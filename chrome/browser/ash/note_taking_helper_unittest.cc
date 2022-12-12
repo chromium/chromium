@@ -759,7 +759,7 @@ TEST_F(NoteTakingHelperTest, NoteTakingWebAppsListed) {
   }
   // Check apps were installed.
   auto* provider = web_app::WebAppProvider::GetForTest(profile());
-  EXPECT_EQ(provider->registrar().CountUserInstalledApps(), 2);
+  EXPECT_EQ(provider->registrar_unsafe().CountUserInstalledApps(), 2);
 
   // Apps with note_taking_new_note_url are listed.
   EXPECT_TRUE(AvailableAppsMatch(
@@ -797,7 +797,7 @@ TEST_F(NoteTakingHelperTest, LockScreenWebAppsListed) {
   }
   // Check apps were installed.
   auto* provider = web_app::WebAppProvider::GetForTest(profile());
-  EXPECT_EQ(provider->registrar().CountUserInstalledApps(), 2);
+  EXPECT_EQ(provider->registrar_unsafe().CountUserInstalledApps(), 2);
 
   // With the flag disabled, web apps are not supported.
   EXPECT_TRUE(AvailableAppsMatch(
@@ -841,7 +841,7 @@ TEST_F(NoteTakingHelperTest_WebLockScreenApiEnabled, LockScreenWebAppsListed) {
   }
   // Check apps were installed.
   auto* provider = web_app::WebAppProvider::GetForTest(profile());
-  EXPECT_EQ(provider->registrar().CountUserInstalledApps(), 2);
+  EXPECT_EQ(provider->registrar_unsafe().CountUserInstalledApps(), 2);
 
   // The web app with a lock screen start URL is supported.
   EXPECT_TRUE(AvailableAppsMatch(
