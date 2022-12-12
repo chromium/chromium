@@ -295,6 +295,9 @@
   <message name="IDS_WEBSITE_RESET_FULL" desc="The label for the button allowing users to clear all data and reset the permissions for a website.">
     Clear data &amp; reset permissions
   </message>
+  <message name="IDS_WEBSITE_RESET_CONFIRMATION_TITLE" desc="The title of the confirmation dialog for clearing all site data and resetting the permissions.">
+    Clear &amp; reset?
+  </message>
   <message name="IDS_WEBSITE_RESET_CONFIRMATION" desc="The confirmation text asking if the user is sure about clearing all data and reset the permissions for a site.">
     Are you sure you want to clear all local data, including cookies, and reset all permissions for this website?
   </message>

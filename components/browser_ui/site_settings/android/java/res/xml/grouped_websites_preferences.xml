@@ -30,7 +30,7 @@ found in the LICENSE file.
     <PreferenceCategory
         android:key="sites_in_group" />
     <org.chromium.components.browser_ui.settings.ButtonPreference
-        android:key="reset_site_button"
+        android:key="reset_group_button"
         android:title="@string/website_reset_full"
         app:allowDividerAbove="false"
         app:allowDividerBelow="false" />

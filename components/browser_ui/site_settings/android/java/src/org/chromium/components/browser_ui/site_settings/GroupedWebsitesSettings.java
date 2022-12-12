@@ -4,8 +4,12 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import android.app.Dialog;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
@@ -15,7 +19,8 @@ import org.chromium.components.browser_ui.settings.TextMessagePreference;
 /**
  * Shows the permissions and other settings for a group of websites.
  */
-public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment {
+public class GroupedWebsitesSettings
+        extends SiteSettingsPreferenceFragment implements Preference.OnPreferenceClickListener {
     public static final String EXTRA_GROUP = "org.chromium.chrome.preferences.site_group";
 
     // Preference keys, see grouped_websites_preferences.xml.
@@ -24,8 +29,11 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment {
     public static final String PREF_RELATED_SITES_HEADER = "related_sites_header";
     public static final String PREF_RELATED_SITES = "related_sites";
     public static final String PREF_SITES_IN_GROUP = "sites_in_group";
+    public static final String PREF_RESET_GROUP = "reset_group_button";
 
     private WebsiteGroup mSiteGroup;
+
+    private Dialog mConfirmationDialog;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -64,6 +72,7 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment {
                         getContext().getString(R.string.domain_settings_sites_in_group,
                                 mSiteGroup.getDomainAndRegistry())));
         setUpClearDataPreference();
+        setUpResetGroupPreference();
         setUpRelatedSitesPreferences();
         updateSitesInGroup();
     }
@@ -71,10 +80,37 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment {
     @Override
     public boolean onPreferenceTreeClick(Preference preference) {
         if (preference instanceof WebsiteRowPreference) {
+            // Handle a click on one of the sites in this group.
             ((WebsiteRowPreference) preference).handleClick(getArguments());
         }
-
         return super.onPreferenceTreeClick(preference);
+    }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        // Handle a click on the Clear & Reset button.
+        View dialogView =
+                getActivity().getLayoutInflater().inflate(R.layout.clear_reset_dialog, null);
+        TextView mainMessage = dialogView.findViewById(R.id.main_message);
+        mainMessage.setText(R.string.website_reset_confirmation);
+        TextView signedOutText = dialogView.findViewById(R.id.signed_out_text);
+        signedOutText.setText(R.string.webstorage_clear_data_dialog_sign_out_message);
+        TextView offlineText = dialogView.findViewById(R.id.offline_text);
+        offlineText.setText(R.string.webstorage_clear_data_dialog_offline_message);
+        mConfirmationDialog =
+                new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
+                        .setView(dialogView)
+                        .setTitle(R.string.website_reset_confirmation_title)
+                        .setPositiveButton(
+                                R.string.website_reset, (dialog, which) -> { resetGroup(); })
+                        .setNegativeButton(
+                                R.string.cancel, (dialog, which) -> mConfirmationDialog = null)
+                        .show();
+        return true;
+    }
+
+    private void resetGroup() {
+        // TODO(crbug.com/1342991): Implement the deletion and UI logic for handling it.
     }
 
     private void setUpClearDataPreference() {
@@ -94,6 +130,16 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment {
             getPreferenceScreen().removePreference(preference);
         }
     }
+
+    private void setUpResetGroupPreference() {
+        Preference preference = findPreference(PREF_RESET_GROUP);
+        if (mSiteGroup.isCookieDeletionDisabled(
+                    getSiteSettingsDelegate().getBrowserContextHandle())) {
+            preference.setEnabled(false);
+        }
+        preference.setOnPreferenceClickListener(this);
+    }
+
     private void setUpRelatedSitesPreferences() {
         var relatedSitesHeader = findPreference(PREF_RELATED_SITES_HEADER);
         TextMessagePreference relatedSitesText = findPreference(PREF_RELATED_SITES);
