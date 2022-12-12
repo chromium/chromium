@@ -74,6 +74,10 @@ class ASH_EXPORT CameraEffectsController : public SessionObserver {
   // SetCameraEffects camera effects with `config`.
   void SetCameraEffects(cros::mojom::EffectsConfigPtr config);
 
+  // SetInitialCameraEffects tells the camera server what `config`
+  // to use when it first registers.
+  void SetInitialCameraEffects(cros::mojom::EffectsConfigPtr config);
+
   // Callback after SetCameraEffects. Based on the `result`, this function will
   // update/revert prefs.
   void OnNewCameraEffectsSet(cros::mojom::EffectsConfigPtr new_config,
