@@ -56,6 +56,7 @@
   },
   "lorenz-graph-dbg": {
     "gn_args": {
+      "android_static_analysis": "off",
       "debuggable_apks": false,
       "enable_chrome_android_internal": false,
       "ffmpeg_branding": "Chrome",
