@@ -18,7 +18,6 @@ namespace media {
 // task runner is given, on which suspend and resume notification callbacks are
 // run. It also provides a function to check if we are suspending on the task
 // runner.
-// Note that on Linux suspend/resume information is not supported.
 class MEDIA_EXPORT PowerObserverHelper : public base::PowerSuspendObserver {
  public:
   PowerObserverHelper(scoped_refptr<base::SequencedTaskRunner> task_runner,
