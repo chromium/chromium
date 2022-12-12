@@ -376,7 +376,8 @@ public class OptionalButtonViewTest {
 
         // Alternative color is controlled by a field trial param.
         TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
                 "action_chip_with_different_color", "true");
         FeatureList.setTestValues(testValues);
 

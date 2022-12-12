@@ -211,7 +211,7 @@ public class OptionalButtonCoordinatorTest {
     public void testUpdateButton_actionChipResourceIdGetsRemovedWhenNotInVariant() {
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "action_chip", "false");
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING, "action_chip", "false");
         FeatureList.setTestValues(testValues);
 
         Drawable iconDrawable = mock(Drawable.class);
@@ -236,7 +236,7 @@ public class OptionalButtonCoordinatorTest {
     public void testUpdateButton_actionChipResourceIdGetsRemovedByFeatureEngagement() {
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "action_chip", "true");
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING, "action_chip", "true");
         FeatureList.setTestValues(testValues);
 
         doReturn(true).when(mMockTracker).isInitialized();
@@ -266,7 +266,7 @@ public class OptionalButtonCoordinatorTest {
     public void testUpdateButton_actionChipResourceIdGetsKeptByFeatureEngagement() {
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "action_chip", "true");
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING, "action_chip", "true");
         FeatureList.setTestValues(testValues);
 
         doReturn(true).when(mMockTracker).isInitialized();

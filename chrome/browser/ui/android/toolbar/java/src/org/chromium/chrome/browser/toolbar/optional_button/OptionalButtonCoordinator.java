@@ -135,8 +135,9 @@ public class OptionalButtonCoordinator {
         // Dynamic buttons include an action chip resource ID by default regardless of variant.
         if (hasActionChipResourceId) {
             // We should only show the action chip if the action chip variant is enabled.
-            boolean isActionChipVariant =
-                    FeatureList.isInitialized() && AdaptiveToolbarFeatures.shouldShowActionChip();
+            boolean isActionChipVariant = FeatureList.isInitialized()
+                    && AdaptiveToolbarFeatures.shouldShowActionChip(
+                            buttonData.getButtonSpec().getButtonVariant());
             // And if feature engagement allows it.
             boolean shouldShowActionChip = isActionChipVariant
                     && mFeatureEngagementTracker.isInitialized()
