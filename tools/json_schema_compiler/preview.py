@@ -8,7 +8,7 @@
 from __future__ import print_function
 
 import cc_generator
-import code
+import code_util
 import cpp_type_generator
 import cpp_util
 import h_generator
@@ -35,11 +35,11 @@ class CompilerHandler(BaseHTTPRequestHandler):
 
     chromium_favicon = 'http://codereview.chromium.org/static/favicon.ico'
 
-    head = code.Code()
+    head = code_util.Code()
     head.Append('<link rel="icon" href="%s">' % chromium_favicon)
     head.Append('<link rel="shortcut icon" href="%s">' % chromium_favicon)
 
-    body = code.Code()
+    body = code_util.Code()
 
     try:
       if os.path.isdir(request_path):
@@ -244,7 +244,7 @@ updateEverything();
     files at |path| with the appropriate onclick handlers to open either
     subdirectories or JSON files.
     """
-    html = code.Code()
+    html = code_util.Code()
 
     # Highlighter chooser.
     html.Append('<select id="highlighters" onChange="updateEverything()">')

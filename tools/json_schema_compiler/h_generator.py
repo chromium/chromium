@@ -4,7 +4,7 @@
 
 import os
 
-from code import Code
+from code_util import Code
 from model import PropertyType, Type, Property
 import cpp_util
 import schema_util

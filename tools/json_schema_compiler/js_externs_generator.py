@@ -8,7 +8,7 @@ Note: This is a work in progress, and generated externs may require tweaking.
 See https://developers.google.com/closure/compiler/docs/api-tutorial3#externs
 """
 
-from code import Code
+from code_util import Code
 from js_util import JsUtil
 from model import *
 from schema_util import *

@@ -32,7 +32,7 @@ template("json_features") {
     sources = invoker.sources
     script = "$compiler_root/feature_compiler.py"
     inputs = [
-      "$compiler_root/code.py",
+      "$compiler_root/code_util.py",
       "$compiler_root/json_parse.py",
     ]
     outputs = generated_files

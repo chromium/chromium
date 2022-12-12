@@ -41,7 +41,7 @@ compiler_root = "//tools/json_schema_compiler"
 compiler_script = "$compiler_root/compiler.py"
 compiler_sources = [
   "$compiler_root/cc_generator.py",
-  "$compiler_root/code.py",
+  "$compiler_root/code_util.py",
   "$compiler_root/compiler.py",
   "$compiler_root/cpp_bundle_generator.py",
   "$compiler_root/cpp_generator.py",

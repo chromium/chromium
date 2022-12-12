@@ -4,7 +4,7 @@
 
 import os.path
 
-from code import Code
+from code_util import Code
 import cpp_util
 
 

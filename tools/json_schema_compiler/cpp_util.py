@@ -5,7 +5,7 @@
 """Utilies and constants specific to Chromium C++ code.
 """
 
-from code import Code
+from code_util import Code
 from datetime import datetime
 from model import PropertyType
 import os
