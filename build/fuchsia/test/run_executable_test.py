@@ -13,8 +13,9 @@ import sys
 
 from typing import List, Optional
 
-from common import get_component_uri, get_host_arch, register_common_args, \
-                   register_device_args, register_log_args, run_ffx_command
+from common import SDK_ROOT, get_component_uri, get_host_arch, \
+                   register_common_args, register_device_args, \
+                   register_log_args, run_ffx_command
 from compatible_utils import map_filter_file_to_package_file
 from ffx_integration import FfxTestRunner
 from test_runner import TestRunner
@@ -190,7 +191,11 @@ class ExecutableTestRunner(TestRunner):
                 get_component_uri(self._test_name), test_args, self._target_id)
 
             # Symbolize output from test process and print to terminal.
-            symbolize_cmd = ['debug', 'symbolize', '--']
+            symbolize_cmd = [
+                'debug', 'symbolize', '--', '--omit-module-lines',
+                '--build-id-dir',
+                os.path.join(SDK_ROOT, '.build-id')
+            ]
             for pkg_path in self._package_deps.values():
                 symbol_path = os.path.join(os.path.dirname(pkg_path),
                                            'ids.txt')
@@ -199,6 +204,7 @@ class ExecutableTestRunner(TestRunner):
                             stdin=test_proc.stdout,
                             stdout=sys.stdout,
                             stderr=subprocess.STDOUT)
+
             if test_proc.wait() == 0:
                 logging.info('Process exited normally with status code 0.')
             else:

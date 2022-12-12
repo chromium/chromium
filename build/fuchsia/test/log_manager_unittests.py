@@ -4,11 +4,14 @@
 # found in the LICENSE file.
 """File for testing log_manager.py."""
 
+import os
 import sys
 import unittest
 import unittest.mock as mock
 
 import log_manager
+
+from common import SDK_ROOT
 
 _LOGS_DIR = 'test_logs_dir'
 
@@ -68,8 +71,9 @@ class LogManagerTest(unittest.TestCase):
         self.assertEqual(mock_ffx.call_args_list[0][0][0],
                          ['log', '--no-symbols'])
         self.assertEqual(mock_ffx.call_args_list[1][0][0], [
-            'debug', 'symbolize', '--', '--omit-module-lines', '--ids-txt',
-            'ids.txt'
+            'debug', 'symbolize', '--', '--omit-module-lines',
+            '--build-id-dir',
+            os.path.join(SDK_ROOT, '.build-id'), '--ids-txt', 'ids.txt'
         ])
         self.assertEqual(mock_ffx.call_count, 2)
 
