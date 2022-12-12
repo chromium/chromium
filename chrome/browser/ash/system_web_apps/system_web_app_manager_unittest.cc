@@ -193,7 +193,7 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
           data.url, web_app::WebAppManagement::Type::kSystem);
       const web_app::AppId app_id = web_app->app_id();
       {
-        web_app::ScopedRegistryUpdate update(&provider().sync_bridge());
+        web_app::ScopedRegistryUpdate update(&provider().sync_bridge_unsafe());
         update->CreateApp(std::move(web_app));
       }
 
