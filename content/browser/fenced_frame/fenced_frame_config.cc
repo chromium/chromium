@@ -24,15 +24,22 @@ GenerateURNConfigVectorForConfigs(
   std::vector<std::pair<GURL, FencedFrameConfig>> nested_urn_config_pairs;
   DCHECK_LE(nested_configs.size(), blink::kMaxAdAuctionAdComponents);
   for (const FencedFrameConfig& config : nested_configs) {
-    nested_urn_config_pairs.emplace_back(GenerateUrnUuid(), config);
+    // Give each config its own urn:uuid. This ensures that if the same config
+    // is loaded into multiple fenced frames, they will not share the same
+    // urn:uuid across processes.
+    GURL urn_uuid = GenerateUrnUuid();
+    auto config_with_urn = config;
+    config_with_urn.urn_ = urn_uuid;
+    nested_urn_config_pairs.emplace_back(urn_uuid, config_with_urn);
   }
 
   // Pad `component_ads_` to contain exactly kMaxAdAuctionAdComponents ads, to
   // avoid leaking any data to the fenced frame the component ads array is
   // exposed to.
   while (nested_urn_config_pairs.size() < blink::kMaxAdAuctionAdComponents) {
+    GURL urn_uuid = GenerateUrnUuid();
     nested_urn_config_pairs.emplace_back(
-        GenerateUrnUuid(), FencedFrameConfig(GURL(url::kAboutBlankURL)));
+        urn_uuid, FencedFrameConfig(urn_uuid, GURL(url::kAboutBlankURL)));
   }
   return nested_urn_config_pairs;
 }
@@ -45,11 +52,20 @@ FencedFrameConfig::FencedFrameConfig(const GURL& mapped_url)
                   VisibilityToEmbedder::kOpaque,
                   VisibilityToContent::kTransparent) {}
 
+FencedFrameConfig::FencedFrameConfig(GURL urn, const GURL& mapped_url)
+    : urn_(urn),
+      mapped_url_(absl::in_place,
+                  mapped_url,
+                  VisibilityToEmbedder::kOpaque,
+                  VisibilityToContent::kTransparent) {}
+
 FencedFrameConfig::FencedFrameConfig(
+    GURL urn,
     const GURL& mapped_url,
     const SharedStorageBudgetMetadata& shared_storage_budget_metadata,
     const ReportingMetadata& reporting_metadata)
-    : mapped_url_(absl::in_place,
+    : urn_(urn),
+      mapped_url_(absl::in_place,
                   mapped_url,
                   VisibilityToEmbedder::kOpaque,
                   VisibilityToContent::kTransparent),
@@ -76,6 +92,8 @@ FencedFrameConfig& FencedFrameConfig::operator=(FencedFrameConfig&&) = default;
 blink::FencedFrame::RedactedFencedFrameConfig FencedFrameConfig::RedactFor(
     FencedFrameEntity entity) const {
   blink::FencedFrame::RedactedFencedFrameConfig redacted_config;
+  if (urn_.has_value())
+    redacted_config.urn_ = urn_;
   if (mapped_url_.has_value()) {
     redacted_config.mapped_url_ =
         blink::FencedFrame::RedactedFencedFrameProperty(
@@ -125,7 +143,8 @@ FencedFrameProperties::FencedFrameProperties()
                        VisibilityToContent::kOpaque) {}
 
 FencedFrameProperties::FencedFrameProperties(const FencedFrameConfig& config)
-    : mapped_url_(config.mapped_url_),
+    : urn_(config.urn_),
+      mapped_url_(config.mapped_url_),
       ad_auction_data_(config.ad_auction_data_),
       on_navigate_callback_(config.on_navigate_callback_),
       nested_urn_config_pairs_(absl::nullopt),
@@ -163,6 +182,8 @@ FencedFrameProperties& FencedFrameProperties::operator=(
 blink::FencedFrame::RedactedFencedFrameProperties
 FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
   blink::FencedFrame::RedactedFencedFrameProperties redacted_properties;
+  if (urn_.has_value())
+    redacted_properties.urn_ = urn_;
   if (mapped_url_.has_value()) {
     redacted_properties.mapped_url_ =
         blink::FencedFrame::RedactedFencedFrameProperty(

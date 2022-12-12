@@ -120,7 +120,9 @@ FencedFrameURLMapping::AddMappingForUrl(const GURL& url) {
   GURL urn_uuid = GenerateUrnUuid();
   DCHECK(!IsMapped(urn_uuid));
 
-  return urn_uuid_to_url_map_.emplace(urn_uuid, FencedFrameConfig(url)).first;
+  return urn_uuid_to_url_map_
+      .emplace(urn_uuid, FencedFrameConfig(urn_uuid, url))
+      .first;
 }
 
 void FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
@@ -142,6 +144,7 @@ void FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   auto& config = urn_uuid_to_url_map_[urn_uuid];
 
   // Assign mapped URL and interest group info.
+  config.urn_.emplace(urn_uuid);
   config.mapped_url_.emplace(url, VisibilityToEmbedder::kOpaque,
                              VisibilityToContent::kTransparent);
   config.ad_auction_data_.emplace(std::move(ad_auction_data),
@@ -152,6 +155,8 @@ void FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   std::vector<FencedFrameConfig> nested_configs;
   nested_configs.reserve(ad_component_urls.size());
   for (auto& ad_component_url : ad_component_urls) {
+    // This config has no urn:uuid. It will later be set when being read into
+    // `nested_urn_config_pairs` in `GenerateURNConfigVectorForConfigs()`.
     nested_configs.emplace_back(ad_component_url);
   }
   config.nested_configs_.emplace(std::move(nested_configs),
@@ -236,7 +241,7 @@ void FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
     reporting_metadata.metadata = std::move(reporting_metadata_map);
 
     config =
-        FencedFrameConfig(mapping_result.mapped_url,
+        FencedFrameConfig(urn_uuid, mapping_result.mapped_url,
                           mapping_result.budget_metadata, reporting_metadata);
     urn_uuid_to_url_map_.emplace(urn_uuid, *config);
   }

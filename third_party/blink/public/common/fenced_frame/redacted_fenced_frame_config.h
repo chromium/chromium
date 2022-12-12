@@ -95,6 +95,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
   RedactedFencedFrameConfig();
   ~RedactedFencedFrameConfig();
 
+  const absl::optional<GURL>& urn() const { return urn_; }
   const absl::optional<RedactedFencedFrameProperty<GURL>>& mapped_url() const {
     return mapped_url_;
   }
@@ -126,6 +127,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
   FRIEND_TEST_ALL_PREFIXES(::content::FencedFrameConfigMojomTraitsTest,
                            ConfigMojomTraitsTest);
 
+  absl::optional<GURL> urn_;
   absl::optional<RedactedFencedFrameProperty<GURL>> mapped_url_;
   absl::optional<RedactedFencedFrameProperty<AdAuctionData>> ad_auction_data_;
   absl::optional<
@@ -147,6 +149,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   RedactedFencedFrameProperties();
   ~RedactedFencedFrameProperties();
 
+  const absl::optional<GURL>& urn() const { return urn_; }
   const absl::optional<RedactedFencedFrameProperty<GURL>>& mapped_url() const {
     return mapped_url_;
   }
@@ -178,6 +181,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   FRIEND_TEST_ALL_PREFIXES(::content::FencedFrameConfigMojomTraitsTest,
                            ConfigMojomTraitsTest);
 
+  absl::optional<GURL> urn_;
   absl::optional<RedactedFencedFrameProperty<GURL>> mapped_url_;
   absl::optional<RedactedFencedFrameProperty<AdAuctionData>> ad_auction_data_;
   absl::optional<RedactedFencedFrameProperty<
