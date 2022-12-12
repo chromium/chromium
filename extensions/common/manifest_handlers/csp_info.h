@@ -71,6 +71,10 @@ class CSPHandler : public ManifestHandler {
   // ManifestHandler override:
   bool Parse(Extension* extension, std::u16string* error) override;
 
+  // Returns the minimum CSP to use in MV3 extensions. Only exposed for testing.
+  static const char* GetMinimumMV3CSPForTesting();
+  static const char* GetMinimumUnpackedMV3CSPForTesting();
+
  private:
   // Parses the "content_security_policy" dictionary in the manifest.
   bool ParseCSPDictionary(Extension* extension, std::u16string* error);

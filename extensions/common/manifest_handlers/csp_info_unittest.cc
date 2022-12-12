@@ -31,8 +31,7 @@ const char kDefaultExtensionPagesCSP[] =
     "script-src 'self' blob: filesystem:; "
     "object-src 'self' blob: filesystem:;";
 const char kDefaultSecureCSP[] = "script-src 'self'; object-src 'self';";
-const char kMinimumMV3CSP[] =
-    "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';";
+
 }  // namespace
 
 using CSPInfoUnitTest = ManifestTest;
@@ -237,20 +236,51 @@ TEST_F(CSPInfoUnitTest, CSPDictionaryMandatoryForV3) {
   const char* default_case_filenames[] = {"csp_dictionary_empty_v3.json",
                                           "csp_dictionary_missing_v3.json"};
 
+  // First, run through with loading the extensions as packed extensions.
   for (const char* filename : default_case_filenames) {
     SCOPED_TRACE(filename);
-    scoped_refptr<Extension> extension = LoadAndExpectSuccess(filename);
+    scoped_refptr<Extension> extension =
+        LoadAndExpectSuccess(filename, mojom::ManifestLocation::kInternal);
     ASSERT_TRUE(extension);
 
     const std::string* isolated_world_csp =
         CSPInfo::GetIsolatedWorldCSP(*extension);
     ASSERT_TRUE(isolated_world_csp);
-    EXPECT_EQ(kMinimumMV3CSP, *isolated_world_csp);
+    EXPECT_EQ(CSPHandler::GetMinimumMV3CSPForTesting(), *isolated_world_csp);
 
     EXPECT_EQ(kDefaultSandboxedPageCSP,
               CSPInfo::GetSandboxContentSecurityPolicy(extension.get()));
     EXPECT_EQ(kDefaultSecureCSP,
               CSPInfo::GetExtensionPagesCSP(extension.get()));
+
+    EXPECT_EQ(
+        CSPHandler::GetMinimumMV3CSPForTesting(),
+        *CSPInfo::GetMinimumCSPToAppend(*extension, "not_sandboxed.html"));
+  }
+
+  // Repeat the test, loading the extensions as unpacked extensions.
+  // The minimum CSP we append (and thus the isolated world CSP) should be
+  // different, while the other CSPs should remain the same.
+  for (const char* filename : default_case_filenames) {
+    SCOPED_TRACE(filename);
+    scoped_refptr<Extension> extension =
+        LoadAndExpectSuccess(filename, mojom::ManifestLocation::kUnpacked);
+    ASSERT_TRUE(extension);
+
+    const std::string* isolated_world_csp =
+        CSPInfo::GetIsolatedWorldCSP(*extension);
+    ASSERT_TRUE(isolated_world_csp);
+    EXPECT_EQ(CSPHandler::GetMinimumUnpackedMV3CSPForTesting(),
+              *isolated_world_csp);
+
+    EXPECT_EQ(kDefaultSandboxedPageCSP,
+              CSPInfo::GetSandboxContentSecurityPolicy(extension.get()));
+    EXPECT_EQ(kDefaultSecureCSP,
+              CSPInfo::GetExtensionPagesCSP(extension.get()));
+
+    EXPECT_EQ(
+        CSPHandler::GetMinimumUnpackedMV3CSPForTesting(),
+        *CSPInfo::GetMinimumCSPToAppend(*extension, "not_sandboxed.html"));
   }
 }
 

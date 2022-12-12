@@ -44,6 +44,11 @@ static const char kDefaultMV3CSP[] = "script-src 'self'; object-src 'self';";
 // The minimum CSP to be used in order to prevent remote scripts.
 static const char kMinimumMV3CSP[] =
     "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';";
+// For unpacked extensions, we additionally allow the use of localhost files to
+// aid in rapid local development.
+static const char kMinimumUnpackedMV3CSP[] =
+    "script-src 'self' 'wasm-unsafe-eval' http://localhost:* "
+    "http://127.0.0.1:*; object-src 'self';";
 
 #define PLATFORM_APP_LOCAL_CSP_SOURCES "'self' blob: filesystem: data:"
 
@@ -107,6 +112,19 @@ const char* GetDefaultExtensionPagesCSP(Extension* extension) {
   return kDefaultContentSecurityPolicy;
 }
 
+// Returns the minimum CSP to apply for the given MV3 extension.
+const std::string* GetMinimumMV3CSPForExtension(const Extension& extension) {
+  DCHECK_GE(extension.manifest_version(), 3);
+
+  static const base::NoDestructor<std::string> default_csp(kMinimumMV3CSP);
+  static const base::NoDestructor<std::string> default_unpacked_csp(
+      kMinimumUnpackedMV3CSP);
+
+  return Manifest::IsUnpackedLocation(extension.location())
+             ? default_unpacked_csp.get()
+             : default_csp.get();
+}
+
 }  // namespace
 
 CSPInfo::CSPInfo(std::string extension_pages_csp)
@@ -143,8 +161,7 @@ const std::string* CSPInfo::GetMinimumCSPToAppend(
   // cause the parsed CSP to not be as strong as the default one. For example,
   // see crbug.com/1042963.
 
-  static const base::NoDestructor<std::string> default_csp(kMinimumMV3CSP);
-  return default_csp.get();
+  return GetMinimumMV3CSPForExtension(extension);
 }
 
 // static
@@ -152,9 +169,7 @@ const std::string* CSPInfo::GetIsolatedWorldCSP(const Extension& extension) {
   if (extension.manifest_version() >= 3) {
     // The isolated world will use its own CSP which blocks remotely hosted
     // code.
-    static const base::NoDestructor<std::string> default_isolated_world_csp(
-        kMinimumMV3CSP);
-    return default_isolated_world_csp.get();
+    return GetMinimumMV3CSPForExtension(extension);
   }
 
   Manifest::Type type = extension.GetType();
@@ -190,6 +205,16 @@ const std::string& CSPInfo::GetResourceContentSecurityPolicy(
 CSPHandler::CSPHandler() = default;
 
 CSPHandler::~CSPHandler() = default;
+
+// static
+const char* CSPHandler::GetMinimumMV3CSPForTesting() {
+  return kMinimumMV3CSP;
+}
+
+// static
+const char* CSPHandler::GetMinimumUnpackedMV3CSPForTesting() {
+  return kMinimumUnpackedMV3CSP;
+}
 
 bool CSPHandler::Parse(Extension* extension, std::u16string* error) {
   const char* key = extension->GetType() == Manifest::TYPE_PLATFORM_APP
