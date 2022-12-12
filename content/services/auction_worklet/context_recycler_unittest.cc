@@ -798,6 +798,34 @@ class ContextRecyclerPrivateAggregationEnabledTest
   }
 
   // Checks given `pa_requests` has one item, which equals to the request
+  // created from given `bucket` and `value`. DebugMode is enabled if
+  // `debug_key` is not nullopt.
+  void ExpectPrivateAggregationRequestsEqual(
+      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
+          pa_requests,
+      absl::uint128 bucket,
+      int value,
+      absl::optional<content::mojom::DebugKeyPtr> debug_key = absl::nullopt) {
+    content::mojom::AggregatableReportHistogramContribution
+        expected_contribution(bucket, value);
+    content::mojom::DebugModeDetailsPtr debug_mode_details;
+    if (debug_key.has_value()) {
+      debug_mode_details = content::mojom::DebugModeDetails::New(
+          /*is_enabled=*/true,
+          /*debug_key=*/std::move(debug_key.value()));
+    } else {
+      debug_mode_details = content::mojom::DebugModeDetails::New();
+    }
+    auction_worklet::mojom::PrivateAggregationRequest expected_request(
+        expected_contribution.Clone(),
+        content::mojom::AggregationServiceMode::kDefault,
+        std::move(debug_mode_details));
+
+    ASSERT_EQ(pa_requests.size(), 1u);
+    EXPECT_EQ(pa_requests[0], expected_request.Clone());
+  }
+
+  // Checks given `pa_requests` has one item, which equals to the request
   // created from given `expected_contribution`.
   void ExpectPrivateAggregationForEventRequestsEqual(
       std::vector<auction_worklet::mojom::PrivateAggregationForEventRequestPtr>
@@ -855,18 +883,10 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    content::mojom::AggregatableReportHistogramContribution
-        expected_contribution(/*bucket=*/123, /*value=*/45);
-    auction_worklet::mojom::PrivateAggregationRequest expected_request(
-        expected_contribution.Clone(),
-        content::mojom::AggregationServiceMode::kDefault,
-        content::mojom::DebugModeDetails::New());
-
-    PrivateAggregationRequests pa_requests =
+    ExpectPrivateAggregationRequestsEqual(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests();
-    ASSERT_EQ(pa_requests.size(), 1u);
-    EXPECT_EQ(pa_requests[0], expected_request.Clone());
+            ->TakePrivateAggregationRequests(),
+        /*bucket=*/123, /*value=*/45);
   }
 
   // Large bucket
@@ -882,19 +902,10 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    content::mojom::AggregatableReportHistogramContribution
-        expected_contribution(
-            /*bucket=*/absl::MakeUint128(/*high=*/1, /*low=*/0), /*value=*/45);
-    auction_worklet::mojom::PrivateAggregationRequest expected_request(
-        expected_contribution.Clone(),
-        content::mojom::AggregationServiceMode::kDefault,
-        content::mojom::DebugModeDetails::New());
-
-    PrivateAggregationRequests pa_requests =
+    ExpectPrivateAggregationRequestsEqual(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests();
-    ASSERT_EQ(pa_requests.size(), 1u);
-    EXPECT_EQ(pa_requests[0], expected_request.Clone());
+            ->TakePrivateAggregationRequests(),
+        /*bucket=*/absl::MakeUint128(/*high=*/1, /*low=*/0), /*value=*/45);
   }
 
   // Maximum bucket
@@ -910,18 +921,10 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    content::mojom::AggregatableReportHistogramContribution
-        expected_contribution(/*bucket=*/absl::Uint128Max(), /*value=*/45);
-    auction_worklet::mojom::PrivateAggregationRequest expected_request(
-        expected_contribution.Clone(),
-        content::mojom::AggregationServiceMode::kDefault,
-        content::mojom::DebugModeDetails::New());
-
-    PrivateAggregationRequests pa_requests =
+    ExpectPrivateAggregationRequestsEqual(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests();
-    ASSERT_EQ(pa_requests.size(), 1u);
-    EXPECT_EQ(pa_requests[0], expected_request.Clone());
+            ->TakePrivateAggregationRequests(),
+        /*bucket=*/absl::Uint128Max(), /*value=*/45);
   }
 
   // Zero bucket
@@ -937,18 +940,10 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    content::mojom::AggregatableReportHistogramContribution
-        expected_contribution(/*bucket=*/0, /*value=*/45);
-    auction_worklet::mojom::PrivateAggregationRequest expected_request(
-        expected_contribution.Clone(),
-        content::mojom::AggregationServiceMode::kDefault,
-        content::mojom::DebugModeDetails::New());
-
-    PrivateAggregationRequests pa_requests =
+    ExpectPrivateAggregationRequestsEqual(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests();
-    ASSERT_EQ(pa_requests.size(), 1u);
-    EXPECT_EQ(pa_requests[0], expected_request.Clone());
+            ->TakePrivateAggregationRequests(),
+        /*bucket=*/0, /*value=*/45);
   }
 
   // Zero value
@@ -964,18 +959,10 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    content::mojom::AggregatableReportHistogramContribution
-        expected_contribution(/*bucket=*/123, /*value=*/0);
-    auction_worklet::mojom::PrivateAggregationRequest expected_request(
-        expected_contribution.Clone(),
-        content::mojom::AggregationServiceMode::kDefault,
-        content::mojom::DebugModeDetails::New());
-
-    PrivateAggregationRequests pa_requests =
+    ExpectPrivateAggregationRequestsEqual(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests();
-    ASSERT_EQ(pa_requests.size(), 1u);
-    EXPECT_EQ(pa_requests[0], expected_request.Clone());
+            ->TakePrivateAggregationRequests(),
+        /*bucket=*/123, /*value=*/0);
   }
 
   // Multiple requests
@@ -1241,20 +1228,10 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    content::mojom::AggregatableReportHistogramContribution
-        expected_contribution(
-            /*bucket=*/123, /*value=*/45);
-    auction_worklet::mojom::PrivateAggregationRequest expected_request(
-        expected_contribution.Clone(),
-        content::mojom::AggregationServiceMode::kDefault,
-        content::mojom::DebugModeDetails::New(/*is_enabled=*/true,
-                                              /*debug_key=*/nullptr));
-
-    PrivateAggregationRequests pa_requests =
+    ExpectPrivateAggregationRequestsEqual(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests();
-    ASSERT_EQ(pa_requests.size(), 1u);
-    EXPECT_EQ(pa_requests[0], expected_request.Clone());
+            ->TakePrivateAggregationRequests(),
+        /*bucket=*/123, /*value=*/45, /*debug_key=*/nullptr);
   }
 
   // Debug mode enabled with debug key
@@ -1274,21 +1251,11 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    content::mojom::AggregatableReportHistogramContribution
-        expected_contribution(
-            /*bucket=*/123, /*value=*/45);
-    auction_worklet::mojom::PrivateAggregationRequest expected_request(
-        expected_contribution.Clone(),
-        content::mojom::AggregationServiceMode::kDefault,
-        content::mojom::DebugModeDetails::New(
-            /*is_enabled=*/true,
-            /*debug_key=*/content::mojom::DebugKey::New(1234u)));
-
-    PrivateAggregationRequests pa_requests =
+    ExpectPrivateAggregationRequestsEqual(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests();
-    ASSERT_EQ(pa_requests.size(), 1u);
-    EXPECT_EQ(pa_requests[0], expected_request.Clone());
+            ->TakePrivateAggregationRequests(),
+        /*bucket=*/123, /*value=*/45,
+        /*debug_key=*/content::mojom::DebugKey::New(1234u));
   }
 
   // Debug mode enabled with large debug key
@@ -1308,22 +1275,11 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    content::mojom::AggregatableReportHistogramContribution
-        expected_contribution(
-            /*bucket=*/123, /*value=*/45);
-    auction_worklet::mojom::PrivateAggregationRequest expected_request(
-        expected_contribution.Clone(),
-        content::mojom::AggregationServiceMode::kDefault,
-        content::mojom::DebugModeDetails::New(
-            /*is_enabled=*/true,
-            /*debug_key=*/content::mojom::DebugKey::New(
-                std::numeric_limits<uint64_t>::max())));
-
-    PrivateAggregationRequests pa_requests =
+    ExpectPrivateAggregationRequestsEqual(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests();
-    ASSERT_EQ(pa_requests.size(), 1u);
-    EXPECT_EQ(pa_requests[0], expected_request.Clone());
+            ->TakePrivateAggregationRequests(),
+        /*bucket=*/123, /*value=*/45, /*debug_key=*/
+        content::mojom::DebugKey::New(std::numeric_limits<uint64_t>::max()));
   }
 
   // Negative debug key
@@ -1417,21 +1373,11 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    content::mojom::AggregatableReportHistogramContribution
-        expected_contribution(
-            /*bucket=*/123, /*value=*/45);
-    auction_worklet::mojom::PrivateAggregationRequest expected_request(
-        expected_contribution.Clone(),
-        content::mojom::AggregationServiceMode::kDefault,
-        content::mojom::DebugModeDetails::New(
-            /*is_enabled=*/true,
-            /*debug_key=*/content::mojom::DebugKey::New(1234u)));
-
-    PrivateAggregationRequests pa_requests =
+    ExpectPrivateAggregationRequestsEqual(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests();
-    ASSERT_EQ(pa_requests.size(), 1u);
-    EXPECT_EQ(pa_requests[0], expected_request.Clone());
+            ->TakePrivateAggregationRequests(),
+        /*bucket=*/123, /*value=*/45,
+        /*debug_key=*/content::mojom::DebugKey::New(1234u));
   }
 
   // enableDebugMode called after report requested: debug details still applied
@@ -1452,21 +1398,11 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         WrapDebugKey(std::string("1234")));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    content::mojom::AggregatableReportHistogramContribution
-        expected_contribution(
-            /*bucket=*/123, /*value=*/45);
-    auction_worklet::mojom::PrivateAggregationRequest expected_request(
-        expected_contribution.Clone(),
-        content::mojom::AggregationServiceMode::kDefault,
-        content::mojom::DebugModeDetails::New(
-            /*is_enabled=*/true,
-            /*debug_key=*/content::mojom::DebugKey::New(1234u)));
-
-    PrivateAggregationRequests pa_requests =
+    ExpectPrivateAggregationRequestsEqual(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests();
-    ASSERT_EQ(pa_requests.size(), 1u);
-    EXPECT_EQ(pa_requests[0], expected_request.Clone());
+            ->TakePrivateAggregationRequests(),
+        /*bucket=*/123, /*value=*/45,
+        /*debug_key=*/content::mojom::DebugKey::New(1234u));
   }
 
   // Multiple debug mode reports
