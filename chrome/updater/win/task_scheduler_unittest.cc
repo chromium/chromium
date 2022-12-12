@@ -300,7 +300,7 @@ TEST_F(TaskSchedulerTests, GetTasksIncludesHidden) {
 }
 
 TEST_F(TaskSchedulerTests, GetTaskInfoExecActions) {
-  base::CommandLine command_line1 = GetTestProcessCommandLine(GetTestScope());
+  base::CommandLine command_line1({L"c:\\test\\process 1.exe"});
 
   EXPECT_TRUE(task_scheduler_->RegisterTask(
       GetTestScope(), kTaskName1, kTaskDescription1, command_line1,
@@ -316,7 +316,7 @@ TEST_F(TaskSchedulerTests, GetTaskInfoExecActions) {
             info.exec_actions[0].application_path.value());
   EXPECT_EQ(command_line1.GetArgumentsString(), info.exec_actions[0].arguments);
 
-  base::CommandLine command_line2 = GetTestProcessCommandLine(GetTestScope());
+  base::CommandLine command_line2({L"c:\\test\\process2.exe"});
   command_line2.AppendSwitch(kUnitTestSwitch);
   EXPECT_TRUE(task_scheduler_->RegisterTask(
       GetTestScope(), kTaskName2, kTaskDescription2, command_line2,
@@ -327,7 +327,7 @@ TEST_F(TaskSchedulerTests, GetTaskInfoExecActions) {
   // the previous contents of the struct.
   EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName2, &info));
   ASSERT_EQ(1UL, info.exec_actions.size());
-  EXPECT_EQ(base::StrCat({L"\"", command_line2.GetProgram().value(), L"\""}),
+  EXPECT_EQ(command_line2.GetProgram().value(),
             info.exec_actions[0].application_path.value());
   EXPECT_EQ(command_line2.GetArgumentsString(), info.exec_actions[0].arguments);
 

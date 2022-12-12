@@ -32,10 +32,10 @@ namespace {
 constexpr wchar_t kAppId[] = L"{3B1A3CCA-0525-4418-93E6-A0DB3398EC9B}";
 constexpr wchar_t kCmdId1[] = L"CreateOSVersionsFileOnOSUpgrade";
 constexpr wchar_t kCmdLineCreateOSVersionsFile[] =
-    L"cmd.exe /c \"echo %1 > %1 && exit 0\"";
+    L"/c \"echo %1 > %1 && exit 0\"";
 constexpr wchar_t kCmdId2[] = L"CreateHardcodedFileOnOSUpgrade";
 constexpr wchar_t kCmdLineCreateHardcodedFile[] =
-    L"cmd.exe /c \"echo HardcodedFile > HardcodedFile && exit 0\"";
+    L"/c \"echo HardcodedFile > HardcodedFile && exit 0\"";
 constexpr char kLastOSVersion[] = "last_os_version";
 
 }  // namespace
@@ -88,11 +88,11 @@ TEST_F(AutoRunOnOsUpgradeTaskTest, RunOnOsUpgradeForApp) {
 
   CreateAppCommandOSUpgradeRegistry(
       GetTestScope(), kAppId, kCmdId1,
-      base::StrCat({cmd_exe_command_line_.GetCommandLineString(),
+      base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
                     kCmdLineCreateOSVersionsFile}));
   CreateAppCommandOSUpgradeRegistry(
       GetTestScope(), kAppId, kCmdId2,
-      base::StrCat({cmd_exe_command_line_.GetCommandLineString(),
+      base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
                     kCmdLineCreateHardcodedFile}));
 
   ASSERT_EQ(os_upgrade_task->RunOnOsUpgradeForApp(base::WideToASCII(kAppId)),

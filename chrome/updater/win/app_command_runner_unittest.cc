@@ -21,7 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
-#include "base/types/expected.h"
+#include "base/win/scoped_localalloc.h"
 #include "build/branding_buildflags.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_branding.h"
@@ -250,15 +250,16 @@ TEST_F(AppCommandRunnerTest,
     // verify that it produces the original substitution.
     std::wstring cmd = base::StrCat({L"process.exe ", command_line.value()});
     int num_args = 0;
-    ScopedLocalAlloc argv_handle(::CommandLineToArgvW(&cmd[0], &num_args));
-    ASSERT_TRUE(argv_handle.is_valid());
+    wchar_t** args = ::CommandLineToArgvW(&cmd[0], &num_args);
+    base::win::ScopedLocalAllocTyped<wchar_t*> argv_handle(
+        base::win::TakeLocalAlloc(args));
+    ASSERT_TRUE(argv_handle);
     EXPECT_EQ(num_args, 2) << "substitution '" << test_case.substitutions[0]
                            << "' gave command line '" << cmd
                            << "' which unexpectedly did not parse to a single "
                            << "argument.";
 
-    EXPECT_EQ(reinterpret_cast<const wchar_t**>(argv_handle.get())[1],
-              test_case.substitutions[0])
+    EXPECT_EQ(argv_handle.get()[1], test_case.substitutions[0])
         << "substitution '" << test_case.substitutions[0]
         << "' gave command line '" << cmd
         << "' which did not parse back to the "

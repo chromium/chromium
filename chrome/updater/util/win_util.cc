@@ -45,6 +45,7 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/scoped_localalloc.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/startup_information.h"
@@ -711,17 +712,17 @@ std::wstring BuildExeCommandLine(
     return std::wstring();
   }
 
-  return base::StrCat({base::CommandLine(exe_installer).GetCommandLineString(),
-                       L" ", arguments, [&installer_data_file]() {
-                         if (!installer_data_file)
-                           return std::wstring();
+  return base::StrCat(
+      {QuoteForCommandLineToArgvW(exe_installer.value()), L" ", arguments,
+       [&installer_data_file]() {
+         if (!installer_data_file)
+           return std::wstring();
 
-                         base::CommandLine installer_data_args(
-                             base::CommandLine::NO_PROGRAM);
-                         installer_data_args.AppendSwitchPath(
-                             kInstallerDataSwitch, *installer_data_file);
-                         return installer_data_args.GetCommandLineString();
-                       }()});
+         base::CommandLine installer_data_args(base::CommandLine::NO_PROGRAM);
+         installer_data_args.AppendSwitchPath(kInstallerDataSwitch,
+                                              *installer_data_file);
+         return base::StrCat({L" ", installer_data_args.GetArgumentsString()});
+       }()});
 }
 
 bool IsServiceRunning(const std::wstring& service_name) {
@@ -904,9 +905,12 @@ bool StopGoogleUpdateProcesses(UpdaterScope scope) {
 
 absl::optional<base::CommandLine> CommandLineForLegacyFormat(
     const std::wstring& cmd_string) {
-  wchar_t** args = nullptr;
   int num_args = 0;
-  args = ::CommandLineToArgvW(cmd_string.c_str(), &num_args);
+  wchar_t** argv = ::CommandLineToArgvW(cmd_string.c_str(), &num_args);
+  base::win::ScopedLocalAllocTyped<wchar_t*> args =
+      base::win::TakeLocalAlloc(argv);
+  if (!args)
+    return absl::nullopt;
 
   auto is_switch = [](const std::wstring& arg) { return arg[0] == L'-'; };
 
@@ -915,23 +919,23 @@ absl::optional<base::CommandLine> CommandLineForLegacyFormat(
   };
 
   // First argument is the program.
-  base::CommandLine command_line(base::FilePath{args[0]});
+  base::CommandLine command_line(base::FilePath{args.get()[0]});
 
   for (int i = 1; i < num_args; ++i) {
-    const std::wstring next_arg = i < num_args - 1 ? args[i + 1] : L"";
+    const std::wstring next_arg = i < num_args - 1 ? args.get()[i + 1] : L"";
 
-    if (is_switch(args[i]) || is_switch(next_arg)) {
+    if (is_switch(args.get()[i]) || is_switch(next_arg)) {
       // Won't parse Chromium-style command line.
       return absl::nullopt;
     }
 
-    if (!is_legacy_switch(args[i])) {
+    if (!is_legacy_switch(args.get()[i])) {
       // This is a bare argument.
-      command_line.AppendArg(base::WideToASCII(args[i]));
+      command_line.AppendArg(base::WideToASCII(args.get()[i]));
       continue;
     }
 
-    const std::string switch_name = base::WideToASCII(&args[i][1]);
+    const std::string switch_name = base::WideToASCII(&args.get()[i][1]);
     if (switch_name.empty()) {
       VLOG(1) << "Empty switch in command line: [" << cmd_string << "]";
       return absl::nullopt;

@@ -23,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "base/win/registry.h"
+#include "base/win/scoped_localalloc.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
@@ -274,14 +275,15 @@ HRESULT AppCommandRunner::GetAppCommandFormatComponents(
   VLOG(2) << __func__ << ": " << scope << ": " << command_format;
 
   int num_args = 0;
-  ScopedLocalAlloc args(::CommandLineToArgvW(&command_format[0], &num_args));
-  if (!args.is_valid() || num_args < 1) {
-    LOG(ERROR) << __func__ << "!args.is_valid() || num_args < 1: " << num_args;
+  wchar_t** args = ::CommandLineToArgvW(&command_format[0], &num_args);
+  base::win::ScopedLocalAllocTyped<wchar_t*> argv(
+      base::win::TakeLocalAlloc(args));
+  if (!argv || num_args < 1) {
+    LOG(ERROR) << __func__ << "!argv || num_args < 1: " << num_args;
     return E_INVALIDARG;
   }
 
-  const wchar_t** argv = reinterpret_cast<const wchar_t**>(args.get());
-  const base::FilePath exe = base::FilePath(argv[0]);
+  const base::FilePath exe = base::FilePath(argv.get()[0]);
   if (!IsSecureAppCommandExePath(scope, exe)) {
     LOG(WARNING) << __func__
                  << ": !IsSecureAppCommandExePath(scope, exe): " << exe;
@@ -291,7 +293,7 @@ HRESULT AppCommandRunner::GetAppCommandFormatComponents(
   executable = exe;
   parameters.clear();
   for (int i = 1; i < num_args; ++i)
-    parameters.push_back(argv[i]);
+    parameters.push_back(argv.get()[i]);
 
   return S_OK;
 }

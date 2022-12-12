@@ -31,6 +31,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/win/scoped_com_initializer.h"
+#include "base/win/scoped_localalloc.h"
 #include "base/win/windows_version.h"
 #include "chrome/installer/util/lzma_util.h"
 #include "chrome/installer/util/util_constants.h"
@@ -193,26 +194,25 @@ ProcessExitResult BuildCommandLineArguments(const wchar_t* cmd_line,
 
   // Append the command line arguments in `cmd_line` first.
   int num_args = 0;
-  ScopedLocalAlloc scoped_arg_list(::CommandLineToArgvW(cmd_line, &num_args));
-  wchar_t** const arg_list =
-      reinterpret_cast<wchar_t** const>(scoped_arg_list.get());
+  wchar_t** arg_list = ::CommandLineToArgvW(cmd_line, &num_args);
+  base::win::ScopedLocalAllocTyped<wchar_t*> argv(
+      base::win::TakeLocalAlloc(arg_list));
   for (int i = 1; i != num_args; ++i) {
     if (!args.append(L" ") ||
-        !args.append(QuoteForCommandLineToArgvW(arg_list[i]).c_str())) {
+        !args.append(QuoteForCommandLineToArgvW(argv.get()[i]).c_str())) {
       return ProcessExitResult(COMMAND_STRING_OVERFLOW);
     }
   }
 
   // Handle the tag. Use the tag from the --tag command line argument if such
-  // argument exists. If --tag is present in the arg_list, then it is going
-  // to be handed over to the updater, along with the other arguments.
-  // Otherwise, try extracting a tag embedded in the program image of the meta
-  // installer.
-  if (![arg_list, num_args]() {
+  // argument exists. If --tag is present in `argv`, then it is going to be
+  // handed over to the updater, along with the other arguments. Otherwise, try
+  // extracting a tag embedded in the program image of the meta installer.
+  if (![&argv, num_args]() {
         // Returns true if the --tag argument is present on the command line.
         constexpr wchar_t kTagSwitch[] = L"--tag=";
         for (int i = 1; i != num_args; ++i) {
-          if (memcmp(arg_list[i], kTagSwitch, sizeof(kTagSwitch)) == 0)
+          if (memcmp(argv.get()[i], kTagSwitch, sizeof(kTagSwitch)) == 0)
             return true;
         }
         return false;
