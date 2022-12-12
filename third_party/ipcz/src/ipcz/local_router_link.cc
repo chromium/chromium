@@ -16,6 +16,9 @@
 
 namespace ipcz {
 
+// This object is shared between the two Routers on either end of a
+// LocalRouterLink. The Routers access each other through references owned by
+// this object.
 class LocalRouterLink::SharedState : public RefCounted {
  public:
   SharedState(LinkType type,
@@ -34,6 +37,9 @@ class LocalRouterLink::SharedState : public RefCounted {
 
   RouterLinkState& link_state() { return link_state_; }
 
+  // Returns the Router on the given `side` of this link. Note that this may
+  // return null if the Router in question has been deactivated, for example due
+  // to the application closing the Router's controlling portal.
   Ref<Router> GetRouter(LinkSide side) {
     absl::MutexLock lock(&mutex_);
     switch (side.value()) {
@@ -162,8 +168,9 @@ void LocalRouterLink::Unlock() {
 bool LocalRouterLink::FlushOtherSideIfWaiting(const OperationContext& context) {
   const LinkSide other_side = side_.opposite();
   if (state_->link_state().ResetWaitingBit(other_side)) {
-    state_->GetRouter(other_side)
-        ->Flush(context, Router::kForceProxyBypassAttempt);
+    if (Ref<Router> receiver = state_->GetRouter(side_.opposite())) {
+      receiver->Flush(context, Router::kForceProxyBypassAttempt);
+    }
     return true;
   }
   return false;
