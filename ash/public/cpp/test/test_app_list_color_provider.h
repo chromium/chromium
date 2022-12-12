@@ -17,21 +17,9 @@ class TestAppListColorProvider : public AppListColorProvider {
 
  public:
   // AppListColorProvider:
-  SkColor GetSearchBoxBackgroundColor(
-      const views::Widget* app_list_widget) const override;
-  SkColor GetSearchBoxTextColor(
-      const views::Widget* app_list_widget) const override;
-  SkColor GetSearchBoxSecondaryTextColor(
-      const views::Widget* app_list_widget) const override;
-  SkColor GetSearchBoxSuggestionTextColor(
-      const views::Widget* app_list_widget) const override;
   SkColor GetAppListItemTextColor(
       const views::Widget* app_list_widget) const override;
   SkColor GetPageSwitcherButtonColor(
-      const views::Widget* app_list_widget) const override;
-  SkColor GetSearchBoxIconColor(
-      const views::Widget* app_list_widget) const override;
-  SkColor GetSearchBoxCardBackgroundColor(
       const views::Widget* app_list_widget) const override;
   SkColor GetFolderBackgroundColor(
       const views::Widget* app_list_widget) const override;

@@ -9,7 +9,6 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 
@@ -20,12 +19,6 @@ namespace {
 constexpr float kLightInkDropOpacity = 0.08f;
 constexpr float kDarkInkDropOpacity = 0.12f;
 
-// Helper to check if tablet mode is enabled.
-bool IsTabletModeEnabled() {
-  return Shell::Get()->tablet_mode_controller() &&
-         Shell::Get()->tablet_mode_controller()->InTabletMode();
-}
-
 bool IsDarkModeEnabled() {
   // May be null in unit tests.
   if (!Shell::HasInstance())
@@ -35,56 +28,9 @@ bool IsDarkModeEnabled() {
 
 }  // namespace
 
-AppListColorProviderImpl::AppListColorProviderImpl()
-    : is_background_blur_enabled_(features::IsBackgroundBlurEnabled()) {}
+AppListColorProviderImpl::AppListColorProviderImpl() = default;
 
 AppListColorProviderImpl::~AppListColorProviderImpl() = default;
-
-SkColor AppListColorProviderImpl::GetSearchBoxBackgroundColor(
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  const ui::ColorProvider* color_provider = app_list_widget->GetColorProvider();
-  if (IsTabletModeEnabled()) {
-    return color_provider->GetColor(is_background_blur_enabled_
-                                        ? kColorAshShieldAndBase80
-                                        : kColorAshShieldAndBase95);
-  }
-  return color_provider->GetColor(kColorAshControlBackgroundColorInactive);
-}
-
-SkColor AppListColorProviderImpl::GetSearchBoxCardBackgroundColor(
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  return app_list_widget->GetColorProvider()->GetColor(
-      is_background_blur_enabled_ ? kColorAshShieldAndBase80
-                                  : kColorAshShieldAndBase95);
-}
-
-SkColor AppListColorProviderImpl::GetSearchBoxTextColor(
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  return app_list_widget->GetColorProvider()->GetColor(
-      cros_tokens::kTextColorPrimary);
-}
-
-SkColor AppListColorProviderImpl::GetSearchBoxSecondaryTextColor(
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  return app_list_widget->GetColorProvider()->GetColor(
-      cros_tokens::kTextColorSecondary);
-}
-
-SkColor AppListColorProviderImpl::GetSearchBoxSuggestionTextColor(
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  return app_list_widget->GetColorProvider()->GetColor(
-      kColorAshTextColorSuggestion);
-}
 
 SkColor AppListColorProviderImpl::GetAppListItemTextColor(
     const views::Widget* app_list_widget) const {
@@ -95,14 +41,6 @@ SkColor AppListColorProviderImpl::GetAppListItemTextColor(
 }
 
 SkColor AppListColorProviderImpl::GetPageSwitcherButtonColor(
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  return app_list_widget->GetColorProvider()->GetColor(
-      kColorAshButtonIconColor);
-}
-
-SkColor AppListColorProviderImpl::GetSearchBoxIconColor(
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
 

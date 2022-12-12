@@ -205,9 +205,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   void UpdateKeyboardShortcutContainer();
   void UpdateRating();
 
-  void StyleLabel(views::Label* label,
-                  bool is_title_label,
-                  const SearchResult::Tags& tags);
+  void StyleLabel(views::Label* label, const SearchResult::Tags& tags);
   void StyleBigTitleContainer();
   void StyleBigTitleSuperscriptContainer();
   void StyleTitleContainer();

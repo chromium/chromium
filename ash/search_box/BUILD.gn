@@ -16,6 +16,7 @@ source_set("search_box") {
   deps = [
     "//ash/public/cpp",
     "//ash/strings",
+    "//ash/style",
     "//base",
     "//skia",
     "//ui/base",

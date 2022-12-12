@@ -55,9 +55,6 @@ class ASH_EXPORT SearchResultPageView : public AppListPage {
       const gfx::Rect& search_box_bounds) const override;
   void OnAnimationStarted(AppListState from_state,
                           AppListState to_state) override;
-  void OnAnimationUpdated(double progress,
-                          AppListState from_state,
-                          AppListState to_state) override;
   gfx::Size GetPreferredSearchBoxSize() const override;
 
   // Whether any results are available for selection within the search result
@@ -69,9 +66,6 @@ class ASH_EXPORT SearchResultPageView : public AppListPage {
   SearchResultPageAnchoredDialog* dialog_for_test() {
     return dialog_controller_->dialog();
   }
-
-  // Returns background color for the given state.
-  SkColor GetBackgroundColorForState(AppListState state) const;
 
   // Hide zero state search result view when ProductivityLauncher is enabled.
   bool ShouldShowSearchResultView() const;

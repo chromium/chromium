@@ -293,7 +293,7 @@ TEST_F(SearchBoxViewTest, SearchBoxInactiveSearchBoxGoogle) {
   SetSearchEngineIsGoogle(true);
   SetSearchBoxActive(false, ui::ET_UNKNOWN);
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
-      kGoogleBlackIcon, view()->GetSearchBoxIconSize(), kDefaultSearchboxColor);
+      kGoogleBlackIcon, view()->GetSearchBoxIconSize(), gfx::kGoogleGrey900);
 
   const gfx::ImageSkia actual_icon = view()->search_icon()->GetImage();
 
@@ -307,7 +307,7 @@ TEST_F(SearchBoxViewTest, SearchBoxActiveSearchEngineGoogle) {
   SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
       vector_icons::kGoogleColorIcon, view()->GetSearchBoxIconSize(),
-      kDefaultSearchboxColor);
+      gfx::kGoogleGrey900);
 
   const gfx::ImageSkia actual_icon = view()->search_icon()->GetImage();
 
@@ -321,7 +321,7 @@ TEST_F(SearchBoxViewTest, SearchBoxInactiveSearchEngineNotGoogle) {
   SetSearchBoxActive(false, ui::ET_UNKNOWN);
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
       kSearchEngineNotGoogleIcon, view()->GetSearchBoxIconSize(),
-      kDefaultSearchboxColor);
+      gfx::kGoogleGrey900);
 
   const gfx::ImageSkia actual_icon = view()->search_icon()->GetImage();
 
@@ -335,7 +335,7 @@ TEST_F(SearchBoxViewTest, SearchBoxActiveSearchEngineNotGoogle) {
   SetSearchBoxActive(true, ui::ET_UNKNOWN);
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
       kSearchEngineNotGoogleIcon, view()->GetSearchBoxIconSize(),
-      kDefaultSearchboxColor);
+      gfx::kGoogleGrey900);
 
   const gfx::ImageSkia actual_icon = view()->search_icon()->GetImage();
 

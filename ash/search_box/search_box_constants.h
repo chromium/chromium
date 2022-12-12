@@ -10,10 +10,6 @@
 
 namespace ash {
 
-// Default color used when wallpaper customized color is not available for
-// searchbox, #000 at 87% opacity.
-constexpr SkColor kDefaultSearchboxColor = gfx::kGoogleGrey200;
-
 // The horizontal padding of the box layout of the search box.
 constexpr int kSearchBoxPadding = 12;
 

@@ -18,21 +18,9 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   // Returns the singleton instance.
   static AppListColorProvider* Get();
 
-  virtual SkColor GetSearchBoxBackgroundColor(
-      const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetSearchBoxTextColor(
-      const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetSearchBoxSecondaryTextColor(
-      const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetSearchBoxSuggestionTextColor(
-      const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetAppListItemTextColor(
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetPageSwitcherButtonColor(
-      const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetSearchBoxIconColor(
-      const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetSearchBoxCardBackgroundColor(
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetFolderBackgroundColor(
       const views::Widget* app_list_widget) const = 0;

@@ -103,6 +103,56 @@ constexpr auto kBigTitleSuperscriptBorder =
 // title and the details label need to be elided.
 constexpr float kDetailsElideRatio = 0.25f;
 
+bool IsTitleLabel(SearchResultView::LabelType label_type) {
+  switch (label_type) {
+    case SearchResultView::LabelType::kDetails:
+    case SearchResultView::LabelType::kKeyboardShortcut:
+      return false;
+    case SearchResultView::LabelType::kTitle:
+    case SearchResultView::LabelType::kBigTitle:
+    case SearchResultView::LabelType::kBigTitleSuperscript:
+      return true;
+  }
+}
+
+ui::ColorId GetLabelColorId(bool is_title, const SearchResult::Tags& tags) {
+  auto color_tag = SearchResult::Tag::NONE;
+  for (const auto& tag : tags) {
+    // Each label only supports one type of color tag. `color_tag` should only
+    // be set once.
+    if (tag.styles & SearchResult::Tag::URL) {
+      DCHECK(color_tag == SearchResult::Tag::NONE ||
+             color_tag == SearchResult::Tag::URL);
+      color_tag = SearchResult::Tag::URL;
+    }
+    if (tag.styles & SearchResult::Tag::GREEN) {
+      DCHECK(color_tag == SearchResult::Tag::NONE ||
+             color_tag == SearchResult::Tag::GREEN);
+      color_tag = SearchResult::Tag::GREEN;
+    }
+    if (tag.styles & SearchResult::Tag::RED) {
+      DCHECK(color_tag == SearchResult::Tag::NONE ||
+             color_tag == SearchResult::Tag::RED);
+      color_tag = SearchResult::Tag::RED;
+    }
+  }
+
+  switch (color_tag) {
+    case SearchResult::Tag::NONE:
+      ABSL_FALLTHROUGH_INTENDED;
+    case SearchResult::Tag::DIM:
+      ABSL_FALLTHROUGH_INTENDED;
+    case SearchResult::Tag::MATCH:
+      return is_title ? kColorAshTextColorPrimary : kColorAshTextColorSecondary;
+    case SearchResult::Tag::URL:
+      return kColorAshTextColorURL;
+    case SearchResult::Tag::GREEN:
+      return kColorAshTextColorPositive;
+    case SearchResult::Tag::RED:
+      return kColorAshTextColorAlert;
+  }
+}
+
 views::ImageView* SetupChildImageView(views::FlexLayoutView* parent) {
   views::ImageView* image_view =
       parent->AddChildView(std::make_unique<views::ImageView>());
@@ -117,6 +167,7 @@ views::Label* SetupChildLabelView(
     views::FlexLayoutView* parent,
     SearchResultView::SearchResultViewType view_type,
     SearchResultView::LabelType label_type,
+    ui::ColorId color_id,
     int flex_order,
     bool has_keyboard_shortcut_contents,
     bool is_multi_line,
@@ -128,6 +179,8 @@ views::Label* SetupChildLabelView(
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->GetViewAccessibility().OverrideIsIgnored(true);
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
+  label->SetAutoColorReadabilityEnabled(false);
+  label->SetEnabledColorId(color_id);
   label->SetVisible(false);
   label->SetElideBehavior(overflow_behavior ==
                                   SearchResultTextItem::OverflowBehavior::kElide
@@ -351,11 +404,12 @@ SearchResultView::SearchResultView(
   title_container_->SetFlexAllocationOrder(
       views::FlexAllocationOrder::kReverse);
 
-  result_text_separator_label_ = SetupChildLabelView(
-      title_and_details_container_, view_type_, LabelType::kDetails,
-      kSeparatorOrder, has_keyboard_shortcut_contents_,
-      /*is_multi_line=*/false,
-      SearchResultTextItem::OverflowBehavior::kNoElide);
+  result_text_separator_label_ =
+      SetupChildLabelView(title_and_details_container_, view_type_,
+                          LabelType::kDetails, kColorAshTextColorSecondary,
+                          kSeparatorOrder, has_keyboard_shortcut_contents_,
+                          /*is_multi_line=*/false,
+                          SearchResultTextItem::OverflowBehavior::kNoElide);
   result_text_separator_label_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR));
   result_text_separator_label_->GetViewAccessibility().OverrideIsIgnored(true);
@@ -372,20 +426,22 @@ SearchResultView::SearchResultView(
           .WithOrder(TitleDetailContainerOrder)
           .WithWeight(1));
 
-  rating_separator_label_ = SetupChildLabelView(
-      title_and_details_container_, view_type_, LabelType::kDetails,
-      kSeparatorOrder, has_keyboard_shortcut_contents_,
-      /*is_multi_line=*/false,
-      SearchResultTextItem::OverflowBehavior::kNoElide);
+  rating_separator_label_ =
+      SetupChildLabelView(title_and_details_container_, view_type_,
+                          LabelType::kDetails, kColorAshTextColorSecondary,
+                          kSeparatorOrder, has_keyboard_shortcut_contents_,
+                          /*is_multi_line=*/false,
+                          SearchResultTextItem::OverflowBehavior::kNoElide);
   rating_separator_label_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR));
   rating_separator_label_->GetViewAccessibility().OverrideIsIgnored(true);
 
-  rating_ = SetupChildLabelView(
-      title_and_details_container_, view_type_, LabelType::kDetails,
-      kRatingOrder, has_keyboard_shortcut_contents_,
-      /*is_multi_line=*/false,
-      SearchResultTextItem::OverflowBehavior::kNoElide);
+  rating_ =
+      SetupChildLabelView(title_and_details_container_, view_type_,
+                          LabelType::kDetails, kColorAshTextColorSecondary,
+                          kRatingOrder, has_keyboard_shortcut_contents_,
+                          /*is_multi_line=*/false,
+                          SearchResultTextItem::OverflowBehavior::kNoElide);
 
   rating_star_ = SetupChildImageView(title_and_details_container_);
   rating_star_->SetBorder(views::CreateEmptyBorder(
@@ -611,6 +667,7 @@ SearchResultView::SetupContainerViewForTextVector(
                         SearchResultTextItem::OverflowBehavior::kNoElide;
         views::Label* label = SetupChildLabelView(
             parent, view_type_, label_type,
+            GetLabelColorId(IsTitleLabel(label_type), span.GetTextTags()),
             !elidable ? kNonElideLabelOrder
                       : kElidableLabelOrderStart + label_count,
             has_keyboard_shortcut_contents,
@@ -653,7 +710,7 @@ SearchResultView::SetupContainerViewForTextVector(
           }
         }
 
-        label_tags.push_back(LabelAndTag(label, span.GetTextTags()));
+        label_tags.emplace_back(label, span.GetTextTags());
       } break;
       case SearchResultTextItemType::kIconifiedText: {
         SearchResultInlineIconView* iconified_text_view =
@@ -860,86 +917,44 @@ void SearchResultView::UpdateRating() {
 }
 
 void SearchResultView::StyleLabel(views::Label* label,
-                                  bool is_title_label,
                                   const SearchResult::Tags& tags) {
   // Reset font weight styling for label.
   label->ApplyBaselineTextStyle();
-  auto color_tag = SearchResult::Tag::NONE;
-  for (const auto& tag : tags) {
-    // Each label only supports one type of color tag. `color_tag` should only
-    // be set once.
-    if (tag.styles & SearchResult::Tag::URL) {
-      DCHECK(color_tag == SearchResult::Tag::NONE ||
-             color_tag == SearchResult::Tag::URL);
-      color_tag = SearchResult::Tag::URL;
-    }
-    if (tag.styles & SearchResult::Tag::GREEN) {
-      DCHECK(color_tag == SearchResult::Tag::NONE ||
-             color_tag == SearchResult::Tag::GREEN);
-      color_tag = SearchResult::Tag::GREEN;
-    }
-    if (tag.styles & SearchResult::Tag::RED) {
-      DCHECK(color_tag == SearchResult::Tag::NONE ||
-             color_tag == SearchResult::Tag::RED);
-      color_tag = SearchResult::Tag::RED;
-    }
 
+  for (const auto& tag : tags) {
     bool has_match_tag = (tag.styles & SearchResult::Tag::MATCH);
     if (has_match_tag)
       label->SetTextStyleRange(AshTextStyle::STYLE_HIGHLIGHT, tag.range);
-  }
-
-  switch (color_tag) {
-    case SearchResult::Tag::NONE:
-      ABSL_FALLTHROUGH_INTENDED;
-    case SearchResult::Tag::DIM:
-      ABSL_FALLTHROUGH_INTENDED;
-    case SearchResult::Tag::MATCH:
-      label->SetEnabledColorId(is_title_label
-                                   ? cros_tokens::kTextColorPrimary
-                                   : cros_tokens::kTextColorSecondary);
-      break;
-    case SearchResult::Tag::URL:
-      label->SetEnabledColorId(kColorAshTextColorURL);
-      break;
-    case SearchResult::Tag::GREEN:
-      label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPositive));
-      break;
-    case SearchResult::Tag::RED:
-      label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorAlert));
-      break;
   }
 }
 
 void SearchResultView::StyleBigTitleContainer() {
   for (auto& span : big_title_label_tags_) {
-    StyleLabel(span.GetLabel(), true /*is_title_label*/, span.GetTags());
+    StyleLabel(span.GetLabel(), span.GetTags());
   }
 }
 
 void SearchResultView::StyleBigTitleSuperscriptContainer() {
   for (auto& span : big_title_superscript_label_tags_) {
-    StyleLabel(span.GetLabel(), true /*is_title_label*/, span.GetTags());
+    StyleLabel(span.GetLabel(), span.GetTags());
   }
 }
 
 void SearchResultView::StyleTitleContainer() {
   for (auto& span : title_label_tags_) {
-    StyleLabel(span.GetLabel(), true /*is_title_label*/, span.GetTags());
+    StyleLabel(span.GetLabel(), span.GetTags());
   }
 }
 
 void SearchResultView::StyleDetailsContainer() {
   for (auto& span : details_label_tags_) {
-    StyleLabel(span.GetLabel(), false /*is_title_label*/, span.GetTags());
+    StyleLabel(span.GetLabel(), span.GetTags());
   }
 }
 
 void SearchResultView::StyleKeyboardShortcutContainer() {
   for (auto& span : keyboard_shortcut_container_tags_) {
-    StyleLabel(span.GetLabel(), false /*is_title_label*/, span.GetTags());
+    StyleLabel(span.GetLabel(), span.GetTags());
   }
 }
 
@@ -1180,31 +1195,11 @@ void SearchResultView::VisibilityChanged(View* starting_from, bool is_visible) {
 }
 
 void SearchResultView::OnThemeChanged() {
-  if (!big_title_label_tags_.empty())
-    StyleBigTitleContainer();
-  if (!title_label_tags_.empty())
-    StyleTitleContainer();
-  if (!details_label_tags_.empty())
-    StyleDetailsContainer();
-  if (!keyboard_shortcut_container_tags_.empty())
-    StyleKeyboardShortcutContainer();
-
-  const auto* app_list_widget = GetWidget();
-  result_text_separator_label_->SetEnabledColor(
-      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          app_list_widget));
-
-  rating_separator_label_->SetEnabledColor(
-      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          app_list_widget));
-  rating_->SetEnabledColor(
-      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          app_list_widget));
+  views::View::OnThemeChanged();
   rating_star_->SetImage(gfx::CreateVectorIcon(
       kBadgeRatingIcon, kSearchRatingStarSize,
-      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          app_list_widget)));
-  views::View::OnThemeChanged();
+      GetWidget()->GetColorProvider()->GetColor(kColorAshTextColorSecondary)));
+  SchedulePaint();
 }
 
 void SearchResultView::OnGestureEvent(ui::GestureEvent* event) {

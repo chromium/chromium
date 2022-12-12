@@ -16,6 +16,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -158,17 +159,8 @@ void KSVSearchBoxView::CloseButtonPressed() {
 }
 
 SkColor KSVSearchBoxView::GetBackgroundColor() {
-  constexpr SkColor kBackgroundDarkColor =
-      SkColorSetARGB(0xFF, 0x32, 0x33, 0x34);
-
-  if (ShouldUseDarkThemeColors()) {
-    return kBackgroundDarkColor;
-  }
-
-  return ShouldUseFocusedColors()
-             ? gfx::kGoogleGrey100
-             : ash::AppListColorProvider::Get()->GetSearchBoxBackgroundColor(
-                   GetWidget());
+  return GetWidget()->GetColorProvider()->GetColor(
+      cros_tokens::kToolbarSearchBgColor);
 }
 
 SkColor KSVSearchBoxView::GetBorderColor() {

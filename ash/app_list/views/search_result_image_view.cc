@@ -7,6 +7,7 @@
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/search_result_image_view_delegate.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -55,7 +56,7 @@ void SearchResultImageView::OnThemeChanged() {
   // TODO(crbug.com/1352636) remove placeholder image.
   result_image_->SetImage(gfx::CreateVectorIcon(
       vector_icons::kGoogleColorIcon, kIconSize,
-      AppListColorProvider::Get()->GetSearchBoxIconColor(GetWidget())));
+      GetWidget()->GetColorProvider()->GetColor(kColorAshButtonIconColor)));
 }
 
 void SearchResultImageView::OnGestureEvent(ui::GestureEvent* event) {

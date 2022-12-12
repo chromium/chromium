@@ -14,21 +14,9 @@ class AppListColorProviderImpl : public AppListColorProvider {
   AppListColorProviderImpl();
   ~AppListColorProviderImpl() override;
   // AppListColorProvider:
-  SkColor GetSearchBoxBackgroundColor(
-      const views::Widget* app_list_widget) const override;
-  SkColor GetSearchBoxSecondaryTextColor(
-      const views::Widget* app_list_widget) const override;
-  SkColor GetSearchBoxSuggestionTextColor(
-      const views::Widget* app_list_widget) const override;
-  SkColor GetSearchBoxTextColor(
-      const views::Widget* app_list_widget) const override;
   SkColor GetAppListItemTextColor(
       const views::Widget* app_list_widget) const override;
   SkColor GetPageSwitcherButtonColor(
-      const views::Widget* app_list_widget) const override;
-  SkColor GetSearchBoxIconColor(
-      const views::Widget* app_list_widget) const override;
-  SkColor GetSearchBoxCardBackgroundColor(
       const views::Widget* app_list_widget) const override;
   SkColor GetFolderBackgroundColor(
       const views::Widget* app_list_widget) const override;
@@ -60,10 +48,6 @@ class AppListColorProviderImpl : public AppListColorProvider {
   SkColor GetSearchResultViewHighlightColor(
       const views::Widget* app_list_widget) const override;
   SkColor GetTextColorURL(const views::Widget* app_list_widget) const override;
-
- private:
-  // Whether feature BackgroundBlur is enabled. Cached for efficiency.
-  const bool is_background_blur_enabled_;
 };
 
 }  // namespace ash

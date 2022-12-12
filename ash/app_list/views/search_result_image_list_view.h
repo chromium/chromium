@@ -45,7 +45,6 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
  private:
   // Overridden from views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnThemeChanged() override;
 
   // Overridden from SearchResultContainerView:
   void OnSelectedResultChanged() override;

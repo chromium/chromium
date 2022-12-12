@@ -11,6 +11,7 @@
 #include "ash/app_list/views/search_result_image_view.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -44,6 +45,8 @@ SearchResultImageListView::SearchResultImageListView(
   title_label_ = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_IMAGES)));
   title_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
+  title_label_->SetAutoColorReadabilityEnabled(false);
+  title_label_->SetEnabledColorId(kColorAshTextColorSecondary);
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kPreferredTitleTopMargins, kPreferredTitleHorizontalMargins,
@@ -102,12 +105,6 @@ SearchResultImageListView::GetSearchResultImageViews() {
 void SearchResultImageListView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kListBox;
-}
-
-void SearchResultImageListView::OnThemeChanged() {
-  SearchResultContainerView::OnThemeChanged();
-  title_label_->SetEnabledColor(
-      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(GetWidget()));
 }
 
 void SearchResultImageListView::OnSelectedResultChanged() {

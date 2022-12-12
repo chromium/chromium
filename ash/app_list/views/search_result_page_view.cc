@@ -17,6 +17,7 @@
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/search_box/search_box_constants.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
 #include "base/bind.h"
 #include "base/time/time.h"
@@ -164,6 +165,7 @@ void SearchResultPageView::OnThemeChanged() {
   GetBackground()->SetNativeControlColor(
       ColorProvider::Get()->GetBaseLayerColor(
           ColorProvider::BaseLayerType::kTransparent80));
+
   // SchedulePaint() marks the entire SearchResultPageView's bounds as dirty.
   SchedulePaint();
   AppListPage::OnThemeChanged();
@@ -366,17 +368,6 @@ bool SearchResultPageView::CanSelectSearchResults() const {
   return search_view_->CanSelectSearchResults();
 }
 
-SkColor SearchResultPageView::GetBackgroundColorForState(
-    AppListState state) const {
-  const auto* app_list_widget = GetWidget();
-  if (state == AppListState::kStateSearchResults) {
-    return AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor(
-        app_list_widget);
-  }
-  return AppListColorProvider::Get()->GetSearchBoxBackgroundColor(
-      app_list_widget);
-}
-
 bool SearchResultPageView::ShouldShowSearchResultView() const {
   return contents_view()->GetSearchBoxView()->HasValidQuery();
 }
@@ -470,23 +461,6 @@ void SearchResultPageView::OnAnimationStarted(AppListState from_state,
   }
 
   AnimateToSearchResultsState(to_result_state);
-}
-
-void SearchResultPageView::OnAnimationUpdated(double progress,
-                                              AppListState from_state,
-                                              AppListState to_state) {
-  if (from_state != AppListState::kStateSearchResults &&
-      to_state != AppListState::kStateSearchResults) {
-    return;
-  }
-  const SkColor color = gfx::Tween::ColorValueBetween(
-      progress, GetBackgroundColorForState(from_state),
-      GetBackgroundColorForState(to_state));
-
-  if (color != background()->get_color()) {
-    background()->SetNativeControlColor(color);
-    SchedulePaint();
-  }
 }
 
 gfx::Size SearchResultPageView::GetPreferredSearchBoxSize() const {

@@ -9,31 +9,6 @@
 
 namespace ash {
 
-SkColor TestAppListColorProvider::GetSearchBoxBackgroundColor(
-    const views::Widget* widget) const {
-  return gfx::kGoogleGrey900;
-}
-
-SkColor TestAppListColorProvider::GetSearchBoxCardBackgroundColor(
-    const views::Widget* app_list_widget) const {
-  return gfx::kGoogleGrey900;
-}
-
-SkColor TestAppListColorProvider::GetSearchBoxTextColor(
-    const views::Widget* widget) const {
-  return gfx::kGoogleGrey200;
-}
-
-SkColor TestAppListColorProvider::GetSearchBoxSecondaryTextColor(
-    const views::Widget* widget) const {
-  return gfx::kGoogleGrey500;
-}
-
-SkColor TestAppListColorProvider::GetSearchBoxSuggestionTextColor(
-    const views::Widget* widget) const {
-  return gfx::kGoogleGrey600;
-}
-
 SkColor TestAppListColorProvider::GetAppListItemTextColor(
     const views::Widget* app_list_widget) const {
   return gfx::kGoogleGrey200;
@@ -47,11 +22,6 @@ SkColor TestAppListColorProvider::GetFolderBackgroundColor(
 SkColor TestAppListColorProvider::GetPageSwitcherButtonColor(
     const views::Widget* app_list_widget) const {
   return gfx::kGoogleGrey700;
-}
-
-SkColor TestAppListColorProvider::GetSearchBoxIconColor(
-    const views::Widget* app_list_widget) const {
-  return gfx::kGoogleGrey200;
 }
 
 SkColor TestAppListColorProvider::GetFolderTitleTextColor(

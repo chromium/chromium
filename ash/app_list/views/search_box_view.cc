@@ -388,10 +388,9 @@ void SearchBoxView::UpdatePlaceholderTextStyle() {
           : gfx::Canvas::TEXT_ALIGN_CENTER);
   // Fullscreen launcher uses custom colors (dark-on-light by default).
   search_box()->set_placeholder_text_color(
-      is_search_box_active()
-          ? AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-                GetWidget())
-          : AppListColorProvider::Get()->GetSearchBoxTextColor(GetWidget()));
+      GetWidget()->GetColorProvider()->GetColor(
+          is_search_box_active() ? kColorAshTextColorSecondary
+                                 : kColorAshTextColorPrimary));
 }
 
 void SearchBoxView::UpdateSearchBoxBorder() {
@@ -437,17 +436,16 @@ const char* SearchBoxView::GetClassName() const {
 
 void SearchBoxView::OnThemeChanged() {
   SearchBoxViewBase::OnThemeChanged();
-  const auto* app_list_widget = GetWidget();
+  const SkColor button_icon_color =
+      GetWidget()->GetColorProvider()->GetColor(kColorAshButtonIconColor);
   close_button()->SetImage(
       views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(
-          views::kIcCloseIcon, GetSearchBoxIconSize(),
-          AppListColorProvider::Get()->GetSearchBoxIconColor(app_list_widget)));
+      gfx::CreateVectorIcon(views::kIcCloseIcon, GetSearchBoxIconSize(),
+                            button_icon_color));
   assistant_button()->SetImage(
       views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(
-          chromeos::kAssistantIcon, GetSearchBoxIconSize(),
-          AppListColorProvider::Get()->GetSearchBoxIconColor(app_list_widget)));
+      gfx::CreateVectorIcon(chromeos::kAssistantIcon, GetSearchBoxIconSize(),
+                            button_icon_color));
   OnWallpaperColorsChanged();
 }
 
@@ -814,7 +812,7 @@ void SearchBoxView::UpdateSearchIcon() {
       search_engine_is_google ? google_icon : kSearchEngineNotGoogleIcon;
   SetSearchIconImage(gfx::CreateVectorIcon(
       icon, GetSearchBoxIconSize(),
-      AppListColorProvider::Get()->GetSearchBoxIconColor(GetWidget())));
+      GetWidget()->GetColorProvider()->GetColor(kColorAshButtonIconColor)));
 }
 
 bool SearchBoxView::IsValidAutocompleteText(
@@ -835,7 +833,7 @@ bool SearchBoxView::IsValidAutocompleteText(
 
 void SearchBoxView::UpdateTextColor() {
   search_box()->SetTextColor(
-      GetColorProvider()->GetColor(cros_tokens::kTextColorPrimary));
+      GetColorProvider()->GetColor(kColorAshTextColorPrimary));
 }
 
 void SearchBoxView::UpdatePlaceholderTextAndAccessibleName() {
