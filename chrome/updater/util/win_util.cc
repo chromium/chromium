@@ -906,9 +906,8 @@ bool StopGoogleUpdateProcesses(UpdaterScope scope) {
 absl::optional<base::CommandLine> CommandLineForLegacyFormat(
     const std::wstring& cmd_string) {
   int num_args = 0;
-  wchar_t** argv = ::CommandLineToArgvW(cmd_string.c_str(), &num_args);
-  base::win::ScopedLocalAllocTyped<wchar_t*> args =
-      base::win::TakeLocalAlloc(argv);
+  base::win::ScopedLocalAllocTyped<wchar_t*> args(
+      ::CommandLineToArgvW(cmd_string.c_str(), &num_args));
   if (!args)
     return absl::nullopt;
 

@@ -367,9 +367,8 @@ TEST(WinUtil, QuoteForCommandLineToArgvW) {
         base::StrCat({L"c:\\test\\process.exe ",
                       base::JoinString(test_case.input_args, L" ")});
     int num_args = 0;
-    wchar_t** args = ::CommandLineToArgvW(&input_command_line[0], &num_args);
     base::win::ScopedLocalAllocTyped<wchar_t*> argv(
-        base::win::TakeLocalAlloc(args));
+        ::CommandLineToArgvW(&input_command_line[0], &num_args));
     ASSERT_EQ(num_args - 1U, test_case.input_args.size());
 
     std::wstring recreated_command_line;

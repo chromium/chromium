@@ -194,9 +194,8 @@ ProcessExitResult BuildCommandLineArguments(const wchar_t* cmd_line,
 
   // Append the command line arguments in `cmd_line` first.
   int num_args = 0;
-  wchar_t** arg_list = ::CommandLineToArgvW(cmd_line, &num_args);
   base::win::ScopedLocalAllocTyped<wchar_t*> argv(
-      base::win::TakeLocalAlloc(arg_list));
+      ::CommandLineToArgvW(cmd_line, &num_args));
   for (int i = 1; i != num_args; ++i) {
     if (!args.append(L" ") ||
         !args.append(QuoteForCommandLineToArgvW(argv.get()[i]).c_str())) {

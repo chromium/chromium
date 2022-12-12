@@ -50,8 +50,7 @@ void Configuration::Clear() {
 // not release it.
 bool Configuration::ParseCommandLine(const wchar_t* command_line) {
   command_line_ = command_line;
-  wchar_t** args = ::CommandLineToArgvW(command_line_, &argument_count_);
-  args_ = base::win::TakeLocalAlloc(args);
+  args_.reset(::CommandLineToArgvW(command_line_, &argument_count_));
   if (!args_)
     return false;
 

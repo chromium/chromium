@@ -275,9 +275,8 @@ HRESULT AppCommandRunner::GetAppCommandFormatComponents(
   VLOG(2) << __func__ << ": " << scope << ": " << command_format;
 
   int num_args = 0;
-  wchar_t** args = ::CommandLineToArgvW(&command_format[0], &num_args);
   base::win::ScopedLocalAllocTyped<wchar_t*> argv(
-      base::win::TakeLocalAlloc(args));
+      ::CommandLineToArgvW(&command_format[0], &num_args));
   if (!argv || num_args < 1) {
     LOG(ERROR) << __func__ << "!argv || num_args < 1: " << num_args;
     return E_INVALIDARG;

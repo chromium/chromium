@@ -250,9 +250,8 @@ TEST_F(AppCommandRunnerTest,
     // verify that it produces the original substitution.
     std::wstring cmd = base::StrCat({L"process.exe ", command_line.value()});
     int num_args = 0;
-    wchar_t** args = ::CommandLineToArgvW(&cmd[0], &num_args);
     base::win::ScopedLocalAllocTyped<wchar_t*> argv_handle(
-        base::win::TakeLocalAlloc(args));
+        ::CommandLineToArgvW(&cmd[0], &num_args));
     ASSERT_TRUE(argv_handle);
     EXPECT_EQ(num_args, 2) << "substitution '" << test_case.substitutions[0]
                            << "' gave command line '" << cmd
