@@ -6,6 +6,6 @@ enum AudioSinkType {
   "none"
 };
 
-[Exposed=Window, RuntimeEnabled=AudioContextSetSinkId] interface AudioSinkInfo {
+[Exposed=Window] interface AudioSinkInfo {
   readonly attribute AudioSinkType type;
 };

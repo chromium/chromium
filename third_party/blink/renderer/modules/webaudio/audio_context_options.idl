@@ -9,5 +9,5 @@ dictionary AudioContextOptions {
     // AudioContext.baseLatency).
     (AudioContextLatencyCategory or double) latencyHint = "interactive";
     float sampleRate;
-    [RuntimeEnabled=AudioContextSetSinkId] (DOMString or AudioSinkOptions) sinkId;
+    (DOMString or AudioSinkOptions) sinkId;
 };
