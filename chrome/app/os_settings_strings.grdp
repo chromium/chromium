@@ -1245,6 +1245,9 @@ Use Ctrl + Alt + Brightness down to zoom out.
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_VOICE_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for the control where the user can choose a voice.">
     Voice
   </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_TEXT_TO_SPEECH_SETTINGS_LINK" desc="In the Select-to-speak settings subpage, the label for the link to the Text-to-Speech settings page.">
+    System voice settings
+  </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_SYSTEM_VOICE" desc="In the Select-to-speak settings subpage, the label for the menu option for the voice name for the system default Text-to-Speech voice">
     System voice
   </message>

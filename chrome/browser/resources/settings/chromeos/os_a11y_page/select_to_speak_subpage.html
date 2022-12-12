@@ -26,7 +26,12 @@ found in the LICENSE file.
     padding-inline-start: 0;
   }
 
-  settings-toggle-button {
+  settings-dropdown-menu {
+    --md-select-width: 100%;
+  }
+
+  settings-toggle-button,
+  cr-link-row {
     padding-inline-end: var(--cr-section-padding);
     padding-inline-start: var(--cr-section-padding);
   }
@@ -159,6 +164,11 @@ found in the LICENSE file.
       </cr-button>
     </cr-input>
   </div>
+  <cr-link-row class="settings-box"
+      label="$i18n{selectToSpeakTextToSpeechSettingsLink}"
+      on-click="onTextToSpeechSettingsTap_" external
+      embedded>
+  </cr-link-row>
   <template is="dom-if"
       if="[[isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled_]]">
     <!-- TODO(crbug.com/1354821): Figure out how to make settings-toggle-button

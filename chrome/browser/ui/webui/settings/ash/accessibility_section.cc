@@ -762,6 +762,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_NAVIGATION_CONTROLS_DESCRIPTION},
       {"selectToSpeakOptionsNavigationControlsSubtitle",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_NAVIGATION_CONTROLS_SUBTITLE},
+      {"selectToSpeakTextToSpeechSettingsLink",
+       IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_TEXT_TO_SPEECH_SETTINGS_LINK},
       {"selectToSpeakOptionsHighlight",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT},
       {"selectToSpeakOptionsSpeech",

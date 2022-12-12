@@ -20,11 +20,11 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
-import {Route} from '../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
 import {routes} from '../os_route.js';
 import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
+import {Route, Router} from '../router.js';
 
 import {getTemplate} from './select_to_speak_subpage.html.js';
 import {SelectToSpeakSubpageBrowserProxy, SelectToSpeakSubpageBrowserProxyImpl} from './select_to_speak_subpage_browser_proxy.js';
@@ -577,6 +577,12 @@ class SettingsSelectToSpeakSubpageElement extends
     } else {
       map.set(lang, [voice]);
     }
+  }
+
+  private onTextToSpeechSettingsTap_(): void {
+    Router.getInstance().navigateTo(
+        routes.MANAGE_TTS_SETTINGS,
+        /* dynamicParams= */ undefined, /* removeSearch= */ true);
   }
 }
 
