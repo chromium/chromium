@@ -123,7 +123,7 @@ def _target_builder_prop(context_node, builder_proto_by_key, target_builder):
         p["dimensions"] = target_builder.dimensions
     if target_builder.testers != None:
         testers = []
-        p["tester_filter"] = testers
+        p["tester_filter"] = {"testers": testers}
         for t in target_builder.testers:
             testers.append(_get_tester_group_and_name(context_node, builder_proto_by_key, t))
     return p
