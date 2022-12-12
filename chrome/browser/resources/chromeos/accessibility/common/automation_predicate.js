@@ -437,8 +437,13 @@ export class AutomationPredicate {
 
     // Always try to dive into subtrees with actionable descendants for some
     // roles even if these roles are not naturally containers.
-    if ((node.role === Role.BUTTON || node.role === Role.CHECK_BOX ||
-         node.role === Role.RADIO_BUTTON || node.role === Role.SWITCH) &&
+    if ([
+          Role.BUTTON,
+          Role.CELL,
+          Role.CHECK_BOX,
+          Role.RADIO_BUTTON,
+          Role.SWITCH,
+        ].includes(node.role) &&
         hasActionableDescendant(node)) {
       return true;
     }
