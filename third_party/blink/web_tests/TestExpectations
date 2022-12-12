@@ -3195,7 +3195,6 @@ crbug.com/626703 [ Mac11 ] external/wpt/credential-management/fedcm-network-requ
 crbug.com/626703 [ Win11 ] external/wpt/credential-management/fedcm-network-requests.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-video.https.html [ Timeout ]
-crbug.com/626703 [ Win11 ] wpt_internal/bluetooth/characteristic/notifications/gc-with-pending-stop.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
