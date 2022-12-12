@@ -204,11 +204,20 @@ public class StartSurfaceTest {
         waitForView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
                 withId(R.id.tab_list_view)));
 
-        StartSurfaceTestUtils.pressBack(mActivityTestRule);
-        onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));
+        // When the start surface refactoring is enabled, tapping the back button on Tab switcher
+        // will show the last tab.
+        if (TabUiTestHelper.getIsStartSurfaceRefactorEnabledFromUIThread(
+                    mActivityTestRule.getActivity())) {
+            StartSurfaceTestUtils.pressBack(mActivityTestRule);
+            // Verifies that the last tab is opening.
+            LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+        } else {
+            StartSurfaceTestUtils.pressBack(mActivityTestRule);
+            onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));
 
-        StartSurfaceTestUtils.clickFirstTabInCarousel();
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+            StartSurfaceTestUtils.clickFirstTabInCarousel();
+            LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+        }
     }
 
     @Test
@@ -296,7 +305,6 @@ public class StartSurfaceTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
-    @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS
             + "open_ntp_instead_of_start/false/open_start_as_homepage/true"})
     // clang-format off
@@ -334,11 +342,21 @@ public class StartSurfaceTest {
             // omnibox.
             return;
         }
-        StartSurfaceTestUtils.pressBack(mActivityTestRule);
-        onViewWaiting(withId(R.id.primary_tasks_surface_view));
 
-        onViewWaiting(withId(R.id.single_tab_view)).perform(click());
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+        // When the start surface refactoring is enabled, tapping the back button on Tab switcher
+        // will show the last tab.
+        if (TabUiTestHelper.getIsStartSurfaceRefactorEnabledFromUIThread(
+                    mActivityTestRule.getActivity())) {
+            StartSurfaceTestUtils.pressBack(mActivityTestRule);
+            // Verifies that the last tab is opening.
+            LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+        } else {
+            StartSurfaceTestUtils.pressBack(mActivityTestRule);
+            onViewWaiting(withId(R.id.primary_tasks_surface_view));
+
+            onViewWaiting(withId(R.id.single_tab_view)).perform(click());
+            LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+        }
     }
 
     @Test
@@ -357,7 +375,8 @@ public class StartSurfaceTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(()
                                             -> cta.getLayoutManager() != null
-                        && cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
+                        && cta.getLayoutManager().isLayoutVisible(
+                                StartSurfaceTestUtils.getStartSurfaceLayoutType()));
         StartSurfaceTestUtils.waitForTabModel(cta);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { cta.getTabModelSelector().getModel(false).closeAllTabs(); });

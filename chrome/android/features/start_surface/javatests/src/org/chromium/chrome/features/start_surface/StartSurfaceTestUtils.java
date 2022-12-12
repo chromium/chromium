@@ -29,6 +29,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
+import android.support.test.runner.lifecycle.Stage;
 import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
@@ -420,7 +422,8 @@ public class StartSurfaceTestUtils {
     public static void pressBack(ChromeTabbedActivityTestRule activityTestRule) {
         // ChromeTabbedActivity expects the native libraries to be loaded when back is pressed.
         activityTestRule.waitForActivityNativeInitializationComplete();
-        TestThreadUtils.runOnUiThreadBlocking(() -> activityTestRule.getActivity().onBackPressed());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> activityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed());
     }
 
     /**
@@ -550,6 +553,25 @@ public class StartSurfaceTestUtils {
         UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         device.pressHome();
         ChromeApplicationTestUtils.waitUntilChromeInBackground();
+    }
+
+    /**
+     * Presses the back button and verifies that Chrome goes to the background.
+     */
+    public static void pressBackAndVerifyChromeToBackground(ChromeTabbedActivityTestRule testRule) {
+        // Verifies Chrome is closed.
+        try {
+            pressBack(testRule);
+        } catch (Exception e) {
+        } finally {
+            CriteriaHelper.pollUiThread(
+                    ()
+                            -> ActivityLifecycleMonitorRegistry.getInstance().getLifecycleStageOf(
+                                       testRule.getActivity())
+                            == Stage.STOPPED,
+                    "Tapping back button should close Chrome.", MAX_TIMEOUT_MS,
+                    CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        }
     }
 
     /**

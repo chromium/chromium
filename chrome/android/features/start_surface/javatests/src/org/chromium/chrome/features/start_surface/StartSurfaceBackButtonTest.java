@@ -20,8 +20,6 @@ import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
-import android.support.test.runner.lifecycle.Stage;
 import android.view.View;
 
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -261,21 +259,8 @@ public class StartSurfaceBackButtonTest {
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
 
-        // Verifies Chrome is closed.
-        try {
-            StartSurfaceTestUtils.pressBack(mActivityTestRule);
-        } catch (Exception e) {
-        } finally {
-            CriteriaHelper.pollUiThread(
-                    ()
-                            -> {
-                        return ActivityLifecycleMonitorRegistry.getInstance().getLifecycleStageOf(
-                                       cta)
-                                == Stage.STOPPED;
-                    },
-                    "Tapping back button should close Chrome.", MAX_TIMEOUT_MS,
-                    CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        }
+        // Verifies that Chrome goes to the background.
+        StartSurfaceTestUtils.pressBackAndVerifyChromeToBackground(mActivityTestRule);
     }
 
     @Test

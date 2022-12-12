@@ -478,7 +478,7 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         // After the Start surface refactoring is enabled, the StartSurfaceState.SHOWN_TABSWITCHER
         // will go away.
-        if (!ReturnToChromeUtil.isStartSurfaceRefactorEnabled(cta)) {
+        if (!TabUiTestHelper.getIsStartSurfaceRefactorEnabledFromUIThread(cta)) {
             StartSurfaceCoordinator startSurfaceCoordinator =
                     StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
             TestThreadUtils.runOnUiThreadBlocking(() -> {
