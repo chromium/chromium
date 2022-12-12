@@ -52,8 +52,6 @@ import org.chromium.media_session.mojom.MediaSessionAction;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -402,22 +400,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                                                           .setSourceRectHint(bounds)
                                                           .setAspectRatio(aspectRatio)
                                                           .build();
-            // Use reflection to access ActivityOptions#makeLaunchIntoPip
-            // TODO(crbug.com/1331593): Do not use reflection, with a new sdk.
-            try {
-                Method methodMakeEnterContentPip = ActivityOptions.class.getMethod(
-                        "makeLaunchIntoPip", PictureInPictureParams.class);
-                ActivityOptions opts = (ActivityOptions) methodMakeEnterContentPip.invoke(
-                        ActivityOptions.class, params);
-                optionsBundle = (opts != null) ? opts.toBundle() : null;
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-            return optionsBundle;
+            return ActivityOptions.makeLaunchIntoPip(params).toBundle();
         }
     };
 
