@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "extensions/common/constants.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -89,6 +90,22 @@ class AppListControllerDelegate {
 
   // Called when a search is started using the app list search box.
   void OnSearchStarted();
+
+  // Delegates search of apps to AppServiceProxy associated with the profile.
+  // Please see |AppServiceProxyBase| for parameters details.
+  virtual std::vector<std::string> GetAppIdsForUrl(
+      Profile* profile,
+      const GURL& url,
+      bool exclude_browsers = false,
+      bool exclude_browser_tab_apps = true);
+
+  // Delegates launch of app to AppServiceProxy associated with the
+  // profile. Please see |AppServiceProxyBase| for parameters details.
+  virtual void LaunchAppWithUrl(Profile* profile,
+                                const std::string& app_id,
+                                int32_t event_flags,
+                                const GURL& url,
+                                apps::LaunchSource launch_source);
 
  private:
   base::WeakPtrFactory<AppListControllerDelegate> weak_ptr_factory_{this};

@@ -108,3 +108,27 @@ void AppListControllerDelegate::OnSearchStarted() {
   rlz::RLZTracker::RecordAppListSearch();
 #endif
 }
+
+std::vector<std::string> AppListControllerDelegate::GetAppIdsForUrl(
+    Profile* profile,
+    const GURL& url,
+    bool exclude_browsers,
+    bool exclude_browser_tab_apps) {
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  if (proxy) {
+    return proxy->GetAppIdsForUrl(url, exclude_browsers,
+                                  exclude_browser_tab_apps);
+  }
+  return std::vector<std::string>{};
+}
+
+void AppListControllerDelegate::LaunchAppWithUrl(
+    Profile* profile,
+    const std::string& app_id,
+    int32_t event_flags,
+    const GURL& url,
+    apps::LaunchSource launch_source) {
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  DCHECK(proxy);
+  proxy->LaunchAppWithUrl(app_id, event_flags, url, launch_source);
+}

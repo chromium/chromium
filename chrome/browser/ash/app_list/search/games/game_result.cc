@@ -89,20 +89,17 @@ GameResult::~GameResult() {
 }
 
 void GameResult::Open(int event_flags) {
-  // TODO(crbug.com/1305880): Add browser tests for the launch logic.
-
   // Launch the app directly if possible.
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  if (proxy) {
-    std::vector<std::string> app_ids =
-        proxy->GetAppIdsForUrl(launch_url_, /*exclude_browsers=*/true,
-                               /*exclude_browser_tab_apps=*/true);
-    for (const auto& app_id : app_ids) {
-      if (kAllowedLaunchAppIds.contains(app_id)) {
-        proxy->LaunchAppWithUrl(app_id, event_flags, launch_url_,
-                                apps::LaunchSource::kFromAppListQuery);
-        return;
-      }
+  std::vector<std::string> app_ids =
+      list_controller_->GetAppIdsForUrl(profile_, launch_url_,
+                                        /*exclude_browsers=*/true,
+                                        /*exclude_browser_tab_apps=*/true);
+  for (const auto& app_id : app_ids) {
+    if (kAllowedLaunchAppIds.contains(app_id)) {
+      list_controller_->LaunchAppWithUrl(profile_, app_id, event_flags,
+                                         launch_url_,
+                                         apps::LaunchSource::kFromAppListQuery);
+      return;
     }
   }
 

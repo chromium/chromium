@@ -23,6 +23,29 @@
 namespace app_list::test {
 namespace {
 
+using ::testing::_;
+using ::testing::Return;
+
+class MockAppListControllerDelegate
+    : public ::test::TestAppListControllerDelegate {
+ public:
+  MOCK_METHOD((std::vector<std::string>),
+              GetAppIdsForUrl,
+              (Profile * profile,
+               const GURL& url,
+               bool exclude_browsers,
+               bool exclude_browser_tab_apps),
+              (override));
+  MOCK_METHOD(void,
+              LaunchAppWithUrl,
+              (Profile * profile,
+               const std::string& app_id,
+               int32_t event_flags,
+               const GURL& url,
+               apps::LaunchSource launch_source),
+              (override));
+};
+
 // Creates a 50x50 yellow test icon.
 gfx::ImageSkia GetTestIcon() {
   SkBitmap bitmap;
@@ -95,6 +118,7 @@ class GameResultTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<Profile> profile_;
   ::test::TestAppListControllerDelegate list_controller_;
+  MockAppListControllerDelegate mock_list_controller_;
   std::unique_ptr<TestAppDiscoveryService> app_discovery_service_;
 };
 
@@ -143,4 +167,59 @@ TEST_F(GameResultTest, Icons) {
   EXPECT_TRUE(no_icon_result.scoring().filter);
 }
 
+TEST_F(GameResultTest, OpensDeepLinkURLWhenAppNotFound) {
+  apps::Result apps_result = MakeAppsResult(/*masking_allowed=*/false);
+  GameResult result(profile_.get(), &mock_list_controller_,
+                    app_discovery_service_.get(), apps_result, 0.6,
+                    u"SomeGame");
+
+  EXPECT_CALL(mock_list_controller_,
+              GetAppIdsForUrl(_, GURL("https://game.com/game"), _, _))
+      .WillOnce(Return(std::vector<std::string>{}));
+  EXPECT_CALL(mock_list_controller_, LaunchAppWithUrl(_, _, _, _, _)).Times(0);
+
+  result.Open(/*event_flags*/ 0);
+
+  EXPECT_EQ(mock_list_controller_.last_opened_url(),
+            GURL("https://game.com/game"));
+}
+
+TEST_F(GameResultTest, OpensDeepLinkURLWhenAppFoundButNotAllowed) {
+  apps::Result apps_result = MakeAppsResult(/*masking_allowed=*/false);
+  GameResult result(profile_.get(), &mock_list_controller_,
+                    app_discovery_service_.get(), apps_result, 0.6,
+                    u"SomeGame");
+
+  std::string not_allowed_app_id{"not_allowed_app"};
+  EXPECT_CALL(mock_list_controller_,
+              GetAppIdsForUrl(_, GURL("https://game.com/game"), _, _))
+      .WillOnce(Return(std::vector<std::string>{not_allowed_app_id}));
+  EXPECT_CALL(mock_list_controller_, LaunchAppWithUrl(_, _, _, _, _)).Times(0);
+
+  result.Open(/*event_flags*/ 0);
+
+  EXPECT_EQ(mock_list_controller_.last_opened_url(),
+            GURL("https://game.com/game"));
+}
+
+TEST_F(GameResultTest, LaunchesAppWhenAppFoundAndAllowed) {
+  apps::Result apps_result = MakeAppsResult(/*masking_allowed=*/false);
+  GameResult result(profile_.get(), &mock_list_controller_,
+                    app_discovery_service_.get(), apps_result, 0.6,
+                    u"SomeGame");
+
+  std::string found_app_id{"egmafekfmcnknbdlbfbhafbllplmjlhn"};
+  EXPECT_CALL(mock_list_controller_,
+              GetAppIdsForUrl(_, GURL("https://game.com/game"), _, _))
+      .WillOnce(Return(std::vector<std::string>{found_app_id}));
+  EXPECT_CALL(
+      mock_list_controller_,
+      LaunchAppWithUrl(_, found_app_id, _, GURL("https://game.com/game"),
+                       apps::LaunchSource::kFromAppListQuery))
+      .Times(1);
+
+  result.Open(/*event_flags*/ 0);
+
+  EXPECT_EQ(mock_list_controller_.last_opened_url(), GURL(""));
+}
 }  // namespace app_list::test
