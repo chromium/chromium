@@ -55,11 +55,8 @@ class PermissionRequestChipGestureSensitiveBrowserTest
     : public InProcessBrowserTest {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {permissions::features::kPermissionChip,
-         permissions::features::kPermissionChipGestureSensitive,
-         permissions::features::kPermissionChipRequestTypeSensitive},
-        {});
+    feature_list_.InitWithFeatures({permissions::features::kPermissionChip},
+                                   {});
     InProcessBrowserTest::SetUp();
   }
 
@@ -305,10 +302,8 @@ class PermissionRequestChipGestureInsensitiveBrowserTest
     : public InProcessBrowserTest {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {permissions::features::kPermissionChip,
-         permissions::features::kPermissionChipRequestTypeSensitive},
-        {});
+    feature_list_.InitWithFeatures({permissions::features::kPermissionChip},
+                                   {});
     InProcessBrowserTest::SetUp();
   }
 

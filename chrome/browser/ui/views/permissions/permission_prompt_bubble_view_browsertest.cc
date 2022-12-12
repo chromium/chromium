@@ -86,15 +86,11 @@ class PermissionPromptBubbleViewBrowserTest
  public:
   PermissionPromptBubbleViewBrowserTest() {
     if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          {permissions::features::kPermissionChip},
-          {permissions::features::kPermissionChipGestureSensitive,
-           permissions::features::kPermissionChipRequestTypeSensitive});
+      feature_list_.InitWithFeatures({permissions::features::kPermissionChip},
+                                     {});
     } else {
-      feature_list_.InitWithFeatures(
-          {}, {permissions::features::kPermissionChip,
-               permissions::features::kPermissionChipGestureSensitive,
-               permissions::features::kPermissionChipRequestTypeSensitive});
+      feature_list_.InitWithFeatures({},
+                                     {permissions::features::kPermissionChip});
     }
   }
 

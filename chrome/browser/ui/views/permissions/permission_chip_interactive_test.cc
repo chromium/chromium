@@ -118,9 +118,7 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
  public:
   PermissionChipInteractiveTest() {
     scoped_feature_list_.InitWithFeatures(
-        {permissions::features::kPermissionChip},
-        {permissions::features::kPermissionChipGestureSensitive,
-         permissions::features::kPermissionChipRequestTypeSensitive});
+        {permissions::features::kPermissionChip}, {});
   }
 
   PermissionChipInteractiveTest(const PermissionChipInteractiveTest&) = delete;
@@ -253,9 +251,7 @@ class LocationBarIconOverrideTest
       public ::testing::WithParamInterface<ChipFeatureConfig> {
  public:
   LocationBarIconOverrideTest() {
-    std::vector<base::test::FeatureRef> disabled_features = {
-        permissions::features::kPermissionChipGestureSensitive,
-        permissions::features::kPermissionChipRequestTypeSensitive};
+    std::vector<base::test::FeatureRef> disabled_features = {};
 
     switch (GetParam()) {
       case REQUEST_CHIP:
@@ -382,9 +378,7 @@ class ConfirmationChipEnabledInteractiveTest
       public ::testing::WithParamInterface<ChipFeatureConfig> {
  public:
   ConfirmationChipEnabledInteractiveTest() {
-    std::vector<base::test::FeatureRef> disabled_features = {
-        permissions::features::kPermissionChipGestureSensitive,
-        permissions::features::kPermissionChipRequestTypeSensitive};
+    std::vector<base::test::FeatureRef> disabled_features = {};
     switch (GetParam()) {
       case REQUEST_AND_CONFIRMATION_CHIP:
         scoped_feature_list_.InitWithFeatures(
@@ -520,9 +514,7 @@ class ConfirmationChipUmaInteractiveTest
  public:
   ConfirmationChipUmaInteractiveTest() {
     scoped_feature_list_.InitWithFeatures(
-        {permissions::features::kConfirmationChip},
-        {permissions::features::kPermissionChipGestureSensitive,
-         permissions::features::kPermissionChipRequestTypeSensitive});
+        {permissions::features::kConfirmationChip}, {});
   }
 
  private:
@@ -592,9 +584,7 @@ class PageInfoChangedWithin1mUmaTest : public PermissionChipInteractiveTest {
  public:
   PageInfoChangedWithin1mUmaTest() {
     scoped_feature_list_.InitWithFeatures(
-        {permissions::features::kConfirmationChip,
-         permissions::features::kPermissionChipGestureSensitive},
-        {permissions::features::kPermissionChipRequestTypeSensitive});
+        {permissions::features::kConfirmationChip}, {});
   }
 
   void InitAndRequestNotification() {
@@ -779,21 +769,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoChangedWithin1mUmaTest,
 class ChipGestureSensitiveEnabledInteractiveTest
     : public PermissionChipInteractiveTest {
  public:
-  ChipGestureSensitiveEnabledInteractiveTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        permissions::features::kPermissionChipGestureSensitive);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  ChipGestureSensitiveEnabledInteractiveTest() {}
 };
 IN_PROC_BROWSER_TEST_F(ChipGestureSensitiveEnabledInteractiveTest,
                        ChipAutoPopupBubbleEnabled) {
-  ASSERT_TRUE(base::FeatureList::IsEnabled(
-      permissions::features::kPermissionChipGestureSensitive));
-  ASSERT_FALSE(base::FeatureList::IsEnabled(
-      permissions::features::kPermissionChipRequestTypeSensitive));
-
   RequestPermission(permissions::RequestType::kGeolocation);
 
   EXPECT_EQ(
@@ -825,22 +804,14 @@ IN_PROC_BROWSER_TEST_F(ChipGestureSensitiveEnabledInteractiveTest,
 class ChipRequestTypeSensitiveEnabledInteractiveTest
     : public PermissionChipInteractiveTest {
  public:
-  ChipRequestTypeSensitiveEnabledInteractiveTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        permissions::features::kPermissionChipRequestTypeSensitive);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  ChipRequestTypeSensitiveEnabledInteractiveTest() {}
 };
 
 class ChipDisabledInteractiveTest : public PermissionChipInteractiveTest {
  public:
   ChipDisabledInteractiveTest() {
     scoped_feature_list_.InitWithFeatures(
-        {permissions::features::kPermissionChipGestureSensitive,
-         permissions::features::kPermissionChipRequestTypeSensitive},
-        {permissions::features::kPermissionChip});
+        {}, {permissions::features::kPermissionChip});
   }
 
  private:
@@ -851,10 +822,6 @@ IN_PROC_BROWSER_TEST_F(ChipDisabledInteractiveTest,
                        ChipAutoPopupBubbleEnabled) {
   ASSERT_FALSE(
       base::FeatureList::IsEnabled(permissions::features::kPermissionChip));
-  ASSERT_TRUE(base::FeatureList::IsEnabled(
-      permissions::features::kPermissionChipGestureSensitive));
-  ASSERT_TRUE(base::FeatureList::IsEnabled(
-      permissions::features::kPermissionChipRequestTypeSensitive));
 
   RequestPermission(permissions::RequestType::kGeolocation);
 
@@ -888,9 +855,7 @@ class QuietChipAutoPopupBubbleInteractiveTest
     scoped_feature_list_.InitWithFeatures(
         {permissions::features::kPermissionChip,
          features::kQuietNotificationPrompts,
-         permissions::features::kPermissionQuietChip,
-         permissions::features::kPermissionChipGestureSensitive,
-         permissions::features::kPermissionChipRequestTypeSensitive},
+         permissions::features::kPermissionQuietChip},
         {});
   }
 
@@ -1271,10 +1236,6 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
       base::FeatureList::IsEnabled(features::kQuietNotificationPrompts));
   ASSERT_TRUE(base::FeatureList::IsEnabled(
       permissions::features::kPermissionQuietChip));
-  ASSERT_TRUE(base::FeatureList::IsEnabled(
-      permissions::features::kPermissionChipGestureSensitive));
-  ASSERT_TRUE(base::FeatureList::IsEnabled(
-      permissions::features::kPermissionChipRequestTypeSensitive));
 
   SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
                       absl::nullopt);

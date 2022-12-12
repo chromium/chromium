@@ -7558,17 +7558,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"permission-chip", flag_descriptions::kPermissionChipName,
      flag_descriptions::kPermissionChipDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(permissions::features::kPermissionChip)},
-    {"permission-chip-gesture",
-     flag_descriptions::kPermissionChipGestureSensitiveName,
-     flag_descriptions::kPermissionChipGestureSensitiveDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         permissions::features::kPermissionChipGestureSensitive)},
-    {"permission-chip-request-type",
-     flag_descriptions::kPermissionChipRequestTypeSensitiveName,
-     flag_descriptions::kPermissionChipRequestTypeSensitiveDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         permissions::features::kPermissionChipRequestTypeSensitive)},
     {"permission-quiet-chip", flag_descriptions::kPermissionQuietChipName,
      flag_descriptions::kPermissionQuietChipDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(permissions::features::kPermissionQuietChip)},

@@ -1337,12 +1337,6 @@ extern const char kChipLocationBarIconOverrideDescription[];
 extern const char kConfirmationChipName[];
 extern const char kConfirmationChipNameDescription[];
 
-extern const char kPermissionChipGestureSensitiveName[];
-extern const char kPermissionChipGestureSensitiveDescription[];
-
-extern const char kPermissionChipRequestTypeSensitiveName[];
-extern const char kPermissionChipRequestTypeSensitiveDescription[];
-
 extern const char kPermissionPredictionsName[];
 extern const char kPermissionPredictionsDescription[];
 
