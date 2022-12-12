@@ -90,6 +90,9 @@ class MoveLoopMouseWatcher {
 
   ~MoveLoopMouseWatcher();
 
+  // Unhooks the MoveLoopMouseWatcher instance associated with `host`, if any.
+  static void UnhookForHost(HWNDMessageHandler* host);
+
   // Returns true if the mouse is up, or if we couldn't install the hook.
   bool got_mouse_up() const { return got_mouse_up_; }
 
@@ -149,6 +152,12 @@ MoveLoopMouseWatcher::MoveLoopMouseWatcher(HWNDMessageHandler* host,
 
 MoveLoopMouseWatcher::~MoveLoopMouseWatcher() {
   Unhook();
+}
+
+// static
+void MoveLoopMouseWatcher::UnhookForHost(HWNDMessageHandler* host) {
+  if (instance_ && instance_->host_ == host)
+    instance_->Unhook();
 }
 
 void MoveLoopMouseWatcher::Unhook() {
@@ -431,8 +440,11 @@ HWNDMessageHandler::HWNDMessageHandler(HWNDMessageHandlerDelegate* delegate,
       pointer_events_for_touch_(::features::IsUsingWMPointerForTouch()) {}
 
 HWNDMessageHandler::~HWNDMessageHandler() {
-  // Prevent calls back into this class via WNDPROC now that we've been
-  // destroyed.
+  // Unhook MoveLoopMouseWatcher, to prevent call backs to this after deletion.
+  MoveLoopMouseWatcher::UnhookForHost(this);
+
+  // Clear pointer to this in `hwnd()`'s user data, to prevent installed hooks
+  // from calling back into this after deletion.
   ClearUserData();
 }
 
