@@ -1,0 +1,6 @@
+# TODO(crbug.com/1396449): Enable these tests when their memory leaks are fixed.
+-AutomationInternalBindingsTest.CatchesExceptions
+-AutomationInternalBindingsTest.GetsFocusAndNodeData
+-AutomationInternalBindingsTest.GetsLocation
+-AutomationInternalBindingsTest.SpotCheckBindingsAdded
+-V8ManagerTest.ExecutesSimpleScript

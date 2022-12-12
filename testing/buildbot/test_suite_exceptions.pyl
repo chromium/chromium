@@ -3230,6 +3230,11 @@
           'shards': 7,
         },
       },
+      'fuchsia-fyi-x64-asan': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.service_unittests.filter',
+        ],
+      },
     }
   },
   'snapshot_unittests': {

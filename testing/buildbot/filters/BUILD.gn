@@ -218,6 +218,7 @@ source_set("services_unittests_filters") {
   data = [
     "//testing/buildbot/filters/android.pie_tot.services_unittests.filter",
     "//testing/buildbot/filters/fuchsia.services_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.lsan.services_unittests.filter",
   ]
 }
 
