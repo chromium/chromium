@@ -16,6 +16,14 @@
 
 - (void)setHeadersForFindBarCoordinator:(FindBarCoordinator*)findBarCoordinator;
 
+// Called when the Find bar is presented by its presenter.
+- (void)findBarDidAppearForFindBarCoordinator:
+    (FindBarCoordinator*)findBarCoordinator;
+
+// Called when the Find bar is dismissed by its presenter.
+- (void)findBarDidDisappearForFindBarCoordinator:
+    (FindBarCoordinator*)findBarCoordinator;
+
 @end
 
 // Coordinator for the Find Bar and the Find In page feature. Currently, this

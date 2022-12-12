@@ -210,6 +210,7 @@ const CGFloat kButtonLength = 44;
     _resultsCountLabel = [[UILabel alloc] init];
     _resultsCountLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _resultsCountLabel.font = [UIFont systemFontOfSize:kFontSize];
+    _resultsCountLabel.accessibilityElementsHidden = YES;
   }
 
   return _resultsCountLabel;

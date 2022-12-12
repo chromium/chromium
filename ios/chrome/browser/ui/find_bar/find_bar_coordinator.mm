@@ -117,10 +117,12 @@
 #pragma mark - ContainedPresenterDelegate
 
 - (void)containedPresenterDidPresent:(id<ContainedPresenter>)presenter {
+  [self.presentationDelegate findBarDidAppearForFindBarCoordinator:self];
   [self.findBarController selectAllText];
 }
 
 - (void)containedPresenterDidDismiss:(id<ContainedPresenter>)presenter {
+  [self.presentationDelegate findBarDidDisappearForFindBarCoordinator:self];
   [self.findBarController findBarViewDidHide];
   [self.delegate toolbarAccessoryCoordinatorDidDismissUI:self];
 }

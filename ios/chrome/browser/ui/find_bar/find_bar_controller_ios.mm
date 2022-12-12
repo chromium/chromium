@@ -109,6 +109,16 @@ const NSTimeInterval kSearchShortDelay = 0.100;
              addTarget:self
                 action:@selector(dismiss)
       forControlEvents:UIControlEventTouchUpInside];
+  // By default, VoiceOver can get confused as to what order we expect the
+  // elements to be sorted when navigating through them. To specify a different
+  // ordering of elements, setting the containing view’s `accessibilityElements`
+  // property.
+  _findBarViewController.findBarView.accessibilityElements = @[
+    _findBarViewController.findBarView.inputField,
+    _findBarViewController.findBarView.previousButton,
+    _findBarViewController.findBarView.nextButton,
+    _findBarViewController.findBarView.closeButton,
+  ];
 
   return _findBarViewController;
 }

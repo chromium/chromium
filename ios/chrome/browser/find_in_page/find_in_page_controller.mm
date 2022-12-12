@@ -35,6 +35,12 @@ namespace {
 // Keeps find in page search term to be shared between different tabs. Never
 // reset, not stored on disk.
 static NSString* gSearchTerm;
+
+// Accessibility announcement delay, so VoiceOver does not cancel the context
+// string announcement when a new match has been selected.
+// TODO(crbug.com/1395828): This is a temporary workaround. The context string
+// announcement might still fail. A retry mechanism needs to be implemented.
+const int64_t kContextStringAnnouncementDelayInNanoseconds = 0.1 * NSEC_PER_SEC;
 }
 
 @interface FindInPageController () <CRWFindInPageManagerDelegate>
@@ -214,8 +220,24 @@ static NSString* gSearchTerm;
         withContextString:(NSString*)contextString
               forWebState:(web::WebState*)webState {
   if (contextString) {
-    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
-                                    contextString);
+    // TODO(crbug.com/1395828): When tapping the Previous or Next button in the
+    // Find Bar, VoiceOver will trigger the announcement of the title of the
+    // button, usually a fraction of a second after this method is called. As a
+    // result, the announcement triggered by the
+    // `UIAccessibilityAnnouncementNotification` posted here will be interrupted
+    // by the announcement of the button. Setting a delay on posting the context
+    // string announcement notification yields the opposite result i.e. the
+    // expected result: VoiceOver will not read "Previous" or "Next", but read
+    // the new context string instead. This is a temporary workaround. The
+    // context string announcement might still fail. Some kind of retry
+    // mechanism needs to be implemented.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                 kContextStringAnnouncementDelayInNanoseconds),
+                   dispatch_get_main_queue(), ^{
+                     UIAccessibilityPostNotification(
+                         UIAccessibilityAnnouncementNotification,
+                         contextString);
+                   });
   }
   // Increment index so that match number show in FindBar ranges from 1...N as
   // opposed to 0...N-1.
