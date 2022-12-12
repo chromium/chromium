@@ -3978,9 +3978,10 @@ void WebFrameWidgetImpl::CalculateSelectionBounds(
 
   // Calculate the bounding box of the selection area.
   if (bounding_box_in_root_frame) {
-    const gfx::Rect bounding_box = ToEnclosingRect(
-        CreateRange(selection.GetSelectionInDOMTree().ComputeRange())
-            ->BoundingRect());
+    Range* range =
+        CreateRange(selection.GetSelectionInDOMTree().ComputeRange());
+    const gfx::Rect bounding_box = ToEnclosingRect(range->BoundingRect());
+    range->Dispose();
     *bounding_box_in_root_frame = visual_viewport.RootFrameToViewport(
         local_frame->View()->ConvertToRootFrame(bounding_box));
   }
