@@ -2540,7 +2540,7 @@ TEST(PaintOpBufferTest, PaintOpDeserialize) {
   buffer.push<DrawColorOp>(SkColors::kMagenta, SkBlendMode::kSrc);
 
   PaintOpBuffer::Iterator iter(&buffer);
-  PaintOp* op = iter.get();
+  const PaintOp* op = iter.get();
   ASSERT_TRUE(op);
 
   TestOptionsProvider options_provider;

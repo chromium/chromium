@@ -282,11 +282,11 @@ size_t CountDrawImagesWithConstraint(const cc::PaintOpBuffer* buffer,
   size_t count = 0;
   for (cc::PaintOpBuffer::Iterator it(buffer); it; ++it) {
     if (it->GetType() == cc::PaintOpType::DrawImageRect) {
-      const auto& image_op = static_cast<cc::DrawImageRectOp&>(*it);
+      const auto& image_op = static_cast<const cc::DrawImageRectOp&>(*it);
       if (image_op.constraint == constraint)
         ++count;
     } else if (it->GetType() == cc::PaintOpType::DrawRecord) {
-      const auto& record_op = static_cast<cc::DrawRecordOp&>(*it);
+      const auto& record_op = static_cast<const cc::DrawRecordOp&>(*it);
       count +=
           CountDrawImagesWithConstraint(record_op.record.get(), constraint);
     }
