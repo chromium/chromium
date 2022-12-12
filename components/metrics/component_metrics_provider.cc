@@ -72,6 +72,8 @@ SystemProfileProto_ComponentId CrxIdToComponentId(const std::string& app_id) {
            SystemProfileProto_ComponentId_WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST},
           {"ggkkehgbnfjpeggfpleeakpidbkibbmn",
            SystemProfileProto_ComponentId_CROWD_DENY},
+          {"neifaoindggfcjicffkgpmnlppeffabd",
+           SystemProfileProto_ComponentId_MEDIA_FOUNDATION_WIDEVINE_CDM},
       });
 
   const auto* result = kComponentMap.find(app_id);
