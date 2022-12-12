@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,8 +57,9 @@ class HighEfficiencyHelpPromoTest : public InProcessBrowserTest {
     auto lock =
         BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
 
-    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                         "HelpBubbleView");
+    views::NamedWidgetShownWaiter waiter(
+        views::test::AnyWidgetTestPasskey{},
+        user_education::HelpBubbleView::kViewClassName);
 
     int tab_count_threshold =
         performance_manager::features::kHighEfficiencyModePromoTabCountThreshold

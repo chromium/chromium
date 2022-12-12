@@ -248,16 +248,16 @@ TEST_F(HighEfficiencyChipViewTest, ShouldRenderMemorySavingsInDialog) {
 
 // When the previous page was not previously discarded, the icon should not be
 // visible.
-TEST_F(HighEfficiencyChipViewTest, ShouldHideLabelAfterThreeTimes) {
+TEST_F(HighEfficiencyChipViewTest, ShouldHideLabelAfterMultipleDiscards) {
   SetHighEfficiencyModeEnabled(true);
-  // Open the tab 3 times with the label being visible.
-  for (int i = 0; i < 3; i++) {
+  // Open the tab the max number of times for the label to be visible
+  for (int i = 0; i < HighEfficiencyChipView::kChipAnimationCount; i++) {
     SetTabDiscardState(0, true);
     EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
     SetTabDiscardState(0, false);
   }
 
-  // On the 4th time, the label should be hidden.
+  // The label should be hidden on subsequent discards
   SetTabDiscardState(0, true);
   EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
 }

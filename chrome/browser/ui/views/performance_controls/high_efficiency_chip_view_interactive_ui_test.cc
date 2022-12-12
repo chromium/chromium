@@ -10,7 +10,6 @@
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_bubble_view.h"
@@ -30,7 +29,6 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/view.h"
 #include "url/gurl.h"
 
 namespace {
@@ -97,7 +95,7 @@ class HighEfficiencyChipInteractiveTest : public InteractiveBrowserTest {
         ->IsDiscarded();
   }
 
-  StepBuilder DiscardTab(int discard_tab_index) {
+  auto DiscardTab(int discard_tab_index) {
     return Do(base::BindLambdaForTesting([=]() {
       EXPECT_NE(discard_tab_index, tab_strip_model_->active_index());
       EXPECT_FALSE(IsTabDiscarded(discard_tab_index));
@@ -110,8 +108,8 @@ class HighEfficiencyChipInteractiveTest : public InteractiveBrowserTest {
 
   // Discard the tab at discard_tab_index and navigates to that tab and waits
   // for it to reload
-  MultiStep DiscardAndSelectTab(int discard_tab_index,
-                                const ui::ElementIdentifier& contents_id) {
+  auto DiscardAndSelectTab(int discard_tab_index,
+                           const ui::ElementIdentifier& contents_id) {
     return Steps(FlushEvents(),
                  // This has to be done on a fresh message loop to prevent
                  // a tab being discarded while it is notifying its observers
@@ -120,10 +118,15 @@ class HighEfficiencyChipInteractiveTest : public InteractiveBrowserTest {
                  WaitForShow(contents_id));
   }
 
+  auto CheckChipIsExpandedState() {
+    return CheckViewProperty(kHighEfficiencyChipElementId,
+                             &PageActionIconView::ShouldShowLabel, true);
+  }
+
   // Discard and reload the tab at discard_tab_index the number of times the
   // high efficiency page action chip can expand so subsequent discards
   // will result in the chip staying in its collapsed state
-  MultiStep DiscardTabUntilChipStopsExpanding(
+  auto DiscardTabUntilChipStopsExpanding(
       size_t discard_tab_index,
       size_t non_discard_tab_index,
       const ui::ElementIdentifier& contents_id) {
@@ -140,23 +143,18 @@ class HighEfficiencyChipInteractiveTest : public InteractiveBrowserTest {
   }
 
   // Navigates the current active tab to the given URL and waits for it to load
-  MultiStep NavigateTab(GURL url, const ui::ElementIdentifier& contents_id) {
+  auto NavigateTab(GURL url, const ui::ElementIdentifier& contents_id) {
     return Steps(
         Do(base::BindLambdaForTesting([=]() { util_->LoadPage(url); })),
         WaitForWebContentsNavigation(contents_id, url));
   }
 
-  StepBuilder CheckChipIsExpandedState() {
-    return CheckViewProperty(kHighEfficiencyChipElementId,
-                             &PageActionIconView::ShouldShowLabel, true);
-  }
-
-  StepBuilder CheckChipIsCollapsedState() {
+  auto CheckChipIsCollapsedState() {
     return CheckViewProperty(kHighEfficiencyChipElementId,
                              &PageActionIconView::ShouldShowLabel, false);
   }
 
-  StepBuilder NameTab(size_t index, std::string name) {
+  auto NameTab(size_t index, std::string name) {
     return NameViewRelative(
         kTabStripElementId, name,
         base::BindOnce([](size_t index, TabStrip* tab_strip)
@@ -352,13 +350,6 @@ class HighEfficiencyInfoIPHInteractiveTest
     auto* promo_controller = static_cast<BrowserFeaturePromoController*>(
         browser()->window()->GetFeaturePromoController());
     return promo_controller;
-  }
-
-  StepBuilder WaitForFeatureEngagementReady() {
-    return Do(base::BindLambdaForTesting([&]() {
-      EXPECT_TRUE(user_education::test::WaitForFeatureEngagementReady(
-          GetFeaturePromoController()));
-    }));
   }
 };
 
