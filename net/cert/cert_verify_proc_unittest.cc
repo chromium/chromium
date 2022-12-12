@@ -4291,12 +4291,25 @@ TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotCaIntermediate) {
 }
 
 TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsIsCaLeaf) {
-  chain_[0]->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
+  for (bool has_key_usage_cert_sign : {false, true}) {
+    chain_[0]->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
 
-  if (VerifyProcTypeIsBuiltin()) {
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
-  } else {
-    EXPECT_THAT(Verify(), IsOk());
+    if (has_key_usage_cert_sign) {
+      chain_[0]->SetKeyUsages(
+          {KEY_USAGE_BIT_KEY_CERT_SIGN, KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+    } else {
+      chain_[0]->SetKeyUsages({KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+    }
+
+    if (VerifyProcTypeIsBuiltin()) {
+      if (has_key_usage_cert_sign) {
+        EXPECT_THAT(Verify(), IsOk());
+      } else {
+        EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+      }
+    } else {
+      EXPECT_THAT(Verify(), IsOk());
+    }
   }
 }
 
@@ -4840,12 +4853,22 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, BaseCase) {
 }
 
 TEST_P(CertVerifyProcConstraintsTrustedLeafTest, BasicConstraintsIsCa) {
-  chain_[0]->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
+  for (bool has_key_usage_cert_sign : {false, true}) {
+    chain_[0]->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
 
-  if (VerifyProcTypeIsBuiltin() || verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
-  } else {
-    EXPECT_THAT(Verify(), IsOk());
+    if (has_key_usage_cert_sign) {
+      chain_[0]->SetKeyUsages(
+          {KEY_USAGE_BIT_KEY_CERT_SIGN, KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+    } else {
+      chain_[0]->SetKeyUsages({KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+    }
+
+    if (VerifyProcTypeIsBuiltin() ||
+        verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+      EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
+    } else {
+      EXPECT_THAT(Verify(), IsOk());
+    }
   }
 }
 
@@ -5021,12 +5044,25 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, BaseCase) {
 }
 
 TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, BasicConstraintsIsCa) {
-  cert_->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
+  for (bool has_key_usage_cert_sign : {false, true}) {
+    cert_->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
 
-  if (VerifyProcTypeIsBuiltin()) {
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
-  } else {
-    EXPECT_THAT(Verify(), IsOk());
+    if (has_key_usage_cert_sign) {
+      cert_->SetKeyUsages(
+          {KEY_USAGE_BIT_KEY_CERT_SIGN, KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+    } else {
+      cert_->SetKeyUsages({KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+    }
+
+    if (VerifyProcTypeIsBuiltin()) {
+      if (has_key_usage_cert_sign) {
+        EXPECT_THAT(Verify(), IsOk());
+      } else {
+        EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+      }
+    } else {
+      EXPECT_THAT(Verify(), IsOk());
+    }
   }
 }
 
