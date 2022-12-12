@@ -101,13 +101,14 @@ CredentialUIEntry::CredentialUIEntry(const std::vector<PasswordForm>& forms) {
   for (const auto& form : forms) {
     // Only notes with an empty `unique_display_name` are supported in the
     // settings UI.
-    const std::u16string current_note =
+    std::u16string current_note =
         form.GetNoteWithEmptyUniqueDisplayName().value_or(std::u16string());
     if (current_note.empty())
       continue;
-    notes_with_duplicates.push_back(current_note);
+    notes_with_duplicates.push_back(std::move(current_note));
   }
-  auto unique_notes = base::MakeFlatSet<std::u16string>(notes_with_duplicates);
+  auto unique_notes =
+      base::MakeFlatSet<std::u16string>(std::move(notes_with_duplicates));
   note = base::JoinString(std::vector<const std::u16string>(
                               unique_notes.begin(), unique_notes.end()),
                           u"\n");
