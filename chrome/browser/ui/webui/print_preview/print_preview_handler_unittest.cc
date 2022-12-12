@@ -450,7 +450,7 @@ class PrintPreviewHandlerTest : public testing::Test {
   void InitializeWithLocale(const std::string& locale) {
     // Sending this message will enable javascript, so it must always be called
     // before any other messages are sent.
-    base::Value args(base::Value::Type::LIST);
+    base::Value::List args;
     args.Append("test-callback-id-0");
 
     auto* browser_process = TestingBrowserProcess::GetGlobal();
@@ -462,7 +462,7 @@ class PrintPreviewHandlerTest : public testing::Test {
       browser_process->SetApplicationLocale(locale);
       base::test::ScopedRestoreICUDefaultLocale scoped_locale(locale);
       base::ResetFormattersForTesting();
-      handler()->HandleGetInitialSettings(args.GetList());
+      handler()->HandleGetInitialSettings(args);
     }
     // Reset again now that |scoped_locale| has been destroyed.
     browser_process->SetApplicationLocale(original_locale);
@@ -513,55 +513,45 @@ class PrintPreviewHandlerTest : public testing::Test {
       const std::string& thousands_delimiter,
       const std::string& decimal_delimiter) {
     CheckWebUIResponse(data, "test-callback-id-0", true);
-    const base::Value* settings = data.arg3();
-    ASSERT_TRUE(settings->FindKeyOfType("isInKioskAutoPrintMode",
-                                        base::Value::Type::BOOLEAN));
-    ASSERT_TRUE(settings->FindKeyOfType("isInAppKioskMode",
-                                        base::Value::Type::BOOLEAN));
+    const base::Value::Dict& settings = data.arg3()->GetDict();
+    ASSERT_TRUE(settings.FindBool("isInKioskAutoPrintMode").has_value());
+    ASSERT_TRUE(settings.FindBool("isInAppKioskMode").has_value());
 
-    const std::string* actual_locale = settings->FindStringKey("uiLocale");
+    const std::string* actual_locale = settings.FindString("uiLocale");
     ASSERT_TRUE(actual_locale);
     EXPECT_EQ(locale, *actual_locale);
     const std::string* actual_thousands_delimiter =
-        settings->FindStringKey("thousandsDelimiter");
+        settings.FindString("thousandsDelimiter");
     ASSERT_TRUE(actual_thousands_delimiter);
     EXPECT_EQ(thousands_delimiter, *actual_thousands_delimiter);
     const std::string* actual_decimal_delimiter =
-        settings->FindStringKey("decimalDelimiter");
+        settings.FindString("decimalDelimiter");
     ASSERT_TRUE(actual_decimal_delimiter);
     EXPECT_EQ(decimal_delimiter, *actual_decimal_delimiter);
 
-    ASSERT_TRUE(
-        settings->FindKeyOfType("unitType", base::Value::Type::INTEGER));
-    ASSERT_TRUE(settings->FindKeyOfType("previewModifiable",
-                                        base::Value::Type::BOOLEAN));
-    const base::Value* title =
-        settings->FindKeyOfType("documentTitle", base::Value::Type::STRING);
+    ASSERT_TRUE(settings.FindInt("unitType").has_value());
+    ASSERT_TRUE(settings.FindBool("previewModifiable").has_value());
+    const std::string* title = settings.FindString("documentTitle");
     ASSERT_TRUE(title);
-    EXPECT_EQ(initiator_title, title->GetString());
-    ASSERT_TRUE(settings->FindKeyOfType("documentHasSelection",
-                                        base::Value::Type::BOOLEAN));
-    ASSERT_TRUE(settings->FindKeyOfType("shouldPrintSelectionOnly",
-                                        base::Value::Type::BOOLEAN));
-    const base::Value* printer =
-        settings->FindKeyOfType("printerName", base::Value::Type::STRING);
+    EXPECT_EQ(initiator_title, *title);
+    ASSERT_TRUE(settings.FindBool("documentHasSelection").has_value());
+    ASSERT_TRUE(settings.FindBool("shouldPrintSelectionOnly").has_value());
+    const std::string* printer = settings.FindString("printerName");
     ASSERT_TRUE(printer);
-    EXPECT_EQ(default_printer_name, printer->GetString());
+    EXPECT_EQ(default_printer_name, *printer);
 
-    ASSERT_TRUE(settings->FindKeyOfType("pdfPrinterDisabled",
-                                        base::Value::Type::BOOLEAN));
-    ASSERT_TRUE(settings->FindKeyOfType("destinationsManaged",
-                                        base::Value::Type::BOOLEAN));
+    ASSERT_TRUE(settings.FindBool("pdfPrinterDisabled").has_value());
+    ASSERT_TRUE(settings.FindBool("destinationsManaged").has_value());
   }
 
   // Returns |policy_name| entry from initial settings policies.
-  const base::Value* GetInitialSettingsPolicy(const base::Value& settings,
-                                              const std::string& policy_name) {
-    const base::Value* policies =
-        settings.FindKeyOfType("policies", base::Value::Type::DICTIONARY);
+  const base::Value::Dict* GetInitialSettingsPolicy(
+      const base::Value::Dict& settings,
+      const std::string& policy_name) {
+    const base::Value::Dict* policies = settings.FindDict("policies");
     if (!policies)
       return nullptr;
-    return policies->FindKeyOfType(policy_name, base::Value::Type::DICTIONARY);
+    return policies->FindDict(policy_name);
   }
 
   // Validates the initial settings value policies structure in the response
@@ -573,12 +563,11 @@ class PrintPreviewHandlerTest : public testing::Test {
       const std::string& policy_name,
       absl::optional<base::Value> expected_policy_value) {
     CheckWebUIResponse(data, "test-callback-id-0", true);
-    const base::Value* settings = data.arg3();
+    const base::Value::Dict& settings = data.arg3()->GetDict();
 
-    const base::Value* policy =
-        GetInitialSettingsPolicy(*settings, policy_name);
-    const base::Value* policy_value =
-        policy ? policy->FindKey("value") : nullptr;
+    const base::Value::Dict* policy =
+        GetInitialSettingsPolicy(settings, policy_name);
+    const base::Value* policy_value = policy ? policy->Find("value") : nullptr;
 
     ASSERT_EQ(expected_policy_value.has_value(), !!policy_value);
     if (expected_policy_value.has_value())
@@ -595,14 +584,14 @@ class PrintPreviewHandlerTest : public testing::Test {
       absl::optional<base::Value> expected_allowed_mode,
       absl::optional<base::Value> expected_default_mode) {
     CheckWebUIResponse(data, "test-callback-id-0", true);
-    const base::Value* settings = data.arg3();
+    const base::Value::Dict& settings = data.arg3()->GetDict();
 
-    const base::Value* policy =
-        GetInitialSettingsPolicy(*settings, policy_name);
+    const base::Value::Dict* policy =
+        GetInitialSettingsPolicy(settings, policy_name);
     const base::Value* allowed_mode =
-        policy ? policy->FindKey("allowedMode") : nullptr;
+        policy ? policy->Find("allowedMode") : nullptr;
     const base::Value* default_mode =
-        policy ? policy->FindKey("defaultMode") : nullptr;
+        policy ? policy->Find("defaultMode") : nullptr;
 
     ASSERT_EQ(expected_allowed_mode.has_value(), !!allowed_mode);
     if (expected_allowed_mode.has_value())
@@ -617,10 +606,10 @@ class PrintPreviewHandlerTest : public testing::Test {
   // making the call to the handler.
   void SendGetPrinters(mojom::PrinterType type,
                        const std::string& callback_id_in) {
-    base::Value args(base::Value::Type::LIST);
+    base::Value::List args;
     args.Append(callback_id_in);
     args.Append(static_cast<int>(type));
-    handler()->HandleGetPrinters(args.GetList());
+    handler()->HandleGetPrinters(args);
   }
 
   // Validates that the printers-added Web UI event has been fired for
@@ -638,8 +627,7 @@ class PrintPreviewHandlerTest : public testing::Test {
     ASSERT_TRUE(add_data.arg3());
     const base::Value::List& printer_list = add_data.arg3()->GetList();
     ASSERT_EQ(printer_list.size(), 1u);
-    EXPECT_TRUE(printer_list[0].FindKeyOfType("printer_name",
-                                              base::Value::Type::STRING));
+    EXPECT_TRUE(printer_list[0].GetDict().FindString("printer_name"));
   }
 
   // Simulates a 'getPrinterCapabilities' Web UI message by constructing the
@@ -647,11 +635,11 @@ class PrintPreviewHandlerTest : public testing::Test {
   void SendGetPrinterCapabilities(mojom::PrinterType type,
                                   const std::string& callback_id_in,
                                   const std::string& printer_name) {
-    base::Value args(base::Value::Type::LIST);
+    base::Value::List args;
     args.Append(callback_id_in);
     args.Append(printer_name);
     args.Append(static_cast<int>(type));
-    handler()->HandleGetPrinterCapabilities(args.GetList());
+    handler()->HandleGetPrinterCapabilities(args);
   }
 
   // Validates that a printer capabilities promise was resolved/rejected.
@@ -660,10 +648,9 @@ class PrintPreviewHandlerTest : public testing::Test {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     CheckWebUIResponse(data, callback_id_in, expect_resolved);
     if (expect_resolved) {
-      const base::Value* settings = data.arg3();
-      ASSERT_TRUE(settings);
-      EXPECT_TRUE(settings->FindKeyOfType(kSettingCapabilities,
-                                          base::Value::Type::DICTIONARY));
+      ASSERT_TRUE(data.arg3());
+      const base::Value::Dict& settings = data.arg3()->GetDict();
+      EXPECT_TRUE(settings.FindDict(kSettingCapabilities));
     }
   }
 
@@ -1220,7 +1207,7 @@ TEST_F(PrintPreviewHandlerTest, Print) {
 
     // Send printing request.
     mojom::PrinterType type = kAllTypes[i];
-    base::Value print_args(base::Value::Type::LIST);
+    base::Value::List print_args;
     std::string print_callback_id =
         "test-callback-id-" + base::NumberToString(2 * (i + 1));
     print_args.Append(print_callback_id);
@@ -1228,7 +1215,7 @@ TEST_F(PrintPreviewHandlerTest, Print) {
     std::string json;
     base::JSONWriter::Write(print_ticket, &json);
     print_args.Append(json);
-    handler()->HandlePrint(print_args.GetList());
+    handler()->HandlePrint(print_args);
 
     CheckHistograms(histograms, type);
 

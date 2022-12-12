@@ -91,13 +91,13 @@ LocalPrinterHandlerChromeos::LocalPrinterHandlerChromeos(
 LocalPrinterHandlerChromeos::~LocalPrinterHandlerChromeos() = default;
 
 // static
-base::Value LocalPrinterHandlerChromeos::PrinterToValue(
+base::Value::Dict LocalPrinterHandlerChromeos::PrinterToValue(
     const crosapi::mojom::LocalDestinationInfo& printer) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetStringKey(kSettingDeviceName, printer.id);
-  value.SetStringKey(kSettingPrinterName, printer.name);
-  value.SetStringKey(kSettingPrinterDescription, printer.description);
-  value.SetBoolKey(kCUPSEnterprisePrinter, printer.configured_via_policy);
+  base::Value::Dict value;
+  value.Set(kSettingDeviceName, printer.id);
+  value.Set(kSettingPrinterName, printer.name);
+  value.Set(kSettingPrinterDescription, printer.description);
+  value.Set(kCUPSEnterprisePrinter, printer.configured_via_policy);
   return value;
 }
 

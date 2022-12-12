@@ -130,12 +130,12 @@ void RecordCapability(base::OnceClosure done_closure,
 }
 
 #if BUILDFLAG(IS_MAC)
-base::Value GetValueFromCustomPaper(
+base::Value::Dict GetValueFromCustomPaper(
     const PrinterSemanticCapsAndDefaults::Paper& paper) {
-  base::Value paper_value(base::Value::Type::DICTIONARY);
-  paper_value.SetStringKey("custom_display_name", paper.display_name);
-  paper_value.SetIntKey("height_microns", paper.size_um.height());
-  paper_value.SetIntKey("width_microns", paper.size_um.width());
+  base::Value::Dict paper_value;
+  paper_value.Set("custom_display_name", paper.display_name);
+  paper_value.Set("height_microns", paper.size_um.height());
+  paper_value.Set("width_microns", paper.size_um.width());
   return paper_value;
 }
 #endif
