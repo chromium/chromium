@@ -493,7 +493,8 @@ void PageSpecificContentSettings::BrowsingDataAccessed(
     bool blocked) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PageSpecificContentSettings* settings = GetForFrame(rfh);
-  settings->OnBrowsingDataAccessed(data_key, storage_type, blocked);
+  if(settings)
+    settings->OnBrowsingDataAccessed(data_key, storage_type, blocked);
 }
 
 // static
