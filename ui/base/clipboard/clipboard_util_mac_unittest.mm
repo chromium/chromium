@@ -19,7 +19,7 @@ namespace {
 
 using ClipboardUtilMacTest = PlatformTest;
 
-TEST_F(ClipboardUtilMacTest, PasteboardItemsFromUrls) {
+TEST_F(ClipboardUtilMacTest, PasteboardItemsFromUrlsRoundtrip) {
   NSString* url_string_1 =
       @"https://www.google.com/"
       @"search?q=test&oq=test&aqs=chrome..69i57l2j69i60l4.278j0j7&"
@@ -51,6 +51,22 @@ TEST_F(ClipboardUtilMacTest, PasteboardItemsFromUrls) {
   // Only the first item should have the "web urls and titles" data.
   EXPECT_TRUE([items[0].types containsObject:kUTTypeWebKitWebURLsWithTitles]);
   EXPECT_FALSE([items[1].types containsObject:kUTTypeWebKitWebURLsWithTitles]);
+}
+
+TEST_F(ClipboardUtilMacTest, PasteboardItemsFromString) {
+  NSString* url_string = @"    https://www.google.com/   ";
+
+  scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
+  [pasteboard->get() writeObjects:@[ url_string ]];
+
+  NSArray* urls = nil;
+  NSArray* titles = nil;
+  ClipboardUtil::URLsAndTitlesFromPasteboard(pasteboard->get(), &urls, &titles);
+
+  ASSERT_EQ(1u, urls.count);
+  EXPECT_NSEQ(@"https://www.google.com/", urls[0]);
+  ASSERT_EQ(1u, titles.count);
+  EXPECT_NSEQ(@"www.google.com", titles[0]);
 }
 
 TEST_F(ClipboardUtilMacTest, PasteboardItemWithFilePath) {

@@ -5,6 +5,7 @@
 import("///build/config/ozone.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 component("clipboard_types") {
   output_name = "ui_base_clipboard_types"
@@ -67,6 +68,17 @@ component("file_info") {
   deps = [ "//base" ]
 }
 
+# This is a source set because it needs to be included only on the Mac for the
+# final executable, but needs to be included on any platform for the fuzzer.
+source_set("url_file_parser") {
+  sources = [
+    "url_file_parser.cc",
+    "url_file_parser.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 component("clipboard") {
   output_name = "ui_base_clipboard"
 
@@ -99,9 +111,6 @@ component("clipboard") {
       "clipboard_mac.mm",
       "clipboard_util_mac.h",
       "clipboard_util_mac.mm",
-    ]
-    weak_frameworks = [
-      "UniformTypeIdentifiers.framework",  # macOS 11
     ]
   }
 
@@ -156,10 +165,16 @@ component("clipboard") {
   }
 
   if (is_mac) {
-    deps += [ "//third_party/mozilla" ]
+    deps += [
+      ":url_file_parser",
+      "//third_party/mozilla",
+    ]
     frameworks = [
       "AppKit.framework",
       "CoreFoundation.framework",
+    ]
+    weak_frameworks = [
+      "UniformTypeIdentifiers.framework",  # macOS 11
     ]
   }
 }
@@ -216,6 +231,7 @@ source_set("clipboard_test") {
     sources += [
       "clipboard_mac_unittest.mm",
       "clipboard_util_mac_unittest.mm",
+      "url_file_parser_unittest.cc",
     ]
   }
 
@@ -238,6 +254,18 @@ source_set("clipboard_test") {
   ]
 
   if (is_mac) {
-    deps += [ "//third_party/mozilla" ]
+    deps += [
+      ":url_file_parser",
+      "//third_party/mozilla",
+    ]
   }
+}
+
+fuzzer_test("url_file_parser_fuzzer") {
+  sources = [ "url_file_parser_fuzzer.cc" ]
+  deps = [
+    ":url_file_parser",
+    "//base",
+  ]
+  seed_corpus = "test/url_file_parser_fuzzer_testcases"
 }

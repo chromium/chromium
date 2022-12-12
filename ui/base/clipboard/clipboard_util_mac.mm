@@ -8,17 +8,22 @@
 #include <CoreServices/CoreServices.h>                      // pre-macOS 11
 #include <UniformTypeIdentifiers/UniformTypeIdentifiers.h>  // macOS 11
 
+#include <string>
+
 #include "base/mac/foundation_util.h"
 #include "base/notreached.h"
+#include "base/strings/sys_string_conversions.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/clipboard/url_file_parser.h"
+#include "url/gurl.h"
 
 namespace ui {
 
 namespace {
 
-// Reads the "WebKitWebURLsWithTitles" type put onto the clipboard by Safari and
-// returns the urls/titles found within. Returns true if this was successful, or
-// false if it was not.
+// Reads the "WebKitWebURLsWithTitles" type put onto the pasteboard by Safari
+// and returns the URLs/titles found within. Returns true if this was
+// successful, or false if it was not.
 bool ReadWebURLsWithTitlesPboardType(NSPasteboard* pboard,
                                      NSArray<NSString*>** urls,
                                      NSArray<NSString*>** titles) {
@@ -62,50 +67,16 @@ bool ReadWebURLsWithTitlesPboardType(NSPasteboard* pboard,
   return true;
 }
 
-// If the given pasteboard item is a drag of an internet location file, return
-// the title that should be used for for the URL. Returns nil if it is not a
-// file or if any error occurs.
-NSString* ExtractTitleFromFileURL(NSPasteboardItem* item) {
-  NSURL* file_url =
-      [NSURL URLWithString:[item stringForType:NSPasteboardTypeFileURL]];
-  if (!file_url) {
-    return nil;
-  }
-
-  // The UTType for .webloc files is com.apple.web-internet-location, but
-  // there is no official constant for that. However, that type does conform
-  // to the generic "internet location" type (aka .inetloc), so check for
-  // that.
+// Returns the user-visible name of the file, without any extension. If there
+// is any error, returns nil.
+NSString* ExtractTitleFromFilename(NSURL* file_url) {
   NSDictionary* resource_values;
-  if (@available(macOS 11, *)) {
-    resource_values = [file_url resourceValuesForKeys:@[
-      NSURLContentTypeKey, NSURLLocalizedNameKey, NSURLHasHiddenExtensionKey
-    ]
-                                                error:nil];
-    if (!resource_values) {
-      return nil;
-    }
-
-    UTType* type = resource_values[NSURLContentTypeKey];
-    if (!type || ![type conformsToType:UTTypeInternetLocation]) {
-      return nil;
-    }
-  } else {
-    resource_values = [file_url resourceValuesForKeys:@[
-      NSURLTypeIdentifierKey, NSURLLocalizedNameKey, NSURLHasHiddenExtensionKey
-    ]
-                                                error:nil];
-    if (!resource_values) {
-      return nil;
-    }
-
-    NSString* type = resource_values[NSURLTypeIdentifierKey];
-    if (!type ||
-        ![NSWorkspace.sharedWorkspace
-                      type:type
-            conformsToType:base::mac::CFToNSCast(kUTTypeInternetLocation)]) {
-      return nil;
-    }
+  resource_values = [file_url resourceValuesForKeys:@[
+    NSURLLocalizedNameKey, NSURLHasHiddenExtensionKey
+  ]
+                                              error:nil];
+  if (!resource_values) {
+    return nil;
   }
 
   NSString* title = resource_values[NSURLLocalizedNameKey];
@@ -123,8 +94,167 @@ NSString* ExtractTitleFromFileURL(NSPasteboardItem* item) {
   return [title stringByDeletingPathExtension];
 }
 
-// Reads the given pasteboard, and returns urls/titles found on it. Returns true
-// if at least one url was found on the pasteboard, and false if none were.
+// A simple pair of URL with title. Valid if the `url` field is not null.
+struct URLAndTitle {
+  NSString* url = nil;
+  NSString* title = nil;
+};
+
+// Returns a URL and title if standard URL and URL title types are present on
+// the pasteboard item. Because the Finder and/or the core macOS drag code
+// automatically turn .webloc file drags into standard URL types, .webloc file
+// drags are also handled by this function.
+URLAndTitle ExtractStandardURLAndTitle(NSPasteboardItem* item) {
+  NSString* url = [item stringForType:NSPasteboardTypeURL];
+  if (!url) {
+    return {};
+  }
+
+  NSString* title = [item stringForType:kUTTypeURLName];
+
+  if (!title) {
+    // If there is no title on the drag, check to see if it's a URL drag
+    // reconstituted from a Finder .webloc. If so, use the name of the file as
+    // the title.
+    NSString* file = [item stringForType:NSPasteboardTypeFileURL];
+    if (file) {
+      NSURL* file_url = [NSURL URLWithString:file].filePathURL;
+
+      // The UTType for .webloc files is com.apple.web-internet-location, but
+      // there is no official constant for that. However, that type does conform
+      // to the generic "internet location" type (aka .inetloc), so check for
+      // that.
+      if (@available(macOS 11, *)) {
+        UTType* type;
+        if (![file_url getResourceValue:&type
+                                 forKey:NSURLContentTypeKey
+                                  error:nil]) {
+          return {};
+        }
+        if (![type conformsToType:UTTypeInternetLocation]) {
+          return {};
+        }
+      } else {
+        NSString* type;
+        if (![file_url getResourceValue:&type
+                                 forKey:NSURLTypeIdentifierKey
+                                  error:nil]) {
+          return {};
+        }
+        if (![NSWorkspace.sharedWorkspace type:type
+                                conformsToType:base::mac::CFToNSCast(
+                                                   kUTTypeInternetLocation)]) {
+          return {};
+        }
+      }
+
+      title = ExtractTitleFromFilename(file_url);
+      if (!title) {
+        // If there was a file URL but the filename could not be extracted, use
+        // the last bit of the URL as the title.
+        title = file_url.lastPathComponent;
+      }
+    }
+  }
+
+  if (!title) {
+    // If still no title, use the hostname as the last resort.
+    title = [NSURL URLWithString:url].host;
+  }
+
+  return {.url = url, .title = title};
+}
+
+// Returns a URL and title if the pasteboard item is of a standard Microsoft
+// Windows IShellLink-style .url file.
+URLAndTitle ExtractURLFromURLFile(NSPasteboardItem* item) {
+  NSString* file = [item stringForType:NSPasteboardTypeFileURL];
+  if (!file) {
+    return {};
+  }
+  NSURL* file_url = [NSURL URLWithString:file].filePathURL;
+
+  if (@available(macOS 11, *)) {
+    UTType* type;
+    if (![file_url getResourceValue:&type
+                             forKey:NSURLContentTypeKey
+                              error:nil]) {
+      return {};
+    }
+    if (![type conformsToType:UTTypeInternetShortcut]) {
+      return {};
+    }
+  } else {
+    NSString* type;
+    if (![file_url getResourceValue:&type
+                             forKey:NSURLTypeIdentifierKey
+                              error:nil]) {
+      return {};
+    }
+    NSString* const kUTTypeInternetShortcut =
+        @"com.microsoft.internet-shortcut";
+    if (![NSWorkspace.sharedWorkspace type:type
+                            conformsToType:kUTTypeInternetShortcut]) {
+      return {};
+    }
+  }
+
+  // Windows codepage 1252 (aka WinLatin1) is the best guess.
+  NSString* contents =
+      [NSString stringWithContentsOfURL:file_url
+                               encoding:NSWindowsCP1252StringEncoding
+                                  error:nil];
+  if (!contents) {
+    return {};
+  }
+
+  std::string found_url =
+      ClipboardUtil::internal::ExtractURLFromURLFileContents(
+          base::SysNSStringToUTF8(contents));
+  if (found_url.empty()) {
+    return {};
+  }
+
+  NSString* title = ExtractTitleFromFilename(file_url);
+  if (!title) {
+    // Fall back to the last path component of the .url file URL if there's no
+    // better option.
+    title = file_url.lastPathComponent;
+  }
+
+  return {.url = base::SysUTF8ToNSString(found_url), .title = title};
+}
+
+// Returns a URL and title if a string on the pasteboard item is formatted as a
+// URL but doesn't actually have the URL type.
+URLAndTitle ExtractURLFromStringValue(NSPasteboardItem* item) {
+  NSString* string = [item stringForType:NSPasteboardTypeString];
+  if (!string) {
+    return {};
+  }
+
+  string = [string
+      stringByTrimmingCharactersInSet:NSCharacterSet
+                                          .whitespaceAndNewlineCharacterSet];
+
+  // Check to see if this string is a valid URL; use GURL to do so. NSURL was
+  // found in 2010 to not be strict enough; see https://crbug.com/43100. It's
+  // unknown if things have changed since then, but there's no reason to revert.
+  // FYI earlier code also allowed all "javascript:" and "data:" URLs as
+  // "loosely validated". TODO(avi): If that "loosely validated" escape hatch
+  // needed? If significant time goes by and no one complains, remove this TODO
+  // and don't put that back in.
+  GURL url(base::SysNSStringToUTF8(string));
+  if (url.is_valid()) {
+    // The hostname is the best that can be done for the title.
+    return {.url = string, .title = base::SysUTF8ToNSString(url.host())};
+  }
+
+  return {};
+}
+
+// Reads the given pasteboard, and returns URLs/titles found on it. Returns true
+// if at least one URL was found on the pasteboard, and false if none were.
 bool ReadURLItemsWithTitles(NSPasteboard* pboard,
                             NSArray<NSString*>** urls,
                             NSArray<NSString*>** titles) {
@@ -133,27 +263,22 @@ bool ReadURLItemsWithTitles(NSPasteboard* pboard,
 
   NSArray<NSPasteboardItem*>* items = pboard.pasteboardItems;
   for (NSPasteboardItem* item : items) {
-    NSString* url = [item stringForType:NSPasteboardTypeURL];
-    NSString* title = [item stringForType:kUTTypeURLName];
+    // Try each of several ways of getting URLs from the pasteboard item and
+    // stop with the first one that works.
 
-    if (!url) {
-      continue;
+    URLAndTitle url_and_title = ExtractStandardURLAndTitle(item);
+
+    if (!url_and_title.url) {
+      url_and_title = ExtractURLFromURLFile(item);
     }
 
-    if (!title) {
-      // If there is no title on the drag, check to see if it's a URL drag
-      // reconstituted from a Finder .webloc. If so, use the name of the file as
-      // the title.
-      title = ExtractTitleFromFileURL(item);
+    if (!url_and_title.url) {
+      url_and_title = ExtractURLFromStringValue(item);
     }
 
-    if (url) {
-      [urls_array addObject:url];
-      if (title) {
-        [titles_array addObject:title];
-      } else {
-        [titles_array addObject:@""];
-      }
+    if (url_and_title.url) {
+      [urls_array addObject:url_and_title.url];
+      [titles_array addObject:url_and_title.title];
     }
   }
 
