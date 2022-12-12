@@ -8307,16 +8307,6 @@ chromium-metrics-reviews@google.com.
   <summary>The result of writing the updated module blocklist cache.</summary>
 </histogram>
 
-<histogram name="ModuleIntegrityVerification.BytesModified" units="bytes"
-    expires_after="M85">
-  <owner>anthonyvd@chromium.org</owner>
-  <summary>
-    Represents the amount of bytes in a module that are different on disk and in
-    memory. Logged when the ModuleIntegrityVerifier determines that a module is
-    different on disk and in memory after being triggered by an incident.
-  </summary>
-</histogram>
-
 <histogram name="ModuleIntegrityVerification.RelocationsUnordered"
     enum="ModuleIndex" expires_after="M85">
   <obsolete>

@@ -3172,13 +3172,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="MobileFre.FragmentInflationSpeed"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ModuleIntegrityVerificationType" separator=".">
-  <suffix name="WithoutByteSet"
-      label="The version of the Module Integrity Verifier that doesn't use a
-             hash set to track relocations."/>
-  <affected-histogram name="ModuleIntegrityVerification.BytesModified"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="NavigationFrameType" separator=".">
   <suffix name="MainFrame" label="Navigation in the main frame."/>
   <suffix name="Subframe" label="Navigation in a subframe."/>

@@ -250,12 +250,6 @@ void CollectModuleVerificationData(
     if (module_state->modified_state() == ModuleState::MODULE_STATE_UNMODIFIED)
       continue;
 
-    if (module_state->modified_state() == ModuleState::MODULE_STATE_MODIFIED) {
-      UMA_HISTOGRAM_COUNTS_10000(
-          "ModuleIntegrityVerification.BytesModified.WithoutByteSet",
-          num_bytes_different);
-    }
-
     process->mutable_module_state()->AddAllocated(module_state.release());
   }
 #endif  // _WIN64
