@@ -1,0 +1,79 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/browser/webid/test/delegated_idp_network_request_manager.h"
+
+namespace content {
+
+DelegatedIdpNetworkRequestManager::DelegatedIdpNetworkRequestManager(
+    IdpNetworkRequestManager* delegate)
+    : delegate_(delegate) {
+  DCHECK(delegate_);
+}
+
+DelegatedIdpNetworkRequestManager::~DelegatedIdpNetworkRequestManager() =
+    default;
+
+void DelegatedIdpNetworkRequestManager::FetchManifestList(
+    const GURL& provider,
+    FetchManifestListCallback callback) {
+  delegate_->FetchManifestList(provider, std::move(callback));
+}
+
+void DelegatedIdpNetworkRequestManager::FetchManifest(
+    const GURL& provider,
+    int idp_brand_icon_ideal_size,
+    int idp_brand_icon_minimum_size,
+    FetchManifestCallback callback) {
+  delegate_->FetchManifest(provider, idp_brand_icon_ideal_size,
+                           idp_brand_icon_minimum_size, std::move(callback));
+}
+
+void DelegatedIdpNetworkRequestManager::FetchClientMetadata(
+    const GURL& endpoint,
+    const std::string& client_id,
+    FetchClientMetadataCallback callback) {
+  delegate_->FetchClientMetadata(endpoint, client_id, std::move(callback));
+}
+
+void DelegatedIdpNetworkRequestManager::SendAccountsRequest(
+    const GURL& accounts_url,
+    const std::string& client_id,
+    AccountsRequestCallback callback) {
+  delegate_->SendAccountsRequest(accounts_url, client_id, std::move(callback));
+}
+
+void DelegatedIdpNetworkRequestManager::SendTokenRequest(
+    const GURL& token_url,
+    const std::string& account,
+    const std::string& url_encoded_post_data,
+    TokenRequestCallback callback) {
+  delegate_->SendTokenRequest(token_url, account, url_encoded_post_data,
+                              std::move(callback));
+}
+
+void DelegatedIdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
+    const GURL& metrics_endpoint_url,
+    base::TimeDelta api_call_to_show_dialog_time,
+    base::TimeDelta show_dialog_to_continue_clicked_time,
+    base::TimeDelta account_selected_to_token_response_time,
+    base::TimeDelta api_call_to_token_response_time) {
+  delegate_->SendSuccessfulTokenRequestMetrics(
+      metrics_endpoint_url, api_call_to_show_dialog_time,
+      show_dialog_to_continue_clicked_time,
+      account_selected_to_token_response_time, api_call_to_token_response_time);
+}
+
+void DelegatedIdpNetworkRequestManager::SendFailedTokenRequestMetrics(
+    const GURL& metrics_endpoint_url,
+    MetricsEndpointErrorCode error_code) {
+  delegate_->SendFailedTokenRequestMetrics(metrics_endpoint_url, error_code);
+}
+
+void DelegatedIdpNetworkRequestManager::SendLogout(const GURL& logout_url,
+                                                   LogoutCallback callback) {
+  delegate_->SendLogout(logout_url, std::move(callback));
+}
+
+}  // namespace content

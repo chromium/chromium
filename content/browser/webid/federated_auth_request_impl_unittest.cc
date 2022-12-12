@@ -19,6 +19,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
+#include "content/browser/webid/test/delegated_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
@@ -42,9 +43,6 @@
 #include "url/origin.h"
 
 using blink::mojom::FederatedAuthRequestResult;
-using blink::mojom::LogoutRpsRequest;
-using blink::mojom::LogoutRpsRequestPtr;
-using blink::mojom::LogoutRpsStatus;
 using blink::mojom::RequestTokenStatus;
 using AccountList = content::IdpNetworkRequestManager::AccountList;
 using ApiPermissionStatus =
@@ -355,124 +353,6 @@ class AuthRequestCallbackHelper {
   absl::optional<std::string> token_;
 };
 
-// Helper class for receiving the Logout method callback.
-class LogoutRpsRequestCallbackHelper {
- public:
-  LogoutRpsRequestCallbackHelper() = default;
-  ~LogoutRpsRequestCallbackHelper() = default;
-
-  LogoutRpsRequestCallbackHelper(const LogoutRpsRequestCallbackHelper&) =
-      delete;
-  LogoutRpsRequestCallbackHelper& operator=(
-      const LogoutRpsRequestCallbackHelper&) = delete;
-
-  LogoutRpsStatus status() const { return status_; }
-
-  // This can only be called once per lifetime of this object.
-  base::OnceCallback<void(LogoutRpsStatus)> callback() {
-    return base::BindOnce(&LogoutRpsRequestCallbackHelper::ReceiverMethod,
-                          base::Unretained(this));
-  }
-
-  // Returns when callback() is called, which can be immediately if it has
-  // already been called.
-  void WaitForCallback() {
-    if (was_called_)
-      return;
-    wait_for_callback_loop_.Run();
-  }
-
- private:
-  void ReceiverMethod(LogoutRpsStatus status) {
-    status_ = status;
-    was_called_ = true;
-    wait_for_callback_loop_.Quit();
-  }
-
-  bool was_called_ = false;
-  base::RunLoop wait_for_callback_loop_;
-  LogoutRpsStatus status_;
-};
-
-LogoutRpsRequestPtr MakeLogoutRequest(const std::string& endpoint,
-                                      const std::string& account_id) {
-  auto request = LogoutRpsRequest::New();
-  request->url = GURL(endpoint);
-  request->account_id = account_id;
-  return request;
-}
-
-// Forwards IdpNetworkRequestManager calls to delegate. The purpose of this
-// class is to enable querying the delegate after FederatedAuthRequestImpl
-// destroys DelegatedIdpNetworkRequestManager.
-class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
- public:
-  explicit DelegatedIdpNetworkRequestManager(IdpNetworkRequestManager* delegate)
-      : delegate_(delegate) {
-    DCHECK(delegate_);
-  }
-
-  void FetchManifestList(const GURL& provider,
-                         FetchManifestListCallback callback) override {
-    delegate_->FetchManifestList(provider, std::move(callback));
-  }
-
-  void FetchManifest(const GURL& provider,
-                     int idp_brand_icon_ideal_size,
-                     int idp_brand_icon_minimum_size,
-                     FetchManifestCallback callback) override {
-    delegate_->FetchManifest(provider, idp_brand_icon_ideal_size,
-                             idp_brand_icon_minimum_size, std::move(callback));
-  }
-
-  void FetchClientMetadata(const GURL& endpoint,
-                           const std::string& client_id,
-                           FetchClientMetadataCallback callback) override {
-    delegate_->FetchClientMetadata(endpoint, client_id, std::move(callback));
-  }
-
-  void SendAccountsRequest(const GURL& accounts_url,
-                           const std::string& client_id,
-                           AccountsRequestCallback callback) override {
-    delegate_->SendAccountsRequest(accounts_url, client_id,
-                                   std::move(callback));
-  }
-
-  void SendTokenRequest(const GURL& token_url,
-                        const std::string& account,
-                        const std::string& url_encoded_post_data,
-                        TokenRequestCallback callback) override {
-    delegate_->SendTokenRequest(token_url, account, url_encoded_post_data,
-                                std::move(callback));
-  }
-
-  void SendSuccessfulTokenRequestMetrics(
-      const GURL& metrics_endpoint_url,
-      base::TimeDelta api_call_to_show_dialog_time,
-      base::TimeDelta show_dialog_to_continue_clicked_time,
-      base::TimeDelta account_selected_to_token_response_time,
-      base::TimeDelta api_call_to_token_response_time) override {
-    delegate_->SendSuccessfulTokenRequestMetrics(
-        metrics_endpoint_url, api_call_to_show_dialog_time,
-        show_dialog_to_continue_clicked_time,
-        account_selected_to_token_response_time,
-        api_call_to_token_response_time);
-  }
-
-  void SendFailedTokenRequestMetrics(
-      const GURL& metrics_endpoint_url,
-      MetricsEndpointErrorCode error_code) override {
-    delegate_->SendFailedTokenRequestMetrics(metrics_endpoint_url, error_code);
-  }
-
-  void SendLogout(const GURL& logout_url, LogoutCallback callback) override {
-    delegate_->SendLogout(logout_url, std::move(callback));
-  }
-
- private:
-  raw_ptr<IdpNetworkRequestManager> delegate_;
-};
-
 class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
  public:
   void SetTestConfig(const MockConfiguration& configuration) {
@@ -614,19 +494,6 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     }
     return provider_key;
   }
-};
-
-class TestLogoutIdpNetworkRequestManager : public TestIdpNetworkRequestManager {
- public:
-  void SendLogout(const GURL& logout_url, LogoutCallback callback) override {
-    ++num_logout_requests_;
-    std::move(callback).Run();
-  }
-
-  size_t num_logout_requests() { return num_logout_requests_; }
-
- protected:
-  size_t num_logout_requests_{0};
 };
 
 // TestIdpNetworkRequestManager subclass which checks the values of the method
@@ -921,15 +788,6 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     return std::make_tuple(auth_helper_.status(),
                            auth_helper_.selected_idp_config_url(),
                            auth_helper_.token());
-  }
-
-  LogoutRpsStatus PerformLogoutRequest(
-      std::vector<LogoutRpsRequestPtr> logout_requests) {
-    LogoutRpsRequestCallbackHelper logout_helper;
-    request_remote_->LogoutRps(std::move(logout_requests),
-                               logout_helper.callback());
-    logout_helper.WaitForCallback();
-    return logout_helper.status();
   }
 
   void SetMockExpectations(const RequestParameters& request_parameters,
@@ -1361,65 +1219,6 @@ TEST_F(FederatedAuthRequestImplTest, AllInvalidEndpoints) {
       "\"accounts_endpoint\"\n",
       messages[0]);
   EXPECT_EQ("Provider's FedCM config file is invalid.", messages[1]);
-}
-
-// Test Logout method success with multiple relying parties.
-TEST_F(FederatedAuthRequestImplTest, LogoutSuccessMultiple) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSignoutFieldTrialParamName, "true"}});
-
-  std::vector<LogoutRpsRequestPtr> logout_requests;
-  logout_requests.push_back(
-      MakeLogoutRequest("https://rp1.example", "user123"));
-  logout_requests.push_back(
-      MakeLogoutRequest("https://rp2.example", "user456"));
-  logout_requests.push_back(
-      MakeLogoutRequest("https://rp3.example", "user789"));
-
-  for (int i = 0; i < 3; ++i) {
-    EXPECT_CALL(*mock_permission_delegate_, HasActiveSession(_, _, _))
-        .WillOnce(Return(true))
-        .RetiresOnSaturation();
-  }
-
-  SetNetworkRequestManager(
-      std::make_unique<TestLogoutIdpNetworkRequestManager>());
-
-  auto logout_response = PerformLogoutRequest(std::move(logout_requests));
-  EXPECT_EQ(logout_response, LogoutRpsStatus::kSuccess);
-  EXPECT_EQ(3u, static_cast<TestLogoutIdpNetworkRequestManager*>(
-                    test_network_request_manager_.get())
-                    ->num_logout_requests());
-}
-
-// Test Logout without session permission granted.
-TEST_F(FederatedAuthRequestImplTest, LogoutWithoutPermission) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSignoutFieldTrialParamName, "true"}});
-
-  SetNetworkRequestManager(
-      std::make_unique<TestLogoutIdpNetworkRequestManager>());
-
-  std::vector<LogoutRpsRequestPtr> logout_requests;
-  logout_requests.push_back(
-      MakeLogoutRequest("https://rp1.example", "user123"));
-
-  auto logout_response = PerformLogoutRequest(std::move(logout_requests));
-  EXPECT_EQ(logout_response, LogoutRpsStatus::kSuccess);
-}
-
-// Test Logout method with an empty endpoint vector.
-TEST_F(FederatedAuthRequestImplTest, LogoutNoEndpoints) {
-  SetNetworkRequestManager(
-      std::make_unique<TestLogoutIdpNetworkRequestManager>());
-
-  auto logout_response =
-      PerformLogoutRequest(std::vector<LogoutRpsRequestPtr>());
-  EXPECT_EQ(logout_response, LogoutRpsStatus::kError);
 }
 
 // Tests for Login State
@@ -2660,8 +2459,7 @@ TEST_F(FederatedAuthRequestImplTest, TooManyRequests) {
   // Reset the network request manager so we can check that we fetch no
   // endpoints in the subsequent call.
   configuration.customized_dialog = false;
-  SetNetworkRequestManager(
-      std::make_unique<TestLogoutIdpNetworkRequestManager>());
+  SetNetworkRequestManager(std::make_unique<TestIdpNetworkRequestManager>());
   // The next FedCM request should fail since the initial request has not yet
   // been finalized.
   expectations = {RequestTokenStatus::kErrorTooManyRequests,
