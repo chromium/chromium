@@ -800,7 +800,8 @@ public class RootUiCoordinator
 
         if (DeviceFormFactor.isWindowOnTablet(mWindowAndroid)
                 && (RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
-                            getPrimaryDisplaySizeInInches(), Profile.getLastUsedRegularProfile())
+                            getPrimaryDisplaySizeInInches(), Profile.getLastUsedRegularProfile(),
+                            mActivity)
                         || RequestDesktopUtils.maybeDisableGlobalSetting(
                                 Profile.getLastUsedRegularProfile()))) {
             // TODO(crbug.com/1350274): Remove this explicit load when this bug is addressed.
