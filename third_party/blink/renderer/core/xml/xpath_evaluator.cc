@@ -38,19 +38,19 @@ namespace blink {
 
 XPathExpression* XPathEvaluator::createExpression(
     const String& expression,
-    XPathNSResolver* resolver,
+    V8XPathNSResolver* resolver,
     ExceptionState& exception_state) {
   return XPathExpression::CreateExpression(expression, resolver,
                                            exception_state);
 }
 
-XPathNSResolver* XPathEvaluator::createNSResolver(Node* node_resolver) {
+NativeXPathNSResolver* XPathEvaluator::createNSResolver(Node* node_resolver) {
   return MakeGarbageCollected<NativeXPathNSResolver>(node_resolver);
 }
 
 XPathResult* XPathEvaluator::evaluate(const String& expression,
                                       Node* context_node,
-                                      XPathNSResolver* resolver,
+                                      V8XPathNSResolver* resolver,
                                       uint16_t type,
                                       const ScriptValue&,
                                       ExceptionState& exception_state) {

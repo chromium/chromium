@@ -4,10 +4,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/custom/v8_custom_xpath_ns_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_ctype_traits.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_xpath_ns_resolver.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "v8/include/v8-fast-api-calls.h"
@@ -94,89 +92,6 @@ EventListener* NativeValueTraits<IDLOnErrorEventHandler>::NativeValue(
     ExceptionState& exception_state) {
   return JSEventHandler::CreateOrNull(
       value, JSEventHandler::HandlerType::kOnErrorEventHandler);
-}
-
-// Workaround https://crbug.com/345529
-XPathNSResolver* NativeValueTraits<XPathNSResolver>::NativeValue(
-    v8::Isolate* isolate,
-    v8::Local<v8::Value> value,
-    ExceptionState& exception_state) {
-  if (XPathNSResolver* xpath_ns_resolver =
-          V8XPathNSResolver::ToImplWithTypeCheck(isolate, value)) {
-    return xpath_ns_resolver;
-  }
-  if (value->IsObject()) {
-    ScriptState* script_state = ScriptState::From(isolate->GetCurrentContext());
-    return MakeGarbageCollected<V8CustomXPathNSResolver>(
-        script_state, value.As<v8::Object>());
-  }
-
-  exception_state.ThrowTypeError(
-      ExceptionMessages::FailedToConvertJSValue("XPathNSResolver"));
-  return nullptr;
-}
-
-XPathNSResolver* NativeValueTraits<XPathNSResolver>::ArgumentValue(
-    v8::Isolate* isolate,
-    int argument_index,
-    v8::Local<v8::Value> value,
-    ExceptionState& exception_state) {
-  if (XPathNSResolver* xpath_ns_resolver =
-          V8XPathNSResolver::ToImplWithTypeCheck(isolate, value)) {
-    return xpath_ns_resolver;
-  }
-  if (value->IsObject()) {
-    ScriptState* script_state = ScriptState::From(isolate->GetCurrentContext());
-    return MakeGarbageCollected<V8CustomXPathNSResolver>(
-        script_state, value.As<v8::Object>());
-  }
-
-  exception_state.ThrowTypeError(
-      ExceptionMessages::ArgumentNotOfType(argument_index, "XPathNSResolver"));
-  return nullptr;
-}
-
-XPathNSResolver* NativeValueTraits<IDLNullable<XPathNSResolver>>::NativeValue(
-    v8::Isolate* isolate,
-    v8::Local<v8::Value> value,
-    ExceptionState& exception_state) {
-  if (XPathNSResolver* xpath_ns_resolver =
-          V8XPathNSResolver::ToImplWithTypeCheck(isolate, value)) {
-    return xpath_ns_resolver;
-  }
-  if (value->IsObject()) {
-    ScriptState* script_state = ScriptState::From(isolate->GetCurrentContext());
-    return MakeGarbageCollected<V8CustomXPathNSResolver>(
-        script_state, value.As<v8::Object>());
-  }
-  if (value->IsNullOrUndefined())
-    return nullptr;
-
-  exception_state.ThrowTypeError(
-      ExceptionMessages::FailedToConvertJSValue("XPathNSResolver"));
-  return nullptr;
-}
-
-XPathNSResolver* NativeValueTraits<IDLNullable<XPathNSResolver>>::ArgumentValue(
-    v8::Isolate* isolate,
-    int argument_index,
-    v8::Local<v8::Value> value,
-    ExceptionState& exception_state) {
-  if (XPathNSResolver* xpath_ns_resolver =
-          V8XPathNSResolver::ToImplWithTypeCheck(isolate, value)) {
-    return xpath_ns_resolver;
-  }
-  if (value->IsObject()) {
-    ScriptState* script_state = ScriptState::From(isolate->GetCurrentContext());
-    return MakeGarbageCollected<V8CustomXPathNSResolver>(
-        script_state, value.As<v8::Object>());
-  }
-  if (value->IsNullOrUndefined())
-    return nullptr;
-
-  exception_state.ThrowTypeError(
-      ExceptionMessages::ArgumentNotOfType(argument_index, "XPathNSResolver"));
-  return nullptr;
 }
 
 }  // namespace blink

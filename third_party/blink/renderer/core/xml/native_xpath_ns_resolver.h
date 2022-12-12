@@ -26,19 +26,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_XML_NATIVE_XPATH_NS_RESOLVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_NATIVE_XPATH_NS_RESOLVER_H_
 
-#include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/core/xml/xpath_ns_resolver.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
 class Node;
 
-class NativeXPathNSResolver final : public XPathNSResolver {
+class NativeXPathNSResolver final : public ScriptWrappable {
+  DEFINE_WRAPPERTYPEINFO();
+
  public:
   explicit NativeXPathNSResolver(Node*);
 
-  AtomicString lookupNamespaceURI(const String& prefix) override;
+  AtomicString lookupNamespaceURI(const String& prefix);
 
   void Trace(Visitor*) const override;
 

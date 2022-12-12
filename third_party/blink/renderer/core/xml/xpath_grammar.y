@@ -60,7 +60,6 @@
 %{
 
 #include "third_party/blink/renderer/core/xml/xpath_functions.h"
-#include "third_party/blink/renderer/core/xml/xpath_ns_resolver.h"
 #include "third_party/blink/renderer/core/xml/xpath_parser.h"
 #include "third_party/blink/renderer/core/xml/xpath_path.h"
 #include "third_party/blink/renderer/core/xml/xpath_predicate.h"

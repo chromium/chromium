@@ -28,9 +28,9 @@
 #include "third_party/blink/renderer/core/xml/xpath_parser.h"
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_xpath_ns_resolver.h"
 #include "third_party/blink/renderer/core/xml/xpath_evaluator.h"
 #include "third_party/blink/renderer/core/xml/xpath_grammar_generated.h"
-#include "third_party/blink/renderer/core/xml/xpath_ns_resolver.h"
 #include "third_party/blink/renderer/core/xml/xpath_path.h"
 #include "third_party/blink/renderer/core/xml/xpath_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -471,9 +471,15 @@ bool Parser::ExpandQName(const String& q_name,
   if (colon != kNotFound) {
     if (!resolver_)
       return false;
-    namespace_uri = resolver_->lookupNamespaceURI(q_name.Left(colon));
-    if (namespace_uri.IsNull())
+    String prefix = q_name.Left(colon);
+    v8::TryCatch try_catch(resolver_->GetIsolate());
+    try_catch.SetVerbose(true);  // Print exceptions to console.
+    String uri;
+    if (!resolver_->lookupNamespaceURI(nullptr, prefix).To(&uri))
       return false;
+    if (uri.IsNull())
+      return false;
+    namespace_uri = AtomicString(uri);
     local_name = AtomicString(q_name.Substring(colon + 1));
   } else {
     local_name = AtomicString(q_name);
@@ -483,7 +489,7 @@ bool Parser::ExpandQName(const String& q_name,
 }
 
 Expression* Parser::ParseStatement(const String& statement,
-                                   XPathNSResolver* resolver,
+                                   V8XPathNSResolver* resolver,
                                    ExceptionState& exception_state) {
   Reset(statement);
 

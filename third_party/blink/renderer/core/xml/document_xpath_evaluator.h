@@ -29,11 +29,12 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/xml/xpath_evaluator.h"
-#include "third_party/blink/renderer/core/xml/xpath_ns_resolver.h"
 
 namespace blink {
 
 class ExceptionState;
+class NativeXPathNSResolver;
+class V8XPathNSResolver;
 class XPathExpression;
 class XPathResult;
 
@@ -47,13 +48,14 @@ class CORE_EXPORT DocumentXPathEvaluator final
 
   static XPathExpression* createExpression(Document&,
                                            const String& expression,
-                                           XPathNSResolver*,
+                                           V8XPathNSResolver*,
                                            ExceptionState&);
-  static XPathNSResolver* createNSResolver(Document&, Node* node_resolver);
+  static NativeXPathNSResolver* createNSResolver(Document&,
+                                                 Node* node_resolver);
   static XPathResult* evaluate(Document&,
                                const String& expression,
                                Node* context_node,
-                               XPathNSResolver*,
+                               V8XPathNSResolver*,
                                uint16_t type,
                                const ScriptValue&,
                                ExceptionState&);

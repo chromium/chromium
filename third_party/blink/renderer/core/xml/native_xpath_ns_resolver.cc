@@ -67,7 +67,7 @@ AtomicString NativeXPathNSResolver::lookupNamespaceURI(const String& prefix) {
 
 void NativeXPathNSResolver::Trace(Visitor* visitor) const {
   visitor->Trace(node_);
-  XPathNSResolver::Trace(visitor);
+  ScriptWrappable::Trace(visitor);
 }
 
 }  // namespace blink

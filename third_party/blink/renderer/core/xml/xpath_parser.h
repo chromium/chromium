@@ -34,7 +34,7 @@
 namespace blink {
 
 class ExceptionState;
-class XPathNSResolver;
+class V8XPathNSResolver;
 
 namespace xpath {
 
@@ -68,13 +68,13 @@ class Parser {
   Parser& operator=(const Parser&) = delete;
   ~Parser();
 
-  XPathNSResolver* Resolver() const { return resolver_; }
+  V8XPathNSResolver* Resolver() const { return resolver_; }
   bool ExpandQName(const String& q_name,
                    AtomicString& local_name,
                    AtomicString& namespace_uri);
 
   Expression* ParseStatement(const String& statement,
-                             XPathNSResolver*,
+                             V8XPathNSResolver*,
                              ExceptionState&);
 
   static Parser* Current() { return current_parser_; }
@@ -109,7 +109,7 @@ class Parser {
   unsigned next_pos_;
   String data_;
   int last_token_type_;
-  XPathNSResolver* resolver_ = nullptr;
+  V8XPathNSResolver* resolver_ = nullptr;
 };
 
 }  // namespace xpath

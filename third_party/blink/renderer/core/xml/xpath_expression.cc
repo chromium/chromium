@@ -26,8 +26,8 @@
 
 #include "third_party/blink/renderer/core/xml/xpath_expression.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_xpath_ns_resolver.h"
 #include "third_party/blink/renderer/core/xml/xpath_expression_node.h"
-#include "third_party/blink/renderer/core/xml/xpath_ns_resolver.h"
 #include "third_party/blink/renderer/core/xml/xpath_parser.h"
 #include "third_party/blink/renderer/core/xml/xpath_result.h"
 #include "third_party/blink/renderer/core/xml/xpath_util.h"
@@ -40,7 +40,7 @@ XPathExpression::XPathExpression() = default;
 
 XPathExpression* XPathExpression::CreateExpression(
     const String& expression,
-    XPathNSResolver* resolver,
+    V8XPathNSResolver* resolver,
     ExceptionState& exception_state) {
   auto* expr = MakeGarbageCollected<XPathExpression>();
   xpath::Parser parser;

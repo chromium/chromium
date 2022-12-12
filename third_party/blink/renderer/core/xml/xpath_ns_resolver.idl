@@ -18,15 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-// http://www.w3.org/TR/DOM-Level-3-XPath/xpath.html#XPathNSResolver
+// https://dom.spec.whatwg.org/#callbackdef-xpathnsresolver
 
-// TODO(foolip): XPathNSResolver should be a callback interface. The spec
-// doesn't say so, but doing so would allow the custom bindings to be removed.
-// createNSResolver(Node nodeResolver) could simply return its argument, which
-// is what Gecko does. crbug.com/345529
-
-[
-    LegacyNoInterfaceObject
-] interface XPathNSResolver {
+callback interface XPathNSResolver {
     DOMString? lookupNamespaceURI(optional DOMString prefix = "undefined");
 };
