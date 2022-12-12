@@ -69,14 +69,14 @@
     <div theme="legacy">
       <h3>Legacy</h3>
       <xf-tree>
-        <xf-tree-item label="Level 1 (2 children)">
-          <xf-tree-item label="Level 1.1 (2 children)">
-            <xf-tree-item label="Level 1.1.1 (no children)" selected></xf-tree-item>
-            <xf-tree-item label="Level 1.1.2 (no children)" disabled></xf-tree-item>
+        <xf-tree-item label="Level 1 (2 children)" icon="my_files">
+          <xf-tree-item label="Level 1.1 (2 children)" icon="downloads">
+            <xf-tree-item label="Level 1.1.1 (no children)" selected icon="camera_folder"></xf-tree-item>
+            <xf-tree-item label="Level 1.1.2 (no children)" disabled icon="usb"></xf-tree-item>
           </xf-tree-item>
-          <xf-tree-item label="Level 1.2 (no children)"></xf-tree-item>
+          <xf-tree-item label="Level 1.2 (no children)" icon="folder"></xf-tree-item>
         </xf-tree-item>
-        <xf-tree-item label="Level 2 (may have children)" may-have-children separator></xf-tree-item>
+        <xf-tree-item label="Level 2 (may have children)" may-have-children separator icon="smb"></xf-tree-item>
         <xf-tree-item label="Level 3 (no children)">
           <span class="trailing-icon" tabindex="0" slot="trailingIcon">X</span>
         </xf-tree-item>
@@ -86,15 +86,15 @@
     <div theme="refresh23">
       <h3>Refresh23</h3>
       <xf-tree>
-        <xf-tree-item label="Level 1 (2 children)">
-          <xf-tree-item label="Level 1.1 (2 children)">
-            <xf-tree-item label="Level 1.1.1 (no children)" selected></xf-tree-item>
-            <xf-tree-item label="Level 1.1.2 (no children)" disabled></xf-tree-item>
+        <xf-tree-item label="Level 1 (2 children)" icon="my_files">
+          <xf-tree-item label="Level 1.1 (2 children)" icon="downloads">
+            <xf-tree-item label="Level 1.1.1 (no children)" selected icon="camera_folder"></xf-tree-item>
+            <xf-tree-item label="Level 1.1.2 (no children)" disabled icon="usb"></xf-tree-item>
           </xf-tree-item>
-          <xf-tree-item label="Level 1.2 (no children)"></xf-tree-item>
+          <xf-tree-item label="Level 1.2 (no children)" icon="folder"></xf-tree-item>
         </xf-tree-item>
-        <xf-tree-item label="Level 2 (may have children)" may-have-children separator></xf-tree-item>
-        <xf-tree-item label="Level 3 (no children)">
+        <xf-tree-item label="Level 2 (may have children)" may-have-children separator icon="smb"></xf-tree-item>
+        <xf-tree-item label="Level 3 (no children)" icon="invalid_type">
           <span class="trailing-icon" tabindex="0" slot="trailingIcon">X</span>
         </xf-tree-item>
       </xf-tree>
@@ -119,8 +119,8 @@
       <xf-icon type="bruschetta"></xf-icon>
     </div>
     <div class="icon-wrapper">
-      <span>type="camera-folder"</span>
-      <xf-icon type="camera-folder"></xf-icon>
+      <span>type="camera_folder"</span>
+      <xf-icon type="camera_folder"></xf-icon>
     </div>
     <div class="icon-wrapper">
       <span>type="computer"</span>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {classMap, css, customElement, html, property, XfBase} from './xf_base.js';
+import {classMap, css, customElement, html, property, PropertyValues, XfBase} from './xf_base.js';
 
 @customElement('xf-icon')
 export class XfIcon extends XfBase {
@@ -28,7 +28,7 @@ export class XfIcon extends XfBase {
       ARCHIVE: 'archive',
       AUDIO: 'audio',
       BRUSCHETTA: 'bruschetta',
-      CAMERA_FOLDER: 'camera-folder',
+      CAMERA_FOLDER: 'camera_folder',
       COMPUTER: 'computer',
       COMPUTERS_GRAND_ROOT: 'computers_grand_root',
       CROSTINI: 'crostini',
@@ -96,11 +96,30 @@ export class XfIcon extends XfBase {
       <span class=${classMap(spanClass)}></span>
     `;
   }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    if (changedProperties.has('type')) {
+      this.validateTypeProperty_(this.type);
+    }
+  }
+
+  private validateTypeProperty_(type: string) {
+    if (!type) {
+      console.warn('Empty type will result in an square being rendered.');
+      return;
+    }
+    const validTypes = Object.values(XfIcon.types);
+    if (!validTypes.find((t) => t === type)) {
+      console.warn(
+          `Type ${type} is not a valid icon type, please check XfIcon.types.`);
+    }
+  }
 }
 
 function getCSS() {
   return css`
     :host {
+      --xf-icon-color: var(--cros-sys-on_surface);
       display: inline-block;
     }
 
@@ -111,7 +130,7 @@ function getCSS() {
     span:not(.keep-color) {
       -webkit-mask-position: center;
       -webkit-mask-repeat: no-repeat;
-      background-color: var(--cros-icon-color-primary);
+      background-color: var(--xf-icon-color);
     }
 
     span.keep-color {
@@ -161,7 +180,7 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/volumes/linux_files.svg);
     }
 
-    :host([type="camera-folder"]) span {
+    :host([type="camera_folder"]) span {
       -webkit-mask-image: url(../foreground/images/volumes/camera.svg);
     }
 
@@ -182,10 +201,6 @@ function getCSS() {
     }
 
     :host([type="drive_shared_with_me"]) span {
-      -webkit-mask-image: url(../foreground/images/volumes/shared.svg);
-    }
-
-    :host([type="drive"]) span {
       -webkit-mask-image: url(../foreground/images/volumes/shared.svg);
     }
 
@@ -279,7 +294,7 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/volumes/sd.svg);
     }
 
-    :host([type="service_drive"]) span {
+    :host([type="service_drive"]) span, :host([type="drive"]) span {
       -webkit-mask-image: url(../foreground/images/volumes/service_drive.svg);
     }
 

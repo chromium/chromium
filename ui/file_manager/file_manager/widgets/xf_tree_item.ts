@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
+import './xf_icon.js';
 
 import {addCSSPrefixSelector} from '../common/js/dom_utils.js';
 
@@ -51,8 +52,12 @@ export class XfTreeItem extends XfBase {
   @property({type: Boolean, reflect: true, attribute: 'may-have-children'})
   mayHaveChildren = false;
 
-  /** The icon of the tree item, will be displayed before the label text. */
-  @property({type: String, reflect: true, attribute: 'icon'}) icon = '';
+  /**
+   * The icon of the tree item, will be displayed before the label text.
+   * The icon value should come from `XfIcon.types`, it will be passed as
+   * `type` to a <xf-icon> widget to render an icon element.
+   */
+  @property({type: String, reflect: true}) icon = '';
   /** The label text of the tree item. */
   @property({type: String, reflect: true}) label = '';
 
@@ -195,10 +200,10 @@ export class XfTreeItem extends XfBase {
         >
           <paper-ripple></paper-ripple>
           <span class="expand-icon"></span>
-          <span
+          <xf-icon
             class="tree-label-icon"
-            tree-icon-type=${this.icon}
-          ></span>
+            type=${this.icon}
+          ></xf-icon>
           ${this.renderTreeLabel()}
           <slot name="trailingIcon"></slot>
         </div>
@@ -479,14 +484,7 @@ function getCSS() {
     }
 
     .tree-label-icon {
-      -webkit-mask-position: center;
-      -webkit-mask-repeat: no-repeat;
-      background-color: var(--cros-icon-color-primary);
-      background-image: none;
       flex: none;
-      height: 20px;
-      position: relative;
-      width: 20px;
     }
 
     .tree-label {
@@ -565,8 +563,14 @@ function getCSS() {
     }
 
     .tree-label-icon {
+      --xf-icon-color: var(--cros-icon-color-primary);
       left: -4px;
+      position: relative;
       right: -4px;
+    }
+
+    :host([selected]) .tree-label-icon {
+      --xf-icon-color: var(--cros-icon-color-selection);
     }
 
     .tree-label {
@@ -614,6 +618,18 @@ function getCSS() {
 
     .expand-icon {
       margin-inline-start: 28px;
+    }
+
+    .tree-label-icon {
+      --xf-icon-color: var(--cros-sys-on_surface);
+    }
+
+    :host([selected]) .tree-label-icon {
+      --xf-icon-color: var(--cros-sys-on_primary)
+    }
+
+    :host([disabled]) .tree-label-icon {
+      --xf-icon-color: var(--cros-sys-disabled);
     }
 
     .tree-label {
