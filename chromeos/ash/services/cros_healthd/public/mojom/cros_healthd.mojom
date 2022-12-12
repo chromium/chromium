@@ -54,7 +54,7 @@ interface CrosHealthdServiceFactory {
 
 // Diagnostics interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 7, NextIndex: 38
+// NextMinVersion: 8, NextIndex: 39
 [Stable]
 interface CrosHealthdDiagnosticsService {
   // Returns an array of all diagnostic routines that the platform supports.
@@ -613,6 +613,19 @@ interface CrosHealthdDiagnosticsService {
   [MinVersion=5] RunLedLitUpRoutine@37(LedName name, LedColor color,
     pending_remote<LedLitUpRoutineReplier> replier)
         => (RunRoutineResponse response);
+
+  // Requests that the EmmcLifetime routine is created and started on the
+  // platform. This routine checks the lifetime of the eMMC drive. The routine
+  // will pass if PRE_EOL_INFO is 0x01 (normal). In addition, the value of
+  // DEVICE_LIFE_TIME_EST_TYP_A and DEVICE_LIFE_TIME_EST_TYP_B will be
+  // included in the output.
+  // The availability of this routine can be determined by checking that
+  // kEmmcLifetime is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=7] RunEmmcLifetimeRoutine@38() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.

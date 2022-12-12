@@ -333,6 +333,7 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
       mojom::LedColor color,
       mojo::PendingRemote<mojom::LedLitUpRoutineReplier> replier,
       RunLedLitUpRoutineCallback callback) override;
+  void RunEmmcLifetimeRoutine(RunEmmcLifetimeRoutineCallback callback) override;
 
   // CrosHealthdEventService overrides:
   void AddBluetoothObserver(
