@@ -6098,8 +6098,8 @@
   },
   {
     "name": "scroll-unification",
-    "owners": [ "skobes@chromium.org", "input-dev@chromium.org" ],
-    "expiry_milestone": 110
+    "owners": [ "skobes@chromium.org", "input-dev@chromium.org", "awogbemila@chromium.org" ],
+    "expiry_milestone": 116
   },
   {
     "name": "scrollable-tabstrip",
