@@ -94,9 +94,8 @@ would then typically be off, so that provides an extra guard against that.
 
 The `PowerBroadcastReceiver` then tells `OmahaBase` that a foreground session
 has started, which immediately triggers the `OmahaService`. The `OmahaService`
-then depending on the OS version either starts an `IntentService` called
-`OmahaClient`, or schedules a `BackgroundTask` with the Chrome
-`BackgroundTaskScheduler` for immediate scheduling (0ms delay).
+then schedules a `BackgroundTask` with the Chrome `BackgroundTaskScheduler` for
+immediate scheduling (0ms delay).
 
 ## Requests and Responses
 
@@ -209,8 +208,7 @@ XMLParser.java | Breaks XML down into its constituent elements and attributes us
 **File** | **Description**
 --- | ---
 ExponentialBackoffScheduler.java | Manages a timer that implements exponential backoff for failed attempts.
-OmahaClient.java | The `IntentService` based implementation of the Omaha client.<br><br>Note: This class can not be renamed because it has is referred to by the system, and therefore possibly old intents, etc.
-OmahaService.java | Uses either `AlarmManager` or `BackgroundTaskScheduler` to schedule jobs.<br><br>Also contains `OmahaClientDelegate`. The delegate contains logic for scheduling using the `AlarmManager` or a `BackgroundTask`.
+OmahaService.java | Uses `BackgroundTaskScheduler` to schedule jobs.<br><br>Also contains `OmahaClientDelegate`. The delegate contains logic for scheduling using a `BackgroundTask`.
 
 ### Updates
 

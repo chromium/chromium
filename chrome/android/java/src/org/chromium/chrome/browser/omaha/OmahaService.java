@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omaha;
 import android.app.IntentService;
 import android.app.job.JobService;
 import android.content.Context;
-import android.os.Build;
 
 import androidx.annotation.Nullable;
 
@@ -34,20 +33,14 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
 
         @Override
         public void scheduleService(long currentTimestampMs, long nextTimestampMs) {
-            if (Build.VERSION.SDK_INT < OmahaBase.MIN_API_JOB_SCHEDULER) {
-                getScheduler().createAlarm(
-                        OmahaClientImpl.createIntent(getContext()), nextTimestampMs);
-                Log.i(OmahaBase.TAG, "Scheduled using AlarmManager and IntentService");
-            } else {
-                final long delay = nextTimestampMs - currentTimestampMs;
-                PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-                    if (scheduleJobService(getContext(), delay)) {
-                        Log.i(OmahaBase.TAG, "Scheduled using JobService");
-                    } else {
-                        Log.e(OmahaBase.TAG, "Failed to schedule job");
-                    }
-                });
-            }
+            final long delay = nextTimestampMs - currentTimestampMs;
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+                if (scheduleJobService(getContext(), delay)) {
+                    Log.i(OmahaBase.TAG, "Scheduled using JobService");
+                } else {
+                    Log.e(OmahaBase.TAG, "Failed to schedule job");
+                }
+            });
         }
     }
 
@@ -78,11 +71,7 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
      * Must only be called by {@link OmahaBase#onForegroundSessionStart}.
      */
     static void startServiceImmediately(Context context) {
-        if (Build.VERSION.SDK_INT < OmahaBase.MIN_API_JOB_SCHEDULER) {
-            context.startService(OmahaClientImpl.createIntent(context));
-        } else {
-            scheduleJobService(context, 0);
-        }
+        scheduleJobService(context, 0);
     }
 
     // Incorrectly infers that this is called on a worker thread because of AsyncTask doInBackground

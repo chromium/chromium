@@ -4,18 +4,9 @@
 
 package org.chromium.chrome.browser.omaha;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 
-import androidx.annotation.VisibleForTesting;
-
-import org.chromium.base.IntentUtils;
-import org.chromium.base.Log;
-
-import java.util.Date;
 import java.util.Random;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -77,19 +68,6 @@ public class ExponentialBackoffScheduler {
         return generateRandomDelay() + getCurrentTime();
     }
 
-    /**
-     * Creates an alarm to fire the specified intent at the specified time.
-     * @param intent The intent to fire.
-     * @return the timestamp of the scheduled intent
-     */
-    public long createAlarm(Intent intent, long timestamp) {
-        PendingIntent retryPIntent = PendingIntent.getService(
-                mContext, 0, intent, IntentUtils.getPendingIntentMutabilityFlag(false));
-        AlarmManager am = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-        setAlarm(am, timestamp, retryPIntent);
-        return timestamp;
-    }
-
     public int getNumFailedAttempts() {
         SharedPreferences preferences = getSharedPreferences();
         return preferences.getInt(PREFERENCE_FAILED_ATTEMPTS, 0);
@@ -120,20 +98,6 @@ public class ExponentialBackoffScheduler {
     public long getGeneratedDelay() {
         SharedPreferences preferences = getSharedPreferences();
         return preferences.getLong(PREFERENCE_DELAY, mBaseMilliseconds);
-    }
-
-    /**
-     * Sets an alarm in the alarm manager.
-     */
-    @VisibleForTesting
-    protected void setAlarm(AlarmManager am, long timestamp, PendingIntent retryPIntent) {
-        Log.d(TAG,
-                "now(" + new Date(getCurrentTime()) + ") refiringAt(" + new Date(timestamp) + ")");
-        try {
-            am.set(AlarmManager.RTC, timestamp, retryPIntent);
-        } catch (SecurityException e) {
-            Log.e(TAG, "Failed to set backoff alarm.");
-        }
     }
 
     /**

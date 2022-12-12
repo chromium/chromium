@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omaha;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
@@ -100,8 +99,6 @@ public class OmahaBase {
     static final String PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT = "timestampForNextPostAttempt";
     static final String PREF_TIMESTAMP_OF_INSTALL = "timestampOfInstall";
     static final String PREF_TIMESTAMP_OF_REQUEST = "timestampOfRequest";
-
-    static final int MIN_API_JOB_SCHEDULER = Build.VERSION_CODES.M;
 
     private static final int UNKNOWN_DATE = -2;
 

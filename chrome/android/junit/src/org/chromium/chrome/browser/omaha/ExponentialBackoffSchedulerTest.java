@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omaha;
 
 import android.content.Context;
-import android.content.Intent;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -59,41 +58,20 @@ public class ExponentialBackoffSchedulerTest {
         MockExponentialBackoffScheduler scheduler =
                 new MockExponentialBackoffScheduler(PREFERENCE_NAME, context, BACKOFF_MS, MAX_MS);
 
-        Intent intent = new Intent(INTENT_STRING);
-        scheduler.createAlarm(intent, scheduler.calculateNextTimestamp());
-
         // With no failures, expect the base backoff delay.
-        long delay = scheduler.getAlarmTimestamp() - scheduler.getCurrentTime();
+        long delay = scheduler.calculateNextTimestamp() - scheduler.getCurrentTime();
         Assert.assertEquals(
                 "Expected delay of " + BACKOFF_MS + " milliseconds.", BACKOFF_MS, delay);
 
         // With two failures, expect a delay within [BACKOFF_MS, BACKOFF_MS * 2^2].
         scheduler.increaseFailedAttempts();
         scheduler.increaseFailedAttempts();
-        scheduler.createAlarm(intent, scheduler.calculateNextTimestamp());
 
-        delay = scheduler.getAlarmTimestamp() - scheduler.getCurrentTime();
+        delay = scheduler.calculateNextTimestamp() - scheduler.getCurrentTime();
         final long minDelay = BACKOFF_MS;
         final long maxDelay = BACKOFF_MS * (1 << scheduler.getNumFailedAttempts());
         Assert.assertTrue("Expected delay greater than the minimum.", delay >= minDelay);
         Assert.assertTrue("Expected delay within maximum of " + maxDelay, delay <= maxDelay);
-    }
-
-    /**
-     * Check that the alarm is being set by the class.
-     */
-    @Test
-    @Feature({"Omaha", "Sync"})
-    public void testExponentialBackoffSchedulerAlarmCreation() {
-        TestContext context = new TestContext(RuntimeEnvironment.getApplication());
-
-        MockExponentialBackoffScheduler scheduler =
-                new MockExponentialBackoffScheduler(PREFERENCE_NAME, context, BACKOFF_MS, MAX_MS);
-
-        Intent intent = new Intent(INTENT_STRING);
-        scheduler.createAlarm(intent, scheduler.calculateNextTimestamp());
-        Assert.assertTrue("Never requested the alarm manager.", context.mRequestedAlarmManager);
-        Assert.assertTrue("Never received a call to set the alarm.", scheduler.getAlarmWasSet());
     }
 
     /**

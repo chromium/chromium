@@ -842,7 +842,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/offlinepages/prefetch/PrefetchBackgroundTaskScheduler.java",
   "java/src/org/chromium/chrome/browser/omaha/MarketURLGetter.java",
   "java/src/org/chromium/chrome/browser/omaha/OmahaBase.java",
-  "java/src/org/chromium/chrome/browser/omaha/OmahaClientImpl.java",
   "java/src/org/chromium/chrome/browser/omaha/OmahaDelegate.java",
   "java/src/org/chromium/chrome/browser/omaha/OmahaDelegateBase.java",
   "java/src/org/chromium/chrome/browser/omaha/OmahaService.java",
