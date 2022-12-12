@@ -13,7 +13,6 @@ import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 import android.view.ViewGroup;
@@ -38,7 +37,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
@@ -292,7 +290,6 @@ public class SwitchToTabTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.N)
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     @DisabledTest(message = "https://crbug.com/1291136")
     public void testSwitchToTabSuggestionWhenIncognitoTabOnTop() throws InterruptedException {
