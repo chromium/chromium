@@ -142,6 +142,9 @@ try_.builder(
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
+            target_cros_boards = [
+                "amd64-generic",
+            ],
             target_platform = builder_config.target_platform.CHROMEOS,
         ),
         # TODO(https://crbug.com/1399919): change skylab_upload_location

@@ -503,16 +503,6 @@
     'enabled': True,
     'identifier': 'DEDEDE_RELEASE_STABLE',
   },
-  'CROS_EVE_PUBLIC': {
-    'skylab': {
-      'cros_board': 'eve',
-      'cros_chrome_version': '110.0.5447.0',
-      'cros_img': 'eve-public/R110-15264.0.0',
-      'bucket': 'chromiumos-image-archive',
-    },
-    'enabled': True,
-    'identifier': 'EVE_PUBLIC',
-  },
   'CROS_EVE_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'eve',
@@ -751,6 +741,16 @@
     },
     'enabled': True,
     'identifier': 'TROGDOR64_RELEASE_LKGM',
+  },
+  'CROS_VOLTEER_PUBLIC': {
+    'skylab': {
+      'cros_board': 'volteer',
+      'cros_chrome_version': '110.0.5460.0',
+      'cros_img': 'volteer-public/R110-15270.0.0',
+      'bucket': 'chromiumos-image-archive',
+    },
+    'enabled': True,
+    'identifier': 'VOLTEER_PUBLIC',
   },
   'LACROS_AMD64_GENERIC': {
     'args': [

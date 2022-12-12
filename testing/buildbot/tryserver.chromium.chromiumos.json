@@ -9,9 +9,9 @@
       {
         "args": [],
         "bucket": "chromiumos-image-archive",
-        "cros_board": "eve",
-        "cros_img": "eve-public/R110-15264.0.0",
-        "name": "lacros_all_tast_tests EVE_PUBLIC",
+        "cros_board": "volteer",
+        "cros_img": "volteer-public/R110-15270.0.0",
+        "name": "lacros_all_tast_tests VOLTEER_PUBLIC",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -21,7 +21,7 @@
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800,
-        "variant_id": "EVE_PUBLIC"
+        "variant_id": "VOLTEER_PUBLIC"
       }
     ]
   }
