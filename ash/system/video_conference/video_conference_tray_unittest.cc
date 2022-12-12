@@ -27,17 +27,26 @@ class VideoConferenceTrayTest : public AshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kVcControlsUi);
 
+    // Here we have to create the global instance of `CrasAudioHandler` before
+    // `FakeVideoConferenceTrayController`, so we do it here and not do it in
+    // `AshTestBase`.
+    CrasAudioClient::InitializeFake();
+    CrasAudioHandler::InitializeForTesting();
+
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
     // ash unit tests).
     controller_ = std::make_unique<FakeVideoConferenceTrayController>();
 
+    set_create_global_cras_audio_handler(false);
     AshTestBase::SetUp();
   }
 
   void TearDown() override {
     AshTestBase::TearDown();
     controller_.reset();
+    CrasAudioHandler::Shutdown();
+    CrasAudioClient::Shutdown();
   }
 
   VideoConferenceTray* video_conference_tray() {
@@ -132,13 +141,28 @@ TEST_F(VideoConferenceTrayTest, ToggleCameraButton) {
 
   // Click the button should mute the camera.
   LeftClickOn(camera_icon);
-  EXPECT_TRUE(controller()->camera_soft_muted());
+  EXPECT_TRUE(controller()->camera_muted());
   EXPECT_TRUE(camera_icon->toggled());
 
   // Toggle again, should be unmuted.
   LeftClickOn(camera_icon);
-  EXPECT_FALSE(controller()->camera_soft_muted());
+  EXPECT_FALSE(controller()->camera_muted());
   EXPECT_FALSE(camera_icon->toggled());
+}
+
+TEST_F(VideoConferenceTrayTest, ToggleMicrophoneButton) {
+  auto* audio_icon = video_conference_tray()->audio_icon();
+  EXPECT_FALSE(audio_icon->toggled());
+
+  // Click the button should mute the microphone.
+  LeftClickOn(audio_icon);
+  EXPECT_TRUE(controller()->microphone_muted());
+  EXPECT_TRUE(audio_icon->toggled());
+
+  // Toggle again, should be unmuted.
+  LeftClickOn(audio_icon);
+  EXPECT_FALSE(controller()->microphone_muted());
+  EXPECT_FALSE(audio_icon->toggled());
 }
 
 TEST_F(VideoConferenceTrayTest, PrivacyIndicator) {

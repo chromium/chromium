@@ -9,6 +9,7 @@
 #include "ash/system/video_conference/video_conference_media_state.h"
 #include "ash/system/video_conference/video_conference_tray_effects_manager.h"
 #include "base/observer_list_types.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
 namespace ash {
@@ -19,7 +20,8 @@ namespace ash {
 // it must be prepared to accommodate this specific lifetime in order to prevent
 // any use-after-free bugs.
 class ASH_EXPORT VideoConferenceTrayController
-    : public media::CameraPrivacySwitchObserver {
+    : public media::CameraPrivacySwitchObserver,
+      public CrasAudioHandler::AudioObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -47,8 +49,11 @@ class ASH_EXPORT VideoConferenceTrayController
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Set the state for camera software mute. Virtual for testing/mocking.
-  virtual void SetCameraSoftwareMuted(bool mute_camera) = 0;
+  // Sets the state for camera mute. Virtual for testing/mocking.
+  virtual void SetCameraMuted(bool muted) = 0;
+
+  // Sets the state for microphone mute. Virtual for testing/mocking.
+  virtual void SetMicrophoneMuted(bool muted) = 0;
 
   // Updates the tray UI with the given `VideoConferenceMediaState`.
   void UpdateWithMediaState(VideoConferenceMediaState state);
@@ -56,6 +61,11 @@ class ASH_EXPORT VideoConferenceTrayController
   // media::CameraPrivacySwitchObserver:
   void OnCameraSWPrivacySwitchStateChanged(
       cros::mojom::CameraPrivacySwitchState state) override;
+
+  // CrasAudioHandler::AudioObserver:
+  void OnInputMuteChanged(
+      bool mute_on,
+      CrasAudioHandler::InputMuteChangeMethod method) override;
 
   VideoConferenceTrayEffectsManager& effects_manager() {
     return effects_manager_;

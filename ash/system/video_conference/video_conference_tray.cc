@@ -261,12 +261,14 @@ void VideoConferenceTray::ToggleBubble(const ui::Event& event) {
 }
 
 void VideoConferenceTray::OnCameraButtonClicked(const ui::Event& event) {
-  VideoConferenceTrayController::Get()->SetCameraSoftwareMuted(
-      /*mute_camera=*/!camera_icon_->toggled());
+  VideoConferenceTrayController::Get()->SetCameraMuted(
+      /*muted=*/!camera_icon_->toggled());
 }
 
 void VideoConferenceTray::OnAudioButtonClicked(const ui::Event& event) {
   // TODO(b/253275993): Implement the callback for `audio_icon_`.
+  VideoConferenceTrayController::Get()->SetMicrophoneMuted(
+      /*muted=*/!audio_icon_->toggled());
 }
 
 void VideoConferenceTray::OnScreenShareButtonClicked(const ui::Event& event) {

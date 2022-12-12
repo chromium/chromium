@@ -76,6 +76,9 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
     // Used only when setting up a pixel diff test.
     absl::optional<pixel_test::InitParams> pixel_test_init_params;
+
+    // True if a fake global `CrasAudioHandler` should be created.
+    bool create_global_cras_audio_handler = true;
   };
 
   // Instantiates/destroys an AshTestHelper. This can happen in a
@@ -206,6 +209,9 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   // InputMethodManager is not owned by this class. It is stored in a
   // global that is registered via InputMethodManager::Initialize().
   input_method::MockInputMethodManager* input_method_manager_ = nullptr;
+
+  // True if a fake global `CrasAudioHandler` should be created.
+  bool create_global_cras_audio_handler_ = true;
 };
 
 }  // namespace ash

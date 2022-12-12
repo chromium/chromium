@@ -22,7 +22,8 @@ class VideoConferenceTrayControllerImpl : public VideoConferenceTrayController {
   ~VideoConferenceTrayControllerImpl() override;
 
   // VideoConferenceTrayController:
-  void SetCameraSoftwareMuted(bool mute_camera) override;
+  void SetCameraMuted(bool muted) override;
+  void SetMicrophoneMuted(bool muted) override;
 };
 
 }  // namespace ash

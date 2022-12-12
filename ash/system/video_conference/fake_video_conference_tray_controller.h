@@ -23,12 +23,16 @@ class ASH_EXPORT FakeVideoConferenceTrayController
   ~FakeVideoConferenceTrayController() override = default;
 
   // VideoConferenceTrayController:
-  void SetCameraSoftwareMuted(bool mute_camera) override;
+  void SetCameraMuted(bool muted) override;
+  void SetMicrophoneMuted(bool muted) override;
 
-  bool camera_soft_muted() { return camera_soft_muted_; }
+  bool camera_muted() { return camera_muted_; }
+  bool microphone_muted() { return microphone_muted_; }
 
  private:
-  bool camera_soft_muted_ = false;
+  // Indicates whether camera/microphone is muted.
+  bool camera_muted_ = false;
+  bool microphone_muted_ = false;
 };
 
 }  // namespace ash

@@ -251,6 +251,10 @@ class AshTestBase : public testing::Test {
       const;
 
   void set_start_session(bool start_session) { start_session_ = start_session; }
+  void set_create_global_cras_audio_handler(
+      bool create_global_cras_audio_handler) {
+    create_global_cras_audio_handler_ = create_global_cras_audio_handler;
+  }
 
   base::test::TaskEnvironment* task_environment() {
     return task_environment_.get();
@@ -357,6 +361,10 @@ class AshTestBase : public testing::Test {
 
   // SetUp() doesn't activate session if this is set to false.
   bool start_session_ = true;
+
+  // `SetUp()` doesn't create a global `CrasAudioHandler` instance if this is
+  // set to false.
+  bool create_global_cras_audio_handler_ = true;
 
   // |task_environment_| is initialized-once at construction time but
   // subclasses may elect to provide their own.

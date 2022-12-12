@@ -10,6 +10,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/video_conference/video_conference_media_state.h"
 #include "ash/system/video_conference/video_conference_tray.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 
@@ -25,6 +26,7 @@ VideoConferenceTrayController::VideoConferenceTrayController() {
 
   media::CameraHalDispatcherImpl::GetInstance()->AddCameraPrivacySwitchObserver(
       this);
+  CrasAudioHandler::Get()->AddAudioObserver(this);
 }
 
 VideoConferenceTrayController::~VideoConferenceTrayController() {
@@ -33,6 +35,7 @@ VideoConferenceTrayController::~VideoConferenceTrayController() {
 
   media::CameraHalDispatcherImpl::GetInstance()
       ->RemoveCameraPrivacySwitchObserver(this);
+  CrasAudioHandler::Get()->RemoveAudioObserver(this);
 }
 
 // static
@@ -59,6 +62,21 @@ void VideoConferenceTrayController::OnCameraSWPrivacySwitchStateChanged(
         ->video_conference_tray()
         ->camera_icon()
         ->SetToggled(state == cros::mojom::CameraPrivacySwitchState::ON);
+  }
+}
+
+void VideoConferenceTrayController::OnInputMuteChanged(
+    bool mute_on,
+    CrasAudioHandler::InputMuteChangeMethod method) {
+  for (auto* root_window_controller :
+       Shell::Get()->GetAllRootWindowControllers()) {
+    DCHECK(root_window_controller);
+    DCHECK(root_window_controller->GetStatusAreaWidget());
+
+    root_window_controller->GetStatusAreaWidget()
+        ->video_conference_tray()
+        ->audio_icon()
+        ->SetToggled(mute_on);
   }
 }
 

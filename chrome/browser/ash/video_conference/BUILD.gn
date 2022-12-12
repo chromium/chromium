@@ -19,6 +19,7 @@ source_set("video_conference") {
     "//ash",
     "//base",
     "//chromeos/crosapi/mojom",
+    "//components/prefs",
     "//media/capture:capture_lib",
     "//media/capture/video/chromeos/mojom:cros_camera",
   ]

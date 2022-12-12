@@ -4,6 +4,7 @@
 
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 
 namespace ash {
@@ -11,12 +12,17 @@ namespace ash {
 FakeVideoConferenceTrayController::FakeVideoConferenceTrayController() =
     default;
 
-void FakeVideoConferenceTrayController::SetCameraSoftwareMuted(
-    bool mute_camera) {
-  camera_soft_muted_ = mute_camera;
+void FakeVideoConferenceTrayController::SetCameraMuted(bool muted) {
+  camera_muted_ = muted;
   OnCameraSWPrivacySwitchStateChanged(
-      camera_soft_muted_ ? cros::mojom::CameraPrivacySwitchState::ON
-                         : cros::mojom::CameraPrivacySwitchState::OFF);
+      camera_muted_ ? cros::mojom::CameraPrivacySwitchState::ON
+                    : cros::mojom::CameraPrivacySwitchState::OFF);
+}
+
+void FakeVideoConferenceTrayController::SetMicrophoneMuted(bool muted) {
+  microphone_muted_ = muted;
+  OnInputMuteChanged(/*mute_on=*/microphone_muted_,
+                     CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
 }
 
 }  // namespace ash

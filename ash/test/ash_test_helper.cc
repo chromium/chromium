@@ -118,11 +118,6 @@ AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
   display::ResetDisplayIdForTest();
   display::SetInternalDisplayIds({});
 
-  CrasAudioClient::InitializeFake();
-  // Create CrasAudioHandler for testing since g_browser_process is not
-  // created in AshTestBase tests.
-  CrasAudioHandler::InitializeForTesting();
-
   // Reset the global state for the cursor manager. This includes the
   // last cursor visibility state, etc.
   wm::CursorManager::ResetCursorVisibilityStateForTest();
@@ -170,8 +165,10 @@ void AshTestHelper::TearDown() {
 
   LoginState::Shutdown();
 
-  CrasAudioHandler::Shutdown();
-  CrasAudioClient::Shutdown();
+  if (create_global_cras_audio_handler_) {
+    CrasAudioHandler::Shutdown();
+    CrasAudioClient::Shutdown();
+  }
 
   // The PowerPolicyController holds a pointer to the PowerManagementClient, so
   // shut the controller down first.
@@ -242,6 +239,15 @@ aura::client::CaptureClient* AshTestHelper::GetCaptureClient() {
 }
 
 void AshTestHelper::SetUp(InitParams init_params) {
+  create_global_cras_audio_handler_ =
+      init_params.create_global_cras_audio_handler;
+  if (create_global_cras_audio_handler_) {
+    // Create `CrasAudioHandler` for testing since `g_browser_process` is not
+    // created in `AshTestBase` tests.
+    CrasAudioClient::InitializeFake();
+    CrasAudioHandler::InitializeForTesting();
+  }
+
   // Build `pixel_test_helper_` only for a pixel diff test.
   if (init_params.pixel_test_init_params) {
     // Constructing `pixel_test_helper_` sets the locale. Therefore, building
