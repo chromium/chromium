@@ -272,10 +272,12 @@ DOMHighResTimeStamp Performance::timeOrigin() const {
 
 PerformanceEntryVector Performance::getEntries(ScriptState* script_state,
                                                bool include_frames) {
-  if (include_frames)
+  if (include_frames &&
+      RuntimeEnabledFeatures::CrossFramePerformanceTimelineEnabled()) {
     return GetEntriesWithChildFrames(script_state);
-  else
+  } else {
     return GetEntriesForCurrentFrame();
+  }
 }
 
 PerformanceEntryVector Performance::GetEntriesForCurrentFrame() {
@@ -333,10 +335,12 @@ PerformanceEntryVector Performance::getEntriesByType(
     ScriptState* script_state,
     const AtomicString& entry_type,
     bool include_frames) {
-  if (include_frames)
+  if (include_frames &&
+      RuntimeEnabledFeatures::CrossFramePerformanceTimelineEnabled()) {
     return GetEntriesWithChildFrames(script_state, entry_type);
-  else
+  } else {
     return GetEntriesByTypeForCurrentFrame(entry_type);
+  }
 }
 
 PerformanceEntryVector Performance::GetEntriesByTypeForCurrentFrame(
@@ -450,7 +454,8 @@ PerformanceEntryVector Performance::getEntriesByName(
   PerformanceEntryVector all_entries;
 
   // Get sorted entry list based on provided input.
-  if (include_frames) {
+  if (include_frames &&
+      RuntimeEnabledFeatures::CrossFramePerformanceTimelineEnabled()) {
     all_entries = GetEntriesWithChildFrames(script_state, entry_type);
   } else {
     if (entry_type.IsNull()) {
