@@ -128,9 +128,11 @@ PaintOpBuffer& PaintOpBuffer::operator=(PaintOpBuffer&& other) {
 }
 
 void PaintOpBuffer::DestroyOps() {
-  if (!are_ops_destroyed_) {
-    for (PaintOp& op : Iterator(this)) {
-      op.DestroyThis();
+  if (!are_ops_destroyed_ && data_) {
+    for (size_t offset = 0; offset < used_;) {
+      auto* op = reinterpret_cast<PaintOp*>(data_.get() + offset);
+      offset += op->skip;
+      op->DestroyThis();
     }
   }
 }
