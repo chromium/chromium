@@ -1877,10 +1877,15 @@ bool PtrCheckFn(int* p) {
   return p != nullptr;
 }
 
+bool RefCheckFn(const int& p) {
+  return true;
+}
+
 class ClassWithWeakPtr {
  public:
   ClassWithWeakPtr() = default;
   void RawPtrArg(int* p) { *p = 123; }
+  void RawRefArg(int& p) { p = 123; }
   WeakPtr<ClassWithWeakPtr> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
  private:
@@ -1918,8 +1923,16 @@ TEST_F(BindUnretainedDanglingTest, UnretainedWeakReceiverValidNoDangling) {
   Free(p);
 }
 
-// Death tests misbehave on Android, http://crbug.com/643760.
-#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+TEST_F(BindUnretainedDanglingTest, UnretainedRefWeakReceiverValidNoDangling) {
+  raw_ptr<int> p = Alloc<int>(3);
+  int& ref = *p;
+  std::unique_ptr<ClassWithWeakPtr> r = std::make_unique<ClassWithWeakPtr>();
+  auto callback = base::BindOnce(&ClassWithWeakPtr::RawRefArg, r->GetWeakPtr(),
+                                 std::ref(ref));
+  std::move(callback).Run();
+  EXPECT_EQ(*p, 123);
+  Free(p);
+}
 
 TEST_F(BindUnretainedDanglingTest, UnretainedWeakReceiverInvalidNoDangling) {
   raw_ptr<int> p = Alloc<int>(3);
@@ -1933,9 +1946,69 @@ TEST_F(BindUnretainedDanglingTest, UnretainedWeakReceiverInvalidNoDangling) {
   // the callback is cancelled because the WeakPtr is already invalidated.
 }
 
+TEST_F(BindUnretainedDanglingTest, UnretainedRefWeakReceiverInvalidNoDangling) {
+  raw_ptr<int> p = Alloc<int>(3);
+  int& ref = *p;
+  std::unique_ptr<ClassWithWeakPtr> r = std::make_unique<ClassWithWeakPtr>();
+  auto callback = base::BindOnce(&ClassWithWeakPtr::RawRefArg, r->GetWeakPtr(),
+                                 std::ref(ref));
+  r.reset();
+  Free(p);
+  std::move(callback).Run();
+  // Should reach this point without crashing; there is a dangling pointer, but
+  // the callback is cancelled because the WeakPtr is already invalidated.
+}
+
+TEST_F(BindUnretainedDanglingTest, UnretainedRefUnsafeDangling) {
+  raw_ptr<int> p = Alloc<int>(3);
+  int& ref = *p;
+  auto callback =
+      base::BindOnce(RefCheckFn, base::UnsafeDangling(base::raw_ref<int>(ref)));
+  Free(p);
+  EXPECT_EQ(std::move(callback).Run(), true);
+  // Should reach this point without crashing; there is a dangling pointer, but
+  // the we marked the reference as `UnsafeDangling`.
+}
+
+TEST_F(BindUnretainedDanglingTest, UnretainedRefUnsafeDanglingUntriaged) {
+  raw_ptr<int> p = Alloc<int>(3);
+  int& ref = *p;
+  auto callback = base::BindOnce(
+      RefCheckFn, base::UnsafeDanglingUntriaged(base::raw_ref<const int>(ref)));
+  Free(p);
+  EXPECT_EQ(std::move(callback).Run(), true);
+  // Should reach this point without crashing; there is a dangling pointer, but
+  // the we marked the reference as `UnsafeDanglingUntriaged`.
+}
+
+// Death tests misbehave on Android, http://crbug.com/643760.
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+
+int FuncWithRefArgument(int& i_ptr) {
+  return i_ptr;
+}
+
 TEST_F(BindUnretainedDanglingDeathTest, UnretainedDanglingPtr) {
   raw_ptr<int> p = Alloc<int>(3);
   auto callback = base::BindOnce(PingPong, base::Unretained(p));
+  Free(p);
+  EXPECT_DEATH(std::move(callback).Run(), "");
+}
+
+TEST_F(BindUnretainedDanglingDeathTest, UnretainedRefDanglingPtr) {
+  raw_ptr<int> p = Alloc<int>(3);
+  int& ref = *p;
+  auto callback = base::BindOnce(FuncWithRefArgument, std::ref(ref));
+  Free(p);
+  EXPECT_DEATH(std::move(callback).Run(), "");
+}
+
+TEST_F(BindUnretainedDanglingDeathTest,
+       UnretainedRefWithManualUnretainedDanglingPtr) {
+  raw_ptr<int> p = Alloc<int>(3);
+  int& ref = *p;
+  auto callback = base::BindOnce(FuncWithRefArgument,
+                                 base::Unretained(base::raw_ref<int>(ref)));
   Free(p);
   EXPECT_DEATH(std::move(callback).Run(), "");
 }

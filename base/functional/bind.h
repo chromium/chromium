@@ -174,24 +174,25 @@ inline internal::UnretainedWrapper<T> Unretained(T* o) {
   return internal::UnretainedWrapper<T>(o);
 }
 
-template <typename T, typename I>
-inline internal::UnretainedWrapper<T> Unretained(const raw_ptr<T, I>& o) {
+template <typename T, typename RawPtrType>
+inline internal::UnretainedWrapper<T> Unretained(
+    const raw_ptr<T, RawPtrType>& o) {
   return internal::UnretainedWrapper<T>(o);
 }
 
-template <typename T, typename I>
-inline internal::UnretainedWrapper<T> Unretained(raw_ptr<T, I>&& o) {
+template <typename T, typename RawPtrType>
+inline internal::UnretainedWrapper<T> Unretained(raw_ptr<T, RawPtrType>&& o) {
   return internal::UnretainedWrapper<T>(std::move(o));
 }
 
-template <typename T, typename I>
-inline auto Unretained(const raw_ref<T, I>& o) {
-  return internal::UnretainedRefWrapper(o);
+template <typename T, typename RawPtrType>
+inline auto Unretained(const raw_ref<T, RawPtrType>& o) {
+  return internal::UnretainedRefWrapper<T>(o);
 }
 
-template <typename T, typename I>
-inline auto Unretained(raw_ref<T, I>&& o) {
-  return internal::UnretainedRefWrapper(std::move(o));
+template <typename T, typename RawPtrType>
+inline auto Unretained(raw_ref<T, RawPtrType>&& o) {
+  return internal::UnretainedRefWrapper<T>(o);
 }
 
 // Similar to `Unretained()`, but allows dangling pointers, e.g.:
@@ -247,6 +248,18 @@ internal::UnretainedWrapper<T, DisableDanglingPtrDetection> UnsafeDangling(
       std::move(o));
 }
 
+template <typename T, typename RawPtrType>
+internal::UnretainedRefWrapper<T, DisableDanglingPtrDetection> UnsafeDangling(
+    const raw_ref<T, RawPtrType>& o) {
+  return internal::UnretainedRefWrapper<T, DisableDanglingPtrDetection>(o);
+}
+
+template <typename T, typename RawPtrType>
+internal::UnretainedRefWrapper<T, DisableDanglingPtrDetection> UnsafeDangling(
+    raw_ref<T, RawPtrType>&& o) {
+  return internal::UnretainedRefWrapper<T, DisableDanglingPtrDetection>(o);
+}
+
 // Like `UnsafeDangling()`, but used to annotate places that still need to be
 // triaged and either migrated to `Unretained()` and safer ownership patterns
 // (preferred) or `UnsafeDangling()` if the correct pattern to use is the one
@@ -267,6 +280,18 @@ template <typename T, typename I>
 internal::UnretainedWrapper<T, DanglingUntriaged> UnsafeDanglingUntriaged(
     raw_ptr<T, I>&& o) {
   return internal::UnretainedWrapper<T, DanglingUntriaged>(std::move(o));
+}
+
+template <typename T, typename RawPtrType>
+internal::UnretainedRefWrapper<T, DanglingUntriaged> UnsafeDanglingUntriaged(
+    const raw_ref<T, RawPtrType>& o) {
+  return internal::UnretainedRefWrapper<T, DanglingUntriaged>(o);
+}
+
+template <typename T, typename RawPtrType>
+internal::UnretainedRefWrapper<T, DanglingUntriaged> UnsafeDanglingUntriaged(
+    raw_ref<T, RawPtrType>&& o) {
+  return internal::UnretainedRefWrapper<T, DanglingUntriaged>(o);
 }
 
 // RetainedRef() accepts a ref counted object and retains a reference to it.

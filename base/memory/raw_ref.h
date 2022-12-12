@@ -180,6 +180,14 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
     return inner_.operator->();
   }
 
+  // This is used to verify callbacks are not invoked with dangling references.
+  // If the `raw_ref` references a deleted object, it will trigger an error.
+  // Depending on the PartitionAllocUnretainedDanglingPtr feature, this is
+  // either a DumpWithoutCrashing, a crash, or ignored.
+  PA_ALWAYS_INLINE void ReportIfDangling() const noexcept {
+    inner_.ReportIfDangling();
+  }
+
   friend PA_ALWAYS_INLINE void swap(raw_ref& lhs, raw_ref& rhs) noexcept {
     PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
     PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.

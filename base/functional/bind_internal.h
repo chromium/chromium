@@ -166,7 +166,9 @@ class UnretainedWrapper {
 //
 // raw_ref<T> is not used to differentiate between storing a `raw_ref<T>`
 // explicitly versus storing a `T&` or `std::ref()`.
-template <typename T, bool = raw_ptr_traits::IsSupportedType<T>::value>
+template <typename T,
+          typename RawPtrType = base::RawPtrBanDanglingIfSupported,
+          bool = raw_ptr_traits::IsSupportedType<T>::value>
 class UnretainedRefWrapper {
  public:
   static_assert(
@@ -184,8 +186,8 @@ class UnretainedRefWrapper {
 
 #if !defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 // Implementation of UnretainedRefWrapper for `T` where raw_ref<T> is supported.
-template <typename T>
-class UnretainedRefWrapper<T, true> {
+template <typename T, typename RawPtrType>
+class UnretainedRefWrapper<T, RawPtrType, true> {
  public:
   static_assert(TypeSupportsUnretainedV<T>,
                 "Callback cannot capture an unprotected C++ pointer since this "
@@ -193,7 +195,19 @@ class UnretainedRefWrapper<T, true> {
                 "base/functional/disallow_unretained.h for alternatives.");
 
   explicit UnretainedRefWrapper(T& o) : ref_(o) {}
+  template <typename U = T, typename I>
+  explicit UnretainedRefWrapper(const raw_ref<U, I>& o) : ref_(o.get()) {}
+  template <typename U = T, typename I>
+  explicit UnretainedRefWrapper(raw_ref<U, I>&& o) : ref_(o.get()) {}
   T& get() const {
+    // The ultimate goal is to crash when a callback is invoked with a
+    // dangling pointer. This is checked here. For now, it is configured to
+    // either crash, DumpWithoutCrashing or be ignored. This depends on the
+    // PartitionAllocUnretainedDanglingPtr feature.
+    if constexpr (std::is_same_v<RawPtrType,
+                                 base::RawPtrBanDanglingIfSupported>) {
+      ref_.ReportIfDangling();
+    }
     // We can't use operator* here, we need to use raw_ptr's GetForExtraction
     // instead of GetForDereference. If we did use GetForDereference then we'd
     // crash in ASAN builds on calling a bound callback with a dangling
@@ -203,34 +217,49 @@ class UnretainedRefWrapper<T, true> {
   }
 
  private:
-  const raw_ref<T, DanglingUntriaged> ref_;
-};
-
-// Implementation of UnretainedRefWrapper for `raw_ref<T>`.
-template <typename T, typename I, bool b>
-class UnretainedRefWrapper<raw_ref<T, I>, b> {
- public:
-  static_assert(
-      TypeSupportsUnretainedV<T>,
-      "Callback cannot capture an unprotected C++ reference since this "
-      "Type is annotated with DISALLOW_UNRETAINED(). Please see "
-      "base/functional/disallow_unretained.h for alternatives.");
-
-  explicit UnretainedRefWrapper(const raw_ref<T, I>& ref) : ref_(ref) {}
-  explicit UnretainedRefWrapper(raw_ref<T, I>&& ref) : ref_(std::move(ref)) {}
-  T& get() const {
-    // We can't use operator* here, we need to use raw_ptr's GetForExtraction
-    // instead of GetForDereference. If we did use GetForDereference then we'd
-    // crash in ASAN builds on calling a bound callback with a dangling
-    // reference parameter even if that parameter is not used. This could hide a
-    // later unprotected issue that would be reached in release builds.
-    return ref_.get();
-  }
-
- private:
-  const raw_ref<T, I> ref_;
+  // Similarly to `UnretainedWrapper`, we cannot enable the dangling pointer
+  // detector (DPD) on this raw_ref, because it is a very common pattern to have
+  // dangling ptrs/references in never-used callbacks. For this reason, we
+  // disable DPD here. Instead we check it is not dangling when the callback is
+  // invoked, by using `ReportIfDangling`.
+  const raw_ref<T, DisableDanglingPtrDetection> ref_;
 };
 #endif  // !defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+
+// The class is used to wrap `UnretainedRefWrapper` when the latter is used as
+// a method receiver (a reference on `this` argument). This is needed because
+// the internal callback mechanism expects the receiver to have the type
+// `MyClass*` and to have `operator*`.
+// This is used as storage.
+template <typename T, typename RawPtrType, bool b>
+class UnretainedRefWrapperReceiver {
+ public:
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  UnretainedRefWrapperReceiver(UnretainedRefWrapper<T, RawPtrType, b>&& o)
+      : obj_(std::move(o)) {}
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  T& operator*() const { return obj_.get(); }
+
+ private:
+  UnretainedRefWrapper<T, RawPtrType, b> obj_;
+};
+
+// MethodReceiverStorageType converts the current receiver type to its stored
+// type. For instance, it converts pointers to `scoped_refptr`, and wraps
+// `UnretainedRefWrapper` to make it compliant with the internal callback
+// invocation mechanism.
+template <typename T>
+struct MethodReceiverStorageType {
+  using Type =
+      std::conditional_t<IsPointerV<T>, scoped_refptr<RemovePointerT<T>>, T>;
+};
+
+template <typename T, typename RawPtrType, bool b>
+struct MethodReceiverStorageType<UnretainedRefWrapper<T, RawPtrType, b>> {
+  // We can't use UnretainedRefWrapper as a receiver directly (see
+  // UnretainedRefWrapperReceiver for why).
+  using Type = UnretainedRefWrapperReceiver<T, RawPtrType, b>;
+};
 
 template <typename T>
 class RetainedRefWrapper {
@@ -1166,7 +1195,6 @@ template <typename Functor, typename Receiver, typename... BoundArgs>
 struct MakeBindStateTypeImpl<true, Functor, Receiver, BoundArgs...> {
  private:
   using DecayedReceiver = std::decay_t<Receiver>;
-
   static_assert(!std::is_array_v<std::remove_reference_t<Receiver>>,
                 "First bound argument to a method cannot be an array.");
   static_assert(
@@ -1184,13 +1212,13 @@ struct MakeBindStateTypeImpl<true, Functor, Receiver, BoundArgs...> {
   static_assert(!HasRefCountedTypeAsRawPtr<std::decay_t<BoundArgs>...>::value,
                 "A parameter is a refcounted type and needs scoped_refptr.");
 
+  using ReceiverStorageType =
+      typename MethodReceiverStorageType<DecayedReceiver>::Type;
+
  public:
-  using Type = BindState<
-      std::decay_t<Functor>,
-      std::conditional_t<IsPointerV<DecayedReceiver>,
-                         scoped_refptr<RemovePointerT<DecayedReceiver>>,
-                         DecayedReceiver>,
-      MakeStorageType<BoundArgs>...>;
+  using Type = BindState<std::decay_t<Functor>,
+                         ReceiverStorageType,
+                         MakeStorageType<BoundArgs>...>;
 };
 
 template <typename Functor, typename... BoundArgs>
@@ -1251,7 +1279,10 @@ struct MakeUnwrappedTypeListImpl {
 //   std::unique_ptr<int> -> int*.
 template <bool is_once, typename Receiver, typename... Args>
 struct MakeUnwrappedTypeListImpl<is_once, true, Receiver, Args...> {
-  using UnwrappedReceiver = TransformToUnwrappedType<is_once, Receiver>;
+  using ReceiverStorageType =
+      typename MethodReceiverStorageType<std::decay_t<Receiver>>::Type;
+  using UnwrappedReceiver =
+      TransformToUnwrappedType<is_once, ReceiverStorageType>;
   using Type = TypeList<decltype(&*std::declval<UnwrappedReceiver>()),
                         TransformToUnwrappedType<is_once, Args>...>;
 };
@@ -1560,9 +1591,9 @@ struct BindUnwrapTraits<internal::UnretainedWrapper<T, ImplType>> {
   }
 };
 
-template <typename T>
-struct BindUnwrapTraits<internal::UnretainedRefWrapper<T>> {
-  static T& Unwrap(const internal::UnretainedRefWrapper<T>& o) {
+template <typename T, typename RawPtrType>
+struct BindUnwrapTraits<internal::UnretainedRefWrapper<T, RawPtrType>> {
+  static T& Unwrap(const internal::UnretainedRefWrapper<T, RawPtrType>& o) {
     return o.get();
   }
 };
