@@ -13,6 +13,30 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+// -----------------------------------------------------------------------------
+// Usage documentation
+// -----------------------------------------------------------------------------
+//
+// Overview: KidsExternalFetcher provides an interface for generic fetchers that
+// use classes to represent Request and Response objects. The default mechanism
+// under the hood takes care of the fetch process, including:
+// * obtaining the right access token,
+// * serializing the request and parsing the response,
+// * submitting metrics.
+//
+// If you want to create new fetcher factory method, then some implementation
+// details must be provided in order to enable fetching for said <Request,
+// Response> pair. The new fetcher factory should have at least the following
+// arguments: signin::IdentityManager, network::SharedURLLoaderFactory, url of
+// the endpoint and consuming callback provided.
+//
+// In the corresponding cc file, there should be:
+// * a traffic annotation tag for the request, assuming that one Request
+// represents one API endpoint, in the implementation cc file (example:
+// GetDefaultNetworkTrafficAnnotationTag),
+// * a request path method for the request (example: GetPathForRequest),
+// * a metrics key constructing method (example: CreateMetricKey).
+
 // Holds the status of the fetch. The callback's response will be set iff the
 // status is ok.
 // These values are persisted to logs. Entries should not be renumbered and
