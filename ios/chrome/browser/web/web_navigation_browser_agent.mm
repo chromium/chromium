@@ -30,11 +30,14 @@ WebNavigationBrowserAgent::WebNavigationBrowserAgent(Browser* browser)
 WebNavigationBrowserAgent::~WebNavigationBrowserAgent() {}
 
 bool WebNavigationBrowserAgent::CanGoBack(const web::WebState* web_state) {
-  if (!web_state) {
+  if (!web_state || !web_state->IsRealized()) {
     return false;
   }
 
-  if (web_state->GetNavigationManager()->CanGoBack()) {
+  const web::NavigationManager* navigation_manager =
+      web_state->GetNavigationManager();
+  DCHECK(navigation_manager);
+  if (navigation_manager->CanGoBack()) {
     return true;
   }
 
@@ -53,7 +56,14 @@ bool WebNavigationBrowserAgent::CanGoBack() {
 }
 
 bool WebNavigationBrowserAgent::CanGoForward(const web::WebState* web_state) {
-  return web_state && web_state->GetNavigationManager()->CanGoForward();
+  if (!web_state || !web_state->IsRealized()) {
+    return false;
+  }
+
+  const web::NavigationManager* navigation_manager =
+      web_state->GetNavigationManager();
+  DCHECK(navigation_manager);
+  return navigation_manager->CanGoForward();
 }
 
 bool WebNavigationBrowserAgent::CanGoForward() {
