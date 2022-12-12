@@ -10,10 +10,12 @@
 import './hotspot_summary_item.js';
 import './network_summary_item.js';
 
+import {getHotspotConfig} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {CrosHotspotConfigInterface, CrosHotspotConfigObserverInterface, CrosHotspotConfigObserverReceiver, HotspotAllowStatus, HotspotInfo, HotspotState} from 'chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js';
 import {CrosNetworkConfigRemote, FilterType, GlobalPolicy, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -98,6 +100,9 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
       /** @private {!GlobalPolicy|undefined} */
       globalPolicy_: Object,
 
+      /** @private {!HotspotInfo} */
+      hotspotInfo_: Object,
+
       /**
        * Return true if hotspot feature flag is enabled.
        * @private
@@ -125,6 +130,30 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
     /** @private {!CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
+
+    if (this.isHotspotFeatureEnabled_) {
+      /** @private {!CrosHotspotConfigInterface} */
+      this.crosHotspotConfig_ = getHotspotConfig();
+
+      /**
+       * @private {!CrosHotspotConfigObserverReceiver}
+       */
+      this.crosHotspotConfigObserverReceiver_ =
+          new CrosHotspotConfigObserverReceiver(
+              /**
+               * @type {!CrosHotspotConfigObserverInterface}
+               */
+              (this));
+    }
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+    if (this.isHotspotFeatureEnabled_) {
+      this.crosHotspotConfig_.addObserver(
+          this.crosHotspotConfigObserverReceiver_.$.bindNewPipeAndPassRemote());
+    }
   }
 
   /** @override */
@@ -135,7 +164,19 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
 
     // Fetch global policies.
     this.onPoliciesApplied(/*userhash=*/ '');
+
+    if (this.isHotspotFeatureEnabled_) {
+      this.onHotspotInfoChanged();
+    }
   }
+
+  /** override */
+  onHotspotInfoChanged() {
+    this.crosHotspotConfig_.getHotspotInfo().then(response => {
+      this.hotspotInfo_ = response.hotspotInfo;
+    });
+  }
+
   /**
    * CrosNetworkConfigObserver impl
    * @param {!string} userhash
@@ -354,6 +395,23 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
    */
   getTetherDeviceState_(deviceStates) {
     return this.deviceStates[NetworkType.kTether];
+  }
+
+  /**
+   * Return whether hotspot row should be shown in network summary.
+   *
+   * @return {boolean}
+   * @private
+   */
+  shouldShowHotspotSummary_() {
+    if (!this.isHotspotFeatureEnabled_ || !this.hotspotInfo_) {
+      return false;
+    }
+    // Hide the hotspot summary row if the device doesn't support hotspot.
+    return this.hotspotInfo_.allowStatus !==
+        HotspotAllowStatus.kDisallowedNoCellularUpstream &&
+        this.hotspotInfo_.allowStatus !==
+        HotspotAllowStatus.kDisallowedNoWiFiDownstream;
   }
 }
 

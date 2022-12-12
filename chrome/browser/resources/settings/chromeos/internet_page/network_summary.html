@@ -13,8 +13,9 @@
         tether-device-state="[[getTetherDeviceState_(deviceStates)]]">
     </network-summary-item>
   </template>
-  <template is="dom-if" if="[[isHotspotFeatureEnabled_]]">
-    <hotspot-summary-item>
+  <template is="dom-if" if="[[shouldShowHotspotSummary_(
+        isHotspotFeatureEnabled_, hotspotInfo_, hotspotInfo_.allowStatus)]]">
+    <hotspot-summary-item hotspot-info="[[hotspotInfo_]]">
     </hotspot-summary-item>
   </template>
 </div>

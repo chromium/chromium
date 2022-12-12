@@ -17,12 +17,25 @@
     <div id="hotspotPageTitle" class="middle settings-box-text"
         aria-hidden="true">
       $i18n{hotspotPageTitle}
+      <div class="secondary" id="hotspotSecondaryLabel">
+        [[getSecondaryLabel_(isHotspotToggleOn_)]]
+      </div>
     </div>
     <cr-icon-button id="hotspotSummaryItemRowArrowIcon"
         class="subpage-arrow layout end"
-        aria-labelledby="hotspotPageTitle"
+        aria-label="$i18n{hotspotPageTitle}"
+        aria-description$="[[getSecondaryLabel_(isHotspotToggleOn_)]]"
         aria-roledescription="$i18n{subpageArrowRoleDescription}"
         on-click="navigateToDetailPage_">
     </cr-icon-button>
   </div>
+  <div class="separator"></div>
+  <cr-toggle id="enableHotspotToggle"
+      class="margin-matches-padding"
+      checked="{{isHotspotToggleOn_}}"
+      disabled$="[[isToggleDisabled_(hotspotInfo.allowStatus,
+          hotspotInfo.state)]]"
+      on-change="announceHotspotToggleChange_"
+      aria-label="$i18n{hotspotToggleA11yLabel}">
+  </cr-toggle>
 </div>

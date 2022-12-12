@@ -5,7 +5,7 @@
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {CrosHotspotConfigInterface, CrosHotspotConfigObserverRemote, HotspotConfig, HotspotControlResult, HotspotInfo, SetHotspotConfigResult} from './cros_hotspot_config.mojom-webui.js';
+import {CrosHotspotConfigInterface, CrosHotspotConfigObserverRemote, HotspotAllowStatus, HotspotConfig, HotspotControlResult, HotspotInfo, HotspotState, SetHotspotConfigResult} from './cros_hotspot_config.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -15,54 +15,119 @@ import {CrosHotspotConfigInterface, CrosHotspotConfigObserverRemote, HotspotConf
 export class FakeHotspotConfig implements CrosHotspotConfigInterface {
   private methods_: FakeMethodResolver = new FakeMethodResolver();
   private hotspotInfo_: HotspotInfo|null = null;
+  private observers_: CrosHotspotConfigObserverRemote[] = [];
+  private setHotspotConfigResult_: SetHotspotConfigResult|null = null;
+  private enableHotspotResult_: HotspotControlResult|null = null;
+  private disableHotspotResult_: HotspotControlResult|null = null;
 
   constructor() {
     this.registerMethods();
   }
 
+  // Implements CrosHotspotConfigInterface.getHotspotInfo().
   getHotspotInfo(): Promise<{hotspotInfo: HotspotInfo}> {
     this.methods_.setResult('getHotspotInfo', {hotspotInfo: this.hotspotInfo_});
     return this.methods_.resolveMethod('getHotspotInfo');
   }
 
-  // Sets the value that will be returned when calling getHotspotInfo().
+  // Set the value that will be returned when calling getHotspotInfo() and
+  // notify observers.
   setFakeHotspotInfo(hotspotInfo: HotspotInfo): void {
     this.hotspotInfo_ = hotspotInfo;
+    this.notifyHotspotInfoUpdated_();
   }
 
+  // Update the hotspot state value and notify observers.
+  setFakeHotspotState(state: HotspotState): void {
+    assert(this.hotspotInfo_);
+    this.hotspotInfo_.state = state;
+    this.hotspotInfo_ = {...this.hotspotInfo_};
+    this.notifyHotspotInfoUpdated_();
+  }
+
+  // Update the hotspot allow status and notify observers.
+  setFakeHotspotAllowStatus(allowStatus: HotspotAllowStatus): void {
+    assert(this.hotspotInfo_);
+    this.hotspotInfo_.allowStatus = allowStatus;
+    this.hotspotInfo_ = {...this.hotspotInfo_};
+    this.notifyHotspotInfoUpdated_();
+  }
+
+  // Update the hotspot config and notify observers.
+  setFakeHotspotConfig(config: HotspotConfig): void {
+    assert(this.hotspotInfo_);
+    this.hotspotInfo_.config = config;
+    this.hotspotInfo_ = {...this.hotspotInfo_};
+    this.notifyHotspotInfoUpdated_();
+  }
+
+  // Set the value that will be returned when calling enableHotspot().
+  setFakeEnableHotspotResult(result: HotspotControlResult): void {
+    this.enableHotspotResult_ = result;
+    this.methods_.setResult(
+        'enableHotspot', {result: this.enableHotspotResult_});
+  }
+
+  // Implements CrosHotspotConfigInterface.enableHotspot().
   enableHotspot(): Promise<{result: HotspotControlResult}> {
+    assert(this.hotspotInfo_);
+    if (this.hotspotInfo_.state === HotspotState.kEnabled) {
+      return this.methods_.resolveMethod('enableHotspot');
+    }
+    this.setFakeHotspotState(HotspotState.kEnabling);
+
+    if (this.enableHotspotResult_ === HotspotControlResult.kSuccess) {
+      this.setFakeHotspotState(HotspotState.kEnabled);
+    } else {
+      this.setFakeHotspotState(HotspotState.kDisabled);
+    }
+
     return this.methods_.resolveMethod('enableHotspot');
   }
 
-  // Sets the value that will be returned when calling enableHotspot().
-  setFakeEnableHotspotResult(result: HotspotControlResult): void {
-    this.methods_.setResult('enableHotspot', {result: result});
-  }
-
-  disableHotspot(): Promise<{result: HotspotControlResult}> {
-    return this.methods_.resolveMethod('disableHotspot');
-  }
-
-  // Sets the value that will be returned when calling disableHotspot().
+  // Set the value that will be returned when calling disableHotspot().
   setFakeDisableHotspotResult(result: HotspotControlResult): void {
+    this.disableHotspotResult_ = result;
     this.methods_.setResult('disableHotspot', {result: result});
   }
 
+  // Implements CrosHotspotConfigInterface.disableHotspot().
+  disableHotspot(): Promise<{result: HotspotControlResult}> {
+    assert(this.hotspotInfo_);
+    if (this.hotspotInfo_.state === HotspotState.kDisabled) {
+      return this.methods_.resolveMethod('disableHotspot');
+    }
+    this.setFakeHotspotState(HotspotState.kDisabling);
+
+    if (this.disableHotspotResult_ === HotspotControlResult.kSuccess) {
+      this.setFakeHotspotState(HotspotState.kDisabled);
+    } else {
+      this.setFakeHotspotState(HotspotState.kEnabled);
+    }
+
+    return this.methods_.resolveMethod('disableHotspot');
+  }
+
+  // Set the value that will be returned when calling setHotspotConfig().
+  setFakeSetHotspotConfigResult(result: SetHotspotConfigResult): void {
+    this.setHotspotConfigResult_ = result;
+    this.methods_.setResult(
+        'setHotspotConfig', {result: this.setHotspotConfigResult_});
+  }
+
+  // Implements CrosHotspotConfigInterface.setHotspotConfig().
   setHotspotConfig(hotspotConfig: HotspotConfig):
       Promise<{result: SetHotspotConfigResult}> {
-    assert(this.hotspotInfo_ !== null);
-    this.hotspotInfo_.config = hotspotConfig;
+    if (this.setHotspotConfigResult_ === SetHotspotConfigResult.kSuccess) {
+      this.setFakeHotspotConfig(hotspotConfig);
+    }
+
     return this.methods_.resolveMethod('setHotspotConfig');
   }
 
-  // Sets the value that will be returned when calling enableHotspot().
-  setFakeSetHotspotConfigResult(result: SetHotspotConfigResult): void {
-    this.methods_.setResult('setHotspotConfig', {result: result});
-  }
-
+  // Implements CrosHotspotConfigInterface.addObserver().
   addObserver(remote: CrosHotspotConfigObserverRemote): void {
-    // TODO(b/239477916): implementation
-    assert(remote !== null);
+    this.observers_.push(remote);
   }
 
   // Setup method resolvers.
@@ -77,5 +142,17 @@ export class FakeHotspotConfig implements CrosHotspotConfigInterface {
   reset(): void {
     this.methods_ = new FakeMethodResolver();
     this.registerMethods();
+
+    this.hotspotInfo_ = null;
+    this.setHotspotConfigResult_ = null;
+    this.enableHotspotResult_ = null;
+    this.disableHotspotResult_ = null;
+    this.observers_ = [];
+  }
+
+  private notifyHotspotInfoUpdated_(): void {
+    for (const observer of this.observers_) {
+      observer.onHotspotInfoChanged();
+    }
   }
 }

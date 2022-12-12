@@ -56,9 +56,11 @@ js_library("hotspot_summary_item") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
     "//chrome/browser/resources/settings/chromeos:router",
+    "//chromeos/ash/services/hotspot_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+  externs_list = [ "//ui/webui/resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer_externs.js" ]
 }
 
 js_library("internet_config") {
@@ -190,7 +192,6 @@ js_library("internet_page") {
     "//chrome/browser/resources/settings/chromeos:os_route",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//chrome/browser/resources/settings/chromeos:router",
-    "//chromeos/ash/services/hotspot_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -277,6 +278,7 @@ js_library("network_summary") {
     "//ash/webui/common/resources/network:mojo_interface_provider",
     "//ash/webui/common/resources/network:network_listener_behavior",
     "//ash/webui/common/resources/network:onc_mojo",
+    "//chromeos/ash/services/hotspot_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

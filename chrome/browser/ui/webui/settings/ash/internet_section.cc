@@ -857,6 +857,15 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"cellularNetworkResettingESim",
        IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_RESETTING_ESIM},
       {"hotspotPageTitle", IDS_SETTINGS_INTERNET_HOTSPOT},
+      {"hotspotToggleA11yLabel",
+       IDS_SETTINGS_INTERNET_HOTSPOT_TOGGLE_A11Y_LABEL},
+      {"hotspotSummaryStateOn", IDS_SETTINGS_INTERNET_HOTSPOT_SUMMARY_STATE_ON},
+      {"hotspotSummaryStateOff",
+       IDS_SETTINGS_INTERNET_HOTSPOT_SUMMARY_STATE_OFF},
+      {"hotspotEnabledA11yLabel",
+       IDS_SETTINGS_INTERNET_HOTSPOT_ENABLED_A11Y_LABEL},
+      {"hotspotDisabledA11yLabel",
+       IDS_SETTINGS_INTERNET_HOTSPOT_DISABLED_A11Y_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
