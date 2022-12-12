@@ -3793,8 +3793,8 @@ TEST_F(ExtensionServiceTest, BlockAndUnblockPolicyExtension) {
 
   {
     ManagementPrefUpdater pref(profile_->GetTestingPrefService());
-    // // Blocklist everything.
-    // pref.SetBlocklistedByDefault(true);
+    // Blocklist everything.
+    pref.SetBlocklistedByDefault(true);
     // Mark good.crx for force-installation.
     pref.SetIndividualExtensionAutoInstalled(
         good_crx, "http://example.com/update_url", true);
@@ -3803,18 +3803,12 @@ TEST_F(ExtensionServiceTest, BlockAndUnblockPolicyExtension) {
   // Have policy force-install an extension.
   MockExternalProvider* provider =
       AddMockExternalProvider(ManifestLocation::kExternalPolicyDownload);
-  provider->UpdateOrAddExtension(
-      good_crx, "1.0.0.0", data_dir().AppendASCII("good_crx"));
+  provider->UpdateOrAddExtension(good_crx, "1.0.0.0",
+                                 data_dir().AppendASCII("good.crx"));
 
   // Reloading extensions should find our externally registered extension
   // and install it.
-  // WaitForExternalExtensionInstalled();
-  // Installation actually fails with
-  // "Package is invalid: 'CRX_FILE_NOT_READABLE'"
-  // Thus commenting out the call above.
-  // TODO(crbug.com/1378548): Test seems to be broken as it passes even though
-  // the extension never got installed in the first place. And maybe that was
-  // always the case?
+  WaitForExternalExtensionInstalled(good_crx);
 
   AssertExtensionBlocksAndUnblocks(false, good_crx);
 }
