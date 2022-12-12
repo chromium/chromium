@@ -12,9 +12,12 @@
 #include "content/browser/preloading/prefetch/prefetch_cookie_listener.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context.h"
+#include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
+#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
 #include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
@@ -209,12 +212,39 @@ void PrefetchContainer::SetOnCookieCopyCompleteCallback(
 void PrefetchContainer::TakeURLLoader(
     std::unique_ptr<network::SimpleURLLoader> loader) {
   DCHECK(!loader_);
+  DCHECK(!PrefetchUseStreamingURLLoader());
   loader_ = std::move(loader);
 }
 
 void PrefetchContainer::ResetURLLoader() {
   DCHECK(loader_);
+  DCHECK(!PrefetchUseStreamingURLLoader());
   loader_.reset();
+}
+
+void PrefetchContainer::TakeStreamingURLLoader(
+    std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader) {
+  DCHECK(!streaming_loader_);
+  DCHECK(PrefetchUseStreamingURLLoader());
+  streaming_loader_ = std::move(streaming_loader);
+}
+
+std::unique_ptr<PrefetchStreamingURLLoader>
+PrefetchContainer::ReleaseStreamingLoader() {
+  DCHECK(streaming_loader_);
+  DCHECK(PrefetchUseStreamingURLLoader());
+  return std::move(streaming_loader_);
+}
+
+void PrefetchContainer::ResetStreamingLoader() {
+  DCHECK(streaming_loader_);
+  DCHECK(PrefetchUseStreamingURLLoader());
+
+  // The streaming URL loader can be deleted in one of its callbacks, so instead
+  // of deleting it immediately, it is made self owned and then deletes itself.
+  PrefetchStreamingURLLoader* raw_streaming_loader = streaming_loader_.get();
+  raw_streaming_loader->MakeSelfOwnedAndDeleteSoon(
+      std::move(streaming_loader_));
 }
 
 void PrefetchContainer::OnPrefetchProbeResult(
@@ -243,10 +273,22 @@ void PrefetchContainer::OnPrefetchedResponseHeadReceived() {
 }
 
 void PrefetchContainer::OnPrefetchComplete() {
-  if (!loader_)
+  if (!loader_ && !streaming_loader_) {
     return;
-  UpdatePrefetchRequestMetrics(loader_->CompletionStatus(),
-                               loader_->ResponseInfo());
+  }
+
+  absl::optional<network::URLLoaderCompletionStatus> completion_status;
+  const network::mojom::URLResponseHead* head;
+  if (loader_) {
+    completion_status = loader_->CompletionStatus();
+    head = loader_->ResponseInfo();
+  } else if (streaming_loader_) {
+    completion_status = streaming_loader_->GetCompletionStatus();
+    head = streaming_loader_->GetHead();
+  }
+
+  UpdatePrefetchRequestMetrics(completion_status, head);
+  UpdateServingPageMetrics();
 }
 
 void PrefetchContainer::UpdatePrefetchRequestMetrics(
@@ -269,12 +311,20 @@ void PrefetchContainer::UpdatePrefetchRequestMetrics(
         completion_status->completion_time - head->load_timing.request_start;
 }
 
-bool PrefetchContainer::HasValidPrefetchedResponse(
+bool PrefetchContainer::IsPrefetchServable(
     base::TimeDelta cacheable_duration) const {
-  return prefetched_response_ != nullptr &&
-         prefetch_received_time_.has_value() &&
-         base::TimeTicks::Now() <
-             prefetch_received_time_.value() + cacheable_duration;
+  // Whether or not the response (either full or partial) from the streaming URL
+  // loader is servable.
+  bool streaming_loader_servable =
+      streaming_loader_ && streaming_loader_->Servable(cacheable_duration);
+
+  // Whether or not there is a valid response from the non-streaming URL loader.
+  bool valid_response =
+      prefetched_response_ != nullptr && prefetch_received_time_.has_value() &&
+      base::TimeTicks::Now() <
+          prefetch_received_time_.value() + cacheable_duration;
+
+  return streaming_loader_servable || valid_response;
 }
 
 void PrefetchContainer::TakePrefetchedResponse(
@@ -285,7 +335,6 @@ void PrefetchContainer::TakePrefetchedResponse(
   prefetch_received_time_ = base::TimeTicks::Now();
   prefetched_response_ = std::move(prefetched_response);
 
-  OnPrefetchedResponseHeadReceived();
   if (prefetch_document_manager_) {
     prefetch_document_manager_->OnPrefetchSuccessful();
   }
@@ -298,7 +347,35 @@ PrefetchContainer::ReleasePrefetchedResponse() {
 }
 
 const network::mojom::URLResponseHead* PrefetchContainer::GetHead() {
-  return prefetched_response_ ? prefetched_response_->GetHead() : nullptr;
+  if (prefetched_response_) {
+    return prefetched_response_->GetHead();
+  }
+
+  if (streaming_loader_) {
+    return streaming_loader_->GetHead();
+  }
+
+  return nullptr;
+}
+
+void PrefetchContainer::SetServingPageMetrics(
+    base::WeakPtr<PrefetchServingPageMetricsContainer>
+        serving_page_metrics_container) {
+  serving_page_metrics_container_ = serving_page_metrics_container;
+}
+
+void PrefetchContainer::UpdateServingPageMetrics() {
+  if (!serving_page_metrics_container_) {
+    return;
+  }
+
+  serving_page_metrics_container_->SetRequiredPrivatePrefetchProxy(
+      GetPrefetchType().IsProxyRequired());
+  serving_page_metrics_container_->SetPrefetchHeaderLatency(
+      GetPrefetchHeaderLatency());
+  if (HasPrefetchStatus()) {
+    serving_page_metrics_container_->SetPrefetchStatus(GetPrefetchStatus());
+  }
 }
 
 }  // namespace content

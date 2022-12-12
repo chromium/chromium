@@ -102,14 +102,9 @@ void PrefetchDocumentManager::DidStartNavigation(
   if (prefetch_iter->second->HasPrefetchBeenConsideredToServe())
     return;
 
-  serving_page_metrics_container->SetRequiredPrivatePrefetchProxy(
-      prefetch_iter->second->GetPrefetchType().IsProxyRequired());
-  serving_page_metrics_container->SetPrefetchHeaderLatency(
-      prefetch_iter->second->GetPrefetchHeaderLatency());
-  if (prefetch_iter->second->HasPrefetchStatus()) {
-    serving_page_metrics_container->SetPrefetchStatus(
-        prefetch_iter->second->GetPrefetchStatus());
-  }
+  prefetch_iter->second->SetServingPageMetrics(
+      serving_page_metrics_container->GetWeakPtr());
+  prefetch_iter->second->UpdateServingPageMetrics();
 
   // Inform |PrefetchService| of the navigation to the prefetch.
   // |navigation_handle->GetURL()| and |prefetched_iter->second->GetURL()|

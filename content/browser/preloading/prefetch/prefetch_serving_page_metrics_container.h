@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_SERVING_PAGE_METRICS_CONTAINER_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_SERVING_PAGE_METRICS_CONTAINER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/prefetch_metrics.h"
@@ -35,6 +36,10 @@ class PrefetchServingPageMetricsContainer
     return serving_page_metrics_;
   }
 
+  base::WeakPtr<PrefetchServingPageMetricsContainer> GetWeakPtr() {
+    return weak_method_factory_.GetWeakPtr();
+  }
+
  private:
   explicit PrefetchServingPageMetricsContainer(
       NavigationHandle& navigation_handle);
@@ -43,6 +48,9 @@ class PrefetchServingPageMetricsContainer
   // The metrics related to the prefetch being used for the page being navigated
   // to.
   PrefetchServingPageMetrics serving_page_metrics_;
+
+  base::WeakPtrFactory<PrefetchServingPageMetricsContainer>
+      weak_method_factory_{this};
 
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };

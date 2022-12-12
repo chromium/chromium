@@ -81137,6 +81137,22 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="4" label="success already prefetched"/>
 </enum>
 
+<enum name="PrefetchStreamingURLLoaderStatus">
+  <int value="0" label="Waiting to receive head of response"/>
+  <int value="1" label="Head received, waiting to receive body of response"/>
+  <int value="2" label="Redirected"/>
+  <int value="3" label="Request successful, but prefetch not served"/>
+  <int value="4" label="Request successful, prefech served after completion"/>
+  <int value="5" label="Request successful, prefech served before completion"/>
+  <int value="6" label="Prefetch was a decoy"/>
+  <int value="7" label="Request failed, invalid head"/>
+  <int value="8" label="Request failed, invalid headers"/>
+  <int value="9" label="Request failed, non-2XX response code"/>
+  <int value="10" label="Request failed, MIME type not supported"/>
+  <int value="11" label="Request failed, net error"/>
+  <int value="12" label="Request failed, net error, but served before error"/>
+</enum>
+
 <enum name="PrefHashStoreVersion">
   <int value="0" label="VERSION_UNINITIALIZED"/>
   <int value="1" label="VERSION_PRE_MIGRATION"/>

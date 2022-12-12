@@ -139,7 +139,7 @@ TEST_F(PrefetchContainerTest, IsDecoy) {
   EXPECT_TRUE(prefetch_container.IsDecoy());
 }
 
-TEST_F(PrefetchContainerTest, ValidResponse) {
+TEST_F(PrefetchContainerTest, Servable) {
   PrefetchContainer prefetch_container(
       GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
       PrefetchType(/*use_isolated_network_context=*/true,
@@ -153,8 +153,8 @@ TEST_F(PrefetchContainerTest, ValidResponse) {
 
   task_environment()->FastForwardBy(base::Minutes(2));
 
-  EXPECT_FALSE(prefetch_container.HasValidPrefetchedResponse(base::Minutes(1)));
-  EXPECT_TRUE(prefetch_container.HasValidPrefetchedResponse(base::Minutes(3)));
+  EXPECT_FALSE(prefetch_container.IsPrefetchServable(base::Minutes(1)));
+  EXPECT_TRUE(prefetch_container.IsPrefetchServable(base::Minutes(3)));
   EXPECT_TRUE(prefetch_container.GetHead());
 }
 

@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
+#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_status.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "net/cookies/canonical_cookie.h"
@@ -201,6 +202,21 @@ class CONTENT_EXPORT PrefetchService {
       const net::IsolationInfo& isolation_info,
       network::mojom::URLResponseHeadPtr head,
       std::unique_ptr<std::string> body);
+
+  // Called when the response for |prefetch_container| has started. Based on
+  // |head|, returns a status to inform the |PrefetchStreamingURLLoader| whether
+  // the prefetch is servable. If servable, then |kHeadReceivedWaitingOnBody|
+  // will be returned, otherwise a valid failure status is returned.
+  PrefetchStreamingURLLoaderStatus OnPrefetchResponseStarted(
+      base::WeakPtr<PrefetchContainer> prefetch_container,
+      network::mojom::URLResponseHead* head);
+
+  // Called when the response for |prefetch_container| has completed when using
+  // the streaming URL loader. Only used if |PrefetchUseStreamingURLLoader| is
+  // true.
+  void OnStreamingPrefetchResponseCompleted(
+      base::WeakPtr<PrefetchContainer> prefetch_container,
+      const network::URLLoaderCompletionStatus& completion_status);
 
   // Copies any cookies in the isolated network context associated with
   // |prefetch_container| to the default network context.

@@ -417,6 +417,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus"
+    units="PrefetchStreamingURLLoaderStatus" expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <summary>
+    Records the final status of the PrefetchStreamingURLLoader used to request
+    the prefetch.
+
+    This is recorded once for each prefetch that is requested using a streaming
+    URL loader. It is recorded when the streaming URL loader is deleted which
+    can be when: 1) the URL loader is canceled, 2) the URL loader completed
+    serving the prefetch, or 3) the prefetch was deleted and not used.
+  </summary>
+</histogram>
+
 <histogram name="PrefetchProxy.Prefetch.Subresources.NetError"
     enum="NetErrorCodes" expires_after="2023-04-25">
   <owner>curranmax@chromium.org</owner>

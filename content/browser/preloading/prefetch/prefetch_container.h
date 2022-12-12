@@ -33,6 +33,8 @@ class PrefetchCookieListener;
 class PrefetchDocumentManager;
 class PrefetchNetworkContext;
 class PrefetchService;
+class PrefetchServingPageMetricsContainer;
+class PrefetchStreamingURLLoader;
 class PrefetchedMainframeResponseContainer;
 class ProxyLookupClientImpl;
 
@@ -136,6 +138,17 @@ class CONTENT_EXPORT PrefetchContainer {
   network::SimpleURLLoader* GetLoader() { return loader_.get(); }
   void ResetURLLoader();
 
+  // The streaming URL loader used to make the network requests for this
+  // prefetch, and then serve the results. Only used if
+  // |PrefetchUseStreamingURLLoader| is true.
+  void TakeStreamingURLLoader(
+      std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader);
+  PrefetchStreamingURLLoader* GetStreamingLoader() {
+    return streaming_loader_.get();
+  }
+  std::unique_ptr<PrefetchStreamingURLLoader> ReleaseStreamingLoader();
+  void ResetStreamingLoader();
+
   // The |PrefetchDocumentManager| that requested |this|.
   PrefetchDocumentManager* GetPrefetchDocumentManager() const;
 
@@ -157,8 +170,8 @@ class CONTENT_EXPORT PrefetchContainer {
   // resource.
   void OnPrefetchComplete();
 
-  // Whether or not |this| has a prefetched response.
-  bool HasValidPrefetchedResponse(base::TimeDelta cacheable_duration) const;
+  // Whether or not |this| is servable.
+  bool IsPrefetchServable(base::TimeDelta cacheable_duration) const;
 
   // Called when |this| has received prefetched response's head.
   // Once this is called, we should be able to call GetHead() and receive a
@@ -185,6 +198,11 @@ class CONTENT_EXPORT PrefetchContainer {
   absl::optional<base::TimeDelta> GetPrefetchHeaderLatency() const {
     return header_latency_;
   }
+
+  // Allow for the serving page to metrics when changes to the prefetch occur.
+  void SetServingPageMetrics(base::WeakPtr<PrefetchServingPageMetricsContainer>
+                                 serving_page_metrics_container);
+  void UpdateServingPageMetrics();
 
   // Returns request id to be used by DevTools
   const std::string& RequestId() const { return request_id_; }
@@ -263,6 +281,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // The URL loader used to prefetch |url_|.
   std::unique_ptr<network::SimpleURLLoader> loader_;
 
+  // The streaming URL loader used to prefetch and serve |url_|. Only used if
+  // |PrefetchUseStreamingURLLoader| is true.
+  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader_;
+
   // The prefetched response for |url_|.
   std::unique_ptr<PrefetchedMainframeResponseContainer> prefetched_response_;
 
@@ -305,6 +327,11 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // A callback that runs once |cookie_copy_status_| is set to |kCompleted|.
   base::OnceClosure on_cookie_copy_complete_callback_;
+
+  // Reference to metrics related to the page that considered using this
+  // prefetch.
+  base::WeakPtr<PrefetchServingPageMetricsContainer>
+      serving_page_metrics_container_;
 
   // Request identifier used by DevTools
   std::string request_id_;

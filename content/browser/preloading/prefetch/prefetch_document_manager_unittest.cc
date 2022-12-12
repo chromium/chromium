@@ -159,6 +159,7 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
     auto response = std::make_unique<PrefetchedMainframeResponseContainer>(
         info, std::move(head), std::move(body));
     GetPrefetches()[0]->TakePrefetchedResponse(std::move(response));
+    GetPrefetches()[0]->OnPrefetchedResponseHeadReceived();
 
     const auto* urls_with_no_vary_search =
         helper.GetAllForUrlWithoutRefAndQueryForTesting(test_url);
@@ -199,6 +200,7 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
     auto response = std::make_unique<PrefetchedMainframeResponseContainer>(
         info, std::move(head), std::move(body));
     GetPrefetches().back()->TakePrefetchedResponse(std::move(response));
+    GetPrefetches().back()->OnPrefetchedResponseHeadReceived();
 
     const auto& helper = prefetch_document_manager->GetNoVarySearchHelper();
     const auto* urls_with_no_vary_search =
