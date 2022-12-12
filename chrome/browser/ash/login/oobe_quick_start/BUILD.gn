@@ -9,6 +9,7 @@ assert(is_chromeos_ash)
 source_set("oobe_quick_start") {
   deps = [
     "connectivity",
+    "logging",
     "//base",
     "//chrome/common:channel_info",
     "//chromeos/ash/components/attestation:attestation",
@@ -39,6 +40,7 @@ source_set("unit_tests") {
     ":oobe_quick_start",
     "connectivity:test_support",
     "connectivity:unit_tests",
+    "logging:unit_tests",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/attestation:test_support",
