@@ -101,36 +101,6 @@ absl::optional<String> ComputeInsetDifference(PhysicalRect reference_rect,
 
 // TODO(vmpstr): This could be optimized by caching values for individual layout
 // boxes. However, it's unclear when the cache should be cleared.
-PhysicalRect ComputeVisualOverflowRect(LayoutBoxModelObject& box) {
-  if (auto clip_path_bounds = ClipPathClipper::LocalClipPathBoundingBox(box)) {
-    // TODO(crbug.com/1326514): This is just the bounds of the clip-path, as
-    // opposed to the intersection between the clip-path and the border box
-    // bounds. This seems suboptimal, but that's the rect that we use further
-    // down the pipeline to generate the texture.
-    // TODO(khushalsagar): This doesn't account for CSS clip property.
-    return PhysicalRect::EnclosingRect(*clip_path_bounds);
-  }
-
-  PhysicalRect result;
-  for (auto* child = box.Layer()->FirstChild(); child;
-       child = child->NextSibling()) {
-    LayoutBoxModelObject& child_box = child->GetLayoutObject();
-    PhysicalRect overflow_rect = ComputeVisualOverflowRect(child_box);
-    child_box.MapToVisualRectInAncestorSpace(&box, overflow_rect);
-    result.Unite(overflow_rect);
-  }
-
-  // Clip self painting descendant overflow by the overflow clip rect, then
-  // add in the visual overflow from the own painting layer.
-  if (auto* layout_box = DynamicTo<LayoutBox>(&box);
-      layout_box && layout_box->ShouldClipOverflowAlongEitherAxis()) {
-    result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
-  }
-  result.Unite(box.PhysicalVisualOverflowRectIncludingFilters());
-
-  return result;
-}
-
 }  // namespace
 
 class ViewTransitionStyleTracker::ImageWrapperPseudoElement
@@ -1024,13 +994,13 @@ EffectPaintPropertyNode* ViewTransitionStyleTracker::GetRootEffect() const {
   return root_effect_node_.get();
 }
 
-bool ViewTransitionStyleTracker::IsSharedElement(Element* element) const {
+bool ViewTransitionStyleTracker::IsSharedElement(Node* node) const {
   // In stable states, we don't have shared elements.
   if (state_ == State::kIdle || state_ == State::kCaptured)
     return false;
 
   for (auto& entry : element_data_map_) {
-    if (entry.value->target_element == element)
+    if (entry.value->target_element == node)
       return true;
   }
   return false;
@@ -1468,6 +1438,65 @@ void ViewTransitionStyleTracker::ElementData::CacheGeometryState() {
     cached_container_properties = container_properties.back();
   cached_visual_overflow_rect_in_layout_space =
       visual_overflow_rect_in_layout_space;
+}
+
+PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
+    LayoutBoxModelObject& box,
+    LayoutBoxModelObject* ancestor) {
+  if (ancestor && IsSharedElement(box.GetNode())) {
+    return {};
+  }
+
+  if (auto clip_path_bounds = ClipPathClipper::LocalClipPathBoundingBox(box)) {
+    // TODO(crbug.com/1326514): This is just the bounds of the clip-path, as
+    // opposed to the intersection between the clip-path and the border box
+    // bounds. This seems suboptimal, but that's the rect that we use further
+    // down the pipeline to generate the texture.
+    // TODO(khushalsagar): This doesn't account for CSS clip property.
+    auto bounds = PhysicalRect::EnclosingRect(*clip_path_bounds);
+    if (ancestor) {
+      box.MapToVisualRectInAncestorSpace(ancestor, bounds, kUseGeometryMapper);
+    }
+    return bounds;
+  }
+
+  PhysicalRect result;
+  auto* paint_layer = box.Layer();
+  if (!box.ChildPaintBlockedByDisplayLock() &&
+      paint_layer->HasSelfPaintingLayerDescendant() &&
+      !paint_layer->KnownToClipSubtreeToPaddingBox()) {
+    PaintLayerPaintOrderIterator iterator(paint_layer, kAllChildren);
+    while (PaintLayer* child_layer = iterator.Next()) {
+      if (!child_layer->IsSelfPaintingLayer())
+        continue;
+      LayoutBoxModelObject& child_box = child_layer->GetLayoutObject();
+
+      PhysicalRect mapped_overflow_rect =
+          ComputeVisualOverflowRect(child_box, ancestor ? ancestor : &box);
+      result.Unite(mapped_overflow_rect);
+    }
+  }
+
+  if (ancestor) {
+    // For any recursive call, we instead map our overflow rect into the
+    // ancestor space and combine that with the result. GeometryMapper should
+    // take care of any filters and clips that are necessary between this box
+    // and the ancestor.
+    auto overflow_rect = box.PhysicalVisualOverflowRect();
+    box.MapToVisualRectInAncestorSpace(ancestor, overflow_rect,
+                                       kUseGeometryMapper);
+    result.Unite(overflow_rect);
+  } else {
+    // We're at the root of the recursion, so clip self painting descendant
+    // overflow by the overflow clip rect, then add in the visual overflow (with
+    // filters) from the own painting layer.
+    if (auto* layout_box = DynamicTo<LayoutBox>(&box);
+        layout_box && layout_box->ShouldClipOverflowAlongEitherAxis()) {
+      result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
+    }
+    result.Unite(box.PhysicalVisualOverflowRectIncludingFilters());
+  }
+  return result;
 }
 
 }  // namespace blink

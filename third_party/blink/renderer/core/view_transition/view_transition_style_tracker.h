@@ -140,7 +140,7 @@ class ViewTransitionStyleTracker
 
   int CapturedTagCount() const { return captured_name_count_; }
 
-  bool IsSharedElement(Element* element) const;
+  bool IsSharedElement(Node* node) const;
 
   // This function represents whether root itself is participating in the
   // transition (i.e. it has a name in the current phase). Note that we create
@@ -253,6 +253,12 @@ class ViewTransitionStyleTracker
   HashSet<AtomicString> AllRootTags() const;
 
   void InvalidateHitTestingCache();
+
+  // Computes the visual overflow rect for the given box. If the ancestor is
+  // specified, then the result is mapped to that ancestor space.
+  PhysicalRect ComputeVisualOverflowRect(
+      LayoutBoxModelObject& box,
+      LayoutBoxModelObject* ancestor = nullptr);
 
   Member<Document> document_;
 
