@@ -237,6 +237,6 @@ https://groups.google.com/a/chromium.org/d/msg/blink-dev/JBakhu5J6Qs/re2LkfEslTA
 [make_internal_runtime_flags.py]: <https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/build/scripts/make_internal_runtime_flags.py>
 [code_generator_v8.py]: <https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/bindings/scripts/code_generator_v8.py>
 [virtual/stable]: <https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/VirtualTestSuites;drc=9878f26d52d32871ed1c085444196e5453909eec;l=112>
-[content/child/runtime_features.cc]: <https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/common/features.cc>
+[content/child/runtime_features.cc]: <https://source.chromium.org/chromium/chromium/src/+/main:content/child/runtime_features.cc>
 [initialize blink features]: <https://chromium.googlesource.com/chromium/src/+/main/docs/initialize_blink_features.md>
 [controlled by chromium feature]: <https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/runtime_enabled_features.json5;drc=70bddadf50a14254072cf7ca0bcf83e4331a7d4f;l=833>
