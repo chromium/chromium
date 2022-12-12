@@ -542,13 +542,20 @@ void FloatController::OnMovingFloatedWindowToDesk(aura::Window* floated_window,
   target_desk->NotifyContentChanged();
 }
 
-void FloatController::OnTabletModeStarting() {
+void FloatController::OnTabletModeStarted() {
   DCHECK(!floated_window_info_map_.empty());
-  // Temporary vector here to avoid mutating the map while iterating it.
+  // If a window can still remain floated, update its bounds, otherwise unfloat
+  // it. Note that the bounds update has to happen after tablet mode has started
+  // as opposed to while it is still starting, since some windows change their
+  // minimum size, which tablet float bounds depend on.
   std::vector<aura::Window*> windows_need_reset;
   for (auto& [window, info] : floated_window_info_map_) {
-    if (!chromeos::wm::CanFloatWindow(window))
+    if (chromeos::wm::CanFloatWindow(window)) {
+      UpdateWindowBoundsForTablet(
+          window, WindowState::BoundsChangeAnimationType::kCrossFade);
+    } else {
       windows_need_reset.push_back(window);
+    }
   }
   for (auto* window : windows_need_reset)
     ResetFloatedWindow(window);

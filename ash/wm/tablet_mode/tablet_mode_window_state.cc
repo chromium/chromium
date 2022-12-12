@@ -476,6 +476,10 @@ void TabletModeWindowState::AttachState(WindowState* window_state,
   if (current_state_type_ != WindowStateType::kMaximized &&
       current_state_type_ != WindowStateType::kMinimized &&
       current_state_type_ != WindowStateType::kFullscreen &&
+      // Skip updating float here as the minimum size of the window may not be
+      // updated at this point and float tablet bounds depend on minimum size.
+      // It will get updated later in `FloatController::OnTabletModeStarted`.
+      current_state_type_ != WindowStateType::kFloated &&
       current_state_type_ != WindowStateType::kPinned &&
       current_state_type_ != WindowStateType::kTrustedPinned) {
     UpdateWindow(window_state, state_type_on_attach_, animate_bounds_on_attach_,

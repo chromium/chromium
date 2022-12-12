@@ -36,6 +36,7 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -727,7 +728,8 @@ TEST_F(WindowFloatMetricsTest, FloatWindowDuration) {
   histogram_tester_.ExpectBucketCount(kHistogramName, 3, 4);
 }
 
-class TabletWindowFloatTest : public WindowFloatTest {
+class TabletWindowFloatTest : public WindowFloatTest,
+                              public display::DisplayObserver {
  public:
   TabletWindowFloatTest() = default;
   TabletWindowFloatTest(const TabletWindowFloatTest&) = delete;
@@ -797,6 +799,12 @@ class TabletWindowFloatTest : public WindowFloatTest {
     }
   }
 
+  void SetOnTabletStateChangedCallback(
+      base::RepeatingCallback<void(display::TabletState)> callback) {
+    on_tablet_state_changed_callback_ = callback;
+    display_observer_.emplace(this);
+  }
+
   // WindowFloatTest:
   void SetUp() override {
     // This allows us to snap to the bottom in portrait mode.
@@ -804,6 +812,23 @@ class TabletWindowFloatTest : public WindowFloatTest {
         ::switches::kUseFirstDisplayAsInternal);
     WindowFloatTest::SetUp();
   }
+
+  void TearDown() override {
+    display_observer_.reset();
+    WindowFloatTest::TearDown();
+  }
+
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override {
+    on_tablet_state_changed_callback_.Run(state);
+  }
+
+ private:
+  // Called when the tablet state changes.
+  base::RepeatingCallback<void(display::TabletState)>
+      on_tablet_state_changed_callback_;
+
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
 };
 
 TEST_F(TabletWindowFloatTest, TabletClamshellTransition) {
@@ -870,6 +895,50 @@ TEST_F(TabletWindowFloatTest, TabletClamshellTransitionAnimation) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   EXPECT_TRUE(IsVisiblyAnimating(normal_window.get()));
   EXPECT_TRUE(IsVisiblyAnimating(floated_window.get()));
+}
+
+// Tests that the new minimum size is respected when entering tablet mode.
+// Regression test for b/261780362.
+TEST_F(TabletWindowFloatTest, MinimumSizeChangeOnTablet) {
+  UpdateDisplay("800x600");
+
+  // Create a window in clamshell mode without a minimum size, and larger than
+  // its tablet minimum size.
+  aura::test::TestWindowDelegate window_delegate;
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
+      &window_delegate, /*id=*/-1, gfx::Rect(500, 500)));
+  window->SetProperty(aura::client::kAppType,
+                      static_cast<int>(AppType::BROWSER));
+  wm::ActivateWindow(window.get());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+
+  // Set a minimum size for tablet that is floatable.
+  const gfx::Size tablet_minimum_size(300, 300);
+
+  // Change the minimum size when tablet mode is changed. This mimics the
+  // behaviour chrome windows have, when they switch to a more tap friendly mode
+  // with larger buttons, which results in a larger minimum size.
+  SetOnTabletStateChangedCallback(
+      base::BindLambdaForTesting([&](display::TabletState state) {
+        switch (state) {
+          case display::TabletState::kInTabletMode:
+            window_delegate.set_minimum_size(tablet_minimum_size);
+            return;
+          case display::TabletState::kInClamshellMode:
+            window_delegate.set_minimum_size(gfx::Size());
+            return;
+          case display::TabletState::kEnteringTabletMode:
+          case display::TabletState::kExitingTabletMode:
+            break;
+        }
+      }));
+
+  // Tests that on entering tablet mode, the window is sized to its minimum
+  // width.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+  EXPECT_EQ(tablet_minimum_size.width(), window->bounds().width());
 }
 
 // Tests that a window can be floated in tablet mode, unless its minimum width

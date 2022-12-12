@@ -114,7 +114,7 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
                                    aura::Window* target_root);
 
   // TabletModeObserver:
-  void OnTabletModeStarting() override;
+  void OnTabletModeStarted() override;
   void OnTabletModeEnding() override;
   void OnTabletControllerDestroyed() override;
 
