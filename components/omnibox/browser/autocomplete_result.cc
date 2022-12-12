@@ -42,6 +42,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -165,6 +166,8 @@ AutocompleteResult::AutocompleteResult() {
   // Reserve enough space for the maximum number of matches we'll show in either
   // on-focus or prefix-suggest mode.
   matches_.reserve(std::max(GetMaxMatches(), GetMaxMatches(true)));
+  // Add default static suggestion groups.
+  MergeSuggestionGroupsMap(omnibox::BuildDefaultGroups());
 }
 
 AutocompleteResult::~AutocompleteResult() = default;
@@ -392,11 +395,11 @@ void AutocompleteResult::SortAndCull(
   const size_t num_matches =
       CalculateNumMatches(is_zero_suggest, matches_, comparing_object);
 
-  if (!is_zero_suggest) {
+  // TODO(manukh): Limiting should be done by the grouping framework.
+  if (!is_zero_suggest)
     matches_.resize(num_matches);
-  }
 
-  // Group search suggestions above URL suggestions.
+    // Group search suggestions above URL suggestions.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (matches_.size() > 2 &&
       !base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
@@ -858,6 +861,7 @@ size_t AutocompleteResult::CalculateNumMatchesPerUrlCount(
 void AutocompleteResult::Reset() {
   matches_.clear();
   suggestion_groups_map_.clear();
+  MergeSuggestionGroupsMap(omnibox::BuildDefaultGroups());
 #if BUILDFLAG(IS_ANDROID)
   java_result_.Reset();
 #endif
@@ -1252,21 +1256,19 @@ void AutocompleteResult::GroupSuggestionsBySearchVsURL(iterator begin,
   if (begin == end)
     return;
 
-  base::ranges::stable_sort(
-      begin, end, [](int a, int b) { return a < b; },
-      [](const auto& m) {
-        if (AutocompleteMatch::IsStarterPackType(m.type))
-          return 0;
-        // Group history cluster suggestions with searches. If the
-        // `omnibox_history_cluster_provider_free_ranking` feature is disabled,
-        // they'll be pushed back to last position, and grouping here will have
-        // no effect.
-        if (m.type == AutocompleteMatchType::HISTORY_CLUSTER)
-          return 0;
-        if (AutocompleteMatch::IsSearchType(m.type))
-          return 1;
-        return 2;
-      });
+  base::ranges::stable_sort(begin, end, {}, [](const auto& m) {
+    if (AutocompleteMatch::IsStarterPackType(m.type))
+      return 0;
+    // Group history cluster suggestions with searches. If the
+    // `omnibox_history_cluster_provider_free_ranking` feature is disabled,
+    // they'll be pushed back to last position, and grouping here will have
+    // no effect.
+    if (m.type == AutocompleteMatchType::HISTORY_CLUSTER)
+      return 0;
+    if (AutocompleteMatch::IsSearchType(m.type))
+      return 1;
+    return 2;
+  });
 }
 
 // static

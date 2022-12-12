@@ -6,18 +6,25 @@
 
 #include "third_party/omnibox_proto/groups.pb.h"
 
+namespace {
+omnibox::GroupConfig CreateGroup(omnibox::GroupSection section) {
+  omnibox::GroupConfig group;
+  group.set_section(section);
+  return group;
+}
+}  // namespace
+
 namespace omnibox {
 
-omnibox::GroupConfigMap BuildDefaultGroups() {
-  omnibox::GroupConfigMap groups;
-  groups[omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX].set_section(
-      omnibox::SECTION_MOBILE_VERBATIM);
-  groups[omnibox::GROUP_MOBILE_MOST_VISITED].set_section(
-      omnibox::SECTION_MOBILE_MOST_VISITED);
-  groups[omnibox::GROUP_MOBILE_CLIPBOARD].set_section(
-      omnibox::SECTION_MOBILE_CLIPBOARD);
-  groups[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST].set_section(
-      omnibox::SECTION_PERSONALIZED_ZERO_SUGGEST);
+const omnibox::GroupConfigMap& BuildDefaultGroups() {
+  static omnibox::GroupConfigMap groups = {
+      // clang-format off
+      {omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX, CreateGroup(omnibox::SECTION_MOBILE_VERBATIM)},
+      {omnibox::GROUP_MOBILE_MOST_VISITED,         CreateGroup(omnibox::SECTION_MOBILE_MOST_VISITED)},
+      {omnibox::GROUP_MOBILE_CLIPBOARD,            CreateGroup(omnibox::SECTION_MOBILE_CLIPBOARD)},
+      {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST,   CreateGroup(omnibox::SECTION_PERSONALIZED_ZERO_SUGGEST)},
+      // clang-format on
+  };
   return groups;
 }
 

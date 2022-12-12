@@ -16,6 +16,7 @@
 #include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)

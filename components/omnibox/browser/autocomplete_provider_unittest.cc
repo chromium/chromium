@@ -56,7 +56,7 @@ const char16_t kTestTemplateURLKeyword[] = u"t";
 
 class TestingSchemeClassifier : public AutocompleteSchemeClassifier {
  public:
-  TestingSchemeClassifier() {}
+  TestingSchemeClassifier() = default;
   TestingSchemeClassifier(const TestingSchemeClassifier&) = delete;
   TestingSchemeClassifier& operator=(const TestingSchemeClassifier&) = delete;
 
@@ -309,7 +309,7 @@ ClassifyTest::ClassifyTest(const std::u16string& text,
                            ACMatchClassifications matches)
     : text_(text), text_is_query_(text_is_query), matches_(matches) {}
 
-ClassifyTest::~ClassifyTest() {}
+ClassifyTest::~ClassifyTest() = default;
 
 ACMatchClassifications ClassifyTest::RunTest(const std::u16string& find_text) {
   return AutocompleteProvider::ClassifyAllMatchesInString(
@@ -386,10 +386,6 @@ class AutocompleteProviderTest : public testing::Test {
   GURL GetDestinationURL(AutocompleteMatch& match,
                          base::TimeDelta query_formulation_time) const;
 
-  // Returns the image from the clipboard as it would be from
-  // AutocompleteController::GetImageFromClipboard().
-  absl::optional<gfx::Image> GetImageFromClipboard() const;
-
   void set_search_provider_field_trial_triggered_in_session(bool val) {
     controller_->search_provider_->set_field_trial_triggered_in_session(val);
   }
@@ -425,11 +421,11 @@ class AutocompleteProviderTest : public testing::Test {
   raw_ptr<MockAutocompleteProviderClient> client_;
   // Used to ensure that |client_| ownership has been passed to |controller_|
   // exactly once.
-  bool client_owned_;
+  bool client_owned_{};
 };
 
 AutocompleteProviderTest::AutocompleteProviderTest()
-    : client_(new MockAutocompleteProviderClient()), client_owned_(false) {
+    : client_(new MockAutocompleteProviderClient()) {
   client_->set_template_url_service(
       std::make_unique<TemplateURLService>(nullptr, 0));
 }

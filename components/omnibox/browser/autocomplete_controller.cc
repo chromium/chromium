@@ -930,10 +930,6 @@ void AutocompleteController::UpdateResult(
   AutocompleteResult old_matches_to_reuse;
   old_matches_to_reuse.Swap(&result_);
 
-  // Add default static suggestion groups.
-  static auto prebuilt_suggestion_groups_map = omnibox::BuildDefaultGroups();
-  result_.MergeSuggestionGroupsMap(prebuilt_suggestion_groups_map);
-
   for (const auto& provider : providers_) {
     if (!ShouldRunProvider(provider.get()))
       continue;
