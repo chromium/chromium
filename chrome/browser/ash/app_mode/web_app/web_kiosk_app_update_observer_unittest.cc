@@ -173,7 +173,7 @@ class WebKioskAppUpdateObserverTest : public BrowserWithTestWindowTest {
   }
 
   web_app::WebAppSyncBridge& sync_bridge() {
-    return web_app_provider()->sync_bridge();
+    return web_app_provider()->sync_bridge_unsafe();
   }
 
   const WebKioskAppData* app_data() {
