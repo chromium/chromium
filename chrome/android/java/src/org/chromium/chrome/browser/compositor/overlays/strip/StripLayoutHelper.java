@@ -1740,16 +1740,15 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return tab == mStripTabsVisuallyOrdered[mStripTabsVisuallyOrdered.length - 1];
     }
 
-    private void updateFolioTabAttachState(StripLayoutTab tab, boolean attached) {
-        finishAnimationsAndPushTabUpdates();
-
+    private void updateFolioTabAttachState(
+            StripLayoutTab tab, boolean attached, ArrayList<Animator> animationList) {
         float startValue =
                 attached ? FOLIO_DETACHED_BOTTOM_MARGIN_DP : FOLIO_ATTACHED_BOTTOM_MARGIN_DP;
         float intermediateValue = FOLIO_ANIM_INTERMEDIATE_MARGIN_DP;
         float endValue =
                 attached ? FOLIO_ATTACHED_BOTTOM_MARGIN_DP : FOLIO_DETACHED_BOTTOM_MARGIN_DP;
 
-        ArrayList<Animator> animationList = new ArrayList<>();
+        ArrayList<Animator> attachAnimationList = new ArrayList<>();
         CompositorAnimator dropAnimation = CompositorAnimator.ofFloatProperty(
                 mUpdateHost.getAnimationHandler(), tab, StripLayoutTab.BOTTOM_MARGIN, startValue,
                 intermediateValue, ANIM_FOLIO_DETACH_MS, Interpolators.EMPHASIZED_ACCELERATE);
@@ -1763,13 +1762,17 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 tab.setFolioAttached(attached);
             }
         });
-        animationList.add(dropAnimation);
-        animationList.add(riseAnimation);
+        attachAnimationList.add(dropAnimation);
+        attachAnimationList.add(riseAnimation);
 
         AnimatorSet set = new AnimatorSet();
-        set.playSequentially(animationList);
-        mRunningAnimator = set;
-        mRunningAnimator.start();
+        set.playSequentially(attachAnimationList);
+
+        if (animationList == null) {
+            set.end();
+        } else {
+            animationList.add(set);
+        }
     }
 
     @VisibleForTesting
@@ -1790,7 +1793,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     private void startReorderMode(long time, float currentX, float startX) {
-        if (mInReorderMode || mTabGroupMarginAnimRunning) return;
+        if (mInReorderMode) return;
         RecordUserAction.record("MobileToolbarStartReorderTab");
         // 1. Reset the last pressed close button state.
         if (mLastPressedCloseButton != null && mLastPressedCloseButton.isPressed()) {
@@ -1803,6 +1806,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (mInteractingTab == null || mInteractingTab.isDying()) return;
 
         // 3. Set initial state parameters.
+        finishAnimationsAndPushTabUpdates();
+        ArrayList<Animator> animationList =
+                mAnimationsDisabledForTesting ? null : new ArrayList<>();
         mLastReorderScrollTime = INVALID_TIME;
         mHoverStartTime = INVALID_TIME;
         mHoverStartOffset = 0;
@@ -1829,22 +1835,27 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     getExpandDuration());
         } else if (TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)) {
             Tab tab = getTabById(mInteractingTab.getId());
-            computeAndUpdateTabGroupMargins(true, true);
+            computeAndUpdateTabGroupMargins(true, animationList);
             setTabGroupDimmed(mTabGroupModelFilter.getRootId(tab), false);
             performHapticFeedback(tab);
         }
 
         // 7. Lift the TSR folio container off the toolbar.
         if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
-            updateFolioTabAttachState(mInteractingTab, false);
+            updateFolioTabAttachState(mInteractingTab, false, animationList);
         }
 
-        // 8. Request an update.
+        // 8. Kick-off animations and request an update.
+        if (animationList != null) {
+            startAnimationList(animationList, getTabGroupMarginAnimatorListener(false));
+        }
         mUpdateHost.requestUpdate();
     }
 
     private void stopReorderMode() {
         if (!mInReorderMode) return;
+        ArrayList<Animator> animationList = null;
+        if (!mAnimationsDisabledForTesting) animationList = new ArrayList<>();
 
         // 1. Reset the state variables.
         mReorderState = REORDER_SCROLL_NONE;
@@ -1852,24 +1863,30 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 2. Clear any drag offset.
         finishAnimationsAndPushTabUpdates();
-        mRunningAnimator = CompositorAnimator.ofFloatProperty(mUpdateHost.getAnimationHandler(),
-                mInteractingTab, StripLayoutTab.X_OFFSET, mInteractingTab.getOffsetX(), 0f,
-                ANIM_TAB_MOVE_MS);
-        mRunningAnimator.start();
+        if (animationList != null) {
+            animationList.add(CompositorAnimator.ofFloatProperty(mUpdateHost.getAnimationHandler(),
+                    mInteractingTab, StripLayoutTab.X_OFFSET, mInteractingTab.getOffsetX(), 0f,
+                    ANIM_TAB_MOVE_MS));
+        } else {
+            mInteractingTab.setOffsetX(0f);
+        }
 
         // 3. Un-dim the background tabs and fade-in the new tab & model selector buttons.
         setBackgroundTabsDimmed(false);
         setCompositorButtonsVisible(true);
 
         // 4. Clear any tab group margins if they are enabled.
-        if (TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)) resetTabGroupMargins();
+        if (TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)) {
+            resetTabGroupMargins(animationList);
+        }
 
         // 5. Reattach the TSR folio container to the toolbar.
         if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
-            updateFolioTabAttachState(mInteractingTab, true);
+            updateFolioTabAttachState(mInteractingTab, true, animationList);
         }
 
         // 6. Request an update.
+        startAnimationList(animationList, getTabGroupMarginAnimatorListener(true));
         mUpdateHost.requestUpdate();
     }
 
@@ -1885,10 +1902,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             StripLayoutTab tab, float trailingMargin, List<Animator> animationList) {
         if (tab.getTrailingMargin() != trailingMargin) {
             if (animationList != null) {
-                CompositorAnimator animator = CompositorAnimator.ofFloatProperty(
+                animationList.add(CompositorAnimator.ofFloatProperty(
                         mUpdateHost.getAnimationHandler(), tab, StripLayoutTab.TRAILING_MARGIN,
-                        tab.getTrailingMargin(), trailingMargin, ANIM_TAB_SLIDE_OUT_MS);
-                animationList.add(animator);
+                        tab.getTrailingMargin(), trailingMargin, ANIM_TAB_SLIDE_OUT_MS));
             } else {
                 tab.setTrailingMargin(trailingMargin);
             }
@@ -1921,10 +1937,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         if (animationList != null) {
-            CompositorAnimator scrollAnimator =
-                    CompositorAnimator.ofFloatProperty(mUpdateHost.getAnimationHandler(), this,
-                            SCROLL_OFFSET, startValue, endValue, ANIM_TAB_SLIDE_OUT_MS);
-            animationList.add(scrollAnimator);
+            animationList.add(CompositorAnimator.ofFloatProperty(mUpdateHost.getAnimationHandler(),
+                    this, SCROLL_OFFSET, startValue, endValue, ANIM_TAB_SLIDE_OUT_MS));
         } else {
             mScrollOffset = endValue;
         }
@@ -1945,10 +1959,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         };
     }
 
-    private void computeAndUpdateTabGroupMargins(boolean autoScroll, boolean animate) {
-        ArrayList<Animator> animationList = null;
-        if (animate && !mAnimationsDisabledForTesting) animationList = new ArrayList<>();
-
+    private void computeAndUpdateTabGroupMargins(
+            boolean autoScroll, ArrayList<Animator> animationList) {
         // 1. Update the trailing margins for each tab.
         boolean pastInteractingTab = false;
         int numMarginsToSlide = 0;
@@ -1993,17 +2005,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         // 4. Begin slide-out and scroll animation. Update tab positions.
-        if (animationList != null) {
-            startAnimationList(animationList, getTabGroupMarginAnimatorListener(false));
-        } else {
-            computeTabInitialPositions();
-        }
+        if (animationList == null) computeTabInitialPositions();
     }
 
-    private void resetTabGroupMargins() {
+    private void resetTabGroupMargins(ArrayList<Animator> animationList) {
         assert !mInReorderMode;
-        ArrayList<Animator> animationList = null;
-        if (!mAnimationsDisabledForTesting) animationList = new ArrayList<>();
 
         // 1. Update the trailing margins for each tab.
         boolean pastInteractingTab = false;
@@ -2021,9 +2027,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         autoScrollForTabGroupMargins(
                 -mStripStartMarginForReorder, numMarginsToSlide, animationList);
         mStripStartMarginForReorder = 0f;
-
-        // 3. Begin slide-out and scroll animation.
-        startAnimationList(animationList, getTabGroupMarginAnimatorListener(true));
     }
 
     private void setCompositorButtonsVisible(boolean visible) {
@@ -2271,7 +2274,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             float oldIdealX = mInteractingTab.getIdealX();
             float oldOffset = mScrollOffset;
             if (TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)) {
-                computeAndUpdateTabGroupMargins(false, false);
+                computeAndUpdateTabGroupMargins(false, null);
             }
 
             // 3.d. Since we just moved the tab we're dragging, adjust its offset so it stays in
