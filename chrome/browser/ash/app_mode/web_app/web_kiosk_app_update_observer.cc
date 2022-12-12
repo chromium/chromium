@@ -49,7 +49,7 @@ void WebKioskAppUpdateObserver::OnAppUpdate(const apps::AppUpdate& update) {
     return;
   }
 
-  if (web_app_provider_->registrar().IsPlaceholderApp(
+  if (web_app_provider_->registrar_unsafe().IsPlaceholderApp(
           update.AppId(), web_app::WebAppManagement::Type::kKiosk)) {
     SYSLOG(INFO) << "Ignoring web app update of placeholder app";
     return;

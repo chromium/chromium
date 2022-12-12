@@ -120,7 +120,7 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
                   /*manifest_id=*/absl::nullopt, start_url);
               // Uninstall placeholder if reinstall_placeholder is set to true.
               auto placeholder_id =
-                  web_app_provider()->registrar().LookupPlaceholderAppId(
+                  web_app_provider()->registrar_unsafe().LookupPlaceholderAppId(
                       install_url, web_app::WebAppManagement::Type::kKiosk);
               if (placeholder_id.has_value()) {
                 if (install_options.reinstall_placeholder) {
@@ -234,7 +234,7 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
   }
 
   web_app::WebAppRegistrar& app_registrar() {
-    return web_app_provider()->registrar();
+    return web_app_provider()->registrar_unsafe();
   }
 
   web_app::WebAppSyncBridge& sync_bridge() {
@@ -358,7 +358,7 @@ TEST_F(WebKioskAppServiceLauncherTest, PlaceholderReplaced) {
 
   set_install_placeholder(true);
   SetupAppData(/*installed=*/true);
-  EXPECT_TRUE(web_app_provider()->registrar().LookupPlaceholderAppId(
+  EXPECT_TRUE(web_app_provider()->registrar_unsafe().LookupPlaceholderAppId(
       GURL(kAppInstallUrl), web_app::WebAppManagement::Type::kKiosk));
 
   set_install_placeholder(false);
@@ -374,7 +374,7 @@ TEST_F(WebKioskAppServiceLauncherTest, PlaceholderReplaced) {
 
   EXPECT_EQ(app_data()->status(), WebKioskAppData::Status::kInstalled);
   EXPECT_EQ(app_data()->launch_url(), kAppLaunchUrl);
-  EXPECT_FALSE(web_app_provider()->registrar().LookupPlaceholderAppId(
+  EXPECT_FALSE(web_app_provider()->registrar_unsafe().LookupPlaceholderAppId(
       GURL(kAppInstallUrl), web_app::WebAppManagement::Type::kKiosk));
 
   // App isn't always ready by the time it's being launched. Therefore we check
