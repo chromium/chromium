@@ -399,4 +399,12 @@ void ChildProcessHostImpl::SetProfilingFile(base::File file) {
 }
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+// Notifies the child process of memory pressure level.
+void ChildProcessHostImpl::NotifyMemoryPressureToChildProcess(
+    base::MemoryPressureListener::MemoryPressureLevel level) {
+  child_process()->OnMemoryPressure(level);
+}
+#endif
+
 }  // namespace content

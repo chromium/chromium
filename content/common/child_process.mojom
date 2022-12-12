@@ -7,6 +7,7 @@ module content.mojom;
 import "ipc/ipc.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
+import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "services/tracing/public/mojom/background_tracing_agent.mojom";
 import "services/tracing/public/mojom/system_tracing_service.mojom";
 
@@ -117,4 +118,16 @@ interface ChildProcess {
   // directory once they log in.
   [EnableIf=is_chromeos_ash]
   ReinitializeLogging(LoggingSettings settings);
+
+  // Notifies a child process of current memory pressure level.
+  //
+  // OnMemoryPressure is called when the browser process receives OS's
+  // memory pressure signals, and also when the browser process triggers
+  // user-level memory pressure signals.
+  //
+  // This method is only for an experimental feature, and may be removed
+  // shortly. Other code should not use this method.
+  // See https://crbug.com/1393283 for details.
+  [EnableIf=is_android]
+  OnMemoryPressure(mojo_base.mojom.MemoryPressureLevel memory_pressure_level);
 };

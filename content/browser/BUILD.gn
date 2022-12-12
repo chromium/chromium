@@ -1284,6 +1284,8 @@ source_set("browser") {
     "media_session/media_session_service.cc",
     "memory/swap_metrics_driver_impl.cc",
     "memory/swap_metrics_driver_impl.h",
+    "memory_pressure/user_level_memory_pressure_signal_generator.cc",
+    "memory_pressure/user_level_memory_pressure_signal_generator.h",
     "message_port_provider.cc",
     "metrics/histogram_controller.cc",
     "metrics/histogram_controller.h",

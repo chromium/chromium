@@ -304,6 +304,9 @@ class PaintCanvasVideoRenderer;
 namespace memory_instrumentation {
 class OSMetrics;
 }
+namespace memory_pressure {
+class UserLevelMemoryPressureSignalGenerator;
+}
 namespace metrics {
 class AndroidMetricsServiceClient;
 class CleanExitBeacon;
@@ -589,6 +592,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class ios_web_view::WebViewBrowserState;
   friend class media::FileVideoCaptureDeviceFactory;
   friend class memory_instrumentation::OSMetrics;
+  friend class memory_pressure::UserLevelMemoryPressureSignalGenerator;
   friend class metrics::AndroidMetricsServiceClient;
   friend class metrics::CleanExitBeacon;
   friend class module_installer::ScopedAllowModulePakLoad;

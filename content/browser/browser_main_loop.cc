@@ -78,6 +78,7 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/media/media_internals.h"
 #include "content/browser/media/media_keys_listener_manager_impl.h"
+#include "content/browser/memory_pressure/user_level_memory_pressure_signal_generator.h"
 #include "content/browser/metrics/histogram_synchronizer.h"
 #include "content/browser/network/browser_online_state_observer.h"
 #include "content/browser/network_service_instance_impl.h"
@@ -754,6 +755,9 @@ int BrowserMainLoop::PreCreateThreads() {
   }
 
   InitializeMemoryManagementComponent();
+#if BUILDFLAG(IS_ANDROID)
+  memory_pressure::UserLevelMemoryPressureSignalGenerator::Initialize();
+#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Prior to any processing happening on the IO thread, we create the

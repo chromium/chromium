@@ -5385,4 +5385,11 @@ void RenderProcessHostImpl::SetOsSupportForAttributionReporting(
   GetRendererInterface()->SetOsSupportForAttributionReporting(os_support);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void RenderProcessHostImpl::NotifyMemoryPressureToRenderer(
+    base::MemoryPressureListener::MemoryPressureLevel level) {
+  child_process_->OnMemoryPressure(level);
+}
+#endif
+
 }  // namespace content

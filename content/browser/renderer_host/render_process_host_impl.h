@@ -81,6 +81,7 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/memory/memory_pressure_listener.h"
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
@@ -743,6 +744,12 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingRemote<network::mojom::URLLoaderFactory> original_factory)>;
   static void SetNetworkFactoryForTesting(
       const CreateNetworkFactoryCallback& url_loader_factory_callback);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Notifies the renderer process of memory pressure level.
+  void NotifyMemoryPressureToRenderer(
+      base::MemoryPressureListener::MemoryPressureLevel level);
+#endif
 
  protected:
   // A proxy for our IPC::Channel that lives on the IO thread.

@@ -421,6 +421,14 @@ class ChildThreadImpl::IOThreadState
   }
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel level) override {
+    // Forward the notification to the registry of MemoryPressureListeners.
+    base::MemoryPressureListener::NotifyMemoryPressure(level);
+  }
+#endif
+
   const scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
   const base::WeakPtr<ChildThreadImpl> weak_main_thread_;
   const base::RepeatingClosure quit_closure_;

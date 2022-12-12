@@ -1,0 +1,60 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CONTENT_BROWSER_MEMORY_PRESSURE_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_GENERATOR_H_
+#define CONTENT_BROWSER_MEMORY_PRESSURE_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_GENERATOR_H_
+
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/no_destructor.h"
+#include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class Process;
+class TimeDelta;
+}  // namespace base
+
+namespace memory_pressure {
+
+// Generates extra memory pressure signals (on top of the OS generated ones)
+// when the memory usage exceeds a threshold.
+class UserLevelMemoryPressureSignalGenerator {
+ public:
+  static void Initialize();
+
+ private:
+  friend class base::NoDestructor<UserLevelMemoryPressureSignalGenerator>;
+
+  // Singleton
+  static UserLevelMemoryPressureSignalGenerator& Get();
+
+  UserLevelMemoryPressureSignalGenerator();
+  ~UserLevelMemoryPressureSignalGenerator();
+
+  void Start(uint64_t memory_threshold,
+             base::TimeDelta measure_interval,
+             base::TimeDelta minimum_interval);
+  void OnTimerFired();
+
+  void StartPeriodicTimer(base::TimeDelta interval);
+
+  static void NotifyMemoryPressure();
+  static uint64_t GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
+
+  static absl::optional<uint64_t> GetPrivateFootprint(
+      const base::Process& process);
+
+  uint64_t memory_threshold_;
+  base::TimeDelta measure_interval_;
+  base::TimeDelta minimum_interval_;
+  base::OneShotTimer periodic_measuring_timer_;
+};
+
+}  // namespace memory_pressure
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#endif  // CONTENT_BROWSER_MEMORY_PRESSURE_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_GENERATOR_H_
