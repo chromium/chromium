@@ -892,9 +892,9 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     // just the number of codec reference frames, plus one to serve the video
     // destination.
     auxiliary_frame_pool_ = std::make_unique<PlatformVideoFramePool>();
-    // Use here |num_codec_reference_frames| + 1 to account for the frame being
-    // decoded.
-    const size_t num_pictures = num_codec_reference_frames + 1;
+    // Use here |num_codec_reference_frames| + 2: one to account for the frame
+    // being decoded and an extra one for the ImageProcessor.
+    const size_t num_pictures = num_codec_reference_frames + 2;
 
     VLOGF(1) << "Initializing auxiliary frame pool with up to " << num_pictures
              << " VideoFrames";
