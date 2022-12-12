@@ -55,7 +55,7 @@ class TestCheckFreeze(unittest.TestCase):
     return FakeOutputApi
 
   def test_before_freeze(self):
-    input_api = self.get_input_api(1639641599)  # 2021/12/15 23:59:59 -0800
+    input_api = self.get_input_api(PRESUBMIT._FREEZE_START - 1)
     output_api = self.get_output_api()
 
     errors = PRESUBMIT.CheckFreeze(input_api, output_api)
@@ -63,7 +63,7 @@ class TestCheckFreeze(unittest.TestCase):
     self.assertEqual(errors, [])
 
   def test_start_of_freeze(self):
-    input_api = self.get_input_api(1639641600)  # 2021/12/16 00:00:00 -0800
+    input_api = self.get_input_api(PRESUBMIT._FREEZE_START + 1)
     output_api = self.get_output_api()
 
     errors = PRESUBMIT.CheckFreeze(input_api, output_api)
@@ -73,7 +73,7 @@ class TestCheckFreeze(unittest.TestCase):
         errors[0].message.startswith('There is a prod freeze in effect'))
 
   def test_end_of_freeze(self):
-    input_api = self.get_input_api(1641196799)  # 2022/01/02 23:59:59 -0800
+    input_api = self.get_input_api(PRESUBMIT._FREEZE_END - 1)
     output_api = self.get_output_api()
 
     errors = PRESUBMIT.CheckFreeze(input_api, output_api)
@@ -83,7 +83,7 @@ class TestCheckFreeze(unittest.TestCase):
         errors[0].message.startswith('There is a prod freeze in effect'))
 
   def test_after_freeze(self):
-    input_api = self.get_input_api(1641196800)  # 2022/01/03 00:00:00 -0800')
+    input_api = self.get_input_api(PRESUBMIT._FREEZE_END + 1)
     output_api = self.get_output_api()
 
     errors = PRESUBMIT.CheckFreeze(input_api, output_api)
@@ -91,9 +91,8 @@ class TestCheckFreeze(unittest.TestCase):
     self.assertEqual(errors, [])
 
   def test_ignore_freeze(self):
-    input_api = self.get_input_api(
-        1639641600,  # 2021/12/16 00:00:00 -0800
-        footers={'Ignore-Freeze': 'testing'})
+    input_api = self.get_input_api(PRESUBMIT._FREEZE_START + 1,
+                                   footers={'Ignore-Freeze': 'testing'})
     output_api = self.get_output_api()
 
     errors = PRESUBMIT.CheckFreeze(input_api, output_api)
