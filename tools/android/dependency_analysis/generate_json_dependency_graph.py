@@ -13,7 +13,7 @@ import pathlib
 import subprocess
 import sys
 
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union
 
 import class_dependency
 import package_dependency
@@ -317,6 +317,11 @@ def main():
     arg_parser.add_argument('--all',
                             action='store_true',
                             help='Build and parse all known javac jars.')
+    arg_parser.add_argument('--skip-rebuild',
+                            action='store_true',
+                            help='Skip rebuilding, useful on bots where '
+                            'compile is a separate step right before running '
+                            'this script.')
     arg_parser.add_argument('-d',
                             '--checkout-dir',
                             default=_SRC_PATH,
@@ -368,18 +373,24 @@ def main():
         target_jars: JarTargetDict = parse_original_targets_and_jars(
             gn_desc_output, args.build_output_dir, cr_position)
 
-    # Always re-compile jars to have the most up-to-date jar files. This is
-    # especially important when running this script locally and testing out
-    # build changes that affect the dependency graph.
-    rel_jar_paths = [
-        p.relative_to(args.build_output_dir) for p in target_jars.values()
-    ]
-    logging.info(f'Re-building {len(rel_jar_paths)} jars for up-to-date deps. '
-                 'This may take a while the first time through. Use -v to see '
-                 'ninja progress.')
-    subprocess.run(['autoninja', '-C', args.build_output_dir] + rel_jar_paths,
-                   capture_output=not args.verbose,
-                   check=True)
+    if args.skip_rebuild:
+        logging.info(f'Skipping rebuilding jars.')
+    else:
+        # Always re-compile jars to have the most up-to-date jar files. This is
+        # especially important when running this script locally and testing out
+        # build changes that affect the dependency graph.
+        rel_jar_paths = [
+            p.relative_to(args.build_output_dir) for p in target_jars.values()
+        ]
+        logging.info(
+            f'Re-building {len(rel_jar_paths)} jars for up-to-date deps. '
+            'This may take a while the first time through. Use -v to see '
+            'ninja progress.')
+        subprocess.run([
+            subprocess_utils.resolve_autoninja(), '-C', args.build_output_dir
+        ] + rel_jar_paths,
+                       capture_output=not args.verbose,
+                       check=True)
 
     logging.info('Running jdeps...')
     # jdeps already has some parallelism

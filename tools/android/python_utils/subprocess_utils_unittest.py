@@ -9,10 +9,49 @@ import pathlib
 import subprocess
 import unittest
 
-import subprocess_utils
+import git_metadata_utils, subprocess_utils
 
 _COMMAND_PROCESS_ERROR_LOG_REGEX = (r'Command ".*" failed with code \d+\.'
                                     r'(\nSTDERR: .*)?(\nSTDOUT: .*)?')
+
+
+class TestResolveCommands(unittest.TestCase):
+    """Tests for util commands like resolve_{ninja,autoninja}."""
+
+    def setUp(self):
+        self.original_path = os.environ.get('PATH')
+
+    def tearDown(self):
+        if self.original_path is not None:
+            os.environ['PATH'] = self.original_path
+        else:
+            del os.environ['PATH']
+
+    def test_resolve_ninja_returns_command_if_in_path(self):
+        ninja_dir = str(git_metadata_utils.get_chromium_src_path() /
+                        'third_party/ninja')
+        os.environ['PATH'] = ninja_dir
+        self.assertEqual('ninja', subprocess_utils.resolve_ninja())
+
+    def test_resolve_ninja_returns_depot_path_if_not_in_path(self):
+        if 'PATH' in os.environ:
+            del os.environ['PATH']
+        ninja_path = str(git_metadata_utils.get_chromium_src_path() /
+                         'third_party/ninja/ninja')
+        self.assertEqual(ninja_path, subprocess_utils.resolve_ninja())
+
+    def test_resolve_autoninja_returns_command_if_in_path(self):
+        autoninja_dir = str(git_metadata_utils.get_chromium_src_path() /
+                            'third_party/depot_tools')
+        os.environ['PATH'] = autoninja_dir
+        self.assertEqual('autoninja', subprocess_utils.resolve_autoninja())
+
+    def test_resolve_autoninja_returns_depot_path_if_not_in_path(self):
+        if 'PATH' in os.environ:
+            del os.environ['PATH']
+        autoninja_path = str(git_metadata_utils.get_chromium_src_path() /
+                             'third_party/depot_tools/autoninja')
+        self.assertEqual(autoninja_path, subprocess_utils.resolve_autoninja())
 
 
 class TestRunCommand(unittest.TestCase):
