@@ -541,6 +541,28 @@ Request* Request::CreateRequestWithRequestOrString(
       return nullptr;
     }
 
+    // Check the permissions policy on `execution_context` as part of the
+    // "Should request be allowed to use feature?" algorithm
+    // (https://www.w3.org/TR/permissions-policy/#algo-should-request-be-allowed-to-use-feature).
+    // The check against request’s origin is done in `BrowsingTopicsURLLoader`
+    // that is able to cover redirects.
+    if (!execution_context->IsFeatureEnabled(
+            mojom::blink::PermissionsPolicyFeature::kBrowsingTopics)) {
+      exception_state.ThrowTypeError(
+          "The \"browsing-topics\" Permissions Policy denied the use of "
+          "fetch(<url>, {browsingTopics: true}).");
+      return nullptr;
+    }
+
+    if (!execution_context->IsFeatureEnabled(
+            mojom::blink::PermissionsPolicyFeature::
+                kBrowsingTopicsBackwardCompatible)) {
+      exception_state.ThrowTypeError(
+          "The \"interest-cohort\" Permissions Policy denied the use of "
+          "fetch(<url>, {browsingTopics: true}).");
+      return nullptr;
+    }
+
     request->SetBrowsingTopics(init->browsingTopics());
   }
 
