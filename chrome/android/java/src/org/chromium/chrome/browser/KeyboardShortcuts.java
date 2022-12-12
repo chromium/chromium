@@ -5,12 +5,9 @@
 package org.chromium.chrome.browser;
 
 import android.content.Context;
-import android.os.Build;
 import android.view.KeyEvent;
 import android.view.KeyboardShortcutGroup;
 import android.view.KeyboardShortcutInfo;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -121,7 +118,6 @@ public class KeyboardShortcuts {
      *            resource.
      * @return a list of shortcuts organized into groups.
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     public static List<KeyboardShortcutGroup> createShortcutGroup(Context context) {
         final int ctrlShift = KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON;
 
@@ -180,7 +176,6 @@ public class KeyboardShortcuts {
         return shortcutGroups;
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     private static void addShortcut(Context context, KeyboardShortcutGroup shortcutGroup, int resId,
             int keyCode, int keyModifier) {
         shortcutGroup.addItem(new KeyboardShortcutInfo(context.getString(resId), keyCode,

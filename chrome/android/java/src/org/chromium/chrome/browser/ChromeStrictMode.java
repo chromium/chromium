@@ -123,11 +123,10 @@ public class ChromeStrictMode {
             // Introduced in Q.
             vmPolicy.detectCredentialProtectedWhileLocked().detectImplicitDirectBoot();
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            // File URI leak detection, has false positives when file URI intents are passed between
-            // Chrome activities in separate processes. See http://crbug.com/508282#c11.
-            vmPolicy.detectFileUriExposure();
-        }
+
+        // File URI leak detection, has false positives when file URI intents are passed between
+        // Chrome activities in separate processes. See http://crbug.com/508282#c11.
+        vmPolicy.detectFileUriExposure();
     }
 
     private static void addDefaultThreadPenalties(StrictMode.ThreadPolicy.Builder threadPolicy) {
