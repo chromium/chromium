@@ -15,8 +15,6 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.provider.Settings;
-import android.provider.Settings.SettingNotFoundException;
 import android.view.Display;
 import android.view.Menu;
 import android.view.View;
@@ -54,8 +52,6 @@ import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
-
-import java.lang.reflect.Field;
 
 /**
  * An activity that talks with application and activity level delegates for async initialization.
@@ -803,33 +799,6 @@ public abstract class AsyncInitializationActivity
         mCurrentOrientation = getResources().getConfiguration().orientation;
 
         if (oldOrientation != mCurrentOrientation) onOrientationChange(mCurrentOrientation);
-    }
-
-    /**
-     * Removes the window background.
-     */
-    protected void removeWindowBackground() {
-        boolean removeWindowBackground = true;
-        try {
-            Field field = Settings.Secure.class.getField(
-                    "ACCESSIBILITY_DISPLAY_MAGNIFICATION_ENABLED");
-            field.setAccessible(true);
-
-            if (field.getType() == String.class) {
-                String accessibilityMagnificationSetting = (String) field.get(null);
-                // When Accessibility magnification is turned on, setting a null window
-                // background causes the overlaid android views to stretch when panning.
-                // (crbug/332994)
-                if (Settings.Secure.getInt(
-                        getContentResolver(), accessibilityMagnificationSetting) == 1) {
-                    removeWindowBackground = false;
-                }
-            }
-        } catch (SettingNotFoundException | NoSuchFieldException | IllegalAccessException
-                | IllegalArgumentException ignore) {
-            // Window background is removed if an exception occurs.
-        }
-        if (removeWindowBackground) getWindow().setBackgroundDrawable(null);
     }
 
     /**
