@@ -396,6 +396,9 @@ message DisplayStatus {
 
 // Data that can change over time, collected and reported every specific period
 // of time or when an event occur.
+// IMPORTANT: Do not add additional non-message fields (bool, int, string,
+// etc.) to `TelemetryData` -- they will be ignored by the server and not
+// written to the telemetry database.
 message TelemetryData {
   // Indicates whether the telemetry data was collected in response to an event.
   optional bool is_event_driven = 8;
@@ -533,6 +536,7 @@ message UsbTelemetry {
 
 // Indicates one of the following conditions occurred on the device, data
 // associated with the event will be reported as TelemetryData.
+// IMPORTANT: DO NOT add any additional fields to `EventData`.
 message EventData {
   optional MetricEventType type = 1;
 }
