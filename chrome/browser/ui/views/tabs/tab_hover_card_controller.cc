@@ -344,6 +344,12 @@ void TabHoverCardController::UpdateOrShowCard(
   if (update_type == TabSlotController::HoverCardUpdateType::kTabDataChanged) {
     DCHECK(IsHoverCardShowingForTab(tab));
     UpdateCardContent(tab);
+
+    // When a tab has been discarded, the thumbnail is moved to a new
+    // ThumbnailTabHelper so it must be observed again.
+    if (tab->data().is_tab_discarded)
+      MaybeStartThumbnailObservation(tab, /* is_initial_show */ false);
+
     slide_animator_->UpdateTargetBounds();
     return;
   }

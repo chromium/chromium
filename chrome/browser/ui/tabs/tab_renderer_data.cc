@@ -42,8 +42,10 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
   data.favicon = tab_ui_helper->GetFavicon().AsImageSkia();
   ThumbnailTabHelper* const thumbnail_tab_helper =
       ThumbnailTabHelper::FromWebContents(contents);
-  if (thumbnail_tab_helper)
+  if (thumbnail_tab_helper) {
     data.thumbnail = thumbnail_tab_helper->thumbnail();
+    data.is_tab_discarded = thumbnail_tab_helper->is_tab_discarded();
+  }
   data.network_state = TabNetworkStateForWebContents(contents);
   data.title = tab_ui_helper->GetTitle();
   data.visible_url = contents->GetVisibleURL();

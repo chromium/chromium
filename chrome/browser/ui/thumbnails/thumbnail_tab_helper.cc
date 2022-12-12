@@ -253,7 +253,9 @@ ThumbnailTabHelper::ThumbnailTabHelper(content::WebContents* contents)
               base::Unretained(this)))),
       thumbnail_(base::MakeRefCounted<ThumbnailImage>(
           state_.get(),
-          DiscardedTabThumbnailData::TakeThumbnailDataIfAvailable(contents))) {}
+          DiscardedTabThumbnailData::TakeThumbnailDataIfAvailable(contents))) {
+  is_tab_discarded_ = contents->WasDiscarded();
+}
 
 ThumbnailTabHelper::~ThumbnailTabHelper() {
   StopVideoCapture();
@@ -410,6 +412,11 @@ void ThumbnailTabHelper::AboutToBeDiscarded(
     content::WebContents* new_contents) {
   DiscardedTabThumbnailData::CreateForWebContents(new_contents,
                                                   thumbnail_->data());
+}
+
+void ThumbnailTabHelper::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  is_tab_discarded_ = false;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ThumbnailTabHelper);
