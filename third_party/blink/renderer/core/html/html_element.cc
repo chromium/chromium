@@ -1648,7 +1648,8 @@ const HTMLElement* NearestOpenAncestralPopoverRecursive(
   int position = -1;
   auto update = [&ancestor, &position, &popover_positions,
                  upper_bound](const HTMLElement* popover) {
-    if (popover && popover->popoverOpen() &&
+    DCHECK(popover);
+    if (popover->popoverOpen() &&
         popover->PopoverType() != PopoverValueType::kManual) {
       DCHECK(popover_positions.Contains(popover));
       int new_position = popover_positions.at(popover);
@@ -1660,8 +1661,9 @@ const HTMLElement* NearestOpenAncestralPopoverRecursive(
   };
   auto recurse_and_update = [&update, &popover_positions, upper_bound,
                              &anchors_to_popovers, &seen](const Node* node) {
-    update(NearestOpenAncestralPopoverRecursive(
-        node, popover_positions, anchors_to_popovers, upper_bound, seen));
+    if (auto* popover = NearestOpenAncestralPopoverRecursive(
+            node, popover_positions, anchors_to_popovers, upper_bound, seen))
+      update(popover);
   };
 
   if (auto* element = DynamicTo<HTMLElement>(node)) {
