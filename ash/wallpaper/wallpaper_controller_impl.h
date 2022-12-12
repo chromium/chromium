@@ -255,9 +255,6 @@ class ASH_EXPORT WallpaperControllerImpl
                           SetWallpaperCallback callback) override;
   void SetOnlineWallpaperIfExists(const OnlineWallpaperParams& params,
                                   SetWallpaperCallback callback) override;
-  void SetOnlineWallpaperFromData(const OnlineWallpaperParams& params,
-                                  const std::string& image_data,
-                                  SetWallpaperCallback callback) override;
   void SetGooglePhotosWallpaper(const GooglePhotosWallpaperParams& params,
                                 SetWallpaperCallback callback) override;
   void SetGooglePhotosDailyRefreshAlbumId(const AccountId& account_id,

@@ -139,22 +139,11 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // downloading the image if it is not on disk yet.
   // Sets wallpaper from the Chrome OS wallpaper picker. If the
   // wallpaper file corresponding to |url| already exists in local file system
-  // (i.e. |SetOnlineWallpaperFromData| was called earlier with the same |url|),
+  // (i.e. |SetOnlineWallpaper| was called earlier with the same |url|),
   // returns true and sets wallpaper for the user, otherwise returns false.
   // |params|: The parameters of the online wallpaper.
   // Responds with true if the wallpaper file exists in local file system.
   virtual void SetOnlineWallpaperIfExists(const OnlineWallpaperParams& params,
-                                          SetWallpaperCallback callback) = 0;
-
-  // Sets wallpaper from the Chrome OS wallpaper picker and saves the wallpaper
-  // to local file system. After this, |SetOnlineWallpaperIfExists| will return
-  // true for the same |params.url|, so that there's no need to provide
-  // |image_data| when the same wallpaper needs to be set again or for another
-  // user. |params|: The parameters of the online wallpaper.
-  // Responds with true if the wallpaper is set successfully (i.e. no decoding
-  // error etc.).
-  virtual void SetOnlineWallpaperFromData(const OnlineWallpaperParams& params,
-                                          const std::string& image_data,
                                           SetWallpaperCallback callback) = 0;
 
   // Sets the user's wallpaper to be the default wallpaper. Note: different user
@@ -285,7 +274,7 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   virtual void RemovePolicyWallpaper(const AccountId& account_id) = 0;
 
   // Returns the urls of the wallpapers that exist in local file system (i.e.
-  // |SetOnlineWallpaperFromData| was called earlier). The url is used as id
+  // |SetOnlineWallpaper| was called earlier). The url is used as id
   // to identify which wallpapers are available to be set offline.
   using GetOfflineWallpaperListCallback =
       base::OnceCallback<void(const std::vector<std::string>&)>;

@@ -98,9 +98,6 @@ class TestWallpaperController : public ash::WallpaperController {
                           SetWallpaperCallback callback) override;
   void SetOnlineWallpaperIfExists(const ash::OnlineWallpaperParams& params,
                                   SetWallpaperCallback callback) override;
-  void SetOnlineWallpaperFromData(const ash::OnlineWallpaperParams& params,
-                                  const std::string& image_data,
-                                  SetWallpaperCallback callback) override;
   void SetGooglePhotosWallpaper(const ash::GooglePhotosWallpaperParams& params,
                                 SetWallpaperCallback callback) override;
   void SetGooglePhotosDailyRefreshAlbumId(const AccountId& account_id,

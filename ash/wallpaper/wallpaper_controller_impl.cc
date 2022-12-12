@@ -1162,30 +1162,6 @@ void WallpaperControllerImpl::SetOnlineWallpaperIfExists(
   }
 }
 
-void WallpaperControllerImpl::SetOnlineWallpaperFromData(
-    const OnlineWallpaperParams& params,
-    const std::string& image_data,
-    SetWallpaperCallback callback) {
-  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted() ||
-      !CanSetUserWallpaper(params.account_id)) {
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
-  image_util::DecodeImageCallback decoded_callback =
-      base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
-                     weak_factory_.GetWeakPtr(), params, /*save_file=*/true,
-                     std::move(callback));
-  if (bypass_decode_for_testing_) {
-    std::move(decoded_callback)
-        .Run(CreateSolidColorWallpaper(kDefaultWallpaperColor));
-    return;
-  }
-  image_util::DecodeImageData(std::move(decoded_callback),
-                              data_decoder::mojom::ImageCodec::kDefault,
-                              image_data);
-}
-
 void WallpaperControllerImpl::SetGooglePhotosWallpaper(
     const GooglePhotosWallpaperParams& params,
     WallpaperController::SetWallpaperCallback callback) {

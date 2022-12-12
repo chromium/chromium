@@ -348,16 +348,6 @@ void WallpaperControllerClientImpl::SetOnlineWallpaperIfExists(
                                                     std::move(callback));
 }
 
-void WallpaperControllerClientImpl::SetOnlineWallpaperFromData(
-    const ash::OnlineWallpaperParams& params,
-    const std::string& image_data,
-    ash::WallpaperController::SetWallpaperCallback callback) {
-  if (!IsKnownUser(params.account_id))
-    return;
-  wallpaper_controller_->SetOnlineWallpaperFromData(params, image_data,
-                                                    std::move(callback));
-}
-
 void WallpaperControllerClientImpl::SetCustomizedDefaultWallpaperPaths(
     const base::FilePath& customized_default_small_path,
     const base::FilePath& customized_default_large_path) {

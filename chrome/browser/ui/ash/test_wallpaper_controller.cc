@@ -132,13 +132,6 @@ void TestWallpaperController::SetOnlineWallpaperIfExists(
   NOTIMPLEMENTED();
 }
 
-void TestWallpaperController::SetOnlineWallpaperFromData(
-    const ash::OnlineWallpaperParams& params,
-    const std::string& image_data,
-    SetWallpaperCallback callback) {
-  NOTIMPLEMENTED();
-}
-
 void TestWallpaperController::SetDefaultWallpaper(
     const AccountId& account_id,
     bool show_wallpaper,
