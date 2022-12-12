@@ -148,4 +148,9 @@ bool SkiaOutputSurfaceDependencyWebView::NeedsSupportForExternalStencil() {
   return true;
 }
 
+bool SkiaOutputSurfaceDependencyWebView::IsUsingCompositorGpuThread() {
+  // Webview never uses CompositorGpuThread aka DrDc thread.
+  return false;
+}
+
 }  // namespace android_webview

@@ -105,6 +105,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
   virtual base::TimeDelta GetGpuBlockedTimeSinceLastSwap() = 0;
   virtual bool NeedsSupportForExternalStencil() = 0;
 
+  // This returns true if CompositorGpuThread(aka DrDc thread) is enabled.
+  virtual bool IsUsingCompositorGpuThread() = 0;
+
   gpu::GrContextType gr_context_type() const {
     return GetGpuPreferences().gr_context_type;
   }

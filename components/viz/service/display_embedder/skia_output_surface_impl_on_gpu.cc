@@ -622,6 +622,16 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     return;
   }
 
+  // When CompositorGpuThread is disabled, this cleanup for gpu main
+  // thread context already happens in raster decoder and hence we do not want
+  // to do additional cleanup here on same context. That results in more skia
+  // reported memory on mac - crbug.com/1396279.
+  // When CompositorGpuThread is enabled, we want to do cleanup here for every
+  // render pass instead of once per frame as it results in less outstanding
+  // allocated memory.
+  if (dependency_->IsUsingCompositorGpuThread())
+    dependency_->ScheduleGrContextCleanup();
+
   // Only overlayed images require end_semaphore synchronization.
   DCHECK(is_overlay || end_semaphores.empty());
 

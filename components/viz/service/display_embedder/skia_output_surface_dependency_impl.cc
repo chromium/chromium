@@ -161,4 +161,8 @@ bool SkiaOutputSurfaceDependencyImpl::NeedsSupportForExternalStencil() {
   return false;
 }
 
+bool SkiaOutputSurfaceDependencyImpl::IsUsingCompositorGpuThread() {
+  return !!gpu_service_impl_->compositor_gpu_thread();
+}
+
 }  // namespace viz
