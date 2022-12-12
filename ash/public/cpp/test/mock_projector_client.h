@@ -28,6 +28,8 @@ class MockProjectorClient : public ProjectorClient,
   ~MockProjectorClient() override;
 
   // ProjectorClient:
+  MOCK_CONST_METHOD0(GetSpeechRecognitionAvailability,
+                     SpeechRecognitionAvailability());
   MOCK_METHOD0(StartSpeechRecognition, void());
   MOCK_METHOD0(StopSpeechRecognition, void());
   bool GetBaseStoragePath(base::FilePath* result) const override;

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/projector/speech_recognition_availability.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/speech/speech_recognizer.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
@@ -29,9 +30,15 @@ class SpeechRecognitionRecognizerClientImpl
     : public SpeechRecognizer,
       public media::mojom::SpeechRecognitionRecognizerClient {
  public:
-  // Returns true if on-device speech recognition is available and installed
-  // on-device for the given language (BCP-47 format, e.g. "en-US").
-  static bool IsOnDeviceSpeechRecognizerAvailable(const std::string& language);
+  // Returns the availability of on-device speech recognition for the given
+  // language (BCP-47 format, e.g. "en-US").
+  static ash::SpeechRecognitionAvailability
+  GetOnDeviceSpeechRecognitionAvailability(const std::string& language);
+
+  // Returns the availability of server-based speech recognition for the given
+  // language.
+  static ash::SpeechRecognitionAvailability
+  GetServerBasedRecognitionAvailability(const std::string& language);
 
   SpeechRecognitionRecognizerClientImpl(
       const base::WeakPtr<SpeechRecognizerDelegate>& delegate,

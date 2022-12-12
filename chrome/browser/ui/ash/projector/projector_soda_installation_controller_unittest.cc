@@ -15,6 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/speech/speech_recognition_recognizer_client_impl.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -62,7 +63,8 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
             features::kOnDeviceSpeechRecognition,
             features::kProjector,
         },
-        {});
+        {features::kInternalServerSideSpeechRecognition,
+         features::kForceEnableServerSideSpeechRecognitionForDev});
   }
   ProjectorSodaInstallationControllerTest(
       const ProjectorSodaInstallationControllerTest&) = delete;
@@ -83,6 +85,15 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
             testing::Return(std::vector<std::string>({kEnglishLocale})));
 
     mock_client_ = std::make_unique<MockProjectorClient>();
+
+    ON_CALL(*mock_client_, GetSpeechRecognitionAvailability)
+        .WillByDefault(
+            testing::Invoke([&]() -> ash::SpeechRecognitionAvailability {
+              return SpeechRecognitionRecognizerClientImpl::
+                  GetOnDeviceSpeechRecognitionAvailability(
+                      g_browser_process->GetApplicationLocale());
+            }));
+
     projector_controller().SetClient(mock_client_.get());
     mock_app_client_ = std::make_unique<MockAppClient>();
 

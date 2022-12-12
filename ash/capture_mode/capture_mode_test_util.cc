@@ -13,6 +13,7 @@
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/public/cpp/projector/projector_session.h"
+#include "ash/public/cpp/projector/speech_recognition_availability.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/wm/cursor_manager_chromeos.h"
@@ -193,8 +194,9 @@ void ProjectorCaptureModeIntegrationHelper::SetUp() {
           []() { ProjectorController::Get()->OnSpeechRecognitionStopped(); }));
 
   // Simulate the availability of speech recognition.
-  projector_controller->OnSpeechRecognitionAvailabilityChanged(
-      SpeechRecognitionAvailability::kAvailable);
+  ON_CALL(projector_client_, GetSpeechRecognitionAvailability)
+      .WillByDefault(
+          testing::Return(SpeechRecognitionAvailability::kSodaAvailable));
   EXPECT_CALL(projector_client_, IsDriveFsMounted())
       .WillRepeatedly(testing::Return(true));
 }

@@ -16,6 +16,7 @@ class FilePath;
 namespace ash {
 
 struct NewScreencastPrecondition;
+enum class SpeechRecognitionAvailability;
 
 // Creates interface to access Browser side functionalities for the
 // ProjectorControllerImpl.
@@ -28,6 +29,8 @@ class ASH_PUBLIC_EXPORT ProjectorClient {
   ProjectorClient& operator=(const ProjectorClient&) = delete;
   virtual ~ProjectorClient();
 
+  virtual SpeechRecognitionAvailability GetSpeechRecognitionAvailability()
+      const = 0;
   virtual void StartSpeechRecognition() = 0;
   virtual void StopSpeechRecognition() = 0;
   // Returns false if base storage path is not available. Normally the base path

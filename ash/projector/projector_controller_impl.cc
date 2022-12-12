@@ -16,12 +16,12 @@
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/public/cpp/projector/projector_session.h"
+#include "ash/public/cpp/projector/speech_recognition_availability.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
@@ -32,7 +32,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
-#include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/gfx/image/image.h"
 
 namespace ash {
@@ -82,30 +81,6 @@ bool SaveFile(scoped_refptr<base::RefCountedMemory> data,
 scoped_refptr<base::RefCountedMemory> EncodeImage(
     const gfx::ImageSkia& image_skia) {
   return gfx::Image(image_skia).As1xPNGBytes();
-}
-
-// TODO(b/245613717): Move this to ServerBasedRecognitionRecognizerClient.
-bool IsServerBasedRecognizerAvailable(const std::string& language_or_locale) {
-  if (!ash::features::IsInternalServerSideSpeechRecognitionEnabled()) {
-    return false;
-  }
-
-  static constexpr auto kSupportedLocales =
-      base::MakeFixedFlatSet<base::StringPiece>(
-          {"ar-x-maghrebi", "cmn-hant-tw", "cs-cz", "da-dk", "de-de", "en-au",
-           "en-gb",         "en-in",       "en-us", "es-es", "es-us", "fi-fi",
-           "fr-fr",         "hi-in",       "id-id", "it-it", "ja-jp", "ko-kr",
-           "nl-nl",         "pt-br",       "ru-ru", "sv-se", "tr-tr", "vi-vn"});
-
-  // The locals that we get come from ui/base/l10n/l10n_util.cc and can
-  // therefore just be language names.
-  static constexpr auto kDefaultLanguages =
-      base::MakeFixedFlatSet<base::StringPiece>(
-          {"cs", "da", "de", "en", "es", "fi", "fr", "hi", "id", "it", "ja",
-           "ko", "nl", "pt", "ru", "sv", "tr", "vi"});
-
-  return kSupportedLocales.contains(base::ToLowerASCII(language_or_locale)) ||
-         kDefaultLanguages.contains(base::ToLowerASCII(language_or_locale));
 }
 
 }  // namespace
@@ -181,15 +156,9 @@ void ProjectorControllerImpl::SetClient(ProjectorClient* client) {
   client_ = client;
 }
 
-void ProjectorControllerImpl::OnSpeechRecognitionAvailabilityChanged(
-    SpeechRecognitionAvailability availability) {
+void ProjectorControllerImpl::OnSpeechRecognitionAvailabilityChanged() {
   if (ProjectorController::AreExtendedProjectorFeaturesDisabled())
     return;
-
-  if (availability == on_device_speech_recognition_availability_)
-    return;
-
-  on_device_speech_recognition_availability_ = availability;
 
   OnNewScreencastPreconditionChanged();
 }
@@ -233,54 +202,45 @@ ProjectorControllerImpl::GetNewScreencastPrecondition() const {
   // For development purposes on the x11 simulator, on-device speech recognition
   // and DriveFS are not supported.
   if (!ProjectorController::AreExtendedProjectorFeaturesDisabled()) {
-    // TODO(b/245613717): Use the appropriate fallback mechanism for using
-    // server based recognizer vs on-device based recognizer.
-    if (ash::features::ShouldForceEnableServerSideSpeechRecognitionForDev()) {
-      auto locale = icu::Locale::getDefault();
-      if (IsServerBasedRecognizerAvailable(locale.getLanguage())) {
+    switch (client_->GetSpeechRecognitionAvailability()) {
+      case SpeechRecognitionAvailability::kSodaAvailable:
+        result.state = NewScreencastPreconditionState::kEnabled;
+        result.reasons = {NewScreencastPreconditionReason::kEnabledBySoda};
+        break;
+      case SpeechRecognitionAvailability::kServerBasedRecognitionAvailable:
         result.state = NewScreencastPreconditionState::kEnabled;
         result.reasons = {NewScreencastPreconditionReason::
                               kEnabledByServerSideSpeechRecognition};
-      } else {
+        break;
+      case SpeechRecognitionAvailability::kSodaNotAvailable:
+        result.state = NewScreencastPreconditionState::kDisabled;
+        result.reasons = {NewScreencastPreconditionReason::
+                              kOnDeviceSpeechRecognitionNotSupported};
+        return result;
+      case SpeechRecognitionAvailability::kUserLanguageNotAvailable:
         result.state = NewScreencastPreconditionState::kDisabled;
         result.reasons = {
             NewScreencastPreconditionReason::kUserLocaleNotSupported};
         return result;
-      }
-    } else {
-      switch (on_device_speech_recognition_availability_) {
-        case SpeechRecognitionAvailability::
-            kOnDeviceSpeechRecognitionNotSupported:
-          result.state = NewScreencastPreconditionState::kDisabled;
-          result.reasons = {NewScreencastPreconditionReason::
-                                kOnDeviceSpeechRecognitionNotSupported};
-          return result;
-        case SpeechRecognitionAvailability::kUserLanguageNotSupported:
-          result.state = NewScreencastPreconditionState::kDisabled;
-          result.reasons = {
-              NewScreencastPreconditionReason::kUserLocaleNotSupported};
-          return result;
 
-        // We will attempt to install SODA.
-        case SpeechRecognitionAvailability::kSodaNotInstalled:
-        case SpeechRecognitionAvailability::kSodaInstalling:
-          result.state = NewScreencastPreconditionState::kDisabled;
-          result.reasons = {
-              NewScreencastPreconditionReason::kSodaDownloadInProgress};
-          return result;
-        case SpeechRecognitionAvailability::kSodaInstallationErrorUnspecified:
-          result.state = NewScreencastPreconditionState::kDisabled;
-          result.reasons = {NewScreencastPreconditionReason::
-                                kSodaInstallationErrorUnspecified};
-          return result;
-        case SpeechRecognitionAvailability::kSodaInstallationErrorNeedsReboot:
-          result.state = NewScreencastPreconditionState::kDisabled;
-          result.reasons = {NewScreencastPreconditionReason::
-                                kSodaInstallationErrorNeedsReboot};
-          return result;
-        case SpeechRecognitionAvailability::kAvailable:
-          break;
-      }
+      // We will attempt to install SODA.
+      case SpeechRecognitionAvailability::kSodaNotInstalled:
+      case SpeechRecognitionAvailability::kSodaInstalling:
+        result.state = NewScreencastPreconditionState::kDisabled;
+        result.reasons = {
+            NewScreencastPreconditionReason::kSodaDownloadInProgress};
+        return result;
+      case SpeechRecognitionAvailability::kServerBasedRecognitionNotAvailable:
+      case SpeechRecognitionAvailability::kSodaInstallationErrorUnspecified:
+        result.state = NewScreencastPreconditionState::kDisabled;
+        result.reasons = {
+            NewScreencastPreconditionReason::kSodaInstallationErrorUnspecified};
+        return result;
+      case SpeechRecognitionAvailability::kSodaInstallationErrorNeedsReboot:
+        result.state = NewScreencastPreconditionState::kDisabled;
+        result.reasons = {
+            NewScreencastPreconditionReason::kSodaInstallationErrorNeedsReboot};
+        return result;
     }
 
     if (!client_->IsDriveFsMounted()) {
@@ -496,9 +456,8 @@ void ProjectorControllerImpl::StartSpeechRecognition() {
   if (ProjectorController::AreExtendedProjectorFeaturesDisabled() || !client_)
     return;
 
-  DCHECK(on_device_speech_recognition_availability_ ==
-             SpeechRecognitionAvailability::kAvailable ||
-         ash::features::ShouldForceEnableServerSideSpeechRecognitionForDev());
+  DCHECK(ProjectorController::IsRecognitionAvailable(
+      client_->GetSpeechRecognitionAvailability()));
 
   DCHECK(!is_speech_recognition_on_);
   client_->StartSpeechRecognition();
@@ -511,9 +470,10 @@ void ProjectorControllerImpl::MaybeStopSpeechRecognition() {
     OnSpeechRecognitionStopped();
     return;
   }
-  DCHECK(on_device_speech_recognition_availability_ ==
-             SpeechRecognitionAvailability::kAvailable ||
-         ash::features::ShouldForceEnableServerSideSpeechRecognitionForDev());
+
+  DCHECK(ProjectorController::IsRecognitionAvailable(
+      client_->GetSpeechRecognitionAvailability()));
+
   client_->StopSpeechRecognition();
   is_speech_recognition_on_ = false;
 }

@@ -14,6 +14,7 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "ash/webui/projector_app/test/mock_app_client.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
@@ -29,6 +30,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
 namespace ash {
 
 namespace {
@@ -36,8 +38,7 @@ namespace {
 const char kFirstSpeechResult[] = "the brown fox";
 const char kSecondSpeechResult[] = "the brown fox jumped over the lazy dog";
 
-const char kEnglishLocale[] = "en-US";
-
+const char kEnglishUS[] = "en-US";
 inline void SetLocale(const std::string& locale) {
   g_browser_process->SetApplicationLocale(locale);
 }
@@ -76,14 +77,22 @@ class MockLocaleUpdateController : public ash::LocaleUpdateController {
   MOCK_METHOD1(RemoveObserver, void(ash::LocaleChangeObserver*));
 };
 
+struct ProjectorClientTestScenario {
+  const std::vector<base::test::FeatureRef> enabled_features;
+  const std::vector<base::test::FeatureRef> disabled_features;
+
+  ProjectorClientTestScenario(
+      const std::vector<base::test::FeatureRef>& enabled,
+      const std::vector<base::test::FeatureRef>& disabled)
+      : enabled_features(enabled), disabled_features(disabled) {}
+};
+
 }  // namespace
 
-class ProjectorClientImplUnitTest : public testing::Test {
+class ProjectorClientImplUnitTest
+    : public testing::TestWithParam<ProjectorClientTestScenario> {
  public:
-  ProjectorClientImplUnitTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kProjector, features::kOnDeviceSpeechRecognition}, {});
-  }
+  ProjectorClientImplUnitTest() = default;
 
   ProjectorClientImplUnitTest(const ProjectorClientImplUnitTest&) = delete;
   ProjectorClientImplUnitTest& operator=(const ProjectorClientImplUnitTest&) =
@@ -98,9 +107,11 @@ class ProjectorClientImplUnitTest : public testing::Test {
 
   ProjectorClient* client() { return projector_client_.get(); }
 
-  // testing::Test:
   void SetUp() override {
-    testing::Test::SetUp();
+    const auto& parameter = GetParam();
+    scoped_feature_list_.InitWithFeatures(parameter.enabled_features,
+                                          parameter.disabled_features);
+
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     testing_profile_ = ProfileManager::GetPrimaryUserProfile();
     ASSERT_TRUE(testing_profile_);
@@ -111,8 +122,10 @@ class ProjectorClientImplUnitTest : public testing::Test {
             base::BindRepeating(&ProjectorClientImplUnitTest::
                                     CreateTestSpeechRecognitionService,
                                 base::Unretained(this)));
-    SetLocale(kEnglishLocale);
+    SetLocale(kEnglishUS);
     soda_installer_ = std::make_unique<MockSodaInstaller>();
+    ON_CALL(*soda_installer_, GetAvailableLanguages)
+        .WillByDefault(testing::Return(std::vector<std::string>({kEnglishUS})));
     soda_installer_->NotifySodaInstalledForTesting();
     soda_installer_->NotifySodaInstalledForTesting(speech::LanguageCode::kEnUs);
     mock_app_client_ = std::make_unique<MockAppClient>();
@@ -169,7 +182,7 @@ class ProjectorClientImplUnitTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ProjectorClientImplUnitTest, SpeechRecognitionResults) {
+TEST_P(ProjectorClientImplUnitTest, SpeechRecognitionResults) {
   client()->StartSpeechRecognition();
   fake_service_->WaitForRecognitionStarted();
 
@@ -186,5 +199,64 @@ TEST_F(ProjectorClientImplUnitTest, SpeechRecognitionResults) {
   EXPECT_CALL(projector_controller(), OnTranscriptionError());
   SendTranscriptionError();
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+namespace {
+
+const char kFrench[] = "fr";
+const char kUnsupportedLanguage[] = "am";
+
+}  // namespace
+
+TEST_P(ProjectorClientImplUnitTest, SpeechRecognitionAvailability) {
+  const bool force_enable_server_based =
+      features::ShouldForceEnableServerSideSpeechRecognitionForDev();
+  const bool server_based_available =
+      features::IsInternalServerSideSpeechRecognitionEnabled();
+
+  SetLocale(kFrench);
+  if (server_based_available) {
+    EXPECT_EQ(
+        projector_client_->GetSpeechRecognitionAvailability(),
+        ash::SpeechRecognitionAvailability::kServerBasedRecognitionAvailable);
+  } else {
+    EXPECT_EQ(projector_client_->GetSpeechRecognitionAvailability(),
+              ash::SpeechRecognitionAvailability::kUserLanguageNotAvailable);
+  }
+
+  SetLocale(kEnglishUS);
+  if (force_enable_server_based && server_based_available) {
+    EXPECT_EQ(
+        projector_client_->GetSpeechRecognitionAvailability(),
+        ash::SpeechRecognitionAvailability::kServerBasedRecognitionAvailable);
+  } else {
+    EXPECT_EQ(projector_client_->GetSpeechRecognitionAvailability(),
+              ash::SpeechRecognitionAvailability::kSodaAvailable);
+  }
+
+  SetLocale(kUnsupportedLanguage);
+  EXPECT_EQ(projector_client_->GetSpeechRecognitionAvailability(),
+            ash::SpeechRecognitionAvailability::kUserLanguageNotAvailable);
+}
+
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+INSTANTIATE_TEST_SUITE_P(
+    ProjectorClientTestScenarios,
+    ProjectorClientImplUnitTest,
+    ::testing::Values(
+        ProjectorClientTestScenario({features::kProjector,
+                                     features::kOnDeviceSpeechRecognition},
+                                    {}),
+        ProjectorClientTestScenario(
+            {features::kProjector, features::kOnDeviceSpeechRecognition,
+             features::kForceEnableServerSideSpeechRecognitionForDev},
+            {}),
+        ProjectorClientTestScenario(
+            {features::kProjector,
+             features::kInternalServerSideSpeechRecognition,
+             features::kOnDeviceSpeechRecognition},
+            {features::kForceEnableServerSideSpeechRecognitionForDev})));
 
 }  // namespace ash

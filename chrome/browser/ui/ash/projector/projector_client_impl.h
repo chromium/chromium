@@ -10,6 +10,7 @@
 #include "ash/public/cpp/projector/projector_annotator_controller.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/public/cpp/projector/speech_recognition_availability.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -46,6 +47,8 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   ~ProjectorClientImpl() override;
 
   // ash::ProjectorClient:
+  ash::SpeechRecognitionAvailability GetSpeechRecognitionAvailability()
+      const override;
   void StartSpeechRecognition() override;
   void StopSpeechRecognition() override;
   bool GetBaseStoragePath(base::FilePath* result) const override;

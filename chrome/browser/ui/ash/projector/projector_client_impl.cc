@@ -70,16 +70,11 @@ ProjectorClientImpl::ProjectorClientImpl(ash::ProjectorController* controller)
   if (session_manager)
     session_observation_.Observe(session_manager);
 
-  if (!base::FeatureList::IsEnabled(
-          ash::features::kOnDeviceSpeechRecognition)) {
-    controller_->OnSpeechRecognitionAvailabilityChanged(
-        ash::SpeechRecognitionAvailability::
-            kOnDeviceSpeechRecognitionNotSupported);
-    return;
+  if (base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition)) {
+    soda_installation_controller_ =
+        std::make_unique<ProjectorSodaInstallationController>(
+            ash::ProjectorAppClient::Get(), controller_);
   }
-  soda_installation_controller_ =
-      std::make_unique<ProjectorSodaInstallationController>(
-          ash::ProjectorAppClient::Get(), controller_);
 }
 
 ProjectorClientImpl::ProjectorClientImpl()
@@ -89,11 +84,41 @@ ProjectorClientImpl::~ProjectorClientImpl() {
   controller_->SetClient(nullptr);
 }
 
+// Projector prioritizes on-device speech recognition over server
+// based speech recognition.
+ash::SpeechRecognitionAvailability
+ProjectorClientImpl::GetSpeechRecognitionAvailability() const {
+  const auto& locale = GetLocale();
+  if (ash::features::ShouldForceEnableServerSideSpeechRecognitionForDev()) {
+    return SpeechRecognitionRecognizerClientImpl::
+        GetServerBasedRecognitionAvailability(locale);
+  }
+
+  const auto on_device_availability = SpeechRecognitionRecognizerClientImpl::
+      GetOnDeviceSpeechRecognitionAvailability(locale);
+  if (on_device_availability ==
+      ash::SpeechRecognitionAvailability::kSodaAvailable) {
+    return on_device_availability;
+  }
+
+  const auto server_based_availability = SpeechRecognitionRecognizerClientImpl::
+      GetServerBasedRecognitionAvailability(locale);
+
+  if (server_based_availability ==
+      ash::SpeechRecognitionAvailability::kServerBasedRecognitionAvailable) {
+    return server_based_availability;
+  }
+
+  // TODO(b/245613717): Add a kSpeechRecognitionNotSupported message.
+  return on_device_availability;
+}
+
 void ProjectorClientImpl::StartSpeechRecognition() {
-  // TODO(b/245613717): Use SpeechRecognitionRecognizerClient factory to
-  // handle the creation of the recognizer.
-  bool should_use_server_based =
-      ash::features::ShouldForceEnableServerSideSpeechRecognitionForDev();
+  const auto availability = GetSpeechRecognitionAvailability();
+  DCHECK(ash::ProjectorController::IsRecognitionAvailable(availability));
+  const bool should_use_server_based =
+      availability ==
+      ash::SpeechRecognitionAvailability::kServerBasedRecognitionAvailable;
 
   DCHECK_EQ(speech_recognizer_.get(), nullptr);
   recognizer_status_ = SPEECH_RECOGNIZER_OFF;

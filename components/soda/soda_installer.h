@@ -110,6 +110,11 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   // Method for checking in-progress downloads.
   bool IsSodaDownloading(LanguageCode language_code) const;
 
+  // Returns the error encountered while installing soda for the language code
+  // or soda binary.
+  absl::optional<ErrorCode> GetSodaInstallErrorCode(
+      LanguageCode language_code) const;
+
   // TODO(crbug.com/1237462): Consider creating a MockSodaInstaller class that
   // implements these test-specific methods.
   void NeverDownloadSodaForTesting() {
@@ -177,6 +182,9 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   std::set<LanguageCode> installed_languages_;
   // Maps language codes to their install progress.
   base::flat_map<LanguageCode, double> language_pack_progress_;
+
+  // The error state for the language code.
+  base::flat_map<LanguageCode, ErrorCode> error_codes_;
 
  private:
   friend class SodaInstallerImplChromeOSTest;

@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/projector/projector_controller.h"
 
+#include "ash/public/cpp/projector/speech_recognition_availability.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 
@@ -27,6 +28,14 @@ ProjectorController::ProjectorController() {
 ProjectorController::~ProjectorController() {
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
+}
+
+// static
+bool ProjectorController::IsRecognitionAvailable(
+    SpeechRecognitionAvailability availability) {
+  return availability == SpeechRecognitionAvailability::kSodaAvailable ||
+         availability ==
+             SpeechRecognitionAvailability::kServerBasedRecognitionAvailable;
 }
 
 // static

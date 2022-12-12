@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/public/cpp/projector/speech_recognition_availability.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -39,16 +40,6 @@ ProjectorSodaInstallationController::ProjectorSodaInstallationController(
     : app_client_(client), projector_controller_(projector_controller) {
   soda_installer_observation_.Observe(speech::SodaInstaller::GetInstance());
   locale_change_observation_.Observe(ash::LocaleUpdateController::Get());
-
-  if (!SpeechRecognitionRecognizerClientImpl::
-          IsOnDeviceSpeechRecognizerAvailable(GetLocale())) {
-    projector_controller_->OnSpeechRecognitionAvailabilityChanged(
-        ash::SpeechRecognitionAvailability::kSodaNotInstalled);
-    return;
-  }
-
-  projector_controller_->OnSpeechRecognitionAvailabilityChanged(
-      ash::SpeechRecognitionAvailability::kAvailable);
 }
 
 ProjectorSodaInstallationController::~ProjectorSodaInstallationController() =
@@ -86,38 +77,27 @@ void ProjectorSodaInstallationController::OnSodaInstalled(
   // Check that language code matches the selected language for projector.
   if (language_code != speech::GetLanguageCode(GetLocale()))
     return;
-  projector_controller_->OnSpeechRecognitionAvailabilityChanged(
-      ash::SpeechRecognitionAvailability::kAvailable);
+  projector_controller_->OnSpeechRecognitionAvailabilityChanged();
   app_client_->OnSodaInstalled();
 }
 
 void ProjectorSodaInstallationController::OnSodaInstallError(
     speech::LanguageCode language_code,
     speech::SodaInstaller::ErrorCode error_code) {
+  const auto& current_locale = GetLocale();
   // Check that language code matches the selected language for projector or is
   // LanguageCode::kNone (signifying the SODA binary failed).
-  if (language_code != speech::GetLanguageCode(GetLocale()) &&
+  if (language_code != speech::GetLanguageCode(current_locale) &&
       language_code != speech::LanguageCode::kNone) {
     return;
   }
+  projector_controller_->OnSpeechRecognitionAvailabilityChanged();
 
-  switch (error_code) {
-    case speech::SodaInstaller::ErrorCode::kUnspecifiedError:
-      projector_controller_->OnSpeechRecognitionAvailabilityChanged(
-          ash::SpeechRecognitionAvailability::
-              kSodaInstallationErrorUnspecified);
-      break;
-    case speech::SodaInstaller::ErrorCode::kNeedsReboot:
-      projector_controller_->OnSpeechRecognitionAvailabilityChanged(
-          ash::SpeechRecognitionAvailability::
-              kSodaInstallationErrorNeedsReboot);
-      break;
-  }
-  // TODO(b/245616124): When there is a SODA installation error,
-  // notify the client of the error only when server side recognition is
-  // not available.
-  if (!ash::features::ShouldForceEnableServerSideSpeechRecognitionForDev())
+  if (SpeechRecognitionRecognizerClientImpl::
+          GetServerBasedRecognitionAvailability(current_locale) !=
+      ash::SpeechRecognitionAvailability::kServerBasedRecognitionAvailable) {
     app_client_->OnSodaInstallError();
+  }
 }
 
 void ProjectorSodaInstallationController::OnSodaProgress(
@@ -135,7 +115,6 @@ void ProjectorSodaInstallationController::OnSodaProgress(
 // This function is triggered after every sign in.
 void ProjectorSodaInstallationController::OnLocaleChanged() {
   if (!IsLanguageSupported(speech::GetLanguageCode(GetLocale()))) {
-    projector_controller_->OnSpeechRecognitionAvailabilityChanged(
-        ash::SpeechRecognitionAvailability::kUserLanguageNotSupported);
+    projector_controller_->OnSpeechRecognitionAvailabilityChanged();
   }
 }

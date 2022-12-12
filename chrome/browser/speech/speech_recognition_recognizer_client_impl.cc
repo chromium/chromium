@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/projector/speech_recognition_availability.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/cros_speech_recognition_service.h"
@@ -56,14 +58,95 @@ media::AudioParameters GetAudioParameters(
       kAudioSampleRate, kAudioSampleRate / kPollingTimesPerSecond);
 }
 
+inline bool IsLanguageSupported(const speech::SodaInstaller* soda_installer,
+                                const speech::LanguageCode language_code) {
+  for (auto const& language : soda_installer->GetAvailableLanguages()) {
+    if (speech::GetLanguageCode(language) == language_code)
+      return true;
+  }
+  return false;
+}
+
+inline ash::SpeechRecognitionAvailability InstallationErrorToAvailability(
+    speech::SodaInstaller::ErrorCode error_code) {
+  switch (error_code) {
+    case speech::SodaInstaller::ErrorCode::kUnspecifiedError:
+      return ash::SpeechRecognitionAvailability::
+          kSodaInstallationErrorUnspecified;
+    case speech::SodaInstaller::ErrorCode::kNeedsReboot:
+      return ash::SpeechRecognitionAvailability::
+          kSodaInstallationErrorNeedsReboot;
+  }
+}
+
 }  // namespace
 
-bool SpeechRecognitionRecognizerClientImpl::IsOnDeviceSpeechRecognizerAvailable(
+ash::SpeechRecognitionAvailability
+SpeechRecognitionRecognizerClientImpl::GetOnDeviceSpeechRecognitionAvailability(
     const std::string& language) {
-  if (!base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition))
-    return false;
+  if (!base::FeatureList::IsEnabled(
+          ash::features::kOnDeviceSpeechRecognition)) {
+    return ash::SpeechRecognitionAvailability::kSodaNotAvailable;
+  }
+
+  const auto language_code = speech::GetLanguageCode(language);
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  return soda_installer->IsSodaInstalled(speech::GetLanguageCode(language));
+
+  if (soda_installer->IsSodaInstalled(language_code))
+    return ash::SpeechRecognitionAvailability::kSodaAvailable;
+
+  if (!IsLanguageSupported(soda_installer, language_code))
+    return ash::SpeechRecognitionAvailability::kUserLanguageNotAvailable;
+
+  // Maybe SODA is currently installing.
+  if (soda_installer->IsSodaDownloading(language_code) ||
+      soda_installer->IsSodaDownloading(speech::LanguageCode::kNone)) {
+    return ash::SpeechRecognitionAvailability::kSodaInstalling;
+  }
+
+  // It is possible that there was some installation issues for SODA which we
+  // can surface to the user.
+  const auto binary_error_code =
+      soda_installer->GetSodaInstallErrorCode(speech::LanguageCode::kNone);
+  if (binary_error_code)
+    return InstallationErrorToAvailability(binary_error_code.value());
+
+  const auto language_error_code =
+      soda_installer->GetSodaInstallErrorCode(language_code);
+  if (language_error_code)
+    return InstallationErrorToAvailability(language_error_code.value());
+
+  return ash::SpeechRecognitionAvailability::kSodaNotInstalled;
+}
+
+ash::SpeechRecognitionAvailability
+SpeechRecognitionRecognizerClientImpl::GetServerBasedRecognitionAvailability(
+    const std::string& language) {
+  if (!ash::features::IsInternalServerSideSpeechRecognitionEnabled()) {
+    return ash::SpeechRecognitionAvailability::
+        kServerBasedRecognitionNotAvailable;
+  }
+
+  static constexpr auto kSupportedLocales =
+      base::MakeFixedFlatSet<base::StringPiece>(
+          {"ar-x-maghrebi", "cmn-hant-tw", "cs-cz", "da-dk", "de-de", "en-au",
+           "en-gb",         "en-in",       "en-us", "es-es", "es-us", "fi-fi",
+           "fr-fr",         "hi-in",       "id-id", "it-it", "ja-jp", "ko-kr",
+           "nl-nl",         "pt-br",       "ru-ru", "sv-se", "tr-tr", "vi-vn"});
+
+  // The locals that we get come from ui/base/l10n/l10n_util.cc and can
+  // therefore just be language names.
+  static constexpr auto kDefaultLanguages =
+      base::MakeFixedFlatSet<base::StringPiece>(
+          {"cs", "da", "de", "en", "es", "fi", "fr", "hi", "id", "it", "ja",
+           "ko", "nl", "pt", "ru", "sv", "tr", "vi"});
+
+  if (kSupportedLocales.contains(base::ToLowerASCII(language)) ||
+      kDefaultLanguages.contains(base::ToLowerASCII(language))) {
+    return ash::SpeechRecognitionAvailability::kServerBasedRecognitionAvailable;
+  }
+
+  return ash::SpeechRecognitionAvailability::kUserLanguageNotAvailable;
 }
 
 SpeechRecognitionRecognizerClientImpl::SpeechRecognitionRecognizerClientImpl(

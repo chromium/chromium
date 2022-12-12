@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_recognizer.h"
 
+#include "ash/public/cpp/projector/speech_recognition_availability.h"
 #include "base/debug/crash_logging.h"
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -107,7 +108,8 @@ void SpeechRecognitionPrivateRecognizer::HandleStart(
   // Choose which type of speech recognition, either on-device or network.
   Profile* profile = Profile::FromBrowserContext(context_);
   if (SpeechRecognitionRecognizerClientImpl::
-          IsOnDeviceSpeechRecognizerAvailable(locale_)) {
+          GetOnDeviceSpeechRecognitionAvailability(locale_) ==
+      ash::SpeechRecognitionAvailability::kSodaAvailable) {
     type_ = speech::SpeechRecognitionType::kOnDevice;
     speech_recognizer_ =
         std::make_unique<SpeechRecognitionRecognizerClientImpl>(
