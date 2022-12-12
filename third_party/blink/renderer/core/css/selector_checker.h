@@ -171,7 +171,7 @@ class CORE_EXPORT SelectorChecker {
     ContainerNode* relative_anchor_element = nullptr;
 
     PseudoId pseudo_id = kPseudoIdNone;
-    AtomicString pseudo_argument = g_null_atom;
+    AtomicString* pseudo_argument = nullptr;
 
     bool is_sub_selector = false;
     bool in_rightmost_compound = true;

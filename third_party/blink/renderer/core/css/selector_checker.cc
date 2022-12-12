@@ -1255,7 +1255,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
             ViewTransitionUtils::GetActiveTransition(element.GetDocument());
         DCHECK(transition);
         return transition->MatchForOnlyChild(context.pseudo_id,
-                                             context.pseudo_argument);
+                                             *context.pseudo_argument);
       }
 
       ContainerNode* parent = element.ParentElementOrDocumentFragment();
