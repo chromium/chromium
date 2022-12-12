@@ -807,12 +807,4 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 @end
 
-// Helpers that only compile under EarlGrey 1 are included in this "EG1"
-// category.
-// TODO(crbug.com/922813): Update these helpers to compile under EG2 and move
-// them into the main class declaration as they are converted.
-@interface ChromeEarlGreyImpl (EG1)
-
-@end
-
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_H_
