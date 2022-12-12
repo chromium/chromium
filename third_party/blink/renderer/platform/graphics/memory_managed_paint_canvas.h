@@ -32,6 +32,8 @@ class PLATFORM_EXPORT MemoryManagedPaintCanvas final
   explicit MemoryManagedPaintCanvas(const cc::RecordPaintCanvas&) = delete;
   ~MemoryManagedPaintCanvas() override;
 
+  sk_sp<cc::PaintRecord> ReleaseAsRecord() override;
+
   void drawImage(const cc::PaintImage& image,
                  SkScalar left,
                  SkScalar top,

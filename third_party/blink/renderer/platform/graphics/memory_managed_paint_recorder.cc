@@ -37,16 +37,21 @@ MemoryManagedPaintRecorder::~MemoryManagedPaintRecorder() = default;
 
 cc::PaintCanvas* MemoryManagedPaintRecorder::beginRecording(
     const gfx::Size& size) {
-  DCHECK(!canvas_);
-  canvas_ = std::make_unique<MemoryManagedPaintCanvas>(size, client_);
+  DCHECK(!is_recording_);
+  is_recording_ = true;
+
+  if (!canvas_ || size != size_) {
+    canvas_ = std::make_unique<MemoryManagedPaintCanvas>(size, client_);
+  }
+  size_ = size;
   return canvas_.get();
 }
 
 sk_sp<cc::PaintRecord> MemoryManagedPaintRecorder::finishRecordingAsPicture() {
   DCHECK(canvas_);
-  auto record = canvas_->ReleaseAsRecord();
-  canvas_.reset();
-  return record;
+  DCHECK(is_recording_);
+  is_recording_ = false;
+  return canvas_->ReleaseAsRecord();
 }
 
 }  // namespace blink

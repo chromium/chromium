@@ -14,6 +14,11 @@ MemoryManagedPaintCanvas::MemoryManagedPaintCanvas(const gfx::Size& size,
 
 MemoryManagedPaintCanvas::~MemoryManagedPaintCanvas() = default;
 
+sk_sp<cc::PaintRecord> MemoryManagedPaintCanvas::ReleaseAsRecord() {
+  cached_image_ids_.clear();
+  return cc::InspectableRecordPaintCanvas::ReleaseAsRecord();
+}
+
 void MemoryManagedPaintCanvas::drawImage(const cc::PaintImage& image,
                                          SkScalar left,
                                          SkScalar top,

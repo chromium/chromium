@@ -52,10 +52,16 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
     return canvas_->OpBytesUsed();
   }
 
-  cc::PaintCanvas* getRecordingCanvas() const { return canvas_.get(); }
+  // Only valid while recording.
+  cc::PaintCanvas* getRecordingCanvas() const {
+    DCHECK(!is_recording_ || canvas_);
+    return is_recording_ ? canvas_.get() : nullptr;
+  }
 
  private:
   MemoryManagedPaintCanvas::Client* client_;
+  bool is_recording_ = false;
+  gfx::Size size_;
   std::unique_ptr<MemoryManagedPaintCanvas> canvas_;
 };
 

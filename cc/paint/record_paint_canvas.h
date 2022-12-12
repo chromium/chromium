@@ -30,7 +30,7 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   RecordPaintCanvas(const RecordPaintCanvas&) = delete;
   RecordPaintCanvas& operator=(const RecordPaintCanvas&) = delete;
 
-  sk_sp<PaintRecord> ReleaseAsRecord();
+  virtual sk_sp<PaintRecord> ReleaseAsRecord();
 
   bool HasRecordedDrawOps() const { return buffer_.has_draw_ops(); }
   size_t TotalOpCount() const { return buffer_.total_op_count(); }
