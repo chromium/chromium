@@ -303,7 +303,8 @@
     </div>
     <cr-button class="footer-button" hidden="[[editing_]]"
         on-click="onAddTabClicked_"
-        disabled="[[!canAddCurrentUrl_(activeFolderPath_.*, currentUrl_)]]">
+        disabled="[[!canAddCurrentUrl_(shownBookmarks_.*, activeFolderPath_.*,
+                     currentUrl_)]]">
       <iron-icon icon="bookmarks:add-tab" class="label-icon"></iron-icon>
       $i18n{addCurrentTab}
     </cr-button>
