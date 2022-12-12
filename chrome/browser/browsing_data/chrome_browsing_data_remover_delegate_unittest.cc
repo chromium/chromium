@@ -134,6 +134,7 @@
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/segmentation_platform/public/features.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/site_isolation/pref_names.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
@@ -2461,6 +2462,11 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        RemoveContentSettingsWithPreserveFilter) {
+  // When a SiteEngagementService instance is first constructed, it deletes
+  // stale values from the settings map in a task posted to the UI thread. If
+  // that happens to run during BlockUntilOriginDataRemoved(), this test will
+  // fail. So to prevent that, force the task execution ahead of time.
+  site_engagement::SiteEngagementService::Get(GetProfile());
   // This test relies on async loading to complete. RunUntilIdle() should be
   // removed and an explicit wait should be added.
   task_environment()->RunUntilIdle();

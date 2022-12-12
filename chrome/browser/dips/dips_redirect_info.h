@@ -41,13 +41,15 @@ struct DIPSRedirectInfo {
                    DIPSRedirectType redirect_type,
                    CookieAccessType access_type,
                    int index,
-                   ukm::SourceId source_id);
+                   ukm::SourceId source_id,
+                   base::Time time);
   // Constructor for client-side redirects.
   DIPSRedirectInfo(const GURL& url,
                    DIPSRedirectType redirect_type,
                    CookieAccessType access_type,
                    int index,
                    ukm::SourceId source_id,
+                   base::Time time,
                    base::TimeDelta client_bounce_delay,
                    bool has_sticky_activation);
   ~DIPSRedirectInfo();
@@ -60,6 +62,7 @@ struct DIPSRedirectInfo {
   // Index of this URL within the overall chain.
   const int index;
   const ukm::SourceId source_id;
+  const base::Time time;
 
   // The following properties are only applicable for client-side redirects:
 

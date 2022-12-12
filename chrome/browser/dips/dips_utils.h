@@ -141,8 +141,25 @@ std::string GetSiteForDIPS(const GURL& url);
 enum class DIPSRecordedEvent {
   kStorage,
   kInteraction,
-  kStatelessBounce,
-  kStatefulBounce,
+};
+
+// RedirectCategory is basically the cross-product of CookieAccessType and a
+// boolean value indicating site engagement. It's used in UMA enum histograms.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class RedirectCategory {
+  kNoCookies_NoEngagement = 0,
+  kReadCookies_NoEngagement = 1,
+  kWriteCookies_NoEngagement = 2,
+  kReadWriteCookies_NoEngagement = 3,
+  kNoCookies_HasEngagement = 4,
+  kReadCookies_HasEngagement = 5,
+  kWriteCookies_HasEngagement = 6,
+  kReadWriteCookies_HasEngagement = 7,
+  kUnknownCookies_NoEngagement = 8,
+  kUnknownCookies_HasEngagement = 9,
+  kMaxValue = kUnknownCookies_HasEngagement,
 };
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_UTILS_H_

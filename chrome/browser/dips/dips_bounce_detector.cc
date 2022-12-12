@@ -7,10 +7,8 @@
 #include <cmath>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -18,14 +16,11 @@
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom-shared.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -43,48 +38,10 @@ NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(ServerBounceDetectionState);
 
 namespace {
 
-// Controls whether UKM metrics are collected for DIPS.
-BASE_FEATURE(kDipsUkm, "DipsUkm", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // The amount of time since finishing navigation to a page that a client-side
 // redirect must happen within to count as a bounce (provided that all other
 // criteria are met as well).
 const int kBounceThresholdSeconds = 10;
-
-RedirectCategory ClassifyRedirect(CookieAccessType access,
-                                  EngagementLevel engagement) {
-  switch (access) {
-    case CookieAccessType::kUnknown:
-      return engagement > EngagementLevel::NONE
-                 ? RedirectCategory::kUnknownCookies_HasEngagement
-                 : RedirectCategory::kUnknownCookies_NoEngagement;
-    case CookieAccessType::kNone:
-      return engagement > EngagementLevel::NONE
-                 ? RedirectCategory::kNoCookies_HasEngagement
-                 : RedirectCategory::kNoCookies_NoEngagement;
-    case CookieAccessType::kRead:
-      return engagement > EngagementLevel::NONE
-                 ? RedirectCategory::kReadCookies_HasEngagement
-                 : RedirectCategory::kReadCookies_NoEngagement;
-    case CookieAccessType::kWrite:
-      return engagement > EngagementLevel::NONE
-                 ? RedirectCategory::kWriteCookies_HasEngagement
-                 : RedirectCategory::kWriteCookies_NoEngagement;
-    case CookieAccessType::kReadWrite:
-      return engagement > EngagementLevel::NONE
-                 ? RedirectCategory::kReadWriteCookies_HasEngagement
-                 : RedirectCategory::kReadWriteCookies_NoEngagement;
-  }
-}
-
-inline void UmaHistogramBounceCategory(RedirectCategory category,
-                                       DIPSCookieMode mode,
-                                       DIPSRedirectType type) {
-  const std::string histogram_name =
-      base::StrCat({"Privacy.DIPS.BounceCategory", GetHistogramPiece(type),
-                    GetHistogramSuffix(mode)});
-  base::UmaHistogramEnumeration(histogram_name, category);
-}
 
 inline void UmaHistogramTimeToBounce(base::TimeDelta sample) {
   base::UmaHistogramTimes("Privacy.DIPS.TimeFromNavigationCommitToClientBounce",
@@ -119,8 +76,6 @@ DIPSWebContentsObserver::DIPSWebContentsObserver(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<DIPSWebContentsObserver>(*web_contents),
       dips_service_(DIPSService::Get(web_contents->GetBrowserContext())),
-      site_engagement_service_(site_engagement::SiteEngagementService::Get(
-          web_contents->GetBrowserContext())),
       detector_(this,
                 base::DefaultTickClock::GetInstance(),
                 base::DefaultClock::GetInstance()) {}
@@ -133,11 +88,13 @@ DIPSBounceDetector::DIPSBounceDetector(DIPSBounceDetectorDelegate* delegate,
     : tick_clock_(tick_clock),
       clock_(clock),
       delegate_(delegate),
-      // It's safe to use unretained because the callback is owned by the
-      // DIPSRedirectContext which is owned by this.
-      redirect_context_(base::BindRepeating(&DIPSBounceDetector::HandleRedirect,
-                                            base::Unretained(this)),
-                        /*initial_url=*/GURL::EmptyGURL()) {}
+      // It's safe to use Unretained because the callback is owned by the
+      // DIPSRedirectContext which is owned by `this`, and the delegate must
+      // outlive `this`.
+      redirect_context_(
+          base::BindRepeating(&DIPSBounceDetectorDelegate::HandleRedirect,
+                              base::Unretained(delegate)),
+          /*initial_url=*/GURL::EmptyGURL()) {}
 
 DIPSBounceDetector::~DIPSBounceDetector() = default;
 
@@ -149,12 +106,6 @@ void DIPSBounceDetector::SetRedirectHandlerForTesting(
 DIPSBounceDetectorDelegate::~DIPSBounceDetectorDelegate() = default;
 
 DIPSNavigationHandle::~DIPSNavigationHandle() = default;
-
-DIPSCookieMode DIPSWebContentsObserver::GetCookieMode() const {
-  return GetDIPSCookieMode(
-      web_contents()->GetBrowserContext()->IsOffTheRecord(),
-      dips_service_->ShouldBlockThirdPartyCookies());
-}
 
 ukm::SourceId DIPSNavigationHandle::GetRedirectSourceId(int index) const {
   return ukm::UkmRecorder::GetSourceIdForRedirectUrl(
@@ -223,49 +174,6 @@ void DIPSRedirectContext::EndChain(GURL url) {
   initial_url_ = std::move(url);
 }
 
-void DIPSBounceDetector::HandleRedirect(const DIPSRedirectInfo& redirect,
-                                        const DIPSRedirectChainInfo& chain) {
-  const std::string site = GetSiteForDIPS(redirect.url);
-  EngagementLevel level = delegate_->GetEngagementLevel(redirect.url);
-  bool initial_site_same = (site == chain.initial_site);
-  bool final_site_same = (site == chain.final_site);
-  DCHECK_LE(0, redirect.index);
-  DCHECK_LT(redirect.index, chain.length);
-
-  if (base::FeatureList::IsEnabled(kDipsUkm)) {
-    ukm::builders::DIPS_Redirect(redirect.source_id)
-        .SetSiteEngagementLevel(static_cast<int64_t>(level))
-        .SetRedirectType(static_cast<int64_t>(redirect.redirect_type))
-        .SetCookieAccessType(static_cast<int64_t>(redirect.access_type))
-        .SetRedirectAndInitialSiteSame(initial_site_same)
-        .SetRedirectAndFinalSiteSame(final_site_same)
-        .SetInitialAndFinalSitesSame(chain.initial_and_final_sites_same)
-        .SetRedirectChainIndex(redirect.index)
-        .SetRedirectChainLength(chain.length)
-        .SetClientBounceDelay(
-            BucketizeBounceDelay(redirect.client_bounce_delay))
-        .SetHasStickyActivation(redirect.has_sticky_activation)
-        .Record(ukm::UkmRecorder::Get());
-  }
-
-  if (initial_site_same || final_site_same) {
-    // Don't record UMA metrics for same-site redirects.
-    return;
-  }
-
-  // Record this bounce in the DIPS database.
-  if (redirect.access_type != CookieAccessType::kUnknown) {
-    DIPSRecordedEvent bounce = redirect.access_type > CookieAccessType::kRead
-                                   ? DIPSRecordedEvent::kStatefulBounce
-                                   : DIPSRecordedEvent::kStatelessBounce;
-    delegate_->RecordEvent(bounce, redirect.url, clock_->Now());
-  }
-
-  RedirectCategory category = ClassifyRedirect(redirect.access_type, level);
-  UmaHistogramBounceCategory(category, delegate_->GetCookieMode(),
-                             redirect.redirect_type);
-}
-
 void DIPSWebContentsObserver::RecordEvent(DIPSRecordedEvent event,
                                           const GURL& url,
                                           const base::Time& time) {
@@ -273,25 +181,13 @@ void DIPSWebContentsObserver::RecordEvent(DIPSRecordedEvent event,
     case DIPSRecordedEvent::kStorage: {
       dips_service_->storage()
           ->AsyncCall(&DIPSStorage::RecordStorage)
-          .WithArgs(url, time, GetCookieMode());
+          .WithArgs(url, time, dips_service_->GetCookieMode());
       return;
     }
     case DIPSRecordedEvent::kInteraction: {
       dips_service_->storage()
           ->AsyncCall(&DIPSStorage::RecordInteraction)
-          .WithArgs(url, time, GetCookieMode());
-      return;
-    }
-    case DIPSRecordedEvent::kStatelessBounce: {
-      dips_service_->storage()
-          ->AsyncCall(&DIPSStorage::RecordStatelessBounce)
-          .WithArgs(url, time);
-      return;
-    }
-    case DIPSRecordedEvent::kStatefulBounce: {
-      dips_service_->storage()
-          ->AsyncCall(&DIPSStorage::RecordStatefulBounce)
-          .WithArgs(url, time);
+          .WithArgs(url, time, dips_service_->GetCookieMode());
       return;
     }
   }
@@ -305,9 +201,10 @@ ukm::SourceId DIPSWebContentsObserver::GetPageUkmSourceId() const {
   return web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 }
 
-blink::mojom::EngagementLevel DIPSWebContentsObserver::GetEngagementLevel(
-    const GURL& url) const {
-  return site_engagement_service_->GetEngagementLevel(url);
+void DIPSWebContentsObserver::HandleRedirect(
+    const DIPSRedirectInfo& redirect,
+    const DIPSRedirectChainInfo& chain) {
+  dips_service_->HandleRedirect(redirect, chain);
 }
 
 // A thin wrapper around NavigationHandle to implement DIPSNavigationHandle.
@@ -372,6 +269,7 @@ void DIPSBounceDetector::DidStartNavigation(
           /*index=*/redirect_context_.size(),
           /*source_id=*/
           delegate_->GetPageUkmSourceId(),
+          /*time=*/clock_->Now(),
           /*client_bounce_delay=*/bounce_time,
           /*has_sticky_activation=*/
           client_detection_state_->received_user_activation);
@@ -489,7 +387,8 @@ void DIPSBounceDetector::DidFinishNavigation(
             server_state->navigation_start)
             ? redirect_context_.size() + i + 1
             : i,
-        /*source_id=*/navigation_handle->GetRedirectSourceId(i)));
+        /*source_id=*/navigation_handle->GetRedirectSourceId(i),
+        /*time=*/clock_->Now()));
   }
 
   // This call handles all the logic for terminating the redirect chain when

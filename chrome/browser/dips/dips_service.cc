@@ -6,9 +6,12 @@
 
 #include <set>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/time/time_delta_from_string.h"
@@ -23,8 +26,15 @@
 #include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+
+using blink::mojom::EngagementLevel;
 
 namespace {
+
+// Controls whether UKM metrics are collected for DIPS.
+BASE_FEATURE(kDipsUkm, "DipsUkm", base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::vector<std::string> GetEngagedSitesInBackground(
     base::Time now,
@@ -47,10 +57,47 @@ std::vector<std::string> GetEngagedSitesInBackground(
   return std::vector(unique_sites.begin(), unique_sites.end());
 }
 
+RedirectCategory ClassifyRedirect(CookieAccessType access,
+                                  EngagementLevel engagement) {
+  switch (access) {
+    case CookieAccessType::kUnknown:
+      return engagement > EngagementLevel::NONE
+                 ? RedirectCategory::kUnknownCookies_HasEngagement
+                 : RedirectCategory::kUnknownCookies_NoEngagement;
+    case CookieAccessType::kNone:
+      return engagement > EngagementLevel::NONE
+                 ? RedirectCategory::kNoCookies_HasEngagement
+                 : RedirectCategory::kNoCookies_NoEngagement;
+    case CookieAccessType::kRead:
+      return engagement > EngagementLevel::NONE
+                 ? RedirectCategory::kReadCookies_HasEngagement
+                 : RedirectCategory::kReadCookies_NoEngagement;
+    case CookieAccessType::kWrite:
+      return engagement > EngagementLevel::NONE
+                 ? RedirectCategory::kWriteCookies_HasEngagement
+                 : RedirectCategory::kWriteCookies_NoEngagement;
+    case CookieAccessType::kReadWrite:
+      return engagement > EngagementLevel::NONE
+                 ? RedirectCategory::kReadWriteCookies_HasEngagement
+                 : RedirectCategory::kReadWriteCookies_NoEngagement;
+  }
+}
+
+inline void UmaHistogramBounceCategory(RedirectCategory category,
+                                       DIPSCookieMode mode,
+                                       DIPSRedirectType type) {
+  const std::string histogram_name =
+      base::StrCat({"Privacy.DIPS.BounceCategory", GetHistogramPiece(type),
+                    GetHistogramSuffix(mode)});
+  base::UmaHistogramEnumeration(histogram_name, category);
+}
+
 }  // namespace
 
 DIPSService::DIPSService(content::BrowserContext* context)
     : browser_context_(context),
+      site_engagement_service_(
+          site_engagement::SiteEngagementService::Get(context)),
       cookie_settings_(CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(context))),
       repeating_timer_(CreateTimer(Profile::FromBrowserContext(context))) {
@@ -103,8 +150,9 @@ scoped_refptr<base::SequencedTaskRunner> DIPSService::CreateTaskRunner() {
        base::ThreadPolicy::PREFER_BACKGROUND});
 }
 
-bool DIPSService::ShouldBlockThirdPartyCookies() const {
-  return cookie_settings_->ShouldBlockThirdPartyCookies();
+DIPSCookieMode DIPSService::GetCookieMode() const {
+  return GetDIPSCookieMode(browser_context_->IsOffTheRecord(),
+                           cookie_settings_->ShouldBlockThirdPartyCookies());
 }
 
 void DIPSService::RemoveEvents(const base::Time& delete_begin,
@@ -132,4 +180,67 @@ void DIPSService::InitializeStorageWithEngagedSites() {
 void DIPSService::InitializeStorage(base::Time time,
                                     std::vector<std::string> sites) {
   storage_.AsyncCall(&DIPSStorage::Prepopulate).WithArgs(time, sites);
+}
+
+void DIPSService::HandleRedirect(const DIPSRedirectInfo& redirect,
+                                 const DIPSRedirectChainInfo& chain) {
+  HandleRedirect(
+      redirect, chain,
+      site_engagement_service_->GetEngagementLevel(redirect.url),
+      GetCookieMode(),
+      base::BindRepeating(&DIPSService::RecordBounce, base::Unretained(this)));
+}
+
+void DIPSService::RecordBounce(bool stateful,
+                               const GURL& url,
+                               base::Time time) {
+  storage_
+      .AsyncCall(stateful ? &DIPSStorage::RecordStatefulBounce
+                          : &DIPSStorage::RecordStatelessBounce)
+      .WithArgs(url, time);
+}
+
+/*static*/
+void DIPSService::HandleRedirect(const DIPSRedirectInfo& redirect,
+                                 const DIPSRedirectChainInfo& chain,
+                                 EngagementLevel engagement_level,
+                                 DIPSCookieMode cookie_mode,
+                                 RecordBounceCallback record_bounce) {
+  const std::string site = GetSiteForDIPS(redirect.url);
+  bool initial_site_same = (site == chain.initial_site);
+  bool final_site_same = (site == chain.final_site);
+  DCHECK_LE(0, redirect.index);
+  DCHECK_LT(redirect.index, chain.length);
+
+  if (base::FeatureList::IsEnabled(kDipsUkm)) {
+    ukm::builders::DIPS_Redirect(redirect.source_id)
+        .SetSiteEngagementLevel(static_cast<int64_t>(engagement_level))
+        .SetRedirectType(static_cast<int64_t>(redirect.redirect_type))
+        .SetCookieAccessType(static_cast<int64_t>(redirect.access_type))
+        .SetRedirectAndInitialSiteSame(initial_site_same)
+        .SetRedirectAndFinalSiteSame(final_site_same)
+        .SetInitialAndFinalSitesSame(chain.initial_and_final_sites_same)
+        .SetRedirectChainIndex(redirect.index)
+        .SetRedirectChainLength(chain.length)
+        .SetClientBounceDelay(
+            BucketizeBounceDelay(redirect.client_bounce_delay))
+        .SetHasStickyActivation(redirect.has_sticky_activation)
+        .Record(ukm::UkmRecorder::Get());
+  }
+
+  if (initial_site_same || final_site_same) {
+    // Don't record UMA metrics for same-site redirects.
+    return;
+  }
+
+  // Record this bounce in the DIPS database.
+  if (redirect.access_type != CookieAccessType::kUnknown) {
+    record_bounce.Run(
+        /*stateful=*/redirect.access_type > CookieAccessType::kRead,
+        redirect.url, redirect.time);
+  }
+
+  RedirectCategory category =
+      ClassifyRedirect(redirect.access_type, engagement_level);
+  UmaHistogramBounceCategory(category, cookie_mode, redirect.redirect_type);
 }

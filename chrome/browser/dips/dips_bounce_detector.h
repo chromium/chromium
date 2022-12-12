@@ -20,17 +20,12 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace base {
 class Clock;
 class TickClock;
-}
-
-namespace site_engagement {
-class SiteEngagementService;
-}
+}  // namespace base
 
 class DIPSService;
 
@@ -93,16 +88,15 @@ class DIPSRedirectContext {
   std::vector<DIPSRedirectInfoPtr> redirects_;
 };
 
-// A simplified interface to WebContents, DIPSService, and SiteEngagementService
-// that can be faked in tests. Needed to allow unit testing DIPSBounceDetector.
+// A simplified interface to WebContents and DIPSService that can be faked in
+// tests. Needed to allow unit testing DIPSBounceDetector.
 class DIPSBounceDetectorDelegate {
  public:
   virtual ~DIPSBounceDetectorDelegate();
-  virtual DIPSCookieMode GetCookieMode() const = 0;
   virtual const GURL& GetLastCommittedURL() const = 0;
   virtual ukm::SourceId GetPageUkmSourceId() const = 0;
-  virtual blink::mojom::EngagementLevel GetEngagementLevel(
-      const GURL&) const = 0;
+  virtual void HandleRedirect(const DIPSRedirectInfo&,
+                              const DIPSRedirectChainInfo&) = 0;
   virtual void RecordEvent(DIPSRecordedEvent event,
                            const GURL& url,
                            const base::Time& time) = 0;
@@ -177,10 +171,8 @@ class DIPSBounceDetector {
   void OnUserActivation();
   void BeforeDestruction();
 
-  void HandleRedirect(const DIPSRedirectInfo& redirect,
-                      const DIPSRedirectChainInfo& chain);
-
-  // Use the passed handler instead of DIPSBounceDetector::HandleRedirect().
+  // Use the passed handler instead of
+  // DIPSBounceDetectorDelegate::HandleRedirect().
   void SetRedirectHandlerForTesting(DIPSRedirectHandler handler);
 
  private:
@@ -215,10 +207,10 @@ class DIPSWebContentsObserver
   friend class content::WebContentsUserData<DIPSWebContentsObserver>;
 
   // DIPSBounceDetectorDelegate overrides:
-  DIPSCookieMode GetCookieMode() const override;
   const GURL& GetLastCommittedURL() const override;
   ukm::SourceId GetPageUkmSourceId() const override;
-  blink::mojom::EngagementLevel GetEngagementLevel(const GURL&) const override;
+  void HandleRedirect(const DIPSRedirectInfo& redirect,
+                      const DIPSRedirectChainInfo& chain) override;
   void RecordEvent(DIPSRecordedEvent event,
                    const GURL& url,
                    const base::Time& time) override;
@@ -240,30 +232,9 @@ class DIPSWebContentsObserver
   // with the BrowserContext/Profile which will outlive the WebContents that
   // DIPSWebContentsObserver is observing.
   raw_ptr<DIPSService> dips_service_;
-  // raw_ptr<> is safe here for the same reasons as above.
-  raw_ptr<site_engagement::SiteEngagementService> site_engagement_service_;
   DIPSBounceDetector detector_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-// RedirectCategory is basically the cross-product of CookieAccessType and a
-// boolean value indicating site engagement. It's used in UMA enum histograms.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class RedirectCategory {
-  kNoCookies_NoEngagement = 0,
-  kReadCookies_NoEngagement = 1,
-  kWriteCookies_NoEngagement = 2,
-  kReadWriteCookies_NoEngagement = 3,
-  kNoCookies_HasEngagement = 4,
-  kReadCookies_HasEngagement = 5,
-  kWriteCookies_HasEngagement = 6,
-  kReadWriteCookies_HasEngagement = 7,
-  kUnknownCookies_NoEngagement = 8,
-  kUnknownCookies_HasEngagement = 9,
-  kMaxValue = kUnknownCookies_HasEngagement,
 };
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_BOUNCE_DETECTOR_H_
