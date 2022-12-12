@@ -687,6 +687,16 @@ class AX_EXPORT AXNode final : public base::SupportsWeakPtr<AXNode> {
   // that might send notifications.
   bool IsLeaf() const;
 
+  // Helper to determine if the node is focusable. This does more than just
+  // use HasState(ax::mojom::State::kFocusable) -- it also checks whether the
+  // object is a likely activedescendant.
+  bool IsFocusable() const;
+
+  // Helper to determine whether the node can be an active descendant, and is a
+  // likely candidate to be one. An id and an ARIA role are required, and the
+  // role must be item-like.
+  bool IsLikelyARIAActiveDescendant() const;
+
   // Returns true if this node is a list marker or if it's a descendant
   // of a list marker node. Returns false otherwise.
   bool IsInListMarker() const;

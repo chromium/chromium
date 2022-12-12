@@ -506,7 +506,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool LastKnownIsIgnoredValue() const;
   bool LastKnownIsIgnoredButIncludedInTreeValue() const;
   bool LastKnownIsIncludedInTreeValue() const;
-  bool CanBeActiveDescendant() const;
   // Some objects, such as table header containers, could be the children of
   // more than one object but have only one primary parent.
   bool HasIndirectChildren() const;
@@ -781,6 +780,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // such as in the case of an ARIA combobox or when the browser offers an
   // autocomplete suggestion.
   virtual ax::mojom::blink::HasPopup HasPopup() const;
+
+  // Heuristic to get the listbox for an <input role="combobox">.
+  AXObject* GetControlsListboxForTextfieldCombobox();
 
   // Returns true if this object is within or at the root of an editable region,
   // such as a contenteditable. Also, returns true if this object is an atomic
@@ -1472,8 +1474,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   Member<AXObjectCacheImpl> ax_object_cache_;
 
-  bool IsARIAControlledByTextboxWithActiveDescendant() const;
-  bool AncestorExposesActiveDescendant() const;
   bool IsCheckable() const;
   static bool IsNativeCheckboxInMixedState(const Node*);
   static bool IncludesARIAWidgetRole(const String&);

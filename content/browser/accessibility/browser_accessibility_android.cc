@@ -276,7 +276,7 @@ bool BrowserAccessibilityAndroid::IsFocusable() const {
     return HasStringAttribute(ax::mojom::StringAttribute::kName);
   }
 
-  return HasState(ax::mojom::State::kFocusable);
+  return BrowserAccessibility::IsFocusable();
 }
 
 bool BrowserAccessibilityAndroid::IsFormDescendant() const {

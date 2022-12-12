@@ -55,7 +55,7 @@ rootWebArea name='Action verbs'
 ++++++++menuItemRadio name='Menu item 3' defaultActionVerb=check checkedState=false
 ++++++++++staticText name='Menu item 3' defaultActionVerb=clickAncestor
 ++++++++++++inlineTextBox name='Menu item 3'
-++++++button name='ARIA Button' defaultActionVerb=click
+++++++button name='ARIA Button' defaultActionVerb=press
 ++++++++staticText name='ARIA Button' defaultActionVerb=clickAncestor
 ++++++++++inlineTextBox name='ARIA Button'
 ++++++button name='ARIA button with tab index' defaultActionVerb=press

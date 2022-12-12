@@ -347,7 +347,8 @@ void AccessibilityTreeFormatterBlink::AddProperties(
        state_index <= static_cast<int32_t>(ax::mojom::State::kMaxValue);
        ++state_index) {
     auto state = static_cast<ax::mojom::State>(state_index);
-    if (node.HasState(state))
+    if (state == ax::mojom::State::kFocusable ? node.IsFocusable()
+                                              : node.HasState(state))
       dict->SetByDottedPath(ui::ToString(state), true);
   }
 
@@ -609,8 +610,8 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
   std::string id_value = base::NumberToString(dict.FindInt("id").value_or(0));
   if (show_ids())  // Show id on every line.
     WriteAttribute(true, id_value, &line);
-  else  // Show id if @BlINK-ALLOW:id=* specified.
-    WriteAttribute(false, std::string("id=") + id_value, &line);
+  else  // Show id if @BlINK-ALLOW:id#=* specified.
+    WriteAttribute(false, std::string("id#=") + id_value, &line);
 
   const std::string* role_value = dict.FindString("internalRole");
   if (role_value) {

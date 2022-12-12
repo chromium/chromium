@@ -1279,7 +1279,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
 
   AXPlatformNodeWin* GetParentPlatformNodeWin() const;
 
-  bool ShouldNodeHaveFocusableState() const;
   int GetAnnotationTypeImpl() const;
 
   // Get the value attribute as a Bstr, this means something different depending

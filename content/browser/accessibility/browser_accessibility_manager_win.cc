@@ -110,11 +110,6 @@ void BrowserAccessibilityManagerWin::UserIsReloading() {
                               GetBrowserAccessibilityRoot());
 }
 
-BrowserAccessibility* BrowserAccessibilityManagerWin::GetFocus() const {
-  BrowserAccessibility* focus = BrowserAccessibilityManager::GetFocus();
-  return GetActiveDescendant(focus);
-}
-
 void BrowserAccessibilityManagerWin::FireFocusEvent(ui::AXNode* node) {
   ui::AXTreeManager::FireFocusEvent(node);
   DCHECK(node);

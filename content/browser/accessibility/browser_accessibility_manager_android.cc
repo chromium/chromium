@@ -91,10 +91,18 @@ bool BrowserAccessibilityManagerAndroid::ShouldExposePasswordText() {
 }
 
 BrowserAccessibility* BrowserAccessibilityManagerAndroid::GetFocus() const {
-  BrowserAccessibility* focus = BrowserAccessibilityManager::GetFocus();
-  if (focus && !focus->IsAtomicTextField())
-    return GetActiveDescendant(focus);
-  return focus;
+  // On Android, don't follow active descendant when focus is in a textfield,
+  // otherwise editable comboboxes such as the search field on google.com do
+  // not work with Talkback. See crbug.com/761501.
+  // TODO(accessibility) How does Talkback then read the active item?
+  // This fix came in crrev.com/c/647339 but said that a more comprehensive fix
+  // was landing in in crrev.com/c/642056, so is this override still necessary?
+  ui::AXNodeID focus_id = GetTreeData().focus_id;
+  BrowserAccessibility* focus = GetFromID(focus_id);
+  if (focus && focus->IsAtomicTextField())
+    return focus;
+
+  return BrowserAccessibilityManager::GetFocus();
 }
 
 ui::AXNode* BrowserAccessibilityManagerAndroid::RetargetForEvents(

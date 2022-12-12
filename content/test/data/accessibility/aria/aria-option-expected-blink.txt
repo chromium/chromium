@@ -1,7 +1,7 @@
 rootWebArea focusable
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++listBox
+++++++listBox activedescendantId=listBoxOption
 ++++++++listBoxOption focusable name='option 1' selected=false
 ++++++++++staticText name='option 1'
 ++++++++++++inlineTextBox name='option 1'

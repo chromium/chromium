@@ -964,15 +964,25 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
                        TestLoadingAccessibilityTree) {
   testing::ScopedContentAXModeSetter ax_mode_setter(ui::kAXModeBasic.flags());
 
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  GURL html_data_url(
+      "data:text/html," +
+      base::EscapeQueryParamValue(R"HTML(<body></body>)HTML", false));
+  ASSERT_TRUE(NavigateToURL(shell(), html_data_url));
 
   // The initial accessible returned should have state STATE_SYSTEM_BUSY while
   // the accessibility tree is being requested from the renderer.
   AccessibleChecker document1_checker(std::wstring(), ROLE_SYSTEM_DOCUMENT,
                                       std::wstring());
   document1_checker.SetExpectedState(STATE_SYSTEM_READONLY |
-                                     STATE_SYSTEM_FOCUSABLE |
                                      STATE_SYSTEM_FOCUSED | STATE_SYSTEM_BUSY);
+  document1_checker.CheckAccessible(GetRendererAccessible());
+
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+  ASSERT_TRUE(waiter.WaitForNotification());
+  document1_checker.SetExpectedState(
+      STATE_SYSTEM_READONLY | STATE_SYSTEM_FOCUSABLE | STATE_SYSTEM_FOCUSED);
   document1_checker.CheckAccessible(GetRendererAccessible());
 }
 

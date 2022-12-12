@@ -1447,6 +1447,7 @@ void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
   doc_node_ =
       CreateNode(ax::mojom::Role::kPdfRoot, ax::mojom::Restriction::kReadOnly,
                  render_accessibility, &nodes_);
+  doc_node_->AddState(ax::mojom::State::kFocusable);
   doc_node_->AddStringAttribute(ax::mojom::StringAttribute::kName,
                                 l10n_util::GetPluralStringFUTF8(
                                     IDS_PDF_DOCUMENT_PAGE_COUNT, page_count_));

@@ -4,7 +4,7 @@ rootWebArea focusable
 ++++++button focusable name='Before'
 ++++++++staticText name='Before'
 ++++++++++inlineTextBox name='Before'
-++++++iframe focusable invisible
+++++++iframe ignored invisible
 ++++++++rootWebArea focusable
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer

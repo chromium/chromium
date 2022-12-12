@@ -22,7 +22,7 @@ rootWebArea
 ++++++button name='Test label'
 ++++++++staticText name='Button with aria-labelledby'
 ++++++++++inlineTextBox name='Button with aria-labelledby'
-++++++textFieldWithComboBox name='aria label' activedescendantId=listBoxOption
+++++++textFieldWithComboBox name='aria label' activedescendantId=listBoxOption controlsIds=listBox
 ++++++++genericContainer
 ++++++listBox
 ++++++++listBoxOption name='Option 1' selected=false
@@ -37,7 +37,7 @@ rootWebArea
 ++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Option 2'
 ++++++++++++inlineTextBox name='Option 2'
-++++++textFieldWithComboBox name='Test label' activedescendantId=listBoxOption
+++++++textFieldWithComboBox name='Test label' activedescendantId=listBoxOption controlsIds=listBox
 ++++++++genericContainer
 ++++++listBox
 ++++++++listBoxOption name='Option 3' selected=false

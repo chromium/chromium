@@ -4675,7 +4675,7 @@ bool AXNodeObject::OnNativeFocusAction() {
     //
     // This code is in the process of being removed. See the comment above
     // |kSimulateClickOnAXFocus| in `blink/common/features.cc`.
-    if (!IsClickable() && CanBeActiveDescendant()) {
+    if (!IsClickable()) {
       return OnNativeClickAction();
     }
   }

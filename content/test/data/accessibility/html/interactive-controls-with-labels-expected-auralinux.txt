@@ -11,12 +11,12 @@
 ++++[static] name='Textbox with aria-labelledby'
 ++[push button] name='aria label'
 ++[push button] name='Test label' labelled-by
-++[combo box] name='aria label' selectable-text
-++[list box]
+++[combo box] name='aria label' selectable-text controller-for
+++[list box] controlled-by
 ++++[list item] name='Option 1' selectable
 ++++[list item] name='Option 2' selectable
-++[combo box] name='Test label' selectable-text labelled-by
-++[list box]
+++[combo box] name='Test label' selectable-text controller-for labelled-by
+++[list box] controlled-by
 ++++[list item] name='Option 3' selectable
 ++++[list item] name='Option 4' selectable
 ++[combo box] name='aria label' controller-for

@@ -4,7 +4,7 @@ rootWebArea
 ++++++genericContainer
 ++++++++staticText name='Choose a fruit, with text content'
 ++++++++++inlineTextBox name='Choose a fruit, with text content'
-++++++comboBoxMenuButton collapsed name='Choose a fruit, with text content' value='Apple' haspopup=listbox controlsIds=listBox
+++++++comboBoxMenuButton collapsed name='Choose a fruit, with text content' value='Apple' activedescendantId=listBoxOption haspopup=listbox controlsIds=listBox
 ++++++++staticText name='Apple'
 ++++++++++inlineTextBox name='Apple'
 ++++++listBox

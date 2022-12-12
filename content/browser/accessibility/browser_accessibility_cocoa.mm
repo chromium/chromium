@@ -2520,7 +2520,7 @@ bool content::IsNSRange(id value) {
     if ([self internalRole] == ax::mojom::Role::kDateTime)
       return NO;
 
-    return GetState(_owner, ax::mojom::State::kFocusable);
+    return _owner->IsFocusable();
   }
 
   if ([attribute isEqualToString:NSAccessibilityValueAttribute])

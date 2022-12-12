@@ -1,6 +1,6 @@
 Document
 ++Group IsControlElement=false
-++++Document
+++++Document IsControlElement=false
 ++++++Document
 ++++++++Group Name='iframe_onscreen'
 ++++++++Group Name='iframe_offscreen'

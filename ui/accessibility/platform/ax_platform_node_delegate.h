@@ -284,6 +284,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Returns true if this node is focused.
   virtual bool IsFocused() const;
 
+  // Returns true if this node is focusable or is a likely active descendant.
+  virtual bool IsFocusable() const;
+
   // Returns true if this node is ignored and should be hidden from the
   // accessibility tree. Methods that are used to navigate the accessibility
   // tree, such as "ChildAtIndex", "GetParent", and "GetChildCount", among

@@ -1673,9 +1673,8 @@ void CollectAncestorRoles(
 }
 
 - (NSNumber*)AXFocused {
-  if (_node->HasState(ax::mojom::State::kFocusable))
-    return
-        @(_node->GetDelegate()->GetFocus() == _node->GetNativeViewAccessible());
+  return
+      @(_node->GetDelegate()->GetFocus() == _node->GetNativeViewAccessible());
   return @NO;
 }
 
@@ -1688,7 +1687,7 @@ void CollectAncestorRoles(
     // Do not cross document boundaries.
     if (ui::IsPlatformDocument(ancestor->GetRole()))
       return nil;
-    if (ancestor->HasState(ax::mojom::State::kFocusable))
+    if (ancestor->IsFocusable())
       break;
   }
   // The assignment to ancestor may be null.
@@ -2089,7 +2088,7 @@ void CollectAncestorRoles(
     return NO;
 
   if (selector == @selector(setAccessibilityFocused:))
-    return _node->HasState(ax::mojom::State::kFocusable);
+    return _node->IsFocusable();
 
   if (selector == @selector(setAccessibilityValue:)) {
     switch (_node->GetRole()) {

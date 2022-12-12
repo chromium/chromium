@@ -1,0 +1,5 @@
+[document web] focusable
+++[menu] name='parent node' focusable
+++++[menu item] name='Inactive descendant' focusable
+++++[check menu item] name='Active descendant' focusable focused checkable checkable:true
+++++[radio menu item] name='Inactive descendant #2' focusable checkable checkable:true

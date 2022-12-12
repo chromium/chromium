@@ -24,7 +24,7 @@ rootWebArea
 ++++++++++staticText name='Test 2: Flash the screen'
 ++++++++++++inlineTextBox name='Test 2: Flash the screen'
 ++++++++++comboBoxGrouping
-++++++++++++textField
+++++++++++++textField controlsIds=listBox
 ++++++++++++listBox
 ++++++++++++++listBoxOption name='1' selected=false
 ++++++++++++++++staticText name='1'
@@ -60,7 +60,7 @@ rootWebArea
 ++++++++++staticText name='Test 4: Flash the screen'
 ++++++++++++inlineTextBox name='Test 4: Flash the screen'
 ++++++++++comboBoxGrouping
-++++++++++++textField
+++++++++++++textField controlsIds=listBox
 ++++++++++++listBox
 ++++++++++++++listBoxOption name='1' selected=false
 ++++++++++++++++staticText name='1'

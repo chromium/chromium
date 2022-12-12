@@ -241,7 +241,7 @@ BrowserAccessibilityFuchsia::GetFuchsiaStates() const {
   if (x_scroll_offset || y_scroll_offset)
     states.set_viewport_offset({x_scroll_offset, y_scroll_offset});
 
-  if (HasState(ax::mojom::State::kFocusable))
+  if (IsFocusable())
     states.set_focusable(true);
 
   states.set_has_input_focus(IsFocused());

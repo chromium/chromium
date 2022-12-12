@@ -4,12 +4,12 @@ Document
 ++Group IsControlElement=false
 ++++Button Name='Button'
 ++Group IsControlElement=false
-++++Document
+++++Document IsControlElement=false
 ++++++Document
 ++++++++Group IsControlElement=false
 ++++++++++Button Name='Ordinary Button'
 ++Group IsControlElement=false
-++++Document
+++++Document IsControlElement=false
 ++++++Document
 ++++++++Group IsControlElement=false
 ++++++++++Button Name='Scrolled Button'

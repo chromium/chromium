@@ -1,5 +1,5 @@
-AXWebArea AXFocused='0'
-++AXMenu AXDescription='parent node' AXFocused='0'
-++++AXMenuItem AXTitle='Inactive descendant' AXFocused='0'
-++++AXMenuItem AXTitle='Active descendant' AXValue='0' AXFocused='1'
-++++AXMenuItem AXTitle='Inactive descendant #2' AXValue='0' AXFocused='0'
+AXWebArea
+++AXMenu AXDescription='parent node'
+++++AXMenuItem AXTitle='Inactive descendant'
+++++AXMenuItem AXTitle='Active descendant' AXValue=0
+++++AXMenuItem AXTitle='Inactive descendant #2' AXValue=0

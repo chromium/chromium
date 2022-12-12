@@ -194,7 +194,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
   void GetFloatAttributeInGValue(ax::mojom::FloatAttribute attr, GValue* value);
 
   // Event helpers
-  void OnActiveDescendantChanged();
   void OnBusyStateChanged(bool is_busy);
   void OnCheckedStateChanged();
   void OnEnabledChanged();
@@ -229,7 +228,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
   void ResendFocusSignalsForCurrentlyFocusedNode();
   void SetAsCurrentlyFocusedNode();
   bool SupportsSelectionWithAtkSelection();
-  bool SelectionAndFocusAreTheSame();
   void SetActiveViewsDialog();
 
   // AXPlatformNode overrides.

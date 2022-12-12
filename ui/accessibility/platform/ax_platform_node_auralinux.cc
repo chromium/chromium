@@ -141,12 +141,6 @@ AXPlatformNode* g_root_application = nullptr;
 // ATK_STATE_FOCUSED change to false.
 AtkObject* g_current_focused = nullptr;
 
-// The last AtkObject which was the active descendant in the currently-focused
-// object (example: The highlighted option within a focused select element).
-// As with g_current_focused, we track this to emit events when this object is
-// no longer the active descendant.
-AtkObject* g_current_active_descendant = nullptr;
-
 // The last object which was selected. Tracking this is required because
 // widgets in the browser UI only emit notifications upon becoming selected,
 // but clients also expect notifications when items become unselected.
@@ -362,22 +356,6 @@ AtkAttributeSet* PrependAtkAttributeToAtkAttributeSet(
   attribute->name = g_strdup(name);
   attribute->value = g_strdup(value);
   return g_slist_prepend(attribute_set, attribute);
-}
-
-AtkObject* GetActiveDescendantOfCurrentFocused() {
-  if (!g_current_focused)
-    return nullptr;
-
-  auto* node = AXPlatformNodeAuraLinux::FromAtkObject(g_current_focused);
-  if (!node)
-    return nullptr;
-
-  int32_t id =
-      node->GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId);
-  if (auto* descendant = node->GetDelegate()->GetFromNodeID(id))
-    return descendant->GetNativeViewAccessible();
-
-  return nullptr;
 }
 
 void PrependTextAttributeToSet(const std::string& attribute,
@@ -2577,12 +2555,10 @@ void AXPlatformNodeAuraLinux::DestroyAtkObjects() {
   }
 
   if (atk_object_) {
-    // We explicitly clear g_current_focused and g_current_active_descendant
-    // just in case there is another reference to atk_object_ somewhere.
+    // We explicitly clear g_current_focused just in case there is another
+    // reference to atk_object_ somewhere.
     if (atk_object_ == g_current_focused)
       SetWeakGPtrToAtkObject(&g_current_focused, nullptr);
-    if (atk_object_ == g_current_active_descendant)
-      SetWeakGPtrToAtkObject(&g_current_active_descendant, nullptr);
     atk_object::Detach(AX_PLATFORM_NODE_AURALINUX(atk_object_));
 
     g_object_unref(atk_object_);
@@ -3103,9 +3079,10 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_EXPANDABLE);
     atk_state_set_add_state(atk_state_set, ATK_STATE_EXPANDED);
   }
-  if (HasState(ax::mojom::State::kFocusable) || SelectionAndFocusAreTheSame()) {
+  if (IsFocused())
+    atk_state_set_add_state(atk_state_set, ATK_STATE_FOCUSED);
+  if (IsFocusable())
     atk_state_set_add_state(atk_state_set, ATK_STATE_FOCUSABLE);
-  }
   if (HasState(ax::mojom::State::kHorizontal))
     atk_state_set_add_state(atk_state_set, ATK_STATE_HORIZONTAL);
   if (!IsInvisibleOrIgnored()) {
@@ -3187,20 +3164,6 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
       atk_state_set_add_state(atk_state_set, ATK_STATE_SENSITIVE);
     }
   }
-
-  AtkObject* atk_object = GetOrCreateAtkObject();
-  if (!atk_object)
-    return;
-
-  // It is insufficient to compare with g_current_activedescendant due to both
-  // timing and event ordering for objects which implement AtkSelection and also
-  // have an active descendant. For instance, if we check the state set of a
-  // selectable child, it will only have ATK_STATE_FOCUSED if we've processed
-  // the activedescendant change.
-  AtkObject* descendant = GetActiveDescendantOfCurrentFocused();
-  AtkObject* effective_focus = descendant ? descendant : delegate_->GetFocus();
-  if (effective_focus == atk_object)
-    atk_state_set_add_state(atk_state_set, ATK_STATE_FOCUSED);
 }
 
 struct AtkIntRelation {
@@ -3407,51 +3370,6 @@ gfx::NativeViewAccessible AXPlatformNodeAuraLinux::GetOrCreateAtkObject() {
     atk_object_ = CreateAtkObject();
   }
   return atk_object_;
-}
-
-void AXPlatformNodeAuraLinux::OnActiveDescendantChanged() {
-  AtkObject* atk_object = GetOrCreateAtkObject();
-  if (!atk_object)
-    return;
-
-  // Active-descendant-changed notifications are typically only relevant when
-  // the change is within the focused widget.
-  if (!g_current_focused)
-    return;
-  if (auto* focused_node = FromAtkObject(g_current_focused)) {
-    if (!focused_node->IsDescendantOf(this))
-      return;
-  }
-
-  AtkObject* descendant = GetActiveDescendantOfCurrentFocused();
-  if (descendant == g_current_active_descendant)
-    return;
-
-  // If selection and focus are the same, when the active descendant changes
-  // as a result of selection, a focus event will be emitted. We don't want to
-  // emit duplicate notifications.
-  {
-    auto* node = FromAtkObject(descendant);
-    if (node && node->SelectionAndFocusAreTheSame())
-      return;
-  }
-
-  // While there is an ATK active-descendant-changed event, it is meant for
-  // objects which manage their descendants (and claim to do so). The Core-AAM
-  // specification states that focus events should be emitted when the active
-  // descendant changes. This behavior is also consistent with Gecko.
-  if (g_current_active_descendant) {
-    g_signal_emit_by_name(g_current_active_descendant, "focus-event", false);
-    atk_object_notify_state_change(ATK_OBJECT(g_current_active_descendant),
-                                   ATK_STATE_FOCUSED, false);
-  }
-
-  SetWeakGPtrToAtkObject(&g_current_active_descendant, descendant);
-  if (g_current_active_descendant) {
-    g_signal_emit_by_name(g_current_active_descendant, "focus-event", true);
-    atk_object_notify_state_change(ATK_OBJECT(g_current_active_descendant),
-                                   ATK_STATE_FOCUSED, true);
-  }
 }
 
 void AXPlatformNodeAuraLinux::OnCheckedStateChanged() {
@@ -3710,24 +3628,16 @@ void AXPlatformNodeAuraLinux::OnFocused() {
 
   SetActiveViewsDialog();
 
-  AtkObject* old_effective_focus = g_current_active_descendant
-                                       ? g_current_active_descendant
-                                       : g_current_focused;
-  if (old_effective_focus) {
-    g_signal_emit_by_name(old_effective_focus, "focus-event", false);
-    atk_object_notify_state_change(ATK_OBJECT(old_effective_focus),
+  if (g_current_focused) {
+    g_signal_emit_by_name(g_current_focused, "focus-event", false);
+    atk_object_notify_state_change(ATK_OBJECT(g_current_focused),
                                    ATK_STATE_FOCUSED, false);
   }
 
   SetWeakGPtrToAtkObject(&g_current_focused, atk_object);
-  AtkObject* descendant = GetActiveDescendantOfCurrentFocused();
-  SetWeakGPtrToAtkObject(&g_current_active_descendant, descendant);
 
-  AtkObject* new_effective_focus = g_current_active_descendant
-                                       ? g_current_active_descendant
-                                       : g_current_focused;
-  g_signal_emit_by_name(new_effective_focus, "focus-event", true);
-  atk_object_notify_state_change(ATK_OBJECT(new_effective_focus),
+  g_signal_emit_by_name(g_current_focused, "focus-event", true);
+  atk_object_notify_state_change(ATK_OBJECT(g_current_focused),
                                  ATK_STATE_FOCUSED, true);
 }
 
@@ -3747,9 +3657,6 @@ void AXPlatformNodeAuraLinux::OnSelected() {
     atk_object_notify_state_change(ATK_OBJECT(atk_object), ATK_STATE_SELECTED,
                                    true);
   }
-
-  if (SelectionAndFocusAreTheSame())
-    OnFocused();
 }
 
 void AXPlatformNodeAuraLinux::OnSelectedChildrenChanged() {
@@ -3758,35 +3665,6 @@ void AXPlatformNodeAuraLinux::OnSelectedChildrenChanged() {
     return;
 
   g_signal_emit_by_name(obj, "selection-changed", true);
-}
-
-bool AXPlatformNodeAuraLinux::SelectionAndFocusAreTheSame() {
-  if (AXPlatformNodeBase* container = GetSelectionContainer()) {
-    ax::mojom::Role role = container->GetRole();
-
-    // In the browser UI, menus and their descendants emit selection-related
-    // events only, but we also want to emit platform focus-related events,
-    // so we treat selection and focus the same for browser UI.
-    if (role == ax::mojom::Role::kMenuBar || role == ax::mojom::Role::kMenu)
-      return !GetDelegate()->IsWebContent();
-    if (role == ax::mojom::Role::kListBox &&
-        !container->HasState(ax::mojom::State::kMultiselectable)) {
-      return GetDelegate()->GetFocus() == GetNativeViewAccessible();
-    }
-  }
-
-  // TODO(accessibility): `GetSelectionContainer()` returns nullptr when the
-  // current object is a descendant of a select element with a size of 1.
-  // Intentional? For now, handle that scenario here.
-  //
-  // If the selection is changing on a collapsed select element, focus remains
-  // on the select element and not the newly-selected descendant.
-  if (AXPlatformNodeBase* parent = FromAtkObject(GetParent())) {
-    if (parent->GetRole() == ax::mojom::Role::kMenuListPopup)
-      return !parent->IsInvisibleOrIgnored();
-  }
-
-  return false;
 }
 
 bool AXPlatformNodeAuraLinux::EmitsAtkTextEvents() const {
@@ -4161,9 +4039,6 @@ void AXPlatformNodeAuraLinux::NotifyAccessibilityEvent(
     case ax::mojom::Event::kMenuPopupEnd:
       OnMenuPopupEnd();
       break;
-    case ax::mojom::Event::kActiveDescendantChanged:
-      OnActiveDescendantChanged();
-      break;
     case ax::mojom::Event::kCheckedStateChanged:
       OnCheckedStateChanged();
       break;
@@ -4528,7 +4403,7 @@ bool AXPlatformNodeAuraLinux::FocusFirstFocusableAncestorInWebContent() {
   if (!atk_object)
     return false;
 
-  if (HasState(ax::mojom::State::kFocusable) || SelectionAndFocusAreTheSame()) {
+  if (IsFocusable()) {
     if (g_current_focused != atk_object)
       GrabFocus();
     return true;
@@ -4548,10 +4423,8 @@ bool AXPlatformNodeAuraLinux::FocusFirstFocusableAncestorInWebContent() {
     if (!child || child == this)
       continue;
 
-    if (child->HasState(ax::mojom::State::kFocusable) ||
-        child->SelectionAndFocusAreTheSame()) {
+    if (child->IsFocusable())
       return false;
-    }
   }
 
   return parent->FocusFirstFocusableAncestorInWebContent();
@@ -4612,8 +4485,21 @@ const gchar* AXPlatformNodeAuraLinux::GetDefaultActionName() {
   if (!GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb, &action))
     return nullptr;
 
+  // If this object cannot receive focus and has a button role, use click as
+  // the default action. On the AuraLinux platform, the press action is a
+  // signal to users that they can trigger the action using the keyboard, while
+  // a click action means the user should trigger the action via a simulated
+  // click. If this object cannot receive focus, it's impossible to trigger it
+  // with a key press.
+  if (GetRole() == ax::mojom::Role::kButton &&
+      action == static_cast<int>(ax::mojom::DefaultActionVerb::kPress) &&
+      !IsFocusable()) {
+    action = static_cast<int>(ax::mojom::DefaultActionVerb::kClick);
+  }
+
   std::string action_verb =
       ui::ToString(static_cast<ax::mojom::DefaultActionVerb>(action));
+
   ATK_AURALINUX_RETURN_STRING(action_verb);
 }
 

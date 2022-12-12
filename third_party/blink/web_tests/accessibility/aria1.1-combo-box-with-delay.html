@@ -34,13 +34,11 @@
       assert_true(window.comboBoxInput.isFocused, 'Combo box should be focused.');
       let state1 = accessibilityController.accessibleElementById('state1');
       assert_false(state1.isSelected, 'State1 should not be selected.');
-      assert_true(state1.isFocusable, 'State1 should be focusable.');
       assert_false(state1.isFocused, 'State1 should not be focused.');
 
       let state2 = accessibilityController.accessibleElementById('state2');
       assert_equals(window.comboBoxInput.activeDescendant, state2, 'State2 should be the active descendant.');
       assert_true(state2.isSelected, 'State2 should be selected.');
-      assert_true(state2.isFocusable, 'State2 should be focusable.');
       assert_false(state2.isFocused, 'State2 should not be focused.');
 
       t.done();
@@ -55,12 +53,10 @@
       let state1 = accessibilityController.accessibleElementById('state1');
       assert_equals(window.comboBoxInput.activeDescendant, state1, 'State1 should be the active descendant.');
       assert_true(state1.isSelected, 'State1 should be selected.');
-      assert_true(state1.isFocusable, 'State1 should be focusable.');
       assert_false(state1.isFocused, 'State1 should not be focused.');
 
       let state2 = accessibilityController.accessibleElementById('state2');
       assert_false(state2.isSelected, 'State2 should not be selected.');
-      assert_true(state2.isFocusable, 'State2 should be focusable.');
       assert_false(state2.isFocused, 'State2 should not be focused.');
 
       document.querySelector('input').setAttribute('aria-activedescendant', 'state2');

@@ -285,6 +285,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   // Returns true if this node is currently focused.
   bool IsFocused() const;
 
+  // Returns true if this node is focusable.
+  // This does more than just use HasState(ax::mojom::State::kFocusable) -- it
+  // also checks whether the object is a likely activedescendant.
+  bool IsFocusable() const;
+
   // Returns true if this node can be scrolled either in the horizontal or the
   // vertical direction.
   bool IsScrollable() const;

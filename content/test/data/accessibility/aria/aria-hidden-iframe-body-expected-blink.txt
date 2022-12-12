@@ -1,12 +1,12 @@
 rootWebArea focusable
 ++genericContainer ignored
 ++++genericContainer
-++++++iframe focusable
+++++++iframe
 ++++++++rootWebArea focusable
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer editable focusable invisible multiline richlyEditable
 ++++++++++++++staticText ignored invisible name='1'
-++++++iframe focusable
+++++++iframe
 ++++++++rootWebArea focusable
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored invisible

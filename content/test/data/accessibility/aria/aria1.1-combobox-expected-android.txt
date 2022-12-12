@@ -1,12 +1,12 @@
 android.webkit.WebView focusable scrollable
-++android.view.View name='State'
-++android.view.View name='State'
+++android.widget.TextView name='State'
+++android.view.View expanded hint='State'
 ++++android.widget.EditText clickable editable_text focusable focused input_type=1
-++android.widget.ListView role_description='list box' clickable collection focusable item_count=2 row_count=2
-++++android.view.View clickable collection_item focusable name='Alabama'
-++++android.view.View clickable collection_item focusable selected name='Alaska' item_index=1 row_index=1
-++android.view.View name='State'
+++android.widget.ListView role_description='list box' clickable collection item_count=2 row_count=2 column_count=1
+++++android.view.View collection_item focusable name='Alabama' row_span=1 column_span=1
+++++android.view.View collection_item focusable selected name='Alaska' item_index=1 row_index=1 row_span=1 column_span=1
+++android.view.View expanded hint='State'
 ++++android.widget.EditText clickable editable_text focusable input_type=1
-++android.widget.ListView role_description='list box' clickable collection item_count=2 row_count=2
-++++android.view.View clickable collection_item focusable name='Alabama'
-++++android.view.View clickable collection_item focusable name='Alaska' item_index=1 row_index=1
+++android.widget.ListView role_description='list box' clickable collection item_count=2 row_count=2 column_count=1
+++++android.view.View collection_item focusable name='Alabama' row_span=1 column_span=1
+++++android.view.View collection_item focusable name='Alaska' item_index=1 row_index=1 row_span=1 column_span=1

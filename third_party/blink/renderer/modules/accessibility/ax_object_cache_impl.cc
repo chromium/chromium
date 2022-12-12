@@ -3184,10 +3184,8 @@ void AXObjectCacheImpl::MaybeNewRelationTarget(Node& node, AXObject* obj) {
   Node* focused_node = document_->FocusedElement();
   if (focused_node) {
     AXObject* focus = Get(focused_node);
-    if (focus &&
-        focus->GetAOMPropertyOrARIAAttribute(
-            AOMRelationProperty::kActiveDescendant) == &node &&
-        obj->CanBeActiveDescendant()) {
+    if (focus && focus->GetAOMPropertyOrARIAAttribute(
+                     AOMRelationProperty::kActiveDescendant) == &node) {
       focus->HandleActiveDescendantChanged();
     }
   }

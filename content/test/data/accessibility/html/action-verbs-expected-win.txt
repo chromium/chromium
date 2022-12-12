@@ -27,7 +27,7 @@ ROLE_SYSTEM_DOCUMENT name='Action verbs' READONLY FOCUSABLE action_name='doDefau
 ++++ROLE_SYSTEM_MENUITEM name='Menu item 1' default_action='select' action_name='select'
 ++++IA2_ROLE_CHECK_MENU_ITEM name='Menu item 2' CHECKED IA2_STATE_CHECKABLE checkable:true default_action='uncheck' action_name='uncheck'
 ++++IA2_ROLE_RADIO_MENU_ITEM name='Menu item 3' IA2_STATE_CHECKABLE checkable:true default_action='check' action_name='check'
-++ROLE_SYSTEM_PUSHBUTTON name='ARIA Button' default_action='click' action_name='click'
+++ROLE_SYSTEM_PUSHBUTTON name='ARIA Button' default_action='press' action_name='press'
 ++ROLE_SYSTEM_PUSHBUTTON name='ARIA button with tab index' FOCUSABLE default_action='press' action_name='press'
 ++ROLE_SYSTEM_PUSHBUTTON name='ARIA button with negative tab index' FOCUSABLE default_action='press' action_name='press'
 ++IA2_ROLE_SECTION default_action='click' action_name='click'

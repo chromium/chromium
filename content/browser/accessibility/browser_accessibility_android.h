@@ -57,7 +57,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   bool IsDisabledDescendant() const;
   bool IsEnabled() const;
   bool IsExpanded() const;
-  bool IsFocusable() const;
+  bool IsFocusable() const override;
   bool IsFormDescendant() const;
   bool IsHeading() const;
   bool IsHierarchical() const;

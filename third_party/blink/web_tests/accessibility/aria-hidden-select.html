@@ -18,10 +18,8 @@ test((t) => {
     assert_equals(popup.childrenCount, 2);
     var option1 = popup.childAtIndex(0);
     assert_equals(option1.name, "A");
-    assert_true(option1.isFocusable);
     var option2 = popup.childAtIndex(1);
     assert_equals(option2.name, "B");
-    assert_true(option2.isFocusable);
 }, "This tests that the aria-hidden attribute on the SELECT element works \
 correctly with accessibility. Even though the SELECT element is aria-hidden, \
 it and its children should appear in the accessibility tree since it is \

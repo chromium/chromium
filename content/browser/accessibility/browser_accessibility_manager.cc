@@ -842,7 +842,7 @@ BrowserAccessibilityManager::GetFocusFromThisOrDescendantFrame() const {
       return child_manager->GetFocusFromThisOrDescendantFrame();
   }
 
-  return obj;
+  return GetActiveDescendant(obj);
 }
 
 void BrowserAccessibilityManager::SetFocus(const BrowserAccessibility& node) {

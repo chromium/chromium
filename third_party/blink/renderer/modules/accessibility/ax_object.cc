@@ -2219,6 +2219,16 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
     }
   }
 
+  // Try to get an aria-controls listbox for an <input role="combobox">.
+  if (!node_data->HasIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kControlsIds)) {
+    if (AXObject* listbox = GetControlsListboxForTextfieldCombobox()) {
+      node_data->AddIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kControlsIds,
+          {static_cast<int32_t>(listbox->AXObjectID())});
+    }
+  }
+
   if (IsScrollableContainer())
     SerializeScrollAttributes(node_data);
 
@@ -2230,6 +2240,70 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
       SerializeHTMLAttributes(node_data);
     }
   }
+}
+
+// Try to get an aria-controls for an <input role="combobox">, because it
+// helps identify focusable options in the listbox using activedescendant
+// detection, even though the focus is on the textbox and not on the listbox
+// ancestor.
+AXObject* AXObject::GetControlsListboxForTextfieldCombobox() {
+  // Only perform work for textfields.
+  if (!ui::IsTextField(RoleValue()))
+    return nullptr;
+
+  // Authors used to be told to use aria-owns to point from the textfield to the
+  // listbox. However, the aria-owns  on a textfield must be ignored for its
+  // normal purpose because a textfield cannot have children. This code allows
+  // the textfield's invalid aria-owns to be remapped to aria-controls.
+  DCHECK(GetElement());
+  HeapVector<Member<Element>> owned_elements;
+  Vector<String> ids;
+  AXObject* listbox_candidate = nullptr;
+  if (ElementsFromAttribute(GetElement(), owned_elements,
+                            html_names::kAriaOwnsAttr, ids)) {
+    DCHECK(owned_elements[0]);
+    listbox_candidate = AXObjectCache().GetOrCreate(owned_elements[0]);
+  }
+
+  // Combobox grouping <div role="combobox"><input><div role="listbox"></div>.
+  if (!listbox_candidate && RoleValue() == ax::mojom::blink::Role::kTextField &&
+      ParentObject()->RoleValue() ==
+          ax::mojom::blink::Role::kComboBoxGrouping) {
+    listbox_candidate = UnignoredNextSibling();
+  }
+
+  // Heuristic: try the next sibling, but we are very strict about this in
+  // order to avoid false positives such as an <input> followed by a
+  // <select>.
+  if (!listbox_candidate &&
+      RoleValue() == ax::mojom::blink::Role::kTextFieldWithComboBox) {
+    // Require an aria-activedescendant on the <input>.
+    if (!GetAOMPropertyOrARIAAttribute(AOMRelationProperty::kActiveDescendant))
+      return nullptr;
+    listbox_candidate = UnignoredNextSibling();
+    if (!listbox_candidate)
+      return nullptr;
+    // Require that the next sibling is not a <select>.
+    if (IsA<HTMLSelectElement>(listbox_candidate->GetNode()))
+      return nullptr;
+    // Require an ARIA role on the next sibling.
+    if (listbox_candidate->AriaRoleAttribute() !=
+        ax::mojom::blink::Role::kListBox) {
+      return nullptr;
+    }
+    // Naming a listbox within a composite combobox widget is not part of a
+    // known/used pattern. If it has a name, it's an indicator that it's
+    // probably a separate listbox widget.
+    if (!listbox_candidate->ComputedName().empty())
+      return nullptr;
+  }
+
+  if (!listbox_candidate ||
+      listbox_candidate->RoleValue() != ax::mojom::blink::Role::kListBox) {
+    return nullptr;
+  }
+
+  return listbox_candidate;
 }
 
 const AtomicString& AXObject::GetRoleAttributeStringForObjectAttribute() {
@@ -3479,6 +3553,11 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
   if (inside_portal)
     return false;
 
+  // The portal itself is focusable. Portals are treated as buttons in platform
+  // APIs, hiding their subtree.
+  if (RoleValue() == ax::mojom::blink::Role::kPortal)
+    return true;
+
   // Display-locked nodes that have content-visibility: hidden are not exposed
   // to accessibility in any way, so they are not focusable. Note that for
   // content-visibility: auto cases, `ShouldIgnoreNodeDueToDisplayLock()` would
@@ -3510,32 +3589,26 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
   if (are_cached_attributes_up_to_date ? cached_is_inert_ : ComputeIsInert())
     return false;
 
-  // NOT focusable: disabled child tree owners (no content area).
+  // NOT focusable: child tree owners (it's the content area that will be marked
+  // focusable in the a11y tree).
   if (IsChildTreeOwner())
-    return !IsDisabled();
+    return false;
 
   // NOT focusable: disabled form controls.
   if (IsDisabledFormControl(elem))
     return false;
 
-  // Focusable: options in a combobox or listbox.
-  // Even though they are not treated as supporting focus by Blink (the parent
-  // widget is), they are considered focusable in the accessibility sense,
-  // behaving like potential active descendants, and handling focus actions.
-  // Menu list options are handled before visibility check, because they
-  // are considered focusable even when part of collapsed drop down.
-  if (RoleValue() == ax::mojom::blink::Role::kMenuListOption)
-    return true;
+  // Option elements do not receive DOM focus but they do receive a11y focus,
+  // unless they are part of a <datalist>, in which case they can be displayed
+  // by the browser process, but not the renderer.
+  // TODO(crbug.com/1399852) Address gaps in datalist a11y.
+  if (auto* option = DynamicTo<HTMLOptionElement>(elem))
+    return !option->OwnerDataListElement();
 
   // NOT focusable: hidden elements.
   // TODO(aleventhal) Consider caching visibility when it's safe to compute.
   if (!IsA<HTMLAreaElement>(elem) && !IsFocusableStyleUsingBestAvailableState())
     return false;
-
-  // Focusable: options in a combobox or listbox.
-  // Similar to menu list option treatment above, but not focusable if hidden.
-  if (RoleValue() == ax::mojom::blink::Role::kListBoxOption)
-    return true;
 
   // Focusable: element supports focus.
   if (elem->SupportsFocus())
@@ -3549,10 +3622,6 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
   //     IsUserScrollable()) {
   //   return true;
   // }
-
-  // Focusable: can be an active descendant.
-  if (CanBeActiveDescendant())
-    return true;
 
   // NOT focusable: everything else.
   return false;
@@ -3571,96 +3640,6 @@ bool AXObject::IsKeyboardFocusable() const {
   // `RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled()`
   // is true.
   return element->tabIndex() >= 0 || IsRootEditableElement(*element);
-}
-
-// From ARIA 1.1.
-// 1. The value of aria-activedescendant refers to an element that is either a
-// descendant of the element with DOM focus or is a logical descendant as
-// indicated by the aria-owns attribute. 2. The element with DOM focus is a
-// textbox with aria-controls referring to an element that supports
-// aria-activedescendant, and the value of aria-activedescendant specified for
-// the textbox refers to either a descendant of the element controlled by the
-// textbox or is a logical descendant of that controlled element as indicated by
-// the aria-owns attribute.
-bool AXObject::CanBeActiveDescendant() const {
-  // Require an element with an id attribute.
-  // TODO(accessibility): this code currently requires both an id and role
-  // attribute, as well as an ancestor or controlling aria-activedescendant.
-  // However, with element reflection it may be possible to set an active
-  // descendant without an id, so at some point we may need to remove the
-  // requirement for an id attribute.
-  if (!GetElement() || !GetElement()->FastHasAttribute(html_names::kIdAttr))
-    return false;
-
-  // Does not make sense to use aria-activedescendant to point to a
-  // presentational object.
-  if (IsPresentational())
-    return false;
-
-  // Does not make sense to use aria-activedescendant to point to an HTML
-  // element that requires real focus, therefore an ARIA role is necessary.
-  if (AriaRoleAttribute() == ax::mojom::blink::Role::kUnknown)
-    return false;
-
-  return IsARIAControlledByTextboxWithActiveDescendant() ||
-         AncestorExposesActiveDescendant();
-}
-
-bool AXObject::IsARIAControlledByTextboxWithActiveDescendant() const {
-  if (IsDetached() || !GetDocument())
-    return false;
-
-  // This situation should mostly arise when using an active descendant on a
-  // textbox inside an ARIA 1.1 combo box widget, which points to the selected
-  // option in a list. In such situations, the active descendant is useful only
-  // when the textbox is focused. Therefore, we don't currently need to keep
-  // track of all aria-controls relationships.
-  const Element* focused_element = GetDocument()->FocusedElement();
-  if (!focused_element)
-    return false;
-
-  const AXObject* focused_object = AXObjectCache().GetOrCreate(focused_element);
-  if (!focused_object || !focused_object->IsTextField())
-    return false;
-
-  if (!focused_object->GetAOMPropertyOrARIAAttribute(
-          AOMRelationProperty::kActiveDescendant)) {
-    return false;
-  }
-
-  HeapVector<Member<Element>> controlled_by_elements;
-  if (!focused_object->HasAOMPropertyOrARIAAttribute(
-          AOMRelationListProperty::kControls, controlled_by_elements)) {
-    return false;
-  }
-
-  for (const auto& controlled_by_element : controlled_by_elements) {
-    const AXObject* controlled_by_object =
-        AXObjectCache().GetOrCreate(controlled_by_element);
-    if (!controlled_by_object)
-      continue;
-
-    const AXObject* object = this;
-    while (object && object != controlled_by_object)
-      object = object->ParentObjectUnignored();
-    if (object)
-      return true;
-  }
-
-  return false;
-}
-
-bool AXObject::AncestorExposesActiveDescendant() const {
-  const AXObject* parent = ParentObjectUnignored();
-  if (!parent)
-    return false;
-
-  if (parent->GetAOMPropertyOrARIAAttribute(
-          AOMRelationProperty::kActiveDescendant)) {
-    return true;
-  }
-
-  return parent->AncestorExposesActiveDescendant();
 }
 
 bool AXObject::CanSetSelectedAttribute() const {
@@ -4283,15 +4262,6 @@ ax::mojom::blink::DefaultActionVerb AXObject::Action() const {
                ? ax::mojom::blink::DefaultActionVerb::kCheck
                : ax::mojom::blink::DefaultActionVerb::kUncheck;
   }
-
-  // If this object cannot receive focus and has a button role, use click as
-  // the default action. On the AuraLinux platform, the press action is a
-  // signal to users that they can trigger the action using the keyboard, while
-  // a click action means the user should trigger the action via a simulated
-  // click. If this object cannot receive focus, it's impossible to trigger it
-  // with a key press.
-  if (RoleValue() == ax::mojom::blink::Role::kButton && !CanSetFocusAttribute())
-    return ax::mojom::blink::DefaultActionVerb::kClick;
 
   switch (RoleValue()) {
     case ax::mojom::blink::Role::kButton:
@@ -6478,9 +6448,27 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     // ----- role="row" -------
     // Spec says we should always expose the name on rows,
     // but for performance reasons we only do it
-    // if the row might receive focus.
-    case ax::mojom::blink::Role::kRow:
-      return CanSetFocusAttribute();
+    // if the row is focusable or is the active descendant of a grid/treegrid.
+    case ax::mojom::blink::Role::kRow: {
+      if (CanSetFocusAttribute())
+        return true;
+      AXObject* ancestor = ParentObjectUnignored();
+      while (ancestor) {
+        if (ancestor->GetAOMPropertyOrARIAAttribute(
+                AOMRelationProperty::kActiveDescendant)) {
+          return true;
+        }
+        if (ancestor->RoleValue() !=
+                ax::mojom::blink::Role::kGenericContainer &&
+            ancestor->RoleValue() != ax::mojom::blink::Role::kNone &&
+            ancestor->RoleValue() != ax::mojom::blink::Role::kRowGroup) {
+          // Not inside a grid or a treegrid, or reached the top of one.
+          return false;
+        }
+        ancestor = ancestor->ParentObjectUnignored();
+      }
+      return false;
+    }
 
     // ----- Conditional: contribute to ancestor only, unless focusable -------
     // Some objects can contribute their contents to ancestor names, but

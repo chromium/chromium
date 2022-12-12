@@ -1,5 +1,5 @@
 Document
-++Document
+++Document IsControlElement=false
 ++++Document
 ++++++Group IsControlElement=false
 ++++++++Text Name='My favorite browser is '
@@ -9,7 +9,7 @@ Document
 ++++++++Group IsControlElement=false
 ++++++++++Text Name='Chrome'
 ++++++++Text Name='!'
-++Document
+++Document IsControlElement=false
 ++++Document
 ++++++Group IsControlElement=false
 ++++++++Text Name='This test is to check '

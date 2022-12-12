@@ -245,6 +245,13 @@ bool AXPlatformNodeDelegate::IsFocused() const {
   return false;
 }
 
+bool AXPlatformNodeDelegate::IsFocusable() const {
+  if (node_)
+    return node_->IsFocusable();
+
+  return HasState(ax::mojom::State::kFocusable);
+}
+
 bool AXPlatformNodeDelegate::IsIgnored() const {
   if (node_)
     return node_->IsIgnored();

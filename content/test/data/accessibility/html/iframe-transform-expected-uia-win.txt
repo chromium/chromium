@@ -1,7 +1,7 @@
 Document
-++Document
+++Document IsControlElement=false
 ++++Document
 ++++++Image
-++Document
+++Document IsControlElement=false
 ++++Document
 ++++++Image

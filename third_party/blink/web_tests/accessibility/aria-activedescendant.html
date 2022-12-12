@@ -77,11 +77,8 @@ function testExpectations(t, widgetId, textboxId, listboxId) {
     assert_true(axWidget.isExpanded, widgetId + ".isExpanded");
     assert_equals(axWidget.hasPopup, "menu");
 
-    assert_true(option1.isFocusable, listboxId + "-option1.isFocusable");
     assert_true(option1.isSelectable, listboxId + "-option1.isSelectable");
-    assert_true(option2.isFocusable, listboxId + "-option2.isFocusable");
     assert_true(option2.isSelectable, listboxId + "-option2.isSelectable");
-    assert_true(option3.isFocusable, listboxId + "-option3.isFocusable");
     assert_true(option3.isSelectable, listboxId + "-option3.isSelectable");
 
     assert_true(axTextbox.isFocused, widgetId + ".isFocused");
