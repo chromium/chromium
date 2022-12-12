@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "extensions/common/api/feedback_private.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/widget/widget.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
@@ -20,6 +21,8 @@ class Profile;
 
 class FeedbackDialog : public ui::WebDialogDelegate {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFeedbackDialogForTesting);
+
   static void CreateOrShow(
       Profile* profile,
       const extensions::api::feedback_private::FeedbackInfo& info);

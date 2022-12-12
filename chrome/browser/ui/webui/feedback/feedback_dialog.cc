@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/api/feedback_private.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -44,6 +45,9 @@ FeedbackDialog* FeedbackDialog::current_instance_ = nullptr;
 FeedbackDialog* FeedbackDialog::GetInstanceForTest() {
   return current_instance_;
 }
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FeedbackDialog,
+                                      kFeedbackDialogForTesting);
 
 // static
 void FeedbackDialog::CreateOrShow(
@@ -72,6 +76,10 @@ void FeedbackDialog::CreateOrShow(
       chrome::ShowWebDialog(nullptr, profile, current_instance_,
                             /*show=*/false);
   current_instance_->widget_ = views::Widget::GetWidgetForNativeWindow(window);
+  views::View* root = current_instance_->widget_->GetRootView();
+  if (root != nullptr) {
+    root->SetProperty(views::kElementIdentifierKey, kFeedbackDialogForTesting);
+  }
 }
 
 FeedbackDialog::FeedbackDialog(
