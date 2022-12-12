@@ -4997,12 +4997,15 @@
       },
     },
 
+    # For updater_gtests on Windows, the test action timeouts are based on
+    # empirical observations of test runtimes, 2021-07. The test launcher
+    # timeout is set at 180000 to work around an unfixable issue in the
+    # COM runtime class activation crbug.com/1259178.
     'updater_gtests_win': {
       'updater_tests': {
         'args': [
           '--gtest_shuffle',
-          # Timeouts based on empirical observations of test runtimes, 2021-07.
-          '--test-launcher-timeout=90000',
+          '--test-launcher-timeout=180000',
           '--ui-test-action-max-timeout=45000',
           '--ui-test-action-timeout=40000',
         ],
@@ -5010,8 +5013,7 @@
       'updater_tests_system': {
         'args': [
           '--gtest_shuffle',
-          # Timeouts based on empirical observations of test runtimes, 2021-07.
-          '--test-launcher-timeout=90000',
+          '--test-launcher-timeout=180000',
           '--ui-test-action-max-timeout=45000',
           '--ui-test-action-timeout=40000',
           '--exclude-paths-from-win-defender',
@@ -5030,8 +5032,7 @@
       'updater_tests_system': {
         'args': [
           '--gtest_shuffle',
-          # Timeouts based on empirical observations of test runtimes, 2021-07.
-          '--test-launcher-timeout=90000',
+          '--test-launcher-timeout=180000',
           '--ui-test-action-max-timeout=45000',
           '--ui-test-action-timeout=40000',
           '--exclude-paths-from-win-defender',
@@ -5049,8 +5050,7 @@
           '--test-launcher-bot-mode',
           '--cfi-diag=0',
           '--gtest_shuffle',
-          # Timeouts based on empirical observations of test runtimes, 2021-07.
-          '--test-launcher-timeout=90000',
+          '--test-launcher-timeout=180000',
           '--ui-test-action-max-timeout=45000',
           '--ui-test-action-timeout=40000',
         ],

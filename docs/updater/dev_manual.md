@@ -47,6 +47,12 @@ defined in file `tools/mb/mb_config.pyl`. Steps to update the config:
   * Run command `./mb train` to update the expectations.
   * Example CL: https://crrev.com/c/3656357.
 
+### Update tester configuration.
+The parameters for invoking the updater unit tests when running in Buildbot are
+defined in `testing/buildbot/test_suites.pyl`. After making changes to the file,
+run `vpython3 .\testing\buildbot\generate_buildbot_json.py` to generate the bot
+configurations, make a CL, and send it out.
+
 ### Run tests on swarming
 `mb` tool can upload your private build target (and all the dependencies,
  based on build rule) to swarming server and run the target on bots. The

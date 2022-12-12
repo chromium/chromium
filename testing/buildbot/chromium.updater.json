@@ -589,7 +589,7 @@
       {
         "args": [
           "--gtest_shuffle",
-          "--test-launcher-timeout=90000",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
         ],
@@ -615,7 +615,7 @@
       {
         "args": [
           "--gtest_shuffle",
-          "--test-launcher-timeout=90000",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000",
           "--exclude-paths-from-win-defender"
@@ -646,7 +646,7 @@
       {
         "args": [
           "--gtest_shuffle",
-          "--test-launcher-timeout=90000",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
         ],
@@ -672,7 +672,7 @@
       {
         "args": [
           "--gtest_shuffle",
-          "--test-launcher-timeout=90000",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000",
           "--exclude-paths-from-win-defender"
@@ -703,7 +703,7 @@
       {
         "args": [
           "--gtest_shuffle",
-          "--test-launcher-timeout=90000",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000",
           "--exclude-paths-from-win-defender"
@@ -732,7 +732,7 @@
           "--test-launcher-bot-mode",
           "--cfi-diag=0",
           "--gtest_shuffle",
-          "--test-launcher-timeout=90000",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
         ],
@@ -761,7 +761,7 @@
       {
         "args": [
           "--gtest_shuffle",
-          "--test-launcher-timeout=90000",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
         ],
@@ -787,7 +787,7 @@
       {
         "args": [
           "--gtest_shuffle",
-          "--test-launcher-timeout=90000",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000",
           "--exclude-paths-from-win-defender"
@@ -818,7 +818,7 @@
       {
         "args": [
           "--gtest_shuffle",
-          "--test-launcher-timeout=90000",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000",
           "--exclude-paths-from-win-defender"
@@ -847,7 +847,7 @@
           "--test-launcher-bot-mode",
           "--cfi-diag=0",
           "--gtest_shuffle",
-          "--test-launcher-timeout=90000",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
         ],
@@ -876,7 +876,7 @@
       {
         "args": [
           "--gtest_shuffle",
-          "--test-launcher-timeout=90000",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
         ],
@@ -902,7 +902,7 @@
       {
         "args": [
           "--gtest_shuffle",
-          "--test-launcher-timeout=90000",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000",
           "--exclude-paths-from-win-defender"
@@ -933,7 +933,7 @@
       {
         "args": [
           "--gtest_shuffle",
-          "--test-launcher-timeout=90000",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
         ],
@@ -958,7 +958,7 @@
       {
         "args": [
           "--gtest_shuffle",
-          "--test-launcher-timeout=90000",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000",
           "--exclude-paths-from-win-defender"
@@ -988,7 +988,7 @@
       {
         "args": [
           "--gtest_shuffle",
-          "--test-launcher-timeout=90000",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
         ],
@@ -1013,7 +1013,7 @@
       {
         "args": [
           "--gtest_shuffle",
-          "--test-launcher-timeout=90000",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000",
           "--exclude-paths-from-win-defender"
