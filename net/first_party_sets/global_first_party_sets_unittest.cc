@@ -11,6 +11,7 @@
 #include "base/version.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -148,7 +149,8 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverride) {
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, absl::nullopt);
   FirstPartySetEntry override_entry(example, SiteType::kAssociated, 1);
 
-  FirstPartySetsContextConfig config({{example, override_entry}});
+  FirstPartySetsContextConfig config(
+      {{example, net::FirstPartySetEntryOverride(override_entry)}});
 
   EXPECT_THAT(GlobalFirstPartySets(kVersion,
                                    {
@@ -163,7 +165,8 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_RemovedViaOverride) {
   SchemefulSite example(GURL("https://example.test"));
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, absl::nullopt);
 
-  FirstPartySetsContextConfig config({{example, absl::nullopt}});
+  FirstPartySetsContextConfig config(
+      {{example, net::FirstPartySetEntryOverride()}});
 
   EXPECT_THAT(GlobalFirstPartySets(kVersion,
                                    {
@@ -194,7 +197,8 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverrideWithDecoyAlias) {
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, absl::nullopt);
   FirstPartySetEntry override_entry(example, SiteType::kAssociated, 1);
 
-  FirstPartySetsContextConfig config({{example_cctld, override_entry}});
+  FirstPartySetsContextConfig config(
+      {{example_cctld, net::FirstPartySetEntryOverride(override_entry)}});
 
   EXPECT_THAT(GlobalFirstPartySets(kVersion,
                                    {
@@ -210,7 +214,8 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_RemovedViaOverrideWithDecoyAlias) {
   SchemefulSite example_cctld(GURL("https://example.cctld"));
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, absl::nullopt);
 
-  FirstPartySetsContextConfig config({{example_cctld, absl::nullopt}});
+  FirstPartySetsContextConfig config(
+      {{example_cctld, net::FirstPartySetEntryOverride()}});
 
   EXPECT_THAT(GlobalFirstPartySets(kVersion,
                                    {
@@ -227,7 +232,8 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_AliasesIgnoredForConfig) {
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, absl::nullopt);
   FirstPartySetEntry override_entry(example, SiteType::kAssociated, 1);
 
-  FirstPartySetsContextConfig config({{example, override_entry}});
+  FirstPartySetsContextConfig config(
+      {{example, net::FirstPartySetEntryOverride(override_entry)}});
 
   // FindEntry should ignore aliases when using the customizations. Public
   // aliases only apply to sites in the public sets.
@@ -1613,17 +1619,18 @@ class GlobalFirstPartySetsWithConfigTest
   GlobalFirstPartySetsWithConfigTest()
       : config_({
             // New entry:
-            {kPrimary3,
-             {FirstPartySetEntry(kPrimary3,
-                                 SiteType::kPrimary,
-                                 absl::nullopt)}},
+            {kPrimary3, net::FirstPartySetEntryOverride(
+                            FirstPartySetEntry(kPrimary3,
+                                               SiteType::kPrimary,
+                                               absl::nullopt))},
             // Removed entry:
-            {kAssociated1, absl::nullopt},
+            {kAssociated1, net::FirstPartySetEntryOverride()},
             // Remapped entry:
             {kAssociated3,
-             {FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)}},
+             net::FirstPartySetEntryOverride(
+                 FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0))},
             // Removed alias:
-            {kAssociated1Cctld, absl::nullopt},
+            {kAssociated1Cctld, net::FirstPartySetEntryOverride()},
         }) {}
 
   FirstPartySetsContextConfig& config() { return config_; }

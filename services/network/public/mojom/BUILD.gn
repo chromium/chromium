@@ -872,6 +872,10 @@ mojom("mojom_first_party_sets") {
               cpp = "::net::FirstPartySetsCacheFilter"
               move_only = true
             },
+            {
+              mojom = "network.mojom.FirstPartySetEntryOverride"
+              cpp = "::net::FirstPartySetEntryOverride"
+            },
           ]
           traits_headers = [
             "//services/network/public/cpp/first_party_sets_mojom_traits.h",

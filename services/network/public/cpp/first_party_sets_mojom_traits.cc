@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
@@ -179,11 +180,27 @@ bool StructTraits<network::mojom::GlobalFirstPartySetsDataView,
   return true;
 }
 
+bool StructTraits<network::mojom::FirstPartySetEntryOverrideDataView,
+                  net::FirstPartySetEntryOverride>::
+    Read(network::mojom::FirstPartySetEntryOverrideDataView override,
+         net::FirstPartySetEntryOverride* out) {
+  absl::optional<net::FirstPartySetEntry> entry;
+  if (!override.ReadEntry(&entry))
+    return false;
+
+  if (entry.has_value()) {
+    *out = net::FirstPartySetEntryOverride(entry.value());
+  } else {
+    *out = net::FirstPartySetEntryOverride();
+  }
+  return true;
+}
+
 bool StructTraits<network::mojom::FirstPartySetsContextConfigDataView,
                   net::FirstPartySetsContextConfig>::
     Read(network::mojom::FirstPartySetsContextConfigDataView config,
          net::FirstPartySetsContextConfig* out_config) {
-  base::flat_map<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>
+  base::flat_map<net::SchemefulSite, net::FirstPartySetEntryOverride>
       customizations;
   if (!config.ReadCustomizations(&customizations))
     return false;

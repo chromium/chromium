@@ -17,6 +17,7 @@
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
@@ -258,9 +259,9 @@ bool FirstPartySetsPolicyService::IsSiteInManagedSet(
   if (!config_.has_value() || !is_enabled())
     return false;
 
-  absl::optional<absl::optional<net::FirstPartySetEntry>> maybe_override =
+  absl::optional<net::FirstPartySetEntryOverride> maybe_override =
       config_->FindOverride(site);
-  return maybe_override.has_value() && maybe_override->has_value();
+  return maybe_override.has_value() && !maybe_override->IsDeletion();
 }
 
 void FirstPartySetsPolicyService::OnReadyToNotifyDelegates(

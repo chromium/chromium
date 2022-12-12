@@ -22,6 +22,7 @@
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
@@ -306,7 +307,7 @@ bool FirstPartySetsDatabase::InsertPolicyConfigurations(
 
   return config.ForEachCustomizationEntry(
       [&](const net::SchemefulSite& site,
-          const absl::optional<net::FirstPartySetEntry>& entry) -> bool {
+          const net::FirstPartySetEntryOverride& entry_override) -> bool {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
         DCHECK(!site.opaque());
         static constexpr char kInsertSql[] =
@@ -317,8 +318,9 @@ bool FirstPartySetsDatabase::InsertPolicyConfigurations(
             db_->GetCachedStatement(SQL_FROM_HERE, kInsertSql));
         insert_statement.BindString(0, browser_context_id);
         insert_statement.BindString(1, site.Serialize());
-        if (entry.has_value()) {
-          insert_statement.BindString(2, entry.value().primary().Serialize());
+        if (!entry_override.IsDeletion()) {
+          insert_statement.BindString(
+              2, entry_override.GetEntry().primary().Serialize());
         } else {
           insert_statement.BindNull(2);
         }
@@ -343,7 +345,7 @@ bool FirstPartySetsDatabase::InsertManualConfiguration(
 
   global_first_party_sets.ForEachManualConfigEntry(
       [&](const net::SchemefulSite& site,
-          const absl::optional<net::FirstPartySetEntry>& entry) -> bool {
+          const net::FirstPartySetEntryOverride& entry_override) -> bool {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
         DCHECK(!site.opaque());
         static constexpr char kInsertSql[] =
@@ -354,9 +356,11 @@ bool FirstPartySetsDatabase::InsertManualConfiguration(
             db_->GetCachedStatement(SQL_FROM_HERE, kInsertSql));
         insert_statement.BindString(0, browser_context_id);
         insert_statement.BindString(1, site.Serialize());
-        if (entry.has_value()) {
-          insert_statement.BindString(2, entry->primary().Serialize());
-          insert_statement.BindInt(3, static_cast<int>(entry->site_type()));
+        if (!entry_override.IsDeletion()) {
+          insert_statement.BindString(
+              2, entry_override.GetEntry().primary().Serialize());
+          insert_statement.BindInt(
+              3, static_cast<int>(entry_override.GetEntry().site_type()));
         } else {
           insert_statement.BindNull(2);
           insert_statement.BindNull(3);
@@ -570,8 +574,7 @@ FirstPartySetsDatabase::FetchPolicyConfigurations(
   DCHECK_EQ(db_status_, InitStatus::kSuccess);
   DCHECK(!browser_context_id.empty());
 
-  std::vector<
-      std::pair<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>>
+  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntryOverride>>
       results;
   static constexpr char kSelectSql[] =
       // clang-format off
@@ -596,17 +599,18 @@ FirstPartySetsDatabase::FetchPolicyConfigurations(
     // TODO(crbug/1314039): Invalid sites should be rare case but possible.
     // Consider deleting them from DB.
     if (site.has_value()) {
-      results.emplace_back(
-          std::move(site.value()),
-          maybe_primary_site.has_value()
-              ? absl::make_optional(net::FirstPartySetEntry(
-                    maybe_primary_site.value(),
-                    // TODO(https://crbug.com/1219656): May change to use the
-                    // real site_type and site_index in the future, depending on
-                    // the design details. Use kAssociated as default site type
-                    // and null site index for now.
-                    net::SiteType::kAssociated, absl::nullopt))
-              : absl::nullopt);
+      net::FirstPartySetEntryOverride entry_override;
+      if (maybe_primary_site.has_value()) {
+        entry_override =
+            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                maybe_primary_site.value(),
+                // TODO(https://crbug.com/1219656): May change to use the
+                // real site_type and site_index in the future, depending on
+                // the design details. Use kAssociated as default site type
+                // and null site index for now.
+                net::SiteType::kAssociated, absl::nullopt));
+      }
+      results.emplace_back(std::move(site.value()), std::move(entry_override));
     }
   }
   if (!statement.Succeeded())
@@ -643,8 +647,7 @@ FirstPartySetsDatabase::FetchManualConfiguration(
   DCHECK_EQ(db_status_, InitStatus::kSuccess);
   DCHECK(!browser_context_id.empty());
 
-  std::vector<
-      std::pair<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>>
+  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntryOverride>>
       results;
   static constexpr char kSelectSql[] =
       // clang-format off
@@ -675,16 +678,17 @@ FirstPartySetsDatabase::FetchManualConfiguration(
     // TODO(crbug.com/1314039): Invalid entries should be rare case but
     // possible. Consider deleting them from DB.
     if (site.has_value()) {
-      results.emplace_back(
-          std::move(site.value()),
-          maybe_primary_site.has_value() && maybe_site_type.has_value()
-              ? absl::make_optional(net::FirstPartySetEntry(
-                    maybe_primary_site.value(),
-                    // TODO(https://crbug.com/1219656): May change to use the
-                    // real site_index in the future, depending on the design
-                    // details. Use null site index for now.
-                    maybe_site_type.value(), absl::nullopt))
-              : absl::nullopt);
+      net::FirstPartySetEntryOverride entry_override;
+      if (maybe_primary_site.has_value() && maybe_site_type.has_value()) {
+        entry_override =
+            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                maybe_primary_site.value(),
+                // TODO(https://crbug.com/1219656): May change to use the
+                // real site_index in the future, depending on the design
+                // details. Use null site index for now.
+                maybe_site_type.value(), absl::nullopt));
+      }
+      results.emplace_back(std::move(site.value()), std::move(entry_override));
     }
   }
 

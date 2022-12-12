@@ -43,6 +43,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -2416,7 +2417,7 @@ TEST_F(PrivacySandboxServiceTest,
       net::FirstPartySetsContextConfig(
           net::FirstPartySetsContextConfig::OverrideSets{
               {net::SchemefulSite(GURL("https://associate2.test")),
-               {absl::nullopt}}}));
+               net::FirstPartySetEntryOverride()}}));
 
   first_party_sets_policy_service()->InitForTesting();
 
@@ -2541,9 +2542,9 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
       net::FirstPartySetsContextConfig(
           net::FirstPartySetsContextConfig::OverrideSets{
               {net::SchemefulSite(GURL("https://google.de")),
-               {net::FirstPartySetEntry(
+               net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
                    net::SchemefulSite(GURL("https://new-primary.test")),
-                   net::SiteType::kAssociated, 0)}}}));
+                   net::SiteType::kAssociated, 0))}}));
 
   first_party_sets_policy_service()->InitForTesting();
 

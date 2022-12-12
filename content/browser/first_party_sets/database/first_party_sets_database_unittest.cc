@@ -20,6 +20,7 @@
 #include "base/version.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
@@ -321,9 +322,11 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
 
   net::FirstPartySetsContextConfig config(
       {{net::SchemefulSite(GURL(site_member1)),
-        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary_site)),
-                                net::SiteType::kAssociated, absl::nullopt)},
-       {net::SchemefulSite(GURL(site_member2)), absl::nullopt}});
+        net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+            net::SchemefulSite(GURL(primary_site)), net::SiteType::kAssociated,
+            absl::nullopt))},
+       {net::SchemefulSite(GURL(site_member2)),
+        net::FirstPartySetEntryOverride()}});
 
   OpenDatabase();
   // Trigger the lazy-initialization.
@@ -433,9 +436,11 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB_NoPublicSets) {
 
   net::FirstPartySetsContextConfig config(
       {{net::SchemefulSite(GURL(site_member1)),
-        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary_site)),
-                                net::SiteType::kAssociated, absl::nullopt)},
-       {net::SchemefulSite(GURL(site_member2)), absl::nullopt}});
+        net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+            net::SchemefulSite(GURL(primary_site)), net::SiteType::kAssociated,
+            absl::nullopt))},
+       {net::SchemefulSite(GURL(site_member2)),
+        net::FirstPartySetEntryOverride()}});
 
   OpenDatabase();
   // Trigger the lazy-initialization.
@@ -577,9 +582,11 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
 
   net::FirstPartySetsContextConfig config(
       {{net::SchemefulSite(GURL(site_member1)),
-        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary_site)),
-                                net::SiteType::kAssociated, absl::nullopt)},
-       {net::SchemefulSite(GURL(site_member2)), absl::nullopt}});
+        net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+            net::SchemefulSite(GURL(primary_site)), net::SiteType::kAssociated,
+            absl::nullopt))},
+       {net::SchemefulSite(GURL(site_member2)),
+        net::FirstPartySetEntryOverride()}});
 
   OpenDatabase();
   // Trigger the lazy-initialization.
@@ -1083,9 +1090,9 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_FormatCheck) {
 
   net::FirstPartySetsContextConfig config(
       {{config_site_member1,
-        net::FirstPartySetEntry(config_primary_site, net::SiteType::kAssociated,
-                                absl::nullopt)},
-       {config_site_member2, absl::nullopt}});
+        net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+            config_primary_site, net::SiteType::kAssociated, absl::nullopt))},
+       {config_site_member2, net::FirstPartySetEntryOverride()}});
 
   OpenDatabase();
   // Trigger the lazy-initialization.

@@ -11,6 +11,7 @@
 #include "base/version.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
@@ -268,9 +269,10 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PolicySitesJoined) {
   net::SchemefulSite member2(GURL("https://member2.test"));
 
   net::FirstPartySetsContextConfig current_config({
-      {foo,
-       {net::FirstPartySetEntry(foo, net::SiteType::kPrimary, absl::nullopt)}},
-      {member2, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
+      {foo, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                foo, net::SiteType::kPrimary, absl::nullopt))},
+      {member2, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                    foo, net::SiteType::kAssociated, 0))},
   });
 
   // "https://example.test" and "https://member2.test" joined FPSs via
@@ -300,18 +302,21 @@ TEST(FirstPartySetsHandlerDatabaseHelper,
 
   // "https://example.test" was removed from FPSs by policy modifications.
   net::FirstPartySetsContextConfig old_config({
-      {foo,
-       {net::FirstPartySetEntry(foo, net::SiteType::kPrimary, absl::nullopt)}},
-      {member1, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
-      {example, absl::nullopt},
+      {foo, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                foo, net::SiteType::kPrimary, absl::nullopt))},
+      {member1, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                    foo, net::SiteType::kAssociated, 0))},
+      {example, net::FirstPartySetEntryOverride()},
   });
 
   // "https://example.test" added back to FPSs.
   net::FirstPartySetsContextConfig current_config({
-      {foo,
-       {net::FirstPartySetEntry(foo, net::SiteType::kPrimary, absl::nullopt)}},
-      {member1, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
-      {example, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
+      {foo, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                foo, net::SiteType::kPrimary, absl::nullopt))},
+      {member1, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                    foo, net::SiteType::kAssociated, 0))},
+      {example, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                    foo, net::SiteType::kAssociated, 0))},
   });
 
   // We don't clear site data upon joining, so the computed diff should be
@@ -328,17 +333,20 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PolicyMemberLeft) {
   net::SchemefulSite member2(GURL("https://member2.test"));
 
   net::FirstPartySetsContextConfig old_config({
-      {foo,
-       {net::FirstPartySetEntry(foo, net::SiteType::kPrimary, absl::nullopt)}},
-      {member1, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
-      {member2, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
+      {foo, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                foo, net::SiteType::kPrimary, absl::nullopt))},
+      {member1, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                    foo, net::SiteType::kAssociated, 0))},
+      {member2, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                    foo, net::SiteType::kAssociated, 0))},
   });
 
   // "https://member2.test" left FPSs via enterprise policy.
   net::FirstPartySetsContextConfig current_config({
-      {foo,
-       {net::FirstPartySetEntry(foo, net::SiteType::kPrimary, absl::nullopt)}},
-      {member1, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
+      {foo, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                foo, net::SiteType::kPrimary, absl::nullopt))},
+      {member1, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                    foo, net::SiteType::kAssociated, 0))},
   });
 
   EXPECT_THAT(FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
@@ -353,21 +361,19 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PolicyOwnerLeft) {
   net::SchemefulSite member2(GURL("https://member2.test"));
 
   net::FirstPartySetsContextConfig old_config({
-      {example,
-       {net::FirstPartySetEntry(example, net::SiteType::kPrimary,
-                                absl::nullopt)}},
-      {member1,
-       {net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)}},
-      {member2,
-       {net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)}},
+      {example, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                    example, net::SiteType::kPrimary, absl::nullopt))},
+      {member1, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                    example, net::SiteType::kAssociated, 0))},
+      {member2, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                    example, net::SiteType::kAssociated, 0))},
   });
 
   net::FirstPartySetsContextConfig current_config({
-      {member1,
-       {net::FirstPartySetEntry(member1, net::SiteType::kPrimary,
-                                absl::nullopt)}},
-      {member2,
-       {net::FirstPartySetEntry(member1, net::SiteType::kAssociated, 0)}},
+      {member1, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                    member1, net::SiteType::kPrimary, absl::nullopt))},
+      {member2, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                    member1, net::SiteType::kAssociated, 0))},
   });
 
   // Expected diff: "https://example.test" left FPSs, "https://member1.test" and
@@ -390,21 +396,25 @@ TEST(FirstPartySetsHandlerDatabaseHelper,
   net::SchemefulSite member2(GURL("https://member2.test"));
 
   net::FirstPartySetsContextConfig old_config({
-      {foo,
-       {net::FirstPartySetEntry(foo, net::SiteType::kPrimary, absl::nullopt)}},
-      {member1, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
-      {bar,
-       {net::FirstPartySetEntry(bar, net::SiteType::kPrimary, absl::nullopt)}},
-      {member2, {net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)}},
+      {foo, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                foo, net::SiteType::kPrimary, absl::nullopt))},
+      {member1, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                    foo, net::SiteType::kAssociated, 0))},
+      {bar, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                bar, net::SiteType::kPrimary, absl::nullopt))},
+      {member2, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                    bar, net::SiteType::kAssociated, 0))},
   });
 
   net::FirstPartySetsContextConfig current_config({
-      {foo,
-       {net::FirstPartySetEntry(foo, net::SiteType::kPrimary, absl::nullopt)}},
-      {member2, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
-      {bar,
-       {net::FirstPartySetEntry(bar, net::SiteType::kPrimary, absl::nullopt)}},
-      {member1, {net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)}},
+      {foo, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                foo, net::SiteType::kPrimary, absl::nullopt))},
+      {member2, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                    foo, net::SiteType::kAssociated, 0))},
+      {bar, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                bar, net::SiteType::kPrimary, absl::nullopt))},
+      {member1, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                    bar, net::SiteType::kAssociated, 0))},
   });
 
   EXPECT_THAT(FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(

@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
@@ -137,10 +138,23 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
+    StructTraits<network::mojom::FirstPartySetEntryOverrideDataView,
+                 net::FirstPartySetEntryOverride> {
+  static const absl::optional<net::FirstPartySetEntry>& entry(
+      const net::FirstPartySetEntryOverride& override) {
+    return override.entry_;
+  }
+
+  static bool Read(network::mojom::FirstPartySetEntryOverrideDataView override,
+                   net::FirstPartySetEntryOverride* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
     StructTraits<network::mojom::FirstPartySetsContextConfigDataView,
                  net::FirstPartySetsContextConfig> {
   static const base::flat_map<net::SchemefulSite,
-                              absl::optional<net::FirstPartySetEntry>>&
+                              net::FirstPartySetEntryOverride>&
   customizations(const net::FirstPartySetsContextConfig& config) {
     return config.customizations();
   }

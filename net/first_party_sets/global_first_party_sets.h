@@ -14,6 +14,7 @@
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -117,8 +118,7 @@ class NET_EXPORT GlobalFirstPartySets {
   // order.
   bool ForEachManualConfigEntry(
       base::FunctionRef<bool(const SchemefulSite&,
-                             const absl::optional<FirstPartySetEntry>&)> f)
-      const;
+                             const FirstPartySetEntryOverride&)> f) const;
 
   // Synchronously iterate over all the effective entries (i.e. anything that
   // could be returned by `FindEntry` using this instance and `config`,

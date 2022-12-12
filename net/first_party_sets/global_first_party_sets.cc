@@ -18,6 +18,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/addition_overlaps_union_find.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -53,7 +54,7 @@ FlattenedSets SetListToFlattenedSets(const std::vector<SingleSet>& set_list) {
 // from a site to its entry.
 void UpdateCustomizations(
     const std::vector<SingleSet>& set_list,
-    std::vector<std::pair<SchemefulSite, absl::optional<FirstPartySetEntry>>>&
+    std::vector<std::pair<SchemefulSite, FirstPartySetEntryOverride>>&
         site_to_entry) {
   for (const auto& set : set_list) {
     for (const auto& site_and_entry : set) {
@@ -63,7 +64,7 @@ void UpdateCustomizations(
 }
 
 const SchemefulSite& ProjectKey(
-    const std::pair<SchemefulSite, absl::optional<FirstPartySetEntry>>& p) {
+    const std::pair<SchemefulSite, FirstPartySetEntryOverride>& p) {
   return p.first;
 }
 
@@ -143,16 +144,19 @@ absl::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
 
   // Check if `normalized_site` can be found in the customizations first.
   if (config) {
-    if (const auto entry = config->FindOverride(normalized_site);
-        entry.has_value()) {
-      return entry.value();
+    if (const auto override = config->FindOverride(normalized_site);
+        override.has_value()) {
+      return override->IsDeletion() ? absl::nullopt
+                                    : absl::make_optional(override->GetEntry());
     }
   }
 
   // Now see if it's in the manual config (with or without a manual alias).
-  if (const auto manual_entry = manual_config_.FindOverride(normalized_site);
-      manual_entry.has_value()) {
-    return manual_entry.value();
+  if (const auto manual_override = manual_config_.FindOverride(normalized_site);
+      manual_override.has_value()) {
+    return manual_override->IsDeletion()
+               ? absl::nullopt
+               : absl::make_optional(manual_override->GetEntry());
   }
 
   // Finally, look up in `entries_`, applying an alias if applicable.
@@ -258,8 +262,8 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
     return FirstPartySetsContextConfig();
   }
 
-  // Maps a site to its new entry if it has one.
-  std::vector<std::pair<SchemefulSite, absl::optional<FirstPartySetEntry>>>
+  // Maps a site to its override.
+  std::vector<std::pair<SchemefulSite, FirstPartySetEntryOverride>>
       site_to_entry;
 
   std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
@@ -349,7 +353,7 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
           if (replaced_existing_owners.contains(set_entry.primary()) &&
               !flattened_replacements.contains(member) &&
               !addition_intersected_owners.contains(set_entry.primary())) {
-            site_to_entry.emplace_back(member, absl::nullopt);
+            site_to_entry.emplace_back(member, FirstPartySetEntryOverride());
           }
 
           return true;
@@ -358,7 +362,7 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
     // Any owner remaining in `potential_singleton` is a real singleton, so
     // delete it:
     for (const auto& [owner, members] : potential_singletons) {
-      site_to_entry.emplace_back(owner, absl::nullopt);
+      site_to_entry.emplace_back(owner, FirstPartySetEntryOverride());
     }
   }
 
@@ -367,7 +371,7 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
   for (const auto& [alias, site] : aliases_) {
     if (base::Contains(site_to_entry, site, ProjectKey) &&
         !base::Contains(site_to_entry, alias, ProjectKey)) {
-      site_to_entry.emplace_back(alias, absl::nullopt);
+      site_to_entry.emplace_back(alias, FirstPartySetEntryOverride());
     }
   }
 
@@ -445,8 +449,7 @@ bool GlobalFirstPartySets::ForEachPublicSetEntry(
 
 bool GlobalFirstPartySets::ForEachManualConfigEntry(
     base::FunctionRef<bool(const SchemefulSite&,
-                           const absl::optional<FirstPartySetEntry>&)> f)
-    const {
+                           const FirstPartySetEntryOverride&)> f) const {
   return manual_config_.ForEachCustomizationEntry(f);
 }
 
@@ -465,9 +468,9 @@ bool GlobalFirstPartySets::ForEachEffectiveSetEntry(
   if (config != nullptr) {
     if (!config->ForEachCustomizationEntry(
             [&](const SchemefulSite& site,
-                const absl::optional<FirstPartySetEntry>& maybe_entry) {
-              if (maybe_entry.has_value())
-                return f(site, *maybe_entry);
+                const FirstPartySetEntryOverride& override) {
+              if (!override.IsDeletion())
+                return f(site, override.GetEntry());
               return true;
             })) {
       return false;
@@ -477,9 +480,9 @@ bool GlobalFirstPartySets::ForEachEffectiveSetEntry(
   // Then the manual set:
   if (!manual_config_.ForEachCustomizationEntry(
           [&](const SchemefulSite& site,
-              const absl::optional<FirstPartySetEntry>& maybe_entry) {
-            if (maybe_entry.has_value() && (!config || !config->Contains(site)))
-              return f(site, *maybe_entry);
+              const FirstPartySetEntryOverride& override) {
+            if (!override.IsDeletion() && (!config || !config->Contains(site)))
+              return f(site, override.GetEntry());
             return true;
           })) {
     return false;
@@ -506,9 +509,8 @@ std::ostream& operator<<(std::ostream& os, const GlobalFirstPartySets& sets) {
   os << "}, manual_config = {";
   sets.manual_config().ForEachCustomizationEntry(
       [&](const net::SchemefulSite& site,
-          const absl::optional<net::FirstPartySetEntry>& maybe_entry) {
-        os << "{" << site.Serialize() << ": ";
-        maybe_entry.has_value() ? os << maybe_entry.value() : os << "nullopt";
+          const FirstPartySetEntryOverride& override) {
+        os << "{" << site.Serialize() << ": " << override << "},";
         return true;
       });
   os << "}}";

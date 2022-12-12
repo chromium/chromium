@@ -6,6 +6,7 @@
 
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -14,6 +15,11 @@
 #include "url/gurl.h"
 
 using ::testing::Optional;
+
+MATCHER_P(OverridesTo, entry, "") {
+  return !arg.IsDeletion() &&
+         testing::ExplainMatchResult(entry, arg.GetEntry(), result_listener);
+}
 
 namespace net {
 
@@ -28,32 +34,36 @@ TEST(FirstPartySetsContextConfigTest, FindOverride_irrelevant) {
   FirstPartySetEntry entry(example, SiteType::kPrimary, absl::nullopt);
   SchemefulSite foo(GURL("https://foo.test"));
 
-  EXPECT_EQ(FirstPartySetsContextConfig({{example, entry}}).FindOverride(foo),
+  EXPECT_EQ(FirstPartySetsContextConfig(
+                {{example, FirstPartySetEntryOverride(entry)}})
+                .FindOverride(foo),
             absl::nullopt);
 }
 
 TEST(FirstPartySetsContextConfigTest, FindOverride_deletion) {
   SchemefulSite example(GURL("https://example.test"));
 
-  EXPECT_THAT(FirstPartySetsContextConfig({{example, absl::nullopt}})
-                  .FindOverride(example),
-              Optional(absl::nullopt));
+  EXPECT_THAT(
+      FirstPartySetsContextConfig({{example, FirstPartySetEntryOverride()}})
+          .FindOverride(example),
+      Optional(FirstPartySetEntryOverride()));
 }
 
 TEST(FirstPartySetsContextConfigTest, FindOverride_modification) {
   SchemefulSite example(GURL("https://example.test"));
   FirstPartySetEntry entry(example, SiteType::kPrimary, absl::nullopt);
 
-  EXPECT_THAT(
-      FirstPartySetsContextConfig({{example, entry}}).FindOverride(example),
-      Optional(Optional(entry)));
+  EXPECT_THAT(FirstPartySetsContextConfig(
+                  {{example, FirstPartySetEntryOverride(entry)}})
+                  .FindOverride(example),
+              Optional(OverridesTo(entry)));
 }
 
 TEST(FirstPartySetsContextConfigTest, Contains) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite decoy(GURL("https://decoy.test"));
 
-  FirstPartySetsContextConfig config({{example, absl::nullopt}});
+  FirstPartySetsContextConfig config({{example, FirstPartySetEntryOverride()}});
 
   EXPECT_TRUE(config.Contains(example));
   EXPECT_FALSE(config.Contains(decoy));
@@ -63,13 +73,13 @@ TEST(FirstPartySetsContextConfigTest, ForEachCustomizationEntry_FullIteration) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite foo(GURL("https://foo.test"));
 
-  FirstPartySetsContextConfig config(
-      {{example, absl::nullopt}, {foo, absl::nullopt}});
+  FirstPartySetsContextConfig config({{example, FirstPartySetEntryOverride()},
+                                      {foo, FirstPartySetEntryOverride()}});
 
   int count = 0;
   EXPECT_TRUE(config.ForEachCustomizationEntry(
       [&](const SchemefulSite& site,
-          const absl::optional<FirstPartySetEntry>& entry) {
+          const FirstPartySetEntryOverride& override) {
         ++count;
         return true;
       }));
@@ -80,13 +90,13 @@ TEST(FirstPartySetsContextConfigTest, ForEachCustomizationEntry_EarlyReturn) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite foo(GURL("https://foo.test"));
 
-  FirstPartySetsContextConfig config(
-      {{example, absl::nullopt}, {foo, absl::nullopt}});
+  FirstPartySetsContextConfig config({{example, FirstPartySetEntryOverride()},
+                                      {foo, FirstPartySetEntryOverride()}});
 
   int count = 0;
   EXPECT_FALSE(config.ForEachCustomizationEntry(
       [&](const SchemefulSite& site,
-          const absl::optional<FirstPartySetEntry>& entry) {
+          const FirstPartySetEntryOverride& override) {
         ++count;
         return count < 1;
       }));

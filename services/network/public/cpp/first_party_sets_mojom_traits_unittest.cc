@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
@@ -199,9 +200,11 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_FirstPartySetsContextConfig) {
   net::SchemefulSite c(GURL("https://c.test"));
 
   const net::FirstPartySetsContextConfig original({
-      {a, net::FirstPartySetEntry(a, net::SiteType::kPrimary, absl::nullopt)},
-      {b, net::FirstPartySetEntry(a, net::SiteType::kAssociated, 0)},
-      {c, absl::nullopt},
+      {a, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+              a, net::SiteType::kPrimary, absl::nullopt))},
+      {b, net::FirstPartySetEntryOverride(
+              net::FirstPartySetEntry(a, net::SiteType::kAssociated, 0))},
+      {c, net::FirstPartySetEntryOverride()},
   });
 
   net::FirstPartySetsContextConfig round_tripped;
