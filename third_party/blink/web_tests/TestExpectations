@@ -6985,14 +6985,9 @@ crbug.com/1395552 webaudio/codec-tests/vorbis/vbr-128kbps-44khz.html [ Failure P
 crbug.com/1395450 http/tests/devtools/layers/layer-tree-model.js [ Failure Pass ]
 crbug.com/1395744 [ Linux ] external/wpt/css/filter-effects/effect-reference-on-transparent-element.html [ Failure ]
 
-# Sheriff 2022-12-6
-crbug.com/1396127 [ Linux ] virtual/gpu-rasterization/images/color-profile-image-canvas.html [ Crash Failure Pass ]
-
 # Sheriff 2022-12-07
 crbug.com/1396185 accessibility/reach-and-scroll-overflow-div-without-mouse.html [ Pass Timeout ]
 
-# Sheriff 2022-12-08
-crbug.com/1383847 [ Linux ] virtual/exotic-color-space/images/color-profile-image-canvas.html [ Crash Failure Pass ]
 
 # Temporarily disable tests to modify Shared Storage element in Application Panel.
 crbug.com/1372007 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Failure Pass ]

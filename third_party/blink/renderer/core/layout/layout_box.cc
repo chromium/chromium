@@ -796,6 +796,11 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
       SetNeedsPaintPropertyUpdate();
     }
 
+    if (old_style->OverflowX() != new_style.OverflowX() ||
+        old_style->OverflowY() != new_style.OverflowY()) {
+      SetNeedsPaintPropertyUpdate();
+    }
+
     if (old_style->OverflowClipMargin() != new_style.OverflowClipMargin())
       SetNeedsPaintPropertyUpdate();
 
