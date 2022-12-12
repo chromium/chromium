@@ -45,8 +45,8 @@ class VR_EXPORT VrWebContentsObserver : public content::WebContentsObserver {
                                      bool will_cause_resize) override;
   void DidChangeVisibleSecurityState() override;
   void WebContentsDestroyed() override;
-  void RenderViewHostChanged(content::RenderViewHost* old_host,
-                             content::RenderViewHost* new_host) override;
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) override;
 
   // This class does not own these pointers.
   raw_ptr<BrowserUiInterface> ui_interface_;

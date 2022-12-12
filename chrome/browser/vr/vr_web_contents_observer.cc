@@ -62,10 +62,11 @@ void VrWebContentsObserver::WebContentsDestroyed() {
   std::move(on_destroy_).Run();
 }
 
-void VrWebContentsObserver::RenderViewHostChanged(
-    content::RenderViewHost* old_host,
-    content::RenderViewHost* new_host) {
-  new_host->GetWidget()->GetView()->SetIsInVR(true);
+void VrWebContentsObserver::RenderFrameHostChanged(
+    content::RenderFrameHost* old_host,
+    content::RenderFrameHost* new_host) {
+  if (new_host->IsInPrimaryMainFrame())
+    new_host->GetRenderWidgetHost()->GetView()->SetIsInVR(true);
 }
 
 }  // namespace vr
