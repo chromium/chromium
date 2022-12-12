@@ -109,9 +109,11 @@ TEST_F(AppStreamLauncherDataModelTest, ResetState) {
 TEST_F(AppStreamLauncherDataModelTest, SetAppsList) {
   std::vector<Notification::AppMetadata> apps_list;
   apps_list.emplace_back(Notification::AppMetadata(
-      u"b_app", "com.fakeapp1", gfx::Image(), absl::nullopt, true, 1));
+      u"b_app", "com.fakeapp1", gfx::Image(), absl::nullopt, true, 1,
+      proto::AppStreamabilityStatus::STREAMABLE));
   apps_list.emplace_back(Notification::AppMetadata(
-      u"a_app", "com.fakeapp2", gfx::Image(), absl::nullopt, true, 1));
+      u"a_app", "com.fakeapp2", gfx::Image(), absl::nullopt, true, 1,
+      proto::AppStreamabilityStatus::STREAMABLE));
   SetAppList(apps_list);
   EXPECT_TRUE(IsObserverAppListChanged());
   EXPECT_EQ(GetAppsList()->size(), 2u);

@@ -4,7 +4,14 @@
 
 #include "ash/system/phonehub/app_stream_launcher_item.h"
 
+#include "ash/strings/grit/ash_strings.h"
+#include "base/hash/hash.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/strings/utf_string_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button.h"
@@ -21,6 +28,7 @@ constexpr gfx::Size kEcheAppItemSize(kEcheAppItemWidth, kEcheAppItemHeight);
 constexpr int kEcheAppItemSpacing = 4;
 constexpr int kEcheAppNameLabelLineHeight = 14;
 constexpr int kEcheAppNameLabelFontSize = 11;
+constexpr double kAlphaValueForInhibitedIconOpacity = 0.3;
 
 void ConfigureLabel(views::Label* label, int line_height, int font_size) {
   label->SetLineHeight(line_height);
@@ -62,11 +70,43 @@ AppStreamLauncherItem::AppStreamLauncherItem(
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
+  const bool enabled = app_metadata.app_streamability_status ==
+                       phonehub::proto::AppStreamabilityStatus::STREAMABLE;
+  gfx::Image image = app_metadata.icon;
+  if (!enabled) {
+    // Fade the image in order to make it look like grayed out.
+    // TODO(b/261916553): Make grayed out icons "gray" in
+    // addition to 30% transparent.
+    image = gfx::Image(gfx::ImageSkiaOperations::CreateTransparentImage(
+        image.AsImageSkia(), kAlphaValueForInhibitedIconOpacity));
+  }
+
+  std::u16string accessible_name;
+  switch (app_metadata.app_streamability_status) {
+    case phonehub::proto::STREAMABLE:
+      accessible_name = app_metadata.visible_app_name;
+      break;
+    case phonehub::proto::BLOCKED_BY_APP:
+      accessible_name = l10n_util::GetStringUTF16(
+          IDS_ASH_PHONE_HUB_STREAM_NOT_SUPPORTED_BY_APP);
+      break;
+    case phonehub::proto::BLOCK_LISTED:
+    default:
+      accessible_name =
+          l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_STREAM_NOT_SUPPORTED);
+      break;
+  }
   recent_app_button_ = AddChildView(std::make_unique<PhoneHubRecentAppButton>(
-      app_metadata.icon, app_metadata.visible_app_name, callback));
+      image, app_metadata.visible_app_name, callback));
+  recent_app_button_->SetAccessibleName(accessible_name);
+  recent_app_button_->SetTooltipText(accessible_name);
+  recent_app_button_->SetEnabled(enabled);
 
   label_ = AddChildView(
       std::make_unique<AppNameLabel>(callback, app_metadata.visible_app_name));
+  label_->SetEnabled(enabled);
+  label_->SetAccessibleName(accessible_name);
+  label_->SetTooltipText(accessible_name);
 }
 
 AppStreamLauncherItem::~AppStreamLauncherItem() = default;

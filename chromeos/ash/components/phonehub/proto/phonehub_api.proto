@@ -63,6 +63,12 @@ enum NotificationIconStyling {
   ICON_STYLE_MONOCHROME_SMALL_ICON = 1;
 }
 
+enum AppStreamabilityStatus {
+  STREAMABLE = 0;
+  BLOCK_LISTED = 1;
+  BLOCKED_BY_APP = 2;
+}
+
 enum ChargingState {
   NOT_CHARGING = 0;
   CHARGING_AC = 1;
@@ -245,6 +251,8 @@ message App {
   // Optionally used only when icon_styling is ICON_STYLE_MONOCHROME_SMALL_ICON.
   // When unset, the ChromeOS side uses the system theme's default color.
   ColorRgb icon_color = 6;
+
+  AppStreamabilityStatus app_streamability_status = 7;
 }
 
 message CrosState {

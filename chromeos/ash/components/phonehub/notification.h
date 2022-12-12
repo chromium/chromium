@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
@@ -34,7 +35,9 @@ class Notification {
                 const gfx::Image& icon,
                 const absl::optional<SkColor> icon_color,
                 bool icon_is_monochrome,
-                int64_t user_id);
+                int64_t user_id,
+                proto::AppStreamabilityStatus app_streamability_status =
+                    proto::AppStreamabilityStatus::STREAMABLE);
     AppMetadata(const AppMetadata& other);
     AppMetadata& operator=(const AppMetadata& other);
 
@@ -52,6 +55,7 @@ class Notification {
     // Whether the icon image is just a mask used to generate a monochrome icon.
     bool icon_is_monochrome;
     int64_t user_id;
+    proto::AppStreamabilityStatus app_streamability_status;
   };
 
   // Interaction behavior for integration with other features.

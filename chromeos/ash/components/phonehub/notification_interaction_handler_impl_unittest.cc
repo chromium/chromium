@@ -97,7 +97,7 @@ TEST_F(NotificationInteractionHandlerImplTest,
   auto expected_app_metadata = Notification::AppMetadata(
       expected_app_visible_name, expected_package_name, gfx::Image(),
       /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true,
-      expected_user_id);
+      expected_user_id, proto::AppStreamabilityStatus::STREAMABLE);
 
   handler().HandleNotificationClicked(expected_id, expected_app_metadata);
 

@@ -449,7 +449,7 @@ void PhoneStatusProcessor::GenerateAppListWithIcons(
         absl::nullopt,
         app.icon_styling() ==
             proto::NotificationIconStyling::ICON_STYLE_MONOCHROME_SMALL_ICON,
-        app.user_id()));
+        app.user_id(), app.app_streamability_status()));
     std::string key = app.package_name() + base::NumberToString(app.user_id());
     decoding_data_list->emplace_back(
         IconDecoder::DecodingData(str_hash(key), app.icon()));

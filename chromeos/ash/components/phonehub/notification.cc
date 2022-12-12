@@ -19,24 +19,28 @@ namespace phonehub {
 const char kVisibleAppName[] = "visible_app_name";
 const char kPackageName[] = "package_name";
 const char kUserId[] = "user_id";
+const char kAppStreamabilityStatus[] = "app_streamability_status";
 const char kIcon[] = "icon";
 const char kIconColorR[] = "icon_color_r";
 const char kIconColorG[] = "icon_color_g";
 const char kIconColorB[] = "icon_color_b";
 const char kIconIsMonochrome[] = "icon_is_monochrome";
 
-Notification::AppMetadata::AppMetadata(const std::u16string& visible_app_name,
-                                       const std::string& package_name,
-                                       const gfx::Image& icon,
-                                       const absl::optional<SkColor> icon_color,
-                                       bool icon_is_monochrome,
-                                       int64_t user_id)
+Notification::AppMetadata::AppMetadata(
+    const std::u16string& visible_app_name,
+    const std::string& package_name,
+    const gfx::Image& icon,
+    const absl::optional<SkColor> icon_color,
+    bool icon_is_monochrome,
+    int64_t user_id,
+    proto::AppStreamabilityStatus app_streamability_status)
     : visible_app_name(visible_app_name),
       package_name(package_name),
       icon(icon),
       icon_color(icon_color),
       icon_is_monochrome(icon_is_monochrome),
-      user_id(user_id) {}
+      user_id(user_id),
+      app_streamability_status(app_streamability_status) {}
 
 Notification::AppMetadata::AppMetadata(const AppMetadata& other) = default;
 
@@ -67,6 +71,8 @@ base::Value Notification::AppMetadata::ToValue() const {
     val.SetIntKey(kIconColorG, SkColorGetG(*icon_color));
     val.SetIntKey(kIconColorB, SkColorGetB(*icon_color));
   }
+  val.SetIntKey(kAppStreamabilityStatus,
+                static_cast<int>(app_streamability_status));
   return val;
 }
 
@@ -113,10 +119,14 @@ Notification::AppMetadata Notification::AppMetadata::FromValue(
   gfx::Image decode_icon = gfx::Image::CreateFrom1xPNGBytes(
       base::MakeRefCounted<base::RefCountedString>(std::move(icon_str)));
 
-  return Notification::AppMetadata(visible_app_name_string_value,
-                                   *(value.FindStringPath(kPackageName)),
-                                   decode_icon, icon_color, icon_is_monochrome,
-                                   *(value.FindDoublePath(kUserId)));
+  return Notification::AppMetadata(
+      visible_app_name_string_value, *(value.FindStringPath(kPackageName)),
+      decode_icon, icon_color, icon_is_monochrome,
+      *(value.FindDoublePath(kUserId)),
+      static_cast<proto::AppStreamabilityStatus>(
+          value.FindIntPath(kAppStreamabilityStatus)
+              .value_or(static_cast<int>(
+                  proto::AppStreamabilityStatus::STREAMABLE))));
 }
 
 Notification::Notification(

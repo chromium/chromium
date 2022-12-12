@@ -116,7 +116,8 @@ TEST_F(AppStreamLauncherViewTest, AddItems) {
 
   auto app1 = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, CreateTestImage(),
-      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id);
+      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id,
+      phonehub::proto::AppStreamabilityStatus::STREAMABLE);
   std::vector<phonehub::Notification::AppMetadata> apps;
   apps.push_back(app1);
 
@@ -139,7 +140,8 @@ TEST_F(AppStreamLauncherViewTest, RemoveItem) {
 
   auto app1 = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, CreateTestImage(),
-      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id);
+      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id,
+      phonehub::proto::AppStreamabilityStatus::STREAMABLE);
   std::vector<phonehub::Notification::AppMetadata> apps;
   apps.push_back(app1);
 
@@ -170,7 +172,8 @@ TEST_F(AppStreamLauncherViewTest, ClickOnItem) {
 
   auto app1 = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, CreateTestImage(),
-      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id);
+      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id,
+      phonehub::proto::AppStreamabilityStatus::STREAMABLE);
   std::vector<phonehub::Notification::AppMetadata> apps;
   apps.push_back(app1);
 
@@ -188,6 +191,8 @@ TEST_F(AppStreamLauncherViewTest, ClickOnItem) {
       GetRootWindow(app_stream_launcher_view()->GetWidget()));
 
   EXPECT_TRUE(GetItemView(0)->GetVisible());
+  EXPECT_TRUE(GetItemView(0)->GetIconForTest()->GetEnabled());
+  EXPECT_TRUE(GetItemView(0)->GetLabelForTest()->GetEnabled());
 
   gfx::Point cursor_location =
       GetItemView(0)->GetIconForTest()->GetBoundsInScreen().CenterPoint();
@@ -197,6 +202,38 @@ TEST_F(AppStreamLauncherViewTest, ClickOnItem) {
   EXPECT_EQ(1U, fake_phone_hub_manager()
                     ->fake_recent_apps_interaction_handler()
                     ->HandledRecentAppsCount(package_name));
+}
+
+TEST_F(AppStreamLauncherViewTest, DisabledItem) {
+  const int64_t user_id = 1;
+  const char16_t app_visible_name[] = u"Fake App";
+  const char package_name[] = "com.fakeapp";
+
+  auto app1 = phonehub::Notification::AppMetadata(
+      app_visible_name, package_name, CreateTestImage(),
+      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id,
+      phonehub::proto::AppStreamabilityStatus::BLOCK_LISTED);
+  std::vector<phonehub::Notification::AppMetadata> apps;
+  apps.push_back(app1);
+
+  phonehub::AppStreamLauncherDataModel* data_model =
+      fake_phone_hub_manager()->fake_app_stream_launcher_data_model();
+  data_model->SetAppList(apps);
+  widget()->LayoutRootViewIfNecessary();
+
+  EXPECT_EQ(1U, app_stream_launcher_view()
+                    ->items_container_for_test()
+                    ->children()
+                    .size());
+
+  ui::test::EventGenerator generator(
+      GetRootWindow(app_stream_launcher_view()->GetWidget()));
+
+  EXPECT_TRUE(GetItemView(0)->GetVisible());
+  EXPECT_FALSE(GetItemView(0)->GetIconForTest()->GetEnabled());
+  EXPECT_FALSE(GetItemView(0)->GetLabelForTest()->GetEnabled());
+  EXPECT_EQ(u"Not supported",
+            GetItemView(0)->GetIconForTest()->GetTooltipText());
 }
 
 }  // namespace ash

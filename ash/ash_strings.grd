@@ -1633,6 +1633,12 @@ Style notes:
       <message name="IDS_ASH_PHONE_HUB_APP_STREAM_LAUNCHER_TITLE" desc="Title for the launcher that displays apps from your phone.">
         Apps from your phone
       </message>
+      <message name="IDS_ASH_PHONE_HUB_STREAM_NOT_SUPPORTED" desc="Tooltip text for the apps that cannot be streamed.">
+        Not supported
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_STREAM_NOT_SUPPORTED_BY_APP" desc="Tooltip text for the apps that cannot be streamed due to exclusion by the developer.">
+        Not supported by app
+      </message>
       <message name="IDS_ASH_PHONE_HUB_APPS_OPT_IN_DESCRIPTION" desc="Description for the apps opt in view.">
         View your phone's apps on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
       </message>

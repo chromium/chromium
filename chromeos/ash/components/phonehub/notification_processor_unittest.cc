@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/phonehub/notification_processor.h"
+#include <string>
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"
@@ -152,9 +153,12 @@ class NotificationProcessorTest : public testing::Test {
       std::string shared_image = std::string(),
       std::string contact_image = std::string(),
       Notification::InteractionBehavior behavior =
-          Notification::InteractionBehavior::kNone) {
+          Notification::InteractionBehavior::kNone,
+      proto::AppStreamabilityStatus app_streamability_status =
+          proto::AppStreamabilityStatus::STREAMABLE) {
     auto origin_app = std::make_unique<proto::App>();
     origin_app->set_icon(icon);
+    origin_app->set_app_streamability_status(app_streamability_status);
 
     proto::Notification notification;
     notification.set_id(notification_id);
@@ -428,6 +432,22 @@ TEST_F(NotificationProcessorTest, ImageFieldPopulatedCorrectly) {
       gfx::test::AreImagesEqual(*notification->shared_image(), TestImage()));
   EXPECT_TRUE(
       gfx::test::AreImagesEqual(*notification->contact_image(), TestImage()));
+}
+
+TEST_F(NotificationProcessorTest, StreamabilityStatus) {
+  std::vector<proto::Notification> first_set_of_notifications;
+
+  first_set_of_notifications.emplace_back(CreateNewInlineReplyableNotification(
+      kNotificationIdA, kInlineReplyIdA, kIconDataA, std::string(),
+      std::string(), Notification::InteractionBehavior::kNone,
+      proto::AppStreamabilityStatus::BLOCK_LISTED));
+  notification_processor()->AddNotifications(first_set_of_notifications);
+  image_decoder_delegate()->RunAllCallbacks();
+
+  const Notification* notification =
+      fake_notification_manager()->GetNotification(kNotificationIdA);
+  EXPECT_EQ(proto::AppStreamabilityStatus::BLOCK_LISTED,
+            notification->app_metadata().app_streamability_status);
 }
 
 TEST_F(NotificationProcessorTest, AddRemoveClearWithoutRace) {

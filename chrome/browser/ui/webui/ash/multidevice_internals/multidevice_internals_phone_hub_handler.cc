@@ -21,6 +21,7 @@
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/pref_names.h"
+#include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -92,7 +93,8 @@ phonehub::Notification::AppMetadata DictToAppMetadata(
 
   return phonehub::Notification::AppMetadata(
       visible_app_name, *package_name, icon, /*icon_color=*/absl::nullopt,
-      /*icon_is_monochrome=*/false, user_id);
+      /*icon_is_monochrome=*/false, user_id,
+      phonehub::proto::AppStreamabilityStatus::STREAMABLE);
 }
 
 void TryAddingMetadata(

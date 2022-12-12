@@ -79,8 +79,13 @@ const base::flat_map<Notification::ActionType, int64_t> kFakeActionIdMap = {
 
 const Notification::AppMetadata& CreateFakeAppMetadata() {
   static const base::NoDestructor<Notification::AppMetadata> fake_app_metadata{
-      kFakeAppVisibleName,          kFakeAppPackageName,         gfx::Image(),
-      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, kUserId};
+      kFakeAppVisibleName,
+      kFakeAppPackageName,
+      gfx::Image(),
+      /*icon_color=*/absl::nullopt,
+      /*icon_is_monochrome=*/true,
+      kUserId,
+      phonehub::proto::AppStreamabilityStatus::STREAMABLE};
   return *fake_app_metadata;
 }
 
