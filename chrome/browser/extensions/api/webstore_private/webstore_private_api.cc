@@ -474,12 +474,14 @@ WebstorePrivateBeginInstallWithManifest3Function::Run() {
   InstallTracker* tracker = InstallTracker::Get(browser_context());
   DCHECK(tracker);
   bool is_installed =
-      extensions::ExtensionRegistry::Get(browser_context())->GetExtensionById(
-          details().id, extensions::ExtensionRegistry::EVERYTHING) != nullptr;
+      extensions::ExtensionRegistry::Get(browser_context())
+          ->GetExtensionById(details().id,
+                             extensions::ExtensionRegistry::EVERYTHING) !=
+      nullptr;
   if (is_installed || tracker->GetActiveInstall(details().id)) {
-    return RespondNow(BuildResponse(
-        api::webstore_private::RESULT_ALREADY_INSTALLED,
-        kAlreadyInstalledError));
+    return RespondNow(
+        BuildResponse(api::webstore_private::RESULT_ALREADY_INSTALLED,
+                      kAlreadyInstalledError));
   }
   ActiveInstallData install_data(details().id);
   scoped_active_install_ =
@@ -963,8 +965,8 @@ WebstorePrivateCompleteInstallFunction::Run() {
   approval_ =
       g_pending_approvals.Get().PopApproval(profile, params->expected_id);
   if (!approval_) {
-    return RespondNow(Error(kNoPreviousBeginInstallWithManifestError,
-                            params->expected_id));
+    return RespondNow(
+        Error(kNoPreviousBeginInstallWithManifestError, params->expected_id));
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1023,8 +1025,8 @@ void WebstorePrivateCompleteInstallFunction::OnExtensionInstallFailure(
     const std::string& error,
     WebstoreInstaller::FailureReason reason) {
   if (test_webstore_installer_delegate) {
-    test_webstore_installer_delegate->OnExtensionInstallFailure(
-        id, error, reason);
+    test_webstore_installer_delegate->OnExtensionInstallFailure(id, error,
+                                                                reason);
   }
 
   VLOG(1) << "Install failed, sending response";
@@ -1075,8 +1077,7 @@ WebstorePrivateGetBrowserLoginFunction::Run() {
 WebstorePrivateGetStoreLoginFunction::WebstorePrivateGetStoreLoginFunction() =
     default;
 
-WebstorePrivateGetStoreLoginFunction::
-    ~WebstorePrivateGetStoreLoginFunction() {}
+WebstorePrivateGetStoreLoginFunction::~WebstorePrivateGetStoreLoginFunction() {}
 
 ExtensionFunction::ResponseAction WebstorePrivateGetStoreLoginFunction::Run() {
   return RespondNow(ArgumentList(GetStoreLogin::Results::Create(
@@ -1086,8 +1087,7 @@ ExtensionFunction::ResponseAction WebstorePrivateGetStoreLoginFunction::Run() {
 WebstorePrivateSetStoreLoginFunction::WebstorePrivateSetStoreLoginFunction() =
     default;
 
-WebstorePrivateSetStoreLoginFunction::
-    ~WebstorePrivateSetStoreLoginFunction() {}
+WebstorePrivateSetStoreLoginFunction::~WebstorePrivateSetStoreLoginFunction() {}
 
 ExtensionFunction::ResponseAction WebstorePrivateSetStoreLoginFunction::Run() {
   std::unique_ptr<SetStoreLogin::Params> params(
@@ -1164,8 +1164,8 @@ WebstorePrivateGetEphemeralAppsEnabledFunction::
 
 ExtensionFunction::ResponseAction
 WebstorePrivateGetEphemeralAppsEnabledFunction::Run() {
-  return RespondNow(ArgumentList(GetEphemeralAppsEnabled::Results::Create(
-      false)));
+  return RespondNow(
+      ArgumentList(GetEphemeralAppsEnabled::Results::Create(false)));
 }
 
 WebstorePrivateIsPendingCustodianApprovalFunction::

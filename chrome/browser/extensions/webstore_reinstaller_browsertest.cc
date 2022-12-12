@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(WebstoreReinstallerBrowserTest, TestWebstoreReinstall) {
                            .Set("description", "Foo")
                            .Set("manifest_version", 2)
                            .Set("version", "1.0")
-                           .Build())
+                           .BuildDict())
           .Build();
   extension_service()->AddExtension(extension.get());
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());

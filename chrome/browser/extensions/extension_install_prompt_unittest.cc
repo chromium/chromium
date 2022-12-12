@@ -118,7 +118,7 @@ TEST_F(ExtensionInstallPromptUnitTest, PromptShowsPermissionWarnings) {
                            .Set("version", "1.0")
                            .Set("manifest_version", 2)
                            .Set("description", "Random Ext")
-                           .Build())
+                           .BuildDict())
           .Build();
 
   content::TestWebContentsFactory factory;
@@ -139,16 +139,17 @@ TEST_F(ExtensionInstallPromptUnitTest,
        DelegatedPromptShowsOptionalPermissions) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(DictionaryBuilder()
-                           .Set("name", "foo")
-                           .Set("version", "1.0")
-                           .Set("manifest_version", 2)
-                           .Set("description", "Random Ext")
-                           .Set("permissions",
-                                ListBuilder().Append("clipboardRead").Build())
-                           .Set("optional_permissions",
-                                ListBuilder().Append("tabs").Build())
-                           .Build())
+          .SetManifest(
+              DictionaryBuilder()
+                  .Set("name", "foo")
+                  .Set("version", "1.0")
+                  .Set("manifest_version", 2)
+                  .Set("description", "Random Ext")
+                  .Set("permissions",
+                       ListBuilder().Append("clipboardRead").BuildList())
+                  .Set("optional_permissions",
+                       ListBuilder().Append("tabs").BuildList())
+                  .BuildDict())
           .Build();
 
   content::TestWebContentsFactory factory;

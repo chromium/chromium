@@ -66,9 +66,8 @@ class TestWebstoreInstaller : public WebstoreInstaller {
   base::OnceClosure deleted_closure_;
 };
 
-class WebstoreInstallerBrowserTest
-    : public WebstoreInstallerTest,
-      public WebstoreInstaller::Delegate {
+class WebstoreInstallerBrowserTest : public WebstoreInstallerTest,
+                                     public WebstoreInstaller::Delegate {
  public:
   WebstoreInstallerBrowserTest(const std::string& webstore_domain,
                                const std::string& test_data_path,
@@ -184,8 +183,7 @@ IN_PROC_BROWSER_TEST_F(WebstoreInstallerMV2BrowserTest, SimultaneousInstall) {
           .SetManifest(std::move(manifest))
           .Build();
   extension_service()->OnExtensionInstalled(extension.get(),
-                                            syncer::StringOrdinal(),
-                                            0);
+                                            syncer::StringOrdinal(), 0);
 
   run_loop.Run();
 

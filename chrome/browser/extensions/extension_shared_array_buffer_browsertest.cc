@@ -123,21 +123,21 @@ IN_PROC_BROWSER_TEST_P(SharedArrayBufferTest, TransferToWorker) {
   if (is_cross_origin_isolated) {
     builder
         .Set("cross_origin_opener_policy",
-             DictionaryBuilder().Set("value", "same-origin").Build())
+             DictionaryBuilder().Set("value", "same-origin").BuildDict())
         .Set("cross_origin_embedder_policy",
-             DictionaryBuilder().Set("value", "require-corp").Build());
+             DictionaryBuilder().Set("value", "require-corp").BuildDict());
   }
 
   DictionaryBuilder background_builder;
   background_builder.Set("scripts",
-                         ListBuilder().Append("background.js").Build());
+                         ListBuilder().Append("background.js").BuildList());
 
   if (is_platform_app) {
     builder.Set("app", DictionaryBuilder()
-                           .Set("background", background_builder.Build())
-                           .Build());
+                           .Set("background", background_builder.BuildDict())
+                           .BuildDict());
   } else {
-    builder.Set("background", background_builder.Build());
+    builder.Set("background", background_builder.BuildDict());
   }
 
   test_dir().WriteManifest(builder.ToJSON());

@@ -40,11 +40,11 @@ scoped_refptr<const Extension> CreateExtensionImportingModules(
   if (!import_ids.empty()) {
     ListBuilder import_list;
     for (const std::string& import_id : import_ids)
-      import_list.Append(DictionaryBuilder().Set("id", import_id).Build());
-    builder.Set("import", import_list.Build());
+      import_list.Append(DictionaryBuilder().Set("id", import_id).BuildDict());
+    builder.Set("import", import_list.BuildList());
   }
   return ExtensionBuilder()
-      .SetManifest(builder.Build())
+      .SetManifest(builder.BuildDict())
       .AddFlags(Extension::FROM_WEBSTORE)
       .SetID(id)
       .Build();
@@ -52,16 +52,16 @@ scoped_refptr<const Extension> CreateExtensionImportingModules(
 
 scoped_refptr<const Extension> CreateSharedModule(
     const std::string& module_id) {
-  std::unique_ptr<base::DictionaryValue> manifest =
+  base::Value::Dict manifest =
       DictionaryBuilder()
           .Set("name", "Shared Module")
           .Set("version", "1.0")
           .Set("manifest_version", 2)
           .Set("export",
                DictionaryBuilder()
-                   .Set("resources", ListBuilder().Append("foo.js").Build())
-                   .Build())
-          .Build();
+                   .Set("resources", ListBuilder().Append("foo.js").BuildList())
+                   .BuildDict())
+          .BuildDict();
 
   return ExtensionBuilder()
       .SetManifest(std::move(manifest))
@@ -178,16 +178,16 @@ TEST_F(SharedModuleServiceUnitTest, PruneSharedModulesOnUpdate) {
       CreateSharedModule("shared_module_1");
   EXPECT_TRUE(InstallExtension(shared_module_1.get(), false));
 
-  std::unique_ptr<base::DictionaryValue> manifest_2 =
+  base::Value::Dict manifest_2 =
       DictionaryBuilder()
           .Set("name", "Shared Module 2")
           .Set("version", "1.0")
           .Set("manifest_version", 2)
           .Set("export",
                DictionaryBuilder()
-                   .Set("resources", ListBuilder().Append("foo.js").Build())
-                   .Build())
-          .Build();
+                   .Set("resources", ListBuilder().Append("foo.js").BuildList())
+                   .BuildDict())
+          .BuildDict();
   scoped_refptr<const Extension> shared_module_2 =
       CreateSharedModule("shared_module_2");
   EXPECT_TRUE(InstallExtension(shared_module_2.get(), false));
@@ -237,7 +237,7 @@ TEST_F(SharedModuleServiceUnitTest, AllowlistedImports) {
   std::string nonallowlisted_id =
       crx_file::id_util::GenerateId("nonallowlisted");
   // Create a module which exports to a restricted allowlist.
-  std::unique_ptr<base::DictionaryValue> manifest =
+  base::Value::Dict manifest =
       DictionaryBuilder()
           .Set("name", "Shared Module")
           .Set("version", "1.0")
@@ -245,10 +245,10 @@ TEST_F(SharedModuleServiceUnitTest, AllowlistedImports) {
           .Set("export",
                DictionaryBuilder()
                    .Set("allowlist",
-                        ListBuilder().Append(allowlisted_id).Build())
-                   .Set("resources", ListBuilder().Append("*").Build())
-                   .Build())
-          .Build();
+                        ListBuilder().Append(allowlisted_id).BuildList())
+                   .Set("resources", ListBuilder().Append("*").BuildList())
+                   .BuildDict())
+          .BuildDict();
   scoped_refptr<const Extension> shared_module =
       ExtensionBuilder()
           .SetManifest(std::move(manifest))

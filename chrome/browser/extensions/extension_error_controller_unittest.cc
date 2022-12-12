@@ -94,10 +94,11 @@ ExtensionErrorUI* CreateMockUI(ExtensionErrorUI::Delegate* delegate) {
 // Builds and returns a simple extension.
 scoped_refptr<const Extension> BuildExtension() {
   return ExtensionBuilder()
-      .SetManifest(DictionaryBuilder().Set("name", "My Wonderful Extension")
-                                      .Set("version", "0.1.1.0")
-                                      .Set("manifest_version", 2)
-                                      .Build())
+      .SetManifest(DictionaryBuilder()
+                       .Set("name", "My Wonderful Extension")
+                       .Set("version", "0.1.1.0")
+                       .Set("manifest_version", 2)
+                       .BuildDict())
       .Build();
 }
 

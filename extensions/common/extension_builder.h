@@ -18,6 +18,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/value_builder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 class Extension;
@@ -170,7 +171,7 @@ class ExtensionBuilder {
 
   // Merge another manifest into the current manifest, with new keys taking
   // precedence.
-  ExtensionBuilder& MergeManifest(const base::Value& manifest);
+  ExtensionBuilder& MergeManifest(base::Value::Dict manifest);
   ExtensionBuilder& MergeManifest(
       std::unique_ptr<base::DictionaryValue> manifest);
 
@@ -192,7 +193,7 @@ class ExtensionBuilder {
   // manifest which will be used to construct it, or the dictionary itself. Only
   // one will be present.
   std::unique_ptr<ManifestData> manifest_data_;
-  std::unique_ptr<base::DictionaryValue> manifest_value_;
+  absl::optional<base::Value::Dict> manifest_value_;
 
   base::FilePath path_;
   mojom::ManifestLocation location_;

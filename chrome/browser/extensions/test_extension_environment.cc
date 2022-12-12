@@ -35,17 +35,14 @@ using content::BrowserThread;
 
 namespace {
 
-std::unique_ptr<base::DictionaryValue> MakeExtensionManifest(
-    const base::Value& manifest_extra) {
-  std::unique_ptr<base::DictionaryValue> manifest =
-      DictionaryBuilder()
-          .Set("name", "Extension")
-          .Set("version", "1.0")
-          .Set("manifest_version", 2)
-          .Build();
-  const base::DictionaryValue* manifest_extra_dict;
-  if (manifest_extra.GetAsDictionary(&manifest_extra_dict)) {
-    manifest->MergeDictionary(manifest_extra_dict);
+base::Value::Dict MakeExtensionManifest(const base::Value& manifest_extra) {
+  base::Value::Dict manifest = DictionaryBuilder()
+                                   .Set("name", "Extension")
+                                   .Set("version", "1.0")
+                                   .Set("manifest_version", 2)
+                                   .BuildDict();
+  if (manifest_extra.is_dict()) {
+    manifest.Merge(manifest_extra.GetDict().Clone());
   } else {
     std::string manifest_json;
     base::JSONWriter::Write(manifest_extra, &manifest_json);
@@ -54,7 +51,7 @@ std::unique_ptr<base::DictionaryValue> MakeExtensionManifest(
   return manifest;
 }
 
-std::unique_ptr<base::DictionaryValue> MakePackagedAppManifest() {
+base::Value::Dict MakePackagedAppManifest() {
   return extensions::DictionaryBuilder()
       .Set("name", "Test App Name")
       .Set("version", "2.0")
@@ -64,10 +61,10 @@ std::unique_ptr<base::DictionaryValue> MakePackagedAppManifest() {
                            extensions::DictionaryBuilder()
                                .Set("scripts", extensions::ListBuilder()
                                                    .Append("background.js")
-                                                   .Build())
-                               .Build())
-                      .Build())
-      .Build();
+                                                   .BuildList())
+                               .BuildDict())
+                      .BuildDict())
+      .BuildDict();
 }
 
 }  // namespace
@@ -132,8 +129,7 @@ ExtensionPrefs* TestExtensionEnvironment::GetExtensionPrefs() {
 
 const Extension* TestExtensionEnvironment::MakeExtension(
     const base::Value& manifest_extra) {
-  std::unique_ptr<base::DictionaryValue> manifest =
-      MakeExtensionManifest(manifest_extra);
+  base::Value::Dict manifest = MakeExtensionManifest(manifest_extra);
   scoped_refptr<const Extension> result =
       ExtensionBuilder().SetManifest(std::move(manifest)).Build();
   GetExtensionService()->AddExtension(result.get());
@@ -143,8 +139,7 @@ const Extension* TestExtensionEnvironment::MakeExtension(
 const Extension* TestExtensionEnvironment::MakeExtension(
     const base::Value& manifest_extra,
     const std::string& id) {
-  std::unique_ptr<base::DictionaryValue> manifest =
-      MakeExtensionManifest(manifest_extra);
+  base::Value::Dict manifest = MakeExtensionManifest(manifest_extra);
   scoped_refptr<const Extension> result =
       ExtensionBuilder().SetManifest(std::move(manifest)).SetID(id).Build();
   GetExtensionService()->AddExtension(result.get());

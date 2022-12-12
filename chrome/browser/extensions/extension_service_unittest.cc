@@ -295,16 +295,15 @@ void PersistExtensionWithPaths(
               base::WriteFile(file, data.c_str(), data.size()));
   }
 
-  std::unique_ptr<base::DictionaryValue> manifest =
-      DictionaryBuilder()
-          .Set(keys::kName, "Test extension")
-          .Set(keys::kVersion, "1.0")
-          .Set(keys::kManifestVersion, 2)
-          .Build();
+  base::Value::Dict manifest = DictionaryBuilder()
+                                   .Set(keys::kName, "Test extension")
+                                   .Set(keys::kVersion, "1.0")
+                                   .Set(keys::kManifestVersion, 2)
+                                   .BuildDict();
 
   // Persist manifest file.
   base::FilePath manifest_path = extension_dir.Append(kManifestFilename);
-  JSONFileValueSerializer(manifest_path).Serialize(*manifest);
+  JSONFileValueSerializer(manifest_path).Serialize(manifest);
   EXPECT_TRUE(base::PathExists(manifest_path));
 }
 
@@ -7644,7 +7643,7 @@ TEST_F(ExtensionServiceTest, CannotDisableSharedModules) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Shared Module")
           .SetManifestPath("export.resources",
-                           ListBuilder().Append("foo.js").Build())
+                           ListBuilder().Append("foo.js").BuildList())
           .AddFlags(Extension::FROM_WEBSTORE)
           .Build();
 

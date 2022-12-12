@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
           .Set("manifest_version", 2)
           .Set("name", "Extension for options param test")
           .Set("options_ui",
-               DictionaryBuilder().Set("page", "options.html").Build())
+               DictionaryBuilder().Set("page", "options.html").BuildDict())
           .Set("version", "1")
           .ToJSON());
 

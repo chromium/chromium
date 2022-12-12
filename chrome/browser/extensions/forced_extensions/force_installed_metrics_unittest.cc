@@ -182,15 +182,15 @@ class ForceInstalledMetricsTest : public ForceInstalledTestBase {
   }
 
   void SetupExtensionManagementPref() {
-    std::unique_ptr<base::DictionaryValue> extension_entry =
+    base::Value::Dict extension_entry =
         DictionaryBuilder()
             .Set("installation_mode", "allowed")
             .Set(ExternalProviderImpl::kExternalUpdateUrl, kExtensionUpdateUrl)
-            .Build();
+            .BuildDict();
     prefs()->SetManagedPref(pref_names::kExtensionManagement,
                             DictionaryBuilder()
                                 .Set(kExtensionId1, std::move(extension_entry))
-                                .Build());
+                                .BuildDict());
   }
 
   void CreateExtensionService(bool extensions_enabled) {
@@ -1361,8 +1361,8 @@ TEST_F(ForceInstalledMetricsTest,
        NonMisconfigurationFailureNotPresentDisallowedByPolicyTypeError) {
   SetupForceList(ExtensionOrigin::kWebStore);
   // Set TYPE_EXTENSION and TYPE_THEME as the allowed extension types.
-  std::unique_ptr<base::Value> list =
-      ListBuilder().Append("extension").Append("theme").Build();
+  base::Value::List list =
+      ListBuilder().Append("extension").Append("theme").BuildList();
   prefs()->SetManagedPref(pref_names::kAllowedTypes, std::move(list));
 
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
@@ -1391,8 +1391,8 @@ TEST_F(ForceInstalledMetricsTest,
   SetupForceList(ExtensionOrigin::kWebStore);
 
   // Set TYPE_EXTENSION and TYPE_THEME as the allowed extension types.
-  std::unique_ptr<base::Value> list =
-      ListBuilder().Append("extension").Append("theme").Build();
+  base::Value::List list =
+      ListBuilder().Append("extension").Append("theme").BuildList();
   prefs()->SetManagedPref(pref_names::kAllowedTypes, std::move(list));
 
   scoped_refptr<const Extension> ext1 = CreateNewExtension(

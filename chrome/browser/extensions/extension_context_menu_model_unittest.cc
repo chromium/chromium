@@ -321,12 +321,13 @@ const Extension* ExtensionContextMenuModelTest::AddExtensionWithHostPermission(
   DictionaryBuilder manifest;
   manifest.Set("name", name).Set("version", "1").Set("manifest_version", 2);
   if (action_key)
-    manifest.Set(action_key, DictionaryBuilder().Build());
+    manifest.Set(action_key, DictionaryBuilder().BuildDict());
   if (!host_permission.empty())
-    manifest.Set("permissions", ListBuilder().Append(host_permission).Build());
+    manifest.Set("permissions",
+                 ListBuilder().Append(host_permission).BuildList());
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(manifest.Build())
+          .SetManifest(manifest.BuildDict())
           .SetID(crx_file::id_util::GenerateId(name))
           .SetLocation(location)
           .Build();
@@ -512,19 +513,18 @@ TEST_F(ExtensionContextMenuModelTest, ComponentExtensionContextMenu) {
   InitializeEmptyExtensionService();
 
   std::string name("component");
-  std::unique_ptr<base::DictionaryValue> manifest =
+  base::Value::Dict manifest =
       DictionaryBuilder()
           .Set("name", name)
           .Set("version", "1")
           .Set("manifest_version", 2)
-          .Set("browser_action", DictionaryBuilder().Build())
-          .Build();
+          .Set("browser_action", DictionaryBuilder().BuildDict())
+          .BuildDict();
 
   {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder()
-            .SetManifest(base::DictionaryValue::From(
-                base::Value::ToUniquePtrValue(manifest->Clone())))
+            .SetManifest(manifest.Clone())
             .SetID(crx_file::id_util::GenerateId("component"))
             .SetLocation(ManifestLocation::kComponent)
             .Build();
@@ -554,7 +554,7 @@ TEST_F(ExtensionContextMenuModelTest, ComponentExtensionContextMenu) {
   {
     // Check that a component extension with an options page does have the
     // options menu item, and it is enabled.
-    manifest->SetStringKey("options_page", "options_page.html");
+    manifest.Set("options_page", "options_page.html");
     scoped_refptr<const Extension> extension =
         ExtensionBuilder()
             .SetManifest(std::move(manifest))

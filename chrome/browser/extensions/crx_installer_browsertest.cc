@@ -127,10 +127,8 @@ class MockPromptProxy {
 
 class MockInstallPrompt : public ExtensionInstallPrompt {
  public:
-  MockInstallPrompt(content::WebContents* web_contents,
-                    MockPromptProxy* proxy) :
-      ExtensionInstallPrompt(web_contents),
-      proxy_(proxy) {}
+  MockInstallPrompt(content::WebContents* web_contents, MockPromptProxy* proxy)
+      : ExtensionInstallPrompt(web_contents), proxy_(proxy) {}
 
   MockInstallPrompt(const MockInstallPrompt&) = delete;
   MockInstallPrompt& operator=(const MockInstallPrompt&) = delete;
@@ -261,7 +259,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
                             .Set("name", "My First Extension")
                             .Set("version", version)
                             .Set("manifest_version", 2)
-                            .Build());
+                            .BuildDict());
     builder.SetID(extension_id);
     builder.SetPath(temp_dir.GetPath());
     extension_service()->AddExtension(builder.Build().get());
@@ -400,8 +398,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
                        ExperimentalExtensionFromOutsideGallery) {
   // Non-gallery-installed extensions should lose their experimental
   // permission if the flag isn't enabled.
-  const Extension* extension = InstallExtension(
-      test_data_dir_.AppendASCII("experimental.crx"), 1);
+  const Extension* extension =
+      InstallExtension(test_data_dir_.AppendASCII("experimental.crx"), 1);
   ASSERT_TRUE(extension);
   EXPECT_FALSE(extension->permissions_data()->HasAPIPermission(
       mojom::APIPermissionID::kExperimental));
@@ -411,8 +409,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTestWithExperimentalApis,
                        ExperimentalExtensionFromOutsideGalleryWithFlag) {
   // Non-gallery-installed extensions should maintain their experimental
   // permission if the flag is enabled.
-  const Extension* extension = InstallExtension(
-      test_data_dir_.AppendASCII("experimental.crx"), 1);
+  const Extension* extension =
+      InstallExtension(test_data_dir_.AppendASCII("experimental.crx"), 1);
   ASSERT_TRUE(extension);
   EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
       mojom::APIPermissionID::kExperimental));
@@ -468,8 +466,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
 
   const int kNumDownloadsExpected = 1;
 
-  base::FilePath crx_path = PackExtension(
-      test_data_dir_.AppendASCII("common/background_page"));
+  base::FilePath crx_path =
+      PackExtension(test_data_dir_.AppendASCII("common/background_page"));
   ASSERT_FALSE(crx_path.empty());
   std::string crx_path_string(crx_path.value().begin(), crx_path.value().end());
   GURL url = GURL(std::string("file:///").append(crx_path_string));
@@ -555,14 +553,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, AllowOffStore) {
     // is done.
     run_loop.Run();
     EXPECT_EQ(kTestData[i], mock_prompt->did_succeed());
-    EXPECT_EQ(kTestData[i], mock_prompt->confirmation_requested()) <<
-        kTestData[i];
+    EXPECT_EQ(kTestData[i], mock_prompt->confirmation_requested())
+        << kTestData[i];
     if (kTestData[i]) {
       EXPECT_EQ(std::u16string(), mock_prompt->error()) << kTestData[i];
     } else {
-      EXPECT_EQ(l10n_util::GetStringUTF16(
-          IDS_EXTENSION_INSTALL_DISALLOWED_ON_SITE),
-          mock_prompt->error()) << kTestData[i];
+      EXPECT_EQ(
+          l10n_util::GetStringUTF16(IDS_EXTENSION_INSTALL_DISALLOWED_ON_SITE),
+          mock_prompt->error())
+          << kTestData[i];
     }
   }
 }
@@ -574,10 +573,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, HiDpiThemeTest) {
   ASSERT_TRUE(InstallExtension(crx_path, 1));
 
   const std::string extension_id("gllekhaobjnhgeagipipnkpmmmpchacm");
-  ExtensionRegistry* registry = ExtensionRegistry::Get(
-      browser()->profile());
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
   const extensions::Extension* extension =
-     registry->enabled_extensions().GetByID(extension_id);
+      registry->enabled_extensions().GetByID(extension_id);
   ASSERT_TRUE(extension);
   EXPECT_EQ(extension_id, extension->id());
 
@@ -592,8 +590,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
 
   ExtensionService* service = extension_service();
   ASSERT_TRUE(service);
-  ExtensionRegistry* registry = ExtensionRegistry::Get(
-      browser()->profile());
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
   ASSERT_TRUE(registry);
 
   // Install version 1 of the test extension. This extension does not have
@@ -602,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
   ASSERT_FALSE(v1_path.empty());
   ASSERT_TRUE(InstallExtension(v1_path, 1));
   const extensions::Extension* extension =
-     registry->enabled_extensions().GetByID(extension_id);
+      registry->enabled_extensions().GetByID(extension_id);
   ASSERT_TRUE(extension);
   ASSERT_EQ(extension_id, extension->id());
   ASSERT_EQ("1.0", extension->version().GetString());
@@ -654,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, Blocklist) {
   blocklist_db->SetUnsafe(extension_id);
 
   base::FilePath crx_path = test_data_dir_.AppendASCII("theme_hidpi_crx")
-                                          .AppendASCII("theme_hidpi.crx");
+                                .AppendASCII("theme_hidpi.crx");
   EXPECT_FALSE(InstallExtension(crx_path, 0));
 
   auto installation_failure =
@@ -975,8 +972,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, KioskOnlyTest) {
   base::ScopedAllowBlockingForTesting allow_io;
   // kiosk_only is allowlisted from non-chromeos.
-  base::FilePath crx_path =
-      test_data_dir_.AppendASCII("kiosk/kiosk_only.crx");
+  base::FilePath crx_path = test_data_dir_.AppendASCII("kiosk/kiosk_only.crx");
   EXPECT_FALSE(InstallExtension(crx_path, 0));
   // Simulate ChromeOS kiosk mode. |scoped_user_manager| will take over
   // lifetime of |user_manager|.
@@ -1007,8 +1003,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, InstallToSharedLocation) {
 
   std::string extension_id = extension->id();
   UninstallExtension(extension_id);
-  ExtensionRegistry* registry = ExtensionRegistry::Get(
-      browser()->profile());
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
   EXPECT_FALSE(registry->enabled_extensions().GetByID(extension_id));
 
   content::RunAllTasksUntilIdle();

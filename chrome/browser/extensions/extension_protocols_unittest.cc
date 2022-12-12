@@ -108,16 +108,17 @@ scoped_refptr<Extension> CreateTestExtension(const std::string& name,
 }
 
 scoped_refptr<Extension> CreateWebStoreExtension() {
-  std::unique_ptr<base::DictionaryValue> manifest =
+  base::Value::Dict manifest =
       DictionaryBuilder()
           .Set("name", "WebStore")
           .Set("version", "1")
           .Set("manifest_version", 2)
-          .Set("icons",
-               DictionaryBuilder().Set("16", "webstore_icon_16.png").Build())
+          .Set(
+              "icons",
+              DictionaryBuilder().Set("16", "webstore_icon_16.png").BuildDict())
           .Set("web_accessible_resources",
-               ListBuilder().Append("webstore_icon_16.png").Build())
-          .Build();
+               ListBuilder().Append("webstore_icon_16.png").BuildList())
+          .BuildDict();
 
   base::FilePath path;
   EXPECT_TRUE(base::PathService::Get(chrome::DIR_RESOURCES, &path));
@@ -125,7 +126,7 @@ scoped_refptr<Extension> CreateWebStoreExtension() {
 
   std::string error;
   scoped_refptr<Extension> extension(
-      Extension::Create(path, mojom::ManifestLocation::kComponent, *manifest,
+      Extension::Create(path, mojom::ManifestLocation::kComponent, manifest,
                         Extension::NO_FLAGS, &error));
   EXPECT_TRUE(extension.get()) << error;
   return extension;
@@ -134,7 +135,7 @@ scoped_refptr<Extension> CreateWebStoreExtension() {
 scoped_refptr<const Extension> CreateTestResponseHeaderExtension() {
   return ExtensionBuilder("An extension with web-accessible resources")
       .SetManifestKey("web_accessible_resources",
-                      ListBuilder().Append("test.dat").Build())
+                      ListBuilder().Append("test.dat").BuildList())
       .SetPath(GetTestPath("response_headers"))
       .Build();
 }

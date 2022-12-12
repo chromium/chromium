@@ -46,8 +46,8 @@ namespace extensions {
 namespace {
 
 scoped_refptr<const Extension> CreateExtensionWithOptionalPermissions(
-    std::unique_ptr<base::Value> optional_permissions,
-    std::unique_ptr<base::Value> permissions,
+    base::Value::List optional_permissions,
+    base::Value::List permissions,
     const std::string& name) {
   return ExtensionBuilder()
       .SetLocation(mojom::ManifestLocation::kInternal)
@@ -59,7 +59,7 @@ scoped_refptr<const Extension> CreateExtensionWithOptionalPermissions(
               .Set("version", "0.1.2.3")
               .Set("permissions", std::move(permissions))
               .Set("optional_permissions", std::move(optional_permissions))
-              .Build())
+              .BuildDict())
       .SetID(crx_file::id_util::GenerateId(name))
       .Build();
 }
@@ -87,7 +87,7 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
                           ListBuilder()
                               .Append("http://*.c.com/*")
                               .Append("notifications")
-                              .Build())
+                              .BuildList())
           .Build();
 
   {
@@ -223,8 +223,8 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissions) {
     ListBuilder required_permissions;
     required_permissions.Append("topSites");
     scoped_refptr<const Extension> extension =
-        CreateExtensionWithOptionalPermissions(optional_permissions.Build(),
-                                               required_permissions.Build(),
+        CreateExtensionWithOptionalPermissions(optional_permissions.BuildList(),
+                                               required_permissions.BuildList(),
                                                "My Extension");
 
     PermissionsUpdater updater(profile());
@@ -283,8 +283,8 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissions) {
     ListBuilder required_permissions;
     required_permissions.Append("tabs").Append("http://*/*");
     scoped_refptr<const Extension> extension =
-        CreateExtensionWithOptionalPermissions(optional_permissions.Build(),
-                                               required_permissions.Build(),
+        CreateExtensionWithOptionalPermissions(optional_permissions.BuildList(),
+                                               required_permissions.BuildList(),
                                                "ExtensionSettings");
     AddPattern(&default_policy_blocked_hosts, "http://*.google.com/*");
     PermissionsUpdater updater(profile());
@@ -379,7 +379,7 @@ TEST_F(PermissionsUpdaterTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .SetManifestKey("optional_permissions",
-                          extensions::ListBuilder().Append("tabs").Build())
+                          extensions::ListBuilder().Append("tabs").BuildList())
           .Build();
 
   PermissionsUpdater updater(profile());
@@ -503,8 +503,8 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissionsWithRuntimeHostPermissions) {
     SCOPED_TRACE(test_name);
     scoped_refptr<const Extension> extension =
         CreateExtensionWithOptionalPermissions(
-            std::make_unique<base::ListValue>(),
-            ListBuilder().Append(test_case.permission).Build(), test_name);
+            base::Value::List(),
+            ListBuilder().Append(test_case.permission).BuildList(), test_name);
     PermissionsUpdater updater(profile());
     updater.InitializePermissions(extension.get());
 
@@ -763,8 +763,9 @@ TEST_F(PermissionsUpdaterTest,
 
   scoped_refptr<const Extension> extension =
       CreateExtensionWithOptionalPermissions(
-          /*optional=*/ListBuilder().Append("tabs").Build(),
-          /*required=*/ListBuilder().Append("https://example.com/*").Build(),
+          /*optional_permissions=*/ListBuilder().Append("tabs").BuildList(),
+          /*permissions=*/
+          ListBuilder().Append("https://example.com/*").BuildList(),
           "optional grant");
   ASSERT_TRUE(extension);
 

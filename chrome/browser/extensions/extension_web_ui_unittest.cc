@@ -89,10 +89,10 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
       .Set(manifest_keys::kVersion, "0.1")
       .Set(manifest_keys::kManifestVersion, 2)
       .Set(api::chrome_url_overrides::ManifestKeys::kChromeUrlOverrides,
-           DictionaryBuilder().Set("bookmarks", kOverrideResource).Build());
+           DictionaryBuilder().Set("bookmarks", kOverrideResource).BuildDict());
   scoped_refptr<const Extension> ext_unpacked(
       ExtensionBuilder()
-          .SetManifest(manifest.Build())
+          .SetManifest(manifest.BuildDict())
           .SetLocation(ManifestLocation::kUnpacked)
           .SetID("abcdefghijabcdefghijabcdefghijaa")
           .Build());
@@ -124,11 +124,12 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
   manifest2.Set(manifest_keys::kName, "ext2")
       .Set(manifest_keys::kVersion, "0.1")
       .Set(manifest_keys::kManifestVersion, 2)
-      .Set(api::chrome_url_overrides::ManifestKeys::kChromeUrlOverrides,
-           DictionaryBuilder().Set("bookmarks", kOverrideResource2).Build());
+      .Set(
+          api::chrome_url_overrides::ManifestKeys::kChromeUrlOverrides,
+          DictionaryBuilder().Set("bookmarks", kOverrideResource2).BuildDict());
   scoped_refptr<const Extension> ext_component(
       ExtensionBuilder()
-          .SetManifest(manifest2.Build())
+          .SetManifest(manifest2.BuildDict())
           .SetLocation(ManifestLocation::kComponent)
           .SetID("bbabcdefghijabcdefghijabcdefghij")
           .Build());
@@ -265,8 +266,8 @@ TEST_F(ExtensionWebUITest, TestFaviconAlwaysAvailable) {
 
 TEST_F(ExtensionWebUITest, TestNumExtensionsOverridingURL) {
   auto load_extension_overriding_newtab = [this](const char* name) {
-    std::unique_ptr<base::Value> chrome_url_overrides =
-        DictionaryBuilder().Set("newtab", "newtab.html").Build();
+    base::Value::Dict chrome_url_overrides =
+        DictionaryBuilder().Set("newtab", "newtab.html").BuildDict();
     scoped_refptr<const Extension> extension =
         ExtensionBuilder(name)
             .SetLocation(ManifestLocation::kInternal)

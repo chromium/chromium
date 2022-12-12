@@ -111,7 +111,7 @@ using extensions::SettingsOverrides;
 using extensions::api::manifest_types::ChromeSettingsOverrides;
 namespace manifest_keys = extensions::manifest_keys;
 
-scoped_refptr<Extension> CreateExtension(const base::DictionaryValue& manifest,
+scoped_refptr<Extension> CreateExtension(const base::Value::Dict& manifest,
                                          std::string* error) {
   scoped_refptr<Extension> extension =
       Extension::Create(base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
@@ -132,12 +132,11 @@ scoped_refptr<Extension> CreateExtension(base::StringPiece manifest,
     ADD_FAILURE() << "Manifest isn't a Dictionary";
     return nullptr;
   }
-  return CreateExtension(*static_cast<base::DictionaryValue*>(root.get()),
-                         error);
+  return CreateExtension(root->GetDict(), error);
 }
 
 scoped_refptr<Extension> CreateExtensionWithSearchProvider(
-    std::unique_ptr<base::DictionaryValue> search_provider,
+    base::Value::Dict search_provider,
     std::string* error) {
   DictionaryBuilder manifest;
   manifest.Set("name", "name")
@@ -147,8 +146,8 @@ scoped_refptr<Extension> CreateExtensionWithSearchProvider(
       .Set("chrome_settings_overrides",
            DictionaryBuilder()
                .Set("search_provider", std::move(search_provider))
-               .Build());
-  return CreateExtension(*manifest.Build(), error);
+               .BuildDict());
+  return CreateExtension(manifest.BuildDict(), error);
 }
 
 TEST(OverrideSettingsTest, ParseManifest) {
@@ -315,18 +314,17 @@ TEST(OverrideSettingsTest, SearchProviderMissingKeys) {
       .Set("is_default", true);
   for (const KeyValue& kv : kMandatorySearchProviderKeyValues)
     search_provider.Set(kv.key, kv.value);
-  std::unique_ptr<base::DictionaryValue> search_provider_with_all_keys_dict =
-      search_provider.Build();
+  base::Value::Dict search_provider_with_all_keys_dict =
+      search_provider.BuildDict();
 
   // Missing all keys from |kMandatorySearchProviderValues|.
   for (const KeyValue& kv : kMandatorySearchProviderKeyValues) {
     SCOPED_TRACE(testing::Message()
                  << "key = " << kv.key << " value = " << kv.value);
     // Build a search provider entry with |kv.key| missing:
-    std::unique_ptr<base::DictionaryValue> provider_with_missing_key =
-        base::DictionaryValue::From(base::Value::ToUniquePtrValue(
-            search_provider_with_all_keys_dict->Clone()));
-    ASSERT_TRUE(provider_with_missing_key->RemovePath(kv.key));
+    base::Value::Dict provider_with_missing_key =
+        search_provider_with_all_keys_dict.Clone();
+    ASSERT_TRUE(provider_with_missing_key.Remove(kv.key));
 
     std::string error;
     scoped_refptr<Extension> extension = CreateExtensionWithSearchProvider(

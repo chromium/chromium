@@ -62,10 +62,10 @@ scoped_refptr<const Extension> CreateApp(const std::string& extension_id,
                                 DictionaryBuilder()
                                     .Set("scripts", ListBuilder()
                                                         .Append("background.js")
-                                                        .Build())
-                                    .Build())
-                           .Build())
-                  .Build())
+                                                        .BuildList())
+                                    .BuildDict())
+                           .BuildDict())
+                  .BuildDict())
           .SetID(extension_id)
           .Build();
   return app;
@@ -84,8 +84,8 @@ scoped_refptr<const Extension> CreateExtension(const std::string& extension_id,
                   .Set("background", DictionaryBuilder()
                                          .Set("page", "background.html")
                                          .Set("persistent", persistent)
-                                         .Build())
-                  .Build())
+                                         .BuildDict())
+                  .BuildDict())
           .SetID(extension_id)
           .Build();
   return extension;
