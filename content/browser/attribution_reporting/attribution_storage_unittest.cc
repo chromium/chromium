@@ -2674,8 +2674,8 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
   EXPECT_EQ(
       AttributionTrigger::EventLevelResult::kNoMatchingConfigurations,
       MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
+          /*reporting_origin=*/origin,
           attribution_reporting::TriggerRegistration(
-              origin,
               /*filters=*/AttributionFilters(),
               /*not_filters=*/AttributionFilters(),
               /*debug_key=*/absl::nullopt,
@@ -2774,8 +2774,8 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
   EXPECT_EQ(
       AttributionTrigger::EventLevelResult::kSuccess,
       MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
+          /*reporting_origin=*/origin,
           attribution_reporting::TriggerRegistration(
-              /*reporting_origin=*/origin,
               /*filters=*/AttributionFilters(),
               /*not_filters=*/AttributionFilters(),
               /*debug_key=*/absl::nullopt,
@@ -2823,8 +2823,8 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           .Build());
 
   AttributionTrigger trigger1(
+      /*reporting_origin=*/origin,
       attribution_reporting::TriggerRegistration(
-          origin,
           /*filters=*/
           *AttributionFilters::Create({
               {"abc", {"456"}},
@@ -2841,8 +2841,8 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
       /*destination_origin=*/origin, /*is_within_fenced_frame=*/false);
 
   AttributionTrigger trigger2(
+      /*reporting_origin=*/origin,
       attribution_reporting::TriggerRegistration(
-          origin,
           /*filters=*/
           *AttributionFilters::Create({
               {"abc", {"123"}},
@@ -2859,8 +2859,8 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
       /*destination_origin=*/origin, /*is_within_fenced_frame=*/false);
 
   AttributionTrigger trigger3(
+      /*reporting_origin=*/origin,
       attribution_reporting::TriggerRegistration(
-          origin,
           /*filters=*/AttributionFilters(),
           /*not_filters=*/
           AttributionFiltersForSourceType(AttributionSourceType::kNavigation),

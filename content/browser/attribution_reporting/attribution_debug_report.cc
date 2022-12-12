@@ -410,7 +410,7 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
     return absl::nullopt;
 
   return AttributionDebugReport(std::move(report_data),
-                                trigger.registration().reporting_origin);
+                                trigger.reporting_origin());
 }
 
 AttributionDebugReport::AttributionDebugReport(

@@ -97,8 +97,7 @@ std::ostream& operator<<(std::ostream& out,
 
 bool operator==(const TriggerRegistration& a, const TriggerRegistration& b) {
   auto tie = [](const TriggerRegistration& reg) {
-    return std::make_tuple(reg.reporting_origin, reg.filters, reg.not_filters,
-                           reg.debug_key, reg.aggregatable_dedup_key,
+    return std::make_tuple(reg.debug_key, reg.aggregatable_dedup_key,
                            reg.event_triggers, reg.aggregatable_trigger_data,
                            reg.aggregatable_values, reg.debug_reporting,
                            reg.aggregation_coordinator);
@@ -107,8 +106,7 @@ bool operator==(const TriggerRegistration& a, const TriggerRegistration& b) {
 }
 
 std::ostream& operator<<(std::ostream& out, const TriggerRegistration& reg) {
-  return out << "{reporting_origin=" << reg.reporting_origin
-             << ",json=" << reg.ToJson() << "}";
+  return out << reg.ToJson();
 }
 
 bool operator==(const SuitableOrigin& a, const SuitableOrigin& b) {

@@ -94,6 +94,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::SourceRegistration) override;
   void TriggerDataAvailable(
+      attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::TriggerRegistration) override;
 
   void OnReceiverDisconnected();

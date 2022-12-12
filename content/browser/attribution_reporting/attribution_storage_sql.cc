@@ -1098,8 +1098,7 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
     std::vector<StoredSource::Id>& source_ids_to_delete,
     std::vector<StoredSource::Id>& source_ids_to_deactivate) {
   const SuitableOrigin& destination_origin = trigger.destination_origin();
-  const SuitableOrigin& reporting_origin =
-      trigger.registration().reporting_origin;
+  const SuitableOrigin& reporting_origin = trigger.reporting_origin();
 
   // Get all sources that match this <reporting_origin,
   // conversion_destination> pair. Only get sources that are active and not

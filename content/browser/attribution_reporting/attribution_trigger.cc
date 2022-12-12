@@ -11,10 +11,12 @@
 namespace content {
 
 AttributionTrigger::AttributionTrigger(
+    attribution_reporting::SuitableOrigin reporting_origin,
     attribution_reporting::TriggerRegistration registration,
     attribution_reporting::SuitableOrigin destination_origin,
     bool is_within_fenced_frame)
-    : registration_(std::move(registration)),
+    : reporting_origin_(std::move(reporting_origin)),
+      registration_(std::move(registration)),
       destination_origin_(std::move(destination_origin)),
       is_within_fenced_frame_(is_within_fenced_frame) {}
 

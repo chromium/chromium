@@ -20,7 +20,6 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/parsing_utils.h"
-#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -96,8 +95,7 @@ void SerializeListIfNotEmpty(base::Value::Dict& dict,
 
 // static
 base::expected<TriggerRegistration, TriggerRegistrationError>
-TriggerRegistration::Parse(base::Value::Dict registration,
-                           SuitableOrigin reporting_origin) {
+TriggerRegistration::Parse(base::Value::Dict registration) {
   auto filters = Filters::FromJSON(registration.Find(Filters::kFilters));
   if (!filters.has_value())
     return base::unexpected(filters.error());
@@ -141,16 +139,15 @@ TriggerRegistration::Parse(base::Value::Dict registration,
   bool debug_reporting = ParseDebugReporting(registration);
 
   return TriggerRegistration(
-      std::move(reporting_origin), std::move(*filters), std::move(*not_filters),
-      debug_key, aggregatable_dedup_key, std::move(*event_triggers),
+      std::move(*filters), std::move(*not_filters), debug_key,
+      aggregatable_dedup_key, std::move(*event_triggers),
       std::move(*aggregatable_trigger_data), std::move(*aggregatable_values),
       debug_reporting, *aggregation_coordinator);
 }
 
 // static
 base::expected<TriggerRegistration, TriggerRegistrationError>
-TriggerRegistration::Parse(base::StringPiece json,
-                           SuitableOrigin reporting_origin) {
+TriggerRegistration::Parse(base::StringPiece json) {
   absl::optional<base::Value> value =
       base::JSONReader::Read(json, base::JSON_PARSE_RFC);
   if (!value)
@@ -159,16 +156,12 @@ TriggerRegistration::Parse(base::StringPiece json,
   if (!value->is_dict())
     return base::unexpected(TriggerRegistrationError::kRootWrongType);
 
-  return Parse(std::move(*value).TakeDict(), std::move(reporting_origin));
+  return Parse(std::move(*value).TakeDict());
 }
 
 TriggerRegistration::TriggerRegistration() = default;
 
-TriggerRegistration::TriggerRegistration(SuitableOrigin reporting_origin)
-    : reporting_origin(std::move(reporting_origin)) {}
-
 TriggerRegistration::TriggerRegistration(
-    SuitableOrigin reporting_origin,
     Filters filters,
     Filters not_filters,
     absl::optional<uint64_t> debug_key,
@@ -178,8 +171,7 @@ TriggerRegistration::TriggerRegistration(
     AggregatableValues aggregatable_values,
     bool debug_reporting,
     aggregation_service::mojom::AggregationCoordinator aggregation_coordinator)
-    : reporting_origin(std::move(reporting_origin)),
-      filters(std::move(filters)),
+    : filters(std::move(filters)),
       not_filters(std::move(not_filters)),
       debug_key(debug_key),
       aggregatable_dedup_key(aggregatable_dedup_key),

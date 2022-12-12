@@ -153,6 +153,7 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::SourceRegistration) override;
   void TriggerDataAvailable(
+      attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::TriggerRegistration) override;
 
   size_t min_source_data_count_ = 0;
@@ -996,8 +997,6 @@ constexpr auto EventTriggerDataListMatches =
                        attribution_reporting::kMaxEventTriggerData>;
 
 struct TriggerRegistrationMatcherConfig {
-  ::testing::Matcher<const attribution_reporting::SuitableOrigin&>
-      reporting_origin = ::testing::_;
   ::testing::Matcher<const attribution_reporting::Filters&> filters =
       ::testing::_;
   ::testing::Matcher<const attribution_reporting::Filters&> not_filters =
@@ -1017,8 +1016,6 @@ struct TriggerRegistrationMatcherConfig {
 
   TriggerRegistrationMatcherConfig() = delete;
   explicit TriggerRegistrationMatcherConfig(
-      ::testing::Matcher<const attribution_reporting::SuitableOrigin&>
-          reporting_origin = ::testing::_,
       ::testing::Matcher<const attribution_reporting::Filters&> filters =
           ::testing::_,
       ::testing::Matcher<const attribution_reporting::Filters&> not_filters =
@@ -1043,6 +1040,8 @@ struct TriggerRegistrationMatcherConfig {
 TriggerRegistrationMatches(const TriggerRegistrationMatcherConfig&);
 
 struct AttributionTriggerMatcherConfig {
+  ::testing::Matcher<const attribution_reporting::SuitableOrigin&>
+      reporting_origin = ::testing::_;
   ::testing::Matcher<const attribution_reporting::TriggerRegistration&>
       registration = ::testing::_;
   ::testing::Matcher<const attribution_reporting::SuitableOrigin&>
@@ -1052,6 +1051,8 @@ struct AttributionTriggerMatcherConfig {
 
   AttributionTriggerMatcherConfig() = delete;
   explicit AttributionTriggerMatcherConfig(
+      ::testing::Matcher<const attribution_reporting::SuitableOrigin&>
+          reporting_origin = ::testing::_,
       ::testing::Matcher<const attribution_reporting::TriggerRegistration&>
           registration = ::testing::_,
       ::testing::Matcher<const attribution_reporting::SuitableOrigin&>

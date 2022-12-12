@@ -14,7 +14,6 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "testing/libfuzzer/proto/json.pb.h"
 #include "testing/libfuzzer/proto/json_proto_converter.h"
@@ -49,10 +48,7 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
   if (!input || !input->is_dict())
     return;
 
-  std::ignore = TriggerRegistration::Parse(
-      std::move(*input).TakeDict(),
-      /*reporting_origin=*/
-      *SuitableOrigin::Deserialize("https://r.test/"));
+  std::ignore = TriggerRegistration::Parse(std::move(*input).TakeDict());
 }
 
 }  // namespace attribution_reporting

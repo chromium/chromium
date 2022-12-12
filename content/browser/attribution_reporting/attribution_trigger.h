@@ -64,7 +64,8 @@ class CONTENT_EXPORT AttributionTrigger {
     kMaxValue = kReportWindowPassed,
   };
 
-  AttributionTrigger(attribution_reporting::TriggerRegistration registration,
+  AttributionTrigger(attribution_reporting::SuitableOrigin reporting_origin,
+                     attribution_reporting::TriggerRegistration registration,
                      attribution_reporting::SuitableOrigin destination_origin,
                      bool is_within_fenced_frame);
 
@@ -73,6 +74,10 @@ class CONTENT_EXPORT AttributionTrigger {
   AttributionTrigger(AttributionTrigger&&);
   AttributionTrigger& operator=(AttributionTrigger&&);
   ~AttributionTrigger();
+
+  const attribution_reporting::SuitableOrigin& reporting_origin() const {
+    return reporting_origin_;
+  }
 
   const attribution_reporting::TriggerRegistration& registration() const {
     return registration_;
@@ -89,6 +94,8 @@ class CONTENT_EXPORT AttributionTrigger {
   bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
 
  private:
+  attribution_reporting::SuitableOrigin reporting_origin_;
+
   attribution_reporting::TriggerRegistration registration_;
 
   // Origin on which this trigger was registered.

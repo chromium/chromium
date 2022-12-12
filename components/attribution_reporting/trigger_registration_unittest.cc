@@ -21,7 +21,6 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
-#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -35,15 +34,14 @@ namespace {
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
 template <typename F>
-TriggerRegistration TriggerRegistrationWith(SuitableOrigin reporting_origin,
-                                            F&& f) {
-  TriggerRegistration r(std::move(reporting_origin));
+TriggerRegistration TriggerRegistrationWith(F&& f) {
+  TriggerRegistration r;
   base::invoke<F, TriggerRegistration&>(std::move(f), r);
   return r;
 }
 
 base::expected<TriggerRegistration, TriggerRegistrationError>
-ParseWithAggregatableTriggerData(size_t n, SuitableOrigin reporting_origin) {
+ParseWithAggregatableTriggerData(size_t n) {
   base::Value::List list;
   for (size_t i = 0; i < n; ++i) {
     base::Value::Dict data;
@@ -58,14 +56,10 @@ ParseWithAggregatableTriggerData(size_t n, SuitableOrigin reporting_origin) {
 
   base::Value::Dict dict;
   dict.Set("aggregatable_trigger_data", std::move(list));
-  return TriggerRegistration::Parse(std::move(dict),
-                                    std::move(reporting_origin));
+  return TriggerRegistration::Parse(std::move(dict));
 }
 
 TEST(TriggerRegistrationTest, Parse) {
-  const auto reporting_origin =
-      *SuitableOrigin::Deserialize("https://r.example");
-
   const struct {
     const char* description;
     const char* json;
@@ -84,16 +78,14 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "empty",
           R"json({})json",
-          TriggerRegistration(reporting_origin),
+          TriggerRegistration(),
       },
       {
           "filters_valid",
           R"json({"filters":{"a":["b"]}})json",
-          TriggerRegistrationWith(
-              reporting_origin,
-              [](auto& r) {
-                r.filters = *Filters::Create({{"a", {"b"}}});
-              }),
+          TriggerRegistrationWith([](auto& r) {
+            r.filters = *Filters::Create({{"a", {"b"}}});
+          }),
       },
       {
           "filters_wrong_type",
@@ -103,11 +95,9 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "not_filters_valid",
           R"json({"not_filters":{"a":["b"]}})json",
-          TriggerRegistrationWith(
-              reporting_origin,
-              [](auto& r) {
-                r.not_filters = *Filters::Create({{"a", {"b"}}});
-              }),
+          TriggerRegistrationWith([](auto& r) {
+            r.not_filters = *Filters::Create({{"a", {"b"}}});
+          }),
       },
       {
           "not_filters_wrong_type",
@@ -117,40 +107,38 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "debug_key_valid",
           R"json({"debug_key":"5"})json",
-          TriggerRegistrationWith(reporting_origin,
-                                  [](auto& r) { r.debug_key = 5; }),
+          TriggerRegistrationWith([](auto& r) { r.debug_key = 5; }),
       },
       {
           "debug_key_invalid",
           R"json({"debug_key":"-5"})json",
-          TriggerRegistration(reporting_origin),
+          TriggerRegistration(),
       },
       {
           "debug_key_wrong_type",
           R"json({"debug_key":5})json",
-          TriggerRegistration(reporting_origin),
+          TriggerRegistration(),
       },
       {
           "aggregatable_dedup_key_valid",
           R"json({"aggregatable_deduplication_key":"10"})json",
           TriggerRegistrationWith(
-              reporting_origin, [](auto& r) { r.aggregatable_dedup_key = 10; }),
+              [](auto& r) { r.aggregatable_dedup_key = 10; }),
       },
       {
           "aggregatable_dedup_key_invalid",
           R"json({"aggregatable_deduplication_key":"-10"})json",
-          TriggerRegistration(reporting_origin),
+          TriggerRegistration(),
       },
       {
           "aggregatable_dedup_key_wrong_type",
           R"json({"aggregatable_deduplication_key": 10})json",
-          TriggerRegistration(reporting_origin),
+          TriggerRegistration(),
       },
       {
           "event_triggers_valid",
           R"json({"event_trigger_data":[{}, {"trigger_data":"5"}]})json",
           TriggerRegistrationWith(
-              reporting_origin,
               [](auto& r) {
                 r.event_triggers = *EventTriggerDataList::Create(
                     {EventTriggerData(),
@@ -186,21 +174,19 @@ TEST(TriggerRegistrationTest, Parse) {
             }
           ]
         })json",
-          TriggerRegistrationWith(reporting_origin,
-                                  [](auto& r) {
-                                    r.aggregatable_trigger_data =
-                                        *AggregatableTriggerDataList::Create(
-                                            {*AggregatableTriggerData::Create(
-                                                 /*key_piece=*/1,
-                                                 /*source_keys=*/{"a"},
-                                                 /*filters=*/Filters(),
-                                                 /*not_filters=*/Filters()),
-                                             *AggregatableTriggerData::Create(
-                                                 /*key_piece=*/2,
-                                                 /*source_keys=*/{"b"},
-                                                 /*filters=*/Filters(),
-                                                 /*not_filters=*/Filters())});
-                                  }),
+          TriggerRegistrationWith([](auto& r) {
+            r.aggregatable_trigger_data = *AggregatableTriggerDataList::Create(
+                {*AggregatableTriggerData::Create(
+                     /*key_piece=*/1,
+                     /*source_keys=*/{"a"},
+                     /*filters=*/Filters(),
+                     /*not_filters=*/Filters()),
+                 *AggregatableTriggerData::Create(
+                     /*key_piece=*/2,
+                     /*source_keys=*/{"b"},
+                     /*filters=*/Filters(),
+                     /*not_filters=*/Filters())});
+          }),
       },
       {
           "aggregatable_trigger_data_list_wrong_type",
@@ -217,11 +203,9 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "aggregatable_values_valid",
           R"json({"aggregatable_values":{"a":1}})json",
-          TriggerRegistrationWith(
-              reporting_origin,
-              [](auto& r) {
-                r.aggregatable_values = *AggregatableValues::Create({{"a", 1}});
-              }),
+          TriggerRegistrationWith([](auto& r) {
+            r.aggregatable_values = *AggregatableValues::Create({{"a", 1}});
+          }),
       },
       {
           "aggregatable_values_wrong_type",
@@ -232,23 +216,20 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "debug_reporting_valid",
           R"json({"debug_reporting": true})json",
-          TriggerRegistrationWith(reporting_origin,
-                                  [](auto& r) { r.debug_reporting = true; }),
+          TriggerRegistrationWith([](auto& r) { r.debug_reporting = true; }),
       },
       {
           "debug_reporting_wrong_type",
           R"json({"debug_reporting":"true"})json",
-          TriggerRegistration(reporting_origin),
+          TriggerRegistration(),
       },
       {
           "aggregation_coordinator_identifier_valid",
           R"json({"aggregation_coordinator_identifier":"aws-cloud"})json",
-          TriggerRegistrationWith(reporting_origin,
-                                  [](auto& r) {
-                                    r.aggregation_coordinator =
-                                        aggregation_service::mojom::
-                                            AggregationCoordinator::kAwsCloud;
-                                  }),
+          TriggerRegistrationWith([](auto& r) {
+            r.aggregation_coordinator =
+                aggregation_service::mojom::AggregationCoordinator::kAwsCloud;
+          }),
       },
       {
           "aggregation_coordinator_identifier_wrong_type",
@@ -265,16 +246,12 @@ TEST(TriggerRegistrationTest, Parse) {
   };
 
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(TriggerRegistration::Parse(test_case.json, reporting_origin),
-              test_case.expected)
+    EXPECT_EQ(TriggerRegistration::Parse(test_case.json), test_case.expected)
         << test_case.description;
   }
 }
 
 TEST(TriggerRegistrationTest, Parse_EventTriggerDataCount) {
-  const auto reporting_origin =
-      *SuitableOrigin::Deserialize("https://r.example");
-
   const auto parse_with_event_triggers = [&](size_t n) {
     base::Value::List list;
     for (size_t i = 0; i < n; ++i) {
@@ -283,7 +260,7 @@ TEST(TriggerRegistrationTest, Parse_EventTriggerDataCount) {
 
     base::Value::Dict dict;
     dict.Set("event_trigger_data", std::move(list));
-    return TriggerRegistration::Parse(std::move(dict), reporting_origin);
+    return TriggerRegistration::Parse(std::move(dict));
   };
 
   for (size_t count = 0; count <= kMaxEventTriggerData; ++count) {
@@ -296,17 +273,13 @@ TEST(TriggerRegistrationTest, Parse_EventTriggerDataCount) {
 }
 
 TEST(TriggerRegistrationTest, Parse_AggregatableTriggerDataCount) {
-  const auto reporting_origin =
-      *SuitableOrigin::Deserialize("https://r.example");
-
   for (size_t count = 0; count <= kMaxAggregatableTriggerDataPerTrigger;
        ++count) {
-    EXPECT_TRUE(
-        ParseWithAggregatableTriggerData(count, reporting_origin).has_value());
+    EXPECT_TRUE(ParseWithAggregatableTriggerData(count).has_value());
   }
 
   EXPECT_EQ(ParseWithAggregatableTriggerData(
-                kMaxAggregatableTriggerDataPerTrigger + 1, reporting_origin),
+                kMaxAggregatableTriggerDataPerTrigger + 1),
             base::unexpected(
                 TriggerRegistrationError::kAggregatableTriggerDataListTooLong));
 }
@@ -315,14 +288,11 @@ TEST(TriggerRegistrationTest, Parse_RecordsMetrics) {
   using ::base::Bucket;
   using ::testing::ElementsAre;
 
-  const auto reporting_origin =
-      *SuitableOrigin::Deserialize("https://r.example");
-
   base::HistogramTester histograms;
 
   for (size_t count : std::vector<size_t>{
            0, 1, 1, 3, kMaxAggregatableTriggerDataPerTrigger + 1}) {
-    ParseWithAggregatableTriggerData(count, reporting_origin);
+    ParseWithAggregatableTriggerData(count);
   }
 
   EXPECT_THAT(
@@ -331,36 +301,30 @@ TEST(TriggerRegistrationTest, Parse_RecordsMetrics) {
 }
 
 TEST(TriggerRegistrationTest, ToJson) {
-  const auto reporting_origin =
-      *SuitableOrigin::Deserialize("https://r.example");
-
   const struct {
     TriggerRegistration input;
     const char* expected_json;
   } kTestCases[] = {
       {
-          TriggerRegistration(reporting_origin),
+          TriggerRegistration(),
           R"json({
             "aggregation_coordinator_identifier": "aws-cloud",
             "debug_reporting": false
           })json",
       },
       {
-          TriggerRegistrationWith(
-              reporting_origin,
-              [](auto& r) {
-                r.aggregatable_dedup_key = 1;
-                r.aggregatable_trigger_data =
-                    *AggregatableTriggerDataList::Create(
-                        {AggregatableTriggerData()});
-                r.aggregatable_values = *AggregatableValues::Create({{"a", 2}});
-                r.debug_key = 3;
-                r.debug_reporting = true;
-                r.event_triggers =
-                    *EventTriggerDataList::Create({EventTriggerData()});
-                r.filters = *Filters::Create({{"b", {}}});
-                r.not_filters = *Filters::Create({{"c", {}}});
-              }),
+          TriggerRegistrationWith([](auto& r) {
+            r.aggregatable_dedup_key = 1;
+            r.aggregatable_trigger_data = *AggregatableTriggerDataList::Create(
+                {AggregatableTriggerData()});
+            r.aggregatable_values = *AggregatableValues::Create({{"a", 2}});
+            r.debug_key = 3;
+            r.debug_reporting = true;
+            r.event_triggers =
+                *EventTriggerDataList::Create({EventTriggerData()});
+            r.filters = *Filters::Create({{"b", {}}});
+            r.not_filters = *Filters::Create({{"c", {}}});
+          }),
           R"json({
             "aggregation_coordinator_identifier": "aws-cloud",
             "aggregatable_deduplication_key": "1",

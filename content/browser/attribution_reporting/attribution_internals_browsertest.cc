@@ -1043,11 +1043,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   const base::Time now = base::Time::Now();
 
-  // TODO(crbug.com/1394029): Display aggregation coordinator in internals UI.
-
   const AttributionTrigger trigger(
+      /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
       attribution_reporting::TriggerRegistration(
-          *SuitableOrigin::Deserialize("https://r.test"),
           /*filters=*/*AttributionFilters::Create({{"a", {"b"}}}),
           /*not_filters=*/*AttributionFilters::Create({{"g", {"h"}}}),
           /*debug_key=*/1,

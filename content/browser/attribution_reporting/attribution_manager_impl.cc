@@ -586,7 +586,7 @@ void AttributionManagerImpl::ProcessEvents() {
                   trigger.registration();
               return registration.debug_key.has_value() ||
                              registration.debug_reporting
-                         ? &registration.reporting_origin
+                         ? &trigger.reporting_origin()
                          : nullptr;
             },
         },
@@ -654,7 +654,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
                 this->storage_partition_.get(),
                 ContentBrowserClient::AttributionReportingOperation::kTrigger,
                 /*source_origin=*/nullptr, &*trigger.destination_origin(),
-                &*registration.reporting_origin);
+                &*trigger.reporting_origin());
             RecordRegisterConversionAllowed(allowed);
             if (!allowed) {
               this->OnReportStored(
@@ -1082,7 +1082,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
                               kTriggerVerboseDebugReport,
                           /*source_origin=*/nullptr,
                           &*trigger.destination_origin(),
-                          &*trigger.registration().reporting_origin)) {
+                          &*trigger.reporting_origin())) {
     return;
   }
 

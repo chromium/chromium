@@ -711,7 +711,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
   DCHECK(!json.IsNull());
 
   auto trigger_data = attribution_reporting::TriggerRegistration::Parse(
-      StringUTF8Adaptor(json).AsStringPiece(), std::move(reporting_origin));
+      StringUTF8Adaptor(json).AsStringPiece());
   if (!trigger_data.has_value()) {
     LogAuditIssue(loader_->local_frame_->DomWindow(),
                   AttributionReportingIssueType::kInvalidRegisterTriggerHeader,
@@ -720,7 +720,8 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     return;
   }
 
-  data_host_->TriggerDataAvailable(std::move(*trigger_data));
+  data_host_->TriggerDataAvailable(std::move(reporting_origin),
+                                   std::move(*trigger_data));
 }
 
 }  // namespace blink

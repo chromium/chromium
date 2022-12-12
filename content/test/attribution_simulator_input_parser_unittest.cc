@@ -378,9 +378,9 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
           Pair(
               AttributionTriggerAndTime{
                   .trigger = AttributionTrigger(
+                      /*reporting_origin=*/
+                      *SuitableOrigin::Deserialize("https://a.r.test"),
                       attribution_reporting::TriggerRegistration(
-                          /*reporting_origin=*/
-                          *SuitableOrigin::Deserialize("https://a.r.test"),
                           /*filters=*/
                           *AttributionFilters::Create({
                               {"a", {"b", "c"}},
@@ -428,9 +428,9 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
           Pair(
               AttributionTriggerAndTime{
                   .trigger = AttributionTrigger(
+                      /*reporting_origin=*/
+                      *SuitableOrigin::Deserialize("https://b.r.test"),
                       attribution_reporting::TriggerRegistration(
-                          /*reporting_origin=*/
-                          *SuitableOrigin::Deserialize("https://b.r.test"),
                           /*filters=*/AttributionFilters(),
                           /*not_filters=*/AttributionFilters(),
                           /*debug_key=*/absl::nullopt,
@@ -453,9 +453,9 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
           Pair(
               AttributionTriggerAndTime{
                   .trigger = AttributionTrigger(
+                      /*reporting_origin=*/
+                      *SuitableOrigin::Deserialize("https://b.r.test"),
                       attribution_reporting::TriggerRegistration(
-                          /*reporting_origin=*/
-                          *SuitableOrigin::Deserialize("https://b.r.test"),
                           /*filters=*/AttributionFilters(),
                           /*not_filters=*/AttributionFilters(),
                           /*debug_key=*/absl::nullopt,

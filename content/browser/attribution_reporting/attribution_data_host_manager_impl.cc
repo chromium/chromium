@@ -412,9 +412,10 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 }
 
 void AttributionDataHostManagerImpl::TriggerDataAvailable(
+    attribution_reporting::SuitableOrigin reporting_origin,
     attribution_reporting::TriggerRegistration data) {
   // This is validated by the Mojo typemapping.
-  DCHECK(data.reporting_origin.IsValid());
+  DCHECK(reporting_origin.IsValid());
 
   ReceiverContext& context = receivers_.current_context();
 
@@ -435,7 +436,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 
   context.IncrementNumDataRegistered();
 
-  AttributionTrigger trigger(std::move(data),
+  AttributionTrigger trigger(std::move(reporting_origin), std::move(data),
                              /*destination_origin=*/context.context_origin(),
                              context.is_within_fenced_frame());
 

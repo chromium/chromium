@@ -106,6 +106,7 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
   }
 
   void TriggerDataAvailable(
+      attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::TriggerRegistration data) override {
     trigger_data_.push_back(std::move(data));
   }

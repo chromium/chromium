@@ -395,11 +395,6 @@ template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::AttributionTriggerDataDataView,
                  attribution_reporting::TriggerRegistration> {
-  static const attribution_reporting::SuitableOrigin& reporting_origin(
-      const attribution_reporting::TriggerRegistration& trigger) {
-    return trigger.reporting_origin;
-  }
-
   static const std::vector<attribution_reporting::EventTriggerData>&
   event_triggers(const attribution_reporting::TriggerRegistration& trigger) {
     return trigger.event_triggers.vec();
@@ -450,9 +445,6 @@ struct BLINK_COMMON_EXPORT
 
   static bool Read(blink::mojom::AttributionTriggerDataDataView data,
                    attribution_reporting::TriggerRegistration* out) {
-    if (!data.ReadReportingOrigin(&out->reporting_origin))
-      return false;
-
     std::vector<attribution_reporting::EventTriggerData> event_triggers;
     if (!data.ReadEventTriggers(&event_triggers))
       return false;

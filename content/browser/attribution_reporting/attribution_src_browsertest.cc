@@ -853,7 +853,6 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicTriggerBrowserTest,
   EXPECT_THAT(
       data_host->trigger_data(),
       ElementsAre(TriggerRegistrationMatches(TriggerRegistrationMatcherConfig(
-          /*reporting_origin=*/*SuitableOrigin::Create(register_url),
           /*filters=*/attribution_reporting::Filters(),
           /*not_filters=*/attribution_reporting::Filters(),
           /*debug_key=*/Eq(absl::nullopt),
@@ -916,7 +915,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_THAT(
       data_host->trigger_data(),
       ElementsAre(TriggerRegistrationMatches(TriggerRegistrationMatcherConfig(
-          /*reporting_origin=*/*SuitableOrigin::Create(register_url),
           /*filters=*/
           *attribution_reporting::Filters::Create(
               {{"w", {}}, {"x", {"y", "z"}}}),
@@ -979,8 +977,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   const auto& trigger_data = data_host->trigger_data();
 
   EXPECT_EQ(trigger_data.size(), 1u);
-  EXPECT_EQ(trigger_data.front().reporting_origin,
-            *SuitableOrigin::Create(register_url));
   EXPECT_EQ(trigger_data.front().event_triggers.vec().size(), 1u);
   EXPECT_EQ(trigger_data.front().event_triggers.vec().front().data, 7u);
 }
@@ -1012,8 +1008,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   const auto& trigger_data = data_host->trigger_data();
 
   EXPECT_EQ(trigger_data.size(), 2u);
-  EXPECT_EQ(trigger_data.front().reporting_origin,
-            *SuitableOrigin::Create(register_url));
 
   // Both triggers should be processed.
   EXPECT_EQ(trigger_data.front().event_triggers.vec().front().data, 5u);

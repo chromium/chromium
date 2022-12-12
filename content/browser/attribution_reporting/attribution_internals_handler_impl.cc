@@ -500,7 +500,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
     auto web_ui_log = attribution_internals::mojom::ClearedDebugKey::New();
     web_ui_log->cleared_debug_key = WebUIDebugKey(cleared_debug_key.value());
     web_ui_log->time = result.trigger_time().ToJsTime();
-    web_ui_log->reporting_origin = registration.reporting_origin;
+    web_ui_log->reporting_origin = trigger.reporting_origin();
     web_ui_log->cleared_from = SourceOrTrigger::kTrigger;
 
     for (auto& observer : observers_) {
@@ -510,7 +510,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
   auto web_ui_trigger = attribution_internals::mojom::WebUITrigger::New();
   web_ui_trigger->trigger_time = result.trigger_time().ToJsTime();
   web_ui_trigger->destination_origin = trigger.destination_origin();
-  web_ui_trigger->reporting_origin = registration.reporting_origin;
+  web_ui_trigger->reporting_origin = trigger.reporting_origin();
   web_ui_trigger->registration_json =
       SerializeAttributionJson(registration.ToJson(),
                                /*pretty_print=*/true);

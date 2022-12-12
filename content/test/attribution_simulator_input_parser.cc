@@ -284,8 +284,7 @@ class AttributionSimulatorInputParser {
         trigger_dict, "Attribution-Reporting-Register-Trigger",
         base::BindLambdaForTesting([&](const base::Value::Dict& dict) {
           auto trigger_registration =
-              attribution_reporting::TriggerRegistration::Parse(
-                  dict.Clone(), std::move(*reporting_origin));
+              attribution_reporting::TriggerRegistration::Parse(dict.Clone());
           if (!trigger_registration.has_value()) {
             *Error() << trigger_registration.error();
             return;
@@ -294,7 +293,8 @@ class AttributionSimulatorInputParser {
           events_.emplace_back(
               AttributionTriggerAndTime{
                   .trigger =
-                      AttributionTrigger(std::move(*trigger_registration),
+                      AttributionTrigger(std::move(*reporting_origin),
+                                         std::move(*trigger_registration),
                                          std::move(*destination_origin),
                                          /*is_within_fenced_frame=*/false),
                   .time = trigger_time,

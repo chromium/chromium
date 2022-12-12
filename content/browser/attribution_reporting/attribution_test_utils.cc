@@ -124,6 +124,7 @@ void MockDataHost::SourceDataAvailable(
 }
 
 void MockDataHost::TriggerDataAvailable(
+    attribution_reporting::SuitableOrigin reporting_origin,
     attribution_reporting::TriggerRegistration data) {
   trigger_data_.push_back(std::move(data));
   if (trigger_data_.size() < min_trigger_data_count_) {
@@ -774,8 +775,8 @@ AttributionTrigger TriggerBuilder::Build(
   }
 
   return AttributionTrigger(
+      reporting_origin_,
       attribution_reporting::TriggerRegistration(
-          reporting_origin_,
           /*filters=*/attribution_reporting::Filters(),
           /*not_filters=*/attribution_reporting::Filters(), debug_key_,
           aggregatable_dedup_key_,
@@ -1362,7 +1363,6 @@ EventTriggerDataMatches(const EventTriggerDataMatcherConfig& cfg) {
 }
 
 TriggerRegistrationMatcherConfig::TriggerRegistrationMatcherConfig(
-    ::testing::Matcher<const SuitableOrigin&> reporting_origin,
     ::testing::Matcher<const attribution_reporting::Filters&> filters,
     ::testing::Matcher<const attribution_reporting::Filters&> not_filters,
     ::testing::Matcher<absl::optional<uint64_t>> debug_key,
@@ -1377,8 +1377,7 @@ TriggerRegistrationMatcherConfig::TriggerRegistrationMatcherConfig(
         aggregatable_values,
     ::testing::Matcher<::aggregation_service::mojom::AggregationCoordinator>
         aggregation_coordinator)
-    : reporting_origin(std::move(reporting_origin)),
-      filters(std::move(filters)),
+    : filters(std::move(filters)),
       not_filters(std::move(not_filters)),
       debug_key(std::move(debug_key)),
       event_triggers(std::move(event_triggers)),
@@ -1393,9 +1392,6 @@ TriggerRegistrationMatcherConfig::~TriggerRegistrationMatcherConfig() = default;
 ::testing::Matcher<const attribution_reporting::TriggerRegistration&>
 TriggerRegistrationMatches(const TriggerRegistrationMatcherConfig& cfg) {
   return AllOf(
-      Field("reporting_origin",
-            &attribution_reporting::TriggerRegistration::reporting_origin,
-            cfg.reporting_origin),
       Field("filters", &attribution_reporting::TriggerRegistration::filters,
             cfg.filters),
       Field("not_filters",
@@ -1426,11 +1422,13 @@ TriggerRegistrationMatches(const TriggerRegistrationMatcherConfig& cfg) {
 }
 
 AttributionTriggerMatcherConfig::AttributionTriggerMatcherConfig(
+    ::testing::Matcher<const SuitableOrigin&> reporting_origin,
     ::testing::Matcher<const attribution_reporting::TriggerRegistration&>
         registration,
     ::testing::Matcher<const SuitableOrigin&> destination_origin,
     ::testing::Matcher<bool> is_within_fenced_frame)
-    : registration(std::move(registration)),
+    : reporting_origin(std::move(reporting_origin)),
+      registration(std::move(registration)),
       destination_origin(std::move(destination_origin)),
       is_within_fenced_frame(std::move(is_within_fenced_frame)) {}
 
@@ -1439,6 +1437,8 @@ AttributionTriggerMatcherConfig::~AttributionTriggerMatcherConfig() = default;
 ::testing::Matcher<AttributionTrigger> AttributionTriggerMatches(
     const AttributionTriggerMatcherConfig& cfg) {
   return AllOf(
+      Property("reporting_origin", &AttributionTrigger::reporting_origin,
+               cfg.reporting_origin),
       Property("registration", &AttributionTrigger::registration,
                cfg.registration),
       Property("destination_origin", &AttributionTrigger::destination_origin,

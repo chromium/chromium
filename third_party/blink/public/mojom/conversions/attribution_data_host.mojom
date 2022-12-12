@@ -126,12 +126,8 @@ struct EventTriggerData {
 // given site. See:
 // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#triggering-attribution
 struct AttributionTriggerData {
-  // Origin that registered this trigger, used to determine which source this
-  // trigger is associated with.
-  AttributionSuitableOrigin reporting_origin;
-
   // List of all event trigger data objects declared by the event trigger
-  // header. This data is arbitrarily set by the reporting_origin.
+  // header. This data is arbitrarily set by the reporting origin.
   array<EventTriggerData> event_triggers;
 
   // If non-empty, this trigger will be ignored unless the attributed source's
@@ -194,5 +190,6 @@ interface AttributionDataHost {
 
   // Called when trigger data from the renderer is available for a given
   // attributionsrc request.
-  TriggerDataAvailable(AttributionTriggerData data);
+  TriggerDataAvailable(AttributionSuitableOrigin reporting_origin,
+                       AttributionTriggerData data);
 };
