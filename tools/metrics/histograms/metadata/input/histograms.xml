@@ -115,8 +115,8 @@ chromium-metrics-reviews@google.com.
     interactions.
   </summary>
   <token key="Keyboard">
-    <variant name="PK" summary="physical keyboard"/>
-    <variant name="VK" summary="virtual keyboard"/>
+    <variant name="Pk" summary="physical keyboard"/>
+    <variant name="Vk" summary="virtual keyboard"/>
   </token>
   <token key="Interaction">
     <variant name="Accepted" summary="accepted"/>
@@ -134,8 +134,8 @@ chromium-metrics-reviews@google.com.
     recorded once an autocorrect is accepted or rejected by user interactions.
   </summary>
   <token key="Keyboard">
-    <variant name="PK" summary="physical keyboard"/>
-    <variant name="VK" summary="virtual keyboard"/>
+    <variant name="Pk" summary="physical keyboard"/>
+    <variant name="Vk" summary="virtual keyboard"/>
   </token>
   <token key="Interaction">
     <variant name="Accepted" summary="accepted"/>
