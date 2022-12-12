@@ -146,7 +146,7 @@ void LockScreenStartReauthDialog::OnProfileInitialized(Profile* profile) {
   }
 
   profile_ = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  g_dialog->ShowSystemDialogForBrowserContext(profile_);
+  ShowSystemDialogForBrowserContext(profile_);
   const NetworkStateInformer::State state = network_state_informer_->state();
   // Show network or captive portal screen if needed.
   // TODO(crbug.com/1237407): Handle other states in NetworkStateInformer
@@ -158,6 +158,7 @@ void LockScreenStartReauthDialog::OnProfileInitialized(Profile* profile) {
   }
 }
 
+// static
 void LockScreenStartReauthDialog::Dismiss() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (g_dialog)
@@ -458,7 +459,7 @@ void LockScreenStartReauthDialog::Observe(
           base::BindOnce(&LockScreenStartReauthDialog::TransferHttpAuthCaches,
                          weak_factory_.GetWeakPtr()),
           kAuthCacheTransferDelayMs);
-      g_dialog->Focus();
+      Focus();
       break;
     }
     case chrome::NOTIFICATION_AUTH_CANCELLED: {
