@@ -226,7 +226,7 @@ screenai::UiElement CreateUiElementProto(const ui::AXTree& tree,
   // Bounding Box.
   gfx::RectF bounds = tree.RelativeToTreeBounds(
       node, gfx::RectF(0, 0),
-      /* offscreen= */ nullptr, /* clip_bounds= */ true,
+      /* offscreen= */ nullptr, /* clip_bounds= */ false,
       /* skip_container_offset= */ false);
 
   // Bounding Box Pixels.
