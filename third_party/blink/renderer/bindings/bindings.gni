@@ -42,6 +42,7 @@ blink_core_sources_bindings =
                     "core/v8/idl_types_base.h",
                     "core/v8/isolated_world_csp.cc",
                     "core/v8/isolated_world_csp.h",
+                    "core/v8/iterable.cc",
                     "core/v8/iterable.h",
                     "core/v8/js_based_event_listener.cc",
                     "core/v8/js_based_event_listener.h",

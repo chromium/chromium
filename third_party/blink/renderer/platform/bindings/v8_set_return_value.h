@@ -75,8 +75,10 @@ struct V8ReturnValue {
 };
 
 // V8 handle types
-template <typename CallbackInfo, typename S>
-void V8SetReturnValue(const CallbackInfo& info, const v8::Local<S> value) {
+template <typename CallbackInfo, typename S, typename... ExtraArgs>
+void V8SetReturnValue(const CallbackInfo& info,
+                      const v8::Local<S> value,
+                      ExtraArgs... extra_args) {
   info.GetReturnValue().Set(value);
 }
 
