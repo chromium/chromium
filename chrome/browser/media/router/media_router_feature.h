@@ -78,6 +78,7 @@ bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context);
 
 // Returns the command-line flag value to override the default mirroring refresh
 // interval, if set.
+// TODO(crbug.com/1394392): Remove this after CastFastRefreshFrames is launched.
 absl::optional<base::TimeDelta> GetMirroringRefreshInterval();
 
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -21,6 +21,10 @@ BASE_DECLARE_FEATURE(kCastDisableLetterboxing);
 COMPONENT_EXPORT(MIRRORING_SERVICE)
 BASE_DECLARE_FEATURE(kCastDisableModelNameCheck);
 
+// TODO(crbug.com/1394392): Remove this feature after launch.
+COMPONENT_EXPORT(MIRRORING_SERVICE)
+BASE_DECLARE_FEATURE(kCastFastRefreshFrames);
+
 }  // namespace features
 }  // namespace mirroring
 
