@@ -325,10 +325,15 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
                 // indicator for the active tab than |mTab|, since the invocation order of
                 // ActivityTabTabObserver and TabModelSelectorTabObserver is not explicitly defined.
                 if (!interactable || tab != modelSelector.getCurrentTab()) return;
-                Runnable enterFullscreen = getEnterFullscreenRunnable(tab);
-                if (enterFullscreen != null) enterFullscreen.run();
+                onTabInteractable(tab);
             }
         };
+    }
+
+    @VisibleForTesting
+    void onTabInteractable(Tab tab) {
+        Runnable enterFullscreen = getAndClearEnterFullscreenRunnable(tab);
+        if (enterFullscreen != null) enterFullscreen.run();
     }
 
     @Override
@@ -354,31 +359,42 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
 
     @Override
     public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+        if (shouldSkipEnterFullscreenRequest(options)) return;
         // If enabling fullscreen while the tab is not interactable, fullscreen
         // will be delayed until the tab is interactable.
         Runnable r = () -> {
             enterPersistentFullscreenMode(options);
             destroySelectActionMode(tab);
             setEnterFullscreenRunnable(tab, null);
+            for (FullscreenManager.Observer observer : mObservers) {
+                observer.onEnterFullscreen(tab, options);
+            }
         };
-
         if (tab.isUserInteractable()) {
             r.run();
         } else {
             setEnterFullscreenRunnable(tab, r);
         }
+    }
 
-        for (FullscreenManager.Observer observer : mObservers) {
-            observer.onEnterFullscreen(tab, options);
-        }
+    private boolean shouldSkipEnterFullscreenRequest(FullscreenOptions options) {
+        // Do not process the request again if we're already in fullscreen mode and the request
+        // with the same option (could be in pending state) is received.
+        return getPersistentFullscreenMode()
+                && (ObjectsCompat.equals(mFullscreenOptions, options)
+                        || ObjectsCompat.equals(mPendingFullscreenOptions, options));
     }
 
     @Override
     public void onExitFullscreen(Tab tab) {
+        if (tab != mTab) return;
         setEnterFullscreenRunnable(tab, null);
-        if (tab == mTab) exitPersistentFullscreenMode();
-        for (FullscreenManager.Observer observer : mObservers) {
-            observer.onExitFullscreen(tab);
+        boolean wasInPersistentFullscreenMode = getPersistentFullscreenMode();
+        exitPersistentFullscreenMode();
+        if (wasInPersistentFullscreenMode) {
+            for (FullscreenManager.Observer observer : mObservers) {
+                observer.onExitFullscreen(tab);
+            }
         }
     }
 
@@ -411,8 +427,11 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
         }
     }
 
-    private Runnable getEnterFullscreenRunnable(Tab tab) {
-        return tab != null ? TabAttributes.from(tab).get(TabAttributeKeys.ENTER_FULLSCREEN) : null;
+    private Runnable getAndClearEnterFullscreenRunnable(Tab tab) {
+        Runnable r =
+                tab != null ? TabAttributes.from(tab).get(TabAttributeKeys.ENTER_FULLSCREEN) : null;
+        if (r != null) setEnterFullscreenRunnable(tab, null);
+        return r;
     }
 
     /**
@@ -422,7 +441,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
      * @param options Options to choose mode of fullscreen.
      */
     private void enterPersistentFullscreenMode(FullscreenOptions options) {
-        if (!getPersistentFullscreenMode() || !ObjectsCompat.equals(mFullscreenOptions, options)) {
+        if (!shouldSkipEnterFullscreenRequest(options)) {
             mPersistentModeSupplier.set(true);
             if (mAreControlsHidden.get()) {
                 // The browser controls are currently hidden.
@@ -624,7 +643,6 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
         contentView.addOnLayoutChangeListener(mFullscreenOnLayoutChangeListener);
         if (DEBUG_LOGS) Log.i(TAG, "enterFullscreen, systemUiVisibility=" + systemUiVisibility);
         contentView.setSystemUiVisibility(systemUiVisibility);
-        mFullscreenOptions = options;
 
         // Request a layout so the updated system visibility takes affect.
         // The flow will continue in the handler of MSG_ID_SET_FULLSCREEN_SYSTEM_UI_FLAGS message.

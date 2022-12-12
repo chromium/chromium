@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -33,9 +34,11 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAttributes;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.util.DimensionCompat;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -66,6 +69,10 @@ public class FullscreenHtmlApiHandlerUnitTest {
     private ContentView mContentView;
     @Mock
     DimensionCompat mDimensionCompat;
+    @Mock
+    private ActivityTabProvider mActivityTabProvider;
+    @Mock
+    private TabModelSelector mTabModelSelector;
 
     private FullscreenHtmlApiHandler mFullscreenHtmlApiHandler;
     private ObservableSupplierImpl<Boolean> mAreControlsHidden;
@@ -141,6 +148,85 @@ public class FullscreenHtmlApiHandlerUnitTest {
         mFullscreenHtmlApiHandler.destroy();
         Assert.assertEquals("Observer is not removed.", 0,
                 mFullscreenHtmlApiHandler.getObserversForTesting().size());
+    }
+
+    @Test
+    public void testFullscreenObserverCalledOncePerSession() {
+        // avoid calling GestureListenerManager/SelectionPopupController
+        doReturn(null).when(mTab).getWebContents();
+        doReturn(true).when(mTab).isUserInteractable();
+
+        mAreControlsHidden.set(false);
+        mFullscreenHtmlApiHandler.setTabForTesting(mTab);
+        FullscreenManager.Observer observer = Mockito.mock(FullscreenManager.Observer.class);
+        mFullscreenHtmlApiHandler.addObserver(observer);
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
+
+        mFullscreenHtmlApiHandler.onEnterFullscreen(mTab, fullscreenOptions);
+        mFullscreenHtmlApiHandler.onEnterFullscreen(mTab, fullscreenOptions);
+        mFullscreenHtmlApiHandler.onEnterFullscreen(mTab, fullscreenOptions);
+        verify(observer, times(1)).onEnterFullscreen(mTab, fullscreenOptions);
+
+        mFullscreenHtmlApiHandler.onExitFullscreen(mTab);
+        mFullscreenHtmlApiHandler.onExitFullscreen(mTab);
+        mFullscreenHtmlApiHandler.onExitFullscreen(mTab);
+        verify(observer, times(1)).onExitFullscreen(mTab);
+
+        mFullscreenHtmlApiHandler.onEnterFullscreen(mTab, fullscreenOptions);
+        verify(observer, times(2)).onEnterFullscreen(mTab, fullscreenOptions);
+        mFullscreenHtmlApiHandler.onExitFullscreen(mTab);
+        verify(observer, times(2)).onExitFullscreen(mTab);
+
+        mFullscreenHtmlApiHandler.onEnterFullscreen(mTab, fullscreenOptions);
+        verify(observer, times(3)).onEnterFullscreen(mTab, fullscreenOptions);
+        mFullscreenHtmlApiHandler.onExitFullscreen(mTab);
+        verify(observer, times(3)).onExitFullscreen(mTab);
+    }
+
+    @Test
+    public void testNoObserverWhenCanceledBeforeBeingInteractable() {
+        // avoid calling GestureListenerManager/SelectionPopupController
+        doReturn(null).when(mTab).getWebContents();
+        doReturn(false).when(mTab).isUserInteractable();
+
+        mAreControlsHidden.set(false);
+        mFullscreenHtmlApiHandler.setTabForTesting(mTab);
+        FullscreenManager.Observer observer = Mockito.mock(FullscreenManager.Observer.class);
+        mFullscreenHtmlApiHandler.addObserver(observer);
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
+
+        // Before the tab becomes interactable, fullscreen exit gets requested.
+        mFullscreenHtmlApiHandler.onEnterFullscreen(mTab, fullscreenOptions);
+        mFullscreenHtmlApiHandler.onExitFullscreen(mTab);
+
+        verify(observer, never()).onEnterFullscreen(mTab, fullscreenOptions);
+        verify(observer, never()).onExitFullscreen(mTab);
+    }
+
+    @Test
+    public void testFullscreenObserverInTabNonInteractableState() {
+        doReturn(null).when(mTab).getWebContents();
+        doReturn(false).when(mTab).isUserInteractable(); // Tab not interactable at first.
+
+        mAreControlsHidden.set(false);
+        mFullscreenHtmlApiHandler.setTabForTesting(mTab);
+        mFullscreenHtmlApiHandler.initialize(mActivityTabProvider, mTabModelSelector);
+        FullscreenManager.Observer observer = Mockito.mock(FullscreenManager.Observer.class);
+        mFullscreenHtmlApiHandler.addObserver(observer);
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
+        mFullscreenHtmlApiHandler.onEnterFullscreen(mTab, fullscreenOptions);
+        verify(observer, never()).onEnterFullscreen(mTab, fullscreenOptions);
+
+        // Only after the tab turns interactable does the fullscreen mode is entered.
+        mFullscreenHtmlApiHandler.onTabInteractable(mTab);
+        mFullscreenHtmlApiHandler.onEnterFullscreen(mTab, fullscreenOptions);
+        verify(observer).onEnterFullscreen(mTab, fullscreenOptions);
+
+        mFullscreenHtmlApiHandler.onExitFullscreen(mTab);
+        mFullscreenHtmlApiHandler.onExitFullscreen(mTab);
+        verify(observer, times(1)).onExitFullscreen(mTab);
+
+        mFullscreenHtmlApiHandler.destroy();
     }
 
     @Test
