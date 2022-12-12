@@ -15657,8 +15657,7 @@
       },
       {
         "args": [
-          "--use-gpu-in-tests",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/win.intel.gl_unittests.filter"
+          "--use-gpu-in-tests"
         ],
         "merge": {
           "args": [],

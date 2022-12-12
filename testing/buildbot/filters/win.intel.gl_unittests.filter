@@ -1,5 +1,0 @@
-# crbug.com/1376203
--DelegatedInkPointRendererGpuTest.DrawPointsAsTheyArrive
--DelegatedInkPointRendererGpuTest.MaximumPointerIds
--DelegatedInkPointRendererGpuTest.MultiplePointerIds
--DelegatedInkPointRendererGpuTest.StoreAndRemovePointsAndTokens
