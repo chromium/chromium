@@ -104,6 +104,10 @@ class ChromeSerialDelegate;
 class ChromeUsbDelegate;
 class ChromeWebAuthenticationDelegate;
 
+#if BUILDFLAG(IS_CHROMEOS)
+class ChromeFirewallHoleProxyFactory;
+#endif
+
 #if BUILDFLAG(ENABLE_VR)
 namespace vr {
 class ChromeXrIntegrationClient;
@@ -409,6 +413,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                                      const GURL& url) override;
   std::unique_ptr<content::VpnServiceProxy> GetVpnServiceProxy(
       content::BrowserContext* browser_context) override;
+#if BUILDFLAG(IS_CHROMEOS)
+  content::FirewallHoleProxyFactory* GetFirewallHoleProxyFactory() override;
+#endif
   std::unique_ptr<ui::SelectFilePolicy> CreateSelectFilePolicy(
       content::WebContents* web_contents) override;
   void GetAdditionalAllowedSchemesForFileSystem(
@@ -946,6 +953,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #endif
   std::unique_ptr<permissions::BluetoothDelegateImpl> bluetooth_delegate_;
   std::unique_ptr<ChromeUsbDelegate> usb_delegate_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<ChromeFirewallHoleProxyFactory> firewall_hole_proxy_factory_;
+#endif
 
 #if BUILDFLAG(ENABLE_VR)
   std::unique_ptr<vr::ChromeXrIntegrationClient> xr_integration_client_;

@@ -45,10 +45,6 @@
 #include "ppapi/shared_impl/private/net_address_private_impl.h"
 #include "ppapi/shared_impl/private/ppb_x509_util_shared.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/network/firewall_hole.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 using ppapi::NetAddressPrivateImpl;
 using ppapi::TCPSocketState;
 using ppapi::TCPSocketVersion;
@@ -125,12 +121,6 @@ PepperTCPSocketMessageFilter::~PepperTCPSocketMessageFilter() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (host_)
     host_->RemoveInstanceObserver(instance_, this);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Close the firewall hole on UI thread if there is one.
-  if (firewall_hole_) {
-    GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, std::move(firewall_hole_));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   --g_num_tcp_filter_instances;
 }
 
@@ -1207,7 +1197,7 @@ void PepperTCPSocketMessageFilter::OpenFirewallHole(
 
 void PepperTCPSocketMessageFilter::OnFirewallHoleOpened(
     const ppapi::host::ReplyMessageContext& context,
-    std::unique_ptr<ash::FirewallHole> hole) {
+    std::unique_ptr<FirewallHoleProxy> hole) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(state_.IsPending(TCPSocketState::LISTEN));
   LOG_IF(WARNING, !hole.get()) << "Firewall hole could not be opened.";

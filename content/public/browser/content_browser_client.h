@@ -252,6 +252,10 @@ class TtsEnvironmentAndroid;
 class TtsControllerDelegate;
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+class FirewallHoleProxyFactory;
+#endif
+
 // Embedder API (or SPI) for participating in browser logic, to be implemented
 // by the client of the content browser. See ChromeContentBrowserClient for the
 // principal implementation. The methods are assumed to be called on the UI
@@ -1113,6 +1117,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   // valid to return nullptr.
   virtual std::unique_ptr<VpnServiceProxy> GetVpnServiceProxy(
       BrowserContext* browser_context);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Allows the embedder to return a FirewallHoleProxyFactory
+  // implementation that can create FirewallHoleProxy objects for both
+  // Ash and Lacros.
+  virtual FirewallHoleProxyFactory* GetFirewallHoleProxyFactory();
+#endif
 
   // Returns an implementation of a file selecition policy. Can return null.
   virtual std::unique_ptr<ui::SelectFilePolicy> CreateSelectFilePolicy(

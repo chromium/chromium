@@ -34,8 +34,8 @@ SocketPermissionRequest CreateSocketPermissionRequest(
       ppapi::NetAddressPrivateImpl::DescribeNetAddress(net_addr, false);
   uint16_t port = 0;
   net::IPAddressBytes address;
-  ppapi::NetAddressPrivateImpl::NetAddressToIPEndPoint(
-      net_addr, &address, &port);
+  ppapi::NetAddressPrivateImpl::NetAddressToIPEndPoint(net_addr, &address,
+                                                       &port);
   return SocketPermissionRequest(type, host, port);
 }
 
@@ -60,10 +60,8 @@ bool CanUseSocketAPIs(bool external_plugin,
   if (!site_instance)
     return false;
   if (!GetContentClient()->browser()->AllowPepperSocketAPI(
-          site_instance->GetBrowserContext(),
-          site_instance->GetSiteURL(),
-          private_api,
-          params)) {
+          site_instance->GetBrowserContext(), site_instance->GetSiteURL(),
+          private_api, params)) {
     LOG(ERROR) << "Host " << site_instance->GetSiteURL().host()
                << " cannot use socket API or destination is not allowed";
     return false;
@@ -90,33 +88,28 @@ bool IsLoopbackAddress(const net::IPAddress& address) {
 
 }  // namespace
 
-void OpenFirewallHole(const net::IPEndPoint& address,
-                      ash::FirewallHole::PortType type,
-                      ash::FirewallHole::OpenCallback callback) {
+void OpenTCPFirewallHole(const net::IPEndPoint& address,
+                         FirewallHoleProxy::OpenCallback callback) {
   if (IsLoopbackAddress(address.address())) {
     std::move(callback).Run(nullptr);
     return;
   }
-
-  // TODO(sergeyu): Currently an empty string is passed as interface name, which
-  // means the port will be opened on all network interfaces. Interface name
-  // can be resolved by the address, but the best solution would be to update
-  // firewalld to allow filtering by destination address, not just destination
-  // port. iptables already support it.
-  ash::FirewallHole::Open(type, address.port(), std::string(),
-                          std::move(callback));
-}
-
-void OpenTCPFirewallHole(const net::IPEndPoint& address,
-                         ash::FirewallHole::OpenCallback callback) {
-  OpenFirewallHole(address, ash::FirewallHole::PortType::TCP,
-                   std::move(callback));
+  GetContentClient()
+      ->browser()
+      ->GetFirewallHoleProxyFactory()
+      ->OpenTCPFirewallHole(std::string(), address.port(), std::move(callback));
 }
 
 void OpenUDPFirewallHole(const net::IPEndPoint& address,
-                         ash::FirewallHole::OpenCallback callback) {
-  OpenFirewallHole(address, ash::FirewallHole::PortType::UDP,
-                   std::move(callback));
+                         FirewallHoleProxy::OpenCallback callback) {
+  if (IsLoopbackAddress(address.address())) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  GetContentClient()
+      ->browser()
+      ->GetFirewallHoleProxyFactory()
+      ->OpenUDPFirewallHole(std::string(), address.port(), std::move(callback));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

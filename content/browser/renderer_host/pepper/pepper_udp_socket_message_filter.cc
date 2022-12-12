@@ -44,7 +44,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/network/firewall_hole.h"
+#include "content/public/browser/firewall_hole_proxy.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using ppapi::NetAddressPrivateImpl;
@@ -72,8 +72,7 @@ PepperUDPSocketMessageFilter::PendingSend::PendingSend(
 PepperUDPSocketMessageFilter::PendingSend::PendingSend(
     const PendingSend& other) = default;
 
-PepperUDPSocketMessageFilter::PendingSend::~PendingSend() {
-}
+PepperUDPSocketMessageFilter::PendingSend::~PendingSend() {}
 
 PepperUDPSocketMessageFilter::PepperUDPSocketMessageFilter(
     BrowserPpapiHostImpl* host,
@@ -96,13 +95,14 @@ PepperUDPSocketMessageFilter::PepperUDPSocketMessageFilter(
   ++g_num_udp_filter_instances;
   DCHECK(host);
 
-  if (!host->GetRenderFrameIDsForInstance(
-          instance, &render_process_id_, &render_frame_id_)) {
+  if (!host->GetRenderFrameIDsForInstance(instance, &render_process_id_,
+                                          &render_frame_id_)) {
     NOTREACHED();
   }
 }
 
 PepperUDPSocketMessageFilter::~PepperUDPSocketMessageFilter() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(closed_);
   DCHECK(!socket_);
   DCHECK(!receiver_.is_bound());
@@ -283,8 +283,8 @@ int32_t PepperUDPSocketMessageFilter::OnMsgSetOption(
     }
     case PP_UDPSOCKET_OPTION_MULTICAST_TTL: {
       int32_t integer_value = 0;
-      if (!value.GetInt32(&integer_value) ||
-          integer_value < 0 || integer_value > 255)
+      if (!value.GetInt32(&integer_value) || integer_value < 0 ||
+          integer_value > 255)
         return PP_ERROR_BADARGUMENT;
 
       // UDPSocket instance is not yet created, so remember the value here.
@@ -328,10 +328,8 @@ int32_t PepperUDPSocketMessageFilter::OnMsgBind(
   SocketPermissionRequest request =
       pepper_socket_utils::CreateSocketPermissionRequest(
           SocketPermissionRequest::UDP_BIND, addr);
-  if (!pepper_socket_utils::CanUseSocketAPIs(external_plugin_,
-                                             private_api_,
-                                             &request,
-                                             render_process_id_,
+  if (!pepper_socket_utils::CanUseSocketAPIs(external_plugin_, private_api_,
+                                             &request, render_process_id_,
                                              render_frame_id_)) {
     return PP_ERROR_NOACCESS;
   }
@@ -431,10 +429,8 @@ int32_t PepperUDPSocketMessageFilter::OnMsgSendTo(
   SocketPermissionRequest request =
       pepper_socket_utils::CreateSocketPermissionRequest(
           SocketPermissionRequest::UDP_SEND_TO, addr);
-  if (!pepper_socket_utils::CanUseSocketAPIs(external_plugin_,
-                                             private_api_,
-                                             &request,
-                                             render_process_id_,
+  if (!pepper_socket_utils::CanUseSocketAPIs(external_plugin_, private_api_,
+                                             &request, render_process_id_,
                                              render_frame_id_)) {
     return PP_ERROR_NOACCESS;
   }
@@ -602,7 +598,7 @@ void PepperUDPSocketMessageFilter::OnFirewallHoleOpened(
     mojo::PendingReceiver<network::mojom::UDPSocketListener> listener_receiver,
     const ppapi::host::ReplyMessageContext& context,
     const PP_NetAddress_Private& net_address,
-    std::unique_ptr<ash::FirewallHole> hole) {
+    std::unique_ptr<FirewallHoleProxy> hole) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   LOG_IF(WARNING, !hole.get()) << "Firewall hole could not be opened.";
@@ -751,8 +747,7 @@ void PepperUDPSocketMessageFilter::SendBindError(
   SendBindReply(context, result, NetAddressPrivateImpl::kInvalidNetAddress);
 }
 
-void PepperUDPSocketMessageFilter::SendRecvFromError(
-    int32_t result) {
+void PepperUDPSocketMessageFilter::SendRecvFromError(int32_t result) {
   SendRecvFromResult(result, std::string(),
                      NetAddressPrivateImpl::kInvalidNetAddress);
 }
@@ -782,10 +777,8 @@ int32_t PepperUDPSocketMessageFilter::CanUseMulticastAPI(
   SocketPermissionRequest request =
       pepper_socket_utils::CreateSocketPermissionRequest(
           SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP, addr);
-  if (!pepper_socket_utils::CanUseSocketAPIs(external_plugin_,
-                                             private_api_,
-                                             &request,
-                                             render_process_id_,
+  if (!pepper_socket_utils::CanUseSocketAPIs(external_plugin_, private_api_,
+                                             &request, render_process_id_,
                                              render_frame_id_)) {
     return PP_ERROR_NOACCESS;
   }

@@ -34,11 +34,6 @@
 
 struct PP_NetAddress_Private;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/network/firewall_hole.h"
-#include "content/public/browser/browser_thread.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace ppapi {
 
 class SocketOptionData;
@@ -46,7 +41,7 @@ class SocketOptionData;
 namespace host {
 struct ReplyMessageContext;
 }
-}
+}  // namespace ppapi
 
 namespace network {
 namespace mojom {
@@ -57,6 +52,7 @@ class NetworkContext;
 namespace content {
 
 class BrowserPpapiHostImpl;
+class FirewallHoleProxy;
 
 class CONTENT_EXPORT PepperUDPSocketMessageFilter
     : public ppapi::host::ResourceMessageFilter,
@@ -146,7 +142,7 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
           listener_receiver,
       const ppapi::host::ReplyMessageContext& context,
       const PP_NetAddress_Private& net_address,
-      std::unique_ptr<ash::FirewallHole> hole);
+      std::unique_ptr<FirewallHoleProxy> hole);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void StartPendingSend();
   void Close();
@@ -227,8 +223,7 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
   mojo::Receiver<network::mojom::UDPSocketListener> receiver_{this};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<ash::FirewallHole, content::BrowserThread::DeleteOnUIThread>
-      firewall_hole_;
+  std::unique_ptr<FirewallHoleProxy> firewall_hole_;
   // Allows for cancellation of opening a hole in the firewall in the case the
   // network service crashes.
   base::WeakPtrFactory<PepperUDPSocketMessageFilter>

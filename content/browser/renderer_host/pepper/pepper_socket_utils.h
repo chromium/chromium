@@ -12,17 +12,11 @@
 #include "ppapi/c/pp_stdint.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/network/firewall_hole.h"
+#include "content/public/browser/firewall_hole_proxy.h"
 #include "net/base/ip_endpoint.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 struct PP_NetAddress_Private;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace chromeos {
-class FirewallHole;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace content {
 
@@ -45,10 +39,11 @@ bool CanUseSocketAPIs(bool external_plugin,
 
 // Returns true if the open operation is in progress.
 void OpenTCPFirewallHole(const net::IPEndPoint& address,
-                         ash::FirewallHole::OpenCallback callback);
+                         FirewallHoleProxy::OpenCallback callback);
 
 void OpenUDPFirewallHole(const net::IPEndPoint& address,
-                         ash::FirewallHole::OpenCallback callback);
+                         FirewallHoleProxy::OpenCallback callback);
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Annotations for TCP and UDP network requests. Defined here to make it easier

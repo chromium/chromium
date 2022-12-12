@@ -620,7 +620,10 @@ source_set("browser_sources") {
   }
 
   if (is_chromeos) {
-    sources += [ "lock_screen_storage.h" ]
+    sources += [
+      "firewall_hole_proxy.h",
+      "lock_screen_storage.h",
+    ]
   }
 
   if (!is_android) {

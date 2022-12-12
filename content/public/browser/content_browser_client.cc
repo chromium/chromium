@@ -75,6 +75,10 @@
 #include "content/public/browser/tts_environment_android.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "content/public/browser/firewall_hole_proxy.h"
+#endif
+
 namespace content {
 
 std::unique_ptr<BrowserMainParts> ContentBrowserClient::CreateBrowserMainParts(
@@ -702,6 +706,12 @@ std::unique_ptr<VpnServiceProxy> ContentBrowserClient::GetVpnServiceProxy(
   DCHECK(browser_context);
   return nullptr;
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+FirewallHoleProxyFactory* ContentBrowserClient::GetFirewallHoleProxyFactory() {
+  return nullptr;
+}
+#endif
 
 std::unique_ptr<ui::SelectFilePolicy>
 ContentBrowserClient::CreateSelectFilePolicy(WebContents* web_contents) {

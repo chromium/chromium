@@ -39,7 +39,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/network/firewall_hole.h"
+#include "content/public/browser/firewall_hole_proxy.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace ppapi {
@@ -48,7 +48,7 @@ class SocketOptionData;
 namespace host {
 struct ReplyMessageContext;
 }
-}
+}  // namespace ppapi
 
 namespace content {
 
@@ -149,8 +149,8 @@ class CONTENT_EXPORT PepperTCPSocketMessageFilter
       const ppapi::host::HostMessageContext* context,
       const std::string& server_name,
       uint16_t server_port,
-      const std::vector<std::vector<char> >& trusted_certs,
-      const std::vector<std::vector<char> >& untrusted_certs);
+      const std::vector<std::vector<char>>& trusted_certs,
+      const std::vector<std::vector<char>>& untrusted_certs);
   int32_t OnMsgRead(const ppapi::host::HostMessageContext* context,
                     int32_t bytes_to_read);
   int32_t OnMsgWrite(const ppapi::host::HostMessageContext* context,
@@ -232,7 +232,7 @@ class CONTENT_EXPORT PepperTCPSocketMessageFilter
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OpenFirewallHole(const ppapi::host::ReplyMessageContext& context);
   void OnFirewallHoleOpened(const ppapi::host::ReplyMessageContext& context,
-                            std::unique_ptr<ash::FirewallHole> hole);
+                            std::unique_ptr<FirewallHoleProxy> hole);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SendBindReply(const ppapi::host::ReplyMessageContext& context,
@@ -317,7 +317,7 @@ class CONTENT_EXPORT PepperTCPSocketMessageFilter
   net::IPEndPoint bind_output_ip_endpoint_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<ash::FirewallHole> firewall_hole_;
+  std::unique_ptr<FirewallHoleProxy> firewall_hole_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Bitwise-or of SocketOption flags. This stores the state about whether
