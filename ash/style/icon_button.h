@@ -23,10 +23,12 @@ namespace ash {
 
 // A circular ImageButton that can have small/medium/large different sizes. Each
 // of them has the floating version, which does not have the background. The
-// button can be togglable if `is_togglable` is set to true, the icon inside
-// might change on different toggle states. A fixed size of EmptyBorder will be
-// applied to the button if `has_border` is true, this is done to help
-// differentiating focus ring from the content of the button.
+// prominent-floating buttons have different icon colors when the button is
+// focused and unfocused. The button can be togglable if `is_togglable` is set
+// to true, the icon inside might change on different toggle states. A fixed
+// size of EmptyBorder will be applied to the button if `has_border` is true,
+// this is done to help differentiating focus ring from the content of the
+// button.
 class ASH_EXPORT IconButton : public views::ImageButton {
  public:
   METADATA_HEADER(IconButton);
@@ -39,7 +41,11 @@ class ASH_EXPORT IconButton : public views::ImageButton {
     kXSmallFloating,
     kSmallFloating,
     kMediumFloating,
-    kLargeFloating
+    kLargeFloating,
+    kXSmallProminentFloating,
+    kSmallProminentFloating,
+    kMediumProminentFloating,
+    kLargeProminentFloating,
   };
 
   // Used to determine how the button will behave when disabled.
@@ -135,13 +141,15 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   void SetToggled(bool toggled);
 
   // views::ImageButton:
+  void OnFocus() override;
+  void OnBlur() override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnThemeChanged() override;
   void NotifyClick(const ui::Event& event) override;
 
  protected:
-  void UpdateVectorIcon();
+  void UpdateBackground();
+  void UpdateVectorIcon(bool icon_changed = false);
 
   // Gets the background color of the icon button.
   SkColor GetBackgroundColor() const;
@@ -181,6 +189,9 @@ class ASH_EXPORT IconButton : public views::ImageButton {
 
   // Custom value for icon size (usually used to make the icon smaller).
   absl::optional<int> icon_size_;
+
+  // Called to update background color when the button is enabled/disabled.
+  base::CallbackListSubscription enabled_changed_subscription_;
 
   DisabledButtonBehavior button_behavior_ = DisabledButtonBehavior::kNone;
 };

@@ -25,6 +25,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -48,32 +49,80 @@ int GetButtonSizeOnType(IconButton::Type type) {
   switch (type) {
     case IconButton::Type::kXSmall:
     case IconButton::Type::kXSmallFloating:
+    case IconButton::Type::kXSmallProminentFloating:
       return kXSmallButtonSize;
     case IconButton::Type::kSmall:
     case IconButton::Type::kSmallFloating:
+    case IconButton::Type::kSmallProminentFloating:
       return kSmallButtonSize;
     case IconButton::Type::kMedium:
     case IconButton::Type::kMediumFloating:
+    case IconButton::Type::kMediumProminentFloating:
       return kMediumButtonSize;
     case IconButton::Type::kLarge:
     case IconButton::Type::kLargeFloating:
+    case IconButton::Type::kLargeProminentFloating:
       return kLargeButtonSize;
   }
 }
 
 int GetIconSizeOnType(IconButton::Type type) {
   if (type == IconButton::Type::kXSmall ||
-      type == IconButton::Type::kXSmallFloating) {
+      type == IconButton::Type::kXSmallFloating ||
+      type == IconButton::Type::kXSmallProminentFloating) {
     return kXSmallIconSize;
   }
   return kIconSize;
 }
 
 bool IsFloatingIconButton(IconButton::Type type) {
-  return type == IconButton::Type::kXSmallFloating ||
-         type == IconButton::Type::kSmallFloating ||
-         type == IconButton::Type::kMediumFloating ||
-         type == IconButton::Type::kLargeFloating;
+  switch (type) {
+    case IconButton::Type::kXSmallFloating:
+    case IconButton::Type::kXSmallProminentFloating:
+    case IconButton::Type::kSmallFloating:
+    case IconButton::Type::kSmallProminentFloating:
+    case IconButton::Type::kMediumFloating:
+    case IconButton::Type::kMediumProminentFloating:
+    case IconButton::Type::kLargeFloating:
+    case IconButton::Type::kLargeProminentFloating:
+      return true;
+    default:
+      break;
+  }
+
+  return false;
+}
+
+bool IsProminentFloatingType(IconButton::Type type) {
+  switch (type) {
+    case IconButton::Type::kXSmallProminentFloating:
+    case IconButton::Type::kSmallProminentFloating:
+    case IconButton::Type::kMediumProminentFloating:
+    case IconButton::Type::kLargeProminentFloating:
+      return true;
+    default:
+      break;
+  }
+
+  return false;
+}
+
+// Create a themed fully rounded rect background for icon button.
+std::unique_ptr<views::Background> CreateThemedBackground(
+    ui::ColorId color_id,
+    IconButton::Type type) {
+  return views::CreateThemedRoundedRectBackground(
+      color_id, GetButtonSizeOnType(type) / 2);
+}
+
+// Create a solid color fully rounded rect background for icon button.
+// TODO(zxdan): Remove this function when the dynamic color migration work is
+// done.
+std::unique_ptr<views::Background> CreateSolidBackground(
+    SkColor color,
+    IconButton::Type type) {
+  return views::CreateRoundedRectBackground(color,
+                                            GetButtonSizeOnType(type) / 2);
 }
 
 }  // namespace
@@ -107,6 +156,9 @@ IconButton::IconButton(PressedCallback callback,
                                    /*highlight_on_hover=*/false,
                                    /*highlight_on_focus=*/false);
 
+  UpdateBackground();
+  UpdateVectorIcon();
+
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
   if (has_border) {
@@ -118,6 +170,9 @@ IconButton::IconButton(PressedCallback callback,
   }
 
   views::InstallCircleHighlightPathGenerator(this);
+
+  enabled_changed_subscription_ = AddEnabledChangedCallback(base::BindRepeating(
+      &IconButton::UpdateBackground, base::Unretained(this)));
 }
 
 IconButton::IconButton(PressedCallback callback,
@@ -147,7 +202,7 @@ IconButton::~IconButton() = default;
 
 void IconButton::SetVectorIcon(const gfx::VectorIcon& icon) {
   icon_ = &icon;
-  UpdateVectorIcon();
+  UpdateVectorIcon(/*icon_changed=*/true);
 }
 
 void IconButton::SetToggledVectorIcon(const gfx::VectorIcon& icon) {
@@ -160,7 +215,10 @@ void IconButton::SetBackgroundColor(const SkColor background_color) {
     return;
 
   background_color_ = background_color;
-  SchedulePaint();
+  background_color_id_ = absl::nullopt;
+
+  if (GetEnabled() && !IsToggledOn())
+    UpdateBackground();
 }
 
 void IconButton::SetBackgroundToggledColor(
@@ -169,7 +227,10 @@ void IconButton::SetBackgroundToggledColor(
     return;
 
   background_toggled_color_ = background_toggled_color;
-  SchedulePaint();
+  background_toggled_color_id_ = absl::nullopt;
+
+  if (GetEnabled() && IsToggledOn())
+    UpdateBackground();
 }
 
 void IconButton::SetBackgroundColorId(ui::ColorId background_color_id) {
@@ -177,7 +238,10 @@ void IconButton::SetBackgroundColorId(ui::ColorId background_color_id) {
     return;
 
   background_color_id_ = background_color_id;
-  SchedulePaint();
+  background_color_ = absl::nullopt;
+
+  if (GetEnabled() && !IsToggledOn())
+    UpdateBackground();
 }
 
 void IconButton::SetBackgroundToggledColorId(
@@ -188,7 +252,10 @@ void IconButton::SetBackgroundToggledColorId(
   }
 
   background_toggled_color_id_ = background_toggled_color_id;
-  SchedulePaint();
+  background_toggled_color_ = absl::nullopt;
+
+  if (GetEnabled() && IsToggledOn())
+    UpdateBackground();
 }
 
 void IconButton::SetBackgroundImage(const gfx::ImageSkia& background_image) {
@@ -201,7 +268,10 @@ void IconButton::SetIconColor(const SkColor icon_color) {
   if (icon_color_ == icon_color)
     return;
   icon_color_ = icon_color;
-  UpdateVectorIcon();
+  icon_color_id_ = absl::nullopt;
+
+  if (!IsToggledOn())
+    UpdateVectorIcon();
 }
 
 void IconButton::SetIconToggledColor(const SkColor icon_toggled_color) {
@@ -209,14 +279,21 @@ void IconButton::SetIconToggledColor(const SkColor icon_toggled_color) {
     return;
 
   icon_toggled_color_ = icon_toggled_color;
-  UpdateVectorIcon();
+  icon_toggled_color_id_ = absl::nullopt;
+
+  if (IsToggledOn())
+    UpdateVectorIcon();
 }
 
 void IconButton::SetIconColorId(ui::ColorId icon_color_id) {
   if (icon_color_id_ == icon_color_id)
     return;
+
   icon_color_id_ = icon_color_id;
-  UpdateVectorIcon();
+  icon_color_ = absl::nullopt;
+
+  if (!IsToggledOn())
+    UpdateVectorIcon();
 }
 
 void IconButton::SetIconToggledColorId(ui::ColorId icon_toggled_color_id) {
@@ -224,7 +301,10 @@ void IconButton::SetIconToggledColorId(ui::ColorId icon_toggled_color_id) {
     return;
 
   icon_toggled_color_id_ = icon_toggled_color_id;
-  UpdateVectorIcon();
+  icon_toggled_color_ = absl::nullopt;
+
+  if (IsToggledOn())
+    UpdateVectorIcon();
 }
 
 void IconButton::SetIconSize(int size) {
@@ -243,31 +323,31 @@ void IconButton::SetToggled(bool toggled) {
   if (delegate_)
     delegate_->OnButtonToggled(this);
 
+  if (GetEnabled())
+    UpdateBackground();
+
   UpdateVectorIcon();
 }
 
+void IconButton::OnFocus() {
+  // Update prominent floating type button's icon color on focus.
+  if (IsProminentFloatingType(type_) && !IsToggledOn())
+    UpdateVectorIcon();
+}
+
+void IconButton::OnBlur() {
+  // Update prominent floating type button's icon color on blur.
+  if (IsProminentFloatingType(type_) && !IsToggledOn())
+    UpdateVectorIcon();
+}
+
 void IconButton::PaintButtonContents(gfx::Canvas* canvas) {
-  if (!GetWidget())
-    return;
-
   if (!IsFloatingIconButton(type_) || IsToggledOn()) {
-    const gfx::Rect rect(GetContentsBounds());
-    cc::PaintFlags flags;
-    flags.setAntiAlias(true);
-
-    SkColor color = GetBackgroundColor();
-
-    // If the button is disabled, apply opacity filter to the color.
-    if (!GetEnabled())
-      color = ColorUtil::GetDisabledColor(color);
-
-    flags.setColor(color);
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), rect.width() / 2,
-                       flags);
-
     // Apply the background image. This is painted on top of the |color|.
     if (!background_image_.isNull()) {
+      const gfx::Rect rect(GetContentsBounds());
+      cc::PaintFlags flags;
+      flags.setAntiAlias(true);
       SkPath mask;
       mask.addCircle(rect.CenterPoint().x(), rect.CenterPoint().y(),
                      rect.width() / 2);
@@ -290,12 +370,6 @@ void IconButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
-void IconButton::OnThemeChanged() {
-  views::ImageButton::OnThemeChanged();
-  UpdateVectorIcon();
-  SchedulePaint();
-}
-
 void IconButton::NotifyClick(const ui::Event& event) {
   if (is_togglable_) {
     haptics_util::PlayHapticToggleEffect(
@@ -308,94 +382,133 @@ void IconButton::NotifyClick(const ui::Event& event) {
   views::Button::NotifyClick(event);
 }
 
-void IconButton::UpdateVectorIcon() {
-  if (!icon_ || !GetWidget())
+void IconButton::UpdateBackground() {
+  // The untoggled floating button does not have a background.
+  const bool is_toggled = IsToggledOn();
+  if (IsFloatingIconButton(type_) && !is_toggled) {
+    SetBackground(nullptr);
+    return;
+  }
+
+  // Create a themed rounded rect background when the button is disabled.
+  if (!GetEnabled()) {
+    SetBackground(
+        CreateThemedBackground(cros_tokens::kCrosSysDisabledContainer, type_));
+    return;
+  }
+
+  // Create a themed rounded rect background when the background color is
+  // defined by a color ID. Otherwise, create a solid rounded rect background.
+  // TODO(zxdan): only use themed background when dynamic color migration work
+  // is done.
+
+  // When the button is toggled, create a background with toggled color.
+  const bool is_jellyroll_enabled = features::IsJellyrollEnabled();
+  if (is_toggled) {
+    if (background_toggled_color_id_ || !background_toggled_color_) {
+      const ui::ColorId color_id = background_toggled_color_id_.value_or(
+          is_jellyroll_enabled ? cros_tokens::kCrosSysSystemPrimaryContainer
+                               : static_cast<ui::ColorId>(
+                                     kColorAshControlBackgroundColorActive));
+      SetBackground(CreateThemedBackground(color_id, type_));
+      return;
+    }
+    SetBackground(
+        CreateSolidBackground(background_toggled_color_.value(), type_));
+    return;
+  }
+
+  // When the button is not toggled, create a background with normal color.
+  if (background_color_id_ || !background_color_) {
+    const ui::ColorId color_id = background_color_id_.value_or(
+        is_jellyroll_enabled ? cros_tokens::kCrosSysSystemOnBase
+                             : static_cast<ui::ColorId>(
+                                   kColorAshControlBackgroundColorInactive));
+    SetBackground(CreateThemedBackground(color_id, type_));
+    return;
+  }
+  SetBackground(CreateSolidBackground(background_color_.value(), type_));
+  return;
+}
+
+void IconButton::UpdateVectorIcon(bool icon_changed) {
+  const bool is_toggled = IsToggledOn();
+  const gfx::VectorIcon* icon =
+      is_toggled && toggled_icon_ ? toggled_icon_ : icon_;
+
+  if (!icon)
     return;
 
-  auto* color_provider = GetColorProvider();
+  const int icon_size = icon_size_.value_or(GetIconSizeOnType(type_));
   const bool is_jellyroll_enabled = features::IsJellyrollEnabled();
 
-  // The icon color IDs set by clients takes precedence over the icon colors. If
-  // neither is set, use the default color IDs.
-  SkColor normal_icon_color;
-  if (icon_color_id_) {
-    normal_icon_color = color_provider->GetColor(icon_color_id_.value());
+  ui::ImageModel new_normal_image_model;
+  // When the icon color is defined by a color Id, use the color Id to create an
+  // image model. Otherwise, use the color to create an image model.
+  // TODO(zxdan): only use color Id when the dynamic color migration work is
+  // done.
+  if (is_toggled) {
+    // When the button is toggled, create an image model with toggled color.
+    if (icon_toggled_color_id_ || !icon_toggled_color_) {
+      const ui::ColorId color_id = icon_toggled_color_id_.value_or(
+          is_jellyroll_enabled
+              ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+              : static_cast<ui::ColorId>(kColorAshButtonIconColorPrimary));
+      new_normal_image_model =
+          ui::ImageModel::FromVectorIcon(*icon, color_id, icon_size);
+    } else {
+      new_normal_image_model = ui::ImageModel::FromVectorIcon(
+          *icon, icon_toggled_color_.value(), icon_size);
+    }
   } else {
-    normal_icon_color = icon_color_.value_or(color_provider->GetColor(
-        is_jellyroll_enabled
-            ? cros_tokens::kCrosSysOnSurface
-            : static_cast<ui::ColorId>(kColorAshButtonIconColor)));
+    // When the button is not toggled, create an image model with normal color.
+    if (icon_color_id_ || !icon_color_) {
+      ui::ColorId default_color_id;
+      if (IsProminentFloatingType(type_)) {
+        default_color_id = HasFocus() ? cros_tokens::kCrosSysPrimary
+                                      : cros_tokens::kCrosSysSecondary;
+      } else {
+        default_color_id =
+            is_jellyroll_enabled
+                ? cros_tokens::kCrosSysOnSurface
+                : static_cast<ui::ColorId>(kColorAshButtonIconColor);
+      }
+      const ui::ColorId color_id = icon_color_id_.value_or(default_color_id);
+      new_normal_image_model =
+          ui::ImageModel::FromVectorIcon(*icon, color_id, icon_size);
+    } else {
+      new_normal_image_model =
+          ui::ImageModel::FromVectorIcon(*icon, icon_color_.value(), icon_size);
+    }
   }
 
-  SkColor toggled_icon_color;
-  if (icon_toggled_color_id_) {
-    toggled_icon_color =
-        color_provider->GetColor(icon_toggled_color_id_.value());
-  } else {
-    toggled_icon_color = icon_toggled_color_.value_or(color_provider->GetColor(
-        is_jellyroll_enabled
-            ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-            : static_cast<ui::ColorId>(kColorAshButtonIconColorPrimary)));
+  if (GetWidget()) {
+    // Skip repainting if the incoming icon is the same as the current icon. If
+    // the icon has been painted before, |gfx::CreateVectorIcon()| will simply
+    // grab the ImageSkia from a cache, so it will be cheap. Note that this
+    // assumes that toggled/disabled images changes at the same time as the
+    // normal image, which it currently does.
+    const gfx::ImageSkia new_normal_image =
+        new_normal_image_model.Rasterize(GetColorProvider());
+    const gfx::ImageSkia& old_normal_image =
+        GetImage(views::Button::STATE_NORMAL);
+    if (!new_normal_image.isNull() && !old_normal_image.isNull() &&
+        new_normal_image.BackedBySameObjectAs(old_normal_image)) {
+      return;
+    }
   }
 
-  const gfx::VectorIcon* icon =
-      toggled_ && toggled_icon_ ? toggled_icon_ : icon_;
-  const SkColor icon_color = toggled_ ? toggled_icon_color : normal_icon_color;
-  const int icon_size = icon_size_.value_or(GetIconSizeOnType(type_));
-
-  // Skip repainting if the incoming icon is the same as the current icon. If
-  // the icon has been painted before, |gfx::CreateVectorIcon()| will simply
-  // grab the ImageSkia from a cache, so it will be cheap. Note that this
-  // assumes that toggled/disabled images changes at the same time as the normal
-  // image, which it currently does.
-  const gfx::ImageSkia new_normal_image =
-      gfx::CreateVectorIcon(*icon, icon_size, icon_color);
-  const gfx::ImageSkia& old_normal_image =
-      GetImage(views::Button::STATE_NORMAL);
-  if (!new_normal_image.isNull() && !old_normal_image.isNull() &&
-      new_normal_image.BackedBySameObjectAs(old_normal_image)) {
-    return;
+  SetImageModel(views::Button::STATE_NORMAL, new_normal_image_model);
+  if (icon_changed) {
+    SetImageModel(views::Button::STATE_DISABLED,
+                  ui::ImageModel::FromVectorIcon(
+                      *icon, cros_tokens::kCrosSysDisabled, icon_size));
   }
-
-  SetImage(views::Button::STATE_NORMAL, new_normal_image);
-  SetImage(
-      views::Button::STATE_DISABLED,
-      gfx::CreateVectorIcon(*icon, icon_size,
-                            ColorUtil::GetDisabledColor(normal_icon_color)));
 }
 
 SkColor IconButton::GetBackgroundColor() const {
-  const bool is_jellyroll_enabled = features::IsJellyrollEnabled();
-  auto* color_provider = GetColorProvider();
-
-  // The background color IDs set by clients takes precedence over the
-  // background colors. If neither is set, use the default color IDs.
-  SkColor normal_background_color;
-  if (background_color_id_) {
-    normal_background_color =
-        color_provider->GetColor(background_color_id_.value());
-  } else {
-    normal_background_color =
-        background_color_.value_or(color_provider->GetColor(
-            is_jellyroll_enabled
-                ? cros_tokens::kCrosSysSystemOnBase
-                : static_cast<ui::ColorId>(
-                      kColorAshControlBackgroundColorInactive)));
-  }
-
-  SkColor toggled_background_color;
-  if (background_toggled_color_id_) {
-    toggled_background_color =
-        color_provider->GetColor(background_toggled_color_id_.value());
-  } else {
-    toggled_background_color =
-        background_toggled_color_.value_or(color_provider->GetColor(
-            is_jellyroll_enabled ? cros_tokens::kCrosSysSystemPrimaryContainer
-                                 : static_cast<ui::ColorId>(
-                                       kColorAshControlBackgroundColorActive)));
-  }
-
-  return IsToggledOn() ? toggled_background_color : normal_background_color;
+  DCHECK(background());
+  return background()->get_color();
 }
 
 bool IconButton::IsToggledOn() const {

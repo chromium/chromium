@@ -52,17 +52,6 @@ class ToggleBubbleButton : public IconButton {
 
   // IconButton:
   void PaintButtonContents(gfx::Canvas* canvas) override {
-    // Only draw the background when the button is toggled.
-    if (toggled()) {
-      const gfx::Rect rect(GetContentsBounds());
-      cc::PaintFlags flags;
-      flags.setAntiAlias(true);
-      flags.setColor(GetBackgroundColor());
-      flags.setStyle(cc::PaintFlags::kFill_Style);
-      canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), rect.width() / 2,
-                         flags);
-    }
-
     // Rotate the canvas to rotate the expand indicator according to toggle
     // state and shelf alignment. Note that when shelf alignment changes,
     // TrayBackgroundView::UpdateLayout() will be triggered and this button will
