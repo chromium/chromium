@@ -133,14 +133,46 @@ def Configure(llvm_libs_root):
 
 def RunXPy(sub, args, gcc_toolchain_path, verbose):
     ''' Run x.py, Rust's build script'''
-    clang_path = os.path.join(LLVM_BUILD_DIR, 'bin', 'clang')
     RUSTENV = collections.defaultdict(str, os.environ)
     # Cargo normally stores files in $HOME. Override this.
     RUSTENV['CARGO_HOME'] = CARGO_HOME_DIR
-    RUSTENV['AR'] = os.path.join(LLVM_BUILD_DIR, 'bin', 'llvm-ar')
-    RUSTENV['CC'] = clang_path
-    RUSTENV['CXX'] = os.path.join(LLVM_BUILD_DIR, 'bin', 'clang++')
-    RUSTENV['LD'] = clang_path
+
+    clang_path = os.path.join(LLVM_BUILD_DIR, 'bin')
+    if sys.platform == 'win32':
+        # The Rust toolchain build requires the use of link.exe already (it is
+        # the well-lit path, and we don't override the Rust linker when building
+        # the toolchain here), so we could use it for linking the small bits of
+        # C/C++ inside the Rust build too.
+        #
+        # That said, the `config.toml.template` file can override the linker for
+        # the Rust toolchain build.
+        #
+        # The `cc` crate wants to use link.exe by default for making static
+        # libs (the `AR` env var) but if clang-cl is being used to compile,
+        # then it wants to use llvm-lib.
+        #
+        # It's not totally clear if we ship llvm-lib, but it seems in practice
+        # that we have it available on the LLVM toolchain builders. Otherwise,
+        # we would need to use `lld-link /lib` and that doesn't work
+        # at the moment as the `cc` crate doesn't consume `ARFLAGS`:
+        # https://github.com/rust-lang/cc-rs/issues/762
+        #
+        # So, since we're using clang-cl, we point to `llvm-lib`, though we
+        # could equally let the `cc` crate find it (it looks in the same path
+        # as the compiler on Windows as of the time of this writing).
+        #
+        # We don't set a final linker with `LD`, as either the default works,
+        # or there are C executables or shared libs compiled during the Rust
+        # toolchain build.
+        RUSTENV['AR'] = os.path.join(clang_path, 'llvm-lib')
+        RUSTENV['CC'] = os.path.join(clang_path, 'clang-cl')
+        RUSTENV['CXX'] = os.path.join(clang_path, 'clang-cl')
+    else:
+        RUSTENV['AR'] = os.path.join(clang_path, 'llvm-ar')
+        RUSTENV['CC'] = os.path.join(clang_path, 'clang')
+        RUSTENV['CXX'] = os.path.join(clang_path, 'clang++')
+        RUSTENV['LD'] = os.path.join(clang_path, 'clang')
+
     # We use these flags to avoid linking with the system libstdc++.
     gcc_toolchain_flag = (f'--gcc-toolchain={gcc_toolchain_path}'
                           if gcc_toolchain_path else '')
@@ -148,6 +180,7 @@ def RunXPy(sub, args, gcc_toolchain_path, verbose):
     RUSTENV['CFLAGS'] += f' {gcc_toolchain_flag}'
     RUSTENV['CXXFLAGS'] += f' {gcc_toolchain_flag}'
     RUSTENV['LDFLAGS'] += f' {gcc_toolchain_flag}'
+
     # These affect how Rust crates are built. A `-Clink-arg=<foo>` arg passes
     # foo to the clang invocation used to link.
     #
