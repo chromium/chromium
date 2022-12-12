@@ -1110,8 +1110,8 @@ void LocalFrame::DidChangeBackgroundColor(SkColor background_color,
 
 LocalFrame& LocalFrame::LocalFrameRoot() const {
   const LocalFrame* cur_frame = this;
-  while (cur_frame && IsA<LocalFrame>(cur_frame->Tree().Parent()))
-    cur_frame = To<LocalFrame>(cur_frame->Tree().Parent());
+  while (cur_frame && IsA<LocalFrame>(cur_frame->Parent()))
+    cur_frame = To<LocalFrame>(cur_frame->Parent());
 
   return const_cast<LocalFrame&>(*cur_frame);
 }
