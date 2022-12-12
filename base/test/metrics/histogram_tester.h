@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/location.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/strings/string_piece.h"
@@ -52,42 +53,50 @@ class HistogramTester {
   // object was constructed.
   void ExpectUniqueSample(StringPiece name,
                           HistogramBase::Sample sample,
-                          HistogramBase::Count expected_bucket_count) const;
+                          HistogramBase::Count expected_bucket_count,
+                          const Location& location = FROM_HERE) const;
   template <typename T>
   void ExpectUniqueSample(StringPiece name,
                           T sample,
-                          HistogramBase::Count expected_bucket_count) const {
+                          HistogramBase::Count expected_bucket_count,
+                          const Location& location = FROM_HERE) const {
     ExpectUniqueSample(name, static_cast<HistogramBase::Sample>(sample),
-                       expected_bucket_count);
+                       expected_bucket_count, location);
   }
   void ExpectUniqueTimeSample(StringPiece name,
                               TimeDelta sample,
-                              HistogramBase::Count expected_bucket_count) const;
+                              HistogramBase::Count expected_bucket_count,
+                              const Location& location = FROM_HERE) const;
 
   // We know the exact number of samples in a bucket, but other buckets may
   // have samples as well. Measures the diff from the snapshot taken when this
   // object was constructed.
   void ExpectBucketCount(StringPiece name,
                          HistogramBase::Sample sample,
-                         HistogramBase::Count expected_count) const;
+                         HistogramBase::Count expected_count,
+                         const Location& location = FROM_HERE) const;
   template <typename T>
   void ExpectBucketCount(StringPiece name,
                          T sample,
-                         HistogramBase::Count expected_count) const {
+                         HistogramBase::Count expected_count,
+                         const Location& location = FROM_HERE) const {
     ExpectBucketCount(name, static_cast<HistogramBase::Sample>(sample),
-                      expected_count);
+                      expected_count, location);
   }
 
   // We don't know the values of the samples, but we know how many there are.
   // This measures the diff from the snapshot taken when this object was
   // constructed.
-  void ExpectTotalCount(StringPiece name, HistogramBase::Count count) const;
+  void ExpectTotalCount(StringPiece name,
+                        HistogramBase::Count count,
+                        const Location& location = FROM_HERE) const;
 
   // We know exact number of samples for buckets corresponding to a time
   // interval. Other intervals may have samples too.
   void ExpectTimeBucketCount(StringPiece name,
                              TimeDelta sample,
-                             HistogramBase::Count count) const;
+                             HistogramBase::Count count,
+                             const Location& location = FROM_HERE) const;
 
   // We don't know the values of the samples, but we know their sum.
   // This returns the diff from the snapshot taken when this object was
@@ -168,7 +177,8 @@ class HistogramTester {
   void CheckBucketCount(StringPiece name,
                         HistogramBase::Sample sample,
                         Histogram::Count expected_count,
-                        const HistogramSamples& samples) const;
+                        const HistogramSamples& samples,
+                        const Location& location) const;
 
   // Returns the total number of values recorded for histogram |name|. This
   // is calculated as the number from |samples| minus the snapshot that was
@@ -181,7 +191,8 @@ class HistogramTester {
   // that was taken for |name|.
   void CheckTotalCount(StringPiece name,
                        Histogram::Count expected_count,
-                       const HistogramSamples& samples) const;
+                       const HistogramSamples& samples,
+                       const Location& location) const;
 
   // Sets the value for |count| to be the value in the |sample| bucket. The
   // bucket's current value is determined from |samples| and is modified based
