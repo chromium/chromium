@@ -647,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, LoadAbort) {
   Login();
 
   // Make gaia landing page unreachable
-  fake_gaia_mixin()->fake_gaia()->SetErrorResponse(
+  fake_gaia_mixin()->fake_gaia()->SetFixedResponse(
       GaiaUrls::GetInstance()->embedded_setup_chromeos_url(2),
       net::HTTP_NOT_FOUND);
 

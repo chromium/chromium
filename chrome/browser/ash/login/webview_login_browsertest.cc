@@ -44,6 +44,7 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/test/webview_content_extractor.h"
@@ -756,13 +757,48 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, ErrorScreenOnGaiaError) {
   ExpectIdentifierPage();
 
   // Make gaia landing page unreachable
-  fake_gaia_.fake_gaia()->SetErrorResponse(
+  fake_gaia_.fake_gaia()->SetFixedResponse(
       GaiaUrls::GetInstance()->embedded_setup_chromeos_url(2),
       net::HTTP_NOT_FOUND);
 
   // Click back to reload (unreachable) identifier page.
   test::OobeJS().ClickOnPath(kBackButton);
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(WebviewLoginTest,
+                       NavigationButtonsDisabledBeforeGaiaLoaded) {
+  WaitForSigninScreen();
+  test::WaitForOobeJSReady();
+
+  test::OobeJS().ExpectHiddenPath(kPrimaryButton);
+  test::OobeJS().ExpectDisabledPath(kPrimaryButton);
+  test::OobeJS().ExpectHiddenPath(kSecondaryButton);
+  test::OobeJS().ExpectDisabledPath(kSecondaryButton);
+}
+
+IN_PROC_BROWSER_TEST_F(WebviewLoginTest,
+                       NavigationButtonsDisabledOnGaiaReload) {
+  // Progress to password page, so that both buttons are enabled.
+  WaitForGaiaPageLoadAndPropertyUpdate();
+  ExpectIdentifierPage();
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail,
+                               FakeGaiaMixin::kEmailPath);
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+  WaitForGaiaPageBackButtonUpdate();
+  ExpectPasswordPage();
+  test::OobeJS().ExpectEnabledPath(kPrimaryButton);
+  test::OobeJS().ExpectEnabledPath(kSecondaryButton);
+
+  // Return empty gaia page so that we do not re-enable buttons again.
+  fake_gaia_.fake_gaia()->SetFixedResponse(
+      GaiaUrls::GetInstance()->embedded_setup_chromeos_url(2), net::HTTP_OK,
+      "<body>no-op gaia</body>");
+  test::OobeJS().ExecuteAsync("$('gaia-signin').authenticator_.reload()");
+
+  // Wait for both buttons to become disabled due to reload.
+  test::OobeJS().CreateEnabledWaiter(false, kPrimaryButton)->Wait();
+  test::OobeJS().CreateEnabledWaiter(false, kSecondaryButton)->Wait();
 }
 
 // Device settings could only change on the owned device.

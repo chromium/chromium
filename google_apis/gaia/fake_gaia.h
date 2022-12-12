@@ -195,11 +195,13 @@ class FakeGaia {
   }
 
   // Configures FakeGaia to answer with HTTP status code |http_status_code| and
-  // an empty body when |gaia_url| is requeqsted. Only |gaia_url|.path() is
-  // relevant for the URL match.
-  // To reset, pass |http_status_code| = net::HTTP_OK.
-  void SetErrorResponse(const GURL& gaia_url,
-                        net::HttpStatusCode http_status_code);
+  // an |http_response_body| body when |gaia_url| is requested. Only
+  // |gaia_url|.path() is relevant for the URL match.
+  // To reset, pass |http_status_code| = net::HTTP_OK and |http_response_body| =
+  // "".
+  void SetFixedResponse(const GURL& gaia_url,
+                        net::HttpStatusCode http_status_code,
+                        const std::string& http_response_body = "");
 
   // Returns the is_supervised param from the reauth URL if any.
   const std::string& is_supervised() { return is_supervised_; }
@@ -264,7 +266,8 @@ class FakeGaia {
       net::test_server::BasicHttpResponse* http_response)>;
   using RequestHandlerMap =
       base::flat_map<std::string, HttpRequestHandlerCallback>;
-  using ErrorResponseMap = base::flat_map<std::string, net::HttpStatusCode>;
+  using FixedResponseMap =
+      base::flat_map<std::string, std::pair<net::HttpStatusCode, std::string>>;
 
   // Finds the handler for the specified |request_path| by prefix.
   // Used as a backup for situations where an exact match doesn't
@@ -351,7 +354,7 @@ class FakeGaia {
   EmailToGaiaIdMap email_to_gaia_id_map_;
   AccessTokenInfoMap access_token_info_map_;
   RequestHandlerMap request_handlers_;
-  ErrorResponseMap error_responses_;
+  FixedResponseMap fixed_responses_;
   std::string embedded_setup_chromeos_response_;
   std::string fake_saml_continue_response_;
   SamlAccountIdpMap saml_account_idp_map_;

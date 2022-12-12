@@ -395,11 +395,12 @@ std::unique_ptr<net::test_server::HttpResponse> FakeGaia::HandleRequest(
   std::string request_path = request_url.path();
   auto http_response = std::make_unique<BasicHttpResponse>();
 
-  ErrorResponseMap::const_iterator error_response =
-      error_responses_.find(request_path);
-  if (error_response != error_responses_.end() &&
-      error_response->second != net::HTTP_OK) {
-    http_response->set_code(error_response->second);
+  auto fixed_response = fixed_responses_.find(request_path);
+  if (fixed_response != fixed_responses_.end()) {
+    const auto& [code, content] = fixed_response->second;
+    http_response->set_code(code);
+    http_response->set_content(content);
+    http_response->set_content_type("text/html");
     return std::move(http_response);
   }
 
@@ -458,9 +459,15 @@ std::string FakeGaia::GetDeviceIdByRefreshToken(
                                                      : std::string();
 }
 
-void FakeGaia::SetErrorResponse(const GURL& gaia_url,
-                                net::HttpStatusCode http_status_code) {
-  error_responses_[gaia_url.path()] = http_status_code;
+void FakeGaia::SetFixedResponse(const GURL& gaia_url,
+                                net::HttpStatusCode http_status_code,
+                                const std::string& http_response_body) {
+  if (http_status_code == net::HTTP_OK && http_response_body.empty()) {
+    fixed_responses_.erase(gaia_url.path());
+  } else {
+    fixed_responses_[gaia_url.path()] =
+        std::make_pair(http_status_code, http_response_body);
+  }
 }
 
 GURL FakeGaia::GetFakeRemoveLocalAccountURL(const std::string& gaia_id) const {
