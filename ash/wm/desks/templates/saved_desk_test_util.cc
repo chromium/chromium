@@ -99,7 +99,7 @@ void SavedDeskPresenterTestApi::SetOnUpdateUiClosure(
 
 void SavedDeskPresenterTestApi::MaybeWaitForModel() {
   if (presenter_->weak_ptr_factory_.HasWeakPtrs())
-    WaitForDesksTemplatesUI();
+    WaitForSavedDeskUI();
 }
 
 SavedDeskLibraryViewTestApi::SavedDeskLibraryViewTestApi(
@@ -164,7 +164,7 @@ std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
   return grid_items;
 }
 
-SavedDeskItemView* GetItemViewFromTemplatesGrid(size_t grid_item_index) {
+SavedDeskItemView* GetItemViewFromSavedDeskGrid(size_t grid_item_index) {
   auto* overview_grid = GetPrimaryOverviewGrid();
   DCHECK(overview_grid);
 
@@ -180,7 +180,7 @@ SavedDeskItemView* GetItemViewFromTemplatesGrid(size_t grid_item_index) {
   return item_view;
 }
 
-views::Button* GetZeroStateDesksTemplatesButton() {
+views::Button* GetZeroStateLibraryButton() {
   const auto* overview_grid = GetPrimaryOverviewGrid();
   if (!overview_grid)
     return nullptr;
@@ -191,7 +191,7 @@ views::Button* GetZeroStateDesksTemplatesButton() {
                         : nullptr;
 }
 
-views::Button* GetExpandedStateDesksTemplatesButton() {
+views::Button* GetExpandedStateLibraryButton() {
   const auto* overview_grid = GetPrimaryOverviewGrid();
   if (!overview_grid)
     return nullptr;
@@ -217,12 +217,12 @@ views::Button* GetSaveDeskForLaterButton() {
 }
 
 views::Button* GetTemplateItemButton(int index) {
-  auto* item = GetItemViewFromTemplatesGrid(index);
+  auto* item = GetItemViewFromSavedDeskGrid(index);
   return item ? static_cast<views::Button*>(item) : nullptr;
 }
 
 views::Button* GetTemplateItemDeleteButton(int index) {
-  auto* item = GetItemViewFromTemplatesGrid(index);
+  auto* item = GetItemViewFromSavedDeskGrid(index);
   return item ? static_cast<views::Button*>(const_cast<CloseButton*>(
                     SavedDeskItemViewTestApi(item).delete_button()))
               : nullptr;
@@ -236,7 +236,7 @@ views::Button* GetSavedDeskDialogAcceptButton() {
   return dialog_widget->widget_delegate()->AsDialogDelegate()->GetOkButton();
 }
 
-void WaitForDesksTemplatesUI() {
+void WaitForSavedDeskUI() {
   auto* overview_session = GetOverviewSession();
   DCHECK(overview_session);
 

@@ -216,7 +216,7 @@ bool OverviewItem::Contains(const aura::Window* target) const {
   return transform_window_.Contains(target);
 }
 
-void OverviewItem::HideForDesksTemplatesGrid(bool animate) {
+void OverviewItem::HideForSavedDeskLibrary(bool animate) {
   // To hide the window, we will set its layer opacity to 0. This would normally
   // also hide the window from the mini view, which we don't want. By setting a
   // property on the window, we can force it to stay visible.
@@ -249,8 +249,8 @@ void OverviewItem::HideForDesksTemplatesGrid(bool animate) {
   HideCannotSnapWarning(animate);
 }
 
-void OverviewItem::RevertHideForDesksTemplatesGrid(bool animate) {
-  // This might run before `HideForDesksTemplatesGrid()`, thus cancel the
+void OverviewItem::RevertHideForSavedDeskLibrary(bool animate) {
+  // This might run before `HideForSavedDeskLibrary()`, thus cancel the
   // callback to prevent such case.
   hide_window_in_overview_callback_.Cancel();
 
@@ -287,7 +287,7 @@ void OverviewItem::OnMovingWindowToAnotherDesk() {
 }
 
 void OverviewItem::RestoreWindow(bool reset_transform,
-                                 bool was_desks_templates_grid_showing) {
+                                 bool was_saved_desk_library_showing) {
   // TODO(oshima): SplitViewController has its own logic to adjust the
   // target state in |SplitViewController::OnOverviewModeEnding|.
   // Unify the mechanism to control it and remove ifs.
@@ -303,7 +303,7 @@ void OverviewItem::RestoreWindow(bool reset_transform,
 
   overview_item_view_->OnOverviewItemWindowRestoring();
   transform_window_.RestoreWindow(reset_transform,
-                                  was_desks_templates_grid_showing);
+                                  was_saved_desk_library_showing);
 
   if (!transform_window_.IsMinimized())
     return;
@@ -1161,8 +1161,8 @@ void OverviewItem::OnItemBoundsAnimationEnded() {
   if (!Shell::Get()->overview_controller()->InOverviewSession())
     return;
 
-  if (overview_session_->IsShowingDesksTemplatesGrid()) {
-    HideForDesksTemplatesGrid(false);
+  if (overview_session_->IsShowingSavedDeskLibrary()) {
+    HideForSavedDeskLibrary(false);
     return;
   }
 

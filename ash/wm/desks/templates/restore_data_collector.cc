@@ -31,7 +31,7 @@ RestoreDataCollector::Call::~Call() = default;
 RestoreDataCollector::RestoreDataCollector() = default;
 RestoreDataCollector::~RestoreDataCollector() = default;
 
-void RestoreDataCollector::CaptureActiveDeskAsTemplate(
+void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
     GetDeskTemplateCallback callback,
     DeskTemplateType template_type,
     const std::string& template_name,
@@ -132,7 +132,7 @@ void RestoreDataCollector::OnAppLaunchDataReceived(
     call.data->ModifyWindowInfo(app_id, window_id, *window_info);
   }
 
-  // Null callback here means that the loop in `CaptureActiveDeskAsTemplate()`
+  // Null callback here means that the loop in `CaptureActiveDeskAsSavedDesk()`
   // has not yet finished polling the windows.  Non-zero pending request count
   // means that some of preceding requests were asynchronous.
   if (call.pending_request_count == 0 && !call.callback.is_null())

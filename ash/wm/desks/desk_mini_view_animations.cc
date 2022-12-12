@@ -386,7 +386,7 @@ void PerformReorderDeskMiniViewAnimation(
   layer->SetTransform(kEndTransform);
 }
 
-void PerformDesksTemplatesButtonVisibilityAnimation(
+void PerformLibraryButtonVisibilityAnimation(
     const std::vector<DeskMiniView*>& mini_views,
     views::View* new_desk_button,
     int shift_x) {

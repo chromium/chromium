@@ -136,10 +136,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
                   bool reposition);
 
   // Removes all overview items and restores the respective windows. This is
-  // used when launching a desks template. While this will empty the grid, it
-  // will *not* invoke `OverviewSession::OnGridEmpty()` since the grid is about
-  // to get filled with new windows.
-  void RemoveAllItemsForDesksTemplatesLaunch();
+  // used when launching a saved desk. While this will empty the grid, it will
+  // *not* invoke `OverviewSession::OnGridEmpty()` since the grid is about to
+  // get filled with new windows.
+  void RemoveAllItemsForSavedDeskLaunch();
 
   // Adds a drop target for |dragged_item|, at the index immediately following
   // |dragged_item|. Repositions all items except |dragged_item|, so that the
@@ -333,19 +333,19 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Commits any on-going name changes if any.
   void CommitNameChanges();
 
-  // Shows the grid of the saved desks. Creates the widget if needed. The
-  // desks bar will be expanded if it isn't already.
-  void ShowDesksTemplatesGrid();
+  // Shows the saved desk library. Creates the widget if needed. The desks bar
+  // will be expanded if it isn't already.
+  void ShowSavedDeskLibrary();
 
-  // Hides the grid of the saved desks and reshows the overview items. Updates
-  // the save desk button if we are not exiting overview.
-  void HideDesksTemplatesGrid(bool exit_overview);
+  // Hides the saved desk library and reshows the overview items. Updates the
+  // save desk buttons if we are not exiting overview.
+  void HideSavedDeskLibrary(bool exit_overview);
 
-  // True if the grid of desks templates is shown.
-  bool IsShowingDesksTemplatesGrid() const;
+  // True if the saved desk library is shown.
+  bool IsShowingSavedDeskLibrary() const;
 
-  // True if the grid of desks templates will be shown shortly.
-  bool WillShowDesksTemplatesGrid() const;
+  // True if the saved desk library will be shown shortly.
+  bool WillShowSavedDeskLibrary() const;
 
   // Returns true if any template name is being modified in its item view on
   // this grid.
@@ -530,15 +530,17 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Called when the animation for fading the `saved_desk_grid_widget_` out is
   // completed.
-  void OnDesksTemplatesGridFadedOut();
+  void OnSavedDeskGridFadedOut();
 
   // Called when the animation for fading the
   // `save_desk_button_container_widget_` out is completed.
   void OnSaveDeskButtonContainerFadedOut();
 
-  // Either increment or decrement `num_incognito_windows_` and
-  // `num_unsupported_windows`.
-  void UpdateNumIncognitoUnsupportedWindows(aura::Window* window,
+  // Updates the number of unsupported windows of saved desk. This includes
+  // `num_incognito_windows_` and `num_unsupported_windows` as of now. When
+  // `window` is being added to the grid, `increment` is true, and false
+  // otherwise.
+  void UpdateNumSavedDeskUnsupportedWindows(aura::Window* window,
                                             bool increment);
 
   // Returns the height of `desks_bar_view_`.

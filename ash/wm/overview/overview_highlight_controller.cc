@@ -228,8 +228,9 @@ OverviewHighlightController::GetTraversableViews() const {
   // Note that this order matches the order of the chromevox cycling in
   // `OverviewSession::UpdateAccessibilityFocus`.
   for (auto& grid : overview_session_->grid_list()) {
-    // If the grid is visible, we shouldn't try to add any overview items.
-    if (grid->IsShowingDesksTemplatesGrid()) {
+    // If the saved desk library is visible, we shouldn't try to add any
+    // overview items.
+    if (grid->IsShowingSavedDeskLibrary()) {
       SavedDeskLibraryView* desk_library_view = grid->GetSavedDeskLibraryView();
       DCHECK(desk_library_view);
       for (SavedDeskGridView* saved_desk_grid_view :

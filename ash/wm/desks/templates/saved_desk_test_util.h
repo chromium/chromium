@@ -160,11 +160,11 @@ std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
 
 // Return the `grid_item_index`th `SavedDeskItemView` from the first
 // `OverviewGrid`'s `SavedDeskGridView` in `GetOverviewGridList()`.
-SavedDeskItemView* GetItemViewFromTemplatesGrid(size_t grid_item_index);
+SavedDeskItemView* GetItemViewFromSavedDeskGrid(size_t grid_item_index);
 
 // These buttons are the ones on the primary root window.
-views::Button* GetZeroStateDesksTemplatesButton();
-views::Button* GetExpandedStateDesksTemplatesButton();
+views::Button* GetZeroStateLibraryButton();
+views::Button* GetExpandedStateLibraryButton();
 views::Button* GetSaveDeskAsTemplateButton();
 views::Button* GetSaveDeskForLaterButton();
 views::Button* GetTemplateItemButton(int index);
@@ -172,10 +172,9 @@ views::Button* GetTemplateItemDeleteButton(int index);
 views::Button* GetSavedDeskDialogAcceptButton();
 
 // A lot of the UI relies on calling into the local desk data manager to
-// update, which sends callbacks via posting tasks. Call
-// `WaitForDesksTemplatesUI()` if testing a piece of the UI which calls into the
-// desk model.
-void WaitForDesksTemplatesUI();
+// update, which sends callbacks via posting tasks. Call `WaitForSavedDeskUI()`
+// if testing a piece of the UI which calls into the desk model.
+void WaitForSavedDeskUI();
 
 }  // namespace ash
 

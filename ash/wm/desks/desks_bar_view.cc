@@ -244,18 +244,18 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
       // call this function past shutdown start. In this case we just continue
       // as if the saved desks UI should be hidden.
       OverviewSession* session = bar_view_->overview_grid()->overview_session();
-      const bool should_show_templates_ui =
+      const bool should_show_saved_desk_library =
           saved_desk_util::IsSavedDesksEnabled() && session &&
           !session->is_shutting_down() &&
-          session->saved_desk_presenter()->should_show_templates_ui();
+          session->saved_desk_presenter()->should_show_saved_desk_library();
       auto* zero_state_desks_templates_button =
           bar_view_->zero_state_desks_templates_button();
       const gfx::Size zero_state_desks_templates_button_size =
-          should_show_templates_ui
+          should_show_saved_desk_library
               ? zero_state_desks_templates_button->GetPreferredSize()
               : gfx::Size();
       const int width_for_zero_state_desks_templates_button =
-          should_show_templates_ui
+          should_show_saved_desk_library
               ? zero_state_desks_templates_button_size.width() +
                     kZeroStateButtonSpacing
               : 0;
@@ -286,7 +286,8 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
                                      kZeroStateButtonSpacing,
                                  kZeroStateY),
                       zero_state_desks_templates_button_size));
-        zero_state_desks_templates_button->SetVisible(should_show_templates_ui);
+        zero_state_desks_templates_button->SetVisible(
+            should_show_saved_desk_library);
       }
       return;
     }
@@ -437,13 +438,12 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
                 this, &kDesksTemplatesIcon,
                 l10n_util::GetStringUTF16(button_text_id),
                 /*initially_enabled=*/true,
-                base::BindRepeating(
-                    &DesksBarView::OnDesksTemplatesButtonPressed,
-                    base::Unretained(this))));
+                base::BindRepeating(&DesksBarView::OnLibraryButtonPressed,
+                                    base::Unretained(this))));
     zero_state_desks_templates_button_ = scroll_view_contents_->AddChildView(
         std::make_unique<ZeroStateIconButton>(
             &kDesksTemplatesIcon, l10n_util::GetStringUTF16(button_text_id),
-            base::BindRepeating(&DesksBarView::OnDesksTemplatesButtonPressed,
+            base::BindRepeating(&DesksBarView::OnLibraryButtonPressed,
                                 base::Unretained(this))));
   }
   scroll_view_contents_->SetLayoutManager(
@@ -758,7 +758,7 @@ bool DesksBarView::IsDraggingDesk() const {
   return drag_view_ != nullptr;
 }
 
-void DesksBarView::OnDesksTemplatesGridHidden() {
+void DesksBarView::OnSavedDeskLibraryHidden() {
   if (mini_views_.size() == 1u)
     SwitchToZeroState();
 }
@@ -868,9 +868,9 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
     mini_view->UpdateDeskButtonVisibility();
 
   // Switch to zero state, which happens if there would be one desk after
-  // removal, unless we are viewing the desks templates grid.
+  // removal, unless we are viewing the saved desk library.
   if (mini_views_.size() == 2u &&
-      !overview_grid_->IsShowingDesksTemplatesGrid()) {
+      !overview_grid_->IsShowingSavedDeskLibrary()) {
     SwitchToZeroState();
     return;
   }
@@ -1011,14 +1011,14 @@ void DesksBarView::OnNewDeskButtonPressed(
   NudgeDeskName(mini_views_.size() - 1);
 }
 
-void DesksBarView::UpdateButtonsForDesksTemplatesGrid() {
+void DesksBarView::UpdateButtonsForSavedDeskGrid() {
   if (IsZeroState() || !saved_desk_util::IsSavedDesksEnabled())
     return;
 
   FindMiniViewForDesk(Shell::Get()->desks_controller()->active_desk())
       ->UpdateBorderColor();
   expanded_state_desks_templates_button_->set_active(
-      overview_grid_->IsShowingDesksTemplatesGrid());
+      overview_grid_->IsShowingSavedDeskLibrary());
   expanded_state_desks_templates_button_->UpdateBorderColor();
 }
 
@@ -1030,16 +1030,16 @@ void DesksBarView::UpdateDeskButtonsVisibility() {
   if (vertical_dots_button_)
     vertical_dots_button_->SetVisible(!is_zero_state);
 
-  UpdateDesksTemplatesButtonVisibility();
+  UpdateLibraryButtonVisibility();
 }
 
-void DesksBarView::UpdateDesksTemplatesButtonVisibility() {
+void DesksBarView::UpdateLibraryButtonVisibility() {
   if (!saved_desk_util::IsSavedDesksEnabled())
     return;
 
   const bool should_show_ui = overview_grid_->overview_session()
                                   ->saved_desk_presenter()
-                                  ->should_show_templates_ui();
+                                  ->should_show_saved_desk_library();
   const bool is_zero_state = IsZeroState();
 
   zero_state_desks_templates_button_->SetVisible(should_show_ui &&
@@ -1067,7 +1067,7 @@ void DesksBarView::UpdateDesksTemplatesButtonVisibility() {
   // The mini views and new desk button are already laid out in the earlier
   // `Layout()` call. This call shifts the transforms of the mini views and new
   // desk button and then animates to the identity transform.
-  PerformDesksTemplatesButtonVisibilityAnimation(
+  PerformLibraryButtonVisibilityAnimation(
       mini_views_,
       is_zero_state
           ? static_cast<views::View*>(zero_state_new_desk_button_)
@@ -1276,11 +1276,11 @@ int DesksBarView::GetAdjustedUncroppedScrollPosition(int position) const {
   return adjusted_position;
 }
 
-void DesksBarView::OnDesksTemplatesButtonPressed() {
+void DesksBarView::OnLibraryButtonPressed() {
   RecordLoadSavedDeskLibraryHistogram();
   if (IsDeskNameBeingModified())
     DeskNameView::CommitChanges(GetWidget());
-  overview_grid_->overview_session()->ShowDesksTemplatesGrids(
+  overview_grid_->overview_session()->ShowSavedDeskLibrary(
       base::GUID(), /*saved_desk_name=*/u"",
       GetWidget()->GetNativeWindow()->GetRootWindow());
 }

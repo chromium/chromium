@@ -152,9 +152,9 @@ class ASH_EXPORT DesksBarView : public views::View,
   // If a desk is in a drag & drop cycle.
   bool IsDraggingDesk() const;
 
-  // Called when the desks templates grid is hidden. Transitions the desks bar
+  // Called when the saved desk library is hidden. Transitions the desks bar
   // view to zero state if necessary.
-  void OnDesksTemplatesGridHidden();
+  void OnSavedDeskLibraryHidden();
 
   // views::View:
   const char* GetClassName() const override;
@@ -188,19 +188,19 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   // If in expanded state, updates the border color of the
   // `expanded_state_desks_templates_button_` and the active desk's mini view
-  // after the desk templates grid has been shown. If not in expanded state,
+  // after the saved desk library has been shown. If not in expanded state,
   // updates the background color of the `zero_state_desks_templates_button_`
   // and the `zero_state_default_desk_button_`.
-  void UpdateButtonsForDesksTemplatesGrid();
+  void UpdateButtonsForSavedDeskGrid();
 
   // Updates the visibility of the two buttons inside the zero state desks bar
   // and the ExpandedDesksBarButton on the desk bar's state.
   void UpdateDeskButtonsVisibility();
 
-  // Updates the visibility of the desks templates button based on whether the
-  // desks templates feature is enabled, the user has any desks templates and
-  // the state of the desks bar.
-  void UpdateDesksTemplatesButtonVisibility();
+  // Updates the visibility of the saved desk library button based on whether
+  // the saved desk feature is enabled, the user has any saved desks and the
+  // state of the desks bar.
+  void UpdateLibraryButtonVisibility();
 
   // Returns the mini_view associated with `desk` or nullptr if no mini_view
   // has been created for it yet.
@@ -253,7 +253,7 @@ class ASH_EXPORT DesksBarView : public views::View,
   // preview is cropped at the start position of the scrollable bar.
   int GetAdjustedUncroppedScrollPosition(int position) const;
 
-  void OnDesksTemplatesButtonPressed();
+  void OnLibraryButtonPressed();
 
   // If the `DesksCloseAll` flag is enabled, this function cycles through
   // `mini_views_` and updates the tooltip for each mini view's combine desks

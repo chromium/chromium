@@ -297,30 +297,30 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   int GetNumberOfDesks() const override;
   void SendToDeskAtIndex(aura::Window* window, int desk_index) override;
 
-  // Captures the active desk and returns it as a desk template (of type
+  // Captures the active desk and returns it as a saved desk (of type
   // `template_type`) containing necessary information that can be used to
   // create a same desk via provided `callback`, `root_window_to_show` is used
   // to determine which monitor to show template related dialog.
-  void CaptureActiveDeskAsTemplate(GetDeskTemplateCallback callback,
-                                   DeskTemplateType template_type,
-                                   aura::Window* root_window_to_show) const;
+  void CaptureActiveDeskAsSavedDesk(GetDeskTemplateCallback callback,
+                                    DeskTemplateType template_type,
+                                    aura::Window* root_window_to_show) const;
 
   // Creates a new desk and optionally activates it depending on
   // `template_type`. If `customized_desk_name` is provided, desk name will be
   // `customized_desk_name` or `customized_desk_name
   // ({counter})` to resolve naming conflicts. CanCreateDesks() must be checked
   // before calling this.
-  const Desk* CreateNewDeskForTemplate(
+  const Desk* CreateNewDeskForSavedDesk(
       DeskTemplateType template_type,
       const std::u16string& customized_desk_name = std::u16string());
 
   // Called when an app with `app_id` is a single instance app which is about to
-  // get launched from a saved template. Moves the existing app instance to the
+  // get launched from a saved desk. Moves the existing app instance to the
   // active desk without animation if it exists. Returns true if we should
   // launch the app (i.e. the app was not found and thus should be launched),
   // and false otherwise. Optional launch parameters may be present in
   // `launch_list`.
-  bool OnSingleInstanceAppLaunchingFromTemplate(
+  bool OnSingleInstanceAppLaunchingFromSavedDesk(
       const std::string& app_id,
       const app_restore::RestoreData::LaunchList& launch_list);
 
@@ -511,7 +511,7 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // Scheduler for reporting the weekly active desks metric.
   base::OneShotTimer weekly_active_desks_scheduler_;
 
-  // Does the job for the `CaptureActiveDeskAsTemplate()` method.
+  // Does the job for the `CaptureActiveDeskAsSavedDesk()` method.
   mutable RestoreDataCollector restore_data_collector_;
 
   // Note: This should remain the last member so it'll be destroyed and

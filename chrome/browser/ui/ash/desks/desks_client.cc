@@ -236,7 +236,7 @@ void DesksClient::CaptureActiveDeskAndSaveTemplate(
     return;
   }
 
-  desks_controller_->CaptureActiveDeskAsTemplate(
+  desks_controller_->CaptureActiveDeskAsSavedDesk(
       base::BindOnce(&DesksClient::OnCapturedDeskTemplate,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       template_type,
@@ -554,7 +554,7 @@ void DesksClient::OnGetTemplateForDeskLaunch(
                                   ? saved_desk->template_name()
                                   : customized_desk_name;
 
-  const ash::Desk* new_desk = desks_controller_->CreateNewDeskForTemplate(
+  const ash::Desk* new_desk = desks_controller_->CreateNewDeskForSavedDesk(
       saved_desk->type(), template_name);
 
   if (!saved_desk->desk_restore_data()) {
@@ -610,9 +610,9 @@ void DesksClient::OnCaptureActiveDeskAndSaveTemplate(
       DCHECK(overview_session);
     }
 
-    overview_session->ShowDesksTemplatesGrids(
-        desk_template->uuid(), desk_template->template_name(),
-        ash::Shell::GetPrimaryRootWindow());
+    overview_session->ShowSavedDeskLibrary(desk_template->uuid(),
+                                           desk_template->template_name(),
+                                           ash::Shell::GetPrimaryRootWindow());
 
     // We have successfully created a *new* desk template for Save & Recall,
     // so we are now going to close all the windows on the active desk and

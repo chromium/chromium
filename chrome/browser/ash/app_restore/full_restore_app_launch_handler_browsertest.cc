@@ -242,7 +242,7 @@ void ClickButton(const views::Button* button) {
 void ClickSaveDeskAsTemplateButton() {
   ClickButton(GetSaveDeskAsTemplateButton());
   // Wait for the template to be stored in the model.
-  WaitForDesksTemplatesUI();
+  WaitForSavedDeskUI();
   // Clicking the save template button selects the newly created template's name
   // field. We can press enter or escape or click to select out of it.
   SendKey(ui::VKEY_RETURN);
@@ -1104,7 +1104,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   WaitForOverviewEnterAnimation();
 
   // Enter the saved desk library.
-  ClickButton(GetExpandedStateDesksTemplatesButton());
+  ClickButton(GetExpandedStateLibraryButton());
   // Launch the first entry.
   ClickTemplateItem(/*index=*/0);
 
@@ -2270,7 +2270,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   // Launch the template.
   ToggleOverview();
   WaitForOverviewEnterAnimation();
-  ClickButton(GetExpandedStateDesksTemplatesButton());
+  ClickButton(GetExpandedStateLibraryButton());
   ClickTemplateItem(/*index=*/0);
   ToggleOverview();
   WaitForOverviewExitAnimation();

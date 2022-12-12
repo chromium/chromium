@@ -232,7 +232,7 @@ void DeskMiniView::UpdateBorderColor() {
     desk_preview_->SetBorderColor(color_provider->GetControlsLayerColor(
         AshColorProvider::ControlsLayerType::kFocusRingColor));
   } else if (!desk_->is_active() ||
-             owner_bar_->overview_grid()->IsShowingDesksTemplatesGrid()) {
+             owner_bar_->overview_grid()->IsShowingSavedDeskLibrary()) {
     desk_preview_->SetBorderColor(SK_ColorTRANSPARENT);
   } else {
     desk_preview_->SetBorderColor(color_provider->GetContentLayerColor(

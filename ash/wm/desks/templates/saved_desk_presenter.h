@@ -34,7 +34,9 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   SavedDeskPresenter& operator=(const SavedDeskPresenter&) = delete;
   ~SavedDeskPresenter() override;
 
-  bool should_show_templates_ui() { return should_show_templates_ui_; }
+  bool should_show_saved_desk_library() {
+    return should_show_saved_desk_library_;
+  }
 
   // Retrieve the current and max count for a given saved desk type. Note that
   // these are snapshots of the model state, which may not match the current UI
@@ -48,10 +50,11 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
                                             ash::DeskTemplateType type,
                                             const base::GUID& uuid) const;
 
-  // Update the buttons of the desks templates UI and the visibility of the
-  // templates grid. The grid contents are not updated. Updates
-  // `should_show_templates_ui_`.
-  void UpdateDesksTemplatesUI();
+  // Update UI for saved desk library. More specifically, it updates the
+  // visibility of the library button, save desk button, and the saved desk
+  // grid. The grid contents are not updated. It also updates
+  // `should_show_saved_desk_library_`.
+  void UpdateUIForSavedDeskLibrary();
 
   // Calls the DeskModel to get all the template entries, with a callback to
   // `OnGetAllEntries`. `saved_desk_name` is used for the name overwrite nudge
@@ -135,9 +138,9 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
                           desks_storage::DeskModelObserver>
       desk_model_observation_{this};
 
-  // If the user has at least one template entry, the desk templates ui should
+  // If the user has at least one template entry, the saved desk library should
   // be shown. Otherwise, it should be invisible.
-  bool should_show_templates_ui_ = false;
+  bool should_show_saved_desk_library_ = false;
 
   // Test closure that runs after the UI has been updated async after a call to
   // the model.

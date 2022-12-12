@@ -247,8 +247,8 @@ class WindowCloseObserver : public aura::WindowObserver {
     }
 
     // Show the library, this should highlight the newly saved item.
-    overview_session->ShowDesksTemplatesGrids(saved_desk_guid_,
-                                              saved_desk_name_, root_window_);
+    overview_session->ShowSavedDeskLibrary(saved_desk_guid_, saved_desk_name_,
+                                           root_window_);
 
     // Remove the current desk, this will be done without animation.
     if (remove_desk) {
@@ -319,7 +319,7 @@ SavedDeskPresenter::SavedDeskPresenter(OverviewSession* overview_session)
   auto* desk_model = GetDeskModel();
   desk_model_observation_.Observe(desk_model);
 
-  should_show_templates_ui_ =
+  should_show_saved_desk_library_ =
       !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
       (GetEntryCount(DeskTemplateType::kTemplate) +
        GetEntryCount(DeskTemplateType::kSaveAndRecall)) > 0u;
@@ -348,7 +348,7 @@ ash::DeskTemplate* SavedDeskPresenter::FindOtherEntryWithName(
   return GetDeskModel()->FindOtherEntryWithName(name, type, uuid);
 }
 
-void SavedDeskPresenter::UpdateDesksTemplatesUI() {
+void SavedDeskPresenter::UpdateUIForSavedDeskLibrary() {
   // This function:
   //  1. Figures out whether the library button should be shown in the desk bar.
   //  2. Hides the library if necessary.
@@ -365,23 +365,22 @@ void SavedDeskPresenter::UpdateDesksTemplatesUI() {
        GetEntryCount(DeskTemplateType::kSaveAndRecall)) > 0u;
 
   for (auto& overview_grid : overview_session_->grid_list()) {
-    const bool is_showing_library =
-        overview_grid->IsShowingDesksTemplatesGrid();
+    const bool is_showing_library = overview_grid->IsShowingSavedDeskLibrary();
 
     if (in_tablet_mode && is_showing_library) {
       // This happens when entering tablet mode while the library is visible.
-      overview_grid->HideDesksTemplatesGrid(/*exit_overview=*/false);
+      overview_grid->HideSavedDeskLibrary(/*exit_overview=*/false);
     }
 
     // The functions below reach into this class to determine whether the
     // buttons should be shown or not. If we are already showing saved desk
     // library, they should not go away (unless we're in tablet mode).
-    should_show_templates_ui_ =
+    should_show_saved_desk_library_ =
         !in_tablet_mode && (is_showing_library || has_saved_desks);
 
     if (DesksBarView* desks_bar_view = overview_grid->desks_bar_view()) {
-      desks_bar_view->UpdateDesksTemplatesButtonVisibility();
-      desks_bar_view->UpdateButtonsForDesksTemplatesGrid();
+      desks_bar_view->UpdateLibraryButtonVisibility();
+      desks_bar_view->UpdateButtonsForSavedDeskGrid();
       overview_grid->UpdateSaveDeskButtons();
     }
   }
@@ -418,7 +417,7 @@ void SavedDeskPresenter::LaunchSavedDesk(
 
   // Copy fields we need from `desk_template` since we're about to move it.
   const auto saved_desk_type = saved_desk->type();
-  const Desk* new_desk = desks_controller->CreateNewDeskForTemplate(
+  const Desk* new_desk = desks_controller->CreateNewDeskForSavedDesk(
       saved_desk_type, saved_desk->template_name());
   LaunchSavedDeskIntoNewDesk(std::move(saved_desk), root_window, new_desk);
 
@@ -432,7 +431,7 @@ void SavedDeskPresenter::LaunchSavedDesk(
 void SavedDeskPresenter::MaybeSaveActiveDeskAsTemplate(
     DeskTemplateType template_type,
     aura::Window* root_window_to_show) {
-  DesksController::Get()->CaptureActiveDeskAsTemplate(
+  DesksController::Get()->CaptureActiveDeskAsSavedDesk(
       base::BindOnce(&SavedDeskPresenter::SaveOrUpdateDeskTemplate,
                      weak_ptr_factory_.GetWeakPtr(),
                      /*is_update=*/false, root_window_to_show),
@@ -493,8 +492,8 @@ void SavedDeskPresenter::GetAllEntries(const base::GUID& item_to_focus,
   if (result.status != desks_storage::DeskModel::GetAllEntriesStatus::kOk)
     return;
 
-  // This updates `should_show_templates_ui_`.
-  UpdateDesksTemplatesUI();
+  // This updates `should_show_saved_desk_library_`.
+  UpdateUIForSavedDeskLibrary();
 
   for (auto& overview_grid : overview_session_->grid_list()) {
     // Populate `SavedDeskLibraryView` with the desk template entries.
@@ -651,10 +650,10 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
     AddOrUpdateUIEntries({desk_template.get()});
 
     if (!was_update) {
-      // Shows the grid if it was hidden. This will not call `GetAllEntries`.
-      overview_session_->ShowDesksTemplatesGrids(base::GUID(),
-                                                 /*saved_desk_name=*/u"",
-                                                 root_window);
+      // Shows the library if it was hidden. This will not call `GetAllEntries`.
+      overview_session_->ShowSavedDeskLibrary(base::GUID(),
+                                              /*saved_desk_name=*/u"",
+                                              root_window);
       if (SavedDeskItemView* item_view =
               library_view->GetItemForUUID(desk_template->uuid())) {
         if (FindOtherEntryWithName(saved_desk_name, desk_template->type(),
@@ -668,10 +667,10 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
     if (on_update_ui_closure_for_testing_)
       std::move(on_update_ui_closure_for_testing_).Run();
   } else if (desk_template->type() != DeskTemplateType::kSaveAndRecall) {
-    // This will update the templates button and save as desks button too. This
-    // will call `GetAllEntries`.
-    overview_session_->ShowDesksTemplatesGrids(desk_template->uuid(),
-                                               saved_desk_name, root_window);
+    // This will update the library button and save desk button too. This will
+    // call `GetAllEntries`.
+    overview_session_->ShowSavedDeskLibrary(desk_template->uuid(),
+                                            saved_desk_name, root_window);
   }
 
   if (!was_update) {
@@ -714,7 +713,7 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
   }
 
   // Note we do not run `on_update_ui_closure_for_testing` here as we want to
-  // wait for the `GetAllEntries` fired in `ShowDesksTemplatesGrids`.
+  // wait for the `GetAllEntries()` fired in `ShowSavedDeskLibrary()`.
 }
 
 void SavedDeskPresenter::AddOrUpdateUIEntries(
@@ -722,8 +721,8 @@ void SavedDeskPresenter::AddOrUpdateUIEntries(
   if (new_entries.empty())
     return;
 
-  // This updates `should_show_templates_ui_`.
-  UpdateDesksTemplatesUI();
+  // This updates `should_show_saved_desk_library_`.
+  UpdateUIForSavedDeskLibrary();
 
   for (auto& overview_grid : overview_session_->grid_list()) {
     if (auto* library_view = overview_grid->GetSavedDeskLibraryView()) {
@@ -740,8 +739,8 @@ void SavedDeskPresenter::RemoveUIEntries(const std::vector<base::GUID>& uuids) {
   if (uuids.empty())
     return;
 
-  // This updates `should_show_templates_ui_`.
-  UpdateDesksTemplatesUI();
+  // This updates `should_show_saved_desk_library_`.
+  UpdateUIForSavedDeskLibrary();
 
   for (auto& overview_grid : overview_session_->grid_list()) {
     // Remove the entries from `SavedDeskLibraryView`.

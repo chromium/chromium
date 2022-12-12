@@ -87,7 +87,7 @@ void OverviewGridEventHandler::OnGestureEvent(ui::GestureEvent* event) {
   // it's `ET_GESTURE_TAP`, here it does not set event to handled, and thus
   // `HandleClickOrTap()` would be executed from
   // `SavedDeskLibraryView::OnLocatedEvent()`.
-  if (grid_->IsShowingDesksTemplatesGrid())
+  if (grid_->IsShowingSavedDeskLibrary())
     return;
 
   switch (event->type()) {

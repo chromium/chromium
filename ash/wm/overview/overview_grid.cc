@@ -450,7 +450,7 @@ OverviewGrid::OverviewGrid(aura::Window* root_window,
     window_list_.push_back(
         std::make_unique<OverviewItem>(window, overview_session_, this));
 
-    UpdateNumIncognitoUnsupportedWindows(window, /*increment*/ true);
+    UpdateNumSavedDeskUnsupportedWindows(window, /*increment*/ true);
   }
 }
 
@@ -464,8 +464,8 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
   Shell::Get()->wallpaper_controller()->RemoveObserver(this);
   grid_event_handler_.reset();
 
-  if (IsShowingDesksTemplatesGrid())
-    HideDesksTemplatesGrid(/*exit_overview=*/true);
+  if (IsShowingSavedDeskLibrary())
+    HideSavedDeskLibrary(/*exit_overview=*/true);
 
   bool has_non_cover_animating = false;
   int animate_count = 0;
@@ -647,7 +647,7 @@ void OverviewGrid::AddItem(aura::Window* window,
   DCHECK(!GetOverviewItemContaining(window));
   DCHECK_LE(index, window_list_.size());
 
-  UpdateNumIncognitoUnsupportedWindows(window, /*increment*/ true);
+  UpdateNumSavedDeskUnsupportedWindows(window, /*increment*/ true);
 
   window_list_.insert(
       window_list_.begin() + index,
@@ -659,8 +659,8 @@ void OverviewGrid::AddItem(aura::Window* window,
   auto* item = window_list_[index].get();
   item->PrepareForOverview();
 
-  // No animations if the templates grid is showing, even if `animate` is true.
-  const bool should_animate = animate && !IsShowingDesksTemplatesGrid();
+  // No animations if the saved desk grid is showing, even if `animate` is true.
+  const bool should_animate = animate && !IsShowingSavedDeskLibrary();
 
   if (should_animate && use_spawn_animation && reposition) {
     item->set_should_use_spawn_animation(true);
@@ -682,8 +682,8 @@ void OverviewGrid::AddItem(aura::Window* window,
   if (reposition)
     PositionWindows(should_animate, ignored_items);
 
-  if (IsShowingDesksTemplatesGrid() || WillShowDesksTemplatesGrid())
-    item->HideForDesksTemplatesGrid(/*animate=*/false);
+  if (IsShowingSavedDeskLibrary() || WillShowSavedDeskLibrary())
+    item->HideForSavedDeskLibrary(/*animate=*/false);
 }
 
 void OverviewGrid::AppendItem(aura::Window* window,
@@ -713,7 +713,7 @@ void OverviewGrid::RemoveItem(OverviewItem* overview_item,
                                  &std::unique_ptr<OverviewItem>::get);
   DCHECK(iter != window_list_.rend());
 
-  UpdateNumIncognitoUnsupportedWindows(overview_item->GetWindow(),
+  UpdateNumSavedDeskUnsupportedWindows(overview_item->GetWindow(),
                                        /*increment*/ false);
 
   // This can also be called when shutting down |this|, at which the item will
@@ -767,11 +767,11 @@ void OverviewGrid::RemoveItem(OverviewItem* overview_item,
   }
 }
 
-void OverviewGrid::RemoveAllItemsForDesksTemplatesLaunch() {
+void OverviewGrid::RemoveAllItemsForSavedDeskLaunch() {
   for (auto& item : window_list_) {
-    item->RevertHideForDesksTemplatesGrid(/*animate=*/false);
+    item->RevertHideForSavedDeskLibrary(/*animate=*/false);
     item->RestoreWindow(/*reset_transform=*/true,
-                        /*was_desks_templates_grid_showing=*/true);
+                        /*was_saved_desk_library_showing=*/true);
   }
   window_list_.clear();
   num_incognito_windows_ = 0;
@@ -1523,7 +1523,7 @@ void OverviewGrid::MaybeExpandDesksBarView(const gfx::PointF& screen_location) {
 
 void OverviewGrid::MaybeShrinkDesksBarView() {
   if (desks_bar_view_ && !desks_bar_view_->IsZeroState() &&
-      !IsShowingDesksTemplatesGrid() &&
+      !IsShowingSavedDeskLibrary() &&
       desks_bar_view_->mini_views().size() == 1) {
     desks_bar_view_->SwitchToZeroState();
   }
@@ -1731,7 +1731,7 @@ void OverviewGrid::CommitNameChanges() {
     SavedDeskNameView::CommitChanges(saved_desk_library_widget_.get());
 }
 
-void OverviewGrid::ShowDesksTemplatesGrid() {
+void OverviewGrid::ShowSavedDeskLibrary() {
   if (!saved_desk_library_widget_) {
     saved_desk_library_widget_ =
         SavedDeskLibraryView::CreateSavedDeskLibraryWidget(root_window_);
@@ -1747,14 +1747,14 @@ void OverviewGrid::ShowDesksTemplatesGrid() {
   }
 
   for (auto& overview_mode_item : window_list_)
-    overview_mode_item->HideForDesksTemplatesGrid(/*animate=*/true);
+    overview_mode_item->HideForSavedDeskLibrary(/*animate=*/true);
 
   // There may be an existing animation in progress triggered by
-  // `HideDeskTemplatesGrid()` below, which animates a widget to 0.f before
-  // calling `OnDesksTemplatesGridFadedOut()` to hide the widget on animation
-  // end. Stop animating so that the callbacks associated get fired, otherwise
-  // we may end up trying to show a widget that's already shown.
-  // `StopAnimating()` is a no-op if there is no animation in progress.
+  // `HideSavedDeskLibrary()` below, which animates a widget to 0.f before
+  // calling `OnSavedDeskGridFadedOut()` to hide the widget on animation end.
+  // Stop animating so that the callbacks associated get fired, otherwise we may
+  // end up trying to show a widget that's already shown. `StopAnimating()` is a
+  // no-op if there is no animation in progress.
   saved_desk_library_widget_->GetLayer()->GetAnimator()->StopAnimating();
   saved_desk_library_widget_->Show();
 
@@ -1768,10 +1768,10 @@ void OverviewGrid::ShowDesksTemplatesGrid() {
     desks_bar_view_->UpdateNewMiniViews(/*initializing_bar_view=*/false,
                                         /*expanding_bar_view=*/true);
   }
-  desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
+  desks_bar_view_->UpdateButtonsForSavedDeskGrid();
 }
 
-void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
+void OverviewGrid::HideSavedDeskLibrary(bool exit_overview) {
   if (!saved_desk_library_widget_)
     return;
 
@@ -1787,14 +1787,14 @@ void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
     // Reshow the overview items and let the `saved_desk_library_widget_`
     // handle its own destruction.
     for (auto& overview_mode_item : window_list_)
-      overview_mode_item->RevertHideForDesksTemplatesGrid(/*animate=*/false);
+      overview_mode_item->RevertHideForSavedDeskLibrary(/*animate=*/false);
     return;
   }
 
   if (exit_overview) {
     // Un-hide the overview mode items.
     for (auto& overview_mode_item : window_list_)
-      overview_mode_item->RevertHideForDesksTemplatesGrid(/*animate=*/true);
+      overview_mode_item->RevertHideForSavedDeskLibrary(/*animate=*/true);
 
     // Disable the `saved_desk_library_widget_`'s event targeting so it can't
     // get any events during the animation.
@@ -1809,18 +1809,17 @@ void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
 
   // Fade out the `saved_desk_library_widget_` and then when its animation is
   // done fade in the supporting widgets and revert the overview item hides.
-  PerformFadeOutLayer(
-      saved_desk_library_widget_->GetLayer(),
-      /*animate=*/true,
-      base::BindOnce(&OverviewGrid::OnDesksTemplatesGridFadedOut,
-                     weak_ptr_factory_.GetWeakPtr()));
+  PerformFadeOutLayer(saved_desk_library_widget_->GetLayer(),
+                      /*animate=*/true,
+                      base::BindOnce(&OverviewGrid::OnSavedDeskGridFadedOut,
+                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-bool OverviewGrid::IsShowingDesksTemplatesGrid() const {
+bool OverviewGrid::IsShowingSavedDeskLibrary() const {
   return saved_desk_library_widget_ && saved_desk_library_widget_->IsVisible();
 }
 
-bool OverviewGrid::WillShowDesksTemplatesGrid() const {
+bool OverviewGrid::WillShowSavedDeskLibrary() const {
   return saved_desk_library_widget_ && saved_desk_library_widget_->GetLayer() &&
          saved_desk_library_widget_->GetLayer()->GetTargetVisibility() != 0.f;
 }
@@ -1836,9 +1835,9 @@ bool OverviewGrid::IsTemplateNameBeingModified() const {
 }
 
 void OverviewGrid::UpdateNoWindowsWidget(bool no_items) {
-  // Hide the widget if there is an item in overview or the desk templates grid
-  // is visible.
-  if (!no_items || IsShowingDesksTemplatesGrid()) {
+  // Hide the widget if there is an item in overview or the saved desk grid is
+  // visible.
+  if (!no_items || IsShowingSavedDeskLibrary()) {
     no_windows_widget_.reset();
     return;
   }
@@ -1891,12 +1890,12 @@ void OverviewGrid::UpdateSaveDeskButtons() {
       (window_list_.size() == 1u && window_list_.front()->animating_to_close());
 
   // Do not create or show the save desk buttons if there are no
-  // windows in this grid, during a window drag or in tablet mode, the desks
-  // templates grid is visible, or if the desks bar hasn't been created yet.
+  // windows in this grid, during a window drag or in tablet mode, the saved
+  // desk grid is visible, or if the desks bar hasn't been created yet.
   const bool target_visible =
       !no_items && !overview_session_->GetCurrentDraggedOverviewItem() &&
       !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
-      !IsShowingDesksTemplatesGrid() && desks_widget_;
+      !IsShowingSavedDeskLibrary() && desks_widget_;
 
   const bool visibility_changed =
       target_visible != IsSaveDeskButtonContainerVisible();
@@ -2526,14 +2525,14 @@ void OverviewGrid::OnSaveDeskForLaterButtonPressed() {
       DeskTemplateType::kSaveAndRecall, root_window());
 }
 
-void OverviewGrid::OnDesksTemplatesGridFadedOut() {
+void OverviewGrid::OnSavedDeskGridFadedOut() {
   for (auto& overview_mode_item : window_list_)
-    overview_mode_item->RevertHideForDesksTemplatesGrid(/*animate=*/true);
+    overview_mode_item->RevertHideForSavedDeskLibrary(/*animate=*/true);
 
   saved_desk_library_widget_->Hide();
 
-  desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
-  desks_bar_view_->OnDesksTemplatesGridHidden();
+  desks_bar_view_->UpdateButtonsForSavedDeskGrid();
+  desks_bar_view_->OnSavedDeskLibraryHidden();
   UpdateSaveDeskButtons();
   UpdateNoWindowsWidget(/*no_items=*/empty());
 }
@@ -2542,7 +2541,7 @@ void OverviewGrid::OnSaveDeskButtonContainerFadedOut() {
   save_desk_button_container_widget_->Hide();
 }
 
-void OverviewGrid::UpdateNumIncognitoUnsupportedWindows(aura::Window* window,
+void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(aura::Window* window,
                                                         bool increment) {
   if (!saved_desk_util::IsSavedDesksEnabled())
     return;
@@ -2570,7 +2569,7 @@ void OverviewGrid::UpdateNumIncognitoUnsupportedWindows(aura::Window* window,
 int OverviewGrid::GetDesksBarHeight() const {
   const bool should_show_zero_state_desks_bar =
       desks_bar_view_ ? desks_bar_view_->IsZeroState()
-                      : !IsShowingDesksTemplatesGrid() &&
+                      : !IsShowingSavedDeskLibrary() &&
                             DesksController::Get()->GetNumberOfDesks() == 1;
 
   return should_show_zero_state_desks_bar

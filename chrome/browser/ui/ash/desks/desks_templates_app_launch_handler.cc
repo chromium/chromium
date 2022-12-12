@@ -141,7 +141,7 @@ bool DesksTemplatesAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
     return true;
 
   const bool should_launch =
-      ash::DesksController::Get()->OnSingleInstanceAppLaunchingFromTemplate(
+      ash::DesksController::Get()->OnSingleInstanceAppLaunchingFromSavedDesk(
           app_id, launch_list);
 
   // Notify performance tracker that some tracked windows will be moving.
@@ -267,7 +267,7 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchArcApps() {
   for (const std::string& app_id : app_ids) {
     auto it = app_id_to_launch_list.find(app_id);
     DCHECK(it != app_id_to_launch_list.end());
-    if (!ash::DesksController::Get()->OnSingleInstanceAppLaunchingFromTemplate(
+    if (!ash::DesksController::Get()->OnSingleInstanceAppLaunchingFromSavedDesk(
             app_id, it->second)) {
       for (auto& window : it->second)
         NotifyMovedSingleInstanceApp(window.first);

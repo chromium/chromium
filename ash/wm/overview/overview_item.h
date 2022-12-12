@@ -58,7 +58,7 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   void OnMovingWindowToAnotherDesk();
 
   // Restores and animates the managed window to its non overview mode state.
-  // Doesn't animate if |was_desks_templates_grid_showing| is true. If
+  // Doesn't animate if |was_saved_desk_library_showing| is true. If
   // |reset_transform| equals false, the window's transform will not be reset to
   // identity transform when exiting overview mode. It's needed when dragging an
   // Arc app window in overview mode to put it in split screen. In this case the
@@ -68,7 +68,7 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   // its snapped window bounds). Note if the window's transform is not reset
   // here, it must be reset by someone else at some point.
   void RestoreWindow(bool reset_transform,
-                     bool was_desks_templates_grid_showing = false);
+                     bool was_saved_desk_library_showing = false);
 
   // Ensures that a possibly minimized window becomes visible after restore.
   void EnsureVisible();
@@ -77,16 +77,16 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   void Shutdown();
 
   // Hides the overview item. This is used to hide any overview items that may
-  // be present when entering the desk templates UI. Animates `item_widget_` and
-  // the windows in the transient tree to 0 opacity if `animate` is true,
+  // be present when entering the saved desk library. Animates `item_widget_`
+  // and the windows in the transient tree to 0 opacity if `animate` is true,
   // otherwise just sets them to 0 opacity.
-  void HideForDesksTemplatesGrid(bool animate);
+  void HideForSavedDeskLibrary(bool animate);
 
-  // This shows overview items that were hidden by the desk templates grid.
-  // Called when exiting the desk templates UI and going back to the overview
+  // This shows overview items that were hidden by the saved desk library.
+  // Called when exiting the saved desk library and going back to the overview
   // grid. Fades the overview items in if `animate` is true, otherwise shows
   // them immediately.
-  void RevertHideForDesksTemplatesGrid(bool animate);
+  void RevertHideForSavedDeskLibrary(bool animate);
 
   // Dispatched before beginning window overview. This will do any necessary
   // one time actions such as restoring minimized windows.

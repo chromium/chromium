@@ -232,9 +232,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
       aura::Window* gained_active,
       aura::Window* lost_active);
 
-  // Returns true when either the `DesksTemplatesGridWidget` or
+  // Returns true when either the `SavedDeskLibraryView` or
   // `SavedDeskDialog` is the window that is losing activation.
-  bool IsTemplatesUiLosingActivation(aura::Window* lost_active);
+  bool IsSavedDeskUiLosingActivation(aura::Window* lost_active);
 
   // Gets the window which keeps focus for the duration of overview mode.
   aura::Window* GetOverviewFocusWindow();
@@ -290,22 +290,22 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // |active_window_before_overview_|.
   bool IsWindowActiveWindowBeforeOverview(aura::Window* window) const;
 
-  // Shows the grid of the saved desks. Creates the widget if needed. The
-  // desks bar will be expanded if it isn't already. Focuses the item which
-  // matches `item_to_focus` on the display associated with `root_window`.
-  void ShowDesksTemplatesGrids(const base::GUID& item_to_focus,
-                               const std::u16string& saved_desk_name,
-                               aura::Window* const root_window);
+  // Shows the saved desk library. Creates the widget if needed. The desks bar
+  // will be expanded if it isn't already. Focuses the item which matches
+  // `item_to_focus` on the display associated with `root_window`.
+  void ShowSavedDeskLibrary(const base::GUID& item_to_focus,
+                            const std::u16string& saved_desk_name,
+                            aura::Window* const root_window);
 
-  // Hides the grid of the saved desks and reshows the overview items. Updates
-  // the save desk button if we are not exiting overview.
-  void HideDesksTemplatesGrids();
+  // Hides the saved desk library and reshows the overview items. Updates the
+  // save desk button if we are not exiting overview.
+  void HideSavedDeskLibrary();
 
-  // True if the grid of desks templates is shown.
-  bool IsShowingDesksTemplatesGrid() const;
+  // True if the saved desk library is shown.
+  bool IsShowingSavedDeskLibrary() const;
 
-  // True if the grid of desks templates will be shown shortly.
-  bool WillShowDesksTemplatesGrid() const;
+  // True if the saved desk library will be shown shortly.
+  bool WillShowSavedDeskLibrary() const;
 
   // Updates the focusable overview widgets so that they point to the correct
   // next and previous widgets for a11y purposes. Needs to be updated when a

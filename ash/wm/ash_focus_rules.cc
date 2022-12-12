@@ -172,7 +172,7 @@ aura::Window* AshFocusRules::GetNextActivatableWindow(
   // not yet active, so we need to check for the existence of the overview
   // controller.
   if (overview_controller && overview_controller->InOverviewSession() &&
-      overview_controller->overview_session()->IsTemplatesUiLosingActivation(
+      overview_controller->overview_session()->IsSavedDeskUiLosingActivation(
           ignore)) {
     starting_window =
         overview_controller->overview_session()->GetOverviewFocusWindow();

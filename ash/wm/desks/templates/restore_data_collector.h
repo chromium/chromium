@@ -46,10 +46,10 @@ class RestoreDataCollector {
 
   // Captures the active desk and returns it as a `DeskTemplate` object via the
   // `callback`.
-  void CaptureActiveDeskAsTemplate(GetDeskTemplateCallback callback,
-                                   DeskTemplateType template_type,
-                                   const std::string& template_name,
-                                   aura::Window* root_window_to_show);
+  void CaptureActiveDeskAsSavedDesk(GetDeskTemplateCallback callback,
+                                    DeskTemplateType template_type,
+                                    const std::string& template_name,
+                                    aura::Window* root_window_to_show);
 
  private:
   // Keeps the state for the asynchronous call for `AppLaunchData` to the apps.

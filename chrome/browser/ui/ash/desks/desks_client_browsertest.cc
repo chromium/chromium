@@ -289,7 +289,7 @@ void ClickSaveDeskAsTemplateButton(bool wait_for_ui) {
   DCHECK(save_desk_as_template_button);
   ClickButton(save_desk_as_template_button);
   if (wait_for_ui)
-    ash::WaitForDesksTemplatesUI();
+    ash::WaitForSavedDeskUI();
   // Clicking the save template button selects the newly created template's name
   // field. We can press enter or escape or click to select out of it.
   ash::SendKey(ui::VKEY_RETURN);
@@ -306,15 +306,14 @@ void ClickSaveDeskForLaterButton() {
 }
 
 void ClickZeroStateTemplatesButton() {
-  views::Button* zero_state_templates_button =
-      ash::GetZeroStateDesksTemplatesButton();
+  views::Button* zero_state_templates_button = ash::GetZeroStateLibraryButton();
   ASSERT_TRUE(zero_state_templates_button);
   ClickButton(zero_state_templates_button);
 }
 
 void ClickExpandedStateTemplatesButton() {
   views::Button* expanded_state_templates_button =
-      ash::GetExpandedStateDesksTemplatesButton();
+      ash::GetExpandedStateLibraryButton();
   ASSERT_TRUE(expanded_state_templates_button);
   ClickButton(expanded_state_templates_button);
 }
@@ -1435,10 +1434,9 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBasic) {
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  // Tests that since we have no templates right now, so the desks templates
-  // button is hidden.
-  views::Button* zero_state_templates_button =
-      ash::GetZeroStateDesksTemplatesButton();
+  // Tests that since we have no saved desk right now, so the library button is
+  // hidden.
+  views::Button* zero_state_templates_button = ash::GetZeroStateLibraryButton();
   ASSERT_TRUE(zero_state_templates_button);
   EXPECT_FALSE(zero_state_templates_button->GetVisible());
 
@@ -1449,14 +1447,13 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBasic) {
   ASSERT_TRUE(save_desk_as_template_button);
   ClickButton(save_desk_as_template_button);
 
-  ash::WaitForDesksTemplatesUI();
+  ash::WaitForSavedDeskUI();
 
   EXPECT_EQ(1u, desk_model->GetEntryCount());
 
   // Tests that since we have one template right now, so that the expanded state
-  // desk button is shown, and the desk templates grid has one item.
-  auto* expanded_state_templates_button =
-      ash::GetExpandedStateDesksTemplatesButton();
+  // library button is shown, and the saved desk grid has one item.
+  auto* expanded_state_templates_button = ash::GetExpandedStateLibraryButton();
   ASSERT_TRUE(expanded_state_templates_button);
   EXPECT_TRUE(expanded_state_templates_button->GetVisible());
 
@@ -2250,7 +2247,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   event_generator.PressAndReleaseKey(ui::VKEY_RETURN);
 
   // Wait for the model to update.
-  ash::WaitForDesksTemplatesUI();
+  ash::WaitForSavedDeskUI();
 
   // Save one more template.
   ash::ToggleOverview();
@@ -2510,7 +2507,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ash::ShellTestApi().WaitForWindowFinishAnimating(
       save_desk_button->GetWidget()->GetNativeWindow());
   ClickButton(save_desk_button);
-  ash::WaitForDesksTemplatesUI();
+  ash::WaitForSavedDeskUI();
 
   // Wait for the browser to close.
   ui_test_utils::WaitForBrowserToClose();
@@ -2996,7 +2993,7 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
   ClickSaveDeskForLaterButton();
-  ash::WaitForDesksTemplatesUI();
+  ash::WaitForSavedDeskUI();
 
   ash::SavedDeskPresenterTestApi::WaitForSaveAndRecallBlockingDialog();
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
@@ -3012,7 +3009,7 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   auto* overview_grid = ash::GetOverviewSession()->GetGridWithRootWindow(
       ash::Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  EXPECT_TRUE(overview_grid->IsShowingDesksTemplatesGrid());
+  EXPECT_TRUE(overview_grid->IsShowingSavedDeskLibrary());
 
   std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
   EXPECT_EQ(1u, templates.size());
@@ -3025,7 +3022,7 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
   ClickSaveDeskForLaterButton();
-  ash::WaitForDesksTemplatesUI();
+  ash::WaitForSavedDeskUI();
 
   ash::SavedDeskPresenterTestApi::WaitForSaveAndRecallBlockingDialog();
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
