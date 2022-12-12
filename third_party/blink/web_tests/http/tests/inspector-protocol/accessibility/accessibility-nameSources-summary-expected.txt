@@ -22,6 +22,10 @@ Tests name sources in details and summary.
             }
             [3] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : summary2-title
+                }
                 type : attribute
                 value : {
                     type : computedString
@@ -86,6 +90,10 @@ Tests name sources in details and summary.
             }
             [3] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : summary3-title
+                }
                 superseded : true
                 type : attribute
                 value : {
@@ -160,6 +168,10 @@ Tests name sources in details and summary.
             }
             [3] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : summary4-title
+                }
                 superseded : true
                 type : attribute
                 value : {
@@ -250,6 +262,10 @@ Tests name sources in details and summary.
             }
             [3] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : summary5-title
+                }
                 superseded : true
                 type : attribute
                 value : {

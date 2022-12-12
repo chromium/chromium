@@ -54,6 +54,10 @@ Tests name sources in images and figures.
             }
             [2] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : figure2-title
+                }
                 type : attribute
                 value : {
                     type : computedString
@@ -93,6 +97,10 @@ Tests name sources in images and figures.
             }
             [2] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : figure3-title
+                }
                 type : attribute
                 value : {
                     type : computedString
@@ -156,6 +164,10 @@ Tests name sources in images and figures.
             }
             [2] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : figure4-title
+                }
                 superseded : true
                 type : attribute
                 value : {
@@ -236,6 +248,10 @@ Tests name sources in images and figures.
             }
             [2] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : figure5-title
+                }
                 superseded : true
                 type : attribute
                 value : {
@@ -344,6 +360,10 @@ Tests name sources in images and figures.
             }
             [3] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : img2-title
+                }
                 type : attribute
                 value : {
                     type : computedString
@@ -399,6 +419,10 @@ Tests name sources in images and figures.
             }
             [3] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : img3-title
+                }
                 superseded : true
                 type : attribute
                 value : {
@@ -464,6 +488,10 @@ Tests name sources in images and figures.
             }
             [3] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : img4-title
+                }
                 superseded : true
                 type : attribute
                 value : {
@@ -545,6 +573,10 @@ Tests name sources in images and figures.
             }
             [3] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : img5-title
+                }
                 superseded : true
                 type : attribute
                 value : {

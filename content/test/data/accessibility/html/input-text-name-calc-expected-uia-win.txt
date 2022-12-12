@@ -6,6 +6,6 @@ Document
 ++Edit Name='Placeholder4' HelpText='Placeholder4'
 ++Edit Name='ARIA Placeholder4a' HelpText='ARIA Placeholder4a'
 ++Edit Name='Placeholder4b' HelpText='Placeholder4b'
-++Edit Name='Placeholder5' HelpText='Placeholder5'
+++Edit Name='Title5' HelpText='Placeholder5'
 ++Edit Name='LabelledBy6' HelpText='Title6'
 ++Edit Name='AriaLabel7' HelpText='Placeholder7'

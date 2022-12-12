@@ -22,14 +22,18 @@ Tests ARIA 1.1 accessibility markup.
                 type : relatedElement
             }
             [3] : {
+                attribute : title
+                type : attribute
+            }
+            [4] : {
                 attribute : placeholder
                 type : placeholder
             }
-            [4] : {
+            [5] : {
                 attribute : aria-placeholder
                 type : placeholder
             }
-            [5] : {
+            [6] : {
                 attribute : title
                 type : attribute
             }

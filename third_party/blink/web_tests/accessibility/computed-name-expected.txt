@@ -113,10 +113,10 @@ PASS input.computedName is "Label1"
 PASS input.computedName is "AriaLabel2"
 PASS input.computedName is "LabelledBy3"
 PASS input.computedName is "Placeholder4"
-PASS input.computedName is "Placeholder5"
+PASS input.computedName is "Title5"
 PASS input.computedName is "LabelledBy6"
 PASS input.computedName is "ARIA Placeholder8"
-PASS input.computedName is "Placeholder9"
+PASS input.computedName is "Title9"
 PASS successfullyParsed is true
 
 TEST COMPLETE

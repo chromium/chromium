@@ -17,7 +17,7 @@ rootWebArea
 ++++++textField inputType='text' name='Placeholder4b'
 ++++++++genericContainer ignored
 ++++++++genericContainer
-++++++textField description='Title5' inputType='text' name='Placeholder5' descriptionFrom=title
+++++++textField inputType='text' name='Title5' placeholder='Placeholder5'
 ++++++++genericContainer ignored
 ++++++++genericContainer
 ++++++textField description='DescribedBy6' inputType='text' name='LabelledBy6' descriptionFrom=relatedElement

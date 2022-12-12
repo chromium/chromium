@@ -6,6 +6,6 @@
 ++[entry] name='Placeholder4' explicit-name:true
 ++[entry] name='ARIA Placeholder4a' explicit-name:true
 ++[entry] name='Placeholder4b' explicit-name:true
-++[entry] name='Placeholder5' description='Title5' description-from:tooltip explicit-name:true
+++[entry] name='Title5' explicit-name:true
 ++[entry] name='LabelledBy6' description='DescribedBy6' labelled-by described-by description-from:aria-describedby explicit-name:true
 ++[entry] name='AriaLabel7' description='DescribedBy7' described-by description-from:aria-describedby explicit-name:true

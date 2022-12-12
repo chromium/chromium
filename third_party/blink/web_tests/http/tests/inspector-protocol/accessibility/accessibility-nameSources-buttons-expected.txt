@@ -382,6 +382,10 @@ Tests name sources in buttons.
             }
             [4] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : button7-title
+                }
                 type : attribute
                 value : {
                     type : computedString
@@ -450,6 +454,10 @@ Tests name sources in buttons.
             }
             [4] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : button8-title
+                }
                 superseded : true
                 type : attribute
                 value : {
@@ -511,6 +519,10 @@ Tests name sources in buttons.
             }
             [4] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : button9-title
+                }
                 type : attribute
                 value : {
                     type : computedString
@@ -579,6 +591,10 @@ Tests name sources in buttons.
             }
             [4] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : button10-title
+                }
                 superseded : true
                 type : attribute
                 value : {

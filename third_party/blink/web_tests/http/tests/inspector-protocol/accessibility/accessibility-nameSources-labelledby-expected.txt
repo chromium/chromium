@@ -1424,16 +1424,21 @@ Tests name sources when used with aria-labelledby.
                 type : relatedElement
             }
             [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+            [4] : {
                 attribute : placeholder
                 superseded : true
                 type : placeholder
             }
-            [4] : {
+            [5] : {
                 attribute : aria-placeholder
                 superseded : true
                 type : placeholder
             }
-            [5] : {
+            [6] : {
                 attribute : title
                 superseded : true
                 type : attribute

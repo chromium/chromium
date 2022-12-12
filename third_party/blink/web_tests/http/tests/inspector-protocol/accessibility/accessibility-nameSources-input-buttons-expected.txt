@@ -173,6 +173,10 @@ Tests name sources in input[type=button].
             }
             [5] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : button-title3
+                }
                 superseded : true
                 type : attribute
                 value : {
@@ -238,6 +242,10 @@ Tests name sources in input[type=button].
             }
             [5] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : button-title4
+                }
                 type : attribute
                 value : {
                     type : computedString
@@ -944,6 +952,10 @@ Tests name sources in input[type=button].
             }
             [5] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : submit-title
+                }
                 superseded : true
                 type : attribute
                 value : {
@@ -1484,6 +1496,10 @@ Tests name sources in input[type=button].
             }
             [8] : {
                 attribute : title
+                attributeValue : {
+                    type : string
+                    value : image-input-title5
+                }
                 superseded : true
                 type : attribute
                 value : {
