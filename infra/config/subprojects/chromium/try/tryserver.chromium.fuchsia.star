@@ -64,7 +64,6 @@ try_.orchestrator_builder(
     compilator = "fuchsia-arm64-rel-compilator",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     main_list_view = "try",
-    tryjob = try_.job(),
     mirrors = [
         "ci/fuchsia-arm64-rel",
     ],
