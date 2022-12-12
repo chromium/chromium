@@ -13,7 +13,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './emoji_search.html.js';
 import Fuse from './fuse.js';
-import {CategoryEnum, EmojiGroupData, EmojiVariants} from './types.js';
+import {CategoryData, CategoryEnum, EmojiGroupData, EmojiVariants} from './types.js';
 
 export interface EmojiSearch {
   $: {
@@ -35,6 +35,7 @@ export class EmojiSearch extends PolymerElement {
   static get properties() {
     return {
       categoriesData: {type: Array, readonly: true},
+      categoryMetadata: {type: Array, readonly: true},
       lazyIndexing: {type: Boolean, value: true},
       searchResults: {type: Array},
       v2Enabled: {
@@ -47,6 +48,7 @@ export class EmojiSearch extends PolymerElement {
     };
   }
   categoriesData: EmojiGroupData;
+  categoryMetadata: CategoryData[];
   lazyIndexing: boolean;
   private searchResults: EmojiGroupData;
   private v2Enabled: boolean;
