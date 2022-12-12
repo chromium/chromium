@@ -294,6 +294,7 @@ class PLATFORM_EXPORT ResourceLoader final
 
   base::TimeTicks request_start_time_;
   base::TimeTicks code_cache_arrival_time_;
+  uint32_t received_body_length_from_service_worker_ = 0;
 };
 
 }  // namespace blink

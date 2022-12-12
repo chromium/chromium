@@ -1211,6 +1211,13 @@ void ResourceLoader::DidReceiveData(const char* data, int length) {
                              base::make_span(data, length));
   }
   resource_->AppendData(data, length);
+
+  // This value should not be exposed for opaque responses.
+  if (resource_->response_.WasFetchedViaServiceWorker() &&
+      resource_->response_.GetType() !=
+          network::mojom::FetchResponseType::kOpaque) {
+    received_body_length_from_service_worker_ += length;
+  }
 }
 
 void ResourceLoader::DidReceiveTransferSizeUpdate(int transfer_size_diff) {
@@ -1239,6 +1246,11 @@ void ResourceLoader::DidFinishLoading(
     int64_t decoded_body_length,
     bool should_report_corb_blocking,
     absl::optional<bool> pervasive_payload_requested) {
+  if (resource_->response_.WasFetchedViaServiceWorker()) {
+    encoded_body_length = received_body_length_from_service_worker_;
+    decoded_body_length = received_body_length_from_service_worker_;
+  }
+
   resource_->SetEncodedDataLength(encoded_data_length);
   resource_->SetEncodedBodyLength(encoded_body_length);
   resource_->SetDecodedBodyLength(decoded_body_length);
