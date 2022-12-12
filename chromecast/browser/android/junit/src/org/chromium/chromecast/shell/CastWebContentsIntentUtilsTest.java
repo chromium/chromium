@@ -139,4 +139,28 @@ public class CastWebContentsIntentUtilsTest {
         Assert.assertNotNull(uri);
         Assert.assertEquals(EXPECTED_URI, uri);
     }
+
+    @Test
+    public void testMediaPlaying() {
+        Intent in0 = CastWebContentsIntentUtils.mediaPlaying(SESSION_ID, true);
+        Intent in1 = CastWebContentsIntentUtils.mediaPlaying(SESSION_ID, false);
+        String uri0 = CastWebContentsIntentUtils.getUriString(in0);
+        String uri1 = CastWebContentsIntentUtils.getUriString(in0);
+        Assert.assertNotNull(uri0);
+        Assert.assertNotNull(uri1);
+        Assert.assertEquals(EXPECTED_URI, uri0);
+        Assert.assertEquals(EXPECTED_URI, uri1);
+        Assert.assertEquals(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING, in0.getAction());
+        Assert.assertEquals(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING, in1.getAction());
+        Assert.assertTrue(CastWebContentsIntentUtils.isMediaPlaying(in0));
+        Assert.assertFalse(CastWebContentsIntentUtils.isMediaPlaying(in1));
+    }
+
+    @Test
+    public void testRequestMediaPlayingStatus() {
+        Intent in = CastWebContentsIntentUtils.requestMediaPlayingStatus(SESSION_ID);
+        Assert.assertEquals(
+                CastWebContentsIntentUtils.ACTION_REQUEST_MEDIA_PLAYING_STATUS, in.getAction());
+        Assert.assertTrue(in.toURI().startsWith(EXPECTED_URI));
+    }
 }

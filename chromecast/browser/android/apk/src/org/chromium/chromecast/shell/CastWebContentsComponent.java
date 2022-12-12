@@ -154,6 +154,7 @@ public class CastWebContentsComponent {
     private Delegate mDelegate;
     private boolean mStarted;
     private boolean mEnableTouchInput;
+    private boolean mMediaPlaying;
     private final boolean mIsRemoteControlMode;
     private final boolean mTurnOnScreen;
     private final boolean mKeepScreenOn;
@@ -185,6 +186,7 @@ public class CastWebContentsComponent {
             filter.addDataPath(instanceUri.getPath(), PatternMatcher.PATTERN_LITERAL);
             filter.addAction(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED);
             filter.addAction(CastWebContentsIntentUtils.ACTION_ON_VISIBILITY_CHANGE);
+            filter.addAction(CastWebContentsIntentUtils.ACTION_REQUEST_MEDIA_PLAYING_STATUS);
             return new LocalBroadcastReceiverScope(filter, this ::onReceiveIntent);
         });
     }
@@ -203,6 +205,12 @@ public class CastWebContentsComponent {
             if (mSurfaceEventHandler != null) {
                 mSurfaceEventHandler.onVisibilityChange(visibilityType);
             }
+        } else if (CastWebContentsIntentUtils.isIntentOfRequestMediaPlayingStatus(intent)) {
+            if (DEBUG) {
+                Log.d(TAG, "onReceive ACTION_REQUEST_MEDIA_PLAYING_STATUS instance=" + mSessionId);
+            }
+            // Just broadcast current value.
+            setMediaPlaying(mMediaPlaying);
         }
     }
 
@@ -261,7 +269,8 @@ public class CastWebContentsComponent {
 
     public void setMediaPlaying(boolean mediaPlaying) {
         if (DEBUG) Log.d(TAG, "setMediaPlaying: " + mediaPlaying);
-        sendIntentSync(CastWebContentsIntentUtils.mediaPlaying(mSessionId, mediaPlaying));
+        mMediaPlaying = mediaPlaying;
+        sendIntentSync(CastWebContentsIntentUtils.mediaPlaying(mSessionId, mMediaPlaying));
     }
 
     public static void onComponentClosed(String sessionId) {

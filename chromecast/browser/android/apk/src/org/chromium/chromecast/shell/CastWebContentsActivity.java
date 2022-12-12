@@ -152,15 +152,19 @@ public class CastWebContentsActivity extends Activity {
         });
 
         final Controller<Unit> mediaPlaying = new Controller<>();
-        mCreatedState.subscribe(x -> {
+        mCreatedState.and(mSessionIdState).map(Both::getSecond).subscribe(sessionId -> {
             IntentFilter filter = new IntentFilter(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING);
-            return new LocalBroadcastReceiverScope(filter, (Intent intent) -> {
-                if (CastWebContentsIntentUtils.isMediaPlaying(intent)) {
-                    mediaPlaying.set(Unit.unit());
-                } else {
-                    mediaPlaying.reset();
-                }
-            });
+            LocalBroadcastReceiverScope scope =
+                    new LocalBroadcastReceiverScope(filter, (Intent intent) -> {
+                        if (CastWebContentsIntentUtils.isMediaPlaying(intent)) {
+                            mediaPlaying.set(Unit.unit());
+                        } else {
+                            mediaPlaying.reset();
+                        }
+                    });
+            // Ensure we get an update if media playback had already started.
+            requestMediaPlayingStatus(sessionId);
+            return scope;
         });
 
         final Controller<Unit> isDocked = new Controller<>();
@@ -185,9 +189,9 @@ public class CastWebContentsActivity extends Activity {
 
         isDocked.subscribe((x) -> {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
-            return () -> {
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
-            };
+            return ()
+                           -> getWindow().clearFlags(
+                                   WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
         });
 
         mGotIntentState.map(Intent::getExtras)
@@ -376,6 +380,12 @@ public class CastWebContentsActivity extends Activity {
         LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(event);
     }
 
+    private void requestMediaPlayingStatus(String sessionId) {
+        Context ctx = getApplicationContext();
+        Intent intent = CastWebContentsIntentUtils.requestMediaPlayingStatus(sessionId);
+        LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(intent);
+    }
+
     public void finishForTesting() {
         mIsFinishingState.set("Finish for testing");
     }
@@ -394,8 +404,6 @@ public class CastWebContentsActivity extends Activity {
             return false;
         }
         int dockState = intent.getIntExtra(Intent.EXTRA_DOCK_STATE, -1);
-        boolean result = dockState != Intent.EXTRA_DOCK_STATE_UNDOCKED;
-        Log.d(TAG, "IsDocked: " + result);
-        return result;
+        return dockState != Intent.EXTRA_DOCK_STATE_UNDOCKED;
     }
 }

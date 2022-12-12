@@ -19,6 +19,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Assume;
@@ -26,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -53,6 +55,9 @@ public class CastWebContentsComponentTest {
     private Activity mActivity;
     private ShadowActivity mShadowActivity;
     private StartParams mStartParams;
+
+    @Captor
+    private ArgumentCaptor<Intent> mIntentCaptor;
 
     @Before
     public void setUp() {
@@ -259,5 +264,65 @@ public class CastWebContentsComponentTest {
                 CastWebContentsActivity.class.getName());
         component.start(mStartParams, delegate);
         Assert.assertNull(mShadowActivity.getNextStartedActivity());
+    }
+
+    @Test
+    public void testSetMediaPlayingBroadcastsMediaStatus() {
+        CastWebContentsComponent component =
+                new CastWebContentsComponent(SESSION_ID, null, null, false, false, true, false);
+        IntentFilter filter = new IntentFilter(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING);
+        Intent receivedIntent0 = verifyBroadcastedIntent(
+                new IntentFilter(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING),
+                () -> component.setMediaPlaying(true), true);
+        Assert.assertTrue(CastWebContentsIntentUtils.isMediaPlaying(receivedIntent0));
+        Intent receivedIntent1 = verifyBroadcastedIntent(
+                new IntentFilter(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING),
+                () -> component.setMediaPlaying(false), true);
+        Assert.assertFalse(CastWebContentsIntentUtils.isMediaPlaying(receivedIntent1));
+    }
+
+    @Test
+    public void testRequestMediaStatusBroadcastsMediaStatus() {
+        String sessionId = "abcdef0";
+        CastWebContentsComponent component =
+                new CastWebContentsComponent(sessionId, null, null, false, false, true, false);
+        CastWebContentsComponent.Delegate delegate = mock(CastWebContentsComponent.Delegate.class);
+        component.start(mStartParams, delegate);
+        Assert.assertTrue(component.isStarted());
+        component.setMediaPlaying(false);
+        Intent receivedIntent0 = verifyBroadcastedIntent(
+                new IntentFilter(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING),
+                () -> requestMediaPlayingStatus(sessionId), true);
+        Assert.assertFalse(CastWebContentsIntentUtils.isMediaPlaying(receivedIntent0));
+        component.setMediaPlaying(true);
+        Intent receivedIntent1 = verifyBroadcastedIntent(
+                new IntentFilter(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING),
+                () -> requestMediaPlayingStatus(sessionId), true);
+        Assert.assertTrue(CastWebContentsIntentUtils.isMediaPlaying(receivedIntent1));
+    }
+
+    private void requestMediaPlayingStatus(String sessionId) {
+        Intent intent = CastWebContentsIntentUtils.requestMediaPlayingStatus(sessionId);
+        LocalBroadcastManager.getInstance(ApplicationProvider.getApplicationContext())
+                .sendBroadcastSync(intent);
+    }
+
+    private Intent verifyBroadcastedIntent(
+            IntentFilter filter, Runnable runnable, boolean shouldExpect) {
+        BroadcastReceiver receiver = mock(BroadcastReceiver.class);
+        LocalBroadcastManager.getInstance(ApplicationProvider.getApplicationContext())
+                .registerReceiver(receiver, filter);
+        try {
+            runnable.run();
+        } finally {
+            LocalBroadcastManager.getInstance(ApplicationProvider.getApplicationContext())
+                    .unregisterReceiver(receiver);
+            if (shouldExpect) {
+                verify(receiver).onReceive(any(Context.class), mIntentCaptor.capture());
+            } else {
+                verify(receiver, times(0)).onReceive(any(Context.class), mIntentCaptor.getValue());
+            }
+            return mIntentCaptor.getValue();
+        }
     }
 }

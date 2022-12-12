@@ -15,6 +15,7 @@ import static org.mockito.Mockito.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,6 +43,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
@@ -132,6 +135,9 @@ public class CastWebContentsActivityTest {
     private ShadowActivity mShadowActivity;
     private @Mock WebContents mWebContents;
     private String mSessionId;
+
+    @Captor
+    private ArgumentCaptor<Intent> mIntentCaptor;
 
     private static Intent defaultIntentForCastWebContentsActivity(WebContents webContents) {
         return CastWebContentsIntentUtils.requestStartCastActivity(
@@ -597,6 +603,40 @@ public class CastWebContentsActivityTest {
         assertWakeLockFlags(false, false);
     }
 
+    @Test
+    public void testEnsureBroadcastMediaStatusRequestedOnCreation() {
+        updateDockState(true);
+        BroadcastReceiver receiver = spy(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (CastWebContentsIntentUtils.isIntentOfRequestMediaPlayingStatus(intent)) {
+                    updateMediaState(true);
+                }
+            }
+        });
+
+        IntentFilter filter = new IntentFilter();
+        Uri instanceUri = CastWebContentsIntentUtils.getInstanceUri(mSessionId);
+        filter.addDataScheme(instanceUri.getScheme());
+        filter.addDataAuthority(instanceUri.getAuthority(), null);
+        filter.addDataPath(instanceUri.getPath(), PatternMatcher.PATTERN_LITERAL);
+        filter.addAction(CastWebContentsIntentUtils.ACTION_REQUEST_MEDIA_PLAYING_STATUS);
+        LocalBroadcastManager.getInstance(RuntimeEnvironment.application)
+                .registerReceiver(receiver, filter);
+        mActivityLifecycle = Robolectric.buildActivity(CastWebContentsActivity.class,
+                CastWebContentsIntentUtils.requestStartCastActivity(RuntimeEnvironment.application,
+                        mWebContents, true, false, true, /*keepScreenOn=*/false, mSessionId));
+        mActivity = mActivityLifecycle.get();
+        mActivity.testingModeForTesting();
+        mActivityLifecycle.create();
+        Shadows.shadowOf(getMainLooper()).idle();
+        verify(receiver, times(1)).onReceive(any(Context.class), mIntentCaptor.capture());
+        Intent broadcastIntent = mIntentCaptor.getValue();
+        assertEquals(CastWebContentsIntentUtils.ACTION_REQUEST_MEDIA_PLAYING_STATUS,
+                broadcastIntent.getAction());
+        assertWakeLockFlags(true, true);
+    }
+
     private void assertWakeLockFlags(boolean keepScreenOn, boolean allowLockWhileScreenOn) {
         if (keepScreenOn) {
             Assert.assertTrue(Shadows.shadowOf(mActivity.getWindow())
@@ -620,7 +660,7 @@ public class CastWebContentsActivityTest {
         Intent intent = new Intent(Intent.ACTION_DOCK_EVENT);
         intent.putExtra(
                 Intent.EXTRA_DOCK_STATE, Intent.EXTRA_DOCK_STATE_UNDOCKED + (docked ? 1 : 0));
-        RuntimeEnvironment.application.sendBroadcast(intent);
+        RuntimeEnvironment.application.sendStickyBroadcast(intent);
         Shadows.shadowOf(getMainLooper()).idle();
     }
 
