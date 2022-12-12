@@ -132,24 +132,6 @@ interface AuthenticatorAttestationResponse : AuthenticatorResponse
 # WebOTP API should not be exposed in WebView, crbug.com/1224417
 interface OTPCredential : Credential
 
-# Picture-in-Picture API is disabled in Android WebView, crbug.com/852449
-interface PictureInPictureEvent : Event
-interface PictureInPictureWindow : EventTarget
-interface Document : Node
-    method exitPictureInPicture
-    getter pictureInPictureElement
-    getter pictureInPictureEnabled
-interface ShadowRoot : DocumentFragment
-    getter pictureInPictureElement
-interface HTMLVideoElement : HTMLMediaElement
-    getter disablePictureInPicture
-    setter disablePictureInPicture
-    method requestPictureInPicture
-    getter onenterpictureinpicture
-    setter onenterpictureinpicture
-    getter onleavepictureinpicture
-    setter onleavepictureinpicture
-
 # Background Fetch API is not enabled in Android webview, crbug.com/766077
 interface BackgroundFetchManager
 interface BackgroundFetchRecord

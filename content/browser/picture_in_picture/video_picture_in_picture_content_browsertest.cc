@@ -151,13 +151,6 @@ class VideoPictureInPictureContentBrowserTest : public ContentBrowserTest {
       SetBrowserClientForTesting(old_browser_client_.value());
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures, "PictureInPictureAPI");
-  }
-
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
 
@@ -478,7 +471,7 @@ class MediaSessionPictureInPictureContentBrowserTest
     ContentBrowserTest::SetUpCommandLine(command_line);
 
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "PictureInPictureAPI,MediaSession");
+                                    "MediaSession");
     scoped_feature_list_.InitWithFeatures(
         {media_session::features::kMediaSessionService}, {});
   }

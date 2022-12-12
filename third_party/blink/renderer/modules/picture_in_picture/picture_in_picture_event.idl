@@ -4,7 +4,6 @@
 
 // https://wicg.github.io/picture-in-picture/#pictureinpictureevent
 [
-    RuntimeEnabled=PictureInPictureAPI,
     Exposed=Window
 ] interface PictureInPictureEvent : Event {
     constructor(DOMString type, PictureInPictureEventInit eventInitDict);

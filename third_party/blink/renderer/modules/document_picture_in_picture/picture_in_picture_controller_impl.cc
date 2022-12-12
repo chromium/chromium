@@ -82,8 +82,7 @@ PictureInPictureControllerImpl::IsDocumentAllowed(bool report_failure) const {
 
   // If document is not allowed to use the policy-controlled feature named
   // "picture-in-picture", return kDisabledByPermissionsPolicy status.
-  if (RuntimeEnabledFeatures::PictureInPictureAPIEnabled() &&
-      !GetSupplementable()->GetExecutionContext()->IsFeatureEnabled(
+  if (!GetSupplementable()->GetExecutionContext()->IsFeatureEnabled(
           blink::mojom::blink::PermissionsPolicyFeature::kPictureInPicture,
           report_failure ? ReportOptions::kReportOnFailure
                          : ReportOptions::kDoNotReport)) {

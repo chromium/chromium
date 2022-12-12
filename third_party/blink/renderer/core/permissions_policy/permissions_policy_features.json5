@@ -321,7 +321,6 @@
       name: "PictureInPicture",
       permissions_policy_name: "picture-in-picture",
       feature_default: "EnableForAll",
-      depends_on: ["PictureInPictureAPI"],
     },
     {
       name: "PublicKeyCredentialsGet",

@@ -886,11 +886,6 @@ BASE_FEATURE(kMediaDrmPreprovisioningAtStartup,
              "MediaDrmPreprovisioningAtStartup",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable picture in picture web api for android.
-BASE_FEATURE(kPictureInPictureAPI,
-             "PictureInPictureAPI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables CanPlayType() (and other queries) for HLS MIME types. Note that
 // disabling this also causes navigation to .m3u8 files to trigger downloading
 // instead of playback.

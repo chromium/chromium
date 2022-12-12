@@ -69,7 +69,6 @@ LocalDOMWindow* OpenDocumentPictureInPictureWindow(
   EXPECT_EQ(nullptr, controller.pictureInPictureWindow());
 
   // Enable the DocumentPictureInPictureAPI flag.
-  ScopedPictureInPictureAPIForTest scoped_dependency(true);
   ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
 
   // Get past the LocalDOMWindow::isSecureContext() check.

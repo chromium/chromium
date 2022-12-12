@@ -1327,7 +1327,6 @@ TEST_P(
     DoNotDestroyMediaPlayerWhenSwitchingSameOriginDocumentsIfReuseIsEnabled) {
   // Ensure that the WebMediaPlayer is re-used when moving to a same-origin
   // document, if `kDocumentPictureInPictureAPI` is enabled.
-  ScopedPictureInPictureAPIForTest scoped_dependency(true);
   ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
   MoveElementAndTestPlayerDestruction("https://a.com", "https://a.com",
                                       /*should_destroy=*/false);
@@ -1339,7 +1338,6 @@ TEST_P(
   // Ensure that the WebMediaPlayer is destroyed when moving to a new origin
   // document, if `kDocumentPictureInPictureAPI` is enabled. Re-use should only
   // occur if it's a same-origin document.
-  ScopedPictureInPictureAPIForTest scoped_dependency(true);
   ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
   MoveElementAndTestPlayerDestruction("https://a.com", "https://b.com",
                                       /*should_destroy=*/true);
@@ -1349,7 +1347,6 @@ TEST_P(HTMLMediaElementTest,
        DestroyMediaPlayerWhenUnloadingOpenerIfReuseIsEnabled) {
   // Ensure that the WebMediaPlayer is re-used, that navigating the opener away
   // causes the player to be destroyed.
-  ScopedPictureInPictureAPIForTest scoped_dependency(true);
   ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
   const char* origin = "https://a.com";
   SetSecurityOrigin(origin);
@@ -1364,7 +1361,6 @@ TEST_P(HTMLMediaElementTest,
 
 TEST_P(HTMLMediaElementTest,
        CreateMediaPlayerAfterMovingElementUsesOpenerFrameIfReuseIsEnabled) {
-  ScopedPictureInPictureAPIForTest scoped_dependency(true);
   ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
   // Move the element before creating the player.
   const char* origin = "https://a.com";

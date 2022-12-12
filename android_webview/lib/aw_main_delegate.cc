@@ -260,9 +260,6 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
     // clear on how user can remove persistent media licenses from UI.
     features.DisableIfNotSet(media::kMediaDrmPersistentLicense);
 
-    // WebView does not support Picture-in-Picture yet.
-    features.DisableIfNotSet(media::kPictureInPictureAPI);
-
     features.DisableIfNotSet(::features::kBackgroundFetch);
 
     // SurfaceControl is controlled by kWebViewSurfaceControl flag.

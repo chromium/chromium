@@ -7,10 +7,10 @@
     ImplementedAs=HTMLVideoElementPictureInPicture
 ]
 partial interface HTMLVideoElement {
-    [RuntimeEnabled=PictureInPictureAPI, CallWith=ScriptState, Measure, NewObject, RaisesException] Promise<PictureInPictureWindow> requestPictureInPicture();
+    [CallWith=ScriptState, Measure, NewObject, RaisesException] Promise<PictureInPictureWindow> requestPictureInPicture();
 
-    [RuntimeEnabled=PictureInPictureAPI] attribute EventHandler onenterpictureinpicture;
-    [RuntimeEnabled=PictureInPictureAPI] attribute EventHandler onleavepictureinpicture;
+    attribute EventHandler onenterpictureinpicture;
+    attribute EventHandler onleavepictureinpicture;
 
-    [RuntimeEnabled=PictureInPictureAPI, CEReactions, Measure, Reflect] attribute boolean disablePictureInPicture;
+    [CEReactions, Measure, Reflect] attribute boolean disablePictureInPicture;
 };

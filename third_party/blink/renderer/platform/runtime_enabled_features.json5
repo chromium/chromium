@@ -817,7 +817,6 @@
     {
       name: "CSSPictureInPicture",
       status: "stable",
-      depends_on: ["PictureInPictureAPI"],
     },
     {
       name: "CSSPositionStickyStaticScrollPosition",
@@ -1057,7 +1056,6 @@
     },
     {
       name: "DocumentPictureInPictureAPI",
-      depends_on: ["PictureInPictureAPI"],
       public: true,
       status: {
         "Android": "",
@@ -2097,11 +2095,6 @@
     {
       name: "PermissionsRequestRevoke",
       status: "experimental",
-    },
-    {
-      name: "PictureInPictureAPI",
-      public: true,
-      status: "stable"
     },
     // This is a reverse OT used for a phased deprecation.
     // https://crbug.com/918374

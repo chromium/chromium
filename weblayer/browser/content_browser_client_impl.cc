@@ -445,6 +445,8 @@ void ContentBrowserClientImpl::OverrideWebkitPrefs(
     content::WebContents* web_contents,
     blink::web_pref::WebPreferences* prefs) {
   prefs->default_encoding = l10n_util::GetStringUTF8(IDS_DEFAULT_ENCODING);
+  // TODO(crbug.com/1131016): Support Picture in Picture on WebLayer.
+  prefs->picture_in_picture_enabled = false;
 
   TabImpl* tab = TabImpl::FromWebContents(web_contents);
   if (tab)
