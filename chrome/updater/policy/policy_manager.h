@@ -30,35 +30,29 @@ class PolicyManager : public PolicyManagerInterface {
 
   bool HasActiveDevicePolicies() const override;
 
-  bool GetLastCheckPeriodMinutes(int* minutes) const override;
-  bool GetUpdatesSuppressedTimes(
-      UpdatesSuppressedTimes* suppressed_times) const override;
-  bool GetDownloadPreferenceGroupPolicy(
-      std::string* download_preference) const override;
-  bool GetPackageCacheSizeLimitMBytes(int* cache_size_limit) const override;
-  bool GetPackageCacheExpirationTimeDays(int* cache_life_limit) const override;
-
-  bool GetEffectivePolicyForAppInstalls(const std::string& app_id,
-                                        int* install_policy) const override;
-  bool GetEffectivePolicyForAppUpdates(const std::string& app_id,
-                                       int* update_policy) const override;
-  bool GetTargetChannel(const std::string& app_id,
-                        std::string* channel) const override;
-  bool GetTargetVersionPrefix(
-      const std::string& app_id,
-      std::string* target_version_prefix) const override;
-  bool IsRollbackToTargetVersionAllowed(const std::string& app_id,
-                                        bool* rollback_allowed) const override;
-  bool GetProxyMode(std::string* proxy_mode) const override;
-  bool GetProxyPacUrl(std::string* proxy_pac_url) const override;
-  bool GetProxyServer(std::string* proxy_server) const override;
-
-  bool GetForceInstallApps(
-      std::vector<std::string>* force_install_apps) const override;
+  absl::optional<int> GetLastCheckPeriodMinutes() const override;
+  absl::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
+      const override;
+  absl::optional<std::string> GetDownloadPreferenceGroupPolicy() const override;
+  absl::optional<int> GetPackageCacheSizeLimitMBytes() const override;
+  absl::optional<int> GetPackageCacheExpirationTimeDays() const override;
+  absl::optional<int> GetEffectivePolicyForAppInstalls(
+      const std::string& app_id) const override;
+  absl::optional<int> GetEffectivePolicyForAppUpdates(
+      const std::string& app_id) const override;
+  absl::optional<std::string> GetTargetVersionPrefix(
+      const std::string& app_id) const override;
+  absl::optional<bool> IsRollbackToTargetVersionAllowed(
+      const std::string& app_id) const override;
+  absl::optional<std::string> GetProxyMode() const override;
+  absl::optional<std::string> GetProxyPacUrl() const override;
+  absl::optional<std::string> GetProxyServer() const override;
+  absl::optional<std::string> GetTargetChannel(
+      const std::string& app_id) const override;
+  absl::optional<std::vector<std::string>> GetForceInstallApps() const override;
 
  private:
-  bool GetIntPolicy(const std::string& key, int* value) const;
-  bool GetStringPolicy(const std::string& key, std::string* value) const;
+  absl::optional<std::string> GetStringPolicy(const std::string& key) const;
 
   const base::Value::Dict policies_;
   std::vector<std::string> force_install_apps_;

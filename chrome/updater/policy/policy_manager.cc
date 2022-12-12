@@ -88,121 +88,102 @@ std::string PolicyManager::source() const {
   return std::string("DictValuePolicy");
 }
 
-bool PolicyManager::GetLastCheckPeriodMinutes(int* minutes) const {
-  return GetIntPolicy(kAutoUpdateCheckPeriodOverrideMinutes, minutes);
+absl::optional<int> PolicyManager::GetLastCheckPeriodMinutes() const {
+  return policies_.FindInt(kAutoUpdateCheckPeriodOverrideMinutes);
 }
 
-bool PolicyManager::GetUpdatesSuppressedTimes(
-    UpdatesSuppressedTimes* suppressed_times) const {
-  return GetIntPolicy(kUpdatesSuppressedStartHour,
-                      &suppressed_times->start_hour_) &&
-         GetIntPolicy(kUpdatesSuppressedStartMin,
-                      &suppressed_times->start_minute_) &&
-         GetIntPolicy(kUpdatesSuppressedDurationMin,
-                      &suppressed_times->duration_minute_);
+absl::optional<UpdatesSuppressedTimes>
+PolicyManager::GetUpdatesSuppressedTimes() const {
+  absl::optional<int> start_hour =
+      policies_.FindInt(kUpdatesSuppressedStartHour);
+  absl::optional<int> start_min = policies_.FindInt(kUpdatesSuppressedStartMin);
+  absl::optional<int> duration_min =
+      policies_.FindInt(kUpdatesSuppressedDurationMin);
+
+  if (!start_hour || !start_min || !duration_min)
+    return absl::nullopt;
+
+  UpdatesSuppressedTimes supressed_times;
+  supressed_times.start_hour_ = start_hour.value();
+  supressed_times.start_minute_ = start_min.value();
+  supressed_times.duration_minute_ = duration_min.value();
+  return supressed_times;
 }
 
-bool PolicyManager::GetDownloadPreferenceGroupPolicy(
-    std::string* download_preference) const {
-  return GetStringPolicy(kDownloadPreference, download_preference);
+absl::optional<std::string> PolicyManager::GetDownloadPreferenceGroupPolicy()
+    const {
+  return GetStringPolicy(kDownloadPreference);
 }
 
-bool PolicyManager::GetPackageCacheSizeLimitMBytes(
-    int* cache_size_limit) const {
-  return GetIntPolicy(kCacheSizeLimitMBytes, cache_size_limit);
+absl::optional<int> PolicyManager::GetPackageCacheSizeLimitMBytes() const {
+  return policies_.FindInt(kCacheSizeLimitMBytes);
 }
 
-bool PolicyManager::GetPackageCacheExpirationTimeDays(
-    int* cache_life_limit) const {
-  return GetIntPolicy(kCacheLifeLimitDays, cache_life_limit);
+absl::optional<int> PolicyManager::GetPackageCacheExpirationTimeDays() const {
+  return policies_.FindInt(kCacheLifeLimitDays);
 }
 
-bool PolicyManager::GetEffectivePolicyForAppInstalls(
-    const std::string& app_id,
-    int* install_policy) const {
+absl::optional<int> PolicyManager::GetEffectivePolicyForAppInstalls(
+    const std::string& app_id) const {
   std::string app_value_name(kInstallAppPrefix);
   app_value_name.append(app_id);
-  return GetIntPolicy(app_value_name.c_str(), install_policy)
-             ? true
-             : GetIntPolicy(kInstallAppsDefault, install_policy);
+  absl::optional<int> policy = policies_.FindInt(app_value_name.c_str());
+  return policy ? policy : policies_.FindInt(kInstallAppsDefault);
 }
 
-bool PolicyManager::GetEffectivePolicyForAppUpdates(const std::string& app_id,
-                                                    int* update_policy) const {
+absl::optional<int> PolicyManager::GetEffectivePolicyForAppUpdates(
+    const std::string& app_id) const {
   std::string app_value_name(kUpdateAppPrefix);
   app_value_name.append(app_id);
-  return GetIntPolicy(app_value_name.c_str(), update_policy)
-             ? true
-             : GetIntPolicy(kUpdateAppsDefault, update_policy);
+  absl::optional<int> policy = policies_.FindInt(app_value_name.c_str());
+  return policy ? policy : policies_.FindInt(kUpdateAppsDefault);
 }
 
-bool PolicyManager::GetTargetChannel(const std::string& app_id,
-                                     std::string* channel) const {
+absl::optional<std::string> PolicyManager::GetTargetChannel(
+    const std::string& app_id) const {
   std::string app_value_name(kTargetChannel);
   app_value_name.append(app_id);
-  return GetStringPolicy(app_value_name.c_str(), channel);
+  return GetStringPolicy(app_value_name.c_str());
 }
 
-bool PolicyManager::GetTargetVersionPrefix(
-    const std::string& app_id,
-    std::string* target_version_prefix) const {
+absl::optional<std::string> PolicyManager::GetTargetVersionPrefix(
+    const std::string& app_id) const {
   std::string app_value_name(kTargetVersionPrefix);
   app_value_name.append(app_id);
-  return GetStringPolicy(app_value_name.c_str(), target_version_prefix);
+  return GetStringPolicy(app_value_name.c_str());
 }
 
-bool PolicyManager::IsRollbackToTargetVersionAllowed(
-    const std::string& app_id,
-    bool* rollback_allowed) const {
+absl::optional<bool> PolicyManager::IsRollbackToTargetVersionAllowed(
+    const std::string& app_id) const {
   std::string app_value_name(kRollbackToTargetVersion);
   app_value_name.append(app_id);
-  int is_rollback_allowed = 0;
-  if (GetIntPolicy(app_value_name.c_str(), &is_rollback_allowed)) {
-    *rollback_allowed = is_rollback_allowed;
-    return true;
-  }
-
-  return false;
+  absl::optional<int> policy = policies_.FindInt(app_value_name);
+  return policy ? absl::optional<bool>(policy.value()) : absl::nullopt;
 }
 
-bool PolicyManager::GetProxyMode(std::string* proxy_mode) const {
-  return GetStringPolicy(kProxyMode, proxy_mode);
+absl::optional<std::string> PolicyManager::GetProxyMode() const {
+  return GetStringPolicy(kProxyMode);
 }
 
-bool PolicyManager::GetProxyPacUrl(std::string* proxy_pac_url) const {
-  return GetStringPolicy(kProxyPacUrl, proxy_pac_url);
+absl::optional<std::string> PolicyManager::GetProxyPacUrl() const {
+  return GetStringPolicy(kProxyPacUrl);
 }
 
-bool PolicyManager::GetProxyServer(std::string* proxy_server) const {
-  return GetStringPolicy(kProxyServer, proxy_server);
+absl::optional<std::string> PolicyManager::GetProxyServer() const {
+  return GetStringPolicy(kProxyServer);
 }
 
-bool PolicyManager::GetForceInstallApps(
-    std::vector<std::string>* force_install_apps) const {
-  if (force_install_apps_.empty())
-    return false;
-
-  *force_install_apps = force_install_apps_;
-  return true;
+absl::optional<std::vector<std::string>> PolicyManager::GetForceInstallApps()
+    const {
+  return force_install_apps_.empty()
+             ? absl::optional<std::vector<std::string>>()
+             : force_install_apps_;
 }
 
-bool PolicyManager::GetIntPolicy(const std::string& key, int* value) const {
-  absl::optional<int> policy = policies_.FindInt(key);
-  if (!policy.has_value())
-    return false;
-
-  *value = *policy;
-  return true;
-}
-
-bool PolicyManager::GetStringPolicy(const std::string& key,
-                                    std::string* value) const {
+absl::optional<std::string> PolicyManager::GetStringPolicy(
+    const std::string& key) const {
   const std::string* policy = policies_.FindString(key);
-  if (policy == nullptr)
-    return false;
-
-  *value = *policy;
-  return true;
+  return policy ? absl::optional<std::string>(*policy) : absl::nullopt;
 }
 
 }  // namespace updater

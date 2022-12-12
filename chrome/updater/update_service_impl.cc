@@ -182,37 +182,30 @@ std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
               return it != app_install_data_index.end() ? it->second : "";
             }(),
             [&config, &id]() {
-              std::string component_channel;
-              return config->GetPolicyService()->GetTargetChannel(
-                         id, nullptr, &component_channel)
-                         ? component_channel
-                         : std::string();
+              return config->GetPolicyService()->GetTargetChannel(id).policy_or(
+                  std::string());
             }(),
             [&config, &id]() {
-              std::string target_version_prefix;
-              return config->GetPolicyService()->GetTargetVersionPrefix(
-                         id, nullptr, &target_version_prefix)
-                         ? target_version_prefix
-                         : std::string();
-            }(),
-            [&config, &id]() {
-              bool rollback_allowed;
               return config->GetPolicyService()
-                             ->IsRollbackToTargetVersionAllowed(
-                                 id, nullptr, &rollback_allowed)
-                         ? rollback_allowed
-                         : false;
+                  ->GetTargetVersionPrefix(id)
+                  .policy_or(std::string());
+            }(),
+            [&config, &id]() {
+              return config->GetPolicyService()
+                  ->IsRollbackToTargetVersionAllowed(id)
+                  .policy_or(false);
             }(),
             [&config, &id, &foreground, update_blocked]() {
               if (update_blocked)
                 return true;
-              int policy = kPolicyEnabled;
-              return config->GetPolicyService()
-                         ->GetEffectivePolicyForAppUpdates(id, nullptr,
-                                                           &policy) &&
-                     (policy == kPolicyDisabled ||
-                      (!foreground && policy == kPolicyManualUpdatesOnly) ||
-                      (foreground && policy == kPolicyAutomaticUpdatesOnly));
+              PolicyStatus<int> app_updates =
+                  config->GetPolicyService()->GetPolicyForAppUpdates(id);
+              return app_updates &&
+                     (app_updates.policy() == kPolicyDisabled ||
+                      (!foreground &&
+                       app_updates.policy() == kPolicyManualUpdatesOnly) ||
+                      (foreground &&
+                       app_updates.policy() == kPolicyAutomaticUpdatesOnly));
             }(),
             policy_same_version_update, persisted_data,
             config->GetCrxVerifierFormat())
@@ -368,13 +361,15 @@ void UpdateServiceImpl::ForceInstall(StateChangeCallback state_update,
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<std::string> force_install_apps;
-  if (!config_->GetPolicyService()->GetForceInstallApps(nullptr,
-                                                        &force_install_apps)) {
+  PolicyStatus<std::vector<std::string>> force_install_apps_status =
+      config_->GetPolicyService()->GetForceInstallApps();
+  if (!force_install_apps_status) {
     base::BindPostTask(main_task_runner_, std::move(callback))
         .Run(UpdateService::Result::kSuccess);
     return;
   }
+  std::vector<std::string> force_install_apps =
+      force_install_apps_status.policy();
   DCHECK(!force_install_apps.empty());
 
   std::vector<std::string> installed_app_ids = persisted_data_->GetAppIds();
@@ -605,13 +600,19 @@ bool UpdateServiceImpl::IsUpdateDisabledByPolicy(const std::string& app_id,
   policy = kPolicyEnabled;
 
   if (is_install) {
-    return config_->GetPolicyService()->GetEffectivePolicyForAppInstalls(
-               app_id, nullptr, &policy) &&
+    PolicyStatus<int> app_install_policy_status =
+        config_->GetPolicyService()->GetPolicyForAppInstalls(app_id);
+    if (app_install_policy_status)
+      policy = app_install_policy_status.policy();
+    return app_install_policy_status &&
            (policy == kPolicyDisabled || (config_->IsPerUserInstall() &&
                                           policy == kPolicyEnabledMachineOnly));
   } else {
-    return config_->GetPolicyService()->GetEffectivePolicyForAppUpdates(
-               app_id, nullptr, &policy) &&
+    PolicyStatus<int> app_update_policy_status =
+        config_->GetPolicyService()->GetPolicyForAppUpdates(app_id);
+    if (app_update_policy_status)
+      policy = app_update_policy_status.policy();
+    return app_update_policy_status &&
            (policy == kPolicyDisabled ||
             ((policy == kPolicyManualUpdatesOnly) &&
              (priority != Priority::kForeground)) ||

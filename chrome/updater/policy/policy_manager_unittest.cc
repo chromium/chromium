@@ -27,61 +27,32 @@ TEST_F(PolicyManagerTests, NoPolicySet) {
 
   EXPECT_EQ(policy_manager->source(), "DictValuePolicy");
 
-  int check_period = 0;
-  EXPECT_FALSE(policy_manager->GetLastCheckPeriodMinutes(&check_period));
-
-  UpdatesSuppressedTimes suppressed_times;
-  EXPECT_FALSE(policy_manager->GetUpdatesSuppressedTimes(&suppressed_times));
-
-  std::string download_preference;
-  EXPECT_FALSE(
-      policy_manager->GetDownloadPreferenceGroupPolicy(&download_preference));
-
-  int cache_size_limit = 0;
-  EXPECT_FALSE(
-      policy_manager->GetPackageCacheSizeLimitMBytes(&cache_size_limit));
-  int cache_life_limit = 0;
-  EXPECT_FALSE(
-      policy_manager->GetPackageCacheExpirationTimeDays(&cache_life_limit));
-
-  std::string proxy_mode;
-  EXPECT_FALSE(policy_manager->GetProxyMode(&proxy_mode));
-  std::string proxy_server;
-  EXPECT_FALSE(policy_manager->GetProxyServer(&proxy_server));
-  std::string proxy_pac_url;
-  EXPECT_FALSE(policy_manager->GetProxyPacUrl(&proxy_pac_url));
-
-  int install_policy = -1;
+  EXPECT_EQ(policy_manager->GetLastCheckPeriodMinutes(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyMode(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyServer(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyPacUrl(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetEffectivePolicyForAppInstalls(kTestAppID),
+            absl::nullopt);
   EXPECT_FALSE(policy_manager->GetEffectivePolicyForAppInstalls(
-      kTestAppID, &install_policy));
-  EXPECT_FALSE(policy_manager->GetEffectivePolicyForAppInstalls(
-      "non-exist-app-fallback-to-global", &install_policy));
-
-  int update_policy = -1;
-  EXPECT_FALSE(policy_manager->GetEffectivePolicyForAppUpdates(kTestAppID,
-                                                               &update_policy));
+      "non-exist-app-fallback-to-global"));
+  EXPECT_EQ(policy_manager->GetEffectivePolicyForAppUpdates(kTestAppID),
+            absl::nullopt);
   EXPECT_FALSE(policy_manager->GetEffectivePolicyForAppUpdates(
-      "non-exist-app-fallback-to-global", &update_policy));
-
-  std::string target_channel;
-  EXPECT_FALSE(policy_manager->GetTargetChannel(kTestAppID, &target_channel));
+      "non-exist-app-fallback-to-global"));
+  EXPECT_EQ(policy_manager->GetTargetChannel(kTestAppID), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetChannel("non-exist-app"), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetVersionPrefix(kTestAppID), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetVersionPrefix("non-exist-app"),
+            absl::nullopt);
+  EXPECT_EQ(policy_manager->IsRollbackToTargetVersionAllowed(kTestAppID),
+            absl::nullopt);
   EXPECT_FALSE(
-      policy_manager->GetTargetChannel("non-exist-app", &target_channel));
-
-  std::string target_version_prefix;
-  EXPECT_FALSE(policy_manager->GetTargetVersionPrefix(kTestAppID,
-                                                      &target_version_prefix));
-  EXPECT_FALSE(policy_manager->GetTargetVersionPrefix("non-exist-app",
-                                                      &target_version_prefix));
-
-  bool is_rollback_allowed = false;
-  EXPECT_FALSE(policy_manager->IsRollbackToTargetVersionAllowed(
-      kTestAppID, &is_rollback_allowed));
-  EXPECT_FALSE(policy_manager->IsRollbackToTargetVersionAllowed(
-      "non-exist-app", &is_rollback_allowed));
-
-  std::vector<std::string> force_install_apps;
-  EXPECT_FALSE(policy_manager->GetForceInstallApps(&force_install_apps));
+      policy_manager->IsRollbackToTargetVersionAllowed("non-exist-app"));
+  EXPECT_EQ(policy_manager->GetForceInstallApps(), absl::nullopt);
 }
 
 TEST_F(PolicyManagerTests, PolicyRead) {
@@ -114,83 +85,52 @@ TEST_F(PolicyManagerTests, PolicyRead) {
 
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
 
-  int check_period = 0;
-  EXPECT_TRUE(policy_manager->GetLastCheckPeriodMinutes(&check_period));
-  EXPECT_EQ(check_period, 480);
+  EXPECT_EQ(policy_manager->GetLastCheckPeriodMinutes(), 480);
 
-  UpdatesSuppressedTimes suppressed_times = {};
-  EXPECT_TRUE(policy_manager->GetUpdatesSuppressedTimes(&suppressed_times));
-  EXPECT_EQ(suppressed_times.start_hour_, 2);
-  EXPECT_EQ(suppressed_times.start_minute_, 30);
-  EXPECT_EQ(suppressed_times.duration_minute_, 500);
+  absl::optional<UpdatesSuppressedTimes> suppressed_times =
+      policy_manager->GetUpdatesSuppressedTimes();
+  ASSERT_TRUE(suppressed_times);
+  EXPECT_EQ(suppressed_times->start_hour_, 2);
+  EXPECT_EQ(suppressed_times->start_minute_, 30);
+  EXPECT_EQ(suppressed_times->duration_minute_, 500);
 
-  std::string download_preference;
-  EXPECT_TRUE(
-      policy_manager->GetDownloadPreferenceGroupPolicy(&download_preference));
-  EXPECT_EQ(download_preference, "cacheable");
+  EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(), "cacheable");
 
-  int cache_size_limit = 0;
-  EXPECT_TRUE(
-      policy_manager->GetPackageCacheSizeLimitMBytes(&cache_size_limit));
-  EXPECT_EQ(cache_size_limit, 100);
-  int cache_life_limit = 0;
-  EXPECT_TRUE(
-      policy_manager->GetPackageCacheExpirationTimeDays(&cache_life_limit));
-  EXPECT_EQ(cache_life_limit, 45);
+  EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), 100);
+  EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), 45);
 
-  std::string proxy_mode;
-  EXPECT_TRUE(policy_manager->GetProxyMode(&proxy_mode));
-  EXPECT_EQ(proxy_mode, "fixed_servers");
-  std::string proxy_server;
-  EXPECT_TRUE(policy_manager->GetProxyServer(&proxy_server));
-  EXPECT_EQ(proxy_server, "http://foo.bar");
-  std::string proxy_pac_url;
-  EXPECT_TRUE(policy_manager->GetProxyPacUrl(&proxy_pac_url));
-  EXPECT_EQ(proxy_pac_url, "go/pac.url");
+  EXPECT_EQ(policy_manager->GetProxyMode(), "fixed_servers");
+  EXPECT_EQ(policy_manager->GetProxyServer(), "http://foo.bar");
+  EXPECT_EQ(policy_manager->GetProxyPacUrl(), "go/pac.url");
 
-  int install_policy = -1;
-  EXPECT_TRUE(policy_manager->GetEffectivePolicyForAppInstalls(
-      kTestAppID, &install_policy));
-  EXPECT_EQ(install_policy, 3);
-  EXPECT_TRUE(policy_manager->GetEffectivePolicyForAppInstalls(
-      "non-exist-app-fallback-to-global", &install_policy));
-  EXPECT_EQ(install_policy, 2);
+  EXPECT_EQ(policy_manager->GetEffectivePolicyForAppInstalls(kTestAppID), 3);
+  EXPECT_EQ(policy_manager->GetEffectivePolicyForAppInstalls(
+                "non-exist-app-fallback-to-global"),
+            2);
 
-  int update_policy = -1;
-  EXPECT_TRUE(policy_manager->GetEffectivePolicyForAppUpdates(kTestAppID,
-                                                              &update_policy));
-  EXPECT_EQ(update_policy, 2);
-  EXPECT_TRUE(policy_manager->GetEffectivePolicyForAppUpdates(
-      "non-exist-app-fallback-to-global", &update_policy));
-  EXPECT_EQ(update_policy, 1);
+  EXPECT_EQ(policy_manager->GetEffectivePolicyForAppUpdates(kTestAppID), 2);
+  EXPECT_EQ(policy_manager->GetEffectivePolicyForAppUpdates(
+                "non-exist-app-fallback-to-global"),
+            1);
 
-  std::string target_channel;
-  EXPECT_TRUE(policy_manager->GetTargetChannel(kTestAppID, &target_channel));
-  EXPECT_EQ(target_channel, "beta");
+  EXPECT_EQ(policy_manager->GetTargetChannel(kTestAppID), "beta");
+  EXPECT_EQ(policy_manager->GetTargetChannel("non-exist-app"), absl::nullopt);
+
+  EXPECT_EQ(policy_manager->GetTargetVersionPrefix(kTestAppID), "55.55.");
+  EXPECT_EQ(policy_manager->GetTargetVersionPrefix("non-exist-app"),
+            absl::nullopt);
+
+  EXPECT_EQ(policy_manager->IsRollbackToTargetVersionAllowed(kTestAppID), true);
   EXPECT_FALSE(
-      policy_manager->GetTargetChannel("non-exist-app", &target_channel));
+      policy_manager->IsRollbackToTargetVersionAllowed("non-exist-app"));
 
-  std::string target_version_prefix;
-  EXPECT_TRUE(policy_manager->GetTargetVersionPrefix(kTestAppID,
-                                                     &target_version_prefix));
-  EXPECT_EQ(target_version_prefix, "55.55.");
-  EXPECT_FALSE(policy_manager->GetTargetVersionPrefix("non-exist-app",
-                                                      &target_version_prefix));
+  absl::optional<std::vector<std::string>> force_install_apps =
+      policy_manager->GetForceInstallApps();
+  ASSERT_EQ(force_install_apps.has_value(), !IsSystemInstall());
 
-  bool is_rollback_allowed = false;
-  EXPECT_TRUE(policy_manager->IsRollbackToTargetVersionAllowed(
-      kTestAppID, &is_rollback_allowed));
-  EXPECT_TRUE(is_rollback_allowed);
-  EXPECT_FALSE(policy_manager->IsRollbackToTargetVersionAllowed(
-      "non-exist-app", &is_rollback_allowed));
-
-  std::vector<std::string> force_install_apps;
-
-  EXPECT_EQ(policy_manager->GetForceInstallApps(&force_install_apps),
-            !IsSystemInstall());
   if (!IsSystemInstall()) {
-    ASSERT_EQ(force_install_apps.size(), 1U);
-    EXPECT_EQ(force_install_apps[0], kTestAppIDForceInstall);
+    ASSERT_EQ(force_install_apps->size(), 1U);
+    EXPECT_EQ(force_install_apps->at(0), kTestAppIDForceInstall);
   }
 }
 
@@ -223,58 +163,31 @@ TEST_F(PolicyManagerTests, WrongPolicyValueType) {
 
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
 
-  int check_period = 0;
-  EXPECT_FALSE(policy_manager->GetLastCheckPeriodMinutes(&check_period));
-
-  UpdatesSuppressedTimes suppressed_times = {};
-  EXPECT_FALSE(policy_manager->GetUpdatesSuppressedTimes(&suppressed_times));
-
-  std::string download_preference;
-  EXPECT_FALSE(
-      policy_manager->GetDownloadPreferenceGroupPolicy(&download_preference));
-
-  int cache_size_limit = 0;
-  EXPECT_FALSE(
-      policy_manager->GetPackageCacheSizeLimitMBytes(&cache_size_limit));
-  int cache_life_limit = 0;
-  EXPECT_FALSE(
-      policy_manager->GetPackageCacheExpirationTimeDays(&cache_life_limit));
-
-  std::string proxy_mode;
-  EXPECT_FALSE(policy_manager->GetProxyMode(&proxy_mode));
-  std::string proxy_server;
-  EXPECT_FALSE(policy_manager->GetProxyServer(&proxy_server));
-  std::string proxy_pac_url;
-  EXPECT_FALSE(policy_manager->GetProxyPacUrl(&proxy_pac_url));
-
-  int install_policy = -1;
+  EXPECT_EQ(policy_manager->GetLastCheckPeriodMinutes(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyMode(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyServer(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyPacUrl(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetEffectivePolicyForAppInstalls(kTestAppID),
+            absl::nullopt);
   EXPECT_FALSE(policy_manager->GetEffectivePolicyForAppInstalls(
-      kTestAppID, &install_policy));
-  EXPECT_FALSE(policy_manager->GetEffectivePolicyForAppInstalls(
-      "non-exist-app-fallback-to-global", &install_policy));
-
-  int update_policy = -1;
-  EXPECT_FALSE(policy_manager->GetEffectivePolicyForAppUpdates(kTestAppID,
-                                                               &update_policy));
+      "non-exist-app-fallback-to-global"));
+  EXPECT_EQ(policy_manager->GetEffectivePolicyForAppUpdates(kTestAppID),
+            absl::nullopt);
   EXPECT_FALSE(policy_manager->GetEffectivePolicyForAppUpdates(
-      "non-exist-app-fallback-to-global", &update_policy));
-
-  std::string target_channel;
-  EXPECT_FALSE(policy_manager->GetTargetChannel(kTestAppID, &target_channel));
+      "non-exist-app-fallback-to-global"));
+  EXPECT_EQ(policy_manager->GetTargetChannel(kTestAppID), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetChannel("non-exist-app"), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetVersionPrefix(kTestAppID), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetVersionPrefix("non-exist-app"),
+            absl::nullopt);
+  EXPECT_EQ(policy_manager->IsRollbackToTargetVersionAllowed(kTestAppID),
+            absl::nullopt);
   EXPECT_FALSE(
-      policy_manager->GetTargetChannel("non-exist-app", &target_channel));
-
-  std::string target_version_prefix;
-  EXPECT_FALSE(policy_manager->GetTargetVersionPrefix(kTestAppID,
-                                                      &target_version_prefix));
-  EXPECT_FALSE(policy_manager->GetTargetVersionPrefix("non-exist-app",
-                                                      &target_version_prefix));
-
-  bool is_rollback_allowed = false;
-  EXPECT_FALSE(policy_manager->IsRollbackToTargetVersionAllowed(
-      kTestAppID, &is_rollback_allowed));
-  EXPECT_FALSE(policy_manager->IsRollbackToTargetVersionAllowed(
-      "non-exist-app", &is_rollback_allowed));
+      policy_manager->IsRollbackToTargetVersionAllowed("non-exist-app"));
 }
 
 }  // namespace updater

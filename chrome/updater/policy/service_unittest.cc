@@ -27,81 +27,80 @@ class FakePolicyManager : public PolicyManagerInterface {
   bool HasActiveDevicePolicies() const override {
     return has_active_device_policies_;
   }
-  bool GetLastCheckPeriodMinutes(int* minutes) const override { return false; }
-  bool GetUpdatesSuppressedTimes(
-      UpdatesSuppressedTimes* suppressed_times) const override {
+  absl::optional<int> GetLastCheckPeriodMinutes() const override {
+    return absl::nullopt;
+  }
+  absl::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
+      const override {
     if (!suppressed_times_.valid())
-      return false;
+      return absl::nullopt;
 
-    *suppressed_times = suppressed_times_;
-    return true;
+    return suppressed_times_;
   }
   void SetUpdatesSuppressedTimes(
       const UpdatesSuppressedTimes& suppressed_times) {
     suppressed_times_ = suppressed_times;
   }
-  bool GetDownloadPreferenceGroupPolicy(
-      std::string* download_preference) const override {
+  absl::optional<std::string> GetDownloadPreferenceGroupPolicy()
+      const override {
     if (download_preference_.empty())
-      return false;
+      return absl::nullopt;
 
-    *download_preference = download_preference_;
-    return true;
+    return download_preference_;
   }
   void SetDownloadPreferenceGroupPolicy(const std::string& preference) {
     download_preference_ = preference;
   }
-  bool GetPackageCacheSizeLimitMBytes(int* cache_size_limit) const override {
-    return false;
+  absl::optional<int> GetPackageCacheSizeLimitMBytes() const override {
+    return absl::nullopt;
   }
-  bool GetPackageCacheExpirationTimeDays(int* cache_life_limit) const override {
-    return false;
+  absl::optional<int> GetPackageCacheExpirationTimeDays() const override {
+    return absl::nullopt;
   }
-  bool GetEffectivePolicyForAppInstalls(const std::string& app_id,
-                                        int* install_policy) const override {
-    return false;
+  absl::optional<int> GetEffectivePolicyForAppInstalls(
+      const std::string& app_id) const override {
+    return absl::nullopt;
   }
-  bool GetEffectivePolicyForAppUpdates(const std::string& app_id,
-                                       int* update_policy) const override {
+  absl::optional<int> GetEffectivePolicyForAppUpdates(
+      const std::string& app_id) const override {
     auto value = update_policies_.find(app_id);
     if (value == update_policies_.end())
-      return false;
-    *update_policy = value->second;
-    return true;
+      return absl::nullopt;
+    return value->second;
   }
   void SetUpdatePolicy(const std::string& app_id, int update_policy) {
     update_policies_[app_id] = update_policy;
   }
-  bool GetTargetVersionPrefix(
-      const std::string& app_id,
-      std::string* target_version_prefix) const override {
-    return false;
+  absl::optional<std::string> GetTargetVersionPrefix(
+      const std::string& app_id) const override {
+    return absl::nullopt;
   }
-  bool IsRollbackToTargetVersionAllowed(const std::string& app_id,
-                                        bool* rollback_allowed) const override {
-    return false;
+  absl::optional<bool> IsRollbackToTargetVersionAllowed(
+      const std::string& app_id) const override {
+    return absl::nullopt;
   }
-  bool GetProxyMode(std::string* proxy_mode) const override { return false; }
-  bool GetProxyPacUrl(std::string* proxy_pac_url) const override {
-    return false;
+  absl::optional<std::string> GetProxyMode() const override {
+    return absl::nullopt;
   }
-  bool GetProxyServer(std::string* proxy_server) const override {
-    return false;
+  absl::optional<std::string> GetProxyPacUrl() const override {
+    return absl::nullopt;
   }
-  bool GetTargetChannel(const std::string& app_id,
-                        std::string* channel) const override {
+  absl::optional<std::string> GetProxyServer() const override {
+    return absl::nullopt;
+  }
+  absl::optional<std::string> GetTargetChannel(
+      const std::string& app_id) const override {
     auto value = channels_.find(app_id);
     if (value == channels_.end())
-      return false;
-    *channel = value->second;
-    return true;
+      return absl::nullopt;
+    return value->second;
   }
   void SetChannel(const std::string& app_id, std::string channel) {
     channels_[app_id] = std::move(channel);
   }
-  bool GetForceInstallApps(
-      std::vector<std::string>* /* force_install_apps */) const override {
-    return false;
+  absl::optional<std::vector<std::string>> GetForceInstallApps()
+      const override {
+    return absl::nullopt;
   }
 
  private:
@@ -120,28 +119,28 @@ TEST(PolicyService, DefaultPolicyValue) {
       base::MakeRefCounted<PolicyService>(std::move(managers));
   EXPECT_EQ(policy_service->source(), "default");
 
-  std::string version_prefix;
-  EXPECT_FALSE(
-      policy_service->GetTargetVersionPrefix("", nullptr, &version_prefix));
+  PolicyStatus<std::string> version_prefix =
+      policy_service->GetTargetVersionPrefix("");
+  EXPECT_FALSE(version_prefix);
 
-  int last_check = 0;
-  EXPECT_TRUE(policy_service->GetLastCheckPeriodMinutes(nullptr, &last_check));
-  EXPECT_EQ(last_check, 270);
+  PolicyStatus<int> last_check = policy_service->GetLastCheckPeriodMinutes();
+  ASSERT_TRUE(last_check);
+  EXPECT_EQ(last_check.policy(), 270);
 
-  int install_policy = 0;
-  EXPECT_TRUE(policy_service->GetEffectivePolicyForAppInstalls(
-      "test1", nullptr, &install_policy));
-  EXPECT_EQ(install_policy, 1);
+  PolicyStatus<int> app_installs =
+      policy_service->GetPolicyForAppInstalls("test1");
+  ASSERT_TRUE(app_installs);
+  EXPECT_EQ(app_installs.policy(), 1);
 
-  int update_policy = 0;
-  EXPECT_TRUE(policy_service->GetEffectivePolicyForAppUpdates("test1", nullptr,
-                                                              &update_policy));
-  EXPECT_EQ(update_policy, 1);
+  PolicyStatus<int> app_updates =
+      policy_service->GetPolicyForAppUpdates("test1");
+  ASSERT_TRUE(app_updates);
+  EXPECT_EQ(app_updates.policy(), 1);
 
-  bool rollback_allowed = true;
-  EXPECT_TRUE(policy_service->IsRollbackToTargetVersionAllowed(
-      "test1", nullptr, &rollback_allowed));
-  EXPECT_EQ(rollback_allowed, false);
+  PolicyStatus<bool> rollback_allowed =
+      policy_service->IsRollbackToTargetVersionAllowed("test1");
+  ASSERT_TRUE(rollback_allowed);
+  EXPECT_EQ(rollback_allowed.policy(), false);
 }
 
 TEST(PolicyService, SinglePolicyManager) {
@@ -154,36 +153,27 @@ TEST(PolicyService, SinglePolicyManager) {
       base::MakeRefCounted<PolicyService>(std::move(managers));
   EXPECT_EQ(policy_service->source(), "test_source");
 
-  PolicyStatus<std::string> app1_channel_status;
-  std::string app1_channel;
-  EXPECT_TRUE(policy_service->GetTargetChannel("app1", &app1_channel_status,
-                                               &app1_channel));
-  EXPECT_TRUE(app1_channel_status.effective_policy());
-  EXPECT_EQ(app1_channel_status.effective_policy().value().policy,
-            "test_channel");
-  EXPECT_EQ(app1_channel, "test_channel");
-  EXPECT_FALSE(app1_channel_status.conflict_policy());
+  PolicyStatus<std::string> app1_channel =
+      policy_service->GetTargetChannel("app1");
+  ASSERT_TRUE(app1_channel);
+  EXPECT_EQ(app1_channel.policy(), "test_channel");
+  EXPECT_EQ(app1_channel.conflict_policy(), absl::nullopt);
 
-  PolicyStatus<std::string> app2_channel_status;
-  std::string app2_channel;
-  EXPECT_FALSE(policy_service->GetTargetChannel("app2", &app2_channel_status,
-                                                &app2_channel));
-  EXPECT_FALSE(app2_channel_status.effective_policy());
-  EXPECT_FALSE(app2_channel_status.conflict_policy());
+  PolicyStatus<std::string> app2_channel =
+      policy_service->GetTargetChannel("app2");
+  EXPECT_FALSE(app2_channel);
+  EXPECT_EQ(app2_channel.conflict_policy(), absl::nullopt);
 
-  PolicyStatus<int> app1_update_status;
-  int update_policy = 0;
-  EXPECT_FALSE(policy_service->GetEffectivePolicyForAppUpdates(
-      "app1", &app1_update_status, &update_policy));
-  EXPECT_FALSE(app1_update_status.conflict_policy());
+  PolicyStatus<int> app1_update_status =
+      policy_service->GetPolicyForAppUpdates("app1");
+  EXPECT_FALSE(app1_update_status);
+  EXPECT_EQ(app1_update_status.conflict_policy(), absl::nullopt);
 
-  PolicyStatus<int> app2_update_status;
-  EXPECT_TRUE(policy_service->GetEffectivePolicyForAppUpdates(
-      "app2", &app2_update_status, &update_policy));
-  EXPECT_TRUE(app2_update_status.effective_policy());
-  EXPECT_EQ(app2_update_status.effective_policy().value().policy, 3);
-  EXPECT_FALSE(app2_update_status.conflict_policy());
-  EXPECT_EQ(update_policy, 3);
+  PolicyStatus<int> app2_update_status =
+      policy_service->GetPolicyForAppUpdates("app2");
+  EXPECT_TRUE(app2_update_status);
+  EXPECT_EQ(app2_update_status.policy(), 3);
+  EXPECT_EQ(app2_update_status.conflict_policy(), absl::nullopt);
 }
 
 TEST(PolicyService, MultiplePolicyManagers) {
@@ -223,20 +213,19 @@ TEST(PolicyService, MultiplePolicyManagers) {
   EXPECT_EQ(policy_service->source(),
             "group_policy;device_management;imaginary;default");
 
-  PolicyStatus<UpdatesSuppressedTimes> suppressed_time_status;
-  EXPECT_TRUE(policy_service->GetUpdatesSuppressedTimes(
-      &suppressed_time_status, &updates_suppressed_times));
+  PolicyStatus<UpdatesSuppressedTimes> suppressed_time_status =
+      policy_service->GetUpdatesSuppressedTimes();
+  ASSERT_TRUE(suppressed_time_status);
   EXPECT_TRUE(suppressed_time_status.conflict_policy());
   EXPECT_EQ(suppressed_time_status.effective_policy().value().source,
             "group_policy");
-  EXPECT_EQ(updates_suppressed_times.start_hour_, 5);
-  EXPECT_EQ(updates_suppressed_times.start_minute_, 10);
-  EXPECT_EQ(updates_suppressed_times.duration_minute_, 30);
+  EXPECT_EQ(suppressed_time_status.policy().start_hour_, 5);
+  EXPECT_EQ(suppressed_time_status.policy().start_minute_, 10);
+  EXPECT_EQ(suppressed_time_status.policy().duration_minute_, 30);
 
-  PolicyStatus<std::string> channel_status;
-  std::string channel;
-  EXPECT_TRUE(
-      policy_service->GetTargetChannel("app1", &channel_status, &channel));
+  PolicyStatus<std::string> channel_status =
+      policy_service->GetTargetChannel("app1");
+  ASSERT_TRUE(channel_status);
   const PolicyStatus<std::string>::Entry& channel_policy =
       channel_status.effective_policy().value();
   EXPECT_EQ(channel_policy.source, "group_policy");
@@ -246,13 +235,11 @@ TEST(PolicyService, MultiplePolicyManagers) {
       channel_status.conflict_policy().value();
   EXPECT_EQ(channel_conflict_policy.source, "device_management");
   EXPECT_EQ(channel_conflict_policy.policy, "channel_dm");
-  EXPECT_EQ(channel, "channel_gp");
+  EXPECT_EQ(channel_status.policy(), "channel_gp");
 
-  PolicyStatus<int> app1_update_status;
-  int update_policy = 0;
-  EXPECT_TRUE(policy_service->GetEffectivePolicyForAppUpdates(
-      "app1", &app1_update_status, &update_policy));
-  EXPECT_TRUE(app1_update_status.effective_policy());
+  PolicyStatus<int> app1_update_status =
+      policy_service->GetPolicyForAppUpdates("app1");
+  ASSERT_TRUE(app1_update_status);
   const PolicyStatus<int>::Entry& app1_update_policy =
       app1_update_status.effective_policy().value();
   EXPECT_EQ(app1_update_policy.source, "device_management");
@@ -263,34 +250,29 @@ TEST(PolicyService, MultiplePolicyManagers) {
   EXPECT_TRUE(app1_update_status.conflict_policy());
   EXPECT_EQ(app1_update_conflict_policy.policy, 2);
   EXPECT_EQ(app1_update_conflict_policy.source, "imaginary");
-  EXPECT_EQ(update_policy, 3);
+  EXPECT_EQ(app1_update_status.policy(), 3);
 
-  PolicyStatus<int> app2_update_status;
-  EXPECT_TRUE(policy_service->GetEffectivePolicyForAppUpdates(
-      "app2", &app2_update_status, &update_policy));
-  EXPECT_TRUE(app2_update_status.effective_policy());
+  PolicyStatus<int> app2_update_status =
+      policy_service->GetPolicyForAppUpdates("app2");
+  ASSERT_TRUE(app2_update_status);
   const PolicyStatus<int>::Entry& app2_update_policy =
       app2_update_status.effective_policy().value();
   EXPECT_EQ(app2_update_policy.source, "group_policy");
   EXPECT_EQ(app2_update_policy.policy, 1);
-  EXPECT_EQ(update_policy, 1);
-  EXPECT_FALSE(app2_update_status.conflict_policy());
+  EXPECT_EQ(app2_update_status.policy(), 1);
+  EXPECT_EQ(app2_update_status.conflict_policy(), absl::nullopt);
 
-  PolicyStatus<std::string> download_preference_status;
-  std::string download_preference;
-  EXPECT_TRUE(policy_service->GetDownloadPreferenceGroupPolicy(
-      &download_preference_status, &download_preference));
-  EXPECT_TRUE(download_preference_status.effective_policy());
+  PolicyStatus<std::string> download_preference_status =
+      policy_service->GetDownloadPreferenceGroupPolicy();
+  ASSERT_TRUE(download_preference_status);
   const PolicyStatus<std::string>::Entry& download_preference_policy =
       download_preference_status.effective_policy().value();
   EXPECT_EQ(download_preference_policy.source, "imaginary");
   EXPECT_EQ(download_preference_policy.policy, "cacheable");
-  EXPECT_EQ(download_preference, "cacheable");
-  EXPECT_FALSE(download_preference_status.conflict_policy());
+  EXPECT_EQ(download_preference_status.policy(), "cacheable");
+  EXPECT_EQ(download_preference_status.conflict_policy(), absl::nullopt);
 
-  int cache_size_limit = 0;
-  EXPECT_FALSE(policy_service->GetPackageCacheSizeLimitMBytes(
-      nullptr, &cache_size_limit));
+  EXPECT_FALSE(policy_service->GetPackageCacheSizeLimitMBytes());
 }
 
 TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
@@ -331,21 +313,18 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
       base::MakeRefCounted<PolicyService>(std::move(managers));
   EXPECT_EQ(policy_service->source(), "device_management;imaginary;default");
 
-  PolicyStatus<UpdatesSuppressedTimes> suppressed_time_status;
-  EXPECT_TRUE(policy_service->GetUpdatesSuppressedTimes(
-      &suppressed_time_status, &updates_suppressed_times));
-  EXPECT_TRUE(suppressed_time_status.conflict_policy());
+  PolicyStatus<UpdatesSuppressedTimes> suppressed_time_status =
+      policy_service->GetUpdatesSuppressedTimes();
+  ASSERT_TRUE(suppressed_time_status);
   EXPECT_EQ(suppressed_time_status.effective_policy().value().source,
             "device_management");
-  EXPECT_EQ(updates_suppressed_times.start_hour_, 5);
-  EXPECT_EQ(updates_suppressed_times.start_minute_, 10);
-  EXPECT_EQ(updates_suppressed_times.duration_minute_, 30);
+  EXPECT_EQ(suppressed_time_status.policy().start_hour_, 5);
+  EXPECT_EQ(suppressed_time_status.policy().start_minute_, 10);
+  EXPECT_EQ(suppressed_time_status.policy().duration_minute_, 30);
 
-  PolicyStatus<std::string> channel_status;
-  std::string channel;
-  EXPECT_TRUE(
-      policy_service->GetTargetChannel("app1", &channel_status, &channel));
-  EXPECT_TRUE(channel_status.effective_policy());
+  PolicyStatus<std::string> channel_status =
+      policy_service->GetTargetChannel("app1");
+  ASSERT_TRUE(channel_status);
   const PolicyStatus<std::string>::Entry& channel_status_policy =
       channel_status.effective_policy().value();
   EXPECT_EQ(channel_status_policy.source, "device_management");
@@ -355,12 +334,11 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
       channel_status.conflict_policy().value();
   EXPECT_EQ(channel_status_conflict_policy.policy, "channel_imaginary");
   EXPECT_EQ(channel_status_conflict_policy.source, "imaginary");
-  EXPECT_EQ(channel, "channel_dm");
+  EXPECT_EQ(channel_status.policy(), "channel_dm");
 
-  PolicyStatus<int> app1_update_status;
-  int update_policy = 0;
-  EXPECT_TRUE(policy_service->GetEffectivePolicyForAppUpdates(
-      "app1", &app1_update_status, &update_policy));
+  PolicyStatus<int> app1_update_status =
+      policy_service->GetPolicyForAppUpdates("app1");
+  ASSERT_TRUE(app1_update_status);
   const PolicyStatus<int>::Entry& app1_update_status_policy =
       app1_update_status.effective_policy().value();
   EXPECT_EQ(app1_update_status_policy.source, "device_management");
@@ -370,31 +348,27 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
       app1_update_status.conflict_policy().value();
   EXPECT_EQ(app1_update_status_conflict_policy.source, "imaginary");
   EXPECT_EQ(app1_update_status_conflict_policy.policy, 2);
-  EXPECT_EQ(update_policy, 3);
+  EXPECT_EQ(app1_update_status.policy(), 3);
 
-  PolicyStatus<int> app2_update_status;
-  EXPECT_TRUE(policy_service->GetEffectivePolicyForAppUpdates(
-      "app2", &app2_update_status, &update_policy));
-  EXPECT_TRUE(app2_update_status.effective_policy());
-  EXPECT_FALSE(app2_update_status.conflict_policy());
+  PolicyStatus<int> app2_update_status =
+      policy_service->GetPolicyForAppUpdates("app2");
+  ASSERT_TRUE(app2_update_status);
+  EXPECT_EQ(app2_update_status.conflict_policy(), absl::nullopt);
   const PolicyStatus<int>::Entry& app2_update_status_policy =
       app2_update_status.effective_policy().value();
   EXPECT_EQ(app2_update_status_policy.source, "default");
   EXPECT_EQ(app2_update_status_policy.policy, 1);
+  EXPECT_EQ(app2_update_status.policy(), 1);
 
-  PolicyStatus<std::string> download_preference_status;
-  std::string download_preference;
-  EXPECT_TRUE(policy_service->GetDownloadPreferenceGroupPolicy(
-      &download_preference_status, &download_preference));
-  EXPECT_TRUE(download_preference_status.effective_policy());
+  PolicyStatus<std::string> download_preference_status =
+      policy_service->GetDownloadPreferenceGroupPolicy();
+  ASSERT_TRUE(download_preference_status);
   EXPECT_EQ(download_preference_status.effective_policy().value().source,
             "imaginary");
-  EXPECT_EQ(download_preference, "cacheable");
-  EXPECT_FALSE(download_preference_status.conflict_policy());
+  EXPECT_EQ(download_preference_status.policy(), "cacheable");
+  EXPECT_EQ(download_preference_status.conflict_policy(), absl::nullopt);
 
-  int cache_size_limit = 0;
-  EXPECT_FALSE(policy_service->GetPackageCacheSizeLimitMBytes(
-      nullptr, &cache_size_limit));
+  EXPECT_FALSE(policy_service->GetPackageCacheSizeLimitMBytes());
 }
 
 }  // namespace updater
