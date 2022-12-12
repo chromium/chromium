@@ -56,8 +56,7 @@ int calcHue(float temp1, float temp2, float hue) {
 }
 
 // Assumes sRGB.
-float Linearize(float eight_bit_component) {
-  const float component = eight_bit_component / 255.0f;
+float Linearize(float component) {
   // The W3C link in the header uses 0.03928 here.  See
   // https://en.wikipedia.org/wiki/SRGB#Theory_of_the_transformation for
   // discussion of why we use this value rather than that one.
@@ -309,6 +308,11 @@ float GetContrastRatio(SkColor color_a, SkColor color_b) {
                           GetRelativeLuminance(color_b));
 }
 
+float GetContrastRatio(SkColor4f color_a, SkColor4f color_b) {
+  return GetContrastRatio(GetRelativeLuminance4f(color_a),
+                          GetRelativeLuminance4f(color_b));
+}
+
 float GetContrastRatio(float luminance_a, float luminance_b) {
   DCHECK_GE(luminance_a, 0.0f);
   DCHECK_GE(luminance_b, 0.0f);
@@ -319,9 +323,12 @@ float GetContrastRatio(float luminance_a, float luminance_b) {
 }
 
 float GetRelativeLuminance(SkColor color) {
-  return (0.2126f * Linearize(SkColorGetR(color))) +
-         (0.7152f * Linearize(SkColorGetG(color))) +
-         (0.0722f * Linearize(SkColorGetB(color)));
+  return GetRelativeLuminance4f(SkColor4f::FromColor(color));
+}
+
+float GetRelativeLuminance4f(SkColor4f color) {
+  return (0.2126f * Linearize(color.fR)) + (0.7152f * Linearize(color.fG)) +
+         (0.0722f * Linearize(color.fB));
 }
 
 uint8_t GetLuma(SkColor color) {

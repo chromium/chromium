@@ -2005,9 +2005,8 @@ Color LocalFrameView::DocumentBackgroundColor() {
   if (background_source->StyleRef().ColorSchemeForced()) {
     // TODO(https://crbug.com/1351544): The DarkModeFilter operate on SkColor4f,
     // and DocumentBackgroundColor should return an SkColor4f.
-    doc_bg = Color::FromSkColor(EnsureDarkModeFilter().InvertColorIfNeeded(
-        doc_bg.ToSkColorDeprecated(),
-        DarkModeFilter::ElementRole::kBackground));
+    doc_bg = Color::FromSkColor4f(EnsureDarkModeFilter().InvertColorIfNeeded(
+        doc_bg.toSkColor4f(), DarkModeFilter::ElementRole::kBackground));
   }
   if (blend_with_base)
     return result.Blend(doc_bg);

@@ -23,11 +23,11 @@ class PLATFORM_EXPORT DarkModeColorFilter {
       const DarkModeSettings& settings);
 
   virtual ~DarkModeColorFilter();
-  virtual SkColor InvertColor(SkColor color) const = 0;
+  virtual SkColor4f InvertColor(const SkColor4f& color) const = 0;
   virtual sk_sp<SkColorFilter> ToSkColorFilter() const = 0;
-  virtual SkColor AdjustColorForHigherConstrast(
-      SkColor adjusted_color,
-      const SkColor background,
+  virtual SkColor4f AdjustColorForHigherConstrast(
+      const SkColor4f& adjusted_color,
+      const SkColor4f& background,
       float reference_contrast_ratio) {
     return adjusted_color;
   }

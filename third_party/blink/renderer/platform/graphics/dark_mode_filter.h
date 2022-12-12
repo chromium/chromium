@@ -41,15 +41,16 @@ class PLATFORM_EXPORT DarkModeFilter {
   };
   enum class ImageType { kNone, kIcon, kSeparator, kPhoto };
 
-  SkColor InvertColorIfNeeded(SkColor color, ElementRole element_role);
-  SkColor InvertColorIfNeeded(SkColor color,
-                              ElementRole role,
-                              SkColor contrast_background);
+  SkColor4f InvertColorIfNeeded(const SkColor4f& color,
+                                ElementRole element_role);
+  SkColor4f InvertColorIfNeeded(const SkColor4f& color,
+                                ElementRole role,
+                                const SkColor4f& contrast_background);
 
   absl::optional<cc::PaintFlags> ApplyToFlagsIfNeeded(
       const cc::PaintFlags& flags,
       ElementRole role,
-      SkColor contrast_background);
+      SkColor4f contrast_background);
 
   size_t GetInvertedColorCacheSizeForTesting();
 
@@ -80,11 +81,11 @@ class PLATFORM_EXPORT DarkModeFilter {
     sk_sp<SkColorFilter> image_filter;
   };
 
-  SkColor AdjustDarkenColor(SkColor color,
-                            DarkModeFilter::ElementRole role,
-                            SkColor contrast_background);
+  SkColor4f AdjustDarkenColor(const SkColor4f& color,
+                              DarkModeFilter::ElementRole role,
+                              const SkColor4f& contrast_background);
 
-  bool ShouldApplyToColor(SkColor color, ElementRole role);
+  bool ShouldApplyToColor(const SkColor4f& color, ElementRole role);
 
   // Returns dark mode color filter for images. This function should be called
   // only if image policy is set to DarkModeImagePolicy::kFilterAll or image is

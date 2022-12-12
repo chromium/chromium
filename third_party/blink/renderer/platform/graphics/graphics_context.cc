@@ -95,11 +95,10 @@ Color DarkModeColor(GraphicsContext& context,
                     const Color& color,
                     const AutoDarkMode& auto_dark_mode) {
   if (auto_dark_mode.enabled) {
-    // TODO(https://crbug.com/1351544): DarkModeFilter should operate on
-    // SkColor4f, not SkColor.
-    return Color::FromSkColor(context.GetDarkModeFilter()->InvertColorIfNeeded(
-        color.ToSkColorDeprecated(), auto_dark_mode.role,
-        auto_dark_mode.contrast_color));
+    return Color::FromSkColor4f(
+        context.GetDarkModeFilter()->InvertColorIfNeeded(
+            color.toSkColor4f(), auto_dark_mode.role,
+            SkColor4f::FromColor(auto_dark_mode.contrast_color)));
   }
   return color;
 }
@@ -120,7 +119,8 @@ class GraphicsContext::DarkModeFlags final {
                 const cc::PaintFlags& flags) {
     if (auto_dark_mode.enabled) {
       dark_mode_flags_ = context->GetDarkModeFilter()->ApplyToFlagsIfNeeded(
-          flags, auto_dark_mode.role, auto_dark_mode.contrast_color);
+          flags, auto_dark_mode.role,
+          SkColor4f::FromColor(auto_dark_mode.contrast_color));
       if (dark_mode_flags_) {
         flags_ = &dark_mode_flags_.value();
         return;

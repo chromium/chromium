@@ -175,9 +175,9 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
     // looper used for shadows so we need to apply dark mode to the color here.
     const Color shadow_color =
         style.ForceDark()
-            ? Color::FromSkColor(
+            ? Color::FromSkColor4f(
                   context.GetDarkModeFilter()->InvertColorIfNeeded(
-                      resolved_shadow_color.ToSkColorDeprecated(),
+                      resolved_shadow_color.toSkColor4f(),
                       DarkModeFilter::ElementRole::kBackground))
             : resolved_shadow_color;
 
@@ -345,9 +345,9 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
     // looper used for shadows so we need to apply dark mode to the color here.
     const Color& shadow_color =
         style.ForceDark()
-            ? Color::FromSkColor(
+            ? Color::FromSkColor4f(
                   context.GetDarkModeFilter()->InvertColorIfNeeded(
-                      resolved_shadow_color.ToSkColorDeprecated(),
+                      resolved_shadow_color.toSkColor4f(),
                       DarkModeFilter::ElementRole::kBackground))
             : resolved_shadow_color;
 

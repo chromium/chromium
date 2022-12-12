@@ -232,8 +232,10 @@ sk_sp<PaintShader> Gradient::CreateShaderInternal(
 
   if (is_dark_mode_enabled_) {
     for (auto& color : colors) {
-      color = EnsureDarkModeFilter().InvertColorIfNeeded(
-          SkColor(color), DarkModeFilter::ElementRole::kBackground);
+      color = EnsureDarkModeFilter()
+                  .InvertColorIfNeeded(SkColor4f::FromColor(color),
+                                       DarkModeFilter::ElementRole::kBackground)
+                  .toSkColor();
     }
   }
   // The matrix type is mutable and set lazily. Force it to be computed here to
