@@ -12,10 +12,19 @@ declare_args() {
   # true (see below). This is done to avoid the binary size impact (~40 KiB) on
   # Android.
   disable_fieldtrial_testing_config = false
+
+  # Set to true to make a build that force enables activation of field trial
+  # tests specified in testing/variations/fieldtrial_testing_config.json.
+  force_enable_fieldtrial_testing_config = false
 }
 
+assert(!(disable_fieldtrial_testing_config &&
+             force_enable_fieldtrial_testing_config),
+       "Cannot enable and disable field trial testing at the same time.")
+
 fieldtrial_testing_enabled =
-    !disable_fieldtrial_testing_config && !(is_android && is_chrome_branded)
+    force_enable_fieldtrial_testing_config ||
+    (!disable_fieldtrial_testing_config && !(is_android && is_chrome_branded))
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
