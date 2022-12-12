@@ -16,7 +16,6 @@ body {
   flex-direction: column;
   font-family: Roboto, sans-serif;
   font-size: 13px;
-  height: 100%;
   margin: 15px;
   overflow: auto;
 }
