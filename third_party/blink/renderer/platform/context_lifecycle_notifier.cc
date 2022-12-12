@@ -8,20 +8,10 @@
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 
 #include "base/record_replay.h"
-#include "base/strings/stringprintf.h"
 
 namespace blink {
 
-ContextLifecycleNotifier::ContextLifecycleNotifier() {
-  // https://linear.app/replay/issue/RUN-806
-  recordreplay::RegisterPointer("ContextLifecycleNotifier", this);
-  observers_.record_replay_assert_id_ = recordreplay::PointerId(this);
-}
-
 ContextLifecycleNotifier::~ContextLifecycleNotifier() {
-  // https://linear.app/replay/issue/RUN-806
-  recordreplay::UnregisterPointer(this);
-
   // `NotifyContextDestroyed()` must be called prior to destruction.
   DCHECK(context_destroyed_);
 }
@@ -32,66 +22,27 @@ bool ContextLifecycleNotifier::IsContextDestroyed() const {
 
 void ContextLifecycleNotifier::AddContextLifecycleObserver(
     ContextLifecycleObserver* observer) {
-  // https://linear.app/replay/issue/RUN-806
-  recordreplay::Assert("ContextLifecycleNotifier::AddContextLifecycleObserver %d %d",
-                       recordreplay::PointerId(this),
-                       recordreplay::PointerId(observer));
-
   observers_.AddObserver(observer);
 }
 
 void ContextLifecycleNotifier::RemoveContextLifecycleObserver(
     ContextLifecycleObserver* observer) {
-  // https://linear.app/replay/issue/RUN-806
-  recordreplay::Assert("ContextLifecycleNotifier::RemoveContextLifecycleObserver %d %d",
-                       recordreplay::PointerId(this),
-                       recordreplay::PointerId(observer));
-
   DCHECK(observers_.HasObserver(observer));
   observers_.RemoveObserver(observer);
 }
 
 void ContextLifecycleNotifier::NotifyContextDestroyed() {
-  // https://linear.app/replay/issue/RUN-806
-  if (!recordreplay::AreEventsDisallowed()) {
-    recordreplay::Assert("ContextLifecycleNotifier::NotifyContextDestroyed %d",
-                         recordreplay::PointerId(this));
-  }
+  // The observers can vary when replaying as weak references are used and different
+  // observers may have been swept. Avoid interacting with the recording while we
+  // do the notifications.
+  recordreplay::AutoDisallowEvents disallow;
 
   context_destroyed_ = true;
 
   ScriptForbiddenScope forbid_script;
-
-  // Manually ensure we notify observers in a consistent order when recording
-  // vs. replaying. It would be better to ensure the observers_ set is iterated
-  // deterministically, but this is easier for now.
-  std::vector<ContextLifecycleObserver*> observers;
-  observers_.ForEachObserver([&](ContextLifecycleObserver* observer) {
-    observers.push_back(observer);
-  });
-
-  std::sort(observers.begin(), observers.end(), recordreplay::CompareByPointerId());
-
-  // https://linear.app/replay/issue/RUN-806
-  if (recordreplay::IsRecordingOrReplaying("values") && !recordreplay::AreEventsDisallowed()) {
-    std::string observer_ids;
-    for (ContextLifecycleObserver* observer : observers) {
-      observer_ids += base::StringPrintf(" %d", recordreplay::PointerId(observer));
-    }
-    recordreplay::Assert("ContextLifecycleNotifier::NotifyContextDestroyed #0%s",
-                         observer_ids.c_str());
-  }
-
-  for (ContextLifecycleObserver* observer : observers) {
-    // https://linear.app/replay/issue/RUN-806
-    if (!recordreplay::AreEventsDisallowed()) {
-      recordreplay::Assert("ContextLifecycleNotifier::NotifyContextDestroyed #1 %d",
-                           recordreplay::PointerId(observer));
-    }
-
+  observers_.ForEachObserver([](ContextLifecycleObserver* observer) {
     observer->NotifyContextDestroyed();
-  }
-
+  });
   observers_.Clear();
 }
 
