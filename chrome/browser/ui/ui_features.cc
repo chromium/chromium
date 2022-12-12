@@ -170,7 +170,7 @@ const char kMinimumTabWidthFeatureParameterName[] = "minTabWidth";
 // Enables buttons when scrolling the tabstrip https://crbug.com/951078
 BASE_FEATURE(kTabScrollingButtonPosition,
              "TabScrollingButtonPosition",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const char kTabScrollingButtonPositionParameterName[] = "buttonPosition";
 
 // Enables tab scrolling while dragging tabs in tabstrip
