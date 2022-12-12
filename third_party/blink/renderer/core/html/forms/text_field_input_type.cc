@@ -435,6 +435,13 @@ static bool IsASCIILineBreak(UChar c) {
   return c == '\r' || c == '\n';
 }
 
+// Returns true if `c` may contain a line break. This is an inexact comparison.
+// This is used as the common case is the text does not contain a newline.
+static bool MayBeASCIILineBreak(UChar c) {
+  static_assert('\n' < '\r');
+  return c <= '\r';
+}
+
 static String LimitLength(const String& string, unsigned max_length) {
   unsigned new_length = std::min(max_length, string.length());
   if (new_length == string.length())
@@ -445,6 +452,13 @@ static String LimitLength(const String& string, unsigned max_length) {
 }
 
 String TextFieldInputType::SanitizeValue(const String& proposed_value) const {
+  // Typical case is the string doesn't contain a break and fits. The Find()
+  // is not exact (meaning it'll match many other characters), but is a good
+  // approximation for a fast path.
+  if (proposed_value.Find(MayBeASCIILineBreak) == kNotFound &&
+      proposed_value.length() < std::numeric_limits<int>::max()) {
+    return proposed_value;
+  }
   return LimitLength(proposed_value.RemoveCharacters(IsASCIILineBreak),
                      std::numeric_limits<int>::max());
 }
