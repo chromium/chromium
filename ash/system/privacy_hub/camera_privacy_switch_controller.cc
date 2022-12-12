@@ -124,6 +124,10 @@ void CameraPrivacySwitchController::OnPreferenceChanged(
   }
 }
 
+void CameraPrivacySwitchController::OnCameraCountChanged(int new_camera_count) {
+  camera_count_ = new_camera_count;
+}
+
 CameraSWPrivacySwitchSetting
 CameraPrivacySwitchController::GetUserSwitchPreference() {
   DCHECK(pref_change_registrar_);
@@ -163,9 +167,10 @@ void CameraPrivacySwitchController::OnCameraHWPrivacySwitchStateChanged(
     frontend->CameraHardwareToggleChanged(state);
   }
   // Issue a notification if camera is disabled by HW switch, but not by the SW
-  // switch
+  // switch and there is multiple cameras.
   if (state == cros::mojom::CameraPrivacySwitchState::ON &&
-      GetUserSwitchPreference() == CameraSWPrivacySwitchSetting::kEnabled) {
+      GetUserSwitchPreference() == CameraSWPrivacySwitchSetting::kEnabled &&
+      camera_count_ > 1) {
     ShowHWCameraSwitchOffSWCameraSwitchOnNotification();
   }
   if (state == cros::mojom::CameraPrivacySwitchState::OFF) {

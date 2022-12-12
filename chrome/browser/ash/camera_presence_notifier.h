@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/sequence_checker.h"
+#include "base/supports_user_data.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
@@ -15,7 +16,7 @@ namespace ash {
 
 // Monitors Camera sources. Establishes connection to source on creation. Fires
 // callbacks on state changes after Start() is called until Stop().
-class CameraPresenceNotifier {
+class CameraPresenceNotifier : public base::SupportsUserData::Data {
  public:
   // |callback| for notification of camera count changes. Only one
   // client may monitor per instance.
@@ -30,7 +31,7 @@ class CameraPresenceNotifier {
   CameraPresenceNotifier(const CameraPresenceNotifier&) = delete;
   CameraPresenceNotifier& operator=(const CameraPresenceNotifier&) = delete;
 
-  ~CameraPresenceNotifier();
+  ~CameraPresenceNotifier() override;
 
   // Start polling for camera presence changes. A callback always fires after
   // Start() is called since the first result is always a change.

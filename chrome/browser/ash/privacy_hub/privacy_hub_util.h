@@ -23,6 +23,9 @@ bool MicrophoneSwitchState();
 // Checks whether there are active input devices for simple usage.
 bool HasActiveInputDeviceForSimpleUsage();
 
+// Needs to be called for the Privacy Hub to be aware of the camera count.
+void SetUpCameraCountObserver();
+
 }  // namespace privacy_hub_util
 }  // namespace ash
 

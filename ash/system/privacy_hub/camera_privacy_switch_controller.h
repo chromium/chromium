@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "base/supports_user_data.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
@@ -44,7 +45,8 @@ class CameraPrivacySwitchAPI {
 // preference setting.
 class ASH_EXPORT CameraPrivacySwitchController
     : public SessionObserver,
-      public media::CameraPrivacySwitchObserver {
+      public media::CameraPrivacySwitchObserver,
+      public base::SupportsUserData {
  public:
   CameraPrivacySwitchController();
 
@@ -66,6 +68,9 @@ class ASH_EXPORT CameraPrivacySwitchController
 
   // Handles user toggling the camera switch on Privacy Hub UI.
   void OnPreferenceChanged(const std::string& pref_name);
+
+  // Handles the change in the number of cameras
+  void OnCameraCountChanged(int new_camera_count);
 
   // Returns the last observed HW switch state for the camera.
   cros::mojom::CameraPrivacySwitchState HWSwitchState() const;
@@ -115,6 +120,7 @@ class ASH_EXPORT CameraPrivacySwitchController
       cros::mojom::CameraPrivacySwitchState::UNKNOWN;
   int active_applications_using_camera_count_ = 0;
   bool is_camera_observer_added_ = false;
+  int camera_count_ = -1;
 };
 
 }  // namespace ash

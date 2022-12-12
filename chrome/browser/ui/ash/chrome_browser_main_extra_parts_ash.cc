@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/policy/display/display_resolution_handler.h"
 #include "chrome/browser/ash/policy/display/display_rotation_default_handler.h"
 #include "chrome/browser/ash/policy/display/display_settings_handler.h"
+#include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
 #include "chrome/browser/ash/video_conference/video_conference_tray_controller_impl.h"
@@ -277,6 +278,9 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 
   media_client_ = std::make_unique<MediaClientImpl>();
   media_client_->Init();
+
+  // Passes (and continues passing) the current camera count to the PrivacyHub.
+  ash::privacy_hub_util::SetUpCameraCountObserver();
 
   if (ash::features::IsMicMuteNotificationsEnabled()) {
     app_access_notifier_ = std::make_unique<AppAccessNotifier>();

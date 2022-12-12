@@ -193,32 +193,44 @@ TEST_F(PrivacyHubCameraControllerTests, OnCameraSoftwarePrivacySwitchChanged) {
       cros::mojom::CameraPrivacySwitchState::ON);
 }
 
-TEST_F(PrivacyHubCameraControllerTests, OnCameraHardwarePrivacySwitchChanged) {
+TEST_F(PrivacyHubCameraControllerTests,
+       OnCameraHardwarePrivacySwitchChangedMultipleCameras) {
   EXPECT_CALL(mock_frontend_, CameraHardwareToggleChanged(
                                   cros::mojom::CameraPrivacySwitchState::OFF));
   EXPECT_CALL(mock_frontend_, CameraHardwareToggleChanged(
                                   cros::mojom::CameraPrivacySwitchState::ON));
   CameraPrivacySwitchController& controller =
       Shell::Get()->privacy_hub_controller()->camera_controller();
+  // We have 2 cameras in the system.
+  controller.OnCameraCountChanged(2);
+  // Camera is enabled in Privacy Hub.
   SetUserPref(true);
 
+  // Somebody switched the camera off by the hardware switch.
   controller.OnCameraHWPrivacySwitchStateChanged(
       std::string(), cros::mojom::CameraPrivacySwitchState::OFF);
+  // Controller must know about it.
   EXPECT_EQ(cros::mojom::CameraPrivacySwitchState::OFF,
             controller.HWSwitchState());
   EXPECT_FALSE(FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
 
+  // Somebody switched the camera off by the hardware switch.
   controller.OnCameraHWPrivacySwitchStateChanged(
       std::string(), cros::mojom::CameraPrivacySwitchState::ON);
+  // Controller must know about it.
   EXPECT_EQ(cros::mojom::CameraPrivacySwitchState::ON,
             controller.HWSwitchState());
 
   message_center::MessageCenter* const message_center =
       message_center::MessageCenter::Get();
+  // This particular notification ("Do you want to disable all cameras?") should
+  // appear only there are multiple cameras.
   EXPECT_TRUE(FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
+  // User pref didn't change.
   EXPECT_TRUE(GetUserPref());
+  // We didn't log any notification clicks so far.
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 privacy_hub_metrics::
                     kPrivacyHubCameraEnabledFromNotificationHistogram,
@@ -229,11 +241,15 @@ TEST_F(PrivacyHubCameraControllerTests, OnCameraHardwarePrivacySwitchChanged) {
                     kPrivacyHubCameraEnabledFromNotificationHistogram,
                 false),
             0);
+  // Click on the notification button.
   message_center->ClickOnNotificationButton(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId, 0);
+  // This must change the user pref for the camera (disabling all cameras).
   EXPECT_FALSE(GetUserPref());
+  // The notification should be cleared after it has been clicked on.
   EXPECT_FALSE(FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
+  // The histograms were updated.
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 privacy_hub_metrics::
                     kPrivacyHubCameraEnabledFromNotificationHistogram,
@@ -246,12 +262,58 @@ TEST_F(PrivacyHubCameraControllerTests, OnCameraHardwarePrivacySwitchChanged) {
             1);
 }
 
+TEST_F(PrivacyHubCameraControllerTests,
+       OnCameraHardwarePrivacySwitchChangedOneCamera) {
+  EXPECT_CALL(mock_frontend_, CameraHardwareToggleChanged(
+                                  cros::mojom::CameraPrivacySwitchState::OFF));
+  EXPECT_CALL(mock_frontend_, CameraHardwareToggleChanged(
+                                  cros::mojom::CameraPrivacySwitchState::ON));
+  CameraPrivacySwitchController& controller =
+      Shell::Get()->privacy_hub_controller()->camera_controller();
+  // We have 1 camera in the system.
+  controller.OnCameraCountChanged(1);
+  // Camera is enabled in Privacy Hub.
+  SetUserPref(true);
+
+  // Somebody switched the camera off by the hardware switch.
+  controller.OnCameraHWPrivacySwitchStateChanged(
+      std::string(), cros::mojom::CameraPrivacySwitchState::OFF);
+  // Controller must know about it.
+  EXPECT_EQ(cros::mojom::CameraPrivacySwitchState::OFF,
+            controller.HWSwitchState());
+  // This particular notification should appear only if there are multiple
+  // cameras.
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
+
+  // Switching the hardware switch back again.
+  controller.OnCameraHWPrivacySwitchStateChanged(
+      std::string(), cros::mojom::CameraPrivacySwitchState::ON);
+  // Controller is aware.
+  EXPECT_EQ(cros::mojom::CameraPrivacySwitchState::ON,
+            controller.HWSwitchState());
+  // This didn't cause any change in the setting toggle.
+  EXPECT_TRUE(GetUserPref());
+  // There were no changes to the histograms.
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubCameraEnabledFromNotificationHistogram,
+                true),
+            0);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::
+                    kPrivacyHubCameraEnabledFromNotificationHistogram,
+                false),
+            0);
+}
+
 // This test is a regression test for b/253407315
 TEST_F(PrivacyHubCameraControllerTests,
        OnCameraHardwarePrivacySwitchChangedNotificationClearing) {
   CameraPrivacySwitchController& controller =
       Shell::Get()->privacy_hub_controller()->camera_controller();
   SetUserPref(true);
+  controller.OnCameraCountChanged(2);
 
   controller.OnCameraHWPrivacySwitchStateChanged(
       "0", cros::mojom::CameraPrivacySwitchState::ON);
@@ -301,6 +363,7 @@ TEST_F(PrivacyHubCameraControllerTests,
 TEST_F(PrivacyHubCameraControllerTests,
        CameraOffNotificationRemoveViaClickOnBody) {
   SetUserPref(false);
+  controller_->OnCameraCountChanged(2);
   message_center::MessageCenter* const message_center =
       message_center::MessageCenter::Get();
   ASSERT_TRUE(message_center);
