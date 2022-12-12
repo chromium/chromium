@@ -434,7 +434,7 @@ DOMHighResTimeStamp PerformanceResourceTiming::requestStart() const {
   if (!AllowTimingDetails())
     return 0.0;
   ResourceLoadTiming* timing = GetResourceLoadTiming();
-  if (!timing)
+  if (!timing || timing->SendStart().is_null())
     return connectEnd();
 
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
@@ -517,8 +517,8 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddNumber("domainLookupStart", domainLookupStart());
   builder.AddNumber("domainLookupEnd", domainLookupEnd());
   builder.AddNumber("connectStart", connectStart());
-  builder.AddNumber("connectEnd", connectEnd());
   builder.AddNumber("secureConnectionStart", secureConnectionStart());
+  builder.AddNumber("connectEnd", connectEnd());
   builder.AddNumber("requestStart", requestStart());
   builder.AddNumber("responseStart", responseStart());
   builder.AddNumber("responseEnd", responseEnd());
