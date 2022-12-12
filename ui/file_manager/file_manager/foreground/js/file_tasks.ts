@@ -19,7 +19,7 @@ import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {FileData} from '../../externs/ts/state.js';
+import {FileData, FileTasks as StoreFileTasks} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
@@ -118,6 +118,20 @@ export class FileTasks {
     return new FileTasks(
         volumeManager, metadataModel, directoryModel, ui,
         fileTransferController, entries, resultingTasks, defaultTask,
+        taskHistory, progressCenter, taskController);
+  }
+
+  /** Creates FileTasks instance based on the data from the Store. */
+  static fromStoreTasks(
+      tasks: StoreFileTasks, volumeManager: VolumeManager,
+      metadataModel: MetadataModel, directoryModel: DirectoryModel,
+      ui: FileManagerUI, fileTransferController: FileTransferController,
+      entries: Entry[], taskHistory: TaskHistory,
+      progressCenter: ProgressCenter,
+      taskController: TaskController): FileTasks {
+    return new FileTasks(
+        volumeManager, metadataModel, directoryModel, ui,
+        fileTransferController, entries, tasks, tasks.defaultTask ?? null,
         taskHistory, progressCenter, taskController);
   }
 

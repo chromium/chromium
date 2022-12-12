@@ -1371,19 +1371,37 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Tasks, /* tasks.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("executeDefaultTaskDownloads"),
-                      TestCase("executeDefaultTaskDownloads").InGuestMode(),
-                      TestCase("executeDefaultTaskDrive"),
-                      TestCase("defaultTaskForPdf"),
-                      TestCase("defaultTaskForTextPlain"),
-                      TestCase("defaultTaskDialogDownloads"),
-                      TestCase("defaultTaskDialogDownloads").InGuestMode(),
-                      TestCase("defaultTaskDialogDrive"),
-                      TestCase("changeDefaultDialogScrollList"),
-                      TestCase("genericTaskIsNotExecuted"),
-                      TestCase("genericTaskAndNonGenericTask"),
-                      TestCase("executeViaDblClick"),
-                      TestCase("noActionBarOpenForDirectories")));
+    ::testing::Values(
+        TestCase("executeDefaultTaskDownloads").FilesExperimental(),
+        TestCase("executeDefaultTaskDownloads"),
+        TestCase("executeDefaultTaskDownloads")
+            .InGuestMode()
+            .FilesExperimental(),
+        TestCase("executeDefaultTaskDownloads").InGuestMode(),
+        TestCase("executeDefaultTaskDrive").FilesExperimental(),
+        TestCase("executeDefaultTaskDrive"),
+        TestCase("defaultTaskForPdf").FilesExperimental(),
+        TestCase("defaultTaskForPdf"),
+        TestCase("defaultTaskForTextPlain").FilesExperimental(),
+        TestCase("defaultTaskForTextPlain"),
+        TestCase("defaultTaskDialogDownloads").FilesExperimental(),
+        TestCase("defaultTaskDialogDownloads"),
+        TestCase("defaultTaskDialogDownloads")
+            .InGuestMode()
+            .FilesExperimental(),
+        TestCase("defaultTaskDialogDownloads").InGuestMode(),
+        TestCase("defaultTaskDialogDrive").FilesExperimental(),
+        TestCase("defaultTaskDialogDrive"),
+        TestCase("changeDefaultDialogScrollList").FilesExperimental(),
+        TestCase("changeDefaultDialogScrollList"),
+        TestCase("genericTaskIsNotExecuted").FilesExperimental(),
+        TestCase("genericTaskIsNotExecuted"),
+        TestCase("genericTaskAndNonGenericTask").FilesExperimental(),
+        TestCase("genericTaskAndNonGenericTask"),
+        TestCase("executeViaDblClick").FilesExperimental(),
+        TestCase("executeViaDblClick"),
+        TestCase("noActionBarOpenForDirectories").FilesExperimental(),
+        TestCase("noActionBarOpenForDirectories")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FolderShortcuts, /* folder_shortcuts.js */
