@@ -18,11 +18,6 @@ var GaiaAuthHostBrowserTest = class extends testing.Test {
   get isAsync() {
     return true;
   }
-
-  /** @override */
-  get webuiHost() {
-    return 'chrome-signin';
-  }
 };
 
 [['PasswordChangeAuthenticator', 'password_change_authenticator_test.js'],
@@ -37,7 +32,7 @@ function registerTest(testName, module, caseName) {
   this[className] = class extends GaiaAuthHostBrowserTest {
     /** @override */
     get browsePreload() {
-      return `chrome://webui-test/test_loader.html?module=gaia_auth_host/${
+      return `chrome://chrome-signin/test_loader.html?module=gaia_auth_host/${
           module}`;
     }
   };
