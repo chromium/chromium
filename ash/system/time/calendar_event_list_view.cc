@@ -261,6 +261,8 @@ void CalendarEventListView::UpdateListItems() {
     if (!all_other_events.empty())
       content_view_->AddChildView(CreateChildEventListView(all_other_events));
 
+    content_view_->InvalidateLayout();
+
     if (!multi_day_events.empty() || !all_other_events.empty())
       return;
   } else {
