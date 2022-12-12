@@ -4529,6 +4529,26 @@
             ]
         }
     ],
+    "ExcludeLowEntropyImagesFromLCP": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Control_V1",
+                    "disable_features": [
+                        "ExcludeLowEntropyImagesFromLCP"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExploreSitesDense": [
         {
             "platforms": [
