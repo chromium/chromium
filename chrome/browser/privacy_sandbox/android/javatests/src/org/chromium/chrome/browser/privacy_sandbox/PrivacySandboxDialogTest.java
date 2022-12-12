@@ -24,9 +24,12 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ScrollView;
 
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -155,6 +158,26 @@ public final class PrivacySandboxDialogTest {
                     mBottomSheetController);
             mDialog = PrivacySandboxDialogController.getDialogForTesting();
         });
+    }
+
+    private void tryClickOn(Matcher<View> viewMatcher) {
+        ScrollView scrollView = getScrollView();
+        while (scrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
+            clickMoreButton();
+        }
+        onViewWaiting(viewMatcher).perform(click());
+    }
+
+    private ScrollView getScrollView() {
+        ScrollView[] scrollViews = {null};
+        onView(withId(R.id.privacy_sandbox_consent_eea_scroll_view)).check(((v, e) -> {
+            scrollViews[0] = ((ScrollView) v);
+        }));
+        return scrollViews[0];
+    }
+
+    private void clickMoreButton() {
+        onView(withId(R.id.more_button)).perform(click());
     }
 
     @Test
@@ -352,7 +375,7 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     public void testControllerShowsEEAConsent() throws IOException {
-        PrivacySandboxDialogController.disableAnimationsForTesting(false);
+        PrivacySandboxDialogController.disableEEANoticeForTesting(true);
 
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_CONSENT);
         launchDialog();
@@ -362,16 +385,16 @@ public final class PrivacySandboxDialogTest {
         assertEquals("Last dialog action", PromptAction.CONSENT_SHOWN,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         // Accept the consent and verify it worked correctly.
-        onView(withId(R.id.ack_button)).perform(click());
+        tryClickOn(withId(R.id.ack_button));
         assertEquals("Last dialog action", PromptAction.CONSENT_ACCEPTED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
-        onView(withId(R.id.privacy_sandbox_m1_consent_title)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).check(doesNotExist());
     }
 
     @Test
     @SmallTest
     public void testControllerShowsEEAConsentDropdown() {
-        PrivacySandboxDialogController.disableAnimationsForTesting(false);
+        PrivacySandboxDialogController.disableEEANoticeForTesting(true);
 
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_CONSENT);
         launchDialog();
@@ -390,10 +413,10 @@ public final class PrivacySandboxDialogTest {
         onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).check(doesNotExist());
 
         // Decline the consent and verify it worked correctly.
-        onView(withId(R.id.no_button)).perform(click());
+        tryClickOn(withId(R.id.no_button));
         assertEquals("Last dialog action", PromptAction.CONSENT_DECLINED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
-        onView(withId(R.id.privacy_sandbox_m1_consent_title)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).check(doesNotExist());
     }
 
     @Test
@@ -406,8 +429,9 @@ public final class PrivacySandboxDialogTest {
         launchDialog();
 
         // Accept the consent and verify the spinner it's shown.
-        onViewWaiting(withId(R.id.ack_button)).perform(click());
-        onView(withId(R.id.privacy_sandbox_m1_consent_title)).check(matches(not(isDisplayed())));
+        tryClickOn(withId(R.id.ack_button));
+        onViewWaiting(withId(R.id.privacy_sandbox_m1_consent_title))
+                .check(matches(not(isDisplayed())));
         onView(withId(R.id.progress_bar_container)).check(matches(isDisplayed()));
 
         // Wait for the spinner to disappear and check the notice is shown
@@ -419,8 +443,9 @@ public final class PrivacySandboxDialogTest {
         launchDialog();
 
         // Decline the consent and verify the spinner it's shown.
-        onViewWaiting(withId(R.id.no_button)).perform(click());
-        onView(withId(R.id.privacy_sandbox_m1_consent_title)).check(matches(not(isDisplayed())));
+        tryClickOn(withId(R.id.no_button));
+        onViewWaiting(withId(R.id.privacy_sandbox_m1_consent_title))
+                .check(matches(not(isDisplayed())));
         onView(withId(R.id.progress_bar_container)).check(matches(isDisplayed()));
 
         // Wait for the spinner to disappear and check the notice is shown

@@ -26,6 +26,7 @@ public class PrivacySandboxDialogController {
     private static WeakReference<Dialog> sDialog;
     private static Boolean sShowNew;
     private static boolean sDisableAnimations;
+    private static boolean sDisableEEANoticeForTesting;
     // TODO(crbug.com/1330704): This variable and its usage can be removed when the PrivacySandbox
     // promo logic will be decoupled from the NewTabPage.
     private static boolean sNewNoticeShownInCurrentSession;
@@ -83,10 +84,12 @@ public class PrivacySandboxDialogController {
      * Shows the NoticeEEA dialog.
      */
     public static void showNoticeEEA(Context context, SettingsLauncher settingsLauncher) {
-        Dialog dialog;
-        dialog = new PrivacySandboxDialogNoticeEEAV4(context, settingsLauncher);
-        dialog.show();
-        sDialog = new WeakReference<>(dialog);
+        if (!sDisableEEANoticeForTesting) {
+            Dialog dialog;
+            dialog = new PrivacySandboxDialogNoticeEEAV4(context, settingsLauncher);
+            dialog.show();
+            sDialog = new WeakReference<>(dialog);
+        }
     }
 
     static boolean showNewNotice() {
@@ -121,5 +124,10 @@ public class PrivacySandboxDialogController {
     @VisibleForTesting
     static void disableAnimationsForTesting(boolean disable) {
         sDisableAnimations = disable;
+    }
+
+    @VisibleForTesting
+    static void disableEEANoticeForTesting(boolean disable) {
+        sDisableEEANoticeForTesting = disable;
     }
 }

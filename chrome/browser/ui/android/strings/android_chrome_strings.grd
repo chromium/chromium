@@ -1156,6 +1156,9 @@ Private state tokens improve privacy on the web and can’t be used to find out 
       <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_LINK" translateable="false" desc="Privacy Sandbox dialog consent EEA: Non-interactable link out 'Learn more with Google's etc ect'">
         Esed purus vestibulum velit convalli
       </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_DIALOG_MORE_BUTTON" translateable="false" desc="Privacy Sandbox dialog more button: Clicking on it makes the dialog scrolling to the bottom to show all the content.">
+        More
+      </message>
 
       <!-- Privacy Sandbox v4 - Notice EEA. -->
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_TITLE" translateable="false" desc="Privacy Sandbox dialog notice EEA: title.">
