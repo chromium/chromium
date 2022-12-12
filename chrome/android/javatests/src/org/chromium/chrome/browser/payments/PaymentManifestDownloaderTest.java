@@ -40,7 +40,7 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String EXPECTED_PAYMENT_METHOD_MANIFEST = "{\n"
-            + "  \"default_applications\": [\"https://bobpay.com/app.json\"]\n"
+            + "  \"default_applications\": [\"https://bobpay.test/app.json\"]\n"
             + "}\n";
 
     private static final String EXPECTED_WEB_APP_MANIFEST = "{\n"
@@ -130,7 +130,7 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
     @Feature({"Payments"})
     public void testDownloadWebAppManifest() throws Throwable {
         final GURL url =
-                new GURL(mServer.getURL("/components/test/data/payments/bobpay.com/app.json"));
+                new GURL(mServer.getURL("/components/test/data/payments/bobpay.test/app.json"));
         mActivityTestRule.runOnUiThread((Runnable) ()
                                                 -> mDownloader.downloadWebAppManifest(mTestOrigin,
                                                         url, PaymentManifestDownloaderTest.this));
@@ -159,7 +159,7 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
     @Feature({"Payments"})
     public void testDownloadPaymentMethodManifest() throws Throwable {
         final GURL url =
-                new GURL(mServer.getURL("/components/test/data/payments/bobpay.com/webpay"));
+                new GURL(mServer.getURL("/components/test/data/payments/bobpay.test/webpay"));
         mActivityTestRule.runOnUiThread(
                 (Runnable) ()
                         -> mDownloader.downloadPaymentMethodManifest(
@@ -192,10 +192,10 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
     public void testSeveralDownloadsAtOnce() throws Throwable {
         final GURL paymentMethodUri1 = new GURL(mServer.getURL("/no-such-payment-method-name"));
         final GURL paymentMethodUri2 =
-                new GURL(mServer.getURL("/components/test/data/payments/bobpay.com/webpay"));
+                new GURL(mServer.getURL("/components/test/data/payments/bobpay.test/webpay"));
         final GURL webAppUri1 = new GURL(mServer.getURL("/no-such-app.json"));
         final GURL webAppUri2 =
-                new GURL(mServer.getURL("/components/test/data/payments/bobpay.com/app.json"));
+                new GURL(mServer.getURL("/components/test/data/payments/bobpay.test/app.json"));
         mActivityTestRule.runOnUiThread((Runnable) () -> {
             mDownloader.downloadPaymentMethodManifest(
                     mTestOrigin, paymentMethodUri1, PaymentManifestDownloaderTest.this);

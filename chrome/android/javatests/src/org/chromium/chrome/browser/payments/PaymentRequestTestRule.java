@@ -1123,7 +1123,7 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
      */
     /* package */ TestFactory addPaymentAppFactory(
             @AppPresence int appPresence, @FactorySpeed int factorySpeed) {
-        return addPaymentAppFactory("https://bobpay.com", appPresence, factorySpeed);
+        return addPaymentAppFactory("https://bobpay.test", appPresence, factorySpeed);
     }
 
     /**

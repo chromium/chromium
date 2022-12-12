@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerInstallFailedTest, Test) {
       "PaymentRequest.PaymentHandlerInstallSuccess", 0);
 
   std::string method_name =
-      https_server()->GetURL("a.com", "/paulpay.com/pay").spec();
+      https_server()->GetURL("a.com", "/paulpay.test/pay").spec();
   ASSERT_NE('/', method_name[method_name.length() - 1]);
   NavigateTo("b.com", "/can_make_payment_checker.html");
   EXPECT_EQ("true", content::EvalJs(

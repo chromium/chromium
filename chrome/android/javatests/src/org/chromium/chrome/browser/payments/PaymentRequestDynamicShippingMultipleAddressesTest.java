@@ -39,45 +39,45 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
 
     private static final AutofillProfile[] AUTOFILL_PROFILES = {
             // Incomplete profile_0 (missing phone number)
-            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
+            new AutofillProfile("" /* guid */, "https://www.example.test" /* origin */,
                     "" /* honorific prefix */, "Bart Simpson", "Acme Inc.", "123 Main",
                     "California", "Los Angeles", "", "90210", "", "US", "", "bart@simpson.com", ""),
 
             // Incomplete profile_1 (missing street address).
-            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
+            new AutofillProfile("" /* guid */, "https://www.example.test" /* origin */,
                     "" /* honorific prefix */, "Homer Simpson", "Acme Inc.", "", "California",
                     "Los Angeles", "", "90210", "", "US", "555 123-4567", "homer@simpson.com", ""),
 
             // Complete profile_2.
-            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
+            new AutofillProfile("" /* guid */, "https://www.example.test" /* origin */,
                     "" /* honorific prefix */, "Lisa Simpson", "Acme Inc.", "123 Main",
                     "California", "Los Angeles", "", "90210", "", "US", "555 123-4567",
                     "lisa@simpson.com", ""),
 
             // Complete profile_3 in another country.
-            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
+            new AutofillProfile("" /* guid */, "https://www.example.test" /* origin */,
                     "" /* honorific prefix */, "Maggie Simpson", "Acme Inc.", "123 Main",
                     "California", "Los Angeles", "", "90210", "", "Uzbekistan", "555 123-4567",
                     "maggie@simpson.com", ""),
 
             // Incomplete profile_4 (invalid address, missing city name).
-            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
+            new AutofillProfile("" /* guid */, "https://www.example.test" /* origin */,
                     "" /* honorific prefix */, "Marge Simpson", "Acme Inc.", "123 Main",
                     "California", "", "", "90210", "", "US", "555 123-4567", "marge@simpson.com",
                     ""),
 
             // Incomplete profile_5 (missing recipient name).
-            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
+            new AutofillProfile("" /* guid */, "https://www.example.test" /* origin */,
                     "" /* honorific prefix */, "", "Acme Inc.", "123 Main", "California",
                     "Los Angeles", "", "90210", "", "US", "555 123-4567", "lisa@simpson.com", ""),
 
             // Incomplete profile_6 (need more information: name and address both missing/invalid).
-            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
+            new AutofillProfile("" /* guid */, "https://www.example.test" /* origin */,
                     "" /* honorific prefix */, "", "Acme Inc.", "123 Main", "California", "", "",
                     "90210", "", "US", "555 123-4567", "lisa@simpson.com", ""),
 
             // Incomplete profile_7 (missing phone number, different from AutofillProfile[0])
-            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
+            new AutofillProfile("" /* guid */, "https://www.example.test" /* origin */,
                     "" /* honorific prefix */, "John Smith", "Acme Inc.", "123 Main", "California",
                     "Los Angeles", "", "90210", "", "US", "", "bart@simpson.com", ""),
     };
@@ -96,7 +96,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
             // The user has a shipping address on disk.
             String billingAddressId = helper.setProfile(mProfilesToAdd[i]);
             guids.add(billingAddressId);
-            helper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
+            helper.setCreditCard(new CreditCard("", "https://example.test", true, true, "Jon Doe",
                     "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
                     billingAddressId, "" /* serverId */));
         }

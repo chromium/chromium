@@ -11,7 +11,7 @@
  */
 async function runTest() {
   return new PaymentRequest(
-             [{supportedMethods: 'https://kylepay.com/webpay'}], {
+             [{supportedMethods: 'https://kylepay.test/webpay'}], {
                displayItems: [],
                id: '',
                modifiers: [],

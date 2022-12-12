@@ -1,0 +1,2 @@
+https://georgepay.test/webpay has no payment app of its own, but allows the
+payment apps from https://alicepay.test to use this payment method identifier.

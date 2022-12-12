@@ -19,7 +19,7 @@ class IgnorePaymentMethodTest : public PaymentRequestPlatformBrowserTestBase {
   void SetUpOnMainThread() override {
     PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
 
-    method_name_ = https_server()->GetURL("a.com", "/nickpay.com/pay").spec();
+    method_name_ = https_server()->GetURL("a.com", "/nickpay.test/pay").spec();
     ASSERT_NE('/', method_name_[method_name_.length() - 1]);
   }
 

@@ -11,7 +11,7 @@
  * used in PaymentRequest as well.
  */
 function buyWithBasicCard(useBasicCard) {
-  let methodData = [{supportedMethods: 'https://bobpay.com'}];
+  let methodData = [{supportedMethods: 'https://bobpay.test'}];
   if (useBasicCard) {
     methodData.push({supportedMethods: 'basic-card'});
   }
@@ -20,7 +20,7 @@ function buyWithBasicCard(useBasicCard) {
         {
           total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
           modifiers: [{
-            supportedMethods: 'https://bobpay.com',
+            supportedMethods: 'https://bobpay.test',
             total: {
               label: 'Total',
               amount: {currency: 'USD', value: '4.00'},

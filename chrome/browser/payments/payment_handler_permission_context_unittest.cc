@@ -79,7 +79,7 @@ class PaymentHandlerPermissionContextTests
 // PaymentHandler permission should be denied for insecure origin.
 TEST_F(PaymentHandlerPermissionContextTests, TestInsecureRequestingUrl) {
   TestPermissionContext permission_context(profile());
-  GURL url("http://www.example.com");
+  GURL url("http://www.example.test");
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
 
   const permissions::PermissionRequestID id(
@@ -104,8 +104,8 @@ TEST_F(PaymentHandlerPermissionContextTests, TestInsecureRequestingUrl) {
 // PaymentHandler permission status should be denied for insecure origin.
 TEST_F(PaymentHandlerPermissionContextTests, TestInsecureQueryingUrl) {
   TestPermissionContext permission_context(profile());
-  GURL insecure_url("http://www.example.com");
-  GURL secure_url("https://www.example.com");
+  GURL insecure_url("http://www.example.test");
+  GURL secure_url("https://www.example.test");
 
   // Check that there is no saved content settings.
   EXPECT_EQ(CONTENT_SETTING_ALLOW,

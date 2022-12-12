@@ -158,7 +158,7 @@ public class ExpandablePaymentHandlerTest {
 
     private GURL defaultPaymentAppUrl() {
         return new GURL(mServer.getURL(
-                "/components/test/data/payments/maxpay.com/payment_handler_window.html"));
+                "/components/test/data/payments/maxpay.test/payment_handler_window.html"));
     }
 
     private PaymentHandlerUiObserver defaultUiObserver() {
@@ -344,7 +344,7 @@ public class ExpandablePaymentHandlerTest {
         onView(withId(R.id.security_icon)).perform(click());
 
         String paymentAppUrl = mServer.getURL(
-                "/components/test/data/payments/maxpay.com/payment_handler_window.html");
+                "/components/test/data/payments/maxpay.test/payment_handler_window.html");
 
         // The UI only shows a hostname by default. Expand to full URL.
         onView(withId(R.id.page_info_url_wrapper)).perform(click());
@@ -373,7 +373,7 @@ public class ExpandablePaymentHandlerTest {
         onView(withId(R.id.origin)).check(matches(withText(getOrigin(mServer))));
 
         String anotherUrl =
-                mServer.getURL("/components/test/data/payments/bobpay.com/app1/index.html");
+                mServer.getURL("/components/test/data/payments/bobpay.test/app1/index.html");
         mRule.runOnUiThread(
                 ()
                         -> paymentHandler.getWebContentsForTest().getNavigationController().loadUrl(

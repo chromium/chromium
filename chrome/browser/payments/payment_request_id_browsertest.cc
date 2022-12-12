@@ -13,7 +13,7 @@ using PaymentRequestIdTest = PaymentRequestPlatformBrowserTestBase;
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestIdTest, ResponseIdEqualsRequestId) {
   NavigateTo("a.com", "/payment_request_id_test.html");
-  GURL method = https_server()->GetURL("b.com", "/nickpay.com/pay");
+  GURL method = https_server()->GetURL("b.com", "/nickpay.test/pay");
   std::string get_id = content::JsReplace("getResponseId($1)", method.spec());
 
   EXPECT_EQ("my_payment_id", content::EvalJs(GetActiveWebContents(), get_id));

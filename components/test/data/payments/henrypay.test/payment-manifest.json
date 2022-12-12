@@ -1,0 +1,4 @@
+{
+  "default_applications": ["https://henrypay.test/app.json"],
+  "supported_origins": "*"
+}

@@ -1,0 +1,3 @@
+https://davepay.test/webpay is used for testing a payment app with two
+separate builds: one for development and one for production. The two builds
+share one web-app manifest file.

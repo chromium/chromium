@@ -105,8 +105,8 @@ class PaymentRequestStateTest : public testing::Test,
         /*observer=*/nullptr, "en-US");
     state_ = std::make_unique<PaymentRequestState>(
         std::move(app_service), web_contents_->GetPrimaryMainFrame(),
-        GURL("https://example.com"), GURL("https://example.com/pay"),
-        url::Origin::Create(GURL("https://example.com")), spec_->AsWeakPtr(),
+        GURL("https://example.test"), GURL("https://example.test/pay"),
+        url::Origin::Create(GURL("https://example.test")), spec_->AsWeakPtr(),
         weak_ptr_factory_.GetWeakPtr(), "en-US", &test_personal_data_manager_,
         test_payment_request_delegate_.GetContentWeakPtr(),
         journey_logger_.GetWeakPtr(), const_csp_checker_.GetWeakPtr());
@@ -474,7 +474,7 @@ TEST_F(PaymentRequestStateTest, JaLatnShippingAddress) {
   // Select an address, nothing should happen until the normalization is
   // completed and the merchant has validated the address.
   autofill::AutofillProfile profile(base::GenerateGUID(),
-                                    "https://example.com");
+                                    "https://example.test");
   autofill::test::SetProfileInfo(&profile, "Jon", "V.", "Doe",
                                  "jon.doe@exampl.com", "Example Inc",
                                  "Roppongi", "6 Chrome-10-1", "Tokyo", "",

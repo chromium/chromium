@@ -68,7 +68,7 @@ class PaymentAppTest : public testing::TestWithParam<RequiredPaymentOptions>,
     std::unique_ptr<content::StoredPaymentApp> stored_app =
         std::make_unique<content::StoredPaymentApp>();
     stored_app->registration_id = 123456;
-    stored_app->scope = GURL("https://bobpay.com");
+    stored_app->scope = GURL("https://bobpay.test");
     stored_app->name = "bobpay";
     stored_app->icon = std::make_unique<SkBitmap>();
     if (can_preselect) {

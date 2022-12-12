@@ -39,7 +39,7 @@ public class PaymentRequestPayerDetailChangeTest implements MainActivityStartCal
         AutofillTestHelper helper = new AutofillTestHelper();
 
         String billing_address_id = helper.setProfile(
-                new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
+                new AutofillProfile("", "https://example.test", true, "" /* honorific prefix */,
                         "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
                         "US", "333-333-3333", "jon.doe@gmail.com", "en-US"));
     }
@@ -54,7 +54,7 @@ public class PaymentRequestPayerDetailChangeTest implements MainActivityStartCal
         // Install a fake payment app. We only need one as we won't skip the PaymentRequest sheet
         // due to requesting contact info as well.
         mPaymentRequestTestRule.addPaymentAppFactory(
-                "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+                "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
         mPaymentRequestTestRule.triggerUIAndWait(
                 "buy", mPaymentRequestTestRule.getReadyToPay());

@@ -748,7 +748,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         org.chromium.url.internal.mojom.Origin payeeOrigin =
                 new org.chromium.url.internal.mojom.Origin();
         payeeOrigin.scheme = "http";
-        payeeOrigin.host = "www.example.com";
+        payeeOrigin.host = "www.example.test";
         payeeOrigin.port = 443;
         Assert.assertNull(defaultBuilder()
                                   .setPayeeOrigin(payeeOrigin)

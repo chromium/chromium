@@ -30,9 +30,9 @@ class IframeCspTest : public PaymentRequestPlatformBrowserTestBase,
   void SetUpOnMainThread() override {
     PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
 
-    // kylepay.com is a payment app that supports just-in-time installation.
+    // kylepay.test is a payment app that supports just-in-time installation.
     app_server_.ServeFilesFromSourceDirectory(
-        "components/test/data/payments/kylepay.com");
+        "components/test/data/payments/kylepay.test");
     ASSERT_TRUE(app_server_.Start());
   }
 
@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_P(IframeCspTest, Show) {
   // Filter for console messages related to the CSP failure. There should be
   // none.
   console_observer.SetPattern(
-      "Refused to load the image 'https://kylepay.com:*/icon.png *");
+      "Refused to load the image 'https://kylepay.test:*/icon.png *");
 
   GURL iframe_url =
       https_server()->GetURL("other.example", "/csp_test_iframe.html");
@@ -65,15 +65,15 @@ IN_PROC_BROWSER_TEST_P(IframeCspTest, Show) {
   EXPECT_EQ(iframe_url, iframe->GetLastCommittedURL());
 
   // Set up test manifest downloader that knows how to fake origin.
-  const std::string method_name = "kylepay.com";
+  const std::string method_name = "kylepay.test";
   SetDownloaderAndIgnorePortInOriginComparisonForTestingInFrame(
       {{method_name, &app_server_}}, iframe);
 
   if (WebPaymentAPICSPEnabled()) {
     EXPECT_EQ(
         "RangeError: Failed to construct 'PaymentRequest': "
-        "https://kylepay.com/webpay payment method identifier violates Content "
-        "Security Policy.",
+        "https://kylepay.test/webpay payment method identifier violates "
+        "Content Security Policy.",
         content::EvalJs(iframe, "checkCanMakePayment()"));
   } else {
     // CSP is disabled.
@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_P(IframeCspTest, PageCSPDeniesPayments) {
   // The payment method identifier for an app that can be installed just in time
   // (JIT), unless CSP blocks connections to it.
   std::string payment_method =
-      https_server()->GetURL("nickpay.com", "/nickpay.com/pay").spec();
+      https_server()->GetURL("nickpay.test", "/nickpay.test/pay").spec();
 
   if (WebPaymentAPICSPEnabled()) {
     // The test page's CSP denies connections to all payment manifests.

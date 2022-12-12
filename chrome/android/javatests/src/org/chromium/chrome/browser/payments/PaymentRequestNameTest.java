@@ -42,30 +42,30 @@ public class PaymentRequestNameTest implements MainActivityStartCallback {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a valid payer name on disk.
         String billingAddressId = helper.setProfile(
-                new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
+                new AutofillProfile("", "https://example.test", true, "" /* honorific prefix */,
                         "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
                         "US", "555-555-5555", "jon.doe@google.com", "en-US"));
-        helper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
+        helper.setCreditCard(new CreditCard("", "https://example.test", true, true, "Jon Doe",
                 "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
                 billingAddressId, "" /* serverId */));
 
         // Add the same profile but with a different address.
-        helper.setProfile(new AutofillProfile("", "https://example.com", true,
+        helper.setProfile(new AutofillProfile("", "https://example.test", true,
                 "" /* honorific prefix */, "", "Google", "999 Main St", "CA", "Los Angeles", "",
                 "90291", "", "US", "555-555-5555", "jon.doe@google.com", "en-US"));
 
         // Add the same profile but without a phone number.
-        helper.setProfile(new AutofillProfile("", "https://example.com", true,
+        helper.setProfile(new AutofillProfile("", "https://example.test", true,
                 "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
                 "", "90291", "", "US", "" /* phone_number */, "jon.doe@google.com", "en-US"));
 
         // Add the same profile but without an email.
-        helper.setProfile(new AutofillProfile("", "https://example.com", true,
+        helper.setProfile(new AutofillProfile("", "https://example.test", true,
                 "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
                 "", "90291", "", "US", "555-555-5555", "" /* emailAddress */, "en-US"));
 
         // Add the same profile but without a name.
-        helper.setProfile(new AutofillProfile("" /* name */, "https://example.com", true,
+        helper.setProfile(new AutofillProfile("" /* name */, "https://example.test", true,
                 "" /* honorific prefix */, "", "Google", "340 Main St", "CA", "Los Angeles", "",
                 "90291", "", "US", "555-555-5555", "jon.doe@google.com", "en-US"));
     }

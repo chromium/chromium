@@ -60,7 +60,7 @@ TEST_F(WebAppManifestSectionTableTest, GetNonExistManifest) {
   WebAppManifestSectionTable* web_app_manifest_section_table =
       WebAppManifestSectionTable::FromWebDatabase(db_.get());
   std::vector<WebAppManifestSection> retrieved_manifest =
-      web_app_manifest_section_table->GetWebAppManifest("https://bobpay.com");
+      web_app_manifest_section_table->GetWebAppManifest("https://bobpay.test");
   ASSERT_TRUE(retrieved_manifest.empty());
 }
 

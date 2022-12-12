@@ -39,7 +39,7 @@ public class PaymentRequestShowTwiceTest implements MainActivityStartCallback {
     @Override
     public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        String billingAddressId = helper.setProfile(new AutofillProfile("", "https://example.com",
+        String billingAddressId = helper.setProfile(new AutofillProfile("", "https://example.test",
                 true, "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA",
                 "Los Angeles", "", "90291", "", "US", "555-555-5555", "", "en-US"));
     }
@@ -50,9 +50,9 @@ public class PaymentRequestShowTwiceTest implements MainActivityStartCallback {
     public void testSecondShowRequestCancelled() throws TimeoutException {
         // Install two payment apps, so that the PaymentRequest UI is shown rather than skipped.
         mPaymentRequestTestRule.addPaymentAppFactory(
-                "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+                "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mPaymentRequestTestRule.addPaymentAppFactory(
-                "https://alicepay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+                "https://alicepay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
         mPaymentRequestTestRule.openPage();
         mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(

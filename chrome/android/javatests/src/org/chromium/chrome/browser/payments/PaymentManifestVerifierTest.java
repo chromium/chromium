@@ -80,7 +80,7 @@ public class PaymentManifestVerifierTest {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
 
         mTestOrigin = PaymentManifestDownloader.createOpaqueOriginForTest();
-        mMethodName = new GURL("https://example.com");
+        mMethodName = new GURL("https://example.test");
 
         mAlicePay = new ResolveInfo();
         mAlicePay.activityInfo = new ActivityInfo();
@@ -124,7 +124,7 @@ public class PaymentManifestVerifierTest {
             public void parsePaymentMethodManifest(
                     GURL paymentMethodManifestUrl, String content, ManifestParseCallback callback) {
                 callback.onPaymentMethodManifestParseSuccess(
-                        new GURL[] {new GURL("https://bobpay.com/app.json")}, new GURL[0]);
+                        new GURL[] {new GURL("https://bobpay.test/app.json")}, new GURL[0]);
             }
 
             @Override
@@ -242,7 +242,7 @@ public class PaymentManifestVerifierTest {
                     public void parsePaymentMethodManifest(GURL paymentMethodManifestUrl,
                             String content, ManifestParseCallback callback) {
                         callback.onPaymentMethodManifestParseSuccess(
-                                new GURL[] {new GURL("https://alicepay.com/app.json")},
+                                new GURL[] {new GURL("https://alicepay.test/app.json")},
                                 new GURL[0]);
                     }
 
@@ -293,8 +293,8 @@ public class PaymentManifestVerifierTest {
             public void parsePaymentMethodManifest(
                     GURL paymentMethodManifestUrl, String content, ManifestParseCallback callback) {
                 callback.onPaymentMethodManifestParseSuccess(
-                        new GURL[] {new GURL("https://alicepay.com/app.json"),
-                                new GURL("https://bobpay.com/app.json")},
+                        new GURL[] {new GURL("https://alicepay.test/app.json"),
+                                new GURL("https://bobpay.test/app.json")},
                         new GURL[0]);
             }
 
@@ -346,8 +346,8 @@ public class PaymentManifestVerifierTest {
             public void parsePaymentMethodManifest(
                     GURL paymentMethodManifestUrl, String content, ManifestParseCallback callback) {
                 callback.onPaymentMethodManifestParseSuccess(
-                        new GURL[] {new GURL("https://alicepay.com/app.json"),
-                                new GURL("https://bobpay.com/app.json")},
+                        new GURL[] {new GURL("https://alicepay.test/app.json"),
+                                new GURL("https://bobpay.test/app.json")},
                         new GURL[0]);
             }
 

@@ -23,7 +23,7 @@ void ExpectUnableToParsePaymentMethodManifest(const std::string& input) {
   std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(input);
 
   PaymentManifestParser::ParsePaymentMethodManifestIntoVectors(
-      GURL("https://bobpay.com/pmm.json"), std::move(value), ErrorLogger(),
+      GURL("https://bobpay.test/pmm.json"), std::move(value), ErrorLogger(),
       &actual_web_app_urls, &actual_supported_origins);
 
   EXPECT_TRUE(actual_web_app_urls.empty()) << actual_web_app_urls.front();
@@ -41,7 +41,7 @@ void ExpectParsedPaymentMethodManifest(
   std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(input);
 
   PaymentManifestParser::ParsePaymentMethodManifestIntoVectors(
-      GURL("https://bobpay.com/pmm.json"), std::move(value), ErrorLogger(),
+      GURL("https://bobpay.test/pmm.json"), std::move(value), ErrorLogger(),
       &actual_web_app_urls, &actual_supported_origins);
 
   EXPECT_EQ(expected_web_app_urls, actual_web_app_urls);
@@ -89,12 +89,12 @@ TEST(PaymentManifestParserTest, ListOfEmptyDefaultApplicationsIsMalformed) {
 TEST(PaymentManifestParserTest, DefaultApplicationCanBeRelativeURL) {
   ExpectParsedPaymentMethodManifest(
       "{\"default_applications\": [\"manifest.json\"]}",
-      {GURL("https://bobpay.com/manifest.json")}, {});
+      {GURL("https://bobpay.test/manifest.json")}, {});
 }
 
 TEST(PaymentManifestParserTest, DefaultApplicationsShouldNotHaveNulCharacters) {
   ExpectUnableToParsePaymentMethodManifest(
-      "{\"default_applications\": [\"https://bobpay.com/app\0json\"]}");
+      "{\"default_applications\": [\"https://bobpay.test/app\0json\"]}");
 }
 
 TEST(PaymentManifestParserTest, DefaultApplicationsShouldBeUTF8) {
@@ -104,25 +104,25 @@ TEST(PaymentManifestParserTest, DefaultApplicationsShouldBeUTF8) {
 
 TEST(PaymentManifestParserTest, DefaultApplicationKeyShouldBeLowercase) {
   ExpectUnableToParsePaymentMethodManifest(
-      "{\"Default_Applications\": [\"https://bobpay.com/app.json\"]}");
+      "{\"Default_Applications\": [\"https://bobpay.test/app.json\"]}");
 }
 
 TEST(PaymentManifestParserTest,
      DefaultApplicationsCanBeEitherAbsoluteOrRelative) {
   ExpectParsedPaymentMethodManifest(
       "{\"default_applications\": ["
-      "\"https://bobpay.com/app1.json\","
+      "\"https://bobpay.test/app1.json\","
       "\"app2.json\"]}",
-      {GURL("https://bobpay.com/app1.json"),
-       GURL("https://bobpay.com/app2.json")},
+      {GURL("https://bobpay.test/app1.json"),
+       GURL("https://bobpay.test/app2.json")},
       {});
 }
 
 TEST(PaymentManifestParserTest, DefaultApplicationsShouldBeHttps) {
   ExpectUnableToParsePaymentMethodManifest(
       "{\"default_applications\": ["
-      "\"https://bobpay.com/app.json\","
-      "\"http://alicepay.com/app.json\"]}");
+      "\"https://bobpay.test/app.json\","
+      "\"http://alicepay.test/app.json\"]}");
 }
 
 TEST(PaymentManifestParserTest, NullSupportedOriginsIsMalformed) {
@@ -147,7 +147,7 @@ TEST(PaymentManifestParserTest, ListOfEmptySupportedOriginsIsMalformed) {
 
 TEST(PaymentManifestParserTest, SupportedOriginsShouldNotHaveNulCharacters) {
   ExpectUnableToParsePaymentMethodManifest(
-      "{\"supported_origins\": [\"https://bob\0pay.com\"]}");
+      "{\"supported_origins\": [\"https://bob\0pay.test\"]}");
 }
 
 TEST(PaymentManifestParserTest, SupportedOriginsShouldBeUTF8) {
@@ -157,36 +157,36 @@ TEST(PaymentManifestParserTest, SupportedOriginsShouldBeUTF8) {
 
 TEST(PaymentManifestParserTest, SupportedOriginsShouldBeHttps) {
   ExpectUnableToParsePaymentMethodManifest(
-      "{\"supported_origins\": [\"http://bobpay.com\"]}");
+      "{\"supported_origins\": [\"http://bobpay.test\"]}");
 }
 
 TEST(PaymentManifestParserTest, SupportedOriginsShouldNotHavePath) {
   ExpectUnableToParsePaymentMethodManifest(
-      "{\"supported_origins\": [\"https://bobpay.com/webpay\"]}");
+      "{\"supported_origins\": [\"https://bobpay.test/webpay\"]}");
 }
 
 TEST(PaymentManifestParserTest, SupportedOriginsShouldNotHaveQuery) {
   ExpectUnableToParsePaymentMethodManifest(
-      "{\"supported_origins\": [\"https://bobpay.com/?action=webpay\"]}");
+      "{\"supported_origins\": [\"https://bobpay.test/?action=webpay\"]}");
 }
 
 TEST(PaymentManifestParserTest, SupportedOriginsShouldNotHaveRef) {
   ExpectUnableToParsePaymentMethodManifest(
-      "{\"supported_origins\": [\"https://bobpay.com/#webpay\"]}");
+      "{\"supported_origins\": [\"https://bobpay.test/#webpay\"]}");
 }
 
 TEST(PaymentManifestParserTest, SupportedOriginsShouldBeList) {
   ExpectUnableToParsePaymentMethodManifest(
-      "{\"supported_origins\": \"https://bobpay.com\"}");
+      "{\"supported_origins\": \"https://bobpay.test\"}");
 }
 
 TEST(PaymentManifestParserTest, WellFormedPaymentMethodManifestWithApps) {
   ExpectParsedPaymentMethodManifest(
       "{\"default_applications\": ["
-      "\"https://bobpay.com/app.json\","
-      "\"https://alicepay.com/app.json\"]}",
-      {GURL("https://bobpay.com/app.json"),
-       GURL("https://alicepay.com/app.json")},
+      "\"https://bobpay.test/app.json\","
+      "\"https://alicepay.test/app.json\"]}",
+      {GURL("https://bobpay.test/app.json"),
+       GURL("https://alicepay.test/app.json")},
       std::vector<url::Origin>());
 }
 
@@ -204,8 +204,8 @@ TEST(PaymentManifestParserTest,
 TEST(PaymentManifestParserTest,
      InvalidPaymentMethodManifestWithAppsAndAllSupportedOrigins) {
   ExpectUnableToParsePaymentMethodManifest(
-      "{\"default_applications\": [\"https://bobpay.com/app.json\", "
-      "\"https://alicepay.com/app.json\"], \"supported_origins\": \"*\"}");
+      "{\"default_applications\": [\"https://bobpay.test/app.json\", "
+      "\"https://alicepay.test/app.json\"], \"supported_origins\": \"*\"}");
 }
 
 TEST(PaymentManifestParserTest, OriginWildcardNotSupported) {
@@ -215,26 +215,26 @@ TEST(PaymentManifestParserTest, OriginWildcardNotSupported) {
 TEST(PaymentManifestParserTest,
      InvalidDefaultAppsWillPreventParsingSupportedOrigins) {
   ExpectUnableToParsePaymentMethodManifest(
-      "{\"default_applications\": [\"http://bobpay.com/app.json\"]}");
+      "{\"default_applications\": [\"http://bobpay.test/app.json\"]}");
 }
 
 TEST(PaymentManifestParserTest,
      InvalidSupportedOriginsWillPreventParsingDefaultApps) {
   ExpectUnableToParsePaymentMethodManifest(
-      "{\"default_applications\": [\"https://bobpay.com/app.json\"], "
+      "{\"default_applications\": [\"https://bobpay.test/app.json\"], "
       "\"supported_origins\": \"+\"}");
 }
 
 TEST(PaymentManifestParserTest,
      WellFormedPaymentMethodManifestWithAppsAndSomeSupportedOrigins) {
   ExpectParsedPaymentMethodManifest(
-      "{\"default_applications\": [\"https://bobpay.com/app.json\", "
-      "\"https://alicepay.com/app.json\"], \"supported_origins\": "
-      "[\"https://charliepay.com\", \"https://evepay.com\"]}",
-      {GURL("https://bobpay.com/app.json"),
-       GURL("https://alicepay.com/app.json")},
-      {url::Origin::Create(GURL("https://charliepay.com")),
-       url::Origin::Create(GURL("https://evepay.com"))});
+      "{\"default_applications\": [\"https://bobpay.test/app.json\", "
+      "\"https://alicepay.test/app.json\"], \"supported_origins\": "
+      "[\"https://charliepay.test\", \"https://evepay.test\"]}",
+      {GURL("https://bobpay.test/app.json"),
+       GURL("https://alicepay.test/app.json")},
+      {url::Origin::Create(GURL("https://charliepay.test")),
+       url::Origin::Create(GURL("https://evepay.test"))});
 }
 
 TEST(PaymentManifestParserTest,
@@ -250,11 +250,11 @@ TEST(PaymentManifestParserTest,
 TEST(PaymentManifestParserTest,
      WellFormedPaymentMethodManifestWithSomeSupportedOrigins) {
   ExpectParsedPaymentMethodManifest(
-      "{\"supported_origins\": [\"https://charliepay.com\", "
-      "\"https://evepay.com\"]}",
+      "{\"supported_origins\": [\"https://charliepay.test\", "
+      "\"https://evepay.test\"]}",
       std::vector<GURL>(),
-      {url::Origin::Create(GURL("https://charliepay.com")),
-       url::Origin::Create(GURL("https://evepay.com"))});
+      {url::Origin::Create(GURL("https://charliepay.test")),
+       url::Origin::Create(GURL("https://evepay.test"))});
 }
 
 TEST(PaymentManifestParserTest,

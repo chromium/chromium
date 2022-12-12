@@ -11,9 +11,9 @@ function buy() {
   try {
     new PaymentRequest(
         [
-          {supportedMethods: 'https://alicepay.com'},
-          {supportedMethods: 'https://bobpay.com'},
-          {supportedMethods: 'https://charliepay.com'},
+          {supportedMethods: 'https://alicepay.test'},
+          {supportedMethods: 'https://bobpay.test'},
+          {supportedMethods: 'https://charliepay.test'},
         ],
         {total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}}})
         .show()

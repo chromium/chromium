@@ -95,27 +95,27 @@ public class PaymentManifestParserTest implements ManifestParseCallback {
         mActivityTestRule.runOnUiThread(
                 (Runnable) ()
                         -> mParser.parsePaymentMethodManifest(
-                                new GURL("https://bobpay.com/pmm.json"),
+                                new GURL("https://bobpay.test/pmm.json"),
                                 "{"
                                         + "  \"default_applications\": ["
-                                        + "    \"https://bobpay.com/app.json\","
-                                        + "    \"https://alicepay.com/app.json\""
+                                        + "    \"https://bobpay.test/app.json\","
+                                        + "    \"https://alicepay.test/app.json\""
                                         + "  ],"
                                         + "  \"supported_origins\": ["
-                                        + "    \"https://charliepay.com\","
-                                        + "    \"https://evepay.com\""
+                                        + "    \"https://charliepay.test\","
+                                        + "    \"https://evepay.test\""
                                         + "  ]"
                                         + "}",
                                 PaymentManifestParserTest.this));
         CriteriaHelper.pollInstrumentationThread(() -> mParsePaymentMethodManifestSuccess);
         Assert.assertNotNull(mWebAppManifestUris);
         Assert.assertEquals(2, mWebAppManifestUris.length);
-        Assert.assertEquals(new GURL("https://bobpay.com/app.json"), mWebAppManifestUris[0]);
-        Assert.assertEquals(new GURL("https://alicepay.com/app.json"), mWebAppManifestUris[1]);
+        Assert.assertEquals(new GURL("https://bobpay.test/app.json"), mWebAppManifestUris[0]);
+        Assert.assertEquals(new GURL("https://alicepay.test/app.json"), mWebAppManifestUris[1]);
         Assert.assertNotNull(mSupportedOrigins);
         Assert.assertEquals(2, mSupportedOrigins.length);
-        Assert.assertEquals(new GURL("https://charliepay.com"), mSupportedOrigins[0]);
-        Assert.assertEquals(new GURL("https://evepay.com"), mSupportedOrigins[1]);
+        Assert.assertEquals(new GURL("https://charliepay.test"), mSupportedOrigins[0]);
+        Assert.assertEquals(new GURL("https://evepay.test"), mSupportedOrigins[1]);
     }
 
     @Test
@@ -126,7 +126,7 @@ public class PaymentManifestParserTest implements ManifestParseCallback {
         mActivityTestRule.runOnUiThread(
                 (Runnable) ()
                         -> mParser.parsePaymentMethodManifest(
-                                new GURL("https://bobpay.com/pmm.json"),
+                                new GURL("https://bobpay.test/pmm.json"),
                                 "{\"supported_origins\": \"*\"}", PaymentManifestParserTest.this));
         Assert.assertNull(mWebAppManifestUris);
         Assert.assertNull(mSupportedOrigins);

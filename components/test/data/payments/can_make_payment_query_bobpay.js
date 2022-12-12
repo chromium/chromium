@@ -15,14 +15,14 @@ const defaultDetails = {
 };
 
 const bobPayMethod = {
-  supportedMethods: 'https://bobpay.com',
+  supportedMethods: 'https://bobpay.test',
   data: {
     'bobPayParameter': '1',
   },
 };
 
 const alicePayMethod = {
-  supportedMethods: 'https://alicepay.com',
+  supportedMethods: 'https://alicepay.test',
   data: {
     'alicePayParameter': '2',
   },

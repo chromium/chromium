@@ -957,7 +957,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, IframeNavigation_UserAborted) {
 
   // Make the iframe navigate away.
   EXPECT_TRUE(NavigateIframeToURL(GetActiveWebContents(), "theIframe",
-                                  GURL("https://www.example.com")));
+                                  GURL("https://www.example.test")));
 
   // Simulate that the user cancels the PR.
   ClickOnCancel();
@@ -1016,7 +1016,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, IframeNavigation_Completed) {
 
   // Make the iframe navigate away.
   EXPECT_TRUE(NavigateIframeToURL(GetActiveWebContents(), "theIframe",
-                                  GURL("https://www.example.com")));
+                                  GURL("https://www.example.test")));
 
   // Complete the Payment Request.
   ResetEventWaiterForSequence(

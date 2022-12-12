@@ -42,27 +42,27 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has valid payer name, phone number and email address on disk.
-        helper.setProfile(new AutofillProfile("", "https://example.com", true,
+        helper.setProfile(new AutofillProfile("", "https://example.test", true,
                 "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
                 "", "90291", "", "US", "555-555-5555", "jon.doe@google.com", "en-US"));
 
         // Add the same profile but with a different address.
-        helper.setProfile(new AutofillProfile("", "https://example.com", true,
+        helper.setProfile(new AutofillProfile("", "https://example.test", true,
                 "" /* honorific prefix */, "", "Google", "999 Main St", "CA", "Los Angeles", "",
                 "90291", "", "US", "555-555-5555", "jon.doe@google.com", "en-US"));
 
         // Add the same profile but without a phone number.
-        helper.setProfile(new AutofillProfile("", "https://example.com", true,
+        helper.setProfile(new AutofillProfile("", "https://example.test", true,
                 "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
                 "", "90291", "", "US", "" /* phone_number */, "jon.doe@google.com", "en-US"));
 
         // Add the same profile but without an email.
-        helper.setProfile(new AutofillProfile("", "https://example.com", true,
+        helper.setProfile(new AutofillProfile("", "https://example.test", true,
                 "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
                 "", "90291", "", "US", "555-555-5555", "" /* emailAddress */, "en-US"));
 
         // Add the same profile but without a name.
-        helper.setProfile(new AutofillProfile("" /* name */, "https://example.com", true,
+        helper.setProfile(new AutofillProfile("" /* name */, "https://example.test", true,
                 "" /* honorific prefix */, "", "Google", "340 Main St", "CA", "Los Angeles", "",
                 "90291", "", "US", "555-555-5555", "jon.doe@google.com", "en-US"));
 

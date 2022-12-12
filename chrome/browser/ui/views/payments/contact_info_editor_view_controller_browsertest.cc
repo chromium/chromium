@@ -21,7 +21,7 @@ namespace {
 const char16_t kNameFull[] = u"Kirby Puckett";
 const char16_t kPhoneNumber[] = u"6515558946";
 const char16_t kPhoneNumberInvalid[] = u"123";
-const char16_t kEmailAddress[] = u"kirby@example.com";
+const char16_t kEmailAddress[] = u"kirby@example.test";
 const char16_t kEmailAddressInvalid[] = u"kirby";
 
 std::string GetLocale() {

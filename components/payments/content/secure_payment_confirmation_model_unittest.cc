@@ -31,7 +31,7 @@ TEST_F(SecurePaymentConfirmationModelTest, SmokeTest) {
   std::u16string cancel_button_label(u"Cancel");
   std::u16string opt_out_label(u"Opt Out");
   std::u16string opt_out_link_text(u"Opt Out Link");
-  std::u16string relying_party_id(u"example.com");
+  std::u16string relying_party_id(u"example.test");
 
   model.set_title(title);
   EXPECT_EQ(title, model.title());

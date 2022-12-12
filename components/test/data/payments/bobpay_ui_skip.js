@@ -15,7 +15,7 @@
 function buy() {
   try {
     new PaymentRequest(
-        [{supportedMethods: 'https://bobpay.com'}],
+        [{supportedMethods: 'https://bobpay.test'}],
         {total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}}})
         .show()
         .then(function(resp) {
@@ -44,7 +44,7 @@ function buy() {
 function buyFail() {
   try {
     new PaymentRequest(
-        [{supportedMethods: 'https://bobpay.com'}],
+        [{supportedMethods: 'https://bobpay.test'}],
         {total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}}})
         .show()
         .then(function(resp) {
@@ -71,7 +71,7 @@ function buyFail() {
 function buyWithRequestedEmail() {
   try {
     new PaymentRequest(
-        [{supportedMethods: 'https://bobpay.com'}],
+        [{supportedMethods: 'https://bobpay.test'}],
         {total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}}},
         {requestPayerEmail: true})
         .show()

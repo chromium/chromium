@@ -42,7 +42,7 @@ class PaymentMethodViewControllerTest : public PaymentRequestBrowserTestBase {
     ASSERT_TRUE(gpay_server_.Start());
 
     kylepay_server_.ServeFilesFromSourceDirectory(
-        "components/test/data/payments/kylepay.com/");
+        "components/test/data/payments/kylepay.test/");
     ASSERT_TRUE(kylepay_server_.Start());
     PaymentRequestBrowserTestBase::SetUpOnMainThread();
   }
@@ -53,8 +53,8 @@ class PaymentMethodViewControllerTest : public PaymentRequestBrowserTestBase {
     auto downloader = std::make_unique<TestDownloader>(
         GetCSPCheckerForTests(), context->GetDefaultStoragePartition()
                                      ->GetURLLoaderFactoryForBrowserProcess());
-    downloader->AddTestServerURL("https://kylepay.com/",
-                                 kylepay_server_.GetURL("kylepay.com", "/"));
+    downloader->AddTestServerURL("https://kylepay.test/",
+                                 kylepay_server_.GetURL("kylepay.test", "/"));
     downloader->AddTestServerURL("https://google.com/",
                                  gpay_server_.GetURL("google.com", "/"));
     ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest,
   content::ExecuteScriptAsync(GetActiveWebContents(), R"(
     testPaymentMethods([
       {supportedMethods: 'https://google.com/pay'},
-      {supportedMethods: 'https://kylepay.com/webpay'},
+      {supportedMethods: 'https://kylepay.test/webpay'},
     ]);
   )");
   WaitForObservedEvent();
@@ -94,9 +94,9 @@ IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest,
 IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest,
                        OneAppSelectedOutOfMany) {
   std::string payment_method_a;
-  InstallPaymentApp("a.com", "/nickpay.com/app.js", &payment_method_a);
+  InstallPaymentApp("a.com", "/nickpay.test/app.js", &payment_method_a);
   std::string payment_method_b;
-  InstallPaymentApp("b.com", "/nickpay.com/app.js", &payment_method_b);
+  InstallPaymentApp("b.com", "/nickpay.test/app.js", &payment_method_b);
 
   NavigateTo("/payment_request_no_shipping_test.html");
 

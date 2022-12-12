@@ -8,7 +8,7 @@
 var request;
 
 const bobPayMethod = Object.freeze({
-  supportedMethods: 'https://bobpay.com',
+  supportedMethods: 'https://bobpay.test',
 });
 
 const visaMethod = Object.freeze({
@@ -19,7 +19,7 @@ const visaMethod = Object.freeze({
 });
 
 const kylePayMethod = Object.freeze({
-  supportedMethods: 'https://kylepay.com/webpay',
+  supportedMethods: 'https://kylepay.test/webpay',
 });
 
 const defaultDetails = Object.freeze({

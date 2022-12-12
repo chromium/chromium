@@ -41,7 +41,7 @@ public class PaymentRequestIncompletePhoneTest implements MainActivityStartCallb
     public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has an invalid phone number on disk.
-        helper.setProfile(new AutofillProfile("", "https://example.com", true,
+        helper.setProfile(new AutofillProfile("", "https://example.test", true,
                 "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
                 "", "90291", "", "US", "+++" /* invalid phone */, "jon.doe@gmail.com", "en-US"));
 

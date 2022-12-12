@@ -11,7 +11,7 @@ function buy() {
   try {
     new PaymentRequest(
         [
-          {supportedMethods: 'https://bobpay.com'},
+          {supportedMethods: 'https://bobpay.test'},
           {
             supportedMethods: 'basic-card',
             data: {supportedNetworks: ['visa']},

@@ -44,7 +44,7 @@ public class PaymentRequestIncompleteContactDetailsAndFreeShippingTest
         // The user has a shipping address with a valid email address on disk. However the phone
         // number is invalid.
         helper.setProfile(
-                new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
+                new AutofillProfile("", "https://example.test", true, "" /* honorific prefix */,
                         "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
                         "US", "" /* invalid phone number */, "jon.doe@google.com", "en-US"));
 

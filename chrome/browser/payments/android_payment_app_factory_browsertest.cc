@@ -50,8 +50,8 @@ class AndroidPaymentAppFactoryTest
 // should be ignored.
 IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
                        IgnoreInstalledPlayBillingServiceWorker) {
-  GURL service_worker_javascript_file_url = https_server()->GetURL(
-      "a.com", "/alicepay.com/app1/app.js");
+  GURL service_worker_javascript_file_url =
+      https_server()->GetURL("a.com", "/alicepay.test/app1/app.js");
   ASSERT_TRUE(
       PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
           *GetActiveWebContents(),

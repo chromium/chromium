@@ -323,7 +323,7 @@ TEST_F(AndroidAppCommunicationTest, TwaIsReadyToPayOnlyWithPlayBilling) {
   communication->SetForTesting();
 
   std::map<std::string, std::set<std::string>> stringified_method_data;
-  stringified_method_data["https://example.com"].insert("{}");
+  stringified_method_data["https://example.test"].insert("{}");
   communication->IsReadyToPay(
       "com.example.app", "com.example.app.Service", stringified_method_data,
       GURL("https://top-level-origin.com"),
@@ -494,7 +494,7 @@ TEST_F(AndroidAppCommunicationTest, TwaPaymentOnlyWithPlayBilling) {
   communication->SetForTesting();
 
   std::map<std::string, std::set<std::string>> stringified_method_data;
-  stringified_method_data["https://example.com"].insert("{}");
+  stringified_method_data["https://example.test"].insert("{}");
   communication->InvokePaymentApp(
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),

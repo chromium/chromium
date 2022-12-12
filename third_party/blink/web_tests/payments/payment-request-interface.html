@@ -230,7 +230,7 @@ test(function() {
 }, 'Android Pay parameters for network token without environment key should not throw.');
 
 test(function() {
-    new PaymentRequest([{'supportedMethods': 'https://bobpay.com', 'data': {'allowedCardNetworks': 0}}], buildDetails());
+    new PaymentRequest([{'supportedMethods': 'https://bobpay.test', 'data': {'allowedCardNetworks': 0}}], buildDetails());
 }, 'Invalid Android Pay parameters should not throw when method name is not "https://android.com/pay".');
 
 test(function() {

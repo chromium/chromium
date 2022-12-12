@@ -18,7 +18,7 @@ class EmptyParametersTest : public PaymentRequestPlatformBrowserTestBase {
 
   void SetUpOnMainThread() override {
     kylepay_server_.ServeFilesFromSourceDirectory(
-        "components/test/data/payments/kylepay.com/");
+        "components/test/data/payments/kylepay.test/");
     ASSERT_TRUE(kylepay_server_.Start());
 
     PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
@@ -30,8 +30,8 @@ class EmptyParametersTest : public PaymentRequestPlatformBrowserTestBase {
     auto downloader = std::make_unique<TestDownloader>(
         GetCSPCheckerForTests(), context->GetDefaultStoragePartition()
                                      ->GetURLLoaderFactoryForBrowserProcess());
-    downloader->AddTestServerURL("https://kylepay.com/",
-                                 kylepay_server_.GetURL("kylepay.com", "/"));
+    downloader->AddTestServerURL("https://kylepay.test/",
+                                 kylepay_server_.GetURL("kylepay.test", "/"));
     ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(
         GetActiveWebContents()->GetPrimaryMainFrame())
         ->SetDownloaderAndIgnorePortInOriginComparisonForTesting(

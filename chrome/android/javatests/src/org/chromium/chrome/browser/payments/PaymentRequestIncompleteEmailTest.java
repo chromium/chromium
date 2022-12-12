@@ -42,7 +42,7 @@ public class PaymentRequestIncompleteEmailTest implements MainActivityStartCallb
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has an invalid email address on disk.
         helper.setProfile(
-                new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
+                new AutofillProfile("", "https://example.test", true, "" /* honorific prefix */,
                         "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
                         "US", "555-555-5555", "jon.doe" /* invalid email address */, "en-US"));
 

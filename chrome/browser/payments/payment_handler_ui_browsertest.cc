@@ -24,7 +24,7 @@ class PaymentHandlerUiBrowserTest
 // Make sure a page can open the Payment UI multiple times.
 IN_PROC_BROWSER_TEST_F(PaymentHandlerUiBrowserTest,
                        MAYBE_OpenPaymentTwiceShouldBeSuccessful) {
-  NavigateTo("/maxpay.com/merchant.html");
+  NavigateTo("/maxpay.test/merchant.html");
 
   std::string expected = "success";
   EXPECT_EQ(expected, content::EvalJs(GetActiveWebContents(), "install()"));

@@ -19,8 +19,8 @@ function buy() {
  */
 function buyWithUrlMethod() {
   buyWithMethod([
-    {supportedMethods: 'https://bobpay.com'},
-    {supportedMethods: 'https://kylepay.com/webpay'},
+    {supportedMethods: 'https://bobpay.test'},
+    {supportedMethods: 'https://kylepay.test/webpay'},
   ]);
 }
 

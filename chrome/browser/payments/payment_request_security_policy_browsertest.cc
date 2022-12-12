@@ -37,7 +37,7 @@ class PaymentRequestSecurityPolicyBrowsertest
                   GetActiveWebContents(),
                   content::JsReplace(
                       "buildPaymentRequest($1).canMakePayment()",
-                      https_server()->GetURL("bobpay.com", "/csp-test"))));
+                      https_server()->GetURL("bobpay.test", "/csp-test"))));
 
     WaitForObservedEvent();
   }
@@ -64,7 +64,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSecurityPolicyBrowsertest, CSPAllowAll) {
   ExpectPaymentRequestCSPViolationRecorded(false);
 }
 
-// Ensure that there is no CSP violation with `connect-src https://bobpay.com:*`
+// Ensure that there is no CSP violation with `connect-src
+// https://bobpay.test:*`
 IN_PROC_BROWSER_TEST_F(PaymentRequestSecurityPolicyBrowsertest,
                        CSPAllowSpecific) {
   NavigateTo("a.com", "/payment_request_csp_allow_specific.html");

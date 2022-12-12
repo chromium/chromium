@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerEnforceFullDelegationTest,
 
   std::string method_name1 =
       https_server()->GetURL("a.com", "/method_manifest.json").spec();
-  NavigateTo("a.com", "/enforce_full_delegation.com/index.html");
+  NavigateTo("a.com", "/enforce_full_delegation.test/index.html");
   EXPECT_EQ(expected,
             content::EvalJs(GetActiveWebContents(),
                             content::JsReplace("install($1)", method_name1)));
@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerEnforceFullDelegationTest,
 
   std::string method_name2 =
       https_server()->GetURL("b.com", "/method_manifest.json").spec();
-  NavigateTo("b.com", "/enforce_full_delegation.com/index.html");
+  NavigateTo("b.com", "/enforce_full_delegation.test/index.html");
   EXPECT_EQ(expected,
             content::EvalJs(GetActiveWebContents(),
                             content::JsReplace("install($1)", method_name2)));
@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerEnforceFullDelegationTest,
 
 IN_PROC_BROWSER_TEST_P(PaymentHandlerEnforceFullDelegationTest,
                        WhenEnabled_ShowPaymentSheet_WhenDisabled_Reject) {
-  NavigateTo("/enforce_full_delegation.com/index.html");
+  NavigateTo("/enforce_full_delegation.test/index.html");
 
   std::string expected = "success";
   EXPECT_EQ(expected, content::EvalJs(GetActiveWebContents(), "install()"));

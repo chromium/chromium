@@ -1,0 +1,14 @@
+{
+  "name": "Pay with Kyle.Example",
+  "short_name": "Kyle.Example",
+  "icons": [{
+    "src": "icon.png",
+    "sizes": "48x48",
+    "type": "image/png"
+  }],
+  "serviceworker": {
+    "src": "https://harry.example.test/app.js",
+    "use_cache": false,
+    "scope": "/webpay"
+  }
+}

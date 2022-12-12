@@ -228,9 +228,9 @@ class PaymentAppBrowserTest : public ContentBrowserTest {
       const std::string& supported_method) {
     CanMakePaymentEventDataPtr event_data = CanMakePaymentEventData::New();
 
-    event_data->top_origin = GURL("https://example.com");
+    event_data->top_origin = GURL("https://example.test");
 
-    event_data->payment_request_origin = GURL("https://example.com");
+    event_data->payment_request_origin = GURL("https://example.test");
 
     event_data->method_data.push_back(PaymentMethodData::New());
     event_data->method_data[0]->supported_method = supported_method;
@@ -252,9 +252,9 @@ class PaymentAppBrowserTest : public ContentBrowserTest {
       const std::string& instrument_key) {
     PaymentRequestEventDataPtr event_data = PaymentRequestEventData::New();
 
-    event_data->top_origin = GURL("https://example.com");
+    event_data->top_origin = GURL("https://example.test");
 
-    event_data->payment_request_origin = GURL("https://example.com");
+    event_data->payment_request_origin = GURL("https://example.test");
 
     event_data->payment_request_id = "payment-request-id";
 
@@ -320,8 +320,8 @@ IN_PROC_BROWSER_TEST_F(PaymentAppBrowserTest, CanMakePayment) {
       registrationIds[0], GetTestServerOrigin(), "id", "basic-card");
   ASSERT_TRUE(can_make_payment);
 
-  EXPECT_EQ("https://example.com/", PopConsoleString() /* topOrigin */);
-  EXPECT_EQ("https://example.com/",
+  EXPECT_EQ("https://example.test/", PopConsoleString() /* topOrigin */);
+  EXPECT_EQ("https://example.test/",
             PopConsoleString() /* paymentRequestOrigin */);
   EXPECT_EQ("[{\"supportedMethods\":\"basic-card\"}]",
             PopConsoleString() /* methodData */);
@@ -363,8 +363,8 @@ IN_PROC_BROWSER_TEST_F(PaymentAppBrowserTest, PaymentAppInvocation) {
                                    "basic-card", "basic-card-payment-app-id"));
   ASSERT_EQ("test", response->method_name);
 
-  EXPECT_EQ("https://example.com/", PopConsoleString() /* topOrigin */);
-  EXPECT_EQ("https://example.com/",
+  EXPECT_EQ("https://example.test/", PopConsoleString() /* topOrigin */);
+  EXPECT_EQ("https://example.test/",
             PopConsoleString() /* paymentRequestOrigin */);
   EXPECT_EQ("payment-request-id", PopConsoleString() /* paymentRequestId */);
   EXPECT_EQ("[{\"supportedMethods\":\"basic-card\"}]",
@@ -395,23 +395,23 @@ IN_PROC_BROWSER_TEST_F(PaymentAppBrowserTest, PaymentAppOpenWindowFailed) {
   ASSERT_EQ(1U, registrationIds.size());
 
   PaymentHandlerResponsePtr response(InvokePaymentAppWithTestData(
-      registrationIds[0], GetTestServerOrigin(), "https://bobpay.com",
+      registrationIds[0], GetTestServerOrigin(), "https://bobpay.test",
       "bobpay-payment-app-id"));
   // InvokePaymentAppCallback returns empty method_name in case of failure, like
   // in PaymentRequestRespondWithObserver::OnResponseRejected.
   ASSERT_EQ("", response->method_name);
 
-  EXPECT_EQ("https://example.com/", PopConsoleString() /* topOrigin */);
-  EXPECT_EQ("https://example.com/",
+  EXPECT_EQ("https://example.test/", PopConsoleString() /* topOrigin */);
+  EXPECT_EQ("https://example.test/",
             PopConsoleString() /* paymentRequestOrigin */);
   EXPECT_EQ("payment-request-id", PopConsoleString() /* paymentRequestId */);
-  EXPECT_EQ("[{\"supportedMethods\":\"https://bobpay.com\"}]",
+  EXPECT_EQ("[{\"supportedMethods\":\"https://bobpay.test\"}]",
             PopConsoleString() /* methodData */);
   EXPECT_EQ("{\"currency\":\"USD\",\"value\":\"55\"}",
             PopConsoleString() /* total */);
   EXPECT_EQ(
       "[{\"additionalDisplayItems\":[],\"supportedMethods\":\"https://"
-      "bobpay.com\","
+      "bobpay.test\","
       "\"total\":{\"amount\":{\"currency\":\"USD\","
       "\"value\":\"55\"},\"label\":\"\",\"pending\":false}}"
       "]",

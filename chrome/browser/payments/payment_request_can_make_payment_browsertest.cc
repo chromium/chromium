@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
                        AppIsNotInstalledButCanBeInstalledJustInTime) {
   std::string method =
-      https_server()->GetURL("a.com", "/nickpay.com/pay").spec();
+      https_server()->GetURL("a.com", "/nickpay.test/pay").spec();
 
   NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
 
@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
                        IncognitoModeWithJITInstallableButNotInstalledApp) {
   std::string method =
-      https_server()->GetURL("a.com", "/nickpay.com/pay").spec();
+      https_server()->GetURL("a.com", "/nickpay.test/pay").spec();
 
   NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
   test_controller()->SetOffTheRecord(true);

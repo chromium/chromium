@@ -218,9 +218,9 @@ IN_PROC_BROWSER_TEST_F(
     JourneyLoggerTest,
     UKMCheckoutEventsNotRecordedForAppOriginWhenNoAppInvoked) {
   std::string a_payment_method;
-  InstallPaymentApp("a.com", "/nickpay.com/app.js", &a_payment_method);
+  InstallPaymentApp("a.com", "/nickpay.test/app.js", &a_payment_method);
   std::string b_payment_method;
-  InstallPaymentApp("b.com", "/nickpay.com/app.js", &b_payment_method);
+  InstallPaymentApp("b.com", "/nickpay.test/app.js", &b_payment_method);
 
   NavigateTo("/journey_logger_test.html");
   ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);

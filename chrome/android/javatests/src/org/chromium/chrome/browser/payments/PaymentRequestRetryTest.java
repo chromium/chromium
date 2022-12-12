@@ -49,10 +49,9 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
     @Override
     public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        helper.setProfile(
-                new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
-                        "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                        "US", "333-333-3333", "jon.doe@gmail.com", "en-US"));
+        helper.setProfile(new AutofillProfile("", "https://example.test", true,
+                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
+                "", "90291", "", "US", "333-333-3333", "jon.doe@gmail.com", "en-US"));
 
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -66,7 +65,7 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
         // Note that the bobpay app has been added in onMainActivityStarted(), so we will have two
         // payment apps in total.
         mPaymentRequestTestRule.addPaymentAppFactory(
-                "https://kylepay.com/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+                "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
         mPaymentRequestTestRule.triggerUIAndWait(
                 "buyWithUrlMethod", mPaymentRequestTestRule.getReadyToPay());

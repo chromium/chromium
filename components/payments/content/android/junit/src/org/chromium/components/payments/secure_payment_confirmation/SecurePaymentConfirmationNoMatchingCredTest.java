@@ -85,7 +85,7 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
         // Create formatter mocks
         UrlFormatter.Natives urlFormatterJniMock = Mockito.mock(UrlFormatter.Natives.class);
         mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, urlFormatterJniMock);
-        Mockito.doReturn("example.com")
+        Mockito.doReturn("example.test")
                 .when(urlFormatterJniMock)
                 .formatStringUrlForSecurityDisplay(
                         Mockito.any(), Mockito.eq(SchemeDisplay.OMIT_CRYPTOGRAPHIC));
@@ -150,7 +150,7 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
         show();
         SecurePaymentConfirmationNoMatchingCredView view = mNoMatchingCredController.getView();
         Assert.assertNotNull(view);
-        Assert.assertTrue(view.mDescription.getText().toString().contains("example.com"));
+        Assert.assertTrue(view.mDescription.getText().toString().contains("example.test"));
         // Opt-out text should be hidden by default.
         Assert.assertEquals(View.GONE, view.mOptOutText.getVisibility());
     }

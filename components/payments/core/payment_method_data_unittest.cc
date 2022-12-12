@@ -84,7 +84,7 @@ TEST(PaymentMethodData, Equality) {
   method_data1.supported_method = "basic-card";
   EXPECT_NE(method_data1, method_data2);
 
-  method_data2.supported_method = "http://bobpay.com";
+  method_data2.supported_method = "http://bobpay.test";
   EXPECT_NE(method_data1, method_data2);
 
   method_data2.supported_method = "basic-card";

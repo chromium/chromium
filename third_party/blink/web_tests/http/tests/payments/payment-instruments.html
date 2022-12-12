@@ -259,8 +259,8 @@ promise_test(test => {
             registration.paymentManager.instruments.set(
               'test_key2',
               {
-                name: "My Bob Pay Account: john@example.com",
-                method: "https://bobpay.com/"
+                name: "My Bob Pay Account: john@example.test",
+                method: "https://bobpay.test/"
               })
           ];
           return Promise.all(instruments);
@@ -304,8 +304,8 @@ promise_test(test => {
             registration.paymentManager.instruments.set(
               'test_key2',
               {
-                name: "My Bob Pay Account: john@example.com",
-                method: "https://bobpay.com/"
+                name: "My Bob Pay Account: john@example.test",
+                method: "https://bobpay.test/"
               })
           ];
           return Promise.all(instruments);

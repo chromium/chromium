@@ -24,7 +24,7 @@ class ExpandablePaymentHandlerBrowserTest
 
   void SetUpOnMainThread() override {
     PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
-    NavigateTo("/maxpay.com/merchant.html");
+    NavigateTo("/maxpay.test/merchant.html");
 
     // Start http server.
     http_server_.ServeFilesFromSourceDirectory(
@@ -33,7 +33,7 @@ class ExpandablePaymentHandlerBrowserTest
   }
 
   GURL GetHttpPageUrl() {
-    return http_server_.GetURL("/maxpay.com/merchant.html");
+    return http_server_.GetURL("/maxpay.test/merchant.html");
   }
 
  private:

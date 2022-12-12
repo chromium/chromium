@@ -16,7 +16,8 @@ class TwoPaymentRequestsTest : public PaymentRequestPlatformBrowserTestBase {};
 // identical results.
 IN_PROC_BROWSER_TEST_F(TwoPaymentRequestsTest, Smoke) {
   std::string method_name;
-  InstallPaymentApp("alicepay.com", "/alicepay.com/app1/app.js", &method_name);
+  InstallPaymentApp("alicepay.test", "/alicepay.test/app1/app.js",
+                    &method_name);
 
   NavigateTo("test.com", "/two_payment_requests.html");
   EXPECT_EQ(

@@ -100,7 +100,7 @@ TEST_F(PaymentMethodManifestTableTest, GetNonExistManifest) {
   PaymentMethodManifestTable* payment_method_manifest_table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
   std::vector<std::string> web_app_ids =
-      payment_method_manifest_table->GetManifest("https://bobpay.com");
+      payment_method_manifest_table->GetManifest("https://bobpay.test");
   ASSERT_TRUE(web_app_ids.empty());
 }
 
@@ -108,7 +108,7 @@ TEST_F(PaymentMethodManifestTableTest, AddAndGetSingleManifest) {
   PaymentMethodManifestTable* payment_method_manifest_table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
 
-  std::string method_name("https://bobpay.com");
+  std::string method_name("https://bobpay.test");
   std::vector<std::string> web_app_ids = {"com.bobpay"};
   ASSERT_TRUE(
       payment_method_manifest_table->AddManifest(method_name, web_app_ids));
@@ -123,7 +123,7 @@ TEST_F(PaymentMethodManifestTableTest, AddAndGetSingleManifest) {
       payment_method_manifest_table->AddManifest(method_name, web_app_ids));
 
   retrieved_web_app_ids =
-      payment_method_manifest_table->GetManifest("https://bobpay.com");
+      payment_method_manifest_table->GetManifest("https://bobpay.test");
   ASSERT_EQ(web_app_ids.size(), retrieved_web_app_ids.size());
   ASSERT_TRUE(base::Contains(retrieved_web_app_ids, web_app_ids[0]));
   ASSERT_TRUE(base::Contains(retrieved_web_app_ids, web_app_ids[1]));
@@ -133,8 +133,8 @@ TEST_F(PaymentMethodManifestTableTest, AddAndGetMultipleManifest) {
   PaymentMethodManifestTable* payment_method_manifest_table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
 
-  std::string method_name_1("https://bobpay.com");
-  std::string method_name_2("https://alicepay.com");
+  std::string method_name_1("https://bobpay.test");
+  std::string method_name_2("https://alicepay.test");
   std::vector<std::string> web_app_ids = {"com.bobpay"};
   ASSERT_TRUE(
       payment_method_manifest_table->AddManifest(method_name_1, web_app_ids));

@@ -24,23 +24,23 @@ class PaymentHandlerJustInTimeInstallationTest
   void SetUpOnMainThread() override {
     PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
     kylepay_server_.ServeFilesFromSourceDirectory(
-        "components/test/data/payments/kylepay.com/");
+        "components/test/data/payments/kylepay.test/");
     ASSERT_TRUE(kylepay_server_.Start());
 
     henrypay_server_.ServeFilesFromSourceDirectory(
-        "components/test/data/payments/henrypay.com");
+        "components/test/data/payments/henrypay.test");
     ASSERT_TRUE(henrypay_server_.Start());
 
     harry_example_server_.ServeFilesFromSourceDirectory(
-        "components/test/data/payments/harry.example.com");
+        "components/test/data/payments/harry.example.test");
     ASSERT_TRUE(harry_example_server_.Start());
 
     NavigateTo("/payment_request_bobpay_and_cards_test.html");
 
     // Set up test manifest downloader that knows how to fake origin.
-    const std::string kyle_hostname = "kylepay.com";
-    const std::string henry_hostname = "henrypay.com";
-    const std::string harry_hostname = "harry.example.com";
+    const std::string kyle_hostname = "kylepay.test";
+    const std::string henry_hostname = "henrypay.test";
+    const std::string harry_hostname = "harry.example.test";
     SetDownloaderAndIgnorePortInOriginComparisonForTesting(
         {{kyle_hostname, &kylepay_server_},
          {henry_hostname, &henrypay_server_},
@@ -53,19 +53,19 @@ class PaymentHandlerJustInTimeInstallationTest
   net::EmbeddedTestServer harry_example_server_;
 };
 
-// kylepay.com hosts an installable payment app which handles both shipping
+// kylepay.test hosts an installable payment app which handles both shipping
 // address and payer's contact information.
 IN_PROC_BROWSER_TEST_F(PaymentHandlerJustInTimeInstallationTest,
                        InstallPaymentAppAndPay) {
   ResetEventWaiterForSingleEvent(TestEvent::kPaymentCompleted);
   EXPECT_TRUE(content::ExecJs(
       GetActiveWebContents(),
-      "testPaymentMethods([{supportedMethods: 'https://kylepay.com/webpay'}], "
+      "testPaymentMethods([{supportedMethods: 'https://kylepay.test/webpay'}], "
       "false/*= requestShippingContact */);"));
   WaitForObservedEvent();
 
   // kylepay should be installed just-in-time and used for testing.
-  ExpectBodyContains("kylepay.com/webpay");
+  ExpectBodyContains("kylepay.test/webpay");
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerJustInTimeInstallationTest,
@@ -73,12 +73,12 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerJustInTimeInstallationTest,
   ResetEventWaiterForSingleEvent(TestEvent::kPaymentCompleted);
   EXPECT_TRUE(content::ExecJs(
       GetActiveWebContents(),
-      "testPaymentMethods([{supportedMethods: 'https://kylepay.com/webpay'}], "
+      "testPaymentMethods([{supportedMethods: 'https://kylepay.test/webpay'}], "
       "true/*= requestShippingContact */);"));
   WaitForObservedEvent();
 
   // kylepay should be installed just-in-time and used for testing.
-  ExpectBodyContains("kylepay.com/webpay");
+  ExpectBodyContains("kylepay.test/webpay");
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerJustInTimeInstallationTest,
@@ -86,14 +86,14 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerJustInTimeInstallationTest,
   ResetEventWaiterForSingleEvent(TestEvent::kNotSupportedError);
   EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
                               "testPaymentMethods([{supportedMethods: "
-                              "'https://henrypay.com/webpay'}])"));
+                              "'https://henrypay.test/webpay'}])"));
   WaitForObservedEvent();
 
   // show() should get rejected since the JIT installable app
   // that uses invalid payment method.
   ExpectBodyContains(
       "\nBob Pay and Cards Test\nInstallable App\nThe payment method "
-      "\"https://henrypay.com/webpay\" is not supported.\n\n\n");
+      "\"https://henrypay.test/webpay\" is not supported.\n\n\n");
 }
 
 using PaymentHandlerSkipSheetTest = PaymentHandlerJustInTimeInstallationTest;
@@ -110,9 +110,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerSkipSheetTest, SkipWithUserGesture) {
   EXPECT_TRUE(
       content::ExecJs(GetActiveWebContents(),
                       "testPaymentMethods([ "
-                      " {supportedMethods: 'https://kylepay.com/webpay'}])"));
+                      " {supportedMethods: 'https://kylepay.test/webpay'}])"));
   WaitForObservedEvent();
-  ExpectBodyContains("kylepay.com/webpay");
+  ExpectBodyContains("kylepay.test/webpay");
 
   histogram_tester.ExpectTotalCount(
       "PaymentRequest.PaymentHandlerInstallSuccess", 1);
@@ -136,8 +136,8 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerJustInTimeInstallationTest,
   ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
   content::ExecuteScriptAsync(GetActiveWebContents(), R"(
     testPaymentMethods([
-      {supportedMethods: 'https://harry.example.com/webpay'},
-      {supportedMethods: 'https://kylepay.com/webpay'}
+      {supportedMethods: 'https://harry.example.test/webpay'},
+      {supportedMethods: 'https://kylepay.test/webpay'}
     ]);
   )");
   WaitForObservedEvent();

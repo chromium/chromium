@@ -30,11 +30,11 @@ const basicMastercardMethod = {
 };
 
 const alicePayMethod = {
-  supportedMethods: 'https://alicepay.com/webpay',
+  supportedMethods: 'https://alicepay.test/webpay',
 };
 
 const bobPayMethod = {
-  supportedMethods: 'https://bobpay.com/webpay',
+  supportedMethods: 'https://bobpay.test/webpay',
 };
 
 const defaultDetails = {

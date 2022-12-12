@@ -23,8 +23,8 @@ async function buyWithCurrentUrlMethod() {
 
 /**
  * Launch PaymentRequest with a show promise that resolves with an empty
- * dictionary. The payment method to be used is 'https://bobpay.com'.
+ * dictionary. The payment method to be used is 'https://bobpay.test'.
  */
 function buyWithUrlMethod() {
-  buyWithMethods('https://bobpay.com');
+  buyWithMethods('https://bobpay.test');
 }

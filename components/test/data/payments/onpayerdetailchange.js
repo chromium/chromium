@@ -8,7 +8,7 @@ var gPaymentResponse = null;
 var gRetryPromise = null;
 
 const bobPayMethod = Object.freeze({
-  supportedMethods: 'https://bobpay.com',
+  supportedMethods: 'https://bobpay.test',
 });
 
 /**

@@ -14,7 +14,7 @@ function buy() {
       supportedMethods: 'basic-card',
       data: {supportedNetworks: ['visa']},
     },
-    {supportedMethods: 'https://bobpay.com'},
+    {supportedMethods: 'https://bobpay.test'},
   ]);
 }
 

@@ -38,14 +38,15 @@ public class PaymentRequestUpdateWithTest implements MainActivityStartCallback {
     @Override
     public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        helper.setProfile(new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
-                "" /* honorific prefix */, "Lisa Simpson", "Acme Inc.", "123 Main", "California",
-                "Los Angeles", "", "90210", "", "US", "555 123-4567", "lisa@simpson.com", ""));
+        helper.setProfile(new AutofillProfile("" /* guid */,
+                "https://www.example.test" /* origin */, "" /* honorific prefix */, "Lisa Simpson",
+                "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
+                "555 123-4567", "lisa@simpson.com", ""));
         String billingAddressId = helper.setProfile(new AutofillProfile("" /* guid */,
-                "https://www.example.com" /* origin */, "" /* honorific prefix */, "Maggie Simpson",
-                "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "Uzbekistan",
-                "555 123-4567", "maggie@simpson.com", ""));
-        helper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
+                "https://www.example.test" /* origin */, "" /* honorific prefix */,
+                "Maggie Simpson", "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210",
+                "", "Uzbekistan", "555 123-4567", "maggie@simpson.com", ""));
+        helper.setCreditCard(new CreditCard("", "https://example.test", true, true, "Jon Doe",
                 "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
                 billingAddressId, "" /* serverId */));
     }

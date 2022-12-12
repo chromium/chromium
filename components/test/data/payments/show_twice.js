@@ -9,7 +9,7 @@
  */
 function showFirst() {
   const request1 = new PaymentRequest(
-      [{supportedMethods: 'https://bobpay.com'}, {supportedMethods: 'https://alicepay.com'}],
+      [{supportedMethods: 'https://bobpay.test'}, {supportedMethods: 'https://alicepay.test'}],
       {total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}}});
   request1.show();
 }
@@ -20,7 +20,7 @@ function showFirst() {
  */
 async function showSecond() {
   const request2 = new PaymentRequest(
-      [{supportedMethods: 'https://bobpay.com'}],
+      [{supportedMethods: 'https://bobpay.test'}],
       {total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}}});
   // We already have a PaymentRequest showing, so this should fail.
   try {

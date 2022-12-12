@@ -73,9 +73,10 @@ class PaymentManifestParserTest : public InProcessBrowserTest {
   void ParsePaymentMethodManifest(const std::string& content) {
     base::RunLoop run_loop;
     parser_.ParsePaymentMethodManifest(
-        GURL("https://alicepay.com/"), content, base::BindOnce(
-                     &PaymentManifestParserTest::OnPaymentMethodManifestParsed,
-                     base::Unretained(this), run_loop.QuitClosure()));
+        GURL("https://alicepay.test/"), content,
+        base::BindOnce(
+            &PaymentManifestParserTest::OnPaymentMethodManifestParsed,
+            base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -126,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(PaymentManifestParserTest, TooManyWebAppUrls) {
   std::vector<GURL> web_app_manifest_urls_in;
   web_app_manifest_urls_in.insert(web_app_manifest_urls_in.begin(),
                                   /*count=*/101,
-                                  GURL("https://bobpay.com/manifest.json"));
+                                  GURL("https://bobpay.test/manifest.json"));
   std::string json = CreatePaymentMethodManifestJson(
       web_app_manifest_urls_in, std::vector<url::Origin>());
   ParsePaymentMethodManifest(json);
@@ -137,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(PaymentManifestParserTest, TooManyWebAppUrls) {
 IN_PROC_BROWSER_TEST_F(PaymentManifestParserTest, TooManySupportedOrigins) {
   std::vector<url::Origin> supported_origins_in;
   supported_origins_in.insert(supported_origins_in.begin(), /*count=*/100001,
-                              url::Origin::Create(GURL("https://bobpay.com")));
+                              url::Origin::Create(GURL("https://bobpay.test")));
   std::string json = CreatePaymentMethodManifestJson(std::vector<GURL>(),
                                                      supported_origins_in);
   ParsePaymentMethodManifest(json);
@@ -148,8 +149,8 @@ IN_PROC_BROWSER_TEST_F(PaymentManifestParserTest, TooManySupportedOrigins) {
 IN_PROC_BROWSER_TEST_F(PaymentManifestParserTest, InsecureSupportedOrigin) {
   std::string json = CreatePaymentMethodManifestJson(
       std::vector<GURL>(),
-      std::vector<url::Origin>(1,
-                               url::Origin::Create(GURL("http://bobpay.com"))));
+      std::vector<url::Origin>(
+          1, url::Origin::Create(GURL("http://bobpay.test"))));
   ParsePaymentMethodManifest(json);
   EXPECT_TRUE(supported_origins().empty());
 }
@@ -157,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(PaymentManifestParserTest, InsecureSupportedOrigin) {
 // Handles a manifest with an insecure web app manifest URL.
 IN_PROC_BROWSER_TEST_F(PaymentManifestParserTest, InsecureWebAppManifestUrl) {
   std::string json = CreatePaymentMethodManifestJson(
-      std::vector<GURL>(1, GURL("http://bobpay.com/manifest.json")),
+      std::vector<GURL>(1, GURL("http://bobpay.test/manifest.json")),
       std::vector<url::Origin>());
   ParsePaymentMethodManifest(json);
   EXPECT_TRUE(web_app_manifest_urls().empty());
@@ -194,14 +195,14 @@ IN_PROC_BROWSER_TEST_F(PaymentManifestParserTest, AllOriginsSupported) {
 IN_PROC_BROWSER_TEST_F(PaymentManifestParserTest, UrlsAndOrigins) {
   ParsePaymentMethodManifest(
       "{\"default_applications\": "
-      "[\"https://alicepay.com/web-app-manifest.json\"], "
-      "\"supported_origins\": [\"https://bobpay.com\"]}");
+      "[\"https://alicepay.test/web-app-manifest.json\"], "
+      "\"supported_origins\": [\"https://bobpay.test\"]}");
 
   EXPECT_EQ(
-      std::vector<GURL>(1, GURL("https://alicepay.com/web-app-manifest.json")),
+      std::vector<GURL>(1, GURL("https://alicepay.test/web-app-manifest.json")),
       web_app_manifest_urls());
   EXPECT_EQ(std::vector<url::Origin>(
-                1, url::Origin::Create(GURL("https://bobpay.com"))),
+                1, url::Origin::Create(GURL("https://bobpay.test"))),
             supported_origins());
 }
 

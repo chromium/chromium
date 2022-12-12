@@ -19,8 +19,8 @@ using ::payments::mojom::PaymentHandlerStatus;
 using ::payments::mojom::PaymentInstrument;
 using ::payments::mojom::PaymentInstrumentPtr;
 
-const char kServiceWorkerScope[] = "https://example.com/a/";
-const char kServiceWorkerScript[] = "https://example.com/a/script.js";
+const char kServiceWorkerScope[] = "https://example.test/a/";
+const char kServiceWorkerScript[] = "https://example.test/a/script.js";
 
 void DeletePaymentInstrumentCallback(PaymentHandlerStatus* out_status,
                                      PaymentHandlerStatus status) {
@@ -263,7 +263,7 @@ TEST_F(PaymentManagerTest, ClearPaymentInstruments) {
 TEST_F(PaymentManagerTest, SetAndGetPaymentInstrument) {
   PaymentHandlerStatus write_status = PaymentHandlerStatus::NOT_FOUND;
   PaymentInstrumentPtr write_details = PaymentInstrument::New();
-  write_details->name = "ChromePay: chrome@chromepay.com";
+  write_details->name = "ChromePay: chrome@chromepay.test";
   write_details->method = "https://www.chromium.org";
   write_details->stringified_capabilities = "{}";
   SetPaymentInstrument("test_key", std::move(write_details), &write_status);
@@ -277,7 +277,7 @@ TEST_F(PaymentManagerTest, SetAndGetPaymentInstrument) {
   PaymentInstrumentPtr read_details;
   GetPaymentInstrument("test_key", &read_details, &read_status);
   ASSERT_EQ(PaymentHandlerStatus::SUCCESS, read_status);
-  EXPECT_EQ("ChromePay: chrome@chromepay.com", read_details->name);
+  EXPECT_EQ("ChromePay: chrome@chromepay.test", read_details->name);
   EXPECT_EQ("https://www.chromium.org", read_details->method);
   EXPECT_EQ("", read_details->stringified_capabilities);
 }

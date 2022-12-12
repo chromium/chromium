@@ -16,8 +16,8 @@ test(() => {
 promise_test(() => {
   return new Promise(resolve => {
     var eventWithInit = new PaymentRequestEvent('paymentrequest', {
-      topOrigin: 'https://example.com',
-      paymentRequestOrigin: 'https://example.com',
+      topOrigin: 'https://example.test',
+      paymentRequestOrigin: 'https://example.test',
       paymentRequestId: 'payment-request-id',
       methodData: [{
         supportedMethods: 'basic-card'
@@ -33,8 +33,8 @@ promise_test(() => {
     });
 
     self.addEventListener('paymentrequest', e => {
-      assert_equals(e.topOrigin, 'https://example.com');
-      assert_equals(e.paymentRequestOrigin, 'https://example.com');
+      assert_equals(e.topOrigin, 'https://example.test');
+      assert_equals(e.paymentRequestOrigin, 'https://example.test');
       assert_equals(e.paymentRequestId, 'payment-request-id');
       assert_equals(e.methodData.length, 1);
       assert_equals(e.methodData[0].supportedMethods, 'basic-card');

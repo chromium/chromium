@@ -76,7 +76,7 @@ self.addEventListener('paymentrequest', e => {
     // Open a window for the payment instrument.
     var payment_app_web_page = 'payment_app_window.html';
     if(e.instrumentKey == 'bobpay-payment-app-id') {
-      payment_app_web_page = 'https://bobpay.com';
+      payment_app_web_page = 'https://bobpay.test';
     }
     e.openWindow(payment_app_web_page)
       .then(window_client => {

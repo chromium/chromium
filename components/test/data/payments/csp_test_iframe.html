@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5, minimum-scale=0.5">
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; script-src 'unsafe-eval' 'unsafe-inline'; img-src 'self' https://kylepay.com:*"
+      content="default-src 'none'; script-src 'unsafe-eval' 'unsafe-inline'; img-src 'self' https://kylepay.test:*"
     >
     <script>
     async function checkCanMakePayment() {
       const methodData = [{
-        supportedMethods: "https://kylepay.com/webpay",
+        supportedMethods: "https://kylepay.test/webpay",
       }];
       let details = {
         total: {

@@ -64,7 +64,7 @@ public class PaymentRequestPaymentAppUiSkipTest {
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mPaymentRequestTestRule.openPageAndClickBuyAndWait(mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(
-                new String[] {"https://bobpay.com", "\"transaction\"", "1337"});
+                new String[] {"https://bobpay.test", "\"transaction\"", "1337"});
     }
 
     /**
@@ -79,7 +79,7 @@ public class PaymentRequestPaymentAppUiSkipTest {
                 AppPresence.HAVE_APPS, FactorySpeed.SLOW_FACTORY);
         mPaymentRequestTestRule.openPageAndClickBuyAndWait(mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(
-                new String[] {"https://bobpay.com", "\"transaction\"", "1337"});
+                new String[] {"https://bobpay.test", "\"transaction\"", "1337"});
     }
 
     /**
@@ -90,11 +90,11 @@ public class PaymentRequestPaymentAppUiSkipTest {
     @MediumTest
     @Feature({"Payments"})
     public void testPayViaDelayedFastBobPay() throws TimeoutException {
-        mPaymentRequestTestRule.addPaymentAppFactory("https://bobpay.com", AppPresence.HAVE_APPS,
+        mPaymentRequestTestRule.addPaymentAppFactory("https://bobpay.test", AppPresence.HAVE_APPS,
                 FactorySpeed.FAST_FACTORY, AppSpeed.SLOW_APP);
         mPaymentRequestTestRule.openPageAndClickBuyAndWait(mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(
-                new String[] {"https://bobpay.com", "\"transaction\"", "1337"});
+                new String[] {"https://bobpay.test", "\"transaction\"", "1337"});
     }
 
     /**
@@ -105,11 +105,11 @@ public class PaymentRequestPaymentAppUiSkipTest {
     @MediumTest
     @Feature({"Payments"})
     public void testPayViaDelayedSlowBobPay() throws TimeoutException {
-        mPaymentRequestTestRule.addPaymentAppFactory("https://bobpay.com", AppPresence.HAVE_APPS,
+        mPaymentRequestTestRule.addPaymentAppFactory("https://bobpay.test", AppPresence.HAVE_APPS,
                 FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
         mPaymentRequestTestRule.openPageAndClickBuyAndWait(mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(
-                new String[] {"https://bobpay.com", "\"transaction\"", "1337"});
+                new String[] {"https://bobpay.test", "\"transaction\"", "1337"});
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting("PaymentRequest.Events",
                         Event.REQUEST_METHOD_OTHER | Event.HAD_INITIAL_FORM_OF_PAYMENT
@@ -124,15 +124,15 @@ public class PaymentRequestPaymentAppUiSkipTest {
     @MediumTest
     @Feature({"Payments"})
     public void testTwoPaymentsAppsWithTheSamePaymentMethodName() throws TimeoutException {
-        mPaymentRequestTestRule.addPaymentAppFactory("https://bobpay.com", AppPresence.HAVE_APPS,
+        mPaymentRequestTestRule.addPaymentAppFactory("https://bobpay.test", AppPresence.HAVE_APPS,
                 FactorySpeed.FAST_FACTORY, AppSpeed.FAST_APP);
-        mPaymentRequestTestRule.addPaymentAppFactory("https://bobpay.com", AppPresence.HAVE_APPS,
+        mPaymentRequestTestRule.addPaymentAppFactory("https://bobpay.test", AppPresence.HAVE_APPS,
                 FactorySpeed.FAST_FACTORY, AppSpeed.FAST_APP);
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(
-                new String[] {"https://bobpay.com", "\"transaction\"", "1337"});
+                new String[] {"https://bobpay.test", "\"transaction\"", "1337"});
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting("PaymentRequest.Events",
                         Event.REQUEST_METHOD_OTHER | Event.HAD_INITIAL_FORM_OF_PAYMENT

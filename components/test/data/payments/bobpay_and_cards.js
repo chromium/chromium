@@ -62,7 +62,7 @@ async function abort() {
  */
 function buy() {
   testPaymentMethods([
-      {supportedMethods: 'https://bobpay.com'},
+      {supportedMethods: 'https://bobpay.test'},
       {
         supportedMethods: 'basic-card',
         data: {supportedNetworks: ['visa', 'mastercard']},
@@ -71,12 +71,12 @@ function buy() {
 }
 
 /**
- * Launches the PaymentRequest UI with kylepay.com and basic-card as payment
- * methods. kylepay.com hosts an installable payment app.
+ * Launches the PaymentRequest UI with kylepay.test and basic-card as payment
+ * methods. kylepay.test hosts an installable payment app.
  */
 function testInstallableAppAndCard() {
   testPaymentMethods([
-      {supportedMethods: 'https://kylepay.com/webpay'},
+      {supportedMethods: 'https://kylepay.test/webpay'},
       {supportedMethods: 'basic-card'},
   ]);
 }

@@ -21,11 +21,11 @@ TEST_F(SecurePaymentConfirmationNoCredsModelTest, SmokeTest) {
     SecurePaymentConfirmationNoCredsModel model;
 
     std::u16string no_creds_text(
-        u"example.com may need to take additional steps to verify your "
+        u"example.test may need to take additional steps to verify your "
         u"payment");
     std::u16string opt_out_label(u"Opt Out");
     std::u16string opt_out_link_text(u"Opt Out Link");
-    std::u16string relying_party_id(u"example.com");
+    std::u16string relying_party_id(u"example.test");
 
     model.set_no_creds_text(no_creds_text);
     EXPECT_EQ(no_creds_text, model.no_creds_text());

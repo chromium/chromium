@@ -7,11 +7,11 @@
 var request;
 
 const bobPayMethod = Object.freeze({
-  supportedMethods: 'https://bobpay.com',
+  supportedMethods: 'https://bobpay.test',
 });
 
 const kylePayMethod = Object.freeze({
-  supportedMethods: 'https://kylepay.com/webpay',
+  supportedMethods: 'https://kylepay.test/webpay',
 });
 
 /**
@@ -226,7 +226,7 @@ function cardsAndBobPayBuy() {
         [
           {supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}},
           {
-            supportedMethods: 'https://bobpay.com',
+            supportedMethods: 'https://bobpay.test',
           },
         ],
         {
@@ -277,7 +277,7 @@ function contactInfoBuy() {
   try {
     new PaymentRequest(
         [
-          {supportedMethods: 'https://bobpay.com'},
+          {supportedMethods: 'https://bobpay.test'},
           {
             supportedMethods: 'basic-card',
             data: {supportedNetworks: ['amex', 'visa']},

@@ -42,7 +42,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     @Override
     public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        helper.setProfile(new AutofillProfile("", "https://example.com", true,
+        helper.setProfile(new AutofillProfile("", "https://example.test", true,
                 "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
                 "", "90291", "", "US", "650-253-0000", "jon.doe@gmail.com", "en-US"));
     }
@@ -138,15 +138,15 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     public void testQuickDismissAndPayShouldNotCrash() throws TimeoutException {
         // Install two payment apps, so that the PaymentRequest UI is shown rather than skipped.
         mPaymentRequestTestRule.addPaymentAppFactory(
-                "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+                "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mPaymentRequestTestRule.addPaymentAppFactory(
-                "https://alicepay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+                "https://alicepay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
         mPaymentRequestTestRule.openPage();
 
         mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
-                "triggerPaymentRequest([{supportedMethods:'https://bobpay.com'}, "
-                        + "{supportedMethods:'https://alicepay.com'}]);",
+                "triggerPaymentRequest([{supportedMethods:'https://bobpay.test'}, "
+                        + "{supportedMethods:'https://alicepay.test'}]);",
                 mPaymentRequestTestRule.getReadyToPay());
 
         // Quickly dismiss and then press on "Continue"
@@ -182,15 +182,15 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     public void testQuickDismissAndCloseShouldNotCrash() throws TimeoutException {
         // Install two payment apps, so that the PaymentRequest UI is shown rather than skipped.
         mPaymentRequestTestRule.addPaymentAppFactory(
-                "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+                "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mPaymentRequestTestRule.addPaymentAppFactory(
-                "https://alicepay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+                "https://alicepay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
         mPaymentRequestTestRule.openPage();
 
         mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
-                "triggerPaymentRequest([{supportedMethods:'https://bobpay.com'}, "
-                        + "{supportedMethods:'https://alicepay.com'}]);",
+                "triggerPaymentRequest([{supportedMethods:'https://bobpay.test'}, "
+                        + "{supportedMethods:'https://alicepay.test'}]);",
                 mPaymentRequestTestRule.getReadyToPay());
 
         // Quickly dismiss and then press on [X].
@@ -218,15 +218,15 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     public void testQuickCloseAndDismissShouldNotCrash() throws TimeoutException {
         // Install two payment apps, so that the PaymentRequest UI is shown rather than skipped.
         mPaymentRequestTestRule.addPaymentAppFactory(
-                "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+                "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mPaymentRequestTestRule.addPaymentAppFactory(
-                "https://alicepay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+                "https://alicepay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
         mPaymentRequestTestRule.openPage();
 
         mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
-                "triggerPaymentRequest([{supportedMethods:'https://bobpay.com'}, "
-                        + "{supportedMethods:'https://alicepay.com'}]);",
+                "triggerPaymentRequest([{supportedMethods:'https://bobpay.test'}, "
+                        + "{supportedMethods:'https://alicepay.test'}]);",
                 mPaymentRequestTestRule.getReadyToPay());
 
         // Quickly press on [X] and then dismiss.

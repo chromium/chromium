@@ -367,10 +367,10 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
     public void testHistogramForMutlipleApps() {
         PackageManagerDelegate packageManagerDelegate =
                 installPaymentApps(new String[] {"com.alicepay.app", "com.bobpay.app"},
-                        new String[] {"https://alicepay.com", "https://bobpay.com"});
+                        new String[] {"https://alicepay.test", "https://bobpay.test"});
 
         // Trigger app lookup.
-        findApps(new String[] {"https://charliepay.com"}, mPaymentManifestDownloader,
+        findApps(new String[] {"https://charliepay.test"}, mPaymentManifestDownloader,
                 mPaymentManifestParser, packageManagerDelegate);
 
         // Two apps are installed, with one method each.
@@ -390,7 +390,7 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
         Bundle bobPayMetaData = new Bundle();
         bobPayMetaData.putString(
                 AndroidPaymentAppFinder.META_DATA_NAME_OF_DEFAULT_PAYMENT_METHOD_NAME,
-                "https://bobpay.com");
+                "https://bobpay.test");
         bobPayMetaData.putInt(AndroidPaymentAppFinder.META_DATA_NAME_OF_PAYMENT_METHOD_NAMES, 1);
         bobPay.activityInfo.metaData = bobPayMetaData;
         activities.add(bobPay);
@@ -404,10 +404,10 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
         Mockito.when(mPackageManagerDelegate.getStringArrayResourceForApplication(
                              ArgumentMatchers.eq(bobPay.activityInfo.applicationInfo),
                              ArgumentMatchers.eq(1)))
-                .thenReturn(new String[] {"https://bobpay.com", "https://alicepay.com"});
+                .thenReturn(new String[] {"https://bobpay.test", "https://alicepay.test"});
 
         // Trigger app lookup.
-        findApps(new String[] {"https://charliepay.com"}, mPaymentManifestDownloader,
+        findApps(new String[] {"https://charliepay.test"}, mPaymentManifestDownloader,
                 mPaymentManifestParser, mPackageManagerDelegate);
 
         // One app is installed. It has two payment methods.
@@ -427,7 +427,7 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
         Bundle bobPayMetaData = new Bundle();
         bobPayMetaData.putString(
                 AndroidPaymentAppFinder.META_DATA_NAME_OF_DEFAULT_PAYMENT_METHOD_NAME,
-                "https://bobpay.com");
+                "https://bobpay.test");
         bobPayMetaData.putInt(AndroidPaymentAppFinder.META_DATA_NAME_OF_PAYMENT_METHOD_NAMES, 1);
         bobPay.activityInfo.metaData = bobPayMetaData;
         activities.add(bobPay);
@@ -441,7 +441,7 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
         Mockito.when(mPackageManagerDelegate.getStringArrayResourceForApplication(
                              ArgumentMatchers.eq(bobPay.activityInfo.applicationInfo),
                              ArgumentMatchers.eq(1)))
-                .thenReturn(new String[] {"https://bobpay.com", "basic-card"});
+                .thenReturn(new String[] {"https://bobpay.test", "basic-card"});
 
         List<ResolveInfo> services = new ArrayList<>();
         ResolveInfo isBobPayReadyToPay = new ResolveInfo();
@@ -488,7 +488,7 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
             public void parsePaymentMethodManifest(
                     GURL paymentMethodManifestUrl, String content, ManifestParseCallback callback) {
                 callback.onPaymentMethodManifestParseSuccess(
-                        new GURL[] {new GURL("https://bobpay.com/app.json")}, new GURL[0]);
+                        new GURL[] {new GURL("https://bobpay.test/app.json")}, new GURL[0]);
             }
 
             @Override
@@ -508,7 +508,7 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
         };
 
         PaymentAppFactoryDelegate delegate = findApps(
-                new String[] {"https://bobpay.com"}, downloader, parser, mPackageManagerDelegate);
+                new String[] {"https://bobpay.test"}, downloader, parser, mPackageManagerDelegate);
 
         Mockito.verify(delegate).onPaymentAppCreated(
                 ArgumentMatchers.argThat(Matches.paymentAppIdentifier("com.bobpay.app")));

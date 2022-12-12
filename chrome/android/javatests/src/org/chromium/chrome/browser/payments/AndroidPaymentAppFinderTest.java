@@ -248,10 +248,10 @@ public class AndroidPaymentAppFinderTest
     public void testNoApps() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("basic-card");
-        methods.add("https://alicepay.com/webpay");
-        methods.add("https://bobpay.com/webpay");
-        methods.add("https://charliepay.com/webpay");
-        methods.add("https://davepay.com/webpay");
+        methods.add("https://alicepay.test/webpay");
+        methods.add("https://bobpay.test/webpay");
+        methods.add("https://charliepay.test/webpay");
+        methods.add("https://davepay.test/webpay");
 
         findApps(methods);
 
@@ -286,11 +286,11 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testPaymentAppsRequireExplicitAuthorizationForPaymentMethods() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://frankpay.com/webpay");
+        methods.add("https://frankpay.test/webpay");
         mPackageManager.installPaymentApp("AlicePay", "com.alicepay",
                 "" /* no default payment method name in metadata */, /*signature=*/"AA");
         mPackageManager.setStringArrayMetaData(
-                "com.alicepay", new String[] {"https://frankpay.com/webpay"});
+                "com.alicepay", new String[] {"https://frankpay.test/webpay"});
 
         findApps(methods);
 
@@ -354,17 +354,17 @@ public class AndroidPaymentAppFinderTest
     }
 
     /**
-     * Test BobPay with https://bobpay.com/webpay payment method name, which the payment app
+     * Test BobPay with https://bobpay.test/webpay payment method name, which the payment app
      * supports through the "default_applications" directive in the
-     * https://bobpay.com/payment-manifest.json file. BobPay has the correct signature that
-     * matches the fingerprint in https://bobpay.com/app.json.
+     * https://bobpay.test/payment-manifest.json file. BobPay has the correct signature that
+     * matches the fingerprint in https://bobpay.test/app.json.
      */
     @Test
     @Feature({"Payments"})
     public void testOneUrlMethodNameApp() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://bobpay.com/webpay");
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+        methods.add("https://bobpay.test/webpay");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 /*signature=*/"01020304050607080900");
 
         findApps(methods);
@@ -378,25 +378,25 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testIgnoreAppStoreMethodsInNonTwa() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://bobpay.com/webpay");
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+        methods.add("https://bobpay.test/webpay");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 /*signature=*/"01020304050607080900");
 
         addAppStoreMethodAndFindApps(/*appStorePackageName=*/"com.bobpay",
-                /*appStorePaymentMethod=*/new GURL("https://bobpay.com/webpay"), methods);
+                /*appStorePaymentMethod=*/new GURL("https://bobpay.test/webpay"), methods);
 
         Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
     }
 
     /**
-     * Test BobPay with an incorrect signature and https://bobpay.com/webpay payment method name.
+     * Test BobPay with an incorrect signature and https://bobpay.test/webpay payment method name.
      */
     @Test
     @Feature({"Payments"})
     public void testOneUrlMethodNameAppWithWrongSignature() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://bobpay.com/webpay");
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+        methods.add("https://bobpay.test/webpay");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 "AA" /* incorrect signature */);
 
         findApps(methods);
@@ -409,9 +409,9 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testOneAppWithoutPackageInfo() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://bobpay.com/webpay");
+        methods.add("https://bobpay.test/webpay");
         mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://bobpay.com/webpay", null /* no package info*/);
+                "BobPay", "com.bobpay", "https://bobpay.test/webpay", null /* no package info*/);
 
         findApps(methods);
 
@@ -423,9 +423,9 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testOneAppWithoutSignatures() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://bobpay.com/webpay");
+        methods.add("https://bobpay.test/webpay");
         mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://bobpay.com/webpay", "" /* no signatures */);
+                "BobPay", "com.bobpay", "https://bobpay.test/webpay", "" /* no signatures */);
 
         findApps(methods);
 
@@ -433,7 +433,7 @@ public class AndroidPaymentAppFinderTest
     }
 
     /**
-     * Test https://davepay.com/webpay payment method, the "default_applications" of which
+     * Test https://davepay.test/webpay payment method, the "default_applications" of which
      * supports two different package names: one for production and one for development version
      * of the payment app. Both of these apps should be found. Repeated lookups should continue
      * finding the two apps.
@@ -442,11 +442,11 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testTwoUrlMethodNameAppsWithSameMethodName() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://davepay.com/webpay");
+        methods.add("https://davepay.test/webpay");
         mPackageManager.installPaymentApp("DavePay", "com.davepay.prod",
-                "https://davepay.com/webpay", /*signature=*/"44444444442222222222");
+                "https://davepay.test/webpay", /*signature=*/"44444444442222222222");
         mPackageManager.installPaymentApp("DavePay Dev", "com.davepay.dev",
-                "https://davepay.com/webpay", /*signature=*/"44444444441111111111");
+                "https://davepay.test/webpay", /*signature=*/"44444444441111111111");
 
         findApps(methods);
 
@@ -471,7 +471,7 @@ public class AndroidPaymentAppFinderTest
     }
 
     /**
-     * If the merchant supports https://bobpay.com/webpay and https://alicepay.com/webpay payment
+     * If the merchant supports https://bobpay.test/webpay and https://alicepay.test/webpay payment
      * method names and the user has an app for each of those, then both apps should be found.
      * Repeated lookups should succeed.
      */
@@ -479,11 +479,12 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testTwoUrlMethodNameAppsWithDifferentMethodNames() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://bobpay.com/webpay");
-        methods.add("https://alicepay.com/webpay");
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+        methods.add("https://bobpay.test/webpay");
+        methods.add("https://alicepay.test/webpay");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 /*signature=*/"01020304050607080900");
-        mPackageManager.installPaymentApp("AlicePay", "com.alicepay", "https://alicepay.com/webpay",
+        mPackageManager.installPaymentApp("AlicePay", "com.alicepay",
+                "https://alicepay.test/webpay",
                 /*signature=*/"ABCDEFABCDEFABCDEFAB");
 
         findApps(methods);
@@ -517,12 +518,12 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testOneValidManifestAndOneInvalidManifestWithPaymentAppsForBoth() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://bobpay.com/webpay");
-        methods.add("https://not-valid.com/webpay");
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+        methods.add("https://bobpay.test/webpay");
+        methods.add("https://not-valid.test/webpay");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 /*signature=*/"01020304050607080900");
         mPackageManager.installPaymentApp("NotValid", "com.not-valid",
-                "https://not-valid.com/webpay", /*signature=*/"ABCDEFABCDEFABCDEFAB");
+                "https://not-valid.test/webpay", /*signature=*/"ABCDEFABCDEFABCDEFAB");
 
         findApps(methods);
 
@@ -546,11 +547,12 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testTwoUrlMethodNameAppsTwice() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://bobpay.com/webpay");
-        methods.add("https://alicepay.com/webpay");
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+        methods.add("https://bobpay.test/webpay");
+        methods.add("https://alicepay.test/webpay");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 /*signature=*/"01020304050607080900");
-        mPackageManager.installPaymentApp("AlicePay", "com.alicepay", "https://alicepay.com/webpay",
+        mPackageManager.installPaymentApp("AlicePay", "com.alicepay",
+                "https://alicepay.test/webpay",
                 /*signature=*/"ABCDEFABCDEFABCDEFAB");
 
         findApps(methods);
@@ -566,7 +568,7 @@ public class AndroidPaymentAppFinderTest
     }
 
     /**
-     * Test CharliePay Dev with https://charliepay.com/webpay payment method, which supports both
+     * Test CharliePay Dev with https://charliepay.test/webpay payment method, which supports both
      * dev and prod versions of the app through multiple web app manifests. Repeated app look ups
      * should be successful.
      */
@@ -574,12 +576,13 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testCharliePayDev() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://charliepay.com/webpay");
+        methods.add("https://charliepay.test/webpay");
         mPackageManager.installPaymentApp("CharliePay", "com.charliepay.dev",
-                "https://charliepay.com/webpay", /*signature=*/"33333333333111111111");
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                "https://charliepay.test/webpay", /*signature=*/"33333333333111111111");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 /*signature=*/"01020304050607080900");
-        mPackageManager.installPaymentApp("AlicePay", "com.alicepay", "https://alicepay.com/webpay",
+        mPackageManager.installPaymentApp("AlicePay", "com.alicepay",
+                "https://alicepay.test/webpay",
                 /*signature=*/"ABCDEFABCDEFABCDEFAB");
 
         findApps(methods);
@@ -597,7 +600,7 @@ public class AndroidPaymentAppFinderTest
     }
 
     /**
-     * Test DavePay Dev with https://davepay.com/webpay payment method, which supports both
+     * Test DavePay Dev with https://davepay.test/webpay payment method, which supports both
      * dev and prod versions of the app through multiple sections of "related_applications" entry
      * in the same web app manifest. Repeated app look ups should be successful.
      */
@@ -605,12 +608,13 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testDavePayDev() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://davepay.com/webpay");
+        methods.add("https://davepay.test/webpay");
         mPackageManager.installPaymentApp("DavePay", "com.davepay.dev",
-                "https://davepay.com/webpay", /*signature=*/"44444444441111111111");
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                "https://davepay.test/webpay", /*signature=*/"44444444441111111111");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 /*signature=*/"01020304050607080900");
-        mPackageManager.installPaymentApp("AlicePay", "com.alicepay", "https://alicepay.com/webpay",
+        mPackageManager.installPaymentApp("AlicePay", "com.alicepay",
+                "https://alicepay.test/webpay",
                 /*signature=*/"ABCDEFABCDEFABCDEFAB");
 
         findApps(methods);
@@ -629,7 +633,7 @@ public class AndroidPaymentAppFinderTest
 
     /**
      * Test a valid installation of EvePay with 55555555551111111111 signature and
-     * https://evepay.com/webpay payment method, which supports a couple of different signatures
+     * https://evepay.test/webpay payment method, which supports a couple of different signatures
      * (with the same package name) through different web app manifests. Repeated app look ups
      * should be successful.
      */
@@ -637,8 +641,8 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testValidEvePay1() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://evepay.com/webpay");
-        mPackageManager.installPaymentApp("EvePay", "com.evepay", "https://evepay.com/webpay",
+        methods.add("https://evepay.test/webpay");
+        mPackageManager.installPaymentApp("EvePay", "com.evepay", "https://evepay.test/webpay",
                 /*signature=*/"55555555551111111111");
 
         findApps(methods);
@@ -657,7 +661,7 @@ public class AndroidPaymentAppFinderTest
 
     /**
      * Test a valid installation of EvePay with 55555555552222222222 signature and
-     * https://evepay.com/webpay payment method, which supports a couple of different signatures
+     * https://evepay.test/webpay payment method, which supports a couple of different signatures
      * (with the same package name) through different web app manifests. Repeated app look ups
      * should be successful.
      */
@@ -665,8 +669,8 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testValidEvePay2() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://evepay.com/webpay");
-        mPackageManager.installPaymentApp("EvePay", "com.evepay", "https://evepay.com/webpay",
+        methods.add("https://evepay.test/webpay");
+        mPackageManager.installPaymentApp("EvePay", "com.evepay", "https://evepay.test/webpay",
                 /*signature=*/"55555555552222222222");
 
         findApps(methods);
@@ -684,7 +688,7 @@ public class AndroidPaymentAppFinderTest
     }
 
     /**
-     * Test an invalid installation of EvePay with https://evepay.com/webpay payment method, which
+     * Test an invalid installation of EvePay with https://evepay.test/webpay payment method, which
      * supports several different signatures (with the same package name) through different web app
      * manifests. Repeated app look ups should find no payment apps.
      */
@@ -692,9 +696,9 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testInvalidEvePay() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://evepay.com/webpay");
+        methods.add("https://evepay.test/webpay");
         mPackageManager.installPaymentApp(
-                "EvePay", "com.evepay", "https://evepay.com/webpay", /*signature=*/"55");
+                "EvePay", "com.evepay", "https://evepay.test/webpay", /*signature=*/"55");
 
         findApps(methods);
 
@@ -708,25 +712,25 @@ public class AndroidPaymentAppFinderTest
     }
 
     /**
-     * Test https://frankpay.com/webpay payment method, which is invalid because it contains
+     * Test https://frankpay.test/webpay payment method, which is invalid because it contains
      * {"supported_origins": "*"}. Repeated app look ups should find no payment apps.
      */
     @Test
     @Feature({"Payments"})
     public void testFrankPayDoesNotMatchAnyPaymentApps() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://frankpay.com/webpay");
+        methods.add("https://frankpay.test/webpay");
         mPackageManager.installPaymentApp(
-                "AlicePay", "com.alicepay", "https://alicepay.com/webpay", /*signature=*/"00");
+                "AlicePay", "com.alicepay", "https://alicepay.test/webpay", /*signature=*/"00");
         mPackageManager.installPaymentApp("BobPay", "com.bobpay", "basic-card", /*signature=*/"11");
         mPackageManager.installPaymentApp(
                 "AlicePay", "com.charliepay", "invalid-payment-method-name", /*signature=*/"22");
         mPackageManager.setStringArrayMetaData(
-                "com.alicepay", new String[] {"https://frankpay.com/webpay"});
+                "com.alicepay", new String[] {"https://frankpay.test/webpay"});
         mPackageManager.setStringArrayMetaData(
-                "com.bobpay", new String[] {"https://frankpay.com/webpay"});
+                "com.bobpay", new String[] {"https://frankpay.test/webpay"});
         mPackageManager.setStringArrayMetaData(
-                "com.charliepay", new String[] {"https://frankpay.com/webpay"});
+                "com.charliepay", new String[] {"https://frankpay.test/webpay"});
 
         findApps(methods);
 
@@ -749,13 +753,13 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testInvalidSignatureAndPaymentMethodDoesNotMatchAnyPaymentApps() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://frankpay.com/webpay");
-        methods.add("https://bobpay.com/webpay");
+        methods.add("https://frankpay.test/webpay");
+        methods.add("https://bobpay.test/webpay");
         methods.add("invalid-payment-method-name");
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
-                "00" /* Invalid signature for https://bobpay.com/webpay. */);
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
+                "00" /* Invalid signature for https://bobpay.test/webpay. */);
         mPackageManager.setStringArrayMetaData("com.bobpay",
-                new String[] {"invalid-payment-method-name", "https://frankpay.com/webpay"});
+                new String[] {"invalid-payment-method-name", "https://frankpay.test/webpay"});
 
         findApps(methods);
 
@@ -770,35 +774,36 @@ public class AndroidPaymentAppFinderTest
     }
 
     /**
-     * Verify that only a valid AlicePay app can use https://georgepay.com/webpay payment method
-     * name, because https://georgepay.com/payment-manifest.json contains {"supported_origins":
-     * ["https://alicepay.com"]}. Repeated app look ups should be successful.
+     * Verify that only a valid AlicePay app can use https://georgepay.test/webpay payment method
+     * name, because https://georgepay.test/payment-manifest.json contains {"supported_origins":
+     * ["https://alicepay.test"]}. Repeated app look ups should be successful.
      */
     @Test
     @Feature({"Payments"})
     public void testGeorgePaySupportsPaymentAppsFromAlicePayOrigin() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://georgepay.com/webpay");
+        methods.add("https://georgepay.test/webpay");
         // Valid AlicePay:
-        mPackageManager.installPaymentApp("AlicePay", "com.alicepay", "https://alicepay.com/webpay",
+        mPackageManager.installPaymentApp("AlicePay", "com.alicepay",
+                "https://alicepay.test/webpay",
                 /*signature=*/"ABCDEFABCDEFABCDEFAB");
         mPackageManager.setStringArrayMetaData(
-                "com.alicepay", new String[] {"https://georgepay.com/webpay"});
+                "com.alicepay", new String[] {"https://georgepay.test/webpay"});
         // Invalid AlicePay:
         mPackageManager.installPaymentApp("AlicePay", "com.fake-alicepay" /* invalid package name*/,
-                "https://alicepay.com/webpay", "00" /* invalid signature */);
+                "https://alicepay.test/webpay", "00" /* invalid signature */);
         mPackageManager.setStringArrayMetaData(
-                "com.fake-alicepay", new String[] {"https://georgepay.com/webpay"});
+                "com.fake-alicepay", new String[] {"https://georgepay.test/webpay"});
         // Valid BobPay:
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
-                "com.bobpay", new String[] {"https://georgepay.com/webpay"});
+                "com.bobpay", new String[] {"https://georgepay.test/webpay"});
         // A "basic-card" app.
         mPackageManager.installPaymentApp("CharliePay", "com.charliepay.dev", "basic-card",
                 /*signature=*/"33333333333111111111");
         mPackageManager.setStringArrayMetaData(
-                "com.charliepay.dev", new String[] {"https://georgepay.com/webpay"});
+                "com.charliepay.dev", new String[] {"https://georgepay.test/webpay"});
 
         findApps(methods);
 
@@ -814,20 +819,20 @@ public class AndroidPaymentAppFinderTest
     }
 
     /**
-     * Verify that AlicePay app with incorrect signature cannot use https://georgepay.com/webpay
-     * payment method, which contains {"supported_origins": ["https://alicepay.com"]} in
-     * https://georgepay.com/payment-manifest.json file. Repeated app look ups should find no apps.
+     * Verify that AlicePay app with incorrect signature cannot use https://georgepay.test/webpay
+     * payment method, which contains {"supported_origins": ["https://alicepay.test"]} in
+     * https://georgepay.test/payment-manifest.json file. Repeated app look ups should find no apps.
      */
     @Test
     @Feature({"Payments"})
     public void testInvalidSignatureAlicePayAppCannotUseGeorgePayMethodName() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://georgepay.com/webpay");
+        methods.add("https://georgepay.test/webpay");
         // AlicePay with invalid signature:
-        mPackageManager.installPaymentApp("AlicePay", "com.alicepay", "https://alicepay.com/webpay",
-                "00" /* invalid signature */);
+        mPackageManager.installPaymentApp("AlicePay", "com.alicepay",
+                "https://alicepay.test/webpay", "00" /* invalid signature */);
         mPackageManager.setStringArrayMetaData(
-                "com.alicepay", new String[] {"https://georgepay.com/webpay"});
+                "com.alicepay", new String[] {"https://georgepay.test/webpay"});
 
         findApps(methods);
 
@@ -841,21 +846,21 @@ public class AndroidPaymentAppFinderTest
     }
 
     /**
-     * Verify that BobPay app cannot use https://georgepay.com/webpay payment method, because
-     * https://georgepay.com/payment-manifest.json contains
-     * {"supported_origins": ["https://alicepay.com"]} and no "https://bobpay.com". BobPay can still
-     * use its own payment method name, however. Repeated app look ups should succeed.
+     * Verify that BobPay app cannot use https://georgepay.test/webpay payment method, because
+     * https://georgepay.test/payment-manifest.json contains
+     * {"supported_origins": ["https://alicepay.test"]} and no "https://bobpay.test". BobPay can
+     * still use its own payment method name, however. Repeated app look ups should succeed.
      */
     @Test
     @Feature({"Payments"})
     public void testValidBobPayCannotUseGeorgePayMethod() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://bobpay.com/webpay");
-        methods.add("https://georgepay.com/webpay");
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+        methods.add("https://bobpay.test/webpay");
+        methods.add("https://georgepay.test/webpay");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
-                "com.bobpay", new String[] {"https://georgepay.com/webpay"});
+                "com.bobpay", new String[] {"https://georgepay.test/webpay"});
 
         findApps(methods);
 
@@ -863,7 +868,7 @@ public class AndroidPaymentAppFinderTest
         Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getIdentifier());
         Assert.assertEquals("1 payment method should be enabled", 1,
                 mPaymentApps.get(0).getInstrumentMethodNames().size());
-        Assert.assertEquals("https://bobpay.com/webpay",
+        Assert.assertEquals("https://bobpay.test/webpay",
                 mPaymentApps.get(0).getInstrumentMethodNames().iterator().next());
 
         mPaymentApps.clear();
@@ -875,13 +880,13 @@ public class AndroidPaymentAppFinderTest
         Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getIdentifier());
         Assert.assertEquals("1 payment method should still be enabled", 1,
                 mPaymentApps.get(0).getInstrumentMethodNames().size());
-        Assert.assertEquals("https://bobpay.com/webpay",
+        Assert.assertEquals("https://bobpay.test/webpay",
                 mPaymentApps.get(0).getInstrumentMethodNames().iterator().next());
     }
 
     /**
-     * Verify that HenryPay can not use https://henrypay.com/webpay payment method name
-     * and BobPay can not use it because https://henrypay.com/payment-manifest.json
+     * Verify that HenryPay can not use https://henrypay.test/webpay payment method name
+     * and BobPay can not use it because https://henrypay.test/payment-manifest.json
      * contains invalid "supported_origins": "*". Repeated app look ups should
      * find no payment apps.
      */
@@ -889,13 +894,14 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testUrlPaymentMethodWithDefaultApplication() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://henrypay.com/webpay");
-        mPackageManager.installPaymentApp("HenryPay", "com.henrypay", "https://henrypay.com/webpay",
+        methods.add("https://henrypay.test/webpay");
+        mPackageManager.installPaymentApp("HenryPay", "com.henrypay",
+                "https://henrypay.test/webpay",
                 /*signature=*/"55555555551111111111");
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
-                "com.bobpay", new String[] {"https://henrypay.com/webpay"});
+                "com.bobpay", new String[] {"https://henrypay.test/webpay"});
 
         findApps(methods);
 
@@ -910,17 +916,17 @@ public class AndroidPaymentAppFinderTest
     }
 
     /**
-     * Verify that no payment app can use https://henrypay.com/webpay, because it
+     * Verify that no payment app can use https://henrypay.test/webpay, because it
      * does not explicitly authorize any payment app.
      */
     @Test
     @Feature({"Payments"})
     public void testNonUriDefaultPaymentMethodAppCanUseMethod() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://henrypay.com/webpay");
+        methods.add("https://henrypay.test/webpay");
         mPackageManager.installPaymentApp("BobPay", "com.bobpay", "basic-card", /*signature=*/"AA");
         mPackageManager.setStringArrayMetaData(
-                "com.bobpay", new String[] {"https://henrypay.com/webpay"});
+                "com.bobpay", new String[] {"https://henrypay.test/webpay"});
 
         findApps(methods);
 
@@ -935,27 +941,28 @@ public class AndroidPaymentAppFinderTest
     }
 
     /**
-     * Verify that IkePay can use https://ikepay.com/webpay payment method name because it's
+     * Verify that IkePay can use https://ikepay.test/webpay payment method name because it's
      * a default application and AlicePay can use it because
-     * https://ikepay.com/payment-manifest.json contains
-     * "supported_origins": ["https://alicepay.com"]. BobPay cannot use this payment method.
+     * https://ikepay.test/payment-manifest.json contains
+     * "supported_origins": ["https://alicepay.test"]. BobPay cannot use this payment method.
      * Repeated app look ups should succeed.
      */
     @Test
     @Feature({"Payments"})
     public void testUrlPaymentMethodWithDefaultApplicationAndOneSupportedOrigin() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://ikepay.com/webpay");
-        mPackageManager.installPaymentApp("IkePay", "com.ikepay", "https://ikepay.com/webpay",
+        methods.add("https://ikepay.test/webpay");
+        mPackageManager.installPaymentApp("IkePay", "com.ikepay", "https://ikepay.test/webpay",
                 /*signature=*/"66666666661111111111");
-        mPackageManager.installPaymentApp("AlicePay", "com.alicepay", "https://alicepay.com/webpay",
+        mPackageManager.installPaymentApp("AlicePay", "com.alicepay",
+                "https://alicepay.test/webpay",
                 /*signature=*/"ABCDEFABCDEFABCDEFAB");
         mPackageManager.setStringArrayMetaData(
-                "com.alicepay", new String[] {"https://ikepay.com/webpay"});
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                "com.alicepay", new String[] {"https://ikepay.test/webpay"});
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
-                "com.bobpay", new String[] {"https://ikepay.com/webpay"});
+                "com.bobpay", new String[] {"https://ikepay.test/webpay"});
 
         findApps(methods);
 
@@ -970,18 +977,19 @@ public class AndroidPaymentAppFinderTest
     }
 
     /**
-     * Verify that no payment app can use https://henrypay.com/webpay, because it
+     * Verify that no payment app can use https://henrypay.test/webpay, because it
      * does not explicitly authorize any payment app.
      */
     @Test
     @Feature({"Payments"})
     public void testDuplicateDefaultAndSupportedMethod() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://henrypay.com/webpay");
-        mPackageManager.installPaymentApp("HenryPay", "com.henrypay", "https://henrypay.com/webpay",
+        methods.add("https://henrypay.test/webpay");
+        mPackageManager.installPaymentApp("HenryPay", "com.henrypay",
+                "https://henrypay.test/webpay",
                 /*signature=*/"55555555551111111111");
         mPackageManager.setStringArrayMetaData(
-                "com.henrypay", new String[] {"https://henrypay.com/webpay"});
+                "com.henrypay", new String[] {"https://henrypay.test/webpay"});
 
         findApps(methods);
 
@@ -1190,16 +1198,16 @@ public class AndroidPaymentAppFinderTest
     public void testFindAppStoreBillingAppMustInTwa() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://play.google.com/billing");
-        methods.add("https://bobpay.com/webpay");
+        methods.add("https://bobpay.test/webpay");
 
         mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
                 "https://play.google.com/billing", /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
                 "com.merchant.twa", new String[] {"https://play.google.com/billing"});
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
-                "com.bobpay", new String[] {"https://bobpay.com/webpay"});
+                "com.bobpay", new String[] {"https://bobpay.test/webpay"});
 
         findApps(methods);
 
@@ -1215,16 +1223,16 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testFindAppStoreBillingAppNotRequested() throws Throwable {
         Set<String> noRequestedMethod = new HashSet<>();
-        noRequestedMethod.add("https://bobpay.com/webpay");
+        noRequestedMethod.add("https://bobpay.test/webpay");
 
         mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
                 "https://play.google.com/billing", /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
                 "com.merchant.twa", new String[] {"https://play.google.com/billing"});
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
-                "com.bobpay", new String[] {"https://bobpay.com/webpay"});
+                "com.bobpay", new String[] {"https://bobpay.test/webpay"});
 
         setMockTrustedWebActivity("com.merchant.twa", "com.android.vending");
         findApps(noRequestedMethod);
@@ -1243,15 +1251,15 @@ public class AndroidPaymentAppFinderTest
     public void testFindAppStoreBillingAppInclusiveForBillingAndNonBilling() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://play.google.com/billing");
-        methods.add("https://bobpay.com/webpay");
+        methods.add("https://bobpay.test/webpay");
         mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
                 "https://play.google.com/billing", /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
                 "com.merchant.twa", new String[] {"https://play.google.com/billing"});
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
-                "com.bobpay", new String[] {"https://bobpay.com/webpay"});
+                "com.bobpay", new String[] {"https://bobpay.test/webpay"});
 
         setMockTrustedWebActivity("com.merchant.twa", "com.android.vending");
         findApps(methods);
@@ -1269,17 +1277,17 @@ public class AndroidPaymentAppFinderTest
     public void testFindAppStoreBillingAppDelegationRejectBilling() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://play.google.com/billing");
-        methods.add("https://bobpay.com/webpay");
+        methods.add("https://bobpay.test/webpay");
         setRequestShipping(true);
         mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
                 "https://play.google.com/billing",
                 /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
                 "com.merchant.twa", new String[] {"https://play.google.com/billing"});
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
-                "com.bobpay", new String[] {"https://bobpay.com/webpay"});
+                "com.bobpay", new String[] {"https://bobpay.test/webpay"});
 
         setMockTrustedWebActivity("com.merchant.twa", "com.android.vending");
         findApps(methods);
@@ -1296,15 +1304,15 @@ public class AndroidPaymentAppFinderTest
     public void testFindAppStoreBillingAppMustInSupportedAppStore() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://another.playstore.com/billing");
-        methods.add("https://bobpay.com/webpay");
+        methods.add("https://bobpay.test/webpay");
         mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
                 "https://another.playstore.com/billing", /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
                 "com.merchant.twa", new String[] {"https://another.playstore.com/billing"});
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
-                "com.bobpay", new String[] {"https://bobpay.com/webpay"});
+                "com.bobpay", new String[] {"https://bobpay.test/webpay"});
 
         setMockTrustedWebActivity("com.merchant.twa", "com.another.appstore");
         findApps(methods);
@@ -1342,15 +1350,16 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testTwoAppsFromDifferentOriginsWithTheSamePaymentMethod() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://jonpay.com/webpay");
-        mPackageManager.installPaymentApp("AlicePay", "com.alicepay", "https://alicepay.com/webpay",
+        methods.add("https://jonpay.test/webpay");
+        mPackageManager.installPaymentApp("AlicePay", "com.alicepay",
+                "https://alicepay.test/webpay",
                 /*signature=*/"ABCDEFABCDEFABCDEFAB");
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
-                "com.alicepay", new String[] {"https://jonpay.com/webpay"});
+                "com.alicepay", new String[] {"https://jonpay.test/webpay"});
         mPackageManager.setStringArrayMetaData(
-                "com.bobpay", new String[] {"https://jonpay.com/webpay"});
+                "com.bobpay", new String[] {"https://jonpay.test/webpay"});
 
         findApps(methods);
 
@@ -1387,16 +1396,16 @@ public class AndroidPaymentAppFinderTest
     }
 
     /**
-     * Test BobPay with https://bobpay.com/webpay payment method name, and supported delegations
+     * Test BobPay with https://bobpay.test/webpay payment method name, and supported delegations
      */
     @Test
     @Feature({"Payments"})
     public void testPaymentAppWithSupportedDelegations() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://bobpay.com/webpay");
+        methods.add("https://bobpay.test/webpay");
         String[] supportedDelegations = {
                 "shippingAddress", "payerName", "payerEmail", "payerPhone"};
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 supportedDelegations, /*signature=*/"01020304050607080900");
 
         findApps(methods);
@@ -1418,9 +1427,9 @@ public class AndroidPaymentAppFinderTest
     @Feature({"Payments"})
     public void testPaymentAppWithInavalidDelegationValue() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://bobpay.com/webpay");
+        methods.add("https://bobpay.test/webpay");
         String[] invalidDelegations = {"invalidDelegation"};
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.test/webpay",
                 invalidDelegations, /*signature=*/"01020304050607080900");
 
         findApps(methods);

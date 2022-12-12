@@ -12,7 +12,7 @@ var request2;
  */
 function buy() {
   buyWithMethods([
-    {supportedMethods: 'https://bobpay.com'},
+    {supportedMethods: 'https://bobpay.test'},
     {
       supportedMethods: 'basic-card',
       data: {supportedNetworks: ['visa']},
@@ -76,7 +76,7 @@ function showAgain() {
  */
 function showSecondRequest() {
   showSecondRequestWithMethods([
-    {supportedMethods: 'https://bobpay.com'},
+    {supportedMethods: 'https://bobpay.test'},
     {
       supportedMethods: 'basic-card',
       data: {supportedNetworks: ['visa']},

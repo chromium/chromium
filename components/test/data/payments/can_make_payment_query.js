@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-const bobPayMethod = {supportedMethods: 'https://bobpay.com'};
+const bobPayMethod = {supportedMethods: 'https://bobpay.test'};
 
 const defaultDetails = {
   total: {

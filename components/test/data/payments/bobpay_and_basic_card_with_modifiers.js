@@ -12,7 +12,7 @@ function buy() {
   try {
     new PaymentRequest(
         [
-          {supportedMethods: 'https://bobpay.com'},
+          {supportedMethods: 'https://bobpay.test'},
           {supportedMethods: 'basic-card'},
         ],
         {
@@ -56,13 +56,13 @@ function buyWithBobPayDiscount() {
   try {
     new PaymentRequest(
         [
-          {supportedMethods: 'https://bobpay.com'},
+          {supportedMethods: 'https://bobpay.test'},
           {supportedMethods: 'basic-card'},
         ],
         {
           total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
           modifiers: [{
-            supportedMethods: 'https://bobpay.com',
+            supportedMethods: 'https://bobpay.test',
             total: {
               label: 'Total',
               amount: {currency: 'USD', value: '4.00'},
@@ -100,7 +100,7 @@ function visaSupportedNetwork() {
   try {
     new PaymentRequest(
         [
-          {supportedMethods: 'https://bobpay.com'},
+          {supportedMethods: 'https://bobpay.test'},
           {supportedMethods: 'basic-card'},
         ],
         {
@@ -147,7 +147,7 @@ function mastercardSupportedNetwork() {
   try {
     new PaymentRequest(
         [
-          {supportedMethods: 'https://bobpay.com'},
+          {supportedMethods: 'https://bobpay.test'},
           {supportedMethods: 'basic-card'},
         ],
         {
@@ -194,7 +194,7 @@ function mastercardAnySupportedType() {
   try {
     new PaymentRequest(
         [
-          {supportedMethods: 'https://bobpay.com'},
+          {supportedMethods: 'https://bobpay.test'},
           {supportedMethods: 'basic-card'},
         ],
         {

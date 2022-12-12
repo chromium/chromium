@@ -36,7 +36,7 @@ public class PaymentRequestShowPromiseEmptyTest implements MainActivityStartCall
 
     @Override
     public void onMainActivityStarted() throws TimeoutException {
-        new AutofillTestHelper().setProfile(new AutofillProfile("", "https://example.com", true,
+        new AutofillTestHelper().setProfile(new AutofillProfile("", "https://example.test", true,
                 "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
                 "", "90291", "", "US", "650-253-0000", "", "en-US"));
     }
@@ -46,7 +46,7 @@ public class PaymentRequestShowPromiseEmptyTest implements MainActivityStartCall
     @Feature({"Payments"})
     public void testResolveWithEmptyDictionary() throws TimeoutException {
         mRule.addPaymentAppFactory(
-                "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+                "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
         mRule.triggerUIAndWait("buyWithUrlMethod", mRule.getReadyToPay());
 

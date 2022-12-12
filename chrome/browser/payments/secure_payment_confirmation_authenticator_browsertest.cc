@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
                 content::JsReplace(
                     "getSecurePaymentConfirmationResponseIconWithInstrument({"
                     "  displayName: 'display_name_for_instrument',"
-                    "  icon: 'https://example.com/invalid-icon.png',"
+                    "  icon: 'https://example.test/invalid-icon.png',"
                     "  iconMustBeShown: false,"
                     "}, $1)",
                     credential_info.id)));
