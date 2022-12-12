@@ -208,10 +208,6 @@ class PLATFORM_EXPORT GeometryMapper {
       OverlayScrollbarClipBehavior,
       InclusiveIntersectOrNot);
 
-  static bool MightOverlapForCompositingLegacy(const gfx::RectF& rect1,
-                                               const PropertyTreeState& state1,
-                                               const gfx::RectF& rect2,
-                                               const PropertyTreeState& state2);
   static bool MightOverlapForCompositingInternal(
       const gfx::RectF& rect1,
       const PropertyTreeState& state1,

@@ -5816,7 +5816,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   settings.scrollbar_animator = LayerTreeSettings::AURA_OVERLAY;
   settings.scrollbar_fade_delay = base::Milliseconds(20);
   settings.scrollbar_fade_duration = base::Milliseconds(20);
-  settings.enable_scroll_update_optimizations = true;
   gfx::Size viewport_size(50, 50);
   gfx::Size content_size(100, 100);
 

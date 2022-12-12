@@ -70,10 +70,8 @@ void BlockPainter::Paint(const PaintInfo& paint_info) {
     // it easier to merge scrolling background and scrolling contents into the
     // same layer. The function checks if it's appropriate to paint overflow
     // controls now.
-    if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled()) {
-      painted_overflow_controls =
-          PaintOverflowControls(local_paint_info, paint_offset);
-    }
+    painted_overflow_controls =
+        PaintOverflowControls(local_paint_info, paint_offset);
 
     if (paint_location & kBackgroundPaintInContentsSpace) {
       local_paint_info.SetIsPaintingBackgroundInContentsSpace(true);

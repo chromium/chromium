@@ -173,7 +173,6 @@ bool HasScrolledEnough(const LayoutObject& object) {
 
 CullRectUpdater::CullRectUpdater(PaintLayer& starting_layer)
     : starting_layer_(starting_layer) {
-  DCHECK(RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled());
   view_transition_supplement_ = ViewTransitionSupplement::FromIfExists(
       starting_layer.GetLayoutObject().GetDocument());
 }
@@ -482,8 +481,6 @@ bool CullRectUpdater::ShouldProactivelyUpdate(const Context& context,
 void CullRectUpdater::PaintPropertiesChanged(
     const LayoutObject& object,
     const PaintPropertiesChangeInfo& properties_changed) {
-  DCHECK(RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled());
-
   // We don't need to update cull rect for kChangedOnlyCompositedValues (except
   // for some paint translation changes, see below) because we expect no repaint
   // or PAC update for performance.
@@ -569,9 +566,6 @@ FragmentCullRects::FragmentCullRects(FragmentData& fragment)
 
 OverriddenCullRectScope::OverriddenCullRectScope(PaintLayer& starting_layer,
                                                  const CullRect& cull_rect) {
-  if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
-    return;
-
   outer_original_cull_rects_ = g_original_cull_rects;
 
   if (starting_layer.IsRootLayer() &&
@@ -589,9 +583,6 @@ OverriddenCullRectScope::OverriddenCullRectScope(PaintLayer& starting_layer,
 }
 
 OverriddenCullRectScope::~OverriddenCullRectScope() {
-  if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
-    return;
-
   if (outer_original_cull_rects_ == g_original_cull_rects)
     return;
 

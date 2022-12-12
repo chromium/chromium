@@ -44,8 +44,7 @@ TransformPaintPropertyNode::State::ComputeTransformChange(
                : PaintPropertyChangeType::kChangedOnlyCompositedValues;
   }
 
-  if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled() &&
-      direct_compositing_reasons & CompositingReason::kStickyPosition) {
+  if (direct_compositing_reasons & CompositingReason::kStickyPosition) {
     // The compositor handles sticky offset changes automatically.
     DCHECK(transform_and_origin.matrix.Preserves2dAxisAlignment());
     DCHECK(other.matrix.Preserves2dAxisAlignment());

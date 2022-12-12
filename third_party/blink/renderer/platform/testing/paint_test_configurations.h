@@ -18,19 +18,15 @@ namespace blink {
 enum {
   kUnderInvalidationChecking = 1 << 0,
   kScrollUnification = 1 << 1,
-  kScrollUpdateOptimizations = 1 << 2,
 };
 
 class PaintTestConfigurations
     : public testing::WithParamInterface<unsigned>,
-      private ScopedPaintUnderInvalidationCheckingForTest,
-      private ScopedScrollUpdateOptimizationsForTest {
+      private ScopedPaintUnderInvalidationCheckingForTest {
  public:
   PaintTestConfigurations()
-      : ScopedPaintUnderInvalidationCheckingForTest(GetParam() &
-                                                    kUnderInvalidationChecking),
-        ScopedScrollUpdateOptimizationsForTest(GetParam() &
-                                               kScrollUpdateOptimizations) {
+      : ScopedPaintUnderInvalidationCheckingForTest(
+            GetParam() & kUnderInvalidationChecking) {
     if (GetParam() & kScrollUnification)
       feature_list_.InitAndEnableFeature(::features::kScrollUnification);
     else
@@ -54,9 +50,8 @@ class PaintTestConfigurations
 // For now this has only one configuration, but can be extended in the future
 // to include more configurations.
 #define INSTANTIATE_PAINT_TEST_SUITE_P(test_class) \
-  INSTANTIATE_TEST_SUITE_P(                        \
-      All, test_class,                             \
-      ::testing::Values(0, kScrollUnification, kScrollUpdateOptimizations))
+  INSTANTIATE_TEST_SUITE_P(All, test_class,        \
+                           ::testing::Values(0, kScrollUnification))
 
 }  // namespace blink
 

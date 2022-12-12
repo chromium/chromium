@@ -1819,7 +1819,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ScrollNonStackingContextContainingStacked) {
   // not a stacking context but contains stacked descendants.
   scroller->setScrollTop(100);
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_TRUE(paint_artifact_compositor->NeedsUpdate());
+  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
 

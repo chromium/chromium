@@ -353,9 +353,6 @@ bool CullRect::ChangedEnough(
 bool CullRect::HasScrolledEnough(
     const gfx::Vector2dF& delta,
     const TransformPaintPropertyNode& scroll_translation) {
-  if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
-    return !delta.IsZero();
-
   if (!scroll_translation.ScrollNode() ||
       !scroll_translation.HasDirectCompositingReasons()) {
     return !delta.IsZero();

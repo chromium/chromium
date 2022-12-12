@@ -32,27 +32,6 @@ void ExpandFixedVisualRectInScroller(
   rect.set_size(rect.size() + expansion);
 }
 
-// Walk up from the local transform to the ancestor. If the last transform
-// before hitting the ancestor is a fixed node, expand based on the min and
-// max scroll offsets.
-void ExpandFixedBoundsInScroller(const TransformPaintPropertyNode* local,
-                                 const TransformPaintPropertyNode* ancestor,
-                                 FloatClipRect& rect_to_map) {
-  DCHECK(!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled());
-  const TransformPaintPropertyNode* current = local->UnaliasedParent();
-  const TransformPaintPropertyNode* previous = local;
-  while (current != nullptr && current != ancestor) {
-    previous = current;
-    current = current->UnaliasedParent();
-  }
-
-  const auto* node = previous->ScrollTranslationForFixed();
-  if (!node)
-    return;
-
-  ExpandFixedVisualRectInScroller(*node, rect_to_map.Rect());
-}
-
 }  // namespace
 
 gfx::Transform GeometryMapper::SourceToDestinationProjection(
@@ -115,8 +94,7 @@ gfx::Transform GeometryMapper::SourceToDestinationProjectionInternal(
 
   if (source.Parent() && &destination == &source.Parent()->Unalias()) {
     extra_result.has_fixed = source.RequiresCompositingForFixedPosition();
-    if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
-      extra_result.has_sticky = source.RequiresCompositingForStickyPosition();
+    extra_result.has_sticky = source.RequiresCompositingForStickyPosition();
     if (source.IsIdentityOr2dTranslation() && source.Origin().IsOrigin()) {
       // The result will be translate(origin)*matrix*translate(-origin) which
       // equals to matrix if the origin is zero or if the matrix is just
@@ -136,8 +114,7 @@ gfx::Transform GeometryMapper::SourceToDestinationProjectionInternal(
   const auto& destination_cache = destination.GetTransformCache();
 
   extra_result.has_fixed |= source_cache.has_fixed();
-  if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
-    extra_result.has_sticky |= source_cache.has_sticky();
+  extra_result.has_sticky |= source_cache.has_sticky();
 
   // Case 1a (fast path of case 1b): check if source and destination are under
   // the same 2d translation root.
@@ -278,16 +255,6 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
     rect_to_map = InfiniteLooseFloatClipRect();
   } else {
     rect_to_map.Map(projection);
-    if (for_compositing_overlap == ForCompositingOverlap::kYes &&
-        !RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled() &&
-        extra_result.has_fixed) {
-      ExpandFixedBoundsInScroller(&local_state.Transform(),
-                                  &ancestor_state.Transform(), rect_to_map);
-      // This early return skips the clipping below because the expansion for
-      // fixed-position is to avoid compositing update on viewport scroll, while
-      // the clips may depend on viewport scroll offset.
-      return !rect_to_map.Rect().IsEmpty();
-    }
   }
 
   FloatClipRect clip_rect =
@@ -481,42 +448,11 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
   return clip;
 }
 
-bool GeometryMapper::MightOverlapForCompositingLegacy(
-    const gfx::RectF& rect1,
-    const PropertyTreeState& state1,
-    const gfx::RectF& rect2,
-    const PropertyTreeState& state2) {
-  DCHECK(!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled());
-
-  PropertyTreeState common_ancestor(
-      state1.Transform().LowestCommonAncestor(state2.Transform()).Unalias(),
-      state1.Clip().LowestCommonAncestor(state2.Clip()).Unalias(),
-      state1.Effect().LowestCommonAncestor(state2.Effect()).Unalias());
-  // Move the common clip up if some effect nodes have OutputClip escaping the
-  // common clip.
-  if (const auto* clip_a =
-          HighestOutputClipBetween(common_ancestor.Effect(), state1.Effect())) {
-    common_ancestor.SetClip(
-        clip_a->LowestCommonAncestor(common_ancestor.Clip()).Unalias());
-  }
-  if (const auto* clip_b =
-          HighestOutputClipBetween(common_ancestor.Effect(), state2.Effect())) {
-    common_ancestor.SetClip(
-        clip_b->LowestCommonAncestor(common_ancestor.Clip()).Unalias());
-  }
-  auto v1 = VisualRectForCompositingOverlap(rect1, state1, common_ancestor);
-  auto v2 = VisualRectForCompositingOverlap(rect2, state2, common_ancestor);
-  return v1.Intersects(v2);
-}
-
 bool GeometryMapper::MightOverlapForCompositing(
     const gfx::RectF& rect1,
     const PropertyTreeState& state1,
     const gfx::RectF& rect2,
     const PropertyTreeState& state2) {
-  if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
-    return MightOverlapForCompositingLegacy(rect1, state1, rect2, state2);
-
   if (&state1.Transform() == &state2.Transform())
     return MightOverlapForCompositingInternal(rect1, state1, rect2, state2);
 

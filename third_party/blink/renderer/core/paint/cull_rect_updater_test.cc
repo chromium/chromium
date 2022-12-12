@@ -34,9 +34,7 @@ class CullRectUpdaterTest : public PaintControllerPaintTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          CullRectUpdaterTest,
-                         ::testing::Values(kScrollUpdateOptimizations |
-                                               kScrollUnification,
-                                           kScrollUpdateOptimizations));
+                         ::testing::Values(0, kScrollUnification));
 
 TEST_P(CullRectUpdaterTest, SimpleCullRect) {
   SetBodyInnerHTML(R"HTML(
@@ -924,9 +922,7 @@ class CullRectUpdateOnPaintPropertyChangeTest : public CullRectUpdaterTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          CullRectUpdateOnPaintPropertyChangeTest,
-                         ::testing::Values(kScrollUpdateOptimizations |
-                                               kScrollUnification,
-                                           kScrollUpdateOptimizations));
+                         ::testing::Values(0, kScrollUnification));
 
 TEST_P(CullRectUpdateOnPaintPropertyChangeTest, Opacity) {
   TestTargetChange("opacity: 0.2", "opacity: 0.8", false, false, false);
@@ -1016,7 +1012,7 @@ TEST_P(CullRectUpdateOnPaintPropertyChangeTest,
        LargeContentsScrollSmallDeltaOrNotExposingNewContents) {
   html_ = html_ + "<style>#child { width: 10000px; height: 10000px; }</style>";
   // Scroll offset changes that are small or won't expose new contents don't
-  // need cull rect update when ScrollUpdateOptimizationsEnabled.
+  // need cull rect update.
   bool needs_cull_rect_update = false;
   TestTargetScroll(ScrollOffset(), ScrollOffset(200, 200), false,
                    needs_cull_rect_update, false);

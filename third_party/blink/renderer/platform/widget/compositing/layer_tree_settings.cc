@@ -558,9 +558,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.enable_backface_visibility_interop =
       RuntimeEnabledFeatures::BackfaceVisibilityInteropEnabled();
 
-  settings.enable_scroll_update_optimizations =
-      RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled();
-
   settings.disable_frame_rate_limit =
       cmd.HasSwitch(::switches::kDisableFrameRateLimit);
 

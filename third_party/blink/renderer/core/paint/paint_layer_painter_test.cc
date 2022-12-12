@@ -7,7 +7,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
-#include "third_party/blink/renderer/core/paint/old_cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
@@ -767,16 +766,12 @@ TEST_P(PaintLayerPainterTest, PaintWithOverriddenCullRect) {
   {
     OverriddenCullRectScope scope(stacking,
                                   CullRect(gfx::Rect(0, 0, 100, 100)));
-    OverriddenOldCullRectScope old_scope(stacking,
-                                         CullRect(gfx::Rect(0, 0, 100, 100)));
     EXPECT_EQ(gfx::Rect(0, 0, 100, 100), GetCullRect(stacking).Rect());
     EXPECT_EQ(gfx::Rect(0, 0, 100, 100), GetCullRect(absolute).Rect());
     PaintController controller(PaintController::kTransient);
     GraphicsContext context(controller);
     PaintLayerPainter(stacking).Paint(context);
   }
-  if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
-    UpdateAllLifecyclePhasesForTest();
   // Should restore the original status after OverridingCullRectScope.
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600), GetCullRect(stacking).Rect());
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600), GetCullRect(absolute).Rect());

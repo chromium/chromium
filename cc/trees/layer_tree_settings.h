@@ -213,9 +213,6 @@ class CC_EXPORT LayerTreeSettings {
   // to find the link to the Fluent Scrollbar spec and related CLs.
   bool enable_fluent_scrollbar = false;
 
-  // This corresponds to the ScrollUpdateOptimizations feature.
-  bool enable_scroll_update_optimizations = false;
-
   // Whether to disable the frame rate limit in the scheduler.
   bool disable_frame_rate_limit = false;
 

@@ -2426,12 +2426,6 @@
       status: "stable",
     },
     {
-      // Whether to enable scroll update optimizations. See crbug.com/1346789.
-      name: "ScrollUpdateOptimizations",
-      base_feature: "ScrollUpdateOptimizations",
-      status: "stable",
-    },
-    {
       name: "SecureContextFixForSharedWorkers",
       status: "stable",
     },

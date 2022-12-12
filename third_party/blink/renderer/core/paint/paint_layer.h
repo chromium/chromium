@@ -561,7 +561,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   }
   void SetNeedsCullRectUpdate();
   void SetForcesChildrenCullRectUpdate();
-  void MarkCompositingContainerChainForNeedsCullRectUpdate();
   void SetDescendantNeedsCullRectUpdate();
   void ClearNeedsCullRectUpdate() {
     needs_cull_rect_update_ = false;

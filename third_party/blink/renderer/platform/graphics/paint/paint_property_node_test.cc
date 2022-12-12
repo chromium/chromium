@@ -508,8 +508,6 @@ TEST_F(PaintPropertyNodeTest,
 }
 
 TEST_F(PaintPropertyNodeTest, StickyTranslationChange) {
-  ScopedScrollUpdateOptimizationsForTest scroll_optimizations(true);
-
   ResetAllChanged();
   ExpectUnchangedState();
   TransformPaintPropertyNode::State state;

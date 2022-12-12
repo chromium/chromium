@@ -52,7 +52,6 @@
 #include "third_party/blink/renderer/core/paint/find_paint_offset_needing_update.h"
 #include "third_party/blink/renderer/core/paint/find_properties_needing_update.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
-#include "third_party/blink/renderer/core/paint/old_cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
@@ -2500,8 +2499,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
           // treated as scroll translations with overlap testing treatment.
           // A scroll translation for overflow:hidden doesn't have a scroll node
           // and needs full PaintArtifactCompositor update on scroll.
-          (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled() ||
-           properties_->Scroll())) {
+          properties_->Scroll()) {
         if (auto* paint_artifact_compositor =
                 object_.GetFrameView()->GetPaintArtifactCompositor()) {
           bool updated =
@@ -4276,18 +4274,7 @@ void PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(
   PaintPropertiesChangeInfo properties_changed;
   properties_changed.transform_changed = effective_change_type;
 
-  if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled()) {
-    CullRectUpdater::PaintPropertiesChanged(object, properties_changed);
-  } else {
-    DCHECK(box.Layer());
-    DCHECK(box.HasSelfPaintingLayer());
-    gfx::Vector2dF old_scroll_offset;
-    if (const auto* scroll_translation = properties->ScrollTranslation()) {
-      old_scroll_offset = scroll_translation->Get2dTranslation();
-    }
-    OldCullRectUpdater::PaintPropertiesChanged(
-        object, *box.Layer(), properties_changed, old_scroll_offset);
-  }
+  CullRectUpdater::PaintPropertiesChanged(object, properties_changed);
 }
 
 void PaintPropertyTreeBuilder::DirectlyUpdateOpacityValue(
@@ -4353,46 +4340,7 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
     }
   }
 
-  if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled()) {
-    if (const auto* properties = object_.FirstFragment().PaintProperties()) {
-      if (const auto* scroll_translation = properties->ScrollTranslation()) {
-        if (scroll_translation->Get2dTranslation() !=
-            context_.old_scroll_offset) {
-          // Scrolling can change overlap relationship for elements fixed to an
-          // overflow: hidden view that programmatically scrolls via script.
-          // In this case the fixed transform doesn't have enough information to
-          // perform the expansion - there is no scroll node to describe the
-          // bounds of the scrollable content.
-          auto* frame_view = object_.GetFrameView();
-          if (frame_view->HasFixedPositionObjects() &&
-              !object_.View()->FirstFragment().PaintProperties()->Scroll()) {
-            frame_view->SetPaintArtifactCompositorNeedsUpdate(
-                PaintArtifactCompositorUpdateReason::
-                    kPaintPropertyTreeBuilderHasFixedPositionObjects);
-          } else if (!object_.IsStackingContext() &&
-                     To<LayoutBoxModelObject>(object_)
-                         .Layer()
-                         ->HasSelfPaintingLayerDescendant()) {
-            // If the scroller is not a stacking context but contains stacked
-            // descendants, we need to update compositing because the stacked
-            // descendants may change overlap relationship with other stacked
-            // elements that are not contained by this scroller.
-            frame_view->SetPaintArtifactCompositorNeedsUpdate(
-                PaintArtifactCompositorUpdateReason::
-                    kPaintPropertyTreeBulderNonStackingContextScroll);
-          }
-        }
-      }
-    }
-  }
-
-  if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled()) {
-    CullRectUpdater::PaintPropertiesChanged(object_, properties_changed_);
-  } else {
-    OldCullRectUpdater::PaintPropertiesChanged(
-        object_, *context_.painting_layer, properties_changed_,
-        context_.old_scroll_offset);
-  }
+  CullRectUpdater::PaintPropertiesChanged(object_, properties_changed_);
 }
 
 bool PaintPropertyTreeBuilder::CanDoDeferredTransformNodeUpdate(
