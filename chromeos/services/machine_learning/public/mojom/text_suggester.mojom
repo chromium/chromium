@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 // Datatypes and interfaces of text suggester API.
 
@@ -102,8 +102,9 @@ struct TextSuggesterResult {
   array<TextSuggestionCandidate> candidates@1;
 };
 
-// Experiment groups for multi word suggestions
-// Next value: 5
+// Experiment groups for multi word suggestions. See the following go link for
+// more details on the experiments: go/cros-text-suggester-experiment-defs
+// Next value: 8
 [Stable, Extensible]
 enum MultiWordExperimentGroup {
   [Default] kDefault = 0,
@@ -111,7 +112,10 @@ enum MultiWordExperimentGroup {
   // Experiment groups used for the relaxed gboard settings finch experiment
   [MinVersion=2] kGboardRelaxedA = 2,
   [MinVersion=2] kGboardRelaxedB = 3,
-  [MinVersion=2] kGboardRelaxedC = 4
+  [MinVersion=2] kGboardRelaxedC = 4,
+  [MinVersion=3] kGboardD = 5,
+  [MinVersion=3] kGboardE = 6,
+  [MinVersion=3] kGboardF = 7,
 };
 
 // Encapsulates any settings details for a TextSuggester
