@@ -9,8 +9,8 @@ _IGNORE_FREEZE_FOOTER = 'Ignore-Freeze'
 
 # The time module's handling of timezones is abysmal, so the boundaries are
 # precomputed in UNIX time
-_FREEZE_START = 1639641600  # 2021/12/16 00:00 -0800
-_FREEZE_END = 1641196800  # 2022/01/03 00:00 -0800
+_FREEZE_START = 1671177600  # 2022/12/16 00:00 -0800
+_FREEZE_END = 1672646400  # 2023/01/02 00:00 -0800
 
 
 def CheckFreeze(input_api, output_api):
