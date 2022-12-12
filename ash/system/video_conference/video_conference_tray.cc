@@ -17,7 +17,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
-#include "ash/system/video_conference/video_conference_bubble.h"
+#include "ash/system/video_conference/bubble/video_conference_bubble.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/bind.h"
 #include "ui/base/metadata/metadata_header_macros.h"

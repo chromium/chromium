@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_VIDEO_CONFERENCE_VIDEO_CONFERENCE_TRAY_EFFECTS_DELEGATE_H_
-#define ASH_SYSTEM_VIDEO_CONFERENCE_VIDEO_CONFERENCE_TRAY_EFFECTS_DELEGATE_H_
+#ifndef ASH_SYSTEM_VIDEO_CONFERENCE_EFFECTS_VIDEO_CONFERENCE_TRAY_EFFECTS_DELEGATE_H_
+#define ASH_SYSTEM_VIDEO_CONFERENCE_EFFECTS_VIDEO_CONFERENCE_TRAY_EFFECTS_DELEGATE_H_
 
 #include <string>
 #include <vector>
 
-#include "ash/system/video_conference/video_conference_tray_effects_manager_types.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 
 namespace ash {
 
@@ -60,4 +60,4 @@ class ASH_EXPORT VcEffectsDelegate {
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_VIDEO_CONFERENCE_VIDEO_CONFERENCE_TRAY_EFFECTS_DELEGATE_H_
+#endif  // ASH_SYSTEM_VIDEO_CONFERENCE_EFFECTS_VIDEO_CONFERENCE_TRAY_EFFECTS_DELEGATE_H_

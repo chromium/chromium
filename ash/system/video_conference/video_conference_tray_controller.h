@@ -6,8 +6,8 @@
 #define ASH_SYSTEM_VIDEO_CONFERENCE_VIDEO_CONFERENCE_TRAY_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 #include "ash/system/video_conference/video_conference_media_state.h"
-#include "ash/system/video_conference/video_conference_tray_effects_manager.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"

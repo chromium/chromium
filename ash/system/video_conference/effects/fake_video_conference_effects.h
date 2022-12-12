@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_VIDEO_CONFERENCE_FAKE_VIDEO_CONFERENCE_EFFECTS_H_
-#define ASH_SYSTEM_VIDEO_CONFERENCE_FAKE_VIDEO_CONFERENCE_EFFECTS_H_
+#ifndef ASH_SYSTEM_VIDEO_CONFERENCE_EFFECTS_FAKE_VIDEO_CONFERENCE_EFFECTS_H_
+#define ASH_SYSTEM_VIDEO_CONFERENCE_EFFECTS_FAKE_VIDEO_CONFERENCE_EFFECTS_H_
 
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/system/video_conference/video_conference_tray_effects_delegate.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 #include "ui/views/controls/button/button.h"
 
 namespace gfx {
@@ -162,4 +162,4 @@ class ASH_EXPORT ShaggyFurEffect : public VcEffectsDelegate {
 
 }  // namespace ash::fake_video_conference
 
-#endif  // ASH_SYSTEM_VIDEO_CONFERENCE_FAKE_VIDEO_CONFERENCE_EFFECTS_H_
+#endif  // ASH_SYSTEM_VIDEO_CONFERENCE_EFFECTS_FAKE_VIDEO_CONFERENCE_EFFECTS_H_

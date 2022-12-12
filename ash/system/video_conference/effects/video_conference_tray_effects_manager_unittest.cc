@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/video_conference/video_conference_tray_effects_manager.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/video_conference/fake_video_conference_effects.h"
+#include "ash/system/video_conference/effects/fake_video_conference_effects.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/views/controls/button/button.h"
 

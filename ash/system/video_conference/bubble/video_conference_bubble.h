@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_VIDEO_CONFERENCE_VIDEO_CONFERENCE_BUBBLE_H_
-#define ASH_SYSTEM_VIDEO_CONFERENCE_VIDEO_CONFERENCE_BUBBLE_H_
+#ifndef ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_VIDEO_CONFERENCE_BUBBLE_H_
+#define ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_VIDEO_CONFERENCE_BUBBLE_H_
 
 #include "ash/system/tray/tray_bubble_view.h"
 
@@ -51,4 +51,4 @@ class VideoConferenceBubbleView : public TrayBubbleView {
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_VIDEO_CONFERENCE_VIDEO_CONFERENCE_BUBBLE_H_
+#endif  // ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_VIDEO_CONFERENCE_BUBBLE_H_

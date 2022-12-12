@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/video_conference/video_conference_tray_effects_manager_types.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 
-#include "ash/system/video_conference/video_conference_tray_effects_manager.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace ash {

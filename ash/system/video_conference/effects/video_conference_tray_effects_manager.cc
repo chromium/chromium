@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/video_conference/video_conference_tray_effects_manager.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 
-#include "ash/system/video_conference/video_conference_tray_effects_delegate.h"
-#include "ash/system/video_conference/video_conference_tray_effects_manager_types.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase_vector.h"
