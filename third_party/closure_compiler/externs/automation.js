@@ -9,9 +9,6 @@
 // Please run the closure compiler before committing changes.
 // See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
-// TODO(b/242243189): Disable automatic extern generation until fixed.
-// The longClick method was manually inserted.
-
 /**
  * @fileoverview Externs generated from namespace: automation
  * @externs
@@ -2371,7 +2368,7 @@ chrome.automation.AutomationNode.prototype.suspendMedia = function() {};
  * Simulates long click on node.
  * @see https://developer.chrome.com/extensions/automation#method-longClick
  */
- chrome.automation.AutomationNode.prototype.longClick = function() {};
+chrome.automation.AutomationNode.prototype.longClick = function() {};
 
 /**
  * Scrolls this scrollable container backward.

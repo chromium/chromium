@@ -1465,6 +1465,9 @@ enum SortDirectionType {
     // Suspend any media playing within this tree.
     static void suspendMedia();
 
+    // Simulates long click on node.
+    static void longClick();
+
     // Scrolls this scrollable container backward.
     static void scrollBackward(optional PerformActionCallback callback);
 
