@@ -25,13 +25,6 @@
     grid-template-rows: auto minmax(158px, 220px) 20px auto 106px 24px;
   }
 
-  .preview-button {
-    bottom: 0;
-    left: 50%;
-    position: absolute;
-    transform: translate(-50%, -50%);
-  }
-
   #messageContainer {
     align-items: center;
     display: flex;
@@ -84,14 +77,13 @@
     grid-template-areas:
       '.              . .'
       'image          . subpage-desc'
+      'image          . buttons'
       '.              . .';
     grid-template-columns: 224px 32px minmax(0,1fr);
-    grid-template-rows: 20px 152px 20px;
+    grid-template-rows: 20px 118px 34px 20px;
   }
 
-  :host(:not([main-page])) #container {
-    border: none;
-    display: grid;
+  :host(:not([main-page])) #container.ambient-mode-disabled {
     grid-template-areas:
       'image          . subpage-desc'
       '.              . .';
@@ -99,12 +91,25 @@
     grid-template-rows: 152px 20px;
   }
 
+  :host(:not([main-page])) #container {
+    border: none;
+    display: grid;
+    grid-template-areas:
+      'image          . subpage-desc'
+      'image          . buttons'
+      '.              . .';
+    grid-template-columns: 224px 32px minmax(0,1fr);
+    grid-template-rows: 118px 34px 20px;
+  }
+
+  :host([main-page]) #buttonContainer,
   :host([main-page]) .currently-set-text {
     display: none;
   }
 
+  :host(:not([main-page])) #buttonContainer,
   :host(:not([main-page])) .currently-set-text {
-    display: block;
+    display: inline-flex;
   }
 
   :host([main-page]) #imageContainer,
@@ -213,6 +218,29 @@
     object-fit: cover;
     width: 100%;
   }
+
+  #buttonContainer {
+    grid-area: buttons;
+  }
+
+  #buttonContainer .text {
+    margin-inline-start: 8px;
+  }
+  #buttonContainer .disabled {
+    cursor: wait;
+    pointer-events: none;
+  }
+
+  #buttonContainer cr-button {
+    border-color: var(--cros-button-stroke-color-secondary);
+    border-radius: 16px;
+  }
+
+  #buttonContainer .spinner {
+    height: 20px;
+    width: 20px;
+  }
+
 </style>
 <div class$="[[getPreviewContainerClass_(ambientModeEnabled_, loading_)]]" id="container">
   <slot></slot>
@@ -293,11 +321,6 @@
                 alt$="[[getAlbumTitle_(firstPreviewAlbum_)]]"
                 is-google-photos>
           </template>
-          <div hidden$="[[!isScreenSaverPreviewEnabled_()]]">
-            <cr-button class="preview-button" on-click="startScreenSaverPreview_">
-              Preview
-            </cr-button>
-          </div>
         </div>
         <h3 id="textContainer" class="preview-text-container album-info-mainpage album-info-subpage"
             aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]">
@@ -314,6 +337,13 @@
             [[getAlbumDescription_(topicSource_, previewAlbums_)]]
           </span>
         </h3>
+        <div id="buttonContainer" hidden$="[[!isScreenSaverPreviewEnabled_()]]">
+          <cr-button class$="[[getScreenSaverPreviewClass_(ambientUiVisibility_)]]" on-click="startScreenSaverPreview_">
+            <iron-icon icon="personalization:fullscreen" hidden$="[[screenSaverPreviewActive_]]"></iron-icon>
+            <paper-spinner-lite active class="spinner" hidden$="[[!screenSaverPreviewActive_]]"></paper-spinner-lite>
+            <div class="text">[[getScreenSaverPreviewText_(ambientUiVisibility_)]]</div>
+          </cr-button>
+        </div>
         <div aria-hidden="true"
             class$="[[getCollageContainerClass_(collageImages_)]]"
             on-click="onClickPhotoCollage_"
