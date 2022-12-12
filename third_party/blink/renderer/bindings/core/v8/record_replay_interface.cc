@@ -2050,6 +2050,7 @@ const hook = {
   onCommitFiberUnmount,
   onCommitFiberRoot,
   onPostCommitFiberRoot,
+  renderers: [],
 };
 
 Object.defineProperty(window, "__REACT_DEVTOOLS_GLOBAL_HOOK__", {
