@@ -620,6 +620,10 @@
       status: "experimental",
     },
     {
+      name: "CSSBaselineSource",
+      status: "experimental",
+    },
+    {
       // Support CSS Values Level 4 calc simplification and serialization
       // as specified in the specs below.
       // https://drafts.csswg.org/css-values-4/#calc-simplification

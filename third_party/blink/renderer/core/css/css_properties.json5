@@ -1808,6 +1808,16 @@
       typedom_types: ["Keyword", "Percentage", "Length"],
     },
     {
+      name: "baseline-source",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "box",
+      field_template: "keyword",
+      default_value: "auto",
+      keywords: ["auto", "first", "last"],
+      typedom_types: ["Keyword"],
+      runtime_flag: "CSSBaselineSource",
+    },
+    {
       name: "border-bottom-color",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
       interpolable: true,

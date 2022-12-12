@@ -2090,13 +2090,21 @@ void NGLineBreaker::HandleAtomicInline(const NGInlineItem& item,
   // Doing a full layout for min/max content can also have undesirable
   // side effects when that falls back to legacy layout.
   if (mode_ == NGLineBreakerMode::kContent || UNLIKELY(is_initial_letter_box)) {
+    // If our baseline-source is non-auto use the easier to reason about
+    // "default" algorithm type.
+    NGBaselineAlgorithmType baseline_algorithm_type =
+        style.BaselineSource() == EBaselineSource::kAuto
+            ? NGBaselineAlgorithmType::kInlineBlock
+            : NGBaselineAlgorithmType::kDefault;
+
     // https://drafts.csswg.org/css-pseudo-4/#first-text-line
     // > The first line of a table-cell or inline-block cannot be the first
     // > formatted line of an ancestor element.
     item_result->layout_result =
         NGBlockNode(To<LayoutBox>(item.GetLayoutObject()))
             .LayoutAtomicInline(constraint_space_, node_.Style(),
-                                /* use_first_line_style */ false);
+                                /* use_first_line_style */ false,
+                                baseline_algorithm_type);
 
     const auto& physical_box_fragment = To<NGPhysicalBoxFragment>(
         item_result->layout_result->PhysicalFragment());

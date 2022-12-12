@@ -18,15 +18,26 @@ FontHeight NGBoxFragment::BaselineMetrics(const NGLineBoxStrut& margins,
   if (physical_fragment_.Style().IsCheckboxOrRadioPart())
     return FontHeight(margins.line_over + BlockSize(), margins.line_under);
 
-  auto baseline = PhysicalBoxFragment().UseLastBaselineForInlineBaseline()
-                      ? LastBaseline()
-                      : FirstBaseline();
+  absl::optional<LayoutUnit> baseline;
+  switch (physical_fragment_.Style().BaselineSource()) {
+    case EBaselineSource::kAuto:
+      baseline = PhysicalBoxFragment().UseLastBaselineForInlineBaseline()
+                     ? LastBaseline()
+                     : FirstBaseline();
 
-  // Some blocks force the baseline to be the block-end margin edge.
-  if (PhysicalBoxFragment().UseBlockEndMarginEdgeForInlineBaseline()) {
-    baseline = BlockSize() + (writing_direction_.IsFlippedLines()
-                                  ? margins.line_over
-                                  : margins.line_under);
+      // Some blocks force the baseline to be the block-end margin edge.
+      if (PhysicalBoxFragment().UseBlockEndMarginEdgeForInlineBaseline()) {
+        baseline = BlockSize() + (writing_direction_.IsFlippedLines()
+                                      ? margins.line_over
+                                      : margins.line_under);
+      }
+      break;
+    case EBaselineSource::kFirst:
+      baseline = FirstBaseline();
+      break;
+    case EBaselineSource::kLast:
+      baseline = LastBaseline();
+      break;
   }
 
   if (baseline) {

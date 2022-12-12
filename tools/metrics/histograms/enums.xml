@@ -65870,6 +65870,7 @@ Called by update_use_counter_css.py.-->
   <int value="736" label="animation-delay-end"/>
   <int value="737" label="font-variant-position"/>
   <int value="738" label="font-variant-alternates"/>
+  <int value="739" label="baseline-source"/>
 </enum>
 
 <enum name="MappedEditingCommands">

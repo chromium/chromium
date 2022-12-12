@@ -210,8 +210,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
       const NGConstraintSpace& parent_constraint_space,
       const ComputedStyle& parent_style,
       bool use_first_line_style,
-      NGBaselineAlgorithmType baseline_algorithm_type =
-          NGBaselineAlgorithmType::kInlineBlock);
+      NGBaselineAlgorithmType baseline_algorithm_type);
 
   void InsertIntoLegacyPositionedObjectsOf(LayoutBlock*) const;
 

@@ -900,6 +900,10 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kBackgroundRepeatY:
       return value_id == CSSValueID::kRepeat ||
              value_id == CSSValueID::kNoRepeat;
+    case CSSPropertyID::kBaselineSource:
+      DCHECK(RuntimeEnabledFeatures::CSSBaselineSourceEnabled());
+      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kFirst ||
+             value_id == CSSValueID::kLast;
     case CSSPropertyID::kBorderCollapse:
       return value_id == CSSValueID::kCollapse ||
              value_id == CSSValueID::kSeparate;
@@ -1338,6 +1342,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kIsolation,
     CSSPropertyID::kBackgroundRepeatX,
     CSSPropertyID::kBackgroundRepeatY,
+    CSSPropertyID::kBaselineSource,
     CSSPropertyID::kBorderBottomStyle,
     CSSPropertyID::kBorderCollapse,
     CSSPropertyID::kBorderLeftStyle,

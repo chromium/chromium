@@ -2250,6 +2250,9 @@ crbug.com/591099 editing/selection/paint-hyphen.html [ Failure Pass ]
 
 crbug.com/1012289 external/wpt/css/css-lists/list-style-type-string-005b.html [ Failure ]
 
+# baseline-source not implemented in legacy.
+crbug.com/591099 external/wpt/css/css-inline/baseline-source/* [ Skip ]
+
 # The initial-letter implements only in LayoutNG.
 crbug.com/1276900 external/wpt/css/css-inline/initial-letter/* [ Skip ]
 crbug.com/1276900 fast/inline/initial-letter-inline-kerning.html [ Skip ]

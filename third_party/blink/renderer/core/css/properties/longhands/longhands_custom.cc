@@ -730,6 +730,13 @@ const CSSValue* BackgroundSize::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::BackgroundImageOrWebkitMaskSize(style, fill_layer);
 }
 
+const CSSValue* BaselineSource::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSIdentifierValue::Create(style.BaselineSource());
+}
+
 const CSSValue* BaselineShift::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
