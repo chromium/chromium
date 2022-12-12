@@ -62,6 +62,19 @@ class MOJO_SYSTEM_IMPL_EXPORT ObjectBase
     // An Invitation instance used to emulate Mojo process invitations. These
     // objects are not serializable and cannot be transmitted over a Transport.
     kInvitation,
+
+    // Wraps an unserialized Mojo message object. MojoIpcz implements lazy
+    // serialization by transmitting this type of object within a box. If the
+    // driver's serializer is invoked (because the box is crossing a node
+    // boundary), the serialized message contents are transmitted separately
+    // by the driver through the same portal that's attempting to transmit this
+    // object. The parcel transmitting this object (which by that point is
+    // essentially empty) is also then sent, but is ignored by the receiver and
+    // not exposed to the application.
+    //
+    // TODO(https://crbug.com/1151120): Remove this hack once Chromium no longer
+    // uses Mojo's lazy serialization.
+    kMessageWrapper,
   };
 
   explicit ObjectBase(Type type);

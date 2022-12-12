@@ -28,6 +28,7 @@
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/data_pipe.h"
 #include "mojo/core/ipcz_driver/invitation.h"
+#include "mojo/core/ipcz_driver/message_wrapper.h"
 #include "mojo/core/ipcz_driver/mojo_message.h"
 #include "mojo/core/ipcz_driver/mojo_trap.h"
 #include "mojo/core/ipcz_driver/shared_buffer.h"
@@ -179,8 +180,11 @@ MojoResult MojoWriteMessageIpcz(MojoHandle message_pipe_handle,
   }
 
   if (m->context()) {
-    // Wrap unserialized messages in boxes to be serialized lazily.
-    ScopedIpczHandle box = ipcz_driver::MojoMessage::Box(std::move(m));
+    // Wrap unserialized messages so that driver serialization can be used to
+    // force serialized message transmission. See MessageWrapper. The parcel
+    // containing this box will be ignored by the receiving endpoint.
+    ScopedIpczHandle box{ipcz_driver::MessageWrapper::MakeBoxed(
+        std::move(m), message_pipe_handle)};
     const IpczResult result = GetIpczAPI().Put(
         message_pipe_handle, nullptr, 0, &box.get(), 1, IPCZ_NO_FLAGS, nullptr);
     if (result == IPCZ_RESULT_OK) {
@@ -220,12 +224,28 @@ MojoResult MojoReadMessageIpcz(MojoHandle message_pipe_handle,
 
   auto new_message = std::make_unique<ipcz_driver::MojoMessage>();
   new_message->SetParcel(std::move(parcel));
-  if (auto wrapped = ipcz_driver::MojoMessage::UnwrapFrom(*new_message)) {
-    *message = wrapped.release()->handle();
-    return IPCZ_RESULT_OK;
+
+  ipcz_driver::MessageWrapper* wrapper = nullptr;
+  if (new_message->data().empty() && new_message->handles().size() == 1) {
+    wrapper = ipcz_driver::MessageWrapper::FromBox(new_message->handles()[0]);
   }
 
-  *message = new_message.release()->handle();
+  if (!wrapper) {
+    *message = new_message.release()->handle();
+    return MOJO_RESULT_OK;
+  }
+
+  std::unique_ptr<ipcz_driver::MojoMessage> wrapped_message =
+      wrapper->TakeMessage();
+  if (!wrapped_message) {
+    // If the actual message object is gone, this was a sentinel message -- a
+    // side-effect of lazy serialization by our peer. The serialized contents
+    // have been transmitted in a subsequent parcel, so we simply return the
+    // result of a second read attempt.
+    return MojoReadMessageIpcz(message_pipe_handle, options, message);
+  }
+
+  *message = wrapped_message.release()->handle();
   return MOJO_RESULT_OK;
 }
 
