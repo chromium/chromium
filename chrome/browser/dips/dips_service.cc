@@ -157,10 +157,10 @@ DIPSCookieMode DIPSService::GetCookieMode() const {
 
 void DIPSService::RemoveEvents(const base::Time& delete_begin,
                                const base::Time& delete_end,
-                               const UrlPredicate& predicate,
+                               network::mojom::ClearDataFilterPtr filter,
                                DIPSEventRemovalType type) {
   storage_.AsyncCall(&DIPSStorage::RemoveEvents)
-      .WithArgs(delete_begin, delete_end, predicate, type);
+      .WithArgs(delete_begin, delete_end, std::move(filter), type);
 }
 
 void DIPSService::InitializeStorageWithEngagedSites() {

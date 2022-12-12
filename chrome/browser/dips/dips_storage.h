@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/dips/dips_database.h"
 #include "chrome/browser/dips/dips_state.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 class GURL;
 
@@ -29,7 +30,7 @@ class DIPSStorage {
 
   void RemoveEvents(base::Time delete_begin,
                     base::Time delete_end,
-                    const UrlPredicate& predicate,
+                    network::mojom::ClearDataFilterPtr filter,
                     const DIPSEventRemovalType type);
 
   // DIPS Helper Method Impls --------------------------------------------------

@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -155,8 +156,7 @@ TEST_F(DIPSStorageTest, RemoveByTimeWithNullRangeEndTime) {
   storage_.WriteForTesting(
       url2, {{absl::nullopt, absl::nullopt},
              {base::Time::FromDoubleT(3), base::Time::FromDoubleT(5)}});
-  storage_.RemoveEvents(delete_begin, delete_end,
-                        base::RepeatingCallback<bool(const GURL&)>(),
+  storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         DIPSEventRemovalType::kAll);
 
   DIPSState state1 = storage_.Read(url1);
@@ -185,8 +185,7 @@ TEST_F(DIPSStorageTest, RemoveByTimeAdjustsOverlappingTimes) {
   storage_.WriteForTesting(
       url2, {{absl::nullopt, absl::nullopt},
              {base::Time::FromDoubleT(3), base::Time::FromDoubleT(5)}});
-  storage_.RemoveEvents(delete_begin, delete_end,
-                        base::RepeatingCallback<bool(const GURL&)>(),
+  storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         DIPSEventRemovalType::kAll);
 
   DIPSState state1 = storage_.Read(url1);
@@ -212,8 +211,7 @@ TEST_F(DIPSStorageTest, RemoveByTimeDoesNotAffectTouchingWindowEndpoints) {
   storage_.WriteForTesting(
       url1, {{base::Time::FromDoubleT(1), base::Time::FromDoubleT(3)},
              {base::Time::FromDoubleT(5), base::Time::FromDoubleT(8)}});
-  storage_.RemoveEvents(delete_begin, delete_end,
-                        base::RepeatingCallback<bool(const GURL&)>(),
+  storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         DIPSEventRemovalType::kAll);
 
   DIPSState state = storage_.Read(url1);
@@ -239,8 +237,7 @@ TEST_F(DIPSStorageTest, RemoveByTimeStorageOnly) {
   storage_.WriteForTesting(
       url2, {{absl::nullopt, absl::nullopt},
              {base::Time::FromDoubleT(3), base::Time::FromDoubleT(5)}});
-  storage_.RemoveEvents(delete_begin, delete_end,
-                        base::RepeatingCallback<bool(const GURL&)>(),
+  storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         DIPSEventRemovalType::kStorage);
 
   DIPSState state1 = storage_.Read(url1);
@@ -272,8 +269,7 @@ TEST_F(DIPSStorageTest, RemoveByTimeInteractionOnly) {
   storage_.WriteForTesting(
       url2, {{absl::nullopt, absl::nullopt},
              {base::Time::FromDoubleT(3), base::Time::FromDoubleT(5)}});
-  storage_.RemoveEvents(delete_begin, delete_end,
-                        base::RepeatingCallback<bool(const GURL&)>(),
+  storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         DIPSEventRemovalType::kHistory);
 
   DIPSState state1 = storage_.Read(url1);
@@ -306,8 +302,7 @@ TEST_F(DIPSStorageTest, RemoveByTimeStatefulOnly) {
              {absl::nullopt, absl::nullopt},
              {absl::nullopt, absl::nullopt},
              {base::Time::FromDoubleT(3), base::Time::FromDoubleT(5)}});
-  storage_.RemoveEvents(delete_begin, delete_end,
-                        base::RepeatingCallback<bool(const GURL&)>(),
+  storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         DIPSEventRemovalType::kStorage);
 
   DIPSState state1 = storage_.Read(url1);
@@ -343,8 +338,7 @@ TEST_F(DIPSStorageTest, RemoveByTimeStatelessOnly) {
              {absl::nullopt, absl::nullopt},
              {absl::nullopt, absl::nullopt},
              {base::Time::FromDoubleT(3), base::Time::FromDoubleT(5)}});
-  storage_.RemoveEvents(delete_begin, delete_end,
-                        base::RepeatingCallback<bool(const GURL&)>(),
+  storage_.RemoveEvents(delete_begin, delete_end, nullptr,
                         DIPSEventRemovalType::kHistory);
 
   DIPSState state1 = storage_.Read(url1);
@@ -359,6 +353,106 @@ TEST_F(DIPSStorageTest, RemoveByTimeStatelessOnly) {
 
   DIPSState state2 = storage_.Read(url2);
   EXPECT_FALSE(state2.was_loaded());  // removed
+}
+
+TEST_F(DIPSStorageTest, RemoveBySite) {
+  GURL url1("https://example1.com");
+  GURL url2("https://example2.com");
+  GURL url3("https://example3.com");
+  GURL url4("https://example4.com");
+
+  storage_.WriteForTesting(
+      url1, {{base::Time::FromDoubleT(1), base::Time::FromDoubleT(1)},
+             {base::Time::FromDoubleT(2), base::Time::FromDoubleT(2)},
+             {base::Time::FromDoubleT(3), base::Time::FromDoubleT(3)},
+             {base::Time::FromDoubleT(4), base::Time::FromDoubleT(4)}});
+  storage_.WriteForTesting(
+      url2, {{base::Time::FromDoubleT(1), base::Time::FromDoubleT(1)},
+             {base::Time::FromDoubleT(2), base::Time::FromDoubleT(2)},
+             {base::Time::FromDoubleT(3), base::Time::FromDoubleT(3)},
+             {base::Time::FromDoubleT(4), base::Time::FromDoubleT(4)}});
+  storage_.WriteForTesting(
+      url3, {{base::Time::FromDoubleT(1), base::Time::FromDoubleT(2)},
+             {absl::nullopt, absl::nullopt},
+             {base::Time::FromDoubleT(3), base::Time::FromDoubleT(4)},
+             {absl::nullopt, absl::nullopt}});
+  storage_.WriteForTesting(
+      url4, {{absl::nullopt, absl::nullopt},
+             {base::Time::FromDoubleT(2), base::Time::FromDoubleT(2)},
+             {base::Time::FromDoubleT(3), base::Time::FromDoubleT(3)},
+             {base::Time::FromDoubleT(4), base::Time::FromDoubleT(4)}});
+
+  std::unique_ptr<content::BrowsingDataFilterBuilder> builder =
+      content::BrowsingDataFilterBuilder::Create(
+          content::BrowsingDataFilterBuilder::Mode::kDelete);
+  builder->AddRegisterableDomain(GetSiteForDIPS(url1));
+  builder->AddRegisterableDomain(GetSiteForDIPS(url3));
+  storage_.RemoveEvents(base::Time(), base::Time::Max(),
+                        builder->BuildNetworkServiceFilter(),
+                        DIPSEventRemovalType::kStorage);
+
+  DIPSState state1 = storage_.Read(url1);
+  EXPECT_FALSE(state1.site_storage_times().first.has_value());  // removed
+  EXPECT_EQ(state1.user_interaction_times().first,
+            absl::make_optional(base::Time::FromDoubleT(2)));      // no change
+  EXPECT_FALSE(state1.stateful_bounce_times().first.has_value());  // removed
+  EXPECT_EQ(state1.stateless_bounce_times().first,
+            absl::make_optional(base::Time::FromDoubleT(4)));  // no change
+
+  DIPSState state2 = storage_.Read(url2);
+  EXPECT_EQ(state2.site_storage_times().first,
+            absl::make_optional(base::Time::FromDoubleT(1)));  // no change
+  EXPECT_EQ(state2.user_interaction_times().first,
+            absl::make_optional(base::Time::FromDoubleT(2)));  // no change
+  EXPECT_EQ(state2.stateful_bounce_times().first,
+            absl::make_optional(base::Time::FromDoubleT(3)));  // no change
+  EXPECT_EQ(state2.stateless_bounce_times().first,
+            absl::make_optional(base::Time::FromDoubleT(4)));  // no change
+
+  DIPSState state3 = storage_.Read(url3);
+  EXPECT_FALSE(state3.was_loaded());  // removed
+
+  DIPSState state4 = storage_.Read(url2);
+  EXPECT_FALSE(state1.site_storage_times().first.has_value());  // no change
+  EXPECT_EQ(state4.user_interaction_times().first,
+            absl::make_optional(base::Time::FromDoubleT(2)));  // no change
+  EXPECT_EQ(state4.stateful_bounce_times().first,
+            absl::make_optional(base::Time::FromDoubleT(3)));  // no change
+  EXPECT_EQ(state4.stateless_bounce_times().first,
+            absl::make_optional(base::Time::FromDoubleT(4)));  // no change
+}
+
+TEST_F(DIPSStorageTest, RemoveBySiteIgnoresDeletionWithTimeRange) {
+  GURL url1("https://example1.com");
+  base::Time delete_begin = base::Time::FromDoubleT(2);
+  base::Time delete_end = base::Time::FromDoubleT(6);
+
+  storage_.WriteForTesting(
+      url1, {{base::Time::FromDoubleT(1), base::Time::FromDoubleT(1)},
+             {base::Time::FromDoubleT(2), base::Time::FromDoubleT(2)},
+             {base::Time::FromDoubleT(3), base::Time::FromDoubleT(3)},
+             {base::Time::FromDoubleT(4), base::Time::FromDoubleT(4)}});
+
+  std::unique_ptr<content::BrowsingDataFilterBuilder> builder =
+      content::BrowsingDataFilterBuilder::Create(
+          content::BrowsingDataFilterBuilder::Mode::kDelete);
+  builder->AddRegisterableDomain(GetSiteForDIPS(url1));
+  storage_.RemoveEvents(delete_begin, delete_end,
+                        builder->BuildNetworkServiceFilter(),
+                        DIPSEventRemovalType::kStorage);
+
+  // Removing events by site (i.e. by using a non-null filter) with a time-range
+  // (other than base::Time() to base::Time::Max()), is currently unsupported.
+  // So url1's DIPS Storage entry should be unaffected.
+  DIPSState state1 = storage_.Read(url1);
+  EXPECT_EQ(state1.site_storage_times().first,
+            absl::make_optional(base::Time::FromDoubleT(1)));  // no change
+  EXPECT_EQ(state1.user_interaction_times().first,
+            absl::make_optional(base::Time::FromDoubleT(2)));  // no change
+  EXPECT_EQ(state1.stateful_bounce_times().first,
+            absl::make_optional(base::Time::FromDoubleT(3)));  // no change
+  EXPECT_EQ(state1.stateless_bounce_times().first,
+            absl::make_optional(base::Time::FromDoubleT(4)));  // no change
 }
 
 class DIPSStoragePrepopulateTest : public testing::Test {

@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/dips/dips_utils.h"
@@ -434,6 +435,26 @@ bool DIPSDatabase::RemoveEventsByTime(const base::Time& delete_begin,
   return true;
 }
 
+bool DIPSDatabase::RemoveEventsBySite(bool preserve,
+                                      const std::vector<std::string>& sites,
+                                      const DIPSEventRemovalType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!CheckDBInit())
+    return false;
+
+  sql::Transaction transaction(db_.get());
+  if (!transaction.Begin())
+    return false;
+
+  GarbageCollect();
+
+  if (!ClearTimestampsBySite(preserve, sites, type))
+    return false;
+
+  transaction.Commit();
+  return true;
+}
+
 bool DIPSDatabase::ClearTimestamps(const base::Time& delete_begin,
                                    const base::Time& delete_end,
                                    const DIPSEventRemovalType type) {
@@ -573,22 +594,7 @@ bool DIPSDatabase::ClearTimestamps(const base::Time& delete_begin,
       return false;
   }
 
-  static constexpr char kCleanUpSql[] =  // clang-format off
-      "DELETE FROM bounces "
-          "WHERE first_site_storage_time=0 AND "
-                "last_site_storage_time=0 AND "
-                "first_user_interaction_time=0 AND "
-                "last_user_interaction_time=0 AND "
-                "first_stateful_bounce_time=0 AND "
-                "last_stateful_bounce_time=0 AND "
-                "first_stateless_bounce_time=0 AND "
-                "last_stateless_bounce_time=0";
-  // clang-format on
-  DCHECK(db_->IsSQLValid(kCleanUpSql));
-
-  sql::Statement s_clean(db_->GetCachedStatement(SQL_FROM_HERE, kCleanUpSql));
-
-  return s_clean.Run();
+  return RemoveEmptyRows();
 }
 
 bool DIPSDatabase::AdjustFirstTimestamps(const base::Time& delete_begin,
@@ -741,6 +747,60 @@ bool DIPSDatabase::AdjustLastTimestamps(const base::Time& delete_begin,
   }
 
   return true;
+}
+
+bool DIPSDatabase::ClearTimestampsBySite(bool preserve,
+                                         const std::vector<std::string>& sites,
+                                         const DIPSEventRemovalType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (sites.empty())
+    return false;
+
+  std::string placeholders =
+      base::JoinString(std::vector<std::string>(sites.size(), "?"), ",");
+
+  if ((type & DIPSEventRemovalType::kStorage) ==
+      DIPSEventRemovalType::kStorage) {
+    sql::Statement s_clear_storage(db_->GetUniqueStatement(  // clang-format off
+        base::StrCat({"UPDATE bounces SET first_site_storage_time=0,"
+                                         "last_site_storage_time=0,"
+                                         "first_stateful_bounce_time=0,"
+                                         "last_stateful_bounce_time=0 "
+                          "WHERE site ", (preserve ? "NOT " : ""),
+                              "IN(", placeholders, ")" })  // clang-format on
+            .c_str()));
+
+    for (size_t i = 0; i < sites.size(); i++) {
+      s_clear_storage.BindString(i, sites[i]);
+    }
+
+    if (!s_clear_storage.Run())
+      return false;
+  }
+
+  return RemoveEmptyRows();
+}
+
+bool DIPSDatabase::RemoveEmptyRows() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  static constexpr char kCleanUpSql[] =  // clang-format off
+      "DELETE FROM bounces "
+          "WHERE first_site_storage_time=0 AND "
+                "last_site_storage_time=0 AND "
+                "first_user_interaction_time=0 AND "
+                "last_user_interaction_time=0 AND "
+                "first_stateful_bounce_time=0 AND "
+                "last_stateful_bounce_time=0 AND "
+                "first_stateless_bounce_time=0 AND "
+                "last_stateless_bounce_time=0";
+  // clang-format on
+  DCHECK(db_->IsSQLValid(kCleanUpSql));
+
+  sql::Statement s_clean(db_->GetCachedStatement(SQL_FROM_HERE, kCleanUpSql));
+
+  return s_clean.Run();
 }
 
 size_t DIPSDatabase::GetEntryCount() const {

@@ -86,6 +86,12 @@ class DIPSDatabase {
                           const base::Time& delete_end,
                           const DIPSEventRemovalType type);
 
+  // Because |sites| is taken from a ClearDataFilter, this only removes
+  // storage and stateful bounce timestamps at the moment.
+  bool RemoveEventsBySite(bool preserve,
+                          const std::vector<std::string>& sites,
+                          const DIPSEventRemovalType type);
+
   // Returns the number of entries present in the database.
   size_t GetEntryCount() const;
 
@@ -134,6 +140,11 @@ class DIPSDatabase {
   bool AdjustLastTimestamps(const base::Time& delete_begin,
                             const base::Time& delete_end,
                             const DIPSEventRemovalType type);
+
+  bool ClearTimestampsBySite(bool preserve,
+                             const std::vector<std::string>& sites,
+                             const DIPSEventRemovalType type);
+  bool RemoveEmptyRows();
 
   void ComputeDatabaseMetrics() const;
 

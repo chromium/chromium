@@ -817,25 +817,22 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         ->RemoveEmbargoAndResetCounts(filter);
   }
 
-  // Different types of DIPS events are cleared for DATA_TYPE_HISTORY,
-  // DATA_TYPE_COOKIES and DATA_TYPE_SITE_USAGE_DATA.
+  // Different types of DIPS events are cleared for DATA_TYPE_HISTORY and
+  // DATA_TYPE_COOKIES.
   DIPSEventRemovalType dips_mask = DIPSEventRemovalType::kNone;
   if ((remove_mask & content::BrowsingDataRemover::DATA_TYPE_COOKIES) &&
-      (origin_type_mask &
-       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB)) {
+      !filter_builder->IsCrossSiteClearSiteDataForCookies()) {
     dips_mask |= DIPSEventRemovalType::kStorage;
   }
-  if ((remove_mask & constants::DATA_TYPE_SITE_USAGE_DATA) ||
-      ((remove_mask & constants::DATA_TYPE_HISTORY) && may_delete_history)) {
+  if (remove_mask & constants::DATA_TYPE_HISTORY) {
     dips_mask |= DIPSEventRemovalType::kHistory;
   }
 
   if (dips_mask != DIPSEventRemovalType::kNone) {
     auto* dips_service = DIPSServiceFactory::GetForBrowserContext(profile_);
     if (dips_service) {
-      // TODO(crbug.com/1342228): Currently the filter is not supported and
-      // calls with a non-null filter are ignored.
-      dips_service->RemoveEvents(delete_begin_, delete_end_, nullable_filter,
+      dips_service->RemoveEvents(delete_begin_, delete_end_,
+                                 filter_builder->BuildNetworkServiceFilter(),
                                  dips_mask);
     }
   }

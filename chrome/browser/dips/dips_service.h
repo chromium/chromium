@@ -13,6 +13,7 @@
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom-forward.h"
 
 class Profile;
@@ -48,7 +49,7 @@ class DIPSService : public KeyedService {
 
   void RemoveEvents(const base::Time& delete_begin,
                     const base::Time& delete_end,
-                    const UrlPredicate& predicate,
+                    network::mojom::ClearDataFilterPtr filter,
                     const DIPSEventRemovalType type);
 
   void HandleRedirect(const DIPSRedirectInfo& redirect,
