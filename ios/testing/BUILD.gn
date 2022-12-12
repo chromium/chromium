@@ -20,7 +20,7 @@ source_set("verify_custom_webkit") {
   deps = [ "//base" ]
 }
 
-source_set("hardware_keyboarr_support") {
+source_set("hardware_keyboard_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
