@@ -35,15 +35,15 @@ TEST_F(DOMArrayBufferTest, TransferredArrayBufferIsDetached) {
   ArrayBufferContents src(10, 4, ArrayBufferContents::kNotShared,
                           ArrayBufferContents::kZeroInitialize);
   auto* buffer = DOMArrayBuffer::Create(src);
-  ArrayBufferContents dst(nullptr, 0, nullptr);
+  ArrayBufferContents dst;
   buffer->Transfer(isolate(), dst);
   ASSERT_EQ(true, buffer->IsDetached());
 }
 
 TEST_F(DOMArrayBufferTest, TransferredEmptyArrayBufferIsDetached) {
-  ArrayBufferContents src(nullptr, 0, nullptr);
+  ArrayBufferContents src;
   auto* buffer = DOMArrayBuffer::Create(src);
-  ArrayBufferContents dst(nullptr, 0, nullptr);
+  ArrayBufferContents dst;
   buffer->Transfer(isolate(), dst);
   ASSERT_EQ(true, buffer->IsDetached());
 }

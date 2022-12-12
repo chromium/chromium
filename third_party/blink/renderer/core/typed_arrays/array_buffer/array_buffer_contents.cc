@@ -37,15 +37,6 @@
 
 namespace blink {
 
-ArrayBufferContents::ArrayBufferContents(void* data,
-                                         size_t length,
-                                         DataDeleter deleter) {
-  DCHECK(data || length == 0);
-
-  backing_store_ =
-      v8::ArrayBuffer::NewBackingStore(data, length, deleter, nullptr);
-}
-
 ArrayBufferContents::ArrayBufferContents(
     const base::subtle::PlatformSharedMemoryRegion& region,
     uint64_t offset,
