@@ -51,7 +51,7 @@ class InterestGroupManagerImpl;
 // InterestGroupAuction can handle component auctions as well as top-level
 // auction.
 //
-// Auctions have three phases, with phase transitions handled by the owner. All
+// Auctions have two phases, with phase transitions handled by the owner. All
 // phases complete asynchronously:
 //
 // * Loading interest groups phase: This loads interest groups that can
@@ -64,9 +64,6 @@ class InterestGroupManagerImpl;
 // generates bids, scores bids, and the highest scoring bid for each component
 // auction is passed to its parent auction, which also scores it. When this
 // phase completes, the winner will have been decided.
-//
-// * ReportResult / ReportWin phase: This phase invokes ReportResult() on
-// winning seller worklets and ReportWin() in the winning bidder worklet.
 class CONTENT_EXPORT InterestGroupAuction
     : public auction_worklet::mojom::ScoreAdClient {
  public:
@@ -179,7 +176,10 @@ class CONTENT_EXPORT InterestGroupAuction
     void BeginTracingKAnonScoring();
     void EndTracingKAnonScoring();
 
-    StorageInterestGroup bidder;
+    // Use a unique pointer so this can be more safely moved to the
+    // InterestGroupReporter. Doing so both preserves pointers, and make sure
+    // there's a crash if this is dereferenced after move.
+    std::unique_ptr<StorageInterestGroup> bidder;
 
     // Set of render URLs that are k-anonymous for use as ad or ad component
     // render URLs for this interest group.
@@ -409,17 +409,11 @@ class CONTENT_EXPORT InterestGroupAuction
       base::OnceClosure on_seller_receiver_callback,
       AuctionPhaseCompletionCallback bidding_and_scoring_phase_callback);
 
-  // Starts the reporting phase of the auction. Callback is invoked
-  // asynchronously when either the auction has encountered a fatal error, or
-  // when all reporting URLs (if any) have been retrieved from the applicable
-  // worklets. `success` is true if the final status of the auction is
-  // `kSuccess`.
-  //
-  // If this is a component auction, `top_seller_signals` must populated and
-  // be the output from the top-level seller's reportResult() method.
-  void StartReportingPhase(
-      absl::optional<std::string> top_seller_signals,
-      AuctionPhaseCompletionCallback reporting_phase_callback);
+  // Creates an InterestGroupAuctionReporter, after the auction has completed.
+  // Takes ownership of the `auction_config`, so that the reporter can outlive
+  // other auction-related classes.
+  std::unique_ptr<InterestGroupAuctionReporter> CreateReporter(
+      std::unique_ptr<blink::AuctionConfig> auction_config);
 
   // Close all Mojo pipes and release all weak pointers. Called when an
   // auction fails and on auction complete.
@@ -432,23 +426,14 @@ class CONTENT_EXPORT InterestGroupAuction
   size_t NumPotentialBidders() const;
 
   // Returns all interest groups that bid in an auction. Expected to be called
-  // after the bidding and scoring phase completes, but before the reporting
-  // phase. Returns an empty set if the auction failed for any reason other
-  // than the seller rejecting all bids.
-  //
-  // TODO(mmenke): Consider calling this after the reporting phase.
+  // after the bidding and scoring phase completes. Returns an empty set if the
+  // auction failed for any reason other than the seller rejecting all bids.
   void GetInterestGroupsThatBid(blink::InterestGroupSet& interest_groups) const;
 
   // Retrieves any debug reporting URLs. May only be called once, since it
   // takes ownership of stored reporting URLs.
   void TakeDebugReportUrls(std::vector<GURL>& debug_win_report_urls,
                            std::vector<GURL>& debug_loss_report_urls);
-
-  // Returns the completed reporter associated with this auction, if the auction
-  // has run to completion and has a winner.
-  std::unique_ptr<InterestGroupAuctionReporter> TakeReporter() {
-    return std::move(reporter_);
-  }
 
   // Retrieves all requests to the Private Aggregation API returned by
   // GenerateBid() and ScoreAd(). The return value is keyed by reporting origin
@@ -610,9 +595,7 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // Invoked by the AuctionWorkletManager on fatal errors, at any point after
   // a SellerWorklet has been provided. Results in auction immediately
-  // failing. Unlike most other methods, may be invoked during either the
-  // generate bid phase or the reporting phase, since the seller worklet is
-  // not unloaded between the two phases.
+  // failing.
   void OnSellerWorkletFatalError(
       AuctionWorkletManager::FatalErrorType fatal_error_type,
       const std::vector<std::string>& errors);
@@ -708,16 +691,6 @@ class CONTENT_EXPORT InterestGroupAuction
   ScoredBid* top_kanon_enforced_bid();
   ScoredBid* top_non_kanon_enforced_bid();
 
-  // -----------------------
-  // Reporting phase methods
-  // -----------------------
-
-  // Sequence of asynchronous methods to call into the seller and then bidder
-  // worklet to report a win. Will ultimately invoke
-  // `reporting_phase_callback_`, which will delete the auction.
-  void ReportSellerResult(absl::optional<std::string> top_seller_signals);
-  void OnReportingPhaseComplete();
-
   // -----------------------------------
   // Methods not associated with a phase
   // -----------------------------------
@@ -786,7 +759,6 @@ class CONTENT_EXPORT InterestGroupAuction
   // is invoked when the phase completes.
   AuctionPhaseCompletionCallback load_interest_groups_phase_callback_;
   AuctionPhaseCompletionCallback bidding_and_scoring_phase_callback_;
-  AuctionPhaseCompletionCallback reporting_phase_callback_;
 
   // Invoked in the bidding and scoring phase, once the seller worklet has
   // loaded. May be null.
@@ -890,12 +862,6 @@ class CONTENT_EXPORT InterestGroupAuction
   // seller failed to load, since neither the bids nor the bidders were the
   // problem).
   bool all_bids_scored_ = false;
-
-  // Handles the reporting phase of the auction.
-  //
-  // TODO(mmenke): Make this class return the report, so the consumer can wire
-  // it up to the URN loading code.
-  std::unique_ptr<InterestGroupAuctionReporter> reporter_;
 
   // Receivers for OnScoreAd() callbacks. Owns Bids, which have raw pointers to
   // other objects, so must be last, to avoid triggering tooling to check for

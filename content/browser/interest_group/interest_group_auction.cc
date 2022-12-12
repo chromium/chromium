@@ -143,10 +143,10 @@ struct BidStatesDescByPriority {
 struct BidStatesDescByPriorityAndGroupByJoinOrigin {
   bool operator()(const std::unique_ptr<InterestGroupAuction::BidState>& a,
                   const std::unique_ptr<InterestGroupAuction::BidState>& b) {
-    return std::tie(a->calculated_priority, a->bidder.joining_origin,
-                    a->bidder.interest_group.execution_mode) >
-           std::tie(b->calculated_priority, b->bidder.joining_origin,
-                    b->bidder.interest_group.execution_mode);
+    return std::tie(a->calculated_priority, a->bidder->joining_origin,
+                    a->bidder->interest_group.execution_mode) >
+           std::tie(b->calculated_priority, b->bidder->joining_origin,
+                    b->bidder->interest_group.execution_mode);
   }
 };
 
@@ -189,7 +189,7 @@ void InterestGroupAuction::BidState::BeginTracing() {
 
   trace_id = base::trace_event::GetNextGlobalTraceId();
 
-  const blink::InterestGroup& interest_group = bidder.interest_group;
+  const blink::InterestGroup& interest_group = bidder->interest_group;
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("fledge", "bid", *trace_id, "bidding_url",
                                     interest_group.bidding_url,
                                     "interest_group_name", interest_group.name);
@@ -207,7 +207,7 @@ void InterestGroupAuction::BidState::BeginTracingKAnonScoring() {
 
   trace_id_for_kanon_scoring = base::trace_event::GetNextGlobalTraceId();
 
-  const blink::InterestGroup& interest_group = bidder.interest_group;
+  const blink::InterestGroup& interest_group = bidder->interest_group;
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("fledge", "score_kanon_enforced_ad",
                                     *trace_id_for_kanon_scoring, "bidding_url",
                                     interest_group.bidding_url,
@@ -240,7 +240,7 @@ InterestGroupAuction::Bid::Bid(
       ad_components(std::move(ad_components)),
       bid_duration(bid_duration),
       bidding_signals_data_version(bidding_signals_data_version),
-      interest_group(&bid_state->bidder.interest_group),
+      interest_group(&bid_state->bidder->interest_group),
       bid_ad(bid_ad),
       bid_state(bid_state),
       auction(auction) {
@@ -311,7 +311,7 @@ class InterestGroupAuction::BuyerHelper
         enable_bidding_signals_prioritization_ = true;
 
       auto state = std::make_unique<BidState>();
-      state->bidder = std::move(bidder);
+      state->bidder = std::make_unique<StorageInterestGroup>(std::move(bidder));
       state->calculated_priority = priority;
       bid_states_.emplace_back(std::move(state));
     }
@@ -375,9 +375,9 @@ class InterestGroupAuction::BuyerHelper
     BidState* state = generate_bid_client_receiver_set_.current_context();
     absl::optional<double> new_priority;
     if (!priority_vector.empty()) {
-      const auto& interest_group = state->bidder.interest_group;
+      const auto& interest_group = state->bidder->interest_group;
       new_priority = CalculateInterestGroupPriority(
-          *auction_->config_, state->bidder, auction_->auction_start_time_,
+          *auction_->config_, *state->bidder, auction_->auction_start_time_,
           priority_vector,
           (interest_group.priority_vector &&
            !interest_group.priority_vector->empty())
@@ -438,8 +438,8 @@ class InterestGroupAuction::BuyerHelper
       blink::InterestGroupSet& interest_groups) const {
     for (const auto& bid_state : bid_states_) {
       if (bid_state->made_bid) {
-        interest_groups.emplace(bid_state->bidder.interest_group.owner,
-                                bid_state->bidder.interest_group.name);
+        interest_groups.emplace(bid_state->bidder->interest_group.owner,
+                                bid_state->bidder->interest_group.name);
       }
     }
   }
@@ -555,7 +555,7 @@ class InterestGroupAuction::BuyerHelper
       // Ignore default error message in case of crash. Instead, use a more
       // specific one.
       auction_->errors_.push_back(
-          base::StrCat({bid_state->bidder.interest_group.bidding_url->spec(),
+          base::StrCat({bid_state->bidder->interest_group.bidding_url->spec(),
                         " crashed while trying to run generateBid()."}));
     } else {
       auction_->errors_.insert(auction_->errors_.end(), errors.begin(),
@@ -623,7 +623,7 @@ class InterestGroupAuction::BuyerHelper
   // for the bidder identified by `bid_state`. Starts generating a bid.
   void OnBidderWorkletReceived(BidState* bid_state) {
     const blink::InterestGroup& interest_group =
-        bid_state->bidder.interest_group;
+        bid_state->bidder->interest_group;
 
     bid_state->BeginTracing();
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "bidder_worklet_generate_bid",
@@ -637,7 +637,7 @@ class InterestGroupAuction::BuyerHelper
             bid_state);
     auction_worklet::mojom::KAnonymityBidMode kanon_mode =
         auction_->kanon_mode();
-    bid_state->kanon_render_urls = ComputeKAnon(bid_state->bidder, kanon_mode);
+    bid_state->kanon_render_urls = ComputeKAnon(*bid_state->bidder, kanon_mode);
     bid_state->worklet_handle->GetBidderWorklet()->GenerateBid(
         auction_worklet::mojom::BidderWorkletNonSharedParams::New(
             interest_group.name,
@@ -647,18 +647,18 @@ class InterestGroupAuction::BuyerHelper
             interest_group.trusted_bidding_signals_keys,
             interest_group.user_bidding_signals, interest_group.ads,
             interest_group.ad_components, bid_state->kanon_render_urls),
-        kanon_mode, bid_state->bidder.joining_origin,
+        kanon_mode, bid_state->bidder->joining_origin,
         auction_->config_->non_shared_params.auction_signals,
         GetPerBuyerSignals(*auction_->config_,
-                           bid_state->bidder.interest_group.owner),
+                           bid_state->bidder->interest_group.owner),
         GetDirectFromSellerPerBuyerSignals(
             *auction_->subresource_url_builder_,
-            bid_state->bidder.interest_group.owner),
+            bid_state->bidder->interest_group.owner),
         GetDirectFromSellerAuctionSignals(*auction_->subresource_url_builder_),
         auction_->PerBuyerTimeout(bid_state), auction_->config_->seller,
         auction_->parent_ ? auction_->parent_->config_->seller
                           : absl::optional<url::Origin>(),
-        bid_state->bidder.bidding_browser_signals.Clone(),
+        bid_state->bidder->bidding_browser_signals.Clone(),
         auction_->auction_start_time_, *bid_state->trace_id,
         std::move(pending_remote));
 
@@ -823,8 +823,8 @@ class InterestGroupAuction::BuyerHelper
 
     if (has_set_priority) {
       auction_->interest_group_manager_->SetInterestGroupPriority(
-          blink::InterestGroupKey(state->bidder.interest_group.owner,
-                                  state->bidder.interest_group.name),
+          blink::InterestGroupKey(state->bidder->interest_group.owner,
+                                  state->bidder->interest_group.name),
           set_priority);
     }
 
@@ -845,8 +845,8 @@ class InterestGroupAuction::BuyerHelper
             "Invalid priority signals overrides");
       } else {
         auction_->interest_group_manager_->UpdateInterestGroupPriorityOverrides(
-            blink::InterestGroupKey(state->bidder.interest_group.owner,
-                                    state->bidder.interest_group.name),
+            blink::InterestGroupKey(state->bidder->interest_group.owner,
+                                    state->bidder->interest_group.name),
             std::move(update_priority_signals_overrides));
       }
     }
@@ -878,7 +878,7 @@ class InterestGroupAuction::BuyerHelper
                request_ptr) { return request_ptr.is_null(); }));
     if (!pa_requests.empty()) {
       PrivateAggregationRequests& pa_requests_for_bidder =
-          auction_->private_aggregation_requests_[state->bidder.interest_group
+          auction_->private_aggregation_requests_[state->bidder->interest_group
                                                       .owner];
       pa_requests_for_bidder.insert(pa_requests_for_bidder.end(),
                                     std::move_iterator(pa_requests.begin()),
@@ -980,7 +980,7 @@ class InterestGroupAuction::BuyerHelper
     }
 
     const blink::InterestGroup& interest_group =
-        bid_state.bidder.interest_group;
+        bid_state.bidder->interest_group;
     const blink::InterestGroup::Ad* matching_ad =
         FindMatchingAd(*interest_group.ads, bid_state.kanon_render_urls,
                        bid_role, mojo_bid->render_url);
@@ -1159,7 +1159,6 @@ void InterestGroupAuction::StartLoadInterestGroupsPhase(
   DCHECK(buyer_helpers_.empty());
   DCHECK(!load_interest_groups_phase_callback_);
   DCHECK(!bidding_and_scoring_phase_callback_);
-  DCHECK(!reporting_phase_callback_);
   DCHECK(!final_auction_result_);
   DCHECK_EQ(num_pending_loads_, 0u);
 
@@ -1222,7 +1221,6 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
   DCHECK(!on_seller_receiver_callback_);
   DCHECK(!load_interest_groups_phase_callback_);
   DCHECK(!bidding_and_scoring_phase_callback_);
-  DCHECK(!reporting_phase_callback_);
   DCHECK(!final_auction_result_);
   DCHECK(!non_kanon_enforced_auction_leader_.top_bid);
   DCHECK(!kanon_enforced_auction_leader_.top_bid);
@@ -1265,15 +1263,14 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
   }
 }
 
-void InterestGroupAuction::StartReportingPhase(
-    absl::optional<std::string> top_seller_signals,
-    AuctionPhaseCompletionCallback reporting_phase_callback) {
-  DCHECK(reporting_phase_callback);
+std::unique_ptr<InterestGroupAuctionReporter>
+InterestGroupAuction::CreateReporter(
+    std::unique_ptr<blink::AuctionConfig> auction_config) {
   DCHECK(!load_interest_groups_phase_callback_);
   DCHECK(!bidding_and_scoring_phase_callback_);
-  DCHECK(!reporting_phase_callback_);
-  DCHECK(!final_auction_result_);
+  DCHECK_EQ(*final_auction_result_, AuctionResult::kSuccess);
   DCHECK(non_kanon_enforced_auction_leader_.top_bid);
+
   // This should only be called on top-level auctions.
   DCHECK(!parent_);
 
@@ -1282,7 +1279,13 @@ void InterestGroupAuction::StartReportingPhase(
   const LeaderInfo& leader = leader_info();
   InterestGroupAuction::ScoredBid* winner = leader.top_bid.get();
   InterestGroupAuctionReporter::WinningBidInfo winning_bid_info;
-  winning_bid_info.storage_interest_group = &winner->bid->bid_state->bidder;
+  // TODO(https://crbug.com/1394777): Moving `bidder` out of the winning bid
+  // state is not very safe. We should modify the InterestGroupAuction API so
+  // that values are returned directly to the AuctionRunner, instead of being
+  // pulled out, and create the reporter last, to avoid and UAF issues with the
+  // winning interest group.
+  winning_bid_info.storage_interest_group =
+      std::move(winner->bid->bid_state->bidder);
   winning_bid_info.render_url = winner->bid->render_url;
   winning_bid_info.ad_components = winner->bid->ad_components;
   // Need the bid from the bidder itself. If the bid was from a component
@@ -1347,18 +1350,11 @@ void InterestGroupAuction::StartReportingPhase(
             ->Clone();
   }
 
-  reporting_phase_callback_ = std::move(reporting_phase_callback);
-  reporter_ = std::make_unique<InterestGroupAuctionReporter>(
-      auction_worklet_manager_, std::move(winning_bid_info),
-      std::move(top_level_seller_winning_bid_info),
+  return std::make_unique<InterestGroupAuctionReporter>(
+      auction_worklet_manager_, std::move(auction_config),
+      std::move(winning_bid_info), std::move(top_level_seller_winning_bid_info),
       std::move(component_seller_winning_bid_info),
       TakePrivateAggregationRequests());
-  reporter_->Start(base::BindOnce(
-      &InterestGroupAuction::OnReportingPhaseComplete, base::Unretained(this)));
-  // The seller worklet handle is no longer needed. It's useful to keep it
-  // alive until this point so that the InterestGroupAuctionReporter can reuse
-  // it.
-  seller_worklet_handle_.reset();
 }
 
 void InterestGroupAuction::ClosePipes() {
@@ -1834,6 +1830,13 @@ void InterestGroupAuction::OnStartLoadInterestGroupsPhaseComplete(
 
   // `final_auction_result_` should only be set to kSuccess when the entire
   // auction is complete.
+  //
+  // TODO(https://crbug.com/1394777): We should probably add new states for
+  // whether the result was used, reports sent, etc, so either the
+  // InterestGroupAuction or the InterestGroupReporter logs a single result.
+  // Alternatively, we could add a separate histogram just for the reporter
+  // stuff, which should have exactly as many entries as the historam
+  // `final_auction_result_` is logged to.
   bool success = auction_result == AuctionResult::kSuccess;
   if (!success)
     final_auction_result_ = auction_result;
@@ -2245,7 +2248,7 @@ absl::optional<base::TimeDelta> InterestGroupAuction::PerBuyerTimeout(
       config_->non_shared_params.per_buyer_timeouts;
   if (per_buyer_timeouts.has_value()) {
     auto it =
-        per_buyer_timeouts.value().find(state->bidder.interest_group.owner);
+        per_buyer_timeouts.value().find(state->bidder->interest_group.owner);
     if (it != per_buyer_timeouts.value().end())
       return std::min(it->second, kMaxTimeout);
   }
@@ -2317,6 +2320,25 @@ void InterestGroupAuction::OnBiddingAndScoringComplete(
     // `final_auction_result_` should only be set to kSuccess when the entire
     // auction is complete.
     final_auction_result_ = auction_result;
+  } else {
+    // If this is the top-level auction, mark it as a success (and the winning
+    // component auction as well, if there is one). Component auction status
+    // depend on whether or not they won the top-level auction, so if this is a
+    // component auciton, leave status as-is.
+    if (!parent_) {
+      final_auction_result_ = AuctionResult::kSuccess;
+      // If there's a winning bid, set its auction result as well. If the
+      // winning bid came from a component auction, this will set that component
+      // auction's result as well. This is needed for auction result accessors.
+      //
+      // TODO(https://crbug.com/1394777): This is currently needed to correctly
+      // retrieve reporting information from the nested auction. Is there a
+      // cleaner way to do this?
+      if (top_bid()) {
+        top_bid()->bid->auction->final_auction_result_ =
+            AuctionResult::kSuccess;
+      }
+    }
   }
 
   // If this is a top-level auction with component auction, update final state
@@ -2335,30 +2357,6 @@ void InterestGroupAuction::OnBiddingAndScoringComplete(
   }
 
   std::move(bidding_and_scoring_phase_callback_).Run(success);
-}
-
-void InterestGroupAuction::OnReportingPhaseComplete() {
-  DCHECK(reporting_phase_callback_);
-  DCHECK(!final_auction_result_);
-
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "reporting_phase", trace_id_);
-
-  final_auction_result_ = AuctionResult::kSuccess;
-  // If there's a winning bid, set its auction result as well. If the winning
-  // bid came from a component auction, this will set that component auction's
-  // result as well. This is needed for auction result accessors.
-  //
-  // TODO(mmenke): Extract relevant data from `this` when creating the Reporter,
-  // and have it handle reporting only if auction results are loaded in a frame,
-  // or if there's no result.
-  ScoredBid* winner = top_bid();
-  if (winner)
-    winner->bid->auction->final_auction_result_ = AuctionResult::kSuccess;
-
-  // Close all pipes, as they're no longer needed.
-  ClosePipes();
-
-  std::move(reporting_phase_callback_).Run(/*success=*/true);
 }
 
 auction_worklet::mojom::ComponentAuctionOtherSellerPtr
@@ -2387,7 +2385,7 @@ bool InterestGroupAuction::RequestBidderWorklet(
     AuctionWorkletManager::FatalErrorCallback fatal_error_callback) {
   DCHECK(!bid_state.worklet_handle);
 
-  const blink::InterestGroup& interest_group = bid_state.bidder.interest_group;
+  const blink::InterestGroup& interest_group = bid_state.bidder->interest_group;
 
   absl::optional<uint16_t> experiment_group_id =
       GetBuyerExperimentId(*config_, interest_group.owner);

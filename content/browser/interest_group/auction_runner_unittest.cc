@@ -1875,14 +1875,12 @@ class AuctionRunnerTest : public testing::Test,
   void OnAuctionComplete(
       AuctionRunner* auction_runner,
       bool manually_aborted,
-      absl::optional<InterestGroupKey> winning_group_id,
-      absl::optional<GURL> ad_url,
+      absl::optional<InterestGroupKey> winning_group_key,
+      absl::optional<GURL> render_url,
       std::vector<GURL> ad_component_urls,
       std::string winning_group_ad_metadata,
-      std::vector<GURL> report_urls,
       std::vector<GURL> debug_loss_report_urls,
       std::vector<GURL> debug_win_report_urls,
-      ReportingMetadata ad_beacon_map,
       std::map<url::Origin, PrivateAggregationRequests>
           private_aggregation_requests,
       blink::InterestGroupSet interest_groups_that_bid,
@@ -1890,26 +1888,30 @@ class AuctionRunnerTest : public testing::Test,
       std::vector<GURL> ad_component_urls_without_kanon_enforced,
       absl::optional<GURL> render_url_with_kanon_simulated,
       std::vector<GURL> ad_component_urls_with_kanon_simulated,
-      std::vector<std::string> errors) {
+      std::vector<std::string> errors,
+      std::unique_ptr<InterestGroupAuctionReporter> reporter) {
     DCHECK(auction_run_loop_);
     DCHECK(!auction_complete_);
     DCHECK_EQ(auction_runner, auction_runner_.get());
 
-    // Delete the auction runner, which is needed to update histograms.
+    // Delete the auction runner, which is needed to update histograms. Don't do
+    // it immediately, so the Reporter is started before its destruction,
+    // allowing reuse of the seller worklet, just as happens in production.
+    std::unique_ptr<AuctionRunner> owned_auction_runner;
     if (!dont_reset_auction_runner_)
-      auction_runner_.reset();
+      owned_auction_runner = std::move(auction_runner_);
 
     auction_complete_ = true;
     result_.manually_aborted = manually_aborted;
-    result_.winning_group_id = std::move(winning_group_id);
-    result_.ad_url = std::move(ad_url);
+    result_.winning_group_id = std::move(winning_group_key);
+    result_.ad_url = std::move(render_url);
     result_.ad_component_urls = std::move(ad_component_urls);
     result_.winning_group_ad_metadata = std::move(winning_group_ad_metadata);
-    result_.report_urls = std::move(report_urls);
+    result_.report_urls.clear();
     result_.errors = std::move(errors);
     result_.debug_loss_report_urls = std::move(debug_loss_report_urls);
     result_.debug_win_report_urls = std::move(debug_win_report_urls);
-    result_.ad_beacon_map = std::move(ad_beacon_map);
+    result_.ad_beacon_map = ReportingMetadata();
     result_.interest_groups_that_bid = std::move(interest_groups_that_bid);
     result_.private_aggregation_requests =
         std::move(private_aggregation_requests);
@@ -1922,6 +1924,38 @@ class AuctionRunnerTest : public testing::Test,
     result_.ad_component_urls_with_kanon_simulated =
         std::move(ad_component_urls_with_kanon_simulated);
 
+    if (!reporter) {
+      EXPECT_FALSE(result_.winning_group_id);
+      EXPECT_FALSE(result_.ad_url);
+      EXPECT_TRUE(result_.ad_component_urls.empty());
+      EXPECT_TRUE(result_.debug_win_report_urls.empty());
+      auction_run_loop_->Quit();
+      return;
+    }
+
+    EXPECT_TRUE(result_.winning_group_id);
+    EXPECT_TRUE(result_.ad_url);
+    // These are handled by the reporter, in the case an auction has a winner,
+    // so they're only requested if the winning ad is used.
+    EXPECT_TRUE(result_.private_aggregation_requests.empty());
+
+    reporter_ = std::move(reporter);
+
+    reporter_->Start(base::BindOnce(&AuctionRunnerTest::OnReportingComplete,
+                                    base::Unretained(this)));
+  }
+
+  void OnReportingComplete() {
+    DCHECK(reporter_);
+    result_.report_urls = reporter_->TakeReportUrls();
+    result_.ad_beacon_map = reporter_->TakeAdBeaconMap();
+    result_.private_aggregation_requests =
+        reporter_->TakePrivateAggregationRequests();
+    const auto& report_errors = reporter_->errors();
+    result_.errors.insert(result_.errors.end(), report_errors.begin(),
+                          report_errors.end());
+
+    reporter_.reset();
     auction_run_loop_->Quit();
   }
 
@@ -2324,6 +2358,7 @@ class AuctionRunnerTest : public testing::Test,
   std::unique_ptr<InterestGroupManagerImpl> interest_group_manager_;
 
   std::unique_ptr<AuctionRunner> auction_runner_;
+  std::unique_ptr<InterestGroupAuctionReporter> reporter_;
   bool dont_reset_auction_runner_ = false;
   // This should be inspected using TakeBadMessage(), which also clears it.
   std::string bad_message_;

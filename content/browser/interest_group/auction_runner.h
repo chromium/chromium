@@ -32,6 +32,7 @@ struct AuctionConfig;
 
 namespace content {
 
+class InterestGroupAuctionReporter;
 class InterestGroupManagerImpl;
 
 // An AuctionRunner loads and runs the bidder and seller worklets, along with
@@ -94,10 +95,8 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       absl::optional<GURL> render_url,
       std::vector<GURL> ad_component_urls,
       std::string winning_group_ad_metadata,
-      std::vector<GURL> report_urls,
       std::vector<GURL> debug_loss_report_urls,
       std::vector<GURL> debug_win_report_urls,
-      ReportingMetadata ad_beacon_map,
       std::map<url::Origin, PrivateAggregationRequests>
           private_aggregation_requests,
       blink::InterestGroupSet interest_groups_that_bid,
@@ -105,7 +104,9 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       std::vector<GURL> ad_component_urls_without_kanon_enforced,
       absl::optional<GURL> render_url_with_kanon_simulated,
       std::vector<GURL> ad_component_urls_with_kanon_simulated,
-      std::vector<std::string> errors)>;
+      std::vector<std::string> errors,
+      std::unique_ptr<InterestGroupAuctionReporter>
+          interest_group_auction_reporter)>;
 
   // Returns true if `origin` is allowed to use the interest group API. Will be
   // called on worklet / interest group origins before using them in any
@@ -113,10 +114,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   using IsInterestGroupApiAllowedCallback =
       InterestGroupAuction::IsInterestGroupApiAllowedCallback;
 
-  explicit AuctionRunner(const AuctionRunner&) = delete;
-  AuctionRunner& operator=(const AuctionRunner&) = delete;
-
-  // Runs an entire FLEDGE auction.
+  // Creates an entire FLEDGE auction. Single-use object.
   //
   // Arguments:
   // `auction_worklet_manager` and `interest_group_manager` must remain valid
@@ -148,7 +146,18 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
       RunAuctionCallback callback);
 
+  explicit AuctionRunner(const AuctionRunner&) = delete;
+  AuctionRunner& operator=(const AuctionRunner&) = delete;
+
   ~AuctionRunner() override;
+
+  // Tells `auction_` to start the loading interest groups phase. May not be
+  // called more than once for a given AuctionRunner.
+  //
+  //  `callback` is invoked on auction completion. It should synchronously
+  //  destroy this AuctionRunner object. `callback` won't be invoked until after
+  //  CreateAndStart() returns.
+  void StartAuction(RunAuctionCallback callback);
 
   // AbortableAdAuction implementation.
   void Abort() override;
@@ -168,7 +177,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   enum class State {
     kLoadingGroupsPhase,
     kBiddingAndScoringPhase,
-    kReportingPhase,
     kSucceeded,
     kFailed,
   };
@@ -227,7 +235,10 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
 
   // Whether k-anonymity enforcement or simulation (or none) are performed.
   const auction_worklet::mojom::KAnonymityBidMode kanon_mode_;
-  blink::AuctionConfig owned_auction_config_;
+  // Use a smart pointer so can pass ownership to InterestGroupAuctionReporter
+  // without invalidating pointers.
+  std::unique_ptr<blink::AuctionConfig> owned_auction_config_;
+
   RunAuctionCallback callback_;
 
   InterestGroupAuction auction_;

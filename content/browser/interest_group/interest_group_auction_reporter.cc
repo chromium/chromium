@@ -63,12 +63,14 @@ InterestGroupAuctionReporter::WinningBidInfo::~WinningBidInfo() = default;
 
 InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     AuctionWorkletManager* auction_worklet_manager,
+    std::unique_ptr<blink::AuctionConfig> auction_config,
     WinningBidInfo winning_bid_info,
     SellerWinningBidInfo top_level_seller_winning_bid_info,
     absl::optional<SellerWinningBidInfo> component_seller_winning_bid_info,
     std::map<url::Origin, PrivateAggregationRequests>
         private_aggregation_requests)
     : auction_worklet_manager_(auction_worklet_manager),
+      auction_config_(std::move(auction_config)),
       winning_bid_info_(std::move(winning_bid_info)),
       top_level_seller_winning_bid_info_(
           std::move(top_level_seller_winning_bid_info)),
@@ -79,6 +81,9 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
 InterestGroupAuctionReporter ::~InterestGroupAuctionReporter() = default;
 
 void InterestGroupAuctionReporter::Start(base::OnceClosure callback) {
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "fledge", "reporting_phase", top_level_seller_winning_bid_info_.trace_id);
+
   DCHECK(!callback_);
 
   callback_ = std::move(callback);
@@ -429,6 +434,8 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
 
 void InterestGroupAuctionReporter::OnReportingComplete(
     const std::vector<std::string>& errors) {
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "reporting_phase",
+                                  top_level_seller_winning_bid_info_.trace_id);
   errors_.insert(errors_.end(), errors.begin(), errors.end());
   std::move(callback_).Run();
 }

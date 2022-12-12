@@ -94,9 +94,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     WinningBidInfo(WinningBidInfo&&);
     ~WinningBidInfo();
 
-    // TODO(mmenke): Make this own the StorageInterestGroup.
-    base::raw_ptr<const StorageInterestGroup, DanglingUntriaged>
-        storage_interest_group;
+    std::unique_ptr<StorageInterestGroup> storage_interest_group;
 
     GURL render_url;
     std::vector<GURL> ad_components;
@@ -114,6 +112,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // the created InterestGroupAuctionReporter.
   InterestGroupAuctionReporter(
       AuctionWorkletManager* auction_worklet_manager,
+      std::unique_ptr<blink::AuctionConfig> auction_config,
       WinningBidInfo winning_bid_info,
       SellerWinningBidInfo top_level_seller_winning_bid_info,
       absl::optional<SellerWinningBidInfo> component_seller_winning_bid_info,
@@ -210,6 +209,11 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   const SellerWinningBidInfo& GetBidderAuction();
 
   const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
+
+  // Top-level AuctionConfig. It owns the `auction_config` objects pointed at by
+  // the the top-level SellerWinningBidInfo. If there's a component auction
+  // SellerWinningBidInfo, it points to an AuctionConfig contained within it.
+  const std::unique_ptr<blink::AuctionConfig> auction_config_;
 
   const WinningBidInfo winning_bid_info_;
   const SellerWinningBidInfo top_level_seller_winning_bid_info_;
