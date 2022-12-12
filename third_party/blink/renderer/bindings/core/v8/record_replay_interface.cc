@@ -918,7 +918,7 @@ function previewBlinkNode(node) {
 function previewTypedArray() {
   // The typed array size isn't available from the object's own property
   // information, except by parsing the object description.
-  const length = getDescriptionCount(this.obj.description);
+  const length = getDescriptionCount(this.cdpObj.description);
   if (length !== undefined) {
     this.addProperty({ name: "length", value: length }, /* force */ true);
   }
@@ -938,7 +938,7 @@ function previewSetMap(allProperties) {
   const size = getDescriptionCount(internal.value.description);
   if (size !== undefined) {
     this.extra.containerEntryCount = size;
-    if (["Set", "Map"].includes(this.obj.className)) {
+    if (["Set", "Map"].includes(this.cdpObj.className)) {
       this.addProperty({ name: "size", value: size }, /* force */ true);
     }
   }
@@ -972,18 +972,18 @@ function previewSetMap(allProperties) {
 }
 
 function previewRegExp() {
-  this.extra.regexpString = this.obj.description;
+  this.extra.regexpString = this.cdpObj.description;
 }
 
 function previewDate() {
-  const dateTime = Date.parse(this.obj.description);
+  const dateTime = Date.parse(this.cdpObj.description);
   if (!Number.isNaN(dateTime)) {
     this.extra.dateTime = dateTime;
   }
 }
 
 function previewError() {
-  this.addProperty({ name: "name", value: this.obj.className }, /* force */ true);
+  this.addProperty({ name: "name", value: this.cdpObj.className }, /* force */ true);
 }
 
 const ErrorProperties = [
