@@ -144,11 +144,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.base_unittests.filter',
         ],
       },
-      'android-11-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter',
-        ],
-      },
       'android-12-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.base_unittests.filter',
