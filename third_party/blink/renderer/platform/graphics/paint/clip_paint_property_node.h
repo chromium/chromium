@@ -199,14 +199,8 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
       : ClipPaintPropertyNodeOrAlias(parent), state_(std::move(state)) {}
 
   void AddChanged(PaintPropertyChangeType changed) {
-    // TODO(crbug.com/814815): This is a workaround of the bug. When the bug is
-    // fixed, change the following condition to
-    //   DCHECK(!clip_cache_ || !clip_cache_->IsValid());
     DCHECK_NE(PaintPropertyChangeType::kUnchanged, changed);
-    if (clip_cache_ && clip_cache_->IsValid()) {
-      DLOG(WARNING) << "Clip tree changed without invalidating the cache.";
-      GeometryMapperClipCache::ClearCache();
-    }
+    GeometryMapperClipCache::ClearCache();
     PaintPropertyNode::AddChanged(changed);
   }
 

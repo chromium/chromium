@@ -87,6 +87,12 @@ PaintPropertyTreeBuilderTest::PaintPropertiesForElement(const char* name) {
       .PaintProperties();
 }
 
+const GeometryMapperTransformCache&
+PaintPropertyTreeBuilderTest::GetTransformCache(
+    const TransformPaintPropertyNode& transform) {
+  return transform.GetTransformCache();
+}
+
 void PaintPropertyTreeBuilderTest::SetUp() {
   EnableCompositing();
   RenderingTest::SetUp();
@@ -7378,6 +7384,32 @@ TEST_P(PaintPropertyTreeBuilderTest, EffectOutputClipOfMissedOutOfFlow) {
   ASSERT_TRUE(properties);
   ASSERT_TRUE(properties->Effect());
   EXPECT_FALSE(properties->Effect()->OutputClip());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, TransformChangesInvalidateGeometryMapper) {
+  SetBodyInnerHTML(R"HTML(
+    <style>#div { width:10px; height:10px; transform:translateX(9px); }</style>
+    <div id="div" style="transform: translateX(5px);"></div>
+  )HTML");
+
+  const auto* properties = PaintPropertiesForElement("div");
+  const auto& transform_cache = GetTransformCache(*properties->Transform());
+  EXPECT_TRUE(transform_cache.IsValid());
+
+  // Change the transform and ensure the geometry mapper cache is invalidated.
+  auto* div = GetDocument().getElementById("div");
+  div->removeAttribute(html_names::kStyleAttr);
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(transform_cache.IsValid());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(transform_cache.IsValid());
+
+  // Make a color change and ensure the geometry mapper cache is not
+  // invalidated.
+  div->setAttribute(html_names::kStyleAttr, "background: green;");
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_TRUE(transform_cache.IsValid());
 }
 
 }  // namespace blink
