@@ -193,7 +193,7 @@ suite('inputCardTestSuite', function() {
     assertFalse(elements[0].querySelector('#infoIcon').hidden);
     assertEquals(
         loadTimeData.getString('inputKeyboardUntestableLidClosedNote'),
-        elements[0].querySelector('#tooltipText').innerText);
+        elements[0].querySelector('#tooltipText').innerText.trim());
 
     assertEquals(
         keyboards[1].name, elements[1].querySelector('.device-name').innerText);
@@ -261,7 +261,7 @@ suite('inputCardTestSuite', function() {
     assertFalse(elements[0].querySelector('#infoIcon').hidden);
     assertEquals(
         loadTimeData.getString('inputKeyboardUntestableTabletModeNote'),
-        elements[0].querySelector('#tooltipText').innerText);
+        elements[0].querySelector('#tooltipText').innerText.trim());
 
     assertEquals(
         keyboards[1].name, elements[1].querySelector('.device-name').innerText);

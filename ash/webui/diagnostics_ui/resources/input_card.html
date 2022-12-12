@@ -1,4 +1,10 @@
 <style include="diagnostics-shared">
+  paper-tooltip {
+    --paper-tooltip-background: var(--cros-tooltip-background-color);
+    --paper-tooltip-min-width: 0px;
+    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
+  }
+
   .device {
     display: flex;
     padding: 12px 20px;
@@ -19,7 +25,16 @@
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
     align-self: center;
-    margin-inline-end: 15px;
+    margin-inline-end: 12px;
+  }
+
+  .device #tooltipText {
+    font-family: var(--diagnostics-roboto-font-family);
+    font-weight: var(--diagnostics-regular-font-weight);
+  }
+
+  .device #inputDeviceTestButton {
+      align-self: center;
   }
 
   .device-body {
@@ -49,7 +64,8 @@
             </div>
             <div class="device-name" id="deviceName">[[device.name]]</div>
           </div>
-          <iron-icon slot="icon" icon="diagnostics:info" id="infoIcon"
+          <iron-icon slot="icon" icon="diagnostics:info" id="infoIcon" tabindex="0"
+              aria-labelledby="tooltipText" role="img"
               hidden$="[[getDeviceTestability(device, hostDeviceStatus)]]">
           </iron-icon>
           <paper-tooltip for="infoIcon" aria-hidden="true">

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './diagnostics_card_frame.js';
 import './icons.html.js';
