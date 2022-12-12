@@ -194,8 +194,11 @@ void IOSLanguageDetectionTabHelper::WebStateDestroyed(
 }
 
 void IOSLanguageDetectionTabHelper::StartLanguageDetection() {
-  if (!translate_enabled_.GetValue())
+  // Translate setting should not cancel language detection.
+  // Keep the existing behavior if IsForceTranslateEnabled is disabled.
+  if (!translate_enabled_.GetValue() && !translate::IsForceTranslateEnabled()) {
     return;  // Translate disabled in preferences.
+  }
   DCHECK(web_state_);
   const GURL& url = web_state_->GetVisibleURL();
   if (!web::UrlHasWebScheme(url) || !web_state_->ContentIsHTML())

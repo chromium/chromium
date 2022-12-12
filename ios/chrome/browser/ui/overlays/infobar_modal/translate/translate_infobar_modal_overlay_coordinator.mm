@@ -9,7 +9,9 @@
 #endif
 
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_translate_language_selection_delegate.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_translate_language_selection_table_view_controller.h"
@@ -101,7 +103,8 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
           initWithRequest:self.request];
   InfobarTranslateTableViewController* modalViewController =
       [[InfobarTranslateTableViewController alloc]
-          initWithDelegate:modalMediator];
+          initWithDelegate:modalMediator
+               prefService:self.browser->GetBrowserState()->GetPrefs()];
   modalMediator.consumer = modalViewController;
   modalMediator.translateMediatorDelegate = self;
   self.modalMediator = modalMediator;

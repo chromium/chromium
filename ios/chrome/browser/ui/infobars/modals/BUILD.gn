@@ -31,6 +31,8 @@ source_set("modals") {
     ":public",
     "//base",
     "//components/autofill/core/common:features",
+    "//components/prefs",
+    "//components/prefs/ios",
     "//components/strings",
     "//components/translate/core/browser",
     "//components/translate/core/common",
