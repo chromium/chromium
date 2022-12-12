@@ -592,6 +592,12 @@ extern const base::FeatureParam<bool>
 // (e.g. @bookmarks, @history) provided by the Builtin Provider.
 extern const base::FeatureParam<int> kSiteSearchStarterPackRelevanceScore;
 
+// Document provider.
+// The max number of low quality doc suggestions to show. Docs are considered
+// low quality if they're neither owned nor fully contain the input in their
+// titles and owners.
+extern const base::FeatureParam<int> kDocumentProviderMaxLowQualitySuggestions;
+
 // Domain suggestions.
 // The minimum number of unique URLs a domain needs to be considered highly
 // visited.

@@ -978,6 +978,13 @@ const base::FeatureParam<int> kSiteSearchStarterPackRelevanceScore(
     "SiteSearchStarterPackRelevanceScore",
     1350);
 
+// Rather than have a special default value of -1 to signify no limit, simply
+// set it to a large value that'll never be reached in practice.
+const base::FeatureParam<int> kDocumentProviderMaxLowQualitySuggestions(
+    &omnibox::kDocumentProvider,
+    "DocumentProviderMaxLowQualitySuggestions",
+    100);
+
 const base::FeatureParam<int> kDomainSuggestionsTypedUrlsThreshold(
     &omnibox::kDomainSuggestions,
     "DomainSuggestionsTypedUrlsThreshold",

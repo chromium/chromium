@@ -21,6 +21,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -64,12 +65,37 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 
   PrefService* GetPrefs() const override { return pref_service_.get(); }
 
+  std::string ProfileUserName() const override { return "goodEmail@gmail.com"; }
+
  private:
   std::unique_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 };
 
 }  // namespace
+
+class FakeDocumentProvider : public DocumentProvider {
+ public:
+  FakeDocumentProvider(AutocompleteProviderClient* client,
+                       AutocompleteProviderListener* listener,
+                       size_t cache_size)
+      : DocumentProvider(client, listener, cache_size) {}
+
+  using DocumentProvider::backoff_for_session_;
+  using DocumentProvider::done_;
+  using DocumentProvider::GenerateLastModifiedString;
+  using DocumentProvider::input_;
+  using DocumentProvider::IsDocumentProviderAllowed;
+  using DocumentProvider::IsInputLikelyURL;
+  using DocumentProvider::matches_;
+  using DocumentProvider::OnDocumentSuggestionsLoaderAvailable;
+  using DocumentProvider::ParseDocumentSearchResults;
+  using DocumentProvider::time_run_invoked_;
+  using DocumentProvider::UpdateResults;
+
+ protected:
+  ~FakeDocumentProvider() override = default;
+};
 
 class DocumentProviderTest : public testing::Test,
                              public AutocompleteProviderListener {
@@ -107,7 +133,7 @@ class DocumentProviderTest : public testing::Test,
   }
 
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
-  scoped_refptr<DocumentProvider> provider_;
+  scoped_refptr<FakeDocumentProvider> provider_;
   raw_ptr<TemplateURL> default_template_url_;
 };
 
@@ -142,7 +168,7 @@ void DocumentProviderTest::SetUp() {
       "https://drive.google.com/drive/search?q={searchTerms}";
   turl_model->Add(std::make_unique<TemplateURL>(data));
 
-  provider_ = DocumentProvider::Create(client_.get(), this, 4);
+  provider_ = new FakeDocumentProvider(client_.get(), this, 4);
 }
 
 void DocumentProviderTest::OnProviderUpdate(
@@ -301,7 +327,7 @@ TEST_F(DocumentProviderTest, IsInputLikelyURL) {
     const AutocompleteInput autocomplete_input(
         base::ASCIIToUTF16(input_ascii), metrics::OmniboxEventProto::OTHER,
         TestSchemeClassifier());
-    return DocumentProvider::IsInputLikelyURL(autocomplete_input);
+    return FakeDocumentProvider::IsInputLikelyURL(autocomplete_input);
   };
 
   EXPECT_TRUE(IsInputLikelyURL_Wrapper("htt"));
@@ -768,13 +794,13 @@ TEST_F(DocumentProviderTest, GenerateLastModifiedString) {
 
   // GenerateLastModifiedString should accept any parsable timestamp, but use
   // ISO8601 UTC timestamp strings since the service returns them in practice.
-  EXPECT_EQ(DocumentProvider::GenerateLastModifiedString(
+  EXPECT_EQ(FakeDocumentProvider::GenerateLastModifiedString(
                 base::TimeToISO8601(modified_today), local_now),
             u"2:18\u202FAM");
-  EXPECT_EQ(DocumentProvider::GenerateLastModifiedString(
+  EXPECT_EQ(FakeDocumentProvider::GenerateLastModifiedString(
                 base::TimeToISO8601(modified_this_year), local_now),
             u"Aug 19");
-  EXPECT_EQ(DocumentProvider::GenerateLastModifiedString(
+  EXPECT_EQ(FakeDocumentProvider::GenerateLastModifiedString(
                 base::TimeToISO8601(modified_last_year), local_now),
             u"8/27/17");
 }
@@ -1048,7 +1074,9 @@ TEST_F(DocumentProviderTest, Scoring) {
       },
       R"({"results": [
           {"title": "Document 1", "score": 1150, "url": "url",
-            "metadata": {"owner": {"emailAddresses": [{"emailAddress": ""}]}}},
+            "metadata": {"owner": {"emailAddresses":
+              [{"emailAddress": "GoodemaiL@gmail.com"}]
+            }}},
           {"title": "Document 2", "score": 1150, "url": "url"},
           {"title": "Document 3", "score": 1150, "url": "url"}
         ]})",
@@ -1347,4 +1375,80 @@ TEST_F(DocumentProviderTest, Logging) {
 
   // It's difficult to simulate a completed `SimpleURLLoader` response, so we
   // don't test the "Case: Stop() after response" or "Case: No Stop()."
+}
+
+TEST_F(DocumentProviderTest, LowQualitySuggestions) {
+  auto test = [&](int limit_enabled, const std::string& response_str,
+                  const std::string& input_text,
+                  const std::vector<int> expected_scores) {
+    base::test::ScopedFeatureList feature_list;
+    if (limit_enabled)
+      feature_list.InitAndEnableFeatureWithParameters(
+          omnibox::kDocumentProvider,
+          {{std::string(
+                OmniboxFieldTrial::kDocumentProviderMaxLowQualitySuggestions
+                    .name),
+            "1"}});
+    absl::optional<base::Value> response = base::JSONReader::Read(response_str);
+    provider_->input_.UpdateText(base::UTF8ToUTF16(input_text), 0, {});
+    ACMatches matches = provider_->ParseDocumentSearchResults(*response);
+
+    ASSERT_EQ(matches.size(), expected_scores.size());
+    for (size_t i = 0; i < matches.size(); i++) {
+      EXPECT_EQ(matches[i].relevance, expected_scores[i]) << "Match " << i;
+    }
+  };
+
+  {
+    SCOPED_TRACE(
+        "Unowned and non-title matching docs are limited. Title matching docs "
+        "are not limited");
+    test(true,
+         R"({"results": [
+          {"title": "bad title1 title2",  "score": 1000, "url": "good url isn't sufficient"},
+          {"title": "bad title1 title2",  "score": 999,  "url": "url"},
+          {"title": "bad title1 title2",  "score": 998,  "url": "url"},
+          {"title": "goOd tItLE1 title2", "score": 997,  "url": "url"},
+          {"title": "good title1 title2", "score": 996,  "url": "url"},
+          {"title": "good title1 title2", "score": 995,  "url": "url"},
+          {"title": "good title1 title2", "score": 994,  "url": "url"}
+        ]})",
+         // - 'goo': prefix matches are ok.
+         // - 'title1': all input terms must be in the title or owner, but not
+         //   all title terms must be in the input (e.g. 'title2').
+         // - "goOd tItLE1 title2": Case insensitive.
+         "gOo Title1", {1000, 0, 0, 997, 996, 995, 994});
+  }
+
+  {
+    SCOPED_TRACE("Owned docs are not limited.");
+    test(true,
+         R"({"results": [
+          {"title": "bad title1 title2",  "score": 1000, "url": "good url isn't sufficient"},
+          {"title": "bad title1 title2",  "score": 999,  "url": "url"},
+          {"title": "bad title1 title2",  "score": 998,  "url": "url", "metadata": {"owner": {"emailAddresses": [{"emailAddress": "badEmail1@gmail.com"}, {"emailAddress": "gOOdemaIl@gmail.com"}]}}},
+          {"title": "bad title1 title2",  "score": 997,  "url": "url", "metadata": {"owner": {"emailAddresses": [{"emailAddress": "badEmail2@gmail.com"}]}}},
+          {"title": "good title1 title2", "score": 996,  "url": "url"},
+          {"title": "good title1 title2", "score": 995,  "url": "url"},
+          {"title": "good title1 title2", "score": 994,  "url": "url"}
+        ]})",
+         "goo title1", {1000, 0, 998, 0, 996, 995, 994});
+  }
+
+  {
+    SCOPED_TRACE(
+        "When the limit is disabled, unowned and non-title matching docs are "
+        "not limited.");
+    test(false,
+         R"({"results": [
+          {"title": "bad title1 title2",  "score": 1000, "url": "good url isn't sufficient"},
+          {"title": "bad title1 title2",  "score": 999,  "url": "url"},
+          {"title": "bad title1 title2",  "score": 998,  "url": "url"},
+          {"title": "goOd tItLE1 title2", "score": 997,  "url": "url"},
+          {"title": "good title1 title2", "score": 996,  "url": "url"},
+          {"title": "good title1 title2", "score": 995,  "url": "url"},
+          {"title": "good title1 title2", "score": 994,  "url": "url"}
+        ]})",
+         "goo title1", {1000, 999, 998, 997, 996, 995, 994});
+  }
 }

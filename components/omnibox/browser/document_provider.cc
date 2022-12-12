@@ -134,16 +134,11 @@ AutocompleteMatch::DocumentType GetIconForMIMEType(
              : AutocompleteMatch::DocumentType::DRIVE_OTHER;
 }
 
-String16Vector SplitByColon(const String16Vector& words) {
-  return std::accumulate(
-      words.begin(), words.end(), String16Vector(),
-      [](String16Vector accumulated, const auto& word) {
-        const auto split = base::SplitString(
-            word, u":", base::WhitespaceHandling::TRIM_WHITESPACE,
-            base::SplitResult::SPLIT_WANT_NONEMPTY);
-        accumulated.insert(accumulated.end(), split.begin(), split.end());
-        return accumulated;
-      });
+// Concats `v2` onto `v1`.
+template <typename T>
+std::vector<T> Concat(std::vector<T>& v1, const std::vector<T>& v2) {
+  v1.insert(v1.end(), v2.begin(), v2.end());
+  return v1;
 }
 
 struct FieldMatches {
@@ -162,11 +157,9 @@ struct FieldMatches {
             String16Vector(),
             [](String16Vector word_vec, const std::string* string) {
               if (string) {
-                const auto string_words =
-                    SplitByColon(String16VectorFromString16(
-                        base::UTF8ToUTF16(string->c_str()), nullptr));
-                word_vec.insert(word_vec.end(), string_words.begin(),
-                                string_words.end());
+                Concat(word_vec,
+                       String16VectorFromString16(
+                           base::UTF8ToUTF16(string->c_str()), nullptr));
               }
               return word_vec;
             })),
@@ -244,8 +237,7 @@ int CalculateScore(const std::u16string& input, const base::Value* result) {
                      return a.weight > b.weight;
                    });
 
-  String16Vector input_words =
-      SplitByColon(String16VectorFromString16(input, nullptr));
+  String16Vector input_words = String16VectorFromString16(input, nullptr);
 
   for (const auto& word : input_words) {
     for (auto& field_matches : field_matches_vec) {
@@ -279,21 +271,71 @@ int CalculateScore(const std::u16string& input, const base::Value* result) {
   return static_cast<int>(min_score + score * (max_score - min_score));
 }
 
+// Return whether `user` owns the doc `result`.
+bool IsOwnedByUser(const std::string& user, const base::Value* result) {
+  std::vector<const std::string*> owner_emails = ExtractResultList(
+      result, "metadata.owner.emailAddresses", "emailAddress");
+  const auto lower_user = base::i18n::ToLower(base::UTF8ToUTF16(user));
+  return base::ranges::any_of(
+      owner_emails,
+      [&](const std::u16string& email) { return lower_user == email; },
+      [&](const std::string* email) {
+        return base::i18n::ToLower(base::UTF8ToUTF16(*email));
+      });
+}
+
 int BoostOwned(const int score,
-               const std::string& owner,
+               const std::string& user,
                const base::Value* result) {
   int promotion = base::GetFieldTrialParamByFeatureAsInt(
       omnibox::kDocumentProvider, "OwnedDocPromotion", 0);
   int demotion = base::GetFieldTrialParamByFeatureAsInt(
       omnibox::kDocumentProvider, "UnownedDocDemotion", 200);
 
-  std::vector<const std::string*> owner_emails = ExtractResultList(
-      result, "metadata.owner.emailAddresses", "emailAddress");
-
-  bool owned = base::Contains(owner_emails, owner,
-                              [](const std::string* email) { return *email; });
+  bool owned = IsOwnedByUser(user, result);
 
   return std::max(score + (owned ? promotion : -demotion), 0);
+}
+
+// Return whether all words in `input` are contained in either the `result`
+// title or owners.
+bool IsCompletelyMatchedInTitleOrOwner(const std::u16string& input,
+                                       const base::Value* result) {
+  // Accumulate a vector of the title and all owners.
+  auto search_strings = ExtractResultList(
+      result, "metadata.owner.emailAddresses", "emailAddress");
+  Concat(search_strings, ExtractResultList(result, "metadata.owner.personNames",
+                                           "displayName"));
+  search_strings.push_back(result->FindStringKey("title"));
+
+  // Extract a flat vector of words from the title and owners.
+  const auto title_and_owner_words = std::accumulate(
+      search_strings.begin(), search_strings.end(), String16Vector(),
+      [](String16Vector accumulated, const auto& search_string) {
+        Concat(accumulated,
+               String16VectorFromString16(
+                   base::i18n::ToLower(base::UTF8ToUTF16(*search_string)),
+                   nullptr));
+        return accumulated;
+      });
+
+  // Check if all input words are contained in `title_and_owner_words`.
+  String16Vector input_words =
+      String16VectorFromString16(base::i18n::ToLower(input), nullptr);
+  for (const auto& input_word : input_words) {
+    // It's possible `input` contained 'owner' as a word, as opposed to
+    // 'owner:...' as an operator. Ignore this rare edge case for simplicity.
+    if (input_word != u"owner" &&
+        base::ranges::none_of(
+            title_and_owner_words, [&](std::u16string title_word) {
+              return base::StartsWith(title_word, input_word,
+                                      base::CompareCase::INSENSITIVE_ASCII);
+            })) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 // Derived from google3/apps/share/util/docs_url_extractor.cc.
@@ -900,6 +942,11 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
 
   // Ensure server's suggestions are added with monotonically decreasing scores.
   int previous_score = INT_MAX;
+
+  // Number of matches that are neither owned nor a complete title or owner
+  // match.
+  int low_quality_match_count = 0;
+
   for (size_t i = 0; i < num_results; i++) {
     const base::Value& result = results->GetList()[i];
     if (!result.is_dict()) {
@@ -936,6 +983,18 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     if (!use_client_score && score >= previous_score)
       score = std::max(previous_score - 1, 0);
     previous_score = score;
+
+    // Only allow up to `kDocumentProviderMaxLowQualitySuggestions`  docs that
+    // are neither owned nor a complete title or owner match.
+    bool is_owned = IsOwnedByUser(client_->ProfileUserName(), &result);
+    bool is_completely_matched_in_title_and_owner =
+        IsCompletelyMatchedInTitleOrOwner(input_.text(), &result);
+    if (!is_owned && !is_completely_matched_in_title_and_owner &&
+        ++low_quality_match_count >
+            OmniboxFieldTrial::kDocumentProviderMaxLowQualitySuggestions
+                .Get()) {
+      score = 0;
+    }
 
     AutocompleteMatch match(this, score, false,
                             AutocompleteMatchType::DOCUMENT_SUGGESTION);
@@ -993,6 +1052,9 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     match.transition = ui::PAGE_TRANSITION_GENERATED;
     match.RecordAdditionalInfo("client score", client_score);
     match.RecordAdditionalInfo("server score", server_score);
+    match.RecordAdditionalInfo("owned", is_owned);
+    match.RecordAdditionalInfo("completely matched in title and owner",
+                               is_completely_matched_in_title_and_owner);
     if (matches.size() >= provider_max_matches_)
       match.RecordAdditionalInfo("for deduping only", "true");
     const std::string* snippet = result.FindStringPath("snippet.snippet");
