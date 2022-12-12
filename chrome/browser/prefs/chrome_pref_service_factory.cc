@@ -432,9 +432,8 @@ void DisableDomainCheckForTesting() {
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-bool InitializePrefsFromMasterPrefs(
-    const base::FilePath& profile_path,
-    std::unique_ptr<base::DictionaryValue> master_prefs) {
+bool InitializePrefsFromMasterPrefs(const base::FilePath& profile_path,
+                                    base::Value::Dict master_prefs) {
   return CreateProfilePrefStoreManager(profile_path)
       ->InitializePrefsFromMasterPrefs(GetTrackingConfiguration(),
                                        kTrackedPrefsReportingIDsCount,

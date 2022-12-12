@@ -153,7 +153,7 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
 
 void InitializeMasterPrefsTracking(
     prefs::mojom::TrackedPersistentPrefStoreConfigurationPtr configuration,
-    base::DictionaryValue* master_prefs) {
+    base::Value::Dict& master_prefs) {
   PrefHashFilter(
       CreatePrefHashStore(*configuration, false),
       GetExternalVerificationPrefHashStorePair(*configuration, nullptr),

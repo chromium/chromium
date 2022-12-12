@@ -430,8 +430,7 @@ ProcessInitialPreferencesResult ProcessInitialPreferences(
 
     if (!chrome_prefs::InitializePrefsFromMasterPrefs(
             profiles::GetDefaultProfileDir(user_data_dir),
-            base::DictionaryValue::From(std::make_unique<base::Value>(
-                std::move(initial_dictionary))))) {
+            std::move(initial_dictionary))) {
       DLOG(ERROR) << "Failed to initialize from initial preferences.";
     }
 

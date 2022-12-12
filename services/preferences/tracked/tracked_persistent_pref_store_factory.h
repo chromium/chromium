@@ -6,11 +6,8 @@
 #define SERVICES_PREFERENCES_TRACKED_TRACKED_PERSISTENT_PREF_STORE_FACTORY_H_
 
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 class PersistentPrefStore;
 
@@ -21,6 +18,6 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
 // TODO(sammc): This should move somewhere more appropriate in the longer term.
 void InitializeMasterPrefsTracking(
     prefs::mojom::TrackedPersistentPrefStoreConfigurationPtr configuration,
-    base::DictionaryValue* master_prefs);
+    base::Value::Dict& master_prefs);
 
 #endif  // SERVICES_PREFERENCES_TRACKED_TRACKED_PERSISTENT_PREF_STORE_FACTORY_H_

@@ -374,10 +374,9 @@ TEST_F(ProfilePrefStoreManagerTest, ProtectValues) {
 }
 
 TEST_F(ProfilePrefStoreManagerTest, InitializePrefsFromMasterPrefs) {
-  auto master_prefs = std::make_unique<base::DictionaryValue>();
-  master_prefs->Set(kTrackedAtomic, std::make_unique<base::Value>(kFoobar));
-  master_prefs->Set(kProtectedAtomic,
-                    std::make_unique<base::Value>(kHelloWorld));
+  base::Value::Dict master_prefs;
+  master_prefs.Set(kTrackedAtomic, kFoobar);
+  master_prefs.Set(kProtectedAtomic, kHelloWorld);
   EXPECT_TRUE(manager_->InitializePrefsFromMasterPrefs(
       prefs::CloneTrackedConfiguration(configuration_), kReportingIdCount,
       std::move(master_prefs)));

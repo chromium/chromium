@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -15,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/preferences/public/mojom/preferences.mojom-forward.h"
@@ -22,10 +22,6 @@
 
 class PersistentPrefStore;
 class PrefService;
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace service_manager {
 class Connector;
@@ -101,7 +97,7 @@ class ProfilePrefStoreManager {
       std::vector<prefs::mojom::TrackedPreferenceMetadataPtr>
           tracking_configuration,
       size_t reporting_ids_count,
-      std::unique_ptr<base::DictionaryValue> master_prefs);
+      base::Value::Dict master_prefs);
 
  private:
   // Connects to the pref service over mojo and configures it.

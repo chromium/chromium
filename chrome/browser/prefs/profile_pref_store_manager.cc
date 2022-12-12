@@ -105,7 +105,7 @@ bool ProfilePrefStoreManager::InitializePrefsFromMasterPrefs(
     std::vector<prefs::mojom::TrackedPreferenceMetadataPtr>
         tracking_configuration,
     size_t reporting_ids_count,
-    std::unique_ptr<base::DictionaryValue> master_prefs) {
+    base::Value::Dict master_prefs) {
   // Create the profile directory if it doesn't exist yet (very possible on
   // first run).
   if (!base::CreateDirectory(profile_path_))
@@ -116,7 +116,7 @@ bool ProfilePrefStoreManager::InitializePrefsFromMasterPrefs(
         CreateTrackedPrefStoreConfiguration(std::move(tracking_configuration),
                                             reporting_ids_count, {},
                                             mojo::NullRemote()),
-        master_prefs.get());
+        master_prefs);
   }
 
   // This will write out to a single combined file which will be immediately
@@ -129,7 +129,7 @@ bool ProfilePrefStoreManager::InitializePrefsFromMasterPrefs(
   // complete before Chrome can start (as master preferences seed the Local
   // State and Preferences files). This won't trip ThreadIORestrictions as they
   // won't have kicked in yet on the main thread.
-  bool success = serializer.Serialize(*master_prefs);
+  bool success = serializer.Serialize(master_prefs);
 
   return success;
 }

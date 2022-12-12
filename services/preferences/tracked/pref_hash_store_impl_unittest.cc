@@ -50,22 +50,22 @@ TEST_F(PrefHashStoreImplTest, ComputeMac) {
 }
 
 TEST_F(PrefHashStoreImplTest, ComputeSplitMacs) {
-  base::DictionaryValue dict;
-  dict.SetKey("a", base::Value("string1"));
-  dict.SetKey("b", base::Value("string2"));
+  base::Value::Dict dict;
+  dict.Set("a", "string1");
+  dict.Set("b", "string2");
   // Verify that dictionary keys can contain a '.' delimiter.
-  dict.SetKey("http://www.example.com", base::Value("string3"));
+  dict.Set("http://www.example.com", "string3");
   PrefHashStoreImpl pref_hash_store(std::string(32, 0), "device_id", true);
 
-  std::unique_ptr<base::DictionaryValue> computed_macs =
+  base::Value::Dict computed_macs =
       pref_hash_store.ComputeSplitMacs("foo.bar", &dict);
 
-  const std::string mac_1 = computed_macs->FindKey("a")->GetString();
-  const std::string mac_2 = computed_macs->FindKey("b")->GetString();
+  const std::string mac_1 = computed_macs.Find("a")->GetString();
+  const std::string mac_2 = computed_macs.Find("b")->GetString();
   const std::string mac_3 =
-      computed_macs->FindKey("http://www.example.com")->GetString();
+      computed_macs.Find("http://www.example.com")->GetString();
 
-  EXPECT_EQ(3U, computed_macs->DictSize());
+  EXPECT_EQ(3U, computed_macs.size());
 
   base::Value string_1("string1");
   base::Value string_2("string2");
@@ -79,11 +79,10 @@ TEST_F(PrefHashStoreImplTest, ComputeSplitMacs) {
 
 TEST_F(PrefHashStoreImplTest, ComputeNullSplitMacs) {
   PrefHashStoreImpl pref_hash_store(std::string(32, 0), "device_id", true);
-  std::unique_ptr<base::DictionaryValue> computed_macs =
+  base::Value::Dict computed_macs =
       pref_hash_store.ComputeSplitMacs("foo.bar", nullptr);
 
-  ASSERT_TRUE(computed_macs);
-  EXPECT_TRUE(computed_macs->DictEmpty());
+  EXPECT_TRUE(computed_macs.empty());
 }
 
 TEST_F(PrefHashStoreImplTest, AtomicHashStoreAndCheck) {

@@ -6,6 +6,7 @@
 #define SERVICES_PREFERENCES_TRACKED_PREF_HASH_STORE_IMPL_H_
 
 #include "base/compiler_specific.h"
+#include "base/values.h"
 #include "services/preferences/tracked/pref_hash_calculator.h"
 #include "services/preferences/tracked/pref_hash_store.h"
 
@@ -47,9 +48,9 @@ class PrefHashStoreImpl : public PrefHashStore {
 
   std::string ComputeMac(const std::string& path,
                          const base::Value* new_value) override;
-  std::unique_ptr<base::DictionaryValue> ComputeSplitMacs(
+  base::Value::Dict ComputeSplitMacs(
       const std::string& path,
-      const base::DictionaryValue* split_values) override;
+      const base::Value::Dict* split_values) override;
 
  private:
   class PrefHashStoreTransactionImpl;

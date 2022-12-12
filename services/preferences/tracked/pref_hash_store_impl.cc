@@ -104,25 +104,24 @@ std::string PrefHashStoreImpl::ComputeMac(const std::string& path,
   return pref_hash_calculator_.Calculate(path, dict);
 }
 
-std::unique_ptr<base::DictionaryValue> PrefHashStoreImpl::ComputeSplitMacs(
+base::Value::Dict PrefHashStoreImpl::ComputeSplitMacs(
     const std::string& path,
-    const base::DictionaryValue* split_values) {
+    const base::Value::Dict* split_values) {
   if (!split_values)
-    return std::make_unique<base::DictionaryValue>();
+    return base::Value::Dict();
 
   std::string keyed_path(path);
   keyed_path.push_back('.');
   const size_t common_part_length = keyed_path.length();
 
-  std::unique_ptr<base::DictionaryValue> split_macs(new base::DictionaryValue);
+  base::Value::Dict split_macs;
 
-  for (const auto item : split_values->GetDict()) {
+  for (const auto item : *split_values) {
     // Keep the common part from the old |keyed_path| and replace the key to
     // get the new |keyed_path|.
     keyed_path.replace(common_part_length, std::string::npos, item.first);
 
-    split_macs->SetKey(item.first,
-                       base::Value(ComputeMac(keyed_path, &item.second)));
+    split_macs.Set(item.first, ComputeMac(keyed_path, &item.second));
   }
 
   return split_macs;
@@ -273,10 +272,10 @@ void PrefHashStoreImpl::PrefHashStoreTransactionImpl::StoreSplitHash(
   contents_->RemoveEntry(path);
 
   if (split_value) {
-    std::unique_ptr<base::DictionaryValue> split_macs =
-        outer_->ComputeSplitMacs(path, split_value);
+    base::Value::Dict split_macs =
+        outer_->ComputeSplitMacs(path, &split_value->GetDict());
 
-    for (const auto item : split_macs->GetDict()) {
+    for (const auto item : split_macs) {
       DCHECK(item.second.is_string());
 
       contents_->SetSplitMac(path, item.first, item.second.GetString());

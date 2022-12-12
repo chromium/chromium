@@ -16,6 +16,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
@@ -28,7 +29,6 @@
 class PrefService;
 
 namespace base {
-class DictionaryValue;
 class Time;
 }  // namespace base
 
@@ -90,7 +90,7 @@ class PrefHashFilter : public InterceptablePrefFilter {
   // Initializes the PrefHashStore with hashes of the tracked preferences in
   // |pref_store_contents|. |pref_store_contents| will be the |storage| passed
   // to PrefHashStore::BeginTransaction().
-  void Initialize(base::DictionaryValue* pref_store_contents);
+  void Initialize(base::Value::Dict& pref_store_contents);
 
   // PrefFilter remaining implementation.
   void FilterUpdate(const std::string& path) override;
@@ -109,20 +109,20 @@ class PrefHashFilter : public InterceptablePrefFilter {
   // Helper function to generate FilterSerializeData()'s pre-write and
   // post-write callbacks. The returned callbacks are thread-safe.
   OnWriteCallbackPair GetOnWriteSynchronousCallbacks(
-      base::DictionaryValue* pref_store_contents);
+      base::Value::Dict* pref_store_contents);
 
   // Clears the MACs contained in |external_validation_hash_store_contents|
   // which are present in |paths_to_clear|.
   static void ClearFromExternalStore(
       HashStoreContents* external_validation_hash_store_contents,
-      const base::DictionaryValue* changed_paths_and_macs);
+      const base::Value::Dict* changed_paths_and_macs);
 
   // Flushes the MACs contained in |changed_paths_and_mac| to
   // external_hash_store_contents if |write_success|, otherwise discards the
   // changes.
   static void FlushToExternalStore(
       std::unique_ptr<HashStoreContents> external_hash_store_contents,
-      std::unique_ptr<base::DictionaryValue> changed_paths_and_macs,
+      std::unique_ptr<base::Value::Dict> changed_paths_and_macs,
       bool write_success);
 
   // Callback to be invoked only once (and subsequently reset) on the next
