@@ -23,4 +23,9 @@ public interface SwipeAnimationHandler {
      *                 is required.
      */
     void onSwipeEnd(@Nullable Animator animator);
+
+    /**
+     * @return Whether the message view should consume the swipe gesture.
+     */
+    boolean isSwipeEnabled();
 }
