@@ -79,6 +79,8 @@ source_set("unit_tests") {
     "//ash/quick_pair/common",
     "//ash/quick_pair/fast_pair_handshake",
     "//ash/quick_pair/fast_pair_handshake:test_support",
+    "//ash/quick_pair/feature_status_tracker",
+    "//ash/quick_pair/feature_status_tracker:test_support",
     "//ash/quick_pair/message_stream",
     "//ash/quick_pair/message_stream:test_support",
     "//ash/quick_pair/proto:fastpair_proto",

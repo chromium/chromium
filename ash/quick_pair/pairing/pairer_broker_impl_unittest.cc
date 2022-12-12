@@ -8,6 +8,7 @@
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
+#include "ash/quick_pair/feature_status_tracker/fake_bluetooth_adapter.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer_impl.h"
 #include "ash/test/ash_test_base.h"
@@ -26,6 +27,9 @@ namespace {
 
 constexpr char kValidModelId[] = "718c17";
 constexpr char kTestDeviceAddress[] = "test_address";
+constexpr char kDeviceName[] = "test_device_name";
+constexpr char kBluetoothCanonicalizedAddress[] = "0C:0E:4C:C8:05:08";
+constexpr base::TimeDelta kCancelPairingRetryDelay = base::Seconds(1);
 
 const char kFastPairRetryCountMetricName[] =
     "Bluetooth.ChromeOS.FastPair.PairRetry.Count";
@@ -143,11 +147,13 @@ namespace quick_pair {
 
 class PairerBrokerImplTest : public AshTestBase, public PairerBroker::Observer {
  public:
+  PairerBrokerImplTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     AshTestBase::SetUp();
 
-    adapter_ =
-        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
+    adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
 
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
 
@@ -200,7 +206,8 @@ class PairerBrokerImplTest : public AshTestBase, public PairerBroker::Observer {
   bool device_pair_complete_ = false;
 
   base::HistogramTester histogram_tester_;
-  scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> adapter_;
+  scoped_refptr<FakeBluetoothAdapter> adapter_;
+  device::MockBluetoothDevice* mock_bluetooth_device_ptr_ = nullptr;
   std::unique_ptr<FakeFastPairPairerFactory> fast_pair_pairer_factory_;
 
   std::unique_ptr<PairerBroker> pairer_broker_;
@@ -211,11 +218,9 @@ TEST_F(PairerBrokerImplTest, PairDevice_Initial) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairInitial);
   pairer_broker_->PairDevice(device);
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(pairer_broker_->IsPairing());
   EXPECT_EQ(device_paired_count_, 1);
@@ -223,7 +228,6 @@ TEST_F(PairerBrokerImplTest, PairDevice_Initial) {
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairingProcedureCompleteCallback();
-  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(pairer_broker_->IsPairing());
 }
 
@@ -234,16 +238,13 @@ TEST_F(PairerBrokerImplTest, PairDevice_Subsequent) {
 
   pairer_broker_->PairDevice(device);
   EXPECT_TRUE(pairing_started_);
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerHandshakeCompleteCallback();
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(handshake_complete_);
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(pairer_broker_->IsPairing());
   EXPECT_EQ(device_paired_count_, 1);
@@ -251,7 +252,6 @@ TEST_F(PairerBrokerImplTest, PairDevice_Subsequent) {
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairingProcedureCompleteCallback();
-  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(pairer_broker_->IsPairing());
   EXPECT_TRUE(device_pair_complete_);
 }
@@ -262,11 +262,9 @@ TEST_F(PairerBrokerImplTest, PairDevice_Retroactive) {
                                              Protocol::kFastPairRetroactive);
 
   pairer_broker_->PairDevice(device);
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(pairer_broker_->IsPairing());
   EXPECT_EQ(device_paired_count_, 1);
@@ -274,7 +272,6 @@ TEST_F(PairerBrokerImplTest, PairDevice_Retroactive) {
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairingProcedureCompleteCallback();
-  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(pairer_broker_->IsPairing());
 }
 
@@ -285,13 +282,49 @@ TEST_F(PairerBrokerImplTest, AlreadyPairingDevice) {
 
   pairer_broker_->PairDevice(device);
   pairer_broker_->PairDevice(device);
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(pairer_broker_->IsPairing());
+  EXPECT_EQ(device_paired_count_, 1);
+  histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 1);
+}
+
+TEST_F(PairerBrokerImplTest, PairAfterCancelPairing) {
+  histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
+                                             Protocol::kFastPairInitial);
+  device->set_classic_address(kBluetoothCanonicalizedAddress);
+
+  // Add a matching mock device to the bluetooth adapter with the
+  // same address to mock the relationship between Device and
+  // device::BluetoothDevice.
+  std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>>
+      mock_bluetooth_device_ =
+          std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+              adapter_.get(), 0, kDeviceName, kBluetoothCanonicalizedAddress,
+              true, false);
+  mock_bluetooth_device_ptr_ = mock_bluetooth_device_.get();
+  adapter_->AddMockDevice(std::move(mock_bluetooth_device_));
+
+  pairer_broker_->PairDevice(device);
+  EXPECT_TRUE(pairer_broker_->IsPairing());
+  EXPECT_CALL(*mock_bluetooth_device_ptr_, IsPaired())
+      .WillOnce(testing::Return(false));
+
+  // Attempt to pair with a failure.
+  fast_pair_pairer_factory_->fake_fast_pair_pairer()
+      ->TriggerPairFailureCallback(
+          PairFailure::kPasskeyCharacteristicNotifySession);
+
+  // Fast forward |kCancelPairingDelay| seconds to allow the retry callback to
+  // be called.
+  task_environment()->FastForwardBy(kCancelPairingRetryDelay);
+
+  // Now allow the pairing to succeed.
+  fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
+
   EXPECT_EQ(device_paired_count_, 1);
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 1);
 }
@@ -302,21 +335,17 @@ TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Initial) {
                                              Protocol::kFastPairInitial);
 
   pairer_broker_->PairDevice(device);
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairFailureCallback(
           PairFailure::kPasskeyCharacteristicNotifySession);
-  base::RunLoop().RunUntilIdle();
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairFailureCallback(
           PairFailure::kPasskeyCharacteristicNotifySession);
-  base::RunLoop().RunUntilIdle();
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairFailureCallback(
           PairFailure::kPasskeyCharacteristicNotifySession);
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(pairer_broker_->IsPairing());
   EXPECT_EQ(pair_failure_count_, 1);
@@ -329,20 +358,16 @@ TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Subsequent) {
                                              Protocol::kFastPairSubsequent);
 
   pairer_broker_->PairDevice(device);
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(pairer_broker_->IsPairing());
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairFailureCallback(
           PairFailure::kPasskeyCharacteristicNotifySession);
-  base::RunLoop().RunUntilIdle();
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairFailureCallback(
           PairFailure::kPasskeyCharacteristicNotifySession);
-  base::RunLoop().RunUntilIdle();
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairFailureCallback(
           PairFailure::kPasskeyCharacteristicNotifySession);
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(pairer_broker_->IsPairing());
   EXPECT_EQ(pair_failure_count_, 1);
@@ -355,20 +380,16 @@ TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Retroactive) {
                                              Protocol::kFastPairRetroactive);
 
   pairer_broker_->PairDevice(device);
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(pairer_broker_->IsPairing());
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairFailureCallback(
           PairFailure::kPasskeyCharacteristicNotifySession);
-  base::RunLoop().RunUntilIdle();
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairFailureCallback(
           PairFailure::kPasskeyCharacteristicNotifySession);
-  base::RunLoop().RunUntilIdle();
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairFailureCallback(
           PairFailure::kPasskeyCharacteristicNotifySession);
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(pairer_broker_->IsPairing());
   EXPECT_EQ(pair_failure_count_, 1);
@@ -380,7 +401,6 @@ TEST_F(PairerBrokerImplTest, AccountKeyFailure_Initial) {
                                              Protocol::kFastPairInitial);
 
   pairer_broker_->PairDevice(device);
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
@@ -396,7 +416,6 @@ TEST_F(PairerBrokerImplTest, AccountKeyFailure_Subsequent) {
                                              Protocol::kFastPairSubsequent);
 
   pairer_broker_->PairDevice(device);
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
@@ -412,7 +431,6 @@ TEST_F(PairerBrokerImplTest, AccountKeyFailure_Retroactive) {
                                              Protocol::kFastPairRetroactive);
 
   pairer_broker_->PairDevice(device);
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
@@ -428,7 +446,6 @@ TEST_F(PairerBrokerImplTest, StopPairing) {
                                              Protocol::kFastPairInitial);
 
   pairer_broker_->PairDevice(device);
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   // Stop Pairing mid pair.
