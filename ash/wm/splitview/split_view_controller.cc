@@ -1191,7 +1191,10 @@ int SplitViewController::GetDefaultDividerPosition() const {
 int SplitViewController::GetDividerPosition(SnapPosition snap_position,
                                             float snap_ratio) const {
   int divider_end_position = GetDividerEndPosition();
-  int snap_width = divider_end_position * snap_ratio;
+  // `snap_width` needs to be a float so that the rounding is performed at the
+  // end of the computation of `next_divider_position`. It's important because a
+  // 1-DIP gap between snapped windows precludes multiresizing. See b/262011280.
+  const float snap_width = divider_end_position * snap_ratio;
   int next_divider_position = snap_position == SnapPosition::kPrimary
                                   ? snap_width
                                   : divider_end_position - snap_width;

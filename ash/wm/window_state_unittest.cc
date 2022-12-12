@@ -120,6 +120,31 @@ TEST_F(WindowStateTest, SnapWindowBasic) {
   EXPECT_EQ(expected.ToString(), window->GetBoundsInScreen().ToString());
 }
 
+// Test snapped window bounds when the work area length is odd. For multiresize
+// functionality to work, it is important that the snapped windows exactly
+// touch. An odd work area length makes this requirement tricky because the
+// window widths must be unequal to add up to an odd number.
+TEST_F(WindowStateTest, SnapWindowOddWorkAreaLength) {
+  UpdateDisplay("1517x805");
+  const gfx::Rect work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  ASSERT_EQ(0, work_area.x());
+  ASSERT_EQ(1517, work_area.width());
+
+  std::unique_ptr<aura::Window> left_window(
+      CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
+  std::unique_ptr<aura::Window> right_window(
+      CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
+  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  WindowState::Get(left_window.get())->OnWMEvent(&snap_primary);
+  WindowState::Get(right_window.get())->OnWMEvent(&snap_secondary);
+  EXPECT_EQ(gfx::Rect(0, work_area.y(), 758, work_area.bottom()),
+            left_window->GetBoundsInScreen());
+  EXPECT_EQ(gfx::Rect(758, work_area.y(), 759, work_area.bottom()),
+            right_window->GetBoundsInScreen());
+}
+
 // Test how the minimum width and maximize behavior specified by the
 // aura::WindowDelegate affect snapping in landscape display layout.
 TEST_F(WindowStateTest, SnapWindowMinimumSizeLandscape) {
