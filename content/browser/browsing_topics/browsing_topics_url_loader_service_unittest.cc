@@ -9,6 +9,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
+#include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
@@ -150,6 +151,9 @@ class BrowsingTopicsURLLoaderServiceTest : public RenderViewHostTestHarness {
     policy.emplace_back(blink::mojom::PermissionsPolicyFeature::kBrowsingTopics,
                         /*allowed_origins=*/
                         std::vector<blink::OriginWithPossibleWildcards>{
+                            blink::OriginWithPossibleWildcards(
+                                url::Origin::Create(GURL("https://google.com")),
+                                /*has_subdomain_wildcard=*/false),
                             blink::OriginWithPossibleWildcards(
                                 url::Origin::Create(GURL("https://foo1.com")),
                                 /*has_subdomain_wildcard=*/false),
@@ -301,6 +305,64 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
+}
+
+TEST_F(BrowsingTopicsURLLoaderServiceTest, RequestFromSubframe) {
+  NavigatePage(GURL("https://google.com"));
+
+  TestRenderFrameHost* initial_subframe = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+          ->AppendChild("child0"));
+
+  auto subframe_navigation = NavigationSimulator::CreateRendererInitiated(
+      GURL("https://google.com"), initial_subframe);
+
+  subframe_navigation->Commit();
+
+  RenderFrameHost* final_subframe =
+      subframe_navigation->GetFinalRenderFrameHost();
+
+  mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
+  network::TestURLLoaderFactory proxied_url_loader_factory;
+  mojo::Remote<network::mojom::URLLoader> remote_loader;
+  mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
+
+  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context =
+      CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
+  bind_context->OnDidCommitNavigation(final_subframe->GetWeakDocumentPtr());
+
+  // The request to `foo1.com` will cause the topics header value
+  // `kExpectedHeaderForOrigin1` to be added.
+  remote_url_loader_factory->CreateLoaderAndStart(
+      remote_loader.BindNewPipeAndPassReceiver(),
+      /*request_id=*/0, /*options=*/0,
+      CreateResourceRequest(GURL("https://foo1.com")),
+      client.InitWithNewPipeAndPassRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  remote_url_loader_factory.FlushForTesting();
+
+  EXPECT_EQ(1, proxied_url_loader_factory.NumPending());
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      &proxied_url_loader_factory.pending_requests()->back();
+
+  std::string topics_header_value;
+  bool has_topics_header = pending_request->request.headers.GetHeader(
+      "Sec-Browsing-Topics", &topics_header_value);
+  EXPECT_TRUE(has_topics_header);
+  EXPECT_EQ(topics_header_value, kExpectedHeaderForOrigin1);
+
+  EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
+
+  // The topics response header value "?1" will cause an observation to be
+  // recorded.
+  pending_request->client->OnReceiveResponse(
+      CreateResponseHead(/*topics_header_value=*/"?1"), /*body=*/{},
+      absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
+  EXPECT_FALSE(browser_client().last_get_topics_param());
+  EXPECT_TRUE(browser_client().last_observe_param());
 }
 
 TEST_F(BrowsingTopicsURLLoaderServiceTest, HasNoObserveResponseHeader) {

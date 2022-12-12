@@ -51,7 +51,8 @@ bool GetTopicsHeaderValueForSubresourceRequest(
 
   // TODO(crbug.com/1244137): IsPrimary() doesn't actually detect portals yet.
   // Remove this when it does.
-  if (!static_cast<RenderFrameHostImpl*>(request_initiator_frame)
+  if (!static_cast<RenderFrameHostImpl*>(
+           request_initiator_frame->GetMainFrame())
            ->IsOutermostMainFrame()) {
     return false;
   }

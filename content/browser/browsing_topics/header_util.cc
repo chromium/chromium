@@ -57,8 +57,9 @@ void HandleTopicsEligibleResponse(
 
   // TODO(crbug.com/1244137): IsPrimary() doesn't actually detect portals yet.
   // Remove this when it does.
-  if (!static_cast<const RenderFrameHostImpl&>(request_initiator_frame)
-           .IsOutermostMainFrame()) {
+  if (!static_cast<const RenderFrameHostImpl*>(
+           request_initiator_frame.GetMainFrame())
+           ->IsOutermostMainFrame()) {
     return;
   }
 
