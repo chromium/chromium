@@ -56,7 +56,6 @@ after discussions on the right group.
       <annotation id="ambient_client"/>
       <annotation id="ambient_photo_cache"/>
       <annotation id="ambient_photo_controller"/>
-      <annotation id="app_suggestion_get_favicon"/>
       <annotation id="arc_auth_code_fetcher"/>
       <annotation id="calendar_get_events"/>
       <annotation id="chrome_plugin_vm_api"/>
