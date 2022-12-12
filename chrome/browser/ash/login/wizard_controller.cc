@@ -57,6 +57,7 @@
 #include "chrome/browser/ash/login/screens/arc_terms_of_service_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/choobe_screen.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 #include "chrome/browser/ash/login/screens/cryptohome_recovery_screen.h"
 #include "chrome/browser/ash/login/screens/cryptohome_recovery_setup_screen.h"
@@ -134,6 +135,7 @@
 #include "chrome/browser/ui/webui/ash/login/arc_terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/assistant_optin_flow_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/auto_enrollment_check_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
@@ -840,6 +842,14 @@ WizardController::CreateScreens() {
         base::BindRepeating(&WizardController::OnCryptohomeRecoveryScreenExit,
                             weak_factory_.GetWeakPtr())));
   }
+
+  if (features::IsOobeChoobeEnabled()) {
+    append(std::make_unique<ChoobeScreen>(
+        oobe_ui->GetView<ChoobeScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnChoobeScreenExit,
+                            weak_factory_.GetWeakPtr())));
+  }
+
   return result;
 }
 
@@ -1066,6 +1076,12 @@ void WizardController::ShowOsTrialScreen() {
 
 void WizardController::ShowConsolidatedConsentScreen() {
   SetCurrentScreen(GetScreen(ConsolidatedConsentScreenView::kScreenId));
+}
+
+void WizardController::ShowChoobeScreen() {
+  DCHECK(features::IsOobeChoobeEnabled());
+  GetChoobeFlowController()->Start();
+  SetCurrentScreen(GetScreen(ChoobeScreenView::kScreenId));
 }
 
 void WizardController::ShowCryptohomeRecoverySetupScreen() {
@@ -1376,6 +1392,21 @@ void WizardController::OnThemeSelectionScreenExit(
 
 void WizardController::OnCryptohomeRecoveryScreenExit() {
   NOTREACHED();
+}
+
+void WizardController::OnChoobeScreenExit(ChoobeScreen::Result result) {
+  OnScreenExit(ChoobeScreenView::kScreenId,
+               ChoobeScreen::GetResultString(result));
+
+  switch (result) {
+    case ChoobeScreen::Result::SELECTED:
+    case ChoobeScreen::Result::NOT_APPLICABLE:
+      ShowThemeSelectionScreen();
+      break;
+    case ChoobeScreen::Result::SKIPPED:
+      ShowMarketingOptInScreen();
+      break;
+  }
 }
 
 void WizardController::SkipToLoginForTesting() {
@@ -1910,7 +1941,10 @@ void WizardController::OnGestureNavigationScreenExit(
     GestureNavigationScreen::Result result) {
   OnScreenExit(GestureNavigationScreenView::kScreenId,
                GestureNavigationScreen::GetResultString(result));
-  ShowThemeSelectionScreen();
+  if (features::IsOobeChoobeEnabled())
+    ShowChoobeScreen();
+  else
+    ShowThemeSelectionScreen();
 }
 
 void WizardController::OnMarketingOptInScreenExit(

@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/login/screens/active_directory_login_screen.h"
 #include "chrome/browser/ash/login/screens/arc_terms_of_service_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
+#include "chrome/browser/ash/login/screens/choobe_screen.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 #include "chrome/browser/ash/login/screens/cryptohome_recovery_screen.h"
 #include "chrome/browser/ash/login/screens/cryptohome_recovery_setup_screen.h"
@@ -316,6 +317,7 @@ class WizardController : public OobeUI::Observer {
   void ShowAuthenticationSetupScreen();
   void ShowGuestTosScreen();
   void ShowThemeSelectionScreen();
+  void ShowChoobeScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -402,6 +404,7 @@ class WizardController : public OobeUI::Observer {
       SmartPrivacyProtectionScreen::Result result);
   void OnThemeSelectionScreenExit(ThemeSelectionScreen::Result result);
   void OnCryptohomeRecoveryScreenExit();
+  void OnChoobeScreenExit(ChoobeScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.
