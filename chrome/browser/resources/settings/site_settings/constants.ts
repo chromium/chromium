@@ -7,7 +7,9 @@
  * the UI. Both top-level categories and content settings that represent
  * individual permissions under Site Details should appear here.
  * This should be kept in sync with the |kContentSettingsTypeGroupNames| array
- * in chrome/browser/ui/webui/settings/site_settings_helper.cc
+ * in chrome/browser/ui/webui/settings/site_settings_helper.cc. See
+ * chrome/browser/resources/settings/site_settings_page/site_settings_page_util
+ * for translations.
  */
 export enum ContentSettingsTypes {
   ADS = 'ads',

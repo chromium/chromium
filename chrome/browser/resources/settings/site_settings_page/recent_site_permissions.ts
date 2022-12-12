@@ -8,11 +8,11 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../settings_shared.css.js';
 import '../i18n_setup.js';
 
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -24,6 +24,7 @@ import {SiteSettingsMixin, SiteSettingsMixinInterface} from '../site_settings/si
 import {RawSiteException, RecentSitePermissions} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {getTemplate} from './recent_site_permissions.html.js';
+import {getLocalizationStringForContentType} from './site_settings_page_util.js';
 
 export interface SettingsRecentSitePermissionsElement {
   $: {
@@ -127,81 +128,6 @@ export class SettingsRecentSitePermissionsElement extends
   }
 
   /**
-   * Perform internationalization for the given content settings type.
-   */
-  private getI18nContentTypeString_(contentSettingsType: ContentSettingsTypes):
-      string {
-    switch (contentSettingsType) {
-      case ContentSettingsTypes.COOKIES:
-        return this.i18n('siteSettingsCookiesMidSentence');
-      case ContentSettingsTypes.IMAGES:
-        return this.i18n('siteSettingsImagesMidSentence');
-      case ContentSettingsTypes.JAVASCRIPT:
-        return this.i18n('siteSettingsJavascriptMidSentence');
-      case ContentSettingsTypes.SOUND:
-        return this.i18n('siteSettingsSoundMidSentence');
-      case ContentSettingsTypes.POPUPS:
-        return this.i18n('siteSettingsPopupsMidSentence');
-      case ContentSettingsTypes.GEOLOCATION:
-        return this.i18n('siteSettingsLocationMidSentence');
-      case ContentSettingsTypes.NOTIFICATIONS:
-        return this.i18n('siteSettingsNotificationsMidSentence');
-      case ContentSettingsTypes.MIC:
-        return this.i18n('siteSettingsMicMidSentence');
-      case ContentSettingsTypes.CAMERA:
-        return this.i18n('siteSettingsCameraMidSentence');
-      case ContentSettingsTypes.PROTOCOL_HANDLERS:
-        return this.i18n('siteSettingsHandlersMidSentence');
-      case ContentSettingsTypes.AUTOMATIC_DOWNLOADS:
-        return this.i18n('siteSettingsAutomaticDownloadsMidSentence');
-      case ContentSettingsTypes.BACKGROUND_SYNC:
-        return this.i18n('siteSettingsBackgroundSyncMidSentence');
-      case ContentSettingsTypes.MIDI_DEVICES:
-        return this.i18n('siteSettingsMidiDevicesMidSentence');
-      case ContentSettingsTypes.USB_DEVICES:
-        return this.i18n('siteSettingsUsbDevicesMidSentence');
-      case ContentSettingsTypes.SERIAL_PORTS:
-        return this.i18n('siteSettingsSerialPortsMidSentence');
-      case ContentSettingsTypes.BLUETOOTH_DEVICES:
-        return this.i18n('siteSettingsBluetoothDevicesMidSentence');
-      case ContentSettingsTypes.ZOOM_LEVELS:
-        return this.i18n('siteSettingsZoomLevelsMidSentence');
-      case ContentSettingsTypes.PROTECTED_CONTENT:
-        return this.i18n('siteSettingsProtectedContentMidSentence');
-      case ContentSettingsTypes.ADS:
-        return this.i18n('siteSettingsAdsMidSentence');
-      case ContentSettingsTypes.CLIPBOARD:
-        return this.i18n('siteSettingsClipboardMidSentence');
-      case ContentSettingsTypes.SENSORS:
-        return this.i18n('siteSettingsSensorsMidSentence');
-      case ContentSettingsTypes.PAYMENT_HANDLER:
-        return this.i18n('siteSettingsPaymentHandlerMidSentence');
-      case ContentSettingsTypes.MIXEDSCRIPT:
-        return this.i18n('siteSettingsInsecureContentMidSentence');
-      case ContentSettingsTypes.FEDERATED_IDENTITY_API:
-        return this.i18n('siteSettingsFederatedIdentityApiMidSentence');
-      case ContentSettingsTypes.BLUETOOTH_SCANNING:
-        return this.i18n('siteSettingsBluetoothScanningMidSentence');
-      case ContentSettingsTypes.FILE_SYSTEM_WRITE:
-        return this.i18n('siteSettingsFileSystemWriteMidSentence');
-      case ContentSettingsTypes.HID_DEVICES:
-        return this.i18n('siteSettingsHidDevicesMidSentence');
-      case ContentSettingsTypes.AR:
-        return this.i18n('siteSettingsArMidSentence');
-      case ContentSettingsTypes.VR:
-        return this.i18n('siteSettingsVrMidSentence');
-      case ContentSettingsTypes.WINDOW_MANAGEMENT:
-        return this.i18n('siteSettingsWindowManagementMidSentence');
-      case ContentSettingsTypes.LOCAL_FONTS:
-        return this.i18n('siteSettingsFontAccessMidSentence');
-      case ContentSettingsTypes.IDLE_DETECTION:
-        return this.i18n('siteSettingsIdleDetectionMidSentence');
-      default:
-        return '';
-    }
-  }
-
-  /**
    * @return a user-friendly name for the origin a set of recent permissions
    *     is associated with.
    */
@@ -265,13 +191,16 @@ export class SettingsRecentSitePermissionsElement extends
    */
   private getPermissionGroupText_(
       setting: string, exceptions: RawSiteException[]): string {
-    const typeStrings = exceptions.map(
-        exception => this.getI18nContentTypeString_(
-            exception.type as ContentSettingsTypes));
-
     if (exceptions.length === 0) {
       return '';
     }
+
+    const typeStrings = exceptions.map(exception => {
+      const localizationString = getLocalizationStringForContentType(
+          exception.type as ContentSettingsTypes);
+      return localizationString ? this.i18n(localizationString) : '';
+    });
+
     if (exceptions.length === 1) {
       return this.i18n(`recentPermission${setting}OneItem`, ...typeStrings);
     }

@@ -9,11 +9,13 @@
 
 // clang-format off
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
+
+import {ContentSettingsTypes} from './constants.js';
 // clang-format on
 
 export interface UnusedSitePermissions {
   origin: string;
-  permissions: string[];
+  permissions: ContentSettingsTypes[];
 }
 
 /**

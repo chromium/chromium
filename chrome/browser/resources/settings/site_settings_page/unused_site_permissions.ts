@@ -22,9 +22,11 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ContentSettingsTypes} from '../site_settings/constants.js';
 import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
 import {SiteSettingsPermissionsBrowserProxy, SiteSettingsPermissionsBrowserProxyImpl, UnusedSitePermissions} from '../site_settings/site_settings_permissions_browser_proxy.js';
 
+import {getLocalizationStringForContentType} from './site_settings_page_util.js';
 import {getTemplate} from './unused_site_permissions.html.js';
 
 export interface SettingsUnusedSitePermissionsElement {
@@ -129,6 +131,44 @@ export class SettingsUnusedSitePermissionsElement extends
   private getAllowAgainAriaLabelForOrigin_(origin: string): string {
     return this.i18n(
         'safetyCheckUnusedSitePermissionsAllowAgainAriaLabel', origin);
+  }
+
+  /**
+   * Text that describes which permissions have been revoked for an origin.
+   * Permissions are listed explicitly when there are up to and including 3. For
+   * 4 or more, the two first permissions are listed explicitly and for the
+   * remaining ones a count is shown, e.g. 'and 2 more'.
+   */
+  private getPermissionsText_(permissions: ContentSettingsTypes[]): string {
+    assert(
+        permissions.length > 0,
+        'There is no permission for the user to review.');
+
+    const permissionsI18n = permissions.map(permission => {
+      const localizationString =
+          getLocalizationStringForContentType(permission);
+      assert(localizationString !== null);
+      return this.i18n(localizationString);
+    });
+
+    if (permissionsI18n.length === 1) {
+      return this.i18n(
+          'safetyCheckUnusedSitePermissionsRemovedOnePermissionLabel',
+          ...permissionsI18n);
+    }
+    if (permissionsI18n.length === 2) {
+      return this.i18n(
+          'safetyCheckUnusedSitePermissionsRemovedTwoPermissionsLabel',
+          ...permissionsI18n);
+    }
+    if (permissionsI18n.length === 3) {
+      return this.i18n(
+          'safetyCheckUnusedSitePermissionsRemovedThreePermissionsLabel',
+          ...permissionsI18n);
+    }
+    return this.i18n(
+        'safetyCheckUnusedSitePermissionsRemovedFourOrMorePermissionsLabel',
+        permissionsI18n[0], permissionsI18n[1], permissionsI18n.length - 2);
   }
 
   private getRowClass_(visible: boolean): string {

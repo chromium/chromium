@@ -5,7 +5,7 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {SettingsUnusedSitePermissionsElement, SiteSettingsPermissionsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSettingsTypes, SettingsUnusedSitePermissionsElement, SiteSettingsPermissionsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 
 import {TestSiteSettingsPermissionsBrowserProxy} from './test_site_settings_permissions_browser_proxy.js';
 
@@ -16,21 +16,17 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
 
   let testElement: SettingsUnusedSitePermissionsElement;
 
-  const origin1 = 'https://www.example1.com:443';
-  const permissions1 = ['location', 'notification'];
-  const origin2 = 'https://www.example2.com:443';
-  const permissions2 = ['microphone', 'camera'];
-
-  const mockData = [
-    {
-      origin: origin1,
-      permissions: permissions1,
-    },
-    {
-      origin: origin2,
-      permissions: permissions2,
-    },
+  const permissions = [
+    ContentSettingsTypes.GEOLOCATION,
+    ContentSettingsTypes.MIC,
+    ContentSettingsTypes.CAMERA,
+    ContentSettingsTypes.NOTIFICATIONS,
   ];
+
+  const mockData = [1, 2, 3, 4].map(i => ({
+                                      origin: `https://www.example${i}.com:443`,
+                                      permissions: permissions.slice(0, i),
+                                    }));
 
   setup(async function() {
     browserProxy = new TestSiteSettingsPermissionsBrowserProxy();
@@ -47,15 +43,36 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
   test('Unused Site Permission strings', function() {
     const entries =
         testElement.shadowRoot!.querySelectorAll('.site-list .site-entry');
-    assertEquals(2, entries.length);
+    assertEquals(4, entries.length);
 
     // Check that the text describing the permissions is correct.
     assertEquals(
-        origin1,
+        mockData[0]!.origin,
         entries[0]!.querySelector('.site-representation')!.textContent!.trim());
     assertEquals(
-        origin2,
+        'Removed location',
+        entries[0]!.querySelector('.secondary')!.textContent!.trim());
+
+    assertEquals(
+        mockData[1]!.origin,
         entries[1]!.querySelector('.site-representation')!.textContent!.trim());
+    assertEquals(
+        'Removed location, microphone',
+        entries[1]!.querySelector('.secondary')!.textContent!.trim());
+
+    assertEquals(
+        mockData[2]!.origin,
+        entries[2]!.querySelector('.site-representation')!.textContent!.trim());
+    assertEquals(
+        'Removed location, microphone, camera',
+        entries[2]!.querySelector('.secondary')!.textContent!.trim());
+
+    assertEquals(
+        mockData[3]!.origin,
+        entries[3]!.querySelector('.site-representation')!.textContent!.trim());
+    assertEquals(
+        'Removed location, microphone, and 2 more',
+        entries[3]!.querySelector('.secondary')!.textContent!.trim());
   });
 
   test('Collapsible List', function() {

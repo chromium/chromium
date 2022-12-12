@@ -21,9 +21,7 @@
         <site-favicon url="[[item.origin]]"></site-favicon>
         <div class="display-name cr-padded-text">
           <div class="site-representation">[[item.origin]]</div>
-          <div class="secondary">
-            <!-- TODO(crbug.com/1345920): Add secondary string. -->
-          </div>
+          <div class="secondary">[[getPermissionsText_(item.permissions)]]</div>
         </div>
         <cr-icon-button iron-icon="settings20:undo" on-focus="onShowTooltip_"
             actionable on-mouseenter="onShowTooltip_"

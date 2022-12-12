@@ -8,7 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {Router, routes, SafetyCheckIconStatus, SettingsSafetyCheckNotificationPermissionsElement, SettingsSafetyCheckPageElement, SettingsSafetyCheckUnusedSitePermissionsElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {NotificationPermission, UnusedSitePermissions, SiteSettingsPermissionsBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSettingsTypes, NotificationPermission, UnusedSitePermissions, SiteSettingsPermissionsBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -49,11 +49,15 @@ suite('SafetyCheckUnusedSitePermissionsUiTests', function() {
     const mockData = [
       {
         origin: origin1,
-        permissions: ['location', 'camera'],
+        permissions: [
+          ContentSettingsTypes.GEOLOCATION,
+          ContentSettingsTypes.CAMERA,
+        ],
       },
       {
         origin: origin2,
-        permissions: ['popups', 'sensors'],
+        permissions:
+            [ContentSettingsTypes.POPUPS, ContentSettingsTypes.SENSORS],
       },
     ];
     createPage(mockData);
@@ -206,7 +210,8 @@ suite('SafetyCheckPagePermissionModulesTest', function() {
   const unusedSiteMockData = [
     {
       origin: 'www.example1.com',
-      permissions: ['location', 'camera'],
+      permissions:
+          [ContentSettingsTypes.GEOLOCATION, ContentSettingsTypes.CAMERA],
     },
   ];
 
