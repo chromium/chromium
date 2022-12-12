@@ -519,7 +519,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   int64_t ReserveNextClusterId();
 
   void AddVisitsToCluster(int64_t cluster_id,
-                          const std::vector<VisitID>& visits);
+                          const std::vector<ClusterVisit>& visits);
 
   std::vector<Cluster> GetMostRecentClusters(
       base::Time inclusive_min_time,

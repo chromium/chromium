@@ -30,7 +30,7 @@ class TestSiteEngagementScoreProvider
     : public site_engagement::SiteEngagementScoreProvider {
  public:
   TestSiteEngagementScoreProvider() = default;
-  ~TestSiteEngagementScoreProvider() = default;
+  ~TestSiteEngagementScoreProvider() override = default;
 
   double GetScore(const GURL& url) const override {
     ++count_get_score_invocations_;

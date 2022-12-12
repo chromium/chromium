@@ -12,6 +12,7 @@
 #include "components/history_clusters/core/config.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/site_engagement/core/site_engagement_score_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,8 +22,10 @@ namespace {
 
 using ::testing::_;
 using ::testing::DoAll;
+using ::testing::ElementsAre;
 using ::testing::Invoke;
 using ::testing::Return;
+using ::testing::SaveArg;
 
 history::URLRows CreateURLRows(const std::vector<GURL>& urls) {
   history::URLRows url_rows;
@@ -93,10 +96,38 @@ class MockHistoryService : public history::HistoryService {
   MOCK_METHOD(base::CancelableTaskTracker::TaskId,
               AddVisitsToCluster,
               (int64_t,
-               const std::vector<history::VisitID>&,
+               const std::vector<history::ClusterVisit>&,
                base::CancelableTaskTracker*),
               (override));
 };
+
+class TestSiteEngagementScoreProvider
+    : public site_engagement::SiteEngagementScoreProvider {
+ public:
+  TestSiteEngagementScoreProvider() = default;
+  ~TestSiteEngagementScoreProvider() override = default;
+
+  double GetScore(const GURL& url) const override {
+    ++count_get_score_invocations_;
+    return 0;
+  }
+
+  double GetTotalEngagementPoints() const override { return 1; }
+
+ private:
+  mutable size_t count_get_score_invocations_ = 0;
+};
+
+// Gets the visit IDs in `visits`.
+std::vector<history::VisitID> GetClusterVisitIds(
+    const std::vector<history::ClusterVisit>& visits) {
+  std::vector<history::VisitID> visit_ids;
+  visit_ids.reserve(visits.size());
+  for (const auto& visit : visits) {
+    visit_ids.push_back(visit.annotated_visit.visit_row.visit_id);
+  }
+  return visit_ids;
+}
 
 }  // namespace
 
@@ -109,17 +140,19 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
     history_service_ =
         std::make_unique<testing::StrictMock<MockHistoryService>>();
 
-    // Set up a simple template URL service with a default search engine.
     template_url_service_ = std::make_unique<TemplateURLService>(
         kTemplateURLData, std::size(kTemplateURLData));
 
     optimization_guide_decider_ =
         std::make_unique<TestOptimizationGuideDecider>();
 
+    engagement_score_provider_ =
+        std::make_unique<TestSiteEngagementScoreProvider>();
+
     // Instantiate observer.
     observer_ = std::make_unique<ContextClustererHistoryServiceObserver>(
         history_service_.get(), template_url_service_.get(),
-        optimization_guide_decider_.get());
+        optimization_guide_decider_.get(), engagement_score_provider_.get());
     observer_->OverrideClockForTesting(task_environment_.GetMockClock());
   }
 
@@ -200,6 +233,7 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
 
   std::unique_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<TestOptimizationGuideDecider> optimization_guide_decider_;
+  std::unique_ptr<TestSiteEngagementScoreProvider> engagement_score_provider_;
   std::unique_ptr<ContextClustererHistoryServiceObserver> observer_;
 
   history::HistoryService::ClusterIdCallback cluster_id_callback_;
@@ -215,12 +249,14 @@ TEST_F(ContextClustererHistoryServiceObserverTest, ClusterOneVisit) {
                                  CaptureClusterIdCallbackAndReturn));
   VisitURL(GURL("https://example.com"), 1, base::Time::FromTimeT(123));
 
-  std::vector<history::VisitID> visit_ids = {1};
-  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, visit_ids, _))
-      .WillOnce(Return(base::CancelableTaskTracker::TaskId()));
+  std::vector<history::ClusterVisit> got_cluster_visits;
+  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, _, _))
+      .WillOnce(DoAll(SaveArg<1>(&got_cluster_visits),
+                      Return(base::CancelableTaskTracker::TaskId())));
   RunLastClusterIdCallbackWithClusterId(cluster_id);
 
   EXPECT_EQ(1, GetNumClustersCreated());
+  EXPECT_THAT(GetClusterVisitIds(got_cluster_visits), ElementsAre(1));
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest,
@@ -237,12 +273,14 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
            /*opener_visit=*/history::kInvalidVisitID, /*referring_visit=*/1);
 
   // Should persist all visits for the cluster when callback is run.
-  std::vector<history::VisitID> visit_ids = {1, 2};
-  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, visit_ids, _))
-      .WillOnce(Return(base::CancelableTaskTracker::TaskId()));
+  std::vector<history::ClusterVisit> got_cluster_visits;
+  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, _, _))
+      .WillOnce(DoAll(SaveArg<1>(&got_cluster_visits),
+                      Return(base::CancelableTaskTracker::TaskId())));
   RunLastClusterIdCallbackWithClusterId(cluster_id);
 
   EXPECT_EQ(1, GetNumClustersCreated());
+  EXPECT_THAT(GetClusterVisitIds(got_cluster_visits), ElementsAre(1, 2));
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest,
@@ -257,20 +295,24 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
   VisitURL(GURL("https://example.com"), 1, base::Time::FromTimeT(123));
 
   // Should persist all visits for the cluster when callback is run.
-  std::vector<history::VisitID> visit_ids = {1};
-  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, visit_ids, _))
-      .WillOnce(Return(base::CancelableTaskTracker::TaskId()));
+  std::vector<history::ClusterVisit> got_first_cluster_visits;
+  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, _, _))
+      .WillOnce(DoAll(SaveArg<1>(&got_first_cluster_visits),
+                      Return(base::CancelableTaskTracker::TaskId())));
   RunLastClusterIdCallbackWithClusterId(cluster_id);
 
   // Should persist as is since we already have the persisted cluster id at this
-  // visit.
-  visit_ids = {2};
-  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, visit_ids, _))
-      .WillOnce(Return(base::CancelableTaskTracker::TaskId()));
+  // visit.t
+  std::vector<history::ClusterVisit> got_second_cluster_visits;
+  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, _, _))
+      .WillOnce(DoAll(SaveArg<1>(&got_second_cluster_visits),
+                      Return(base::CancelableTaskTracker::TaskId())));
   VisitURL(GURL("https://example.com/2"), 2, base::Time::FromTimeT(123),
            /*opener_visit=*/1, /*referring_visit=*/history::kInvalidVisitID);
 
   EXPECT_EQ(1, GetNumClustersCreated());
+  EXPECT_THAT(GetClusterVisitIds(got_first_cluster_visits), ElementsAre(1));
+  EXPECT_THAT(GetClusterVisitIds(got_second_cluster_visits), ElementsAre(2));
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest,
@@ -318,9 +360,10 @@ TEST_F(ContextClustererHistoryServiceObserverTest, SplitClusterOnSearchTerm) {
            base::Time::FromTimeT(123));
 
   int64_t cluster_id = 123;
-  std::vector<history::VisitID> visit_ids = {1};
-  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, visit_ids, _))
-      .WillOnce(Return(base::CancelableTaskTracker::TaskId()));
+  std::vector<history::ClusterVisit> got_first_cluster_visits;
+  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, _, _))
+      .WillOnce(DoAll(SaveArg<1>(&got_first_cluster_visits),
+                      Return(base::CancelableTaskTracker::TaskId())));
   RunLastClusterIdCallbackWithClusterId(cluster_id);
 
   EXPECT_CALL(*history_service_,
@@ -331,13 +374,16 @@ TEST_F(ContextClustererHistoryServiceObserverTest, SplitClusterOnSearchTerm) {
            base::Time::FromTimeT(123),
            /*opener_visit=*/1);
 
-  visit_ids = {2};
+  std::vector<history::ClusterVisit> got_second_cluster_visits;
   cluster_id = 124;
-  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, visit_ids, _))
-      .WillOnce(Return(base::CancelableTaskTracker::TaskId()));
+  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, _, _))
+      .WillOnce(DoAll(SaveArg<1>(&got_second_cluster_visits),
+                      Return(base::CancelableTaskTracker::TaskId())));
   RunLastClusterIdCallbackWithClusterId(cluster_id);
 
   EXPECT_EQ(2, GetNumClustersCreated());
+  EXPECT_THAT(GetClusterVisitIds(got_first_cluster_visits), ElementsAre(1));
+  EXPECT_THAT(GetClusterVisitIds(got_second_cluster_visits), ElementsAre(2));
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest,

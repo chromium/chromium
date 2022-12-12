@@ -2146,8 +2146,9 @@ int64_t HistoryBackend::ReserveNextClusterId() {
   return db_ ? db_->ReserveNextClusterId() : 0;
 }
 
-void HistoryBackend::AddVisitsToCluster(int64_t cluster_id,
-                                        const std::vector<VisitID>& visits) {
+void HistoryBackend::AddVisitsToCluster(
+    int64_t cluster_id,
+    const std::vector<ClusterVisit>& visits) {
   TRACE_EVENT0("browser", "HistoryBackend::AddVisitsToCluster");
   if (!db_)
     return;

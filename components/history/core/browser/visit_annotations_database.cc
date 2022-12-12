@@ -690,7 +690,7 @@ int64_t VisitAnnotationsDatabase::ReserveNextClusterId() {
 
 void VisitAnnotationsDatabase::AddVisitsToCluster(
     int64_t cluster_id,
-    const std::vector<VisitID>& visits) {
+    const std::vector<ClusterVisit>& visits) {
   DCHECK_GT(cluster_id, 0);
   sql::Statement clusters_and_visits_statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
@@ -700,21 +700,22 @@ void VisitAnnotationsDatabase::AddVisitsToCluster(
       "VALUES(?,?,?,?,?,?,?)"));
 
   // Insert each visit into 'clusters_and_visits'.
-  base::ranges::for_each(visits, [&](const auto visit_id) {
-    DCHECK_GT(visit_id, 0);
+  base::ranges::for_each(visits, [&](const auto& visit) {
+    DCHECK_GT(visit.annotated_visit.visit_row.visit_id, 0);
     clusters_and_visits_statement.Reset(true);
     clusters_and_visits_statement.BindInt64(0, cluster_id);
-    clusters_and_visits_statement.BindInt64(1, visit_id);
+    clusters_and_visits_statement.BindInt64(
+        1, visit.annotated_visit.visit_row.visit_id);
     // Tentatively score everything as 1.0.
     clusters_and_visits_statement.BindDouble(2, 1.0);
-    // Do not populate these initially.
-    clusters_and_visits_statement.BindDouble(3, 0);
-    clusters_and_visits_statement.BindString(4, "");
-    clusters_and_visits_statement.BindString(5, "");
-    clusters_and_visits_statement.BindString16(6, u"");
+    clusters_and_visits_statement.BindDouble(3, visit.engagement_score);
+    clusters_and_visits_statement.BindString(4, visit.url_for_deduping.spec());
+    clusters_and_visits_statement.BindString(5, visit.normalized_url.spec());
+    clusters_and_visits_statement.BindString16(6, visit.url_for_display);
     if (!clusters_and_visits_statement.Run()) {
       DVLOG(0) << "Failed to execute 'clusters_and_visits' insert statement:  "
-               << "cluster_id = " << cluster_id << ", visit_id = " << visit_id;
+               << "cluster_id = " << cluster_id
+               << ", visit_id = " << visit.annotated_visit.visit_row.visit_id;
     }
   });
 }

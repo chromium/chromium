@@ -8,8 +8,10 @@
 #include "base/time/default_clock.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history_clusters/core/config.h"
+#include "components/history_clusters/core/history_clusters_util.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/site_engagement/core/site_engagement_score_provider.h"
 
 namespace history_clusters {
 
@@ -40,10 +42,12 @@ InProgressCluster::InProgressCluster(const InProgressCluster&) = default;
 ContextClustererHistoryServiceObserver::ContextClustererHistoryServiceObserver(
     history::HistoryService* history_service,
     TemplateURLService* template_url_service,
-    optimization_guide::NewOptimizationGuideDecider* optimization_guide_decider)
+    optimization_guide::NewOptimizationGuideDecider* optimization_guide_decider,
+    site_engagement::SiteEngagementScoreProvider* engagement_score_provider)
     : history_service_(history_service),
       template_url_service_(template_url_service),
       optimization_guide_decider_(optimization_guide_decider),
+      engagement_score_provider_(engagement_score_provider),
       clock_(base::DefaultClock::GetInstance()) {
   history_service_observation_.Observe(history_service);
 
@@ -150,6 +154,18 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
   visit_url_to_cluster_map_[normalized_url] = *cluster_id;
 
   if (GetConfig().persist_context_clusters_at_navigation) {
+    history::ClusterVisit cluster_visit;
+    cluster_visit.annotated_visit.visit_row.visit_id = new_visit.visit_id;
+    cluster_visit.normalized_url = GURL(normalized_url);
+    cluster_visit.url_for_deduping =
+        ComputeURLForDeduping(cluster_visit.normalized_url);
+    cluster_visit.url_for_display =
+        ComputeURLForDisplay(cluster_visit.normalized_url);
+    if (engagement_score_provider_) {
+      cluster_visit.engagement_score =
+          engagement_score_provider_->GetScore(cluster_visit.normalized_url);
+    }
+
     // For new clusters, asyncly reserve an ID and have the
     //   `OnPersistedClusterIdReceived()` callback add the visits.
     // For clusters created recently for which history service hasn't yet
@@ -159,9 +175,16 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
     if (in_progress_cluster.persisted_cluster_id > 0) {
       // Persist visit to existing cluster.
       history_service->AddVisitsToCluster(
-          in_progress_cluster.persisted_cluster_id, {new_visit.visit_id},
+          in_progress_cluster.persisted_cluster_id, {std::move(cluster_visit)},
           &task_tracker_);
-    } else if (is_new_cluster) {
+      return;
+    }
+
+    // As `in_progress_cluster` does not have a persisted cluster ID yet, add
+    // the ClusterVisit to the vector of visits that needs to get persisted.
+    in_progress_cluster.unpersisted_visits.push_back(std::move(cluster_visit));
+
+    if (is_new_cluster) {
       // Cluster creation is async. Reserve next cluster ID and wait to persist
       // items until it comes back in `OnPersistedClusterIdReceived()`.
       history_service->ReserveNextClusterId(
@@ -274,8 +297,14 @@ void ContextClustererHistoryServiceObserver::OnPersistedClusterIdReceived(
 
   cluster_it->second.persisted_cluster_id = persisted_cluster_id;
   // Persist all visits we've seen so far.
-  history_service_->AddVisitsToCluster(
-      persisted_cluster_id, cluster_it->second.visit_ids, &task_tracker_);
+  history_service_->AddVisitsToCluster(persisted_cluster_id,
+                                       cluster_it->second.unpersisted_visits,
+                                       &task_tracker_);
+
+  // Clear these out since the visits have now been requested to be persisted.
+  // This is safe to clear here as the vector should have already been copied to
+  // the history DB thread in `AddVisitsToCluster()`.
+  cluster_it->second.unpersisted_visits.clear();
 }
 
 void ContextClustererHistoryServiceObserver::OverrideClockForTesting(

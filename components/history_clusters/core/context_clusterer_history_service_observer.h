@@ -27,6 +27,10 @@ namespace optimization_guide {
 class NewOptimizationGuideDecider;
 }  // namespace optimization_guide
 
+namespace site_engagement {
+class SiteEngagementScoreProvider;
+}  // namespace site_engagement
+
 namespace history_clusters {
 
 // Information required for determine pending cluster.
@@ -46,6 +50,9 @@ struct InProgressCluster {
   std::u16string search_terms;
   // The corresponding cluster ID in the persisted database.
   int64_t persisted_cluster_id = 0;
+  // The vector of visits that have not been persisted yet. Note that each entry
+  // only contains the minimum required to persist a cluster visit.
+  std::vector<history::ClusterVisit> unpersisted_visits;
 };
 
 // A HistoryServiceObserver responsible for grouping visits into clusters.
@@ -66,7 +73,8 @@ class ContextClustererHistoryServiceObserver
       history::HistoryService* history_service,
       TemplateURLService* template_url_service,
       optimization_guide::NewOptimizationGuideDecider*
-          optimization_guide_decider);
+          optimization_guide_decider,
+      site_engagement::SiteEngagementScoreProvider* engagement_score_provider);
   ~ContextClustererHistoryServiceObserver() override;
 
   // history::HistoryServiceObserver:
@@ -115,15 +123,21 @@ class ContextClustererHistoryServiceObserver
   // The History Service that `this` observers. Should never be null.
   raw_ptr<history::HistoryService> history_service_;
 
-  // The Template URL Service used to determine if a visit is a search visit.
+  // Used to determine if a visit is a search visit. Should only be null for
+  // tests.
   raw_ptr<TemplateURLService> template_url_service_;
 
-  // The Optimization Guide decider used to determine whether to include a visit
-  // in a cluster.
+  // Used to determine whether to include a visit in any cluster. Can be null,
+  // but is guaranteed to outlive `this`.
   raw_ptr<optimization_guide::NewOptimizationGuideDecider>
       optimization_guide_decider_;
 
-  // The clock used to schedule the clean up of clusters.
+  // Used to determine how "interesting" a visit is likely to be to a user.
+  // Should only be null for tests.
+  raw_ptr<site_engagement::SiteEngagementScoreProvider>
+      engagement_score_provider_;
+
+  // Used to schedule the clean up of clusters.
   raw_ptr<const base::Clock> clock_;
 
   // Tracks the observed history service, for cleanup.

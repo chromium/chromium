@@ -314,7 +314,7 @@ base::CancelableTaskTracker::TaskId HistoryService::ReserveNextClusterId(
 
 base::CancelableTaskTracker::TaskId HistoryService::AddVisitsToCluster(
     int64_t cluster_id,
-    const std::vector<VisitID>& visits,
+    const std::vector<ClusterVisit>& visits,
     base::CancelableTaskTracker* tracker) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

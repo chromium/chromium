@@ -598,11 +598,11 @@ class HistoryService : public KeyedService {
       base::OnceCallback<void(int64_t)> callback,
       base::CancelableTaskTracker* tracker);
 
-  // Adds all visit IDs in `visits` to the cluster `cluster_id`.
+  // Adds `visits` to the cluster `cluster_id`.
   // Virtual for testing.
   virtual base::CancelableTaskTracker::TaskId AddVisitsToCluster(
       int64_t cluster_id,
-      const std::vector<VisitID>& visits,
+      const std::vector<ClusterVisit>& visits,
       base::CancelableTaskTracker* tracker);
 
   // Get the most recent `Cluster`s within the constraints. The most recent

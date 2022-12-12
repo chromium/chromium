@@ -88,7 +88,7 @@ class VisitAnnotationsDatabase {
 
   // Adds visits to the cluster with id `cluster_id`.
   void AddVisitsToCluster(int64_t cluster_id,
-                          const std::vector<VisitID>& visits);
+                          const std::vector<ClusterVisit>& visits);
 
   // Get a `Cluster`. Does not include the cluster's `visits` or
   // `keyword_to_data_map`.

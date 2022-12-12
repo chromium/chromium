@@ -17,6 +17,10 @@ class SiteEngagementScoreProvider {
 
   // Returns the sum of engagement points awarded to all sites.
   virtual double GetTotalEngagementPoints() const = 0;
+
+ protected:
+  SiteEngagementScoreProvider() = default;
+  virtual ~SiteEngagementScoreProvider() = default;
 };
 
 }  // namespace site_engagement

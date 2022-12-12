@@ -67,7 +67,8 @@ HistoryClustersService::HistoryClustersService(
       visit_deletion_observer_(this),
       context_clusterer_observer_(history_service,
                                   template_url_service,
-                                  optimization_guide_decider) {
+                                  optimization_guide_decider,
+                                  engagement_score_provider) {
   DCHECK(history_service_);
 
   visit_deletion_observer_.AttachToHistoryService(history_service);
