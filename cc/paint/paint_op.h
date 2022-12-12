@@ -266,6 +266,7 @@ class CC_PAINT_EXPORT PaintOp {
   static const SkRect kUnsetRect;
 
  protected:
+  ~PaintOp() = default;
   PaintOp(const PaintOp&) = default;
   PaintOp& operator=(const PaintOp&) = default;
 };
@@ -293,6 +294,7 @@ class CC_PAINT_EXPORT PaintOpWithFlags : public PaintOp {
   PaintFlags flags;
 
  protected:
+  ~PaintOpWithFlags() = default;
   PaintOpWithFlags(const PaintOpWithFlags&) = default;
   PaintOpWithFlags& operator=(const PaintOpWithFlags&) = default;
 
