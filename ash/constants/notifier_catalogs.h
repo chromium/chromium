@@ -172,7 +172,8 @@ enum class NotificationCatalogName {
   kPrivacyHubMicAndCamera = 157,
   kArcVmDataMigration = 158,
   kWebHid = 159,
-  kMaxValue = kWebHid
+  kDoNotDisturb = 160,
+  kMaxValue = kDoNotDisturb,
 };
 
 // A living catalog that registers system nudges.

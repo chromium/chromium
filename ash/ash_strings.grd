@@ -5907,6 +5907,17 @@ New install
       <message name="IDS_GLANCEABLES_UP_NEXT_EVENT_EMPTY_TITLE" desc="Placeholder text for calendar events without title.">
         (No title)
       </message>
+
+      <!-- Do not disturb notification -->
+      <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do not disturb' feature is enabled.">
+        Do not disturb is on
+      </message>
+      <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_DESCRIPTION" desc="Text description used for the notification that shows up when the 'Do not disturb' feature is enabled.">
+        Notifications are muted when Do not disturb is on
+      </message>
+      <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TURN_OFF" desc="Label for a button on the 'Do not disturb' notification that turns off 'Do not disturb' mode.">
+        Turn off
+      </message>
     </messages>
   </release>
 </grit>

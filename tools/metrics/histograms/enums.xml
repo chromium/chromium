@@ -72505,6 +72505,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="157" label="Privacy Hub Microphone and Camera"/>
   <int value="158" label="ARCVM Data Migration"/>
   <int value="159" label="WebHID"/>
+  <int value="160" label="Do Not Disturb"/>
 </enum>
 
 <enum name="NotificationDatabaseStatus">
