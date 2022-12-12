@@ -1,0 +1,29 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("declarative_net_request") {
+  sources = [
+    "declarative_net_request_api.cc",
+    "declarative_net_request_api.h",
+    "declarative_net_request_prefs_helper.cc",
+    "declarative_net_request_prefs_helper.h",
+    "web_contents_helper.cc",
+    "web_contents_helper.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//extensions/common",
+    "//extensions/common/api",
+    "//services/preferences/public/cpp",
+  ]
+
+  public_deps = [ "//extensions/browser:browser_sources" ]
+}
