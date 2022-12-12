@@ -767,9 +767,7 @@ void Pointer::OnCursorDisplayChanged(const display::Display& display) {
   capture_scale_ = info.device_scale_factor();
 
   auto* cursor_client = WMHelper::GetInstance()->GetCursorClient();
-  // TODO(crbug.com/631103): CursorClient does not exist in mash yet.
-  if (!cursor_client)
-    return;
+  DCHECK(cursor_client);
   if (cursor_ == ui::mojom::CursorType::kCustom &&
       cursor_ == cursor_client->GetCursor()) {
     // If the current cursor is still the one created by us,
@@ -926,9 +924,7 @@ void Pointer::OnCursorCaptured(const gfx::Point& hotspot,
 void Pointer::UpdateCursor() {
   WMHelper* helper = WMHelper::GetInstance();
   aura::client::CursorClient* cursor_client = helper->GetCursorClient();
-  // TODO(crbug.com/631103): CursorClient does not exist in mash yet.
-  if (!cursor_client)
-    return;
+  DCHECK(cursor_client);
 
   if (cursor_ == ui::mojom::CursorType::kCustom) {
     SkBitmap bitmap = cursor_bitmap_;
