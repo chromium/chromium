@@ -226,28 +226,29 @@ TEST(RegistryDictTest, ConvertToJSON) {
       &error);
   ASSERT_TRUE(schema.valid()) << error;
 
-  std::unique_ptr<base::Value> actual(test_dict.ConvertToJSON(schema));
+  absl::optional<base::Value> actual(test_dict.ConvertToJSON(schema));
+  ASSERT_TRUE(actual);
 
-  base::DictionaryValue expected;
-  expected.SetKey("one", int_value.Clone());
-  auto expected_subdict = std::make_unique<base::DictionaryValue>();
-  expected_subdict->SetKey("two", string_value.Clone());
-  expected.Set("three", std::move(expected_subdict));
-  auto expected_list = std::make_unique<base::ListValue>();
-  expected_list->GetList().Append(string_value.Clone());
-  expected.Set("dict-to-list", std::move(expected_list));
-  expected.SetBoolKey("int-to-bool", true);
-  expected.SetDoubleKey("int-to-double", 42.0);
-  expected.SetBoolKey("string-to-bool", false);
-  expected.SetDoubleKey("string-to-double", 0.0);
-  expected.SetIntKey("string-to-int", static_cast<int>(0));
-  expected_list = std::make_unique<base::ListValue>();
-  expected_list->GetList().Append("value");
-  expected_subdict = std::make_unique<base::DictionaryValue>();
-  expected_subdict->Set("key", std::move(expected_list));
-  expected.Set("string-to-dict", std::move(expected_subdict));
+  base::Value::Dict expected;
+  expected.Set("one", int_value.Clone());
+  base::Value::Dict expected_subdict1;
+  expected_subdict1.Set("two", string_value.Clone());
+  expected.Set("three", std::move(expected_subdict1));
+  base::Value::List expected_list1;
+  expected_list1.Append(string_value.Clone());
+  expected.Set("dict-to-list", std::move(expected_list1));
+  expected.Set("int-to-bool", true);
+  expected.Set("int-to-double", 42.0);
+  expected.Set("string-to-bool", false);
+  expected.Set("string-to-double", 0.0);
+  expected.Set("string-to-int", static_cast<int>(0));
+  base::Value::List expected_list2;
+  expected_list2.Append("value");
+  base::Value::Dict expected_subdict2;
+  expected_subdict2.Set("key", std::move(expected_list2));
+  expected.Set("string-to-dict", std::move(expected_subdict2));
 
-  EXPECT_EQ(expected, *actual);
+  EXPECT_EQ(base::Value(std::move(expected)), *actual);
 }
 
 TEST(RegistryDictTest, NonSequentialConvertToJSON) {
@@ -274,16 +275,17 @@ TEST(RegistryDictTest, NonSequentialConvertToJSON) {
       &error);
   ASSERT_TRUE(schema.valid()) << error;
 
-  std::unique_ptr<base::Value> actual(test_dict.ConvertToJSON(schema));
+  absl::optional<base::Value> actual(test_dict.ConvertToJSON(schema));
+  ASSERT_TRUE(actual);
 
-  base::DictionaryValue expected;
-  std::unique_ptr<base::ListValue> expected_list(new base::ListValue());
-  expected_list->GetList().Append(base::Value("1").Clone());
-  expected_list->GetList().Append(base::Value("2").Clone());
-  expected_list->GetList().Append(base::Value("4").Clone());
+  base::Value::Dict expected;
+  base::Value::List expected_list;
+  expected_list.Append("1");
+  expected_list.Append("2");
+  expected_list.Append("4");
   expected.Set("dict-to-list", std::move(expected_list));
 
-  EXPECT_EQ(expected, *actual);
+  EXPECT_EQ(base::Value(std::move(expected)), *actual);
 }
 
 TEST(RegistryDictTest, PatternPropertySchema) {
@@ -339,33 +341,24 @@ TEST(RegistryDictTest, PatternPropertySchema) {
       &error);
   ASSERT_TRUE(schema.valid()) << error;
 
-  std::unique_ptr<base::Value> actual(test_dict.ConvertToJSON(schema));
+  absl::optional<base::Value> actual(test_dict.ConvertToJSON(schema));
+  ASSERT_TRUE(actual);
 
-  base::DictionaryValue expected;
-  std::unique_ptr<base::DictionaryValue> expected_extension_settings(
-      new base::DictionaryValue());
-  std::unique_ptr<base::ListValue> list_value(new base::ListValue());
-  list_value->GetList().Append("*://*.google.com");
-  std::unique_ptr<base::DictionaryValue> restrictions_properties(
-      new base::DictionaryValue());
-  restrictions_properties->Set(
-      "runtime_blocked_hosts",
-      base::Value::ToUniquePtrValue(list_value->Clone()));
-  restrictions_properties->Set(
-      "runtime_allowed_hosts",
-      base::Value::ToUniquePtrValue(list_value->Clone()));
-  restrictions_properties->Set(
-      "minimum_version_required",
-      base::Value::ToUniquePtrValue(version_string.Clone()));
-  expected_extension_settings->Set("aaaabbbbaaaabbbbaaaabbbbaaaabbbb",
-                                   std::move(restrictions_properties));
-  expected_extension_settings->Set(
-      "invalid_key", std::make_unique<base::Value>(std::move(string_dict)));
+  base::Value::Dict expected;
+  base::Value::Dict expected_extension_settings;
+  base::Value::List list_value;
+  list_value.Append("*://*.google.com");
+  base::Value::Dict restrictions_properties;
+  restrictions_properties.Set("runtime_blocked_hosts", list_value.Clone());
+  restrictions_properties.Set("runtime_allowed_hosts", list_value.Clone());
+  restrictions_properties.Set("minimum_version_required",
+                              version_string.Clone());
+  expected_extension_settings.Set("aaaabbbbaaaabbbbaaaabbbbaaaabbbb",
+                                  std::move(restrictions_properties));
+  expected_extension_settings.Set("invalid_key", std::move(string_dict));
   expected.Set("ExtensionSettings", std::move(expected_extension_settings));
 
-  // Needed so that the EXPECT below prints good values in case of a mismatch.
-  const base::Value* expected_pointer = &expected;
-  EXPECT_EQ(*expected_pointer, *actual);
+  EXPECT_EQ(base::Value(std::move(expected)), *actual);
 }
 #endif
 

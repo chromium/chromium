@@ -21,6 +21,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/enterprise_util.h"
 #include "base/files/file_util.h"
@@ -50,6 +51,7 @@
 #include "components/policy/core/common/registry_dict.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -82,7 +84,8 @@ void ParsePolicy(const RegistryDict* gpo_dict,
   if (!gpo_dict)
     return;
 
-  std::unique_ptr<base::Value> policy_value(gpo_dict->ConvertToJSON(schema));
+  absl::optional<base::Value> policy_value(gpo_dict->ConvertToJSON(schema));
+  DCHECK(policy_value);
   const base::Value::Dict* policy_dict = policy_value->GetIfDict();
   if (!policy_dict) {
     SYSLOG(WARNING) << "Root policy object is not a dictionary!";

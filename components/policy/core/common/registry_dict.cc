@@ -284,14 +284,13 @@ void RegistryDict::ReadRegistry(HKEY hive, const std::wstring& root) {
   }
 }
 
-std::unique_ptr<base::Value> RegistryDict::ConvertToJSON(
+absl::optional<base::Value> RegistryDict::ConvertToJSON(
     const Schema& schema) const {
   base::Value::Type type =
       schema.valid() ? schema.type() : base::Value::Type::DICTIONARY;
   switch (type) {
     case base::Value::Type::DICTIONARY: {
-      std::unique_ptr<base::DictionaryValue> result(
-          new base::DictionaryValue());
+      base::Value::Dict result;
       for (RegistryDict::ValueMap::const_iterator entry(values_.begin());
            entry != values_.end(); ++entry) {
         SchemaList matching_schemas =
@@ -304,7 +303,7 @@ std::unique_ptr<base::Value> RegistryDict::ConvertToJSON(
           absl::optional<base::Value> converted =
               ConvertRegistryValue(entry->second, subschema);
           if (converted.has_value()) {
-            result->SetKey(entry->first, std::move(converted.value()));
+            result.Set(entry->first, std::move(converted.value()));
             break;
           }
         }
@@ -318,28 +317,27 @@ std::unique_ptr<base::Value> RegistryDict::ConvertToJSON(
         if (matching_schemas.empty())
           matching_schemas.push_back(Schema());
         for (const Schema& subschema : matching_schemas) {
-          std::unique_ptr<base::Value> converted =
+          absl::optional<base::Value> converted =
               entry->second->ConvertToJSON(subschema);
           if (converted) {
-            result->GetDict().Set(entry->first, std::move(*converted));
+            result.Set(entry->first, std::move(*converted));
             break;
           }
         }
       }
-      return std::move(result);
+      return base::Value(std::move(result));
     }
     case base::Value::Type::LIST: {
-      std::unique_ptr<base::ListValue> result(new base::ListValue());
+      base::Value::List result;
       Schema item_schema = schema.valid() ? schema.GetItems() : Schema();
       for (RegistryDict::KeyMap::const_iterator entry(keys_.begin());
            entry != keys_.end(); ++entry) {
         if (!IsKeyNumerical(entry->first))
           continue;
-        std::unique_ptr<base::Value> converted =
+        absl::optional<base::Value> converted =
             entry->second->ConvertToJSON(item_schema);
         if (converted)
-          result->GetList().Append(
-              base::Value::FromUniquePtrValue(std::move(converted)));
+          result.Append(std::move(*converted));
       }
       for (RegistryDict::ValueMap::const_iterator entry(values_.begin());
            entry != values_.end(); ++entry) {
@@ -348,15 +346,15 @@ std::unique_ptr<base::Value> RegistryDict::ConvertToJSON(
         absl::optional<base::Value> converted =
             ConvertRegistryValue(entry->second, item_schema);
         if (converted.has_value())
-          result->GetList().Append(std::move(converted.value()));
+          result.Append(std::move(*converted));
       }
-      return std::move(result);
+      return base::Value(std::move(result));
     }
     default:
       LOG(WARNING) << "Can't convert registry key to schema type " << type;
   }
 
-  return nullptr;
+  return absl::nullopt;
 }
 #endif  // #if BUILDFLAG(IS_WIN)
 }  // namespace policy
