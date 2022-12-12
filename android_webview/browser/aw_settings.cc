@@ -577,6 +577,14 @@ bool AwSettings::IsForceDarkApplied(JNIEnv* env,
   return false;
 }
 
+bool AwSettings::PrefersDarkFromTheme(JNIEnv* env,
+                                      const JavaParamRef<jobject>& obj) {
+  if (AwDarkMode* aw_dark_mode = AwDarkMode::FromWebContents(web_contents())) {
+    return aw_dark_mode->prefers_dark_from_theme();
+  }
+  return false;
+}
+
 void AwSettings::SetEnterpriseAuthenticationAppLinkPolicyEnabled(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,

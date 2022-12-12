@@ -113,6 +113,8 @@ class AwSettings : public content::WebContentsObserver {
   bool GetAllowFileAccess();
   bool IsForceDarkApplied(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& obj);
+  bool PrefersDarkFromTheme(JNIEnv* env,
+                            const base::android::JavaParamRef<jobject>& obj);
 
   void SetEnterpriseAuthenticationAppLinkPolicyEnabled(
       JNIEnv* env,

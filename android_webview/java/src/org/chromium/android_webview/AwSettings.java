@@ -1776,6 +1776,13 @@ public class AwSettings {
         }
     }
 
+    public boolean prefersDarkFromTheme() {
+        synchronized (mAwSettingsLock) {
+            assert mNativeAwSettings != 0;
+            return AwSettingsJni.get().prefersDarkFromTheme(mNativeAwSettings, AwSettings.this);
+        }
+    }
+
     @ForceDarkBehavior
     public int getForceDarkBehavior() {
         synchronized (mAwSettingsLock) {
@@ -2003,6 +2010,7 @@ public class AwSettings {
         void updateCookiePolicyLocked(long nativeAwSettings, AwSettings caller);
         void updateAllowFileAccessLocked(long nativeAwSettings, AwSettings caller);
         boolean isForceDarkApplied(long nativeAwSettings, AwSettings caller);
+        boolean prefersDarkFromTheme(long nativeAwSettings, AwSettings caller);
         void setEnterpriseAuthenticationAppLinkPolicyEnabled(
                 long nativeAwSettings, AwSettings caller, boolean enabled);
         boolean getEnterpriseAuthenticationAppLinkPolicyEnabled(
