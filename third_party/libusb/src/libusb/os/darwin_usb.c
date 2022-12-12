@@ -42,6 +42,9 @@
 
 #include "darwin_usb.h"
 
+/* Both kIOMasterPortDefault or kIOMainPortDefault are synonyms for 0. */
+static const mach_port_t darwin_default_master_port = 0;
+
 /* async event thread */
 static pthread_mutex_t libusb_darwin_at_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t  libusb_darwin_at_cond = PTHREAD_COND_INITIALIZER;
@@ -207,7 +210,7 @@ static int usb_setup_device_iterator (io_iterator_t *deviceIterator, UInt32 loca
     /* else we can still proceed as long as the caller accounts for the possibility of other devices in the iterator */
   }
 
-  return IOServiceGetMatchingServices(kIOMasterPortDefault, matchingDict, deviceIterator);
+  return IOServiceGetMatchingServices(darwin_default_master_port, matchingDict, deviceIterator);
 }
 
 /* Returns 1 on success, 0 on failure. */
@@ -336,7 +339,7 @@ static void *darwin_event_thread_main (void *arg0) {
   CFRetain (runloop);
 
   /* add the notification port to the run loop */
-  libusb_notification_port     = IONotificationPortCreate (kIOMasterPortDefault);
+  libusb_notification_port     = IONotificationPortCreate (darwin_default_master_port);
   libusb_notification_cfsource = IONotificationPortGetRunLoopSource (libusb_notification_port);
   CFRunLoopAddSource(runloop, libusb_notification_cfsource, kCFRunLoopDefaultMode);
 
