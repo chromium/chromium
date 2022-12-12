@@ -297,6 +297,10 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 
 // Tests "Open in New Tab" on context menu.
 - (void)testContextMenuOpenInNewTab {
+  // TODO(crbug.com/1107513): Test fails in some iPads.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad.");
+  }
   const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
   [ChromeEarlGrey loadURL:initialURL];
   [ChromeEarlGrey
