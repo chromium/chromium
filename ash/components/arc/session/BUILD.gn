@@ -35,6 +35,8 @@ static_library("session") {
     "arc_upgrade_params.h",
     "arc_vm_client_adapter.cc",
     "arc_vm_client_adapter.h",
+    "arc_vm_data_migration_confirmation_dialog.cc",
+    "arc_vm_data_migration_confirmation_dialog.h",
     "file_system_status.cc",
     "file_system_status.h",
     "serial_number_util.cc",
@@ -120,6 +122,7 @@ source_set("unit_tests") {
     "arc_stop_reason_unittest.cc",
     "arc_upgrade_params_unittest.cc",
     "arc_vm_client_adapter_unittest.cc",
+    "arc_vm_data_migration_confirmation_dialog_unittest.cc",
     "connection_holder_unittest.cc",
     "connection_notifier_unittest.cc",
     "file_system_status_unittest.cc",
@@ -129,6 +132,7 @@ source_set("unit_tests") {
   deps = [
     ":arc_base_enums",
     ":session",
+    "//ash:test_support",
     "//ash/components/arc:arc_base",
     "//ash/components/arc:arc_test_support",
     "//ash/components/arc:prefs",
@@ -146,5 +150,6 @@ source_set("unit_tests") {
     "//components/user_manager",
     "//components/version_info",
     "//content/test:test_support",
+    "//ui/views:views",
   ]
 }

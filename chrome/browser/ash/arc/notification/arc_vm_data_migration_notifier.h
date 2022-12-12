@@ -38,6 +38,8 @@ class ArcVmDataMigrationNotifier : public ArcSessionManagerObserver {
 
   void OnNotificationClicked(absl::optional<int> button_index);
 
+  void OnRestartAccepted(bool accepted);
+
   base::ScopedObservation<ArcSessionManager, ArcSessionManagerObserver>
       arc_session_observation_{this};
 

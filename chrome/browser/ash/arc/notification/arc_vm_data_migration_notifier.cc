@@ -7,10 +7,12 @@
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_vm_data_migration_confirmation_dialog.h"
 #include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "components/prefs/pref_service.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -117,7 +119,18 @@ void ArcVmDataMigrationNotifier::OnNotificationClicked(
 
   CloseNotification();
 
-  // TODO(b/258278176): Show a confirmation dialog.
+  ShowArcVmDataMigrationConfirmationDialog(
+      base::BindOnce(&ArcVmDataMigrationNotifier::OnRestartAccepted,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcVmDataMigrationNotifier::OnRestartAccepted(bool accepted) {
+  if (accepted) {
+    SetArcVmDataMigrationStatus(profile_->GetPrefs(),
+                                ArcVmDataMigrationStatus::kConfirmed);
+    chrome::AttemptRestart();
+  }
+  // TODO(b/258278176): Report when the confirmation dialog is canceled.
 }
 
 }  // namespace arc
