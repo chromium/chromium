@@ -19,6 +19,9 @@ namespace {
 class SharedXnnpackContext;
 }
 
+using ExternalValueIdMap = HashMap<String, uint32_t>;
+using DataBufferPtr = std::unique_ptr<uint8_t[]>;
+
 class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
  public:
   // Create and build an MLGraphXnnpack object. Resolve the promise with
@@ -49,6 +52,9 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
   // defines the subgraph Nodes for operators in topological order.
   static HeapVector<Member<const MLOperator>>* GetOperatorsInTopologicalOrder(
       const MLNamedOperands& named_outputs);
+
+  const ExternalValueIdMap& GetInputExternalValueIdMap() const;
+  const ExternalValueIdMap& GetOutputExternalValueIdMap() const;
 
  private:
   // Post the XNNPACK Subgraph and Runtime building to a background thread.
@@ -104,6 +110,17 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
   // of MLGraphXnnpack. It initializes (and also deinitializes) the XNNPACK
   // library for graph building and execution.
   scoped_refptr<SharedXnnpackContext> xnn_context_;
+
+  // Holds the static data of XNNPACK Values for MLGraph's constant operands.
+  // The data must outlive XNNPACK Subgraph and Runtime objects using them.
+  Vector<DataBufferPtr> static_data_buffers_;
+
+  // Map the names of the MLGraph's inputs/outputs to the XNNPACK external Value
+  // IDs. They will be used to set up the xnn_external_value structures from the
+  // input/output named array buffer views when invoking the XNNPACK Runtime
+  // object for the MLGraph compute.
+  ExternalValueIdMap input_external_value_id_map_;
+  ExternalValueIdMap output_external_value_id_map_;
 
   // The XNNPACK Runtime object for the accelerated executions.
   std::unique_ptr<xnn_runtime, decltype(&xnn_delete_runtime)> xnn_runtime_{

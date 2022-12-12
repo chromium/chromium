@@ -29,6 +29,18 @@
 
 namespace blink {
 
+// Maps MLOperand pointer address to its XNNPACK Value ID.
+//
+// Use `const void*` here because this HashMap might be used in a worker thread
+// that doesn't support GC.
+//
+// This map is only used in CreateXnnSubgraphAndRuntime(), who owns references
+// to MLOperands, so it's safe to use raw pointers here.
+//
+// TODO(crbug.com/1273291): Consider getting GC support in worker threads, so
+// the safer `HeapHashMap<Member<MLOperand>, uint32_t>` could be used instead.
+using OperandValueIdMap = HashMap<const void*, uint32_t>;
+
 #define XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_func)            \
   {                                                                 \
     xnn_status status = xnn_func;                                   \
@@ -38,6 +50,14 @@ namespace blink {
                          XnnStatusToString(status).Utf8().c_str()); \
       return status;                                                \
     }                                                               \
+  }
+
+#define XNN_CHECK_STATUS(xnn_func)      \
+  {                                     \
+    xnn_status status = xnn_func;       \
+    if (status != xnn_status_success) { \
+      return status;                    \
+    }                                   \
   }
 
 namespace {
@@ -58,6 +78,27 @@ String XnnStatusToString(xnn_status status) {
       return "xnn_status_unsupported_hardware";
     case xnn_status_out_of_memory:
       return "xnn_status_out_of_memory";
+  }
+}
+
+String XnnDataTypeToString(xnn_datatype datatype) {
+  switch (datatype) {
+    case xnn_datatype_invalid:
+      return "xnn_datatype_invalid";
+    case xnn_datatype_fp32:
+      return "xnn_datatype_fp32";
+    case xnn_datatype_fp16:
+      return "xnn_datatype_fp16";
+    case xnn_datatype_qint8:
+      return "xnn_datatype_qint8";
+    case xnn_datatype_quint8:
+      return "xnn_datatype_quint8";
+    case xnn_datatype_qint32:
+      return "xnn_datatype_qint32";
+    case xnn_datatype_qcint8:
+      return "xnn_datatype_qcint8";
+    case xnn_datatype_qcint32:
+      return "xnn_datatype_qcint32";
   }
 }
 
@@ -151,6 +192,134 @@ class SharedXnnpackContext : public ThreadSafeRefCounted<SharedXnnpackContext> {
 
 SharedXnnpackContext* SharedXnnpackContext::instance_ = nullptr;
 
+xnn_datatype GetXnnDataType(V8MLOperandType::Enum operand_type) {
+  switch (operand_type) {
+    case V8MLOperandType::Enum::kFloat32:
+      return xnn_datatype_fp32;
+    case V8MLOperandType::Enum::kFloat16:
+      return xnn_datatype_fp16;
+    case V8MLOperandType::Enum::kInt32:
+    case V8MLOperandType::Enum::kUint32:
+    case V8MLOperandType::Enum::kInt8:
+    case V8MLOperandType::Enum::kUint8:
+      // TODO(crbug.com/1273291): Support the quantized integer types that is a
+      // WebNN v2 feature tracked by:
+      // https://github.com/webmachinelearning/webnn/issues/128.
+      return xnn_datatype_invalid;
+  }
+}
+
+Vector<size_t> GetXnnDimensions(const Vector<uint32_t>& operand_dimensions) {
+  Vector<size_t> xnn_dimensions;
+  for (const auto d : operand_dimensions) {
+    xnn_dimensions.push_back(base::checked_cast<size_t>(d));
+  }
+  return xnn_dimensions;
+}
+
+// DefineXnnValue() defines an XNNPACK Value for a WebNN operand. If there are
+// no errors, it returns xnn_status_success and the value_id is set to the
+// XNNPACK Value's ID.
+//
+// This method should not be used directly. Please use the specialized
+// DefineExternalXnnValue(), DefineInternalXnnValue() and DefineStaticXnnValue()
+// methods instead.
+//
+// If the data pointer is not nullptr, it is safe to be used to initialize the
+// XNNPACK Value. Because its buffer is holded by this MLGraph object's
+// static_data_buffers_ member, it would outlive the XNNPACK Value who uses it.
+xnn_status DefineXnnValue(xnn_subgraph_t subgraph,
+                          const MLOperand* operand,
+                          const DataBufferPtr& data,
+                          uint32_t external_value_id,
+                          uint32_t& value_id,
+                          String& error_message) {
+  DCHECK(operand);
+  xnn_datatype datatype = GetXnnDataType(operand->Type());
+  if (datatype == xnn_datatype_invalid) {
+    error_message = "The operand type (" +
+                    V8MLOperandType(operand->Type()).AsString() +
+                    ") is not supported.";
+    return xnn_status_unsupported_parameter;
+  }
+  Vector<size_t> dims = GetXnnDimensions(operand->Dimensions());
+
+  uint32_t flags = 0;
+  if (external_value_id != XNN_INVALID_VALUE_ID) {
+    // External Values should not be initialized with static data.
+    DCHECK(!data);
+    switch (operand->Kind()) {
+      case MLOperand::OperandKind::kInput:
+        flags = XNN_VALUE_FLAG_EXTERNAL_INPUT;
+        break;
+      case MLOperand::OperandKind::kOutput:
+        flags = XNN_VALUE_FLAG_EXTERNAL_OUTPUT;
+        break;
+      case MLOperand::OperandKind::kConstant:
+        // Should not define an external Value for constant operand.
+        NOTREACHED();
+        break;
+    }
+  }
+
+  switch (datatype) {
+    case xnn_datatype_fp32:
+    case xnn_datatype_fp16:
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_tensor_value(
+          subgraph, datatype, dims.size(), dims.data(), data.get(),
+          external_value_id, flags, &value_id));
+      break;
+    default:
+      // TODO(crbug.com/1273291): Call xnn_define_quantized_tensor_value() once
+      // WebNN supports quantized integer types that is tracked by
+      // https://github.com/webmachinelearning/webnn/issues/128
+      error_message = "The data type (" + XnnDataTypeToString(datatype) +
+                      ") is not supported.";
+      return xnn_status_unsupported_parameter;
+  }
+
+  return xnn_status_success;
+}
+
+// Define an external XNNPACK Value given a WebNN graph's input or output
+// operand.
+xnn_status DefineExternalXnnValue(xnn_subgraph_t subgraph,
+                                  const MLOperand* operand,
+                                  uint32_t external_value_id,
+                                  uint32_t& value_id,
+                                  String& error_message) {
+  DCHECK_NE(external_value_id, XNN_INVALID_VALUE_ID);
+  return DefineXnnValue(subgraph, operand, DataBufferPtr(nullptr),
+                        external_value_id, value_id, error_message);
+}
+
+// Define an internal XNNPACK Value given a WebNN graph's intermediate
+// operand that connects with two operators.
+xnn_status DefineInternalXnnValue(xnn_subgraph_t subgraph,
+                                  const MLOperand* operand,
+                                  uint32_t& value_id,
+                                  String& error_message) {
+  // Set external_value_id to XNN_INVALID_VALUE_ID, so an internal ID will be
+  // created for the Value and value_id will be set to that internal ID.
+  return DefineXnnValue(subgraph, operand, DataBufferPtr(nullptr),
+                        XNN_INVALID_VALUE_ID, value_id, error_message);
+}
+
+// Define a static XNNPACK Value given a WebNN graph's constant operand and its
+// data. XNNPACK requires the life-time of the data must exceed the life-time of
+// the Subgraph object, and of any Runtime objects created from the Subgraph.
+xnn_status DefineStaticXnnValue(xnn_subgraph_t subgraph,
+                                const MLOperand* operand,
+                                const DataBufferPtr& data,
+                                uint32_t& value_id,
+                                String& error_message) {
+  DCHECK(data);
+  // Set external_value_id to XNN_INVALID_VALUE_ID, so an internal ID will be
+  // created for the Value and value_id will be set to that internal ID.
+  return DefineXnnValue(subgraph, operand, data, XNN_INVALID_VALUE_ID, value_id,
+                        error_message);
+}
+
 }  // namespace
 
 // static
@@ -172,7 +341,13 @@ MLGraph* MLGraphXnnpack::ValidateAndBuildSync(
 
 MLGraphXnnpack::MLGraphXnnpack(MLContext* context) : MLGraph(context) {}
 
-MLGraphXnnpack::~MLGraphXnnpack() = default;
+MLGraphXnnpack::~MLGraphXnnpack() {
+  // Explicitly destroy XNNPACK Runtime before releasing static data buffers. It
+  // ensures the lifetime of static data buffers exceeds the lifetime of this
+  // Runtime object.
+  xnn_runtime_.reset();
+  static_data_buffers_.clear();
+}
 
 // static
 HeapVector<Member<const MLOperator>>*
@@ -236,6 +411,14 @@ MLGraphXnnpack::GetOperatorsInTopologicalOrder(
     }
   }
   return toposorted_operators;
+}
+
+const ExternalValueIdMap& MLGraphXnnpack::GetInputExternalValueIdMap() const {
+  return input_external_value_id_map_;
+}
+
+const ExternalValueIdMap& MLGraphXnnpack::GetOutputExternalValueIdMap() const {
+  return output_external_value_id_map_;
 }
 
 void MLGraphXnnpack::BuildAsyncImpl(const MLNamedOperands& named_outputs,
@@ -372,10 +555,105 @@ xnn_status MLGraphXnnpack::CreateXnnSubgraphAndRuntime(
   std::unique_ptr<xnn_subgraph, decltype(&xnn_delete_subgraph)> subgraph(
       subgraph_ptr, &xnn_delete_subgraph);
 
-  // TODO(ningxin.hu@intel.com): Define XNNPACK Subgraph external Values for
-  // the named output operands. Visit the topologically sorted operators. For
-  // each operator, define the XNNPACK Subgraph Node for the operator and Values
-  // for its input and output operands.
+  // Map the operand to its XNNPACK Value ID.
+  OperandValueIdMap operand_value_id_map;
+  // The ID is used to define an external XNNPACK Value. It should be increased
+  // by 1 after each definition.
+  uint32_t external_value_id = 0;
+
+  for (const auto& output : named_outputs) {
+    // Define an external XNNPACK Value for the graph's output operand.
+    const auto& [name, operand] = output;
+    // The external Value ID should be in the [0, external_value_ids_num - 1]
+    // range.
+    DCHECK_LT(external_value_id, external_value_ids_num);
+    uint32_t value_id;
+    XNN_CHECK_STATUS(DefineExternalXnnValue(
+        subgraph.get(), operand, external_value_id, value_id, error_message));
+    // If the external Value ID is provided, the value_id should be set to that
+    // ID.
+    DCHECK_EQ(external_value_id, value_id);
+    // Increase the ID by 1 for defining the next external Value.
+    external_value_id++;
+    operand_value_id_map.insert(operand.Get(), value_id);
+    output_external_value_id_map_.insert(name, value_id);
+  }
+
+  // Visit the operators in topological order. For each operator, define XNNPACK
+  // Values for its input and output operands.
+  for (const auto current_operator : toposorted_operators) {
+    for (const auto& operand : current_operator->Inputs()) {
+      if (operand_value_id_map.Contains(operand.Get())) {
+        // The XNNPACK Value is already defined for this operand, skip it.
+        continue;
+      }
+      switch (operand->Kind()) {
+        case MLOperand::OperandKind::kInput: {
+          // Define an external XNNPACK Value for the graph's input operand.
+          // The external ID should be in the [0, external_value_ids_num - 1]
+          // range.
+          DCHECK_LT(external_value_id, external_value_ids_num);
+          uint32_t value_id;
+          XNN_CHECK_STATUS(DefineExternalXnnValue(subgraph.get(), operand,
+                                                  external_value_id, value_id,
+                                                  error_message));
+          // If the external Value ID is provided, the value_id should be set to
+          // that ID.
+          DCHECK_EQ(external_value_id, value_id);
+          // Increase the ID by 1 for defining the next external Value.
+          external_value_id++;
+          operand_value_id_map.insert(operand.Get(), value_id);
+          input_external_value_id_map_.insert(operand->Name(), value_id);
+          break;
+        }
+        case MLOperand::OperandKind::kConstant: {
+          // Define a static XNNPACK Value for this constant operand. Because
+          // XNNPACK requires the static data of a static XNNPACK Value must
+          // exceed the life-time of its Subgraph and Runtime objects, a new
+          // buffer is allocated and kept alive by this MLGraphXnnpack object.
+          // The contents of this constant operand are copied from the array
+          // buffer into the newly-allocated buffer and it is used to initialize
+          // the XNNPACK Value.
+          const auto* array_buffer_view = operand->ArrayBufferView();
+          auto data =
+              std::make_unique<uint8_t[]>(array_buffer_view->byteLength());
+          DCHECK(data);
+          memcpy(data.get(), array_buffer_view->BaseAddress(),
+                 array_buffer_view->byteLength());
+          uint32_t value_id;
+          XNN_CHECK_STATUS(DefineStaticXnnValue(subgraph.get(), operand, data,
+                                                value_id, error_message));
+          operand_value_id_map.insert(operand.Get(), value_id);
+          static_data_buffers_.push_back(std::move(data));
+          break;
+        }
+        case MLOperand::OperandKind::kOutput:
+          // Because the operators are visited in topological order, if this
+          // operand is an intermediate operand, it should already be defined as
+          // an output operand of the dependent operator.
+          NOTREACHED();
+          break;
+      }
+    }
+
+    for (const auto& operand : current_operator->Outputs()) {
+      if (operand_value_id_map.Contains(operand.Get())) {
+        // If the XNNPACK Value is already defined for this operand, skip it.
+        continue;
+      }
+      // Because the graph's output operands are already defined before, this
+      // operand should be an intermediate operand that connects with two
+      // operators. Define an internal XNNPACK Value for this operand.
+      uint32_t value_id;
+      XNN_CHECK_STATUS(DefineInternalXnnValue(subgraph.get(), operand, value_id,
+                                              error_message));
+      operand_value_id_map.insert(operand.Get(), value_id);
+    }
+
+    // TODO(ningxin.hu@intel.com): Define the XNNPACK Node for the current
+    // operator. The operand_value_id_map will be used to find its corresponding
+    // input and output XNNPACK Values.
+  }
 
   xnn_runtime_t runtime_ptr = nullptr;
   XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(

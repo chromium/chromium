@@ -69,17 +69,37 @@ NotShared<DOMArrayBufferView> CreateDOMArrayBufferView(
   NotShared<DOMArrayBufferView> buffer_view;
   switch (type) {
     case V8MLOperandType::Enum::kFloat32: {
-      auto* float32_array = blink::DOMFloat32Array::Create(size);
-      buffer_view = NotShared<DOMArrayBufferView>(float32_array);
+      buffer_view =
+          NotShared<DOMArrayBufferView>(blink::DOMFloat32Array::Create(size));
+      break;
+    }
+    case V8MLOperandType::Enum::kFloat16: {
+      // Using Uint16Array for float16 is a workaround of WebNN spec issue:
+      // https://github.com/webmachinelearning/webnn/issues/127
+      buffer_view =
+          NotShared<DOMArrayBufferView>(blink::DOMUint16Array::Create(size));
       break;
     }
     case V8MLOperandType::Enum::kInt32: {
-      auto* int32_array = blink::DOMInt32Array::Create(size);
-      buffer_view = NotShared<DOMArrayBufferView>(int32_array);
+      buffer_view =
+          NotShared<DOMArrayBufferView>(blink::DOMInt32Array::Create(size));
       break;
     }
-    default:
-      NOTREACHED();
+    case V8MLOperandType::Enum::kUint32: {
+      buffer_view =
+          NotShared<DOMArrayBufferView>(blink::DOMUint32Array::Create(size));
+      break;
+    }
+    case V8MLOperandType::Enum::kInt8: {
+      buffer_view =
+          NotShared<DOMArrayBufferView>(blink::DOMInt8Array::Create(size));
+      break;
+    }
+    case V8MLOperandType::Enum::kUint8: {
+      buffer_view =
+          NotShared<DOMArrayBufferView>(blink::DOMUint8Array::Create(size));
+      break;
+    }
   }
   CHECK(buffer_view.Get());
   return buffer_view;

@@ -58,12 +58,6 @@ TEST_P(MLGraphXnnpackTest, SharedXnnpackContextTest) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         MLGraphXnnpackTest,
-                         ::testing::Values(ExecutionMode::kAsync,
-                                           ExecutionMode::kSync),
-                         ExecutionModeParamToString);
-
 TEST_F(MLGraphXnnpackTest, TopoSortOperatorsTest) {
   V8TestingScope scope;
   auto* builder = CreateMLGraphBuilder(scope);
@@ -121,5 +115,159 @@ TEST_F(MLGraphXnnpackTest, TopoSortOperatorsTest) {
     EXPECT_EQ(toposorted_operators->at(3), add->Operator());
   }
 }
+
+TEST_P(MLGraphXnnpackTest, DefineXnnpackValuesTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope);
+  Vector<uint32_t> shape({1, 4, 4, 3});
+  const auto OperandTypes = {V8MLOperandType::Enum::kFloat32,
+                             V8MLOperandType::Enum::kFloat16};
+  {
+    // Test defining XNNPACK Values for operands in the following topology:
+    //       [input0] [input1]
+    //           \   /
+    //            add
+    //             |
+    //          [output]
+    for (const auto operand_type : OperandTypes) {
+      auto* input0 = BuildInput(scope, builder, "input0", shape, operand_type);
+      auto* input1 = BuildInput(scope, builder, "input1", shape, operand_type);
+      auto* output = BuildElementWiseBinary(
+          scope, builder, ElementWiseBinaryKind::kAdd, input0, input1);
+      auto [graph, exception] =
+          BuildGraph(scope, builder, {{"output", output}});
+      EXPECT_NE(graph, nullptr);
+      MLGraphXnnpack* xnnpack_graph = static_cast<MLGraphXnnpack*>(graph.Get());
+      const auto& output_externals =
+          xnnpack_graph->GetOutputExternalValueIdMap();
+      EXPECT_EQ(output_externals.size(), 1u);
+      EXPECT_EQ(output_externals.Contains("output"), true);
+      // MLGraphXnnpack defines output external Values first.
+      EXPECT_EQ(output_externals.at("output"), 0u);
+      const auto& input_externals = xnnpack_graph->GetInputExternalValueIdMap();
+      EXPECT_EQ(input_externals.size(), 2u);
+      EXPECT_EQ(input_externals.Contains("input0"), true);
+      EXPECT_EQ(input_externals.Contains("input1"), true);
+      EXPECT_EQ(input_externals.at("input0"), 1u);
+      EXPECT_EQ(input_externals.at("input1"), 2u);
+    }
+  }
+  {
+    // Test defining XNNPACK Values for the operands in the following topology:
+    //       [input] [constant]
+    //           \   /
+    //            add
+    //             |
+    //          [output]
+    for (const auto operand_type : OperandTypes) {
+      auto* input = BuildInput(scope, builder, "input", shape, operand_type);
+      auto* constant = BuildConstant(scope, builder, shape, operand_type);
+      auto* output = BuildElementWiseBinary(
+          scope, builder, ElementWiseBinaryKind::kAdd, input, constant);
+      auto [graph, exception] =
+          BuildGraph(scope, builder, {{"output", output}});
+      EXPECT_NE(graph, nullptr);
+      MLGraphXnnpack* xnnpack_graph = static_cast<MLGraphXnnpack*>(graph.Get());
+      const auto& output_externals =
+          xnnpack_graph->GetOutputExternalValueIdMap();
+      EXPECT_EQ(output_externals.size(), 1u);
+      EXPECT_EQ(output_externals.Contains("output"), true);
+      // MLGraphXnnpack defines output external Values first.
+      EXPECT_EQ(output_externals.at("output"), 0u);
+      const auto& input_externals = xnnpack_graph->GetInputExternalValueIdMap();
+      EXPECT_EQ(input_externals.size(), 1u);
+      EXPECT_EQ(input_externals.Contains("input"), true);
+      EXPECT_EQ(input_externals.at("input"), 1u);
+    }
+  }
+  {
+    // Test defining XNNPACK Values for the operands in the following topology:
+    //       [input] [constant0]
+    //           \   /
+    //            add
+    //             |
+    //      [intermediate]  [constant1]
+    //                  \   /
+    //                   add
+    //                    |
+    //                 [output]
+    for (const auto operand_type : OperandTypes) {
+      auto* input = BuildInput(scope, builder, "input", shape, operand_type);
+      auto* constant0 = BuildConstant(scope, builder, shape, operand_type);
+      auto* intermediate = BuildElementWiseBinary(
+          scope, builder, ElementWiseBinaryKind::kAdd, input, constant0);
+      auto* constant1 = BuildConstant(scope, builder, shape, operand_type);
+      auto* output = BuildElementWiseBinary(
+          scope, builder, ElementWiseBinaryKind::kAdd, intermediate, constant1);
+      auto [graph, exception] =
+          BuildGraph(scope, builder, {{"output", output}});
+      EXPECT_NE(graph, nullptr);
+      MLGraphXnnpack* xnnpack_graph = static_cast<MLGraphXnnpack*>(graph.Get());
+      const auto& output_externals =
+          xnnpack_graph->GetOutputExternalValueIdMap();
+      EXPECT_EQ(output_externals.size(), 1u);
+      EXPECT_EQ(output_externals.Contains("output"), true);
+      // MLGraphXnnpack defines output external Values first, so the external
+      // Value's ID of the output operand should start from 0.
+      EXPECT_EQ(output_externals.at("output"), 0u);
+      const auto& input_externals = xnnpack_graph->GetInputExternalValueIdMap();
+      EXPECT_EQ(input_externals.size(), 1u);
+      EXPECT_EQ(input_externals.Contains("input"), true);
+      EXPECT_EQ(input_externals.at("input"), 1u);
+    }
+  }
+  {
+    // Test defining XNNPACK Values for the operands in the following topology:
+    //     [input0] [input1]
+    //           \   /
+    //            add
+    //             |
+    //      [intermediate]  [input2]
+    //             |     \   /
+    //            relu    add
+    //             |       |
+    //       [output0]   [output1]
+    for (const auto operand_type : OperandTypes) {
+      auto* input0 = BuildInput(scope, builder, "input0", shape, operand_type);
+      auto* input1 = BuildInput(scope, builder, "input1", shape, operand_type);
+      auto* intermediate = BuildElementWiseBinary(
+          scope, builder, ElementWiseBinaryKind::kAdd, input0, input1);
+      auto* output0 = builder->relu(intermediate, scope.GetExceptionState());
+      auto* input2 = BuildInput(scope, builder, "input2", shape, operand_type);
+      auto* output1 = BuildElementWiseBinary(
+          scope, builder, ElementWiseBinaryKind::kAdd, intermediate, input2);
+      auto [graph, exception] = BuildGraph(
+          scope, builder, {{"output0", output0}, {"output1", output1}});
+      EXPECT_NE(graph, nullptr);
+      MLGraphXnnpack* xnnpack_graph = static_cast<MLGraphXnnpack*>(graph.Get());
+      const auto& output_externals =
+          xnnpack_graph->GetOutputExternalValueIdMap();
+      EXPECT_EQ(output_externals.size(), 2u);
+      EXPECT_EQ(output_externals.Contains("output0"), true);
+      EXPECT_EQ(output_externals.Contains("output1"), true);
+      // MLGraphXnnpack defines output external Values first, so the external
+      // Value's ID of the output operand should start from 0.
+      EXPECT_EQ(output_externals.at("output0"), 0u);
+      EXPECT_EQ(output_externals.at("output1"), 1u);
+      const auto& input_externals = xnnpack_graph->GetInputExternalValueIdMap();
+      EXPECT_EQ(input_externals.size(), 3u);
+      EXPECT_EQ(input_externals.Contains("input0"), true);
+      EXPECT_EQ(input_externals.Contains("input1"), true);
+      EXPECT_EQ(input_externals.Contains("input2"), true);
+      // MLGraphXnnpack defines input external Values in the topological order
+      // of operators, so the Value ID of input2 should be greater than input0
+      // and input1.
+      EXPECT_EQ(input_externals.at("input0"), 2u);
+      EXPECT_EQ(input_externals.at("input1"), 3u);
+      EXPECT_EQ(input_externals.at("input2"), 4u);
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MLGraphXnnpackTest,
+                         ::testing::Values(ExecutionMode::kAsync,
+                                           ExecutionMode::kSync),
+                         ExecutionModeParamToString);
 
 }  // namespace blink
