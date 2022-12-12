@@ -102,7 +102,7 @@ void WebKioskBrowserControllerBase::OnTabRemoved(
 
 const raw_ref<web_app::WebAppRegistrar>
 WebKioskBrowserControllerBase::registrar() const {
-  return raw_ref(provider_->registrar());
+  return raw_ref(provider_->registrar_unsafe());
 }
 
 }  // namespace ash
