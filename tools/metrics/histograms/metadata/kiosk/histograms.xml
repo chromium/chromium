@@ -359,6 +359,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Kiosk.SessionRestart.UserActivity" enum="KioskUserActivity"
+    expires_after="2023-12-09">
+  <owner>irfedorova@google.com</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>
+    ChromeOS only. Records the last saved user activity of the previous kiosk
+    session. The user activity is saved to the local state every hour. It
+    contains information whether the user was actively using the device or the
+    device was idle during the last check-in.
+  </summary>
+</histogram>
+
 <histogram name="Kiosk.SessionState" enum="KioskSessionState"
     expires_after="2023-06-04">
   <owner>pbond@chromium.org</owner>

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
@@ -11,12 +12,14 @@
 #include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "ui/base/user_activity/user_activity_detector.h"
 
 namespace ash {
 
@@ -44,17 +47,23 @@ bool IsDeviceOnline() {
   return default_network->IsOnline();
 }
 
-absl::optional<KioskInternetAccessInfo> GetSavedInternetAccessInfo(
-    const PrefService* prefs) {
+base::TimeDelta GetDeviceIdlePeriod() {
+  return base::TimeTicks::Now() -
+         ui::UserActivityDetector::Get()->last_activity_time();
+}
+
+template <typename ResultType>
+absl::optional<ResultType> GetSavedEnumFromKioskMetrics(
+    const PrefService* prefs,
+    const std::string& key_name) {
   const base::Value::Dict& metrics_dict = prefs->GetDict(prefs::kKioskMetrics);
-  const auto* internet_access_info_value =
-      metrics_dict.Find(kKioskInternetAccessInfo);
-  if (!internet_access_info_value)
+  const auto* result_value = metrics_dict.Find(key_name);
+  if (!result_value)
     return absl::nullopt;
-  auto internet_access_info = internet_access_info_value->GetIfInt();
-  if (!internet_access_info.has_value())
+  auto result = result_value->GetIfInt();
+  if (!result.has_value())
     return absl::nullopt;
-  return static_cast<KioskInternetAccessInfo>(internet_access_info.value());
+  return static_cast<ResultType>(result.value());
 }
 
 }  // namespace
@@ -65,9 +74,15 @@ const char kKioskDiskUsagePercentageHistogram[] = "Kiosk.DiskUsagePercentage";
 const char kKioskChromeProcessCountHistogram[] = "Kiosk.ChromeProcessCount";
 const char kKioskSessionRestartInternetAccessHistogram[] =
     "Kiosk.SessionRestart.InternetAccess";
+const char kKioskSessionRestartUserActivityHistogram[] =
+    "Kiosk.SessionRestart.UserActivity";
+
 const char kKioskInternetAccessInfo[] = "internet-access";
+const char kKioskUserActivity[] = "user-activity";
 
 const base::TimeDelta kPeriodicMetricsInterval = base::Hours(1);
+const base::TimeDelta kFirstIdleTimeout = base::Minutes(5);
+const base::TimeDelta kRegularIdleTimeout = kPeriodicMetricsInterval;
 
 // This class is calculating amount of available and total disk space and
 // reports the percentage of available disk space to the histogram. Since the
@@ -111,6 +126,7 @@ PeriodicMetricsService::~PeriodicMetricsService() = default;
 
 void PeriodicMetricsService::RecordPreviousSessionMetrics() const {
   RecordPreviousInternetAccessInfo();
+  RecordPreviousUserActivity();
 }
 
 void PeriodicMetricsService::StartRecordingPeriodicMetrics(
@@ -118,17 +134,21 @@ void PeriodicMetricsService::StartRecordingPeriodicMetrics(
   is_offline_enabled_ = is_offline_enabled;
   // Record all periodic metrics at the beginning of the kiosk session and then
   // every `kPeriodicMetricsInterval`.
-  RecordPeriodicMetrics();
-  metrics_timer_.Start(FROM_HERE, kPeriodicMetricsInterval, this,
-                       &PeriodicMetricsService::RecordPeriodicMetrics);
+  RecordPeriodicMetrics(kFirstIdleTimeout);
+  metrics_timer_.Start(
+      FROM_HERE, kPeriodicMetricsInterval,
+      base::BindRepeating(&PeriodicMetricsService::RecordPeriodicMetrics,
+                          weak_ptr_factory_.GetWeakPtr(), kRegularIdleTimeout));
 }
 
-void PeriodicMetricsService::RecordPeriodicMetrics() {
+void PeriodicMetricsService::RecordPeriodicMetrics(
+    const base::TimeDelta& idle_timeout) {
   RecordRamUsage();
   RecordSwapUsage();
   RecordDiskSpaceUsage();
   RecordChromeProcessCount();
   SaveInternetAccessInfo();
+  SaveUserActivity(idle_timeout);
 }
 
 void PeriodicMetricsService::RecordRamUsage() const {
@@ -165,12 +185,24 @@ void PeriodicMetricsService::RecordChromeProcessCount() const {
 void PeriodicMetricsService::RecordPreviousInternetAccessInfo() const {
   absl::optional<KioskInternetAccessInfo>
       previous_session_internet_access_info =
-          GetSavedInternetAccessInfo(prefs_);
+          GetSavedEnumFromKioskMetrics<KioskInternetAccessInfo>(
+              prefs_, kKioskInternetAccessInfo);
 
   if (previous_session_internet_access_info.has_value()) {
     base::UmaHistogramEnumeration(
         kKioskSessionRestartInternetAccessHistogram,
         previous_session_internet_access_info.value());
+  }
+}
+
+void PeriodicMetricsService::RecordPreviousUserActivity() const {
+  absl::optional<KioskUserActivity> previous_session_user_activity =
+      GetSavedEnumFromKioskMetrics<KioskUserActivity>(prefs_,
+                                                      kKioskUserActivity);
+
+  if (previous_session_user_activity.has_value()) {
+    base::UmaHistogramEnumeration(kKioskSessionRestartUserActivityHistogram,
+                                  previous_session_user_activity.value());
   }
 }
 
@@ -186,6 +218,16 @@ void PeriodicMetricsService::SaveInternetAccessInfo() const {
                  : KioskInternetAccessInfo::kOfflineAndAppRequiresInternet);
   ScopedDictPrefUpdate(prefs_, prefs::kKioskMetrics)
       ->Set(kKioskInternetAccessInfo, static_cast<int>(network_access_info));
+}
+
+void PeriodicMetricsService::SaveUserActivity(
+    const base::TimeDelta& idle_timeout) const {
+  KioskUserActivity user_activity = (GetDeviceIdlePeriod() >= idle_timeout)
+                                        ? KioskUserActivity::kIdle
+                                        : KioskUserActivity::kActive;
+
+  ScopedDictPrefUpdate(prefs_, prefs::kKioskMetrics)
+      ->Set(kKioskUserActivity, static_cast<int>(user_activity));
 }
 
 }  // namespace ash

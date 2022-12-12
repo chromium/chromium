@@ -54282,6 +54282,11 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="7" label="Restored session"/>
 </enum>
 
+<enum name="KioskUserActivity">
+  <int value="0" label="User is using the device"/>
+  <int value="1" label="Device is idle"/>
+</enum>
+
 <enum name="KmsVncMethodEnum">
   <int value="1" label="EGL"/>
   <int value="2" label="BO"/>

@@ -15,9 +15,13 @@ extern const char kKioskSwapUsagePercentageHistogram[];
 extern const char kKioskDiskUsagePercentageHistogram[];
 extern const char kKioskChromeProcessCountHistogram[];
 extern const char kKioskSessionRestartInternetAccessHistogram[];
+extern const char kKioskSessionRestartUserActivityHistogram[];
 extern const char kKioskInternetAccessInfo[];
+extern const char kKioskUserActivity[];
 
 extern const base::TimeDelta kPeriodicMetricsInterval;
+extern const base::TimeDelta kFirstIdleTimeout;
+extern const base::TimeDelta kRegularIdleTimeout;
 
 // These values are used in UMA metrics. Entries should not be renumbered and
 // numeric values should never be reused. Keep in sync with respective enum in
@@ -28,6 +32,15 @@ enum class KioskInternetAccessInfo {
   kOfflineAndAppRequiresInternet = 2,
   kOfflineAndAppSupportsOffline = 3,
   kMaxValue = kOfflineAndAppSupportsOffline,
+};
+
+// These values are used in UMA metrics. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with respective enum in
+// tools/metrics/histograms/enums.xml
+enum class KioskUserActivity {
+  kActive = 0,
+  kIdle = 1,
+  kMaxValue = kIdle,
 };
 
 class DiskSpaceCalculator;
@@ -48,7 +61,7 @@ class PeriodicMetricsService {
   void StartRecordingPeriodicMetrics(bool is_offline_enabled);
 
  private:
-  void RecordPeriodicMetrics();
+  void RecordPeriodicMetrics(const base::TimeDelta& idle_timeout);
 
   void RecordRamUsage() const;
 
@@ -60,10 +73,18 @@ class PeriodicMetricsService {
 
   void RecordPreviousInternetAccessInfo() const;
 
+  void RecordPreviousUserActivity() const;
+
   // Save the Internet access info to record
   // `kKioskSessionRestartInternetAccessHistogram` during the next kiosk session
   // start.
   void SaveInternetAccessInfo() const;
+
+  // Save the user activity info to record
+  // `kKioskSessionRestartUserActivityHistogram` during the next kiosk session
+  // start. The first idle timeout is `kFirstIdleTimeout`, but then when
+  // ChromeOS records user activity, it uses `kRegularIdleTimeout`.
+  void SaveUserActivity(const base::TimeDelta& idle_timeout) const;
 
   // Invokes callback to record continuously monitored metrics. Starts when
   // the kiosk session is started.
@@ -74,6 +95,7 @@ class PeriodicMetricsService {
   raw_ptr<PrefService> prefs_;
 
   const std::unique_ptr<DiskSpaceCalculator> disk_space_calculator_;
+  base::WeakPtrFactory<PeriodicMetricsService> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
