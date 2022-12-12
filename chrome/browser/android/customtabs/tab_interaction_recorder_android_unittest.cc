@@ -174,8 +174,6 @@ class TabInteractionRecorderAndroidTest
 };
 
 TEST_F(TabInteractionRecorderAndroidTest, HadFormInteraction) {
-  test_feature_list_.InitAndEnableFeature(chrome::android::kCCTRetainingState);
-
   std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
   auto* helper = TabInteractionRecorderAndroid::FromWebContents(contents.get());
 
@@ -185,7 +183,6 @@ TEST_F(TabInteractionRecorderAndroidTest, HadFormInteraction) {
 }
 
 TEST_F(TabInteractionRecorderAndroidTest, HasNavigatedFromFirstPage) {
-  test_feature_list_.InitAndEnableFeature(chrome::android::kCCTRetainingState);
   std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
   auto* helper = TabInteractionRecorderAndroid::FromWebContents(contents.get());
 

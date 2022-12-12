@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
 import org.chromium.chrome.browser.customtabs.features.sessionrestore.SessionRestoreUtils;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -131,15 +130,14 @@ public class CustomTabActivityLifecycleUmaTracker
                 preferences.writeString(ChromePreferenceKeys.CUSTOM_TABS_LAST_URL, urlToLoad);
             }
 
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_RETAINING_STATE)) {
-                String clientPackage = mIntentDataProvider.getClientPackageName();
-                String referrer = getReferrerUriString(mActivity);
-                int taskId = mActivity.getTaskId();
+            String clientPackage = mIntentDataProvider.getClientPackageName();
+            String referrer = getReferrerUriString(mActivity);
+            int taskId = mActivity.getTaskId();
 
-                recordForRetainableSessions(
-                        clientPackage, referrer, taskId, preferences, launchWithSameUrl);
-                TabInteractionRecorder.resetTabInteractionRecords();
-            }
+            recordForRetainableSessions(
+                    clientPackage, referrer, taskId, preferences, launchWithSameUrl);
+            TabInteractionRecorder.resetTabInteractionRecords();
+
             recordUserAction();
             recordMetrics();
         }

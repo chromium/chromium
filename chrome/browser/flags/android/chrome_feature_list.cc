@@ -208,7 +208,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableForFirstParties,
     &kCCTResizableForThirdParties,
     &kCCTResizableSideSheet,
-    &kCCTRetainingState,
     &kCCTRetainingStateInMemory,
     &kCCTResourcePrefetch,
     &kCCTShowAboutBlankUrl,
@@ -624,10 +623,6 @@ BASE_FEATURE(kCCTResizableSideSheet,
 
 BASE_FEATURE(kCCTResourcePrefetch,
              "CCTResourcePrefetch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTRetainingState,
-             "CCTRetainingState",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTRetainingStateInMemory,

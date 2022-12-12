@@ -681,7 +681,6 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.CCT_RETAINING_STATE)
     public void testRecordRetainableSession_WithCctSession() throws Exception {
         Activity emptyActivity = startBlankUiTestActivity();
 
@@ -712,7 +711,6 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.CCT_RETAINING_STATE)
     public void testRecordRetainableSession_WithoutWarmupAndSession() {
         Context context = InstrumentationRegistry.getContext();
         Activity emptyActivity = startBlankUiTestActivity();
@@ -1448,7 +1446,6 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @Features.EnableFeatures(ChromeFeatureList.CCT_RETAINING_STATE)
     public void testInteractionRecordedOnClose() throws Exception {
         Context context = InstrumentationRegistry.getInstrumentation()
                                   .getTargetContext()
