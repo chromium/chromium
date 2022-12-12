@@ -104144,6 +104144,12 @@ Full version information for the fingerprint enum values:
   <int value="4" label="Evicted"/>
 </enum>
 
+<enum name="VkToUssMigrationStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed persisting to USS"/>
+  <int value="2" label="Failed constructing input"/>
+</enum>
+
 <enum name="VoiceIntentTarget">
 <!-- This must be kept in sync with the VoiceIntentTarget variants in
 others/histograms.xml -->
