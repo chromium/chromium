@@ -50789,6 +50789,16 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="10" label="SUGGESTION_CHANGED_ACCENT"/>
 </enum>
 
+<enum name="IMEAutocorrectRejectionBreakdown">
+  <int value="0" label="SUGGESTION_REJECTED"/>
+  <int value="1" label="REJECTION_OTHER"/>
+  <int value="2" label="UNDO_WITHOUT_KEYBOARD"/>
+  <int value="3" label="UNDO_WITH_KEYBOARD"/>
+  <int value="4" label="UNDO_CTRL_Z"/>
+  <int value="5" label="REJECTED_BACKSPACE"/>
+  <int value="6" label="REJECTED_CTRL_BACKSPACE"/>
+</enum>
+
 <enum name="IMECommitType">
   <obsolete>
     Deprecated 03/2015, and replaced by IMECommitType2.

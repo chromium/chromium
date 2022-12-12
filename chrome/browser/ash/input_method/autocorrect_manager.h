@@ -189,6 +189,7 @@ class AutocorrectManager {
 
  private:
   void LogAssistiveAutocorrectAction(AutocorrectActions action);
+  void LogRejectionInteractions(AutocorrectActions action);
   void MeasureAndLogAssistiveAutocorrectQualityBreakdown(
       AutocorrectActions action);
 
@@ -272,6 +273,14 @@ class AutocorrectManager {
     // Specifies if virtual keyboard was visible when suggesting the pending
     // autocorrect or not.
     bool virtual_keyboard_visible = false;
+
+    // Records the most recent keypress and if control was down for use in
+    // metrics.
+    absl::optional<ui::KeyEvent> last_key_event;
+
+    // Records the difference in length between the previous text and the
+    // current |current text| - |prev text|.
+    int text_length_diff = 0;
   };
 
   struct PendingPhysicalKeyboardUserPrefMetric {

@@ -240,6 +240,20 @@ void LogAssistiveAutocorrectQualityBreakdown(
   }
 }
 
+AutocorrectRejectionBreakdown LogControlInteractions(
+    const ui::DomCode& last_key_press,
+    const std::string& histogram_name) {
+  switch (last_key_press) {
+    case ui::DomCode::BACKSPACE:
+    case ui::DomCode::DEL:
+      return AutocorrectRejectionBreakdown::kRejectedCtrlBackspace;
+    case ui::DomCode::US_Z:
+      return AutocorrectRejectionBreakdown::kUndoCtrlZ;
+    default:
+      return AutocorrectRejectionBreakdown::kRejectionOther;
+  }
+}
+
 // Returns the Levenshtein distance between |str1| and |str2|.
 // Which is the minimum number of single-character edits (i.e. insertions,
 // deletions or substitutions) required to change one word into the other.
@@ -458,6 +472,7 @@ void AutocorrectManager::LogAssistiveAutocorrectAction(
 
     LogAutocorrectAppCompatibilityUkm(
         action, latency, pending_autocorrect_->virtual_keyboard_visible);
+    LogRejectionInteractions(action);
   }
 
   if (pending_autocorrect_.has_value() &&
@@ -481,6 +496,53 @@ void AutocorrectManager::LogAssistiveAutocorrectAction(
           action);
     }
   }
+}
+
+void AutocorrectManager::LogRejectionInteractions(
+    const AutocorrectActions action) {
+  if ((action != AutocorrectActions::kUserActionClearedUnderline &&
+       action != AutocorrectActions::kReverted) ||
+      !pending_autocorrect_.has_value()) {
+    return;
+  }
+  const ui::DomCode& last_key_press =
+      pending_autocorrect_->last_key_event.has_value()
+          ? pending_autocorrect_->last_key_event->code()
+          : ui::DomCode::NONE;
+  const std::string histogram_name =
+      pending_autocorrect_->virtual_keyboard_visible
+          ? "InputMethod.Assistive.AutocorrectV2.Rejection.VK"
+          : "InputMethod.Assistive.AutocorrectV2.Rejection.PK";
+  base::UmaHistogramEnumeration(
+      histogram_name, AutocorrectRejectionBreakdown::kSuggestionRejected);
+
+  if (action == AutocorrectActions::kReverted) {
+    if (last_key_press == ui::DomCode::ENTER) {
+      base::UmaHistogramEnumeration(
+          histogram_name, AutocorrectRejectionBreakdown::kUndoWithKeyboard);
+    } else {
+      base::UmaHistogramEnumeration(
+          histogram_name, AutocorrectRejectionBreakdown::kUndoWithoutKeyboard);
+    }
+    return;
+  }
+  if (pending_autocorrect_->last_key_event.has_value() &&
+      pending_autocorrect_->last_key_event->IsControlDown()) {
+    base::UmaHistogramEnumeration(
+        histogram_name, LogControlInteractions(last_key_press, histogram_name));
+    return;
+  }
+  // TODO(b:253549747): for cases that the user replaces part of the text.
+  if (pending_autocorrect_->text_length_diff < 0 &&
+      (pending_autocorrect_->virtual_keyboard_visible ||
+       last_key_press == ui::DomCode::BACKSPACE ||
+       last_key_press == ui::DomCode::DEL)) {
+    base::UmaHistogramEnumeration(
+        histogram_name, AutocorrectRejectionBreakdown::kRejectedBackspace);
+    return;
+  }
+  base::UmaHistogramEnumeration(histogram_name,
+                                AutocorrectRejectionBreakdown::kRejectionOther);
 }
 
 void AutocorrectManager::MeasureAndLogAssistiveAutocorrectQualityBreakdown(
@@ -595,10 +657,15 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
     pending_user_pref_metric_ = absl::nullopt;
   }
 
+  if (!pending_autocorrect_.has_value() || event.type() != ui::ET_KEY_PRESSED) {
+    return false;
+  }
+  // TODO(b:253549747): call pending_autocorrect_->last_key_event.reset() if
+  // user changes the text using Mouse or Touch Screen
+  pending_autocorrect_->last_key_event = event;
+
   // OnKeyEvent is only used for interacting with the undo UI.
-  if (!pending_autocorrect_.has_value() ||
-      !pending_autocorrect_->undo_window_visible ||
-      event.type() != ui::ET_KEY_PRESSED) {
+  if (!pending_autocorrect_->undo_window_visible) {
     return false;
   }
 
@@ -666,6 +733,11 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
       return;
     }
   }
+
+  pending_autocorrect_->text_length_diff =
+      pending_autocorrect_->text_length != -1
+          ? text.length() - pending_autocorrect_->text_length
+          : 0;
 
   const gfx::Range range = input_context->GetAutocorrectRange();
   const uint32_t cursor_pos_unsigned

@@ -313,6 +313,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Assistive.AutocorrectV2.Rejection.{Keyboard}"
+    enum="IMEAutocorrectRejectionBreakdown" expires_after="2023-05-01">
+  <owner>zacpartridge@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The histogram records the different interactions used to reject or revert an
+    autocorrect suggestion. These interactions include selecting undo with or
+    without the keyboard or deleting some or all of the word.
+  </summary>
+  <token key="Keyboard">
+    <variant name="PK" summary="physical keyboard"/>
+    <variant name="VK" summary="virtual keyboard"/>
+  </token>
+</histogram>
+
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.UserPrefChange.{Type}.{Language}"
     enum="IMEAutocorrectPrefStateTransition" expires_after="2023-06-01">

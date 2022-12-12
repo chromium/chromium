@@ -95,6 +95,10 @@ constexpr char kAutocorrectV2PkUserPreferenceAll[] =
     "InputMethod.Assistive.AutocorrectV2.PkUserPreference.All";
 constexpr char kAutocorrectV2PkUserPreferenceEnglish[] =
     "InputMethod.Assistive.AutocorrectV2.PkUserPreference.English";
+constexpr char kAutocorrectV2PkRejectionHistName[] =
+    "InputMethod.Assistive.AutocorrectV2.Rejection.PK";
+constexpr char kAutocorrectV2VkRejectionHistName[] =
+    "InputMethod.Assistive.AutocorrectV2.Rejection.VK";
 
 constexpr char kUsEnglishEngineId[] = "xkb:us::eng";
 constexpr char kUsInternationalEngineId[] = "xkb:us:intl:eng";
@@ -320,6 +324,12 @@ ui::ime::AssistiveWindowButton CreateHighlightedUndoButton(
 ui::KeyEvent CreateKeyEvent(ui::DomKey key, ui::DomCode code) {
   return ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, code, ui::EF_NONE,
                       key, ui::EventTimeForNow());
+}
+
+ui::KeyEvent PressKeyWithCtrl(const ui::DomCode& code) {
+  return ui::KeyEvent(ui::EventType::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, code,
+                      ui::EF_CONTROL_DOWN, ui::DomKey::NONE,
+                      ui::EventTimeForNow());
 }
 
 ui::KeyEvent KeyA() {
@@ -2257,6 +2267,164 @@ TEST_F(AutocorrectManagerTest, RecordDistanceMetricAlmostMaxLength) {
       kAutocorrectV2Distance2dPkAcceptedHistName, expected_value, 1);
   histogram_tester_.ExpectTotalCount(kAutocorrectV2Distance2dPkAcceptedHistName,
                                      1);
+}
+
+TEST_F(AutocorrectManagerTest, RecordRejectionForPkUndoWithoutKeyboard) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  manager_.UndoAutocorrect();
+
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2PkRejectionHistName,
+      AutocorrectRejectionBreakdown::kUndoWithoutKeyboard, 1);
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2PkRejectionHistName,
+      AutocorrectRejectionBreakdown::kSuggestionRejected, 1);
+  histogram_tester_.ExpectTotalCount(kAutocorrectV2PkRejectionHistName, 2);
+}
+
+TEST_F(AutocorrectManagerTest, RecordRejectionForPkUndoWithKeyboard) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  {
+    ::testing::InSequence seq;
+
+    AssistiveWindowProperties shown_properties =
+        CreateVisibleUndoWindowProperties(u"teh", u"the");
+
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+
+    ui::ime::AssistiveWindowButton button = CreateHighlightedUndoButton(u"teh");
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetButtonHighlighted(_, button, true, _));
+
+    AssistiveWindowProperties hidden_properties =
+        CreateHiddenUndoWindowProperties();
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, hidden_properties, _));
+  }
+
+  manager_.OnSurroundingTextChanged(u"the ", 1, 1);
+  manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::ARROW_UP));
+  manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::ENTER));
+
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2PkRejectionHistName,
+      AutocorrectRejectionBreakdown::kUndoWithKeyboard, 1);
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2PkRejectionHistName,
+      AutocorrectRejectionBreakdown::kSuggestionRejected, 1);
+  histogram_tester_.ExpectTotalCount(kAutocorrectV2PkRejectionHistName, 2);
+}
+
+TEST_F(AutocorrectManagerTest, RecordRejectionForPkUndoControlZ) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  manager_.OnKeyEvent(PressKeyWithCtrl(ui::DomCode::US_Z));
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(),
+                                                      base::DoNothing());
+  manager_.OnSurroundingTextChanged(u"teh ", 4, 4);
+
+  histogram_tester_.ExpectBucketCount(kAutocorrectV2PkRejectionHistName,
+                                      AutocorrectRejectionBreakdown::kUndoCtrlZ,
+                                      1);
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2PkRejectionHistName,
+      AutocorrectRejectionBreakdown::kSuggestionRejected, 1);
+  histogram_tester_.ExpectTotalCount(kAutocorrectV2PkRejectionHistName, 2);
+}
+
+TEST_F(AutocorrectManagerTest, RecordRejectionForPkBackspace) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::BACKSPACE));
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(),
+                                                      base::DoNothing());
+  manager_.OnSurroundingTextChanged(u"th", 2, 2);
+
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2PkRejectionHistName,
+      AutocorrectRejectionBreakdown::kRejectedBackspace, 1);
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2PkRejectionHistName,
+      AutocorrectRejectionBreakdown::kSuggestionRejected, 1);
+  histogram_tester_.ExpectTotalCount(kAutocorrectV2PkRejectionHistName, 2);
+}
+
+TEST_F(AutocorrectManagerTest, RecordRejectionForPkControlBackspace) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  manager_.OnKeyEvent(PressKeyWithCtrl(ui::DomCode::BACKSPACE));
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(),
+                                                      base::DoNothing());
+  manager_.OnSurroundingTextChanged(u"", 0, 0);
+
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2PkRejectionHistName,
+      AutocorrectRejectionBreakdown::kRejectedCtrlBackspace, 1);
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2PkRejectionHistName,
+      AutocorrectRejectionBreakdown::kSuggestionRejected, 1);
+  histogram_tester_.ExpectTotalCount(kAutocorrectV2PkRejectionHistName, 2);
+}
+
+TEST_F(AutocorrectManagerTest, RecordRejectionForPkMetricOther) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // Accept autocorrect implicitly.
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  // Clear range.
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(),
+                                                      base::DoNothing());
+  manager_.OnSurroundingTextChanged(u"teh ", 4, 4);
+
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2PkRejectionHistName,
+      AutocorrectRejectionBreakdown::kRejectionOther, 1);
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2PkRejectionHistName,
+      AutocorrectRejectionBreakdown::kSuggestionRejected, 1);
+  histogram_tester_.ExpectTotalCount(kAutocorrectV2PkRejectionHistName, 2);
+}
+
+TEST_F(AutocorrectManagerTest, RecordRejectionForVkUndo) {
+  keyboard_client_->set_keyboard_visible_for_test(true);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  manager_.UndoAutocorrect();
+
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2VkRejectionHistName,
+      AutocorrectRejectionBreakdown::kUndoWithoutKeyboard, 1);
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2VkRejectionHistName,
+      AutocorrectRejectionBreakdown::kSuggestionRejected, 1);
+  histogram_tester_.ExpectTotalCount(kAutocorrectV2VkRejectionHistName, 2);
+}
+
+TEST_F(AutocorrectManagerTest, RecordRejectionForVkBackspace) {
+  keyboard_client_->set_keyboard_visible_for_test(true);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(),
+                                                      base::DoNothing());
+  manager_.OnSurroundingTextChanged(u"th", 2, 2);
+
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2VkRejectionHistName,
+      AutocorrectRejectionBreakdown::kRejectedBackspace, 1);
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2VkRejectionHistName,
+      AutocorrectRejectionBreakdown::kSuggestionRejected, 1);
+  histogram_tester_.ExpectTotalCount(kAutocorrectV2VkRejectionHistName, 2);
 }
 
 struct PkUserPrefCase {

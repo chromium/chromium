@@ -59,6 +59,21 @@ enum class AutocorrectCompatibilitySummary {
   kMaxValue = kFastExitField,
 };
 
+// Must match with IMEAutocorrectRejectionBreakdown in enums.xml
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AutocorrectRejectionBreakdown {
+  kSuggestionRejected = 0,
+  kRejectionOther = 1,
+  kUndoWithoutKeyboard = 2,
+  kUndoWithKeyboard = 3,
+  kUndoCtrlZ = 4,
+  kRejectedBackspace = 5,
+  kRejectedCtrlBackspace = 6,
+  kMaxValue = kRejectedCtrlBackspace,
+};
+
 }  // namespace input_method
 }  // namespace ash
 
