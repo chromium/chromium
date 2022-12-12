@@ -8547,6 +8547,7 @@ domain Page
       SameSiteCrossOriginRedirectNotOptIn
       SameSiteCrossOriginNavigationNotOptIn
       ActivationNavigationParameterMismatch
+      ActivatedInBackground
 
   # Fired when a prerender attempt is completed.
   experimental event prerenderAttemptCompleted

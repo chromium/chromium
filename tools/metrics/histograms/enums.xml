@@ -82586,6 +82586,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="48" label="kSameSiteCrossOriginRedirectNotOptIn"/>
   <int value="49" label="kSameSiteCrossOriginNavigationNotOptIn"/>
   <int value="50" label="kActivationNavigationParameterMismatch"/>
+  <int value="51" label="kActivatedInBackground"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

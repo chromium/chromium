@@ -859,6 +859,15 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
   if (!host)
     return RenderFrameHost::kNoFrameTreeNodeId;
 
+  // TODO(crbug.com/1399709): Remove the restriction after further investigation
+  // and discussion.
+  // Disallow activation when the navigation happens in the background.
+  if (web_contents()->GetVisibility() == Visibility::HIDDEN) {
+    CancelHost(host->frame_tree_node_id(),
+               PrerenderFinalStatus::kActivatedInBackground);
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
+
   if (!host->GetInitialNavigationId().has_value()) {
     DCHECK(base::FeatureList::IsEnabled(
         blink::features::kPrerender2SequentialPrerendering));

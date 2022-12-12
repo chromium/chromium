@@ -332,7 +332,7 @@ TEST_F(PrerenderHostTest, LoadProgressChangedInvokedOnActivation) {
   ExpectFinalStatus(PrerenderFinalStatus::kActivated);
 }
 
-TEST_F(PrerenderHostTest, CancelPrerenderWhenTriggerGetsHidden) {
+TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsHidden) {
   const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
   const int prerender_frame_tree_node_id = registry().CreateAndStartHost(
       GeneratePrerenderAttributes(kPrerenderingUrl));
@@ -341,9 +341,41 @@ TEST_F(PrerenderHostTest, CancelPrerenderWhenTriggerGetsHidden) {
   ASSERT_NE(prerender_host, nullptr);
   CommitPrerenderNavigation(*prerender_host);
 
-  // Changing the visibility state to HIDDEN will cause prerendering cancelled.
+  // Changing the visibility state to HIDDEN will not stop prerendering.
   contents()->WasHidden();
-  ExpectFinalStatus(PrerenderFinalStatus::kTriggerBackgrounded);
+
+  // Activation from the foreground page should succeed.
+  contents()->WasShown();
+  contents()->ActivatePrerenderedPage(kPrerenderingUrl);
+  ExpectFinalStatus(PrerenderFinalStatus::kActivated);
+}
+
+TEST_F(PrerenderHostTest, CancelActivationFromHiddenPage) {
+  const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
+  const int prerender_frame_tree_node_id = registry().CreateAndStartHost(
+      GeneratePrerenderAttributes(kPrerenderingUrl));
+  PrerenderHost* prerender_host =
+      registry().FindNonReservedHostById(prerender_frame_tree_node_id);
+  ASSERT_NE(prerender_host, nullptr);
+  CommitPrerenderNavigation(*prerender_host);
+
+  // Changing the visibility state to HIDDEN will not stop prerendering.
+  contents()->WasHidden();
+
+  // Activation from the background page should fail.
+  test::PrerenderHostObserver prerender_host_observer(
+      *contents(), prerender_frame_tree_node_id);
+  std::unique_ptr<NavigationSimulatorImpl> navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(
+          kPrerenderingUrl, contents()->GetPrimaryMainFrame());
+  navigation->SetReferrer(blink::mojom::Referrer::New(
+      contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
+  navigation->Commit();
+  prerender_host_observer.WaitForDestroyed();
+
+  EXPECT_FALSE(prerender_host_observer.was_activated());
+  ExpectFinalStatus(PrerenderFinalStatus::kActivatedInBackground);
 }
 
 TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsVisible) {
@@ -452,41 +484,6 @@ TEST_F(PrerenderHostTest, CanceledPrerenderCannotBeReadyForActivation) {
   EXPECT_EQ(test::PreloadingAttemptAccessor(preloading_attempt)
                 .GetTriggeringOutcome(),
             PreloadingTriggeringOutcome::kFailure);
-}
-
-// TODO(crbug.com/1356907): Remove this and merge it to PrerenderHostTest once
-// kPrerender2InBackground is enabled by default.
-class PrerenderHostInBackgroundTest : public PrerenderHostTest {
- public:
-  PrerenderHostInBackgroundTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {// Enable to run prerenderings in the background.
-         blink::features::kPrerender2InBackground},
-        // Disable the memory requirement of Prerender2 so the test can run on
-        // any bot.
-        {blink::features::kPrerender2MemoryControls});
-  }
-
-  ~PrerenderHostInBackgroundTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(PrerenderHostInBackgroundTest,
-       DontCancelPrerenderWhenTriggerGetsHidden) {
-  const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
-  const int prerender_frame_tree_node_id = registry().CreateAndStartHost(
-      GeneratePrerenderAttributes(kPrerenderingUrl));
-  PrerenderHost* prerender_host =
-      registry().FindNonReservedHostById(prerender_frame_tree_node_id);
-  ASSERT_NE(prerender_host, nullptr);
-  CommitPrerenderNavigation(*prerender_host);
-
-  // Changing the visibility state to HIDDEN will not stop prerendering.
-  contents()->WasHidden();
-  contents()->ActivatePrerenderedPage(kPrerenderingUrl);
-  ExpectFinalStatus(PrerenderFinalStatus::kActivated);
 }
 
 }  // namespace
