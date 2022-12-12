@@ -437,12 +437,6 @@ BASE_FEATURE(kOmniboxMostVisitedTilesFadingOnTablet,
              "OmniboxMostVisitedTilesFadingOnTablet",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature used to add most visited tiles to the suggestions when the user is on
-// a search result page that does not do search term replacement.
-BASE_FEATURE(kOmniboxMostVisitedTilesOnSrp,
-             "OmniboxMostVisitedTilesOnSrp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, forces omnibox suggestion rows to be uniformly sized.
 BASE_FEATURE(kUniformRowHeight,
              "OmniboxUniformRowHeight",

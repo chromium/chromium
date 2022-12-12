@@ -102,7 +102,6 @@ BASE_DECLARE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor);
 BASE_DECLARE_FEATURE(kOmniboxRemoveSuggestionHeaderChevron);
 BASE_DECLARE_FEATURE(kOmniboxMostVisitedTilesAddRecycledViewPool);
 BASE_DECLARE_FEATURE(kOmniboxMostVisitedTilesFadingOnTablet);
-BASE_DECLARE_FEATURE(kOmniboxMostVisitedTilesOnSrp);
 BASE_DECLARE_FEATURE(kUniformRowHeight);
 
 // Omnibox UI - these affect the UI or function of the location bar (not the

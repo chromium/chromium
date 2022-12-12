@@ -5146,11 +5146,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-most-visited-tiles-on-srp",
-    "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "omnibox-most-visited-tiles-title-wrap-around",
     "owners": [ "fgorski", "ender", "stkhapugin", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 120
