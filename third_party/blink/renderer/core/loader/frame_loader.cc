@@ -1005,7 +1005,10 @@ void FrameLoader::CommitNavigation(
   if (!CancelProvisionalLoaderForNewNavigation())
     return;
 
-  if (navigation_params->frame_load_type == WebFrameLoadType::kBackForward) {
+  auto url_origin = SecurityOrigin::Create(navigation_params->url);
+  if (navigation_params->frame_load_type == WebFrameLoadType::kBackForward &&
+      frame_->DomWindow()->GetSecurityOrigin()->IsSameOriginWith(
+          url_origin.get())) {
     auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
         navigation_params->url, NavigateEventType::kCrossDocument,
         WebFrameLoadType::kBackForward);
@@ -1077,8 +1080,7 @@ void FrameLoader::CommitNavigation(
   // so that the old document can access it and fill in the information as it
   // is being unloaded/swapped out.
   ScopedOldDocumentInfoForCommitCapturer scoped_old_document_info(
-      MakeGarbageCollected<OldDocumentInfoForCommit>(
-          SecurityOrigin::Create(navigation_params->url)));
+      MakeGarbageCollected<OldDocumentInfoForCommit>(url_origin));
 
   FrameSwapScope frame_swap_scope(frame_owner);
   {
