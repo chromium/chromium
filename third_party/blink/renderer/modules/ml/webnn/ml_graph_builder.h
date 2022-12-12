@@ -117,6 +117,9 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
 
   MLOperand* softmax(const MLOperand* input, ExceptionState& exception_state);
 
+  MLOperand* sigmoid(const MLOperand* input, ExceptionState& exception_state);
+  MLOperator* sigmoid(ExceptionState& exception_state);
+
   ScriptPromise buildAsync(ScriptState* script_state,
                            const MLNamedOperands& named_outputs,
                            ExceptionState& exception_state);

@@ -5253,6 +5253,7 @@ interface MLGraphBuilder
     method relu
     method resample2d
     method reshape
+    method sigmoid
     method softmax
     method sub
 interface MLModelLoader

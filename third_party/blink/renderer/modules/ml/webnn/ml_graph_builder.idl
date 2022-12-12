@@ -103,5 +103,8 @@ dictionary MLResample2dOptions {
 
   [RaisesException] MLOperand softmax(MLOperand input);
 
+  [RaisesException] MLOperand sigmoid(MLOperand input);
+  [RaisesException] MLOperator sigmoid();
+
   [CallWith=ScriptState, RaisesException] Promise<MLGraph> buildAsync(MLNamedOperands outputs);
 };

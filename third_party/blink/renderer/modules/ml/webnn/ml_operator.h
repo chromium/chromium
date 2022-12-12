@@ -38,7 +38,8 @@ class MODULES_EXPORT MLOperator final : public ScriptWrappable {
     kRelu,
     kReshape,
     kResample,
-    kSoftmax
+    kSoftmax,
+    kSigmoid
   };
 
   // It is safe for a caller, usually a MLGraphBuidler operation build method,

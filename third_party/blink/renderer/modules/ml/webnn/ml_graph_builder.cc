@@ -1201,6 +1201,38 @@ MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
   return output;
 }
 
+MLOperand* MLGraphBuilder::sigmoid(const MLOperand* input,
+                                   ExceptionState& exception_state) {
+  auto* sigmoid = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kSigmoid);
+  // According to WebNN spec
+  // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-sigmoid, the
+  // output tensor of sigmoid has the same type and dimensions as its input.
+  // And the input type must be one of the floating point types.
+  if (!IsFloatingPointType(input->Type())) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The input type must be one of the floating point types.");
+    return nullptr;
+  }
+  String error_message;
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, input->Type(), input->Dimensions(), sigmoid, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
+  sigmoid->Connect({input}, {output});
+  return output;
+}
+
+MLOperator* MLGraphBuilder::sigmoid(ExceptionState& exception_state) {
+  // Create the sigmoid operator that would be used as an activation function.
+  return MakeGarbageCollected<MLOperator>(this,
+                                          MLOperator::OperatorKind::kSigmoid);
+}
+
 ScriptPromise MLGraphBuilder::buildAsync(ScriptState* script_state,
                                          const MLNamedOperands& named_outputs,
                                          ExceptionState& exception_state) {

@@ -2230,6 +2230,47 @@ TEST_F(MLGraphBuilderTest, Softmax) {
   }
 }
 
+TEST_F(MLGraphBuilderTest, SigmoidTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope);
+  {
+    // Test building sigmoid with float32 input.
+    Vector<uint32_t> input_shape({3, 4, 5});
+    auto* input = BuildInput(scope, builder, "input", input_shape,
+                             V8MLOperandType::Enum::kFloat32);
+    auto* output = builder->sigmoid(input, scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), input_shape);
+    const MLOperator* sigmoid = output->Operator();
+    EXPECT_NE(sigmoid, nullptr);
+    EXPECT_EQ(sigmoid->Kind(), MLOperator::OperatorKind::kSigmoid);
+    EXPECT_EQ(sigmoid->IsConnected(), true);
+    EXPECT_EQ(sigmoid->Options(), nullptr);
+  }
+  {
+    // Test throwing exception when building sigmoid with int32 input.
+    Vector<uint32_t> input_shape({3, 4, 5});
+    auto* input = BuildInput(scope, builder, "input", input_shape,
+                             V8MLOperandType::Enum::kInt32);
+    auto* output = builder->sigmoid(input, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input type must be one of the floating point types.");
+  }
+  {
+    // Test building sigmoid operator.
+    auto* sigmoid = builder->sigmoid(scope.GetExceptionState());
+    EXPECT_NE(sigmoid, nullptr);
+    EXPECT_EQ(sigmoid->Kind(), MLOperator::OperatorKind::kSigmoid);
+    EXPECT_EQ(sigmoid->IsConnected(), false);
+    EXPECT_EQ(sigmoid->Options(), nullptr);
+  }
+}
+
 class FakeMLGraphBackend final : public MLGraph {
  public:
   // Create and build a FakeMLGraphBackend object. Resolve the promise with
