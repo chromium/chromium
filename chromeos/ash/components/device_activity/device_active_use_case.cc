@@ -168,10 +168,10 @@ std::string DeviceActiveUseCase::GetFullHardwareClass() const {
   // Retrieve full hardware class from machine statistics object.
   // Default |full_hardware_class| to kHardwareClassKeyNotFound if retrieval
   // from machine statistics fails.
-  std::string full_hardware_class = kHardwareClassKeyNotFound;
-  statistics_provider_->GetMachineStatistic(chromeos::system::kHardwareClassKey,
-                                            &full_hardware_class);
-  return full_hardware_class;
+  const absl::optional<base::StringPiece> full_hardware_class =
+      statistics_provider_->GetMachineStatistic(
+          chromeos::system::kHardwareClassKey);
+  return std::string(full_hardware_class.value_or(kHardwareClassKeyNotFound));
 }
 
 std::string DeviceActiveUseCase::GetChromeOSVersion() const {
