@@ -8,15 +8,15 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
-#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
@@ -161,7 +161,37 @@ class UserActiveDirectoryPolicyManagerTest
   bool session_exit_expected_ = false;
 };
 
-TEST_F(UserActiveDirectoryPolicyManagerTest, DontWait_HasCachedPolicy) {
+TEST_F(UserActiveDirectoryPolicyManagerTest, InitializationChromadEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(ash::features::kChromadAvailable);
+
+  CreatePolicyManager(base::TimeDelta());
+  fake_client()->set_refresh_user_policy_error(authpolicy::ERROR_NONE);
+  mock_store()->set_policy_data_for_testing(
+      std::make_unique<enterprise_management::PolicyData>());
+  mock_store()->NotifyStoreLoaded();
+  InitPolicyManagerAndVerifyExpectations();
+
+  EXPECT_EQ(policy_manager_->scheduler()->interval(),
+            ActiveDirectoryPolicyManager::kFetchIntervalChromadEnabled);
+}
+
+TEST_F(UserActiveDirectoryPolicyManagerTest, InitializationChromadDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(ash::features::kChromadAvailable);
+
+  CreatePolicyManager(base::TimeDelta());
+  fake_client()->set_refresh_user_policy_error(authpolicy::ERROR_NONE);
+  mock_store()->set_policy_data_for_testing(
+      std::make_unique<enterprise_management::PolicyData>());
+  mock_store()->NotifyStoreLoaded();
+  InitPolicyManagerAndVerifyExpectations();
+
+  EXPECT_EQ(policy_manager_->scheduler()->interval(),
+            ActiveDirectoryPolicyManager::kFetchIntervalChromadDisabled);
+}
+
+TEST_F(UserActiveDirectoryPolicyManagerTest, DontWaitHasCachedPolicy) {
   CreatePolicyManager(base::TimeDelta());
 
   // Configure policy fetch to fail.
@@ -174,7 +204,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest, DontWait_HasCachedPolicy) {
   EXPECT_TRUE(policy_manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 }
 
-TEST_F(UserActiveDirectoryPolicyManagerTest, DontWait_NoCachedPolicy) {
+TEST_F(UserActiveDirectoryPolicyManagerTest, DontWaitNoCachedPolicy) {
   CreatePolicyManager(base::TimeDelta());
 
   // Configure policy fetch to fail.
@@ -192,7 +222,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest, DontWait_NoCachedPolicy) {
 // Initialization is only complete after policy has been fetched and after that
 // has been loaded.
 TEST_F(UserActiveDirectoryPolicyManagerTest,
-       WaitFinite_LoadSuccess_FetchSuccess_LoadSuccess) {
+       WaitFiniteLoadSuccessFetchSuccessLoadSuccess) {
   CreatePolicyManager(base::Days(365));
 
   // Configure policy fetch to succeed.
@@ -221,7 +251,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest,
 // has failed to load. Load failure should not prevent session start as long as
 // we have cached policy.
 TEST_F(UserActiveDirectoryPolicyManagerTest,
-       WaitFinite_LoadSuccess_FetchSuccess_LoadFail) {
+       WaitFinite_LoadSuccessFetchSuccessLoadFail) {
   CreatePolicyManager(base::Days(365));
 
   // Configure policy fetch to succeed.
@@ -249,7 +279,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest,
 // If the initial fetch timeout is not infinite, we're in best-effort mode but
 // still require the policy load to succeed so that there's *some* policy
 // present (though possibly outdated).
-TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_LoadSuccess_FetchFail) {
+TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFiniteLoadSuccessFetchFail) {
   CreatePolicyManager(base::Days(365));
 
   // Configure policy fetch to fail.
@@ -280,7 +310,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_LoadSuccess_FetchFail) {
 // still require the policy load to succeed so that there's *some* policy
 // present (though possibly outdated). Here the sequence is inverted: Fetch
 // returns before load.
-TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_FetchFail_LoadSuccess) {
+TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFiniteFetchFailLoadSuccess) {
   CreatePolicyManager(base::Days(365));
 
   // Configure policy fetch to fail.
@@ -303,7 +333,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_FetchFail_LoadSuccess) {
 
 // If the initial fetch timeout is not infinite, we're in best-effort mode but
 // if we can't load existing policy from disk we have to give up.
-TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_LoadFail_FetchFail) {
+TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFiniteLoadFailFetchFail) {
   CreatePolicyManager(base::Days(365));
 
   // Configure policy fetch to fail.
@@ -336,7 +366,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_LoadFail_FetchFail) {
 // upon timeout initialization is complete if any policy could be loaded from
 // disk.
 TEST_F(UserActiveDirectoryPolicyManagerTest,
-       WaitFinite_LoadSuccess_FetchTimeout) {
+       WaitFiniteLoadSuccessFetchTimeout) {
   CreatePolicyManager(base::Days(365));
 
   // Configure policy fetch to fail.
@@ -358,10 +388,10 @@ TEST_F(UserActiveDirectoryPolicyManagerTest,
 
 // If load fails and fetch times out, we wait until fetch response is called.
 TEST_F(UserActiveDirectoryPolicyManagerTest,
-       WaitFinite_LoadFail_FetchTimeout_FetchSuccess) {
+       WaitFiniteLoadFailFetchTimeoutFetchSuccess) {
   CreatePolicyManager(base::Days(365));
 
-  // Configure policy fetch to fail.
+  // Configure policy fetch to return success.
   fake_client()->set_refresh_user_policy_error(authpolicy::ERROR_NONE);
 
   // Trigger mock policy fetch from authpolicyd.
@@ -388,7 +418,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest,
 // If load fails and fetch times out, we wait until fetch response is called.
 // Failure should end the session.
 TEST_F(UserActiveDirectoryPolicyManagerTest,
-       WaitFinite_LoadFail_FetchTimeout_FetchFail) {
+       WaitFiniteLoadFailFetchTimeoutFetchFail) {
   CreatePolicyManager(base::Days(365));
 
   // Configure policy fetch to fail.
@@ -412,7 +442,7 @@ TEST_F(UserActiveDirectoryPolicyManagerTest,
 }
 
 // Simulate long load by policy store.
-TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_FetchSucces_LongLoad) {
+TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFiniteFetchSuccessLongLoad) {
   CreatePolicyManager(base::Days(365));
   // Trigger mock policy fetch from authpolicyd.
   InitPolicyManagerAndVerifyExpectations();
@@ -442,9 +472,26 @@ class DeviceActiveDirectoryPolicyManagerTest
   }
 };
 
-TEST_F(DeviceActiveDirectoryPolicyManagerTest, Initialization) {
+TEST_F(DeviceActiveDirectoryPolicyManagerTest, InitializationChromadEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(ash::features::kChromadAvailable);
+
   CreatePolicyManager();
   InitPolicyManagerAndVerifyExpectations();
+
+  EXPECT_EQ(policy_manager_->scheduler()->interval(),
+            ActiveDirectoryPolicyManager::kFetchIntervalChromadEnabled);
+}
+
+TEST_F(DeviceActiveDirectoryPolicyManagerTest, InitializationChromadDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(ash::features::kChromadAvailable);
+
+  CreatePolicyManager();
+  InitPolicyManagerAndVerifyExpectations();
+
+  EXPECT_EQ(policy_manager_->scheduler()->interval(),
+            ActiveDirectoryPolicyManager::kFetchIntervalChromadDisabled);
 }
 
 }  // namespace policy
