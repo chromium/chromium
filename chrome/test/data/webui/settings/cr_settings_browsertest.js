@@ -901,6 +901,13 @@ TEST_F(
  ['SearchEngines', 'search_engines_page_test.js'],
  ['SearchPage', 'search_page_test.js'],
  ['Search', 'search_settings_test.js'],
+ ['SecurityKeysBioEnrollment', 'security_keys_bio_enrollment_test.js'],
+ [
+   'SecurityKeysCredentialManagement',
+   'security_keys_credential_management_test.js'
+ ],
+ ['SecurityKeysResetDialog', 'security_keys_reset_dialog_test.js'],
+ ['SecurityKeysSetPinDialog', 'security_keys_set_pin_dialog_test.js'],
  ['SecurityKeysPhonesSubpage', 'security_keys_phones_subpage_test.js'],
  ['SecureDns', 'secure_dns_test.js'],
  ['SiteDetailsPermission', 'site_details_permission_tests.js'],
@@ -980,11 +987,6 @@ GEN('#endif');
 
 GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)');
 registerTest('MetricsReporting', 'metrics_reporting_tests.js');
-GEN('#endif');
-
-// TODO(crbug.com/1395417): Flaky on Linux
-GEN('#if !BUILDFLAG(IS_LINUX)');
-registerTest('SecurityKeysSubpage', 'security_keys_subpage_test.js');
 GEN('#endif');
 
 function registerTest(testName, module, caseName) {
