@@ -54,11 +54,11 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   FloatController& operator=(const FloatController&) = delete;
   ~FloatController() override;
 
-  // Returns float window bounds in clamshell mode.
+  // Returns float window bounds in clamshell mode in root window coordinates.
   static gfx::Rect GetPreferredFloatWindowClamshellBounds(aura::Window* window);
 
   // Gets the ideal float bounds of `floated_window` in tablet mode if it were
-  // to be floated.
+  // to be floated, in root window coordinates.
   gfx::Rect GetPreferredFloatWindowTabletBounds(
       aura::Window* floated_window) const;
 

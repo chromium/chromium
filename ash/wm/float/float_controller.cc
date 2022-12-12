@@ -36,6 +36,7 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/screen.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -257,8 +258,9 @@ gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
   if (window->GetProperty(app_restore::kLaunchedFromAppRestoreKey))
     return window->bounds();
 
-  auto* work_area_insets = WorkAreaInsets::ForWindow(window->GetRootWindow());
-  const gfx::Rect work_area = work_area_insets->user_work_area_bounds();
+  gfx::Rect work_area = WorkAreaInsets::ForWindow(window->GetRootWindow())
+                            ->user_work_area_bounds();
+  wm::ConvertRectFromScreen(window->GetRootWindow(), &work_area);
 
   gfx::Rect preferred_bounds =
       WindowState::Get(window)->HasRestoreBounds()
@@ -283,9 +285,11 @@ gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
 
 gfx::Rect FloatController::GetPreferredFloatWindowTabletBounds(
     aura::Window* floated_window) const {
-  const gfx::Rect work_area =
+  gfx::Rect work_area =
       WorkAreaInsets::ForWindow(floated_window->GetRootWindow())
           ->user_work_area_bounds();
+  wm::ConvertRectFromScreen(floated_window->GetRootWindow(), &work_area);
+
   const bool landscape =
       chromeos::wm::IsLandscapeOrientationForWindow(floated_window);
   const gfx::Size preferred_size =

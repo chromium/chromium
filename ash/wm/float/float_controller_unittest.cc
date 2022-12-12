@@ -294,6 +294,23 @@ TEST_F(WindowFloatTest, DragToOtherDisplayThenMaximize) {
   EXPECT_EQ(Shell::GetAllRootWindows()[1], window->GetRootWindow());
 }
 
+// Tests that windows that are floated on non-primary displays are onscreen.
+// Regression test for b/261860554.
+TEST_F(WindowFloatTest, FloatOnOtherDisplay) {
+  UpdateDisplay("1200x800,1201+0-1200x800");
+
+  // Create a window on the secondary display.
+  std::unique_ptr<aura::Window> window =
+      CreateAppWindow(gfx::Rect(1200, 0, 300, 300));
+  ASSERT_EQ(Shell::GetAllRootWindows()[1], window->GetRootWindow());
+
+  // After floating, the bounds of `window` should be full contained by the
+  // secondary display bounds.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(
+      gfx::Rect(1200, 0, 1200, 800).Contains(window->GetBoundsInScreen()));
+}
+
 // Test float window per desk logic.
 TEST_F(WindowFloatTest, OneFloatWindowPerDeskLogic) {
   // Test one float window per desk is allowed.
