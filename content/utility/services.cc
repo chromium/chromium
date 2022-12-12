@@ -28,7 +28,6 @@
 #include "services/audio/service_factory.h"
 #include "services/data_decoder/data_decoder_service.h"
 #include "services/network/network_service.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
 #include "services/tracing/tracing_service.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
@@ -104,6 +103,8 @@ extern sandbox::TargetServices* g_utility_target_services;
 #endif  // BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
 
 namespace content {
+base::LazyInstance<NetworkBinderCreationCallback>::Leaky
+    g_network_binder_creation_callback_for_testing = LAZY_INSTANCE_INITIALIZER;
 
 namespace {
 
@@ -167,7 +168,10 @@ class UtilityThreadVideoCaptureServiceImpl final
 auto RunNetworkService(
     mojo::PendingReceiver<network::mojom::NetworkService> receiver) {
   auto binders = std::make_unique<service_manager::BinderRegistry>();
-  GetContentClient()->utility()->RegisterNetworkBinders(binders.get());
+  if (g_network_binder_creation_callback_for_testing.Get()) {
+    std::move(g_network_binder_creation_callback_for_testing.Get())
+        .Run(binders.get());
+  }
   return std::make_unique<network::NetworkService>(
       std::move(binders), std::move(receiver),
       /*delay_initialization_until_set_client=*/true);
@@ -336,6 +340,11 @@ auto RunVideoEncodeAcceleratorProviderFactory(
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
+
+void SetNetworkBinderCreationCallbackForTesting(  // IN-TEST
+    NetworkBinderCreationCallback callback) {
+  g_network_binder_creation_callback_for_testing.Get() = std::move(callback);
+}
 
 void RegisterIOThreadServices(mojo::ServiceFactory& services) {
   // The network service runs on the IO thread because it needs a message

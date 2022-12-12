@@ -9,7 +9,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/network_service_test_helper.h"
 #include "content/public/utility/content_utility_client.h"
-#include "content/shell/common/shell_switches.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace {
@@ -17,11 +16,7 @@ namespace {
 class TestShellContentUtilityClient : public content::ContentUtilityClient {
  public:
   TestShellContentUtilityClient() {
-    if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switches::kProcessType) == switches::kUtilityProcess) {
-      network_service_test_helper_ =
-          std::make_unique<content::NetworkServiceTestHelper>();
-    }
+    network_service_test_helper_ = content::NetworkServiceTestHelper::Create();
   }
 
   TestShellContentUtilityClient(const TestShellContentUtilityClient&) = delete;
@@ -29,12 +24,6 @@ class TestShellContentUtilityClient : public content::ContentUtilityClient {
       const TestShellContentUtilityClient&) = delete;
 
   ~TestShellContentUtilityClient() override {}
-
-  // content::ContentUtilityClient implementation.
-  void RegisterNetworkBinders(
-      service_manager::BinderRegistry* registry) override {
-    network_service_test_helper_->RegisterNetworkBinders(registry);
-  }
 
  private:
   std::unique_ptr<content::NetworkServiceTestHelper>

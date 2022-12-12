@@ -5,7 +5,6 @@
 #include "headless/lib/utility/headless_content_utility_client.h"
 
 #include "base/bind.h"
-#include "base/lazy_instance.h"
 #include "content/public/utility/utility_thread.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
@@ -20,10 +19,6 @@ namespace headless {
 
 namespace {
 
-base::LazyInstance<
-    HeadlessContentUtilityClient::NetworkBinderCreationCallback>::Leaky
-    g_network_binder_creation_callback = LAZY_INSTANCE_INITIALIZER;
-
 #if BUILDFLAG(ENABLE_PRINTING)
 auto RunPrintCompositor(
     mojo::PendingReceiver<printing::mojom::PrintCompositor> receiver) {
@@ -34,12 +29,6 @@ auto RunPrintCompositor(
 #endif
 
 }  // namespace
-
-// static
-void HeadlessContentUtilityClient::SetNetworkBinderCreationCallbackForTests(
-    NetworkBinderCreationCallback callback) {
-  g_network_binder_creation_callback.Get() = std::move(callback);
-}
 
 HeadlessContentUtilityClient::HeadlessContentUtilityClient(
     const std::string& user_agent)
@@ -52,12 +41,6 @@ void HeadlessContentUtilityClient::RegisterMainThreadServices(
 #if BUILDFLAG(ENABLE_PRINTING)
   services.Add(RunPrintCompositor);
 #endif
-}
-
-void HeadlessContentUtilityClient::RegisterNetworkBinders(
-    service_manager::BinderRegistry* registry) {
-  if (g_network_binder_creation_callback.Get())
-    g_network_binder_creation_callback.Get().Run(registry);
 }
 
 }  // namespace headless

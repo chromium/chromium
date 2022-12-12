@@ -16,12 +16,6 @@ namespace headless {
 class HEADLESS_EXPORT HeadlessContentUtilityClient
     : public content::ContentUtilityClient {
  public:
-  using NetworkBinderCreationCallback =
-      base::RepeatingCallback<void(service_manager::BinderRegistry*)>;
-
-  static void SetNetworkBinderCreationCallbackForTests(
-      NetworkBinderCreationCallback callback);
-
   explicit HeadlessContentUtilityClient(const std::string& user_agent);
 
   HeadlessContentUtilityClient(const HeadlessContentUtilityClient&) = delete;
@@ -32,8 +26,6 @@ class HEADLESS_EXPORT HeadlessContentUtilityClient
 
   // content::ContentUtilityClient:
   void RegisterMainThreadServices(mojo::ServiceFactory& services) override;
-  void RegisterNetworkBinders(
-      service_manager::BinderRegistry* registry) override;
 
  private:
   const std::string user_agent_;

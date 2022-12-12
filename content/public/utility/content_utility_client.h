@@ -17,7 +17,7 @@
 namespace mojo {
 class BinderMap;
 class ServiceFactory;
-}
+}  // namespace mojo
 
 namespace content {
 
@@ -64,9 +64,6 @@ class CONTENT_EXPORT ContentUtilityClient {
   //
   // Only called from the main thread.
   virtual void RegisterMainThreadServices(mojo::ServiceFactory& services) {}
-
-  virtual void RegisterNetworkBinders(
-      service_manager::BinderRegistry* registry) {}
 };
 
 }  // namespace content

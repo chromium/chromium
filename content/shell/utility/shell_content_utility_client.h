@@ -24,8 +24,6 @@ class ShellContentUtilityClient : public ContentUtilityClient {
   // ContentUtilityClient:
   void ExposeInterfacesToBrowser(mojo::BinderMap* binders) override;
   void RegisterIOThreadServices(mojo::ServiceFactory& services) override;
-  void RegisterNetworkBinders(
-      service_manager::BinderRegistry* registry) override;
 
  private:
   std::unique_ptr<NetworkServiceTestHelper> network_service_test_helper_;

@@ -387,8 +387,6 @@ source_set("weblayer_lib_base") {
     "renderer/weblayer_render_frame_observer.h",
     "renderer/weblayer_render_thread_observer.cc",
     "renderer/weblayer_render_thread_observer.h",
-    "utility/content_utility_client_impl.cc",
-    "utility/content_utility_client_impl.h",
   ]
 
   configs += [ "//build/config:precompiled_headers" ]

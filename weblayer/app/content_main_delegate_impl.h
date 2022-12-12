@@ -16,7 +16,6 @@ namespace weblayer {
 class ContentBrowserClientImpl;
 class ContentClientImpl;
 class ContentRendererClientImpl;
-class ContentUtilityClientImpl;
 
 class ContentMainDelegateImpl : public content::ContentMainDelegate {
  public:
@@ -40,7 +39,6 @@ class ContentMainDelegateImpl : public content::ContentMainDelegate {
   content::ContentClient* CreateContentClient() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentRendererClient* CreateContentRendererClient() override;
-  content::ContentUtilityClient* CreateContentUtilityClient() override;
 
  private:
   void InitializeResourceBundle();
@@ -48,7 +46,6 @@ class ContentMainDelegateImpl : public content::ContentMainDelegate {
   MainParams params_;
   std::unique_ptr<ContentBrowserClientImpl> browser_client_;
   std::unique_ptr<ContentRendererClientImpl> renderer_client_;
-  std::unique_ptr<ContentUtilityClientImpl> utility_client_;
   std::unique_ptr<ContentClientImpl> content_client_;
 };
 

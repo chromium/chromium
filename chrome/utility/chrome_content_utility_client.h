@@ -10,9 +10,6 @@
 
 class ChromeContentUtilityClient : public content::ContentUtilityClient {
  public:
-  using NetworkBinderCreationCallback =
-      base::OnceCallback<void(service_manager::BinderRegistry*)>;
-
   ChromeContentUtilityClient();
 
   ChromeContentUtilityClient(const ChromeContentUtilityClient&) = delete;
@@ -25,15 +22,9 @@ class ChromeContentUtilityClient : public content::ContentUtilityClient {
   void ExposeInterfacesToBrowser(mojo::BinderMap* binders) override;
   void PostIOThreadCreated(
       base::SingleThreadTaskRunner* io_thread_task_runner) override;
-  void RegisterNetworkBinders(
-      service_manager::BinderRegistry* registry) override;
   void UtilityThreadStarted() override;
   void RegisterMainThreadServices(mojo::ServiceFactory& services) override;
   void RegisterIOThreadServices(mojo::ServiceFactory& services) override;
-
-  // See NetworkBinderProvider above.
-  static void SetNetworkBinderCreationCallback(
-      NetworkBinderCreationCallback callback);
 
  private:
   // True if the utility process runs with elevated privileges.

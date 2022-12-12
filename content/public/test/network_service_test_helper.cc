@@ -23,7 +23,9 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/test_host_resolver.h"
+#include "content/utility/services.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -51,6 +53,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #include "services/network/sct_auditing/sct_auditing_reporter.h"
 
@@ -789,20 +792,35 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
 };
 
 NetworkServiceTestHelper::NetworkServiceTestHelper()
-    : network_service_test_impl_(new NetworkServiceTestImpl) {}
+    : network_service_test_impl_(new NetworkServiceTestImpl) {
+  static bool is_created = false;
+  DCHECK(!is_created) << "NetworkServiceTestHelper shouldn't be created twice.";
+  is_created = true;
+}
 
 NetworkServiceTestHelper::~NetworkServiceTestHelper() = default;
+
+std::unique_ptr<NetworkServiceTestHelper> NetworkServiceTestHelper::Create() {
+  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kUtilitySubType) == network::mojom::NetworkService::Name_) {
+    std::unique_ptr<NetworkServiceTestHelper> helper(
+        new NetworkServiceTestHelper());
+    SetNetworkBinderCreationCallbackForTesting(
+        base::BindOnce(&NetworkServiceTestHelper::RegisterNetworkBinders,
+                       base::Unretained(helper.get())));
+    return helper;
+  }
+  return nullptr;
+}
 
 void NetworkServiceTestHelper::RegisterNetworkBinders(
     service_manager::BinderRegistry* registry) {
   registry->AddInterface(base::BindRepeating(
-      &NetworkServiceTestHelper::BindNetworkServiceTestReceiver,
+      [](NetworkServiceTestHelper* helper,
+         mojo::PendingReceiver<network::mojom::NetworkServiceTest> receiver) {
+        helper->network_service_test_impl_->BindReceiver(std::move(receiver));
+      },
       base::Unretained(this)));
-}
-
-void NetworkServiceTestHelper::BindNetworkServiceTestReceiver(
-    mojo::PendingReceiver<network::mojom::NetworkServiceTest> receiver) {
-  network_service_test_impl_->BindReceiver(std::move(receiver));
 }
 
 }  // namespace content
