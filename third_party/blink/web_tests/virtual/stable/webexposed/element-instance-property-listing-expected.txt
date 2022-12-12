@@ -641,6 +641,7 @@ html element iframe
     property allowPaymentRequest
     property contentDocument
     property contentWindow
+    property credentialless
     property csp
     property featurePolicy
     property frameBorder

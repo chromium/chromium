@@ -3200,6 +3200,7 @@ interface HTMLIFrameElement : HTMLElement
     getter allowPaymentRequest
     getter contentDocument
     getter contentWindow
+    getter credentialless
     getter csp
     getter featurePolicy
     getter frameBorder
@@ -3221,6 +3222,7 @@ interface HTMLIFrameElement : HTMLElement
     setter allow
     setter allowFullscreen
     setter allowPaymentRequest
+    setter credentialless
     setter csp
     setter frameBorder
     setter height
@@ -10709,6 +10711,7 @@ namespace CSS
     getter clientInformation
     getter closed
     getter cookieStore
+    getter credentialless
     getter crossOriginIsolated
     getter crypto
     getter customElements

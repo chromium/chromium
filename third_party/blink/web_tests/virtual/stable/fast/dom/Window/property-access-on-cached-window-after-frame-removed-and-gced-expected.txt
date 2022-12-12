@@ -3,6 +3,7 @@ Tests property access on a cached DOMWindow after the associated frame is remove
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 FAIL childWindow.closed should be false. Was true.
+PASS childWindow.credentialless is false
 PASS childWindow.crossOriginIsolated is false
 PASS childWindow.devicePixelRatio is 0
 PASS childWindow.innerHeight is 0
