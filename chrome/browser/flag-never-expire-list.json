@@ -98,6 +98,7 @@
   "overlay-strategies",
   "password-import",
   "prefer-dcheck",
+  "printing-ppd-channel",
   "reader-mode-heuristics",
   "record-web-app-debug-info",
   "release-notes-notification-all-channels",

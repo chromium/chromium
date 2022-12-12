@@ -5641,6 +5641,18 @@
     "expiry_milestone": 112
   },
   {
+    "name": "printing-ppd-channel",
+    "owners": [
+      "bmgordon",
+      "masonwilde",
+      "pawliczek",
+      "project-bolton@google.com"
+    ],
+    // This flag allows our testers and partners test PPD files before they are
+    // published in production channel.
+    "expiry_milestone": -1
+  },
+  {
     "name": "privacy-guide-2",
     "owners": [
       "rainhard",

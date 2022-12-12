@@ -5,6 +5,7 @@
 #include "ash/constants/ash_features.h"
 
 #include "ash/constants/ash_switches.h"
+#include "ash_features.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -1603,6 +1604,20 @@ BASE_FEATURE(kPhoneHubPingOnBubbleOpen,
 BASE_FEATURE(kPreferConstantFrameRate,
              "PreferConstantFrameRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Set the channel from which the PPD files are loaded.
+BASE_FEATURE(kPrintingPpdChannel,
+             "PrintingPpdChannel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<PrintingPpdChannel>::Option
+    printing_ppd_channel_options[] = {
+        {PrintingPpdChannel::kProduction, "production"},
+        {PrintingPpdChannel::kStaging, "staging"},
+        {PrintingPpdChannel::kDev, "dev"}};
+const base::FeatureParam<PrintingPpdChannel> kPrintingPpdChannelParam{
+    &kPrintingPpdChannel, "channel", PrintingPpdChannel::kProduction,
+    &printing_ppd_channel_options};
 
 // Enables to allocate more video capture buffers.
 BASE_FEATURE(kMoreVideoCaptureBuffers,

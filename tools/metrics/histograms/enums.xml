@@ -57510,6 +57510,7 @@ from previous Chrome versions.
   <int value="-1791226955" label="BreakingNewsPush:enabled"/>
   <int value="-1790227231" label="show-autofill-signatures"/>
   <int value="-1789139269" label="SmbFs:disabled"/>
+  <int value="-1788763369" label="PrintingPpdChannel:disabled"/>
   <int value="-1784831690" label="Bento:disabled"/>
   <int value="-1784788154" label="NewRemotePlaybackPipeline:disabled"/>
   <int value="-1783790234"
@@ -59345,6 +59346,7 @@ from previous Chrome versions.
   <int value="-735827773" label="PageInfoHistoryDesktop:enabled"/>
   <int value="-735790302" label="CCTBrandTransparency:enabled"/>
   <int value="-735084806" label="NewTabLoadingAnimation:enabled"/>
+  <int value="-735010994" label="PrintingPpdChannel:enabled"/>
   <int value="-734301625"
       label="AutofillImportNonFocusableCreditCardForms:disabled"/>
   <int value="-734067604"

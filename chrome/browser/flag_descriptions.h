@@ -3333,6 +3333,9 @@ extern const char kPhoneHubFeatureSetupErrorHandlingDescription[];
 extern const char kPreferDcheckName[];
 extern const char kPreferDcheckDescription[];
 
+extern const char kPrintingPpdChannelName[];
+extern const char kPrintingPpdChannelDescription[];
+
 extern const char kProductivityLauncherName[];
 extern const char kProductivityLauncherDescription[];
 

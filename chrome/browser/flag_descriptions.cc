@@ -5792,6 +5792,11 @@ const char kPreferDcheckName[] = "Prefer DCHECK-enabled build";
 const char kPreferDcheckDescription[] =
     "Use a DCHECK-enabled build when available.";
 
+const char kPrintingPpdChannelName[] = "Printing PPD channel";
+const char kPrintingPpdChannelDescription[] =
+    "The channel from which PPD index "
+    "is loaded when matching PPD files during printer setup.";
+
 const char kProductivityLauncherName[] =
     "Productivity experiment: App Launcher";
 const char kProductivityLauncherDescription[] =

@@ -9541,6 +9541,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPromiseIconsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPromiseIcons)},
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"printing-ppd-channel", flag_descriptions::kPrintingPpdChannelName,
+     flag_descriptions::kPrintingPpdChannelDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPrintingPpdChannel)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
