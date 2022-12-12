@@ -169,15 +169,11 @@ void FinishRecordingOnUIThread(sk_sp<const cc::PaintRecord> recording,
     return;
   }
 
-  TRACE_EVENT_BEGIN0("paint_preview", "PreProcessPaintOpBuffer");
-  PreProcessPaintOpBuffer(recording.get(), tracker.get());
-  TRACE_EVENT_END0("paint_preview", "PreProcessPaintOpBuffer");
-
   // This cannot be done async if the recording contains a GPU accelerated
   // image.
   TRACE_EVENT_BEGIN0("paint_preview", "ConvertToSkPicture");
-  auto skp = PaintRecordToSkPicture(recording, tracker.get(), bounds);
-  recording.reset();
+  auto skp =
+      PaintRecordToSkPicture(std::move(recording), tracker.get(), bounds);
   if (!skp) {
     std::move(callback).Run(mojom::PaintPreviewStatus::kCaptureFailed,
                             std::move(response));

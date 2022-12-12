@@ -28,11 +28,13 @@ PlaybackParams::PlaybackParams(ImageProvider* image_provider)
 PlaybackParams::PlaybackParams(ImageProvider* image_provider,
                                const SkM44& original_ctm,
                                CustomDataRasterCallback custom_callback,
-                               DidDrawOpCallback did_draw_op_callback)
+                               DidDrawOpCallback did_draw_op_callback,
+                               ConvertOpCallback convert_op_callback)
     : image_provider(image_provider),
       original_ctm(original_ctm),
       custom_callback(custom_callback),
-      did_draw_op_callback(did_draw_op_callback) {}
+      did_draw_op_callback(std::move(did_draw_op_callback)),
+      convert_op_callback(std::move(convert_op_callback)) {}
 
 PlaybackParams::~PlaybackParams() = default;
 
@@ -209,13 +211,18 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
   // the translation should be preserved instead of clobbering the top level
   // transform.  This could probably be done more efficiently.
   PlaybackParams new_params(params.image_provider, canvas->getLocalToDevice(),
-                            params.custom_callback,
-                            params.did_draw_op_callback);
+                            params.custom_callback, params.did_draw_op_callback,
+                            params.convert_op_callback);
   new_params.save_layer_alpha_should_preserve_lcd_text =
       save_layer_alpha_should_preserve_lcd_text;
   new_params.is_analyzing = params.is_analyzing;
   for (PlaybackFoldingIterator iter(this, offsets); iter; ++iter) {
-    const PaintOp& op = *iter;
+    const PaintOp* op = iter.get();
+    if (params.convert_op_callback) {
+      op = params.convert_op_callback.Run(*op);
+      if (!op)
+        continue;
+    }
 
     // This is an optimization to replicate the behaviour in SkCanvas
     // which rejects ops that draw outside the current clip. In the
@@ -223,13 +230,13 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
     // using an ImageProvider for pre-decoding images, we can save
     // performing an expensive decode that will never be rasterized.
     const bool skip_op = new_params.image_provider &&
-                         PaintOp::OpHasDiscardableImages(op) &&
-                         PaintOp::QuickRejectDraw(op, canvas);
+                         PaintOp::OpHasDiscardableImages(*op) &&
+                         PaintOp::QuickRejectDraw(*op, canvas);
     if (skip_op)
       continue;
 
-    if (op.IsPaintOpWithFlags()) {
-      const auto& flags_op = static_cast<const PaintOpWithFlags&>(op);
+    if (op->IsPaintOpWithFlags()) {
+      const auto& flags_op = static_cast<const PaintOpWithFlags&>(*op);
       auto* context = canvas->recordingContext();
       const ScopedRasterFlags scoped_flags(
           &flags_op.flags, new_params.image_provider, canvas->getTotalMatrix(),
@@ -238,7 +245,7 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
         flags_op.RasterWithFlags(canvas, raster_flags, new_params);
     } else {
       DCHECK_EQ(iter.alpha(), 255);
-      op.Raster(canvas, new_params);
+      op->Raster(canvas, new_params);
     }
 
     if (!new_params.did_draw_op_callback.is_null())

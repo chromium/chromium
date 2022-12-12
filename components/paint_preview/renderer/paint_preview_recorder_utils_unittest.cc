@@ -71,7 +71,7 @@ TEST(PaintPreviewRecorderUtilsTest, TestParseGlyphs) {
 
   PaintPreviewTracker tracker(base::UnguessableToken::Create(),
                               base::UnguessableToken::Create(), true);
-  PreProcessPaintOpBuffer(record.get(), &tracker);
+  PaintRecordToSkPicture(std::move(record), &tracker, gfx::Rect(100, 100));
   auto* usage_map = tracker.GetTypefaceUsageMap();
   EXPECT_TRUE(usage_map->count(typeface->uniqueID()));
   EXPECT_TRUE(
@@ -132,7 +132,7 @@ TEST(PaintPreviewRecorderUtilsTest, TestParseLinks) {
 
   PaintPreviewTracker tracker(base::UnguessableToken::Create(),
                               base::UnguessableToken::Create(), true);
-  PreProcessPaintOpBuffer(record.get(), &tracker);
+  PaintRecordToSkPicture(std::move(record), &tracker, gfx::Rect(100, 100));
 
   std::vector<mojom::LinkDataPtr> links;
   tracker.MoveLinks(&links);
@@ -187,7 +187,7 @@ TEST(PaintPreviewRecorderUtilsTest, TestTransformSubframeRects) {
   EXPECT_EQ(rect.width(), old_cull_rect.width());
   EXPECT_EQ(rect.height(), old_cull_rect.height());
 
-  PreProcessPaintOpBuffer(record.get(), &tracker);
+  PaintRecordToSkPicture(std::move(record), &tracker, gfx::Rect(100, 100));
 
   auto* picture_ctx = tracker.GetPictureSerializationContext();
   ASSERT_EQ(picture_ctx->content_id_to_transformed_clip.size(), 1U);
@@ -230,9 +230,8 @@ class PaintPreviewRecorderUtilsSerializeAsSkPictureTest
   absl::optional<SerializedRecording> SerializeAsSkPicture(
       absl::optional<size_t> max_capture_size,
       size_t* serialized_size) {
-    auto recording = recorder.finishRecordingAsPicture();
-    PreProcessPaintOpBuffer(recording.get(), &tracker);
-    auto skp = PaintRecordToSkPicture(recording, &tracker, dimensions);
+    auto skp = PaintRecordToSkPicture(recorder.finishRecordingAsPicture(),
+                                      &tracker, dimensions);
     if (!skp)
       return absl::nullopt;
 

@@ -48,13 +48,20 @@ struct CC_PAINT_EXPORT PlaybackParams {
   using CustomDataRasterCallback =
       base::RepeatingCallback<void(SkCanvas* canvas, uint32_t id)>;
   using DidDrawOpCallback = base::RepeatingCallback<void()>;
+  // This callback returns
+  // - &op if no conversion;
+  // - a pointer (owned by the callback) to a new op;
+  // - null if the op should be discarded.
+  using ConvertOpCallback =
+      base::RepeatingCallback<const PaintOp*(const PaintOp& op)>;
 
   explicit PlaybackParams(ImageProvider* image_provider);
   PlaybackParams(
       ImageProvider* image_provider,
       const SkM44& original_ctm,
       CustomDataRasterCallback custom_callback = CustomDataRasterCallback(),
-      DidDrawOpCallback did_draw_op_callback = DidDrawOpCallback());
+      DidDrawOpCallback did_draw_op_callback = DidDrawOpCallback(),
+      ConvertOpCallback convert_op_callback = ConvertOpCallback());
   ~PlaybackParams();
 
   PlaybackParams(const PlaybackParams& other);
@@ -67,6 +74,7 @@ struct CC_PAINT_EXPORT PlaybackParams {
   SkM44 original_ctm;
   CustomDataRasterCallback custom_callback;
   DidDrawOpCallback did_draw_op_callback;
+  ConvertOpCallback convert_op_callback;
   absl::optional<bool> save_layer_alpha_should_preserve_lcd_text;
   bool is_analyzing = false;
 };
