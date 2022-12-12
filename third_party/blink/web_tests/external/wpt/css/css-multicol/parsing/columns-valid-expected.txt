@@ -1,14 +1,14 @@
 This is a testharness.js-based test.
-FAIL e.style['columns'] = "auto 3" should set the property value assert_equals: serialization should be canonical expected "3" but got "auto 3"
-FAIL e.style['columns'] = "auto 10em" should set the property value assert_equals: serialization should be canonical expected "10em" but got "10em auto"
-FAIL e.style['columns'] = "3 auto" should set the property value assert_equals: serialization should be canonical expected "3" but got "auto 3"
-FAIL e.style['columns'] = "10em auto" should set the property value assert_equals: serialization should be canonical expected "10em" but got "10em auto"
+PASS e.style['columns'] = "auto 3" should set the property value
+PASS e.style['columns'] = "auto 10em" should set the property value
+PASS e.style['columns'] = "3 auto" should set the property value
+PASS e.style['columns'] = "10em auto" should set the property value
 PASS e.style['columns'] = "2 10px" should set the property value
 PASS e.style['columns'] = "10px 2" should set the property value
-FAIL e.style['columns'] = "auto" should set the property value assert_equals: serialization should be canonical expected "auto" but got "auto auto"
-FAIL e.style['columns'] = "auto auto" should set the property value assert_equals: serialization should be canonical expected "auto" but got "auto auto"
-FAIL e.style['columns'] = "7" should set the property value assert_equals: serialization should be canonical expected "7" but got "auto 7"
-FAIL e.style['columns'] = "7em" should set the property value assert_equals: serialization should be canonical expected "7em" but got "7em auto"
+PASS e.style['columns'] = "auto" should set the property value
+PASS e.style['columns'] = "auto auto" should set the property value
+PASS e.style['columns'] = "7" should set the property value
+PASS e.style['columns'] = "7em" should set the property value
 PASS e.style['columns'] = "0 1" should set the property value
 PASS e.style['columns'] = "1 0" should set the property value
 PASS e.style['columns'] = "0px 1" should set the property value

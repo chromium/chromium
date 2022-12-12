@@ -9,20 +9,20 @@
         testRunner.dumpAsText();
 
       function runTests() {
-          var tests = [["-webkit-columns:auto 3;", "auto", "3", "auto 3"],
-                       ["-webkit-columns:auto 10em;", "10em", "auto", "10em auto"],
-                       ["-webkit-columns:3 auto;", "auto", "3", "auto 3"],
-                       ["-webkit-columns:10em auto;", "10em", "auto", "10em auto"],
+          var tests = [["-webkit-columns:auto 3;", "auto", "3", "3"],
+                       ["-webkit-columns:auto 10em;", "10em", "auto", "10em"],
+                       ["-webkit-columns:3 auto;", "auto", "3", "3"],
+                       ["-webkit-columns:10em auto;", "10em", "auto", "10em"],
                        ["-webkit-columns:7 7em; -webkit-columns:auto auto auto;", "7em", "7", "7em 7"],
                        ["-webkit-columns:7 7em; -webkit-columns:10em auto auto;", "7em", "7", "7em 7"],
-                       ["-webkit-columns:7 7em; -webkit-columns:auto;", "auto", "auto", "auto auto"],
-                       ["-webkit-columns:7 7em; -webkit-columns:auto auto;",  "auto", "auto", "auto auto"],
+                       ["-webkit-columns:7 7em; -webkit-columns:auto;", "auto", "auto", "auto"],
+                       ["-webkit-columns:7 7em; -webkit-columns:auto auto;",  "auto", "auto", "auto"],
                        ["-webkit-columns:auto; -webkit-columns:initial;", "initial", "initial", "initial"],
-                       ["-webkit-columns:auto; -webkit-columns:initial initial;", "auto", "auto", "auto auto"],
+                       ["-webkit-columns:auto; -webkit-columns:initial initial;", "auto", "auto", "auto"],
                        ["-webkit-columns:auto; -webkit-columns:inherit;", "inherit", "inherit", "inherit"],
-                       ["-webkit-columns:auto; -webkit-columns:inherit inherit;", "auto", "auto", "auto auto"],
-                       ["-webkit-columns:7;", "auto", "7", "auto 7"],
-                       ["-webkit-columns:7em;", "7em", "auto", "7em auto"]];
+                       ["-webkit-columns:auto; -webkit-columns:inherit inherit;", "auto", "auto", "auto"],
+                       ["-webkit-columns:7;", "auto", "7", "7"],
+                       ["-webkit-columns:7em;", "7em", "auto", "7em"]];
 
           tests.forEach(function(test) {
               element.style.cssText = test[0];

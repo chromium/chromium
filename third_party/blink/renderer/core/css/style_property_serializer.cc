@@ -502,7 +502,7 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kColumnRule:
       return GetShorthandValue(columnRuleShorthand());
     case CSSPropertyID::kColumns:
-      return GetShorthandValue(columnsShorthand());
+      return GetShorthandValueForColumns(columnsShorthand());
     case CSSPropertyID::kContainIntrinsicSize:
       return ContainIntrinsicSizeValue();
     case CSSPropertyID::kFlex:
@@ -1420,6 +1420,29 @@ String StylePropertySerializer::GetShorthandValue(
       result.Append(separator);
     result.Append(value_text);
   }
+  return result.ReleaseString();
+}
+
+String StylePropertySerializer::GetShorthandValueForColumns(
+    const StylePropertyShorthand& shorthand) const {
+  DCHECK_EQ(shorthand.length(), 2u);
+
+  StringBuilder result;
+  for (unsigned i = 0; i < shorthand.length(); ++i) {
+    const CSSValue* value =
+        property_set_.GetPropertyCSSValue(*shorthand.properties()[i]);
+    String value_text = value->CssText();
+    if (IsA<CSSIdentifierValue>(value) &&
+        To<CSSIdentifierValue>(value)->GetValueID() == CSSValueID::kAuto)
+      continue;
+    if (!result.empty())
+      result.Append(" ");
+    result.Append(value_text);
+  }
+
+  if (result.empty())
+    return "auto";
+
   return result.ReleaseString();
 }
 
