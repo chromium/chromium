@@ -173,14 +173,14 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadExtensionAndSendMessages) {
   ASSERT_TRUE(have_test_data_dir);
   extension_dir = extension_dir.AppendASCII("extensions")
                       .AppendASCII("no_best_effort_tasks_test_extension");
+  extensions::TestExtensionRegistryObserver observer(
+      extensions::ExtensionRegistry::Get(browser()->profile()));
   extensions::UnpackedInstaller::Create(
       extensions::ExtensionSystem::Get(browser()->profile())
           ->extension_service())
       ->Load(extension_dir);
   scoped_refptr<const extensions::Extension> extension =
-      extensions::TestExtensionRegistryObserver(
-          extensions::ExtensionRegistry::Get(browser()->profile()))
-          .WaitForExtensionReady();
+      observer.WaitForExtensionReady();
   ASSERT_TRUE(extension);
   ASSERT_EQ(kExtensionId, extension->id());
 
