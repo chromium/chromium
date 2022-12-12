@@ -1414,19 +1414,21 @@ void Range::FixupRemovedChildrenAcrossShadowBoundary(ContainerNode& container) {
   BoundaryShadowNodeChildrenWillBeRemoved(end_, container);
 }
 
-static inline void BoundaryNodeWillBeRemoved(RangeBoundaryPoint& boundary,
+// Returns true if `boundary` was modified.
+static inline bool BoundaryNodeWillBeRemoved(RangeBoundaryPoint& boundary,
                                              Node& node_to_be_removed) {
   if (boundary.ChildBefore() == node_to_be_removed) {
     boundary.ChildBeforeWillBeRemoved();
-    return;
+    return true;
   }
 
   for (Node* n = &boundary.Container(); n; n = n->parentNode()) {
     if (n == node_to_be_removed) {
       boundary.SetToBeforeChild(node_to_be_removed);
-      return;
+      return true;
     }
   }
+  return false;
 }
 
 static inline void BoundaryShadowNodeWillBeRemoved(RangeBoundaryPoint& boundary,
@@ -1450,8 +1452,14 @@ void Range::NodeWillBeRemoved(Node& node) {
   // should change following if-statement to DCHECK(!node->parentNode).
   if (!node.parentNode())
     return;
-  BoundaryNodeWillBeRemoved(start_, node);
-  BoundaryNodeWillBeRemoved(end_, node);
+  const bool is_collapsed = collapsed();
+  const bool start_updated = BoundaryNodeWillBeRemoved(start_, node);
+  if (is_collapsed) {
+    if (start_updated)
+      end_ = start_;
+  } else {
+    BoundaryNodeWillBeRemoved(end_, node);
+  }
 }
 
 void Range::FixupRemovedNodeAcrossShadowBoundary(Node& node) {
