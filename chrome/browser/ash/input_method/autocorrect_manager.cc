@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 #include "chrome/browser/ash/input_method/ime_rules_config.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -637,7 +638,13 @@ void AutocorrectManager::OnActivate(const std::string& engine_id) {
       GetPhysicalKeyboardAutocorrectPref(*pref_service, engine_id);
   if (base::FeatureList::IsEnabled(features::kAutocorrectByDefault) &&
       autocorrect_pref == AutocorrectPreference::kDefault &&
-      IsUsEnglishId(engine_id)) {
+      IsUsEnglishId(engine_id) &&
+      // This class is instantiated with NativeInputMethodEngineObserver, which
+      // must exist at all times in the system to provide typing (including
+      // login screens, guest sessions, etc). Make sure we are only recording
+      // this metric when a real user has logged into their profile.
+      ProfileHelper::IsUserProfile(profile_) && profile_->IsRegularProfile() &&
+      !profile_->IsGuestSession()) {
     SetPhysicalKeyboardAutocorrectAsEnabledByDefault(pref_service, engine_id);
   }
 }
