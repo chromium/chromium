@@ -30,11 +30,14 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/rust.gni")
 
 if (toolchain_has_rust) {
-  # List of Rust stdlib rlibs which are present in the official
-  # Rust toolchain we are using from the Android team. This is usually
-  # a version or two behind nightly.
-  # See //docs/security/rust-toolchain.md#building-on-non_linux-platforms
-  # for how to maintain this list.
+  # List of Rust stdlib rlibs which are present in the official Rust toolchain
+  # we are using from the Android team. This is usually a version or two behind
+  # nightly. Generally this matches the toolchain we build ourselves, but if
+  # they differ, append or remove libraries based on the
+  # `use_chromium_rust_toolchain` GN variable.
+  #
+  # If the build fails due to missing symbols, it would be because of a missing
+  # library that needs to be added here in a newer stdlib.
   stdlib_files = [
     "std",  # List first because it makes depfiles more debuggable (see below)
     "addr2line",
@@ -59,10 +62,6 @@ if (toolchain_has_rust) {
     "unicode_width",
     "unwind",
   ]
-
-  if (use_chromium_rust_toolchain) {
-    stdlib_files += [ "cfg_if-2" ]
-  }
 
   # Different Rust toolchains may add or remove files relative to the above
   # list. That can be specified in gn args for anyone using (for instance)
