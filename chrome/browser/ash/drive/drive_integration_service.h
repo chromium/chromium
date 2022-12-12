@@ -171,6 +171,9 @@ class DriveIntegrationService : public KeyedService,
   // Returns the DriveFsHost if it is enabled.
   drivefs::DriveFsHost* GetDriveFsHost() const;
 
+  // Returns the `DriveFsPinManager` iff DriveFS is mounted.
+  drivefs::pinning::DriveFsPinManager* GetDriveFsPinManager();
+
   // Returns the mojo interface to the DriveFs daemon if it is enabled and
   // connected.
   drivefs::mojom::DriveFs* GetDriveFsInterface() const;
@@ -274,9 +277,6 @@ class DriveIntegrationService : public KeyedService,
   void ForceReSyncFile(const base::FilePath& local_path,
                        base::OnceClosure callback);
 
-  // Enable / disable the bulk pinning functionality.
-  void SetBulkPinningEnabled(bool enabled);
-
  private:
   enum State {
     NOT_INITIALIZED,
@@ -288,8 +288,6 @@ class DriveIntegrationService : public KeyedService,
 
   // Manages passing changes in team drives to the drive notification manager.
   class NotificationManager;
-
-  void OnBulkPinningFinished(drivefs::pinning::PinError status);
 
   // Returns true if Drive is enabled.
   // Must be called on UI thread.

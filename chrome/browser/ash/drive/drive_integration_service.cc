@@ -450,8 +450,10 @@ class DriveIntegrationService::PreferenceWatcher
     }
 
     VLOG(1) << "Updating the bulk pinning state";
-    integration_service_->SetBulkPinningEnabled(
-        pref_service_->GetBoolean(prefs::kDriveFsBulkPinningEnabled));
+    if (integration_service_->GetDriveFsPinManager()) {
+      integration_service_->GetDriveFsPinManager()->SetBulkPinningEnabled(
+          pref_service_->GetBoolean(prefs::kDriveFsBulkPinningEnabled));
+    }
   }
 
   void AddNetworkPortalDetectorObserver() {
@@ -842,6 +844,15 @@ void DriveIntegrationService::MaybeRemountFileSystemAfterClearCache(
 
 drivefs::DriveFsHost* DriveIntegrationService::GetDriveFsHost() const {
   return drivefs_holder_->drivefs_host();
+}
+
+drivefs::pinning::DriveFsPinManager*
+DriveIntegrationService::GetDriveFsPinManager() {
+  if (!ash::features::IsDriveFsBulkPinningEnabled()) {
+    return nullptr;
+  }
+
+  return pin_manager_.get();
 }
 
 drivefs::mojom::DriveFs* DriveIntegrationService::GetDriveFsInterface() const {
@@ -1442,32 +1453,6 @@ void DriveIntegrationService::ForceReSyncFile(const base::FilePath& local_path,
   // TODO(b/234921400): Replace this with a call to DriveFS once implemented.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                            std::move(callback));
-}
-
-void DriveIntegrationService::SetBulkPinningEnabled(bool enabled) {
-  if (!ash::features::IsDriveFsBulkPinningEnabled() || !IsMounted() ||
-      !GetDriveFsInterface() || !pin_manager_) {
-    return;
-  }
-
-  VLOG(1) << "Setting bulk pinning enabled: " << enabled;
-  pin_manager_->SetBulkPinningEnabled(enabled);
-
-  if (enabled) {
-    drivefs_holder_->drivefs_host()->AddObserver(pin_manager_.get());
-    pin_manager_->Start(
-        base::BindOnce(&DriveIntegrationService::OnBulkPinningFinished,
-                       weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
-  pin_manager_->Stop();
-  drivefs_holder_->drivefs_host()->RemoveObserver(pin_manager_.get());
-}
-
-void DriveIntegrationService::OnBulkPinningFinished(
-    drivefs::pinning::PinError status) {
-  LOG(ERROR) << "Finished with status: " << static_cast<int>(status);
 }
 
 //===================== DriveIntegrationServiceFactory =======================
