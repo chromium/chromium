@@ -119,9 +119,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.BookmarksBar.DragDropType"
-    enum="BookmarkBarDragDropType" expires_after="2023-01-15">
+    enum="BookmarkBarDragDropType" expires_after="2023-06-04">
   <owner>dfried@chromium.org</owner>
-  <owner>mickeyburks@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     Records whether a bookmarks bar drag-drop is from a URL (e.g. from the
     location bar) or from the bookmarks bar itself (which is effectively a
