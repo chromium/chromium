@@ -27,7 +27,7 @@
 
 namespace WTF {
 
-static base::Locks& HashTableStatsLock() {
+static base::Lock& HashTableStatsLock() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
   return lock;
 }
