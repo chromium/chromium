@@ -16,7 +16,6 @@
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_scripts_fetcher.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -97,8 +96,7 @@ class LeakDetectionDelegateHelperTest
         base::MakeRefCounted<testing::StrictMock<MockPasswordStoreInterface>>();
 
     delegate_helper_ = std::make_unique<LeakDetectionDelegateHelper>(
-        store_, /*account_store=*/nullptr, /*scripts_fetcher=*/nullptr,
-        callback_.Get());
+        store_, /*account_store=*/nullptr, callback_.Get());
   }
 
   void TearDown() override { store_ = nullptr; }
@@ -287,8 +285,7 @@ class LeakDetectionDelegateHelperWithTwoStoreTest
                          /*affiliated_match_helper=*/nullptr);
 
     delegate_helper_ = std::make_unique<LeakDetectionDelegateHelper>(
-        profile_store_, account_store_, /*scripts_fetcher=*/nullptr,
-        callback_.Get());
+        profile_store_, account_store_, callback_.Get());
   }
 
   void TearDown() override {
@@ -350,97 +347,6 @@ TEST_F(LeakDetectionDelegateHelperWithTwoStoreTest,
                    .at(account_store_form.signon_realm)
                    .at(0)
                    .password_issues.empty());
-}
-
-class FakePasswordScriptsFetcher : public PasswordScriptsFetcher {
- public:
-  void PrewarmCache() override {}
-  void RefreshScriptsIfNecessary(
-      base::OnceClosure fetch_finished_callback) override {}
-
-  void FetchScriptAvailability(const url::Origin& origin,
-                               ResponseCallback callback) override {
-    callback_ = std::move(callback);
-  }
-
-  bool IsScriptAvailable(const url::Origin& origin) const override {
-    // The synchronous script availability check isn't used by
-    // LeakDetectionDelegateHelper.
-    NOTREACHED();
-    return false;
-  }
-
-  bool HasScriptAvailabilityCallback() const { return !callback_.is_null(); }
-
-  void RunScriptAvailabilityCallback(bool is_script_available) {
-    std::move(callback_).Run(is_script_available);
-  }
-
-  bool IsCacheStale() const override { return true; }
-
-  base::Value::Dict GetDebugInformationForInternals() const override {
-    return base::Value::Dict();
-  }
-
-  base::Value::List GetCacheEntries() const override {
-    return base::Value::List();
-  }
-
- private:
-  ResponseCallback callback_;
-};
-
-class LeakDetectionDelegateHelperWithScriptsFetcherTest
-    : public testing::Test,
-      public LeakDetectionDelegateHelperTestBase {
- protected:
-  void SetUp() override {
-    profile_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
-
-    delegate_helper_ = std::make_unique<LeakDetectionDelegateHelper>(
-        profile_store_, /*account_store=*/nullptr, &scripts_fetcher_,
-        callback_.Get());
-  }
-
-  void TearDown() override {
-    delegate_helper_.reset();
-    profile_store_->ShutdownOnUIThread();
-    profile_store_ = nullptr;
-    task_environment_.RunUntilIdle();
-  }
-
-  scoped_refptr<TestPasswordStore> profile_store_ =
-      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
-  FakePasswordScriptsFetcher scripts_fetcher_;
-};
-
-TEST_F(LeakDetectionDelegateHelperWithScriptsFetcherTest,
-       NoPasswordChangeScriptAvailable) {
-  profile_store_->AddLogin(CreateForm(kLeakedOrigin, kLeakedUsername));
-
-  InitiateGetCredentialLeakType();
-  ASSERT_TRUE(scripts_fetcher_.HasScriptAvailabilityCallback());
-
-  // The result should only be available once the script fetcher finishes.
-  SetOnShowLeakDetectionNotificationExpectation(
-      PasswordForm::Store::kProfileStore, IsReused(false),
-      {GURL(kLeakedOrigin)});
-  scripts_fetcher_.RunScriptAvailabilityCallback(/*is_script_available=*/false);
-}
-
-TEST_F(LeakDetectionDelegateHelperWithScriptsFetcherTest,
-       PasswordChangeScriptAvailable) {
-  profile_store_->AddLogin(CreateForm(kLeakedOrigin, kLeakedUsername));
-
-  InitiateGetCredentialLeakType();
-  ASSERT_TRUE(scripts_fetcher_.HasScriptAvailabilityCallback());
-
-  // The result should only be available once the script fetcher finishes.
-  SetOnShowLeakDetectionNotificationExpectation(
-      PasswordForm::Store::kProfileStore, IsReused(false),
-      {GURL(kLeakedOrigin)});
-  scripts_fetcher_.RunScriptAvailabilityCallback(/*is_script_available=*/true);
 }
 
 }  // namespace password_manager

@@ -19,7 +19,6 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/password_scripts_fetcher.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -46,6 +45,8 @@ LeakDetectionDelegate::LeakDetectionDelegate(PasswordManagerClient* client)
 
 LeakDetectionDelegate::~LeakDetectionDelegate() = default;
 
+// TODO(crbug.com/1386065): Delete `submitted_form_was_likely_signup_form` param
+// as part of APC deprecation.
 void LeakDetectionDelegate::StartLeakCheck(
     const PasswordForm& credentials,
     bool submitted_form_was_likely_signup_form) {
@@ -90,22 +91,9 @@ void LeakDetectionDelegate::OnLeakDetectionDone(bool is_leaked,
           kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission,
       false);
   if (is_leaked || force_dialog_for_testing) {
-    PasswordScriptsFetcher* scripts_fetcher = nullptr;
-    // Password change scripts should only be offered during sign-in
-    // (not during sign-up), so don't query if this was a new-password form.
-    if (!is_likely_signup_form_ &&
-        client_->GetPasswordFeatureManager()
-            ->AreRequirementsForAutomatedPasswordChangeFulfilled() &&
-        password_manager::features::IsPasswordScriptsFetchingEnabled() &&
-        base::FeatureList::IsEnabled(
-            password_manager::features::kPasswordChange)) {
-      scripts_fetcher = client_->GetPasswordScriptsFetcher();
-    }
-
     // Query the helper to asynchronously determine the `CredentialLeakType`.
     helper_ = std::make_unique<LeakDetectionDelegateHelper>(
         client_->GetProfilePasswordStore(), client_->GetAccountPasswordStore(),
-        scripts_fetcher,
         base::BindOnce(&LeakDetectionDelegate::OnShowLeakDetectionNotification,
                        base::Unretained(this)));
     helper_->ProcessLeakedPassword(std::move(url), std::move(username),

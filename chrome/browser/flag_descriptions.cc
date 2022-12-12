@@ -2311,11 +2311,6 @@ const char kPasswordImportName[] = "Password import";
 const char kPasswordImportDescription[] =
     "Import functionality in password settings.";
 
-const char kPasswordDomainCapabilitiesFetchingName[] =
-    "Fetch credentials' password change capabilities";
-const char kPasswordDomainCapabilitiesFetchingDescription[] =
-    "Fetches credentials' password change capabilities from the server.";
-
 const char kPasswordChangeAccountStoreUsersName[] =
     "Password change for account store users";
 const char kPasswordChangeAccountStoreUsersDescription[] =
@@ -2325,12 +2320,6 @@ const char kPasswordStrengthIndicatorName[] = "Password strength indicator";
 const char kPasswordStrengthIndicatorDescription[] =
     "Enables password strength indicator when typing a password during a "
     "sign-up and password change flows.";
-
-const char kForceEnablePasswordDomainCapabilitiesName[] =
-    "Force enable password change capabilities for domains";
-const char kForceEnablePasswordDomainCapabilitiesDescription[] =
-    "Force enables password change capabilities for every domain, regardless "
-    "of the server response.";
 
 const char kForceEnableFastCheckoutCapabilitiesName[] =
     "Force enable fast checkout capabilities";

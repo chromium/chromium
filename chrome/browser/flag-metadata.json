@@ -3812,11 +3812,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "force-enable-password-domain-capabilities",
-    "owners": [ "vizcay@google.com", "brunobraga@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "force-gpu-main-thread-to-normal-priority-drdc",
     "owners": [ "vikassoni", "lehoangquyen" ],
     "expiry_milestone": 110
@@ -5521,11 +5516,6 @@
   {
     "name": "password-change-support",
     "owners": [ "kolos", "treib", "brunobraga" ],
-    "expiry_milestone": 112
-  },
-  {
-    "name": "password-domain-capabilities-fetching",
-    "owners": [ "vizcay@google.com", "treib", "brunobraga@google.com", "chrome-duplex@google.com" ],
     "expiry_milestone": 112
   },
   {

@@ -233,7 +233,6 @@ public class PasswordCheckControllerTest {
     public void testCreatesEntryForExistingCredentials() {
         when(mPasswordCheck.getCompromisedCredentials())
                 .thenReturn(new CompromisedCredential[] {ANA});
-        when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
         when(mChangePasswordDelegate.canManuallyChangeCredential(eq(ANA))).thenReturn(true);
 
         mMediator.onPasswordCheckStatusChanged(IDLE);
@@ -250,7 +249,6 @@ public class PasswordCheckControllerTest {
     public void testHidesChangeButtonIfManualChangeIsNotPossible() {
         when(mPasswordCheck.getCompromisedCredentials())
                 .thenReturn(new CompromisedCredential[] {BOB});
-        when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
         when(mChangePasswordDelegate.canManuallyChangeCredential(eq(BOB))).thenReturn(false);
 
         mMediator.onPasswordCheckStatusChanged(IDLE);
@@ -268,7 +266,6 @@ public class PasswordCheckControllerTest {
         // First call adds only ANA.
         when(mPasswordCheck.getCompromisedCredentials())
                 .thenReturn(new CompromisedCredential[] {ANA});
-        when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
         mMediator.onCompromisedCredentialsFetchCompleted();
         assertThat(mModel.get(ITEMS).size(), is(2)); // Header + existing credentials.
 
@@ -291,7 +288,6 @@ public class PasswordCheckControllerTest {
         // Add 2 compromised credentials.
         when(mPasswordCheck.getCompromisedCredentials())
                 .thenReturn(new CompromisedCredential[] {ANA, BOB});
-        when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
         when(mPasswordCheck.getCompromisedCredentialsCount()).thenReturn(2);
         mMediator.onCompromisedCredentialsFetchCompleted();
         assertThat(mModel.get(ITEMS).size(), is(3)); // Header + existing credentials.
@@ -316,7 +312,6 @@ public class PasswordCheckControllerTest {
         // Add ANA while the check is running.
         when(mPasswordCheck.getCompromisedCredentials())
                 .thenReturn(new CompromisedCredential[] {ANA});
-        when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
         when(mPasswordCheck.getCompromisedCredentialsCount()).thenReturn(1);
         mMediator.onCompromisedCredentialsFetchCompleted();
         assertThat(mModel.get(ITEMS).size(), is(2)); // Header + existing credentials.
@@ -341,7 +336,6 @@ public class PasswordCheckControllerTest {
     public void testShowSubtitleOnCompromisedCredentialsFetched() {
         when(mPasswordCheck.getCompromisedCredentials())
                 .thenReturn(new CompromisedCredential[] {ANA});
-        when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
         when(mPasswordCheck.getCompromisedCredentialsCount()).thenReturn(1);
         mMediator.onCompromisedCredentialsFetchCompleted();
         assertThat(getHeaderModel().get(SHOW_CHECK_SUBTITLE), is(true));
@@ -351,7 +345,6 @@ public class PasswordCheckControllerTest {
     public void testShowSubtitleOnNoCompromisedCredentialsFetchedIfIdleStatus() {
         mMediator.onPasswordCheckStatusChanged(IDLE);
         when(mPasswordCheck.getCompromisedCredentials()).thenReturn(new CompromisedCredential[] {});
-        when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
         when(mPasswordCheck.getCompromisedCredentialsCount()).thenReturn(0);
         mMediator.onCompromisedCredentialsFetchCompleted();
         assertThat(getHeaderModel().get(SHOW_CHECK_SUBTITLE), is(true));
@@ -360,7 +353,6 @@ public class PasswordCheckControllerTest {
     @Test
     public void testNotShowSubtitleOnNoCompromisedCredentialsFetched() {
         when(mPasswordCheck.getCompromisedCredentials()).thenReturn(new CompromisedCredential[] {});
-        when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
         when(mPasswordCheck.getCompromisedCredentialsCount()).thenReturn(0);
         mMediator.onCompromisedCredentialsFetchCompleted();
         assertThat(getHeaderModel().get(SHOW_CHECK_SUBTITLE), is(false));
@@ -378,7 +370,6 @@ public class PasswordCheckControllerTest {
                 makeCredential("example.org", "alice", 2, 2, true, false);
         CompromisedCredential leakedLate = makeCredential("site.com", "john", 4, 4, true, false);
 
-        when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
         when(mPasswordCheck.getCompromisedCredentials())
                 .thenReturn(new CompromisedCredential[] {
                         phishedEarly, leakedEarly, leakedLate, phishedLeakedLate});
@@ -403,8 +394,6 @@ public class PasswordCheckControllerTest {
         CompromisedCredential leakedEarly =
                 makeCredential("example.org", "alice", 2, 2, true, false);
         CompromisedCredential leakedLate = makeCredential("site.com", "john", 4, 4, true, false);
-
-        when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
 
         // Send the initial set of credentials (to simulate loading them from disk).
         when(mPasswordCheck.getCompromisedCredentials())
@@ -515,7 +504,6 @@ public class PasswordCheckControllerTest {
     public void testRecordsDidNothingOnLeavingPage() {
         when(mPasswordCheck.getCompromisedCredentials())
                 .thenReturn(new CompromisedCredential[] {ANA, BOB, CHARLIE});
-        when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
         when(mChangePasswordDelegate.canManuallyChangeCredential(any(CompromisedCredential.class)))
                 .thenReturn(true);
 
@@ -535,7 +523,6 @@ public class PasswordCheckControllerTest {
         when(mPasswordCheck.getCompromisedCredentials())
                 .thenReturn(new CompromisedCredential[] {ANA, BOB, CHARLIE});
         when(mPasswordCheck.getCompromisedCredentialsCount()).thenReturn(3);
-        when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
         when(mChangePasswordDelegate.canManuallyChangeCredential(any(CompromisedCredential.class)))
                 .thenReturn(true);
 

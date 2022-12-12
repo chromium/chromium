@@ -89,10 +89,6 @@ PasswordReuseManager* StubPasswordManagerClient::GetPasswordReuseManager()
   return nullptr;
 }
 
-PasswordScriptsFetcher* StubPasswordManagerClient::GetPasswordScriptsFetcher() {
-  return nullptr;
-}
-
 MockPasswordChangeSuccessTracker*
 StubPasswordManagerClient::GetPasswordChangeSuccessTracker() {
   return &password_change_success_tracker_;

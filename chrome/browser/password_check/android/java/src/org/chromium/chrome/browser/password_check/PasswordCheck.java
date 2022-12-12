@@ -122,14 +122,4 @@ public interface PasswordCheck extends PasswordCheckComponentUi.Delegate {
      * Stops the password check, if one is running. Otherwise, does nothing.
      */
     void stopCheck();
-
-    /**
-     * Checks if scripts refreshment is finished.
-     */
-    boolean areScriptsRefreshed();
-
-    /**
-     *  Fetches scripts for automated passwords changes.
-     */
-    void fetchScripts();
 }

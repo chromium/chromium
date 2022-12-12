@@ -66,7 +66,6 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   PasswordStoreInterface* GetProfilePasswordStore() const override;
   PasswordStoreInterface* GetAccountPasswordStore() const override;
   PasswordReuseManager* GetPasswordReuseManager() const override;
-  PasswordScriptsFetcher* GetPasswordScriptsFetcher() override;
   MockPasswordChangeSuccessTracker* GetPasswordChangeSuccessTracker() override;
   const GURL& GetLastCommittedURL() const override;
   url::Origin GetLastCommittedOrigin() const override;

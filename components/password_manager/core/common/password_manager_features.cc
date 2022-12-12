@@ -41,12 +41,6 @@ BASE_FEATURE(kDetectFormSubmissionOnFormClear,
 #endif
 );
 
-// Force enables password change capabilities for every domain, regardless of
-// the server response. The flag is meant for end-to-end testing purposes only.
-BASE_FEATURE(kForceEnablePasswordDomainCapabilities,
-             "ForceEnablePasswordDomainCapabilities",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the overwriting of prefilled username fields if the server predicted
 // the field to contain a placeholder value.
 BASE_FEATURE(kEnableOverwritingPlaceholderUsernames,
@@ -168,12 +162,6 @@ BASE_FEATURE(kPasswordChangeAccountStoreUsers,
 // Enables .well-known based password change flow from leaked password dialog.
 BASE_FEATURE(kPasswordChangeWellKnown,
              "PasswordChangeWellKnown",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables fetching credentials capabilities from server for the
-// |PasswordChangeInSettings| and |PasswordChange| features.
-BASE_FEATURE(kPasswordDomainCapabilitiesFetching,
-             "PasswordDomainCapabilitiesFetching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls the ability to import passwords from Chrome's settings page.
@@ -348,10 +336,6 @@ const char kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission[] =
 // settings.
 const char kPasswordChangeInSettingsWithForcedWarningForEverySite[] =
     "should_force_warning_for_every_site_in_settings";
-
-bool IsPasswordScriptsFetchingEnabled() {
-  return base::FeatureList::IsEnabled(kPasswordDomainCapabilitiesFetching);
-}
 
 #if BUILDFLAG(IS_ANDROID)
 bool UsesUnifiedPasswordManagerUi() {

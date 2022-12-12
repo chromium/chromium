@@ -1298,17 +1298,11 @@ extern const char kPasswordChangeDescription[];
 extern const char kPasswordImportName[];
 extern const char kPasswordImportDescription[];
 
-extern const char kPasswordDomainCapabilitiesFetchingName[];
-extern const char kPasswordDomainCapabilitiesFetchingDescription[];
-
 extern const char kPasswordChangeAccountStoreUsersName[];
 extern const char kPasswordChangeAccountStoreUsersDescription[];
 
 extern const char kPasswordStrengthIndicatorName[];
 extern const char kPasswordStrengthIndicatorDescription[];
-
-extern const char kForceEnablePasswordDomainCapabilitiesName[];
-extern const char kForceEnablePasswordDomainCapabilitiesDescription[];
 
 extern const char kForceEnableFastCheckoutCapabilitiesName[];
 extern const char kForceEnableFastCheckoutCapabilitiesDescription[];

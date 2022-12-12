@@ -213,11 +213,6 @@ WebViewPasswordManagerClient::GetPasswordReuseManager() const {
   return reuse_manager_;
 }
 
-password_manager::PasswordScriptsFetcher*
-WebViewPasswordManagerClient::GetPasswordScriptsFetcher() {
-  return nullptr;
-}
-
 password_manager::PasswordChangeSuccessTracker*
 WebViewPasswordManagerClient::GetPasswordChangeSuccessTracker() {
   return password_change_tracker_;

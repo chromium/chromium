@@ -359,7 +359,6 @@ static_library("browser") {
     sources += [
       "http_credentials_cleaner.cc",
       "http_credentials_cleaner.h",
-      "password_scripts_fetcher.h",
     ]
   }
 
@@ -396,25 +395,6 @@ static_library("browser") {
     sources += [
       "password_store_signin_notifier_impl.cc",
       "password_store_signin_notifier_impl.h",
-    ]
-  }
-}
-
-source_set("capabilities") {
-  if (!is_ios) {
-    sources = [
-      "capabilities_service.h",
-      "capabilities_service_impl.cc",
-      "capabilities_service_impl.h",
-      "saved_passwords_capabilities_fetcher.cc",
-      "saved_passwords_capabilities_fetcher.h",
-    ]
-    deps = [
-      ":browser",
-      "//base",
-      "//components/password_manager/core/common:features",
-      "//components/password_manager/services/csv_password:service",
-      "//url",
     ]
   }
 }
@@ -539,8 +519,6 @@ static_library("test_support") {
     "mock_password_manager_settings_service.h",
     "mock_password_reuse_manager.cc",
     "mock_password_reuse_manager.h",
-    "mock_password_scripts_fetcher.cc",
-    "mock_password_scripts_fetcher.h",
     "mock_password_store_backend.cc",
     "mock_password_store_backend.h",
     "mock_password_store_consumer.cc",
@@ -754,10 +732,7 @@ source_set("unit_tests") {
   if (is_ios) {
     sources += [ "login_database_ios_unittest.cc" ]
   } else {
-    sources += [
-      "http_credentials_cleaner_unittest.cc",
-      "saved_passwords_capabilities_fetcher_unittest.cc",
-    ]
+    sources += [ "http_credentials_cleaner_unittest.cc" ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
@@ -771,7 +746,6 @@ source_set("unit_tests") {
   deps = [
     ":affiliation",
     ":affiliation_unittests",
-    ":capabilities",
     ":hash_password_manager",
     ":password_generator",
     ":password_hash_data",

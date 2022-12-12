@@ -58,7 +58,7 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
                            std::u16string password) override;
 
   // Initiates the showing of the leak detection notification. It is called by
-  // `helper_` after `in_stores`, `is_reused`
+  // `helper_` after `in_stores` and `is_reused`
   // were determined asynchronously. `all_urls_with_leaked_credentials` contains
   // all the URLs on which the leaked username/password pair is used.
   void OnShowLeakDetectionNotification(
@@ -77,7 +77,9 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
   // Current leak check-up being performed in the background.
   std::unique_ptr<LeakDetectionCheck> leak_check_;
 
-  // Whether the form that was submitted was (likely) a signup form.
+  // TODO(crbug.com/1386065): Delete `is_likely_signup_form_` as part of APC
+  // deprecation. Whether the form that was submitted was (likely) a signup
+  // form.
   bool is_likely_signup_form_ = false;
 
   // Timer measuring the time it takes from StartLeakCheck() until a call to

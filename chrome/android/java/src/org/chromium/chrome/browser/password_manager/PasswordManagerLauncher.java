@@ -9,7 +9,6 @@ import android.app.Activity;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.content_public.browser.WebContents;
@@ -33,12 +32,6 @@ public class PasswordManagerLauncher {
             @ManagePasswordsReferrer int referrer,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         SyncService syncService = SyncService.get();
-        if (syncService.isEngineInitialized()
-                && PasswordManagerHelper.hasChosenToSyncPasswordsWithNoCustomPassphrase(syncService)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.PASSWORD_DOMAIN_CAPABILITIES_FETCHING)) {
-            PasswordScriptsFetcherBridge.prewarmCache();
-        }
         PasswordManagerHelper.showPasswordSettings(activity, referrer, new SettingsLauncherImpl(),
                 syncService, modalDialogManagerSupplier);
     }

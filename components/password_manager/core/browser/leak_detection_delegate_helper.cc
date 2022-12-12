@@ -10,7 +10,6 @@
 #include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_scripts_fetcher.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 
@@ -19,14 +18,12 @@ namespace password_manager {
 LeakDetectionDelegateHelper::LeakDetectionDelegateHelper(
     scoped_refptr<PasswordStoreInterface> profile_store,
     scoped_refptr<PasswordStoreInterface> account_store,
-    PasswordScriptsFetcher* scripts_fetcher,
     LeakTypeReply callback)
     : profile_store_(std::move(profile_store)),
       account_store_(std::move(account_store)),
-      scripts_fetcher_(scripts_fetcher),
       callback_(std::move(callback)) {
   DCHECK(profile_store_);
-  // `account_store_` and `scripts_fetcher_` may be null.
+  // `account_store_` may be null.
 }
 
 LeakDetectionDelegateHelper::~LeakDetectionDelegateHelper() = default;
@@ -39,7 +36,7 @@ void LeakDetectionDelegateHelper::ProcessLeakedPassword(
   username_ = std::move(username);
   password_ = std::move(password);
 
-  int wait_counter = 1 + (account_store_ ? 1 : 0) + (scripts_fetcher_ ? 1 : 0);
+  int wait_counter = 1 + (account_store_ ? 1 : 0);
   barrier_closure_ = base::BarrierClosure(
       wait_counter, base::BindOnce(&LeakDetectionDelegateHelper::ProcessResults,
                                    base::Unretained(this)));
@@ -49,29 +46,12 @@ void LeakDetectionDelegateHelper::ProcessLeakedPassword(
   if (account_store_) {
     account_store_->GetAutofillableLogins(weak_ptr_factory_.GetWeakPtr());
   }
-
-  if (scripts_fetcher_) {
-    scripts_fetcher_->FetchScriptAvailability(
-        url::Origin::Create(url_),
-        base::BindOnce(
-            &LeakDetectionDelegateHelper::ScriptAvailabilityDetermined,
-            weak_ptr_factory_.GetWeakPtr()));
-  }
 }
 
 void LeakDetectionDelegateHelper::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   // Store the results.
   base::ranges::move(results, std::back_inserter(partial_results_));
-
-  barrier_closure_.Run();
-}
-
-// TODO (https://crbug.com/1386065): Remove this function and its usages
-// as part of APC removal.
-void LeakDetectionDelegateHelper::ScriptAvailabilityDetermined(
-    bool script_is_available) {
-  script_is_available_ = false;
 
   barrier_closure_.Run();
 }

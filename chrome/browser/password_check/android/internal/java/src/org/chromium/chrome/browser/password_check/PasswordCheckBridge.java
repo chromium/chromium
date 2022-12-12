@@ -102,21 +102,6 @@ class PasswordCheckBridge {
     }
 
     /**
-     *
-     * @return Whether the scripts refreshment is finished.
-     */
-    boolean areScriptsRefreshed() {
-        return PasswordCheckBridgeJni.get().areScriptsRefreshed(mNativePasswordCheckBridge);
-    }
-
-    /**
-     * Invokes scripts refreshment.
-     */
-    void refreshScripts() {
-        PasswordCheckBridgeJni.get().refreshScripts(mNativePasswordCheckBridge);
-    }
-
-    /**
      * @return The timestamp of the last completed check.
      */
     long getLastCheckTimestamp() {
@@ -189,8 +174,6 @@ class PasswordCheckBridge {
         long create(PasswordCheckBridge passwordCheckBridge);
         void startCheck(long nativePasswordCheckBridge);
         void stopCheck(long nativePasswordCheckBridge);
-        boolean areScriptsRefreshed(long nativePasswordCheckBridge);
-        void refreshScripts(long nativePasswordCheckBridge);
         long getLastCheckTimestamp(long nativePasswordCheckBridge);
         int getCompromisedCredentialsCount(long nativePasswordCheckBridge);
         int getSavedPasswordsCount(long nativePasswordCheckBridge);

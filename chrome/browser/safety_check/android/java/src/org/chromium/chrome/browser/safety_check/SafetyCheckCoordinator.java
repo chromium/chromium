@@ -10,9 +10,6 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
-import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -43,12 +40,6 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         new SafetyCheckCoordinator(settingsFragment, updatesClient, settingsLauncher,
                 signinLauncher, modalDialogManagerSupplier);
-        if (!PasswordManagerHelper.canUseUpm()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.PASSWORD_DOMAIN_CAPABILITIES_FETCHING)) {
-            // Triggers pre-fetching the list of password change scripts.
-            PasswordCheckFactory.getOrCreate(settingsLauncher).fetchScripts();
-        }
     }
 
     private SafetyCheckCoordinator(SafetyCheckSettingsFragment settingsFragment,

@@ -212,11 +212,6 @@ IOSChromePasswordManagerClient::GetPasswordReuseManager() const {
       bridge_.browserState);
 }
 
-password_manager::PasswordScriptsFetcher*
-IOSChromePasswordManagerClient::GetPasswordScriptsFetcher() {
-  return nullptr;
-}
-
 password_manager::PasswordChangeSuccessTracker*
 IOSChromePasswordManagerClient::GetPasswordChangeSuccessTracker() {
   return IOSChromePasswordChangeSuccessTrackerFactory::GetForBrowserState(

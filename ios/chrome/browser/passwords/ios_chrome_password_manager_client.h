@@ -37,10 +37,9 @@ class LogManager;
 }
 
 namespace password_manager {
-class PasswordScriptsFetcher;
 class PasswordFormManagerForUI;
 class PasswordManagerDriver;
-}
+}  // namespace password_manager
 
 namespace safe_browsing {
 enum class WarningAction;
@@ -115,8 +114,6 @@ class IOSChromePasswordManagerClient
       const override;
   password_manager::PasswordReuseManager* GetPasswordReuseManager()
       const override;
-  password_manager::PasswordScriptsFetcher* GetPasswordScriptsFetcher()
-      override;
   password_manager::PasswordChangeSuccessTracker*
   GetPasswordChangeSuccessTracker() override;
 

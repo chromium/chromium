@@ -264,8 +264,7 @@ INSTANTIATE_TEST_SUITE_P(InstantiationName,
 
 #if BUILDFLAG(IS_ANDROID)
 struct PasswordChangeParams {
-  // Specifies the test case. Note that the HasChangeScript(false) cases are
-  // covered in a separate test.
+  // Specifies the test case.
   CredentialLeakType leak_type;
   // The rest of the fields specify what should be displayed for this test case.
   int accept_button_id;

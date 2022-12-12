@@ -30,7 +30,6 @@ BASE_DECLARE_FEATURE(kBiometricAuthenticationInSettings);
 #endif
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
 BASE_DECLARE_FEATURE(kDetectFormSubmissionOnFormClear);
-BASE_DECLARE_FEATURE(kForceEnablePasswordDomainCapabilities);
 BASE_DECLARE_FEATURE(kEnableOverwritingPlaceholderUsernames);
 BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);
 BASE_DECLARE_FEATURE(kEnablePasswordGenerationForClearTextFields);
@@ -51,11 +50,12 @@ BASE_DECLARE_FEATURE(kNewRegexForOtpFields);
 BASE_DECLARE_FEATURE(kPasswordViewPageInSettings);
 BASE_DECLARE_FEATURE(kSendPasswords);
 BASE_DECLARE_FEATURE(kLeakDetectionUnauthenticated);
+// TODO(crbug.com/1386065): Delete the following two flags as part of APC
+// deprecation.
 BASE_DECLARE_FEATURE(kPasswordChange);
 BASE_DECLARE_FEATURE(kPasswordChangeInSettings);
 BASE_DECLARE_FEATURE(kPasswordChangeAccountStoreUsers);
 BASE_DECLARE_FEATURE(kPasswordChangeWellKnown);
-BASE_DECLARE_FEATURE(kPasswordDomainCapabilitiesFetching);
 BASE_DECLARE_FEATURE(kPasswordImport);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 BASE_DECLARE_FEATURE(kPasswordManagerRedesign);
@@ -83,12 +83,6 @@ BASE_DECLARE_FEATURE(kUnifiedPasswordManagerAndroidBranding);
 BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
 
 // All features parameters are in alphabetical order.
-
-// True if the client is part of the live_experiment group for
-// |kPasswordDomainCapabilitiesFetching|, otherwise, the client is assumed to be
-// in the regular launch group.
-constexpr base::FeatureParam<bool> kPasswordChangeLiveExperimentParam = {
-    &kPasswordDomainCapabilitiesFetching, "live_experiment", false};
 
 // If true, then password strength indicator will display a minimized state for
 // passwords with more than 5 characters as long as they are weak. Otherwise,
@@ -189,9 +183,6 @@ extern const char kPasswordChangeInSettingsWithForcedWarningForEverySite[];
 // Touch To Fill submission feature's variations.
 extern const char kTouchToFillPasswordSubmissionWithConservativeHeuristics[];
 #endif  // IS_ANDROID
-
-// Returns true the password script fetching flag is enabled.
-bool IsPasswordScriptsFetchingEnabled();
 
 #if BUILDFLAG(IS_ANDROID)
 // Returns true if the unified password manager feature is active and in a stage

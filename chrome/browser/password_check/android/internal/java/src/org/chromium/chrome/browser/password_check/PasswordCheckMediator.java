@@ -126,9 +126,6 @@ class PasswordCheckMediator
 
     @Override
     public void onCompromisedCredentialsFetchCompleted() {
-        if (!getPasswordCheck().areScriptsRefreshed()) {
-            return;
-        }
         CompromisedCredential[] credentials = getPasswordCheck().getCompromisedCredentials();
         assert credentials != null;
 

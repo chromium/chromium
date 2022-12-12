@@ -33,7 +33,6 @@
 #include "chrome/browser/password_manager/field_info_manager_factory.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
-#include "chrome/browser/password_manager/password_scripts_fetcher_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
@@ -83,7 +82,6 @@
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_requirements_service.h"
-#include "components/password_manager/core/browser/password_scripts_fetcher.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -670,14 +668,6 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::CredentialLeakType leak_type,
     const GURL& url,
     const std::u16string& username) {
-  if (GetPasswordFeatureManager()->IsGenerationEnabled() &&
-      password_manager::features::IsPasswordScriptsFetchingEnabled()) {
-    // The prewarm is triggered so that script availability is prefetched in
-    // case the user lands on the Password Check UI (after tapping the "Check
-    // Passwords" button).
-    GetPasswordScriptsFetcher()->PrewarmCache();
-  }
-
 #if BUILDFLAG(IS_ANDROID)
   auto metrics_recorder = std::make_unique<
       password_manager::metrics_util::LeakDialogMetricsRecorder>(
@@ -745,11 +735,6 @@ ChromePasswordManagerClient::GetAccountPasswordStore() const {
 password_manager::PasswordReuseManager*
 ChromePasswordManagerClient::GetPasswordReuseManager() const {
   return PasswordReuseManagerFactory::GetForProfile(profile_);
-}
-
-password_manager::PasswordScriptsFetcher*
-ChromePasswordManagerClient::GetPasswordScriptsFetcher() {
-  return PasswordScriptsFetcherFactory::GetForBrowserContext(profile_);
 }
 
 password_manager::PasswordChangeSuccessTracker*

@@ -168,14 +168,6 @@ void PasswordCheckBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-bool PasswordCheckBridge::AreScriptsRefreshed(JNIEnv* env) const {
-  return check_manager_.AreScriptsRefreshed();
-}
-
-void PasswordCheckBridge::RefreshScripts(JNIEnv* env) {
-  check_manager_.RefreshScripts();
-}
-
 void PasswordCheckBridge::OnSavedPasswordsFetched(int count) {
   Java_PasswordCheckBridge_onSavedPasswordsFetched(
       base::android::AttachCurrentThread(), java_bridge_, count);
