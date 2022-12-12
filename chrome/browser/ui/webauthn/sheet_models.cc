@@ -33,6 +33,10 @@
 #include "ui/gfx/text_utils.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace {
 
 // Possibly returns a resident key warning if the model indicates that it's
@@ -657,7 +661,9 @@ bool AuthenticatorBlePermissionMacSheetModel::IsCancelButtonVisible() const {
 
 std::u16string AuthenticatorBlePermissionMacSheetModel::GetAcceptButtonLabel()
     const {
-  return l10n_util::GetStringUTF16(IDS_OPEN_PREFERENCES_LINK);
+  return l10n_util::GetStringUTF16(base::mac::IsAtMostOS12()
+                                       ? IDS_OPEN_PREFERENCES_LINK
+                                       : IDS_OPEN_SETTINGS_LINK);
 }
 
 void AuthenticatorBlePermissionMacSheetModel::OnAccept() {
