@@ -5206,11 +5206,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-remove-suggestion-header-capitalization",
-    "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "omnibox-remove-suggestion-header-chevron",
     "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

@@ -7287,7 +7287,6 @@
                         "OmniboxMostVisitedTilesFadingOnTablet",
                         "OmniboxMostVisitedTilesOnSrp",
                         "OmniboxMostVisitedTilesTitleWrapAround",
-                        "OmniboxRemoveSuggestionHeaderCapitalization",
                         "OmniboxRemoveSuggestionHeaderChevron",
                         "OmniboxRetainSuggestionsWithHeaders",
                         "OmniboxUIExperimentMaxAutocompleteMatches",

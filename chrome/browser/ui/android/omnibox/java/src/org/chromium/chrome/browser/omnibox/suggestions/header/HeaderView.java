@@ -141,17 +141,6 @@ public class HeaderView extends SimpleHorizontalLayoutView {
     }
 
     /**
-     * Specifies whether suggestion header text should be capitalized.
-     *
-     * @param shouldRemoveSuggestionHeaderCapitalization true, if capitalization on the suggestion
-     *         header should be removed.
-     */
-    void setShouldRemoveSuggestionHeaderCapitalization(
-            boolean shouldRemoveSuggestionHeaderCapitalization) {
-        mHeaderText.setAllCaps(!shouldRemoveSuggestionHeaderCapitalization);
-    }
-
-    /**
      * Specifies the paddings for suggestion header.
      *
      * @param minHeight the min height of header view.

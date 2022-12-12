@@ -61,8 +61,6 @@ public class HeaderProcessor implements DropdownItemProcessor {
         model.set(HeaderViewProperties.TITLE, headerText);
         model.set(HeaderViewProperties.IS_COLLAPSED, false);
         model.set(HeaderViewProperties.SHOULD_REMOVE_CHEVRON, mShouldRemoveSuggestionHeaderChevron);
-        model.set(HeaderViewProperties.SHOULD_REMOVE_CAPITALIZATION,
-                mShouldRemoveSuggestionHeaderCapitalization);
         model.set(HeaderViewProperties.USE_UPDATED_HEADER_PADDING, mUseUpdatedHeaderPadding);
         if (mAllowGroupCollapsedState) {
             model.set(HeaderViewProperties.DELEGATE, new HeaderViewProperties.Delegate() {
@@ -99,9 +97,6 @@ public class HeaderProcessor implements DropdownItemProcessor {
                 ChromeFeatureList.OMNIBOX_REMOVE_SUGGESTION_HEADER_CHEVRON,
                 "allow_group_collapsed_state",
                 /* default= */ true);
-
-        mShouldRemoveSuggestionHeaderCapitalization = ChromeFeatureList.isEnabled(
-                ChromeFeatureList.OMNIBOX_REMOVE_SUGGESTION_HEADER_CAPITALIZATION);
 
         mUseUpdatedHeaderPadding =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_HEADER_PADDING_UPDATE);

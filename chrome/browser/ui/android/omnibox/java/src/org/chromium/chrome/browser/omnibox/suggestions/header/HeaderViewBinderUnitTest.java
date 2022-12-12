@@ -202,20 +202,6 @@ public class HeaderViewBinderUnitTest {
     }
 
     @Test
-    public void headerView_removeSuggestionHeaderCapitalizationTrue() {
-        // Remove Capitalization.
-        mModel.set(HeaderViewProperties.SHOULD_REMOVE_CAPITALIZATION, true);
-        verify(mHeaderView, times(1)).setShouldRemoveSuggestionHeaderCapitalization(true);
-    }
-
-    @Test
-    public void headerView_removeSuggestionHeaderCapitalizationFalse() {
-        // Restore Capitalization.
-        mModel.set(HeaderViewProperties.SHOULD_REMOVE_CAPITALIZATION, false);
-        verify(mHeaderView, times(1)).setShouldRemoveSuggestionHeaderCapitalization(false);
-    }
-
-    @Test
     @DisableFeatures({ChromeFeatureList.OMNIBOX_HEADER_PADDING_UPDATE,
             ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
     public void

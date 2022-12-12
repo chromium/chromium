@@ -99,7 +99,6 @@ BASE_DECLARE_FEATURE(kOmniboxFuzzyUrlSuggestions);
 BASE_DECLARE_FEATURE(kOmniboxDefaultBrowserPedal);
 BASE_DECLARE_FEATURE(kOmniboxHeaderPaddingUpdate);
 BASE_DECLARE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor);
-BASE_DECLARE_FEATURE(kOmniboxRemoveSuggestionHeaderCapitalization);
 BASE_DECLARE_FEATURE(kOmniboxRemoveSuggestionHeaderChevron);
 BASE_DECLARE_FEATURE(kOmniboxMostVisitedTilesAddRecycledViewPool);
 BASE_DECLARE_FEATURE(kOmniboxMostVisitedTilesFadingOnTablet);

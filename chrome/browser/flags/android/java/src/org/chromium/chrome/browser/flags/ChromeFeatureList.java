@@ -415,8 +415,6 @@ public abstract class ChromeFeatureList {
             "OmniboxRemoveExcessiveRecycledViewClearCalls";
     public static final String OMNIBOX_REMOVE_SUGGESTION_HEADER_CHEVRON =
             "OmniboxRemoveSuggestionHeaderChevron";
-    public static final String OMNIBOX_REMOVE_SUGGESTION_HEADER_CAPITALIZATION =
-            "OmniboxRemoveSuggestionHeaderCapitalization";
     public static final String OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS =
             "OmniboxUpdatedConnectionSecurityIndicators";
     public static final String OPAQUE_ORIGIN_FOR_INCOMING_INTENTS =

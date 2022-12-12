@@ -5271,12 +5271,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxMostVisitedTilesDynamicSpacingDescription,
      kOsAndroid, FEATURE_VALUE_TYPE(omnibox::kMostVisitedTilesDynamicSpacing)},
 
-    {"omnibox-remove-suggestion-header-capitalization",
-     flag_descriptions::kOmniboxRemoveSuggestionHeaderCapitalizationName,
-     flag_descriptions::kOmniboxRemoveSuggestionHeaderCapitalizationDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxRemoveSuggestionHeaderCapitalization)},
-
     {"omnibox-remove-suggestion-header-chevron",
      flag_descriptions::kOmniboxRemoveSuggestionHeaderChevronName,
      flag_descriptions::kOmniboxRemoveSuggestionHeaderChevronDescription,
