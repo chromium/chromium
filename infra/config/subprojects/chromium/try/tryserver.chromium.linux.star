@@ -217,8 +217,6 @@ try_.compilator_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     check_for_flakiness = True,
     main_list_view = "try",
-    # TODO (gatong): Remove once we've migrated to n2s
-    cores = "8|16",
 )
 
 try_.orchestrator_builder(
@@ -261,8 +259,6 @@ try_.compilator_builder(
     name = "linux-wayland-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    # TODO (gatong): Remove once we've migrated to n2s
-    cores = "8|16",
     ssd = True,
 )
 
@@ -388,8 +384,6 @@ try_.compilator_builder(
     name = "linux_chromium_asan_rel_ng-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    # TODO (gatong): Remove once we've migrated to n2s
-    cores = "8|16",
 )
 
 try_.builder(
@@ -569,8 +563,6 @@ try_.compilator_builder(
     name = "linux_chromium_tsan_rel_ng-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    # TODO (gatong): Remove once we've migrated to n2s
-    cores = "8|16",
 )
 
 try_.builder(

@@ -78,8 +78,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "fuchsia-arm64-rel-compilator",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    # TODO (gatong): Remove once we've migrated to n2s
-    cores = "8|16",
     # TODO(crbug.com/1298110): Set to True once compilator bots are moved
     ssd = None,
     main_list_view = "try",

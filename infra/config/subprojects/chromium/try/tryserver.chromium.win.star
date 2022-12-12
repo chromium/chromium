@@ -102,8 +102,6 @@ try_.compilator_builder(
     main_list_view = "try",
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
-    # TODO (gatong): Remove once we've migrated to n2s
-    cores = "16|32",
 )
 
 try_.builder(

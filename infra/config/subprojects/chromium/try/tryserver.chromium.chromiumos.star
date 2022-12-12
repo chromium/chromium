@@ -71,8 +71,7 @@ try_.compilator_builder(
     name = "chromeos-amd64-generic-rel-compilator",
     branch_selector = branches.CROS_LTS_MILESTONE,
     main_list_view = "try",
-    # TODO (gatong): Change to cores = 8 once we've migrated to n2s
-    cores = "8|16",
+    cores = 8,
     goma_backend = None,
 )
 
@@ -283,8 +282,6 @@ try_.compilator_builder(
     branch_selector = branches.CROS_LTS_MILESTONE,
     main_list_view = "try",
     goma_backend = None,
-    # TODO (gatong): Remove once we've migrated to n2s
-    cores = "16|32",
 )
 
 try_.builder(
