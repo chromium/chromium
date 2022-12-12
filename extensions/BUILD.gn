@@ -133,6 +133,7 @@ static_library("test_support") {
     "test/extension_test_message_listener.h",
     "test/extension_test_notification_observer.cc",
     "test/extension_test_notification_observer.h",
+    "test/flakiness_test_util.h",
     "test/logging_timer.cc",
     "test/logging_timer.h",
     "test/permissions_manager_waiter.cc",
@@ -244,6 +245,7 @@ test("extensions_unittests") {
 
   sources = [
     "test/extensions_unittests_main.cc",
+    "test/flakiness_test_util_test.cc",
     "test/logging_timer_unittest.cc",
   ]
 
