@@ -257,29 +257,18 @@ bool FrameSelection::SetSelectionDeprecated(
   if (!is_changed && is_handle_visible_ == should_show_handle &&
       is_directional_ == options.IsDirectional())
     return false;
+  Document& current_document = GetDocument();
   if (is_changed) {
     AssertUserSelection(new_selection, options);
     selection_editor_->SetSelectionAndEndTyping(new_selection);
-
-    // The old selection might not be valid, and thus not iteratable. If that's
-    // the case, notify that all selection was removed and use an empty range as
-    // the old selection.
-    EphemeralRangeInFlatTree old_range;
-    if (old_selection_in_dom_tree.IsValidFor(GetDocument())) {
-      old_range =
-          ToEphemeralRangeInFlatTree(old_selection_in_dom_tree.ComputeRange());
-    } else {
-      DisplayLockUtilities::SelectionRemovedFromDocument(GetDocument());
-    }
-    DisplayLockUtilities::SelectionChanged(
-        old_range, ToEphemeralRangeInFlatTree(new_selection.ComputeRange()));
+    NotifyDisplayLockForSelectionChange(
+        current_document, old_selection_in_dom_tree, new_selection);
   }
   is_directional_ = options.IsDirectional();
   should_shrink_next_tap_ = options.ShouldShrinkNextTap();
   is_handle_visible_ = should_show_handle;
   ScheduleVisualUpdateForPaintInvalidationIfNeeded();
 
-  const Document& current_document = GetDocument();
   frame_->GetEditor().RespondToChangedSelection();
   DCHECK_EQ(current_document, GetDocument());
   return true;
@@ -873,6 +862,28 @@ void FrameSelection::NotifyCompositorForSelectionChange() {
 
 void FrameSelection::NotifyEventHandlerForSelectionChange() {
   frame_->GetEventHandler().GetSelectionController().NotifySelectionChanged();
+}
+
+void FrameSelection::NotifyDisplayLockForSelectionChange(
+    Document& document,
+    const SelectionInDOMTree& old_selection,
+    const SelectionInDOMTree& new_selection) {
+  if (DisplayLockUtilities::NeedsSelectionChangedUpdate(document) ||
+      (!old_selection.IsNone() && old_selection.GetDocument() != document &&
+       DisplayLockUtilities::NeedsSelectionChangedUpdate(
+           *old_selection.GetDocument()))) {
+    // The old selection might not be valid, and thus not iterable. If
+    // that's the case, notify that all selection was removed and use an empty
+    // range as the old selection.
+    EphemeralRangeInFlatTree old_range;
+    if (old_selection.IsValidFor(document)) {
+      old_range = ToEphemeralRangeInFlatTree(old_selection.ComputeRange());
+    } else {
+      DisplayLockUtilities::SelectionRemovedFromDocument(document);
+    }
+    DisplayLockUtilities::SelectionChanged(
+        old_range, ToEphemeralRangeInFlatTree(new_selection.ComputeRange()));
+  }
 }
 
 void FrameSelection::FocusedOrActiveStateChanged() {

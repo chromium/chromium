@@ -617,6 +617,12 @@ void DisplayLockUtilities::ElementGainedFocus(Element* element) {
   }
 }
 
+// static
+bool DisplayLockUtilities::NeedsSelectionChangedUpdate(
+    const Document& document) {
+  return document.GetDisplayLockDocumentState().DisplayLockCount() > 0;
+}
+
 void DisplayLockUtilities::SelectionChanged(
     const EphemeralRangeInFlatTree& old_selection,
     const EphemeralRangeInFlatTree& new_selection) {

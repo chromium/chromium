@@ -293,6 +293,8 @@ class CORE_EXPORT DisplayLockUtilities {
   static void ElementLostFocus(Element*);
   static void ElementGainedFocus(Element*);
 
+  // Returns true if the selection changed functions need to be called.
+  static bool NeedsSelectionChangedUpdate(const Document& document);
   static void SelectionChanged(const EphemeralRangeInFlatTree& old_selection,
                                const EphemeralRangeInFlatTree& new_selection);
   static void SelectionRemovedFromDocument(Document& document);
