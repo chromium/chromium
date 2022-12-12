@@ -33,7 +33,7 @@ using testing::SaveArg;
 // list.
 template <typename T>
 std::string ParamsToJSON(const T& params) {
-  base::ListValue params_value;
+  base::Value::List params_value;
   params_value.Append(base::Value(params.ToValue()));
   std::string params_json_string;
   EXPECT_TRUE(base::JSONWriter::Write(params_value, &params_json_string));
