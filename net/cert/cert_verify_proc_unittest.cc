@@ -4382,6 +4382,12 @@ TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotPresentIntermediate) {
   EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
 }
 
+TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotPresentLeaf) {
+  chain_[0]->EraseExtension(der::Input(kBasicConstraintsOid));
+
+  EXPECT_THAT(Verify(), IsOk());
+}
+
 TEST_P(CertVerifyProcConstraintsTest, NameConstraintsNotMatchingRoot) {
   chain_[3]->SetNameConstraintsDnsNames(/*permitted_dns_names=*/{"example.org"},
                                         /*excluded_dns_names=*/{});
@@ -4421,6 +4427,17 @@ TEST_P(CertVerifyProcConstraintsTest, NameConstraintsMatchingIntermediate) {
   } else {
     EXPECT_THAT(Verify(), IsOk());
   }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, NameConstraintsOnLeaf) {
+  chain_[0]->SetNameConstraintsDnsNames(
+      /*permitted_dns_names=*/{"example.com"},
+      /*excluded_dns_names=*/{});
+
+  // TODO(mattm): this should be an error
+  // RFC 5280 4.2.1.10 says: "The name constraints extension, which MUST be
+  // used only in a CA certificate, ..."
+  EXPECT_THAT(Verify(), IsOk());
 }
 
 TEST_P(CertVerifyProcConstraintsTest, ValidityExpiredRoot) {
@@ -4722,6 +4739,22 @@ TEST_P(CertVerifyProcConstraintsTest, KeyUsageNotPresentIntermediate) {
   EXPECT_THAT(Verify(), IsOk());
 }
 
+TEST_P(CertVerifyProcConstraintsTest, KeyUsageNoDigitalSignatureLeaf) {
+  // This test is mostly uninteresting since keyUsage on the end-entity is only
+  // checked at the TLS layer, not during cert verification.
+  chain_[0]->SetKeyUsages({KEY_USAGE_BIT_CRL_SIGN});
+
+  EXPECT_THAT(Verify(), IsOk());
+}
+
+TEST_P(CertVerifyProcConstraintsTest, KeyUsageNotPresentLeaf) {
+  // This test is mostly uninteresting since keyUsage on the end-entity is only
+  // checked at the TLS layer, not during cert verification.
+  chain_[0]->EraseExtension(der::Input(kKeyUsageOid));
+
+  EXPECT_THAT(Verify(), IsOk());
+}
+
 TEST_P(CertVerifyProcConstraintsTest, ExtendedKeyUsageNoServerAuthRoot) {
   chain_[3]->SetExtendedKeyUsages({der::Input(kCodeSigning)});
 
@@ -4759,6 +4792,12 @@ TEST_P(CertVerifyProcConstraintsTest, ExtendedKeyUsageServerAuthIntermediate) {
   EXPECT_THAT(Verify(), IsOk());
 }
 
+TEST_P(CertVerifyProcConstraintsTest, ExtendedKeyUsageNoServerAuthLeaf) {
+  chain_[0]->SetExtendedKeyUsages({der::Input(kCodeSigning)});
+
+  EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+}
+
 TEST_P(CertVerifyProcConstraintsTest, UnknownSignatureAlgorithmRoot) {
   chain_[3]->SetSignatureAlgorithmTLV(TestOid0SignatureAlgorithmTLV());
 
@@ -4777,6 +4816,17 @@ TEST_P(CertVerifyProcConstraintsTest, UnknownSignatureAlgorithmIntermediate) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
   } else {
     EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, UnknownSignatureAlgorithmLeaf) {
+  chain_[0]->SetSignatureAlgorithmTLV(TestOid0SignatureAlgorithmTLV());
+
+  if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
+      verify_proc_type() == CERT_VERIFY_PROC_IOS) {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
+  } else {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
   }
 }
 
@@ -4804,6 +4854,19 @@ TEST_P(CertVerifyProcConstraintsTest, UnknownExtensionIntermediate) {
   for (bool critical : {true, false}) {
     SCOPED_TRACE(critical);
     chain_[2]->SetExtension(TestOid0(), "hello world", critical);
+
+    if (critical) {
+      EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
+    } else {
+      EXPECT_THAT(Verify(), IsOk());
+    }
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, UnknownExtensionLeaf) {
+  for (bool critical : {true, false}) {
+    SCOPED_TRACE(critical);
+    chain_[0]->SetExtension(TestOid0(), "hello world", critical);
 
     if (critical) {
       EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
