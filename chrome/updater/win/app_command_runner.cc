@@ -167,24 +167,28 @@ AppCommandRunner& AppCommandRunner::operator=(const AppCommandRunner&) =
     default;
 AppCommandRunner::~AppCommandRunner() = default;
 
-HRESULT AppCommandRunner::LoadAppCommand(UpdaterScope scope,
-                                         const std::wstring& app_id,
-                                         const std::wstring& command_id,
-                                         AppCommandRunner& app_command_runner) {
+HResultOr<AppCommandRunner> AppCommandRunner::LoadAppCommand(
+    UpdaterScope scope,
+    const std::wstring& app_id,
+    const std::wstring& command_id) {
   std::wstring command_format;
   HRESULT hr = LoadAppCommandFormat(scope, app_id, command_id, command_format);
   if (FAILED(hr)) {
     if (IsSystemInstall(scope)) {
       hr = LoadLegacyProcessLauncherFormat(app_id, command_id, command_format);
     }
-
     if (FAILED(hr))
-      return hr;
+      return base::unexpected(hr);
   }
 
-  return GetAppCommandFormatComponents(scope, command_format,
-                                       app_command_runner.executable_,
-                                       app_command_runner.parameters_);
+  AppCommandRunner app_command_runner;
+  hr = GetAppCommandFormatComponents(scope, command_format,
+                                     app_command_runner.executable_,
+                                     app_command_runner.parameters_);
+  if (FAILED(hr))
+    return base::unexpected(hr);
+
+  return app_command_runner;
 }
 
 std::vector<AppCommandRunner>
@@ -211,9 +215,10 @@ AppCommandRunner::LoadAutoRunOnOsUpgradeAppCommands(
       continue;
     }
 
-    AppCommandRunner runner;
-    if (SUCCEEDED(LoadAppCommand(scope, app_id, it.Name(), runner)))
-      app_command_runners.push_back(runner);
+    HResultOr<AppCommandRunner> runner =
+        LoadAppCommand(scope, app_id, it.Name());
+    if (runner.has_value())
+      app_command_runners.push_back(*runner);
   }
 
   return app_command_runners;

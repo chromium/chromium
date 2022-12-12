@@ -32,6 +32,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
@@ -659,11 +660,11 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdElevated(
     const WCHAR* command_id,
     DWORD caller_proc_id,
     ULONG_PTR* proc_handle) {
-  AppCommandRunner app_command_runner;
-  if (HRESULT hr = AppCommandRunner::LoadAppCommand(
-          UpdaterScope::kSystem, app_id, command_id, app_command_runner);
-      FAILED(hr)) {
-    return hr;
+  HResultOr<AppCommandRunner> app_command_runner =
+      AppCommandRunner::LoadAppCommand(UpdaterScope::kSystem, app_id,
+                                       command_id);
+  if (!app_command_runner.has_value()) {
+    return app_command_runner.error();
   }
 
   base::win::ScopedHandle caller_proc_handle;
@@ -674,7 +675,7 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdElevated(
   }
 
   base::Process process;
-  if (HRESULT hr = app_command_runner.Run({}, process); FAILED(hr)) {
+  if (HRESULT hr = app_command_runner->Run({}, process); FAILED(hr)) {
     return hr;
   }
 
@@ -709,8 +710,9 @@ HRESULT LegacyAppCommandWebImpl::RuntimeClassInitialize(
     UpdaterScope scope,
     const std::wstring& app_id,
     const std::wstring& command_id) {
-  return AppCommandRunner::LoadAppCommand(scope, app_id, command_id,
-                                          app_command_runner_);
+  app_command_runner_ =
+      AppCommandRunner::LoadAppCommand(scope, app_id, command_id);
+  return app_command_runner_.has_value() ? S_OK : app_command_runner_.error();
 }
 
 STDMETHODIMP LegacyAppCommandWebImpl::get_status(UINT* status) {
@@ -754,6 +756,8 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
                                               VARIANT substitution7,
                                               VARIANT substitution8,
                                               VARIANT substitution9) {
+  CHECK(app_command_runner_.has_value());
+
   std::vector<std::wstring> substitutions;
   for (const VARIANT& substitution :
        {substitution1, substitution2, substitution3, substitution4,
@@ -769,7 +773,7 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
     substitutions.push_back(substitution_string.value());
   }
 
-  return app_command_runner_.Run(substitutions, process_);
+  return app_command_runner_->Run(substitutions, process_);
 }
 
 PolicyStatusImpl::PolicyStatusImpl()
