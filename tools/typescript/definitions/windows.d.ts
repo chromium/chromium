@@ -44,22 +44,6 @@ declare namespace chrome {
       PANEL = 'panel',
     }
 
-    export interface GetInfo {
-      populate?: boolean;
-      windowTypes?: WindowType[];
-    }
-
-    export const WINDOW_ID_NONE: number;
-    export const WINDOW_ID_CURRENT: number;
-
-    export function get(windowId: number, getInfo: (GetInfo|null),
-                        callback: (p1: Window) => void): void;
-    export function getCurrent(getInfo: (GetInfo|null),
-                               callback: (p1: Window) => void): void;
-    export function getLastFocused(getInfo: (GetInfo|null),
-                                   callback: (p1: Window) => void): void;
-    export function getAll(getInfo: (GetInfo|null),
-                           callback: (p1: Window[]) => void): void;
     interface CreateData {
       url?: (string|string[]);
       tabId?: number;
@@ -74,21 +58,6 @@ declare namespace chrome {
       setSelfAsOpener?: boolean;
     }
 
-    export function create(createData?: CreateData,
-                           callback?: (p1: Window) => void): void;
-
-    interface UpdateInfo {
-      left?: number;
-      top?: number;
-      width?: number;
-      height?: number;
-      focused?: boolean;
-      drawAttention?: boolean;
-      state?: WindowState;
-    }
-
-    export function update(windowId: number, updateInfo: UpdateInfo,
-                           callback?: (p1: Window) => void): void;
-    export function remove(windowId: number, callback?: () => void): void;
+    export function create(createData?: CreateData): Promise<Window>;
   }
 }
