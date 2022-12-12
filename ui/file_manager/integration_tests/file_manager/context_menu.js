@@ -980,10 +980,11 @@ testcase.checkPolicyAssignedDefaultHasManagedIcon = async () => {
   chrome.test.assertTrue('is-managed' in tasksMenuDefaultTaskItem.attributes);
 
   // Check that the remaining items do not have is-default/is-managed
-  // properties.
+  // properties, and that `Change Default` is not shown.
   const tasksMenuNonDefaultTaskItems = tasksMenu['items'].slice(1);
   for (const nonDefaultTaskItem of tasksMenuNonDefaultTaskItems) {
     chrome.test.assertFalse('is-default' in nonDefaultTaskItem.attributes);
     chrome.test.assertFalse('is-managed' in nonDefaultTaskItem.attributes);
+    chrome.test.assertFalse(nonDefaultTaskItem.attributes['class'].includes('change-default'));
   }
 };

@@ -244,9 +244,9 @@ export class TaskController {
         combobutton.addDropDownItem(item);
       }
 
-      // If there exist non generic task (i.e. defaultTask is set), we show
-      // an item to change default task.
-      if (defaultTask) {
+      // If there exist non generic task (i.e. defaultTask is set) and this
+      // default is not set by policy, we show an item to change default task.
+      if (defaultTask && !fileTasks.getPolicyDefaultHandlerStatus()) {
         combobutton.addSeparator();
         // TODO(greengrape): Ensure that the passed object is a `DropdownItem`.
         const changeDefaultMenuItem = combobutton.addDropDownItem({
@@ -256,17 +256,6 @@ export class TaskController {
           isPolicyDefault: false,
         });
         changeDefaultMenuItem.classList.add('change-default');
-
-        // Disables CHANGE_DEFAULT button if default has been set by policy.
-        if (fileTasks.getPolicyDefaultHandlerStatus()) {
-          // |defaultTask| exists, thus |policyDefaultHandlerStatus| cannot be
-          // INCORRECT_ASSIGNMENT.
-          console.assert(
-              fileTasks.getPolicyDefaultHandlerStatus() ===
-              chrome.fileManagerPrivate.PolicyDefaultHandlerStatus
-                  .DEFAULT_HANDLER_ASSIGNED_BY_POLICY);
-          changeDefaultMenuItem.disabled = true;
-        }
       }
     }
   }
@@ -506,18 +495,25 @@ export class TaskController {
         menuItem.iconEndImage = '';
         menuItem.removeIconEndFileType();
 
-        menuItem.setIconEndHidden(false);
-        // iconType is defined for some tasks in FileTasks.annotate_().
-        const iconType: string = (defaultTask as any).iconType;
-        if (iconType) {
-          menuItem.iconEndFileType = iconType;
-        } else if (defaultTask.iconUrl) {
-          menuItem.iconEndImage = 'url(' + defaultTask.iconUrl + ')';
-        } else {
+        // If default is set by policy, we hide the original app icon and show
+        // only the managed one.
+        if (policyDefaultHandlerStatus) {
           menuItem.setIconEndHidden(true);
-        }
+          menuItem.toggleManagedIcon(/*visible=*/ true);
+        } else {
+          menuItem.setIconEndHidden(false);
+          menuItem.toggleManagedIcon(/*visible=*/ false);
 
-        menuItem.toggleManagedIcon(/*visible=*/ !!policyDefaultHandlerStatus);
+          // iconType is defined for some tasks in FileTasks.annotate_().
+          const iconType: string = (defaultTask as any).iconType;
+          if (iconType) {
+            menuItem.iconEndFileType = iconType;
+          } else if (defaultTask.iconUrl) {
+            menuItem.iconEndImage = 'url(' + defaultTask.iconUrl + ')';
+          } else {
+            menuItem.setIconEndHidden(true);
+          }
+        }
 
         menuItem.label = defaultTask.title;
         menuItem.descriptor = defaultTask.descriptor;
