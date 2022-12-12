@@ -278,6 +278,13 @@ class AutocorrectManager {
     // metrics.
     absl::optional<ui::KeyEvent> last_key_event;
 
+    // The range of the current pending autocorrect.
+    gfx::Range last_autocorrect_range = gfx::Range();
+
+    // The range of the selected text or (cursor_pos, cursor_pos] if no text is
+    // selected.
+    gfx::Range last_selection_range = gfx::Range();
+
     // Records the difference in length between the previous text and the
     // current |current text| - |prev text|.
     int text_length_diff = 0;

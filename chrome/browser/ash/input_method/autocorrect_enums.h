@@ -71,7 +71,14 @@ enum class AutocorrectRejectionBreakdown {
   kUndoCtrlZ = 4,
   kRejectedBackspace = 5,
   kRejectedCtrlBackspace = 6,
-  kMaxValue = kRejectedCtrlBackspace,
+  kRejectedTypingFull = 7,
+  kRejectedTypingPartial = 8,
+  kRejectedTypingFullWithExternal = 9,
+  kRejectedTypingPartialWithExternal = 10,
+  kRemovedLetters = 11,
+  kRejectedTypingNoSelection = 12,
+  kRejectedSelectedInvalidRange = 13,
+  kMaxValue = kRejectedSelectedInvalidRange,
 };
 
 }  // namespace input_method

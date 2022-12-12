@@ -255,6 +255,25 @@ AutocorrectRejectionBreakdown LogControlInteractions(
   }
 }
 
+AutocorrectRejectionBreakdown LogSelectionEditInteractions(
+    const gfx::Range& last_autocorrect_range,
+    const gfx::Range& last_selection_range,
+    const std::string& histogram_name) {
+  if (last_autocorrect_range.IsBoundedBy(last_selection_range)) {
+    if (last_selection_range.IsBoundedBy(last_autocorrect_range)) {
+      return AutocorrectRejectionBreakdown::kRejectedTypingFull;
+    }
+    return AutocorrectRejectionBreakdown::kRejectedTypingFullWithExternal;
+  }
+  if (last_selection_range.IsBoundedBy(last_autocorrect_range)) {
+    return AutocorrectRejectionBreakdown::kRejectedTypingPartial;
+  }
+  if (last_selection_range.Intersects(last_autocorrect_range)) {
+    return AutocorrectRejectionBreakdown::kRejectedTypingPartialWithExternal;
+  }
+  return AutocorrectRejectionBreakdown::kRejectedSelectedInvalidRange;
+}
+
 // Returns the Levenshtein distance between |str1| and |str2|.
 // Which is the minimum number of single-character edits (i.e. insertions,
 // deletions or substitutions) required to change one word into the other.
@@ -521,10 +540,10 @@ void AutocorrectManager::LogRejectionInteractions(
     if (last_key_press == ui::DomCode::ENTER) {
       base::UmaHistogramEnumeration(
           histogram_name, AutocorrectRejectionBreakdown::kUndoWithKeyboard);
-    } else {
-      base::UmaHistogramEnumeration(
-          histogram_name, AutocorrectRejectionBreakdown::kUndoWithoutKeyboard);
+      return;
     }
+    base::UmaHistogramEnumeration(
+        histogram_name, AutocorrectRejectionBreakdown::kUndoWithoutKeyboard);
     return;
   }
   if (pending_autocorrect_->last_key_event.has_value() &&
@@ -533,13 +552,28 @@ void AutocorrectManager::LogRejectionInteractions(
         histogram_name, LogControlInteractions(last_key_press, histogram_name));
     return;
   }
-  // TODO(b:253549747): for cases that the user replaces part of the text.
-  if (pending_autocorrect_->text_length_diff < 0 &&
-      (pending_autocorrect_->virtual_keyboard_visible ||
-       last_key_press == ui::DomCode::BACKSPACE ||
-       last_key_press == ui::DomCode::DEL)) {
+  if (!pending_autocorrect_->last_selection_range.is_empty()) {
     base::UmaHistogramEnumeration(
-        histogram_name, AutocorrectRejectionBreakdown::kRejectedBackspace);
+        histogram_name,
+        LogSelectionEditInteractions(
+            pending_autocorrect_->last_autocorrect_range,
+            pending_autocorrect_->last_selection_range, histogram_name));
+    return;
+  }
+  if (pending_autocorrect_->text_length_diff < 0) {
+    base::UmaHistogramEnumeration(
+        histogram_name, AutocorrectRejectionBreakdown::kRemovedLetters);
+    if (last_key_press == ui::DomCode::BACKSPACE ||
+        last_key_press == ui::DomCode::DEL) {
+      base::UmaHistogramEnumeration(
+          histogram_name, AutocorrectRejectionBreakdown::kRejectedBackspace);
+    }
+    return;
+  }
+  if (pending_autocorrect_->text_length_diff > 0) {
+    base::UmaHistogramEnumeration(
+        histogram_name,
+        AutocorrectRejectionBreakdown::kRejectedTypingNoSelection);
     return;
   }
   base::UmaHistogramEnumeration(histogram_name,
@@ -718,6 +752,7 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
     return;
   }
 
+  const gfx::Range range = input_context->GetAutocorrectRange();
   if (!pending_autocorrect_->is_validated) {
     // Validate that the surrounding text matches with pending autocorrect
     // suggestion. Because of delays in update of surrounding text and
@@ -726,8 +761,7 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
     // implementation of autocorrect interactions such as implicit acceptance.
     pending_autocorrect_->is_validated =
         IsAutocorrectSuggestionInSurroundingText(
-            text, input_context->GetAutocorrectRange(),
-            pending_autocorrect_->suggested_text);
+            text, range, pending_autocorrect_->suggested_text);
     pending_autocorrect_->validation_tries++;
 
     if (!pending_autocorrect_->is_validated) {
@@ -746,7 +780,6 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
           ? text.length() - pending_autocorrect_->text_length
           : 0;
 
-  const gfx::Range range = input_context->GetAutocorrectRange();
   const uint32_t cursor_pos_unsigned
       = base::checked_cast<uint32_t>(cursor_pos);
 
@@ -791,6 +824,12 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
     // range.
     HideUndoWindow();
   }
+
+  // Only update at the end so that the metrics can use the cursor selection
+  // just before the edit
+  pending_autocorrect_->last_autocorrect_range = range;
+  pending_autocorrect_->last_selection_range = gfx::Range(
+      std::min(cursor_pos, anchor_pos), std::max(cursor_pos, anchor_pos));
 }
 
 void AutocorrectManager::OnFocus(int context_id) {
