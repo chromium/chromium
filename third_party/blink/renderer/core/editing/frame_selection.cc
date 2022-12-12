@@ -28,6 +28,7 @@
 #include <stdio.h>
 
 #include "base/auto_reset.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/accessibility/blink_ax_event_intent.h"
@@ -286,15 +287,17 @@ void FrameSelection::DidSetSelectionDeprecated(
   // If the selection is currently being modified via the "Modify" method, we
   // should already have more detailed information on the stack than can be
   // deduced in this method.
-  ScopedBlinkAXEventIntent scoped_blink_ax_event_intent(
-      is_being_modified_
-          ? BlinkAXEventIntent()
-          : new_selection.IsNone()
-                ? BlinkAXEventIntent::FromClearedSelection(set_selection_by)
-                : BlinkAXEventIntent::FromNewSelection(
-                      options.Granularity(), new_selection.IsBaseFirst(),
-                      set_selection_by),
-      &current_document);
+  absl::optional<ScopedBlinkAXEventIntent> scoped_blink_ax_event_intent;
+  if (current_document.ExistingAXObjectCache()) {
+    scoped_blink_ax_event_intent.emplace(
+        is_being_modified_ ? BlinkAXEventIntent()
+        : new_selection.IsNone()
+            ? BlinkAXEventIntent::FromClearedSelection(set_selection_by)
+            : BlinkAXEventIntent::FromNewSelection(options.Granularity(),
+                                                   new_selection.IsBaseFirst(),
+                                                   set_selection_by),
+        &current_document);
+  }
 
   if (!new_selection.IsNone() && !options.DoNotSetFocus()) {
     SetFocusedNodeIfNeeded();
@@ -441,11 +444,15 @@ bool FrameSelection::Modify(SelectionModifyAlteration alter,
       frame_->GetEditor().Behavior().ShouldSkipSpaceWhenMovingRight()
           ? PlatformWordBehavior::kWordSkipSpaces
           : PlatformWordBehavior::kWordDontSkipSpaces;
-  ScopedBlinkAXEventIntent scoped_blink_ax_event_intent(
-      BlinkAXEventIntent::FromModifiedSelection(
-          alter, direction, granularity, set_selection_by,
-          selection_modifier.DirectionOfSelection(), platform_word_behavior),
-      &GetDocument());
+  Document& document = GetDocument();
+  absl::optional<ScopedBlinkAXEventIntent> scoped_blink_ax_event_intent;
+  if (document.ExistingAXObjectCache()) {
+    scoped_blink_ax_event_intent.emplace(
+        BlinkAXEventIntent::FromModifiedSelection(
+            alter, direction, granularity, set_selection_by,
+            selection_modifier.DirectionOfSelection(), platform_word_behavior),
+        &document);
+  }
 
   // For MacOS only selection is directionless at the beginning.
   // Selection gets direction on extent.
