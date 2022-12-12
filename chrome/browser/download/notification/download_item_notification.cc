@@ -167,7 +167,7 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
       base::RecordAction(
           UserMetricsAction("DownloadNotification.Button_LearnScanning"));
       break;
-    case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
+    case DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD:
       base::RecordAction(
           UserMetricsAction("DownloadNotification.Button_LearnMixedContent"));
       break;
@@ -238,9 +238,9 @@ bool IsNotificationEligibleForSuppression(const DownloadUIModel* item) {
   // Only notifications for in-progress downloads are eligible for suppression.
   if (item->GetState() != download::DownloadItem::IN_PROGRESS)
     return false;
-  // Notifications associated with dangerous or mixed content downloads are not
+  // Notifications associated with dangerous or insecure downloads are not
   // eligible for suppression as they likely contain important information.
-  if (item->IsDangerous() || item->IsMixedContent())
+  if (item->IsDangerous() || item->IsInsecure())
     return false;
   // Otherwise notifications are assumed to be informational only and are
   // therefore eligible for suppression.
@@ -353,7 +353,7 @@ void DownloadItemNotification::Close(bool by_user) {
     return;
   }
 
-  if (item_ && item_->IsMixedContent() && !item_->IsDone()) {
+  if (item_ && item_->IsInsecure() && !item_->IsDone()) {
     item_->Cancel(by_user);
     return;
   }
@@ -426,7 +426,7 @@ void DownloadItemNotification::Click(
   }
 
   // Handle a click on the notification's body.
-  if (item_->IsMixedContent()) {
+  if (item_->IsInsecure()) {
     chrome::ShowDownloads(GetBrowser());
     return;
   }
@@ -487,7 +487,7 @@ void DownloadItemNotification::Update() {
   // dangerous, make sure it pops up again.
   bool pop_up =
       ((item_->IsDangerous() && !previous_dangerous_state_) ||
-       (item_->IsMixedContent() && !previous_mixed_content_state_) ||
+       (item_->IsInsecure() && !previous_insecure_state_) ||
        (download_state == download::DownloadItem::COMPLETE &&
         previous_download_state_ != download::DownloadItem::COMPLETE) ||
        (download_state == download::DownloadItem::INTERRUPTED &&
@@ -497,7 +497,7 @@ void DownloadItemNotification::Update() {
   show_next_ = false;
   previous_download_state_ = item_->GetState();
   previous_dangerous_state_ = item_->IsDangerous();
-  previous_mixed_content_state_ = item_->IsMixedContent();
+  previous_insecure_state_ = item_->IsInsecure();
 }
 
 void DownloadItemNotification::UpdateNotificationData(bool display,
@@ -553,19 +553,19 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
     } else {
       notification_->set_priority(message_center::DEFAULT_PRIORITY);
     }
-  } else if (item_->IsMixedContent()) {
+  } else if (item_->IsInsecure()) {
     notification_->set_type(message_center::NOTIFICATION_TYPE_SIMPLE);
-    switch (item_->GetMixedContentStatus()) {
-      case download::DownloadItem::MixedContentStatus::BLOCK:
+    switch (item_->GetInsecureDownloadStatus()) {
+      case download::DownloadItem::InsecureDownloadStatus::BLOCK:
         notification_->set_priority(message_center::HIGH_PRIORITY);
         break;
-      case download::DownloadItem::MixedContentStatus::WARN:
+      case download::DownloadItem::InsecureDownloadStatus::WARN:
         notification_->set_priority(message_center::DEFAULT_PRIORITY);
         break;
-      case download::DownloadItem::MixedContentStatus::UNKNOWN:
-      case download::DownloadItem::MixedContentStatus::SAFE:
-      case download::DownloadItem::MixedContentStatus::VALIDATED:
-      case download::DownloadItem::MixedContentStatus::SILENT_BLOCK:
+      case download::DownloadItem::InsecureDownloadStatus::UNKNOWN:
+      case download::DownloadItem::InsecureDownloadStatus::SAFE:
+      case download::DownloadItem::InsecureDownloadStatus::VALIDATED:
+      case download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK:
         NOTREACHED();
         break;
     }
@@ -658,16 +658,16 @@ SkColor DownloadItemNotification::GetNotificationIconColor() {
                ? ash::kSystemNotificationColorCriticalWarning
                : ash::kSystemNotificationColorWarning;
   }
-  if (item_->IsMixedContent()) {
-    switch (item_->GetMixedContentStatus()) {
-      case download::DownloadItem::MixedContentStatus::BLOCK:
+  if (item_->IsInsecure()) {
+    switch (item_->GetInsecureDownloadStatus()) {
+      case download::DownloadItem::InsecureDownloadStatus::BLOCK:
         return ash::kSystemNotificationColorCriticalWarning;
-      case download::DownloadItem::MixedContentStatus::WARN:
+      case download::DownloadItem::InsecureDownloadStatus::WARN:
         return ash::kSystemNotificationColorWarning;
-      case download::DownloadItem::MixedContentStatus::UNKNOWN:
-      case download::DownloadItem::MixedContentStatus::SAFE:
-      case download::DownloadItem::MixedContentStatus::VALIDATED:
-      case download::DownloadItem::MixedContentStatus::SILENT_BLOCK:
+      case download::DownloadItem::InsecureDownloadStatus::UNKNOWN:
+      case download::DownloadItem::InsecureDownloadStatus::SAFE:
+      case download::DownloadItem::InsecureDownloadStatus::VALIDATED:
+      case download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK:
         NOTREACHED();
         break;
     }
@@ -772,22 +772,22 @@ DownloadItemNotification::GetExtraActions() const {
     return actions;
   }
 
-  if (item_->IsMixedContent()) {
-    switch (item_->GetMixedContentStatus()) {
-      case download::DownloadItem::MixedContentStatus::BLOCK:
+  if (item_->IsInsecure()) {
+    switch (item_->GetInsecureDownloadStatus()) {
+      case download::DownloadItem::InsecureDownloadStatus::BLOCK:
         actions->push_back(DownloadCommands::DISCARD);
         break;
-      case download::DownloadItem::MixedContentStatus::WARN:
+      case download::DownloadItem::InsecureDownloadStatus::WARN:
         actions->push_back(DownloadCommands::KEEP);
         break;
-      case download::DownloadItem::MixedContentStatus::UNKNOWN:
-      case download::DownloadItem::MixedContentStatus::SAFE:
-      case download::DownloadItem::MixedContentStatus::VALIDATED:
-      case download::DownloadItem::MixedContentStatus::SILENT_BLOCK:
+      case download::DownloadItem::InsecureDownloadStatus::UNKNOWN:
+      case download::DownloadItem::InsecureDownloadStatus::SAFE:
+      case download::DownloadItem::InsecureDownloadStatus::VALIDATED:
+      case download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK:
         NOTREACHED();
         break;
     }
-    actions->push_back(DownloadCommands::LEARN_MORE_MIXED_CONTENT);
+    actions->push_back(DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD);
     return actions;
   }
 
@@ -867,8 +867,9 @@ std::u16string DownloadItemNotification::GetTitle() const {
     }
   }
 
-  if (item_->IsMixedContent()) {
-    return l10n_util::GetStringUTF16(IDS_PROMPT_BLOCKED_MIXED_DOWNLOAD_TITLE);
+  if (item_->IsInsecure()) {
+    return l10n_util::GetStringUTF16(
+        IDS_PROMPT_BLOCKED_INSECURE_DOWNLOAD_TITLE);
   }
 
   std::u16string file_name =
@@ -943,7 +944,7 @@ std::u16string DownloadItemNotification::GetCommandLabel(
     case DownloadCommands::COPY_TO_CLIPBOARD:
       id = IDS_DOWNLOAD_NOTIFICATION_COPY_TO_CLIPBOARD;
       break;
-    case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
+    case DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD:
       id = IDS_LEARN_MORE;
       break;
     case DownloadCommands::DEEP_SCAN:
@@ -978,13 +979,13 @@ std::u16string DownloadItemNotification::GetCommandLabel(
 }
 
 std::u16string DownloadItemNotification::GetWarningStatusString() const {
-  // Should only be called if IsDangerous() or IsMixedContent().
-  DCHECK(item_->IsDangerous() || item_->IsMixedContent());
+  // Should only be called if IsDangerous() or IsInsecure().
+  DCHECK(item_->IsDangerous() || item_->IsInsecure());
   std::u16string elided_filename =
       item_->GetFileNameToReportUser().LossyDisplayName();
-  // If mixed content, that warning is shown first.
-  if (item_->IsMixedContent()) {
-    return l10n_util::GetStringFUTF16(IDS_PROMPT_DOWNLOAD_MIXED_CONTENT_BLOCKED,
+  // If insecure, that warning is shown first.
+  if (item_->IsInsecure()) {
+    return l10n_util::GetStringFUTF16(IDS_PROMPT_DOWNLOAD_INSECURE_BLOCKED,
                                       elided_filename);
   }
   switch (item_->GetDangerType()) {
@@ -1099,7 +1100,7 @@ std::u16string DownloadItemNotification::GetInProgressSubStatusString() const {
 }
 
 std::u16string DownloadItemNotification::GetSubStatusString() const {
-  if (item_->IsMixedContent() || item_->IsDangerous())
+  if (item_->IsInsecure() || item_->IsDangerous())
     return GetWarningStatusString();
 
   if (item_->GetDangerType() ==
@@ -1160,7 +1161,7 @@ std::u16string DownloadItemNotification::GetSubStatusString() const {
 }
 
 std::u16string DownloadItemNotification::GetStatusString() const {
-  if (item_->IsDangerous() || item_->IsMixedContent())
+  if (item_->IsDangerous() || item_->IsInsecure())
     return std::u16string();
 
   if (IsScanning()) {

@@ -9,11 +9,11 @@
 namespace download {
 
 DownloadItemMode GetDesiredDownloadItemMode(DownloadUIModel* download) {
-  if (download->IsMixedContent()) {
-    const bool warn = download->GetMixedContentStatus() ==
-                      download::DownloadItem::MixedContentStatus::WARN;
-    return warn ? DownloadItemMode::kMixedContentWarn
-                : DownloadItemMode::kMixedContentBlock;
+  if (download->IsInsecure()) {
+    const bool warn = download->GetInsecureDownloadStatus() ==
+                      download::DownloadItem::InsecureDownloadStatus::WARN;
+    return warn ? DownloadItemMode::kInsecureDownloadWarn
+                : DownloadItemMode::kInsecureDownloadBlock;
   }
 
   if (download->IsDangerous() &&

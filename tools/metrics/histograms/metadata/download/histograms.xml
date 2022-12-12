@@ -715,9 +715,9 @@ chromium-metrics-reviews@google.com.
     enum="MixedContentDownloadDialogEvent" expires_after="2022-12-11">
   <owner>qinmin@chromium.org</owner>
   <summary>
-    Records user interactions with the mixed content download dialog on Android.
-    Records when the dialog is shown, or when user clicks on a button or
-    dismisses the dialog.
+    Records user interactions with the insecure download (formerly the mixed
+    content download) dialog on Android. Records when the dialog is shown, or
+    when user clicks on a button or dismisses the dialog.
   </summary>
 </histogram>
 

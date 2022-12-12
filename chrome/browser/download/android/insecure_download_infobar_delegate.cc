@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/download/android/mixed_content_download_infobar_delegate.h"
+#include "chrome/browser/download/android/insecure_download_infobar_delegate.h"
 
 #include <memory>
 #include <utility>
@@ -18,92 +18,92 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
-using MixedContentStatus = download::DownloadItem::MixedContentStatus;
+using InsecureDownloadStatus = download::DownloadItem::InsecureDownloadStatus;
 
 // static
-void MixedContentDownloadInfoBarDelegate::Create(
+void InsecureDownloadInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager,
     const base::FilePath& basename,
-    download::DownloadItem::MixedContentStatus mixed_content_status,
+    download::DownloadItem::InsecureDownloadStatus insecure_download_status,
     ResultCallback callback) {
   infobar_manager->AddInfoBar(std::make_unique<infobars::ConfirmInfoBar>(
-      base::WrapUnique(new MixedContentDownloadInfoBarDelegate(
-          basename, mixed_content_status, std::move(callback)))));
+      base::WrapUnique(new InsecureDownloadInfoBarDelegate(
+          basename, insecure_download_status, std::move(callback)))));
 }
 
-MixedContentDownloadInfoBarDelegate::MixedContentDownloadInfoBarDelegate(
+InsecureDownloadInfoBarDelegate::InsecureDownloadInfoBarDelegate(
     const base::FilePath& basename,
-    download::DownloadItem::MixedContentStatus mixed_content_status,
+    download::DownloadItem::InsecureDownloadStatus insecure_download_status,
     ResultCallback callback)
-    : mixed_content_status_(mixed_content_status),
+    : insecure_download_status_(insecure_download_status),
       callback_(std::move(callback)) {
   message_text_ =
-      l10n_util::GetStringFUTF16(IDS_PROMPT_CONFIRM_MIXED_CONTENT_DOWNLOAD,
+      l10n_util::GetStringFUTF16(IDS_PROMPT_CONFIRM_INSECURE_DOWNLOAD,
                                  base::UTF8ToUTF16(basename.value()));
 }
 
-MixedContentDownloadInfoBarDelegate::~MixedContentDownloadInfoBarDelegate() {}
+InsecureDownloadInfoBarDelegate::~InsecureDownloadInfoBarDelegate() = default;
 
 infobars::InfoBarDelegate::InfoBarIdentifier
-MixedContentDownloadInfoBarDelegate::GetIdentifier() const {
-  return MIXED_CONTENT_DOWNLOAD_INFOBAR_DELEGATE_ANDROID;
+InsecureDownloadInfoBarDelegate::GetIdentifier() const {
+  return INSECURE_DOWNLOAD_INFOBAR_DELEGATE_ANDROID;
 }
 
-int MixedContentDownloadInfoBarDelegate::GetIconId() const {
+int InsecureDownloadInfoBarDelegate::GetIconId() const {
   return IDR_ANDROID_INFOBAR_WARNING;
 }
 
-bool MixedContentDownloadInfoBarDelegate::ShouldExpire(
+bool InsecureDownloadInfoBarDelegate::ShouldExpire(
     const NavigationDetails& details) const {
   return false;
 }
 
-void MixedContentDownloadInfoBarDelegate::InfoBarDismissed() {
+void InsecureDownloadInfoBarDelegate::InfoBarDismissed() {
   PostReply(false);
 }
 
-std::u16string MixedContentDownloadInfoBarDelegate::GetMessageText() const {
+std::u16string InsecureDownloadInfoBarDelegate::GetMessageText() const {
   return message_text_;
 }
 
-std::u16string MixedContentDownloadInfoBarDelegate::GetButtonLabel(
+std::u16string InsecureDownloadInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
-  if (mixed_content_status_ == MixedContentStatus::WARN) {
+  if (insecure_download_status_ == InsecureDownloadStatus::WARN) {
     return l10n_util::GetStringUTF16(
         button == BUTTON_OK ? IDS_CONFIRM_DOWNLOAD : IDS_DISCARD_DOWNLOAD);
   }
 
-  DCHECK_EQ(mixed_content_status_, MixedContentStatus::BLOCK);
+  DCHECK_EQ(insecure_download_status_, InsecureDownloadStatus::BLOCK);
   // Default button is Discard when blocking.
   return l10n_util::GetStringUTF16(button == BUTTON_OK ? IDS_DISCARD_DOWNLOAD
                                                        : IDS_CONFIRM_DOWNLOAD);
 }
 
-bool MixedContentDownloadInfoBarDelegate::Accept() {
-  if (mixed_content_status_ == MixedContentStatus::WARN) {
+bool InsecureDownloadInfoBarDelegate::Accept() {
+  if (insecure_download_status_ == InsecureDownloadStatus::WARN) {
     PostReply(true);
     return true;
   }
 
-  DCHECK_EQ(mixed_content_status_, MixedContentStatus::BLOCK);
+  DCHECK_EQ(insecure_download_status_, InsecureDownloadStatus::BLOCK);
   // Default button is Discard when blocking.
   PostReply(false);
   return true;
 }
 
-bool MixedContentDownloadInfoBarDelegate::Cancel() {
-  if (mixed_content_status_ == MixedContentStatus::WARN) {
+bool InsecureDownloadInfoBarDelegate::Cancel() {
+  if (insecure_download_status_ == InsecureDownloadStatus::WARN) {
     PostReply(false);
     return true;
   }
 
-  DCHECK_EQ(mixed_content_status_, MixedContentStatus::BLOCK);
+  CHECK_EQ(insecure_download_status_, InsecureDownloadStatus::BLOCK);
   // Cancel button is Keep when blocking.
   PostReply(true);
   return true;
 }
 
-void MixedContentDownloadInfoBarDelegate::PostReply(bool should_download) {
+void InsecureDownloadInfoBarDelegate::PostReply(bool should_download) {
   DCHECK(callback_);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), should_download));

@@ -207,9 +207,9 @@ class DownloadDisplayControllerTest : public testing::Test {
         .WillRepeatedly(ReturnRefOfCopy(target_file_path));
     EXPECT_CALL(item(index), GetLastReason())
         .WillRepeatedly(Return(download::DOWNLOAD_INTERRUPT_REASON_NONE));
-    EXPECT_CALL(item(index), GetMixedContentStatus())
+    EXPECT_CALL(item(index), GetInsecureDownloadStatus())
         .WillRepeatedly(
-            Return(download::DownloadItem::MixedContentStatus::SAFE));
+            Return(download::DownloadItem::InsecureDownloadStatus::SAFE));
     if (state == DownloadState::IN_PROGRESS) {
       in_progress_count_++;
     }

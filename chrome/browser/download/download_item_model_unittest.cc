@@ -208,9 +208,9 @@ class DownloadItemModelTest : public testing::Test {
             Return(DownloadItem::TARGET_DISPOSITION_OVERWRITE));
     ON_CALL(item_, IsPaused()).WillByDefault(Return(false));
     ON_CALL(item_, CanResume()).WillByDefault(Return(false));
-    ON_CALL(item_, GetMixedContentStatus())
+    ON_CALL(item_, GetInsecureDownloadStatus())
         .WillByDefault(
-            Return(download::DownloadItem::MixedContentStatus::SAFE));
+            Return(download::DownloadItem::InsecureDownloadStatus::SAFE));
     ON_CALL(item(), GetDangerType())
         .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
     content::DownloadItemUtils::AttachInfoForTesting(&(item()), profile_,
@@ -751,18 +751,18 @@ TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
   SetupCompletedDownloadItem(base::Hours(1));
   SetStatusTextBuilder(/*for_bubble=*/true);
 
-  const struct MixedContentStatusTestCase {
-    download::DownloadItem::MixedContentStatus mixed_content_status;
+  const struct InsecureDownloadStatusTestCase {
+    download::DownloadItem::InsecureDownloadStatus mixed_content_status;
     std::string expected_bubble_status_msg;
-  } kMixedContentStatusTestCases[] = {
-      {download::DownloadItem::MixedContentStatus::BLOCK,
+  } kInsecureDownloadStatusTestCases[] = {
+      {download::DownloadItem::InsecureDownloadStatus::BLOCK,
        "Blocked \xE2\x80\xA2 Insecure download"},
-      {download::DownloadItem::MixedContentStatus::WARN,
+      {download::DownloadItem::InsecureDownloadStatus::WARN,
        "Blocked \xE2\x80\xA2 Insecure download"},
   };
-  for (const auto& test_case : kMixedContentStatusTestCases) {
+  for (const auto& test_case : kInsecureDownloadStatusTestCases) {
     SetupDownloadItemDefaults();
-    ON_CALL(item(), GetMixedContentStatus())
+    ON_CALL(item(), GetInsecureDownloadStatus())
         .WillByDefault(Return(test_case.mixed_content_status));
     EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
               test_case.expected_bubble_status_msg);

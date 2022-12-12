@@ -201,7 +201,7 @@ suite('manager tests', function() {
   test('undo is not shown when removing only dangerous items', async () => {
     callbackRouterRemote.insertItems(0, [
       createDownload({isDangerous: true}),
-      createDownload({isMixedContent: true}),
+      createDownload({isInsecure: true}),
     ]);
     await callbackRouterRemote.$.flushForTesting();
     toastManager.show('', /* hideSlotted= */ false);
@@ -214,7 +214,7 @@ suite('manager tests', function() {
     callbackRouterRemote.insertItems(0, [
       createDownload(),
       createDownload({isDangerous: true}),
-      createDownload({isMixedContent: true}),
+      createDownload({isInsecure: true}),
     ]);
     await callbackRouterRemote.$.flushForTesting();
     toastManager.show('', /* hideSlotted= */ true);

@@ -1624,12 +1624,12 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
   }
 
   // Updates whether the specified `in_progress_download` of the appropriate
-  // type for Ash or Lacros given test parameterization is dangerous, mixed
-  // content, or might be malicious.
-  void UpdateInProgressDownloadIsDangerousMixedContentOrMightBeMalicious(
+  // type for Ash or Lacros given test parameterization is dangerous, insecure,
+  // or might be malicious.
+  void UpdateInProgressDownloadIsDangerousInsecureOrMightBeMalicious(
       AshOrLacrosDownload* in_progress_download,
       bool is_dangerous,
-      bool is_mixed_content,
+      bool is_insecure,
       bool might_be_malicious) {
     ASSERT_TRUE(is_dangerous || !might_be_malicious);
     switch (GetDownloadTypeToUse()) {
@@ -1647,8 +1647,8 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
                           DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
         ON_CALL(*in_progress_ash_download, IsDangerous())
             .WillByDefault(testing::Return(is_dangerous));
-        ON_CALL(*in_progress_ash_download, IsMixedContent())
-            .WillByDefault(testing::Return(is_mixed_content));
+        ON_CALL(*in_progress_ash_download, IsInsecure())
+            .WillByDefault(testing::Return(is_insecure));
         NotifyObserversAshDownloadUpdated(in_progress_ash_download.get());
         return;
       }
@@ -1663,7 +1663,7 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
                          : crosapi::mojom::DownloadDangerType::
                                kDownloadDangerTypeNotDangerous;
         in_progress_lacros_download->is_dangerous = is_dangerous;
-        in_progress_lacros_download->is_mixed_content = is_mixed_content;
+        in_progress_lacros_download->is_insecure = is_insecure;
         NotifyObserversLacrosDownloadUpdated(in_progress_lacros_download.get());
         return;
       }
@@ -1951,8 +1951,8 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
     lacros_download_item->start_time = base::Time::Now();
     lacros_download_item->is_dangerous = false;
     lacros_download_item->has_is_dangerous = true;
-    lacros_download_item->is_mixed_content = false;
-    lacros_download_item->has_is_mixed_content = true;
+    lacros_download_item->is_insecure = false;
+    lacros_download_item->has_is_insecure = true;
 
     auto* const download_controller_ash = crosapi::CrosapiManager::Get()
                                               ->crosapi_ash()
@@ -2229,10 +2229,10 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
             base::UTF16ToUTF8(u"Download paused " + target_file_name));
 
   // Mark the download as dangerous.
-  UpdateInProgressDownloadIsDangerousMixedContentOrMightBeMalicious(
+  UpdateInProgressDownloadIsDangerousInsecureOrMightBeMalicious(
       in_progress_download.get(),
       /*is_dangerous=*/true,
-      /*is_mixed_content=*/false,
+      /*is_insecure=*/false,
       /*might_be_malicious=*/true);
 
   // Because the download is marked as dangerous, that should be indicated in
@@ -2265,9 +2265,9 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
             base::UTF16ToUTF8(u"Download scanning " + target_file_name));
 
   // Stop scanning and mark that the download is *not* malicious.
-  UpdateInProgressDownloadIsDangerousMixedContentOrMightBeMalicious(
+  UpdateInProgressDownloadIsDangerousInsecureOrMightBeMalicious(
       in_progress_download.get(), /*is_dangerous=*/true,
-      /*is_mixed_content=*/false, /*might_be_malicious=*/false);
+      /*is_insecure=*/false, /*might_be_malicious=*/false);
 
   // Because the download is *not* malicious, the user will be able to keep/
   // discard the download via notification. That should be indicated in the
@@ -2284,10 +2284,10 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
             base::UTF16ToUTF8(u"Confirm download " + target_file_name));
 
   // Mark the download as safe.
-  UpdateInProgressDownloadIsDangerousMixedContentOrMightBeMalicious(
+  UpdateInProgressDownloadIsDangerousInsecureOrMightBeMalicious(
       in_progress_download.get(),
       /*is_dangerous=*/false,
-      /*is_mixed_content=*/false,
+      /*is_insecure=*/false,
       /*might_be_malicious=*/false);
 
   // Because the download is no longer marked as dangerous, that should be
@@ -2304,14 +2304,14 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
             base::UTF16ToUTF8(u"Download paused " + target_file_name));
 
-  // Mark the download as mixed content.
-  UpdateInProgressDownloadIsDangerousMixedContentOrMightBeMalicious(
+  // Mark the download as insecure.
+  UpdateInProgressDownloadIsDangerousInsecureOrMightBeMalicious(
       in_progress_download.get(),
       /*is_dangerous=*/false,
-      /*is_mixed_content=*/true,
+      /*is_insecure=*/true,
       /*might_be_malicious=*/false);
 
-  // Because the download is marked as mixed content, that should be indicated
+  // Because the download is marked as insecure, that should be indicated
   // in the `secondary_label` of the holding space item chip view.
   EXPECT_TRUE(primary_label->GetVisible());
   EXPECT_EQ(primary_label->GetText(), target_file_name);
@@ -2324,14 +2324,14 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
             base::UTF16ToUTF8(u"Download dangerous " + target_file_name));
 
-  // Mark the download as *not* mixed content.
-  UpdateInProgressDownloadIsDangerousMixedContentOrMightBeMalicious(
+  // Mark the download as *not* insecure.
+  UpdateInProgressDownloadIsDangerousInsecureOrMightBeMalicious(
       in_progress_download.get(),
       /*is_dangerous=*/false,
-      /*is_mixed_content=*/false,
+      /*is_insecure=*/false,
       /*might_be_malicious=*/false);
 
-  // Because the download is no longer marked as mixed content, that should be
+  // Because the download is no longer marked as insecure, that should be
   // indicated in the `secondary_label` of the holding space item chip view.
   EXPECT_TRUE(primary_label->GetVisible());
   EXPECT_EQ(primary_label->GetText(), target_file_name);

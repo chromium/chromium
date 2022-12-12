@@ -189,15 +189,16 @@ struct DownloadTestCase {
 class MockDownloadTargetDeterminerDelegate
     : public DownloadTargetDeterminerDelegate {
  public:
-  void GetMixedContentStatus(download::DownloadItem* item,
-                             const base::FilePath& path,
-                             GetMixedContentStatusCallback cb) override {
-    GetMixedContentStatus_(item, path, cb);
+  void GetInsecureDownloadStatus(
+      download::DownloadItem* item,
+      const base::FilePath& path,
+      GetInsecureDownloadStatusCallback cb) override {
+    GetInsecureDownloadStatus_(item, path, cb);
   }
-  MOCK_METHOD3(GetMixedContentStatus_,
+  MOCK_METHOD3(GetInsecureDownloadStatus_,
                void(download::DownloadItem*,
                     const base::FilePath&,
-                    GetMixedContentStatusCallback&));
+                    GetInsecureDownloadStatusCallback&));
   void CheckDownloadUrl(download::DownloadItem* item,
                         const base::FilePath& path,
                         CheckDownloadUrlCallback cb) override {
@@ -266,9 +267,9 @@ class MockDownloadTargetDeterminerDelegate
                void(const base::FilePath&, GetFileMimeTypeCallback&));
 
   void SetupDefaults() {
-    ON_CALL(*this, GetMixedContentStatus_(_, _, _))
+    ON_CALL(*this, GetInsecureDownloadStatus_(_, _, _))
         .WillByDefault(WithArg<2>(ScheduleCallback(
-            download::DownloadItem::MixedContentStatus::UNKNOWN)));
+            download::DownloadItem::InsecureDownloadStatus::UNKNOWN)));
     ON_CALL(*this, CheckDownloadUrl_(_, _, _))
         .WillByDefault(WithArg<2>(
             ScheduleCallback(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS)));
@@ -1627,7 +1628,7 @@ TEST_F(DownloadTargetDeterminerTest, ManagedPath) {
                              std::size(kManagedPathTestCases));
 }
 
-// Test basic blocking functionality via GetMixedContentStatus.
+// Test basic blocking functionality via GetInsecureDownloadStatus.
 TEST_F(DownloadTargetDeterminerTest, BlockDownloads) {
   const DownloadTestCase kBlockDownloadsTestCases[] = {
       {AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
@@ -1636,9 +1637,9 @@ TEST_F(DownloadTargetDeterminerTest, BlockDownloads) {
        DownloadItem::TARGET_DISPOSITION_OVERWRITE, EXPECT_EMPTY},
   };
 
-  ON_CALL(*delegate(), GetMixedContentStatus_(_, _, _))
+  ON_CALL(*delegate(), GetInsecureDownloadStatus_(_, _, _))
       .WillByDefault(WithArg<2>(ScheduleCallback(
-          download::DownloadItem::MixedContentStatus::SILENT_BLOCK)));
+          download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK)));
   RunTestCasesWithActiveItem(kBlockDownloadsTestCases,
                              std::size(kBlockDownloadsTestCases));
 }

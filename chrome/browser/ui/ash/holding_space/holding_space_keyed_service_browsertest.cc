@@ -830,12 +830,12 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceLacrosBrowserTest,
   download->is_from_incognito_profile = FromIncognitoProfile();
 
   // Lacros clients which are eligible for in-progress downloads integration
-  // have `has_is_mixed_content` present. This field was the last field to be
+  // have `has_is_insecure` present. This field was the last field to be
   // implemented in Lacros. Its presence indicates that other required metadata
   // and APIs (e.g. pause, resume, cancel, etc.) are also implemented and is
   // therefore used to gate eligibility.
   if (InProgressDownloadsEligibleClient())
-    download->has_is_mixed_content = true;
+    download->has_is_insecure = true;
 
   // Notify observers of `download` creation.
   download->state = crosapi::mojom::DownloadState::kInProgress;

@@ -460,11 +460,11 @@ class DownloadNotificationTest : public DownloadNotificationTestBase {
     ASSERT_TRUE(download_item_);
 
     // Confirms that a notification is created when the `download_item_` is not
-    // in-progress, dangerous, mixed content, or holding space in-progress
+    // in-progress, dangerous, insecure, or holding space in-progress
     // downloads notification suppression is disabled. Otherwise notification is
     // suppressed.
     if (download_item_->GetState() != download::DownloadItem::IN_PROGRESS ||
-        download_item_->IsDangerous() || download_item_->IsMixedContent() ||
+        download_item_->IsDangerous() || download_item_->IsInsecure() ||
         !IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()) {
       WaitForDownloadNotification(browser);
       CacheNotification(browser);

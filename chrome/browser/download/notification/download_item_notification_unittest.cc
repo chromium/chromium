@@ -550,9 +550,9 @@ TEST_P(DownloadItemNotificationParameterizedTest,
 
 // Verifies that download in-progress notifications are displayed even if the
 // holding space in-progress downloads notification suppression feature is
-// enabled if the underlying download is mixed content.
+// enabled if the underlying download is insecure.
 TEST_P(DownloadItemNotificationParameterizedTest,
-       ShowInProgressNotificationsIfMixedContent) {
+       ShowInProgressNotificationsIfInsecure) {
   // Creates a download in-progress notification.
   CreateDownloadItemNotification();
 
@@ -563,20 +563,22 @@ TEST_P(DownloadItemNotificationParameterizedTest,
                 : 1u,
             NotificationCount());
 
-  // The download becoming mixed-content should cause the notification to be
+  // The download becoming insecure should cause the notification to be
   // displayed even if it was previously suppressed.
-  ON_CALL(*download_item_, GetMixedContentStatus)
-      .WillByDefault(Return(download::DownloadItem::MixedContentStatus::WARN));
-  ON_CALL(*download_item_, IsMixedContent).WillByDefault(Return(true));
+  ON_CALL(*download_item_, GetInsecureDownloadStatus)
+      .WillByDefault(
+          Return(download::DownloadItem::InsecureDownloadStatus::WARN));
+  ON_CALL(*download_item_, IsInsecure).WillByDefault(Return(true));
   download_item_->NotifyObserversDownloadUpdated();
   EXPECT_EQ(1u, NotificationCount());
 
-  // The download becoming non-mixed content should cause the notification to be
+  // The download becoming secure should cause the notification to be
   // suppressed if an only if holding space in-progress downloads notification
   // suppression is enabled.
-  ON_CALL(*download_item_, GetMixedContentStatus)
-      .WillByDefault(Return(download::DownloadItem::MixedContentStatus::SAFE));
-  ON_CALL(*download_item_, IsMixedContent).WillByDefault(Return(false));
+  ON_CALL(*download_item_, GetInsecureDownloadStatus)
+      .WillByDefault(
+          Return(download::DownloadItem::InsecureDownloadStatus::SAFE));
+  ON_CALL(*download_item_, IsInsecure).WillByDefault(Return(false));
   download_item_->NotifyObserversDownloadUpdated();
   EXPECT_EQ(IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()
                 ? 0u

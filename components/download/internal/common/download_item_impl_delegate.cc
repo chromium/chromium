@@ -37,8 +37,8 @@ void DownloadItemImplDelegate::DetermineDownloadTarget(
   std::move(callback).Run(
       target_path, DownloadItem::TARGET_DISPOSITION_OVERWRITE,
       DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-      DownloadItem::MixedContentStatus::UNKNOWN, target_path, base::FilePath(),
-      std::string(), DOWNLOAD_INTERRUPT_REASON_NONE);
+      DownloadItem::InsecureDownloadStatus::UNKNOWN, target_path,
+      base::FilePath(), std::string(), DOWNLOAD_INTERRUPT_REASON_NONE);
 }
 
 bool DownloadItemImplDelegate::ShouldCompleteDownload(

@@ -212,15 +212,15 @@ bool is_download_warning(download::DownloadItemMode mode) {
          (mode == download::DownloadItemMode::kMalicious);
 }
 
-// Whether we are in the mixed content mode.
-bool is_mixed_content(download::DownloadItemMode mode) {
-  return (mode == download::DownloadItemMode::kMixedContentWarn) ||
-         (mode == download::DownloadItemMode::kMixedContentBlock);
+// Whether we are in the insecure download mode.
+bool is_insecure(download::DownloadItemMode mode) {
+  return (mode == download::DownloadItemMode::kInsecureDownloadWarn) ||
+         (mode == download::DownloadItemMode::kInsecureDownloadBlock);
 }
 
 // Whether a warning label is visible.
 bool has_warning_label(download::DownloadItemMode mode) {
-  return is_download_warning(mode) || is_mixed_content(mode);
+  return is_download_warning(mode) || is_insecure(mode);
 }
 
 float GetDPIScaleForView(views::View* view) {
@@ -737,10 +737,10 @@ void DownloadItemView::SetMode(download::DownloadItemMode mode) {
       UpdateAccessibleAlert(model_->GetWarningText(unelided_filename, &ignore));
       accessible_alert_timer_.Stop();
     }
-  } else if (is_mixed_content(mode_)) {
+  } else if (is_insecure(mode_)) {
     announce_accessible_alert_soon_ = true;
     UpdateAccessibleAlert(l10n_util::GetStringFUTF16(
-        IDS_PROMPT_DOWNLOAD_MIXED_CONTENT_BLOCKED_ACCESSIBLE_ALERT,
+        IDS_PROMPT_DOWNLOAD_INSECURE_BLOCKED_ACCESSIBLE_ALERT,
         unelided_filename));
   } else if (mode_ == download::DownloadItemMode::kDeepScanning) {
     UpdateAccessibleAlert(l10n_util::GetStringFUTF16(
@@ -855,11 +855,11 @@ void DownloadItemView::UpdateButtons() {
 
   save_button_->SetVisible(
       (mode_ == download::DownloadItemMode::kDangerous) ||
-      (mode_ == download::DownloadItemMode::kMixedContentWarn));
+      (mode_ == download::DownloadItemMode::kInsecureDownloadWarn));
   save_button_->SetText(model_->GetWarningConfirmButtonText());
 
   discard_button_->SetVisible(
-      (mode_ == download::DownloadItemMode::kMixedContentBlock) ||
+      (mode_ == download::DownloadItemMode::kInsecureDownloadBlock) ||
       prompt_to_discard);
   scan_button_->SetVisible(prompt_to_scan);
   review_button_->SetVisible(prompt_to_review);
@@ -1072,20 +1072,20 @@ ui::ImageModel DownloadItemView::GetIcon() const {
       break;
   }
 
-  switch (model_->GetMixedContentStatus()) {
-    case download::DownloadItem::MixedContentStatus::BLOCK:
+  switch (model_->GetInsecureDownloadStatus()) {
+    case download::DownloadItem::InsecureDownloadStatus::BLOCK:
       return kError;
-    case download::DownloadItem::MixedContentStatus::WARN:
+    case download::DownloadItem::InsecureDownloadStatus::WARN:
       return kWarning;
-    case download::DownloadItem::MixedContentStatus::UNKNOWN:
-    case download::DownloadItem::MixedContentStatus::SAFE:
-    case download::DownloadItem::MixedContentStatus::VALIDATED:
-    case download::DownloadItem::MixedContentStatus::SILENT_BLOCK:
+    case download::DownloadItem::InsecureDownloadStatus::UNKNOWN:
+    case download::DownloadItem::InsecureDownloadStatus::SAFE:
+    case download::DownloadItem::InsecureDownloadStatus::VALIDATED:
+    case download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK:
       break;
   }
 
   LOG(ERROR) << "Unexpected danger type " << danger_type
-             << " or mixed content status " << model_->GetMixedContentStatus();
+             << " or insecure status " << model_->GetInsecureDownloadStatus();
   return kInfo;
 }
 
@@ -1326,10 +1326,10 @@ DEFINE_ENUM_CONVERTERS(download::DownloadItemMode,
                        {download::DownloadItemMode::kNormal, u"kNormal"},
                        {download::DownloadItemMode::kDangerous, u"kDangerous"},
                        {download::DownloadItemMode::kMalicious, u"kMalicious"},
-                       {download::DownloadItemMode::kMixedContentWarn,
-                        u"kMixedContentWarn"},
-                       {download::DownloadItemMode::kMixedContentBlock,
-                        u"kMixedContentBlock"})
+                       {download::DownloadItemMode::kInsecureDownloadWarn,
+                        u"kInsecureDownloadWarn"},
+                       {download::DownloadItemMode::kInsecureDownloadBlock,
+                        u"kInsecureDownloadBlock"})
 
 BEGIN_METADATA(DownloadItemView, views::View)
 ADD_READONLY_PROPERTY_METADATA(download::DownloadItemMode, Mode)

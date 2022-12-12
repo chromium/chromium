@@ -173,9 +173,9 @@ class DownloadBubbleUIControllerTest : public testing::Test {
             ReturnRefOfCopy(base::FilePath(FILE_PATH_LITERAL("foo"))));
     EXPECT_CALL(item(index), GetLastReason())
         .WillRepeatedly(Return(download::DOWNLOAD_INTERRUPT_REASON_NONE));
-    EXPECT_CALL(item(index), GetMixedContentStatus())
+    EXPECT_CALL(item(index), GetInsecureDownloadStatus())
         .WillRepeatedly(
-            Return(download::DownloadItem::MixedContentStatus::SAFE));
+            Return(download::DownloadItem::InsecureDownloadStatus::SAFE));
     int received_bytes =
         state == download::DownloadItem::IN_PROGRESS ? 50 : 100;
     EXPECT_CALL(item(index), GetReceivedBytes())

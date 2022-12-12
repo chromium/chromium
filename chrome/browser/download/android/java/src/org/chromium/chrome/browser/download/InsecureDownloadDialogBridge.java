@@ -8,32 +8,32 @@ import android.app.Activity;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.download.dialogs.MixedContentDownloadDialog;
+import org.chromium.chrome.browser.download.dialogs.InsecureDownloadDialog;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 /**
- * Glues mixed-content download dialogs UI code and handles the communication to download native
+ * Glues insecure download dialogs UI code and handles the communication to download native
  * backend.
  */
-public class MixedContentDownloadDialogBridge {
-    private long mNativeMixedContentDownloadDialogBridge;
+public class InsecureDownloadDialogBridge {
+    private long mNativeInsecureDownloadDialogBridge;
 
     /**
      * Constructor, taking a pointer to the native instance.
-     * @param nativeMixedContentDownloadDialogBridge Pointer to the native object.
+     * @param nativeInsecureDownloadDialogBridge Pointer to the native object.
      */
-    public MixedContentDownloadDialogBridge(long nativeMixedContentDownloadDialogBridge) {
-        mNativeMixedContentDownloadDialogBridge = nativeMixedContentDownloadDialogBridge;
+    public InsecureDownloadDialogBridge(long nativeInsecureDownloadDialogBridge) {
+        mNativeInsecureDownloadDialogBridge = nativeInsecureDownloadDialogBridge;
     }
 
     @CalledByNative
-    private static MixedContentDownloadDialogBridge create(long nativeDialog) {
-        return new MixedContentDownloadDialogBridge(nativeDialog);
+    private static InsecureDownloadDialogBridge create(long nativeDialog) {
+        return new InsecureDownloadDialogBridge(nativeDialog);
     }
 
     /**
-     * Called to show a warning dialog for mixed-content download.
+     * Called to show a warning dialog for insecure download.
      * @param windowAndroid Window to show the dialog.
      * @param fileName Name of the download file.
      * @param totalBytes Total bytes of the file.
@@ -48,24 +48,24 @@ public class MixedContentDownloadDialogBridge {
             return;
         }
 
-        new MixedContentDownloadDialog().show(activity,
+        new InsecureDownloadDialog().show(activity,
                 ((ModalDialogManagerHolder) activity).getModalDialogManager(), fileName, totalBytes,
                 (accepted) -> { onConfirmed(callbackId, accepted); });
     }
 
     @CalledByNative
     private void destroy() {
-        mNativeMixedContentDownloadDialogBridge = 0;
+        mNativeInsecureDownloadDialogBridge = 0;
     }
 
     private void onConfirmed(long callbackId, boolean accepted) {
-        MixedContentDownloadDialogBridgeJni.get().onConfirmed(
-                mNativeMixedContentDownloadDialogBridge, callbackId, accepted);
+        InsecureDownloadDialogBridgeJni.get().onConfirmed(
+                mNativeInsecureDownloadDialogBridge, callbackId, accepted);
     }
 
     @NativeMethods
     interface Natives {
         void onConfirmed(
-                long nativeMixedContentDownloadDialogBridge, long callbackId, boolean accepted);
+                long nativeInsecureDownloadDialogBridge, long callbackId, boolean accepted);
     }
 }

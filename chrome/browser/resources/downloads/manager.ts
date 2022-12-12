@@ -214,8 +214,8 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
         loadTimeData.getBoolean('allowDeletingHistory') &&
         this.items_.some(
             ({state}) => state !== States.DANGEROUS &&
-                state !== States.MIXED_CONTENT &&
-                state !== States.IN_PROGRESS && state !== States.PAUSED);
+                state !== States.INSECURE && state !== States.IN_PROGRESS &&
+                state !== States.PAUSED);
 
     if (this.inSearchMode_) {
       this.announcerDebouncer_ = Debouncer.debounce(
@@ -281,7 +281,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
 
     this.mojoHandler_.clearAll();
     const canUndo =
-        this.items_.some(data => !data.isDangerous && !data.isMixedContent);
+        this.items_.some(data => !data.isDangerous && !data.isInsecure);
     getToastManager().show(
         loadTimeData.getString('toastClearedAll'),
         /* hideSlotted= */ !canUndo);

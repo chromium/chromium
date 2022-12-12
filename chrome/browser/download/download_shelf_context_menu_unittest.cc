@@ -37,7 +37,7 @@ TEST_F(DownloadShelfContextMenuTest, InvalidDownloadWontCrashContextMenu) {
       std::make_unique<NiceMock<download::MockDownloadItem>>();
   auto download_ui_model = DownloadItemModel::Wrap(item.get());
   auto download_weak_ptr = download_ui_model->GetWeakPtr();
-  EXPECT_CALL(*item, IsMixedContent()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*item, IsInsecure()).WillRepeatedly(Return(true));
   EXPECT_CALL(*item, IsPaused()).WillRepeatedly(Return(true));
   // 1 out of 2 commands should be executed.
   EXPECT_CALL(*item, OpenDownload()).Times(1);
@@ -64,7 +64,7 @@ TEST_F(DownloadShelfContextMenuTest, RecordCommandsEnabled) {
       std::make_unique<NiceMock<download::MockDownloadItem>>();
   auto download_ui_model = DownloadItemModel::Wrap(item.get());
   auto download_weak_ptr = download_ui_model->GetWeakPtr();
-  EXPECT_CALL(*item, IsMixedContent()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*item, IsInsecure()).WillRepeatedly(Return(true));
   EXPECT_CALL(*item, IsPaused()).WillRepeatedly(Return(true));
 
   MakeContextMenu(download_ui_model.get());
@@ -77,6 +77,6 @@ TEST_F(DownloadShelfContextMenuTest, RecordCommandsEnabled) {
       DownloadShelfContextMenuAction::kKeepEnabled, 1);
   histogram_tester.ExpectBucketCount(
       "Download.ShelfContextMenuAction",
-      DownloadShelfContextMenuAction::kLearnMoreMixedContentEnabled, 1);
+      DownloadShelfContextMenuAction::kLearnMoreInsecureDownloadEnabled, 1);
   histogram_tester.ExpectTotalCount("Download.ShelfContextMenuAction", 2);
 }

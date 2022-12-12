@@ -66,7 +66,7 @@
 #endif
 
 using download::DownloadItem;
-using MixedContentStatus = download::DownloadItem::MixedContentStatus;
+using InsecureDownloadStatus = download::DownloadItem::InsecureDownloadStatus;
 using safe_browsing::DownloadFileType;
 using ReportThreatDetailsResult =
     safe_browsing::PingManager::ReportThreatDetailsResult;
@@ -210,7 +210,7 @@ void MaybeSendDownloadReport(const GURL& url,
 bool MaybeSubmitDownloadToFeedbackService(DownloadCommands::Command command,
                                           Profile* profile,
                                           download::DownloadItem* download) {
-  if (!download->IsDangerous() || download->IsMixedContent()) {
+  if (!download->IsDangerous() || download->IsInsecure()) {
     return false;
   }
   if (!safe_browsing::DownloadFeedbackService::IsEnabledForDownload(
@@ -393,8 +393,8 @@ bool DownloadItemModel::IsMalicious() const {
   return false;
 }
 
-bool DownloadItemModel::IsMixedContent() const {
-  return download_->IsMixedContent();
+bool DownloadItemModel::IsInsecure() const {
+  return download_->IsInsecure();
 }
 
 bool DownloadItemModel::ShouldRemoveFromShelfWhenComplete() const {
@@ -546,9 +546,9 @@ void DownloadItemModel::SetDangerLevel(
   data->danger_level_ = danger_level;
 }
 
-download::DownloadItem::MixedContentStatus
-DownloadItemModel::GetMixedContentStatus() const {
-  return download_->GetMixedContentStatus();
+download::DownloadItem::InsecureDownloadStatus
+DownloadItemModel::GetInsecureDownloadStatus() const {
+  return download_->GetInsecureDownloadStatus();
 }
 
 bool DownloadItemModel::IsBeingRevived() const {
@@ -778,7 +778,7 @@ bool DownloadItemModel::IsCommandEnabled(
     case DownloadCommands::KEEP:
     case DownloadCommands::LEARN_MORE_SCANNING:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
-    case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
+    case DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
     case DownloadCommands::REVIEW:
@@ -818,7 +818,7 @@ bool DownloadItemModel::IsCommandChecked(
     case DownloadCommands::KEEP:
     case DownloadCommands::LEARN_MORE_SCANNING:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
-    case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
+    case DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD:
     case DownloadCommands::COPY_TO_CLIPBOARD:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
@@ -870,8 +870,8 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
         MaybeSubmitDownloadToFeedbackService(command, profile(), download_);
       }
 #endif
-      if (IsMixedContent()) {
-        download_->ValidateMixedContentDownload();
+      if (IsInsecure()) {
+        download_->ValidateInsecureDownload();
         break;
       }
       if (GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
@@ -918,7 +918,7 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::PLATFORM_OPEN:
     case DownloadCommands::CANCEL:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
-    case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
+    case DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD:
     case DownloadCommands::PAUSE:
     case DownloadCommands::RESUME:
     case DownloadCommands::COPY_TO_CLIPBOARD:
@@ -1068,8 +1068,8 @@ bool DownloadItemModel::ShouldShowInBubble() const {
   bool should_notify =
       download_->GetLastReason() ==
           download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED &&
-      download_->GetMixedContentStatus() !=
-          download::DownloadItem::MixedContentStatus::SILENT_BLOCK;
+      download_->GetInsecureDownloadStatus() !=
+          download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK;
 
   // Wait until the target path is determined.
   if (download_->GetTargetFilePath().empty() && !should_notify) {
@@ -1103,14 +1103,14 @@ bool DownloadItemModel::IsEphemeralWarning() const {
     return false;
   }
 
-  switch (GetMixedContentStatus()) {
-    case download::DownloadItem::MixedContentStatus::BLOCK:
-    case download::DownloadItem::MixedContentStatus::WARN:
+  switch (GetInsecureDownloadStatus()) {
+    case download::DownloadItem::InsecureDownloadStatus::BLOCK:
+    case download::DownloadItem::InsecureDownloadStatus::WARN:
       return true;
-    case download::DownloadItem::MixedContentStatus::UNKNOWN:
-    case download::DownloadItem::MixedContentStatus::SAFE:
-    case download::DownloadItem::MixedContentStatus::VALIDATED:
-    case download::DownloadItem::MixedContentStatus::SILENT_BLOCK:
+    case download::DownloadItem::InsecureDownloadStatus::UNKNOWN:
+    case download::DownloadItem::InsecureDownloadStatus::SAFE:
+    case download::DownloadItem::InsecureDownloadStatus::VALIDATED:
+    case download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK:
       break;
   }
 

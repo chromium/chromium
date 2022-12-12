@@ -130,8 +130,8 @@ suite('item tests', function() {
     assertTrue(toastManager.slottedHidden);
   });
 
-  test('undo is not shown in toast when item is mixed content', () => {
-    item.data = createDownload({hideDate: false, isMixedContent: true});
+  test('undo is not shown in toast when item is insecure', () => {
+    item.data = createDownload({hideDate: false, isInsecure: true});
     toastManager.show('', /* hideSlotted= */ false);
     assertFalse(toastManager.slottedHidden);
     item.$.remove.click();

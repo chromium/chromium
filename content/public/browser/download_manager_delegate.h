@@ -67,7 +67,7 @@ using DownloadTargetCallback = base::OnceCallback<void(
     const base::FilePath& target_path,
     download::DownloadItem::TargetDisposition disposition,
     download::DownloadDangerType danger_type,
-    download::DownloadItem::MixedContentStatus mixed_content_status,
+    download::DownloadItem::InsecureDownloadStatus insecure_download_status,
     const base::FilePath& intermediate_path,
     const base::FilePath& display_name,
     const std::string& mime_type,

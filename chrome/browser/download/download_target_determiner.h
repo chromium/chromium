@@ -116,7 +116,7 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // handler returns COMPLETE.
   enum State {
     STATE_GENERATE_TARGET_PATH,
-    STATE_SET_MIXED_CONTENT_STATUS,
+    STATE_SET_INSECURE_DOWNLOAD_STATUS,
     STATE_NOTIFY_EXTENSIONS,
     STATE_RESERVE_VIRTUAL_PATH,
     STATE_PROMPT_USER_FOR_DOWNLOAD_PATH,
@@ -178,21 +178,21 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // the download item.
   // Next state:
   // - STATE_NONE : If the download is not in progress, returns COMPLETE.
-  // - STATE_SET_MIXED_CONTENT_STATUS : All other downloads.
+  // - STATE_SET_INSECURE_DOWNLOAD_STATUS : All other downloads.
   Result DoGenerateTargetPath();
 
-  // Determines the mixed content status of the download, so as to block it
+  // Determines the insecure download status of the download, so as to block it
   // prior to prompting the user for the file path.  This function relies on the
   // delegate for the actual determination.
   //
   // Next state:
   // - STATE_NOTIFY_EXTENSIONS
-  Result DoSetMixedContentStatus();
+  Result DoSetInsecureDownloadStatus();
 
-  // Callback invoked by delegate after mixed content status is determined.
+  // Callback invoked by delegate after insecure download status is determined.
   // Cancels the download if status indicates blocking is necessary.
-  void GetMixedContentStatusDone(
-      download::DownloadItem::MixedContentStatus status);
+  void GetInsecureDownloadStatusDone(
+      download::DownloadItem::InsecureDownloadStatus status);
 
   // Notifies downloads extensions. If any extension wishes to override the
   // download filename, it will respond to the OnDeterminingFilename()
@@ -378,8 +378,8 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   base::FilePath local_path_;
   base::FilePath intermediate_path_;
   std::string mime_type_;
-  bool is_filetype_handled_safely_;
-  download::DownloadItem::MixedContentStatus mixed_content_status_;
+  bool is_filetype_handled_safely_ = false;
+  download::DownloadItem::InsecureDownloadStatus insecure_download_status_;
 #if BUILDFLAG(IS_ANDROID)
   bool is_checking_dialog_confirmed_path_;
 #endif

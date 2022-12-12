@@ -106,8 +106,8 @@ enum class DownloadCancelReason {
   kTargetConfirmationResult = 1,
   // Canceled due to no valid virtual path.
   kNoValidPath = 2,
-  // Canceled due to no mixed content.
-  kMixedContent = 3,
+  // Canceled due to no insecure download.
+  kInsecureDownload = 3,
   // Canceled due to failed path reservacation.
   kFailedPathReservation = 4,
   // Canceled due to empty local path.
@@ -215,8 +215,8 @@ enum class DownloadShelfContextMenuAction {
   kLearnMoreScanningClicked = 21,
   kLearnMoreInterruptedEnabled = 22,
   kLearnMoreInterruptedClicked = 23,
-  kLearnMoreMixedContentEnabled = 24,
-  kLearnMoreMixedContentClicked = 25,
+  kLearnMoreInsecureDownloadEnabled = 24,
+  kLearnMoreInsecureDownloadClicked = 25,
   kCopyToClipboardEnabled = 26,
   kCopyToClipboardClicked = 27,
   // kAnnotateEnabled = 28,

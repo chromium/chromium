@@ -1,4 +1,4 @@
 file://components/download/OWNERS
 
 per-file download_request_limiter*=dominickn@chromium.org
-per-file mixed_content_download_blocking*=jdeblasio@chromium.org
+per-file insecure_download_blocking*=jdeblasio@chromium.org

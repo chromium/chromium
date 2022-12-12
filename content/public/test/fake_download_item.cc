@@ -256,17 +256,17 @@ void FakeDownloadItem::SetIsDangerous(bool is_dangerous) {
   is_dangerous_ = is_dangerous;
 }
 
-void FakeDownloadItem::SetIsMixedContent(bool is_mixed_content) {
-  is_mixed_content_ = is_mixed_content;
+void FakeDownloadItem::SetIsInsecure(bool is_insecure) {
+  is_insecure_ = is_insecure;
 }
 
 void FakeDownloadItem::SetDangerType(download::DownloadDangerType danger_type) {
   danger_type_ = danger_type;
 }
 
-void FakeDownloadItem::SetMixedContentStatus(
-    download::DownloadItem::MixedContentStatus mixed_content_status) {
-  mixed_content_status_ = mixed_content_status;
+void FakeDownloadItem::SetInsecureDownloadStatus(
+    download::DownloadItem::InsecureDownloadStatus insecure_download_status) {
+  insecure_download_status_ = insecure_download_status;
 }
 
 bool FakeDownloadItem::GetOpenWhenComplete() const {
@@ -282,7 +282,7 @@ void FakeDownloadItem::ValidateDangerousDownload() {
   NOTREACHED();
 }
 
-void FakeDownloadItem::ValidateMixedContentDownload() {
+void FakeDownloadItem::ValidateInsecureDownload() {
   NOTREACHED();
 }
 
@@ -479,17 +479,17 @@ bool FakeDownloadItem::IsDangerous() const {
   return is_dangerous_;
 }
 
-bool FakeDownloadItem::IsMixedContent() const {
-  return is_mixed_content_;
+bool FakeDownloadItem::IsInsecure() const {
+  return is_insecure_;
 }
 
 download::DownloadDangerType FakeDownloadItem::GetDangerType() const {
   return danger_type_;
 }
 
-download::DownloadItem::MixedContentStatus
-FakeDownloadItem::GetMixedContentStatus() const {
-  return mixed_content_status_;
+download::DownloadItem::InsecureDownloadStatus
+FakeDownloadItem::GetInsecureDownloadStatus() const {
+  return insecure_download_status_;
 }
 
 bool FakeDownloadItem::TimeRemaining(base::TimeDelta* remaining) const {

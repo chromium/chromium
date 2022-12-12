@@ -49,7 +49,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImplDelegate {
       const base::FilePath& target_path,
       DownloadItem::TargetDisposition disposition,
       DownloadDangerType danger_type,
-      DownloadItem::MixedContentStatus mixed_content_status,
+      DownloadItem::InsecureDownloadStatus insecure_download_status,
       const base::FilePath& intermediate_path,
       const base::FilePath& display_name,
       const std::string& mime_type,

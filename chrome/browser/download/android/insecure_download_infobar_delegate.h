@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_DOWNLOAD_ANDROID_MIXED_CONTENT_DOWNLOAD_INFOBAR_DELEGATE_H_
-#define CHROME_BROWSER_DOWNLOAD_ANDROID_MIXED_CONTENT_DOWNLOAD_INFOBAR_DELEGATE_H_
+#ifndef CHROME_BROWSER_DOWNLOAD_ANDROID_INSECURE_DOWNLOAD_INFOBAR_DELEGATE_H_
+#define CHROME_BROWSER_DOWNLOAD_ANDROID_INSECURE_DOWNLOAD_INFOBAR_DELEGATE_H_
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
@@ -14,31 +14,30 @@ namespace infobars {
 class ContentInfoBarManager;
 }
 
-// An infobar that asks if user wants to download an insecurely delivered file
-// initiated from a secure context.  Note that this infobar does not expire if
-// the user subsequently navigates, since such navigations won't automatically
-// cancel the underlying download.
-class MixedContentDownloadInfoBarDelegate : public ConfirmInfoBarDelegate {
+// An infobar that asks if user wants to download an insecurely delivered file.
+// Note that this infobar does not expire if the user subsequently navigates,
+// since such navigations won't automatically cancel the underlying download.
+class InsecureDownloadInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   using ResultCallback = base::OnceCallback<void(bool should_download)>;
 
   static void Create(
       infobars::ContentInfoBarManager* infobar_manager,
       const base::FilePath& basename,
-      download::DownloadItem::MixedContentStatus mixed_content_status,
+      download::DownloadItem::InsecureDownloadStatus insecure_download_status,
       ResultCallback callback);
 
-  MixedContentDownloadInfoBarDelegate(
-      const MixedContentDownloadInfoBarDelegate&) = delete;
-  MixedContentDownloadInfoBarDelegate& operator=(
-      const MixedContentDownloadInfoBarDelegate&) = delete;
+  InsecureDownloadInfoBarDelegate(const InsecureDownloadInfoBarDelegate&) =
+      delete;
+  InsecureDownloadInfoBarDelegate& operator=(
+      const InsecureDownloadInfoBarDelegate&) = delete;
 
-  ~MixedContentDownloadInfoBarDelegate() override;
+  ~InsecureDownloadInfoBarDelegate() override;
 
  private:
-  explicit MixedContentDownloadInfoBarDelegate(
+  explicit InsecureDownloadInfoBarDelegate(
       const base::FilePath& basename,
-      download::DownloadItem::MixedContentStatus mixed_content_status,
+      download::DownloadItem::InsecureDownloadStatus insecure_download_status,
       ResultCallback callback);
 
   // ConfirmInfoBarDelegate:
@@ -55,8 +54,8 @@ class MixedContentDownloadInfoBarDelegate : public ConfirmInfoBarDelegate {
   void PostReply(bool should_download);
 
   std::u16string message_text_;
-  download::DownloadItem::MixedContentStatus mixed_content_status_;
+  download::DownloadItem::InsecureDownloadStatus insecure_download_status_;
   ResultCallback callback_;
 };
 
-#endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_MIXED_CONTENT_DOWNLOAD_INFOBAR_DELEGATE_H_
+#endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_INSECURE_DOWNLOAD_INFOBAR_DELEGATE_H_

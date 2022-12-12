@@ -40,7 +40,7 @@
 #include "chrome/browser/download/download_request_limiter.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/download/download_target_determiner.h"
-#include "chrome/browser/download/mixed_content_download_blocking.h"
+#include "chrome/browser/download/insecure_download_blocking.h"
 #include "chrome/browser/download/save_package_file_picker.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
@@ -104,8 +104,8 @@
 #include "chrome/browser/download/android/download_open_source.h"
 #include "chrome/browser/download/android/download_utils.h"
 #include "chrome/browser/download/android/duplicate_download_dialog_bridge_delegate.h"
-#include "chrome/browser/download/android/mixed_content_download_dialog_bridge.h"
-#include "chrome/browser/download/android/mixed_content_download_infobar_delegate.h"
+#include "chrome/browser/download/android/insecure_download_dialog_bridge.h"
+#include "chrome/browser/download/android/insecure_download_infobar_delegate.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "net/http/http_content_disposition.h"
@@ -316,15 +316,15 @@ void OnCheckExistingDownloadPathDone(
 
   std::move(callback).Run(
       target_info->target_path, target_info->target_disposition,
-      target_info->danger_type, target_info->mixed_content_status,
+      target_info->danger_type, target_info->insecure_download_status,
       target_info->intermediate_path, target_info->display_name,
       target_info->mime_type, target_info->result);
 }
 
 #if BUILDFLAG(IS_ANDROID)
-// Callback used by Mixed Download infobar on Android. Unlike on Desktop, this
-// infobar's entire life occurs prior to download start.
-void HandleMixedDownloadInfoBarResult(
+// Callback used by Insecure Download infobar on Android. Unlike on Desktop,
+// this infobar's entire life occurs prior to download start.
+void HandleInsecureDownloadInfoBarResult(
     download::DownloadItem* download_item,
     std::unique_ptr<DownloadTargetInfo> target_info,
     content::DownloadTargetCallback callback,
@@ -334,14 +334,14 @@ void HandleMixedDownloadInfoBarResult(
     std::move(callback).Run(target_info->target_path,
                             target_info->target_disposition,
                             download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-                            DownloadItem::MixedContentStatus::SILENT_BLOCK,
+                            DownloadItem::InsecureDownloadStatus::SILENT_BLOCK,
                             target_info->intermediate_path,
                             target_info->display_name, target_info->mime_type,
                             download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
     return;
   }
-  target_info->mixed_content_status =
-      download::DownloadItem::MixedContentStatus::VALIDATED;
+  target_info->insecure_download_status =
+      download::DownloadItem::InsecureDownloadStatus::VALIDATED;
 
   // Otherwise, proceed as normal and check for a separate reservation with the
   // same target path. If such a reservation exists, cancel this reservation.
@@ -978,13 +978,13 @@ ChromeDownloadManagerDelegate::GetDownloadProtectionService() {
   return nullptr;
 }
 
-void ChromeDownloadManagerDelegate::GetMixedContentStatus(
+void ChromeDownloadManagerDelegate::GetInsecureDownloadStatus(
     download::DownloadItem* download,
     const base::FilePath& virtual_path,
-    GetMixedContentStatusCallback callback) {
+    GetInsecureDownloadStatusCallback callback) {
   DCHECK(download);
   std::move(callback).Run(
-      GetMixedContentStatusForDownload(profile_, virtual_path, download));
+      GetInsecureDownloadStatusForDownload(profile_, virtual_path, download));
 }
 
 void ChromeDownloadManagerDelegate::NotifyExtensions(
@@ -1534,22 +1534,22 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
   base::FilePath target_path = target_info->target_path;
 
 #if BUILDFLAG(IS_ANDROID)
-  // Present a mixed content download infobar when needed, and wait to initiate
+  // Present an insecure download infobar when needed, and wait to initiate
   // the download until the user decides what to do.
   // On Desktop, this is handled using the unsafe-download warnings that are
   // shown in parallel with the download. Those warnings don't exist for
   // Android, so for simplicity we prompt before starting the download instead.
-  auto mcs = target_info->mixed_content_status;
+  auto ids = target_info->insecure_download_status;
   if (target_info->result == download::DOWNLOAD_INTERRUPT_REASON_NONE &&
-      (mcs == download::DownloadItem::MixedContentStatus::BLOCK ||
-       mcs == download::DownloadItem::MixedContentStatus::WARN)) {
+      (ids == download::DownloadItem::InsecureDownloadStatus::BLOCK ||
+       ids == download::DownloadItem::InsecureDownloadStatus::WARN)) {
     auto* web_contents = content::DownloadItemUtils::GetWebContents(item);
     gfx::NativeWindow native_window =
         web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
     if (native_window && item) {
-      MixedContentDownloadDialogBridge::GetInstance()->CreateDialog(
+      InsecureDownloadDialogBridge::GetInstance()->CreateDialog(
           item, target_path.BaseName(), native_window,
-          base::BindOnce(HandleMixedDownloadInfoBarResult, item,
+          base::BindOnce(HandleInsecureDownloadInfoBarResult, item,
                          std::move(target_info), std::move(callback)));
       return;
     }

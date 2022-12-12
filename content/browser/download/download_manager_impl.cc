@@ -487,7 +487,7 @@ void DownloadManagerImpl::DetermineDownloadTarget(
     std::move(callback).Run(
         target_path, download::DownloadItem::TARGET_DISPOSITION_OVERWRITE,
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-        download::DownloadItem::MixedContentStatus::UNKNOWN, target_path,
+        download::DownloadItem::InsecureDownloadStatus::UNKNOWN, target_path,
         base::FilePath(), std::string() /*mime_type*/,
         download::DOWNLOAD_INTERRUPT_REASON_NONE);
   }

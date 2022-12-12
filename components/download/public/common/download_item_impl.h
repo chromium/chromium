@@ -247,7 +247,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   void RemoveObserver(DownloadItem::Observer* observer) override;
   void UpdateObservers() override;
   void ValidateDangerousDownload() override;
-  void ValidateMixedContentDownload() override;
+  void ValidateInsecureDownload() override;
   void StealDangerousDownload(bool need_removal,
                               AcquireFileCallback callback) override;
   void Pause() override;
@@ -304,9 +304,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   DownloadItemRenameHandler* GetRenameHandler() override;
   const DownloadItemRerouteInfo& GetRerouteInfo() const override;
   bool IsDangerous() const override;
-  bool IsMixedContent() const override;
+  bool IsInsecure() const override;
   DownloadDangerType GetDangerType() const override;
-  MixedContentStatus GetMixedContentStatus() const override;
+  InsecureDownloadStatus GetInsecureDownloadStatus() const override;
   bool TimeRemaining(base::TimeDelta* remaining) const override;
   int64_t CurrentSpeed() const override;
   int PercentComplete() const override;
@@ -597,7 +597,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
       const base::FilePath& target_path,
       TargetDisposition disposition,
       DownloadDangerType danger_type,
-      MixedContentStatus mixed_content_status,
+      InsecureDownloadStatus insecure_download_status,
       const base::FilePath& intermediate_path,
       const base::FilePath& display_name,
       const std::string& mime_type,
@@ -890,8 +890,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // UKM ID for reporting, default to 0 if uninitialized.
   uint64_t ukm_download_id_ = 0;
 
-  // The MixedContentStatus if determined.
-  MixedContentStatus mixed_content_status_ = MixedContentStatus::UNKNOWN;
+  // The InsecureDownloadStatus if determined.
+  InsecureDownloadStatus insecure_download_status_ =
+      InsecureDownloadStatus::UNKNOWN;
 
   // A handler for renaming and helping with display the item.
   std::unique_ptr<DownloadItemRenameHandler> rename_handler_;

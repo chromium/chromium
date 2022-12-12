@@ -284,8 +284,8 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
     case download::DownloadItem::IN_PROGRESS: {
       if (download_item->IsDangerous()) {
         state = "DANGEROUS";
-      } else if (download_item->IsMixedContent()) {
-        state = "MIXED_CONTENT";
+      } else if (download_item->IsInsecure()) {
+        state = "INSECURE";
       } else if (download_item->GetDangerType() ==
                  download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
         state = "ASYNC_SCANNING";
@@ -336,7 +336,7 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
 
   file_value->danger_type = danger_type;
   file_value->is_dangerous = download_item->IsDangerous();
-  file_value->is_mixed_content = download_item->IsMixedContent();
+  file_value->is_insecure = download_item->IsInsecure();
   file_value->is_reviewable =
       enterprise_connectors::ShouldPromptReviewForDownload(
           Profile::FromBrowserContext(

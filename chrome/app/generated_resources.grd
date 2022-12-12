@@ -1927,8 +1927,8 @@ are declared in tools/grit/grit_rule.gni.
         desc="Message shown in the download shelf when a download is being scanned for an Advanced Protection user">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> is being scanned.
       </message>
-      <message name="IDS_PROMPT_CONFIRM_MIXED_CONTENT_DOWNLOAD"
-        desc="Message shown to the user to validate the download when the download content is a mixed-content download.">
+      <message name="IDS_PROMPT_CONFIRM_INSECURE_DOWNLOAD"
+        desc="Message shown to the user to validate the download when the download content is an insecure download.">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> can't be downloaded securely
       </message>
       <message name="IDS_PROMPT_DOWNLOAD_BLOCKED_TOO_LARGE"
@@ -1955,12 +1955,12 @@ are declared in tools/grit/grit_rule.gni.
         desc="Message shown in the download shelf when a download is finished being scanned, and issues were found">
         This file is dangerous
       </message>
-      <message name="IDS_PROMPT_DOWNLOAD_MIXED_CONTENT_WARNING"
-        desc="Message shown in the download shelf when a download is mixed content, and Chrome needs to show a warning.">
+      <message name="IDS_PROMPT_DOWNLOAD_INSECURE_WARNING"
+        desc="Message shown in the download shelf when a download is insecure, and Chrome needs to show a warning.">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> can't be downloaded securely
       </message>
-      <message name="IDS_PROMPT_DOWNLOAD_MIXED_CONTENT_BLOCKED"
-        desc="Message shown in the download shelf when a download is mixed content, and Chrome has blocked it.">
+      <message name="IDS_PROMPT_DOWNLOAD_INSECURE_BLOCKED"
+        desc="Message shown in the download shelf when a download is insecure, and Chrome has blocked it.">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> can't be downloaded securely
       </message>
       <message name="IDS_PROMPT_APP_DEEP_SCANNING"
@@ -1983,8 +1983,8 @@ are declared in tools/grit/grit_rule.gni.
          desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it may be dangerous.">
         This type of file may harm your computer.
       </message>
-      <message name="IDS_BLOCK_REASON_MIXED_CONTENT"
-         desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it is mixed-content.">
+      <message name="IDS_BLOCK_REASON_INSECURE_DOWNLOAD"
+         desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it was insecurely delivered.">
         This file can't be downloaded securely
       </message>
       <message name="IDS_BLOCK_REASON_DEEP_SCANNING"
@@ -2017,7 +2017,7 @@ are declared in tools/grit/grit_rule.gni.
       </message>
 
       <if expr="is_chromeos">
-        <message name="IDS_PROMPT_BLOCKED_MIXED_DOWNLOAD_TITLE"
+        <message name="IDS_PROMPT_BLOCKED_INSECURE_DOWNLOAD_TITLE"
                  desc="In the download notification, a title of the message shown on a download blocked for being insecure.">
           Insecure download blocked
         </message>
@@ -2277,19 +2277,19 @@ are declared in tools/grit/grit_rule.gni.
         </else>
       </if>
       <message name="IDS_DEEP_SCANNING_ACCESSIBLE_ALERT"
-               desc="The title of a download notification inidcating that the file may be malicious, and the Advanced Protection Program recommends sending the file to Google. This message is for screen reader users">
+               desc="The title of a download notification indicating that the file may be malicious, and the Advanced Protection Program recommends sending the file to Google. This message is for screen reader users">
         <ph name="FILE_NAME">$1<ex>file.exe</ex></ph> is being scanned.
       </message>
       <if expr="is_macosx">
         <then>
-          <message name="IDS_PROMPT_DOWNLOAD_MIXED_CONTENT_BLOCKED_ACCESSIBLE_ALERT"
-                   desc="The title of a download notification inidcating that the download was delivered insecurely. This message is for screen reader users">
+          <message name="IDS_PROMPT_DOWNLOAD_INSECURE_BLOCKED_ACCESSIBLE_ALERT"
+                   desc="The title of a download notification indicating that the download was delivered insecurely. This message is for screen reader users">
             <ph name="FILE_NAME">$1<ex>file.exe</ex></ph> can't be downloaded securely.
           </message>
         </then>
         <else>
-          <message name="IDS_PROMPT_DOWNLOAD_MIXED_CONTENT_BLOCKED_ACCESSIBLE_ALERT"
-                   desc="The title of a download notification inidcating that the download was delivered insecurely. This message is for screen reader users">
+          <message name="IDS_PROMPT_DOWNLOAD_INSECURE_BLOCKED_ACCESSIBLE_ALERT"
+                   desc="The title of a download notification indicating that the download was delivered insecurely. This message is for screen reader users">
             <ph name="FILE_NAME">$1<ex>file.exe</ex></ph> can't be downloaded securely. Press Shift+F6 to cycle to the downloads bar area.
           </message>
         </else>
@@ -2366,8 +2366,8 @@ are declared in tools/grit/grit_rule.gni.
                    desc="Download context menu: Show information about interrupted downloads">
             &amp;More information
           </message>
-          <message name="IDS_DOWNLOAD_MENU_LEARN_MORE_MIXED_CONTENT"
-                   desc="Download context menu: Show information about mixed content downloads">
+          <message name="IDS_DOWNLOAD_MENU_LEARN_MORE_INSECURE"
+                   desc="Download context menu: Show information about insecure downloads">
             &amp;Learn more
           </message>
         </if>
@@ -2434,8 +2434,8 @@ are declared in tools/grit/grit_rule.gni.
                    desc="In Title Case: Download context menu: Show information about interrupted downloads">
             &amp;More Information
           </message>
-          <message name="IDS_DOWNLOAD_MENU_LEARN_MORE_MIXED_CONTENT"
-                   desc="In Title Case: Download context menu: Show information about mixed content downloads">
+          <message name="IDS_DOWNLOAD_MENU_LEARN_MORE_INSECURE"
+                   desc="In Title Case: Download context menu: Show information about insecure downloads">
             &amp;Learn More
           </message>
         </if>  <!-- not use_titlecase -->

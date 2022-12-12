@@ -18,18 +18,19 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * Dialog for confirming that the user wants to download a mixed-content file, using the default
- * model dialog from ModalDialogManager.
+ * Dialog for confirming that the user wants to download an insecurely-delivered file, using the
+ * default model dialog from ModalDialogManager.
  */
-public class MixedContentDownloadDialog {
+public class InsecureDownloadDialog {
     /**
-     * Events related to the mixed-content download dialog, used for UMA reporting.
+     * Events related to the insecure download dialog, used for UMA reporting.
      * These values are persisted to logs. Entries should not be renumbered and
      * numeric values should never be reused.
      */
-    @IntDef({MixedContentDownloadDialogEvent.SHOW, MixedContentDownloadDialogEvent.CONFIRM,
-            MixedContentDownloadDialogEvent.CANCEL, MixedContentDownloadDialogEvent.DISMISS})
-    private @interface MixedContentDownloadDialogEvent {
+    @IntDef({InsecureDownloadDialogEvent.SHOW, InsecureDownloadDialogEvent.CONFIRM,
+            InsecureDownloadDialogEvent.CANCEL, InsecureDownloadDialogEvent.DISMISS,
+            InsecureDownloadDialogEvent.COUNT})
+    private @interface InsecureDownloadDialogEvent {
         int SHOW = 0;
         int CONFIRM = 1;
         int CANCEL = 2;
@@ -39,7 +40,7 @@ public class MixedContentDownloadDialog {
     }
 
     /**
-     * Called to show a warning dialog for mixed-content download.
+     * Called to show a warning dialog for insecure download.
      * @param context Context for showing the dialog.
      * @param modalDialogManager Manager for managing the modal dialog.
      * @param fileName Name of the download file.
@@ -69,9 +70,9 @@ public class MixedContentDownloadDialog {
                                                                          .POSITIVE_BUTTON_CLICKED
                                                                : DialogDismissalCause
                                                                          .NEGATIVE_BUTTON_CLICKED);
-                                        recordMixedContentDownloadDialogEvent(acceptDownload
-                                                        ? MixedContentDownloadDialogEvent.CONFIRM
-                                                        : MixedContentDownloadDialogEvent.CANCEL);
+                                        recordInsecureDownloadDialogEvent(acceptDownload
+                                                        ? InsecureDownloadDialogEvent.CONFIRM
+                                                        : InsecureDownloadDialogEvent.CANCEL);
                                     }
 
                                     @Override
@@ -83,36 +84,35 @@ public class MixedContentDownloadDialog {
                                                         != DialogDismissalCause
                                                                    .NEGATIVE_BUTTON_CLICKED) {
                                             if (callback != null) callback.onResult(false);
-                                            recordMixedContentDownloadDialogEvent(
-                                                    MixedContentDownloadDialogEvent.DISMISS);
+                                            recordInsecureDownloadDialogEvent(
+                                                    InsecureDownloadDialogEvent.DISMISS);
                                         }
                                     }
                                 })
                         .with(ModalDialogProperties.TITLE,
                                 context.getResources().getString(
-                                        R.string.mixed_content_download_dialog_title))
+                                        R.string.insecure_download_dialog_title))
                         .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, message)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 context.getResources().getString(
-                                        R.string.mixed_content_download_dialog_confirm_text))
+                                        R.string.insecure_download_dialog_confirm_text))
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 context.getResources().getString(
-                                        R.string.mixed_content_download_dialog_discard_text))
+                                        R.string.insecure_download_dialog_discard_text))
                         .with(ModalDialogProperties.BUTTON_STYLES,
                                 ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE)
                         .build();
 
         modalDialogManager.showDialog(propertyModel, ModalDialogManager.ModalDialogType.TAB);
-        recordMixedContentDownloadDialogEvent(MixedContentDownloadDialogEvent.SHOW);
+        recordInsecureDownloadDialogEvent(InsecureDownloadDialogEvent.SHOW);
     }
 
     /**
-     * Collects mixed content download dialog UI event metrics.
+     * Collects insecure download dialog UI event metrics.
      * @param event The UI event to collect.
      */
-    private static void recordMixedContentDownloadDialogEvent(
-            @MixedContentDownloadDialogEvent int event) {
+    private static void recordInsecureDownloadDialogEvent(@InsecureDownloadDialogEvent int event) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Download.MixedContentDialog.Events", event, MixedContentDownloadDialogEvent.COUNT);
+                "Download.MixedContentDialog.Events", event, InsecureDownloadDialogEvent.COUNT);
     }
 }

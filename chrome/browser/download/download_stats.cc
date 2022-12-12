@@ -172,11 +172,11 @@ DownloadShelfContextMenuAction DownloadCommandToShelfAction(
       return clicked
                  ? DownloadShelfContextMenuAction::kLearnMoreInterruptedClicked
                  : DownloadShelfContextMenuAction::kLearnMoreInterruptedEnabled;
-    case DownloadCommands::Command::LEARN_MORE_MIXED_CONTENT:
-      return clicked
-                 ? DownloadShelfContextMenuAction::kLearnMoreMixedContentClicked
-                 : DownloadShelfContextMenuAction::
-                       kLearnMoreMixedContentEnabled;
+    case DownloadCommands::Command::LEARN_MORE_INSECURE_DOWNLOAD:
+      return clicked ? DownloadShelfContextMenuAction::
+                           kLearnMoreInsecureDownloadClicked
+                     : DownloadShelfContextMenuAction::
+                           kLearnMoreInsecureDownloadEnabled;
     case DownloadCommands::Command::COPY_TO_CLIPBOARD:
       return clicked ? DownloadShelfContextMenuAction::kCopyToClipboardClicked
                      : DownloadShelfContextMenuAction::kCopyToClipboardEnabled;

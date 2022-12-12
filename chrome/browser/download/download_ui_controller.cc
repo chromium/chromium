@@ -278,8 +278,8 @@ void DownloadUIController::OnDownloadUpdated(content::DownloadManager* manager,
   bool should_notify =
       item->GetLastReason() ==
           download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED &&
-      item->GetMixedContentStatus() !=
-          download::DownloadItem::MixedContentStatus::SILENT_BLOCK;
+      item->GetInsecureDownloadStatus() !=
+          download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK;
 
   // Wait until the target path is determined or the download is canceled.
   if (item->GetTargetFilePath().empty() &&

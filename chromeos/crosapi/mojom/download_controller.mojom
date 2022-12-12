@@ -45,10 +45,10 @@ enum DownloadDangerType {
   kDownloadDangerTypeDangerousAccountCompromise = 19,
 };
 
-// This mirrors `download::DownloadItem::MixedContentStatus`, anything added or
-// removed here must also be added or removed there.
-[Stable, Extensible]
-enum DownloadMixedContentStatus {
+// This mirrors `download::DownloadItem::InsecureDownloadStatus`, anything
+// added or removed here must also be added or removed there.
+[Stable, Extensible, RenamedFrom="crosapi.mojom.DownloadMixedContentStatus"]
+enum InsecureDownloadStatus {
   [Default] kInvalid = -1,
   kUnknown = 0,
   kSafe = 1,
@@ -85,10 +85,10 @@ struct DownloadItem {
   [MinVersion=2] mojo_base.mojom.Time? start_time@13;
   [MinVersion=3] bool has_is_dangerous@14;
   [MinVersion=3] bool is_dangerous@15;
-  [MinVersion=3] bool has_is_mixed_content@16;
-  [MinVersion=3] bool is_mixed_content@17;
+  [MinVersion=3] bool has_is_insecure@16;
+  [MinVersion=3] bool is_insecure@17;
   [MinVersion=4] DownloadDangerType danger_type@18;
-  [MinVersion=4] DownloadMixedContentStatus mixed_content_status@19;
+  [MinVersion=4] InsecureDownloadStatus insecure_download_status@19;
 };
 
 // A client implemented in lacros-chrome for the DownloadController which is

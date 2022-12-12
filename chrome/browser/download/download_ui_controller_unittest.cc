@@ -320,16 +320,17 @@ TEST_F(DownloadUIControllerTest, DownloadUIController_NotifyBasic_FileBlocked) {
       .WillRepeatedly(Return(download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED));
 
   // If the download is a silently blocked mixed content download, don't notify.
-  EXPECT_CALL(*item, GetMixedContentStatus())
+  EXPECT_CALL(*item, GetInsecureDownloadStatus())
       .WillRepeatedly(
-          Return(download::DownloadItem::MixedContentStatus::SILENT_BLOCK));
+          Return(download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK));
   ASSERT_TRUE(manager_observer());
   manager_observer()->OnDownloadCreated(manager(), item.get());
   EXPECT_FALSE(notified_item());
 
   // Notify even though the destination hasn't been determined yet.
-  EXPECT_CALL(*item, GetMixedContentStatus())
-      .WillRepeatedly(Return(download::DownloadItem::MixedContentStatus::SAFE));
+  EXPECT_CALL(*item, GetInsecureDownloadStatus())
+      .WillRepeatedly(
+          Return(download::DownloadItem::InsecureDownloadStatus::SAFE));
   item->NotifyObserversDownloadUpdated();
   EXPECT_EQ(static_cast<download::DownloadItem*>(item.get()), notified_item());
 }

@@ -32,7 +32,7 @@ bool CastDownloadManagerDelegate::DetermineDownloadTarget(
   std::move(*callback).Run(
       empty, download::DownloadItem::TARGET_DISPOSITION_OVERWRITE,
       download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
-      download::DownloadItem::MixedContentStatus::UNKNOWN, empty, empty,
+      download::DownloadItem::InsecureDownloadStatus::UNKNOWN, empty, empty,
       std::string() /*mime_type*/,
       download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
   return true;

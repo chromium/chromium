@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/download/mixed_content_download_blocking.h"
+#include "chrome/browser/download/insecure_download_blocking.h"
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -27,7 +27,7 @@
 #include "url/origin.h"
 
 using download::DownloadSource;
-using MixedContentStatus = download::DownloadItem::MixedContentStatus;
+using InsecureDownloadStatus = download::DownloadItem::InsecureDownloadStatus;
 
 namespace {
 
@@ -183,9 +183,9 @@ InsecureDownloadSecurityStatus GetDownloadBlockingEnum(
   return InsecureDownloadSecurityStatus::kInitiatorInsecureFileInsecure;
 }
 
-struct MixedContentDownloadData {
-  MixedContentDownloadData(const base::FilePath& path,
-                           const download::DownloadItem* item)
+struct InsecureDownloadData {
+  InsecureDownloadData(const base::FilePath& path,
+                       const download::DownloadItem* item)
       : item_(item) {
     // Configure initiator.
     bool initiator_inferred = false;
@@ -302,8 +302,7 @@ bool ContainsExtension(const std::string& extension_list,
 
 // Just print a descriptive message to the console about the blocked download.
 // |is_blocked| indicates whether this download will be blocked now.
-void PrintConsoleMessage(const MixedContentDownloadData& data,
-                         bool is_blocked) {
+void PrintConsoleMessage(const InsecureDownloadData& data, bool is_blocked) {
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(data.item_);
   if (!web_contents) {
@@ -360,25 +359,29 @@ bool IsDownloadPermittedByContentSettings(
 
 }  // namespace
 
-MixedContentStatus GetMixedContentStatusForDownload(
+InsecureDownloadStatus GetInsecureDownloadStatusForDownload(
     Profile* profile,
     const base::FilePath& path,
     const download::DownloadItem* item) {
-  MixedContentDownloadData data(path, item);
+  InsecureDownloadData data(path, item);
+
+  // For now, the only downloads that are marked as insecure are "mixed"
+  // downloads (i.e. insecure downloads that are initiated from a secure
+  // context). We expect this to change in the future.
 
   if (!data.is_mixed_content_) {
-    return MixedContentStatus::SAFE;
+    return InsecureDownloadStatus::SAFE;
   }
 
   // As of M81, print a console message even if no other blocking is enabled.
   if (!base::FeatureList::IsEnabled(features::kTreatUnsafeDownloadsAsActive)) {
     PrintConsoleMessage(data, false);
-    return MixedContentStatus::SAFE;
+    return InsecureDownloadStatus::SAFE;
   }
 
   if (IsDownloadPermittedByContentSettings(profile, data.initiator_)) {
     PrintConsoleMessage(data, false);
-    return MixedContentStatus::SAFE;
+    return InsecureDownloadStatus::SAFE;
   }
 
   if (ContainsExtension(kSilentBlockExtensionList.Get(), data.extension_) !=
@@ -390,25 +393,25 @@ MixedContentStatus GetMixedContentStatusForDownload(
     auto download_source = data.item_->GetDownloadSource();
     if (download_source == DownloadSource::CONTEXT_MENU ||
         download_source == DownloadSource::WEB_CONTENTS_API) {
-      return MixedContentStatus::BLOCK;
+      return InsecureDownloadStatus::BLOCK;
     }
 
-    return MixedContentStatus::SILENT_BLOCK;
+    return InsecureDownloadStatus::SILENT_BLOCK;
   }
 
   if (ContainsExtension(kBlockExtensionList.Get(), data.extension_) !=
       kTreatBlockListAsAllowlist.Get()) {
     PrintConsoleMessage(data, true);
-    return MixedContentStatus::BLOCK;
+    return InsecureDownloadStatus::BLOCK;
   }
 
   if (ContainsExtension(kWarnExtensionList.Get(), data.extension_) !=
       kTreatWarnListAsAllowlist.Get()) {
     PrintConsoleMessage(data, true);
-    return MixedContentStatus::WARN;
+    return InsecureDownloadStatus::WARN;
   }
 
   // The download is still mixed content, but we're not blocking it yet.
   PrintConsoleMessage(data, false);
-  return MixedContentStatus::SAFE;
+  return InsecureDownloadStatus::SAFE;
 }

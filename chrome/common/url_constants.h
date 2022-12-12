@@ -194,8 +194,8 @@ extern const char kLearnMoreReportingURL[];
 // The URL for the Learn More page about policies and enterprise enrollment.
 extern const char kManagedUiLearnMoreUrl[];
 
-// The URL for the "Learn more" page for mixed content download blocking.
-extern const char kMixedContentDownloadBlockingLearnMoreUrl[];
+// The URL for the "Learn more" page for insecure download blocking.
+extern const char kInsecureDownloadBlockingLearnMoreUrl[];
 
 // "myactivity.google.com" URL for the history checkbox in ClearBrowsingData.
 extern const char kMyActivityUrlInClearBrowsingData[];

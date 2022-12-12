@@ -79,8 +79,9 @@ struct DownloadTargetInfo {
   // Result of the download target determination.
   download::DownloadInterruptReason result;
 
-  // What sort of blocking should be used if the download is of mixed content.
-  download::DownloadItem::MixedContentStatus mixed_content_status;
+  // What sort of blocking should be used if the download is insecure.
+  download::DownloadItem::InsecureDownloadStatus insecure_download_status = 
+          download::DownloadItem::InsecureDownloadStatus::UNKNOWN;
 
   // Display name of the file.
   base::FilePath display_name;

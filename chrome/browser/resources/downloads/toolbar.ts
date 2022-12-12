@@ -98,7 +98,7 @@ export class DownloadsToolbarElement extends PolymerElement {
     this.mojoHandler_!.clearAll();
     this.$.moreActionsMenu.close();
     const canUndo =
-        this.items.some(data => !data.isDangerous && !data.isMixedContent);
+        this.items.some(data => !data.isDangerous && !data.isInsecure);
     getToastManager().show(
         loadTimeData.getString('toastClearedAll'),
         /* hideSlotted= */ !canUndo);

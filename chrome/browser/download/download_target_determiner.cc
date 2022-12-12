@@ -168,8 +168,8 @@ void DownloadTargetDeterminer::DoLoop() {
       case STATE_GENERATE_TARGET_PATH:
         result = DoGenerateTargetPath();
         break;
-      case STATE_SET_MIXED_CONTENT_STATUS:
-        result = DoSetMixedContentStatus();
+      case STATE_SET_INSECURE_DOWNLOAD_STATUS:
+        result = DoSetInsecureDownloadStatus();
         break;
       case STATE_NOTIFY_EXTENSIONS:
         result = DoNotifyExtensions();
@@ -222,7 +222,7 @@ DownloadTargetDeterminer::Result
   DCHECK(!should_notify_extensions_);
   bool is_forced_path = !download_->GetForcedFilePath().empty();
 
-  next_state_ = STATE_SET_MIXED_CONTENT_STATUS;
+  next_state_ = STATE_SET_INSECURE_DOWNLOAD_STATUS;
 
   // Transient download should use the existing path.
   if (download_->IsTransient()) {
@@ -357,30 +357,30 @@ base::FilePath DownloadTargetDeterminer::GenerateFileName() const {
 }
 
 DownloadTargetDeterminer::Result
-DownloadTargetDeterminer::DoSetMixedContentStatus() {
+DownloadTargetDeterminer::DoSetInsecureDownloadStatus() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!virtual_path_.empty());
 
   next_state_ = STATE_NOTIFY_EXTENSIONS;
 
-  delegate_->GetMixedContentStatus(
+  delegate_->GetInsecureDownloadStatus(
       download_, virtual_path_,
-      base::BindOnce(&DownloadTargetDeterminer::GetMixedContentStatusDone,
+      base::BindOnce(&DownloadTargetDeterminer::GetInsecureDownloadStatusDone,
                      weak_ptr_factory_.GetWeakPtr()));
   return QUIT_DOLOOP;
 }
 
-void DownloadTargetDeterminer::GetMixedContentStatusDone(
-    download::DownloadItem::MixedContentStatus status) {
+void DownloadTargetDeterminer::GetInsecureDownloadStatusDone(
+    download::DownloadItem::InsecureDownloadStatus status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Delegate should not call back here more than once.
   DCHECK_EQ(STATE_NOTIFY_EXTENSIONS, next_state_);
 
-  mixed_content_status_ = status;
+  insecure_download_status_ = status;
 
-  if (status == download::DownloadItem::MixedContentStatus::SILENT_BLOCK) {
-    RecordDownloadCancelReason(DownloadCancelReason::kMixedContent);
+  if (status == download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK) {
+    RecordDownloadCancelReason(DownloadCancelReason::kInsecureDownload);
     ScheduleCallbackAndDeleteSelf(
         download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
     return;
@@ -1121,7 +1121,7 @@ void DownloadTargetDeterminer::ScheduleCallbackAndDeleteSelf(
   target_info->intermediate_path = intermediate_path_;
   target_info->mime_type = mime_type_;
   target_info->is_filetype_handled_safely = is_filetype_handled_safely_;
-  target_info->mixed_content_status = mixed_content_status_;
+  target_info->insecure_download_status = insecure_download_status_;
 #if BUILDFLAG(IS_ANDROID)
   // If |virtual_path_| is content URI, there is no need to prompt the user.
   if (local_path_.IsContentUri() && !virtual_path_.IsContentUri()) {

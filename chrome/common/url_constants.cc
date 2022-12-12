@@ -184,7 +184,7 @@ const char kManagedUiLearnMoreUrl[] =
     "https://support.google.com/chrome/?p=is_chrome_managed";
 #endif
 
-const char kMixedContentDownloadBlockingLearnMoreUrl[] =
+const char kInsecureDownloadBlockingLearnMoreUrl[] =
     "https://support.google.com/chrome/?p=mixed_content_downloads";
 
 const char kMyActivityUrlInClearBrowsingData[] =

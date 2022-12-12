@@ -535,14 +535,14 @@ void DownloadItemImpl::ValidateDangerousDownload() {
   MaybeCompleteDownload();
 }
 
-void DownloadItemImpl::ValidateMixedContentDownload() {
+void DownloadItemImpl::ValidateInsecureDownload() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!IsDone());
-  DCHECK(IsMixedContent());
+  DCHECK(IsInsecure());
 
   DVLOG(20) << __func__ << "() download=" << DebugString(true);
 
-  mixed_content_status_ = MixedContentStatus::VALIDATED;
+  insecure_download_status_ = InsecureDownloadStatus::VALIDATED;
 
   UpdateObservers();  // TODO(asanka): This is potentially unsafe. The download
                       // may not be in a consistent state or around at all after
@@ -1038,19 +1038,19 @@ bool DownloadItemImpl::IsDangerous() const {
          danger_type_ == DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE;
 }
 
-bool DownloadItemImpl::IsMixedContent() const {
-  return mixed_content_status_ == MixedContentStatus::WARN ||
-         mixed_content_status_ == MixedContentStatus::BLOCK ||
-         mixed_content_status_ == MixedContentStatus::SILENT_BLOCK;
+bool DownloadItemImpl::IsInsecure() const {
+  return insecure_download_status_ == InsecureDownloadStatus::WARN ||
+         insecure_download_status_ == InsecureDownloadStatus::BLOCK ||
+         insecure_download_status_ == InsecureDownloadStatus::SILENT_BLOCK;
 }
 
 DownloadDangerType DownloadItemImpl::GetDangerType() const {
   return danger_type_;
 }
 
-DownloadItem::MixedContentStatus DownloadItemImpl::GetMixedContentStatus()
-    const {
-  return mixed_content_status_;
+DownloadItem::InsecureDownloadStatus
+DownloadItemImpl::GetInsecureDownloadStatus() const {
+  return insecure_download_status_;
 }
 
 bool DownloadItemImpl::TimeRemaining(base::TimeDelta* remaining) const {
@@ -1705,7 +1705,7 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
     const base::FilePath& target_path,
     TargetDisposition disposition,
     DownloadDangerType danger_type,
-    MixedContentStatus mixed_content_status,
+    InsecureDownloadStatus insecure_download_status,
     const base::FilePath& intermediate_path,
     const base::FilePath& display_name,
     const std::string& mime_type,
@@ -1747,7 +1747,7 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
   destination_info_.target_path = target_path;
   destination_info_.target_disposition = disposition;
   SetDangerType(danger_type);
-  mixed_content_status_ = mixed_content_status;
+  insecure_download_status_ = insecure_download_status;
   if (!display_name.empty())
     SetDisplayName(display_name);
   if (!mime_type.empty())
@@ -2303,9 +2303,9 @@ bool DownloadItemImpl::IsDownloadReadyForCompletion(
   if (IsDangerous())
     return false;
 
-  // If the download is mixed content, but not yet validated, it's not ready for
+  // If the download is insecure, but not yet validated, it's not ready for
   // completion.
-  if (IsMixedContent())
+  if (IsInsecure())
     return false;
 
   // Check for consistency before invoking delegate. Since there are no pending

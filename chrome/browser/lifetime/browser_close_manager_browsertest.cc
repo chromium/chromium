@@ -228,13 +228,13 @@ class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
                            const base::FilePath& target_path,
                            download::DownloadItem::TargetDisposition disp,
                            download::DownloadDangerType danger_type,
-                           download::DownloadItem::MixedContentStatus mcs,
+                           download::DownloadItem::InsecureDownloadStatus ids,
                            const base::FilePath& intermediate_path,
                            const base::FilePath& display_name,
                            const std::string& mime_type,
                            download::DownloadInterruptReason reason) {
     std::move(callback).Run(target_path, disp,
-                            download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL, mcs,
+                            download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL, ids,
                             intermediate_path, display_name, mime_type, reason);
   }
 };

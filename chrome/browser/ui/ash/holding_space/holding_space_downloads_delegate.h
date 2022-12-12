@@ -82,8 +82,7 @@ class HoldingSpaceDownloadsDelegate
   // Invoked when the specified `in_progress_download` is updated. If
   // `invalidate_image` is `true`, the image for the associated holding space
   // item will be explicitly invalidated. This is necessary if, for example, the
-  // underlying download is transitioning to/from a dangerous or mixed content
-  // state.
+  // underlying download is transitioning to/from a dangerous or insecure state.
   void OnDownloadUpdated(InProgressDownload* in_progress_download,
                          bool invalidate_image);
 
@@ -102,7 +101,7 @@ class HoldingSpaceDownloadsDelegate
   // specified `in_progress_download`. If `invalidate_image` is `true`, the
   // image for the holding space item will be explicitly invalidated. This is
   // necessary if, for example, the underlying download is transitioning to/from
-  // a dangerous or mixed content state.
+  // a dangerous or insecure state.
   void CreateOrUpdateHoldingSpaceItem(InProgressDownload* in_progress_download,
                                       bool invalidate_image);
 

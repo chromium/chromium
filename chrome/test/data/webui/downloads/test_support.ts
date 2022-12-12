@@ -88,7 +88,7 @@ export function createDownload(config?: Partial<MojomData>): MojomData {
         hideDate: false,
         id: '123',
         isDangerous: false,
-        isMixedContent: false,
+        isInsecure: false,
         isReviewable: false,
         lastReasonText: '',
         otr: false,

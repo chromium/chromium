@@ -122,9 +122,9 @@ public class DownloadDialogIncognitoTest {
 
     @Test
     @LargeTest
-    public void testMixedContentDownloadDownloadDoNotShowIncognitoWarning() throws Exception {
-        // Showing a mixed content download dialog with a regular profile.
-        showMixedContentDialog();
+    public void testInsecureDownloadDownloadDoNotShowIncognitoWarning() throws Exception {
+        // Showing an insecure download dialog with a regular profile.
+        showInsecureDownloadDialog();
 
         // Verify the Incognito warning message is NOT shown.
         waitForWarningVisibilityToBe(GONE);
@@ -156,10 +156,10 @@ public class DownloadDialogIncognitoTest {
         });
     }
 
-    private void showMixedContentDialog() {
+    private void showInsecureDownloadDialog() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Context mContext = mActivityTestRule.getActivity().getApplicationContext();
-            new MixedContentDownloadDialog().show(
+            new InsecureDownloadDialog().show(
                     mContext, mModalDialogManager, FILE_NAME, TOTAL_BYTES, mResultCallback);
         });
     }

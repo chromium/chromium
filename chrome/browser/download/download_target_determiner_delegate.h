@@ -24,10 +24,10 @@ class FilePath;
 // DownloadTargetDeterminer and is expected to outlive it.
 class DownloadTargetDeterminerDelegate {
  public:
-  // Callback to be invoked after GetMixedContentStatus() completes. The
+  // Callback to be invoked after GetInsecureDownloadStatus() completes. The
   // |should_block| bool represents whether the download should be aborted.
-  using GetMixedContentStatusCallback = base::OnceCallback<void(
-      download::DownloadItem::MixedContentStatus status)>;
+  using GetInsecureDownloadStatusCallback = base::OnceCallback<void(
+      download::DownloadItem::InsecureDownloadStatus status)>;
 
   // Callback to be invoked after NotifyExtensions() completes. The
   // |new_virtual_path| should be set to a new path if an extension wishes to
@@ -72,12 +72,12 @@ class DownloadTargetDeterminerDelegate {
   // determined, it should be set to the empty string.
   typedef base::OnceCallback<void(const std::string&)> GetFileMimeTypeCallback;
 
-  // Returns whether the download should be warned/blocked based on its mixed
-  // content status, and if so, what kind of warning/blocking should be used.
-  virtual void GetMixedContentStatus(
+  // Returns whether the download should be warned/blocked based on its insecure
+  // download status, and if so, what kind of warning/blocking should be used.
+  virtual void GetInsecureDownloadStatus(
       download::DownloadItem* download,
       const base::FilePath& virtual_path,
-      GetMixedContentStatusCallback callback) = 0;
+      GetInsecureDownloadStatusCallback callback) = 0;
 
   // Notifies extensions of the impending filename determination. |virtual_path|
   // is the current suggested virtual path. The |callback| should be invoked to

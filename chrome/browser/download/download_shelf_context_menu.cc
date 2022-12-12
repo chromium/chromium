@@ -24,12 +24,12 @@
 #include "chrome/browser/ui/pdf/adobe_reader_info_win.h"
 #endif
 
-using MixedContentStatus = download::DownloadItem::MixedContentStatus;
+using InsecureDownloadStatus = download::DownloadItem::InsecureDownloadStatus;
 
 bool DownloadShelfContextMenu::WantsContextMenu(
     DownloadUIModel* download_model) {
   return !download_model->IsDangerous() || download_model->MightBeMalicious() ||
-         download_model->IsMixedContent();
+         download_model->IsInsecure();
 }
 
 DownloadShelfContextMenu::~DownloadShelfContextMenu() {
@@ -76,8 +76,8 @@ ui::SimpleMenuModel* DownloadShelfContextMenu::GetMenuModel() {
 
   bool is_download = download_->GetDownloadItem() != nullptr;
 
-  if (download_->IsMixedContent()) {
-    model = GetMixedContentDownloadMenuModel();
+  if (download_->IsInsecure()) {
+    model = GetInsecureDownloadMenuModel();
   } else if (ChromeDownloadManagerDelegate::IsDangerTypeBlocked(
                  download_->GetDangerType())) {
     model = GetInterruptedMenuModel(is_download);
@@ -191,8 +191,8 @@ std::u16string DownloadShelfContextMenu::GetLabelForCommandId(
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
       id = IDS_DOWNLOAD_MENU_LEARN_MORE_INTERRUPTED;
       break;
-    case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
-      id = IDS_DOWNLOAD_MENU_LEARN_MORE_MIXED_CONTENT;
+    case DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD:
+      id = IDS_DOWNLOAD_MENU_LEARN_MORE_INSECURE;
       break;
     case DownloadCommands::COPY_TO_CLIPBOARD:
       // This command is implemented only for the Download notification.
@@ -414,29 +414,27 @@ ui::SimpleMenuModel* DownloadShelfContextMenu::GetDeepScanningMenuModel(
   return deep_scanning_menu_model_.get();
 }
 
-ui::SimpleMenuModel*
-DownloadShelfContextMenu::GetMixedContentDownloadMenuModel() {
-  if (mixed_content_download_menu_model_)
-    return mixed_content_download_menu_model_.get();
+ui::SimpleMenuModel* DownloadShelfContextMenu::GetInsecureDownloadMenuModel() {
+  if (insecure_download_menu_model_)
+    return insecure_download_menu_model_.get();
 
-  mixed_content_download_menu_model_ =
-      std::make_unique<ui::SimpleMenuModel>(this);
+  insecure_download_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
 
-  if (download_->GetMixedContentStatus() == MixedContentStatus::WARN) {
-    mixed_content_download_menu_model_->AddItem(
+  if (download_->GetInsecureDownloadStatus() == InsecureDownloadStatus::WARN) {
+    insecure_download_menu_model_->AddItem(
         DownloadCommands::DISCARD,
         GetLabelForCommandId(DownloadCommands::DISCARD));
   } else {
-    mixed_content_download_menu_model_->AddItem(
+    insecure_download_menu_model_->AddItem(
         DownloadCommands::KEEP, GetLabelForCommandId(DownloadCommands::KEEP));
   }
 
-  mixed_content_download_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-  mixed_content_download_menu_model_->AddItem(
-      DownloadCommands::LEARN_MORE_MIXED_CONTENT,
-      GetLabelForCommandId(DownloadCommands::LEARN_MORE_MIXED_CONTENT));
+  insecure_download_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+  insecure_download_menu_model_->AddItem(
+      DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD,
+      GetLabelForCommandId(DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD));
 
-  return mixed_content_download_menu_model_.get();
+  return insecure_download_menu_model_.get();
 }
 
 void DownloadShelfContextMenu::AddAutoOpenToMenu(ui::SimpleMenuModel* menu) {

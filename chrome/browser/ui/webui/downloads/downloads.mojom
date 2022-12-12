@@ -9,7 +9,8 @@ module downloads.mojom;
 struct Data {
   bool file_externally_removed;
   bool is_dangerous;
-  bool is_mixed_content;
+  [RenamedFrom=is_mixed_content]
+  bool is_insecure;
   bool is_reviewable;
   // |otr| stands for off-the-record and is true when a download entry is
   // created during an incognito or guest profile session.
@@ -32,7 +33,7 @@ struct Data {
   string show_in_folder_text;
   string since_string;
   // |state| indicates the current state of the download. A download data entry
-  // can be dangerous or mixed content which can be expressed as a state to
+  // can be dangerous or insecure which can be expressed as a state to
   // indicate the download needs confirmation before initiating. After
   // confirmation, the state will indicate the download is in progress, complete
   // or cancelled.

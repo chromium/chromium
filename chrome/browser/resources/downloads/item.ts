@@ -273,8 +273,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         }
         break;
 
-      case States.MIXED_CONTENT:
-        return loadTimeData.getString('mixedContentDownloadDesc');
+      case States.INSECURE:
+        return loadTimeData.getString('insecureDownloadDesc');
 
       case States.DANGEROUS:
         switch (data.dangerType) {
@@ -391,7 +391,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   private computeIsDangerous_(): boolean {
     return this.data.state === States.DANGEROUS ||
-        this.data.state === States.MIXED_CONTENT;
+        this.data.state === States.INSECURE;
   }
 
   private computeIsInProgress_(): boolean {
@@ -577,7 +577,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       // Make the file name collapsible.
       p.collapsible = !!p.arg;
     });
-    const canUndo = !this.data.isDangerous && !this.data.isMixedContent;
+    const canUndo = !this.data.isDangerous && !this.data.isInsecure;
     getToastManager().showForStringPieces(pieces, /* hideSlotted= */ !canUndo);
 
     // Stop propagating a click to the document to remove toast.

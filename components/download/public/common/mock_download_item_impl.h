@@ -30,7 +30,7 @@ class MockDownloadItemImpl : public DownloadItemImpl {
                void(const base::FilePath&,
                     TargetDisposition,
                     DownloadDangerType,
-                    MixedContentStatus,
+                    InsecureDownloadStatus,
                     const base::FilePath&,
                     const base::FilePath&,
                     const std::string&,
@@ -105,9 +105,9 @@ class MockDownloadItemImpl : public DownloadItemImpl {
   MOCK_METHOD1(SetOpenWhenComplete, void(bool));
   MOCK_CONST_METHOD0(GetFileExternallyRemoved, bool());
   MOCK_CONST_METHOD0(GetDangerType, DownloadDangerType());
-  MOCK_CONST_METHOD0(GetMixedContentStatus, MixedContentStatus());
+  MOCK_CONST_METHOD0(GetInsecureDownloadStatus, InsecureDownloadStatus());
   MOCK_CONST_METHOD0(IsDangerous, bool());
-  MOCK_CONST_METHOD0(IsMixedContent, bool());
+  MOCK_CONST_METHOD0(IsInsecure, bool());
   MOCK_METHOD0(GetAutoOpened, bool());
   MOCK_CONST_METHOD0(GetForcedFilePath, const base::FilePath&());
   MOCK_CONST_METHOD0(HasUserGesture, bool());
