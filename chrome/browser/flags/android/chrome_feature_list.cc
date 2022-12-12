@@ -561,7 +561,7 @@ BASE_FEATURE(kCCTNewDownloadTab,
 
 BASE_FEATURE(kCCTFeatureUsage,
              "CCTFeatureUsage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTIncognito, "CCTIncognito", base::FEATURE_ENABLED_BY_DEFAULT);
 
