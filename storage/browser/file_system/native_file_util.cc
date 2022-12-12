@@ -44,9 +44,12 @@ bool SetPlatformSpecificDirectoryPermissions(const base::FilePath& dir_path) {
                          S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH)) != 0) {
     return false;
   }
-  auto* group = getgrnam("chronos-access");
-  if (!group ||
-      HANDLE_EINTR(chown(dir_path.value().c_str(), -1, group->gr_gid)) != 0) {
+  struct group grp, *result = nullptr;
+  std::vector<char> buffer(16384);
+  getgrnam_r("chronos-access", &grp, buffer.data(), buffer.size(), &result);
+  // Ignoring as the group might not exist in tests.
+  if (result &&
+      HANDLE_EINTR(chown(dir_path.value().c_str(), -1, grp.gr_gid)) != 0) {
     return false;
   }
 #endif
