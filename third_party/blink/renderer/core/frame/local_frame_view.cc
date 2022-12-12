@@ -3642,6 +3642,14 @@ void LocalFrameView::ScheduleAnimation(base::TimeDelta delay,
     client->ScheduleAnimation(this, delay);
 }
 
+void LocalFrameView::OnCommitRequested() {
+  DCHECK(frame_->IsLocalRoot());
+  if (frame_->GetDocument() &&
+      !frame_->GetDocument()->IsInitialEmptyDocument() && GetUkmAggregator()) {
+    GetUkmAggregator()->OnCommitRequested();
+  }
+}
+
 void LocalFrameView::AddScrollAnchoringScrollableArea(
     PaintLayerScrollableArea* scrollable_area) {
   DCHECK(scrollable_area);

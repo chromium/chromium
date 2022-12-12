@@ -946,6 +946,47 @@ TEST_F(LocalFrameUkmAggregatorSimTest, PrePostFCPMetricsWithChildFrameFCP) {
   histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PostFCP", 1);
 }
 
+TEST_F(LocalFrameUkmAggregatorSimTest, VisualUpdateDelay) {
+  base::HistogramTester histogram_tester;
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <div id=target></div>
+  )HTML");
+
+  // The first main frame will not record VisualUpdateDelay because it was
+  // requested before the current document was installed.
+  Compositor().BeginFrame();
+  histogram_tester.ExpectTotalCount("Blink.VisualUpdateDelay.UpdateTime.PreFCP",
+                                    0);
+
+  // This is necessary to ensure that the invalidation timestamp is later than
+  // the previous frame time.
+  Compositor().ResetLastFrameTime();
+
+  // This is the code path for a normal invalidation from blink
+  WebView().MainFrameViewWidget()->RequestAnimationAfterDelay(
+      base::TimeDelta());
+
+  base::PlatformThread::Sleep(base::Microseconds(3000));
+
+  // Service the frame; it should record a sample.
+  Compositor().BeginFrame();
+  histogram_tester.ExpectTotalCount("Blink.VisualUpdateDelay.UpdateTime.PreFCP",
+                                    1);
+  base::HistogramBase::Sample delay =
+      base::saturated_cast<base::HistogramBase::Sample>(
+          (Compositor().LastFrameTime() -
+           local_root_aggregator().LastFrameRequestTimeForTest())
+              .InMicroseconds());
+  EXPECT_GT(delay, 3000);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.VisualUpdateDelay.UpdateTime.PreFCP", delay, 1);
+}
+
 TEST_F(LocalFrameUkmAggregatorSimTest, SVGImageMetricsAreNotRecorded) {
   base::HistogramTester histogram_tester;
 

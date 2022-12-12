@@ -205,6 +205,12 @@ void LayerTreeView::OnPauseRenderingChanged(bool paused) {
   delegate_->OnPauseRenderingChanged(paused);
 }
 
+void LayerTreeView::OnCommitRequested() {
+  if (!delegate_)
+    return;
+  delegate_->OnCommitRequested();
+}
+
 void LayerTreeView::OnDeferCommitsChanged(
     bool status,
     cc::PaintHoldingReason reason,

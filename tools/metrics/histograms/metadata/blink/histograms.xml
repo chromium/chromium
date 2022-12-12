@@ -3421,6 +3421,25 @@ chromium-metrics-reviews@google.com.
       variants="BlinkVisibleLoadTimeSuffixes"/>
 </histogram>
 
+<histogram base="true" name="Blink.VisualUpdateDelay.UpdateTime"
+    units="microseconds" expires_after="2023-03-26">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+
+  <owner>szager@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Elapsed time between when a widget first registers a state invalidation that
+    requires a visual refresh; and when the main thread begins a main frame that
+    will send the updated visual state to the compositor.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Blink.WaitForCommit.UpdateTime"
     units="microseconds" expires_after="2023-06-04">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->

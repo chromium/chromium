@@ -32,6 +32,7 @@ class StubLayerTreeHostClient : public LayerTreeHostClient {
       PaintHoldingReason,
       absl::optional<PaintHoldingCommitTrigger>) override {}
   void OnPauseRenderingChanged(bool) override {}
+  void OnCommitRequested() override {}
   void RecordStartOfFrameMetrics() override {}
   void RecordEndOfFrameMetrics(base::TimeTicks,
                                ActiveFrameSequenceTrackers) override {}

@@ -3280,6 +3280,12 @@ be describing additional metrics about the same event.
       Paint, in microseconds.
     </summary>
   </metric>
+  <metric name="VisualUpdateDelay">
+    <summary>
+      Time elapsed, in microseconds, between when an animation update is first
+      scheduled and when the resulting BeginMainFrame starts.
+    </summary>
+  </metric>
   <metric name="WaitForCommit">
     <summary>
       The time spent waiting for the compositor thread to begin processing a
@@ -4624,6 +4630,18 @@ be describing additional metrics about the same event.
       The time spent doing forced document updates due to a user action such as
       input, find-in-page or printing, during the BeginMainFrame block of a
       sampled frame, in microseconds.
+    </summary>
+  </metric>
+  <metric name="VisualUpdateDelay">
+    <summary>
+      Time elapsed between when an animation update is first scheduled and when
+      the resulting BeginMainFrame starts.
+    </summary>
+  </metric>
+  <metric name="VisualUpdateDelayBeginMainFrame">
+    <summary>
+      Time elapsed between when an animation update is first scheduled and when
+      the resulting BeginMainFrame starts.
     </summary>
   </metric>
   <metric name="WaitForCommit">

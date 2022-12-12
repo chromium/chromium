@@ -224,6 +224,8 @@ LocalFrameUkmAggregator::GetScopedTimer(size_t metric_index) {
 void LocalFrameUkmAggregator::BeginMainFrame() {
   DCHECK(!in_main_frame_update_);
   in_main_frame_update_ = true;
+  request_timestamp_for_current_frame_ = animation_request_timestamp_;
+  animation_request_timestamp_.reset();
 }
 
 std::unique_ptr<cc::BeginMainFrameMetrics>
@@ -458,6 +460,9 @@ void LocalFrameUkmAggregator::RecordEndOfFrameMetrics(
     base::TimeTicks start,
     base::TimeTicks end,
     cc::ActiveFrameSequenceTrackers trackers) {
+  last_frame_request_timestamp_for_test_ =
+      request_timestamp_for_current_frame_.value_or(base::TimeTicks());
+
   const int64_t count = (end - start).InMicroseconds();
   const bool have_valid_metrics =
       // Any of the early outs in LocalFrameView::UpdateLifecyclePhases() will
@@ -473,6 +478,11 @@ void LocalFrameUkmAggregator::RecordEndOfFrameMetrics(
     // clear counters, even when we did not record anything this frame.
     ResetAllMetrics();
     return;
+  }
+
+  if (request_timestamp_for_current_frame_.has_value()) {
+    RecordTimerSample(kVisualUpdateDelay,
+                      request_timestamp_for_current_frame_.value(), start);
   }
 
   bool report_as_pre_fcp = (fcp_state_ != kHavePassedFCP);
@@ -587,6 +597,7 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent() {
   RECORD_METRIC(MediaIntersectionObserver);
   RECORD_METRIC(AnchorElementMetricsIntersectionObserver);
   RECORD_METRIC(UpdateViewportIntersection);
+  RECORD_METRIC(VisualUpdateDelay);
   RECORD_METRIC(UserDrivenDocumentUpdate);
   RECORD_METRIC(ServiceDocumentUpdate);
   RECORD_METRIC(ContentDocumentUpdate);
@@ -641,6 +652,7 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent() {
   RECORD_METRIC(MediaIntersectionObserver);
   RECORD_METRIC(AnchorElementMetricsIntersectionObserver);
   RECORD_METRIC(UpdateViewportIntersection);
+  RECORD_METRIC(VisualUpdateDelay);
   RECORD_METRIC(UserDrivenDocumentUpdate);
   RECORD_METRIC(ServiceDocumentUpdate);
   RECORD_METRIC(ContentDocumentUpdate);
@@ -662,6 +674,7 @@ void LocalFrameUkmAggregator::ResetAllMetrics() {
   primary_metric_.reset();
   for (auto& record : absolute_metric_records_)
     record.reset();
+  request_timestamp_for_current_frame_.reset();
 }
 
 void LocalFrameUkmAggregator::ChooseNextFrameForTest() {
@@ -674,6 +687,14 @@ void LocalFrameUkmAggregator::DoNotChooseNextFrameForTest() {
 
 bool LocalFrameUkmAggregator::IsBeforeFCPForTesting() const {
   return fcp_state_ == kBeforeFCPSignal;
+}
+
+void LocalFrameUkmAggregator::OnCommitRequested() {
+  // This can't be a DCHECK because this method can be called during the early
+  // stages of cc::ProxyMain::BeginMainFrame, before
+  // LocalFrameUkmAggregator::BeginMainFrame() has been invoked.
+  if (!animation_request_timestamp_.has_value())
+    animation_request_timestamp_.emplace(clock_->NowTicks());
 }
 
 }  // namespace blink

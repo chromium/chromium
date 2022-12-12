@@ -2135,6 +2135,11 @@ void WebFrameWidgetImpl::Resize(const gfx::Size& new_size) {
   view->Resize(*size_);
 }
 
+void WebFrameWidgetImpl::OnCommitRequested() {
+  if (auto* view = LocalRootImpl()->GetFrame()->View())
+    view->OnCommitRequested();
+}
+
 void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
   TRACE_EVENT1("blink", "WebFrameWidgetImpl::BeginMainFrame", "frameTime",
                last_frame_time);

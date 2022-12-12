@@ -410,6 +410,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   float GetEmulatorScale() override;
 
   // WidgetBaseClient overrides:
+  void OnCommitRequested() override;
   void BeginMainFrame(base::TimeTicks last_frame_time) override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;

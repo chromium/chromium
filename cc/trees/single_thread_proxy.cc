@@ -192,6 +192,7 @@ void SingleThreadProxy::SetNeedsAnimate() {
   DebugScopedSetImplThread impl(task_runner_provider_);
   if (scheduler_on_impl_thread_)
     scheduler_on_impl_thread_->SetNeedsBeginMainFrame();
+  layer_tree_host_->OnCommitRequested();
 }
 
 void SingleThreadProxy::SetNeedsUpdateLayers() {

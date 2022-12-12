@@ -38,6 +38,9 @@ class WebMouseEvent;
 // will need to implement.
 class WidgetBaseClient {
  public:
+  // Called when a compositing update is first requested.
+  virtual void OnCommitRequested() {}
+
   // Called to record the time taken to dispatch rAF aligned input.
   virtual void RecordDispatchRafAlignedInputTime(
       base::TimeTicks raf_aligned_input_start_time) {}

@@ -285,6 +285,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // synchronization.
   virtual void SetNeedsCommit();
 
+  // Invoked when a compositing update is first requested and scheduled.
+  void OnCommitRequested();
+
   // Notifies that a new viz::LocalSurfaceId has been set, ahead of it becoming
   // activated. Requests that the compositor thread does not produce new frames
   // until it has activated.

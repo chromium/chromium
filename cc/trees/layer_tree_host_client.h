@@ -134,6 +134,9 @@ class LayerTreeHostClient {
   // Notification that rendering has been paused or resumed.
   virtual void OnPauseRenderingChanged(bool) = 0;
 
+  // Notification that a compositing update has been requested.
+  virtual void OnCommitRequested() = 0;
+
   // Visual frame-based updates to the state of the LayerTreeHost are expected
   // to happen only in calls to LayerTreeHostClient::UpdateLayerTreeHost, which
   // should mutate/invalidate the layer tree or other page parameters as

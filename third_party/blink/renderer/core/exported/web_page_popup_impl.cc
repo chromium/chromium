@@ -700,6 +700,13 @@ cc::LayerTreeHost* WebPagePopupImpl::LayerTreeHostForTesting() {
   return widget_base_->LayerTreeHost();
 }
 
+void WebPagePopupImpl::OnCommitRequested() {
+  if (page_ && page_->MainFrame()) {
+    if (auto* view = MainFrame().View())
+      view->OnCommitRequested();
+  }
+}
+
 void WebPagePopupImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
   if (!page_)
     return;

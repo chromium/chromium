@@ -136,6 +136,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
 
  private:
   // WidgetBaseClient overrides:
+  void OnCommitRequested() override;
   void BeginMainFrame(base::TimeTicks last_frame_time) override;
   void SetSuppressFrameRequestsWorkaroundFor704763Only(bool) final;
   WebInputEventResult DispatchBufferedTouchEvents() override;

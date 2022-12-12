@@ -555,6 +555,10 @@ void WidgetBase::OnPauseRenderingChanged(bool paused) {
   widget_input_handler_manager_->OnPauseRenderingChanged(paused);
 }
 
+void WidgetBase::OnCommitRequested() {
+  client_->OnCommitRequested();
+}
+
 void WidgetBase::DidBeginMainFrame() {
   if (base::FeatureList::IsEnabled(features::kRunTextInputUpdatePostLifecycle))
     UpdateTextInputState();

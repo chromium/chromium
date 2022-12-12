@@ -794,6 +794,7 @@ bool ProxyMain::SendCommitRequestToImplThreadIfNeeded(
   ImplThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&ProxyImpl::SetNeedsCommitOnImpl,
                                 base::Unretained(proxy_impl_.get())));
+  layer_tree_host_->OnCommitRequested();
   return true;
 }
 

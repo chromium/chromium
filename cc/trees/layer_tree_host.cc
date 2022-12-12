@@ -724,6 +724,10 @@ void LayerTreeHost::SetNeedsCommit() {
   events_metrics_manager_.SaveActiveEventMetrics();
 }
 
+void LayerTreeHost::OnCommitRequested() {
+  client_->OnCommitRequested();
+}
+
 void LayerTreeHost::SetTargetLocalSurfaceId(
     const viz::LocalSurfaceId& target_local_surface_id) {
   DCHECK(IsMainThread());

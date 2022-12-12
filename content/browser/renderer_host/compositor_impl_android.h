@@ -141,6 +141,7 @@ class CONTENT_EXPORT CompositorImpl
       cc::PaintHoldingReason,
       absl::optional<cc::PaintHoldingCommitTrigger>) override {}
   void OnPauseRenderingChanged(bool) override {}
+  void OnCommitRequested() override {}
   void BeginMainFrameNotExpectedSoon() override {}
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override {}
   void UpdateLayerTreeHost() override;

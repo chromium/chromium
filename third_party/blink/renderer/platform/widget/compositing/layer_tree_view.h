@@ -78,6 +78,7 @@ class PLATFORM_EXPORT LayerTreeView
       cc::PaintHoldingReason reason,
       absl::optional<cc::PaintHoldingCommitTrigger> trigger) override;
   void OnPauseRenderingChanged(bool) override;
+  void OnCommitRequested() override;
   void BeginMainFrameNotExpectedSoon() override;
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override;
   void UpdateLayerTreeHost() override;

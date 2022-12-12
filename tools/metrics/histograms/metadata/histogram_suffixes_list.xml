@@ -697,6 +697,7 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.Style.UpdateTime"/>
   <affected-histogram name="Blink.UpdateViewportIntersection.UpdateTime"/>
   <affected-histogram name="Blink.UserDrivenDocumentUpdate.UpdateTime"/>
+  <affected-histogram name="Blink.VisualUpdateDelay.UpdateTime"/>
   <affected-histogram name="Blink.WaitForCommit.UpdateTime"/>
 </histogram_suffixes>
 
@@ -733,6 +734,7 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.Style.UpdateTime"/>
   <affected-histogram name="Blink.UpdateViewportIntersection.UpdateTime"/>
   <affected-histogram name="Blink.UserDrivenDocumentUpdate.UpdateTime"/>
+  <affected-histogram name="Blink.VisualUpdateDelay.UpdateTime"/>
   <affected-histogram name="Blink.WaitForCommit.UpdateTime"/>
 </histogram_suffixes>
 
@@ -769,6 +771,7 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.Style.UpdateTime"/>
   <affected-histogram name="Blink.UpdateViewportIntersection.UpdateTime"/>
   <affected-histogram name="Blink.UserDrivenDocumentUpdate.UpdateTime"/>
+  <affected-histogram name="Blink.VisualUpdateDelay.UpdateTime"/>
   <affected-histogram name="Blink.WaitForCommit.UpdateTime"/>
 </histogram_suffixes>
 

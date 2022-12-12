@@ -144,6 +144,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
     kMediaIntersectionObserver,
     kAnchorElementMetricsIntersectionObserver,
     kUpdateViewportIntersection,
+    kVisualUpdateDelay,
     kForcedStyleAndLayout,
     kContentDocumentUpdate,
     kHitTestDocumentUpdate,
@@ -196,6 +197,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
         {"Blink.MediaIntersectionObserver.UpdateTime", true},
         {"Blink.AnchorElementMetricsIntersectionObserver.UpdateTime", true},
         {"Blink.UpdateViewportIntersection.UpdateTime", true},
+        {"Blink.VisualUpdateDelay.UpdateTime", true},
         {"Blink.ForcedStyleAndLayout.UpdateTime", true},
         {"Blink.ContentDocumentUpdate.UpdateTime", true},
         {"Blink.HitTestDocumentUpdate.UpdateTime", true},
@@ -332,6 +334,12 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // RecordEndOfFrameMetrics.
   std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics();
 
+  void OnCommitRequested();
+
+  base::TimeTicks LastFrameRequestTimeForTest() const {
+    return last_frame_request_timestamp_for_test_;
+  }
+
  private:
   struct AbsoluteMetricRecord {
     std::unique_ptr<CustomCountHistogram> pre_fcp_uma_counter;
@@ -434,6 +442,10 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // most of the benefit even if we downsample them. This value controls how
   // frequently we collect granular IntersectionObserver metrics.
   size_t intersection_observer_sample_period_ = 10;
+
+  absl::optional<base::TimeTicks> animation_request_timestamp_;
+  absl::optional<base::TimeTicks> request_timestamp_for_current_frame_;
+  base::TimeTicks last_frame_request_timestamp_for_test_;
 
   // True if the local frame root that instantiated this is the main frame.
   bool is_for_main_frame_ = false;

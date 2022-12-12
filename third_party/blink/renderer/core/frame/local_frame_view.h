@@ -473,6 +473,8 @@ class CORE_EXPORT LocalFrameView final
   void ScheduleAnimation(base::TimeDelta = base::TimeDelta(),
                          base::Location location = base::Location::Current());
 
+  void OnCommitRequested();
+
   // FIXME: This should probably be renamed as the 'inSubtreeLayout' parameter
   // passed around the LocalFrameView layout methods can be true while this
   // returns false.
