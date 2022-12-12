@@ -50,7 +50,7 @@ SidePanelToolbarButton::SidePanelToolbarButton(Browser* browser)
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
-  SetProperty(views::kElementIdentifierKey, kReadLaterButtonElementId);
+  SetProperty(views::kElementIdentifierKey, kSidePanelButtonElementId);
 
   if (reading_list_model_)
     reading_list_model_scoped_observation_.Observe(reading_list_model_.get());

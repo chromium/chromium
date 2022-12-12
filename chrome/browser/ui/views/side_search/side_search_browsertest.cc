@@ -129,7 +129,7 @@ void SideSearchBrowserTest::NavigateActiveSideContents(Browser* browser,
 }
 
 void SideSearchBrowserTest::NotifyButtonClick(Browser* browser) {
-  views::test::ButtonTestApi(GetSidePanelButtonFor(browser))
+  views::test::ButtonTestApi(GetSideSearchButtonFor(browser))
       .NotifyClick(GetDummyEvent());
   BrowserViewFor(browser)->GetWidget()->LayoutRootViewIfNecessary();
 }
@@ -142,7 +142,7 @@ void SideSearchBrowserTest::NotifyCloseButtonClick(Browser* browser) {
 }
 
 void SideSearchBrowserTest::NotifyReadLaterButtonClick(Browser* browser) {
-  views::test::ButtonTestApi(GetReadLaterButtonFor(browser))
+  views::test::ButtonTestApi(GetSidePanelButtonFor(browser))
       .NotifyClick(GetDummyEvent());
 }
 
@@ -157,17 +157,17 @@ BrowserView* SideSearchBrowserTest::BrowserViewFor(Browser* browser) {
   return BrowserView::GetBrowserViewForBrowser(browser);
 }
 
-views::Button* SideSearchBrowserTest::GetSidePanelButtonFor(Browser* browser) {
+views::Button* SideSearchBrowserTest::GetSideSearchButtonFor(Browser* browser) {
   views::View* button_view =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
           kSideSearchButtonElementId, browser->window()->GetElementContext());
   return button_view ? views::AsViewClass<views::Button>(button_view) : nullptr;
 }
 
-views::Button* SideSearchBrowserTest::GetReadLaterButtonFor(Browser* browser) {
+views::Button* SideSearchBrowserTest::GetSidePanelButtonFor(Browser* browser) {
   views::View* button_view =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          kReadLaterButtonElementId, browser->window()->GetElementContext());
+          kSidePanelButtonElementId, browser->window()->GetElementContext());
   return button_view ? views::AsViewClass<views::Button>(button_view) : nullptr;
 }
 
@@ -180,9 +180,9 @@ void SideSearchBrowserTest::TestSidePanelOpenEntrypointState(Browser* browser) {
   // If the side panel is visible and DSE support is enabled then the
   // entrypoint should be hidden. Otherwise the entrypoint should be visible.
   if (side_search::IsDSESupportEnabled(browser->profile())) {
-    EXPECT_FALSE(GetSidePanelButtonFor(browser)->GetVisible());
+    EXPECT_FALSE(GetSideSearchButtonFor(browser)->GetVisible());
   } else {
-    EXPECT_TRUE(GetSidePanelButtonFor(browser)->GetVisible());
+    EXPECT_TRUE(GetSideSearchButtonFor(browser)->GetVisible());
   }
 }
 
@@ -211,13 +211,13 @@ void SideSearchBrowserTest::NavigateToMatchingAndNonMatchingSearchPage(
     Browser* browser) {
   // The side panel button should never be visible on the matched search page.
   NavigateActiveTab(browser, GetMatchingSearchUrl());
-  EXPECT_FALSE(GetSidePanelButtonFor(browser)->GetVisible());
+  EXPECT_FALSE(GetSideSearchButtonFor(browser)->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser)->GetVisible());
 
   // The side panel button should be visible if on a non-matched page and the
   // current tab has previously encountered a matched search page.
   NavigateActiveTab(browser, GetNonMatchingUrl());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser)->GetVisible());
+  EXPECT_TRUE(GetSideSearchButtonFor(browser)->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser)->GetVisible());
 }
 

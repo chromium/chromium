@@ -65,16 +65,16 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
   // If no previous matched search page has been navigated to the button should
   // not be visible.
   NavigateActiveTab(browser(), GetNonMatchingUrl());
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSideSearchButtonFor(browser())->GetVisible());
 
   // The side panel button should never be visible on a matched search page.
   NavigateActiveTab(browser(), GetMatchingSearchUrl());
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSideSearchButtonFor(browser())->GetVisible());
 
   // The side panel button should be visible if on a non-matched page and the
   // current tab has previously encountered a matched search page.
   NavigateActiveTab(browser(), GetNonMatchingUrl());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSideSearchButtonFor(browser())->GetVisible());
   histogram_tester_.ExpectBucketCount(
       "SideSearch.AvailabilityChanged",
       SideSearchAvailabilityChangeType::kBecomeAvailable, 1);
@@ -93,37 +93,37 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
   // The side panel button should never be visible on non-matching pages.
   AppendTab(browser(), GetNonMatchingUrl());
   ActivateTabAt(browser(), 1);
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSideSearchButtonFor(browser())->GetVisible());
 
   // Navigate to a matched search page and then to a non-matched search page.
   // This should show the side panel button in the toolbar.
   AppendTab(browser(), GetMatchingSearchUrl());
   ActivateTabAt(browser(), 2);
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSideSearchButtonFor(browser())->GetVisible());
   NavigateActiveTab(browser(), GetNonMatchingUrl());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSideSearchButtonFor(browser())->GetVisible());
 
   // Switch back to the matched search page, the side panel button should no
   // longer be visible.
   ActivateTabAt(browser(), 1);
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSideSearchButtonFor(browser())->GetVisible());
 
   // When switching back to the tab on the non-matched page with a previously
   // visited matched search page, the button should be visible.
   ActivateTabAt(browser(), 2);
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSideSearchButtonFor(browser())->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
                        SidePanelTogglesCorrectlySingleTab) {
   NavigateActiveTab(browser(), GetMatchingSearchUrl());
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSideSearchButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
   // The side panel button should be visible if on a non-matched page and the
   // current tab has previously encountered a matched search page.
   NavigateActiveTab(browser(), GetNonMatchingUrl());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSideSearchButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
   // Toggle the side panel.
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
 
   // Toggling the close button should close the side panel.
   NotifyCloseButtonClick(browser());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSideSearchButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
   histogram_tester_.ExpectBucketCount(
       "SideSearch.CloseAction",
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
   NavigateActiveTab(browser2, GetMatchingSearchUrl());
   NavigateActiveTab(browser2, GetNonMatchingUrl());
 
-  EXPECT_EQ(nullptr, GetSidePanelButtonFor(browser2));
+  EXPECT_EQ(nullptr, GetSideSearchButtonFor(browser2));
   EXPECT_EQ(nullptr, GetSidePanelFor(browser2));
 }
 
@@ -269,19 +269,19 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
 
   // Tab 1.
   NavigateActiveTab(browser(), GetMatchingSearchUrl());
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSideSearchButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
   NavigateActiveTab(browser(), GetNonMatchingUrl());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSideSearchButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
   // Tab 2.
   AppendTab(browser(), GetMatchingSearchUrl());
   ActivateTabAt(browser(), 1);
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSideSearchButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
   NavigateActiveTab(browser(), GetNonMatchingUrl());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSideSearchButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
   // Show the side panel on Tab 2 and switch to Tab 1. The side panel should
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
       "SideSearch.TimeSinceSidePanelAvailableToFirstOpen", 1);
 
   ActivateTabAt(browser(), 0);
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSideSearchButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
   // Show the side panel on Tab 1 and switch to Tab 2. The side panel should be
@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
   // Close the side panel on Tab 2 and switch to Tab 1. The side panel should be
   // still be visible for Tab 1, respecting its per-tab state.
   NotifyCloseButtonClick(browser());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSideSearchButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
   histogram_tester_.ExpectTotalCount(
       "SideSearch.SidePanel.TimeShownOpenedViaTabSwitch", 1);
@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 
   NotifyCloseButtonClick(browser());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSideSearchButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
   histogram_tester_.ExpectTotalCount(
       "SideSearch.SidePanel.TimeShownOpenedViaTabSwitch", 2);
@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
 
   // Verify that new tab has page action icon displayed.
   ActivateTabAt(browser(), 1);
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSideSearchButtonFor(browser())->GetVisible());
 
   // Verify new_tab_helper has correct last_search_url_.
   auto* new_tab_helper = SideSearchTabContentsHelper::FromWebContents(new_tab);
@@ -556,8 +556,9 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
   ASSERT_EQ(new_tab_url, new_tab->GetLastCommittedURL());
 
   // Verify that new window has page action icon displayed.
-  EXPECT_TRUE(GetSidePanelButtonFor(chrome::FindBrowserWithWebContents(new_tab))
-                  ->GetVisible());
+  EXPECT_TRUE(
+      GetSideSearchButtonFor(chrome::FindBrowserWithWebContents(new_tab))
+          ->GetVisible());
 
   // Verify new_tab_helper has correct last_search_url_.
   auto* new_tab_helper = SideSearchTabContentsHelper::FromWebContents(new_tab);
@@ -606,7 +607,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Verify that new window has page action icon displayed.
   EXPECT_FALSE(
-      GetSidePanelButtonFor(chrome::FindBrowserWithWebContents(new_tab)));
+      GetSideSearchButtonFor(chrome::FindBrowserWithWebContents(new_tab)));
 }
 
 IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
@@ -643,7 +644,7 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
 
   // Verify that new tab has page action icon displayed.
   ActivateTabAt(browser(), 1);
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSideSearchButtonFor(browser())->GetVisible());
 
   // Verify new_tab_helper has correct last_search_url_.
   auto* new_tab_helper = SideSearchTabContentsHelper::FromWebContents(tab);
@@ -684,7 +685,7 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
   ASSERT_EQ(new_tab, tab->GetLastCommittedURL());
 
   // Verify that new window has page action icon displayed.
-  EXPECT_TRUE(GetSidePanelButtonFor(chrome::FindBrowserWithWebContents(tab))
+  EXPECT_TRUE(GetSideSearchButtonFor(chrome::FindBrowserWithWebContents(tab))
                   ->GetVisible());
 
   // Verify new_tab_helper has correct last_search_url_.
@@ -727,7 +728,7 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
   ASSERT_EQ(new_tab, tab->GetLastCommittedURL());
 
   // Verify that new window has page action icon displayed.
-  EXPECT_FALSE(GetSidePanelButtonFor(chrome::FindBrowserWithWebContents(tab)));
+  EXPECT_FALSE(GetSideSearchButtonFor(chrome::FindBrowserWithWebContents(tab)));
 }
 
 // Only tested for the Side Search DSE configuration.
@@ -751,7 +752,7 @@ class SideSearchIconViewTest : public SideSearchBrowserTest {
 // entrypoint was toggled.
 IN_PROC_BROWSER_TEST_F(SideSearchIconViewTest,
                        LabelVisibilityMetricsCorrectlyEmittedWhenToggled) {
-  auto* button_view = GetSidePanelButtonFor(browser());
+  auto* button_view = GetSideSearchButtonFor(browser());
   ASSERT_NE(nullptr, button_view);
   auto* icon_view = views::AsViewClass<SideSearchIconView>(button_view);
 
@@ -862,7 +863,7 @@ class SideSearchDSEClobberingTest : public SideSearchBrowserTest {
   SidePanelToolbarButton* GetToolbarSidePanelButtonFor(Browser* browser) {
     views::View* button_view =
         views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-            kReadLaterButtonElementId, browser->window()->GetElementContext());
+            kSidePanelButtonElementId, browser->window()->GetElementContext());
     return button_view ? views::AsViewClass<SidePanelToolbarButton>(button_view)
                        : nullptr;
   }
