@@ -28,4 +28,9 @@ class PageSwitcherView : public views::View {
   raw_ptr<views::View, DanglingUntriaged> current_page_ = nullptr;
 };
 
+BEGIN_VIEW_BUILDER(/* no export */, PageSwitcherView, views::View)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* no export */, PageSwitcherView)
+
 #endif  // CHROME_BROWSER_UI_VIEWS_CONTROLS_PAGE_SWITCHER_VIEW_H_

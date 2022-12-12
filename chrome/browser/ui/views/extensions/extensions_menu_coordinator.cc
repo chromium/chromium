@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_base_view.h"
 #include "extensions/common/extension_features.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/layout_provider.h"
@@ -31,12 +32,10 @@ void ExtensionsMenuCoordinator::Show(views::View* anchor_view) {
   // Let anchor view's MenuButtonController handle the highlight.
   bubble_delegate->set_highlight_button_when_shown(false);
   bubble_delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
-  bubble_delegate->SetShowCloseButton(true);
   bubble_delegate->SetEnableArrowKeyTraversal(true);
 
-  // TODO(crbug.com/1390952): Use "extensions menu base view" once it's created.
-  auto* contents_view =
-      bubble_delegate->SetContentsView(std::make_unique<views::View>());
+  auto* contents_view = bubble_delegate->SetContentsView(
+      std::make_unique<ExtensionsMenuBaseView>());
   extensions_menu_bubble_view_tracker_.SetView(contents_view);
 
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate))->Show();
