@@ -85,8 +85,8 @@ export class TestSelectToSpeakSubpageBrowserProxy extends TestBrowserProxy {
     this.methodCalled('getAppLocale');
   }
 
-  previewTtsVoice() {
-    this.methodCalled('previewTtsVoice');
+  previewTtsVoice(previewText, previewVoice) {
+    this.methodCalled('previewTtsVoice', [previewText, previewVoice]);
   }
 
   refreshTtsVoices() {

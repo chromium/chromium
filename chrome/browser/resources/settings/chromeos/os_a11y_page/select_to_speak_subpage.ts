@@ -100,6 +100,24 @@ class SettingsSelectToSpeakSubpageElement extends
   static get properties() {
     return {
       /**
+       * Whether a voice preview is currently speaking.
+       */
+      isPreviewing_: {
+        type: Boolean,
+        value: false,
+      },
+
+      voicePreviewText_: {
+        type: String,
+        value: '',
+      },
+
+      enhancedNetworkVoicePreviewText_: {
+        type: String,
+        value: '',
+      },
+
+      /**
        * The language sort dropdown state as a fake preference object (so we can
        * use <settings-dropdown-menu> without overriding with custom handlers)
        */
@@ -208,10 +226,13 @@ class SettingsSelectToSpeakSubpageElement extends
 
   private route_: Route;
   private langBrowserProxy_: LanguagesBrowserProxy;
+  private isPreviewing_: boolean;
   private languageFilterVirtualPref_: chrome.settingsPrivate.PrefObject<string>;
   private languagesMenuOptions_: DropdownMenuOptionList;
   private localVoicesMenuOptions_: DropdownMenuOptionList;
   private networkVoicesMenuOptions_: DropdownMenuOptionList;
+  private voicePreviewText_: string;
+  private enhancedNetworkVoicePreviewText_: string;
   private appLocale_ = '';
   private selectToSpeakBrowserProxy_: SelectToSpeakSubpageBrowserProxy;
   private voices_: HandlerVoice[] = [];
@@ -230,12 +251,20 @@ class SettingsSelectToSpeakSubpageElement extends
   override ready() {
     super.ready();
 
+    // Populate the voice and enhanced network voice preview text inputs with a
+    // sample message. Users can change this to their own value later.
+    this.voicePreviewText_ = this.i18n('textToSpeechPreviewInput');
+    this.enhancedNetworkVoicePreviewText_ =
+        this.i18n('textToSpeechPreviewInput');
     this.addWebUiListener(
         'all-sts-voice-data-updated',
         (voices: HandlerVoice[]) => this.updateVoices_(voices));
     this.addWebUiListener(
         'app-locale-updated',
         (appLocale: string) => this.updateAppLocale_(appLocale));
+    this.addWebUiListener(
+        'tts-preview-state-changed',
+        (isSpeaking: boolean) => this.onTtsPreviewStateChanged_(isSpeaking));
     this.selectToSpeakBrowserProxy_.getAllTtsVoiceData();
     this.selectToSpeakBrowserProxy_.getAppLocale();
     this.selectToSpeakBrowserProxy_.refreshTtsVoices();
@@ -258,6 +287,73 @@ class SettingsSelectToSpeakSubpageElement extends
   private onHighlightColorChanged_(color: string) {
     this.shadowRoot!.getElementById('lightHighlight')!.style.background = color;
     this.shadowRoot!.getElementById('darkHighlight')!.style.background = color;
+  }
+
+  /**
+   * Called when the TTS voice preview state changes between speaking and not
+   * speaking.
+   */
+  private onTtsPreviewStateChanged_(isSpeaking: boolean): void {
+    this.isPreviewing_ = isSpeaking;
+  }
+
+  /**
+   * Returns true if voices are loaded and preview is not currently speaking and
+   * there is text to preview.
+   */
+  private enablePreviewButton_(
+      voiceOptions: DropdownMenuOptionList, isPreviewing: boolean,
+      previewText: string): boolean {
+    const nonWhitespaceRe = /\S+/;
+    const hasPreviewText = nonWhitespaceRe.exec(previewText) !== null;
+    return voiceOptions.length > 0 && !isPreviewing && hasPreviewText;
+  }
+
+  /**
+   * Returns the voice name and extension matching the current primary voice
+   * pref. If the primary voice pref is set to the system voice, then return
+   * an empty name and extension, to tell the TTS handler to use the default
+   * system voice.
+   */
+  private getVoiceNameAndExtension_(): {name: string, extension: string} {
+    const name = this.getPref('settings.a11y.select_to_speak_voice_name').value;
+    if (name === SYSTEM_VOICE) {
+      return {
+        name: '',
+        extension: '',
+      };
+    }
+
+    const extension =
+        this.voices_.find(({voiceName}) => voiceName === name)!.extensionId;
+    return {name, extension};
+  }
+
+  /**
+   * Returns the voice name and extension matching the current enhanced network
+   * voice pref. The enhanced network voice pref has a consistent name used for
+   * its default voice (default-wavenet), which will automatically be sent as
+   * the voice name if chosen.
+   */
+  private getEnhancedNetworkVoiceNameAndExtension_():
+      {name: string, extension: string} {
+    const name =
+        this.getPref('settings.a11y.select_to_speak_enhanced_voice_name').value;
+    const extension =
+        this.voices_.find(({voiceName}) => voiceName === name)!.extensionId;
+    return {name, extension};
+  }
+
+  private onVoicePreviewClick_(): void {
+    this.selectToSpeakBrowserProxy_.previewTtsVoice(
+        this.voicePreviewText_,
+        JSON.stringify(this.getVoiceNameAndExtension_()));
+  }
+
+  private onEnhancedNetworkVoicePreviewClick_(): void {
+    this.selectToSpeakBrowserProxy_.previewTtsVoice(
+        this.enhancedNetworkVoicePreviewText_,
+        JSON.stringify(this.getEnhancedNetworkVoiceNameAndExtension_()));
   }
 
   private languageChanged_() {
