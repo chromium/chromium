@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
@@ -24,11 +25,17 @@ export class ThemeSnapshotElement extends PolymerElement {
   static get properties() {
     return {
       theme_: Object,
+
+      showThemeSnapshot_: {
+        type: Boolean,
+        computed: 'computeShowThemeSnapshot_(theme_)',
+      },
     };
   }
 
   private theme_: Theme;
   private setThemeListenerId_: number|null = null;
+  private showThemeSnapshot_: boolean;
 
   private callbackRouter_: CustomizeChromePageCallbackRouter;
   private pageHandler_: CustomizeChromePageHandlerInterface;
@@ -44,6 +51,10 @@ export class ThemeSnapshotElement extends PolymerElement {
     this.setThemeListenerId_ =
         this.callbackRouter_.setTheme.addListener((theme: Theme) => {
           this.theme_ = theme;
+          this.updateStyles({
+            '--customize-chrome-color-background-color':
+                skColorToRgba(this.theme_.backgroundColor),
+          });
         });
     this.pageHandler_.updateTheme();
   }
@@ -53,6 +64,10 @@ export class ThemeSnapshotElement extends PolymerElement {
     super.disconnectedCallback();
     assert(this.setThemeListenerId_);
     this.callbackRouter_.removeListener(this.setThemeListenerId_);
+  }
+
+  private computeShowThemeSnapshot_(): boolean {
+    return !!this.theme_.backgroundImage;
   }
 }
 

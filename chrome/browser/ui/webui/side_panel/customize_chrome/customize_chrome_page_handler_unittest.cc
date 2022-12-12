@@ -306,6 +306,9 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
   EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);
   EXPECT_EQ("foo line", theme->background_image->title);
   EXPECT_TRUE(theme->system_dark_mode);
+  EXPECT_EQ(
+      web_contents().GetColorProvider().GetColor(kColorNewTabPageBackground),
+      theme->background_color);
   EXPECT_EQ(web_contents().GetColorProvider().GetColor(ui::kColorFrameActive),
             theme->foreground_color);
 }

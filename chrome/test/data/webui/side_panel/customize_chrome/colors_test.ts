@@ -13,7 +13,7 @@ import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-import {installMock} from './test_support.js';
+import {createTheme, installMock} from './test_support.js';
 
 suite('ColorsTest', () => {
   let colorsElement: ColorsElement;
@@ -42,11 +42,7 @@ suite('ColorsTest', () => {
   ] as Array<[boolean, Color]>)
       .forEach(([systemDarkMode, defaultColor]) => {
         test('renders default color', async () => {
-          const theme: Theme = {
-            backgroundImage: undefined,
-            systemDarkMode,
-            foregroundColor: undefined,
-          };
+          const theme: Theme = createTheme(systemDarkMode);
 
           callbackRouter.setTheme(theme);
           await callbackRouter.$.flushForTesting();

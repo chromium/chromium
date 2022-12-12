@@ -8,10 +8,15 @@
     width: 288px;
   }
 
-  #themeSnapshot img {
+  .image {
+    border: 1px solid rgba(0, 0, 0, .14);
     border-radius: 20px;
     height: 162px;
     margin-bottom: 4px;
+    width: inherit;
+  }
+
+  #themeSnapshot img {
     object-fit: fill;
   }
 
@@ -20,10 +25,22 @@
     overflow: hidden;
     white-space: nowrap;
   }
+
+  #classicChrome {
+    background-color: var(--customize-chrome-color-background-color);
+  }
 </style>
 <div id="themeSnapshot">
-  <img is="cr-auto-img" auto-src="[[theme_.backgroundImage.url.url]]"
-      draggable="false">
-  </img>
-  <label id="themeTitle">[[theme_.backgroundImage.title]]</label>
+  <template is="dom-if" if="[[showThemeSnapshot_]]">
+    <img class="image" is="cr-auto-img"
+        auto-src="[[theme_.backgroundImage.url.url]]" draggable="false">
+    </img>
+    <label id="themeTitle">[[theme_.backgroundImage.title]]</label>
+  </template>
+  <template is="dom-if" if="[[!showThemeSnapshot_]]">
+    <div class="image" id="classicChrome">
+      <!--TODO(crbug/1384227): Add classic chrome image. -->
+    </div>
+    <label id="themeTitle">$i18n{classicChrome}</label>
+  </template>
 </div>

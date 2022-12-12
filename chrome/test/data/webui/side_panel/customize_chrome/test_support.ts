@@ -45,10 +45,11 @@ export function createBackgroundImage(url: string): BackgroundImage {
   };
 }
 
-export function createTheme(): Theme {
+export function createTheme(systemDarkMode = false): Theme {
   return {
     backgroundImage: undefined,
-    systemDarkMode: false,
+    systemDarkMode,
+    backgroundColor: {value: 0xffff0000},
     foregroundColor: undefined,
   };
 }

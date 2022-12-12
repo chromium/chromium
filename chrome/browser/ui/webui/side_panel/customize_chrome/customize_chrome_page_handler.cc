@@ -112,6 +112,8 @@ void CustomizeChromePageHandler::UpdateTheme() {
     background_image = nullptr;
   }
   theme->background_image = std::move(background_image);
+  theme->background_color =
+      web_contents_->GetColorProvider().GetColor(kColorNewTabPageBackground);
   if (!theme_service_->UsingDefaultTheme() &&
       !theme_service_->UsingSystemTheme()) {
     theme->foreground_color =

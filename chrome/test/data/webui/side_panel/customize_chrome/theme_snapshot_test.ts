@@ -11,7 +11,7 @@ import {ThemeSnapshotElement} from 'chrome://customize-chrome-side-panel.top-chr
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-import {$$, createBackgroundImage, createTheme, installMock} from './test_support.js';
+import {$$, assertStyle, createBackgroundImage, createTheme, installMock} from './test_support.js';
 
 
 suite('ThemeSnapshotTest', () => {
@@ -54,6 +54,24 @@ suite('ThemeSnapshotTest', () => {
     assertEquals(1, handler.getCallCount('updateTheme'));
     assertEquals(
         'chrome://theme/foo',
-        $$<HTMLImageElement>(themeSnapshotElement, '#themeSnapshot img')!.src);
+        $$<HTMLImageElement>(
+            themeSnapshotElement, '#themeSnapshot .image')!.src);
+  });
+
+  test('having no theme set updates preview background color', async () => {
+    // Arrange.
+    createThemeSnapshotElement();
+    const theme = createTheme();
+    theme.backgroundColor = {value: 4279522202};
+
+    // Act.
+    callbackRouterRemote.setTheme(theme);
+    await callbackRouterRemote.$.flushForTesting();
+
+    // Assert.
+    assertEquals(1, handler.getCallCount('updateTheme'));
+    assertStyle(
+        $$(themeSnapshotElement, '#themeSnapshot .image')!, 'background-color',
+        'rgb(20, 83, 154)');
   });
 });

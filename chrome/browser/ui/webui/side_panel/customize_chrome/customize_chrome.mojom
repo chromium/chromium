@@ -21,7 +21,9 @@ struct Theme {
   BackgroundImage? background_image;
   // Whether the OS is in dark mode.
   bool system_dark_mode;
-  // The current theme color. If not set, we use the default theme.
+  // The current theme background color.
+  skia.mojom.SkColor background_color;
+  // The current theme foreground color. If not set, we use the default theme.
   skia.mojom.SkColor? foreground_color;
 };
 
