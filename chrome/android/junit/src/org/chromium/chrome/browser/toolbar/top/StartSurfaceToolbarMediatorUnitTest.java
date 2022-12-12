@@ -357,12 +357,12 @@ public class StartSurfaceToolbarMediatorUnitTest {
 
         // If default search engine doesn't have logo, logo shouldn't be visible.
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
-        mMediator.getLogoCoordinatorForTesting().onTemplateURLServiceChanged();
+        mMediator.getLogoCoordinatorForTesting().onTemplateURLServiceChangedForTesting();
         assertFalse(mMediator.isLogoVisibleForTesting());
 
         // If default search engine has logo, logo should be visible.
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
-        mMediator.getLogoCoordinatorForTesting().onTemplateURLServiceChanged();
+        mMediator.getLogoCoordinatorForTesting().onTemplateURLServiceChangedForTesting();
         assertTrue(mMediator.isLogoVisibleForTesting());
     }
 

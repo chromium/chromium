@@ -489,7 +489,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
     void destroy() {
         if (mLogoCoordinator != null) {
-            mLogoCoordinator.removeObserver(this);
             mLogoCoordinator.destroy();
             mLogoCoordinator = null;
         }
@@ -1233,7 +1232,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         }
         if (mLogoCoordinator != null) {
             boolean isShowingHomepage = isShowingStartSurfaceHomepage();
-            mLogoCoordinator.maybeLoadSearchProviderLogo(
+            mLogoCoordinator.updateVisibilityAndMaybeCleanUp(
                     isShowingHomepage && isVisible, !isShowingHomepage, false);
         }
     }
@@ -1428,8 +1427,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
         mLogoCoordinator = new LogoCoordinator(mContext, logoClickedCallback,
                 mLogoContainerView.findViewById(R.id.search_provider_logo), true, null, null,
-                isShowingStartSurfaceHomepage());
-        mLogoCoordinator.addObserver(this);
+                isShowingStartSurfaceHomepage(), this);
         return mLogoCoordinator;
     }
 

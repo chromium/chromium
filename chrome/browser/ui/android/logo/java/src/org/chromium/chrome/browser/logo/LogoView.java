@@ -61,7 +61,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
      */
     private float mTransitionAmount;
 
-    private Delegate mDelegate;
+    private ClickHandler mClickHandler;
 
     private final FloatProperty<LogoView> mTransitionProperty =
             new FloatProperty<LogoView>("") {
@@ -82,7 +82,8 @@ public class LogoView extends FrameLayout implements OnClickListener {
             };
 
     /** Handles tasks for the {@link LogoView} shown on an NTP.*/
-    public interface Delegate {
+    @FunctionalInterface
+    interface ClickHandler {
         /**
          * Called when the user clicks on the logo.
          * @param isAnimatedLogoShowing Whether the animated GIF logo is playing.
@@ -115,7 +116,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
     }
 
     /** Clean up member variables when this view is no longer needed.*/
-    public void destroy() {
+    void destroy() {
         // Need to end the animation otherwise it can cause memory leaks since the AnimationHandler
         // has a reference to the animation callback which then can link back to the
         // {@code mTransitionProperty}.
@@ -123,13 +124,13 @@ public class LogoView extends FrameLayout implements OnClickListener {
         mLoadingView.destroy();
     }
 
-    /** Sets the {@link Delegate} to notify when the logo is pressed.*/
-    public void setDelegate(Delegate delegate) {
-        mDelegate = delegate;
+    /** Sets the {@link ClickHandler} to notify when the logo is pressed.*/
+    void setClickHandler(ClickHandler clickHandler) {
+        mClickHandler = clickHandler;
     }
 
     /** Jumps to the end of the logo cross-fading animation, if any.*/
-    public void endFadeAnimation() {
+    void endFadeAnimation() {
         if (mFadeAnimation != null) {
             mFadeAnimation.end();
             mFadeAnimation = null;
@@ -142,7 +143,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
     }
 
     /** Starts playing the given animated GIF logo.*/
-    public void playAnimatedLogo(BaseGifImage gifImage) {
+    void playAnimatedLogo(BaseGifImage gifImage) {
         mLoadingView.hideLoadingUI();
         mAnimatedLogoDrawable = new BaseGifDrawable(gifImage, Config.ARGB_8888);
         mAnimatedLogoMatrix = new Matrix();
@@ -154,7 +155,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
     }
 
     /** Show a spinning progressbar.*/
-    public void showLoadingView() {
+    void showLoadingView() {
         mLogo = null;
         invalidate();
         mLoadingView.showLoadingUI();
@@ -164,7 +165,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
      * Show a loading indicator or a baked-in default search provider logo, based on what is
      * available.
      */
-    public void showSearchProviderInitialView() {
+    void showSearchProviderInitialView() {
         if (maybeShowDefaultLogo()) return;
 
         showLoadingView();
@@ -175,7 +176,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
      *
      * @param logo The new logo to fade in.
      */
-    public void updateLogo(Logo logo) {
+    void updateLogo(Logo logo) {
         if (logo == null) {
             if (maybeShowDefaultLogo()) return;
 
@@ -191,7 +192,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
                 logo.image, contentDescription, /* isDefaultLogo = */ false, isLogoClickable(logo));
     }
 
-    public void setAnimationEnabled(boolean animationEnabled) {
+    void setAnimationEnabled(boolean animationEnabled) {
         mAnimationEnabled = animationEnabled;
     }
 
@@ -247,7 +248,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
         mFadeAnimation.start();
     }
 
-    public void setDefaultGoogleLogo(Bitmap defaultGoogleLogo) {
+    void setDefaultGoogleLogo(Bitmap defaultGoogleLogo) {
         mDefaultGoogleLogo = defaultGoogleLogo;
     }
 
@@ -361,8 +362,8 @@ public class LogoView extends FrameLayout implements OnClickListener {
 
     @Override
     public void onClick(View view) {
-        if (view == this && mDelegate != null && !isTransitioning()) {
-            mDelegate.onLogoClicked(isAnimatedLogoShowing());
+        if (view == this && mClickHandler != null && !isTransitioning()) {
+            mClickHandler.onLogoClicked(isAnimatedLogoShowing());
         }
     }
 
@@ -378,6 +379,10 @@ public class LogoView extends FrameLayout implements OnClickListener {
         return mNewLogo;
     }
 
+    Bitmap getLogoForTesting() {
+        return mLogo;
+    }
+
     boolean getAnimationEnabledForTesting() {
         return mAnimationEnabled;
     }
@@ -390,11 +395,19 @@ public class LogoView extends FrameLayout implements OnClickListener {
         mLoadingView.addObserver(listener);
     }
 
-    Delegate getDelegateForTesting() {
-        return mDelegate;
+    ClickHandler getClickHandlerForTesting() {
+        return mClickHandler;
     }
 
     Bitmap getDefaultGoogleLogoForTesting() {
         return mDefaultGoogleLogo;
+    }
+
+    int getLoadingViewVisibilityForTesting() {
+        return mLoadingView.getVisibility();
+    }
+
+    void setLoadingViewVisibilityForTesting(int visibility) {
+        mLoadingView.setVisibility(visibility);
     }
 }

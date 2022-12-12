@@ -331,7 +331,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
 
         mLogoCoordinator = new LogoCoordinator(mContext, mLogoClickedCallback, logoView,
                 mShouldFetchDoodle, /*onLogoAvailableCallback=*/null,
-                /*onCachedLogoRevalidatedRunnable=*/null, isOnHomepage());
+                /*onCachedLogoRevalidatedRunnable=*/null, isOnHomepage(), null);
 
         // The logo view may be ready after native is initialized, so we need to call
         // mLogoCoordinator.initWithNative() here in case that initLogoNative() skip it.
@@ -386,7 +386,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
     private void updateLogoVisibility() {
         if (mLogoCoordinator == null) return;
 
-        mLogoCoordinator.maybeLoadSearchProviderLogo(isOnHomepage(),
+        mLogoCoordinator.updateVisibilityAndMaybeCleanUp(isOnHomepage(),
                 isOnATab() || isOnGridTabSwitcher()
                         || mStartSurfaceState == StartSurfaceState.DISABLED,
                 /*animationEnabled*/ false);

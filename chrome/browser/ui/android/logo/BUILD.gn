@@ -6,9 +6,10 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/logo/CachedTintedBitmap.java",
     "java/src/org/chromium/chrome/browser/logo/LogoBridge.java",
     "java/src/org/chromium/chrome/browser/logo/LogoCoordinator.java",
-    "java/src/org/chromium/chrome/browser/logo/LogoDelegateImpl.java",
+    "java/src/org/chromium/chrome/browser/logo/LogoMediator.java",
     "java/src/org/chromium/chrome/browser/logo/LogoProperties.java",
     "java/src/org/chromium/chrome/browser/logo/LogoView.java",
     "java/src/org/chromium/chrome/browser/logo/LogoViewBinder.java",
@@ -19,8 +20,6 @@ android_library("java") {
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
-    "//chrome/android/features/start_surface:public_java",
-    "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/search_engines/android:java",
@@ -60,25 +59,30 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   sources = [
-    "java/src/org/chromium/chrome/browser/logo/LogoCoordinatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/logo/CachedTintedBitmapUnitTest.java",
+    "java/src/org/chromium/chrome/browser/logo/LogoMediatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoViewBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoViewTest.java",
   ]
 
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/search_engines/android:java",
+    "//components/image_fetcher:java",
     "//components/search_engines/android:java",
     "//content/public/android:content_full_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/gif_player:gif_player_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",

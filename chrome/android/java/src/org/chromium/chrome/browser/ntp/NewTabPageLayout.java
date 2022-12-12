@@ -317,7 +317,8 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
         boolean shouldFetchDoodle = !FeedPositionUtils.isFeedPullUpEnabled();
         mLogoCoordinator = new LogoCoordinator(mContext, logoClickedCallback,
                 findViewById(R.id.search_provider_logo), shouldFetchDoodle, onLogoAvailableCallback,
-                onCachedLogoRevalidatedRunnable, /*isParentSurfaceShown=*/true);
+                onCachedLogoRevalidatedRunnable, /*isParentSurfaceShown=*/true,
+                /*visibilityObserver=*/null);
         mLogoCoordinator.initWithNative();
         setSearchProviderInfo(searchProviderHasLogo, searchProviderIsGoogle);
     }
@@ -851,17 +852,16 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
      * Makes the Search Box and Logo as wide as Most Visited.
      */
     private void unifyElementWidths() {
-        View logoView = mLogoCoordinator.getView();
         View searchBoxView = getSearchBoxView();
         if (mMvTilesContainerLayout.getVisibility() != GONE) {
             if (!isScrollableMvtEnabled()) {
                 final int width = mMvTilesContainerLayout.getMeasuredWidth() - mTileGridLayoutBleed;
                 measureExactly(searchBoxView, width, searchBoxView.getMeasuredHeight());
-                measureExactly(logoView, width, logoView.getMeasuredHeight());
+                mLogoCoordinator.measureExactlyLogoView(width);
             } else {
                 final int width = getMeasuredWidth() - mTileGridLayoutBleed;
                 measureExactly(searchBoxView, width, searchBoxView.getMeasuredHeight());
-                measureExactly(logoView, width, logoView.getMeasuredHeight());
+                mLogoCoordinator.measureExactlyLogoView(width);
             }
         }
     }

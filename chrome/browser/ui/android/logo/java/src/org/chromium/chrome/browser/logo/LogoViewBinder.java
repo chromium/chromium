@@ -4,11 +4,9 @@
 
 package org.chromium.chrome.browser.logo;
 
-import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
-import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -30,20 +28,22 @@ class LogoViewBinder
             marginLayoutParams.bottomMargin = model.get(LogoProperties.LOGO_BOTTOM_MARGIN);
         } else if (LogoProperties.SET_END_FADE_ANIMATION == propertyKey) {
             logoView.endFadeAnimation();
-        } else if (LogoProperties.DESTROY == propertyKey) {
-            logoView.destroy();
         } else if (LogoProperties.VISIBILITY == propertyKey) {
             logoView.setVisibility(model.get(LogoProperties.VISIBILITY) ? View.VISIBLE : View.GONE);
         } else if (LogoProperties.ANIMATION_ENABLED == propertyKey) {
             logoView.setAnimationEnabled(model.get(LogoProperties.ANIMATION_ENABLED));
-        } else if (LogoProperties.LOGO_DELEGATE == propertyKey) {
-            logoView.setDelegate((LogoDelegateImpl) model.get(LogoProperties.LOGO_DELEGATE));
+        } else if (LogoProperties.LOGO_CLICK_HANDLER == propertyKey) {
+            logoView.setClickHandler(model.get(LogoProperties.LOGO_CLICK_HANDLER));
         } else if (LogoProperties.SHOW_SEARCH_PROVIDER_INITIAL_VIEW == propertyKey) {
             logoView.showSearchProviderInitialView();
-        } else if (LogoProperties.UPDATED_LOGO == propertyKey) {
-            logoView.updateLogo((Logo) model.get(LogoProperties.UPDATED_LOGO));
+        } else if (LogoProperties.LOGO == propertyKey) {
+            logoView.updateLogo(model.get(LogoProperties.LOGO));
         } else if (LogoProperties.DEFAULT_GOOGLE_LOGO == propertyKey) {
-            logoView.setDefaultGoogleLogo((Bitmap) model.get(LogoProperties.DEFAULT_GOOGLE_LOGO));
+            logoView.setDefaultGoogleLogo(model.get(LogoProperties.DEFAULT_GOOGLE_LOGO));
+        } else if (LogoProperties.SHOW_LOADING_VIEW == propertyKey) {
+            logoView.showLoadingView();
+        } else if (LogoProperties.ANIMATED_LOGO == propertyKey) {
+            logoView.playAnimatedLogo(model.get(LogoProperties.ANIMATED_LOGO));
         } else {
             assert false : "Unhandled property detected in LogoViewBinder!";
         }

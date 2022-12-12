@@ -459,13 +459,13 @@ public class NewTabPageTest {
                 // Mock to notify the template URL service observer.
                 when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
                 when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
-                ntpLayout.getLogoCoordinatorForTesting().onTemplateURLServiceChanged();
+                ntpLayout.getLogoCoordinatorForTesting().onTemplateURLServiceChangedForTesting();
                 Assert.assertEquals(View.GONE, logoView.getVisibility());
 
                 ntpLayout.setSearchProviderInfo(/* hasLogo = */ true, /* isGoogle */ true);
                 // Mock to notify the template URL service observer.
                 when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
-                ntpLayout.getLogoCoordinatorForTesting().onTemplateURLServiceChanged();
+                ntpLayout.getLogoCoordinatorForTesting().onTemplateURLServiceChangedForTesting();
                 Assert.assertEquals(View.VISIBLE, logoView.getVisibility());
             }
         });
@@ -501,7 +501,7 @@ public class NewTabPageTest {
             when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
             ntpLayout.setSearchProviderInfo(/* hasLogo = */ false, /* isGoogle */ true);
             // Mock to notify the template URL service observer.
-            ntpLayout.getLogoCoordinatorForTesting().onTemplateURLServiceChanged();
+            ntpLayout.getLogoCoordinatorForTesting().onTemplateURLServiceChangedForTesting();
 
             Assert.assertEquals(View.GONE, logoView.getVisibility());
             Assert.assertEquals(View.GONE, searchBoxView.getVisibility());
@@ -527,7 +527,7 @@ public class NewTabPageTest {
             when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
             ntpLayout.setSearchProviderInfo(/* hasLogo = */ true, /* isGoogle */ true);
             // Mock to notify the template URL service observer.
-            ntpLayout.getLogoCoordinatorForTesting().onTemplateURLServiceChanged();
+            ntpLayout.getLogoCoordinatorForTesting().onTemplateURLServiceChangedForTesting();
 
             Assert.assertEquals(View.VISIBLE, logoView.getVisibility());
             Assert.assertEquals(View.VISIBLE, searchBoxView.getVisibility());

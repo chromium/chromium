@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -31,16 +32,21 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileJni;
+import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.LoadingView;
+
+import jp.tomorrowkey.android.gifplayer.BaseGifImage;
+
+// TODO(crbug.com/1394983): For the LogoViewTest and LogoViewBinderUnitTest, that's the nice thing
+//  about only have 1 test file, where all test cases go into the single test file.
 
 /** Unit tests for the {@link LogoViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -50,23 +56,25 @@ public class LogoViewBinderUnitTest {
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private PropertyModel mLogoModel;
     private LogoView mLogoView;
-    private LogoDelegateImpl mLogoDelegate;
+    private LogoMediator mLogoMediator;
     private static final double DELTA = 1e-5;
+    private static final String ANIMATED_LOGO_URL =
+            "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json";
 
     @Rule
-    public final JniMocker mJniMocker = new JniMocker();
-
-    @Mock
-    LogoBridge.Natives mLogoBridge;
-
-    @Mock
-    Profile.Natives mProfileJniMock;
-
-    @Mock
-    private Profile mProfile;
+    public JniMocker mJniMocker = new JniMocker();
 
     @Mock
     private LogoView mMockLogoView;
+
+    @Mock
+    LogoBridge.Natives mLogoBridgeJniMock;
+
+    @Mock
+    LogoBridge mLogoBridge;
+
+    @Mock
+    ImageFetcher mImageFetcher;
 
     static class TestObserver implements LoadingView.Observer {
         public final CallbackHelper showLoadingCallback = new CallbackHelper();
@@ -86,6 +94,7 @@ public class LogoViewBinderUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(LogoBridgeJni.TEST_HOOKS, mLogoBridgeJniMock);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mLogoView = new LogoView(mActivity, null);
         LayoutParams params =
@@ -94,9 +103,8 @@ public class LogoViewBinderUnitTest {
         mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoViewBinder());
-        mJniMocker.mock(LogoBridgeJni.TEST_HOOKS, mLogoBridge);
-        mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
-        mLogoDelegate = new LogoDelegateImpl(null, mLogoView, mProfile);
+        mLogoMediator =
+                new LogoMediator(null, null, mLogoModel, true, null, null, true, null, null);
     }
 
     @After
@@ -105,7 +113,7 @@ public class LogoViewBinderUnitTest {
         mLogoModel = null;
         mLogoView = null;
         mActivity = null;
-        mLogoDelegate = null;
+        mLogoMediator = null;
     }
 
     @Test
@@ -136,31 +144,16 @@ public class LogoViewBinderUnitTest {
         Logo logo = new Logo(Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8), null, null,
                 "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json");
         assertNull(mLogoView.getFadeAnimationForTesting());
-        mLogoModel.set(LogoProperties.UPDATED_LOGO, logo);
+        mLogoModel.set(LogoProperties.LOGO, logo);
         assertNotNull(mLogoView.getFadeAnimationForTesting());
         mLogoModel.set(LogoProperties.SET_END_FADE_ANIMATION, true);
         assertNull(mLogoView.getFadeAnimationForTesting());
         Logo newLogo = new Logo(Bitmap.createBitmap(2, 2, Bitmap.Config.ARGB_8888),
                 "https://www.google.com", null, null);
-        mLogoModel.set(LogoProperties.UPDATED_LOGO, newLogo);
+        mLogoModel.set(LogoProperties.LOGO, newLogo);
         assertNotNull(mLogoView.getFadeAnimationForTesting());
         mLogoModel.set(LogoProperties.SET_END_FADE_ANIMATION, true);
         assertNull(mLogoView.getFadeAnimationForTesting());
-    }
-
-    @Test
-    @UiThreadTest
-    @SmallTest
-    public void testDestroy() {
-        Logo logo = new Logo(Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8), null, null,
-                "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json");
-        mLogoModel.set(LogoProperties.UPDATED_LOGO, logo);
-        mLogoView.addLoadingViewObserverForTesting(new TestObserver());
-        assertEquals(false, mLogoView.checkLoadingViewObserverEmptyForTesting());
-        assertNotNull(mLogoView.getFadeAnimationForTesting());
-        mLogoModel.set(LogoProperties.DESTROY, true);
-        assertNull(mLogoView.getFadeAnimationForTesting());
-        assertEquals(true, mLogoView.checkLoadingViewObserverEmptyForTesting());
     }
 
     @Test
@@ -171,7 +164,7 @@ public class LogoViewBinderUnitTest {
                 "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json");
         assertNull(mLogoView.getFadeAnimationForTesting());
         assertNotEquals(logo.image, mLogoView.getNewLogoForTesting());
-        mLogoModel.set(LogoProperties.UPDATED_LOGO, logo);
+        mLogoModel.set(LogoProperties.LOGO, logo);
         assertNotNull(mLogoView.getFadeAnimationForTesting());
         assertEquals(logo.image, mLogoView.getNewLogoForTesting());
     }
@@ -201,10 +194,16 @@ public class LogoViewBinderUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
-    public void testSetLogoDelegate() {
-        assertNull(mLogoView.getDelegateForTesting());
-        mLogoModel.set(LogoProperties.LOGO_DELEGATE, mLogoDelegate);
-        assertEquals(mLogoDelegate, mLogoView.getDelegateForTesting());
+    public void testSetLogoClickHandler() {
+        assertNull(mLogoView.getClickHandlerForTesting());
+        mLogoMediator.setLogoBridgeForTesting(mLogoBridge);
+        mLogoMediator.setImageFetcherForTesting(mImageFetcher);
+        mLogoMediator.setAnimatedLogoUrlForTesting(ANIMATED_LOGO_URL);
+        mLogoModel.set(LogoProperties.LOGO_CLICK_HANDLER, mLogoMediator::onLogoClicked);
+        mLogoView.onClick(mLogoView);
+        assertEquals(
+                1, RecordHistogram.getHistogramValueCountForTesting("NewTabPage.LogoClick", 1));
+        verify(mImageFetcher, times(1)).fetchGif(any(), any());
     }
 
     @Test
@@ -217,5 +216,14 @@ public class LogoViewBinderUnitTest {
         verify(mMockLogoView).showSearchProviderInitialView();
         LogoModel.set(LogoProperties.SHOW_SEARCH_PROVIDER_INITIAL_VIEW, true);
         verify(mMockLogoView, times(2)).showSearchProviderInitialView();
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testLoadingViewWithAnimatedLogo() {
+        mLogoView.setLoadingViewVisibilityForTesting(View.INVISIBLE);
+        mLogoModel.set(LogoProperties.ANIMATED_LOGO, new BaseGifImage(new byte[] {}));
+        assertEquals(View.GONE, mLogoView.getLoadingViewVisibilityForTesting());
     }
 }
