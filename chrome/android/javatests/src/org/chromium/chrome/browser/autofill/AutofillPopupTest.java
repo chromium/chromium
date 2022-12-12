@@ -32,6 +32,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -54,6 +55,7 @@ import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.DropdownPopupWindowInterface;
 import org.chromium.ui.R;
+import org.chromium.ui.test.util.UiDisableIf;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -356,6 +358,7 @@ public class AutofillPopupTest {
     @MediumTest
     @Feature({"autofill"})
     @EnableFeatures(ChromeFeatureList.AUTOFILL_REFRESH_STYLE_ANDROID)
+    @DisableIf.Device(type = UiDisableIf.TABLET) // https://crbug.com/1399871
     public void testScreenOrientationPortrait() throws TimeoutException {
         runTestScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
@@ -364,6 +367,7 @@ public class AutofillPopupTest {
     @MediumTest
     @Feature({"autofill"})
     @EnableFeatures(ChromeFeatureList.AUTOFILL_REFRESH_STYLE_ANDROID)
+    @DisableIf.Device(type = UiDisableIf.TABLET) // https://crbug.com/1399871
     public void testScreenOrientationLandscape() throws TimeoutException {
         runTestScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
