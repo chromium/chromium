@@ -6,11 +6,77 @@ module auction_worklet.mojom;
 
 import "content/common/aggregatable_report.mojom";
 import "content/common/private_aggregation_host.mojom";
+import "mojo/public/mojom/base/int128.mojom";
 
 // Represents a request made to the Private Aggregation API (e.g. via
 // `privateAggregation.sendHistogramReport()`).
 struct PrivateAggregationRequest {
   content.mojom.AggregatableReportHistogramContribution contribution;
+  content.mojom.AggregationServiceMode aggregation_mode;
+  content.mojom.DebugModeDetails debug_mode_details;
+};
+
+// Indicates which value the browser should use to calculate the resulting
+// bucket or value.
+enum BaseValue {
+  kWinningBid = 0,
+  kHighestScoringOtherBid = 1,
+  kScriptRunTime = 2,
+  kSignalsFetchTime = 3,
+  kBidRejectReason = 4,
+};
+
+// Offset to add/subtract to the auction result value.
+// Offset's `value` should be Uint128 for contribution's bucket, and int for its
+// value. To make things simpler, using Uint128 for both, and will parse it to
+// int in code for contribution's value offset.
+// We need to support negative offset value, so adding a is_negative bool to
+// indicate whether offset is negative.
+struct Offset {
+  mojo_base.mojom.Uint128 value;
+  bool is_negative;
+};
+
+// Both the bucket and value can be a SignalBucketOrValue.
+// TODO(b/262009451): Find a way that supports calculating a Uint128 bucket from
+// double base value (e.g., winning bid) using scale and offset.
+struct SignalBucketOrValue {
+  // The name of the auction result value we want to report.
+  BaseValue base_value;
+
+  // Optional scale factor by which we want to multiply the output.
+  // TODO(https://crbug.com/657632): Update when optional doubles are supported.
+  double scale;
+  bool has_scale;
+
+  // Optional offset to add/subtract to the auction result value.
+  Offset? offset;
+};
+
+// A bucket which is a 128bit ID or a SignalBucketOrValue which tells the
+// browser how to calculate the bucket.
+union ForEventSignalBucket {
+  mojo_base.mojom.Uint128 id_bucket;
+  SignalBucketOrValue signal_bucket;
+};
+
+// A value is an integer, or a SignalBucketOrValue which tells the browser how
+// to calculate the value.
+union ForEventSignalValue {
+  int32 int_value;
+  SignalBucketOrValue signal_value;
+};
+
+// A contribution contains a bucket and a value.
+struct AggregatableReportForEventContribution {
+  ForEventSignalBucket bucket;
+  ForEventSignalValue value;
+};
+
+// Represents a request made to the extended Private Aggregation API (e.g. via
+// `privateAggregation.reportContributionForEvent()`).
+struct PrivateAggregationForEventRequest {
+  AggregatableReportForEventContribution contribution;
   content.mojom.AggregationServiceMode aggregation_mode;
   content.mojom.DebugModeDetails debug_mode_details;
 };

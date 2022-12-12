@@ -797,13 +797,30 @@ class ContextRecyclerPrivateAggregationEnabledTest
     return gin::ConvertToV8(helper_->isolate(), dict);
   }
 
+  // Checks given `pa_requests` has one item, which equals to the request
+  // created from given `expected_contribution`.
+  void ExpectPrivateAggregationForEventRequestsEqual(
+      std::vector<auction_worklet::mojom::PrivateAggregationForEventRequestPtr>
+          pa_requests,
+      auction_worklet::mojom::AggregatableReportForEventContributionPtr
+          expected_contribution) {
+    auction_worklet::mojom::PrivateAggregationForEventRequest expected_request(
+        expected_contribution.Clone(),
+        content::mojom::AggregationServiceMode::kDefault,
+        content::mojom::DebugModeDetails::New());
+
+    ASSERT_EQ(pa_requests.size(), 1u);
+    EXPECT_EQ(pa_requests[0], expected_request.Clone());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Exercise PrivateAggregationBindings, and make sure they reset properly.
+// Exercise `sendHistogramReport()` of PrivateAggregationBindings, and make sure
+// they reset properly.
 TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
-       PrivateAggregationBindings) {
+       PrivateAggregationBindingsSendHistogramReport) {
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
@@ -815,19 +832,6 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         args.bucket = BigInt(args.bucket);
       }
       privateAggregation.sendHistogramReport(args);
-    }
-    function enableDebugMode(arg) {
-      if (arg === undefined) {
-        privateAggregation.enableDebugMode();
-        return;
-      }
-
-      // Passing BigInts in directly is complicated so we construct them from
-      // strings.
-      if (typeof arg.debug_key === "string") {
-        arg.debug_key = BigInt(arg.debug_key);
-      }
-      privateAggregation.enableDebugMode(arg);
     }
     function doNothing() {}
   )";
@@ -1167,6 +1171,60 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
                     .empty());
   }
 
+  // API not called
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+
+    Run(scope, script, "doNothing", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests()
+                    .empty());
+  }
+}
+
+// Exercise `enableDebugMode()` of PrivateAggregationBindings, and make sure
+// they reset properly.
+TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
+       PrivateAggregationBindingsEnableDebugMode) {
+  using PrivateAggregationRequests =
+      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
+
+  const char kScript[] = R"(
+    function test(args) {
+      // Passing BigInts in directly is complicated so we construct them from
+      // strings.
+      if (typeof args.bucket === "string") {
+        args.bucket = BigInt(args.bucket);
+      }
+      privateAggregation.sendHistogramReport(args);
+    }
+    function enableDebugMode(arg) {
+      if (arg === undefined) {
+        privateAggregation.enableDebugMode();
+        return;
+      }
+
+      // Passing BigInts in directly is complicated so we construct them from
+      // strings.
+      if (typeof arg.debug_key === "string") {
+        arg.debug_key = BigInt(arg.debug_key);
+      }
+      privateAggregation.enableDebugMode(arg);
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  context_recycler.AddPrivateAggregationBindings();
+
   // Debug mode enabled with no debug key
   {
     ContextRecyclerScope scope(context_recycler);
@@ -1464,6 +1522,732 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     EXPECT_EQ(pa_requests[0], expected_request_1.Clone());
     EXPECT_EQ(pa_requests[1], expected_request_2.Clone());
   }
+}
+
+// Exercise `reportContributionsForEvent()` of PrivateAggregationBindings, and
+// make sure they reset properly.
+TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
+       PrivateAggregationForEventBindings) {
+  using PrivateAggregationForEventRequests =
+      std::vector<auction_worklet::mojom::PrivateAggregationForEventRequestPtr>;
+
+  const char kScript[] = R"(
+    function test(args) {
+      // Passing BigInts in directly is complicated so we construct them from
+      // strings.
+      if (typeof args.bucket === 'string') {
+        args.bucket = BigInt(args.bucket);
+      } else if (
+          typeof args.bucket === 'object' &&
+          typeof args.bucket.offset === 'string') {
+        args.bucket.offset = BigInt(args.bucket.offset);
+      }
+      privateAggregation.reportContributionForEvent('reserved.win', args);
+      privateAggregation.reportContributionForEvent('reserved.loss', args);
+    }
+
+    function testWinAndLoss(args) {
+      // Passing BigInts in directly is complicated so we construct them from
+      // strings.
+      if (typeof args.bucket === "string") {
+        args.bucket = BigInt(args.bucket);
+      }
+      privateAggregation.reportContributionForEvent('reserved.win', args);
+      // Add 1 to both bucket and value, to let reserved.loss request gets
+      // different contribution from reserved.win request.
+      args.bucket += BigInt(1);
+      args.value += 1;
+      privateAggregation.reportContributionForEvent('reserved.loss', args);
+    }
+
+    function testMissingEventType(args) {
+      if (typeof args.bucket === "string") {
+        args.bucket = BigInt(args.bucket);
+      }
+      privateAggregation.reportContributionForEvent(args);
+    }
+
+    function testMissingContribution() {
+      privateAggregation.reportContributionForEvent('reserved.win');
+    }
+
+    function testWrongArgumentsOrder(args) {
+      if (typeof args.bucket === "string") {
+        args.bucket = BigInt(args.bucket);
+      }
+      privateAggregation.reportContributionForEvent(args, 'reserved.win');
+    }
+    function testNotReservedEventType(args) {
+      // Passing BigInts in directly is complicated so we construct them from
+      // strings.
+      if (typeof args.bucket === "string") {
+        args.bucket = BigInt(args.bucket);
+      }
+      privateAggregation.reportContributionForEvent('not.reserved', args);
+    }
+    function doNothing() {}
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  context_recycler.AddPrivateAggregationBindings();
+
+  // Basic test
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "testWinAndLoss", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    auto expected_win_contribution =
+        auction_worklet::mojom::AggregatableReportForEventContribution::New(
+            /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
+                NewIdBucket(123),
+            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
+                45));
+    auto expected_loss_contribution =
+        auction_worklet::mojom::AggregatableReportForEventContribution::New(
+            /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
+                NewIdBucket(124),
+            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
+                46));
+
+    ExpectPrivateAggregationForEventRequestsEqual(
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationForEventRequests("reserved.win"),
+        expected_win_contribution.Clone());
+
+    ExpectPrivateAggregationForEventRequestsEqual(
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationForEventRequests("reserved.loss"),
+        std::move(expected_loss_contribution));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests()
+                    .empty());
+  }
+
+  // Missing event_type (the first argument) to reportContributionForEvent()
+  // API.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "testMissingEventType", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre(
+            "https://example.org/script.js:34 Uncaught TypeError: "
+            "reportContributionForEvent requires 2 parameters, with first "
+            "parameter being a string and second parameter being an object."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    .empty());
+  }
+
+  // Missing contribution (the second argument) to reportContributionForEvent()
+  // API.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+
+    Run(scope, script, "testMissingContribution", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre(
+            "https://example.org/script.js:38 Uncaught TypeError: "
+            "reportContributionForEvent requires 2 parameters, with first "
+            "parameter being a string and second parameter being an object."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    .empty());
+  }
+
+  // The two arguments to reportContributionForEvent() API are in wrong order.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "testWrongArgumentsOrder", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre(
+            "https://example.org/script.js:45 Uncaught TypeError: "
+            "reportContributionForEvent requires 2 parameters, with first "
+            "parameter being a string and second parameter being an object."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    .empty());
+  }
+
+  // Not reserved event type, which is just being ignored currently, but will
+  // be supported in the future.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "testNotReservedEventType", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    .empty());
+  }
+
+  // Large bucket
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("18446744073709551616"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    auto expected_contribution =
+        auction_worklet::mojom::AggregatableReportForEventContribution::New(
+            /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
+                NewIdBucket(absl::MakeUint128(/*high=*/1, /*low=*/0)),
+            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
+                45));
+
+    ExpectPrivateAggregationForEventRequestsEqual(
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationForEventRequests("reserved.win"),
+        std::move(expected_contribution));
+  }
+
+  // Maximum bucket
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("340282366920938463463374607431768211455"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    auto expected_contribution =
+        auction_worklet::mojom::AggregatableReportForEventContribution::New(
+            /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
+                NewIdBucket(absl::Uint128Max()),
+            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
+                45));
+
+    ExpectPrivateAggregationForEventRequestsEqual(
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationForEventRequests("reserved.win"),
+        std::move(expected_contribution));
+  }
+
+  // Zero bucket
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("0"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    auto expected_contribution =
+        auction_worklet::mojom::AggregatableReportForEventContribution::New(
+            /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
+                NewIdBucket(0),
+            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
+                45));
+    ExpectPrivateAggregationForEventRequestsEqual(
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationForEventRequests("reserved.win"),
+        std::move(expected_contribution));
+  }
+
+  // Zero value
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    dict.Set("value", 0);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    auto expected_contribution =
+        auction_worklet::mojom::AggregatableReportForEventContribution::New(
+            /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
+                NewIdBucket(123),
+            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
+                0));
+    ExpectPrivateAggregationForEventRequestsEqual(
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationForEventRequests("reserved.win"),
+        std::move(expected_contribution));
+  }
+
+  // Multiple requests
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    {
+      gin::Dictionary dict_1 = gin::Dictionary::CreateEmpty(helper_->isolate());
+      dict_1.Set("bucket", std::string("123"));
+      dict_1.Set("value", 45);
+
+      Run(scope, script, "test", error_msgs,
+          gin::ConvertToV8(helper_->isolate(), dict_1));
+      EXPECT_THAT(error_msgs, ElementsAre());
+    }
+    {
+      gin::Dictionary dict_2 = gin::Dictionary::CreateEmpty(helper_->isolate());
+      dict_2.Set("bucket", std::string("678"));
+      dict_2.Set("value", 90);
+
+      Run(scope, script, "test", error_msgs,
+          gin::ConvertToV8(helper_->isolate(), dict_2));
+      EXPECT_THAT(error_msgs, ElementsAre());
+    }
+
+    auto expected_contribution_1 =
+        auction_worklet::mojom::AggregatableReportForEventContribution::New(
+            /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
+                NewIdBucket(123),
+            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
+                45));
+    auction_worklet::mojom::PrivateAggregationForEventRequest
+        expected_request_1(expected_contribution_1.Clone(),
+                           content::mojom::AggregationServiceMode::kDefault,
+                           content::mojom::DebugModeDetails::New());
+
+    auto expected_contribution_2 =
+        auction_worklet::mojom::AggregatableReportForEventContribution::New(
+            /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
+                NewIdBucket(678),
+            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
+                90));
+    auction_worklet::mojom::PrivateAggregationForEventRequest
+        expected_request_2(expected_contribution_2.Clone(),
+                           content::mojom::AggregationServiceMode::kDefault,
+                           content::mojom::DebugModeDetails::New());
+
+    PrivateAggregationForEventRequests pa_requests =
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationForEventRequests("reserved.win");
+    ASSERT_EQ(pa_requests.size(), 2u);
+    EXPECT_EQ(pa_requests[0], expected_request_1.Clone());
+    EXPECT_EQ(pa_requests[1], expected_request_2.Clone());
+  }
+
+  // Too large bucket
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("340282366920938463463374607431768211456"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+                    "BigInt is too large."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    .empty());
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.loss")
+                    .empty());
+  }
+
+  // Dictionary bucket
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary bucket_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    bucket_dict.Set("base_value", std::string("bidRejectReason"));
+    bucket_dict.Set("offset", std::string("-255"));
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", bucket_dict);
+    dict.Set("value", 1);
+
+    auto signal_bucket = auction_worklet::mojom::SignalBucketOrValue::New(
+        /*base_value=*/auction_worklet::mojom::BaseValue::kBidRejectReason,
+        /*scale=*/0, /*has_scale*/ false,
+        /*offset=*/
+        auction_worklet::mojom::Offset::New(/*value=*/255,
+                                            /*is_negative=*/true));
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    auto expected_contribution =
+        auction_worklet::mojom::AggregatableReportForEventContribution::New(
+            /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
+                NewSignalBucket(std::move(signal_bucket)),
+            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
+                1));
+
+    ExpectPrivateAggregationForEventRequestsEqual(
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationForEventRequests("reserved.win"),
+        expected_contribution.Clone());
+
+    ExpectPrivateAggregationForEventRequestsEqual(
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationForEventRequests("reserved.loss"),
+        std::move(expected_contribution));
+  }
+
+  // Invalid bucket dictionary, which has no base_value key
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary bucket_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    bucket_dict.Set("scale", 1);
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", bucket_dict);
+    dict.Set("value", 1);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs,
+                ElementsAre("https://example.org/script.js:12 Uncaught "
+                            "TypeError: Invalid bucket dictionary."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    .empty());
+  }
+
+  // Invalid bucket dictionary, whose base_value is invalid.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary bucket_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    bucket_dict.Set("base_value", std::string("notValidBaseValue"));
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", bucket_dict);
+    dict.Set("value", 1);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs,
+                ElementsAre("https://example.org/script.js:12 Uncaught "
+                            "TypeError: Invalid bucket dictionary."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    .empty());
+  }
+
+  // Invalid bucket dictionary, whose scale is not Number.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary bucket_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    bucket_dict.Set("base_value", std::string("winningBid"));
+    bucket_dict.Set("scale", std::string("255"));
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", bucket_dict);
+    dict.Set("value", 1);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs,
+                ElementsAre("https://example.org/script.js:12 Uncaught "
+                            "TypeError: Invalid bucket dictionary."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    .empty());
+  }
+
+  // Invalid bucket dictionary, whose offset is not BigInt.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary bucket_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    bucket_dict.Set("base_value", std::string("winningBid"));
+    bucket_dict.Set("offset", 255);
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", bucket_dict);
+    dict.Set("value", 1);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs,
+                ElementsAre("https://example.org/script.js:12 Uncaught "
+                            "TypeError: Invalid bucket dictionary."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    .empty());
+  }
+
+  // Dictionary value
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary value_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    value_dict.Set("base_value", std::string("winningBid"));
+    value_dict.Set("scale", 2);
+    value_dict.Set("offset", -5);
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("1596"));
+    dict.Set("value", value_dict);
+
+    auto signal_value = auction_worklet::mojom::SignalBucketOrValue::New(
+        /*base_value=*/auction_worklet::mojom::BaseValue::kWinningBid,
+        /*scale=*/2, /*has_scale*/ true,
+        /*offset=*/
+        auction_worklet::mojom::Offset::New(/*value=*/5,
+                                            /*is_negative=*/true));
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    auto expected_contribution =
+        auction_worklet::mojom::AggregatableReportForEventContribution::New(
+            /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
+                NewIdBucket(1596),
+            /*value=*/auction_worklet::mojom::ForEventSignalValue::
+                NewSignalValue(std::move(signal_value)));
+
+    ExpectPrivateAggregationForEventRequestsEqual(
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationForEventRequests("reserved.win"),
+        expected_contribution.Clone());
+
+    ExpectPrivateAggregationForEventRequestsEqual(
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationForEventRequests("reserved.loss"),
+        std::move(expected_contribution));
+  }
+
+  // Invalid value dictionary, which has no base_value key
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary value_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    value_dict.Set("offset", 255);
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("1"));
+    dict.Set("value", value_dict);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs,
+                ElementsAre("https://example.org/script.js:12 Uncaught "
+                            "TypeError: Invalid value dictionary."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    .empty());
+  }
+
+  // Non BigInt or dictionary bucket
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", 12.3);
+    dict.Set("value", 45);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+                    "Bucket must be a BigInt or a dictionary."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    .empty());
+  }
+
+  // Non integer or dictionary value
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    dict.Set("value", 4.5);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+                    "Value must be an integer or a dictionary."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    .empty());
+  }
+
+  // Negative bucket
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("-1"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+                    "BigInt must be non-negative."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    .empty());
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.loss")
+                    .empty());
+  }
+
+  // Negative value
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    dict.Set("value", -1);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+                    "Value must be non-negative."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    .empty());
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.loss")
+                    .empty());
+  }
+
+  // Missing bucket
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("value", 45);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+                    "Invalid or missing bucket in reportContributionForEvent's "
+                    "argument."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    .empty());
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.loss")
+                    .empty());
+  }
+
+  // Missing value
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", 123);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+                    "Invalid or missing value in reportContributionForEvent's "
+                    "argument."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    .empty());
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.loss")
+                    .empty());
+  }
 
   // API not called
   {
@@ -1477,7 +2261,10 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     EXPECT_THAT(error_msgs, ElementsAre());
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    .empty());
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationForEventRequests("reserved.loss")
                     .empty());
   }
 }

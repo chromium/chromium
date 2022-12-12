@@ -45,32 +45,6 @@ v8::MaybeLocal<v8::String> CreateUtf8String(v8::Isolate* isolate,
                                  utf8_string.length());
 }
 
-// If returns `absl::nullopt`, will output an error to `error_out`.
-absl::optional<absl::uint128> ConvertBigIntToUint128(
-    v8::Local<v8::BigInt> bigint,
-    std::string* error_out) {
-  if (bigint.IsEmpty()) {
-    *error_out = "Failed to interpret as BigInt";
-    return absl::nullopt;
-  }
-  if (bigint->WordCount() > 2) {
-    *error_out = "BigInt is too large";
-    return absl::nullopt;
-  }
-  // Signals the size of the `words` array to `ToWordsArray()`. The number of
-  // elements actually used is then written here by the function.
-  int word_count = 2;
-  int sign_bit = 0;
-  uint64_t words[2] = {0, 0};  // Least significant to most significant.
-  bigint->ToWordsArray(&sign_bit, &word_count, words);
-  if (sign_bit) {
-    *error_out = "BigInt must be non-negative";
-    return absl::nullopt;
-  }
-
-  return absl::MakeUint128(words[1], words[0]);
-}
-
 // In case of failure, will return `absl::nullopt` and output an error to
 // `error_out`.
 absl::optional<uint64_t> ParseDebugKey(v8::Local<v8::Value> js_debug_key,
@@ -98,6 +72,31 @@ absl::optional<uint64_t> ParseDebugKey(v8::Local<v8::Value> js_debug_key,
 }
 
 }  // namespace
+
+absl::optional<absl::uint128> ConvertBigIntToUint128(
+    v8::Local<v8::BigInt> bigint,
+    std::string* error_out) {
+  if (bigint.IsEmpty()) {
+    *error_out = "Failed to interpret as BigInt";
+    return absl::nullopt;
+  }
+  if (bigint->WordCount() > 2) {
+    *error_out = "BigInt is too large";
+    return absl::nullopt;
+  }
+  // Signals the size of the `words` array to `ToWordsArray()`. The number of
+  // elements actually used is then written here by the function.
+  int word_count = 2;
+  int sign_bit = 0;
+  uint64_t words[2] = {0, 0};  // Least significant to most significant.
+  bigint->ToWordsArray(&sign_bit, &word_count, words);
+  if (sign_bit) {
+    *error_out = "BigInt must be non-negative";
+    return absl::nullopt;
+  }
+
+  return absl::MakeUint128(words[1], words[0]);
+}
 
 content::mojom::AggregatableReportHistogramContributionPtr
 ParseSendHistogramReportArguments(const gin::Arguments& args) {

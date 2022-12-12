@@ -38,18 +38,42 @@ class CONTENT_EXPORT PrivateAggregationBindings : public Bindings {
   std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
   TakePrivateAggregationRequests();
 
+  std::vector<auction_worklet::mojom::PrivateAggregationForEventRequestPtr>
+  TakePrivateAggregationForEventRequests(const std::string& event_type);
+
  private:
   static void SendHistogramReport(
       const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void ReportContributionForEvent(
+      const v8::FunctionCallbackInfo<v8::Value>& args);
   static void EnableDebugMode(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+  // Creates private aggregation for event requests from given `contributions`,
+  // and returns the requests.
+  std::vector<auction_worklet::mojom::PrivateAggregationForEventRequestPtr>
+  PrivateAggregationRequestsFromContribution(
+      std::vector<
+          auction_worklet::mojom::AggregatableReportForEventContributionPtr>
+          contributions);
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
 
   // Defaults to debug mode being disabled.
   content::mojom::DebugModeDetails debug_mode_details_;
 
+  // Contributions from `sendHistogramReport()`.
   std::vector<content::mojom::AggregatableReportHistogramContributionPtr>
       private_aggregation_contributions_;
+
+  // Contributions of event type "reserved.win" from
+  // `reportContributionsForEvent()`.
+  std::vector<auction_worklet::mojom::AggregatableReportForEventContributionPtr>
+      private_aggregation_for_event_win_contributions_;
+
+  // Contributions of event type "reserved.loss" from
+  // `reportContributionsForEvent()`.
+  std::vector<auction_worklet::mojom::AggregatableReportForEventContributionPtr>
+      private_aggregation_for_event_loss_contributions_;
 };
 
 }  // namespace auction_worklet

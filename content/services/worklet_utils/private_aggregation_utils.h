@@ -5,14 +5,24 @@
 #ifndef CONTENT_SERVICES_WORKLET_UTILS_PRIVATE_AGGREGATION_UTILS_H_
 #define CONTENT_SERVICES_WORKLET_UTILS_PRIVATE_AGGREGATION_UTILS_H_
 
+#include <string>
+
 #include "content/common/aggregatable_report.mojom-forward.h"
 #include "content/common/private_aggregation_host.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "v8/include/v8-primitive.h"
 
 namespace gin {
 class Arguments;
 }
 
 namespace worklet_utils {
+
+// If returns `absl::nullopt`, will output an error to `error_out`.
+absl::optional<absl::uint128> ConvertBigIntToUint128(
+    v8::Local<v8::BigInt> bigint,
+    std::string* error_out);
 
 // Parses arguments provided to `sendHistogramReport()` and returns the
 // corresponding contribution. In case of an error, throws an exception and
