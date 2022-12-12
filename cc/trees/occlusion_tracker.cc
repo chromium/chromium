@@ -225,12 +225,8 @@ static void ReduceOcclusionBelowSurface(
     return;
 
   gfx::Rect affected_area_in_target =
-      contributing_surface->BackdropFilters().HasFilterOfType(
-          FilterOperation::FilterType::BLUR)
-          ? contributing_surface->BackdropFilters().MapRect(target_rect,
-                                                            SkMatrix::I())
-          : contributing_surface->BackdropFilters().MapRectReverse(
-                target_rect, SkMatrix::I());
+      contributing_surface->BackdropFilters().MapRectReverse(target_rect,
+                                                             SkMatrix::I());
   // Unite target_rect because we only care about positive outsets.
   affected_area_in_target.Union(target_rect);
 

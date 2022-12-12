@@ -39,14 +39,13 @@ TEST(FilterOperationsTest, MapRectBlurOverflow) {
 TEST(FilterOperationsTest, MapRectReverseBlur) {
   FilterOperations ops;
   ops.Append(FilterOperation::CreateBlurFilter(20));
-  EXPECT_EQ(gfx::Rect(60, 60, 30, 30),
-            ops.MapRectReverse(gfx::Rect(0, 0, 150, 150), SkMatrix::I()));
+  EXPECT_EQ(gfx::Rect(-60, -60, 130, 130),
+            ops.MapRectReverse(gfx::Rect(0, 0, 10, 10), SkMatrix::I()));
+  EXPECT_EQ(gfx::Rect(-120, -120, 260, 260),
+            ops.MapRectReverse(gfx::Rect(0, 0, 20, 20), SkMatrix::Scale(2, 2)));
   EXPECT_EQ(
-      gfx::Rect(120, 120, 60, 60),
-      ops.MapRectReverse(gfx::Rect(0, 0, 300, 300), SkMatrix::Scale(2, 2)));
-  EXPECT_EQ(
-      gfx::Rect(60, 50, 30, 30),
-      ops.MapRectReverse(gfx::Rect(0, -10, 150, 150), SkMatrix::Scale(1, -1)));
+      gfx::Rect(-60, -70, 130, 130),
+      ops.MapRectReverse(gfx::Rect(0, -10, 10, 10), SkMatrix::Scale(1, -1)));
 }
 
 TEST(FilterOperationsTest, MapRectDropShadowReferenceFilter) {

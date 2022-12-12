@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "cc/base/math_util.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -339,15 +340,16 @@ gfx::Rect MapRectInternal(const FilterOperation& op,
   switch (op.type()) {
     case FilterOperation::BLUR: {
       SkVector spread = MapStdDeviation(op.amount(), matrix);
-      // Mapping a blur forward requires an outset (negative inset) because a
-      // smaller source rectangle gets blurred to a larger destination
-      // rectangle.
-      float sign =
-          (direction == SkImageFilter::kForward_MapDirection) ? -1.0 : 1.0;
-      float spread_x = std::abs(spread.x()) * sign;
-      float spread_y = std::abs(spread.y()) * sign;
+      float spread_x = std::abs(spread.x());
+      float spread_y = std::abs(spread.y());
+
+      // Mapping a blur both forward/backward requires an outset. For the
+      // forward case this is the bounds that will be modified by the filter
+      // which is larger than `rect`. For the reverse case this is the pixels
+      // needed as input for the filter which is also larger than `rect`. See
+      // https://crbug.com/1385154.
       gfx::RectF result(rect);
-      result.Inset(gfx::InsetsF::VH(spread_y, spread_x));
+      result.Outset(gfx::OutsetsF::VH(spread_x, spread_y));
       return gfx::ToEnclosingRect(result);
     }
     case FilterOperation::DROP_SHADOW: {
