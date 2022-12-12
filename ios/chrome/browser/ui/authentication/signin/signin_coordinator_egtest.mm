@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -38,6 +39,7 @@
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager_constants.h"
+#import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
@@ -179,6 +181,9 @@ void ExpectSyncConsentHistogram(
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(signin::kEnableUnicornAccountSupport);
+  if ([self isRunningTest:@selector(testOpenSignInFromNTP)]) {
+    config.features_enabled.push_back(switches::kIdentityStatusConsistency);
+  }
   return config;
 }
 
@@ -856,6 +861,21 @@ void ExpectSyncConsentHistogram(
   // Ensure the Settings menu is displayed.
   [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that a signed-out user can open "Sign in" screen from the NTP.
+- (void)testOpenSignInFromNTP {
+  // Select the identity disc particle.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(GetNSString(
+                                          IDS_ACCNAME_PARTICLE_DISC))]
+      performAction:grey_tap()];
+
+  // Ensure the sign-in menu is displayed. The existence of the skip
+  // accessibility button on screen verifies that tha sign-in screen was
+  // shown.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSkipSigninAccessibilityIdentifier)]
+      performAction:grey_tap()];
 }
 
 // Tests that opening the sign-in screen from the Settings and signing in works

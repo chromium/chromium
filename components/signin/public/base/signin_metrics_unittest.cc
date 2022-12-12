@@ -141,6 +141,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "PostDeviceRestoreSigninPromo";
       case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
         return "PostDeviceRestoreBackgroundSignin";
+      case AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
+        return "NTPSignedOutIcon";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";

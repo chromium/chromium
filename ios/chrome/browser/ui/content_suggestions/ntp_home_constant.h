@@ -52,6 +52,8 @@ extern const CGFloat kSuggestionPeekingHeight;
 extern const CGFloat kIdentityAvatarDimension;
 // Margin around user's identity avatar.
 extern const CGFloat kIdentityAvatarMargin;
+// Dimension of signed-out identity icon.
+extern const CGFloat kSignedOutIdentityIconDimension;
 
 // The background color of the NTP.
 UIColor* NTPBackgroundColor();

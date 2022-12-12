@@ -119,6 +119,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "signin_coordinator_egtest.mm" ]
   deps = [
+    ":constants",
     "//base",
     "//base/test:test_support",
     "//components/policy:policy_code_generate",

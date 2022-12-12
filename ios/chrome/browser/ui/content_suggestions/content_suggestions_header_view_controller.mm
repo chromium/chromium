@@ -10,12 +10,14 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/lens_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
+#import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_synchronizing.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
@@ -26,6 +28,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h"
@@ -51,7 +54,8 @@ using base::UserMetricsAction;
 
 namespace {
 
-const NSString* kScribbleFakeboxElementId = @"fakebox";
+NSString* const kScribbleFakeboxElementId = @"fakebox";
+NSString* const kSignOutIdentityIconName = @"sign_out_icon";
 
 }  // namespace
 
@@ -366,9 +370,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   self.identityDiscButton = [UIButton buttonWithType:UIButtonTypeCustom];
   self.identityDiscButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_ACCNAME_PARTICLE_DISC);
-  self.identityDiscButton.imageEdgeInsets = UIEdgeInsetsMake(
-      ntp_home::kIdentityAvatarMargin, ntp_home::kIdentityAvatarMargin,
-      ntp_home::kIdentityAvatarMargin, ntp_home::kIdentityAvatarMargin);
   [self.identityDiscButton addTarget:self
                               action:@selector(identityDiscTapped)
                     forControlEvents:UIControlEventTouchUpInside];
@@ -452,7 +453,16 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 - (void)identityDiscTapped {
   base::RecordAction(base::UserMetricsAction("MobileNTPIdentityDiscTapped"));
-  [self.dispatcher showSettingsFromViewController:self.baseViewController];
+  if ([self.delegate isSignedIn]) {
+    [self.dispatcher showSettingsFromViewController:self.baseViewController];
+  } else {
+    ShowSigninCommand* const showSigninCommand = [[ShowSigninCommand alloc]
+        initWithOperation:AuthenticationOperationSigninAndSync
+              accessPoint:signin_metrics::AccessPoint::
+                              ACCESS_POINT_NTP_SIGNED_OUT_ICON];
+    [self.dispatcher showSignin:showSigninCommand
+             baseViewController:self.baseViewController];
+  }
 }
 
 // TODO(crbug.com/807330) The fakebox is currently a collection of views spread
@@ -742,11 +752,25 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 #pragma mark - UserAccountImageUpdateDelegate
 
 - (void)updateAccountImage:(UIImage*)image {
-  self.identityDiscButton.hidden = !image;
-  DCHECK(image == nil ||
-         (image.size.width == ntp_home::kIdentityAvatarDimension &&
-          image.size.height == ntp_home::kIdentityAvatarDimension))
-      << base::SysNSStringToUTF8([image description]);
+  if (![self.delegate isSignedIn] &&
+      base::FeatureList::IsEnabled(switches::kIdentityStatusConsistency)) {
+    DCHECK(!image);
+    if (UseSymbols()) {
+      image = DefaultSymbolTemplateWithPointSize(
+          kPersonCropCircleSymbol, ntp_home::kSignedOutIdentityIconDimension);
+    } else {
+      image = [UIImage imageNamed:kSignOutIdentityIconName];
+    }
+  } else {
+    // TODO(crbug.com/1385758): Update this logic after
+    // kIdentityStatusConsistency is rolled out as image can't be
+    // null when the user is signed-in.
+    self.identityDiscButton.hidden = !image;
+    DCHECK(image == nil ||
+           (image.size.width == ntp_home::kIdentityAvatarDimension &&
+            image.size.height == ntp_home::kIdentityAvatarDimension))
+        << base::SysNSStringToUTF8([image description]);
+  }
   [self.identityDiscButton setImage:image forState:UIControlStateNormal];
   self.identityDiscButton.imageView.layer.cornerRadius = image.size.width / 2;
   self.identityDiscButton.imageView.layer.masksToBounds = YES;

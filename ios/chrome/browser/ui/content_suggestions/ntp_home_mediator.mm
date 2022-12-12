@@ -292,6 +292,10 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   [self updateAccountImage];
 }
 
+- (BOOL)isSignedIn {
+  return self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+}
+
 #pragma mark - SearchEngineObserving
 
 - (void)searchEngineChanged {

@@ -416,6 +416,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromPostDeviceRestoreSigninPromo"));
       break;
+    case AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromNTPSignedOutIcon"));
+      break;
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED();
       break;
@@ -528,6 +532,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
     case AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
     case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
+    case AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
       NOTREACHED() << "Signin_Impression_From* user actions"
                    << " are not recorded for access point "
                    << static_cast<int>(access_point);
