@@ -258,7 +258,9 @@ TEST_F(AACTest, XHE_AAC) {
 
   // ADTS conversion should do nothing since xHE-AAC can't be represented with
   // only two bits for the profile.
-  EXPECT_TRUE(aac_.ConvertEsdsToADTS(&data));
+  int adts_header_size = 1;  // Choose a non-zero value to make sure it's set.
+  EXPECT_TRUE(aac_.ConvertEsdsToADTS(&data, &adts_header_size));
+  EXPECT_EQ(adts_header_size, 0);
   EXPECT_EQ(data.size(), sizeof(buffer));
 }
 
