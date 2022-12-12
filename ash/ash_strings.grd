@@ -492,6 +492,12 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_CAST_ACCESS_CODE_CAST_CONNECT" desc="Menu item label that, when clicked on, opens the access code casting dialog.">
         Connect with a code
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_CAST_ZERO_STATE_TITLE" desc="The main label for the system tray Cast view when no Chromecast devices are available.">
+        Cast your screen from your Chromebook
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_CAST_ZERO_STATE_SUBTITLE" desc="The secondary label for the system tray Cast view when no Chromecast devices are available.">
+        Make sure your Chromebook is on the same Wi-Fi network as your Chromecast device.
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_DARK_THEME" desc="The label used as the header in the dark theme popup. [CHAR_LIMIT=19">
         Dark theme
       </message>

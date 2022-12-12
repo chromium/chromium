@@ -1204,6 +1204,8 @@ component("ash") {
     "system/cast/cast_feature_pod_controller.h",
     "system/cast/cast_notification_controller.cc",
     "system/cast/cast_notification_controller.h",
+    "system/cast/cast_zero_state_view.cc",
+    "system/cast/cast_zero_state_view.h",
     "system/cast/tray_cast.cc",
     "system/cast/tray_cast.h",
     "system/cast/unified_cast_detailed_view_controller.cc",

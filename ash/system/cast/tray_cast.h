@@ -13,6 +13,10 @@
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace ash {
 
 // This view displays a list of cast receivers that can be clicked on and casted
@@ -44,6 +48,9 @@ class ASH_EXPORT CastDetailedView : public TrayDetailedView,
 
   void UpdateReceiverListFromCachedData();
 
+  // Adds the view shown when no cast devices are available (with QsRevamp).
+  void AddZeroStateView();
+
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
 
@@ -55,6 +62,9 @@ class ASH_EXPORT CastDetailedView : public TrayDetailedView,
 
   // Special list item that, if clicked, launches the access code casting dialog
   views::View* add_access_code_device_ = nullptr;
+
+  // View shown when no cast devices are available (with QsRevamp).
+  views::View* zero_state_view_ = nullptr;
 };
 
 }  // namespace ash

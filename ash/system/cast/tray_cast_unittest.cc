@@ -80,6 +80,8 @@ class CastDetailedViewTest : public AshTestBase {
     return views;
   }
 
+  views::View* GetZeroStateView() { return detailed_view_->zero_state_view_; }
+
   // Adds two simulated cast devices.
   void AddCastDevices() {
     std::vector<SinkAndRoute> devices;
@@ -97,6 +99,9 @@ class CastDetailedViewTest : public AshTestBase {
     devices.push_back(device2);
     detailed_view_->OnDevicesUpdated(devices);
   }
+
+  // Removes simulated cast devices.
+  void ResetCastDevices() { detailed_view_->OnDevicesUpdated({}); }
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
@@ -126,6 +131,20 @@ TEST_F(CastDetailedViewTest, ClickOnViewClosesBubble) {
   LeftClickOn(first_view);
   EXPECT_EQ(cast_config_.cast_to_sink_count_, 1u);
   EXPECT_EQ(delegate_->close_bubble_call_count(), 1u);
+}
+
+TEST_F(CastDetailedViewTest, ZeroStateView) {
+  // The zero state view shows when there are no cast devices.
+  ASSERT_TRUE(GetDeviceViews().empty());
+  EXPECT_TRUE(GetZeroStateView());
+
+  // Adding cast devices hides the zero state view.
+  AddCastDevices();
+  EXPECT_FALSE(GetZeroStateView());
+
+  // Removing cast devices shows the zero state view.
+  ResetCastDevices();
+  EXPECT_TRUE(GetZeroStateView());
 }
 
 }  // namespace ash
