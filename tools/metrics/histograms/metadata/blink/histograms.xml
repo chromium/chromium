@@ -1886,6 +1886,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Layout.UpdateLayerPositionsAfterLayout"
+    units="microseconds" expires_after="2023-05-07">
+  <owner>pdr@chromium.org</owner>
+  <owner>ikilpatrick@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    Time spent in PaintLayer::UpdateLayerPositionsAfterLayout.
+
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Blink.Layout.UpdateTime" units="microseconds"
     expires_after="2023-05-27">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->

@@ -100,6 +100,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
@@ -292,6 +293,8 @@ const PaintLayer* PaintLayer::ContainingScrollContainerLayer(
 void PaintLayer::UpdateLayerPositionsAfterLayout() {
   DCHECK(IsRootLayer());
 
+  SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES(
+      "Blink.Layout.UpdateLayerPositionsAfterLayout");
   TRACE_EVENT0("blink,benchmark",
                "PaintLayer::updateLayerPositionsAfterLayout");
   RUNTIME_CALL_TIMER_SCOPE(
