@@ -475,7 +475,13 @@ PerformanceEntryVector Performance::GetEntriesWithChildFrames(
   PerformanceEntryVector entries;
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+  if (!window) {
+    return entries;
+  }
   LocalFrame* parent_frame = window->GetFrame();
+  if (!parent_frame) {
+    return entries;
+  }
 
   HeapDeque<Member<Frame>> queue;
   queue.push_back(parent_frame);
@@ -486,7 +492,11 @@ PerformanceEntryVector Performance::GetEntriesWithChildFrames(
     if (LocalFrame* local_frame = DynamicTo<LocalFrame>(current_frame);
         local_frame && !local_frame->IsCrossOriginToNearestMainFrame()) {
       // Get the Performance object from the current frame.
-      LocalDOMWindow* current_window = local_frame->GetDocument()->domWindow();
+      LocalDOMWindow* current_window = local_frame->DomWindow();
+      // As we verified that the frame this was called with is not detached when
+      // entring this loop, we can assume that all its children are also not
+      // detached, and hence have a window object.
+      DCHECK(current_window);
       WindowPerformance* window_performance =
           DOMWindowPerformance::performance(*current_window);
 
