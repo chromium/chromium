@@ -1686,19 +1686,20 @@ class DlpFilesExternalCopyTest
 INSTANTIATE_TEST_SUITE_P(
     DlpFiles,
     DlpFilesExternalCopyTest,
+    // TODO(http://b/262223235) check for the actual component.
     ::testing::Values(
         std::make_tuple("android_files",
                         "path/in/android",
-                        ::dlp::DlpComponent::ARC),
+                        ::dlp::DlpComponent::SYSTEM),
         std::make_tuple("removable",
                         "MyUSB/path/in/removable",
-                        ::dlp::DlpComponent::USB),
+                        ::dlp::DlpComponent::SYSTEM),
         std::make_tuple("crostini_test_termina_penguin",
                         "path/in/crostini",
-                        ::dlp::DlpComponent::CROSTINI),
+                        ::dlp::DlpComponent::SYSTEM),
         std::make_tuple("drivefs-84675c855b63e12f384d45f033826980",
                         "root/path/in/mydrive",
-                        ::dlp::DlpComponent::GOOGLE_DRIVE)));
+                        ::dlp::DlpComponent::SYSTEM)));
 
 TEST_P(DlpFilesExternalCopyTest, FileCopyTest) {
   auto [mount_name, path, expected_component] = GetParam();
