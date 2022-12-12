@@ -96,6 +96,7 @@ class Tab : public gfx::AnimationDelegate,
   void PaintChildren(const views::PaintInfo& info) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void AddedToWidget() override;
+  void RemovedFromWidget() override;
   void OnFocus() override;
   void OnBlur() override;
   void OnThemeChanged() override;
@@ -123,9 +124,6 @@ class Tab : public gfx::AnimationDelegate,
 
   // Called when the alert indicator has changed states.
   void AlertStateChanged();
-
-  // Called when the frame state color changes.
-  void FrameColorsChanged();
 
   // Called when the selected state changes.
   void SelectedStateChanged();
@@ -290,6 +288,8 @@ class Tab : public gfx::AnimationDelegate,
   // Freezing token held while the tab is collapsed.
   std::unique_ptr<performance_manager::freezing::FreezingVoteToken>
       freezing_token_;
+
+  base::CallbackListSubscription paint_as_active_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_H_

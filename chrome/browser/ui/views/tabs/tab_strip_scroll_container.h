@@ -66,6 +66,8 @@ class TabStripScrollContainer : public views::View, views::ViewObserver {
 
   // views::View
   void OnThemeChanged() override;
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
 
   // Manages the visibility of the scroll buttons based on whether |tab_strip_|
   // is currently overflowing.
@@ -82,6 +84,8 @@ class TabStripScrollContainer : public views::View, views::ViewObserver {
   // The class handling the overflow indiciators for the scroll view.
   std::unique_ptr<TabStripScrollingOverflowIndicatorStrategy>
       overflow_indicator_strategy_;
+
+  base::CallbackListSubscription paint_as_active_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_SCROLL_CONTAINER_H_

@@ -308,6 +308,19 @@ void TabStripScrollContainer::OnThemeChanged() {
   FrameColorsChanged();
 }
 
+void TabStripScrollContainer::AddedToWidget() {
+  paint_as_active_subscription_ =
+      GetWidget()->RegisterPaintAsActiveChangedCallback(
+          base::BindRepeating(&TabStripScrollContainer::FrameColorsChanged,
+                              base::Unretained(this)));
+  // Set the initial state correctly.
+  FrameColorsChanged();
+}
+
+void TabStripScrollContainer::RemovedFromWidget() {
+  paint_as_active_subscription_ = {};
+}
+
 BEGIN_METADATA(TabStripScrollContainer, views::View)
 ADD_READONLY_PROPERTY_METADATA(int, TabStripAvailableWidth)
 END_METADATA

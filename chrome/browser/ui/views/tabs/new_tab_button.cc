@@ -120,6 +120,18 @@ void NewTabButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   ink_drop_container_->SetBoundsRect(GetLocalBounds());
 }
 
+void NewTabButton::AddedToWidget() {
+  paint_as_active_subscription_ =
+      GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
+          &NewTabButton::FrameColorsChanged, base::Unretained(this)));
+  // Set the initial state correctly.
+  FrameColorsChanged();
+}
+
+void NewTabButton::RemovedFromWidget() {
+  paint_as_active_subscription_ = {};
+}
+
 #if BUILDFLAG(IS_WIN)
 void NewTabButton::OnMouseReleased(const ui::MouseEvent& event) {
   if (!event.IsOnlyRightMouseButton()) {

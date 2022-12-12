@@ -976,13 +976,6 @@ void TabStrip::RemoveObserver(TabStripObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void TabStrip::FrameColorsChanged() {
-  for (int i = 0; i < GetTabCount(); ++i)
-    tab_at(i)->FrameColorsChanged();
-  UpdateContrastRatioValues();
-  SchedulePaint();
-}
-
 void TabStrip::SetBackgroundOffset(int background_offset) {
   if (background_offset == background_offset_)
     return;
@@ -2169,10 +2162,16 @@ void TabStrip::OnMouseExited(const ui::MouseEvent& event) {
 
 void TabStrip::AddedToWidget() {
   GetWidget()->AddObserver(this);
+  paint_as_active_subscription_ =
+      GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
+          &TabStrip::UpdateContrastRatioValues, base::Unretained(this)));
+  // Set the initial state correctly.
+  UpdateContrastRatioValues();
 }
 
 void TabStrip::RemovedFromWidget() {
   GetWidget()->RemoveObserver(this);
+  paint_as_active_subscription_ = {};
 }
 
 void TabStrip::OnGestureEvent(ui::GestureEvent* event) {

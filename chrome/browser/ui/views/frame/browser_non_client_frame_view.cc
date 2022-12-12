@@ -270,10 +270,6 @@ SkRRect BrowserNonClientFrameView::GetRestoredClipRegion() const {
 }
 
 void BrowserNonClientFrameView::PaintAsActiveChanged() {
-  // The toolbar top separator color (used as the stroke around the tabs and
-  // the new tab button) needs to be recalculated.
-  browser_view_->tab_strip_region_view()->FrameColorsChanged();
-
   if (web_app_frame_toolbar_)
     web_app_frame_toolbar_->SetPaintAsActive(ShouldPaintAsActive());
 

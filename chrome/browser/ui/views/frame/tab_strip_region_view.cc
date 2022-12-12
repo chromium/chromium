@@ -204,17 +204,6 @@ bool TabStripRegionView::IsPositionInWindowCaption(const gfx::Point& point) {
   return IsRectInWindowCaption(gfx::Rect(point, gfx::Size(1, 1)));
 }
 
-void TabStripRegionView::FrameColorsChanged() {
-  new_tab_button_->FrameColorsChanged();
-  if (tab_search_button_)
-    tab_search_button_->FrameColorsChanged();
-
-  tab_strip_->FrameColorsChanged();
-  if (tab_strip_scroll_container_)
-    tab_strip_scroll_container_->FrameColorsChanged();
-  SchedulePaint();
-}
-
 bool TabStripRegionView::CanDrop(const OSExchangeData& data) {
   return TabDragController::IsSystemDragAndDropSessionRunning() &&
          data.HasCustomFormat(
@@ -257,11 +246,6 @@ gfx::Size TabStripRegionView::GetMinimumSize() const {
   tab_strip_min_size.set_width(
       std::min(max_min_width, tab_strip_min_size.width()));
   return tab_strip_min_size;
-}
-
-void TabStripRegionView::OnThemeChanged() {
-  View::OnThemeChanged();
-  FrameColorsChanged();
 }
 
 views::View* TabStripRegionView::GetDefaultFocusableChild() {

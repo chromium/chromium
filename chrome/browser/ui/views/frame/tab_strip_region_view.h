@@ -41,9 +41,6 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   // of |this|.
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
-  // Called when the colors of the frame change.
-  void FrameColorsChanged();
-
   NewTabButton* new_tab_button() { return new_tab_button_; }
 
   TabSearchButton* tab_search_button() { return tab_search_button_; }
@@ -71,7 +68,6 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   // views::AccessiblePaneView:
   void ChildPreferredSizeChanged(views::View* child) override;
   gfx::Size GetMinimumSize() const override;
-  void OnThemeChanged() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetDefaultFocusableChild() override;
 

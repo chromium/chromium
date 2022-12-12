@@ -314,9 +314,6 @@ class TabStrip : public views::View,
   void ShiftGroupRight(const tab_groups::TabGroupId& group) override;
   const Browser* GetBrowser() const override;
 
-  // Update the background colors when frame active state changes.
-  void FrameColorsChanged();
-
   // views::View:
   views::SizeBounds GetAvailableSize(const View* child) const override;
   gfx::Size GetMinimumSize() const override;
@@ -468,6 +465,8 @@ class TabStrip : public views::View,
   float radial_highlight_opacity_ = 1.0f;
 
   SkColor separator_color_ = gfx::kPlaceholderColor;
+
+  base::CallbackListSubscription paint_as_active_subscription_;
 
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
