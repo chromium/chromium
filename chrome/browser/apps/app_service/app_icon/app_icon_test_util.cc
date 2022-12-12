@@ -97,13 +97,11 @@ FakePublisherForIconTest::FakePublisherForIconTest(apps::AppServiceProxy* proxy,
 
 void FakePublisherForIconTest::GetCompressedIconData(
     const std::string& app_id,
-    apps::IconType icon_type,
     int32_t size_in_dip,
     ui::ResourceScaleFactor scale_factor,
     apps::LoadIconCallback callback) {
-  apps::GetWebAppCompressedIconData(proxy()->profile(), app_id, icon_type,
-                                    size_in_dip, scale_factor,
-                                    std::move(callback));
+  apps::GetWebAppCompressedIconData(proxy()->profile(), app_id, size_in_dip,
+                                    scale_factor, std::move(callback));
 }
 #endif
 

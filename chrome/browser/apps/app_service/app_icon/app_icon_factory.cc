@@ -494,7 +494,6 @@ void LoadIconFromWebApp(content::BrowserContext* context,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void GetWebAppCompressedIconData(content::BrowserContext* context,
                                  const std::string& web_app_id,
-                                 IconType icon_type,
                                  int size_in_dip,
                                  ui::ResourceScaleFactor scale_factor,
                                  LoadIconCallback callback) {
@@ -507,7 +506,7 @@ void GetWebAppCompressedIconData(content::BrowserContext* context,
   DCHECK(web_app_provider);
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
-          icon_type, size_in_dip, /*is_placeholder_icon=*/false,
+          IconType::kCompressed, size_in_dip, /*is_placeholder_icon=*/false,
           IconEffects::kNone, kInvalidIconResource, std::move(callback));
   icon_loader->GetWebAppCompressedIconData(web_app_id, scale_factor,
                                            web_app_provider->icon_manager());
@@ -515,7 +514,6 @@ void GetWebAppCompressedIconData(content::BrowserContext* context,
 
 void GetChromeAppCompressedIconData(content::BrowserContext* context,
                                     const std::string& extension_id,
-                                    IconType icon_type,
                                     int size_in_dip,
                                     ui::ResourceScaleFactor scale_factor,
                                     LoadIconCallback callback) {
@@ -523,7 +521,7 @@ void GetChromeAppCompressedIconData(content::BrowserContext* context,
 
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
-          icon_type, size_in_dip, /*is_placeholder_icon=*/false,
+          IconType::kCompressed, size_in_dip, /*is_placeholder_icon=*/false,
           IconEffects::kNone, kInvalidIconResource, std::move(callback));
   icon_loader->GetChromeAppCompressedIconData(
       extensions::ExtensionRegistry::Get(context)->GetInstalledExtension(

@@ -78,7 +78,6 @@ class FakePublisherForIconTest : public apps::AppPublisher {
                 apps::LoadIconCallback callback) override {}
 
   void GetCompressedIconData(const std::string& app_id,
-                             apps::IconType icon_type,
                              int32_t size_in_dip,
                              ui::ResourceScaleFactor scale_factor,
                              apps::LoadIconCallback callback) override;

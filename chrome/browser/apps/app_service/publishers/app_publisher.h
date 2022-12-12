@@ -84,7 +84,6 @@ class AppPublisher {
   // is identified by `size_in_dip` and `scale_factor`. Calls `callback` with
   // the result.
   virtual void GetCompressedIconData(const std::string& app_id,
-                                     IconType icon_type,
                                      int32_t size_in_dip,
                                      ui::ResourceScaleFactor scale_factor,
                                      LoadIconCallback callback);

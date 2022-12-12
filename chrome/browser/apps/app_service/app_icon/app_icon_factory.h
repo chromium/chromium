@@ -110,7 +110,6 @@ void LoadIconFromWebApp(content::BrowserContext* context,
 // Requests a compressed icon data for an web app identified by `web_app_id`.
 void GetWebAppCompressedIconData(content::BrowserContext* context,
                                  const std::string& web_app_id,
-                                 IconType icon_type,
                                  int size_in_dip,
                                  ui::ResourceScaleFactor scale_factor,
                                  LoadIconCallback callback);
@@ -119,7 +118,6 @@ void GetWebAppCompressedIconData(content::BrowserContext* context,
 // `extension_id`.
 void GetChromeAppCompressedIconData(content::BrowserContext* context,
                                     const std::string& extension_id,
-                                    IconType icon_type,
                                     int size_in_dip,
                                     ui::ResourceScaleFactor scale_factor,
                                     LoadIconCallback callback);
