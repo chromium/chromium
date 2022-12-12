@@ -287,6 +287,8 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
     }
     PciguardClient::Get()->SendExternalPciDevicesPermissionState(
         settings::PeripheralDataAccessHandler::GetPrefState());
+    TypecdClient::Get()->SetPeripheralDataAccessPermissionState(
+        settings::PeripheralDataAccessHandler::GetPrefState());
 
     CrasAudioHandler::Get()->RefreshNoiseCancellationState();
   }

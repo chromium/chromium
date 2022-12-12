@@ -19,4 +19,7 @@ void FakeTypecdClient::EmitCableWarningSignal(typecd::CableWarningType type) {
   NotifyOnCableWarning(type);
 }
 
+void FakeTypecdClient::SetPeripheralDataAccessPermissionState(bool permitted) {
+}
+
 }  // namespace ash

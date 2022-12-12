@@ -1145,6 +1145,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       PeripheralNotificationManager::Get()->SetPcieTunnelingAllowedState(value);
     }
     PciguardClient::Get()->SendExternalPciDevicesPermissionState(value);
+    TypecdClient::Get()->SetPeripheralDataAccessPermissionState(value);
   }
 }
 

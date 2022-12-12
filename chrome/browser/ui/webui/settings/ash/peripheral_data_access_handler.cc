@@ -133,6 +133,7 @@ void PeripheralDataAccessHandler::OnPeripheralDataAccessProtectionChanged() {
 
   PeripheralNotificationManager::Get()->SetPcieTunnelingAllowedState(new_state);
   PciguardClient::Get()->SendExternalPciDevicesPermissionState(new_state);
+  TypecdClient::Get()->SetPeripheralDataAccessPermissionState(new_state);
 }
 
 }  // namespace ash::settings
