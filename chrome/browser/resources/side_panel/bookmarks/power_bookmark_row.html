@@ -3,6 +3,7 @@
     --power-bookmark-row-image-size: 56px;
     --power-bookmark-row-height: 68px;
     --power-bookmark-row-checkbox-width: 0;
+    --power-bookmark-row-trailing-icon-size: 0px;
     display: block;
     user-select: none;
     white-space: nowrap;
@@ -69,8 +70,14 @@
     background-color: var(--cr-primary-text-color);
   }
 
+  .description {
+    color: var(--cr-secondary-text-color);
+    font-size: var(--mwb-secondary-text-font-size);
+  }
+
   .row {
-    --power-bookmark-row-image-padding: 32px;
+    --row-end-padding: 18px;
+    --row-start-padding: 32px;
     align-items: center;
     appearance: none;
     background: transparent;
@@ -79,10 +86,12 @@
     color: currentColor;
     display: grid;
     font-size: var(--mwb-primary-text-font-size);
-    grid-template-areas: 'checkbox image content';
+    grid-template-areas: 'checkbox image content trailing-icon';
     grid-template-columns: var(--power-bookmark-row-checkbox-width)
                            calc(var(--power-bookmark-row-image-size) +
-                                var(--power-bookmark-row-image-padding)) auto;
+                                var(--row-start-padding)) auto
+                           calc(var(--power-bookmark-row-trailing-icon-size) +
+                                var(--row-end-padding));
     height: var(--power-bookmark-row-height);
     padding: 0;
     text-align: start;
@@ -90,26 +99,12 @@
   }
 
   .row:hover {
+    --power-bookmark-row-trailing-icon-size: 24px;
     background-color: var(--mwb-list-item-hover-background-color);
   }
 
-  .row:focus-within,
-  .row:focus-within:hover {
-    background-color: var(--mwb-list-item-selected-background-color);
-    outline: none;
-  }
-
-  .row:focus-visible:focus-within {
-    outline: none;
-  }
-
-  .row:active {
-    background-color: var(--cr-active-background-color);
-  }
-
-  .description {
-    color: var(--cr-secondary-text-color);
-    font-size: var(--mwb-secondary-text-font-size);
+  .row:hover > .trailing-icon {
+    display: block;
   }
 
   .text-container {
@@ -125,6 +120,13 @@
     align-items: baseline;
     flex-direction: row;
     gap: 4px;
+  }
+
+  .trailing-icon {
+    --cr-icon-button-margin-start: 8px;
+    --cr-icon-button-size: var(--power-bookmark-row-trailing-icon-size);
+    display: none;
+    grid-area: trailing-icon;
   }
 
   .url-icon {
@@ -143,6 +145,7 @@
       title="[[bookmark.title]]"
       data-bookmark="[[bookmark]]"
       on-click="onRowClicked_"
+      on-contextmenu="onContextMenu_"
       disabled="[[hasCheckbox]]">
     <div id="bookmarkImage" class="bookmark-image"></div>
     <div class="text-container">
@@ -150,5 +153,9 @@
       <div class="content description">[[description]]</div>
       <slot name="extra-content-container"></slot>
     </div>
+    <cr-icon-button class="trailing-icon" iron-icon="[[trailingIcon]]"
+        hidden="[[!trailingIcon]]" on-click="onTrailingIconClicked_"
+        disabled="[[hasCheckbox]]" aria-label="[[trailingIconAriaLabel_]]">
+    </cr-button>
   </button>
 </div>

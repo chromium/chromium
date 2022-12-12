@@ -4,6 +4,7 @@
 
 import './power_bookmark_chip.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
@@ -51,12 +52,25 @@ export class PowerBookmarkRowElement extends PolymerElement {
         reflectToAttribute: true,
         value: false,
       },
+
+      trailingIcon: {
+        type: String,
+        value: '',
+      },
+
+      trailingIconAriaLabel: {
+        type: String,
+        value: '',
+      },
     };
   }
 
   bookmark: chrome.bookmarks.BookmarkTreeNode;
   compact: boolean;
+  description: string;
   hasCheckbox: boolean;
+  trailingIcon: string;
+  trailingIconAriaLabel: string;
 
   /**
    * Add the appropriate image for the given bookmark and compact/expanded
@@ -90,6 +104,40 @@ export class PowerBookmarkRowElement extends PolymerElement {
     event.preventDefault();
     event.stopPropagation();
     this.dispatchEvent(new CustomEvent('row-clicked', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        bookmark: this.bookmark,
+        event: event,
+      },
+    }));
+  }
+
+  /**
+   * Dispatches a custom click event when the user right-clicks anywhere on the
+   * row.
+   */
+  private onContextMenu_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dispatchEvent(new CustomEvent('context-menu', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        bookmark: this.bookmark,
+        event: event,
+      },
+    }));
+  }
+
+  /**
+   * Dispatches a custom click event when the user clicks anywhere on the
+   * trailing icon button.
+   */
+  private onTrailingIconClicked_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dispatchEvent(new CustomEvent('trailing-icon-clicked', {
       bubbles: true,
       composed: true,
       detail: {

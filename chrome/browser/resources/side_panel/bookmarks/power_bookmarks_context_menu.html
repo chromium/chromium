@@ -1,0 +1,19 @@
+<style include="cr-icons cr-hidden-style">
+  iron-icon {
+    --icon-size: 16px;
+    height: var(--icon-size);
+    width: var(--icon-size);
+  }
+
+  .dropdown-item {
+    gap: 18px;
+  }
+</style>
+
+<cr-action-menu id="menu">
+  <template is="dom-repeat" items="[[menuItems_]]">
+    <button class="dropdown-item" on-click="onMenuItemClicked_">
+      [[item]]
+    </button>
+  </template>
+</cr-action-menu>

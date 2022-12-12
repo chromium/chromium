@@ -269,9 +269,12 @@
       <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
           description= "[[getBookmarkDescription_(item, compactDescriptions_.*,
                           expandedDescriptions_.*, compact_)]]"
-          compact="[[compact_]]"
+          compact="[[compact_]]" trailing-icon="cr:more-vert"
+          trailing-icon-aria-label="TODO"
           has-checkbox="[[editing_]]"
           on-row-clicked="onRowClicked_"
+          on-context-menu="onShowContextMenuClicked_"
+          on-trailing-icon-clicked="onShowContextMenuClicked_"
           on-checkbox-change="onRowSelectedChange_">
         <div slot="extra-content-container">
           <template is="dom-if"
@@ -336,3 +339,9 @@
     $i18n{compactView}
   </button>
 </cr-action-menu>
+
+<cr-lazy-render id="contextMenu">
+  <template>
+    <power-bookmarks-context-menu></power-bookmarks-context-menu>
+  </template>
+</cr-lazy-render>

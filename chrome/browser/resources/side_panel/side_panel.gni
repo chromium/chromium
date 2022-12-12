@@ -16,6 +16,7 @@ web_component_files = [
   "bookmarks/bookmarks_list.ts",
   "bookmarks/power_bookmark_chip.ts",
   "bookmarks/power_bookmark_row.ts",
+  "bookmarks/power_bookmarks_context_menu.ts",
   "bookmarks/power_bookmarks_list.ts",
   "history_clusters/app.ts",
   "bookmarks/commerce/shopping_list.ts",
