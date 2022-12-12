@@ -58,8 +58,7 @@ void ExpectSimilar(const TemplateURLData* expected,
 void SetExtensionDefaultSearchInPrefs(
     sync_preferences::TestingPrefServiceSyncable* prefs,
     const TemplateURLData& data) {
-  std::unique_ptr<base::DictionaryValue> entry =
-      TemplateURLDataToDictionary(data);
+  base::Value::Dict entry = TemplateURLDataToDictionary(data);
   prefs->SetExtensionPref(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName,
       std::move(entry));

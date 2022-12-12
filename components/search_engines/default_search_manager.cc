@@ -209,8 +209,8 @@ void DefaultSearchManager::SetUserSelectedDefaultSearchEngine(
     return;
   }
 
-  pref_service_->Set(kDefaultSearchProviderDataPrefName,
-                     *TemplateURLDataToDictionary(data));
+  pref_service_->SetDict(kDefaultSearchProviderDataPrefName,
+                         TemplateURLDataToDictionary(data));
 }
 
 void DefaultSearchManager::ClearUserSelectedDefaultSearchEngine() {

@@ -250,11 +250,10 @@ void SettingsOverridesAPI::RegisterSearchProvider(
   url_service_->Add(std::move(turl));
 
   if (settings->search_engine->is_default) {
-    // Override current DSE pref to have extension overriden value.
-    SetPref(
-        extension->id(),
-        DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-        base::Value::FromUniquePtrValue(TemplateURLDataToDictionary(*data)));
+    // Override current DSE pref to have extension overridden value.
+    SetPref(extension->id(),
+            DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+            base::Value(TemplateURLDataToDictionary(*data)));
   }
 }
 

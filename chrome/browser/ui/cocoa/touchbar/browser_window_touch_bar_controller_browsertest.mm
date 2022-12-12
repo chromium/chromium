@@ -287,8 +287,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest,
   ASSERT_FALSE([TouchBarInvalidationWatcher touchBarInvalidFlag]);
   std::unique_ptr<TemplateURLData> data =
       GenerateDummyTemplateURLData("poutine");
-  prefs->Set(DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-             *TemplateURLDataToDictionary(*data));
+  prefs->SetDict(DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+                 TemplateURLDataToDictionary(*data));
 
   // Confirm the touch bar was invalidated.
   EXPECT_TRUE([TouchBarInvalidationWatcher touchBarInvalidFlag]);

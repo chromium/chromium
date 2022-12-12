@@ -55,8 +55,8 @@ class TestingTemplateURLServiceClient : public ChromeTemplateURLServiceClient {
 void SetManagedDefaultSearchPreferences(const TemplateURLData& managed_data,
                                         bool enabled,
                                         TestingProfile* profile) {
-  auto dict = TemplateURLDataToDictionary(managed_data);
-  dict->SetBoolean(DefaultSearchManager::kDisabledByPolicy, !enabled);
+  base::Value::Dict dict = TemplateURLDataToDictionary(managed_data);
+  dict.Set(DefaultSearchManager::kDisabledByPolicy, !enabled);
 
   profile->GetTestingPrefService()->SetManagedPref(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName,
@@ -71,8 +71,8 @@ void RemoveManagedDefaultSearchPreferences(TestingProfile* profile) {
 void SetRecommendedDefaultSearchPreferences(const TemplateURLData& data,
                                             bool enabled,
                                             TestingProfile* profile) {
-  auto dict = TemplateURLDataToDictionary(data);
-  dict->SetBoolean(DefaultSearchManager::kDisabledByPolicy, !enabled);
+  base::Value::Dict dict = TemplateURLDataToDictionary(data);
+  dict.Set(DefaultSearchManager::kDisabledByPolicy, !enabled);
 
   profile->GetTestingPrefService()->SetRecommendedPref(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName,

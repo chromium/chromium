@@ -68,8 +68,8 @@ void SetPolicy(sync_preferences::TestingPrefServiceSyncable* prefs,
     EXPECT_FALSE(data->keyword().empty());
     EXPECT_FALSE(data->url().empty());
   }
-  std::unique_ptr<base::Value> entry = TemplateURLDataToDictionary(*data);
-  entry->SetBoolKey(DefaultSearchManager::kDisabledByPolicy, !enabled);
+  base::Value::Dict entry = TemplateURLDataToDictionary(*data);
+  entry.Set(DefaultSearchManager::kDisabledByPolicy, !enabled);
 
   is_mandatory ? prefs->SetManagedPref(
                      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
