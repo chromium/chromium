@@ -5813,7 +5813,7 @@
   {
     "name": "quick-intensive-throttling-after-loading",
     "owners": [ "jiahe.zhang@intel.com", "fdoray" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "quick-settings-network-revamp",
