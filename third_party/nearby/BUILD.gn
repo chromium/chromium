@@ -269,6 +269,7 @@ source_set("connections_implementation_mediums") {
     "src/connections/implementation/mediums/bluetooth_radio.cc",
     "src/connections/implementation/mediums/mediums.cc",
     "src/connections/implementation/mediums/webrtc.cc",
+    "src/connections/implementation/mediums/wifi_direct.cc",
     "src/connections/implementation/mediums/wifi_hotspot.cc",
     "src/connections/implementation/mediums/wifi_lan.cc",
   ]
@@ -288,6 +289,7 @@ source_set("connections_implementation_mediums") {
     "src/connections/implementation/mediums/lost_entity_tracker.h",
     "src/connections/implementation/mediums/mediums.h",
     "src/connections/implementation/mediums/webrtc.h",
+    "src/connections/implementation/mediums/wifi_direct.h",
     "src/connections/implementation/mediums/wifi_hotspot.h",
     "src/connections/implementation/mediums/wifi_lan.h",
   ]
@@ -731,8 +733,8 @@ source_set("presence") {
     "src/presence/presence_service.h",
   ]
   public_deps = [
-    ":presence_types",
     ":presence_internal",
+    ":presence_types",
     "//third_party/abseil-cpp:absl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -818,8 +820,8 @@ source_set("presence_internal") {
     ":platform_public_logging",
     ":platform_public_types",
     ":presence_ldt_stub",
-    ":presence_types",
     ":presence_mediums",
+    ":presence_types",
     "//third_party/abseil-cpp:absl",
     "//third_party/boringssl:boringssl",
   ]
@@ -831,12 +833,8 @@ source_set("presence_ldt_stub") {
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  sources = [
-    "src/presence/implementation/np_ldt.c",
-  ]
-  public = [
-    "src/presence/implementation/np_ldt.h",
-  ]
+  sources = [ "src/presence/implementation/np_ldt.c" ]
+  public = [ "src/presence/implementation/np_ldt.h" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
@@ -845,9 +843,7 @@ source_set("presence_sensor_fusion") {
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  public = [
-    "src/presence/implementation/sensor_fusion.h",
-  ]
+  public = [ "src/presence/implementation/sensor_fusion.h" ]
   public_deps = [
     ":presence_types",
     "//third_party/abseil-cpp:absl",
