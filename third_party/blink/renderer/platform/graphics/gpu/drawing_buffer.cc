@@ -1277,13 +1277,15 @@ bool DrawingBuffer::ReallocateDefaultFramebuffer(const gfx::Size& size,
     GrSurfaceOrigin origin = opengl_flip_y_extension_
                                  ? kTopLeft_GrSurfaceOrigin
                                  : kBottomLeft_GrSurfaceOrigin;
+    uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2 |
+                     gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+                     gpu::SHARED_IMAGE_USAGE_RASTER;
+    if (gpu::GetPlatformSpecificTextureTarget() == GL_TEXTURE_2D) {
+      usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    }
     premultiplied_alpha_false_mailbox_ = sii->CreateSharedImage(
         back_color_buffer_->format, size, back_color_buffer_->color_space,
-        origin, kUnpremul_SkAlphaType,
-        gpu::SHARED_IMAGE_USAGE_GLES2 |
-            gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
-            gpu::SHARED_IMAGE_USAGE_RASTER,
-        gpu::kNullSurfaceHandle);
+        origin, kUnpremul_SkAlphaType, usage, gpu::kNullSurfaceHandle);
     gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
     gl_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
     premultiplied_alpha_false_texture_ =
