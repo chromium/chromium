@@ -148,30 +148,34 @@ Node* FlatTreeTraversal::TraverseSiblingsForHostChild(
 }
 
 ContainerNode* FlatTreeTraversal::TraverseParent(const Node& node) {
+  // This code is called extensively, so it minimizes repetitive work (such
+  // as avoiding multiple calls to parentElement()).
+
   // TODO(hayato): Stop this hack for a pseudo element because a pseudo element
   // is not a child of its parentOrShadowHostNode() in a flat tree.
   if (node.IsPseudoElement())
     return node.ParentOrShadowHostNode();
 
-  if (node.IsChildOfShadowHost())
-    return node.AssignedSlot();
-
-  if (auto* parent_slot =
-          ToHTMLSlotElementIfSupportsAssignmentOrNull(node.parentElement())) {
-    if (!parent_slot->AssignedNodes().empty())
-      return nullptr;
-    return parent_slot;
-  }
-  return TraverseParentOrHost(node);
-}
-
-ContainerNode* FlatTreeTraversal::TraverseParentOrHost(const Node& node) {
-  ContainerNode* parent = node.parentNode();
-  if (!parent)
+  ContainerNode* parent_node = node.parentNode();
+  if (!parent_node)
     return nullptr;
-  auto* shadow_root = DynamicTo<ShadowRoot>(parent);
+
+  if (Element* parent_element = DynamicTo<Element>(parent_node)) {
+    if (parent_element->GetShadowRoot())
+      return node.AssignedSlot();
+
+    if (auto* parent_slot =
+            ToHTMLSlotElementIfSupportsAssignmentOrNull(*parent_element)) {
+      if (!parent_slot->AssignedNodes().empty())
+        return nullptr;
+      return parent_slot;
+    }
+  }
+
+  auto* shadow_root = DynamicTo<ShadowRoot>(parent_node);
   if (!shadow_root)
-    return parent;
+    return parent_node;
+
   return &shadow_root->host();
 }
 

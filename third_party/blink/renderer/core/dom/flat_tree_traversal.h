@@ -193,7 +193,6 @@ class CORE_EXPORT FlatTreeTraversal {
   static Node* TraverseChild(const Node&, TraversalDirection);
 
   static ContainerNode* TraverseParent(const Node&);
-  static ContainerNode* TraverseParentOrHost(const Node&);
 
   static Node* TraverseNextSibling(const Node&);
   static Node* TraversePreviousSibling(const Node&);
