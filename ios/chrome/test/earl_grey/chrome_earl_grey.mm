@@ -522,15 +522,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return cookies;
 }
 
-- (void)clearBrowsingCookies {
-  EG_TEST_HELPER_ASSERT_NO_ERROR(
-      [ChromeEarlGreyAppInterface clearBrowsingCookies]);
-
-  // After clearing browsing cookies via code, wait for the UI to be done
-  // with any updates. This includes icons from the new tab page being removed.
-  GREYWaitForAppToIdle(@"App failed to idle");
-}
-
 #pragma mark - WebState Utilities (EG2)
 
 - (void)tapWebStateElementWithID:(NSString*)elementID {
