@@ -1842,6 +1842,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.CorruptedProfile" enum="NetworkCorruptedProfile"
     expires_after="2021-12-01">
+  <obsolete>
+    Removed Dec 2022. Not monitored. Less than 4 per day since M-106.
+  </obsolete>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1870,6 +1873,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.DeviceConnectionStatus" enum="ConnectionStatus"
     expires_after="2022-04-17">
+  <obsolete>
+    Removed Dec 2022. Not monitored. Less than .5% offline. Uninteresting and
+    largely redundant with portal detection related metrics.
+  </obsolete>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2192,22 +2199,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.ServiceErrors" enum="NetworkServiceError"
-    expires_after="2021-12-01">
-  <obsolete>
-    Removed as of 02/2022. Now using Network.Shill.Cellular.ServiceErrors,
-    Network.Shill.Ethernet.ServiceErrors, Network.Shill.Wifi.ServiceErrors.
-  </obsolete>
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS connection manager service errors across all technologies.
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.SuspendActionResult"
     enum="ShillSuspendTerminationDarkResumeActionResult"
     expires_after="2023-04-16">
+  <obsolete>
+    Removed Dec 2022. Not monitored. 0.001% failure rate.
+  </obsolete>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
