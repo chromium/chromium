@@ -560,9 +560,6 @@ absl::optional<syncer::ModelError> HistorySyncBridge::ApplySyncChanges(
           // Updating didn't work, so actually add the data instead.
           if (!AddEntityInBackend(&id_remapper, specifics)) {
             // Something went wrong.
-            // TODO(crbug.com/1364576): This can happen if the incoming URL
-            // shouldn't be added to the history DB. In that case, we should
-            // *not* record a DB error here.
             RecordDatabaseError(
                 SyncHistoryDatabaseError::kApplySyncChangesAddSyncedVisit);
             break;
@@ -610,8 +607,6 @@ void HistorySyncBridge::ApplyStopSyncChanges(
   if (delete_metadata_change_list) {
     // A non-null `delete_metadata_change_list` indicates that Sync is being
     // turned off only permanently. Delete all foreign visits from the DB.
-    // TODO(crbug.com/1383912): The signal to delete metadata currently doesn't
-    // reliably arrive here.
     history_backend_->DeleteAllForeignVisits();
   }
 
@@ -810,7 +805,7 @@ void HistorySyncBridge::SetSyncTransportState(
     syncer::SyncService::TransportState state) {
   sync_transport_state_ = state;
 
-  // TODO(crbug.com/1383912): Currently ApplyStopSyncChanges() doesn't always
+  // TODO(crbug.com/897628): Currently ApplyStopSyncChanges() doesn't always
   // get called with a non-null MetadataChangeList when Sync is turned off. This
   // is a workaround to still clear foreign history in that case. Remove once
   // that bug is fixed.
