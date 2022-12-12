@@ -333,6 +333,43 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
 }
 
 // Check the following flow works as expected:
+// 1. Start dragging  window_2 with touch.
+// 2. Emulate |window_2| being closed manually by the user (eg control+w).
+// 3. No crash observed.
+TEST_P(WaylandWindowDragControllerTest, DestroyWindowDuringDragAndDrop_TOUCH) {
+  // Init and open |window_2|.
+  PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
+  properties.type = PlatformWindowType::kWindow;
+  EXPECT_CALL(delegate_, OnAcceleratedWidgetAvailable(_)).Times(1);
+  auto window_2 =
+      delegate_.CreateWaylandWindow(connection_.get(), std::move(properties));
+  ASSERT_NE(gfx::kNullAcceleratedWidget, window_2->GetWidget());
+
+  // Ensure there is no window currently focused
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_EQ(gfx::kNullAcceleratedWidget,
+            screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
+
+  // Start a window dragging session and verify |window_2| is effectively being
+  // dragged
+  SendTouchDown(window_2.get(), &delegate_, 0 /*point id*/,
+                {0, 0} /*location*/);
+  connection_->window_drag_controller()->StartDragSession();
+
+  // Verify that the proper window is being dragged.
+  EXPECT_EQ(window_2.get(),
+            window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_EQ(window_2.get(), drag_controller()->origin_window_for_testing());
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  // Destroy the dragged window, and expect no crashes.
+  window_2.reset();
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+
+  SendTouchUp(0 /*touch id*/);
+}
+
+// Check the following flow works as expected:
 // 1. With two windows open,
 // 2. Touch down and start drag a window,
 // 3. Emulate the compositor sending an unexpected `pointer enter` event

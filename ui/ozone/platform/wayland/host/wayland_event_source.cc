@@ -33,6 +33,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_event_watcher.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 
 namespace ui {
@@ -748,11 +749,19 @@ void WaylandEventSource::OnDispatcherListChanged() {
 }
 
 void WaylandEventSource::OnWindowRemoved(WaylandWindow* window) {
-  if (connection_->IsDragInProgress()) {
-    auto* target_window = window_manager_->GetCurrentTouchFocusedWindow();
-    for (auto& touch_point : touch_points_)
-      touch_point.second->window = target_window;
-    return;
+  // A window can be `swallowed` by another window during tab-dragging, which
+  // results in OnWindowRemoved() being called.
+  //
+  // If a window dragging session is active and is touch-based, verify if there
+  // is a valid target window to transfer the touch points to.
+  if (auto* target_window = window_manager_->GetCurrentTouchFocusedWindow()) {
+    auto drag_source = connection_->window_drag_controller()->drag_source();
+    if (drag_source &&
+        *drag_source == WaylandWindowDragController::DragSource::kTouch) {
+      for (auto& touch_point : touch_points_)
+        touch_point.second->window = target_window;
+      return;
+    }
   }
 
   // Clear touch-related data.
