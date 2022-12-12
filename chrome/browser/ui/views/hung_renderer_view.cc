@@ -181,13 +181,16 @@ HungPagesTableModel::WebContentsObserverImpl::WebContentsObserverImpl(
     WebContents* tab)
     : content::WebContentsObserver(tab), model_(model) {}
 
-void HungPagesTableModel::WebContentsObserverImpl::RenderViewHostChanged(
-    content::RenderViewHost* old_host,
-    content::RenderViewHost* new_host) {
+void HungPagesTableModel::WebContentsObserverImpl::RenderFrameHostChanged(
+    content::RenderFrameHost* old_host,
+    content::RenderFrameHost* new_host) {
+  if (!new_host->IsInPrimaryMainFrame())
+    return;
+
   // If |new_host| is currently responsive dismiss this dialog, otherwise
   // let the model know the tab has been updated. Updating the tab will
   // dismiss the current dialog but restart the hung renderer timeout.
-  if (!new_host->GetWidget()->IsCurrentlyUnresponsive()) {
+  if (!new_host->GetRenderWidgetHost()->IsCurrentlyUnresponsive()) {
     model_->TabDestroyed(this);
     return;
   }

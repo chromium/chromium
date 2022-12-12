@@ -96,9 +96,9 @@ bool BubbleContentsWrapper::HandleContextMenu(
   return true;
 }
 
-void BubbleContentsWrapper::RenderViewHostChanged(
-    content::RenderViewHost* old_host,
-    content::RenderViewHost* new_host) {
+void BubbleContentsWrapper::RenderFrameHostChanged(
+    content::RenderFrameHost* old_host,
+    content::RenderFrameHost* new_host) {
   content::RenderWidgetHostView* render_widget_host_view =
       web_contents_->GetRenderWidgetHostView();
   if (!webui_resizes_host_ || !render_widget_host_view)

@@ -100,8 +100,8 @@ class HungPagesTableModel : public ui::TableModel,
     }
 
     // WebContentsObserver overrides:
-    void RenderViewHostChanged(content::RenderViewHost* old_host,
-                               content::RenderViewHost* new_host) override;
+    void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                                content::RenderFrameHost* new_host) override;
     void WebContentsDestroyed() override;
 
    private:
