@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class ChromeOSSystemProfileProviderTest;
+class ChromeMetricsServiceClientTestIgnoredForAppMetrics;
 class ChromeMetricsServiceClientTest;
 class Profile;
 
@@ -32,6 +33,7 @@ class MultiDeviceSetupClientFactory : public ProfileKeyedServiceFactory {
  private:
   friend struct base::DefaultSingletonTraits<MultiDeviceSetupClientFactory>;
   friend class ::ChromeOSSystemProfileProviderTest;
+  friend class ::ChromeMetricsServiceClientTestIgnoredForAppMetrics;
   friend class ::ChromeMetricsServiceClientTest;
 
   MultiDeviceSetupClientFactory();

@@ -45,6 +45,8 @@ if (is_android) {
       "//base:base_java_test_support",
       "//chrome/android:chrome_java",
       "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/signin/services/android:java",
       "//chrome/browser/tab:java",
       "//chrome/test/android:chrome_java_integration_test_support",
       "//components/metrics:metrics_java",

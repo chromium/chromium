@@ -312,7 +312,7 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       metrics_state_manager_->IsMetricsReportingEnabled()));
 
   metrics_service_->RegisterMetricsProvider(
-        std::make_unique<metrics::EntropyStateProvider>(local_state));
+      std::make_unique<metrics::EntropyStateProvider>(local_state));
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::FormFactorMetricsProvider>());
@@ -533,7 +533,9 @@ void IOSChromeMetricsServiceClient::OnHistoryDeleted() {
     ukm_service_->Purge();
 }
 
-void IOSChromeMetricsServiceClient::OnUkmAllowedStateChanged(bool must_purge) {
+void IOSChromeMetricsServiceClient::OnUkmAllowedStateChanged(
+    bool must_purge,
+    ukm::UkmConsentState) {
   if (!ukm_service_)
     return;
   if (must_purge) {

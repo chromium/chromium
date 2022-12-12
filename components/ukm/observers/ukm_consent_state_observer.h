@@ -14,10 +14,14 @@
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/ukm/ukm_consent_state.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
+#include "services/metrics/public/cpp/metrics_export.h"
 
 class PrefService;
 
 namespace ukm {
+
+// This feature controls whether App Sync relies on MSBB to be enabled.
+BASE_DECLARE_FEATURE(kAppMetricsOnlyRelyOnAppSync);
 
 // Observer that monitors whether UKM is allowed for all profiles.
 //
@@ -53,7 +57,9 @@ class UkmConsentStateObserver
   // local data must be purged. Otherwise, more specific consents are checked
   // for individual sync settings, and recorded data may be partially purged if
   // we no longer have the corresponding sync consent.
-  virtual void OnUkmAllowedStateChanged(bool total_purge) = 0;
+  virtual void OnUkmAllowedStateChanged(
+      bool total_purge,
+      UkmConsentState previous_consent_state) = 0;
 
  private:
   // syncer::SyncServiceObserver:

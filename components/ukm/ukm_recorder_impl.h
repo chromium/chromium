@@ -28,6 +28,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom-forward.h"
+#include "ukm_consent_state.h"
 
 namespace metrics {
 class UkmBrowserTestBase;
@@ -82,6 +83,10 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // attributed with these Sources.
   void PurgeRecordingsWithSourceIdType(ukm::SourceIdType source_id_type);
 
+  // Deletes stored Sources with any Source Id related to MSBB. This included
+  // all SourceIds that are not of type APP_ID.
+  void PurgeRecordingsWithMsbbSources();
+
   // Marks a source as no longer needed to be kept alive in memory. The source
   // with given id will be removed from in-memory recordings at the next
   // reporting cycle.
@@ -128,6 +133,8 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   bool recording_enabled(ukm::UkmConsentType type) const {
     return recording_state_.Has(type);
   }
+
+  bool ShouldDropEntryForTesting(mojom::UkmEntry* entry);
 
  protected:
   // Calculates sampled in/out for a specific source/event based on internal
@@ -178,6 +185,9 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
       SourceId source_id,
       const UkmSource::NavigationData& navigation_data) override;
   using UkmRecorder::RecordOtherURL;
+
+  // Get the UkmConsentType associated for a given SourceIdType.
+  static UkmConsentType GetConsentType(SourceIdType type);
 
  private:
   friend ::metrics::UkmBrowserTestBase;
@@ -238,6 +248,9 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
                                         const GURL& sanitized_url) const;
 
   void RecordSource(std::unique_ptr<UkmSource> source);
+
+  // Determines if an UkmEntry should be dropped and records reason if so.
+  bool ShouldDropEntry(mojom::UkmEntry* entry);
 
   // Applies UkmEntryFilter if there is one registered.
   bool ApplyEntryFilter(mojom::UkmEntry* entry);

@@ -129,7 +129,9 @@ class ChromeMetricsServiceClient
   void OnHistoryDeleted() override;
 
   // ukm::UkmConsentStateObserver:
-  void OnUkmAllowedStateChanged(bool must_purge) override;
+  void OnUkmAllowedStateChanged(
+      bool must_purge,
+      ukm::UkmConsentState previous_consent_state) override;
 
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
@@ -159,6 +161,7 @@ class ChromeMetricsServiceClient
 
  private:
   friend class ChromeMetricsServiceClientTest;
+  friend class ChromeMetricsServiceClientTestIgnoredForAppMetrics;
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServiceClientTest, IsWebstoreExtension);
 
   // Registers providers to the MetricsService. These provide data from
@@ -210,6 +213,12 @@ class ChromeMetricsServiceClient
 
   // Check if an extension is installed via the Web Store.
   static bool IsWebstoreExtension(base::StringPiece id);
+
+  // Resets client state (i.e. client id) if MSBB or App-sync consent
+  // is changed from on to off. NOOP when kAppMetricsOnlyRelyOnAppSync is
+  // disabled.
+  void ResetClientStateWhenMsbbOrAppConsentIsRevoked(
+      ukm::UkmConsentState previous_consent_state);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

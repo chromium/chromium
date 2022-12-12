@@ -60,6 +60,7 @@ using chrome_test_util::SettingsDoneButton;
 
   // Grant metrics consent and update MetricsServicesManager.
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
+
   GREYAssert(![MetricsAppInterface setMetricsAndCrashReportingForTesting:YES],
              @"Unpaired set/reset of user consent.");
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
@@ -234,7 +235,6 @@ using chrome_test_util::SettingsDoneButton;
 // Corresponds to MetricsConsentCheck in //chrome/browser/metrics/
 // ukm_browsertest.cc.
 - (void)testMetricsConsent {
-
   const uint64_t originalClientID = [MetricsAppInterface UKMClientID];
 
   [MetricsAppInterface setMetricsAndCrashReportingForTesting:NO];
@@ -278,39 +278,37 @@ using chrome_test_util::SettingsDoneButton;
 // Corresponds to ConsentAddedButNoSyncCheck in //chrome/browser/metrics/
 // ukm_browsertest.cc.
 - (void)testSingleDisableSync {
-
   const uint64_t originalClientID = [MetricsAppInterface UKMClientID];
 
   [ChromeEarlGreyUI openSettingsMenu];
-    // Open Sync and Google services settings
-    [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
-    // Toggle "Make searches and browsing better" switch off.
+  // Open Sync and Google services settings
+  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
+  // Toggle "Make searches and browsing better" switch off.
 
-    [[[EarlGrey
-        selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                     @"betterSearchAndBrowsingItem_switch",
-                                     YES)]
-           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-        onElementWithMatcher:chrome_test_util::GoogleServicesSettingsView()]
-        performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+  [[[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   @"betterSearchAndBrowsingItem_switch", YES)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:chrome_test_util::GoogleServicesSettingsView()]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
 
-    GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
-               @"Failed to assert that UKM was not enabled.");
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
+             @"Failed to assert that UKM was not enabled.");
 
-    // Toggle "Make searches and browsing better" switch on.
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                     @"betterSearchAndBrowsingItem_switch", NO)]
-        performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
+  // Toggle "Make searches and browsing better" switch on.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   @"betterSearchAndBrowsingItem_switch", NO)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
 
-    GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
-               @"Failed to assert that UKM was enabled.");
-    // Client ID should have been reset.
-    GREYAssertNotEqual(originalClientID, [MetricsAppInterface UKMClientID],
-                       @"Client ID was not reset.");
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
+             @"Failed to assert that UKM was enabled.");
+  // Client ID should have been reset.
+  GREYAssertNotEqual(originalClientID, [MetricsAppInterface UKMClientID],
+                     @"Client ID was not reset.");
 
-    [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-        performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Make sure that UKM is disabled when sync is not enabled.

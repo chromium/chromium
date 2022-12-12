@@ -87,7 +87,7 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   void OnHistoryDeleted() override;
 
   // ukm::UkmConsentStateObserver:
-  void OnUkmAllowedStateChanged(bool must_purge) override;
+  void OnUkmAllowedStateChanged(bool must_purge, ukm::UkmConsentState) override;
 
   // web::GlobalWebStateObserver:
   void WebStateDidStartLoading(web::WebState* web_state) override;

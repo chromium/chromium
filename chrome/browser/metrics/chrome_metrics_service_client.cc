@@ -1159,21 +1159,41 @@ void ChromeMetricsServiceClient::OnHistoryDeleted() {
     ukm_service_->Purge();
 }
 
-void ChromeMetricsServiceClient::OnUkmAllowedStateChanged(bool total_purge) {
+void ChromeMetricsServiceClient::OnUkmAllowedStateChanged(
+    bool total_purge,
+    ukm::UkmConsentState previous_consent_state) {
   if (!ukm_service_)
     return;
 
   const ukm::UkmConsentState consent_state = GetUkmConsentState();
 
-  // Purge recording if the required consent has been revoked.
+  // Manages purging of events and sources.
   if (total_purge) {
     ukm_service_->Purge();
     ukm_service_->ResetClientState(ukm::ResetReason::kOnUkmAllowedStateChanged);
   } else {
-    if (!consent_state.Has(ukm::UkmConsentType::EXTENSIONS))
+    // Purge recording if required consent has been revoked.
+    if (!consent_state.Has(ukm::MSBB))
+      ukm_service_->PurgeMsbbData();
+    if (!consent_state.Has(ukm::EXTENSIONS))
       ukm_service_->PurgeExtensionsData();
-    if (!consent_state.Has(ukm::UkmConsentType::APPS))
+    if (!consent_state.Has(ukm::APPS))
       ukm_service_->PurgeAppsData();
+
+    // If MSBB or App-sync consent changed from on to off then,
+    // the client id, or client state, must be reset. When
+    // kAppMetricsOnlyRelyOnAppSync feature is disabled function will no-op.
+    //
+    // In the non-feature case client reset is handled above because
+    // |total_purge| will be true. MSBB is used to determine if UKM is enabled
+    // or disabled. When the consent is revoked UkmService will be disabled,
+    // triggering |total_purge| to be true. At which point the client state will
+    // be reset.
+    //
+    // When the feature is enabled disabling MSBB or App-Sync will not trigger a
+    // total purge. Resetting the client state has to be handled specifically
+    // for this case.
+    ResetClientStateWhenMsbbOrAppConsentIsRevoked(previous_consent_state);
   }
 
   // Notify the recording service of changed metrics consent.
@@ -1376,4 +1396,26 @@ absl::optional<std::string> ChromeMetricsServiceClient::GetCurrentUserId()
   return absl::nullopt;
 }
 
-#endif
+#endif  //  BUILDFLAG(IS_CHROMEOS_ASH)
+
+void ChromeMetricsServiceClient::ResetClientStateWhenMsbbOrAppConsentIsRevoked(
+    ukm::UkmConsentState previous_consent_state) {
+  // TODO(crbug/1396481): enable by default once validated.
+  if (!base::FeatureList::IsEnabled(ukm::kAppMetricsOnlyRelyOnAppSync))
+    return;
+
+  const auto ukm_consent_state = GetUkmConsentState();
+
+  // True if MSBB consent change from on to off, False otherwise.
+  const bool msbb_revoked = previous_consent_state.Has(ukm::MSBB) &&
+                            !ukm_consent_state.Has(ukm::MSBB);
+
+  // True if APPS consent change from on to off, False otherwise.
+  const bool apps_revoked = previous_consent_state.Has(ukm::APPS) &&
+                            !ukm_consent_state.Has(ukm::APPS);
+
+  // If either condition is true, then reset client state.
+  if (msbb_revoked || apps_revoked) {
+    ukm_service_->ResetClientState(ukm::ResetReason::kOnUkmAllowedStateChanged);
+  }
+}

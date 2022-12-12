@@ -53,6 +53,10 @@ metrics::MetricsService* GetMetricsService() {
 + (void)overrideMetricsAndCrashReportingForTesting {
   IOSChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
       &g_metrics_enabled);
+
+  // Give MSBB consent to the UKMService.
+  ukm::UkmTestHelper ukm_test_helper(GetUkmService());
+  ukm_test_helper.SetMsbbConsent();
 }
 
 + (void)stopOverridingMetricsAndCrashReportingForTesting {

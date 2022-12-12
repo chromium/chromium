@@ -57,6 +57,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UKM.ConsentObserver.AppSyncConsentChanged" enum="Boolean"
+    expires_after="2023-05-01">
+  <owner>andrewbregger@google.com</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    Logged in UpdateUkmAllowedForAllProfiles from the UkmConsentStateObserver.
+    This records if App-sync was changed everytime a profile is updated. True
+    will be recorded when App-sync changes and false otherwise. This is to
+    understand how often App-sync is changed.
+  </summary>
+</histogram>
+
 <histogram name="UKM.ConsentObserver.Purge" enum="Boolean"
     expires_after="2023-07-01">
   <owner>rkaplow@chromium.org</owner>

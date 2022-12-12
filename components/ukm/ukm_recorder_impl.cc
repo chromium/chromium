@@ -33,6 +33,8 @@
 #include "third_party/metrics_proto/ukm/entry.pb.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
 #include "third_party/metrics_proto/ukm/source.pb.h"
+#include "ukm_consent_state.h"
+#include "ukm_recorder_impl.h"
 #include "url/gurl.h"
 
 namespace ukm {
@@ -89,6 +91,8 @@ enum class DroppedDataReason {
   EMPTY_URL = 9,
   REJECTED_BY_FILTER = 10,
   SAMPLING_UNCONFIGURED = 11,
+  MSBB_CONSENT_DISABLED = 12,
+  APPS_CONSENT_DISABLED = 13,
   NUM_DROPPED_DATA_REASONS
 };
 
@@ -249,6 +253,10 @@ void UkmRecorderImpl::SetSamplingForTesting(int rate) {
   event_sampling_rates_.clear();
 }
 
+bool UkmRecorderImpl::ShouldDropEntryForTesting(mojom::UkmEntry* entry) {
+  return ShouldDropEntry(entry);
+}
+
 bool UkmRecorderImpl::IsSamplingConfigured() const {
   return sampling_forced_for_testing_ ||
          base::FeatureList::IsEnabled(kUkmSamplingRateFeature);
@@ -289,6 +297,20 @@ void UkmRecorderImpl::PurgeRecordingsWithSourceIdType(
 
   for (const auto& kv : recordings_.sources) {
     if (GetSourceIdType(kv.first) == source_id_type) {
+      relevant_source_ids.insert(kv.first);
+    }
+  }
+
+  PurgeSourcesAndEventsBySourceIds(relevant_source_ids);
+  recording_is_continuous_ = false;
+}
+
+void UkmRecorderImpl::PurgeRecordingsWithMsbbSources() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::unordered_set<SourceId> relevant_source_ids;
+
+  for (const auto& kv : recordings_.sources) {
+    if (GetConsentType(GetSourceIdType(kv.first)) == MSBB) {
       relevant_source_ids.insert(kv.first);
     }
   }
@@ -671,6 +693,37 @@ int UkmRecorderImpl::PruneData(std::set<SourceId>& source_ids_seen) {
   return pruned_sources_age_sec;
 }
 
+bool UkmRecorderImpl::ShouldDropEntry(mojom::UkmEntry* entry) {
+  if (!recording_enabled()) {
+    RecordDroppedEntry(entry->event_hash,
+                       DroppedDataReason::RECORDING_DISABLED);
+    return true;
+  }
+
+  const auto required_consent =
+      GetConsentType(GetSourceIdType(entry->source_id));
+
+  if (!recording_enabled(required_consent)) {
+    if (required_consent == UkmConsentType::MSBB) {
+      RecordDroppedEntry(entry->event_hash,
+                         DroppedDataReason::MSBB_CONSENT_DISABLED);
+
+    } else {
+      RecordDroppedEntry(entry->event_hash,
+                         DroppedDataReason::APPS_CONSENT_DISABLED);
+    }
+    return true;
+  }
+
+  if (!ApplyEntryFilter(entry)) {
+    RecordDroppedEntry(entry->event_hash,
+                       DroppedDataReason::REJECTED_BY_FILTER);
+    return true;
+  }
+
+  return false;
+}
+
 bool UkmRecorderImpl::ApplyEntryFilter(mojom::UkmEntry* entry) {
   base::flat_set<uint64_t> dropped_metric_hashes;
 
@@ -805,6 +858,26 @@ void UkmRecorderImpl::RecordNavigation(
       std::make_unique<UkmSource>(source_id, sanitized_navigation_data));
 }
 
+// static:
+UkmConsentType UkmRecorderImpl::GetConsentType(SourceIdType type) {
+  switch (type) {
+    case SourceIdType::APP_ID:
+      return UkmConsentType::APPS;
+    case SourceIdType::DEFAULT:
+    case SourceIdType::NAVIGATION_ID:
+    case SourceIdType::HISTORY_ID:
+    case SourceIdType::WEBAPK_ID:
+    case SourceIdType::PAYMENT_APP_ID:
+    case SourceIdType::DESKTOP_WEB_APP_ID:
+    case SourceIdType::WORKER_ID:
+    case SourceIdType::NO_URL_ID:
+    case SourceIdType::REDIRECT_ID:
+    case SourceIdType::WEB_IDENTITY_ID:
+      return UkmConsentType::MSBB;
+  }
+  return UkmConsentType::MSBB;
+}
+
 UkmRecorderImpl::EventAggregate::EventAggregate() = default;
 UkmRecorderImpl::EventAggregate::~EventAggregate() = default;
 
@@ -879,6 +952,20 @@ UkmRecorderImpl::ShouldRecordUrlResult UkmRecorderImpl::ShouldRecordUrl(
     has_recorded_reason = true;
   }
 
+  const auto required_consent = GetConsentType(GetSourceIdType(source_id));
+
+  if (!recording_enabled(required_consent)) {
+    if (required_consent == UkmConsentType::MSBB) {
+      RecordDroppedSource(has_recorded_reason,
+                          DroppedDataReason::MSBB_CONSENT_DISABLED);
+
+    } else {
+      RecordDroppedSource(has_recorded_reason,
+                          DroppedDataReason::APPS_CONSENT_DISABLED);
+    }
+    return ShouldRecordUrlResult::kDropped;
+  }
+
   if (recordings_.sources.size() >= max_sources_) {
     RecordDroppedSource(has_recorded_reason, DroppedDataReason::MAX_HIT);
     return ShouldRecordUrlResult::kDropped;
@@ -926,6 +1013,12 @@ void UkmRecorderImpl::RecordSource(std::unique_ptr<UkmSource> source) {
     return;
   }
 
+  const auto required_consent = GetConsentType(GetSourceIdType(source_id));
+
+  if (!recording_enabled(required_consent)) {
+    return;
+  }
+
   if (GetSourceIdType(source_id) == SourceIdType::NAVIGATION_ID)
     recordings_.source_counts.navigation_sources++;
   recordings_.source_counts.observed++;
@@ -938,17 +1031,8 @@ void UkmRecorderImpl::AddEntry(mojom::UkmEntryPtr entry) {
 
   NotifyObserversWithNewEntry(*entry);
 
-  if (!recording_enabled()) {
-    RecordDroppedEntry(entry->event_hash,
-                       DroppedDataReason::RECORDING_DISABLED);
+  if (ShouldDropEntry(entry.get()))
     return;
-  }
-
-  if (!ApplyEntryFilter(entry.get())) {
-    RecordDroppedEntry(entry->event_hash,
-                       DroppedDataReason::REJECTED_BY_FILTER);
-    return;
-  }
 
   EventAggregate& event_aggregate =
       recordings_.event_aggregations[entry->event_hash];

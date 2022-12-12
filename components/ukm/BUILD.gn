@@ -94,6 +94,7 @@ static_library("observers") {
     "//components/sync/base",
     "//components/sync/driver",
     "//google_apis",
+    "//services/metrics/public/cpp:metrics_cpp",
   ]
 
   public_deps = [ "//components/unified_consent" ]

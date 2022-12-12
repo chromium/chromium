@@ -33,6 +33,9 @@ interface UkmSource {
  */
 interface UkmSession {
   state: boolean;
+  msbb_state: boolean;
+  extension_state: boolean;
+  app_state: boolean;
   client_id: number[];
   session_id: string;
   sources: UkmSource[];
@@ -398,6 +401,12 @@ function updateUkmData() {
       data.sources = [...cachedSources.values()];
     }
     getRequiredElement('state').innerText = data.state ? 'ENABLED' : 'DISABLED';
+    getRequiredElement('msbb_state').innerText =
+        data.msbb_state ? 'ENABLED' : 'DISABLED';
+    getRequiredElement('extension_state').innerText =
+        data.extension_state ? 'ENABLED' : 'DISABLED';
+    getRequiredElement('app_state').innerText =
+        data.app_state ? 'ENABLED' : 'DISABLED';
     getRequiredElement('clientid').innerText = '0x' + data.client_id;
     getRequiredElement('sessionid').innerText = data.session_id;
     getRequiredElement('is_sampling_enabled').innerText =

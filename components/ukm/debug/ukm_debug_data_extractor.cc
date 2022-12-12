@@ -87,6 +87,9 @@ base::Value UkmDebugDataExtractor::GetStructuredData(
   base::Value::Dict ukm_data;
 
   ukm_data.Set("state", ukm_service->recording_enabled_);
+  ukm_data.Set("msbb_state", ukm_service->recording_enabled(MSBB));
+  ukm_data.Set("extension_state", ukm_service->recording_enabled(EXTENSIONS));
+  ukm_data.Set("app_state", ukm_service->recording_enabled(APPS));
   ukm_data.Set("client_id",
                base::StringPrintf("%016" PRIx64, ukm_service->client_id_));
   ukm_data.Set("session_id", static_cast<int>(ukm_service->session_id_));

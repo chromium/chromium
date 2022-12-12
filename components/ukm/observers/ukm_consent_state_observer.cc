@@ -9,7 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
@@ -19,7 +19,6 @@
 using unified_consent::UrlKeyedDataCollectionConsentHelper;
 
 namespace ukm {
-
 namespace {
 
 bool CanUploadUkmForType(syncer::SyncService* sync_service,
@@ -35,8 +34,11 @@ bool CanUploadUkmForType(syncer::SyncService* sync_service,
       return true;
   }
 }
-
 }  // namespace
+
+BASE_FEATURE(kAppMetricsOnlyRelyOnAppSync,
+             "AppMetricsOnlyRelyOnAppSync",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 UkmConsentStateObserver::UkmConsentStateObserver() = default;
 
@@ -47,7 +49,11 @@ UkmConsentStateObserver::~UkmConsentStateObserver() {
 }
 
 bool UkmConsentStateObserver::ProfileState::IsUkmConsented() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return consent_state.Has(MSBB) || consent_state.Has(APPS);
+#else
   return consent_state.Has(MSBB);
+#endif
 }
 
 void UkmConsentStateObserver::ProfileState::SetConsentType(
@@ -64,16 +70,20 @@ UkmConsentStateObserver::ProfileState UkmConsentStateObserver::GetProfileState(
   ProfileState state;
 
   const bool msbb_consent = consent_helper->IsEnabled();
+
   if (msbb_consent)
     state.SetConsentType(MSBB);
 
   if (msbb_consent &&
-      CanUploadUkmForType(sync_service, syncer::ModelType::EXTENSIONS))
+      CanUploadUkmForType(sync_service, syncer::ModelType::EXTENSIONS)) {
     state.SetConsentType(EXTENSIONS);
+  }
 
-  if (msbb_consent &&
-      CanUploadUkmForType(sync_service, syncer::ModelType::APPS))
+  if ((msbb_consent ||
+       base::FeatureList::IsEnabled(kAppMetricsOnlyRelyOnAppSync)) &&
+      CanUploadUkmForType(sync_service, syncer::ModelType::APPS)) {
     state.SetConsentType(APPS);
+  }
 
   return state;
 }
@@ -94,16 +104,22 @@ void UkmConsentStateObserver::StartObserving(syncer::SyncService* sync_service,
 }
 
 void UkmConsentStateObserver::UpdateUkmAllowedForAllProfiles(bool total_purge) {
-  const UkmConsentState previous_state = GetPreviousStatesForAllProfiles();
+  const UkmConsentState new_state = GetPreviousStatesForAllProfiles();
 
-  UMA_HISTOGRAM_BOOLEAN("UKM.ConsentObserver.AllowedForAllProfiles",
-                        previous_state.Has(MSBB));
+  base::UmaHistogramBoolean("UKM.ConsentObserver.AllowedForAllProfiles",
+                            new_state.Has(MSBB));
 
   // Any change in profile states needs to call OnUkmAllowedStateChanged so that
   // the new settings take effect.
-  if (total_purge || previous_state != ukm_consent_state_) {
-    ukm_consent_state_ = previous_state;
-    OnUkmAllowedStateChanged(total_purge);
+  if (total_purge || new_state != ukm_consent_state_) {
+    // Records whether the App sync consent changed when the consent state is
+    // updated. This is to see how often App sync is changed by users.
+    base::UmaHistogramBoolean(
+        "UKM.ConsentObserver.AppSyncConsentChanged",
+        ukm_consent_state_.Has(APPS) != new_state.Has(APPS));
+    const auto previous_consent_state = ukm_consent_state_;
+    ukm_consent_state_ = new_state;
+    OnUkmAllowedStateChanged(total_purge, previous_consent_state);
   }
 }
 
@@ -160,7 +176,7 @@ void UkmConsentStateObserver::UpdateProfileState(
   // allows tracking UKM.
   bool total_purge = previous_state.IsUkmConsented() && !state.IsUkmConsented();
 
-  UMA_HISTOGRAM_BOOLEAN("UKM.ConsentObserver.Purge", total_purge);
+  base::UmaHistogramBoolean("UKM.ConsentObserver.Purge", total_purge);
 
   previous_states_[sync] = state;
   UpdateUkmAllowedForAllProfiles(total_purge);
@@ -180,7 +196,11 @@ void UkmConsentStateObserver::OnSyncShutdown(syncer::SyncService* sync) {
 }
 
 bool UkmConsentStateObserver::IsUkmAllowedForAllProfiles() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ukm_consent_state_.Has(MSBB) || ukm_consent_state_.Has(APPS);
+#else
   return ukm_consent_state_.Has(MSBB);
+#endif
 }
 
 UkmConsentState UkmConsentStateObserver::GetUkmConsentState() {

@@ -5723,6 +5723,11 @@ test("unit_tests") {
         [ "../browser/policy/browser_dm_token_storage_linux_unittest.cc" ]
   }
 
+  if (is_chromeos_ash) {
+    sources +=
+        [ "../browser/metrics/chrome_metrics_service_client_ash_unittest.cc" ]
+  }
+
   if (enable_downgrade_processing) {
     sources += [
       "../browser/downgrade/snapshot_file_collector_unittest.cc",
@@ -6154,8 +6159,8 @@ test("unit_tests") {
     "//v8",
   ]
 
-  if (enable_server_based_recognition) {
-    deps += [ "//chrome/services/speech/internal:unit_tests" ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/dbus/tpm_manager:tpm_manager" ]
   }
 
   public_deps = []

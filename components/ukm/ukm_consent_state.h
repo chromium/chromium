@@ -9,7 +9,7 @@
 
 namespace ukm {
 
-// Different types of consent's that control what types of data is recorded by
+// Different types of consents that control what types of data is recorded by
 // UKM.
 enum UkmConsentType {
   // "Make searches and browsing better" (MSBB) is consented.

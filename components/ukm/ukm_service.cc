@@ -368,6 +368,20 @@ void UkmService::PurgeAppsData() {
   UkmRecorderImpl::PurgeRecordingsWithSourceIdType(SourceIdType::APP_ID);
 }
 
+void UkmService::PurgeMsbbData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Filter out any MSBB-related data from the serialized logs in the
+  // UnsentLogStore for uploading.
+  PurgeDataFromUnsentLogStore(
+      reporting_service_.ukm_log_store(), [&](const Source& source) {
+        return UkmRecorderImpl::GetConsentType(GetSourceIdType(source.id())) ==
+               MSBB;
+      });
+
+  // Purge data currently in the recordings intended for the next ukm::Report.
+  UkmRecorderImpl::PurgeRecordingsWithMsbbSources();
+}
+
 void UkmService::ResetClientState(ResetReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

@@ -55,8 +55,11 @@ class UkmTestHelper {
   // Creates a log and stores it in |ukm_service_|'s UnsentLogStore.
   void BuildAndStoreLog();
 
-  // Reeturns true if |ukm_service_| has logs to send.
+  // Returns true if |ukm_service_| has logs to send.
   bool HasUnsentLogs();
+
+  // Adds MSBB consent to the UkmService.
+  void SetMsbbConsent();
 
  private:
   const raw_ptr<UkmService, DanglingUntriaged> ukm_service_;
