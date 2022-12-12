@@ -120,8 +120,9 @@ public class SnackbarView {
     }
 
     public void dismiss() {
-        // Disable action button during animation.
-        mActionButtonView.setEnabled(false);
+        // Prevent clicks during dismissal animations. Intentionally not using setEnabled(false) to
+        // avoid unnecessary text color changes in this transitory state.
+        mActionButtonView.setOnClickListener(null);
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.setDuration(mAnimationDuration);
         animatorSet.addListener(new AnimatorListenerAdapter() {
