@@ -422,20 +422,28 @@ bool BluetoothDeviceBlueZ::IsPaired() const {
           object_path_);
   DCHECK(properties);
 
-  // The Paired property reflects the successful pairing for BR/EDR/LE. The
-  // value of the Paired property is always false for the devices that don't
-  // support pairing. Once a device is paired successfully, both Paired and
-  // Trusted properties will be set to true.
+  // The "paired" property reflects the successful pairing for BR/EDR/LE. The
+  // value of the "paired" property is always false for the devices that don't
+  // support pairing. Once a device is paired successfully, both the "paired"
+  // and the "trusted" properties will be set to true.
   return properties->paired.value();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool BluetoothDeviceBlueZ::IsBonded() const {
-  // TODO(b/217464014): Update to retrieve whether the peripheral is bonded to
-  // the device when this information is available from the platform.
-  return IsPaired();
+  bluez::BluetoothDeviceClient::Properties* properties =
+      bluez::BluezDBusManager::Get()->GetBluetoothDeviceClient()->GetProperties(
+          object_path_);
+  DCHECK(properties);
+
+  // The "bonded" property reflects the successful pairing for BR/EDR/LE, where
+  // the information required to initiate and authenticate connections is stored
+  // on-device. The value of the "bonded" property is always false for the
+  // devices that don't support pairing. Once a device is bonded successfully,
+  // the "bonded", "paired", and "trusted" properties will be set to true.
+  return properties->bonded.value();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif
 
 bool BluetoothDeviceBlueZ::IsConnected() const {
   bluez::BluetoothDeviceClient::Properties* properties =

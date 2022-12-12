@@ -924,6 +924,9 @@ void BluetoothAdapterBlueZ::DevicePropertyChanged(
       property_name == properties->address.name() ||
       property_name == properties->name.name() ||
       property_name == properties->paired.name() ||
+#if BUILDFLAG(IS_CHROMEOS)
+      property_name == properties->bonded.name() ||
+#endif
       property_name == properties->trusted.name() ||
       property_name == properties->connected.name() ||
       property_name == properties->uuids.name() ||
@@ -966,6 +969,12 @@ void BluetoothAdapterBlueZ::DevicePropertyChanged(
     }
     NotifyDevicePairedChanged(device_bluez, properties->paired.value());
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (property_name == properties->bonded.name()) {
+    NotifyDeviceBondedChanged(device_bluez, properties->bonded.value());
+  }
+#endif
 
   // UMA connection counting
   if (property_name == properties->connected.name()) {

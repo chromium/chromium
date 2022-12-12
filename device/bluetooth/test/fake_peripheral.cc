@@ -126,7 +126,7 @@ device::BluetoothTransport FakePeripheral::GetType() const {
   NOTREACHED();
   return device::BLUETOOTH_TRANSPORT_INVALID;
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 std::string FakePeripheral::GetIdentifier() const {
   NOTREACHED();

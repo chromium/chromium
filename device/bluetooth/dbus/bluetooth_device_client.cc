@@ -32,6 +32,10 @@ const int kUnknownPower = 127;
 // |bluetooth_device::kConnectClassic| once it has been uprev'd.
 constexpr char kConnectClassicPlaceholder[] = "ConnectClassic";
 
+// TODO(b/217464014): Remove this constant and replace with
+// |bluetooth_device::kBondedProperty| once it has been uprev'd.
+constexpr char kBondedPropertyPlaceholder[] = "Bonded";
+
 std::unique_ptr<BluetoothServiceAttributeValueBlueZ> ReadAttributeValue(
     dbus::MessageReader* struct_reader) {
   uint8_t type_val;
@@ -199,6 +203,7 @@ BluetoothDeviceClient::Properties::Properties(
   RegisterProperty(bluetooth_device::kAppearanceProperty, &appearance);
   RegisterProperty(bluetooth_device::kUUIDsProperty, &uuids);
   RegisterProperty(bluetooth_device::kPairedProperty, &paired);
+  RegisterProperty(kBondedPropertyPlaceholder, &bonded);
   RegisterProperty(bluetooth_device::kConnectedProperty, &connected);
   RegisterProperty(bluetooth_device::kConnectedLEProperty, &connected_le);
   RegisterProperty(bluetooth_device::kTrustedProperty, &trusted);

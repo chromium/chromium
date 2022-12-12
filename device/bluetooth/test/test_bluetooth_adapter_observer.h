@@ -59,6 +59,11 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
       const device::BluetoothDevice::ServiceDataMap& service_data_map,
       const device::BluetoothDevice::ManufacturerDataMap& manufacturer_data_map)
       override;
+#if BUILDFLAG(IS_CHROMEOS)
+  void DeviceBondedChanged(device::BluetoothAdapter* adapter,
+                           device::BluetoothDevice* device,
+                           bool new_bonded_status) override;
+#endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   void DevicePairedChanged(device::BluetoothAdapter* adapter,
                            device::BluetoothDevice* device,
@@ -155,6 +160,13 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
   last_manufacturer_data_map() const {
     return last_manufacturer_data_map_;
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  int device_bonded_changed_count() const {
+    return device_bonded_changed_count_;
+  }
+  bool device_new_bonded_status() const { return device_new_bonded_status_; }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   int device_paired_changed_count() const {
@@ -270,6 +282,11 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
 
   base::RepeatingClosure discovering_changed_callback_;
   base::RepeatingClosure discovery_change_completed_callback_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  int device_bonded_changed_count_;
+  bool device_new_bonded_status_;
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   int device_paired_changed_count_;

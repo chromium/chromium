@@ -44,6 +44,10 @@ void TestBluetoothAdapterObserver::Reset() {
   last_rssi_ = 128;
   last_tx_power_ = 128;
   last_appearance_ = 128;
+#if BUILDFLAG(IS_CHROMEOS)
+  device_bonded_changed_count_ = 0;
+  device_new_bonded_status_ = false;
+#endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   device_paired_changed_count_ = 0;
   device_new_paired_status_ = false;
@@ -186,6 +190,19 @@ void TestBluetoothAdapterObserver::DeviceAdvertisementReceived(
 
   QuitMessageLoop();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void TestBluetoothAdapterObserver::DeviceBondedChanged(
+    device::BluetoothAdapter* adapter,
+    device::BluetoothDevice* device,
+    bool new_bonded_status) {
+  ++device_bonded_changed_count_;
+  last_device_ = device;
+  device_new_bonded_status_ = new_bonded_status;
+
+  QuitMessageLoop();
+}
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 void TestBluetoothAdapterObserver::DevicePairedChanged(

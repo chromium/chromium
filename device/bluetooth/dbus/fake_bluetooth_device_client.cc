@@ -330,6 +330,7 @@ FakeBluetoothDeviceClient::FakeBluetoothDeviceClient()
   properties->name.set_valid(true);
   properties->alias.ReplaceValue(kPairedDeviceAlias);
   properties->paired.ReplaceValue(true);
+  properties->bonded.ReplaceValue(true);
   properties->trusted.ReplaceValue(true);
   properties->adapter.ReplaceValue(
       dbus::ObjectPath(FakeBluetoothAdapterClient::kAdapterPath));
@@ -354,6 +355,7 @@ FakeBluetoothDeviceClient::FakeBluetoothDeviceClient()
   properties->name.set_valid(true);
   properties->alias.ReplaceValue(kPairedUnconnectableDeviceAlias);
   properties->paired.ReplaceValue(true);
+  properties->bonded.ReplaceValue(true);
   properties->trusted.ReplaceValue(true);
   properties->adapter.ReplaceValue(
       dbus::ObjectPath(FakeBluetoothAdapterClient::kAdapterPath));
@@ -860,6 +862,7 @@ void FakeBluetoothDeviceClient::CreateDevice(
     properties->connected.ReplaceValue(true);
     properties->connected_le.ReplaceValue(true);
     properties->paired.ReplaceValue(false);
+    properties->bonded.ReplaceValue(false);
     properties->name.ReplaceValue(kConnectedTrustedNotPairedDeviceName);
     properties->name.set_valid(true);
   } else {
@@ -891,8 +894,10 @@ void FakeBluetoothDeviceClient::CreateDeviceWithProperties(
   properties->bluetooth_class.ReplaceValue(props.device_class);
   properties->trusted.ReplaceValue(props.is_trusted);
 
-  if (props.is_trusted)
+  if (props.is_trusted) {
     properties->paired.ReplaceValue(true);
+    properties->bonded.ReplaceValue(true);
+  }
 
   std::unique_ptr<SimulatedPairingOptions> options(new SimulatedPairingOptions);
   options->pairing_method = props.pairing_method;

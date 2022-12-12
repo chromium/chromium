@@ -160,9 +160,17 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
         const BluetoothDevice::ServiceDataMap& service_data_map,
         const BluetoothDevice::ManufacturerDataMap& manufacturer_data_map) {}
 
+#if BUILDFLAG(IS_CHROMEOS)
+    // Called when the bonded property of the device |device| known to the
+    // adapter |adapter| changed.
+    virtual void DeviceBondedChanged(BluetoothAdapter* adapter,
+                                     BluetoothDevice* device,
+                                     bool new_bonded_status) {}
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-    // Called when paired property of the device |device| known to the adapter
-    // |adapter| changed.
+    // Called when the paired property of the device |device| known to the
+    // adapter |adapter| changed.
     virtual void DevicePairedChanged(BluetoothAdapter* adapter,
                                      BluetoothDevice* device,
                                      bool new_paired_status) {}
@@ -672,6 +680,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+  void NotifyDeviceBondedChanged(BluetoothDevice* device,
+                                 bool new_bonded_status);
   void NotifyDeviceIsBlockedByPolicyChanged(BluetoothDevice* device,
                                             bool new_blocked_status);
 #endif
