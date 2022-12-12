@@ -77,7 +77,7 @@ inherit from `RefCounted` or `RefCountedThreadSafe`, since the ref counting
 happens in the object itself, unlike `shared_ptr<T>`. It's preferred for an
 object to remain on the same thread, as `RefCounted` is much cheaper. If there
 are `scoped_refptr`s to the same object on different threads, use
-`RedCountedThreadSafe`, since accesses to the reference count can race.
+`RefCountedThreadSafe`, since accesses to the reference count can race.
 In this case, without external synchronization, the destructor can run on any
 thread. If the destructor interacts with other systems it is important to
 control and know which thread has the last reference to the object, or you can
