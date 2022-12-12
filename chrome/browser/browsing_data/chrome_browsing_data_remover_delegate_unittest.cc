@@ -1547,12 +1547,14 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearWebAppData) {
   auto web_app_id = web_app::test::InstallDummyWebApp(GetProfile(), "Web App",
                                                       GURL("http://some.url"));
   auto last_launch_time = base::Time() + base::Seconds(10);
-  provider->sync_bridge().SetAppLastLaunchTime(web_app_id, last_launch_time);
+  provider->sync_bridge_unsafe().SetAppLastLaunchTime(web_app_id,
+                                                      last_launch_time);
   EXPECT_EQ(
       provider->registrar_unsafe().GetAppById(web_app_id)->last_launch_time(),
       last_launch_time);
   auto last_badging_time = base::Time() + base::Seconds(20);
-  provider->sync_bridge().SetAppLastBadgingTime(web_app_id, last_badging_time);
+  provider->sync_bridge_unsafe().SetAppLastBadgingTime(web_app_id,
+                                                       last_badging_time);
   EXPECT_EQ(
       provider->registrar_unsafe().GetAppById(web_app_id)->last_badging_time(),
       last_badging_time);
