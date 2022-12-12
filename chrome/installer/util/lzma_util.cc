@@ -126,6 +126,14 @@ bool SevenZipDelegateImpl::OnDirectory(const seven_zip::EntryInfo& entry) {
 
 bool SevenZipDelegateImpl::OnEntry(const seven_zip::EntryInfo& entry,
                                    base::span<uint8_t>& output) {
+  if (entry.file_path.ReferencesParent()) {
+    PLOG(ERROR) << "Path contains a parent directory traversal which is not "
+                   "allowed because it could become a security issue: "
+                << entry.file_path;
+    unpack_error_ = UNPACK_CREATE_FILE_ERROR;
+    return false;
+  }
+
   base::FilePath file_path = location_.Append(entry.file_path);
   if (output_file_)
     *output_file_ = file_path;
