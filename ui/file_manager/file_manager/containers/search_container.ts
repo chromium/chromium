@@ -7,9 +7,12 @@ import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.j
 import {queryRequiredElement} from '../common/js/dom_utils.js';
 import {str, util} from '../common/js/util.js';
 import {PropStatus, SearchData, SearchFileType, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
+import {VolumeManager} from '../externs/volume_manager.js';
+import {PathComponent} from '../foreground/js/path_component.js';
 import {SearchAutocompleteList} from '../foreground/js/ui/search_autocomplete_list.js';
 import {updateSearch} from '../state/actions.js';
 import {getStore, Store} from '../state/store.js';
+import {XfPathDisplayElement} from '../widgets/xf_path_display.js';
 import {OptionKind, SEARCH_OPTIONS_CHANGED, SearchOptionsChangedEvent, XfSearchOptionsElement} from '../widgets/xf_search_options.js';
 
 /**
@@ -72,6 +75,12 @@ export class SearchContainer extends EventTarget {
   // mostly to cache the access to the actual element, rather than accessing it
   // via querySelector.
   private searchOptions_: XfSearchOptionsElement|null = null;
+  // The container used to display the path of the currently selected file.
+  private pathContainer_: HTMLElement;
+  // The element that shows the path of the currently selected file.
+  private pathDisplay_: XfPathDisplayElement|null = null;
+  // Volume manager, used by us to resolve paths of selected entries.
+  private volumeManager_: VolumeManager;
 
 
   /**
@@ -84,9 +93,11 @@ export class SearchContainer extends EventTarget {
    * includes notifying listeners when the the search query changes or the
    * auto-complete item is selected.
    */
-  constructor(searchWrapper: HTMLElement, optionsContainer: HTMLElement) {
+  constructor(
+      volumeManager: VolumeManager, searchWrapper: HTMLElement,
+      optionsContainer: HTMLElement, pathContainer: HTMLElement) {
     super();
-
+    this.volumeManager_ = volumeManager;
     // The "box" around the search button, query input, and clear button.
     this.searchBox_ =
         queryRequiredElement('#search-box', searchWrapper) as HTMLElement;
@@ -113,6 +124,7 @@ export class SearchContainer extends EventTarget {
     this.searchWrapper_.parentNode!.appendChild(this.autocompleteList_);
 
     this.optionsContainer_ = optionsContainer;
+    this.pathContainer_ = pathContainer;
     this.store_ = getStore();
     this.store_.subscribe(this);
 
@@ -207,7 +219,16 @@ export class SearchContainer extends EventTarget {
    * A method invoked every time the store state changes.
    */
   onStateChanged(state: State) {
-    const {search} = state;
+    this.handleSearchState_(state.search);
+    this.handleSelectionState_(state);
+  }
+
+  /**
+   * Handles changes in the search state of the store state. If the search
+   * is not active it hides the UI elements. Otherwise, updates them
+   * accordingly.
+   */
+  private handleSearchState_(search: SearchData|undefined) {
     if (this.searchState_ === search) {
       // Bail out early if the search part of the state has not changed.
       return;
@@ -223,10 +244,45 @@ export class SearchContainer extends EventTarget {
       this.setQuery(query);
     }
     if (util.isSearchV2Enabled()) {
-      if (search.status === PropStatus.STARTED && query) {
+      const status = search.status;
+      if (status === PropStatus.STARTED && query) {
         this.showOptions_();
+        this.showPathDisplay_();
       }
     }
+  }
+
+  /**
+   * Handles changes in the current directory part of the state. It uses it
+   * to set the path of the currently selected element.
+   */
+  private handleSelectionState_(state: State) {
+    if (!this.pathDisplay_) {
+      return;
+    }
+    this.pathDisplay_.path = this.getSelectedPath_(state);
+  }
+
+  /**
+   * Helper function that converts information stored in State
+   * a path of the selected file or directory.
+   */
+  private getSelectedPath_(state: State): string {
+    const keys = state.currentDirectory?.selection?.keys;
+    if (!keys) {
+      return '';
+    }
+    const fileData = state.allEntries[keys[0]!];
+    if (!fileData) {
+      return '';
+    }
+    const entry = fileData.entry;
+    if (!entry) {
+      return '';
+    }
+    const parts: PathComponent[] =
+        PathComponent.computeComponentsFromEntry(entry, this.volumeManager_);
+    return parts.map(p => p.name).join('/');
   }
 
   /**
@@ -249,6 +305,39 @@ export class SearchContainer extends EventTarget {
       element = this.createSearchOptionsElement_();
     }
     element.hidden = false;
+  }
+
+  private hidePathDisplay_() {
+    const element = this.getPathDisplayElement_();
+    if (element) {
+      element.hidden = true;
+    }
+  }
+
+  private showPathDisplay_() {
+    let element = this.getPathDisplayElement_();
+    if (!element) {
+      element = this.createPathDisplayElement_();
+    }
+    element.hidden = false;
+  }
+
+  /**
+   * Returns the path display element by either retuning the cached instance,
+   * or fetching it by its tag. May return null.
+   */
+  private getPathDisplayElement_(): XfPathDisplayElement|null {
+    if (!this.pathDisplay_) {
+      this.pathDisplay_ = document.querySelector('xf-path-display');
+    }
+    return this.pathDisplay_;
+  }
+
+  private createPathDisplayElement_(): XfPathDisplayElement {
+    const element = document.createElement('xf-path-display');
+    this.pathContainer_.appendChild(element);
+    this.pathDisplay_ = element;
+    return element;
   }
 
   /**
@@ -474,6 +563,7 @@ export class SearchContainer extends EventTarget {
     // in the CLOSING state, without ever getting to CLOSED state.
     if (this.inputState_ === SearchInputState.OPEN) {
       this.hideOptions_();
+      this.hidePathDisplay_();
       this.inputState_ = SearchInputState.CLOSING;
       this.inputElement_.tabIndex = -1;
       this.inputElement_.disabled = true;

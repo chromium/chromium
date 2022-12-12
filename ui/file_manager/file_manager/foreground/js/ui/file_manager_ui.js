@@ -234,15 +234,6 @@ export class FileManagerUI {
         queryRequiredElement('.dialog-navigation-list', this.element);
 
     /**
-     * Search container, which controls search UI elements.
-     * @type {!SearchContainer}
-     * @const
-     */
-    this.searchContainer = new SearchContainer(
-        queryRequiredElement('#search-wrapper', this.element),
-        queryRequiredElement('#search-options-container', this.element));
-
-    /**
      * Toggle-view button.
      * @type {!Element}
      * @const
@@ -502,6 +493,16 @@ export class FileManagerUI {
     // Splitter.
     this.decorateSplitter_(
         queryRequiredElement('#navigation-list-splitter', this.element));
+
+    /**
+     * Search container, which controls search UI elements.
+     * @type {!SearchContainer}
+     * @const
+     */
+    this.searchContainer = new SearchContainer(
+        volumeManager, queryRequiredElement('#search-wrapper', this.element),
+        queryRequiredElement('#search-options-container', this.element),
+        queryRequiredElement('#path-display-container', this.element));
 
     // Init context menus.
     contextMenuHandler.setContextMenu(grid, this.fileContextMenu);

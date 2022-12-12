@@ -323,6 +323,7 @@ function getCSS(): CSSResultGroup {
       min-width: auto;
       outline: none;
       padding: 8px 12px;
+      white-space: nowrap;
     }
     .xf-select-icon {
       height: 20px;

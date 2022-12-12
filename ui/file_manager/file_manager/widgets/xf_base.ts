@@ -12,6 +12,7 @@ import '../common/js/tslib_shim.js';
 import {customElement, property, query, state} from 'chrome://resources/mwc/lit/decorators.js';
 import {classMap} from 'chrome://resources/mwc/lit/directives/class-map.js';
 import {ifDefined} from 'chrome://resources/mwc/lit/directives/if-defined.js';
+import {repeat} from 'chrome://resources/mwc/lit/directives/repeat.js';
 import {styleMap} from 'chrome://resources/mwc/lit/directives/style-map.js';
 import {css, CSSResult, CSSResultGroup, html, LitElement, PropertyValues} from 'chrome://resources/mwc/lit/index.js';
 
@@ -26,6 +27,7 @@ export {
   property,
   PropertyValues,
   query,
+  repeat,
   state,
   styleMap,
 };
