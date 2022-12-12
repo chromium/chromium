@@ -175,6 +175,7 @@ std::unique_ptr<Config> FeedUserSegment::GetConfig() {
           features::kSegmentationPlatformFeedSegmentFeature,
           kVariationsParamNameUnknownSelectionTTLDays,
           kFeedUserSegmentUnknownSelectionTTLDays));
+  config->is_boolean_segment = true;
   return config;
 }
 

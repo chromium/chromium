@@ -58,22 +58,4 @@ std::string Config::GetSegmentUmaName(proto::SegmentId segment) const {
   return it->second->uma_name;
 }
 
-bool Config::IsBooleanSegment() const {
-  // TODO(haileywang): Make this a boolean member in Config and set this from
-  // each model.
-  // Please keep in sync with BooleanModel variant in
-  // //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
-  return segmentation_key == kChromeStartAndroidSegmentationKey ||
-         segmentation_key == kChromeStartAndroidV2SegmentationKey ||
-         segmentation_key == kQueryTilesSegmentationKey ||
-         segmentation_key == kChromeLowUserEngagementSegmentationKey ||
-         segmentation_key == kFeedUserSegmentationKey ||
-         segmentation_key == kPowerUserKey ||
-         segmentation_key == kShoppingUserSegmentationKey ||
-         segmentation_key == kCrossDeviceUserKey ||
-         segmentation_key == kFrequentFeatureUserKey ||
-         segmentation_key == kIntentionalUserKey ||
-         segmentation_key == kResumeHeavyUserKey;
-}
-
 }  // namespace segmentation_platform

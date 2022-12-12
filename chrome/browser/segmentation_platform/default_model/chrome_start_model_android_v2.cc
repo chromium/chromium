@@ -63,6 +63,7 @@ std::unique_ptr<Config> ChromeStartModelV2::GetConfig() {
       kChromeStartV2DefaultSelectionTTLDays);
   config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
   config->unknown_selection_ttl = config->segment_selection_ttl;
+  config->is_boolean_segment = true;
 
   return config;
 }

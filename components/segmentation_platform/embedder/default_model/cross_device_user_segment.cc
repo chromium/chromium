@@ -132,6 +132,7 @@ std::unique_ptr<Config> CrossDeviceUserSegment::GetConfig() {
       base::Days(kCrossDeviceUserSegmentSelectionTTLDays);
   config->unknown_selection_ttl =
       base::Days(kCrossDeviceUserSegmentUnknownSelectionTTLDays);
+  config->is_boolean_segment = true;
   return config;
 }
 

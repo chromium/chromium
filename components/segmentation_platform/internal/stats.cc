@@ -234,7 +234,7 @@ void RecordSegmentSelectionComputed(
     base::UmaHistogramEnumeration(
         switched_hist,
         GetAdaptiveToolbarSegmentSwitch(new_selection, prev_segment));
-  } else if (config.IsBooleanSegment()) {
+  } else if (config.is_boolean_segment) {
     base::UmaHistogramEnumeration(
         switched_hist, GetBooleanSegmentSwitch(new_selection, prev_segment));
   }

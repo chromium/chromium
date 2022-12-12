@@ -47,8 +47,6 @@ using proto::SegmentId;
 
 namespace {
 
-constexpr int kChromeLowUserEngagementSelectionTTLDays = 7;
-
 #if BUILDFLAG(IS_ANDROID)
 
 constexpr int kAdaptiveToolbarDefaultSelectionTTLDays = 56;
@@ -117,52 +115,6 @@ std::unique_ptr<Config> GetConfigForContextualPageActions(
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-bool IsLowEngagementFeatureEnabled() {
-  // TODO(ssid): Remove this extra feature and change feature guide to use the
-  // segmentation defined feature.
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          feature_guide::features::kSegmentationModelLowEngagedUsers)) {
-    return true;
-  }
-#endif
-  return base::FeatureList::IsEnabled(
-      features::kSegmentationPlatformLowEngagementFeature);
-}
-
-std::unique_ptr<ModelProvider> GetLowEngagementDefaultModel() {
-  if (!base::GetFieldTrialParamByFeatureAsBool(
-          features::kSegmentationPlatformLowEngagementFeature,
-          kDefaultModelEnabledParam, true)) {
-    return nullptr;
-  }
-  return std::make_unique<LowUserEngagementModel>();
-}
-std::unique_ptr<Config> GetConfigForChromeLowUserEngagement() {
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = kChromeLowUserEngagementSegmentationKey;
-  config->segmentation_uma_name = kChromeLowUserEngagementUmaName;
-  config->AddSegmentId(
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT,
-      GetLowEngagementDefaultModel());
-
-#if BUILDFLAG(IS_ANDROID)
-  int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
-      feature_guide::features::kSegmentationModelLowEngagedUsers,
-      kVariationsParamNameSegmentSelectionTTLDays,
-      kChromeLowUserEngagementSelectionTTLDays);
-#else
-  int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
-      features::kSegmentationPlatformLowEngagementFeature,
-      kVariationsParamNameSegmentSelectionTTLDays,
-      kChromeLowUserEngagementSelectionTTLDays);
-#endif
-
-  config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
-  config->unknown_selection_ttl = base::Days(segment_selection_ttl_days);
-  return config;
-}
-
 }  // namespace
 
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
@@ -184,11 +136,8 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(PowerUserSegment::GetConfig());
   configs.emplace_back(FrequentFeatureUserModel::GetConfig());
 #endif
-  // TODO(ssid): Move this check into the model.
-  if (IsLowEngagementFeatureEnabled()) {
-    configs.emplace_back(GetConfigForChromeLowUserEngagement());
-  }
 
+  configs.emplace_back(LowUserEngagementModel::GetConfig());
   configs.emplace_back(SearchUserModel::GetConfig());
   configs.emplace_back(FeedUserSegment::GetConfig());
   configs.emplace_back(ShoppingUserModel::GetConfig());

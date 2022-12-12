@@ -97,8 +97,9 @@ struct Config {
   // Returns the segment name for the `segment` used by the metrics.
   std::string GetSegmentUmaName(proto::SegmentId segment) const;
 
-  // Returns whether the segment is a boolean model.
-  bool IsBooleanSegment() const;
+  // Whether the segment is a boolean model.
+  // TODO(haileywang): update config_parser to include this field.
+  bool is_boolean_segment = false;
 };
 
 }  // namespace segmentation_platform

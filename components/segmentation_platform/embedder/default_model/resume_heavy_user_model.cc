@@ -59,6 +59,8 @@ std::unique_ptr<Config> ResumeHeavyUserModel::GetConfig() {
           features::kResumeHeavyUserSegmentFeature,
           kVariationsParamNameUnknownSelectionTTLDays,
           kResumeHeavyUserSegmentUnknownSelectionTTLDays));
+  config->is_boolean_segment = true;
+
   return config;
 }
 

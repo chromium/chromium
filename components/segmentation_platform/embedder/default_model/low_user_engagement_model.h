@@ -9,6 +9,8 @@
 
 namespace segmentation_platform {
 
+struct Config;
+
 // Segmentation low engagement model provider. Provides a default model and
 // metadata for the low user engagement optimization target.
 class LowUserEngagementModel : public ModelProvider {
@@ -19,6 +21,8 @@ class LowUserEngagementModel : public ModelProvider {
   // Disallow copy/assign.
   LowUserEngagementModel(LowUserEngagementModel&) = delete;
   LowUserEngagementModel& operator=(LowUserEngagementModel&) = delete;
+
+  static std::unique_ptr<Config> GetConfig();
 
   // ModelProvider implementation.
   void InitAndFetchModel(

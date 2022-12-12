@@ -77,6 +77,7 @@ std::unique_ptr<Config> QueryTilesModel::GetConfig() {
       kNumDaysMVCkicksBelowThreshold, kQueryTilesDefaultUnknownTTLDays);
   config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
   config->unknown_selection_ttl = base::Days(unknown_selection_ttl_days);
+  config->is_boolean_segment = true;
   return config;
 }
 

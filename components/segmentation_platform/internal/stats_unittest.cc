@@ -107,6 +107,7 @@ TEST(StatsTest, BooleanSegmentSwitch) {
   config.segmentation_key = kChromeStartAndroidSegmentationKey;
   config.segmentation_uma_name =
       SegmentationKeyToUmaName(config.segmentation_key);
+  config.is_boolean_segment = true;
 
   // Start to none.
   RecordSegmentSelectionComputed(

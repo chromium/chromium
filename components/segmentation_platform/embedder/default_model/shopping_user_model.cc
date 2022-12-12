@@ -75,6 +75,7 @@ std::unique_ptr<Config> ShoppingUserModel::GetConfig() {
           features::kShoppingUserSegmentFeature,
           kVariationsParamNameUnknownSelectionTTLDays,
           kShoppingUserDefaultUnknownSelectionTTLDays));
+  config->is_boolean_segment = true;
   return config;
 }
 

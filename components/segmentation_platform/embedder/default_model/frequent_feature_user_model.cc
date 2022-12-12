@@ -69,6 +69,7 @@ std::unique_ptr<Config> FrequentFeatureUserModel::GetConfig() {
                        std::make_unique<FrequentFeatureUserModel>());
   config->segment_selection_ttl = base::Days(7);
   config->unknown_selection_ttl = base::Days(7);
+  config->is_boolean_segment = true;
 
   return config;
 }
