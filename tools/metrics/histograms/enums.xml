@@ -22915,6 +22915,13 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="7" label="TPM ECC"/>
 </enum>
 
+<enum name="CryptohomeAuthFactorBackingStoreConfig">
+  <int value="0" label="No AuthFactor"/>
+  <int value="1" label="Vault Keyset"/>
+  <int value="2" label="User Secret Stash"/>
+  <int value="3" label="Mixed Backing Stores"/>
+</enum>
+
 <enum name="CryptohomeChecksumStatus">
   <int value="0" label="Checksum OK"/>
   <int value="1" label="Checksum does not exist"/>
