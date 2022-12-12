@@ -53,9 +53,12 @@ CREATE VIEW cpu_power_slice AS
   SELECT *
   FROM (
     SELECT
+      -- Fields named 'ts' and 'dur' are needed for span joins.
       ts,
       LEAD(ts) OVER (PARTITION BY cpu ORDER BY ts ASC) - ts
         AS dur,
+      LEAD(ts) OVER (PARTITION BY cpu ORDER BY ts ASC) - ts
+        AS power_duration,
       cpu,
       power_state,
       LAG(power_state) OVER (PARTITION BY cpu ORDER BY ts ASC)
@@ -106,6 +109,8 @@ USING
 --   sched_id   : Id for the sched_slice table.
 --   utid       : Unique id for the thread that ran within the slice.
 --   previous_power_state : The CPU's power state before this slice.
+--   powerup_id : The id of the power-up slice.
+--   power_duration : The duration of the underlying power slice.
 DROP VIEW IF EXISTS cpu_power_first_sched_slice_after_powerup;
 CREATE VIEW cpu_power_first_sched_slice_after_powerup AS
   SELECT
@@ -115,7 +120,8 @@ CREATE VIEW cpu_power_first_sched_slice_after_powerup AS
     id,
     utid,
     previous_power_state,
-    powerup_id
+    powerup_id,
+    power_duration
   FROM cpu_power_and_sched_slice
   WHERE power_state = 0     -- Power-ups only.
   GROUP BY cpu, powerup_id
@@ -182,7 +188,7 @@ USING
 -- The first top-level slice that ran after a CPU power-up.
 DROP VIEW IF EXISTS cpu_power_first_top_level_slice_after_powerup;
 CREATE VIEW cpu_power_first_top_level_slice_after_powerup AS
-  SELECT slice_id, previous_power_state
+  SELECT slice_id, previous_power_state, power_duration
   FROM cpu_power_post_powerup_slice
   GROUP BY cpu, powerup_id
   HAVING ts = MIN(ts)
