@@ -32,7 +32,6 @@
 #include "net/http/http_util.h"
 
 using base::CaseInsensitiveCompareASCII;
-using base::ListValue;
 using base::Value;
 
 namespace helpers = extension_web_request_api_helpers;
@@ -712,9 +711,9 @@ WebRequestConditionAttributeStages::
 
 namespace {
 
-// Reads strings stored in |value|, which is expected to be a ListValue, and
-// sets corresponding bits (see RequestStage) in |out_stages|. Returns true on
-// success, false otherwise.
+// Reads strings stored in |value|, which is expected to be a Value of type
+// LIST, and sets corresponding bits (see RequestStage) in |out_stages|.
+// Returns true on success, false otherwise.
 bool ParseListOfStages(const base::Value& value, int* out_stages) {
   if (!value.is_list())
     return false;
