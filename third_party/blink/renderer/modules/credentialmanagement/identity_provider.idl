@@ -1,0 +1,24 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    Exposed=Window,
+    SecureContext,
+    RuntimeEnabled=FedCmUserInfo
+] dictionary IdentityUserInfo {
+  USVString email;
+  USVString name;
+  USVString given_name;
+  USVString picture;
+};
+
+[
+    Exposed=Window,
+    SecureContext,
+    RuntimeEnabled=FedCmUserInfo
+] interface IdentityProvider {
+    // Allows an IDP to request user info from its own iframe embeded on an RP.
+    [RuntimeEnabled=FedCmUserInfo, CallWith=ScriptState, RaisesException, MeasureAs=FedCmUserInfo]
+    static Promise<sequence<IdentityUserInfo>?> getUserInfo(IdentityProviderConfig config);
+};

@@ -44,4 +44,9 @@ FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusMode() {
 bool IsFedCmMetricsEndpointEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmMetricsEndpoint);
 }
+
+bool IsFedCmUserInfoEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmUserInfo);
+}
+
 }  // namespace content

@@ -27,6 +27,9 @@ FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusMode();
 // Whether metrics endpoint is enabled.
 bool IsFedCmMetricsEndpointEnabled();
 
+// Whether the UserInfo API is enabled.
+bool IsFedCmUserInfoEnabled();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

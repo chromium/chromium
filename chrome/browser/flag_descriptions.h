@@ -805,6 +805,9 @@ extern const char kFedCmMetricsEndpointDescription[];
 extern const char kFedCmMultiIdpName[];
 extern const char kFedCmMultiIdpDescription[];
 
+extern const char kFedCmUserInfoName[];
+extern const char kFedCmUserInfoDescription[];
+
 extern const char kFileHandlingAPIName[];
 extern const char kFileHandlingAPIDescription[];
 

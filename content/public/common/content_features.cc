@@ -399,6 +399,11 @@ BASE_FEATURE(kFedCmMultipleIdentityProviders,
              "FedCmMultipleIdentityProviders",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables usage of the FedCM API with the User Info API at the same time.
+BASE_FEATURE(kFedCmUserInfo,
+             "FedCmUserInfo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Field trial boolean parameter which indicates whether IdpSigninStatus API is
 // used in FedCM API.
 const char kFedCmIdpSigninStatusFieldTrialParamName[] = "IdpSigninStatus";

@@ -215,6 +215,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableFedCm, features::kFedCm, kSetOnlyIfOverridden},
     {wf::EnableFedCmMultipleIdentityProviders,
      features::kFedCmMultipleIdentityProviders, kDefault},
+    {wf::EnableFedCmUserInfo, features::kFedCmUserInfo, kDefault},
     {wf::EnableFencedFrames, features::kPrivacySandboxAdsAPIsOverride,
      kSetOnlyIfOverridden},
     {wf::EnableSharedStorageAPI, features::kPrivacySandboxAdsAPIsOverride,

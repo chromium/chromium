@@ -1209,6 +1209,11 @@
       public: true,
     },
     {
+      name: "FedCmUserInfo",
+      depends_on: ["FedCm"],
+      public: true,
+    },
+    {
       name: "FencedFrames",
       // This helps enable and expose the <fencedframe> element, but note that
       // blink::features::kFencedFrames must be enabled as well, similar to

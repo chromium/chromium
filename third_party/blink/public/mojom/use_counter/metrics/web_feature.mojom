@@ -3764,6 +3764,7 @@ enum WebFeature {
   kDialogCloseWatcherCancelSkippedAndDefaultPrevented = 4423,
   kDialogCloseWatcherCloseSignalClosedMultiple = 4424,
   kNoVarySearch = 4425,
+  kFedCmUserInfo = 4426,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
