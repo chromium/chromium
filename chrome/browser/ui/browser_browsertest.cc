@@ -1504,9 +1504,15 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
   }
 }
 
+// TODO(crbug.com/1394195) This test is flaky on asan lacros and may crash ash.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)
+#define MAYBE_StartMinimized DISABLED_StartMinimized
+#else
+#define MAYBE_StartMinimized StartMinimized
+#endif
 // Makes sure the browser doesn't crash when
 // set_show_state(ui::SHOW_STATE_MINIMIZED) has been invoked.
-IN_PROC_BROWSER_TEST_F(BrowserTest, StartMinimized) {
+IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_StartMinimized) {
   Browser::CreateParams params[] = {
     Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true),
     Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true),
