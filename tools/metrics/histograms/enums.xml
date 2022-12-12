@@ -72473,6 +72473,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="155" label="PrivacyHubHWCameraSwitchOffSWCameraSwitchOn"/>
   <int value="156" label="Eche App Network Setting"/>
   <int value="157" label="Privacy Hub Microphone and Camera"/>
+  <int value="158" label="ARCVM Data Migration"/>
+  <int value="159" label="WebHID"/>
 </enum>
 
 <enum name="NotificationDatabaseStatus">

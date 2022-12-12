@@ -14,8 +14,11 @@
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
+#include "chrome/browser/hid/hid_connection_tracker.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
@@ -122,6 +125,9 @@ class WebHidExtensionBrowserTest : public extensions::ExtensionBrowserTest {
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+    display_service_for_profile_notification_ =
+        std::make_unique<NotificationDisplayServiceTester>(profile());
   }
 
   void TearDownOnMainThread() override {
@@ -149,7 +155,7 @@ class WebHidExtensionBrowserTest : public extensions::ExtensionBrowserTest {
             kPolicySetting, extension->url().spec().c_str())));
   }
 
-  void LoadExtensionAndRunTest(const std::string& kBackgroundJs) {
+  const Extension* LoadExtensionAndRunTest(const std::string& kBackgroundJs) {
     extensions::TestExtensionDir test_dir;
 
     test_dir.WriteManifest(
@@ -168,12 +174,43 @@ class WebHidExtensionBrowserTest : public extensions::ExtensionBrowserTest {
     EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
     ready_listener.Reply("ok");
     EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+
+    return extension;
   }
 
   device::FakeHidManager* hid_manager() { return &hid_manager_; }
 
+  void SimulateClickOnDeviceOpenedNotification(Browser* browser,
+                                               const Extension* extension) {
+    std::string expected_link_destination(chrome::kChromeUIContentSettingsURL);
+    std::string origin_string = extension->origin().Serialize();
+    url::RawCanonOutputT<char> percent_encoded_origin;
+    url::EncodeURIComponent(origin_string.c_str(), origin_string.length(),
+                            &percent_encoded_origin);
+    expected_link_destination = chrome::kChromeUISiteDetailsPrefixURL +
+                                std::string(percent_encoded_origin.data(),
+                                            percent_encoded_origin.length());
+
+    auto* profile = browser->profile();
+    auto expected_notification_id =
+        base::StringPrintf("webhid.opened.%s.%s", profile->UniqueId().c_str(),
+                           extension->origin().host().c_str());
+    auto maybe_notification =
+        display_service_for_profile_notification_->GetNotification(
+            expected_notification_id);
+    EXPECT_TRUE(maybe_notification);
+    display_service_for_profile_notification_->SimulateClick(
+        NotificationHandler::Type::TRANSIENT, expected_notification_id,
+        /*action_index=*/0,
+        /*reply=*/absl::nullopt);
+    auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
+    EXPECT_EQ(web_contents->GetURL(), expected_link_destination);
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<NotificationDisplayServiceTester>
+      display_service_for_profile_notification_;
 
  private:
   device::FakeHidManager hid_manager_;
@@ -282,6 +319,31 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest,
   )";
 
   LoadExtensionAndRunTest(kBackgroundJs);
+}
+
+IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest,
+                       HidConnectionTracker) {
+  auto device = CreateTestDeviceWithInputAndOutputReports();
+  hid_manager()->AddDevice(std::move(device));
+
+  constexpr char kBackgroundJs[] = R"(
+    // |device| is a global variable to store HidDevice object being tested in
+    // case the local one is garbage collected, which can close the connection.
+    var device;
+    chrome.test.sendMessage("ready", async () => {
+      try {
+        const devices = await navigator.hid.getDevices();
+        device = devices[0];
+        chrome.test.assertEq(1, devices.length);
+        await device.open();
+        chrome.test.notifyPass();
+      } catch (e) {
+        chrome.test.fail(e.name + ':' + e.message);
+      }
+    });
+  )";
+  const auto* extension = LoadExtensionAndRunTest(kBackgroundJs);
+  SimulateClickOnDeviceOpenedNotification(browser(), extension);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

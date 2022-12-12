@@ -171,7 +171,8 @@ enum class NotificationCatalogName {
   kEcheAppNetworkSetting = 156,
   kPrivacyHubMicAndCamera = 157,
   kArcVmDataMigration = 158,
-  kMaxValue = kArcVmDataMigration
+  kWebHid = 159,
+  kMaxValue = kWebHid
 };
 
 // A living catalog that registers system nudges.
