@@ -14,15 +14,15 @@
 
 using ChromeAcceptHeaderTest = InProcessBrowserTest;
 
-#if BUILDFLAG(ENABLE_AV1_DECODER)
 namespace {
 std::string GetOptionalImageCodecs() {
   std::string result;
+#if BUILDFLAG(ENABLE_AV1_DECODER)
   result.append("image/avif,");
+#endif
   return result;
 }
 }  // namespace
-#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 
 IN_PROC_BROWSER_TEST_F(ChromeAcceptHeaderTest, Check) {
   net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTP);
@@ -53,24 +53,15 @@ IN_PROC_BROWSER_TEST_F(ChromeAcceptHeaderTest, Check) {
   // With MimeHandlerViewInCrossProcessFrame, embedded PDF will go through the
   // navigation code path and behaves similarly to PDF loaded inside <iframe>.
   std::string expected_plugin_accept_header =
-      "text/html,application/xhtml+xml,application/xml;q=0.9,image/"
-      "webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-  expected_plugin_accept_header =
       "text/html,application/xhtml+xml,application/xml;q=0.9," +
       GetOptionalImageCodecs() +
       "image/webp,image/apng,*/*;q=0.8,"
       "application/signed-exchange;v=b3;q=0.9";
-#endif
   ASSERT_EQ(expected_plugin_accept_header, plugin_accept_header);
 
   std::string expected_favicon_accept_header =
-      "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-  expected_favicon_accept_header =
       GetOptionalImageCodecs() +
       "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
-#endif
   ASSERT_EQ(expected_favicon_accept_header, favicon_accept_header);
 
   // Since the server uses local variables.
