@@ -26,31 +26,23 @@ import org.chromium.ui.base.WindowAndroid;
  * through this builder.
  */
 public class ArkTabBuilder {
-    private int mId = Tab.INVALID_TAB_ID;
+
     private Tab mParent;
     private TabResolver mTabResolver;
-    private boolean mIncognito;
-//    private ArkWindowAndroid mWindow;
     private Integer mLaunchType;
     private Integer mCreationType;
     private boolean mFromFrozenState;
     private LoadUrlParams mLoadUrlParams;
 
     private WebContents mWebContents;
-//    private TabDelegateFactory mDelegateFactory;
     private boolean mInitiallyHidden;
     private TabState mTabState;
-    private SerializedCriticalPersistedTabData mSerializedCriticalPersistedTabData;
     private Callback<Tab> mPreInitializeAction;
 
-    /**
-     * Sets the id with which the Tab to create should be identified.
-     * @param id The id of the Tab.
-     * @return {@link ArkTabBuilder} creating the Tab.
-     */
-    public ArkTabBuilder setId(int id) {
-        mId = id;
-        return this;
+    private final PageInfo mPageInfo;
+
+    public ArkTabBuilder(PageInfo pageInfo) {
+        mPageInfo = pageInfo;
     }
 
     /**
@@ -74,26 +66,6 @@ public class ArkTabBuilder {
     }
 
     /**
-     * Sets incognito mode.
-     * @param incognito {@code true} if the tab will be in incognito mode.
-     * @return {@link ArkTabBuilder} creating the Tab.
-     */
-    public ArkTabBuilder setIncognito(boolean incognito) {
-        mIncognito = incognito;
-        return this;
-    }
-
-//    /**
-//     * Sets window which the Tab will be attached to.
-//     * @param window An instance of a {@link WindowAndroid}.
-//     * @return {@link ArkTabBuilder} creating the Tab.
-//     */
-//    public ArkTabBuilder setWindow(ArkWindowAndroid window) {
-//        mWindow = window;
-//        return this;
-//    }
-
-    /**
      * Sets a flag indicating how this tab is launched (from a link, external app, etc).
      * @param type Launch type.
      * @return {@link ArkTabBuilder} creating the Tab.
@@ -113,16 +85,6 @@ public class ArkTabBuilder {
         mWebContents = webContents;
         return this;
     }
-
-//    /**
-//     * Sets a {@link TabDelegateFactory} object.
-//     * @param delegateFactory The factory delegated to create various Tab-related objects.
-//     * @return {@link ArkTabBuilder} creating the Tab.
-//     */
-//    public ArkTabBuilder setDelegateFactory(TabDelegateFactory delegateFactory) {
-//        mDelegateFactory = delegateFactory;
-//        return this;
-//    }
 
     /**
      * Sets a pre-initialization action to run.
@@ -155,18 +117,6 @@ public class ArkTabBuilder {
         return this;
     }
 
-    /**
-     * Sets a serialized {@link CriticalPersistedTabData} object containing information about the
-     * tab, if it was persisted
-     * @param serializedCriticalPersistedTabData serialized {@link CriticalPersistedTabData}
-     * @return {@link ArkTabBuilder} creating the Tab
-     */
-    public ArkTabBuilder setSerializedCriticalPersistedTabData(
-            @Nullable SerializedCriticalPersistedTabData serializedCriticalPersistedTabData) {
-        mSerializedCriticalPersistedTabData = serializedCriticalPersistedTabData;
-        return this;
-    }
-
     public ArkTabImpl build() {
         // Pre-condition check
         if (mCreationType != null) {
@@ -184,19 +134,19 @@ public class ArkTabBuilder {
             mLaunchType = TabLaunchType.FROM_CHROME_UI;
         }
         ArkTabImpl tab =
-                new ArkTabImpl(mId, mIncognito, mLaunchType, mSerializedCriticalPersistedTabData);
+                new ArkTabImpl(mPageInfo, mLaunchType);
         Tab parent = null;
         if (mParent != null) {
             parent = mParent;
         } else if (mTabResolver != null) {
-            if (!CriticalPersistedTabData.isEmptySerialization(
-                        mSerializedCriticalPersistedTabData)) {
-                parent = mTabResolver.resolve(CriticalPersistedTabData.from(tab).getParentId());
-            } else if (mTabState != null) {
+//            if (!CriticalPersistedTabData.isEmptySerialization(
+//                        mSerializedCriticalPersistedTabData)) {
+//                parent = mTabResolver.resolve(CriticalPersistedTabData.from(tab).getParentId());
+//            }
+            if (mTabState != null) {
                 parent = mTabResolver.resolve(mTabState.parentId);
             }
         }
-//        tab.updateWindowAndroid(mWindow);
 
 //        if (parent != null && mDelegateFactory == null) {
 //            mDelegateFactory = ((ArkTabImpl) parent).getDelegateFactory();
@@ -221,7 +171,7 @@ public class ArkTabBuilder {
         return this;
     }
 
-    private ArkTabBuilder setLoadUrlParams(LoadUrlParams loadUrlParams) {
+    public ArkTabBuilder setLoadUrlParams(LoadUrlParams loadUrlParams) {
         mLoadUrlParams = loadUrlParams;
         return this;
     }
@@ -231,32 +181,33 @@ public class ArkTabBuilder {
      * background tabs restored on cold start that should be loaded when switched to. initialize()
      * needs to be called afterwards to complete the second level initialization.
      */
-    public static ArkTabBuilder createFromFrozenState() {
-        return new ArkTabBuilder()
+    public static ArkTabBuilder createFromFrozenState(PageInfo pageInfo) {
+        return new ArkTabBuilder(pageInfo)
                 .setLaunchType(TabLaunchType.FROM_RESTORE)
                 .setCreationType(TabCreationState.FROZEN_ON_RESTORE)
                 .setFromFrozenState(true);
     }
 
-    /**
-     * Creates a TabBuilder for a new tab to be loaded lazily. This can be used for tabs opened
-     * in the background that should be loaded when switched to. initialize() needs to be called
-     * afterwards to complete the second level initialization.
-     * @param loadUrlParams Params specifying the conditions for loading url.
-     */
-    public static ArkTabBuilder createForLazyLoad(LoadUrlParams loadUrlParams) {
-        return new ArkTabBuilder()
-                .setLoadUrlParams(loadUrlParams)
-                .setCreationType(TabCreationState.FROZEN_FOR_LAZY_LOAD);
-    }
+//    /**
+//     * Creates a TabBuilder for a new tab to be loaded lazily. This can be used for tabs opened
+//     * in the background that should be loaded when switched to. initialize() needs to be called
+//     * afterwards to complete the second level initialization.
+//     * @param loadUrlParams Params specifying the conditions for loading url.
+//     */
+//    public static ArkTabBuilder createForLazyLoad(LoadUrlParams loadUrlParams) {
+//        return new ArkTabBuilder()
+//                .setLoadUrlParams(loadUrlParams)
+//                .setCreationType(TabCreationState.FROZEN_FOR_LAZY_LOAD);
+//    }
 
     /**
      * Creates a TabBuilder for a fresh tab. initialize() needs to be called afterwards to
      * complete the second level initialization.
      * @param initiallyHidden true iff the tab being created is initially in background
      */
-    public static ArkTabBuilder createLiveTab(boolean initiallyHidden) {
-        return new ArkTabBuilder().setCreationType(initiallyHidden
+    public static ArkTabBuilder createLiveTab(PageInfo pageInfo, boolean initiallyHidden) {
+        return new ArkTabBuilder(pageInfo)
+                .setCreationType(initiallyHidden
                         ? TabCreationState.LIVE_IN_BACKGROUND
                         : TabCreationState.LIVE_IN_FOREGROUND);
     }

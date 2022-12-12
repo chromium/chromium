@@ -1,7 +1,10 @@
 package com.ark.browser.tab;
 
 import androidx.annotation.Keep;
+import androidx.core.util.AtomicFile;
 
+import com.ark.browser.tab.core.IPage;
+import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
@@ -9,6 +12,7 @@ import com.ark.browser.utils.ThreadPool;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -172,11 +176,6 @@ public class TabInfo {
             }
             return from(stream, pageIds);
         }
-//        DataInputStream stream = ArkTabDao.readFile(tabFile);
-//        if (stream == null) {
-//            throw new IOException("tab file stream is null!");
-//        }
-//        return from(stream);
     }
 
     public static TabInfo from(DataInputStream is, List<Integer> pageIds) throws IOException {
@@ -247,4 +246,54 @@ public class TabInfo {
                 ", incognito=" + incognito +
                 '}';
     }
+
+//    public void saveTabInfo() {
+//        try {
+//            long time = System.currentTimeMillis();
+//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//            DataOutputStream os = new DataOutputStream(stream);
+//            int version = 1;
+//            os.writeInt(version);
+//            os.writeLong(getTabInfoId());
+//            os.writeLong(getCreateTime());
+//            os.writeBoolean(isIncognito());
+//            os.writeBoolean(isLocked());
+//            os.writeInt(getPageIndex());
+//            os.writeInt(getCurrentTabId());
+//            os.writeInt(getPosition());
+//            os.writeLong(getAccessTime());
+//            os.writeInt(getPageSize());
+//            ArkLogger.e(this, "saveTabInfo info=" + this
+//                    + " pageSize=" + getPageSize());
+//            for (IPage page : getPageGroup().getPageInfoList()) {
+//                os.writeInt(page.getId());
+//            }
+//            os.close();
+//
+//            byte[] bytes = stream.toByteArray();
+//
+//            ArkLogger.e(this, "saveTabInfo to byte deltaTime="
+//                    + (System.currentTimeMillis() - time));
+//
+//            ThreadPool.executeIO(() -> {
+//                long time1 = System.currentTimeMillis();
+//                File tabFile = ArkTabDao.getTabFile(getTabInfoId());
+//                AtomicFile file = new AtomicFile(tabFile);
+//                FileOutputStream fos = null;
+//                try {
+//                    fos = file.startWrite();
+//                    fos.write(bytes, 0, bytes.length);
+//                    file.finishWrite(fos);
+//                } catch (IOException e) {
+//                    if (fos != null) file.failWrite(fos);
+//                    ArkLogger.e(TabInfo.this, "Failed to write file: " + file.getBaseFile().getAbsolutePath());
+//                }
+//                ArkLogger.e(TabInfo.this, "saveTabInfo deltaTime="
+//                        + (System.currentTimeMillis() - time1));
+//            });
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
 }

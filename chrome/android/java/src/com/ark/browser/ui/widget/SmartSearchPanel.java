@@ -20,6 +20,7 @@ import androidx.customview.widget.ViewDragHelper;
 import com.ark.browser.ArkCompositorViewHolder;
 import com.ark.browser.ArkNavigationHandler;
 import com.ark.browser.ArkWindowAndroid;
+import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.EmptyTabInfoObserver;
 import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.PageInfo;
@@ -705,19 +706,11 @@ public class SmartSearchPanel extends FrameLayout {
             }
         };
 
-        Tab tab = PageCacheManager.getInstance().createLivePageByType(newTab.getPageSize(),
-                mFloatTabList.getWindowAndroid(), newTab, TabLaunchType.FROM_CHROME_UI);
-
-        PageInfo pageInfo = PageInfo.from(tab.getId(), Tab.INVALID_PAGE_ID, newTab.getId(),
-                newTab.getPageSize(), tab.isIncognito());
-        pageInfo.setUrl(tab.getUrl().toString());
-        pageInfo.setTitle(tab.getTitle());
-        // TODO
-//        pageInfo.save();
-
-        IPage newPage = new PageImpl(pageInfo);
+        ArkTabImpl tab = PageCacheManager.getInstance().createLivePageByType(newTab,
+                loadUrlParams, newTab.getPageSize(),TabLaunchType.FROM_CHROME_UI);
+        IPage newPage = new PageImpl(tab.getPageInfo());
         newTab.getPageGroup().addPage(newPage);
-        tab.loadUrl(loadUrlParams);
+//        tab.loadUrl(loadUrlParams);
 
 
         mFloatTabList.getTabInfoList().add(newTab);

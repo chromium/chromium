@@ -568,9 +568,9 @@ public class CriticalPersistedTabData extends PersistedTabData {
         if (getUrl() == null || getUrl().isEmpty()) {
             return false;
         }
-        if (UrlUtilities.isNTPUrl(getUrl()) && !mTab.canGoBack() && !mTab.canGoForward()) {
-            return false;
-        }
+//        if (UrlUtilities.isNTPUrl(getUrl()) && !mTab.canGoBack() && !mTab.canGoForward()) {
+//            return false;
+//        }
         if (isTabUrlContentScheme(getUrl())) {
             return false;
         }

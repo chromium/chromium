@@ -12,6 +12,7 @@ import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabIdManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -115,68 +116,47 @@ public class PageCacheManager {
 
     @UiThread
     @NonNull
-    public Tab createLivePageByType(int index, @NonNull ArkWindowAndroid nativeWindow, @NonNull ITab tabInfo,
-                                    @TabLaunchType int type) {
+    public ArkTabImpl createLivePageByType(@NonNull ITab tabInfo, LoadUrlParams params, int index, @TabLaunchType int type) {
         long start = System.currentTimeMillis();
 
-        ArkTabImpl tab = ArkTabBuilder.createLiveTab(false)
-                .setIncognito(tabInfo.getTabInfo().isIncognito())
+        PageInfo pageInfo = PageInfo.from(TabIdManager.getInstance().generateValidId(),
+                Tab.INVALID_PAGE_ID, tabInfo.getId(),
+                index, tabInfo.getTabInfo().isIncognito());
+
+        ArkTabImpl tab = ArkTabBuilder.createLiveTab(pageInfo, false)
                 .setLaunchType(type)
-//                .setWindow(nativeWindow)
-//                .setDelegateFactory(nativeWindow.getTabDelegateFactory())
+                .setLoadUrlParams(params)
                 .build();
         putPage(tab);
-
-
-//        Tab tab = Tab.createLiveTab(index, Tab.INVALID_PAGE_ID, tabInfo.getId(),
-//                tabInfo.getTabInfo().isIncognito(), nativeWindow,
-//                type, Tab.INVALID_PAGE_ID, false);
-//        tab.initialize(null, false, false);
-//        putPage(tab);
-//        tab.getPageInfo().save();
         ArkLogger.d(TAG, "createLivePageByType create tab deltaTime=" + (System.currentTimeMillis() - start));
         return tab;
     }
 
     @UiThread
     @NonNull
-    public Tab createLivePage(@NonNull ArkWindowAndroid nativeWindow, @NonNull PageInfo pageInfo) {
+    public Tab createLivePage(@NonNull PageInfo pageInfo) {
         long start = System.currentTimeMillis();
 
         ArkLogger.e(this, "createLivePage pageInfo=" + pageInfo);
 
-        Tab tab = ArkTabBuilder.createLiveTab(false)
-                .setId(pageInfo.getPageId())
-                .setIncognito(pageInfo.isIncognito())
-//                .setWindow(nativeWindow)
-//                .setDelegateFactory(nativeWindow.getTabDelegateFactory())
+        Tab tab = ArkTabBuilder.createLiveTab(pageInfo, false)
                 .build();
         LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(pageInfo.getUrl()));
         params.setTransitionType(TabLaunchType.FROM_CHROME_UI);
         tab.loadUrl(params);
         putPage(tab);
-
-
-//        Tab tab = Tab.createLiveTab(pageInfo, nativeWindow, TabLaunchType.FROM_CHROME_UI, false);
-//        tab.initialize(null, false, false);
-//        LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(pageInfo.getUrl()));
-//        params.setTransitionType(TabLaunchType.FROM_CHROME_UI);
-//        tab.loadUrl(params);
-//        putPage(tab);
-        ArkLogger.d(TAG, "createLivePage create tab deltaTime=" + (System.currentTimeMillis() - start));
+        ArkLogger.d(TAG, "createLivePage create tab deltaTime="
+                + (System.currentTimeMillis() - start));
         return tab;
     }
 
     @UiThread
     @NonNull
-    public Tab createFrozenPageFromState(@NonNull ArkWindowAndroid nativeWindow, @NonNull PageInfo pageInfo,
+    public Tab createFrozenPageFromState(@NonNull PageInfo pageInfo,
                                          @NonNull TabState state) {
         long start = System.currentTimeMillis();
-        Tab tab = ArkTabBuilder.createFromFrozenState()
-                .setId(pageInfo.getPageId())
+        Tab tab = ArkTabBuilder.createFromFrozenState(pageInfo)
                 .setTabState(state)
-//                .setWindow(nativeWindow)
-//                .setDelegateFactory(nativeWindow.getTabDelegateFactory())
                 .build();
         putPage(tab);
         ArkLogger.d(TAG, "createFrozenPageFromState create tab deltaTime=" + (System.currentTimeMillis() - start));

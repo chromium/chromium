@@ -65,6 +65,10 @@ public class TabIdManager {
         return id;
     }
 
+    public final int generateValidId() {
+        return generateValidId(Tab.INVALID_TAB_ID);
+    }
+
     /**
      * Ensures the counter is at least as high as the specified value.  The counter should always
      * point to an unused ID (which will be handed out next time a request comes in).  Exposed so

@@ -111,11 +111,11 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     private long mNativeTabAndroid;
 
-    /** Unique id of this tab (within its container). */
-    private final int mId;
-
-    /** Whether or not this tab is an incognito tab. */
-    private final boolean mIncognito;
+//    /** Unique id of this tab (within its container). */
+//    private final int mId;
+//
+//    /** Whether or not this tab is an incognito tab. */
+//    private final boolean mIncognito;
 
     /** Gives {@link Tab} a way to interact with the Android window. */
     private ArkWindowAndroid mWindowAndroid;
@@ -210,34 +210,55 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     private final TabThemeColorHelper mThemeColorHelper;
     private int mThemeColor;
-    private boolean mUsedCriticalPersistedTabData;
 
     private final TabWebContentsDelegateAndroidImpl mWebContentsDelegate = new TabWebContentsDelegateAndroidImpl(this, null);
 
-    /**
-     * Creates an instance of a {@link ArkTabImpl}.
-     *
-     * This constructor can be called before the native library has been loaded, so any additions
-     * must be vetted for library calls.
-     *
-     * Package-private. Use {@link TabBuilder} to create an instance.
-     *
-     * @param id The id this tab should be identified with.
-     * @param incognito Whether or not this tab is incognito.
-     * @param launchType Type indicating how this tab was launched.
-     * @param serializedCriticalPersistedTabData serialized {@link CriticalPersistedTabData}
-     */
-    @SuppressLint("HandlerLeak")
-    public ArkTabImpl(int id, boolean incognito, @NonNull @TabLaunchType Integer launchType,
-                      @Nullable SerializedCriticalPersistedTabData serializedCriticalPersistedTabData) {
+    private final PageInfo mPageInfo;
+
+//    /**
+//     * Creates an instance of a {@link ArkTabImpl}.
+//     *
+//     * This constructor can be called before the native library has been loaded, so any additions
+//     * must be vetted for library calls.
+//     *
+//     * Package-private. Use {@link TabBuilder} to create an instance.
+//     *
+//     * @param id The id this tab should be identified with.
+//     * @param incognito Whether or not this tab is incognito.
+//     * @param launchType Type indicating how this tab was launched.
+//     * @param serializedCriticalPersistedTabData serialized {@link CriticalPersistedTabData}
+//     */
+//    @SuppressLint("HandlerLeak")
+//    public ArkTabImpl(int id, boolean incognito, @NonNull @TabLaunchType Integer launchType) {
+//        mIsTabSaveEnabledSupplier.set(false);
+//        mId = TabIdManager.getInstance().generateValidId(id);
+//        mIncognito = incognito;
+//
+//
+//        mLaunchType = launchType;
+//
+//        mAttachStateChangeListener = new OnAttachStateChangeListener() {
+//            @Override
+//            public void onViewAttachedToWindow(View view) {
+//                mIsViewAttachedToWindow = true;
+//                updateInteractableState();
+//            }
+//
+//            @Override
+//            public void onViewDetachedFromWindow(View view) {
+//                mIsViewAttachedToWindow = false;
+//                updateInteractableState();
+//            }
+//        };
+//        mTabViewManager = new ArkTabViewManagerImpl(this);
+//        mThemeColorHelper = new TabThemeColorHelper(this, this::updateThemeColor);
+//        mThemeColor = TabState.UNSPECIFIED_THEME_COLOR;
+//    }
+
+    public ArkTabImpl(PageInfo pageInfo, @NonNull @TabLaunchType Integer launchType) {
         mIsTabSaveEnabledSupplier.set(false);
-        mId = TabIdManager.getInstance().generateValidId(id);
-        mIncognito = incognito;
-        if (!CriticalPersistedTabData.isEmptySerialization(serializedCriticalPersistedTabData)
-                && useCriticalPersistedTabData()) {
-            CriticalPersistedTabData.build(this, serializedCriticalPersistedTabData);
-            mUsedCriticalPersistedTabData = true;
-        }
+
+        mPageInfo = pageInfo;
 
         mLaunchType = launchType;
 
@@ -257,6 +278,11 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         mTabViewManager = new ArkTabViewManagerImpl(this);
         mThemeColorHelper = new TabThemeColorHelper(this, this::updateThemeColor);
         mThemeColor = TabState.UNSPECIFIED_THEME_COLOR;
+    }
+
+
+    public PageInfo getPageInfo() {
+        return mPageInfo;
     }
 
     @Override
@@ -392,7 +418,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public int getId() {
-        return mId;
+        return mPageInfo.pageId;
     }
 
     @Override
@@ -406,6 +432,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         // If we have a ContentView, or the url is not empty, we have a WebContents
         // so cache the WebContent's url. If not use the cached version.
         if (getWebContents() != null || !url.getSpec().isEmpty()) {
+            mPageInfo.setUrl(url.getSpec());
             CriticalPersistedTabData.from(this).setUrl(url);
         }
 
@@ -469,7 +496,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public boolean isIncognito() {
-        return mIncognito;
+        return mPageInfo.isIncognito;
     }
 
     @Override
@@ -889,14 +916,16 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             TraceEvent.begin("Tab.initialize");
 
             if (parent != null) {
+                mPageInfo.setPageId(parent.getId());
                 CriticalPersistedTabData.from(this).setParentId(parent.getId());
-                mSourceTabId = parent.isIncognito() == mIncognito ? parent.getId() : INVALID_TAB_ID;
+                mSourceTabId = parent.isIncognito() == mPageInfo.isIncognito ? parent.getId() : INVALID_TAB_ID;
             }
 
             CriticalPersistedTabData.from(this).setLaunchTypeAtCreation(mLaunchType);
             mCreationState = creationState;
             mPendingLoadParams = loadUrlParams;
             if (loadUrlParams != null) {
+                mPageInfo.setUrl(loadUrlParams.getUrl());
                 CriticalPersistedTabData.from(this).setUrl(new GURL(loadUrlParams.getUrl()));
             }
 
@@ -953,12 +982,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             String appId = null;
             Boolean hasThemeColor = null;
             int themeColor = 0;
-            if (mUsedCriticalPersistedTabData) {
-                appId = CriticalPersistedTabData.from(this).getOpenerAppId();
-                themeColor = CriticalPersistedTabData.from(this).getThemeColor();
-                hasThemeColor = themeColor != TabState.UNSPECIFIED_THEME_COLOR
-                        && !ColorUtils.isThemeColorTooBright(themeColor);
-            } else if (tabState != null) {
+            if (tabState != null) {
                 appId = tabState.openerAppId;
                 themeColor = tabState.getThemeColor();
                 hasThemeColor = tabState.hasThemeColor();
@@ -996,13 +1020,14 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         assert state != null;
         CriticalPersistedTabData.from(this).setWebContentsState(state.contentsState);
         CriticalPersistedTabData.from(this).setTimestampMillis(state.timestampMillis);
-        CriticalPersistedTabData.from(this).setUrl(
-                new GURL(state.contentsState.getVirtualUrlFromState()));
+        String url = state.contentsState.getVirtualUrlFromState();
+        mPageInfo.setUrl(url);
+        CriticalPersistedTabData.from(this).setUrl(new GURL(url));
         CriticalPersistedTabData.from(this).setTitle(
                 state.contentsState.getDisplayTitleFromState());
         CriticalPersistedTabData.from(this).setLaunchTypeAtCreation(state.tabLaunchTypeAtCreation);
         CriticalPersistedTabData.from(this).setRootId(
-                state.rootId == Tab.INVALID_TAB_ID ? mId : state.rootId);
+                state.rootId == Tab.INVALID_TAB_ID ? mPageInfo.pageId : state.rootId);
         CriticalPersistedTabData.from(this).setUserAgent(state.userAgent);
     }
 
@@ -1223,6 +1248,10 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * @param title Title of the page.
      */
     void updateTitle(String title) {
+        if (!TextUtils.equals(mPageInfo.getTitle(), title)) {
+            mPageInfo.setTitle(title);
+        }
+
         if (TextUtils.equals(CriticalPersistedTabData.from(this).getTitle(), title)) return;
 
         CriticalPersistedTabData.from(this).setTitle(title);
@@ -1393,7 +1422,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 //                    new TabContextMenuPopulatorFactory(
 //                            mDelegateFactory.createContextMenuPopulatorFactory(this), this));
 
-            TabJni.get().initWebContents(mNativeTabAndroid, mIncognito, isDetached(this),
+            TabJni.get().initWebContents(mNativeTabAndroid, mPageInfo.isIncognito, isDetached(this),
                     webContents, mSourceTabId, mWebContentsDelegate, new ArkTabContextMenuPopulatorFactory(this));
 
             mWebContents.notifyRendererPreferenceUpdate();

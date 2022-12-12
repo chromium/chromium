@@ -3,6 +3,7 @@ package com.ark.browser.tab.core;
 import androidx.core.util.AtomicFile;
 
 import com.ark.browser.ArkWindowAndroid;
+import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabInfo;
@@ -224,24 +225,14 @@ public interface ITab {
         }
 
         int pageIndex = parentPageInfo.getOriginalIndex() + 1;
-        Tab tab = PageCacheManager.getInstance().createLivePageByType(
-                pageIndex, (ArkWindowAndroid) parent.getWindowAndroid(), this, type);
-//        PageInfo pageInfo = tab.getPageInfo();
-
-        PageInfo pageInfo = PageInfo.from(tab.getId(), parentId, getId(),
-                pageIndex, tab.isIncognito());
-        pageInfo.setUrl(tab.getUrl().toString());
-        pageInfo.setTitle(tab.getTitle());
-//        pageInfo.save();
-
-        IPage page = new PageImpl(pageInfo);
-        page.savePageInfo();
+        ArkTabImpl tab = PageCacheManager.getInstance().createLivePageByType(this, params, pageIndex, type);
+        IPage page = new PageImpl(tab.getPageInfo());
         IPageGroup pageInfoList = getPageGroup();
 
         pageInfoList.getPageInfoList().add(++index, page);
 
         ArkLogger.d(this, "openNewPage params=" + params);
-        tab.loadUrl(params);
+//        tab.loadUrl(params);
 
         if (++index < pageInfoList.getCount()) {
             List<IPage> pageRemoved = pageInfoList.getPageInfoList()
@@ -340,8 +331,6 @@ public interface ITab {
             ArkLogger.e(ITab.this, "saveTabInfo info=" + getTabInfo()
                     + " pageSize=" + getPageSize());
             for (IPage page : getPageGroup().getPageInfoList()) {
-                ArkLogger.e(ITab.this, "saveTabInfo page=" + page.getId()
-                        + " pageInfo=" + page.getPageInfo());
                 os.writeInt(page.getId());
             }
             os.close();

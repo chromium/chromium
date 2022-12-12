@@ -1,13 +1,18 @@
 package com.ark.browser.tab;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Keep;
+import androidx.core.util.AtomicFile;
 
 import com.ark.browser.tab.dao.ArkTabDao;
+import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -85,6 +90,7 @@ public class PageInfo {
         info.tabInfoId = tabInfoId;
         info.isIncognito = isIncognito;
         info.fromMerge = false;
+        info.save();
         return info;
     }
 
@@ -124,6 +130,7 @@ public class PageInfo {
         info.themeColor = pageInfo.themeColor;
         info.url = pageInfo.url;
         info.title = pageInfo.title;
+        info.save();
         return info;
     }
 
@@ -217,7 +224,11 @@ public class PageInfo {
     }
 
     public void setUrl(String url) {
+        if (TextUtils.equals(this.url, url)) {
+            return;
+        }
         this.url = url;
+        save();
     }
 
     public String getTitle() {
@@ -225,7 +236,11 @@ public class PageInfo {
     }
 
     public void setTitle(String title) {
+        if (TextUtils.equals(this.title, title)) {
+            return;
+        }
         this.title = title;
+        save();
     }
 
     @Override
@@ -242,4 +257,71 @@ public class PageInfo {
                 ", title='" + title + '\'' +
                 '}';
     }
+
+    private void save() {
+        ArkLogger.e(this, "save this=" + this);
+        try {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            DataOutputStream os = new DataOutputStream(stream);
+
+            int version = 1;
+            os.writeInt(version);
+            os.writeInt(pageId);
+            os.writeLong(tabInfoId);
+            os.writeBoolean(isIncognito);
+            os.writeBoolean(fromMerge);
+            os.writeInt(themeColor);
+            os.writeInt(originalIndex);
+            os.writeUTF(url);
+            os.writeUTF(title);
+            os.close();
+
+            byte[] bytes = stream.toByteArray();
+
+            ThreadPool.executeIO(new Runnable() {
+                @Override
+                public void run() {
+                    File pagesDir = ArkTabDao.getPagesDir(tabInfoId);
+                    AtomicFile file = new AtomicFile(new File(pagesDir, String.valueOf(pageId)));
+                    FileOutputStream fos = null;
+                    try {
+                        fos = file.startWrite();
+                        fos.write(bytes, 0, bytes.length);
+                        file.finishWrite(fos);
+                    } catch (IOException e) {
+                        if (fos != null) file.failWrite(fos);
+                        ArkLogger.e(this, "Failed to write file: " + file.getBaseFile().getAbsolutePath());
+                    }
+                }
+            });
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+//        ThreadPool.executeIO(() -> {
+//            PageInfo pageInfo = getPageInfo();
+//            File pagesDir = ArkTabDao.getPagesDir(pageInfo.tabInfoId);
+//            File file = new File(pagesDir, String.valueOf(pageInfo.pageId));
+//            try (DataOutputStream os = new DataOutputStream(
+//                    new BufferedOutputStream(new FileOutputStream(file)))) {
+//                int version = 1;
+//                os.writeInt(version);
+//                os.writeInt(pageInfo.pageId);
+//                os.writeLong(pageInfo.tabInfoId);
+//                os.writeBoolean(pageInfo.isIncognito);
+//                os.writeBoolean(pageInfo.fromMerge);
+//                os.writeInt(pageInfo.getThemeColor());
+//                os.writeInt(pageInfo.originalIndex);
+//                os.writeUTF(pageInfo.getUrl());
+//                os.writeUTF(pageInfo.getTitle());
+//                os.flush();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        });
+    }
+
 }

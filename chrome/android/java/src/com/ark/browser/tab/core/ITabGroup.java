@@ -301,11 +301,10 @@ public interface ITabGroup {
                 Tab innerTab = tab;
                 if (innerTab == null) {
                     if (finalState == null) {
-                        innerTab = PageCacheManager.getInstance().createLivePage(
-                                getWindowAndroid(), page.getPageInfo());
+                        innerTab = PageCacheManager.getInstance().createLivePage(page.getPageInfo());
                     } else {
                         innerTab = PageCacheManager.getInstance().createFrozenPageFromState(
-                                getWindowAndroid(), page.getPageInfo(), finalState);
+                                page.getPageInfo(), finalState);
                     }
                 }
 //                innerTab.setImportance(ChildProcessImportance.IMPORTANT);
@@ -314,8 +313,6 @@ public interface ITabGroup {
                 onIndexChanged(indexOf(iTab));
                 iTab.getTabInfo().setAccessTime(System.currentTimeMillis());
                 iTab.selectPage(page);
-//                iTab.getTabInfo().save();
-                iTab.saveTabInfo();
 
 
                 for (TabInfoObserver obs : getObservers()) {

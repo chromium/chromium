@@ -3,6 +3,7 @@ package com.ark.browser.tab.core;
 import androidx.core.util.AtomicFile;
 
 import com.ark.browser.ArkWindowAndroid;
+import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabInfo;
@@ -319,26 +320,16 @@ public class TabGroupImpl implements ITabGroup {
         loadUrlParams.setUrl(UrlFormatter.fixupUrl(loadUrlParams.getUrl()).getValidSpecOrEmpty());
 //        loadUrlParams.setTransitionType(type);
 
-        Tab page = PageCacheManager.getInstance().createLivePageByType(
-                newTab.getPageSize(), getWindowAndroid(), newTab, type);
-
-//        PageInfo pageInfo = page.getPageInfo();
-
-        PageInfo pageInfo = PageInfo.from(page.getId(), Tab.INVALID_PAGE_ID, newTab.getId(),
-                newTab.getPageSize(), page.isIncognito());
-
-        pageInfo.setUrl(page.getUrl().toString());
-        pageInfo.setTitle(page.getTitle());
-
-        IPage newPage = new PageImpl(pageInfo);
-        newPage.savePageInfo();
+        ArkTabImpl page = PageCacheManager.getInstance().createLivePageByType(
+                newTab, loadUrlParams, newTab.getPageSize(), type);
+        IPage newPage = new PageImpl(page.getPageInfo());
         newTab.getPageGroup().getPageInfoList().add(newPage);
 
         for (TabInfoObserver obs : getObservers()) {
             obs.didAddTab(newPage, type);
         }
         ArkLogger.d(TAG, "openNewTab loadUrlParams=" + loadUrlParams);
-        page.loadUrl(loadUrlParams);
+//        page.loadUrl(loadUrlParams);
         selectTab(newTab, newPage);
     }
 
@@ -499,10 +490,14 @@ public class TabGroupImpl implements ITabGroup {
     @Override
     public void onIndexChanged(int index) {
         ArkLogger.e(TAG, "onIndexChanged index=" + index);
+        if (this.index == index) {
+            return;
+        }
         this.index = index;
 //        PrefsHelper.with().putInt("tab_index", index);
 
-        ThreadPool.executeIO(this::saveGroupFile);
+
+        saveGroupFile();
 
     }
 
@@ -544,9 +539,10 @@ public class TabGroupImpl implements ITabGroup {
             return;
         }
 
+        saveGroupFile();
 
         ThreadPool.executeIO(() -> {
-            saveGroupFile();
+
 
             for (ITab tab : changes) {
                 tab.saveTabInfo();

@@ -17,8 +17,12 @@ import com.ark.browser.utils.ThreadPool;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.content_public.browser.RenderWidgetHostView;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,8 +37,6 @@ public class TabSnapshotManager {
 
     private final SparseArray<SnapshotTask> snapshotTasks = new SparseArray<>();
     private final LruCache<Integer, Bitmap> mBitmapCache;
-
-//    private final String path;
 
     private static final class Holder {
         private static final TabSnapshotManager MANAGER = new TabSnapshotManager();
@@ -87,6 +89,9 @@ public class TabSnapshotManager {
 
     public void removeSnapshot(int pageId) {
         ThreadPool.executeIO(() -> {
+            synchronized (mBitmapCache) {
+                mBitmapCache.remove(pageId);
+            }
             File file = new File(PathHolder.path, pageId + ".thumbnail");
             if (file.exists()) {
                 file.delete();
@@ -187,6 +192,35 @@ public class TabSnapshotManager {
             mStart.set(true);
             Tab tab = PageCacheManager.getInstance().findPage(mPageId);
             if (tab != null && tab.getWebContents() != null) {
+
+                RenderWidgetHostView renderWidgetHostView = tab.getWebContents().getRenderWidgetHostView();
+                if (renderWidgetHostView == null) {
+                    onFinished(null);
+                    return;
+                } else {
+                    File file = new File(PathHolder.path, mPageId + ".thumbnail");
+                    renderWidgetHostView.writeContentBitmapToDiskAsync(0, 0, file.getAbsolutePath(), new Callback<String>() {
+                        @Override
+                        public void onResult(String result) {
+                            ThreadPool.executeIO(() -> {
+                                ArkLogger.e(SnapshotTask.class, "onResult result=" + result);
+                                try (FileInputStream fis = new FileInputStream(file)) {
+                                    Bitmap bitmap = BitmapFactory.decodeStream(fis);
+                                    ThreadPool.post(() -> onFinished(bitmap));
+                                    synchronized (getInstance().mBitmapCache) {
+                                        getInstance().mBitmapCache.put(mPageId, bitmap);
+                                    }
+                                } catch (Exception e) {
+                                    ArkLogger.e(SnapshotTask.class, "decodeBitmap failed! ", e);
+                                    ThreadPool.post(() -> onFinished(null));
+                                }
+                            });
+                        }
+                    });
+                }
+
+
+
 //                tab.getWebContents().getContentBitmapAsync(0, 0, (bitmap, response) -> {
 //                    if (mStart.get()) {
 //                        Log.d("TabThumbnailManager.Task", "onFinishGetBitmap size=" + getInstance().mBitmapCache.size() + " maxSize=" + getInstance().mBitmapCache.maxSize());
@@ -230,7 +264,7 @@ public class TabSnapshotManager {
 //                        onFinished(bitmap);
 //                    }
 //                });
-                onFinished(null);
+//                onFinished(null);
             } else {
                 onFinished(null);
             }
