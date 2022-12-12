@@ -10,9 +10,3 @@ include_rules = [
   "+base/path_service.h",
   "+base/supports_user_data.h",
 ]
-specific_include_rules = {
-  "path_builder_unittest\.cc": [
-    "+base/test/bind.h",
-  ],
-}
-

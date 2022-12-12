@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "net/cert/pem.h"
 #include "net/cert/pki/cert_error_params.h"
@@ -86,7 +85,7 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
 
   ~AsyncCertIssuerSourceStatic() override = default;
 
-  void SetAsyncGetCallback(base::RepeatingClosure closure) {
+  void SetAsyncGetCallback(std::function<void()> closure) {
     async_get_callback_ = std::move(closure);
   }
 
@@ -103,8 +102,9 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
     static_cert_issuer_source_.SyncGetIssuersOf(cert, &issuers);
     auto req = std::make_unique<StaticAsyncRequest>(std::move(issuers));
     *out_req = std::move(req);
-    if (!async_get_callback_.is_null())
-      async_get_callback_.Run();
+    if (async_get_callback_) {
+      async_get_callback_();
+    }
   }
   int num_async_gets() const { return num_async_gets_; }
 
@@ -112,7 +112,7 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
   CertIssuerSourceStatic static_cert_issuer_source_;
 
   int num_async_gets_ = 0;
-  base::RepeatingClosure async_get_callback_;
+  std::function<void()> async_get_callback_ = nullptr;
 };
 
 ::testing::AssertionResult ReadTestPem(const std::string& file_name,
@@ -754,8 +754,8 @@ TEST_F(PathBuilderMultiRootTest, TestDeadline) {
   // returning the async result.
   AsyncCertIssuerSourceStatic async_certs;
   async_certs.AddCert(c_by_d_);
-  async_certs.SetAsyncGetCallback(base::BindLambdaForTesting(
-      [&] { delegate_.SetDeadlineExpiredForTesting(true); }));
+  async_certs.SetAsyncGetCallback(
+      [&] { delegate_.SetDeadlineExpiredForTesting(true); });
 
   CertPathBuilder path_builder(
       a_by_b_, &trust_store, &delegate_, time_, KeyPurpose::ANY_EKU,
