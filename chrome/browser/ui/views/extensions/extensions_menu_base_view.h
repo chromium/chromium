@@ -9,11 +9,13 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_navigation_handler.h"
 #include "ui/views/view.h"
 
+class Browser;
+
 // The views implementation of the extensions menu UI.
 class ExtensionsMenuBaseView : public views::View,
                                public ExtensionsMenuNavigationHandler {
  public:
-  ExtensionsMenuBaseView();
+  explicit ExtensionsMenuBaseView(Browser* browser);
   ~ExtensionsMenuBaseView() override = default;
   ExtensionsMenuBaseView(const ExtensionsMenuBaseView&) = delete;
   const ExtensionsMenuBaseView& operator=(const ExtensionsMenuBaseView&) =

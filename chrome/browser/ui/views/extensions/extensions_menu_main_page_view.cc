@@ -7,9 +7,12 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_navigation_handler.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/url_formatter/elide_url.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -22,9 +25,23 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
+namespace {
+
+// Returns the current site pointed by `web_contents`. This method should only
+// be called when web contents are present.
+std::u16string GetCurrentSite(content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  const GURL& url = web_contents->GetLastCommittedURL();
+  return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+      url);
+}
+
+}  // namespace
+
 ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
+    Browser* browser,
     ExtensionsMenuNavigationHandler* navigation_handler)
-    : navigation_handler_(navigation_handler) {
+    : browser_(browser), navigation_handler_(navigation_handler) {
   views::FlexSpecification stretch_specification =
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded,
@@ -55,9 +72,8 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                                   views::style::CONTEXT_DIALOG_TITLE)
                               .SetTextStyle(views::style::STYLE_SECONDARY),
                           views::Builder<views::Label>()
-                              // TODO(crbug.com/1390952): Change to current
-                              // site.
-                              .SetText(u"site.com")
+                              .CopyAddressTo(&subheader_subtitle_)
+                              .SetText(GetCurrentSite(GetActiveWebContents()))
                               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                               .SetTextContext(views::style::CONTEXT_LABEL)
                               .SetTextStyle(views::style::STYLE_SECONDARY)
@@ -71,4 +87,29 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                               &ExtensionsMenuNavigationHandler::CloseBubble,
                               base::Unretained(navigation_handler_))))))
       .BuildChildren();
+
+  browser_->tab_strip_model()->AddObserver(this);
+}
+
+void ExtensionsMenuMainPageView::Update() {
+  content::WebContents* web_contents = GetActiveWebContents();
+  if (web_contents)
+    subheader_subtitle_->SetText(GetCurrentSite(web_contents));
+}
+
+void ExtensionsMenuMainPageView::TabChangedAt(content::WebContents* contents,
+                                              int index,
+                                              TabChangeType change_type) {
+  Update();
+}
+
+void ExtensionsMenuMainPageView::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  Update();
+}
+
+content::WebContents* ExtensionsMenuMainPageView::GetActiveWebContents() const {
+  return browser_->tab_strip_model()->GetActiveWebContents();
 }

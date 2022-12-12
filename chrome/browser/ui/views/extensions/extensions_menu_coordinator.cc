@@ -14,7 +14,8 @@
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
-ExtensionsMenuCoordinator::ExtensionsMenuCoordinator() = default;
+ExtensionsMenuCoordinator::ExtensionsMenuCoordinator(Browser* browser)
+    : browser_(browser) {}
 
 ExtensionsMenuCoordinator::~ExtensionsMenuCoordinator() {
   Hide();
@@ -35,8 +36,8 @@ void ExtensionsMenuCoordinator::Show(views::View* anchor_view) {
   bubble_delegate->SetEnableArrowKeyTraversal(true);
 
   auto* contents_view = bubble_delegate->SetContentsView(
-      std::make_unique<ExtensionsMenuBaseView>());
-  extensions_menu_bubble_view_tracker_.SetView(contents_view);
+      std::make_unique<ExtensionsMenuBaseView>(browser_));
+  bubble_tracker_.SetView(contents_view);
 
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate))->Show();
 }
@@ -49,15 +50,14 @@ void ExtensionsMenuCoordinator::Hide() {
     menu->Close();
     // Immediately stop tracking the view. Widget will be destroyed
     // asynchronously.
-    extensions_menu_bubble_view_tracker_.SetView(nullptr);
+    bubble_tracker_.SetView(nullptr);
   }
 }
 
 bool ExtensionsMenuCoordinator::IsShowing() const {
-  return !!extensions_menu_bubble_view_tracker_.view();
+  return bubble_tracker_.view() != nullptr;
 }
 
 views::Widget* ExtensionsMenuCoordinator::GetExtensionsMenuWidget() {
-  return IsShowing() ? extensions_menu_bubble_view_tracker_.view()->GetWidget()
-                     : nullptr;
+  return IsShowing() ? bubble_tracker_.view()->GetWidget() : nullptr;
 }

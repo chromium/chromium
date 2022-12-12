@@ -97,7 +97,7 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
       extensions_menu_coordinator_(
           base::FeatureList::IsEnabled(
               extensions_features::kExtensionsMenuAccessControl)
-              ? std::make_unique<ExtensionsMenuCoordinator>()
+              ? std::make_unique<ExtensionsMenuCoordinator>(browser_)
               : nullptr),
       extensions_button_(base::FeatureList::IsEnabled(
                              extensions_features::kExtensionsMenuAccessControl)

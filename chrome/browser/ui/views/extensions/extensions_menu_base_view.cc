@@ -9,8 +9,9 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
-ExtensionsMenuBaseView::ExtensionsMenuBaseView() {
-  auto initial_page = std::make_unique<ExtensionsMenuMainPageView>(this);
+ExtensionsMenuBaseView::ExtensionsMenuBaseView(Browser* browser) {
+  auto initial_page =
+      std::make_unique<ExtensionsMenuMainPageView>(browser, this);
 
   views::Builder<ExtensionsMenuBaseView>(this)
       .SetLayoutManager(std::make_unique<views::BoxLayout>(

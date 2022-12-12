@@ -7,9 +7,12 @@
 
 #include "ui/views/view_tracker.h"
 
+class Browser;
+
+// Handles the lifetime and showing/hidden state of the extensions menu bubble.
 class ExtensionsMenuCoordinator {
  public:
-  ExtensionsMenuCoordinator();
+  explicit ExtensionsMenuCoordinator(Browser* browser);
   ExtensionsMenuCoordinator(const ExtensionsMenuCoordinator&) = delete;
   const ExtensionsMenuCoordinator& operator=(const ExtensionsMenuCoordinator&) =
       delete;
@@ -28,7 +31,8 @@ class ExtensionsMenuCoordinator {
   views::Widget* GetExtensionsMenuWidget();
 
  private:
-  views::ViewTracker extensions_menu_bubble_view_tracker_;
+  raw_ptr<Browser> browser_;
+  views::ViewTracker bubble_tracker_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_COORDINATOR_H_
