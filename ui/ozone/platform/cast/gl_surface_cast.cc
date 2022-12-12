@@ -82,7 +82,7 @@ gfx::SwapResult GLSurfaceCast::SwapBuffersWithBounds(
   }
 
   return NativeViewGLSurfaceEGL::SwapBuffersWithDamage(
-      rects_data, std::move(callback), std::move(data));
+      rects_data, std::move(callback), data);
 }
 
 bool GLSurfaceCast::Resize(const gfx::Size& size,

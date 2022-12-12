@@ -185,7 +185,7 @@ void GbmSurfaceless::PostSubBufferAsync(
     gl::FrameData data) {
   // The actual sub buffer handling is handled at higher layers.
   SwapBuffersAsync(std::move(completion_callback),
-                   std::move(presentation_callback), std::move(data));
+                   std::move(presentation_callback), data);
 }
 
 EGLConfig GbmSurfaceless::GetConfig() {

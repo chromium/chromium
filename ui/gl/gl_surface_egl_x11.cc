@@ -49,8 +49,7 @@ void NativeViewGLSurfaceEGLX11::Destroy() {
 gfx::SwapResult NativeViewGLSurfaceEGLX11::SwapBuffers(
     PresentationCallback callback,
     FrameData data) {
-  auto result =
-      NativeViewGLSurfaceEGL::SwapBuffers(std::move(callback), std::move(data));
+  auto result = NativeViewGLSurfaceEGL::SwapBuffers(std::move(callback), data);
   if (result == gfx::SwapResult::SWAP_FAILED)
     return result;
 

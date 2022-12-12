@@ -143,7 +143,7 @@ gfx::SwapResult DCompPresenter::PostSubBuffer(int x,
                                               FrameData data) {
   // The arguments are ignored because SetDrawRectangle specified the area to
   // be swapped.
-  return SwapBuffers(std::move(callback), std::move(data));
+  return SwapBuffers(std::move(callback), data);
 }
 
 gfx::VSyncProvider* DCompPresenter::GetVSyncProvider() {

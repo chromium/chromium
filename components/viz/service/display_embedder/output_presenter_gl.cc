@@ -288,11 +288,10 @@ void OutputPresenterGL::SwapBuffers(
     gl::FrameData data) {
   if (supports_async_swap_) {
     gl_surface_->SwapBuffersAsync(std::move(completion_callback),
-                                  std::move(presentation_callback),
-                                  std::move(data));
+                                  std::move(presentation_callback), data);
   } else {
-    auto result = gl_surface_->SwapBuffers(std::move(presentation_callback),
-                                           std::move(data));
+    auto result =
+        gl_surface_->SwapBuffers(std::move(presentation_callback), data);
     std::move(completion_callback).Run(gfx::SwapCompletionResult(result));
   }
 }
@@ -309,12 +308,11 @@ void OutputPresenterGL::PostSubBuffer(
   if (supports_async_swap_) {
     gl_surface_->PostSubBufferAsync(
         rect.x(), rect.y(), rect.width(), rect.height(),
-        std::move(completion_callback), std::move(presentation_callback),
-        std::move(data));
+        std::move(completion_callback), std::move(presentation_callback), data);
   } else {
     auto result = gl_surface_->PostSubBuffer(
         rect.x(), rect.y(), rect.width(), rect.height(),
-        std::move(presentation_callback), std::move(data));
+        std::move(presentation_callback), data);
     std::move(completion_callback).Run(gfx::SwapCompletionResult(result));
   }
 }
@@ -352,12 +350,11 @@ void OutputPresenterGL::CommitOverlayPlanes(
     BufferPresentedCallback presentation_callback,
     gl::FrameData data) {
   if (supports_async_swap_) {
-    gl_surface_->CommitOverlayPlanesAsync(std::move(completion_callback),
-                                          std::move(presentation_callback),
-                                          std::move(data));
+    gl_surface_->CommitOverlayPlanesAsync(
+        std::move(completion_callback), std::move(presentation_callback), data);
   } else {
     auto result = gl_surface_->CommitOverlayPlanes(
-        std::move(presentation_callback), std::move(data));
+        std::move(presentation_callback), data);
     std::move(completion_callback).Run(gfx::SwapCompletionResult(result));
   }
 }

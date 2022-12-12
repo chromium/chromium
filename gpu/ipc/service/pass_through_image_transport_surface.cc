@@ -56,7 +56,7 @@ gfx::SwapResult PassThroughImageTransportSurface::SwapBuffers(
       base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      local_swap_id_),
-      std::move(data));
+      data);
   response.result = result;
   FinishSwapBuffers(std::move(response), local_swap_id_,
                     /*release_fence=*/gfx::GpuFenceHandle());
@@ -81,7 +81,7 @@ void PassThroughImageTransportSurface::SwapBuffersAsync(
       base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(presentation_callback), local_swap_id_),
-      std::move(data));
+      data);
 }
 
 gfx::SwapResult PassThroughImageTransportSurface::SwapBuffersWithBounds(
@@ -95,7 +95,7 @@ gfx::SwapResult PassThroughImageTransportSurface::SwapBuffersWithBounds(
       base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      local_swap_id_),
-      std::move(data));
+      data);
   response.result = result;
   FinishSwapBuffers(response, local_swap_id_,
                     /*release_fence=*/gfx::GpuFenceHandle());
@@ -116,7 +116,7 @@ gfx::SwapResult PassThroughImageTransportSurface::PostSubBuffer(
       base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      local_swap_id_),
-      std::move(data));
+      data);
   response.result = result;
   FinishSwapBuffers(response, local_swap_id_,
                     /*release_fence=*/gfx::GpuFenceHandle());
@@ -142,7 +142,7 @@ void PassThroughImageTransportSurface::PostSubBufferAsync(
       base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(presentation_callback), local_swap_id_),
-      std::move(data));
+      data);
 }
 
 gfx::SwapResult PassThroughImageTransportSurface::CommitOverlayPlanes(
@@ -154,7 +154,7 @@ gfx::SwapResult PassThroughImageTransportSurface::CommitOverlayPlanes(
       base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      local_swap_id_),
-      std::move(data));
+      data);
   response.result = result;
   FinishSwapBuffers(response, local_swap_id_,
                     /*release_fence=*/gfx::GpuFenceHandle());
@@ -174,7 +174,7 @@ void PassThroughImageTransportSurface::CommitOverlayPlanesAsync(
       base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(presentation_callback), local_swap_id_),
-      std::move(data));
+      data);
 }
 
 void PassThroughImageTransportSurface::SetVSyncEnabled(bool enabled) {

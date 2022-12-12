@@ -53,11 +53,9 @@ void SoftwareOutputDeviceOzone::OnSwapBuffers(
     SwapBuffersCallback swap_ack_callback,
     gl::FrameData data) {
   if (surface_ozone_->SupportsAsyncBufferSwap())
-    surface_ozone_->OnSwapBuffers(std::move(swap_ack_callback),
-                                  std::move(data));
+    surface_ozone_->OnSwapBuffers(std::move(swap_ack_callback), data);
   else
-    SoftwareOutputDevice::OnSwapBuffers(std::move(swap_ack_callback),
-                                        std::move(data));
+    SoftwareOutputDevice::OnSwapBuffers(std::move(swap_ack_callback), data);
 }
 
 int SoftwareOutputDeviceOzone::MaxFramesPending() const {
