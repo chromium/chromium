@@ -167,20 +167,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Audio.AgcSetLevel" units="level"
-    expires_after="2023-04-16">
-  <owner>hlundin@chromium.org</owner>
+<histogram name="WebRTC.Audio.Apm.RecommendedInputVolume.OnChangeToMatchTarget"
+    units="volume" expires_after="2023-12-31">
+  <owner>silen@chromium.org</owner>
+  <owner>alessiob@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
-    The automatic gain control (AGC) in WebRTC tries to adjust the microphone
-    gain to maintain a strong audio level, but without clipping (saturation).
-    The histogram will log a new value every time the AGC changes the target
-    level.
+    The recommended input volume when adjusted to match the target level - i.e.,
+    not adjusted to handle clipping input. A log call is made every time that
+    such a volume changes during an active WebRTC call.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Audio.Apm.{InputVolumeType}.OnChange" units="volume"
+    expires_after="2023-12-31">
+  <owner>silen@chromium.org</owner>
+  <owner>alessiob@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    The {InputVolumeType} input volume. A log call is made every time that the
+    volume changes during an active WebRTC call.
+  </summary>
+  <token key="InputVolumeType">
+    <variant name="AppliedInputVolume" summary="applied"/>
+    <variant name="RecommendedInputVolume" summary="recommended"/>
+  </token>
+</histogram>
+
 <histogram name="WebRTC.Audio.Apm.{InputVolumeType}.{Metric}Average"
-    units="level" expires_after="2023-12-31">
+    units="volume" expires_after="2023-12-31">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
