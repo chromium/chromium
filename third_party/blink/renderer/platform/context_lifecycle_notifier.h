@@ -16,7 +16,6 @@ class ContextLifecycleObserver;
 // Notifier interface for ContextLifecycleObserver.
 class PLATFORM_EXPORT ContextLifecycleNotifier : public GarbageCollectedMixin {
  public:
-  ContextLifecycleNotifier();
   virtual ~ContextLifecycleNotifier();
 
   virtual void AddContextLifecycleObserver(ContextLifecycleObserver*);
