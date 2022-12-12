@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
   <token key="Process" variants="ProfiledProcess"/>
 </histogram>
 
-<histogram name="HeapProfiling.InProcess.ShortStacks{Process}" units="Boolean"
+<histogram name="HeapProfiling.InProcess.ShortStacks{Process}" enum="Boolean"
     expires_after="2023-06-05">
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-memory@google.com</owner>
