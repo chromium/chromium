@@ -890,7 +890,7 @@ TEST_F(PersonalDataManagerTest, NoIBANsAddedIfDisabled) {
   personal_data_->AddIBAN(iban0);
   personal_data_->AddIBAN(iban1);
 
-  EXPECT_EQ(0U, personal_data_->GetIBANs().size());
+  EXPECT_EQ(0U, personal_data_->GetLocalIBANs().size());
 }
 
 TEST_F(PersonalDataManagerTest, AddUpdateRemoveIBANs) {
@@ -924,13 +924,13 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveIBANs) {
   std::vector<IBAN*> ibans;
   ibans.push_back(&iban0);
   ibans.push_back(&iban1);
-  ExpectSameElements(ibans, personal_data_->GetIBANs());
+  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
 
   // `iban1_2` has the same fields as `iban1_1`, verify that `iban1_2` is
   // not added.
   IBAN iban1_2 = iban1_1;
   personal_data_->AddIBAN(iban1_1);
-  ExpectSameElements(ibans, personal_data_->GetIBANs());
+  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
 
   // Update IBAN0, remove IBAN1, and add IBAN2.
   iban0.set_nickname(u"Nickname new 0");
@@ -944,7 +944,7 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveIBANs) {
   ibans.clear();
   ibans.push_back(&iban0);
   ibans.push_back(&iban2);
-  ExpectSameElements(ibans, personal_data_->GetIBANs());
+  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
 
   // Verify that a duplicate IBAN should not be added.
   IBAN iban0_dup = iban0;
@@ -952,7 +952,7 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveIBANs) {
   ibans.clear();
   ibans.push_back(&iban0);
   ibans.push_back(&iban2);
-  ExpectSameElements(ibans, personal_data_->GetIBANs());
+  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
 
   // Reset the PersonalDataManager. This tests that the personal data was saved
   // to the web database, and that we can load the IBANs from the web database.
@@ -962,7 +962,7 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveIBANs) {
   ibans.clear();
   ibans.push_back(&iban0);
   ibans.push_back(&iban2);
-  ExpectSameElements(ibans, personal_data_->GetIBANs());
+  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
 }
 
 // Ensure that new IBANs can be updated and saved via
@@ -979,7 +979,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave) {
 
   // Make sure everything is set up correctly.
   WaitForOnPersonalDataChanged();
-  EXPECT_EQ(1U, personal_data_->GetIBANs().size());
+  EXPECT_EQ(1U, personal_data_->GetLocalIBANs().size());
 
   // Creates a new IBAN and call `OnAcceptedLocalIBANSave()` and verify that
   // the new IBAN is saved.
@@ -990,13 +990,13 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave) {
   WaitForOnPersonalDataChanged();
 
   // Expect that the new IBAN is added.
-  ASSERT_EQ(2U, personal_data_->GetIBANs().size());
+  ASSERT_EQ(2U, personal_data_->GetLocalIBANs().size());
 
   std::vector<IBAN*> ibans;
   ibans.push_back(&iban0);
   ibans.push_back(&iban1);
   // Verify that we've loaded the IBAN from the web database.
-  ExpectSameElements(ibans, personal_data_->GetIBANs());
+  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
 
   // Creates a new `iban2` which has the same value as `iban0` but with
   // different nickname and call `OnAcceptedLocalIBANSave()`.
@@ -1014,21 +1014,21 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave) {
   ibans.push_back(&iban1);
   ibans.push_back(&iban2);
   // Expect that the existing IBANs are updated.
-  ASSERT_EQ(2U, personal_data_->GetIBANs().size());
+  ASSERT_EQ(2U, personal_data_->GetLocalIBANs().size());
 
   // Verify that we've loaded the IBANs from the web database.
-  ExpectSameElements(ibans, personal_data_->GetIBANs());
+  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
 
   // Call `OnAcceptedLocalIBANSave()` with the same iban1, verify that nothing
   // changes.
   personal_data_->OnAcceptedLocalIBANSave(iban1);
-  ExpectSameElements(ibans, personal_data_->GetIBANs());
+  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
 
   // Reset the PersonalDataManager. This tests that the IBANs are persisted
   // in the local web database even if the browser is re-loaded, ensuring that
   // the user can load the IBANs from the local web database on browser startup.
   ResetPersonalDataManager(USER_MODE_NORMAL);
-  ExpectSameElements(ibans, personal_data_->GetIBANs());
+  ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
 }
 
 // Ensure that new IBAN cannot be updated nor saved via
@@ -1046,7 +1046,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave_IsOffTheRecordTrue) {
   personal_data_->AddIBAN(iban0);
 
   // Verify the new IBAN is not saved.
-  EXPECT_TRUE(personal_data_->GetIBANs().empty());
+  EXPECT_TRUE(personal_data_->GetLocalIBANs().empty());
 
   // Creates a new IBAN and call `OnAcceptedLocalIBANSave()` and verify that
   // the new IBAN is not saved.
@@ -1055,14 +1055,14 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave_IsOffTheRecordTrue) {
   iban1.set_nickname(u"Nickname 1");
   personal_data_->OnAcceptedLocalIBANSave(iban1);
 
-  EXPECT_TRUE(personal_data_->GetIBANs().empty());
+  EXPECT_TRUE(personal_data_->GetLocalIBANs().empty());
 
   // Updates the nickname for `iban1` and call `OnAcceptedLocalIBANSave()`,
   // verify that nothing happens.
   iban1.set_nickname(u"Nickname 0 updated");
   personal_data_->OnAcceptedLocalIBANSave(iban1);
 
-  EXPECT_TRUE(personal_data_->GetIBANs().empty());
+  EXPECT_TRUE(personal_data_->GetLocalIBANs().empty());
 }
 
 TEST_F(PersonalDataManagerTest, AddUpdateRemoveCreditCards) {

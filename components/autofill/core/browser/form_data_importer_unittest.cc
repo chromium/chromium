@@ -3333,7 +3333,7 @@ TEST_P(FormDataImporterTest, ImportFormData_ImportIbanRecordType_LocalIban) {
 
   WaitForOnPersonalDataChanged();
 
-  const std::vector<IBAN*>& results = personal_data_manager_->GetIBANs();
+  const std::vector<IBAN*>& results = personal_data_manager_->GetLocalIBANs();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(iban));
 
@@ -3365,7 +3365,7 @@ TEST_P(FormDataImporterTest,
 
   WaitForOnPersonalDataChanged();
 
-  const std::vector<IBAN*>& results = personal_data_manager_->GetIBANs();
+  const std::vector<IBAN*>& results = personal_data_manager_->GetLocalIBANs();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(iban));
 

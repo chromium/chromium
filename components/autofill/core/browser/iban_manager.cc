@@ -27,7 +27,7 @@ bool IBANManager::OnGetSingleFieldSuggestions(
     base::WeakPtr<SuggestionsHandler> handler,
     const SuggestionsContext& context) {
   if (!is_off_the_record_ && personal_data_manager_) {
-    std::vector<IBAN*> ibans = personal_data_manager_->GetIBANs();
+    std::vector<IBAN*> ibans = personal_data_manager_->GetLocalIBANs();
     if (!ibans.empty()) {
       // Rank the IBANs by ranking score (see AutoFillDataModel for details).
       base::Time comparison_time = AutofillClock::Now();

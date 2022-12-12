@@ -900,7 +900,7 @@ absl::optional<IBAN> FormDataImporter::ImportIBAN(const FormStructure& form) {
     return absl::nullopt;
 
   bool found_existing_iban = base::ranges::any_of(
-      personal_data_manager_->GetIBANs(), [&](const auto& iban) {
+      personal_data_manager_->GetLocalIBANs(), [&](const auto& iban) {
         return iban->value() == candidate_iban.value();
       });
 

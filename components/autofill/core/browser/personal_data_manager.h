@@ -320,8 +320,8 @@ class PersonalDataManager : public KeyedService,
   // Returns all credit cards, server and local.
   virtual std::vector<CreditCard*> GetCreditCards() const;
 
-  // Returns local Ibans.
-  virtual std::vector<IBAN*> GetIBANs() const;
+  // Returns local IBANs.
+  virtual std::vector<IBAN*> GetLocalIBANs() const;
 
   // Returns the Payments customer data. Returns nullptr if no data is present.
   virtual PaymentsCustomerData* GetPaymentsCustomerData() const;

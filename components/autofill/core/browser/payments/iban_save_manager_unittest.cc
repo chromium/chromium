@@ -92,7 +92,7 @@ TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted) {
   OnUserDidDecideOnLocalSave(
       AutofillClient::SaveIBANOfferUserDecision::kAccepted,
       u"  My teacher's IBAN ");
-  const std::vector<IBAN*> ibans = personal_data().GetIBANs();
+  const std::vector<IBAN*> ibans = personal_data().GetLocalIBANs();
 
   // Verify IBAN has been successfully updated with the new nickname on accept.
   EXPECT_EQ(ibans.size(), 1U);
@@ -106,13 +106,13 @@ TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Declined) {
   iban.set_value(value);
 
   EXPECT_TRUE(iban_save_manager_->AttemptToOfferIBANLocalSave(iban));
-  EXPECT_TRUE(personal_data().GetIBANs().empty());
+  EXPECT_TRUE(personal_data().GetLocalIBANs().empty());
 
   OnUserDidDecideOnLocalSave(
       AutofillClient::SaveIBANOfferUserDecision::kDeclined);
-  const std::vector<IBAN*> ibans = personal_data().GetIBANs();
+  const std::vector<IBAN*> ibans = personal_data().GetLocalIBANs();
 
-  EXPECT_TRUE(personal_data().GetIBANs().empty());
+  EXPECT_TRUE(personal_data().GetLocalIBANs().empty());
 }
 
 TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored) {
@@ -121,13 +121,13 @@ TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored) {
   iban.set_value(value);
 
   EXPECT_TRUE(iban_save_manager_->AttemptToOfferIBANLocalSave(iban));
-  EXPECT_TRUE(personal_data().GetIBANs().empty());
+  EXPECT_TRUE(personal_data().GetLocalIBANs().empty());
 
   OnUserDidDecideOnLocalSave(
       AutofillClient::SaveIBANOfferUserDecision::kIgnored);
-  const std::vector<IBAN*> ibans = personal_data().GetIBANs();
+  const std::vector<IBAN*> ibans = personal_data().GetLocalIBANs();
 
-  EXPECT_TRUE(personal_data().GetIBANs().empty());
+  EXPECT_TRUE(personal_data().GetLocalIBANs().empty());
 }
 
 TEST_F(IBANSaveManagerTest, LocallySaveIBAN_NotEnoughStrikesShouldOfferToSave) {
