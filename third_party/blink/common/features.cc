@@ -1462,7 +1462,7 @@ BASE_FEATURE(kFileSystemUrlNavigationForChromeAppsOnly,
 
 BASE_FEATURE(kEarlyExitOnNoopClassOrStyleChange,
              "EarlyExitOnNoopClassOrStyleChange",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(mahesh.ma): Enable for supported Android versions once feature is ready.
 BASE_FEATURE(kStylusWritingToInput,
