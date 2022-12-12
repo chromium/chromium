@@ -29,11 +29,17 @@ class ScopedHardwareBufferFenceSync;
 
 namespace gl {
 
+class ScopedJavaSurfaceControl;
+
 class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
  public:
   GLSurfaceEGLSurfaceControl(
       GLDisplayEGL* display,
       ANativeWindow* window,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  GLSurfaceEGLSurfaceControl(
+      GLDisplayEGL* display,
+      gl::ScopedJavaSurfaceControl scoped_java_surface_control,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // GLSurface implementation.
@@ -94,6 +100,10 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
       absl::optional<int64_t> choreographer_vsync_id) override;
 
  private:
+  GLSurfaceEGLSurfaceControl(
+      GLDisplayEGL* display,
+      scoped_refptr<gfx::SurfaceControl::Surface> root_surface,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~GLSurfaceEGLSurfaceControl() override;
 
   struct SurfaceState {
@@ -205,7 +215,6 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
   void AdvanceTransactionQueue();
   void CheckPendingPresentationCallbacks();
 
-  const std::string root_surface_name_;
   const std::string child_surface_name_;
 
   // Holds the surface state changes made since the last call to SwapBuffers.

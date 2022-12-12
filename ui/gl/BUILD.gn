@@ -141,6 +141,8 @@ component("gl") {
     sources += [
       "android/scoped_java_surface.cc",
       "android/scoped_java_surface.h",
+      "android/scoped_java_surface_control.cc",
+      "android/scoped_java_surface_control.h",
       "android/surface_texture.cc",
       "android/surface_texture.h",
       "android/surface_texture_listener.cc",
@@ -624,6 +626,7 @@ if (is_android) {
 
   generate_jni("gl_jni_headers") {
     sources = [
+      "../android/java/src/org/chromium/ui/gl/ScopedJavaSurfaceControl.java",
       "../android/java/src/org/chromium/ui/gl/SurfaceTextureListener.java",
       "../android/java/src/org/chromium/ui/gl/SurfaceTexturePlatformWrapper.java",
     ]
