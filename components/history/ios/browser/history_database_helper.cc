@@ -25,11 +25,10 @@ const DownloadInterruptReason kDownloadInterruptReasonCrash = 50;
 }  // namespace
 
 HistoryDatabaseParams HistoryDatabaseParamsForPath(
-    const base::FilePath& history_dir) {
-  return HistoryDatabaseParams(
-      history_dir,
-      kDownloadInterruptReasonNone,
-      kDownloadInterruptReasonCrash);
+    const base::FilePath& history_dir,
+    version_info::Channel channel) {
+  return HistoryDatabaseParams(history_dir, kDownloadInterruptReasonNone,
+                               kDownloadInterruptReasonCrash, channel);
 }
 
 }  // namespace

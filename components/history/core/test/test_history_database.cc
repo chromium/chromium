@@ -5,6 +5,7 @@
 #include "components/history/core/test/test_history_database.h"
 
 #include "components/history/core/browser/history_database_params.h"
+#include "components/version_info/channel.h"
 
 namespace history {
 const DownloadInterruptReason kTestDownloadInterruptReasonNone = 0;
@@ -20,10 +21,9 @@ TestHistoryDatabase::~TestHistoryDatabase() {
 
 HistoryDatabaseParams TestHistoryDatabaseParamsForPath(
     const base::FilePath& history_dir) {
-  return HistoryDatabaseParams(
-      history_dir,
-      kTestDownloadInterruptReasonNone,
-      kTestDownloadInterruptReasonCrash);
+  return HistoryDatabaseParams(history_dir, kTestDownloadInterruptReasonNone,
+                               kTestDownloadInterruptReasonCrash,
+                               version_info::Channel::UNKNOWN);
 }
 
 }  // namespace history

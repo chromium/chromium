@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/cocoa/screentime/history_deleter.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/version_info/channel.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -64,8 +65,8 @@ class HistoryBridgeTest : public ::testing::Test {
         std::make_unique<HistoryBridge>(service_.get(), std::move(deleter));
 
     CHECK(history_dir_.CreateUniqueTempDir());
-    service_->Init(
-        history::HistoryDatabaseParams(history_dir_.GetPath(), 0, 0));
+    service_->Init(history::HistoryDatabaseParams(
+        history_dir_.GetPath(), 0, 0, version_info::Channel::UNKNOWN));
     service_->SetOnBackendDestroyTask(history_teardown_loop_.QuitClosure());
   }
 

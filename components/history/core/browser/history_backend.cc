@@ -199,6 +199,27 @@ void MergeUpdateIntoExistingModelAnnotations(
   }
 }
 
+// Does base::debug::DumpWithoutCrashing(), but on Canary/Dev only, and at a
+// throttled rate. This is because our dump volume is high, and that can mask
+// OTHER crashes. This is similar to ReportUnrecoverableError() in Sync code.
+// https://crbug.com/1377512
+void SelectiveDumpWithoutCrashing(version_info::Channel channel) {
+  if (channel != version_info::Channel::CANARY &&
+      channel != version_info::Channel::DEV) {
+    return;
+  }
+
+  // We only want to upload |kErrorUploadRatio| ratio of errors.
+  const double kErrorUploadRatio = 0.1;
+  if (kErrorUploadRatio <= 0.0)
+    return;  // We are not allowed to upload errors.
+  double random_number = base::RandDouble();
+  if (random_number > kErrorUploadRatio)
+    return;
+
+  base::debug::DumpWithoutCrashing();
+}
+
 }  // namespace
 
 std::u16string FormatUrlForRedirectComparison(const GURL& url) {
@@ -999,6 +1020,7 @@ void HistoryBackend::InitImpl(
 
   // Compute the file names.
   history_dir_ = history_database_params.history_dir;
+  channel_ = history_database_params.channel;
 
 #if DCHECK_IS_ON()
   DCHECK(!HistoryPathsTracker::GetInstance()->HasPath(history_dir_))
@@ -2758,7 +2780,7 @@ void HistoryBackend::BeginSingletonTransaction() {
 
     // TODO(crbug.com/1321483): Remove DumpWithoutCrashing after fixing
     // transaction related bugs in History.
-    base::debug::DumpWithoutCrashing();
+    SelectiveDumpWithoutCrashing(channel_);
   }
 }
 
@@ -2796,7 +2818,7 @@ void HistoryBackend::CommitSingletonTransactionIfItExists() {
     error_message_key.Set(diagnostics_.error_message);
     // TODO(crbug.com/1321483): Remove DumpWithoutCrashing after fixing
     // transaction related bugs in History.
-    base::debug::DumpWithoutCrashing();
+    SelectiveDumpWithoutCrashing(channel_);
   }
   singleton_transaction_.reset();
 }

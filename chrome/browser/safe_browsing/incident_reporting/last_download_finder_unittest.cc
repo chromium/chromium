@@ -70,8 +70,8 @@ std::unique_ptr<KeyedService> BuildHistoryService(
           std::make_unique<ChromeHistoryClient>(
               BookmarkModelFactory::GetForBrowserContext(profile)),
           std::unique_ptr<history::VisitDelegate>()));
-  if (history_service->Init(
-          history::HistoryDatabaseParamsForPath(profile->GetPath()))) {
+  if (history_service->Init(history::HistoryDatabaseParamsForPath(
+          profile->GetPath(), version_info::Channel::UNKNOWN))) {
     return std::move(history_service);
   }
 

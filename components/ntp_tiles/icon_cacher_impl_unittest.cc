@@ -86,8 +86,8 @@ class IconCacherTestBase : public ::testing::Test {
   IconCacherTestBase()
       : favicon_service_(/*favicon_client=*/nullptr, &history_service_) {
     CHECK(history_dir_.CreateUniqueTempDir());
-    CHECK(history_service_.Init(
-        history::HistoryDatabaseParams(history_dir_.GetPath(), 0, 0)));
+    CHECK(history_service_.Init(history::HistoryDatabaseParams(
+        history_dir_.GetPath(), 0, 0, version_info::Channel::UNKNOWN)));
   }
 
   void PreloadIcon(const GURL& url,
