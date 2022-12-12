@@ -5,6 +5,7 @@
 #include "base/win/security_util.h"
 
 #include <windows.h>
+#include <winternl.h>
 
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -95,6 +96,20 @@ void AppendSidVector(std::vector<Sid>& base_sids,
   for (const Sid& sid : append_sids) {
     base_sids.push_back(sid.Clone());
   }
+}
+
+absl::optional<ACCESS_MASK> GetGrantedAccess(HANDLE handle) {
+  static const auto query_object = reinterpret_cast<decltype(NtQueryObject)*>(
+      GetProcAddress(::GetModuleHandle(L"ntdll.dll"), "NtQueryObject"));
+  if (!query_object) {
+    return absl::nullopt;
+  }
+  PUBLIC_OBJECT_BASIC_INFORMATION basic_info = {};
+  if (!NT_SUCCESS(query_object(handle, ObjectBasicInformation, &basic_info,
+                               sizeof(basic_info), nullptr))) {
+    return absl::nullopt;
+  }
+  return basic_info.GrantedAccess;
 }
 
 }  // namespace win

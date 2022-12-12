@@ -105,10 +105,10 @@ bool AddSidToDefaultDacl(HANDLE token,
   if (!token)
     return false;
 
-  absl::optional<base::win::AccessToken::Dacl> dacl = query_token.DefaultDacl();
+  absl::optional<base::win::AccessControlList> dacl = query_token.DefaultDacl();
   if (!dacl)
     return false;
-  auto new_dacl = AddSidToDacl(sid, dacl->GetAcl(), access_mode, access);
+  auto new_dacl = AddSidToDacl(sid, dacl->get(), access_mode, access);
   if (!new_dacl)
     return false;
 

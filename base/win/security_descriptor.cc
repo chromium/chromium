@@ -175,8 +175,7 @@ absl::optional<SecurityDescriptor> SecurityDescriptor::FromPointer(
 absl::optional<SecurityDescriptor> SecurityDescriptor::FromFile(
     const base::FilePath& path,
     SECURITY_INFORMATION security_info) {
-  return FromName(path.value().c_str(), SecurityObjectType::kFile,
-                  security_info);
+  return FromName(path.value(), SecurityObjectType::kFile, security_info);
 }
 
 absl::optional<SecurityDescriptor> SecurityDescriptor::FromName(
@@ -214,8 +213,7 @@ SecurityDescriptor::~SecurityDescriptor() = default;
 
 bool SecurityDescriptor::WriteToFile(const base::FilePath& path,
                                      SECURITY_INFORMATION security_info) const {
-  return WriteToName(path.value().c_str(), SecurityObjectType::kFile,
-                     security_info);
+  return WriteToName(path.value(), SecurityObjectType::kFile, security_info);
 }
 
 bool SecurityDescriptor::WriteToName(const std::wstring& name,

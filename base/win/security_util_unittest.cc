@@ -253,5 +253,15 @@ TEST(SecurityUtilTest, AppendSidVector) {
   }
 }
 
+TEST(SecurityUtilTest, GetGrantedAccess) {
+  EXPECT_FALSE(GetGrantedAccess(nullptr));
+  ScopedHandle handle(::CreateMutexEx(nullptr, nullptr, 0, MUTEX_MODIFY_STATE));
+  EXPECT_EQ(GetGrantedAccess(handle.get()), DWORD{MUTEX_MODIFY_STATE});
+  handle.Set(::CreateMutexEx(nullptr, nullptr, 0, READ_CONTROL));
+  EXPECT_EQ(GetGrantedAccess(handle.get()), DWORD{READ_CONTROL});
+  handle.Set(::CreateMutexEx(nullptr, nullptr, 0, GENERIC_ALL));
+  EXPECT_EQ(GetGrantedAccess(handle.get()), DWORD{MUTEX_ALL_ACCESS});
+}
+
 }  // namespace win
 }  // namespace base
