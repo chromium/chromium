@@ -439,6 +439,7 @@ TEST(MathUtilTest, ProjectEnclosingRectWithLargeTransforms) {
 }
 
 TEST(MathUtilTest, RoundUp) {
+  static_assert(MathUtil::UncheckedRoundUp(45, 10) == 50);
   for (int multiplier = 1; multiplier <= 10; ++multiplier) {
     // Try attempts in descending order, so that we can
     // determine the correct value before it's needed.
@@ -473,6 +474,7 @@ TEST(MathUtilTest, RoundUpOverflow) {
 }
 
 TEST(MathUtilTest, RoundDown) {
+  static_assert(MathUtil::UncheckedRoundDown(45, 10) == 40);
   for (int multiplier = 1; multiplier <= 10; ++multiplier) {
     // Try attempts in ascending order, so that we can
     // determine the correct value before it's needed.
