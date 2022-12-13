@@ -20,6 +20,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/history_clusters/core/features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/navigation_details.h"
@@ -159,7 +160,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
   ChromeURLDataManagerWebUITrustedTypesTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     enabled_features.push_back(features::kChromeWhatsNewUI);
-    enabled_features.push_back(features::kSidePanelJourneys);
+    enabled_features.push_back(history_clusters::kSidePanelJourneys);
     enabled_features.push_back(features::kSupportTool);
     enabled_features.push_back(ntp_features::kCustomizeChromeSidePanel);
     enabled_features.push_back(

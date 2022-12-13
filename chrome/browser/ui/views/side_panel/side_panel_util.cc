@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/side_panel/user_note/user_note_ui_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/webview/webview_side_panel_coordinator.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/prefs/pref_service.h"
@@ -67,7 +68,7 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
   // Add history clusters.
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(browser->profile());
-  if (base::FeatureList::IsEnabled(features::kSidePanelJourneys) &&
+  if (base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys) &&
       history_clusters_service &&
       history_clusters_service->IsJourneysEnabled() &&
       !browser->profile()->IsIncognitoProfile()) {

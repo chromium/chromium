@@ -5823,7 +5823,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSidePanelJourneysName,
      flag_descriptions::kSidePanelJourneysDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
-         features::kSidePanelJourneys,
+         history_clusters::kSidePanelJourneys,
          kSidePanelJourneysOpensFromOmniboxVariations,
          "SidePanelJourneys")},
 

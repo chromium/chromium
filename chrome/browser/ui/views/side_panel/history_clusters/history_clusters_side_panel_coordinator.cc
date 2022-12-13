@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/url_constants.h"
@@ -108,7 +109,7 @@ void HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged() {
           history_clusters::prefs::kVisible)) {
     auto* history_clusters_service =
         HistoryClustersServiceFactory::GetForBrowserContext(browser->profile());
-    if (base::FeatureList::IsEnabled(features::kSidePanelJourneys) &&
+    if (base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys) &&
         history_clusters_service &&
         history_clusters_service->IsJourneysEnabled() &&
         !browser->profile()->IsIncognitoProfile()) {

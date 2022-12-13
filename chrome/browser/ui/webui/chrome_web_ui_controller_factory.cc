@@ -80,6 +80,7 @@
 #include "components/favicon_base/select_favicon_frames.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/features.h"
 #include "components/history_clusters/history_clusters_internals/webui/history_clusters_internals_ui.h"
 #include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
 #include "components/nacl/common/buildflags.h"
@@ -901,7 +902,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       customize_chrome::IsSidePanelEnabled()) {
     return &NewWebUI<CustomizeChromeUI>;
   }
-  if (base::FeatureList::IsEnabled(features::kSidePanelJourneys)) {
+  if (base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys)) {
     if (url.host_piece() == chrome::kChromeUIHistoryClustersSidePanelHost)
       return &NewWebUI<HistoryClustersSidePanelUI>;
   }

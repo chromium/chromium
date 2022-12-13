@@ -77,8 +77,6 @@ BASE_DECLARE_FEATURE(kSidePanelImprovedClobbering);
 
 BASE_DECLARE_FEATURE(kSidePanelWebView);
 
-BASE_DECLARE_FEATURE(kSidePanelJourneys);
-extern const base::FeatureParam<bool> kSidePanelJourneysOpensFromOmnibox;
 BASE_DECLARE_FEATURE(kSidePanelJourneysQueryless);
 
 BASE_DECLARE_FEATURE(kSideSearch);

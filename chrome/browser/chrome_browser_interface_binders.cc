@@ -57,6 +57,7 @@
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/feed/buildflags.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/history_clusters_internals/webui/history_clusters_internals_ui.h"
 #include "components/live_caption/caption_util.h"
@@ -929,7 +930,7 @@ void PopulateChromeWebUIFrameBinders(
           render_frame_host->GetProcess()->GetBrowserContext());
   if (history_clusters_service &&
       history_clusters_service->IsJourneysEnabled()) {
-    if (base::FeatureList::IsEnabled(features::kSidePanelJourneys) &&
+    if (base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys) &&
         base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
       RegisterWebUIControllerInterfaceBinder<
           history_clusters::mojom::PageHandler, HistoryUI,

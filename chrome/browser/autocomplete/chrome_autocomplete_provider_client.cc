@@ -45,6 +45,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/top_sites.h"
+#include "components/history_clusters/core/features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
@@ -468,8 +469,8 @@ void ChromeAutocompleteProviderClient::CloseIncognitoWindows() {
 bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
 #if !BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(features::kUnifiedSidePanel) ||
-      !base::FeatureList::IsEnabled(features::kSidePanelJourneys) ||
-      !features::kSidePanelJourneysOpensFromOmnibox.Get()) {
+      !base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys) ||
+      !history_clusters::kSidePanelJourneysOpensFromOmnibox.Get()) {
     return false;
   }
 

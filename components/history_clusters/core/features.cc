@@ -105,4 +105,12 @@ const base::FeatureParam<base::TimeDelta>
         &kJourneysSurveyForOmniboxEntrypoint, "survey-delay-duration",
         base::Seconds(6)};
 
+BASE_FEATURE(kSidePanelJourneys,
+             "SidePanelJourneys",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// If enabled, and the main flag is also enabled, the Journeys omnibox
+// entrypoints open Journeys in Side Panel rather than the History WebUI.
+const base::FeatureParam<bool> kSidePanelJourneysOpensFromOmnibox{
+    &kSidePanelJourneys, "SidePanelJourneysOpensFromOmnibox", false};
+
 }  // namespace history_clusters

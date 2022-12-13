@@ -90,6 +90,11 @@ BASE_DECLARE_FEATURE(kJourneysSurveyForOmniboxEntrypoint);
 extern const base::FeatureParam<base::TimeDelta>
     kJourneysSurveyForOmniboxEntrypointDelay;
 
+// Enables Side Panel Journeys.
+BASE_DECLARE_FEATURE(kSidePanelJourneys);
+extern const base::FeatureParam<bool> kSidePanelJourneysOpensFromOmnibox;
+BASE_DECLARE_FEATURE(kSidePanelJourneysQueryless);
+
 }  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_FEATURES_H_
