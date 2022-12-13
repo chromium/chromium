@@ -12,6 +12,8 @@ source_set("web_content_area") {
     "http_auth_overlay.mm",
     "java_script_dialog_overlay.h",
     "java_script_dialog_overlay.mm",
+    "java_script_dialog_overlay_utils.h",
+    "java_script_dialog_overlay_utils.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -44,6 +46,7 @@ source_set("unit_tests") {
     "app_launcher_overlay_unittest.mm",
     "http_auth_overlay_unittest.mm",
     "java_script_dialog_overlay_unittest.mm",
+    "java_script_dialog_overlay_utils_unittest.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -56,6 +59,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/ui/dialogs",
+    "//ios/chrome/browser/ui/dialogs:java_script_blocking_fake_web_state",
     "//ios/chrome/browser/ui/elements",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

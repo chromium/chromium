@@ -23,9 +23,26 @@ source_set("unit_tests") {
 
   deps = [
     ":dialogs",
+    ":java_script_blocking_fake_web_state",
     "//ios/web",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("java_script_blocking_fake_web_state") {
+  testonly = true
+
+  sources = [
+    "java_script_blocking_fake_web_state.h",
+    "java_script_blocking_fake_web_state.mm",
+  ]
+
+  deps = [
+    "//ios/web",
+    "//ios/web/public/test/fakes",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

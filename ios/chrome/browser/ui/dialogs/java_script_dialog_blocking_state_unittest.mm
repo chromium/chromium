@@ -4,52 +4,13 @@
 
 #import "ios/chrome/browser/ui/dialogs/java_script_dialog_blocking_state.h"
 
-#import <memory>
-
-#import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/fake_navigation_manager.h"
-#import "ios/web/public/test/fakes/fake_web_state.h"
-#import "ios/web/public/web_state_observer.h"
+#import "ios/chrome/browser/ui/dialogs/java_script_blocking_fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-// FakeWebState subclass that allows simulating page loads.
-class JavaScriptBlockingFakeWebState : public web::FakeWebState {
- public:
-  JavaScriptBlockingFakeWebState() : web::FakeWebState() {
-    last_committed_item_ = web::NavigationItem::Create();
-    auto manager = std::make_unique<web::FakeNavigationManager>();
-    manager->SetLastCommittedItem(last_committed_item_.get());
-    manager_ = manager.get();
-    SetNavigationManager(std::move(manager));
-  }
-
-  // Simulates a navigation by sending a WebStateObserver callback.
-  void SimulateNavigationStarted(bool renderer_initiated,
-                                 bool same_document,
-                                 ui::PageTransition transition,
-                                 bool change_last_committed_item) {
-    if (change_last_committed_item) {
-      last_committed_item_ = web::NavigationItem::Create();
-      manager_->SetLastCommittedItem(last_committed_item_.get());
-    }
-    web::FakeNavigationContext context;
-    context.SetIsRendererInitiated(renderer_initiated);
-    context.SetIsSameDocument(same_document);
-    OnNavigationStarted(&context);
-  }
-
- private:
-  web::FakeNavigationManager* manager_ = nullptr;
-  std::unique_ptr<web::NavigationItem> last_committed_item_;
-};
-}  // namespace
 
 // Test fixture for testing JavaScriptDialogBlockingState.
 class JavaScriptDialogBlockingStateTest : public PlatformTest {
