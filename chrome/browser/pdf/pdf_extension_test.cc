@@ -3622,9 +3622,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, BackgroundColor) {
   // ensures that the PDF plugin has loaded and the right background color is
   // beign used.
   WaitForPluginServiceToLoad();
-  WebContents* guest_contents =
-      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest_contents);
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(guest);
+  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
+  ASSERT_TRUE(guest_mainframe);
+
   const std::string script =
       "window.domAutomationController.send("
       "    window.getComputedStyle(document.body, null)."
@@ -3634,7 +3637,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, BackgroundColor) {
                                                      script, &outer));
   std::string inner;
   ASSERT_TRUE(
-      content::ExecuteScriptAndExtractString(guest_contents, script, &inner));
+      content::ExecuteScriptAndExtractString(guest_mainframe, script, &inner));
   EXPECT_EQ(inner, outer);
 }
 
