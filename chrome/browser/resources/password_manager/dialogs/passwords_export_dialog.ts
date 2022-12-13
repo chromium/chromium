@@ -7,6 +7,8 @@
  * passwords.
  */
 
+import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
+
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -26,6 +28,18 @@ enum States {
 
 const ProgressStatus = chrome.passwordsPrivate.ExportProgressStatus;
 
+/**
+ * The amount of time (ms) between the start of the export and the moment we
+ * start showing the progress bar.
+ */
+const progressBarDelayMs: number = 100;
+
+/**
+ * The minimum amount of time (ms) that the progress bar will be visible.
+ */
+const progressBarBlockMs: number = 1000;
+
+
 const PasswordsExportDialogElementBase = I18nMixin(PolymerElement);
 
 export class PasswordsExportDialogElement extends
@@ -41,14 +55,23 @@ export class PasswordsExportDialogElement extends
   static get properties() {
     return {
       showStartDialog_: Boolean,
+      showProgressDialog_: Boolean,
     };
   }
 
   private showStartDialog_: boolean;
+  private showProgressDialog_: boolean;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
   private onPasswordsFileExportProgressListener_:
       PasswordsFileExportProgressListener|null = null;
+  // Token for the timeout used to ensure that the progress bar is not shown if
+  // the export takes less than |progressBarDelayMs|.
+  private progressBarDelayToken_: number|null;
+  // Token for the timeout used to ensure that the progress bar is visible for
+  // at least |progressBarBlockMs|.
+  private progressBarBlockToken_: number|null;
+  private delayedProgress_: chrome.passwordsPrivate.PasswordExportProgress|null;
 
   override ready() {
     super.ready();
@@ -68,8 +91,7 @@ export class PasswordsExportDialogElement extends
     // busy UI.
     this.passwordManager_.requestExportProgressStatus().then(status => {
       if (status === ProgressStatus.IN_PROGRESS) {
-        // TODO(crbug.com/1394416): Show progress dialog once implemented.
-        return;
+        this.switchToDialog_(States.IN_PROGRESS);
       }
     });
 
@@ -83,14 +105,54 @@ export class PasswordsExportDialogElement extends
    */
   private onPasswordsFileExportProgress_(
       progress: chrome.passwordsPrivate.PasswordExportProgress) {
-    this.processProgress_(progress);
-    // TODO(crbug/1394416): Handle the minimum time the progress bar needs to be
-    // displayed once it's implemented.
+    // If Chrome has already started displaying the progress bar
+    // (|progressBarDelayToken_ is null) and hasn't completed its minimum
+    // display time (|progressBarBlockToken_| is not null) progress should be
+    // cached for consumption when the blocking time ends.
+    const progressBlocked =
+        !this.progressBarDelayToken_ && this.progressBarBlockToken_;
+    if (!progressBlocked) {
+      clearTimeout(this.progressBarDelayToken_!);
+      this.progressBarDelayToken_ = null;
+      this.processProgress_(progress);
+    } else {
+      this.delayedProgress_ = progress;
+    }
+  }
+
+  /**
+   * Displays the progress bar and suspends further UI updates for
+   * |progressBarBlockMs|.
+   */
+  private handleProgressBarDisplay_() {
+    this.progressBarDelayToken_ = null;
+    this.switchToDialog_(States.IN_PROGRESS);
+    this.progressBarBlockToken_ =
+        setTimeout(() => this.processDelayedProgress_(), progressBarBlockMs);
+  }
+
+  /**
+   * Unblocks progress after showing the progress bar for |progressBarBlock|ms
+   * and processes any progress that was delayed.
+   */
+  private processDelayedProgress_() {
+    this.progressBarBlockToken_ = null;
+    if (this.delayedProgress_) {
+      this.processProgress_(this.delayedProgress_);
+      this.delayedProgress_ = null;
+    }
   }
 
   /** Closes the dialog. */
   private close_() {
+    clearTimeout(this.progressBarDelayToken_!);
+    clearTimeout(this.progressBarBlockToken_!);
+    this.progressBarDelayToken_ = null;
+    this.progressBarBlockToken_ = null;
+    this.passwordManager_.removePasswordsFileExportProgressListener(
+        this.onPasswordsFileExportProgressListener_!);
     this.showStartDialog_ = false;
+    this.showProgressDialog_ = false;
     assert(this.onPasswordsFileExportProgressListener_);
     this.passwordManager_.removePasswordsFileExportProgressListener(
         this.onPasswordsFileExportProgressListener_);
@@ -121,15 +183,19 @@ export class PasswordsExportDialogElement extends
    */
   private processProgress_(progress:
                                chrome.passwordsPrivate.PasswordExportProgress) {
-    switch (progress.status) {
-      case ProgressStatus.SUCCEEDED: {
-        this.close_();
-        break;
-      }
-      case ProgressStatus.FAILED_WRITE_FAILED: {
-        // TODO(crbug/1394416): Show error message once implemneted.
-        break;
-      }
+    if (progress.status === ProgressStatus.IN_PROGRESS) {
+      this.progressBarDelayToken_ = setTimeout(
+          () => this.handleProgressBarDisplay_(), progressBarDelayMs);
+      return;
+    }
+    if (progress.status === ProgressStatus.SUCCEEDED) {
+      // TODO(crbug/1394416): Maybe notify the user of successful completion.
+      this.close_();
+      return;
+    }
+    if (progress.status === ProgressStatus.FAILED_WRITE_FAILED) {
+      // TODO(crbug/1394416): Show error message once implemneted.
+      return;
     }
   }
 
@@ -139,12 +205,22 @@ export class PasswordsExportDialogElement extends
    */
   private switchToDialog_(state: States) {
     this.showStartDialog_ = state === States.START;
+    this.showProgressDialog_ = state === States.IN_PROGRESS;
   }
 
   /**
    * Handler for tapping the 'cancel' button. Should just dismiss the dialog.
    */
   private onCancelButtonTap_() {
+    this.close_();
+  }
+
+  /**
+   * Handler for tapping the 'cancel' button on the progress dialog. It should
+   * cancel the export and dismiss the dialog.
+   */
+  private onCancelProgressButtonTap_() {
+    this.passwordManager_.cancelExportPasswords();
     this.close_();
   }
 }

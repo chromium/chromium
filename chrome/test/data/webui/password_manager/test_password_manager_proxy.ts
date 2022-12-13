@@ -36,6 +36,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   constructor() {
     super([
+      'cancelExportPasswords',
       'exportPasswords',
       'getBlockedSitesList',
       'getCredentialGroups',
@@ -189,5 +190,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   removePasswordsFileExportProgressListener(
       _listener: PasswordsFileExportProgressListener) {
     this.listeners.passwordsFileExportProgressListener = null;
+  }
+
+  cancelExportPasswords() {
+    this.methodCalled('cancelExportPasswords');
   }
 }

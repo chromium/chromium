@@ -180,6 +180,11 @@ export interface PasswordManagerProxy {
    */
   removePasswordsFileExportProgressListener(
       listener: PasswordsFileExportProgressListener): void;
+
+  /**
+   * Cancels the export in progress.
+   */
+  cancelExportPasswords(): void;
 }
 
 /**
@@ -290,6 +295,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
       listener: PasswordsFileExportProgressListener) {
     chrome.passwordsPrivate.onPasswordsFileExportProgress.removeListener(
         listener);
+  }
+
+  cancelExportPasswords() {
+    chrome.passwordsPrivate.cancelExportPasswords();
   }
 
   static getInstance(): PasswordManagerProxy {
