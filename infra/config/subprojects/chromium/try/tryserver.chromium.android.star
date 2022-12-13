@@ -204,18 +204,21 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-arm64-dbg",
+    mirrors = ["ci/android-cronet-arm64-dbg"],
     goma_backend = None,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "android-cronet-arm64-rel",
+    mirrors = ["ci/android-cronet-arm64-rel"],
     goma_backend = None,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "android-cronet-asan-arm-rel",
+    mirrors = ["ci/android-cronet-asan-arm-rel"],
     goma_backend = None,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
@@ -231,6 +234,7 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-x86-rel",
+    mirrors = ["ci/android-cronet-x86-rel"],
     goma_backend = None,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
@@ -289,6 +293,10 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-x86-rel-kitkat-tests",
+    mirrors = [
+        "ci/android-cronet-x86-rel",
+        "ci/android-cronet-x86-rel-kitkat-tests",
+    ],
     goma_backend = None,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
@@ -417,6 +425,7 @@ try_.builder(
 # TODO(crbug/1182468) Remove when experiment is done.
 try_.builder(
     name = "android-pie-arm64-coverage-experimental-rel",
+    mirrors = ["ci/android-pie-arm64-coverage-experimental-rel"],
     builderless = True,
     cores = 16,
     ssd = True,
