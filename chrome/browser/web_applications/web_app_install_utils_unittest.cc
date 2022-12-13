@@ -54,6 +54,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "chrome/browser/web_applications/test/mock_os_integration_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -1420,7 +1421,8 @@ TEST_F(RegisterOsSettingsTest, MaybeRegisterOsUninstall) {
   EXPECT_CALL(manager, MacAppShimOnAppInstalledForProfile(app_id)).Times(1);
   EXPECT_CALL(manager, RegisterWebAppOsUninstallation(app_id, testing::_))
       .Times(1);
-  EXPECT_CALL(manager, Synchronize(app_id, testing::_)).Times(1);
+  EXPECT_CALL(manager, Synchronize(app_id, testing::_))
+      .WillOnce(base::test::RunOnceCallback<1>());
 
   // Scenario 1.
   auto web_app = std::make_unique<WebApp>(app_id);

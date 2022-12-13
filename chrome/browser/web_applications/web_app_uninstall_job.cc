@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/web_applications/isolation_prefs_utils.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -86,9 +87,13 @@ void WebAppUninstallJob::Start(const url::Origin& app_origin,
 
   RemoveAppIsolationState(&profile_prefs, app_origin);
 
-  os_integration_manager.UninstallAllOsHooks(
-      app_id_, base::BindOnce(&WebAppUninstallJob::OnOsHooksUninstalled,
-                              weak_ptr_factory_.GetWeakPtr()));
+  auto synchronize_barrier = OsIntegrationManager::GetBarrierForSynchronize(
+      base::BindOnce(&WebAppUninstallJob::OnOsHooksUninstalled,
+                     weak_ptr_factory_.GetWeakPtr()));
+  os_integration_manager.UninstallAllOsHooks(app_id_, synchronize_barrier);
+  os_integration_manager.Synchronize(
+      app_id_, base::BindOnce(synchronize_barrier, OsHooksErrors()));
+
   icon_manager.DeleteData(app_id_,
                           base::BindOnce(&WebAppUninstallJob::OnIconDataDeleted,
                                          weak_ptr_factory_.GetWeakPtr()));

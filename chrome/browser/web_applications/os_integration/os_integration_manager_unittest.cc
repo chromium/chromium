@@ -80,7 +80,6 @@ TEST_F(OsIntegrationManagerTest, InstallOsHooksOnlyShortcuts) {
 
   testing::StrictMock<MockOsIntegrationManager> manager;
   EXPECT_CALL(manager, MacAppShimOnAppInstalledForProfile(app_id)).Times(1);
-  EXPECT_CALL(manager, Synchronize(app_id, testing::_)).Times(1);
   EXPECT_CALL(manager, CreateShortcuts(app_id, false,
                                        SHORTCUT_CREATION_AUTOMATED, testing::_))
       .WillOnce(base::test::RunOnceCallback<3>(true));
@@ -109,7 +108,6 @@ TEST_F(OsIntegrationManagerTest, InstallOsHooksEverything) {
   // added here.
   testing::StrictMock<MockOsIntegrationManager> manager;
   EXPECT_CALL(manager, MacAppShimOnAppInstalledForProfile(app_id)).Times(1);
-  EXPECT_CALL(manager, Synchronize(app_id, testing::_)).Times(1);
   EXPECT_CALL(manager, CreateShortcuts(app_id, true, SHORTCUT_CREATION_BY_USER,
                                        testing::_))
       .WillOnce(base::test::RunOnceCallback<3>(true));
@@ -162,7 +160,6 @@ TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
           .AppendASCII("_crx_test");
 
   testing::StrictMock<MockOsIntegrationManager> manager;
-  EXPECT_CALL(manager, Synchronize(app_id, testing::_)).Times(1);
   EXPECT_CALL(manager, BuildShortcutInfo(app_id))
       .WillOnce(
           testing::Return(testing::ByMove(CreateTestShorcutInfo(app_id))));

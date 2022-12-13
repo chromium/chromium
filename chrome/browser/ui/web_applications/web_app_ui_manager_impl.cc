@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -102,11 +102,16 @@ void UninstallWebAppWithDialogFromStartupSwitch(const AppId& app_id,
     // In this case we clean up the OsSettings entry.
     web_app::OsHooksOptions options;
     options[OsHookType::kUninstallationViaOsSettings] = true;
-    provider->os_integration_manager().UninstallOsHooks(
-        app_id, options,
-        base::BindOnce([](std::unique_ptr<ScopedKeepAlive> scoped_keep_alive,
-                          OsHooksErrors os_hooks_errors) {},
-                       std::move(scoped_keep_alive)));
+
+    auto synchronize_barrier =
+        web_app::OsIntegrationManager::GetBarrierForSynchronize(base::BindOnce(
+            [](std::unique_ptr<ScopedKeepAlive> scoped_keep_alive,
+               OsHooksErrors os_hooks_errors) {},
+            std::move(scoped_keep_alive)));
+    provider->os_integration_manager().UninstallOsHooks(app_id, options,
+                                                        synchronize_barrier);
+    provider->os_integration_manager().Synchronize(
+        app_id, base::BindOnce(synchronize_barrier, OsHooksErrors()));
   }
 }
 
@@ -346,6 +351,7 @@ void WebAppUiManagerImpl::InstallOsHooksForReplacementApp(
   options.os_hooks[OsHookType::kRunOnOsLogin] = locations.in_startup;
   os_integration_manager_->InstallOsHooks(app_id, base::DoNothing(), nullptr,
                                           options);
+  os_integration_manager_->Synchronize(app_id, base::DoNothing());
 }
 
 bool WebAppUiManagerImpl::CanAddAppToQuickLaunchBar() const {

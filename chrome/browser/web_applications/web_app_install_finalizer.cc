@@ -6,13 +6,13 @@
 
 #include <map>
 #include <utility>
-#include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolation_prefs_utils.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcuts_menu.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -543,12 +544,15 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
       break;
   }
 
+  auto os_hooks_barrier =
+      OsIntegrationManager::GetBarrierForSynchronize(base::BindOnce(
+          &WebAppInstallFinalizer::OnInstallHooksFinished,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id));
+
   os_integration_manager_->InstallOsHooks(
-      app_id,
-      base::BindOnce(&WebAppInstallFinalizer::OnInstallHooksFinished,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     app_id),
-      /*web_app_info=*/nullptr, hooks_options);
+      app_id, os_hooks_barrier, /*web_app_info=*/nullptr, hooks_options);
+  os_integration_manager_->Synchronize(
+      app_id, base::BindOnce(os_hooks_barrier, OsHooksErrors()));
 }
 
 void WebAppInstallFinalizer::OnInstallHooksFinished(
@@ -592,17 +596,23 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     return;
   }
 
-  if (ShouldUpdateOsHooks(app_id)) {
-    os_integration_manager_->UpdateOsHooks(
-        app_id, old_name, file_handlers_need_os_update, web_app_info,
-        base::BindOnce(&WebAppInstallFinalizer::OnUpdateHooksFinished,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       app_id, old_name));
-  } else {
+  if (!ShouldUpdateOsHooks(app_id)) {
     std::move(callback).Run(
         app_id, webapps::InstallResultCode::kSuccessAlreadyInstalled,
         OsHooksErrors());
+    return;
   }
+
+  auto os_hooks_barrier = OsIntegrationManager::GetBarrierForSynchronize(
+      base::BindOnce(&WebAppInstallFinalizer::OnUpdateHooksFinished,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     app_id, old_name));
+
+  os_integration_manager_->UpdateOsHooks(app_id, old_name,
+                                         file_handlers_need_os_update,
+                                         web_app_info, os_hooks_barrier);
+  os_integration_manager_->Synchronize(
+      app_id, base::BindOnce(os_hooks_barrier, OsHooksErrors()));
 }
 
 void WebAppInstallFinalizer::OnUpdateHooksFinished(
@@ -611,7 +621,6 @@ void WebAppInstallFinalizer::OnUpdateHooksFinished(
     std::string old_name,
     OsHooksErrors os_hooks_errors) {
   install_manager_->NotifyWebAppManifestUpdated(app_id, old_name);
-
   std::move(callback).Run(
       app_id,
       os_hooks_errors.any()

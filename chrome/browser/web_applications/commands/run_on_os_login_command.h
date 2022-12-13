@@ -8,7 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -72,7 +73,8 @@ class RunOnOsLoginCommand : public WebAppCommandTemplate<AppLock> {
   // Note that this tries to avoid extra work by no-oping if the current
   // OS state matches what is calculated to be the desired stated.
   void SyncRunOnOsLoginMode();
-  void UpdateRunOnOsLoginModeWithOsIntegration();
+  void UpdateRunOnOsLoginModeWithOsIntegration(
+      base::RepeatingCallback<void(OsHooksErrors)> os_hooks_callback);
   void OnOsHooksSet(OsHooksErrors errors);
   void RecordCompletionState(
       RunOnOsLoginCommandCompletionState completion_state);

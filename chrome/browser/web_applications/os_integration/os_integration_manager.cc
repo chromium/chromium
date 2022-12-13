@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -65,6 +66,15 @@ bool AreSubManagersExecuteEnabled() {
           features::OsIntegrationSubManagersStage::kExecuteAndWriteConfig);
 }
 
+OsHooksErrors GetFinalErrorBitsetFromCollection(
+    std::vector<OsHooksErrors> os_hooks_errors) {
+  OsHooksErrors final_errors;
+  for (const OsHooksErrors& error : os_hooks_errors) {
+    final_errors = final_errors | error;
+  }
+  return final_errors;
+}
+
 }  // namespace
 
 OsIntegrationManager::ScopedSuppressForTesting::ScopedSuppressForTesting()
@@ -99,12 +109,6 @@ class OsIntegrationManager::OsHooksBarrier
     return base::BindOnce(&OsHooksBarrier::AddResult, this, type);
   }
 
-  base::OnceClosure CreateBarrierCallbackForSynchronize(
-      base::OnceClosure synchronize_callback) {
-    return base::BindOnce(&OsHooksBarrier::WaitForSynchronize, this,
-                          std::move(synchronize_callback));
-  }
-
  private:
   friend class base::RefCounted<OsHooksBarrier>;
 
@@ -119,11 +123,6 @@ class OsIntegrationManager::OsHooksBarrier
     errors_[type] = result == Result::kError ? true : false;
   }
 
-  void WaitForSynchronize(base::OnceClosure synchronize_callback) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    std::move(synchronize_callback).Run();
-  }
-
   OsHooksErrors errors_;
   InstallOsHooksCallback callback_;
 };
@@ -133,12 +132,6 @@ InstallOsHooksOptions::InstallOsHooksOptions(
     const InstallOsHooksOptions& other) = default;
 InstallOsHooksOptions& InstallOsHooksOptions::operator=(
     const InstallOsHooksOptions& other) = default;
-
-void OsIntegrationManager::SetSynchronizeCompleteCallbackForTesting(
-    base::OnceClosure synchronize_complete_callback) {
-  synchronize_complete_callback_for_testing_ =  // IN-TEST
-      std::move(synchronize_complete_callback);
-}
 
 OsIntegrationManager::OsIntegrationManager(
     Profile* profile,
@@ -153,6 +146,26 @@ OsIntegrationManager::OsIntegrationManager(
       url_handler_manager_(std::move(url_handler_manager)) {}
 
 OsIntegrationManager::~OsIntegrationManager() = default;
+
+// static
+base::RepeatingCallback<void(OsHooksErrors)>
+OsIntegrationManager::GetBarrierForSynchronize(
+    AnyOsHooksErrorCallback errors_callback) {
+  // There are always 2 barriers, one for the normal OS Hook call and one for
+  // Synchronize().
+  int num_barriers = 2;
+
+  auto barrier_callback_for_synchronize = base::BarrierCallback<OsHooksErrors>(
+      num_barriers,
+      base::BindOnce(
+          [](AnyOsHooksErrorCallback callback,
+             std::vector<OsHooksErrors> combined_errors) {
+            std::move(callback).Run(
+                GetFinalErrorBitsetFromCollection(combined_errors));
+          },
+          std::move(errors_callback)));
+  return barrier_callback_for_synchronize;
+}
 
 void OsIntegrationManager::SetSubsystems(WebAppSyncBridge* sync_bridge,
                                          WebAppRegistrar* registrar,
@@ -170,6 +183,7 @@ void OsIntegrationManager::SetSubsystems(WebAppSyncBridge* sync_bridge,
   if (url_handler_manager_)
     url_handler_manager_->SetSubsystems(registrar);
 
+  sub_managers_.clear();
   auto shortcut_handling_sub_manager =
       std::make_unique<ShortcutHandlingSubManager>(profile_, *icon_manager,
                                                    *registrar);
@@ -194,11 +208,6 @@ void OsIntegrationManager::Start() {
 
 void OsIntegrationManager::Synchronize(const AppId& app_id,
                                        base::OnceClosure callback) {
-  if (synchronize_complete_callback_for_testing_) {  // IN-TEST
-    callback = std::move(callback).Then(
-        std::move(synchronize_complete_callback_for_testing_));  // IN-TEST
-  }
-
   if (!AreOsIntegrationSubManagersEnabled()) {
     std::move(callback).Run();
     return;
@@ -272,9 +281,6 @@ void OsIntegrationManager::InstallOsHooks(
   }
 #endif
 
-  Synchronize(app_id,
-              barrier->CreateBarrierCallbackForSynchronize(base::DoNothing()));
-
   // TODO(ortuno): Make adding a shortcut to the applications menu independent
   // from adding a shortcut to desktop.
   if (options.os_hooks[OsHookType::kShortcuts]) {
@@ -308,9 +314,6 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
   OsHooksErrors os_hooks_errors;
   scoped_refptr<OsHooksBarrier> barrier = base::MakeRefCounted<OsHooksBarrier>(
       os_hooks_errors, std::move(callback));
-
-  Synchronize(app_id,
-              barrier->CreateBarrierCallbackForSynchronize(base::DoNothing()));
 
   if (os_hooks[OsHookType::kShortcutsMenu]) {
     bool success = UnregisterShortcutsMenu(
@@ -371,9 +374,6 @@ void OsIntegrationManager::UpdateOsHooks(
   OsHooksErrors os_hooks_errors;
   scoped_refptr<OsHooksBarrier> barrier = base::MakeRefCounted<OsHooksBarrier>(
       os_hooks_errors, std::move(callback));
-
-  Synchronize(app_id,
-              barrier->CreateBarrierCallbackForSynchronize(base::DoNothing()));
 
   UpdateFileHandlers(app_id, file_handlers_need_os_update,
                      base::BindOnce(barrier->CreateBarrierCallbackForType(

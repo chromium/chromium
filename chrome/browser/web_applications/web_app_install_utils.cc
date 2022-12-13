@@ -23,6 +23,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
@@ -941,8 +942,12 @@ void MaybeRegisterOsUninstall(const WebApp* web_app,
   if (!user_installable_before_uninstall && user_installable_after_uninstall) {
     InstallOsHooksOptions options;
     options.os_hooks[OsHookType::kUninstallationViaOsSettings] = true;
-    os_integration_manager.InstallOsHooks(
-        web_app->app_id(), std::move(callback), nullptr, options);
+    auto os_hooks_barrier =
+        OsIntegrationManager::GetBarrierForSynchronize(std::move(callback));
+    os_integration_manager.InstallOsHooks(web_app->app_id(), os_hooks_barrier,
+                                          nullptr, options);
+    os_integration_manager.Synchronize(
+        web_app->app_id(), base::BindOnce(os_hooks_barrier, OsHooksErrors()));
     return;
   }
 #endif
@@ -966,6 +971,7 @@ void MaybeUnregisterOsUninstall(const WebApp* web_app,
     options[OsHookType::kUninstallationViaOsSettings] = true;
     os_integration_manager.UninstallOsHooks(web_app->app_id(), options,
                                             base::DoNothing());
+    os_integration_manager.Synchronize(web_app->app_id(), base::DoNothing());
   }
 #endif
 }

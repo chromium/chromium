@@ -11,7 +11,6 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -55,6 +54,7 @@
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -1359,6 +1359,8 @@ void AppLauncherHandler::OnOsHooksInstalled(
   // use that to compare with the results, and record if they all were
   // successful, instead of just shortcuts.
   bool error = os_hooks_errors[web_app::OsHookType::kShortcuts];
+  // TODO(b/260863656): Move the metric measurement to
+  // ShortcutHandlingSubManager::Execute()
   base::UmaHistogramBoolean("Apps.Launcher.InstallLocallyShortcutsCreated",
                             !error);
   web_app_provider_->install_manager().NotifyWebAppInstalledWithOsHooks(app_id);
@@ -1460,9 +1462,13 @@ void AppLauncherHandler::InstallOsHooks(const web_app::AppId& app_id) {
   options.os_hooks[web_app::OsHookType::kUrlHandlers] = false;
 #endif
 
+  auto os_hooks_barrier =
+      web_app::OsIntegrationManager::GetBarrierForSynchronize(
+          base::BindOnce(&AppLauncherHandler::OnOsHooksInstalled,
+                         weak_ptr_factory_.GetWeakPtr(), app_id));
+
   web_app_provider_->os_integration_manager().InstallOsHooks(
-      app_id,
-      base::BindOnce(&AppLauncherHandler::OnOsHooksInstalled,
-                     weak_ptr_factory_.GetWeakPtr(), app_id),
-      /*web_app_info=*/nullptr, std::move(options));
+      app_id, os_hooks_barrier, /*web_app_info=*/nullptr, std::move(options));
+  web_app_provider_->os_integration_manager().Synchronize(
+      app_id, base::BindOnce(os_hooks_barrier, web_app::OsHooksErrors()));
 }

@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -35,14 +34,6 @@ using ::testing::Eq;
 using ::testing::IsFalse;
 
 namespace {
-
-// This is an enum so that the enabling of write_config_and_execute can
-// also be tested when implemented.
-enum class OsIntegrationSubManagersState {
-  kEnabled = 0,
-  kDisabled = 1,
-  kMaxValue = kDisabled
-};
 
 class ShortcutHandlingSubManagerBrowserTest
     : public WebAppControllerBrowserTest,
@@ -119,11 +110,7 @@ IN_PROC_BROWSER_TEST_P(ShortcutHandlingSubManagerBrowserTest, Configure) {
       "/banners/"
       "manifest_test_page.html");
 
-  base::test::TestFuture<void> sync_future;
-  provider().os_integration_manager().SetSynchronizeCompleteCallbackForTesting(
-      sync_future.GetCallback());
   const AppId& app_id = LoadUrlAndInstallApp(test_url);
-  EXPECT_TRUE(sync_future.Wait());
 
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
@@ -158,12 +145,7 @@ IN_PROC_BROWSER_TEST_P(ShortcutHandlingSubManagerBrowserTest,
       "manifest_test_page.html");
   const AppId& app_id = LoadUrlAndInstallApp(test_url);
 
-  base::test::TestFuture<void> sync_future;
-  provider().os_integration_manager().SetSynchronizeCompleteCallbackForTesting(
-      sync_future.GetCallback());
   UninstallAppAndCleanData(app_id);
-  EXPECT_TRUE(sync_future.Wait());
-
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   EXPECT_FALSE(state.has_value());
@@ -173,7 +155,15 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ShortcutHandlingSubManagerBrowserTest,
     ::testing::Values(OsIntegrationSubManagersState::kEnabled,
-                      OsIntegrationSubManagersState::kDisabled));
+                      OsIntegrationSubManagersState::kDisabled),
+    [](const ::testing::TestParamInfo<OsIntegrationSubManagersState>& info) {
+      switch (info.param) {
+        case OsIntegrationSubManagersState::kEnabled:
+          return "OSIntegrationSubManagers_Enabled";
+        case OsIntegrationSubManagersState::kDisabled:
+          return "OSIntegrationSubManagers_Disabled";
+      }
+    });
 
 }  // namespace
 

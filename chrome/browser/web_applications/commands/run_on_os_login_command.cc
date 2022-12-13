@@ -8,8 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -155,7 +156,13 @@ void RunOnOsLoginCommand::SetRunOnOsLoginMode() {
   }
   lock_->registrar().NotifyWebAppRunOnOsLoginModeChanged(app_id_,
                                                          login_mode_.value());
-  UpdateRunOnOsLoginModeWithOsIntegration();
+
+  auto synchronize_barrier =
+      OsIntegrationManager::GetBarrierForSynchronize(base::BindOnce(
+          &RunOnOsLoginCommand::OnOsHooksSet, weak_factory_.GetWeakPtr()));
+  lock_->os_integration_manager().Synchronize(
+      app_id_, base::BindOnce(synchronize_barrier, OsHooksErrors()));
+  UpdateRunOnOsLoginModeWithOsIntegration(synchronize_barrier);
 }
 
 void RunOnOsLoginCommand::SyncRunOnOsLoginMode() {
@@ -164,10 +171,17 @@ void RunOnOsLoginCommand::SyncRunOnOsLoginMode() {
     return;
   }
   login_mode_ = lock_->registrar().GetAppRunOnOsLoginMode(app_id_).value;
-  UpdateRunOnOsLoginModeWithOsIntegration();
+
+  auto synchronize_barrier =
+      OsIntegrationManager::GetBarrierForSynchronize(base::BindOnce(
+          &RunOnOsLoginCommand::OnOsHooksSet, weak_factory_.GetWeakPtr()));
+  lock_->os_integration_manager().Synchronize(
+      app_id_, base::BindOnce(synchronize_barrier, OsHooksErrors()));
+  UpdateRunOnOsLoginModeWithOsIntegration(synchronize_barrier);
 }
 
-void RunOnOsLoginCommand::UpdateRunOnOsLoginModeWithOsIntegration() {
+void RunOnOsLoginCommand::UpdateRunOnOsLoginModeWithOsIntegration(
+    base::RepeatingCallback<void(OsHooksErrors)> os_hooks_callback) {
   absl::optional<RunOnOsLoginMode> os_integration_state =
       lock_->registrar().GetExpectedRunOnOsLoginOsIntegrationState(app_id_);
 
@@ -183,18 +197,14 @@ void RunOnOsLoginCommand::UpdateRunOnOsLoginModeWithOsIntegration() {
     web_app::OsHooksOptions os_hooks;
     os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
     lock_->os_integration_manager().UninstallOsHooks(
-        app_id_, os_hooks,
-        base::BindOnce(&RunOnOsLoginCommand::OnOsHooksSet,
-                       weak_factory_.GetWeakPtr()));
+        app_id_, os_hooks, std::move(os_hooks_callback));
   } else {
     web_app::InstallOsHooksOptions install_options;
     install_options.os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
     install_options.reason = SHORTCUT_CREATION_AUTOMATED;
     lock_->os_integration_manager().InstallOsHooks(
-        app_id_,
-        base::BindOnce(&RunOnOsLoginCommand::OnOsHooksSet,
-                       weak_factory_.GetWeakPtr()),
-        nullptr, std::move(install_options));
+        app_id_, std::move(os_hooks_callback), nullptr,
+        std::move(install_options));
   }
 }
 

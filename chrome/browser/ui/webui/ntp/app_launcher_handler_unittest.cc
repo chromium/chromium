@@ -14,8 +14,10 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
@@ -26,8 +28,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using web_app::AppId;
-using web_app::WebAppProvider;
+using OsIntegrationSubManagersState = web_app::OsIntegrationSubManagersState;
+using AppId = web_app::AppId;
+using WebAppProvider = web_app::WebAppProvider;
 
 namespace {
 
@@ -78,9 +81,20 @@ std::unique_ptr<WebAppInstallInfo> BuildWebAppInfo() {
 
 }  // namespace
 
-class AppLauncherHandlerTest : public BrowserWithTestWindowTest {
+class AppLauncherHandlerTest
+    : public BrowserWithTestWindowTest,
+      public ::testing::WithParamInterface<OsIntegrationSubManagersState> {
  public:
-  AppLauncherHandlerTest() = default;
+  AppLauncherHandlerTest() {
+    if (GetParam() == OsIntegrationSubManagersState::kEnabled) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {{features::kOsIntegrationSubManagers, {{"stage", "write_config"}}}},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{}, {features::kOsIntegrationSubManagers});
+    }
+  }
 
   AppLauncherHandlerTest(const AppLauncherHandlerTest&) = delete;
   AppLauncherHandlerTest& operator=(const AppLauncherHandlerTest&) = delete;
@@ -166,11 +180,12 @@ class AppLauncherHandlerTest : public BrowserWithTestWindowTest {
 
   web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
   raw_ptr<extensions::ExtensionService> extension_service_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that AppLauncherHandler::HandleInstallAppLocally calls the JS method
 // "ntp.appAdded" for the locally installed app.
-TEST_F(AppLauncherHandlerTest, HandleInstallAppLocally) {
+TEST_P(AppLauncherHandlerTest, HandleInstallAppLocally) {
   AppId installed_app_id = InstallWebApp(/*is_locally_installed=*/false);
 
   // Initialize the web_ui instance.
@@ -196,7 +211,7 @@ TEST_F(AppLauncherHandlerTest, HandleInstallAppLocally) {
 
 // Tests that AppLauncherHandler::HandleInstallAppLocally calls the JS method
 // "ntp.appAdded" for the all the running instances of chrome://apps page.
-TEST_F(AppLauncherHandlerTest, HandleInstallAppLocally_MultipleWebUI) {
+TEST_P(AppLauncherHandlerTest, HandleInstallAppLocally_MultipleWebUI) {
   AppId installed_app_id = InstallWebApp(/*is_locally_installed=*/false);
 
   // Initialize the first web_ui instance.
@@ -234,7 +249,7 @@ TEST_F(AppLauncherHandlerTest, HandleInstallAppLocally_MultipleWebUI) {
 }
 
 // Regression test for crbug.com/1302157.
-TEST_F(AppLauncherHandlerTest, HandleClosedWhileUninstallingExtension) {
+TEST_P(AppLauncherHandlerTest, HandleClosedWhileUninstallingExtension) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("foo").Build();
   extension_service_->AddExtension(extension.get());
@@ -254,3 +269,17 @@ TEST_F(AppLauncherHandlerTest, HandleClosedWhileUninstallingExtension) {
   app_launcher_handler.reset();
   // No crash (in asan tester) indicates a passing score.
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AppLauncherHandlerTest,
+    ::testing::Values(OsIntegrationSubManagersState::kEnabled,
+                      OsIntegrationSubManagersState::kDisabled),
+    [](const ::testing::TestParamInfo<OsIntegrationSubManagersState>& info) {
+      switch (info.param) {
+        case OsIntegrationSubManagersState::kEnabled:
+          return "OSIntegrationSubManagers_Enabled";
+        case OsIntegrationSubManagersState::kDisabled:
+          return "OSIntegrationSubManagers_Disabled";
+      }
+    });

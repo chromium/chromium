@@ -94,11 +94,6 @@ class OsIntegrationManager : public AppRegistrarObserver {
     base::AutoReset<bool> scope_;
   };
 
-  // Sets a |callback| for testing code to get notified whenever a Synchronize()
-  // has completed executing and the new states has been written to the DB.
-  void SetSynchronizeCompleteCallbackForTesting(
-      base::OnceClosure synchronize_complete_callback);
-
   explicit OsIntegrationManager(
       Profile* profile,
       std::unique_ptr<WebAppShortcutManager> shortcut_manager,
@@ -106,6 +101,11 @@ class OsIntegrationManager : public AppRegistrarObserver {
       std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager,
       std::unique_ptr<UrlHandlerManager> url_handler_manager);
   ~OsIntegrationManager() override;
+
+  using AnyOsHooksErrorCallback =
+      base::OnceCallback<void(OsHooksErrors os_hooks_errors)>;
+  static base::RepeatingCallback<void(OsHooksErrors)> GetBarrierForSynchronize(
+      AnyOsHooksErrorCallback errors_callback);
 
   virtual void SetSubsystems(WebAppSyncBridge* sync_bridge,
                              WebAppRegistrar* registrar,
@@ -336,7 +336,6 @@ class OsIntegrationManager : public AppRegistrarObserver {
   std::unique_ptr<UrlHandlerManager> url_handler_manager_;
 
   std::vector<std::unique_ptr<OsIntegrationSubManager>> sub_managers_;
-  base::OnceClosure synchronize_complete_callback_for_testing_;
 
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};
