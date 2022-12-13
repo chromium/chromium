@@ -41,6 +41,26 @@ INSTANTIATE_TEST_SUITE_P(RTL, ScrollableShelfViewPixelRTLTest, testing::Bool());
 TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overflow.rev_0", GetPrimaryShelf()->GetWindow()));
+
+  ASSERT_TRUE(scrollable_shelf_view_->right_arrow());
+  const gfx::Point right_arrow_center =
+      scrollable_shelf_view_->right_arrow()->GetBoundsInScreen().CenterPoint();
+
+  GetEventGenerator()->MoveMouseTo(right_arrow_center);
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "overflow_end.rev_0", GetPrimaryShelf()->GetWindow()));
+}
+
+TEST_P(ScrollableShelfViewPixelRTLTest, LeftRightShelfAlignment) {
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "left_shelf_alignment.rev_0", GetPrimaryShelf()->GetWindow()));
+
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "right_shelf_alignment.rev_0", GetPrimaryShelf()->GetWindow()));
 }
 
 class ScrollableShelfViewWithGuestModePixelTest
