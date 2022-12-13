@@ -26,6 +26,24 @@ COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const base::FeatureParam<bool> kDarkenWebsitesCheckboxOptOut;
 #endif
 
+namespace features {
+
+// Feature to enable the unused site permissions module of Safety Check.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kSafetyCheckUnusedSitePermissions);
+
+// Determines the frequency at which permissions of sites are checked whether
+// they are unused.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kSafetyCheckUnusedSitePermissionsRepeatedUpdateInterval;
+
+// When enabled, site permissions will be considered as unused immediately in
+// order to facilitate testing.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<bool> kSafetyCheckUnusedSitePermissionsNoDelay;
+
+}  // namespace features
 }  // namespace content_settings
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_FEATURES_H_

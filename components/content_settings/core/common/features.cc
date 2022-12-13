@@ -25,4 +25,21 @@ constexpr base::FeatureParam<bool> kDarkenWebsitesCheckboxOptOut{
     &kDarkenWebsitesCheckboxInThemesSetting, "opt_out", true};
 #endif  // BUILDFLAG(IS_ANDROID)
 
+namespace features {
+
+// Enables unused site permission module in Safety Check.
+BASE_FEATURE(kSafetyCheckUnusedSitePermissions,
+             "SafetyCheckUnusedSitePermissions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta>
+    kSafetyCheckUnusedSitePermissionsRepeatedUpdateInterval{
+        &kSafetyCheckUnusedSitePermissions,
+        "unused-site-repeated-update-interval", base::Days(1)};
+
+const base::FeatureParam<bool> kSafetyCheckUnusedSitePermissionsNoDelay{
+    &kSafetyCheckUnusedSitePermissions,
+    "unused-site-permissions-no-delay-for-testing", false};
+
+}  // namespace features
 }  // namespace content_settings

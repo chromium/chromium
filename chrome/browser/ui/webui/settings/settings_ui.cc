@@ -72,6 +72,7 @@
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
@@ -438,9 +439,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("safetyCheckNotificationPermissionsEnabled",
                           base::FeatureList::IsEnabled(
                               features::kSafetyCheckNotificationPermissions));
-  html_source->AddBoolean("safetyCheckUnusedSitePermissionsEnabled",
-                          base::FeatureList::IsEnabled(
-                              features::kSafetyCheckUnusedSitePermissions));
+  html_source->AddBoolean(
+      "safetyCheckUnusedSitePermissionsEnabled",
+      base::FeatureList::IsEnabled(
+          content_settings::features::kSafetyCheckUnusedSitePermissions));
 
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());

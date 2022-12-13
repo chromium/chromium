@@ -77,10 +77,10 @@ base::Time GetConstraintExpiration(const base::TimeDelta duration);
 bool CanTrackLastVisit(ContentSettingsType type);
 
 // Get a timestamp with week-precision.
-base::Time GetCoarseTime(base::Time time);
+base::Time GetCoarseVisitedTime(base::Time time);
 
 // Returns a TimeDelta representing a week.
-base::TimeDelta GetCoarseTimePrecision();
+base::TimeDelta GetCoarseVisitedTimePrecision();
 
 }  // namespace content_settings
 

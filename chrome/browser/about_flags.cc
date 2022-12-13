@@ -3319,6 +3319,18 @@ const FeatureEntry::FeatureVariation kWebRtcApmDownmixMethodVariations[] = {
     {"- Use first channel", kWebRtcApmDownmixMethodFirstChannel,
      std::size(kWebRtcApmDownmixMethodFirstChannel), nullptr}};
 
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam
+    kSafetyCheckUnusedSitePermissionsNoDelayParam[] = {
+        {"unused-site-permissions-no-delay-for-testing", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kSafetyCheckUnusedSitePermissionsVariations[] = {
+        {"for testing", kSafetyCheckUnusedSitePermissionsNoDelayParam,
+         std::size(kSafetyCheckUnusedSitePermissionsNoDelayParam), nullptr},
+};
+#endif
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -9046,7 +9058,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafetyCheckUnusedSitePermissionsName,
      flag_descriptions::kSafetyCheckUnusedSitePermissionsDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSafetyCheckUnusedSitePermissions)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         content_settings::features::kSafetyCheckUnusedSitePermissions,
+         kSafetyCheckUnusedSitePermissionsVariations,
+         "SafetyCheckUnusedSitePermissions")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     {"autofill-enable-upstream-save-card-offer-ui-experiment",

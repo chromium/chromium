@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   map->GetWebsiteSetting(url, url, ContentSettingsType::GEOLOCATION, &info);
   ASSERT_FALSE(info.metadata.last_visited.is_null());
   EXPECT_GE(info.metadata.last_visited,
-            past - content_settings::GetCoarseTimePrecision());
+            past - content_settings::GetCoarseVisitedTimePrecision());
   EXPECT_LE(info.metadata.last_visited, past);
 
   // Navigate to |url|.
@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   // Check that the timestamp is updated after a navigation.
   map->GetWebsiteSetting(url, url, ContentSettingsType::GEOLOCATION, &info);
   EXPECT_GE(info.metadata.last_visited,
-            now - content_settings::GetCoarseTimePrecision());
+            now - content_settings::GetCoarseVisitedTimePrecision());
   EXPECT_LE(info.metadata.last_visited, now);
 
   map->SetClockForTesting(base::DefaultClock::GetInstance());

@@ -12,6 +12,7 @@ GEN('#include "build/build_config.h"');
 GEN('#include "build/chromeos_buildflags.h"');
 GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "chrome/common/chrome_features.h"');
+GEN('#include "components/content_settings/core/common/features.h"');
 GEN('#include "components/performance_manager/public/features.h"');
 GEN('#include "components/privacy_sandbox/privacy_sandbox_features.h"');
 GEN('#include "components/autofill/core/common/autofill_features.h"');
@@ -341,7 +342,7 @@ var CrSettingsSafetyCheckPermissionsTest = class extends CrSettingsBrowserTest {
   get featureListInternal() {
     return {
       enabled: [
-        'features::kSafetyCheckUnusedSitePermissions',
+        'content_settings::features::kSafetyCheckUnusedSitePermissions',
         'features::kSafetyCheckNotificationPermissions',
       ],
     };
@@ -830,7 +831,7 @@ var CrSettingsUnusedSitePermissionsTest = class extends CrSettingsBrowserTest {
   get featureList() {
     return {
       enabled: [
-        'features::kSafetyCheckUnusedSitePermissions',
+        'content_settings::features::kSafetyCheckUnusedSitePermissions',
       ],
     };
   }

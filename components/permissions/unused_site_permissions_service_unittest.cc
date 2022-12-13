@@ -69,7 +69,8 @@ TEST_F(UnusedSitePermissionsServiceTest, UnusedSitePermissionsServiceTest) {
       .track_last_visit_for_autoexpiration = true};
 
   const base::Time now = clock()->Now();
-  const base::TimeDelta precision = content_settings::GetCoarseTimePrecision();
+  const base::TimeDelta precision =
+      content_settings::GetCoarseVisitedTimePrecision();
 
   // Add one setting for url1 and two settings for url2.
   hcsm()->SetContentSettingDefaultScope(

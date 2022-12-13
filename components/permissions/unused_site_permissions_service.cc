@@ -6,11 +6,13 @@
 #include "base/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -18,6 +20,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/origin.h"
 
@@ -30,7 +33,7 @@ UnusedSitePermissionsService::UnusedPermissionMap GetUnusedPermissionsMap(
     scoped_refptr<HostContentSettingsMap> hcsm) {
   UnusedSitePermissionsService::UnusedPermissionMap recently_unused;
   base::Time threshold =
-      clock->Now() - content_settings::GetCoarseTimePrecision();
+      clock->Now() - content_settings::GetCoarseVisitedTimePrecision();
 
   auto* registry = content_settings::ContentSettingsRegistry::GetInstance();
   for (const content_settings::ContentSettingsInfo* info : *registry) {
@@ -91,8 +94,11 @@ void UnusedSitePermissionsService::Shutdown() {
 void UnusedSitePermissionsService::StartRepeatedUpdates() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   UpdateUnusedPermissionsAsync(base::NullCallback());
+  base::TimeDelta repeated_update_interval =
+      content_settings::features::
+          kSafetyCheckUnusedSitePermissionsRepeatedUpdateInterval.Get();
   update_timer_.Start(
-      FROM_HERE, base::Days(1),
+      FROM_HERE, repeated_update_interval,
       base::BindRepeating(
           &UnusedSitePermissionsService::UpdateUnusedPermissionsAsync,
           base::Unretained(this), base::NullCallback()));

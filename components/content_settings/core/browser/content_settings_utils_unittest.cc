@@ -8,7 +8,10 @@
 
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -131,13 +134,44 @@ TEST(ContentSettingsUtilsTest, IsMorePermissive) {
   }
 }
 
-TEST(ContentSettingsUtilsTest, GetCoarseTime) {
+class ContentSettingsUtilsFlagTest : public testing::TestWithParam<bool> {
+ public:
+  ContentSettingsUtilsFlagTest() {
+    if (IsNoDelayForTestingEnabled()) {
+      features_.InitWithFeaturesAndParameters(
+          {{content_settings::features::kSafetyCheckUnusedSitePermissions,
+            {{"unused-site-permissions-no-delay-for-testing", "true"}}}},
+          {});
+    }
+  }
+
+  bool IsNoDelayForTestingEnabled() const { return GetParam(); }
+
+ protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_P(ContentSettingsUtilsFlagTest, GetCoarseVisitedTime) {
   base::Time now = base::Time::Now();
   for (int i = 0; i < 20; i++) {
     base::Time time = now + base::Days(i);
-    EXPECT_LE(GetCoarseTime(time), time);
-    EXPECT_GE(GetCoarseTime(time), time - GetCoarseTimePrecision());
+    if (IsNoDelayForTestingEnabled()) {
+      EXPECT_EQ(GetCoarseVisitedTime(time), time);
+      EXPECT_EQ(GetCoarseVisitedTime(time),
+                time - GetCoarseVisitedTimePrecision());
+    } else {
+      EXPECT_LE(GetCoarseVisitedTime(time), time);
+      EXPECT_GE(GetCoarseVisitedTime(time),
+                time - GetCoarseVisitedTimePrecision());
+    }
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         ContentSettingsUtilsFlagTest,
+                         testing::Bool());
 
 }  // namespace content_settings

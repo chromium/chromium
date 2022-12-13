@@ -992,11 +992,6 @@ const base::FeatureParam<int>
     kSafetyCheckNotificationPermissionsLowEnagementLimit{
         &kSafetyCheckNotificationPermissions,
         "low-engagement-notification-count", 4};
-
-// Enables unused site permission module in Safety Check.
-BASE_FEATURE(kSafetyCheckUnusedSitePermissions,
-             "SafetyCheckUnusedSitePermissions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

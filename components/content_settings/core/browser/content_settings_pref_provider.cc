@@ -227,7 +227,7 @@ bool PrefProvider::SetWebsiteSetting(
          !primary_pattern.GetHost().empty());
 
   base::Time last_visited = constraints.track_last_visit_for_autoexpiration
-                                ? GetCoarseTime(clock_->Now())
+                                ? GetCoarseVisitedTime(clock_->Now())
                                 : base::Time();
 
   // If SessionModel is OneTime, we know for sure that a one time permission
@@ -265,7 +265,7 @@ bool PrefProvider::UpdateLastVisitTime(
       DCHECK(rule.metadata.last_visited != base::Time());
       // Reset iterator to release lock before updating setting.
       it.reset();
-      rule.metadata.last_visited = GetCoarseTime(clock_->Now());
+      rule.metadata.last_visited = GetCoarseVisitedTime(clock_->Now());
       GetPref(content_type)
           ->SetWebsiteSetting(rule.primary_pattern, rule.secondary_pattern,
                               std::move(rule.value), std::move(rule.metadata));

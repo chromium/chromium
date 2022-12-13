@@ -15,6 +15,7 @@
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 
 namespace {
 
@@ -195,13 +196,15 @@ bool CanTrackLastVisit(ContentSettingsType type) {
   return info && info->GetInitialDefaultSetting() == CONTENT_SETTING_ASK;
 }
 
-base::Time GetCoarseTime(base::Time time) {
+base::Time GetCoarseVisitedTime(base::Time time) {
   return base::Time::FromDeltaSinceWindowsEpoch(
       time.ToDeltaSinceWindowsEpoch().FloorToMultiple(
-          GetCoarseTimePrecision()));
+          GetCoarseVisitedTimePrecision()));
 }
 
-base::TimeDelta GetCoarseTimePrecision() {
+base::TimeDelta GetCoarseVisitedTimePrecision() {
+  if (features::kSafetyCheckUnusedSitePermissionsNoDelay.Get())
+    return base::Days(0);
   return base::Days(7);
 }
 
