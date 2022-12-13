@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/mock_quick_pair_browser_delegate.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
@@ -18,6 +19,7 @@
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/quick_pair/fast_pair_data_parser.h"
@@ -55,6 +57,8 @@ const char kFastPairAssociateAccountNotificationId[] =
     "cros_fast_pair_associate_account_notification_id";
 const char kFastPairDiscoverySubsequentNotificationId[] =
     "cros_fast_pair_discovery_subsequent_notification_id";
+constexpr char kRetroactiveSuccessFunnelMetric[] =
+    "FastPair.RetroactivePairing";
 
 constexpr base::TimeDelta kNotificationTimeout = base::Seconds(12);
 constexpr base::TimeDelta kNotificationShortTimeDuration = base::Seconds(5);
@@ -201,6 +205,7 @@ class FastPairPresenterImplTest : public AshTestBase {
   }
 
  protected:
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
   std::unique_ptr<MockQuickPairBrowserDelegate> browser_delegate_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -1132,6 +1137,10 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount) {
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
       kFastPairAssociateAccountNotificationId));
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                kRetroactiveSuccessFunnelMetric,
+                FastPairRetroactiveSuccessFunnelEvent::kNotificationDisplayed),
+            1);
 }
 
 TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_SaveClicked) {

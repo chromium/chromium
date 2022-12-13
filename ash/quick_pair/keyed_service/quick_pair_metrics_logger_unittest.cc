@@ -79,6 +79,8 @@ const char kFastPairAccountKeyWriteFailureMetricInitial[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Failure.InitialPairingProtocol";
 const char kFastPairAccountKeyWriteFailureMetricRetroactive[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Failure.RetroactivePairingProtocol";
+constexpr char kRetroactiveSuccessFunnelMetric[] =
+    "FastPair.RetroactivePairing";
 
 constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
 constexpr char kTestBleDeviceName[] = "Test Device Name";
@@ -310,6 +312,14 @@ class QuickPairMetricsLoggerTest : public testing::Test {
                                                    /*error=*/absl::nullopt);
         break;
       case Protocol::kFastPairRetroactive:
+        fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(
+            retroactive_device_);
+        mock_ui_broker_->NotifyAssociateAccountAction(
+            retroactive_device_, AssociateAccountAction::kAssoicateAccount);
+        mock_pairer_broker_->NotifyPairingStart(retroactive_device_);
+        mock_pairer_broker_->NotifyHandshakeComplete(retroactive_device_);
+        mock_pairer_broker_->NotifyAccountKeyWrite(retroactive_device_,
+                                                   /*error=*/absl::nullopt);
         break;
     }
   }
@@ -1115,6 +1125,33 @@ TEST_F(QuickPairMetricsLoggerTest, LogSuccessFunnel_Initial) {
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kInitialSuccessFunnelMetric,
                 FastPairInitialSuccessFunnelEvent::kProcessComplete),
+            1);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogSuccessFunnel_Retroactive) {
+  SimulatePairingFlow(Protocol::kFastPairRetroactive);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kRetroactiveSuccessFunnelMetric,
+                FastPairRetroactiveSuccessFunnelEvent::kDeviceDetected),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kRetroactiveSuccessFunnelMetric,
+                FastPairRetroactiveSuccessFunnelEvent::kInitializationStarted),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kRetroactiveSuccessFunnelMetric,
+                FastPairRetroactiveSuccessFunnelEvent::kWritingAccountKey),
+            1);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kRetroactiveSuccessFunnelMetric,
+          FastPairRetroactiveSuccessFunnelEvent::kAccountKeyWrittenToDevice),
+      1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kRetroactiveSuccessFunnelMetric,
+                FastPairRetroactiveSuccessFunnelEvent::kSaveRequested),
             1);
 }
 

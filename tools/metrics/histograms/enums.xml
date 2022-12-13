@@ -36662,6 +36662,18 @@ Called by update_extension_permission.py.-->
       label="Associate Account Dismissed By Timeout After Learn More Pressed"/>
 </enum>
 
+<enum name="FastPairRetroactiveSuccessFunnelEvent">
+  <int value="0" label="Device detected"/>
+  <int value="1" label="Initialization started"/>
+  <int value="2" label="Writing account key"/>
+  <int value="3" label="Timed out writing account key"/>
+  <int value="4" label="Account key written to device"/>
+  <int value="5" label="BLE address rotated"/>
+  <int value="6" label="Notification displayed"/>
+  <int value="7" label="Save requested by user"/>
+  <int value="8" label="Save to Footprints complete"/>
+</enum>
+
 <enum name="FastPairSavedDevicesUiEvent">
   <int value="0" label="Settings - saved device list subpage shown"/>
   <int value="1" label="Settings - user has devices saved to their account"/>

@@ -96,6 +96,25 @@ enum class COMPONENT_EXPORT(QUICK_PAIR_COMMON)
     };
 
 // These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. The numbers here correspond to the
+// ordering of the flow. This enum should be kept in sync with the
+// FastPairRetroactiveSuccessFunnelEvent enum in
+// src/tools/metrics/histograms/enums.xml.
+enum class COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+    FastPairRetroactiveSuccessFunnelEvent {
+      kDeviceDetected = 0,
+      kInitializationStarted = 1,
+      kWritingAccountKey = 2,
+      kTimeOutWritingAccountKey = 3,
+      kAccountKeyWrittenToDevice = 4,
+      kAddressRotated = 5,
+      kNotificationDisplayed = 6,
+      kSaveRequested = 7,
+      kSaveComplete = 8,
+      kMaxValue = kSaveComplete,
+    };
+
+// These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. This enum should be kept in sync
 // with the FastPairPairingMethod enum in
 // src/tools/metrics/histograms/enums.xml.
@@ -178,6 +197,10 @@ void RecordInitialSuccessFunnelFlow(FastPairInitialSuccessFunnelEvent event);
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordSubsequentSuccessFunnelFlow(
     FastPairSubsequentSuccessFunnelEvent event);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordRetroactiveSuccessFunnelFlow(
+    FastPairRetroactiveSuccessFunnelEvent event);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void AttemptRecordingTotalUxPairTime(const Device& device,

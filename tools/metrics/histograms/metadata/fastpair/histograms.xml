@@ -48,6 +48,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FastPair.RetroactivePairing"
+    enum="FastPairRetroactiveSuccessFunnelEvent" expires_after="2023-06-01">
+  <owner>jackshira@chromium.org</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records each successful step in the Retroactive Pairing flow. Emitted on:
+    device detected, GATT initialization started, writing account key, timed out
+    writing account key, account key successfully written to the device, BLE
+    address rotated, notification displayed to user, save requested by user
+    (notification clicked), and account key saved to Footprints.
+  </summary>
+</histogram>
+
 <histogram name="FastPair.SubsequentPairing"
     enum="FastPairSubsequentSuccessFunnelEvent" expires_after="2023-06-01">
   <owner>jackshira@chromium.org</owner>

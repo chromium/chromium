@@ -5,6 +5,7 @@
 #include "ash/quick_pair/repository/fast_pair_repository_impl.h"
 
 #include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/mock_quick_pair_browser_delegate.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/repository/fake_device_metadata_http_fetcher.h"
@@ -69,6 +70,8 @@ const uint8_t salt = 0xC7;
 
 const char kSavedDeviceGetDevicesResultMetricName[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.GetSavedDevices.Result";
+constexpr char kRetroactiveSuccessFunnelMetric[] =
+    "FastPair.RetroactivePairing";
 
 // Computes and returns the Sha256 of the concatenation of the given
 // |account_key| and |mac_address|.
@@ -499,6 +502,25 @@ TEST_F(FastPairRepositoryImplTest, AssociateAccountKey_ValidId) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kRetroactiveSuccessFunnelMetric,
+                FastPairRetroactiveSuccessFunnelEvent::kSaveComplete),
+            0);
+}
+
+TEST_F(FastPairRepositoryImplTest,
+       AssociateAccountKey_LogRetroactiveSuccessFunnel) {
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
+                                             Protocol::kFastPairRetroactive);
+  device->set_classic_address(kTestClassicAddress1);
+  fast_pair_repository_->AssociateAccountKey(device, kAccountKey1);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kRetroactiveSuccessFunnelMetric,
+                FastPairRetroactiveSuccessFunnelEvent::kSaveComplete),
+            1);
 }
 
 TEST_F(FastPairRepositoryImplTest,
@@ -1268,6 +1290,49 @@ TEST_F(FastPairRepositoryImplTest, RetriesWriteDevice_AfterNetworkAvailable) {
   ASSERT_TRUE(
       saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
   ASSERT_EQ(0u, pending_write_store_->GetPendingWrites().size());
+}
+
+TEST_F(FastPairRepositoryImplTest,
+       RetryWriteRetroactivePair_DoesntRecordMetric) {
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
+                                             Protocol::kFastPairRetroactive);
+  device->set_classic_address(kTestClassicAddress1);
+
+  // Mock an error due to Network failure.
+  footprints_fetcher_->SetAddUserFastPairInfoResult(false);
+  fast_pair_repository_->AssociateAccountKey(device, kAccountKey1);
+
+  base::RunLoop().RunUntilIdle();
+
+  // The failed write should save as pending write.
+  ASSERT_FALSE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  std::vector<PendingWriteStore::PendingWrite> pending_writes =
+      pending_write_store_->GetPendingWrites();
+  ASSERT_EQ(1u, pending_writes.size());
+
+  // Mock waiting out the 1 minute timeout.
+  task_environment()->FastForwardBy(base::Minutes(1));
+  base::RunLoop().RunUntilIdle();
+
+  // Reconnect to the Network, but after the 1 minute timeout.
+  footprints_fetcher_->SetAddUserFastPairInfoResult(true);
+  fast_pair_repository_->DefaultNetworkChanged(
+      helper_.network_state_handler()->DefaultNetwork());
+  base::RunLoop().RunUntilIdle();
+
+  // The write, after a successful retry, should no longer be pending.
+  ASSERT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  ASSERT_EQ(0u, pending_write_store_->GetPendingWrites().size());
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+
+  // A pending write for retroactive pairing does not log a success in the
+  // metrics.
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kRetroactiveSuccessFunnelMetric,
+                FastPairRetroactiveSuccessFunnelEvent::kSaveComplete),
+            0);
 }
 
 }  // namespace quick_pair

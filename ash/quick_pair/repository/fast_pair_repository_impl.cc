@@ -387,6 +387,14 @@ void FastPairRepositoryImpl::OnWriteDeviceToFootprintsComplete(
   }
   QP_LOG(INFO) << __func__ << ": Successfully added device to Footprints.";
 
+  // TODO(b/261917790): Capture a pending successful Footprint write in the
+  // Retroactive Pairing Flow.
+  if (device_protocol.has_value() &&
+      device_protocol.value() == Protocol::kFastPairRetroactive) {
+    RecordRetroactiveSuccessFunnelFlow(
+        FastPairRetroactiveSuccessFunnelEvent::kSaveComplete);
+  }
+
   // Remove pending write on successful Footprints write.
   pending_write_store_->OnPairedDeviceSaved(mac_address);
 

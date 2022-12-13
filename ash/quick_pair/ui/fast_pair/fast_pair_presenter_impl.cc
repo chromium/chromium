@@ -352,6 +352,8 @@ void FastPairPresenterImpl::OnPairingFailedDismissed(
 void FastPairPresenterImpl::ShowAssociateAccount(
     scoped_refptr<Device> device,
     AssociateAccountCallback callback) {
+  RecordRetroactiveSuccessFunnelFlow(
+      FastPairRetroactiveSuccessFunnelEvent::kNotificationDisplayed);
   const auto metadata_id = device->metadata_id;
   FastPairRepository::Get()->GetDeviceMetadata(
       metadata_id,
