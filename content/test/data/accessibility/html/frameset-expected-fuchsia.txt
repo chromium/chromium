@@ -1,7 +1,7 @@
 UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
-++++++UNKNOWN focusable
+++++++UNKNOWN
 ++++++++UNKNOWN focusable
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN hidden
@@ -18,7 +18,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++++++++UNKNOWN label='Chrome'
 ++++++++++++++++STATIC_TEXT label='!'
 ++++++++++++++++++UNKNOWN label='!'
-++++++UNKNOWN focusable
+++++++UNKNOWN
 ++++++++UNKNOWN focusable
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN hidden
