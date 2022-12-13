@@ -7684,6 +7684,8 @@
           "--avd-config=../../tools/android/avd/proto/generic_android31.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_browsertests.filter"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
