@@ -20,7 +20,7 @@ const char kPrivacySandboxM1RowNoticeAcknowledged[] =
     "privacy_sandbox.m1.row_notice_acknowledged";
 
 const char kPrivacySandboxM1PromptSuppressed[] =
-    "privacy_sandbox.m1.prompt_supressed";
+    "privacy_sandbox.m1.prompt_suppressed";
 
 const char kPrivacySandboxM1TopicsEnabled[] =
     "privacy_sandbox.m1.topics_enabled";
