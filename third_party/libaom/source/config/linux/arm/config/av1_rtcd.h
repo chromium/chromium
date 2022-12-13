@@ -226,6 +226,7 @@ int64_t av1_calc_frame_error_c(const uint8_t* const ref,
 void av1_calc_indices_dim1_c(const int* data,
                              const int* centroids,
                              uint8_t* indices,
+                             int64_t* total_dist,
                              int n,
                              int k);
 #define av1_calc_indices_dim1 av1_calc_indices_dim1_c
@@ -233,6 +234,7 @@ void av1_calc_indices_dim1_c(const int* data,
 void av1_calc_indices_dim2_c(const int* data,
                              const int* centroids,
                              uint8_t* indices,
+                             int64_t* total_dist,
                              int n,
                              int k);
 #define av1_calc_indices_dim2 av1_calc_indices_dim2_c

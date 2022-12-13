@@ -420,37 +420,50 @@ RTCD_EXTERN int64_t (*av1_calc_frame_error)(const uint8_t* const ref,
 void av1_calc_indices_dim1_c(const int* data,
                              const int* centroids,
                              uint8_t* indices,
+                             int64_t* total_dist,
                              int n,
                              int k);
 void av1_calc_indices_dim1_sse2(const int* data,
                                 const int* centroids,
                                 uint8_t* indices,
+                                int64_t* total_dist,
                                 int n,
                                 int k);
 void av1_calc_indices_dim1_avx2(const int* data,
                                 const int* centroids,
                                 uint8_t* indices,
+                                int64_t* total_dist,
                                 int n,
                                 int k);
 RTCD_EXTERN void (*av1_calc_indices_dim1)(const int* data,
                                           const int* centroids,
                                           uint8_t* indices,
+                                          int64_t* total_dist,
                                           int n,
                                           int k);
 
 void av1_calc_indices_dim2_c(const int* data,
                              const int* centroids,
                              uint8_t* indices,
+                             int64_t* total_dist,
                              int n,
                              int k);
+void av1_calc_indices_dim2_sse2(const int* data,
+                                const int* centroids,
+                                uint8_t* indices,
+                                int64_t* total_dist,
+                                int n,
+                                int k);
 void av1_calc_indices_dim2_avx2(const int* data,
                                 const int* centroids,
                                 uint8_t* indices,
+                                int64_t* total_dist,
                                 int n,
                                 int k);
 RTCD_EXTERN void (*av1_calc_indices_dim2)(const int* data,
                                           const int* centroids,
                                           uint8_t* indices,
+                                          int64_t* total_dist,
                                           int n,
                                           int k);
 
@@ -2900,7 +2913,7 @@ static void setup_rtcd_internal(void) {
   av1_calc_indices_dim1 = av1_calc_indices_dim1_sse2;
   if (flags & HAS_AVX2)
     av1_calc_indices_dim1 = av1_calc_indices_dim1_avx2;
-  av1_calc_indices_dim2 = av1_calc_indices_dim2_c;
+  av1_calc_indices_dim2 = av1_calc_indices_dim2_sse2;
   if (flags & HAS_AVX2)
     av1_calc_indices_dim2 = av1_calc_indices_dim2_avx2;
   av1_compute_cross_correlation = av1_compute_cross_correlation_c;
