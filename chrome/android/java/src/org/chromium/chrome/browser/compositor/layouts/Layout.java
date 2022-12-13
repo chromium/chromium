@@ -64,6 +64,20 @@ public abstract class Layout {
         int USE_PREVIOUS_BROWSER_CONTROLS_STATE = 3;
     }
 
+    @IntDef({LayoutState.STARTING_TO_SHOW, LayoutState.SHOWING, LayoutState.STARTING_TO_HIDE,
+            LayoutState.HIDDEN})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface LayoutState {
+        /** The layout is going to hide as soon as the animation finishes. */
+        int STARTING_TO_SHOW = 0;
+        /** Actively being showed, no ongoing animation. */
+        int SHOWING = 1;
+        /** The layout is going to show as soon as the animation finishes. */
+        int STARTING_TO_HIDE = 2;
+        /** Not currently showed, and no ongoing animation. */
+        int HIDDEN = 3;
+    }
+
     /** Length of the unstalling animation. **/
     public static final long UNSTALLED_ANIMATION_DURATION_MS = 500;
 
@@ -93,11 +107,8 @@ public abstract class Layout {
      * drawn using the same ordering as this array. */
     protected LayoutTab[] mLayoutTabs;
 
-    // True means that the layout is going to hide as soon as the animation finishes.
-    private boolean mIsStartingToHide;
-
-    // True means that the layout is going to show as soon as the animation finishes.
-    private boolean mIsStartingToShow;
+    // Current state of the Layout.
+    private @LayoutState int mLayoutState;
 
     // The next id to show when the layout is hidden, or TabBase#INVALID_TAB_ID if no change.
     protected int mNextTabId = Tab.INVALID_TAB_ID;
@@ -127,6 +138,8 @@ public abstract class Layout {
         mCurrentOrientation = Orientation.UNSET;
         mDpToPx = context.getResources().getDisplayMetrics().density;
         mPxToDp = 1 / mDpToPx;
+
+        mLayoutState = LayoutState.HIDDEN;
     }
 
     /**
@@ -392,7 +405,7 @@ public abstract class Layout {
      */
     public void startHiding(int nextTabId, boolean hintAtTabSelection) {
         mUpdateHost.startHiding(nextTabId, hintAtTabSelection);
-        mIsStartingToHide = true;
+        mLayoutState = LayoutState.STARTING_TO_HIDE;
         mNextTabId = nextTabId;
     }
 
@@ -400,14 +413,14 @@ public abstract class Layout {
      * @return True is the layout is in the process of hiding itself.
      */
     public boolean isStartingToHide() {
-        return mIsStartingToHide;
+        return mLayoutState == LayoutState.STARTING_TO_HIDE;
     }
 
     /**
      * @return True is the layout is in the process of showing itself.
      */
     public boolean isStartingToShow() {
-        return mIsStartingToShow;
+        return mLayoutState == LayoutState.STARTING_TO_SHOW;
     }
 
     /**
@@ -421,9 +434,9 @@ public abstract class Layout {
      * To be called when the transition into the layout is done.
      */
     public void doneShowing() {
-        if (!mIsStartingToShow) return;
+        if (mLayoutState != LayoutState.STARTING_TO_SHOW) return;
 
-        mIsStartingToShow = false;
+        mLayoutState = LayoutState.SHOWING;
         mUpdateHost.doneShowing();
     }
 
@@ -432,9 +445,9 @@ public abstract class Layout {
      * This is currently called by the renderer when all the animation are done while hiding.
      */
     public void doneHiding() {
-        if (!mIsStartingToHide) return;
+        if (mLayoutState != LayoutState.STARTING_TO_HIDE) return;
 
-        mIsStartingToHide = false;
+        mLayoutState = LayoutState.HIDDEN;
         if (mNextTabId != Tab.INVALID_TAB_ID) {
             TabModel model = mTabModelSelector.getModelForTabId(mNextTabId);
             if (model != null) {
@@ -467,8 +480,7 @@ public abstract class Layout {
      */
     public void show(long time, boolean animate) {
         // TODO(crbug.com/1108496): Remove after LayoutManager explicitly hide the old layout.
-        mIsStartingToHide = false;
-        mIsStartingToShow = true;
+        mLayoutState = LayoutState.STARTING_TO_SHOW;
         mNextTabId = Tab.INVALID_TAB_ID;
     }
 
