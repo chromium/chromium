@@ -4205,6 +4205,7 @@ source_set("unit_tests") {
     # builds as well.
     "../ui/views/frame/immersive_mode_controller_chromeos_unittest.cc",
     "../ui/views/select_file_dialog_extension_unittest.cc",
+    "../ui/webui/ash/cloud_upload/cloud_upload_notification_manager_unittest.cc",
     "../ui/webui/ash/login/l10n_util_test_util.cc",
     "../ui/webui/ash/login/l10n_util_test_util.h",
     "../ui/webui/ash/login/l10n_util_unittest.cc",

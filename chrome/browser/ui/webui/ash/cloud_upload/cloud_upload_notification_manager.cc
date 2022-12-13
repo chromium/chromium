@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_notification_manager.h"
 
 #include "ash/public/cpp/notification_utils.h"
+#include "base/check.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,12 +19,12 @@
 namespace ash::cloud_upload {
 namespace {
 
-// Minimum amount of time, in seconds, for which the notification should be
+// The minimum amount of time for which the "in progress" state should be
 // displayed.
-const base::TimeDelta kMinNotificationTime = base::Seconds(5);
+const base::TimeDelta kMinInProgressTime = base::Seconds(5);
 
-// Time, in seconds, for which the "Complete" notification should display.
-const base::TimeDelta kCompleteNotificationTimeout = base::Seconds(2);
+// Time for which the "Complete" notification should display.
+const base::TimeDelta kCompleteNotificationTime = base::Seconds(5);
 
 // If no other class instance holds a reference to the notification manager, the
 // notification manager goes out of scope.
@@ -137,19 +139,19 @@ void CloudUploadNotificationManager::ShowUploadProgress(int progress) {
                                            *notification,
                                            /*metadata=*/nullptr);
 
-  // Start the "min time" notification timer when the first progress
-  // notification is shown.
-  if (!first_notification_shown) {
-    first_notification_shown = true;
-    notification_timer_.Start(
-        FROM_HERE, kMinNotificationTime,
+  // Make sure we display the "in progress" state for a minimum amount of time.
+  if (state_ == State::kUninitialized) {
+    state_ = State::kInProgress;
+    in_progress_timer_.Start(
+        FROM_HERE, kMinInProgressTime,
         base::BindOnce(
-            &CloudUploadNotificationManager::OnMinNotificationTimeReached,
+            &CloudUploadNotificationManager::OnMinInProgressTimeReached,
             weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
-void CloudUploadNotificationManager::ShowUploadComplete() {
+void CloudUploadNotificationManager::ShowCompleteNotification() {
+  DCHECK_EQ(state_, State::kComplete);
   std::unique_ptr<message_center::Notification> notification =
       CreateUploadCompleteNotification();
   notification->set_never_timeout(true);
@@ -157,26 +159,28 @@ void CloudUploadNotificationManager::ShowUploadComplete() {
                                            *notification,
                                            /*metadata=*/nullptr);
 
-  // If the complete notification is shown before any progress notifications,
-  // start the `kMinNotificationTime` timer.
-  if (!first_notification_shown) {
-    first_notification_shown = true;
-    notification_timer_.Start(
-        FROM_HERE, kMinNotificationTime,
-        base::BindOnce(
-            &CloudUploadNotificationManager::OnMinNotificationTimeReached,
-            weak_ptr_factory_.GetWeakPtr()));
-  }
-
   // Start the timer to automatically dismiss the "Complete" notification.
   complete_notification_timer_.Start(
-      FROM_HERE, kCompleteNotificationTimeout,
-      base::BindOnce(
-          &CloudUploadNotificationManager::OnCompleteNotificationTimeout,
-          weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE, kCompleteNotificationTime,
+      base::BindOnce(&CloudUploadNotificationManager::CloseNotification,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void CloudUploadNotificationManager::ShowUploadError(std::string message) {
+void CloudUploadNotificationManager::MarkUploadComplete() {
+  // Check if the "in progress" timeout has happened yet or not.
+  if (state_ == State::kInProgress) {
+    state_ = State::kWaitingForInProgressTimeout;
+  } else if (state_ == State::kUninitialized ||
+             state_ == State::kInProgressTimedOut) {
+    // If the complete notification is shown before any progress notifications,
+    // we don't run the kMinInProgressTime timeout.
+    state_ = State::kComplete;
+    ShowCompleteNotification();
+  }
+}
+
+void CloudUploadNotificationManager::ShowUploadError(
+    const std::string& message) {
   std::unique_ptr<message_center::Notification> notification =
       CreateUploadErrorNotification(message);
   notification->set_never_timeout(true);
@@ -185,28 +189,19 @@ void CloudUploadNotificationManager::ShowUploadError(std::string message) {
                                            /*metadata=*/nullptr);
 }
 
-void CloudUploadNotificationManager::OnMinNotificationTimeReached() {
-  // Close the notification only if the "Complete notification" has timed out.
-  // Error notifications can only be dismissed by users.
-  if (completed_) {
-    CloseNotification();
-  }
-}
-
-void CloudUploadNotificationManager::OnCompleteNotificationTimeout() {
-  completed_ = true;
-
-  // If `kMinNotificationTime` hasn't been reached yet, do not close the
-  // notification.
-  if (!notification_timer_.IsRunning()) {
-    CloseNotification();
+void CloudUploadNotificationManager::OnMinInProgressTimeReached() {
+  if (state_ == State::kInProgress) {
+    state_ = State::kInProgressTimedOut;
+  } else if (state_ == State::kWaitingForInProgressTimeout) {
+    state_ = State::kComplete;
+    ShowCompleteNotification();
   }
 }
 
 void CloudUploadNotificationManager::CloseNotification() {
   GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
                                          notification_id_);
-  notification_timer_.Stop();
+  in_progress_timer_.Stop();
   complete_notification_timer_.Stop();
   if (callback_) {
     std::move(callback_).Run();

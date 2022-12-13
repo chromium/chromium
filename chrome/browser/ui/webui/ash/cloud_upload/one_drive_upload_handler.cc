@@ -131,7 +131,7 @@ void OneDriveUploadHandler::OnEndUpload(const FileSystemURL& uploaded_file_url,
   // Resolve notifications.
   if (notification_manager_) {
     if (uploaded_file_url.is_valid()) {
-      notification_manager_->ShowUploadComplete();
+      notification_manager_->MarkUploadComplete();
     } else if (!error_message.empty()) {
       LOG(ERROR) << "Upload to OneDrive: " << error_message;
       notification_manager_->ShowUploadError(error_message);
