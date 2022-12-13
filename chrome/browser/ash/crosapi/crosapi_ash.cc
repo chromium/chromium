@@ -68,6 +68,7 @@
 #include "chrome/browser/ash/crosapi/login_state_ash.h"
 #include "chrome/browser/ash/crosapi/message_center_ash.h"
 #include "chrome/browser/ash/crosapi/metrics_reporting_ash.h"
+#include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
 #include "chrome/browser/ash/crosapi/network_change_ash.h"
 #include "chrome/browser/ash/crosapi/network_settings_service_ash.h"
@@ -123,6 +124,7 @@
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
+#include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
@@ -227,6 +229,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       message_center_ash_(std::make_unique<MessageCenterAsh>()),
       metrics_reporting_ash_(registry->CreateMetricsReportingAsh(
           g_browser_process->metrics_service())),
+      multi_capture_service_ash_(std::make_unique<MultiCaptureServiceAsh>()),
       native_theme_service_ash_(std::make_unique<NativeThemeServiceAsh>()),
       network_change_ash_(std::make_unique<NetworkChangeAsh>()),
       networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
@@ -618,6 +621,11 @@ void CrosapiAsh::BindMessageCenter(
 void CrosapiAsh::BindMetricsReporting(
     mojo::PendingReceiver<mojom::MetricsReporting> receiver) {
   metrics_reporting_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindMultiCaptureService(
+    mojo::PendingReceiver<mojom::MultiCaptureService> receiver) {
+  multi_capture_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindNativeThemeService(

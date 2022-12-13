@@ -67,6 +67,7 @@
 #include "chromeos/crosapi/mojom/login_state.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
+#include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
 #include "chromeos/crosapi/mojom/network_change.mojom.h"
 #include "chromeos/crosapi/mojom/network_settings_service.mojom.h"
 #include "chromeos/crosapi/mojom/networking_attributes.mojom.h"
@@ -401,6 +402,10 @@ LacrosService::LacrosService()
                   &crosapi::mojom::Crosapi::BindMessageCenter,
                   Crosapi::MethodMinVersions::kBindMessageCenterMinVersion>();
   ConstructRemote<
+      crosapi::mojom::MultiCaptureService,
+      &crosapi::mojom::Crosapi::BindMultiCaptureService,
+      Crosapi::MethodMinVersions::kBindMultiCaptureServiceMinVersion>();
+  ConstructRemote<
       crosapi::mojom::NativeThemeService,
       &crosapi::mojom::Crosapi::BindNativeThemeService,
       Crosapi::MethodMinVersions::kBindNativeThemeServiceMinVersion>();
@@ -606,6 +611,13 @@ bool LacrosService::IsMetricsReportingAvailable() const {
   return version &&
          version.value() >=
              Crosapi::MethodMinVersions::kBindMetricsReportingMinVersion;
+}
+
+bool LacrosService::IsMultiCaptureServiceAvailable() const {
+  absl::optional<uint32_t> version = CrosapiVersion();
+  return version &&
+         version.value() >=
+             Crosapi::MethodMinVersions::kBindMultiCaptureServiceMinVersion;
 }
 
 bool LacrosService::IsSensorHalClientAvailable() const {
