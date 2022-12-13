@@ -584,6 +584,11 @@ void RealboxHandler::OpenAutocompleteMatch(
   }
 
   AutocompleteMatch match(autocomplete_controller_->result().match_at(line));
+  if (match.action && match.action->TakesOverMatch()) {
+    return ExecuteAction(line, base::TimeTicks::Now(), mouse_button, alt_key,
+                         ctrl_key, meta_key, shift_key);
+  }
+
   if (match.destination_url != url) {
     // TODO(https://crbug.com/1020025): this could be malice or staleness.
     // Either way: don't navigate.

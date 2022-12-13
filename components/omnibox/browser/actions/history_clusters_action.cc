@@ -98,7 +98,8 @@ GURL GetFullJourneysUrlForQuery(const std::string& query) {
 
 HistoryClustersAction::HistoryClustersAction(
     const std::string& query,
-    const history::ClusterKeywordData& matched_keyword_data)
+    const history::ClusterKeywordData& matched_keyword_data,
+    bool takes_over_match)
     : OmniboxAction(
           OmniboxAction::LabelStrings(
               IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT,
@@ -107,7 +108,8 @@ HistoryClustersAction::HistoryClustersAction(
               IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH),
           GetFullJourneysUrlForQuery(query)),
       matched_keyword_data_(matched_keyword_data),
-      query_(query) {
+      query_(query),
+      takes_over_match_(takes_over_match) {
 #if BUILDFLAG(IS_ANDROID)
     CreateOrUpdateJavaObject(query);
 #endif
@@ -164,6 +166,10 @@ void HistoryClustersAction::Execute(ExecutionContext& context) const {
   }
   // Otherwise call the superclass, which will open the WebUI URL.
   OmniboxAction::Execute(context);
+}
+
+bool HistoryClustersAction::TakesOverMatch() const {
+  return takes_over_match_;
 }
 
 int32_t HistoryClustersAction::GetID() const {
@@ -252,7 +258,8 @@ void AttachHistoryClustersActions(
           service->DoesQueryMatchAnyCluster(query);
       if (matched_keyword_data) {
         match.action = base::MakeRefCounted<HistoryClustersAction>(
-            query, std::move(matched_keyword_data.value()));
+            query, std::move(matched_keyword_data.value()),
+            /*takes_over_match=*/false);
       }
     } else if (GetConfig().omnibox_action_on_urls) {
       // We do the URL stripping here, because we need it to both execute the
@@ -262,7 +269,8 @@ void AttachHistoryClustersActions(
           history_clusters::ComputeURLKeywordForLookup(match.destination_url);
       if (service->DoesURLMatchAnyCluster(url_keyword)) {
         match.action = base::MakeRefCounted<HistoryClustersAction>(
-            url_keyword, history::ClusterKeywordData());
+            url_keyword, history::ClusterKeywordData(),
+            /*takes_over_match=*/false);
       }
     }
 

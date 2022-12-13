@@ -2150,6 +2150,15 @@ bool OmniboxEditModel::TriggerPopupSelectionAction(
                                         !current_visibility);
       break;
     }
+    case OmniboxPopupSelection::NORMAL:
+      if (match.action && match.action->TakesOverMatch()) {
+        DCHECK(timestamp != base::TimeTicks());
+        ExecuteAction(match, selection.line, timestamp, disposition);
+        return true;
+      } else {
+        return false;
+      }
+
     case OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH:
       DCHECK(timestamp != base::TimeTicks());
       OpenMatch(match, WindowOpenDisposition::SWITCH_TO_TAB, GURL(),

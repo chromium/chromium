@@ -149,6 +149,12 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
   virtual bool IsReadyToTrigger(const AutocompleteInput& input,
                                 const AutocompleteProviderClient& client) const;
 
+  // Returns true if the Action should take over the whole match - that is:
+  // If the user presses Enter or clicks on the match at all, the navigation
+  // is ignored and the action is executed. Note, when this returns true, the
+  // action chip should be un-rendered, because the whole match IS the action.
+  virtual bool TakesOverMatch() const;
+
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
   // Returns the vector icon to represent this Action.
   virtual const gfx::VectorIcon& GetVectorIcon() const;

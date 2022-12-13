@@ -86,6 +86,10 @@ bool OmniboxAction::IsReadyToTrigger(
   return true;
 }
 
+bool OmniboxAction::TakesOverMatch() const {
+  return false;
+}
+
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& OmniboxAction::GetVectorIcon() const {
   // TODO(tommycli): Replace with real icon.
