@@ -69,17 +69,19 @@ class MockResponseWebView : public StubWebView {
                       std::unique_ptr<base::Value>* result) override {
     if (function ==
         webdriver::atoms::asString(webdriver::atoms::GET_LOCATION)) {
-      *result = std::make_unique<base::DictionaryValue>();
-      (*result)->SetIntPath("value.status", 0);
-      (*result)->SetDoublePath("x", 0.0);
-      (*result)->SetDoublePath("y", 128.8);
+      base::Value::Dict dict;
+      dict.SetByDottedPath("value.status", 0);
+      dict.Set("x", 0.0);
+      dict.Set("y", 128.8);
+      *result = std::make_unique<base::Value>(std::move(dict));
     } else if (function ==
                webdriver::atoms::asString(webdriver::atoms::GET_SIZE)) {
       // Do not set result; this should be an error state
       return Status(kStaleElementReference);
     } else {
-      *result = std::make_unique<base::DictionaryValue>();
-      (*result)->SetIntPath("value.status", 0);
+      base::Value::Dict dict;
+      dict.SetByDottedPath("value.status", 0);
+      *result = std::make_unique<base::Value>(std::move(dict));
     }
     return Status(kOk);
   }

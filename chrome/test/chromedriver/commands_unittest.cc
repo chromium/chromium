@@ -72,13 +72,13 @@ void ExecuteStubGetSession(int* count,
   }
   (*count)++;
 
-  std::unique_ptr<base::Value> capabilities(
-      new base::Value(base::Value::Type::DICTIONARY));
+  base::Value::Dict capabilities;
+  capabilities.Set("capability1", "test1");
+  capabilities.Set("capability2", "test2");
 
-  capabilities->SetStringKey("capability1", "test1");
-  capabilities->SetStringKey("capability2", "test2");
-
-  callback.Run(Status(kOk), std::move(capabilities), session_id, false);
+  callback.Run(Status(kOk),
+               std::make_unique<base::Value>(std::move(capabilities)),
+               session_id, false);
 }
 
 void OnGetSessions(const Status& status,
@@ -345,18 +345,18 @@ class FindElementWebView : public StubWebView {
       case kElementExistsQueryTwice:
       case kElementExistsTimeout: {
         if (only_one_) {
-          base::Value element(base::Value::Type::DICTIONARY);
-          element.SetStringKey("ELEMENT", "1");
-          result_ = base::Value::ToUniquePtrValue(element.Clone());
+          base::Value::Dict element;
+          element.Set("ELEMENT", "1");
+          result_ = std::make_unique<base::Value>(std::move(element));
         } else {
-          base::Value element1(base::Value::Type::DICTIONARY);
-          element1.SetStringKey("ELEMENT", "1");
-          base::Value element2(base::Value::Type::DICTIONARY);
-          element2.SetStringKey("ELEMENT", "2");
-          base::Value list(base::Value::Type::LIST);
-          list.Append(element1.Clone());
-          list.Append(element2.Clone());
-          result_ = base::Value::ToUniquePtrValue(list.Clone());
+          base::Value::Dict element1;
+          element1.Set("ELEMENT", "1");
+          base::Value::Dict element2;
+          element2.Set("ELEMENT", "2");
+          base::Value::List list;
+          list.Append(std::move(element1));
+          list.Append(std::move(element2));
+          result_ = std::make_unique<base::Value>(std::move(list));
         }
         break;
       }
@@ -450,10 +450,10 @@ TEST(CommandsTest, SuccessfulFindElement) {
   ASSERT_EQ(kOk,
             ExecuteFindElement(1, &session, &web_view, params, &result, nullptr)
                 .code());
-  base::Value param(base::Value::Type::DICTIONARY);
-  param.SetStringKey("css selector", "#a");
+  base::Value::Dict param;
+  param.Set("css selector", "#a");
   base::Value expected_args(base::Value::Type::LIST);
-  expected_args.Append(param.Clone());
+  expected_args.Append(base::Value(std::move(param)));
   web_view.Verify("frame_id1", &expected_args, result.get());
 }
 
@@ -481,10 +481,10 @@ TEST(CommandsTest, SuccessfulFindElements) {
   ASSERT_EQ(
       kOk, ExecuteFindElements(1, &session, &web_view, params, &result, nullptr)
                .code());
-  base::Value param(base::Value::Type::DICTIONARY);
-  param.SetStringKey("css selector", "*[name='b']");
+  base::Value::Dict param;
+  param.Set("css selector", "*[name='b']");
   base::Value expected_args(base::Value::Type::LIST);
-  expected_args.Append(param.Clone());
+  expected_args.Append(base::Value(std::move(param)));
   web_view.Verify("frame_id2", &expected_args, result.get());
 }
 
@@ -515,13 +515,13 @@ TEST(CommandsTest, SuccessfulFindChildElement) {
   ASSERT_EQ(kOk, ExecuteFindChildElement(1, &session, &web_view, element_id,
                                          params, &result)
                      .code());
-  base::Value locator_param(base::Value::Type::DICTIONARY);
-  locator_param.SetStringKey("css selector", "div");
-  base::Value root_element_param(base::Value::Type::DICTIONARY);
-  root_element_param.SetStringKey("ELEMENT", element_id);
+  base::Value::Dict locator_param;
+  locator_param.Set("css selector", "div");
+  base::Value::Dict root_element_param;
+  root_element_param.Set("ELEMENT", element_id);
   base::Value expected_args(base::Value::Type::LIST);
-  expected_args.Append(locator_param.Clone());
-  expected_args.Append(root_element_param.Clone());
+  expected_args.Append(base::Value(std::move(locator_param)));
+  expected_args.Append(base::Value(std::move(root_element_param)));
   web_view.Verify("frame_id3", &expected_args, result.get());
 }
 
@@ -551,13 +551,13 @@ TEST(CommandsTest, SuccessfulFindChildElements) {
   ASSERT_EQ(kOk, ExecuteFindChildElements(1, &session, &web_view, element_id,
                                           params, &result)
                      .code());
-  base::Value locator_param(base::Value::Type::DICTIONARY);
-  locator_param.SetStringKey("css selector", ".c");
-  base::Value root_element_param(base::Value::Type::DICTIONARY);
-  root_element_param.SetStringKey("ELEMENT", element_id);
+  base::Value::Dict locator_param;
+  locator_param.Set("css selector", ".c");
+  base::Value::Dict root_element_param;
+  root_element_param.Set("ELEMENT", element_id);
   base::Value expected_args(base::Value::Type::LIST);
-  expected_args.Append(locator_param.Clone());
-  expected_args.Append(root_element_param.Clone());
+  expected_args.Append(base::Value(std::move(locator_param)));
+  expected_args.Append(base::Value(std::move(root_element_param)));
   web_view.Verify("frame_id4", &expected_args, result.get());
 }
 

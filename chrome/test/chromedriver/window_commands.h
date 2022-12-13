@@ -11,11 +11,6 @@
 #include "base/values.h"
 #include "chrome/test/chromedriver/session.h"
 
-namespace base {
-class DictionaryValue;
-class Value;
-}  // namespace base
-
 struct Session;
 class Status;
 class Timeout;
@@ -368,10 +363,9 @@ Status ExecutePerformActions(Session* session,
                              std::unique_ptr<base::Value>* value,
                              Timeout* timeout);
 
-Status ProcessInputActionSequence(
-    Session* session,
-    const base::Value::Dict& action_sequence,
-    std::vector<std::unique_ptr<base::DictionaryValue>>* action_list);
+Status ProcessInputActionSequence(Session* session,
+                                  const base::Value::Dict& action_sequence,
+                                  std::vector<base::Value::Dict>* action_list);
 
 Status ExecuteReleaseActions(Session* session,
                              WebView* web_view,

@@ -1256,10 +1256,9 @@ Status ExecuteTouchScroll(Session* session,
                                            *yoffset);
 }
 
-Status ProcessInputActionSequence(
-    Session* session,
-    const base::Value::Dict& action_sequence,
-    std::vector<std::unique_ptr<base::DictionaryValue>>* action_list) {
+Status ProcessInputActionSequence(Session* session,
+                                  const base::Value::Dict& action_sequence,
+                                  std::vector<base::Value::Dict>* action_list) {
   const std::string* maybe_type = action_sequence.FindString("type");
   std::string pointer_type;
   if (!maybe_type || ((*maybe_type != "key") && (*maybe_type != "pointer") &&
@@ -1363,8 +1362,7 @@ Status ProcessInputActionSequence(
 
   std::unique_ptr<base::Value::List> actions_result(new base::Value::List);
   for (const base::Value& action_item_value : *actions) {
-    std::unique_ptr<base::DictionaryValue> action(new base::DictionaryValue());
-    base::Value::Dict& action_dict = action->GetDict();
+    base::Value::Dict action_dict;
 
     if (!action_item_value.is_dict()) {
       return Status(
@@ -1567,7 +1565,7 @@ Status ProcessInputActionSequence(
                       "'twist' must be an integer in the range of [0,359]");
       action_dict.Set("twist", maybe_int_value.value());
     }
-    action_list->push_back(std::move(action));
+    action_list->push_back(std::move(action_dict));
   }
   return Status(kOk);
 }
@@ -1581,13 +1579,13 @@ Status ExecutePerformActions(Session* session,
   const base::Value::List* actions_input = params.FindList("actions");
 
   // the processed actions
-  std::vector<std::vector<std::unique_ptr<base::DictionaryValue>>> actions_list;
+  std::vector<std::vector<base::Value::Dict>> actions_list;
   for (const base::Value& action_sequence : *actions_input) {
     // process input action sequence
     if (!action_sequence.is_dict())
       return Status(kInvalidArgument, "each argument must be a dictionary");
 
-    std::vector<std::unique_ptr<base::DictionaryValue>> action_list;
+    std::vector<base::Value::Dict> action_list;
     Status status = ProcessInputActionSequence(
         session, action_sequence.GetDict(), &action_list);
     actions_list.push_back(std::move(action_list));
@@ -1619,7 +1617,7 @@ Status ExecutePerformActions(Session* session,
     size_t last_touch_index = 0;
     for (size_t j = 0; j < actions_list.size(); j++) {
       if (actions_list[j].size() > i) {
-        const base::Value::Dict& action = actions_list[j][i]->GetDict();
+        const base::Value::Dict& action = actions_list[j][i];
         std::string type;
         std::string action_type;
         GetOptionalString(action, "type", &type);
@@ -1643,7 +1641,7 @@ Status ExecutePerformActions(Session* session,
     std::vector<TouchEvent> dispatch_touch_events;
     for (size_t j = 0; j < actions_list.size(); j++) {
       if (actions_list[j].size() > i) {
-        const base::Value::Dict& action = actions_list[j][i]->GetDict();
+        const base::Value::Dict& action = actions_list[j][i];
         std::string id;
         std::string type;
         std::string action_type;
@@ -2428,7 +2426,6 @@ Status ExecuteDeleteCookie(Session* session,
   const std::string* name = params.FindString("name");
   if (!name)
     return Status(kInvalidArgument, "missing 'name'");
-  base::DictionaryValue params_url;
   std::unique_ptr<base::Value> value_url;
   std::string url;
   Status status = GetUrl(web_view, session->GetCurrentFrameId(), &url);
@@ -2462,7 +2459,6 @@ Status ExecuteDeleteAllCookies(Session* session,
     return status;
 
   if (!cookies.empty()) {
-    base::DictionaryValue params_url;
     std::unique_ptr<base::Value> value_url;
     std::string url;
     status = GetUrl(web_view, session->GetCurrentFrameId(), &url);
