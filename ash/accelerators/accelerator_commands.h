@@ -293,7 +293,7 @@ ASH_EXPORT void ToggleCalendar();
 ASH_EXPORT void ToggleCapsLock();
 
 // Toggles the clipboard history.
-ASH_EXPORT void ToggleClipboardHistory();
+ASH_EXPORT void ToggleClipboardHistory(bool is_plain_text_paste);
 
 // Turns the dictation on or off.
 ASH_EXPORT void ToggleDictation();

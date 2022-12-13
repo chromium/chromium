@@ -1108,9 +1108,10 @@ void ToggleCapsLock() {
   ime_controller->SetCapsLockEnabled(!ime_controller->IsCapsLockEnabled());
 }
 
-void ToggleClipboardHistory() {
+void ToggleClipboardHistory(bool is_plain_text_paste) {
   DCHECK(Shell::Get()->clipboard_history_controller());
-  Shell::Get()->clipboard_history_controller()->ToggleMenuShownByAccelerator();
+  Shell::Get()->clipboard_history_controller()->ToggleMenuShownByAccelerator(
+      is_plain_text_paste);
 }
 
 void ToggleDictation() {

@@ -624,6 +624,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return accelerators::CanMoveActiveWindowBetweenDisplays();
     case NEW_INCOGNITO_WINDOW:
       return accelerators::CanCreateNewIncognitoWindow();
+    case PASTE_CLIPBOARD_HISTORY_PLAIN_TEXT:
+      return true;
     case PRIVACY_SCREEN_TOGGLE:
       return accelerators::CanTogglePrivacyScreen();
     case ROTATE_SCREEN:
@@ -1058,6 +1060,9 @@ void AcceleratorControllerImpl::PerformAction(
     case OPEN_GET_HELP:
       accelerators::OpenHelp();
       break;
+    case PASTE_CLIPBOARD_HISTORY_PLAIN_TEXT:
+      accelerators::ToggleClipboardHistory(/*is_plain_text_paste=*/true);
+      break;
     case POWER_PRESSED:
     case POWER_RELEASED:
       if (!base::SysInfo::IsRunningOnChromeOS()) {
@@ -1185,7 +1190,7 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::ToggleCapsLock();
       break;
     case TOGGLE_CLIPBOARD_HISTORY:
-      accelerators::ToggleClipboardHistory();
+      accelerators::ToggleClipboardHistory(/*is_plain_text_paste=*/false);
       break;
     case TOGGLE_DICTATION:
       base::RecordAction(UserMetricsAction("Accel_Toggle_Dictation"));

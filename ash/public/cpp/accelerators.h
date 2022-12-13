@@ -87,6 +87,9 @@ enum AcceleratorAction {
   OPEN_FEEDBACK_PAGE,
   OPEN_FILE_MANAGER,
   OPEN_GET_HELP,
+  // Similar to TOGGLE_CLIPBOARD_HISTORY but is used to paste plain text only
+  // when clipboard history menu is already open.
+  PASTE_CLIPBOARD_HISTORY_PLAIN_TEXT,
   POWER_PRESSED,
   POWER_RELEASED,
   PRINT_UI_HIERARCHIES,

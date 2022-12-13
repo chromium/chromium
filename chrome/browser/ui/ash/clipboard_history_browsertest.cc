@@ -45,6 +45,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/ink_drop.h"
@@ -675,6 +676,31 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest, DeleteItemViaBackspaceKey) {
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 }
 
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
+                       OpenClipboardHistoryViaAccelerator) {
+  // Verify Command+V shortcut does not open empty clipboard history menu.
+  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Verify Shift+Command+V shortcut does not open clipboard history menu.
+  PressAndRelease(ui::KeyboardCode::VKEY_V,
+                  ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Write some things to the clipboard to allow test to potentially show menu.
+  SetClipboardText("A");
+  SetClipboardText("B");
+
+  // Verify Shift+Command+V shortcut does not open clipboard history menu.
+  PressAndRelease(ui::KeyboardCode::VKEY_V,
+                  ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Verify Command+V shortcut opens non-empty clipboard history menu.
+  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+}
+
 class ClipboardHistoryPasteTypeBrowserTest
     : public ClipboardHistoryBrowserTest {
  public:
@@ -921,6 +947,27 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryPasteTypeBrowserTest,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.PasteType",
                                     /*count=*/6);
+
+  // Wait for the clipboard buffer to be restored before performing another
+  // paste.
+  ClipboardDataWaiter().WaitFor(&clipboard_data);
+
+  // Open clipboard history and paste the first history item by toggling the
+  // clipboard history menu while holding down the shift key. The item should
+  // paste as plain text.
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  PressAndRelease(ui::KeyboardCode::VKEY_V,
+                  ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+  WaitForWebContentsPaste("C", /*paste_plain_text=*/true);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.PasteType",
+      ClipboardHistoryPasteType::kPlainTextAccelerator,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.PasteType",
+                                    /*count=*/7);
 
   // Verify the clipboard buffer is restored to initial state.
   ClipboardDataWaiter().WaitFor(&clipboard_data);

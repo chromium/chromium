@@ -283,13 +283,21 @@ bool ClipboardHistoryControllerImpl::IsMenuShowing() const {
   return context_menu_ && context_menu_->IsRunning();
 }
 
-void ClipboardHistoryControllerImpl::ToggleMenuShownByAccelerator() {
+void ClipboardHistoryControllerImpl::ToggleMenuShownByAccelerator(
+    bool is_plain_text_paste) {
   if (IsMenuShowing()) {
     // Before hiding the menu, paste the selected menu item, or the first item
     // if none is selected.
     PasteMenuItemData(context_menu_->GetSelectedMenuItemCommand().value_or(
                           clipboard_history_util::kFirstItemCommandId),
-                      ClipboardHistoryPasteType::kRichTextAccelerator);
+                      is_plain_text_paste
+                          ? ClipboardHistoryPasteType::kPlainTextAccelerator
+                          : ClipboardHistoryPasteType::kRichTextAccelerator);
+    return;
+  }
+
+  // Do not allow the plain text shortcut to open the menu.
+  if (is_plain_text_paste) {
     return;
   }
 

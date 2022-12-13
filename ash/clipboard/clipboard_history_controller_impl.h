@@ -80,7 +80,11 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
 
   // Shows or hides the clipboard history menu through the keyboard accelerator.
   // If the menu was already shown, pastes the selected menu item before hiding.
-  void ToggleMenuShownByAccelerator();
+  // If the menu was not already shown and `is_plain_text_paste` is true the
+  // menu will not be shown. The common case for `is_plain_text_paste` is to
+  // allow pasting plain text when menu is already open, otherwise do not allow
+  // the plain text shortcut to open the menu.
+  void ToggleMenuShownByAccelerator(bool is_plain_text_paste);
 
   // ClipboardHistoryController:
   void AddObserver(ClipboardHistoryController::Observer* observer) override;
