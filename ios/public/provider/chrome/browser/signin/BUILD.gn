@@ -27,6 +27,14 @@ source_set("signin_error_api") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("signin_identity_api") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "signin_identity_api.h" ]
+  deps = [ ":signin_sso_api" ]
+  public_deps = [ "//ios/chrome/browser/signin:system_identity_manager" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("signin_resources_api") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "signin_resources_api.h" ]
