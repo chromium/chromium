@@ -5,9 +5,16 @@
 #include "content/browser/interest_group/interest_group_update_manager.h"
 
 #include <stddef.h>
+#include <stdint.h>
+
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/scoped_refptr.h"
@@ -28,6 +35,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -111,7 +119,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   // Extract all key/value pairs to a vector before writing to a flat_map, since
   // flat_map insertion is O(n).
   std::vector<std::pair<std::string, double>> pairs;
-  for (const auto pair : maybe_dict->GetDict()) {
+  for (const std::pair<const std::string&, const base::Value&> pair :
+       maybe_dict->GetDict()) {
     if (pair.second.is_int() || pair.second.is_double()) {
       pairs.emplace_back(pair.first, pair.second.GetDouble());
       continue;
@@ -137,7 +146,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     return false;
 
   std::vector<std::pair<std::string, absl::optional<double>>> pairs;
-  for (const auto pair : maybe_dict->GetDict()) {
+  for (const std::pair<const std::string&, const base::Value&> pair :
+       maybe_dict->GetDict()) {
     if (pair.second.is_none()) {
       pairs.emplace_back(pair.first, absl::nullopt);
       continue;
@@ -150,6 +160,52 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   }
   priority_signals_overrides =
       base::flat_map<std::string, absl::optional<double>>(std::move(pairs));
+  return true;
+}
+
+// Copies the sellerCapabilities JSON field into
+// `seller_capabilities` and `all_sellers_capabilities`, returns true if the
+// JSON is valid and the copy completed.
+[[nodiscard]] bool TryToCopySellerCapabilities(
+    const base::Value::Dict& dict,
+    InterestGroupUpdate& interest_group_update) {
+  const base::Value* maybe_dict = dict.Find("sellerCapabilities");
+  if (!maybe_dict)
+    return true;
+  if (!maybe_dict->is_dict())
+    return false;
+
+  std::vector<
+      std::pair<url::Origin, blink::InterestGroup::SellerCapabilitiesType>>
+      seller_capabilities_vec;
+  for (const std::pair<const std::string&, const base::Value&> pair :
+       maybe_dict->GetDict()) {
+    if (!pair.second.is_list())
+      return false;
+    blink::InterestGroup::SellerCapabilitiesType capabilities;
+    for (const base::Value& maybe_capability : pair.second.GetList()) {
+      if (!maybe_capability.is_string())
+        return false;
+      const std::string& capability = maybe_capability.GetString();
+      if (capability == "interestGroupCounts") {
+        capabilities.Put(
+            blink::InterestGroup::SellerCapabilities::kInterestGroupCounts);
+      } else if (capability == "latencyStats") {
+        capabilities.Put(
+            blink::InterestGroup::SellerCapabilities::kLatencyStats);
+      } else {
+        return false;
+      }
+    }
+    if (pair.first == "*") {
+      interest_group_update.all_sellers_capabilities = capabilities;
+    } else {
+      seller_capabilities_vec.emplace_back(
+          url::Origin::Create(GURL(pair.first)), capabilities);
+    }
+  }
+  if (!seller_capabilities_vec.empty())
+    interest_group_update.seller_capabilities.emplace(seller_capabilities_vec);
   return true;
 }
 
@@ -291,6 +347,9 @@ absl::optional<InterestGroupUpdate> ParseUpdateJson(
       !TryToCopyPrioritySignalsOverrides(
           *dict, interest_group_update.priority_signals_overrides) ||
       !TryToCopyExecutionMode(*dict, interest_group_update)) {
+    return absl::nullopt;
+  }
+  if (!TryToCopySellerCapabilities(*dict, interest_group_update)) {
     return absl::nullopt;
   }
   const std::string* maybe_bidding_url = dict->FindString("biddingLogicUrl");

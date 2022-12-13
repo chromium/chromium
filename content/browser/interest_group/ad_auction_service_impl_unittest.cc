@@ -1016,12 +1016,14 @@ TEST_F(AdAuctionServiceImplTest, FixExpiryOnJoin) {
 // The server JSON updates all fields that can be updated.
 TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath, base::StringPrintf(R"({
+      kDailyUpdateUrlPath,
+      base::StringPrintf(R"({
 "priority": 1.59,
 "enableBiddingSignalsPrioritization": true,
 "priorityVector": {"old1": 2, "new1": 1.1},
 "prioritySignalsOverrides": {"old2": 1, "new1": 1.1,
                              "browserSignals.reserved":-1},
+"sellerCapabilities": {"%s": ["latencyStats"], "*": ["interestGroupCounts"]},
 "biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
 "biddingWasmHelperUrl":"%s/interest_group/new_bidding_wasm_helper_url.wasm",
 "trustedBiddingSignalsUrl":
@@ -1034,14 +1036,20 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
                   "metadata": {"new_c": "d"}
                  }]
 })",
-                                              kOriginStringA, kOriginStringA,
-                                              kOriginStringA, kOriginStringA));
+                         kOriginStringA, kOriginStringA, kOriginStringA,
+                         kOriginStringA, kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.priority = 2.0;
   interest_group.enable_bidding_signals_prioritization = false;
   interest_group.priority_vector = {{{"old1", 1}, {"old2", 2}}};
   interest_group.priority_signals_overrides = {{{"old1", 1}, {"old2", 2}}};
+  interest_group.seller_capabilities.emplace();
+  interest_group.seller_capabilities->insert(std::make_pair(
+      kOriginA,
+      blink::InterestGroup::SellerCapabilities::kInterestGroupCounts));
+  interest_group.all_sellers_capabilities =
+      blink::InterestGroup::SellerCapabilities::kLatencyStats;
   interest_group.daily_update_url = kUpdateUrlA;
   interest_group.bidding_url = kBiddingLogicUrlA;
   interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
@@ -1079,6 +1087,12 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   EXPECT_EQ(group.priority_signals_overrides,
             expected_priority_signals_overrides);
 
+  EXPECT_EQ(group.all_sellers_capabilities,
+            blink::InterestGroup::SellerCapabilities::kInterestGroupCounts);
+  ASSERT_TRUE(group.seller_capabilities);
+  ASSERT_EQ(group.seller_capabilities->size(), 1u);
+  EXPECT_EQ(group.seller_capabilities->at(kOriginA),
+            blink::InterestGroup::SellerCapabilities::kLatencyStats);
   ASSERT_TRUE(group.bidding_url.has_value());
   EXPECT_EQ(group.bidding_url->spec(),
             base::StringPrintf("%s/interest_group/new_bidding_logic.js",
@@ -1799,6 +1813,46 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidPriorityCancelsAllUpdates) {
   ASSERT_EQ(groups.size(), 1u);
   const auto& group = groups[0].interest_group;
   EXPECT_EQ(group.priority, 2.0);
+  EXPECT_EQ(group.bidding_url, kBiddingLogicUrlA);
+}
+
+// The `sellerCapabilities` field has an invalid capability. The entire update
+// should get cancelled, since updates are atomic.
+TEST_F(AdAuctionServiceImplTest,
+       UpdateInvalidSellerCapabilitiesCancelsAllUpdates) {
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
+"sellerCapabilities": {"%s": ["latencyStats"], "*": ["interestGroupCounts",
+                                                     "invalidCapability"]},
+"biddingLogicUrl": "%s/interest_group/new_bidding_logic.js"
+})",
+                                              kOriginStringA, kOriginStringA));
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.daily_update_url = kUpdateUrlA;
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
+  interest_group.trusted_bidding_signals_keys.emplace();
+  interest_group.trusted_bidding_signals_keys->push_back("key1");
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // Check that the seller capabilities and bidding logic URL didn't change.
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].interest_group;
+  EXPECT_EQ(group.all_sellers_capabilities,
+            blink::InterestGroup::SellerCapabilitiesType());
+  EXPECT_FALSE(group.seller_capabilities);
   EXPECT_EQ(group.bidding_url, kBiddingLogicUrlA);
 }
 

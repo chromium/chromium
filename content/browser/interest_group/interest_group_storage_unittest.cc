@@ -38,11 +38,14 @@
 #include "url/origin.h"
 
 namespace content {
+namespace {
 
 using blink::InterestGroup;
 using testing::Field;
 using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
+using SellerCapabilities = blink::InterestGroup::SellerCapabilities;
+using SellerCapabilitiesType = blink::InterestGroup::SellerCapabilitiesType;
 
 class InterestGroupStorageTest : public testing::Test {
  public:
@@ -79,6 +82,109 @@ class InterestGroupStorageTest : public testing::Test {
     result.execution_mode =
         blink::InterestGroup::ExecutionMode::kCompatibilityMode;
     return result;
+  }
+
+  // This test is in a helper function so that it can also be run after
+  // UpgradeFromV6.
+  void StoresAllFieldsTest() {
+    const url::Origin partial_origin =
+        url::Origin::Create(GURL("https://partial.example.com"));
+    InterestGroup partial = NewInterestGroup(partial_origin, "partial");
+    const url::Origin full_origin =
+        url::Origin::Create(GURL("https://full.example.com"));
+    InterestGroup full(
+        /*expiry=*/base::Time::Now() + base::Days(30), /*owner=*/full_origin,
+        /*name=*/"full", /*priority=*/1.0,
+        /*enable_bidding_signals_prioritization=*/true,
+        /*priority_vector=*/{{{"a", 2}, {"b", -2.2}}},
+        /*priority_signals_overrides=*/{{{"a", -2}, {"c", 10}, {"d", 1.2}}},
+        /*seller_capabilities=*/
+        {{{full_origin, SellerCapabilities::kInterestGroupCounts},
+          {partial_origin, SellerCapabilities::kLatencyStats}}},
+        /*all_sellers_capabilities=*/
+        {SellerCapabilities::kInterestGroupCounts,
+         SellerCapabilities::kLatencyStats},
+        /*execution_mode=*/InterestGroup::ExecutionMode::kCompatibilityMode,
+        /*bidding_url=*/GURL("https://full.example.com/bid"),
+        /*bidding_wasm_helper_url=*/GURL("https://full.example.com/bid_wasm"),
+        /*daily_update_url=*/GURL("https://full.example.com/update"),
+        /*trusted_bidding_signals_url=*/
+        GURL("https://full.example.com/signals"),
+        /*trusted_bidding_signals_keys=*/
+        std::vector<std::string>{"a", "b", "c", "d"},
+        /*user_bidding_signals=*/"foo",
+        /*ads=*/
+        std::vector<InterestGroup::Ad>{
+            blink::InterestGroup::Ad(GURL("https://full.example.com/ad1"),
+                                     "metadata1"),
+            blink::InterestGroup::Ad(GURL("https://full.example.com/ad2"),
+                                     "metadata2")},
+        /*ad_components=*/
+        std::vector<InterestGroup::Ad>{
+            blink::InterestGroup::Ad(
+                GURL("https://full.example.com/adcomponent1"), "metadata1c"),
+            blink::InterestGroup::Ad(
+                GURL("https://full.example.com/adcomponent2"), "metadata2c")});
+
+    std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+    storage->JoinInterestGroup(partial, partial_origin.GetURL());
+    storage->JoinInterestGroup(full, full_origin.GetURL());
+
+    std::vector<StorageInterestGroup> storage_interest_groups =
+        storage->GetInterestGroupsForOwner(partial_origin);
+    ASSERT_EQ(1u, storage_interest_groups.size());
+    EXPECT_TRUE(
+        partial.IsEqualForTesting(storage_interest_groups[0].interest_group));
+
+    storage_interest_groups = storage->GetInterestGroupsForOwner(full_origin);
+    ASSERT_EQ(1u, storage_interest_groups.size());
+    EXPECT_TRUE(
+        full.IsEqualForTesting(storage_interest_groups[0].interest_group));
+    base::Time join_time = base::Time::Now();
+    EXPECT_EQ(storage_interest_groups[0].join_time, join_time);
+    EXPECT_EQ(storage_interest_groups[0].last_updated, join_time);
+
+    // Test update as well.
+
+    // Pass time, so can check if `join_time` or `last_updated` is updated.
+    task_environment().FastForwardBy(base::Seconds(1234));
+
+    InterestGroupUpdate update;
+    update.bidding_url = GURL("https://full.example.com/bid2");
+    update.bidding_wasm_helper_url = GURL("https://full.example.com/bid_wasm2");
+    update.trusted_bidding_signals_url =
+        GURL("https://full.example.com/signals2");
+    update.trusted_bidding_signals_keys =
+        std::vector<std::string>{"a", "b2", "c", "d"};
+    update.ads = full.ads;
+    update.ads->emplace_back(blink::InterestGroup::Ad(
+        GURL("https://full.example.com/ad3"), "metadata3"));
+    update.ad_components = full.ad_components;
+    update.ad_components->emplace_back(blink::InterestGroup::Ad(
+        GURL("https://full.example.com/adcomponent3"), "metadata3c"));
+    storage->UpdateInterestGroup(blink::InterestGroupKey(full.owner, full.name),
+                                 update);
+
+    InterestGroup updated = full;
+    updated.bidding_url = update.bidding_url;
+    updated.bidding_wasm_helper_url = update.bidding_wasm_helper_url;
+    updated.trusted_bidding_signals_url = update.trusted_bidding_signals_url;
+    updated.trusted_bidding_signals_keys = update.trusted_bidding_signals_keys;
+    updated.ads = update.ads;
+    updated.ad_components = update.ad_components;
+
+    storage_interest_groups = storage->GetInterestGroupsForOwner(full_origin);
+    ASSERT_EQ(1u, storage_interest_groups.size());
+    EXPECT_TRUE(
+        updated.IsEqualForTesting(storage_interest_groups[0].interest_group));
+    // `join_time` should not be modified be updates, but `last_updated` should
+    // be.
+    EXPECT_EQ(storage_interest_groups[0].join_time, join_time);
+    EXPECT_EQ(storage_interest_groups[0].last_updated, base::Time::Now());
+    // Make sure the clock was advanced.
+    EXPECT_NE(storage_interest_groups[0].join_time,
+              storage_interest_groups[0].last_updated);
   }
 
  private:
@@ -598,101 +704,7 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
 }
 
 TEST_F(InterestGroupStorageTest, StoresAllFields) {
-  const url::Origin partial_origin =
-      url::Origin::Create(GURL("https://partial.example.com"));
-  InterestGroup partial = NewInterestGroup(partial_origin, "partial");
-  const url::Origin full_origin =
-      url::Origin::Create(GURL("https://full.example.com"));
-  InterestGroup full(
-      /*expiry=*/base::Time::Now() + base::Days(30), /*owner=*/full_origin,
-      /*name=*/"full", /*priority=*/1.0,
-      /*enable_bidding_signals_prioritization=*/true,
-      /*priority_vector=*/{{{"a", 2}, {"b", -2.2}}},
-      /*priority_signals_overrides=*/{{{"a", -2}, {"c", 10}, {"d", 1.2}}},
-      // TODO(crbug.com/1385549): Update once storage support added.
-      /*seller_capabilities=*/absl::nullopt,
-      /*all_sellers_capabilities=*/
-      blink::InterestGroup::SellerCapabilitiesType(),
-      /*execution_mode=*/InterestGroup::ExecutionMode::kCompatibilityMode,
-      /*bidding_url=*/GURL("https://full.example.com/bid"),
-      /*bidding_wasm_helper_url=*/GURL("https://full.example.com/bid_wasm"),
-      /*daily_update_url=*/GURL("https://full.example.com/update"),
-      /*trusted_bidding_signals_url=*/GURL("https://full.example.com/signals"),
-      /*trusted_bidding_signals_keys=*/
-      std::vector<std::string>{"a", "b", "c", "d"},
-      /*user_bidding_signals=*/"foo",
-      /*ads=*/
-      std::vector<InterestGroup::Ad>{
-          blink::InterestGroup::Ad(GURL("https://full.example.com/ad1"),
-                                   "metadata1"),
-          blink::InterestGroup::Ad(GURL("https://full.example.com/ad2"),
-                                   "metadata2")},
-      /*ad_components=*/
-      std::vector<InterestGroup::Ad>{
-          blink::InterestGroup::Ad(
-              GURL("https://full.example.com/adcomponent1"), "metadata1c"),
-          blink::InterestGroup::Ad(
-              GURL("https://full.example.com/adcomponent2"), "metadata2c")});
-
-  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
-
-  storage->JoinInterestGroup(partial, partial_origin.GetURL());
-  storage->JoinInterestGroup(full, full_origin.GetURL());
-
-  std::vector<StorageInterestGroup> storage_interest_groups =
-      storage->GetInterestGroupsForOwner(partial_origin);
-  ASSERT_EQ(1u, storage_interest_groups.size());
-  EXPECT_TRUE(
-      partial.IsEqualForTesting(storage_interest_groups[0].interest_group));
-
-  storage_interest_groups = storage->GetInterestGroupsForOwner(full_origin);
-  ASSERT_EQ(1u, storage_interest_groups.size());
-  EXPECT_TRUE(
-      full.IsEqualForTesting(storage_interest_groups[0].interest_group));
-  base::Time join_time = base::Time::Now();
-  EXPECT_EQ(storage_interest_groups[0].join_time, join_time);
-  EXPECT_EQ(storage_interest_groups[0].last_updated, join_time);
-
-  // Test update as well.
-
-  // Pass time, so can check if `join_time` or `last_updated` is updated.
-  task_environment().FastForwardBy(base::Seconds(1234));
-
-  InterestGroupUpdate update;
-  update.bidding_url = GURL("https://full.example.com/bid2");
-  update.bidding_wasm_helper_url = GURL("https://full.example.com/bid_wasm2");
-  update.trusted_bidding_signals_url =
-      GURL("https://full.example.com/signals2");
-  update.trusted_bidding_signals_keys =
-      std::vector<std::string>{"a", "b2", "c", "d"};
-  update.ads = full.ads;
-  update.ads->emplace_back(blink::InterestGroup::Ad(
-      GURL("https://full.example.com/ad3"), "metadata3"));
-  update.ad_components = full.ad_components;
-  update.ad_components->emplace_back(blink::InterestGroup::Ad(
-      GURL("https://full.example.com/adcomponent3"), "metadata3c"));
-  storage->UpdateInterestGroup(blink::InterestGroupKey(full.owner, full.name),
-                               update);
-
-  InterestGroup updated = full;
-  updated.bidding_url = update.bidding_url;
-  updated.bidding_wasm_helper_url = update.bidding_wasm_helper_url;
-  updated.trusted_bidding_signals_url = update.trusted_bidding_signals_url;
-  updated.trusted_bidding_signals_keys = update.trusted_bidding_signals_keys;
-  updated.ads = update.ads;
-  updated.ad_components = update.ad_components;
-
-  storage_interest_groups = storage->GetInterestGroupsForOwner(full_origin);
-  ASSERT_EQ(1u, storage_interest_groups.size());
-  EXPECT_TRUE(
-      updated.IsEqualForTesting(storage_interest_groups[0].interest_group));
-  // `join_time` should not be modified be updates, but `last_updated` should
-  // be.
-  EXPECT_EQ(storage_interest_groups[0].join_time, join_time);
-  EXPECT_EQ(storage_interest_groups[0].last_updated, base::Time::Now());
-  // Make sure the clock was advanced.
-  EXPECT_NE(storage_interest_groups[0].join_time,
-            storage_interest_groups[0].last_updated);
+  StoresAllFieldsTest();
 }
 
 TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
@@ -1036,7 +1048,7 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
   EXPECT_EQ(0, interest_groups[0].bidding_browser_signals->bid_count);
 }
 
-// Upgrades a v6 database dump to an expected v9 database.
+// Upgrades a v6 database dump to an expected current database.
 // The v6 database dump was extracted from the InterestGroups database in
 // a browser profile by using `sqlite3 dump <path-to-database>` and then
 // cleaning up and formatting the output.
@@ -1069,6 +1081,11 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                   Field("priority_signals_overrides",
                         &InterestGroup::priority_signals_overrides,
                         absl::nullopt),
+                  Field("seller_capabilities",
+                        &InterestGroup::seller_capabilities, absl::nullopt),
+                  Field("all_sellers_capabilities",
+                        &InterestGroup::all_sellers_capabilities,
+                        SellerCapabilitiesType()),
                   Field("bidding_url", &InterestGroup::bidding_url,
                         GURL("https://owner.example.com/bidder.js")),
                   Field("bidding_wasm_helper_url",
@@ -1152,6 +1169,11 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                   Field("priority_signals_overrides",
                         &InterestGroup::priority_signals_overrides,
                         absl::nullopt),
+                  Field("seller_capabilities",
+                        &InterestGroup::seller_capabilities, absl::nullopt),
+                  Field("all_sellers_capabilities",
+                        &InterestGroup::all_sellers_capabilities,
+                        SellerCapabilitiesType()),
                   Field("bidding_url", &InterestGroup::bidding_url,
                         GURL("https://owner.example.com/bidder.js")),
                   Field("bidding_wasm_helper_url",
@@ -1235,6 +1257,11 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                   Field("priority_signals_overrides",
                         &InterestGroup::priority_signals_overrides,
                         absl::nullopt),
+                  Field("seller_capabilities",
+                        &InterestGroup::seller_capabilities, absl::nullopt),
+                  Field("all_sellers_capabilities",
+                        &InterestGroup::all_sellers_capabilities,
+                        SellerCapabilitiesType()),
                   Field("bidding_url", &InterestGroup::bidding_url,
                         GURL("https://owner.example.com/bidder.js")),
                   Field("bidding_wasm_helper_url",
@@ -1300,7 +1327,7 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                 base::Time::FromDeltaSinceWindowsEpoch(
                     base::Microseconds(13291340603098283)))));
 
-  // Upgrade if necessary and read.
+  // Upgrade and read.
   {
     std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
     ASSERT_TRUE(storage);
@@ -1319,6 +1346,30 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
 
     EXPECT_THAT(interest_groups, expected_interest_group_matcher);
   }
+}
+
+// Upgrades a v6 database dump to an expected current database, then attempts to
+// insert new rows into the migrated database.
+//
+// The v6 database dump was extracted from the InterestGroups database in
+// a browser profile by using `sqlite3 dump <path-to-database>` and then
+// cleaning up and formatting the output.
+TEST_F(InterestGroupStorageTest, UpgradeFromV6ThenAcceptNewData) {
+  // Create V6 database from dump
+  base::FilePath file_path;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
+  file_path =
+      file_path.AppendASCII("content/test/data/interest_group/schemaV6.sql");
+  ASSERT_TRUE(base::PathExists(file_path));
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(), file_path));
+
+  // Upgrade.
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+  ASSERT_TRUE(storage);
+
+  // Make sure the database can accept new data (including new fields) correctly
+  // after the migration.
+  StoresAllFieldsTest();
 }
 
 TEST_F(InterestGroupStorageTest,
@@ -1726,4 +1777,5 @@ TEST_F(InterestGroupStorageTest, OnlyDeletesExpiredKAnon) {
             storage->GetLastKAnonymityReported(ad2_url.spec()));
 }
 
+}  // namespace
 }  // namespace content

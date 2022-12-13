@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_UPDATE_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_UPDATE_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 
@@ -13,6 +15,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -35,6 +38,11 @@ struct CONTENT_EXPORT InterestGroupUpdate {
   // old overrides around. Keys mapped to nullopt are deleted.
   absl::optional<base::flat_map<std::string, absl::optional<double>>>
       priority_signals_overrides;
+  absl::optional<
+      base::flat_map<url::Origin, blink::InterestGroup::SellerCapabilitiesType>>
+      seller_capabilities;
+  absl::optional<blink::InterestGroup::SellerCapabilitiesType>
+      all_sellers_capabilities;
   absl::optional<blink::InterestGroup::ExecutionMode> execution_mode;
   absl::optional<GURL> bidding_url;
   absl::optional<GURL> bidding_wasm_helper_url;

@@ -113,11 +113,46 @@ base::Value::List MakeAdsValue(
   return list;
 }
 
-base::Value::Dict stringDoubleMapToDict(
+base::Value::Dict StringDoubleMapToDict(
     const base::flat_map<std::string, double>& map) {
   base::Value::Dict dict;
   for (const auto& pair : map) {
     dict.Set(pair.first, pair.second);
+  }
+  return dict;
+}
+
+base::Value::List SellerCapabilitiesToList(
+    blink::InterestGroup::SellerCapabilitiesType capabilities) {
+  base::Value::List list;
+  for (blink::InterestGroup::SellerCapabilities capability : capabilities) {
+    if (capability ==
+        blink::InterestGroup::SellerCapabilities::kInterestGroupCounts) {
+      list.Append("interestGroupCounts");
+    } else if (capability ==
+               blink::InterestGroup::SellerCapabilities::kLatencyStats) {
+      list.Append("latencyStats");
+    } else {
+      ADD_FAILURE() << "Unknown seller capability "
+                    << static_cast<uint32_t>(capability);
+    }
+  }
+  return list;
+}
+
+base::Value::Dict SellerCapabilitiesToDict(
+    const absl::optional<
+        base::flat_map<url::Origin,
+                       blink::InterestGroup::SellerCapabilitiesType>>& map,
+    blink::InterestGroup::SellerCapabilitiesType all_sellers_capabilities) {
+  base::Value::Dict dict;
+  if (map) {
+    for (const auto& [origin, capabilities] : *map) {
+      dict.Set(origin.Serialize(), SellerCapabilitiesToList(capabilities));
+    }
+  }
+  if (!all_sellers_capabilities.Empty()) {
+    dict.Set("*", SellerCapabilitiesToList(all_sellers_capabilities));
   }
   return dict;
 }
@@ -585,11 +620,14 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     dict.Set("enableBiddingSignalsPrioritization",
              group.enable_bidding_signals_prioritization);
     if (group.priority_vector)
-      dict.Set("priorityVector", stringDoubleMapToDict(*group.priority_vector));
+      dict.Set("priorityVector", StringDoubleMapToDict(*group.priority_vector));
     if (group.priority_signals_overrides) {
       dict.Set("prioritySignalsOverrides",
-               stringDoubleMapToDict(*group.priority_signals_overrides));
+               StringDoubleMapToDict(*group.priority_signals_overrides));
     }
+    dict.Set("sellerCapabilities",
+             SellerCapabilitiesToDict(group.seller_capabilities,
+                                      group.all_sellers_capabilities));
     if (group.bidding_url)
       dict.Set("biddingLogicUrl", group.bidding_url->spec());
     if (group.bidding_wasm_helper_url)
@@ -2497,6 +2535,52 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 })())",
                                 origin_string.c_str())));
   WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupValidSellerCapabilities) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  auto origin = url::Origin::Create(url);
+  std::string origin_string = origin.Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/origin,
+          /*name=*/"cars",
+          /*priority=*/0.0, /*enable_bidding_signals_prioritization=*/false,
+          /*priority_vector=*/absl::nullopt,
+          /*priority_signals_overrides=*/absl::nullopt,
+          /*seller_capabilities=*/
+          {{{url::Origin::Create(GURL("https://example.test")),
+             blink::InterestGroup::SellerCapabilities::kInterestGroupCounts}}},
+          /*all_sellers_capabilities=*/
+          blink::InterestGroup::SellerCapabilities::
+              kLatencyStats, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/absl::nullopt,
+          /*bidding_wasm_helper_url=*/absl::nullopt,
+          /*daily_update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/absl::nullopt,
+          /*ads=*/absl::nullopt,
+          /*ad_components=*/absl::nullopt)));
+
+  WaitForAccessObserved({});
+
+  std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
+  ASSERT_EQ(groups.size(), 1u);
+  const blink::InterestGroup& group = groups[0].interest_group;
+  EXPECT_EQ(group.all_sellers_capabilities,
+            blink::InterestGroup::SellerCapabilities::kLatencyStats);
+  ASSERT_TRUE(group.seller_capabilities);
+  ASSERT_EQ(group.seller_capabilities->size(), 1u);
+  EXPECT_EQ(group.seller_capabilities->at(
+                url::Origin::Create(GURL("https://example.test"))),
+            blink::InterestGroup::SellerCapabilities::kInterestGroupCounts);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,

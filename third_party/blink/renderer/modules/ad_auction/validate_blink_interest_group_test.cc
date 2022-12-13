@@ -223,6 +223,19 @@ TEST_F(ValidateBlinkInterestGroupTest,
       blink_interest_group, /*expected_error_field_name=*/"sellerCapabilities",
       /*expected_error_field_value=*/"null",
       /*expected_error=*/"sellerCapabilities origins must all be HTTPS.");
+
+  blink_interest_group->seller_capabilities->clear();
+  blink_interest_group->seller_capabilities->insert(
+      SecurityOrigin::CreateFromString(String::FromUTF8("https://origin.test")),
+      mojom::blink::SellerCapabilities::New());
+  blink_interest_group->seller_capabilities->insert(
+      SecurityOrigin::CreateFromString(String::FromUTF8("https://invalid^&")),
+      mojom::blink::SellerCapabilities::New());
+  // Data URLs have opaque origins, which are mapped to the string "null".
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group, /*expected_error_field_name=*/"sellerCapabilities",
+      /*expected_error_field_value=*/"null",
+      /*expected_error=*/"sellerCapabilities origins must all be HTTPS.");
 }
 
 // Check that `bidding_url`, `bidding_wasm_helper_url`, `daily_update_url`, and
