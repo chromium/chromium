@@ -44,8 +44,7 @@ ScopedBlinkAXEventIntent::ScopedBlinkAXEventIntent(
 }
 
 ScopedBlinkAXEventIntent::~ScopedBlinkAXEventIntent() {
-  // If a conservative GC is required, |document_| may become nullptr.
-  if (!document_ || !document_->IsActive())
+  if (!document_->IsActive())
     return;
 
   if (AXObjectCache* cache = document_->ExistingAXObjectCache()) {

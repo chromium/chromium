@@ -33,7 +33,7 @@ class CORE_EXPORT ScopedBlinkAXEventIntent final {
                            Document* document);
   ScopedBlinkAXEventIntent(const Vector<BlinkAXEventIntent>& intents,
                            Document* document);
-  virtual ~ScopedBlinkAXEventIntent();
+  ~ScopedBlinkAXEventIntent();
   ScopedBlinkAXEventIntent(const ScopedBlinkAXEventIntent& intent) = delete;
   ScopedBlinkAXEventIntent& operator=(const ScopedBlinkAXEventIntent& intent) =
       delete;
