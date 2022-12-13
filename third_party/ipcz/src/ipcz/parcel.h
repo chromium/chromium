@@ -32,6 +32,10 @@ class NodeLinkMemory;
 // outgoing transfer.
 class Parcel {
  public:
+  // Arbitrary hard cap on the number of subparcels which can be embedded within
+  // a parcel, to mitigate the potential for abuse.
+  static constexpr size_t kMaxSubparcelsPerParcel = 1024;
+
   Parcel();
   explicit Parcel(SequenceNumber sequence_number);
   Parcel(Parcel&& other);
@@ -40,6 +44,14 @@ class Parcel {
 
   void set_sequence_number(SequenceNumber n) { sequence_number_ = n; }
   SequenceNumber sequence_number() const { return sequence_number_; }
+
+  void set_num_subparcels(size_t num_subparcels) {
+    num_subparcels_ = num_subparcels;
+  }
+  size_t num_subparcels() const { return num_subparcels_; }
+
+  void set_subparcel_index(size_t index) { subparcel_index_ = index; }
+  size_t subparcel_index() const { return subparcel_index_; }
 
   // Indicates whether this Parcel is empty, meaning its data and objects have
   // been fully consumed.
@@ -232,6 +244,12 @@ class Parcel {
   // not yet consumed from it. Heap-allocated to keep Parcels small in the
   // common case of no object attachments.
   std::unique_ptr<ObjectStorageWithView> objects_;
+
+  // By default, all parcels have a single subparcel (theirself) at index 0. On
+  // any Parcel that exists as a subparcel of another, these fields will be
+  // updated by the containing Parcel as needed.
+  size_t num_subparcels_ = 1;
+  size_t subparcel_index_ = 0;
 };
 
 }  // namespace ipcz

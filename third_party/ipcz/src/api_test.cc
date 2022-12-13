@@ -597,19 +597,31 @@ TEST_F(APITest, BoxInvalid) {
 
   IpczHandle box;
 
-  // Invalid node handle.
+  // Null contents structure.
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().Box(IPCZ_INVALID_HANDLE, transport0, IPCZ_NO_FLAGS, nullptr,
-                       &box));
+            ipcz().Box(node, nullptr, IPCZ_NO_FLAGS, nullptr, &box));
 
-  // Invalid driver handle.
+  // Malformed contents structure.
+  IpczBoxContents contents = {.size = 0};
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().Box(node, IPCZ_INVALID_DRIVER_HANDLE, IPCZ_NO_FLAGS, nullptr,
-                       &box));
+            ipcz().Box(node, &contents, IPCZ_NO_FLAGS, nullptr, &box));
+
+  // Invalid node handle.
+  contents.type = IPCZ_BOX_TYPE_DRIVER_OBJECT;
+  contents.object.driver_object = transport0;
+  EXPECT_EQ(
+      IPCZ_RESULT_INVALID_ARGUMENT,
+      ipcz().Box(IPCZ_INVALID_HANDLE, &contents, IPCZ_NO_FLAGS, nullptr, &box));
+
+  // Invalid driver object.
+  contents.object.driver_object = IPCZ_INVALID_DRIVER_HANDLE;
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().Box(node, &contents, IPCZ_NO_FLAGS, nullptr, &box));
 
   // Null output handle.
+  contents.type = IPCZ_BOX_TYPE_DRIVER_OBJECT;
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().Box(node, transport0, IPCZ_NO_FLAGS, nullptr, nullptr));
+            ipcz().Box(node, &contents, IPCZ_NO_FLAGS, nullptr, nullptr));
 
   EXPECT_EQ(IPCZ_RESULT_OK,
             kDefaultDriver.Close(transport0, IPCZ_NO_FLAGS, nullptr));
@@ -628,20 +640,22 @@ TEST_F(APITest, UnboxInvalid) {
 
   IpczHandle node = CreateNode(kDefaultDriver);
   IpczHandle box;
+  IpczBoxContents contents = {.size = sizeof(contents),
+                              .type = IPCZ_BOX_TYPE_DRIVER_OBJECT,
+                              .object = {.driver_object = transport0}};
   EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().Box(node, transport0, IPCZ_NO_FLAGS, nullptr, &box));
-
-  IpczDriverHandle handle;
+            ipcz().Box(node, &contents, IPCZ_NO_FLAGS, nullptr, &box));
 
   // Null box handle.
-  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().Unbox(IPCZ_INVALID_HANDLE, IPCZ_NO_FLAGS, nullptr, &handle));
+  EXPECT_EQ(
+      IPCZ_RESULT_INVALID_ARGUMENT,
+      ipcz().Unbox(IPCZ_INVALID_HANDLE, IPCZ_NO_FLAGS, nullptr, &contents));
 
   // Invalid box handle type (node instead of box).
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().Unbox(node, IPCZ_NO_FLAGS, nullptr, &handle));
+            ipcz().Unbox(node, IPCZ_NO_FLAGS, nullptr, &contents));
 
-  // Null output handle.
+  // Null output contents.
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
             ipcz().Unbox(box, IPCZ_NO_FLAGS, nullptr, nullptr));
 

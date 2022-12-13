@@ -7,11 +7,14 @@
 #include <algorithm>
 #include <sstream>
 #include <utility>
+#include <vector>
 
+#include "ipcz/application_object.h"
 #include "ipcz/box.h"
 #include "ipcz/node_link.h"
 #include "ipcz/node_link_memory.h"
 #include "ipcz/node_messages.h"
+#include "ipcz/parcel.h"
 #include "ipcz/portal.h"
 #include "ipcz/router.h"
 #include "util/log.h"
@@ -146,6 +149,7 @@ void RemoteRouterLink::AcceptParcel(const OperationContext& context,
 
   size_t num_portals = 0;
   absl::InlinedVector<DriverObject, 2> driver_objects;
+  std::vector<Ref<ParcelWrapper>> subparcels;
   bool must_relay_driver_objects = false;
   for (Ref<APIObject>& object : objects) {
     switch (object->object_type()) {
@@ -156,10 +160,36 @@ void RemoteRouterLink::AcceptParcel(const OperationContext& context,
       case APIObject::kBox: {
         Box* box = Box::FromObject(object.get());
         ABSL_ASSERT(box);
-        if (!box->object().CanTransmitOn(*node_link()->transport())) {
-          must_relay_driver_objects = true;
+
+        switch (box->type()) {
+          case Box::Type::kDriverObject: {
+            if (!box->driver_object().CanTransmitOn(
+                    *node_link()->transport())) {
+              must_relay_driver_objects = true;
+            }
+            driver_objects.push_back(std::move(box->driver_object()));
+            break;
+          }
+
+          case Box::Type::kApplicationObject: {
+            // Application objects must be serialized into subparcels.
+            ApplicationObject application_object =
+                std::move(box->application_object());
+            if (!application_object.IsSerializable()) {
+              DLOG(FATAL) << "Cannot transmit unserializable object";
+              return;
+            }
+            subparcels.push_back(application_object.Serialize(*node_link()));
+            break;
+          }
+
+          case Box::Type::kSubparcel:
+            subparcels.push_back(std::move(box->subparcel()));
+            break;
+
+          default:
+            DLOG(FATAL) << "Attempted to transmit an invalid object";
         }
-        driver_objects.push_back(std::move(box->object()));
         break;
       }
 
@@ -167,6 +197,37 @@ void RemoteRouterLink::AcceptParcel(const OperationContext& context,
         break;
     }
   }
+
+  // Subparcels cannot contain other subparcels.
+  ABSL_ASSERT(parcel.subparcel_index() == 0 || subparcels.empty());
+
+  // Receivers will reject parcels which contain more than this maximum number
+  // of subparcels.
+  ABSL_ASSERT(subparcels.size() < Parcel::kMaxSubparcelsPerParcel);
+
+  uint32_t num_subparcels;
+  if (parcel.subparcel_index() == 0) {
+    // The total subparcel count includes this (the main) parcel.
+    num_subparcels = checked_cast<uint32_t>(subparcels.size()) + 1;
+
+    // Send the other subparcels separately before sending this main one. All
+    // will be collected on the receiving end and reconstituted into a single
+    // parcel.
+    for (size_t i = 1; i < num_subparcels; ++i) {
+      auto& subparcel = subparcels[i - 1]->parcel();
+      subparcel.set_sequence_number(parcel.sequence_number());
+      subparcel.set_num_subparcels(num_subparcels);
+      subparcel.set_subparcel_index(i);
+      AcceptParcel(context, subparcel);
+    }
+  } else {
+    // This is not the main parcel, so the number of subparcels has already been
+    // set correctly by the main parcel.
+    num_subparcels = parcel.num_subparcels();
+  }
+
+  accept.params().num_subparcels = num_subparcels;
+  accept.params().subparcel_index = parcel.subparcel_index();
 
   // If driver objects will require relaying through the broker, then the parcel
   // must be split into two separate messages: one for the driver objects (which
@@ -245,8 +306,22 @@ void RemoteRouterLink::AcceptParcel(const OperationContext& context,
       }
 
       case APIObject::kBox:
-        handle_types[i] =
-            must_split_parcel ? HandleType::kRelayedBox : HandleType::kBox;
+        switch (Box::FromObject(&object)->type()) {
+          case Box::Type::kDriverObject:
+            handle_types[i] = must_split_parcel
+                                  ? HandleType::kRelayedBoxedDriverObject
+                                  : HandleType::kBoxedDriverObject;
+            break;
+
+          // Subparcels and application objects both serialized as subparcels.
+          case Box::Type::kApplicationObject:
+          case Box::Type::kSubparcel:
+            handle_types[i] = HandleType::kBoxedSubparcel;
+            break;
+
+          default:
+            DLOG(FATAL) << "Attempted to transmit an invalid object.";
+        }
         break;
 
       default:

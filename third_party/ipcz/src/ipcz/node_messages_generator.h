@@ -295,6 +295,21 @@ IPCZ_MSG_BEGIN(AcceptParcel, IPCZ_MSG_ID(20), IPCZ_MSG_VERSION(0))
   // parcel sequence (and the receiving portal's inbound parcel sequence.)
   IPCZ_MSG_PARAM(SequenceNumber, sequence_number)
 
+  // For any given Parcel in a portal's sequence, there may be any number of
+  // additional subparcels transmitted separately and indexed sequentially
+  // starting from 1. This is the subparcel index for this transmitted Parcel.
+  // If 0, then this is the main Parcel for the given SequenceNumber.
+  IPCZ_MSG_PARAM(uint32_t, subparcel_index)
+
+  // The total number of subparcels belonging to this Parcel or its main
+  // containing Parcel. If no subparcels are associated with this Parcel, this
+  // value is 1.
+  //
+  // Note that subparcels themselves never contain other subparcels, so for
+  // subparcels this field always conveys the number of subparcels belonging to
+  // its main containing Parcel.
+  IPCZ_MSG_PARAM(uint32_t, num_subparcels)
+
   // Free-form array of application-provided data bytes for this parcel. This
   // field is only meaningful if `parcel_fragment` is null.
   IPCZ_MSG_PARAM_ARRAY(uint8_t, parcel_data)

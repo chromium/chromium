@@ -7,7 +7,9 @@
 
 #include "api.h"
 #include "ipcz/api_object.h"
+#include "ipcz/application_object.h"
 #include "ipcz/box.h"
+#include "ipcz/driver_object.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/node.h"
 #include "ipcz/node_link_memory.h"
@@ -325,17 +327,38 @@ IpczResult Reject(IpczHandle parcel_handle,
 }
 
 IpczResult Box(IpczHandle node_handle,
-               IpczDriverHandle driver_handle,
+               const IpczBoxContents* contents,
                uint32_t flags,
                const void* options,
                IpczHandle* handle) {
   ipcz::Node* node = ipcz::Node::FromHandle(node_handle);
-  if (!node || driver_handle == IPCZ_INVALID_DRIVER_HANDLE || !handle) {
+  if (!node || !handle || !contents ||
+      contents->size < sizeof(IpczBoxContents)) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  auto box = ipcz::MakeRefCounted<ipcz::Box>(
-      ipcz::DriverObject(node->driver(), driver_handle));
+  ipcz::Ref<ipcz::Box> box;
+  switch (contents->type) {
+    case IPCZ_BOX_TYPE_DRIVER_OBJECT:
+      if (contents->object.driver_object == IPCZ_INVALID_DRIVER_HANDLE) {
+        return IPCZ_RESULT_INVALID_ARGUMENT;
+      }
+      box = ipcz::MakeRefCounted<ipcz::Box>(
+          ipcz::DriverObject(node->driver(), contents->object.driver_object));
+      break;
+
+    case IPCZ_BOX_TYPE_APPLICATION_OBJECT:
+      box = ipcz::MakeRefCounted<ipcz::Box>(
+          ipcz::ApplicationObject(contents->object.application_object,
+                                  contents->serializer, contents->destructor));
+      break;
+
+    default:
+      // NOTE: Explicit boxing of parcel fragments is not supported, but it
+      // could be in the future.
+      return IPCZ_RESULT_UNIMPLEMENTED;
+  }
+
   *handle = ipcz::Box::ReleaseAsHandle(std::move(box));
   return IPCZ_RESULT_OK;
 }
@@ -343,8 +366,8 @@ IpczResult Box(IpczHandle node_handle,
 IpczResult Unbox(IpczHandle handle,
                  IpczUnboxFlags flags,
                  const void* options,
-                 IpczDriverHandle* driver_handle) {
-  if (!driver_handle) {
+                 IpczBoxContents* contents) {
+  if (!contents || contents->size < sizeof(IpczBoxContents)) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
@@ -354,12 +377,10 @@ IpczResult Unbox(IpczHandle handle,
   }
 
   if (flags & IPCZ_UNBOX_PEEK) {
-    *driver_handle = box->object().handle();
-    std::ignore = box.release();
-  } else {
-    *driver_handle = box->object().release();
+    return box.release()->Peek(*contents);
   }
-  return IPCZ_RESULT_OK;
+
+  return box->Unbox(*contents);
 }
 
 constexpr IpczAPI kCurrentAPI = {

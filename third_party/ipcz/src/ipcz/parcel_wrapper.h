@@ -24,6 +24,8 @@ class ParcelWrapper : public APIObjectImpl<ParcelWrapper, APIObject::kParcel> {
  public:
   explicit ParcelWrapper(Parcel parcel);
 
+  Parcel& parcel() { return parcel_; }
+
   // APIObject:
   IpczResult Close() override;
 

@@ -531,7 +531,7 @@ bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
         break;
       }
 
-      case HandleType::kBox: {
+      case HandleType::kBoxedDriverObject: {
         if (driver_objects.empty()) {
           return false;
         }
@@ -541,10 +541,18 @@ bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
         break;
       }
 
-      case HandleType::kRelayedBox: {
+      case HandleType::kRelayedBoxedDriverObject: {
         is_split_parcel = true;
         break;
       }
+
+      case HandleType::kBoxedSubparcel:
+        // Store a placeholder object for each expected subparcel. These will
+        // be filled in by AcceptCompleteParcel() once the last complete
+        // subparcel is accepted.
+        objects[i] =
+            MakeRefCounted<Box>(MakeRefCounted<ParcelWrapper>(Parcel{}));
+        break;
 
       default:
         parcel_valid = false;
@@ -558,8 +566,17 @@ bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
     parcel_valid = false;
   }
 
+  const uint32_t num_subparcels = accept.params().num_subparcels;
+  const uint32_t subparcel_index = accept.params().subparcel_index;
+  if (num_subparcels > Parcel::kMaxSubparcelsPerParcel ||
+      subparcel_index >= num_subparcels) {
+    return false;
+  }
+
   const SublinkId for_sublink = accept.params().sublink;
   Parcel parcel(accept.params().sequence_number);
+  parcel.set_num_subparcels(num_subparcels);
+  parcel.set_subparcel_index(subparcel_index);
   parcel.SetObjects(std::move(objects));
   if (!parcel_valid) {
     return false;
@@ -930,6 +947,66 @@ bool NodeLink::AcceptCompleteParcel(SublinkId for_sublink, Parcel& parcel) {
     return true;
   }
 
+  // Note that the common case is a standalone complete parcel, where the number
+  // of subparcels is 1. In that case no additional tracking is necessary and we
+  // immediately accept the parcel below.
+  const size_t num_subparcels = parcel.num_subparcels();
+  if (num_subparcels > 1) {
+    auto key = std::make_tuple(for_sublink, parcel.sequence_number());
+    absl::MutexLock lock(&mutex_);
+    auto [it, inserted] =
+        subparcel_trackers_.try_emplace(key, SubparcelTracker{});
+    SubparcelTracker& tracker = it->second;
+    if (inserted) {
+      tracker.subparcels.resize(num_subparcels);
+    }
+
+    // Note that `index` has already been validated against the expected number
+    // of subparcels in OnAcceptParcel().
+    const size_t index = parcel.subparcel_index();
+    ABSL_ASSERT(index < tracker.subparcels.size());
+    if (tracker.subparcels[index]) {
+      // Multiple subparcels claim the same index for this SequenceNumber. Bad.
+      return false;
+    }
+    tracker.subparcels[index] =
+        MakeRefCounted<ParcelWrapper>(std::move(parcel));
+    tracker.num_subparcels_received++;
+    if (tracker.num_subparcels_received < num_subparcels) {
+      // Still waiting for more subparcels.
+      return true;
+    }
+
+    // We have all subparcels for this SequenceNumber. Join them and proceed.
+    // We do this by iterating over the object attachments in subparcel 0,
+    // replacing any placeholder ParcelWrapper objects with our own real ones.
+    auto subparcels = std::move(tracker.subparcels);
+    subparcel_trackers_.erase(it);
+    parcel = std::move(subparcels[0]->parcel());
+    absl::Span<Ref<ParcelWrapper>> remaining_subparcels =
+        absl::MakeSpan(subparcels).subspan(1);
+    for (auto& object : parcel.objects_view()) {
+      Box* box = Box::FromObject(object.get());
+      if (box && box->type() == Box::Type::kSubparcel) {
+        if (remaining_subparcels.empty()) {
+          // Too many placeholder objects in the main parcel. Bad.
+          return false;
+        }
+
+        ParcelWrapper* wrapper = box->subparcel().get();
+        wrapper->parcel() = std::move(remaining_subparcels.front()->parcel());
+        remaining_subparcels.remove_prefix(1);
+      }
+    }
+
+    if (!remaining_subparcels.empty()) {
+      // One or more subparcels unclaimed by the main parcel. Bad.
+      return false;
+    }
+  }
+
+  // At this point we've collected all expected subparcels and can pass the full
+  // parcel along to its receiver.
   const OperationContext context{OperationContext::kTransportNotification};
   parcel.set_remote_source(WrapRefCounted(this));
   const LinkType link_type = sublink->router_link->GetType();

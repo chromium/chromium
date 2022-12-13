@@ -373,16 +373,23 @@ IpczHandle TestNode::BoxBlob(std::string_view contents) {
   GetDriver().Close(mapping, IPCZ_NO_FLAGS, nullptr);
 
   IpczHandle box;
-  result = ipcz().Box(node_, memory, IPCZ_NO_FLAGS, nullptr, &box);
+  const IpczBoxContents box_contents = {
+      .size = sizeof(box_contents),
+      .type = IPCZ_BOX_TYPE_DRIVER_OBJECT,
+      .object = {.driver_object = memory},
+  };
+  result = ipcz().Box(node_, &box_contents, IPCZ_NO_FLAGS, nullptr, &box);
   ABSL_ASSERT(result == IPCZ_RESULT_OK);
   return box;
 }
 
 std::string TestNode::UnboxBlob(IpczHandle box) {
-  IpczDriverHandle memory;
-  IpczResult result = ipcz().Unbox(box, IPCZ_NO_FLAGS, nullptr, &memory);
+  IpczBoxContents box_contents = {.size = sizeof(box_contents)};
+  IpczResult result = ipcz().Unbox(box, IPCZ_NO_FLAGS, nullptr, &box_contents);
   ABSL_ASSERT(result == IPCZ_RESULT_OK);
+  ABSL_ASSERT(box_contents.type == IPCZ_BOX_TYPE_DRIVER_OBJECT);
 
+  const IpczDriverHandle memory = box_contents.object.driver_object;
   IpczSharedMemoryInfo info = {.size = sizeof(info)};
   result =
       GetDriver().GetSharedMemoryInfo(memory, IPCZ_NO_FLAGS, nullptr, &info);

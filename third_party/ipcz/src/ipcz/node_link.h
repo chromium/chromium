@@ -31,6 +31,7 @@ namespace ipcz {
 
 class Message;
 class Parcel;
+class ParcelWrapper;
 class RemoteRouterLink;
 class Router;
 
@@ -309,6 +310,22 @@ class NodeLink : public msg::NodeMessageListener {
   using PartialParcelKey = std::tuple<SublinkId, SequenceNumber>;
   using PartialParcelMap = absl::flat_hash_map<PartialParcelKey, Parcel>;
   PartialParcelMap partial_parcels_ ABSL_GUARDED_BY(mutex_);
+
+  // Mapping from subparcel index to Parcel object.
+  using SubparcelMap = absl::flat_hash_map<size_t, Parcel>;
+
+  // Tracks complete subparcels received for a given sequence number. Only once
+  // all expected subparcels are received can the parcel be made available for
+  // consumption.
+  using SubparcelVector = std::vector<Ref<ParcelWrapper>>;
+  struct SubparcelTracker {
+    size_t num_subparcels_received = 0;
+    SubparcelVector subparcels;
+  };
+  using SubparcelTrackerKey = std::tuple<SublinkId, SequenceNumber>;
+  using SubparcelTrackerMap =
+      absl::flat_hash_map<SubparcelTrackerKey, SubparcelTracker>;
+  SubparcelTrackerMap subparcel_trackers_ ABSL_GUARDED_BY(mutex_);
 
   // Tracks pending referrals sent to the broker.
   uint64_t next_referral_id_ = 0;

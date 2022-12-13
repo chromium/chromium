@@ -33,26 +33,36 @@ bool ObjectBase::Serialize(Transport& transmitter,
 
 // static
 IpczHandle ObjectBase::Box(scoped_refptr<ObjectBase> object) {
-  IpczDriverHandle handle = ReleaseAsHandle(std::move(object));
   IpczHandle box;
+  const IpczBoxContents contents = {
+      .size = sizeof(contents),
+      .type = IPCZ_BOX_TYPE_DRIVER_OBJECT,
+      .object = {.driver_object = ReleaseAsHandle(std::move(object))},
+  };
   const IpczResult result =
-      GetIpczAPI().Box(GetIpczNode(), handle, IPCZ_NO_FLAGS, nullptr, &box);
+      GetIpczAPI().Box(GetIpczNode(), &contents, IPCZ_NO_FLAGS, nullptr, &box);
   CHECK_EQ(result, IPCZ_RESULT_OK);
   return box;
 }
 
 // static
 IpczDriverHandle ObjectBase::PeekBox(IpczHandle box) {
-  IpczDriverHandle handle = IPCZ_INVALID_DRIVER_HANDLE;
-  GetIpczAPI().Unbox(box, IPCZ_UNBOX_PEEK, nullptr, &handle);
-  return handle;
+  IpczBoxContents contents = {
+      .size = sizeof(contents),
+      .object = {.driver_object = IPCZ_INVALID_DRIVER_HANDLE},
+  };
+  GetIpczAPI().Unbox(box, IPCZ_UNBOX_PEEK, nullptr, &contents);
+  return contents.object.driver_object;
 }
 
 // static
 scoped_refptr<ObjectBase> ObjectBase::Unbox(IpczHandle box) {
-  IpczDriverHandle handle = IPCZ_INVALID_DRIVER_HANDLE;
-  GetIpczAPI().Unbox(box, IPCZ_NO_FLAGS, nullptr, &handle);
-  return TakeFromHandle(handle);
+  IpczBoxContents contents = {.size = sizeof(contents)};
+  const IpczResult result =
+      GetIpczAPI().Unbox(box, IPCZ_NO_FLAGS, nullptr, &contents);
+  DCHECK_EQ(result, IPCZ_RESULT_OK);
+  DCHECK_EQ(contents.type, IPCZ_BOX_TYPE_DRIVER_OBJECT);
+  return TakeFromHandle(contents.object.driver_object);
 }
 
 }  // namespace mojo::core::ipcz_driver
