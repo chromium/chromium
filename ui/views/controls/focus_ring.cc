@@ -16,6 +16,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -58,7 +59,10 @@ SkColor GetPaintColor(FocusRing* focus_ring, bool valid) {
 
 double GetCornerRadius(float halo_thickness) {
   const double thickness = halo_thickness / 2.f;
-  return FocusableBorder::kCornerRadiusDp + thickness;
+  return (features::IsChromeRefresh2023()
+              ? FocusableBorder::kChromeRefresh2023CornerRadiusDp
+              : FocusableBorder::kCornerRadiusDp) +
+         thickness;
 }
 
 SkPath GetHighlightPathInternal(const View* view, float halo_thickness) {
