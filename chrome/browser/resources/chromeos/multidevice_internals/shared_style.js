@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-const template = document.createElement('template');
-template.innerHTML = `
-<dom-module id="shared-style">{__html_template__}</dom-module>
-`;
-document.body.appendChild(template.content.cloneNode(true));
+
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+const styleMod = document.createElement('dom-module');
+styleMod.appendChild(html`{__html_template__}`.content);
+styleMod.register('shared-style');
