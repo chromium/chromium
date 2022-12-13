@@ -269,16 +269,17 @@ suite('LensUploadDialogTest', () => {
     assertEquals(url, submittedUrl);
   });
 
-  test('dragenter event should transition to dragging state', async () => {
-    // Arrange.
-    uploadDialog.openDialog();
-    await waitAfterNextRender(uploadDialog);
-    // Act.
-    uploadDialog.$.dragDropArea.dispatchEvent(new DragEvent('dragenter'));
-    await waitAfterNextRender(uploadDialog);
-    // Assert.
-    assertTrue(uploadDialog.hasAttribute('is-dragging_'));
-  });
+  // TODO (crbug/1399340): De-flake this test.
+  // test('dragenter event should transition to dragging state', async () => {
+  //   // Arrange.
+  //   uploadDialog.openDialog();
+  //   await waitAfterNextRender(uploadDialog);
+  //   // Act.
+  //   uploadDialog.$.dragDropArea.dispatchEvent(new DragEvent('dragenter'));
+  //   await waitAfterNextRender(uploadDialog);
+  //   // Assert.
+  //   assertTrue(uploadDialog.hasAttribute('is-dragging_'));
+  // });
 
   test(
       'dragenter then dragleave event should transition to normal state',
