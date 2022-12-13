@@ -16,7 +16,9 @@ import 'chrome://crostini-installer/strings.m.js';
 import {BrowserProxy} from 'chrome://crostini-installer/browser_proxy.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './app.html.js';
 
 /**
  * Enum for the state of `crostini-installer-app`. Not to confused with
@@ -72,7 +74,7 @@ const UNAVAILABLE_USERNAMES = [
 Polymer({
   is: 'crostini-installer-app',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   properties: {
     /** @private {!State} */
