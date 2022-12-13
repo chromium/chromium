@@ -22,6 +22,7 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 import {AllSitesAction2, ContentSetting, ContentSettingsTypes, SiteSettingSource} from '../site_settings/constants.js';
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from '../site_settings/site_settings_mixin.js';
 import {RawSiteException, RecentSitePermissions} from '../site_settings/site_settings_prefs_browser_proxy.js';
+import {TooltipMixin, TooltipMixinInterface} from '../tooltip_mixin.js';
 
 import {getTemplate} from './recent_site_permissions.html.js';
 import {getLocalizationStringForContentType} from './site_settings_page_util.js';
@@ -33,11 +34,11 @@ export interface SettingsRecentSitePermissionsElement {
 }
 
 const SettingsRecentSitePermissionsElementBase =
-    RouteObserverMixin(
-        SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as {
+    TooltipMixin(RouteObserverMixin(
+        SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))) as {
       new (): PolymerElement & I18nMixinInterface &
           WebUiListenerMixinInterface & SiteSettingsMixinInterface &
-          RouteObserverMixinInterface,
+          RouteObserverMixinInterface & TooltipMixinInterface,
     };
 
 export class SettingsRecentSitePermissionsElement extends
@@ -261,23 +262,7 @@ export class SettingsRecentSitePermissionsElement extends
   private onShowIncognitoTooltip_(e: Event) {
     e.stopPropagation();
 
-    const target = e.target!;
-    const tooltip = this.$.tooltip;
-    tooltip.target = target;
-    tooltip.updatePosition();
-    const hide = () => {
-      tooltip.hide();
-      target.removeEventListener('mouseleave', hide);
-      target.removeEventListener('blur', hide);
-      target.removeEventListener('click', hide);
-      tooltip.removeEventListener('mouseenter', hide);
-    };
-    target.addEventListener('mouseleave', hide);
-    target.addEventListener('blur', hide);
-    target.addEventListener('click', hide);
-    tooltip.addEventListener('mouseenter', hide);
-
-    tooltip.show();
+    this.showTooltipAtTarget(this.$.tooltip, e.target!);
   }
 
   /**

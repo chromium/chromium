@@ -25,6 +25,7 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {ContentSettingsTypes, MODEL_UPDATE_DELAY_MS} from '../site_settings/constants.js';
 import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
 import {SiteSettingsPermissionsBrowserProxy, SiteSettingsPermissionsBrowserProxyImpl, UnusedSitePermissions} from '../site_settings/site_settings_permissions_browser_proxy.js';
+import {TooltipMixin} from '../tooltip_mixin.js';
 
 import {getLocalizationStringForContentType} from './site_settings_page_util.js';
 import {getTemplate} from './unused_site_permissions.html.js';
@@ -43,8 +44,8 @@ interface UnusedSitePermissionsDisplay extends UnusedSitePermissions {
   visible: boolean;
 }
 
-const SettingsUnusedSitePermissionsElementBase =
-    I18nMixin(WebUiListenerMixin(SiteSettingsMixin(PolymerElement)));
+const SettingsUnusedSitePermissionsElementBase = TooltipMixin(
+    I18nMixin(WebUiListenerMixin(SiteSettingsMixin(PolymerElement))));
 
 export class SettingsUnusedSitePermissionsElement extends
     SettingsUnusedSitePermissionsElementBase {
@@ -223,23 +224,9 @@ export class SettingsUnusedSitePermissionsElement extends
 
   private onShowTooltip_(e: Event) {
     e.stopPropagation();
-    const target = e.target!;
     const tooltip = this.shadowRoot!.querySelector('paper-tooltip');
     assert(tooltip);
-    tooltip.target = target;
-    tooltip.updatePosition();
-    const hide = () => {
-      tooltip.hide();
-      target.removeEventListener('mouseleave', hide);
-      target.removeEventListener('blur', hide);
-      target.removeEventListener('click', hide);
-      tooltip.removeEventListener('mouseenter', hide);
-    };
-    target.addEventListener('mouseleave', hide);
-    target.addEventListener('blur', hide);
-    target.addEventListener('click', hide);
-    tooltip.addEventListener('mouseenter', hide);
-    tooltip.show();
+    this.showTooltipAtTarget(tooltip, e.target!);
   }
 
   private async onSitesChanged_() {

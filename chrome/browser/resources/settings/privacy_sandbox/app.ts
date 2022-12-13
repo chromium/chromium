@@ -15,7 +15,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 // Those resources are loaded through settings.js as the privacy sandbox page
 // lives outside regular settings, hence can't access those resources directly
 // with |optimize_webui="true"|.
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsMixin, SettingsToggleButtonElement, TrustSafetyInteraction} from '../settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsMixin, SettingsToggleButtonElement, TooltipMixin, TrustSafetyInteraction} from '../settings.js';
 
 import {getTemplate} from './app.html.js';
 import {FledgeState, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl, PrivacySandboxInterest, TopicsState} from './privacy_sandbox_browser_proxy.js';
@@ -39,7 +39,7 @@ export interface PrivacySandboxAppElement {
   };
 }
 
-const PrivacySandboxAppElementBase = PrefsMixin(PolymerElement);
+const PrivacySandboxAppElementBase = TooltipMixin(PrefsMixin(PolymerElement));
 
 export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   static get is() {
@@ -357,19 +357,7 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     const tooltip = this.shadowRoot!.querySelector<PaperTooltipElement>(
         target.id === 'topicsTooltipIcon' ? '#topicsTooltip' :
                                             '#fledgeTooltip')!;
-
-    const hide = () => {
-      tooltip.hide();
-      target.removeEventListener('mouseleave', hide);
-      target.removeEventListener('blur', hide);
-      target.removeEventListener('click', hide);
-      tooltip.removeEventListener('mouseenter', hide);
-    };
-    target.addEventListener('mouseleave', hide);
-    target.addEventListener('blur', hide);
-    target.addEventListener('click', hide);
-    tooltip.addEventListener('mouseenter', hide);
-    tooltip.show();
+    this.showTooltipAtTarget(tooltip, target);
   }
 }
 
