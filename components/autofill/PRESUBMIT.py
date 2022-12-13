@@ -10,6 +10,18 @@ for more details on the presubmit API built into depot_tools.
 
 USE_PYTHON3 = True
 
+def IsComponentsAutofillFile(f, name_suffix):
+  # The exact path can change. Only check the containing folder.
+  return (f.LocalPath().startswith('components/autofill/') and
+          f.LocalPath().endswith(name_suffix))
+
+def AnyAffectedFileMatches(input_api, matcher):
+  return any(matcher(f) for f in input_api.change.AffectedTestableFiles())
+
+def IsComponentsAutofillFileAffected(input_api, name_suffix):
+  return AnyAffectedFileMatches(
+      input_api, lambda f: IsComponentsAutofillFile(f, name_suffix))
+
 def _CheckNoBaseTimeCalls(input_api, output_api):
   """Checks that no files call base::Time::Now() or base::TimeTicks::Now()."""
   pattern = input_api.re.compile(
@@ -71,8 +83,7 @@ def _CheckFeatureNames(input_api, output_api):
     return False
 
   for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
-    if (f.LocalPath().startswith('components/autofill/') and
-        f.LocalPath().endswith('features.cc')):
+    if IsComponentsAutofillFile(f, 'features.cc'):
       contents = input_api.ReadFile(f)
       mismatches = [(constant, feature)
               for (constant, feature) in pattern.findall(contents)
@@ -94,19 +105,10 @@ def _CheckWebViewExposedExperiments(input_api, output_api):
       'android_webview/common/ProductionSupportedFlagList.java')
   _GENERATE_FLAG_LABELS_PY = 'android_webview/tools/generate_flag_labels.py'
 
-  def is_autofill_features_file(f):
-    return (f.LocalPath().startswith('components/autofill/') and
-        f.LocalPath().endswith('features.cc'))
-
-  def is_webview_features_file(f):
-    return f.LocalPath() == _PRODUCTION_SUPPORT_FILE
-
-  def any_file_matches(matcher):
-    return any(matcher(f) for f in input_api.change.AffectedTestableFiles())
-
   warnings = []
-  if (any_file_matches(is_autofill_features_file)
-      and not any_file_matches(is_webview_features_file)):
+  if (IsComponentsAutofillFileAffected(input_api, 'features.cc') and
+      not AnyAffectedFileMatches(
+          input_api, lambda f: f.LocalPath() == _PRODUCTION_SUPPORT_FILE)):
     warnings += [
         output_api.PresubmitPromptWarning((
             'You may need to modify {} and run {} and follow its '+
@@ -119,18 +121,26 @@ def _CheckWebViewExposedExperiments(input_api, output_api):
 def _CheckModificationOfLegacyRegexPatterns(input_api, output_api):
   """Reminds to update internal regex patterns when legacy ones are modified."""
 
-  def is_legacy_patterns_file(f):
-    return (f.LocalPath().startswith("components/autofill/") and
-            f.LocalPath().endswith("legacy_regex_patterns.json"))
-
-  if any(
-      is_legacy_patterns_file(f)
-      for f in input_api.change.AffectedTestableFiles()):
+  if IsComponentsAutofillFileAffected(input_api, "legacy_regex_patterns.json"):
     return [
         output_api.PresubmitPromptWarning(
             "You may need to modify the parsing patterns in src-internal. " +
             "See go/autofill-internal-parsing-patterns for more details. " +
             "Ideally, the legacy patterns should not be modified.")
+    ]
+
+  return []
+
+def _CheckModificationOfFormAutofillUtil(input_api, output_api):
+  """Reminds to keep form_autofill_util.cc and the iOS counterpart in sync."""
+
+  if (IsComponentsAutofillFileAffected(input_api, "fill.js") !=
+      IsComponentsAutofillFileAffected(input_api, "form_autofill_util.cc")):
+    return [
+        output_api.PresubmitPromptWarning(
+            'Form extraction/label inference has a separate iOS ' +
+            'implementation in components/autofill/ios/form_util/resources/' +
+            'fill.js. Try to keep it in sync with form_autofill_util.cc.')
     ]
 
   return []
@@ -143,6 +153,7 @@ def _CommonChecks(input_api, output_api):
   results.extend(_CheckFeatureNames(input_api, output_api))
   results.extend(_CheckWebViewExposedExperiments(input_api, output_api))
   results.extend(_CheckModificationOfLegacyRegexPatterns(input_api, output_api))
+  results.extend(_CheckModificationOfFormAutofillUtil(input_api, output_api))
   return results
 
 def CheckChangeOnUpload(input_api, output_api):
