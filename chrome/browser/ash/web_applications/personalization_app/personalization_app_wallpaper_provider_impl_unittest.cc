@@ -359,14 +359,15 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SelectWallpaper) {
   wallpaper_provider_remote()->FlushForTesting();
 
   EXPECT_EQ(1, test_wallpaper_controller()->set_online_wallpaper_count());
-  EXPECT_EQ(
-      ash::WallpaperInfo(
-          {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
-           image_info.asset_id, image_info.image_url, "collection_id",
-           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-           /*preview_mode=*/false, /*from_user=*/true,
-           /*daily_refresh_enabled=*/false, image_info.unit_id, variants}),
-      test_wallpaper_controller()->wallpaper_info().value());
+  EXPECT_TRUE(
+      test_wallpaper_controller()->wallpaper_info().value().MatchesSelection(
+          ash::WallpaperInfo(
+              {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
+               image_info.asset_id, image_info.image_url, "collection_id",
+               ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+               /*preview_mode=*/false, /*from_user=*/true,
+               /*daily_refresh_enabled=*/false, image_info.unit_id,
+               variants})));
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplTest, PreviewWallpaper) {
@@ -385,14 +386,15 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, PreviewWallpaper) {
   wallpaper_provider_remote()->FlushForTesting();
 
   EXPECT_EQ(1, test_wallpaper_controller()->set_online_wallpaper_count());
-  EXPECT_EQ(
-      ash::WallpaperInfo(
-          {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
-           image_info.asset_id, image_info.image_url, "collection_id",
-           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-           /*preview_mode=*/true, /*from_user=*/true,
-           /*daily_refresh_enabled=*/false, image_info.unit_id, variants}),
-      test_wallpaper_controller()->wallpaper_info().value());
+  EXPECT_TRUE(
+      test_wallpaper_controller()->wallpaper_info().value().MatchesSelection(
+          ash::WallpaperInfo(
+              {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
+               image_info.asset_id, image_info.image_url, "collection_id",
+               ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+               /*preview_mode=*/true, /*from_user=*/true,
+               /*daily_refresh_enabled=*/false, image_info.unit_id,
+               variants})));
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplTest,
@@ -963,13 +965,15 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   EXPECT_EQ(0,
             test_wallpaper_controller()->set_google_photos_wallpaper_count());
-  EXPECT_NE(ash::WallpaperInfo(
-                {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
-                 photo_id, /*daily_refresh_enabled=*/false,
-                 ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-                 /*preview_mode=*/false, "dedup_key"}),
-            test_wallpaper_controller()->wallpaper_info().value_or(
-                ash::WallpaperInfo()));
+  EXPECT_FALSE(
+      test_wallpaper_controller()
+          ->wallpaper_info()
+          .value_or(ash::WallpaperInfo())
+          .MatchesSelection(ash::WallpaperInfo(
+              {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
+               photo_id, /*daily_refresh_enabled=*/false,
+               ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+               /*preview_mode=*/false, "dedup_key"})));
 
   // Test selecting a wallpaper after fetching the enterprise setting.
   FetchGooglePhotosEnabled();
@@ -981,13 +985,15 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   EXPECT_EQ(1,
             test_wallpaper_controller()->set_google_photos_wallpaper_count());
-  EXPECT_EQ(ash::WallpaperInfo(
-                {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
-                 photo_id, /*daily_refresh_enabled=*/false,
-                 ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-                 /*preview_mode=*/false, "dedup_key"}),
-            test_wallpaper_controller()->wallpaper_info().value_or(
-                ash::WallpaperInfo()));
+  EXPECT_TRUE(
+      test_wallpaper_controller()
+          ->wallpaper_info()
+          .value_or(ash::WallpaperInfo())
+          .MatchesSelection(ash::WallpaperInfo(
+              {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
+               photo_id, /*daily_refresh_enabled=*/false,
+               ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+               /*preview_mode=*/false, "dedup_key"})));
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,

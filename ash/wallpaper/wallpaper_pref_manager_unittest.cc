@@ -198,7 +198,7 @@ TEST_F(WallpaperPrefManagerTest, GetWallpaperInfo_Normal) {
 
   WallpaperInfo actual_info;
   EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(account_id_1, &actual_info));
-  EXPECT_EQ(expected_info, actual_info);
+  EXPECT_TRUE(actual_info.MatchesSelection(expected_info));
 }
 
 TEST_F(WallpaperPrefManagerTest, GetWallpaperInfo_Ephemeral) {
@@ -208,7 +208,7 @@ TEST_F(WallpaperPrefManagerTest, GetWallpaperInfo_Ephemeral) {
 
   WallpaperInfo actual_info;
   EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(account_id_1, &actual_info));
-  EXPECT_EQ(expected_info, actual_info);
+  EXPECT_TRUE(actual_info.MatchesSelection(expected_info));
 }
 
 TEST_F(WallpaperPrefManagerTest, GetWallpaperInfoNothingToGet_Normal) {
@@ -231,7 +231,7 @@ TEST_F(WallpaperPrefManagerTest,
   WallpaperInfo actual_info;
   EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(
       account_id_1, /*is_ephemeral=*/true, &actual_info));
-  EXPECT_EQ(expected_info, actual_info);
+  EXPECT_TRUE(actual_info.MatchesSelection(expected_info));
 }
 
 TEST_F(WallpaperPrefManagerTest, SetWallpaperInfo_EphemeralDoesNotChangeLocal) {

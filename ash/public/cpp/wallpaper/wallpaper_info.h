@@ -37,9 +37,15 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
   WallpaperInfo(WallpaperInfo&& other);
   WallpaperInfo& operator=(WallpaperInfo&& other);
 
-  bool operator==(const WallpaperInfo& other) const;
-
-  bool operator!=(const WallpaperInfo& other) const;
+  // MatchesAsset() takes the current wallpaper variant into account, whereas
+  // MatchesSelection() doesn't. For example if WallpaperInfo A has theme X with
+  // variant 1, and WallpaperInfo B has theme X with variant 2,
+  // MatchesSelection() will be true and MatchesAsset() will be false. Put
+  // differently, MatchesSelection() tells whether the same wallpaper has been
+  // selected, whereas MatchesAsset() tells whether the exact same wallpaper
+  // image is active.
+  bool MatchesSelection(const WallpaperInfo& other) const;
+  bool MatchesAsset(const WallpaperInfo& other) const;
 
   ~WallpaperInfo();
 

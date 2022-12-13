@@ -60,7 +60,7 @@ WallpaperInfo& WallpaperInfo::operator=(const WallpaperInfo& other) = default;
 WallpaperInfo::WallpaperInfo(WallpaperInfo&& other) = default;
 WallpaperInfo& WallpaperInfo::operator=(WallpaperInfo&& other) = default;
 
-bool WallpaperInfo::operator==(const WallpaperInfo& other) const {
+bool WallpaperInfo::MatchesSelection(const WallpaperInfo& other) const {
   // |asset_id| and |location| are skipped on purpose in favor of |unit_id| as
   // online wallpapers can vary across devices due to their color mode. Other
   // wallpaper types still require location to be equal.
@@ -89,8 +89,25 @@ bool WallpaperInfo::operator==(const WallpaperInfo& other) const {
   }
 }
 
-bool WallpaperInfo::operator!=(const WallpaperInfo& other) const {
-  return !(*this == other);
+bool WallpaperInfo::MatchesAsset(const WallpaperInfo& other) const {
+  if (!MatchesSelection(other))
+    return false;
+
+  switch (type) {
+    case WallpaperType::kOnline:
+    case WallpaperType::kDaily:
+      return location == other.location && asset_id == other.asset_id;
+    case WallpaperType::kOnceGooglePhotos:
+    case WallpaperType::kDailyGooglePhotos:
+    case WallpaperType::kCustomized:
+    case WallpaperType::kDefault:
+    case WallpaperType::kPolicy:
+    case WallpaperType::kThirdParty:
+    case WallpaperType::kDevice:
+    case WallpaperType::kOneShot:
+    case WallpaperType::kCount:
+      return true;
+  }
 }
 
 WallpaperInfo::~WallpaperInfo() = default;

@@ -1139,6 +1139,13 @@ void WallpaperControllerImpl::SetOnlineWallpaperIfExists(
     return;
   }
 
+  if (current_wallpaper_ && current_wallpaper_->wallpaper_info().MatchesAsset(
+                                WallpaperInfo(params))) {
+    DVLOG(1) << "Detected no change in online wallpaper";
+    std::move(callback).Run(/*success=*/true);
+    return;
+  }
+
   for (auto& observer : observers_)
     observer.OnOnlineWallpaperSet(params);
 
@@ -3060,7 +3067,7 @@ void WallpaperControllerImpl::SyncLocalAndRemotePrefs(
     HandleWallpaperInfoSyncedIn(account_id, synced_info);
     return;
   }
-  if (synced_info == local_info)
+  if (synced_info.MatchesSelection(local_info))
     return;
   if (synced_info.date >= local_info.date) {
     // If synced is newer or the same age, it wins.
