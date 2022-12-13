@@ -1114,6 +1114,38 @@ TEST_F(ManifestParserTest, IconsParseRules) {
     EXPECT_FALSE(IsManifestEmpty(manifest));
     EXPECT_EQ(0u, GetErrorCount());
   }
+
+  // Smoke test.
+  {
+    auto& manifest = ParseManifest(R"(
+          {
+            "icons": [
+              {
+                "src": "foo.webp",
+                "type": "image/webp",
+                "sizes": "192x192"
+              },
+              {
+                "src": "foo.svg",
+                "type": "image/svg+xml",
+                "sizes": "144x144"
+              }
+            ]
+          }
+        )");
+    ASSERT_EQ(manifest->icons.size(), 2u);
+    EXPECT_EQ(manifest->icons[0]->src, KURL(DefaultDocumentUrl(), "foo.webp"));
+    EXPECT_EQ(manifest->icons[0]->type, "image/webp");
+    EXPECT_EQ(manifest->icons[0]->sizes.size(), 1u);
+    EXPECT_EQ(manifest->icons[0]->sizes[0].width(), 192);
+    EXPECT_EQ(manifest->icons[0]->sizes[0].height(), 192);
+    EXPECT_EQ(manifest->icons[1]->src, KURL(DefaultDocumentUrl(), "foo.svg"));
+    EXPECT_EQ(manifest->icons[1]->type, "image/svg+xml");
+    EXPECT_EQ(manifest->icons[1]->sizes.size(), 1u);
+    EXPECT_EQ(manifest->icons[1]->sizes[0].width(), 144);
+    EXPECT_EQ(manifest->icons[1]->sizes[0].height(), 144);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
 }
 
 TEST_F(ManifestParserTest, ScreenshotsParseRules) {
