@@ -157,7 +157,7 @@ IconButton::IconButton(PressedCallback callback,
                                    /*highlight_on_focus=*/false);
 
   UpdateBackground();
-  UpdateVectorIcon();
+  UpdateVectorIcon(/*icon_changed=*/true);
 
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
