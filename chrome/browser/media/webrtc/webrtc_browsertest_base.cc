@@ -105,19 +105,20 @@ bool JavascriptErrorDetectingLogHandler(int severity,
 
 std::vector<std::string> JsonArrayToVectorOfStrings(
     const std::string& json_array) {
-  std::unique_ptr<base::Value> value =
-      base::JSONReader::ReadDeprecated(json_array);
-  EXPECT_TRUE(value);
-  EXPECT_TRUE(value->is_list());
-  std::unique_ptr<base::ListValue> list =
-      base::ListValue::From(std::move(value));
-  std::vector<std::string> vector;
-  vector.reserve(list->GetList().size());
-  for (base::Value& item : list->GetList()) {
-    EXPECT_TRUE(item.is_string());
-    vector.push_back(std::move(item).TakeString());
+  std::vector<std::string> result;
+  absl::optional<base::Value> value = base::JSONReader::Read(json_array);
+  if (!value || !value->is_list()) {
+    ADD_FAILURE();
+    return result;
   }
-  return vector;
+
+  base::Value::List& list = value->GetList();
+  result.reserve(list.size());
+  for (base::Value& item : list) {
+    EXPECT_TRUE(item.is_string());
+    result.push_back(std::move(item).TakeString());
+  }
+  return result;
 }
 
 }  // namespace
