@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/policy/remote_commands/fake_cros_network_config_base.h"
+#include "chrome/browser/ash/policy/remote_commands/fake_cros_network_config.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
@@ -43,11 +43,7 @@ using ::base::test::TestFuture;
 using extensions::DictionaryBuilder;
 using ResultCode = DeviceCommandStartCrdSessionJob::ResultCode;
 using UmaSessionType = DeviceCommandStartCrdSessionJob::UmaSessionType;
-using chromeos::network_config::mojom::NetworkStateProperties;
-using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using chromeos::network_config::mojom::NetworkType;
-using chromeos::network_config::mojom::NetworkTypeStateProperties;
-using chromeos::network_config::mojom::NetworkTypeStatePropertiesPtr;
 using chromeos::network_config::mojom::OncSource;
 using remoting::features::kEnableCrdAdminRemoteAccess;
 
@@ -155,109 +151,13 @@ void StubCrdHostDelegate::StartCrdHostAndGetCode(
   }
 }
 
+test::NetworkBuilder CreateNetwork(NetworkType type = NetworkType::kWiFi) {
+  return test::NetworkBuilder(type);
+}
+
 struct Result {
   RemoteCommandJob::Status status;
   std::string payload;
-};
-
-// Helper class that creates a `NetworkStatePropertiesPtr`.
-class NetworkBuilder {
- public:
-  explicit NetworkBuilder(NetworkType type) {
-    network_->type = type;
-    network_->guid = "<network-guid>";
-    network_->type_state = CreateTypeStateForType(type);
-  }
-  NetworkBuilder(NetworkBuilder&& other) = default;
-  NetworkBuilder& operator=(NetworkBuilder&&) = default;
-
-  NetworkBuilder(const NetworkBuilder& other)
-      : network_(other.network_.Clone()) {}
-  void operator=(const NetworkBuilder& other) {
-    this->network_ = other.network_.Clone();
-  }
-
-  ~NetworkBuilder() = default;
-
-  NetworkBuilder& SetOncSource(OncSource source) {
-    network_->source = source;
-    return *this;
-  }
-
-  NetworkStatePropertiesPtr Build() const { return network_.Clone(); }
-
- private:
-  NetworkTypeStatePropertiesPtr CreateTypeStateForType(NetworkType type) {
-    switch (type) {
-      case NetworkType::kCellular:
-        return NetworkTypeStateProperties::NewCellular(
-            chromeos::network_config::mojom::CellularStateProperties::New());
-      case NetworkType::kEthernet:
-        return NetworkTypeStateProperties::NewEthernet(
-            chromeos::network_config::mojom::EthernetStateProperties::New());
-      case NetworkType::kTether:
-        return NetworkTypeStateProperties::NewTether(
-            chromeos::network_config::mojom::TetherStateProperties::New());
-      case NetworkType::kVPN:
-        return NetworkTypeStateProperties::NewVpn(
-            chromeos::network_config::mojom::VPNStateProperties::New());
-      case NetworkType::kWiFi:
-        return NetworkTypeStateProperties::NewWifi(
-            chromeos::network_config::mojom::WiFiStateProperties::New());
-      case NetworkType::kAll:
-      case NetworkType::kMobile:
-      case NetworkType::kWireless:
-        // These are not actual network types, but just shorthands used while
-        // filtering.
-        NOTREACHED();
-        break;
-    }
-    NOTREACHED();
-    return nullptr;
-  }
-  NetworkStatePropertiesPtr network_ = NetworkStateProperties::New();
-};
-
-NetworkBuilder CreateNetwork(NetworkType type = NetworkType::kWiFi) {
-  return NetworkBuilder(type);
-}
-
-// Fake implementation of `CrosNetworkConfig` that simply stores a list of
-// networks that will be returned on each `GetNetworkStateList()` call.
-class FakeCrosNetworkConfig : public FakeCrosNetworkConfigBase {
- public:
-  FakeCrosNetworkConfig() = default;
-  FakeCrosNetworkConfig(const FakeCrosNetworkConfig&) = delete;
-  FakeCrosNetworkConfig& operator=(const FakeCrosNetworkConfig&) = delete;
-  ~FakeCrosNetworkConfig() override = default;
-
-  void SetActiveNetworks(std::vector<NetworkBuilder> networks) {
-    active_networks_.clear();
-    for (auto& builder : networks) {
-      active_networks_.push_back(builder.Build());
-    }
-  }
-
-  void AddActiveNetwork(NetworkBuilder builder) {
-    active_networks_.push_back(builder.Build());
-  }
-
-  void ClearActiveNetworks() { active_networks_.clear(); }
-
-  // `FakeCrosNetworkConfigBase` implementation:
-  void GetNetworkStateList(
-      chromeos::network_config::mojom::NetworkFilterPtr filter,
-      GetNetworkStateListCallback callback) override {
-    std::vector<NetworkStatePropertiesPtr> networks;
-    for (const auto& network : active_networks_) {
-      networks.push_back(network->Clone());
-    }
-
-    std::move(callback).Run(std::move(networks));
-  }
-
- private:
-  std::vector<NetworkStatePropertiesPtr> active_networks_;
 };
 
 class MockCrosNetworkConfig : public FakeCrosNetworkConfigBase {
@@ -293,14 +193,11 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
     chromeos::SystemSaltGetter::Initialize();
     DeviceOAuth2TokenServiceFactory::Initialize(
         test_url_loader_factory_.GetSafeWeakWrapper(), &local_state_);
+    // The token service also requires local state.
     RegisterLocalState(local_state_.registry());
-
-    chromeos::network_config::OverrideInProcessInstanceForTesting(
-        &fake_cros_network_config_);
   }
 
   void TearDown() override {
-    chromeos::network_config::OverrideInProcessInstanceForTesting(nullptr);
     DeviceOAuth2TokenServiceFactory::Shutdown();
     chromeos::SystemSaltGetter::Shutdown();
 
@@ -444,7 +341,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
     return launched;
   }
 
-  FakeCrosNetworkConfig& fake_cros_network_config() {
+  test::FakeCrosNetworkConfig& fake_cros_network_config() {
     return fake_cros_network_config_;
   }
 
@@ -473,7 +370,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   StubCrdHostDelegate crd_host_delegate_;
   std::unique_ptr<DeviceCommandStartCrdSessionJob> job_;
 
-  FakeCrosNetworkConfig fake_cros_network_config_;
+  test::ScopedFakeCrosNetworkConfig fake_cros_network_config_;
 
   // Future value that will be populated with the result once the remote
   // command job is completed.

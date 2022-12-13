@@ -4846,6 +4846,8 @@ source_set("unit_tests") {
     "policy/remote_commands/device_command_set_volume_job_unittest.cc",
     "policy/remote_commands/device_command_start_crd_session_unittest.cc",
     "policy/remote_commands/device_command_wipe_users_job_unittest.cc",
+    "policy/remote_commands/fake_cros_network_config.cc",
+    "policy/remote_commands/fake_cros_network_config.h",
     "policy/remote_commands/fake_cros_network_config_base.cc",
     "policy/remote_commands/fake_cros_network_config_base.h",
     "policy/remote_commands/user_command_arc_job_unittest.cc",
