@@ -2429,7 +2429,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
                             extensions::LAUNCH_TYPE_WINDOW);
   WebAppProvider* provider = WebAppProvider::GetForTest(browser()->profile());
   DCHECK(provider);
-  provider->sync_bridge().SetAppUserDisplayMode(
+  provider->sync_bridge_unsafe().SetAppUserDisplayMode(
       web_app_id, web_app::UserDisplayMode::kStandalone,
       /*is_user_action=*/false);
 
@@ -2579,7 +2579,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyUpdate) {
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForTest(profile());
   web_app::test::AddInstallUrlData(
-      profile()->GetPrefs(), &provider->sync_bridge(), app_id, app_url,
+      profile()->GetPrefs(), &provider->sync_bridge_unsafe(), app_id, app_url,
       web_app::ExternalInstallSource::kExternalPolicy);
   provider->install_manager().NotifyWebAppInstalledWithOsHooks(app_id);
 
