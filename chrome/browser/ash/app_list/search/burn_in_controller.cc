@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/burnin_controller.h"
+#include "chrome/browser/ash/app_list/search/burn_in_controller.h"
 
 #include "base/containers/flat_set.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
