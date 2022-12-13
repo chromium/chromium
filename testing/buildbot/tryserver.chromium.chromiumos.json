@@ -10,7 +10,7 @@
         "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
-        "cros_img": "volteer-public/R110-15270.0.0",
+        "cros_img": "volteer-public/R110-15276.0.0",
         "name": "lacros_all_tast_tests VOLTEER_PUBLIC",
         "resultdb": {
           "enable": true,
