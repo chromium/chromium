@@ -1471,7 +1471,7 @@
 <translation id="2312219318583366810">URL страницы</translation>
 <translation id="2314165183524574721">Ваше устройство скрыто от других пользователей</translation>
 <translation id="2314774579020744484">Язык, который используется при переводе страниц</translation>
-<translation id="2316129865977710310">Спасибо, не надо</translation>
+<translation id="2316129865977710310">Пропустить</translation>
 <translation id="2317842250900878657">Выполнено: <ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2318143611928805047">Размер бумаги</translation>
 <translation id="2318817390901984578">Чтобы пользоваться приложениями Android, зарядите и обновите устройство <ph name="DEVICE_TYPE" />.</translation>
@@ -4049,7 +4049,7 @@
 <translation id="4735506354605317060">Обводка указателя мыши</translation>
 <translation id="4735793370946506039">Подробнее об улучшенном Безопасном просмотре.</translation>
 <translation id="4735803855089279419">Не удалось определить идентификаторы устройства.</translation>
-<translation id="4736292055110123391">Синхронизируйте закладки, пароли, историю и другие данные на всех ваших устройствах</translation>
+<translation id="4736292055110123391">Синхронизируйте закладки, пароли, историю и другие данные на всех ваших устройствах.</translation>
 <translation id="473775607612524610">Обновить</translation>
 <translation id="473936925429402449">Выбрано, показан дополнительный контент на карточке <ph name="CURRENT_ELEMENT" /> из <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Билеты</translation>
@@ -5374,7 +5374,7 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Чтобы продолжить просмотр веб-страниц, попросите администратора удалить это приложение.}one{Чтобы продолжить просмотр веб-страниц, попросите администратора удалить эти приложения.}few{Чтобы продолжить просмотр веб-страниц, попросите администратора удалить эти приложения.}many{Чтобы продолжить просмотр веб-страниц, попросите администратора удалить эти приложения.}other{Чтобы продолжить просмотр веб-страниц, попросите администратора удалить эти приложения.}}</translation>
 <translation id="5997337190805127100">Подробнее о доступе для сайта…</translation>
 <translation id="6000758707621254961">Количество результатов поиска по запросу "<ph name="SEARCH_TEXT" />": <ph name="RESULT_COUNT" /></translation>
-<translation id="6001839398155993679">Начать</translation>
+<translation id="6001839398155993679">Создать</translation>
 <translation id="6002122790816966947">Ваши устройства</translation>
 <translation id="6002210667729577411">Переместить группу в новое окно</translation>
 <translation id="6002452033851752583">Пароль удален из аккаунта Google.</translation>
@@ -7288,7 +7288,7 @@
 <translation id="7798844538707273832">Автоматически отключено разрешение "<ph name="PERMISSION" />"</translation>
 <translation id="7800518121066352902">Повернуть п&amp;ротив часовой стрелки</translation>
 <translation id="7801679634091975683">Параметры ниже относятся только к браузеру Lacros Chrome. Чтобы изменить параметры обычного браузера Chrome, откройте его и перейдите в настройки.</translation>
-<translation id="780301667611848630">Спасибо, не надо</translation>
+<translation id="780301667611848630">Пропустить</translation>
 <translation id="7804072833593604762">Вкладка закрыта</translation>
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="7807067443225230855">Поиск и Ассистент</translation>
@@ -7726,7 +7726,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваши устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Объем на диске</translation>
 <translation id="8195191503358432289">Добавление пароля</translation>
-<translation id="8197673340773315084">Укажите имя или название (например, "Рабочий" или "Личный")</translation>
+<translation id="8197673340773315084">Укажите название, например "Рабочий"</translation>
 <translation id="8198456017687137612">Трансляция вкладки</translation>
 <translation id="8199300056570174101">Настройки сети и устройства</translation>
 <translation id="8200772114523450471">Возобновить</translation>
@@ -7825,7 +7825,7 @@
 <translation id="8281886186245836920">Пропустить</translation>
 <translation id="8284279544186306258">все сайты <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Субтитры</translation>
-<translation id="8286036467436129157">Вход</translation>
+<translation id="8286036467436129157">Войти</translation>
 <translation id="8286227656784970313">Использовать системный словарь</translation>
 <translation id="828642162569365647">Этот пароль или PIN-код будет защищать ваши данные на текущем устройстве <ph name="DEVICE_TYPE" />, а также информацию, получаемую с телефона. Чтобы выйти из спящего режима, потребуется разблокировать устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8287902281644548111">Поиск по URL или запросу к API</translation>

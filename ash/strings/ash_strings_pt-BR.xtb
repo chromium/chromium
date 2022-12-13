@@ -416,7 +416,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3294437725009624529">Visitante</translation>
 <translation id="3307642347673023554">Modo laptop ativado</translation>
 <translation id="3308453408813785101">O usuário <ph name="USER_EMAIL_ADDRESS" /> ainda poderá fazer login mais tarde.</translation>
-<translation id="3321628682574733415">Código de pai/mãe incorreto</translation>
+<translation id="3321628682574733415">Código de familiar responsável incorreto</translation>
 <translation id="3339826665088060472">Captura de tela, ferramentas para capturar e gravar a tela do dispositivo</translation>
 <translation id="3340978935015468852">configurações</translation>
 <translation id="3341303451326249809">Captura de tela feita</translation>
@@ -671,7 +671,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4666082839192943839">Desative o acesso à câmera neste dispositivo para bloquear todas as câmeras o tempo todo.</translation>
 <translation id="4667099493359681081">Fazendo o download do arquivo <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">Estante na parte inferior</translation>
-<translation id="4696813013609194136">Desbloquear dispositivo usando o código de pai/mãe</translation>
+<translation id="4696813013609194136">Desbloquear dispositivo usando o código de familiar responsável</translation>
 <translation id="4702647871202761252">A tela de privacidade está desativada</translation>
 <translation id="470644585772471629">Inversão de cores</translation>
 <translation id="4717575069099566988">O cabo USB-C não oferece suporte a USB4. O desempenho do dispositivo pode ser limitado.</translation>
@@ -876,7 +876,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5867217927013474703">Coletando informações da rede</translation>
 <translation id="5867606971598166637">O administrador do sistema está monitorando suas telas</translation>
-<translation id="5876666360658629066">Digite o código de pai/mãe</translation>
+<translation id="5876666360658629066">Digite o código de familiar responsável</translation>
 <translation id="5881540930187678962">Configurar o recurso "Seu smartphone" mais tarde</translation>
 <translation id="5887954372087850114">A janela <ph name="WINDOW_TITLE" /> foi atribuída a <ph name="DESK_TITLE" /> e não foi atribuída a nenhum outro espaço de trabalho</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -956,7 +956,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6282694724099204652">Ative os acessos para autorizar apps e páginas da Web com a permissão de uso do microfone e da câmera neste dispositivo.</translation>
 <translation id="6283712521836204486">O "Não perturbe" está desativado.</translation>
 <translation id="6284232397434400372">Resolução alterada</translation>
-<translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> pode ser adicionado novamente com a permissão do pai/mãe.</translation>
+<translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> pode ser adicionado novamente com a permissão do familiar responsável.</translation>
 <translation id="6291221004442998378">Não está carregando</translation>
 <translation id="6315170314923504164">Voz</translation>
 <translation id="6330012934079202188">Mostrando janelas de todos os espaços de trabalho. Pressione a tecla de seta para cima para mostrar as do espaço de trabalho atual</translation>
@@ -1327,7 +1327,7 @@ Nova instalação</translation>
 <translation id="8380784334203145311">Boa noite,</translation>
 <translation id="8382715499079447151">Proteção de visualização</translation>
 <translation id="8388750414311082622">Não é possível remover o último espaço de trabalho.</translation>
-<translation id="8394567579869570560">Seu pai/mãe bloqueou o dispositivo</translation>
+<translation id="8394567579869570560">Seu familiar responsável bloqueou o dispositivo</translation>
 <translation id="8401850874595457088">Menu "Informar idioma"</translation>
 <translation id="8412677897383510995">Mostrar configurações de tela</translation>
 <translation id="8413272770729657668">A gravação começa em 3, 2, 1</translation>
@@ -1479,7 +1479,7 @@ Nova instalação</translation>
 <translation id="9211681782751733685">Tempo restante até que a bateria esteja totalmente carregada: <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Definir plano de fundo</translation>
 <translation id="9219103736887031265">Imagens</translation>
-<translation id="921989828232331238">Seu pai/mãe bloqueou o dispositivo por hoje</translation>
+<translation id="921989828232331238">Seu familiar responsável bloqueou o dispositivo por hoje</translation>
 <translation id="9220525904950070496">Remover conta</translation>
 <translation id="923686485342484400">Pressione Control+Shift+Q duas vezes para sair.</translation>
 <translation id="92580429198593979">Você pressionou o atalho de teclado para inversão de cores. Quer ativar o recurso?</translation>
