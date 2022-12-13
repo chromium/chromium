@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.fuzz builder group."""
 
+load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "reclient", "sheriff_rotations", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -55,6 +56,23 @@ consoles.console_view(
 
 ci.builder(
     name = "ASAN Debug",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_asan",
+            apply_configs = [
+                "mb",
+                "clobber",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chromium-browser-asan",
+            gs_acl = "public-read",
+            archive_name_prefix = "asan",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan",
         short_name = "dbg",
@@ -67,6 +85,24 @@ ci.builder(
 
 ci.builder(
     name = "ASan Debug (32-bit x86 with V8-ARM)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_asan",
+            apply_configs = [
+                "mb",
+                "clobber",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 32,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chromium-browser-asan",
+            gs_acl = "public-read",
+            archive_name_prefix = "asan-v8-arm",
+            archive_subdir = "v8-arm",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan|x64 v8-ARM",
         short_name = "dbg",
@@ -78,6 +114,23 @@ ci.builder(
 
 ci.builder(
     name = "ASAN Release",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_asan",
+            apply_configs = [
+                "mb",
+                "clobber",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chromium-browser-asan",
+            gs_acl = "public-read",
+            archive_name_prefix = "asan",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan",
         short_name = "rel",
@@ -90,6 +143,24 @@ ci.builder(
 
 ci.builder(
     name = "ASan Release (32-bit x86 with V8-ARM)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_asan",
+            apply_configs = [
+                "mb",
+                "clobber",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chromium-browser-asan",
+            gs_acl = "public-read",
+            archive_name_prefix = "asan-v8-arm",
+            archive_subdir = "v8-arm",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan|x64 v8-ARM",
         short_name = "rel",
@@ -101,6 +172,23 @@ ci.builder(
 
 ci.builder(
     name = "ASAN Release Media",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_asan",
+            apply_configs = [
+                "mb",
+                "clobber",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chrome-test-builds/media",
+            gs_acl = "public-read",
+            archive_name_prefix = "asan",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan",
         short_name = "med",
@@ -126,6 +214,24 @@ ci.builder(
 
 ci.builder(
     name = "ASan Release Media (32-bit x86 with V8-ARM)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_asan",
+            apply_configs = [
+                "mb",
+                "clobber",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chrome-test-builds/media",
+            gs_acl = "public-read",
+            archive_name_prefix = "asan-v8-arm",
+            archive_subdir = "v8-arm",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan|x64 v8-ARM",
         short_name = "med",
@@ -137,6 +243,27 @@ ci.builder(
 
 ci.builder(
     name = "ChromiumOS ASAN Release",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["chromeos"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_asan",
+            apply_configs = [
+                "mb",
+                "clobber",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chromium-browser-asan",
+            gs_acl = "public-read",
+            archive_name_prefix = "asan",
+            archive_subdir = "chromeos",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "cros asan",
     ),
@@ -148,6 +275,24 @@ ci.builder(
 
 ci.builder(
     name = "MSAN Release (chained origins)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "mb",
+                "msan",
+                "clobber",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chromium-browser-msan",
+            gs_acl = "public-read",
+            archive_name_prefix = "msan-chained-origins",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux msan",
         short_name = "org",
@@ -160,6 +305,24 @@ ci.builder(
 
 ci.builder(
     name = "MSAN Release (no origins)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "mb",
+                "msan",
+                "clobber",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chromium-browser-msan",
+            gs_acl = "public-read",
+            archive_name_prefix = "msan-no-origins",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux msan",
         short_name = "rel",
@@ -172,6 +335,23 @@ ci.builder(
 
 ci.builder(
     name = "Mac ASAN Release",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_asan",
+            apply_configs = [
+                "mb",
+                "clobber",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chromium-browser-asan",
+            gs_acl = "public-read",
+            archive_name_prefix = "asan",
+        ),
+    ),
     builderless = False,
     cores = 4,
     os = os.MAC_DEFAULT,
@@ -186,6 +366,23 @@ ci.builder(
 
 ci.builder(
     name = "Mac ASAN Release Media",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_asan",
+            apply_configs = [
+                "mb",
+                "clobber",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chrome-test-builds/media",
+            gs_acl = "public-read",
+            archive_name_prefix = "asan",
+        ),
+    ),
     builderless = False,
     cores = 4,
     os = os.MAC_DEFAULT,
@@ -200,6 +397,24 @@ ci.builder(
 
 ci.builder(
     name = "TSAN Debug",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "mb",
+                "tsan2",
+                "clobber",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chromium-browser-tsan",
+            gs_acl = "public-read",
+            archive_name_prefix = "tsan",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux tsan",
         short_name = "dbg",
@@ -212,6 +427,24 @@ ci.builder(
 
 ci.builder(
     name = "TSAN Release",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "mb",
+                "tsan2",
+                "clobber",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chromium-browser-tsan",
+            gs_acl = "public-read",
+            archive_name_prefix = "tsan",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux tsan",
         short_name = "rel",
@@ -224,6 +457,20 @@ ci.builder(
 
 ci.builder(
     name = "UBSan Release",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_linux_ubsan",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chromium-browser-ubsan",
+            gs_acl = "public-read",
+            archive_name_prefix = "ubsan",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux UBSan",
         short_name = "rel",
@@ -236,6 +483,21 @@ ci.builder(
 
 ci.builder(
     name = "UBSan vptr Release",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_linux_ubsan_vptr",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chromium-browser-ubsan",
+            gs_acl = "public-read",
+            archive_name_prefix = "ubsan-vptr",
+            archive_subdir = "vptr",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux UBSan",
         short_name = "vpt",
@@ -248,6 +510,23 @@ ci.builder(
 
 ci.builder(
     name = "Win ASan Release",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_win_clang_asan",
+            apply_configs = [
+                "mb",
+                "clobber",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chromium-browser-asan",
+            gs_acl = "public-read",
+            archive_name_prefix = "asan",
+        ),
+    ),
     builderless = False,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -262,6 +541,23 @@ ci.builder(
 
 ci.builder(
     name = "Win ASan Release Media",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_win_clang_asan",
+            apply_configs = [
+                "mb",
+                "clobber",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chrome-test-builds/media",
+            gs_acl = "public-read",
+            archive_name_prefix = "asan",
+        ),
+    ),
     builderless = False,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(

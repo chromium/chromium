@@ -1,4 +1,48 @@
 {
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "TSAN Release",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.fuzz",
+              "clusterfuzz_archive": {
+                "archive_name_prefix": "tsan",
+                "gs_acl": "public-read",
+                "gs_bucket": "chromium-browser-tsan"
+              },
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb",
+                  "tsan2",
+                  "clobber"
+                ],
+                "build_config": "Release",
+                "config": "chromium_clang",
+                "target_bits": 64
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "TSAN Release",
+          "project": "chromium"
+        }
+      ]
+    }
+  },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
     "jobs": 250,
