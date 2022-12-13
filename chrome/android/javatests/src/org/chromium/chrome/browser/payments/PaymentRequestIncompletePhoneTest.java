@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +21,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
@@ -32,13 +32,13 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PaymentRequestIncompletePhoneTest implements MainActivityStartCallback {
+public class PaymentRequestIncompletePhoneTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_phone_test.html", this);
+            new PaymentRequestTestRule("payment_request_phone_test.html");
 
-    @Override
-    public void onMainActivityStarted() throws TimeoutException {
+    @Before
+    public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has an invalid phone number on disk.
         helper.setProfile(new AutofillProfile("", "https://example.test", true,
@@ -56,7 +56,7 @@ public class PaymentRequestIncompletePhoneTest implements MainActivityStartCallb
     @DisabledTest(message = "https://crbug.com/1197578")
     public void testEditIncompletePhoneAndCancel() throws TimeoutException {
         // Not ready to pay since Contact phone is invalid.
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         // Check that there is a selected payment method (makes sure we are not ready to pay because
         // of the Contact Details).
         mPaymentRequestTestRule.expectPaymentMethodRowIsSelected(0);
@@ -88,7 +88,7 @@ public class PaymentRequestIncompletePhoneTest implements MainActivityStartCallb
     @Feature({"Payments"})
     public void testAddIncompletePhoneAndCancel() throws TimeoutException {
         // Not ready to pay since Contact phone is invalid.
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         // Check that there is a selected payment method (makes sure we are not ready to pay because
         // of the Contact Details).
         mPaymentRequestTestRule.expectPaymentMethodRowIsSelected(0);
@@ -120,7 +120,7 @@ public class PaymentRequestIncompletePhoneTest implements MainActivityStartCallb
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditIncompletePhoneAndPay() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(

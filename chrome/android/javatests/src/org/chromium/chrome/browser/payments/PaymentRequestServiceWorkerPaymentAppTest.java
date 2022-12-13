@@ -113,7 +113,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
     @MediumTest
     @Feature({"Payments"})
     public void testNoSupportedPaymentMethods() throws TimeoutException {
-        mPaymentRequestTestRule.openPageAndClickNodeAndWait(
+        mPaymentRequestTestRule.clickNodeAndWait(
                 "buy_with_bobpay", mPaymentRequestTestRule.getShowFailed());
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"show() rejected", "The payment method", "not supported"});
@@ -128,7 +128,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
         // Payment sheet skips to the app since it is the only available app.
-        mPaymentRequestTestRule.openPageAndClickBuyAndWait(mPaymentRequestTestRule.getDismissed());
+        mPaymentRequestTestRule.clickNodeAndWait("buy", mPaymentRequestTestRule.getDismissed());
     }
 
     @Test
@@ -148,7 +148,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
         // available, otherwise CanMakePayment is not called.
         PaymentAppServiceBridge.setCanMakePaymentForTesting(false);
 
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(2, mPaymentRequestTestRule.getNumberOfPaymentApps());
     }
 
@@ -162,7 +162,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
 
         // Payment sheet skips to the app since it is the only available app.
-        mPaymentRequestTestRule.openPageAndClickBuyAndWait(mPaymentRequestTestRule.getDismissed());
+        mPaymentRequestTestRule.clickNodeAndWait("buy", mPaymentRequestTestRule.getDismissed());
     }
 
     @Test
@@ -175,7 +175,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
 
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         Assert.assertNull(mPaymentRequestTestRule.getSelectedPaymentAppLabel());
     }
 
@@ -189,7 +189,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
 
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         Assert.assertNull(mPaymentRequestTestRule.getSelectedPaymentAppLabel());
     }
 
@@ -203,7 +203,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
 
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         Assert.assertNull(mPaymentRequestTestRule.getSelectedPaymentAppLabel());
     }
 
@@ -312,7 +312,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
                 false /*payerEmail*/, "shippingSupported" /*name */);
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
-        mPaymentRequestTestRule.openPageAndClickNodeAndWait(
+        mPaymentRequestTestRule.clickNodeAndWait(
                 "buy_with_shipping_requested", mPaymentRequestTestRule.getDismissed());
     }
 
@@ -331,7 +331,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
                 true /*payerEmail*/, "emailOnlySupported" /*name */);
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
-        mPaymentRequestTestRule.openPageAndClickNodeAndWait(
+        mPaymentRequestTestRule.clickNodeAndWait(
                 "buy_with_contact_requested", mPaymentRequestTestRule.getDismissed());
     }
 
@@ -350,7 +350,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
                 true /*payerEmail*/, "shippingAndContactSupported" /*name*/);
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
-        mPaymentRequestTestRule.openPageAndClickNodeAndWait(
+        mPaymentRequestTestRule.clickNodeAndWait(
                 "buy_with_shipping_and_contact_requested", mPaymentRequestTestRule.getDismissed());
     }
 }

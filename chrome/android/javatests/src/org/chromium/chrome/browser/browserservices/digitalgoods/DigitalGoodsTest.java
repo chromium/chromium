@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -54,8 +53,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        PaymentRequestTestRule.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
-        "enable-blink-features=DigitalGoods"})
+        "enable-experimental-web-platform-features", "enable-blink-features=DigitalGoods"})
 public class DigitalGoodsTest {
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();

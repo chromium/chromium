@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.concurrent.TimeoutException;
@@ -21,19 +20,16 @@ import java.util.concurrent.TimeoutException;
 /** A test to verify that PaymentRequest does not crash with very long request identifiers. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PaymentRequestLongIdTest implements MainActivityStartCallback {
+public class PaymentRequestLongIdTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_long_id_test.html", this);
-
-    @Override
-    public void onMainActivityStarted() {}
+            new PaymentRequestTestRule("payment_request_long_id_test.html");
 
     @Test
     @MediumTest
     @Feature({"Payments"})
     public void testNoCrash() throws TimeoutException {
-        mPaymentRequestTestRule.openPageAndClickNode("buy");
+        mPaymentRequestTestRule.clickNode("buy");
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"ID cannot be longer than 1024 characters"});
     }

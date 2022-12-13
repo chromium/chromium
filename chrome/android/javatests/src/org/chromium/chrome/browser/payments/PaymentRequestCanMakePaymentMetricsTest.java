@@ -19,7 +19,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -36,13 +35,10 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStartCallback {
+public class PaymentRequestCanMakePaymentMetricsTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_can_make_payment_metrics_test.html", this);
-
-    @Override
-    public void onMainActivityStarted() throws TimeoutException {}
+            new PaymentRequestTestRule("payment_request_can_make_payment_metrics_test.html");
 
     /**
      * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant

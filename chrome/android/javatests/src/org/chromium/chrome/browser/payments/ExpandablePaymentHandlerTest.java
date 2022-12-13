@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -60,10 +61,8 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ExpandablePaymentHandlerTest {
-    // Open a tab on the blank page first to initiate the native bindings required by the test
-    // server.
     @Rule
-    public PaymentRequestTestRule mRule = new PaymentRequestTestRule("about:blank");
+    public ChromeTabbedActivityTestRule mRule = new ChromeTabbedActivityTestRule();
 
     // Host the tests on https://127.0.0.1, because file:// URLs cannot have service workers.
     private EmbeddedTestServer mServer;
@@ -122,6 +121,7 @@ public class ExpandablePaymentHandlerTest {
 
     @Before
     public void setUp() throws Throwable {
+        mRule.startMainActivityOnBlankPage();
         mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         mDefaultActivity = mRule.getActivity();
         mBottomSheetTestSupport = new BottomSheetTestSupport(

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +20,6 @@ import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.ArrayList;
@@ -31,11 +31,10 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PaymentRequestDynamicShippingMultipleAddressesTest
-        implements MainActivityStartCallback {
+public class PaymentRequestDynamicShippingMultipleAddressesTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_dynamic_shipping_test.html", this);
+            new PaymentRequestTestRule("payment_request_dynamic_shipping_test.html");
 
     private static final AutofillProfile[] AUTOFILL_PROFILES = {
             // Incomplete profile_0 (missing phone number)
@@ -86,8 +85,8 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
     private int[] mCountsToSet;
     private int[] mDatesToSet;
 
-    @Override
-    public void onMainActivityStarted() throws TimeoutException {
+    @Before
+    public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
 
         // Add the profiles.
@@ -125,7 +124,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
         mCountsToSet = new int[] {20, 15, 10, 25};
         mDatesToSet = new int[] {5000, 5000, 5000, 5000};
 
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(4, mPaymentRequestTestRule.getNumberOfShippingAddressSuggestions());
@@ -155,7 +154,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
         mCountsToSet = new int[] {20, 30};
         mDatesToSet = new int[] {5000, 5000};
 
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(2, mPaymentRequestTestRule.getNumberOfShippingAddressSuggestions());
@@ -182,7 +181,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
         mCountsToSet = new int[] {20, 15, 10, 5, 2, 1};
         mDatesToSet = new int[] {5000, 5000, 5000, 5000, 2, 1};
 
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         // Only four profiles should be suggested to the user.
@@ -219,7 +218,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
         mCountsToSet = new int[] {15, 10, 5, 1};
         mDatesToSet = new int[] {5000, 5000, 5000, 1};
 
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         // Only 3 profiles should be suggested, the two complete ones and the incomplete one that
@@ -249,7 +248,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
         mDatesToSet = new int[] {5000};
 
         // Click on the unacceptable shipping address.
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(0).contains(
@@ -279,7 +278,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
         mCountsToSet = new int[] {15, 10, 5, 25};
         mDatesToSet = new int[] {5000, 5000, 5000, 5000};
 
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
 

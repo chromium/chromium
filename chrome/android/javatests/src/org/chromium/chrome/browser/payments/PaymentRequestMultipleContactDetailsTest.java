@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +21,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.ArrayList;
@@ -32,10 +32,10 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PaymentRequestMultipleContactDetailsTest implements MainActivityStartCallback {
+public class PaymentRequestMultipleContactDetailsTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_contact_details_test.html", this);
+            new PaymentRequestTestRule("payment_request_contact_details_test.html");
 
     private static final AutofillProfile[] AUTOFILL_PROFILES = {
             // 0 - Incomplete (no phone) profile.
@@ -114,8 +114,8 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
     private int[] mCountsToSet;
     private int[] mDatesToSet;
 
-    @Override
-    public void onMainActivityStarted() throws TimeoutException {
+    @Before
+    public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
 
         // Add the profiles.
@@ -151,7 +151,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
         mCountsToSet = new int[] {20, 15, 10, 5, 1};
         mDatesToSet = new int[] {5000, 5000, 5000, 5000, 1};
 
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(4, mPaymentRequestTestRule.getNumberOfContactDetailSuggestions());
@@ -179,7 +179,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
         mCountsToSet = new int[] {15, 10, 5, 1};
         mDatesToSet = new int[] {5000, 5000, 5000, 5000};
 
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(4, mPaymentRequestTestRule.getNumberOfContactDetailSuggestions());
@@ -214,7 +214,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
         mCountsToSet = new int[] {1, 20, 15, 10, 5};
         mDatesToSet = new int[] {1000, 4000, 3000, 2000, 1000};
 
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
 
@@ -239,7 +239,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
         mCountsToSet = new int[] {15, 5};
         mDatesToSet = new int[] {5000, 2000};
 
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(1, mPaymentRequestTestRule.getNumberOfContactDetailSuggestions());
@@ -263,7 +263,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
         mCountsToSet = new int[] {15, 25};
         mDatesToSet = new int[] {5000, 7000};
 
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(2, mPaymentRequestTestRule.getNumberOfContactDetailSuggestions());

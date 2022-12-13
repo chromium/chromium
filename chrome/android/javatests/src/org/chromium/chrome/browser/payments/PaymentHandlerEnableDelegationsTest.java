@@ -34,7 +34,8 @@ public class PaymentHandlerEnableDelegationsTest {
     // Open a tab on the blank page first to initiate the native bindings required by the test
     // server.
     @Rule
-    public PaymentRequestTestRule mRule = new PaymentRequestTestRule("about:blank", null, true);
+    public PaymentRequestTestRule mRule =
+            new PaymentRequestTestRule("about:blank", /*delayStartActivity=*/true);
 
     // Host the tests on https://127.0.0.1, because file:// URLs cannot have service workers.
     private EmbeddedTestServer mServer;
@@ -46,9 +47,7 @@ public class PaymentHandlerEnableDelegationsTest {
         mRule.startMainActivityWithURL(
                 mServer.getURL("/components/test/data/payments/payment_handler.html"));
 
-        // Find the web contents where JavaScript will be executed and instrument the browser
-        // payment sheet.
-        mRule.openPage();
+        mRule.setObserversAndWaitForInitialPageLoad();
     }
 
     private void installPaymentHandlerWithDelegations(String delegations) throws Throwable {

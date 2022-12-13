@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.payments;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +19,6 @@ import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.concurrent.TimeoutException;
@@ -28,13 +28,13 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PaymentRequestShippingAddressChangeTest implements MainActivityStartCallback {
+public class PaymentRequestShippingAddressChangeTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_shipping_address_change_test.html", this);
+            new PaymentRequestTestRule("payment_request_shipping_address_change_test.html");
 
-    @Override
-    public void onMainActivityStarted() throws TimeoutException {
+    @Before
+    public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a shipping address on disk.
         String billingAddressId = helper.setProfile(new AutofillProfile("", "https://example.test",
@@ -55,7 +55,7 @@ public class PaymentRequestShippingAddressChangeTest implements MainActivityStar
     @Feature({"Payments"})
     public void testAddressRedactionInShippingAddressChange() throws TimeoutException {
         // Select a shipping address and cancel out.
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickOnShippingAddressSuggestionOptionAndWait(

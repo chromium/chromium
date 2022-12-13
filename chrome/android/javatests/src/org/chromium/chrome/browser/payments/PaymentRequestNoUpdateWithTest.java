@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +20,6 @@ import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 
@@ -32,13 +32,13 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PaymentRequestNoUpdateWithTest implements MainActivityStartCallback {
+public class PaymentRequestNoUpdateWithTest {
     @Rule
     public PaymentRequestTestRule mRule =
-            new PaymentRequestTestRule("payment_request_no_update_with_test.html", this);
+            new PaymentRequestTestRule("payment_request_no_update_with_test.html");
 
-    @Override
-    public void onMainActivityStarted() throws TimeoutException {
+    @Before
+    public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         helper.setProfile(new AutofillProfile("" /* guid */,
                 "https://www.example.test" /* origin */, "" /* honorific prefix */, "Lisa Simpson",

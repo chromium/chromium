@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.payments;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +19,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.concurrent.TimeoutException;
@@ -29,13 +29,13 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PaymentRequestCanMakePaymentQueryTest implements MainActivityStartCallback {
+public class PaymentRequestCanMakePaymentQueryTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_can_make_payment_query_test.html", this);
+            new PaymentRequestTestRule("payment_request_can_make_payment_query_test.html");
 
-    @Override
-    public void onMainActivityStarted() throws TimeoutException {
+    @Before
+    public void setUp() throws TimeoutException {
         // The user has a valid credit card without a billing address on file. This is sufficient
         // for canMakePayment() to return true.
         new AutofillTestHelper().setCreditCard(new CreditCard("", "https://example.test", true,
@@ -49,8 +49,8 @@ public class PaymentRequestCanMakePaymentQueryTest implements MainActivityStartC
     public void testNoAppsInFastBobPayFactory() throws TimeoutException {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.NO_APPS, FactorySpeed.FAST_FACTORY);
-        mPaymentRequestTestRule.openPageAndClickBuyAndWait(
-                mPaymentRequestTestRule.getCanMakePaymentQueryResponded());
+        mPaymentRequestTestRule.clickNodeAndWait(
+                "buy", mPaymentRequestTestRule.getCanMakePaymentQueryResponded());
         mPaymentRequestTestRule.expectResultContains(new String[] {"true"});
     }
 
@@ -60,8 +60,8 @@ public class PaymentRequestCanMakePaymentQueryTest implements MainActivityStartC
     public void testNoAppsInSlowBobPayFactory() throws TimeoutException {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.NO_APPS, FactorySpeed.SLOW_FACTORY);
-        mPaymentRequestTestRule.openPageAndClickBuyAndWait(
-                mPaymentRequestTestRule.getCanMakePaymentQueryResponded());
+        mPaymentRequestTestRule.clickNodeAndWait(
+                "buy", mPaymentRequestTestRule.getCanMakePaymentQueryResponded());
         mPaymentRequestTestRule.expectResultContains(new String[] {"true"});
     }
 
@@ -71,8 +71,8 @@ public class PaymentRequestCanMakePaymentQueryTest implements MainActivityStartC
     public void testPayWithFastBobPayFactory() throws TimeoutException {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-        mPaymentRequestTestRule.openPageAndClickBuyAndWait(
-                mPaymentRequestTestRule.getCanMakePaymentQueryResponded());
+        mPaymentRequestTestRule.clickNodeAndWait(
+                "buy", mPaymentRequestTestRule.getCanMakePaymentQueryResponded());
         mPaymentRequestTestRule.expectResultContains(new String[] {"true"});
     }
 
@@ -82,8 +82,8 @@ public class PaymentRequestCanMakePaymentQueryTest implements MainActivityStartC
     public void testPayWithSlowBobPayFactory() throws TimeoutException {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.SLOW_FACTORY);
-        mPaymentRequestTestRule.openPageAndClickBuyAndWait(
-                mPaymentRequestTestRule.getCanMakePaymentQueryResponded());
+        mPaymentRequestTestRule.clickNodeAndWait(
+                "buy", mPaymentRequestTestRule.getCanMakePaymentQueryResponded());
         mPaymentRequestTestRule.expectResultContains(new String[] {"true"});
     }
 }

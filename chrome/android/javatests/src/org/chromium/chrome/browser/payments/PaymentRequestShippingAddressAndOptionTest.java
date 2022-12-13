@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +20,6 @@ import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.concurrent.TimeoutException;
@@ -29,13 +29,13 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PaymentRequestShippingAddressAndOptionTest implements MainActivityStartCallback {
+public class PaymentRequestShippingAddressAndOptionTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_free_shipping_test.html", this);
+            new PaymentRequestTestRule("payment_request_free_shipping_test.html");
 
-    @Override
-    public void onMainActivityStarted() throws TimeoutException {
+    @Before
+    public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a shipping address associated with a credit card.
         String firstAddressId = helper.setProfile(new AutofillProfile("", "https://example.test",
@@ -61,7 +61,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressFormat_BottomSheet() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
 
         // Make sure that the shipping label on the bottomsheet does not include the country.
         Assert.assertEquals("Jon Doe\nGoogle, 340 Main St, Los Angeles, CA 90291\n555-555-5555",
@@ -83,7 +83,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressFormat_FullSheet() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
 
         // Focus on a section other that shipping addresses to enter fullsheet mode.
         mPaymentRequestTestRule.clickInPaymentMethodAndWait(
@@ -107,7 +107,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressFormat_Expanded() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
 
         // Focus on the shipping addresses section to enter expanded mode.
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
@@ -138,7 +138,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressFormat_NewAddress() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
 
         // Add a shipping address.
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
@@ -169,7 +169,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
     @Feature({"Payments"})
     public void testEditShippingAddressAndCancelEditorShouldKeepAddressSelected()
             throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.expectShippingAddressRowIsSelected(0);
@@ -194,7 +194,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
     @Feature({"Payments"})
     public void testEditShippingAddressAndClickAndroidBackButtonShouldKeepAddressSelected()
             throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.expectShippingAddressRowIsSelected(0);
@@ -219,7 +219,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
     @Feature({"Payments"})
     public void testAddShippingAddressAndCancelEditorShouldKeepAddressSelected()
             throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.expectShippingAddressRowIsSelected(0);
@@ -244,7 +244,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
     @Feature({"Payments"})
     public void testAddShippingAddressAndClickAndroidBackButtonShouldKeepAddressSelected()
             throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.expectShippingAddressRowIsSelected(0);

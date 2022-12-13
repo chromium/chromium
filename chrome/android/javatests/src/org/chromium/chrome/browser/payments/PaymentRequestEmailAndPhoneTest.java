@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +22,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.payments.Event;
 
@@ -32,13 +32,13 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PaymentRequestEmailAndPhoneTest implements MainActivityStartCallback {
+public class PaymentRequestEmailAndPhoneTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_email_and_phone_test.html", this);
+            new PaymentRequestTestRule("payment_request_email_and_phone_test.html");
 
-    @Override
-    public void onMainActivityStarted() throws TimeoutException {
+    @Before
+    public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a valid email address and phone number on disk.
         helper.setProfile(new AutofillProfile("", "https://example.test", true,
@@ -75,7 +75,7 @@ public class PaymentRequestEmailAndPhoneTest implements MainActivityStartCallbac
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(
@@ -88,7 +88,7 @@ public class PaymentRequestEmailAndPhoneTest implements MainActivityStartCallbac
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddInvalidEmailAndCancel() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
@@ -111,7 +111,7 @@ public class PaymentRequestEmailAndPhoneTest implements MainActivityStartCallbac
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddEmailAndPhoneAndPay() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
@@ -136,7 +136,7 @@ public class PaymentRequestEmailAndPhoneTest implements MainActivityStartCallbac
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testSuggestionsDeduped() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(1, mPaymentRequestTestRule.getNumberOfContactDetailSuggestions());
@@ -152,7 +152,7 @@ public class PaymentRequestEmailAndPhoneTest implements MainActivityStartCallbac
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
         // Start and cancel the Payment Request.
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.close_button, mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(

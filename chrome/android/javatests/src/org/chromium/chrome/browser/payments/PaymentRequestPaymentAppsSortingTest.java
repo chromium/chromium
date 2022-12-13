@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +19,6 @@ import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppSpeed;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.TestPay;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
@@ -30,13 +30,13 @@ import java.util.concurrent.TimeoutException;
 /** A payment integration test that sorting payment apps by frecency. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PaymentRequestPaymentAppsSortingTest implements MainActivityStartCallback {
+public class PaymentRequestPaymentAppsSortingTest {
     @Rule
-    public PaymentRequestTestRule mPaymentRequestTestRule = new PaymentRequestTestRule(
-            "payment_request_alicepay_bobpay_charliepay_test.html", this);
+    public PaymentRequestTestRule mPaymentRequestTestRule =
+            new PaymentRequestTestRule("payment_request_alicepay_bobpay_charliepay_test.html");
 
-    @Override
-    public void onMainActivityStarted() throws TimeoutException {
+    @Before
+    public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         String billingAddressId = helper.setProfile(
                 new AutofillProfile("", "https://example.test", true, "" /* honorific prefix */,
@@ -84,7 +84,7 @@ public class PaymentRequestPaymentAppsSortingTest implements MainActivityStartCa
         PaymentPreferencesUtil.setPaymentAppUseCountForTest(charliePayId, 15);
         PaymentPreferencesUtil.setPaymentAppLastUseDate(charliePayId, 15);
 
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInPaymentMethodAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
 
@@ -111,7 +111,7 @@ public class PaymentRequestPaymentAppsSortingTest implements MainActivityStartCa
         PaymentPreferencesUtil.setPaymentAppUseCountForTest(alicePayId, 20);
         PaymentPreferencesUtil.setPaymentAppLastUseDate(alicePayId, 20);
 
-        mPaymentRequestTestRule.reTriggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInPaymentMethodAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
 

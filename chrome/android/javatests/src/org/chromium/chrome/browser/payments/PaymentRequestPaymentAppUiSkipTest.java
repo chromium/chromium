@@ -62,7 +62,7 @@ public class PaymentRequestPaymentAppUiSkipTest {
     public void testPayViaFastBobPay() throws TimeoutException {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-        mPaymentRequestTestRule.openPageAndClickBuyAndWait(mPaymentRequestTestRule.getDismissed());
+        mPaymentRequestTestRule.clickNodeAndWait("buy", mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"https://bobpay.test", "\"transaction\"", "1337"});
     }
@@ -77,7 +77,7 @@ public class PaymentRequestPaymentAppUiSkipTest {
     public void testPayViaSlowBobPay() throws TimeoutException {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.SLOW_FACTORY);
-        mPaymentRequestTestRule.openPageAndClickBuyAndWait(mPaymentRequestTestRule.getDismissed());
+        mPaymentRequestTestRule.clickNodeAndWait("buy", mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"https://bobpay.test", "\"transaction\"", "1337"});
     }
@@ -92,7 +92,7 @@ public class PaymentRequestPaymentAppUiSkipTest {
     public void testPayViaDelayedFastBobPay() throws TimeoutException {
         mPaymentRequestTestRule.addPaymentAppFactory("https://bobpay.test", AppPresence.HAVE_APPS,
                 FactorySpeed.FAST_FACTORY, AppSpeed.SLOW_APP);
-        mPaymentRequestTestRule.openPageAndClickBuyAndWait(mPaymentRequestTestRule.getDismissed());
+        mPaymentRequestTestRule.clickNodeAndWait("buy", mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"https://bobpay.test", "\"transaction\"", "1337"});
     }
@@ -107,7 +107,7 @@ public class PaymentRequestPaymentAppUiSkipTest {
     public void testPayViaDelayedSlowBobPay() throws TimeoutException {
         mPaymentRequestTestRule.addPaymentAppFactory("https://bobpay.test", AppPresence.HAVE_APPS,
                 FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
-        mPaymentRequestTestRule.openPageAndClickBuyAndWait(mPaymentRequestTestRule.getDismissed());
+        mPaymentRequestTestRule.clickNodeAndWait("buy", mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"https://bobpay.test", "\"transaction\"", "1337"});
         Assert.assertEquals(1,
@@ -128,7 +128,7 @@ public class PaymentRequestPaymentAppUiSkipTest {
                 FactorySpeed.FAST_FACTORY, AppSpeed.FAST_APP);
         mPaymentRequestTestRule.addPaymentAppFactory("https://bobpay.test", AppPresence.HAVE_APPS,
                 FactorySpeed.FAST_FACTORY, AppSpeed.FAST_APP);
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(

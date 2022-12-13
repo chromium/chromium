@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +22,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppSpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.concurrent.TimeoutException;
@@ -32,14 +32,13 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PaymentRequestShowPromiseSingleOptionShippingTest
-        implements MainActivityStartCallback {
+public class PaymentRequestShowPromiseSingleOptionShippingTest {
     @Rule
     public PaymentRequestTestRule mRule =
-            new PaymentRequestTestRule("show_promise/single_option_shipping.html", this);
+            new PaymentRequestTestRule("show_promise/single_option_shipping.html");
 
-    @Override
-    public void onMainActivityStarted() throws TimeoutException {
+    @Before
+    public void setUp() throws TimeoutException {
         AutofillTestHelper autofillTestHelper = new AutofillTestHelper();
         autofillTestHelper.setProfile(new AutofillProfile("", "https://example.test", true,
                 "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "California",
@@ -55,7 +54,7 @@ public class PaymentRequestShowPromiseSingleOptionShippingTest
     @Feature({"Payments"})
     public void testFastApp() throws TimeoutException {
         mRule.addPaymentAppFactory("basic-card", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-        mRule.triggerUIAndWait(mRule.getReadyToPay());
+        mRule.triggerUIAndWait("buy", mRule.getReadyToPay());
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
         Assert.assertEquals("$0.00", mRule.getShippingOptionCostSummaryOnBottomSheet());
         mRule.clickInShippingAddressAndWait(R.id.payments_section, mRule.getReadyForInput());
@@ -71,7 +70,7 @@ public class PaymentRequestShowPromiseSingleOptionShippingTest
     public void testSlowApp() throws TimeoutException {
         mRule.addPaymentAppFactory(
                 "basic-card", AppPresence.HAVE_APPS, FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
-        mRule.triggerUIAndWait(mRule.getReadyToPay());
+        mRule.triggerUIAndWait("buy", mRule.getReadyToPay());
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
         Assert.assertEquals("$0.00", mRule.getShippingOptionCostSummaryOnBottomSheet());
         mRule.clickInShippingAddressAndWait(R.id.payments_section, mRule.getReadyForInput());

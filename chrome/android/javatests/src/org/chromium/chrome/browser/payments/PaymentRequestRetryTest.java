@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +21,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -34,10 +34,10 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         PaymentRequestTestRule.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES})
-public class PaymentRequestRetryTest implements MainActivityStartCallback {
+public class PaymentRequestRetryTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_retry.html", this);
+            new PaymentRequestTestRule("payment_request_retry.html");
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -46,8 +46,8 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
                     .setBugComponent(RenderTestRule.Component.BLINK_PAYMENTS)
                     .build();
 
-    @Override
-    public void onMainActivityStarted() throws TimeoutException {
+    @Before
+    public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         helper.setProfile(new AutofillProfile("", "https://example.test", true,
                 "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
@@ -88,7 +88,7 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testRetryWithDefaultError() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
         mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
@@ -112,7 +112,7 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testRetryWithCustomError() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
         mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
@@ -137,7 +137,7 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments", "RenderTest"})
     public void testRetryWithShippingAddressErrors() throws Throwable {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
         mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
@@ -188,7 +188,7 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments", "RenderTest"})
     public void testRetryWithPayerErrors() throws Throwable {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
         mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
@@ -231,7 +231,7 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testRetryWithShippingAddressErrorsAndPayerErrors() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
         mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
@@ -274,7 +274,7 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testRetryAndPayerDetailChangeEvent() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
         mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
@@ -314,7 +314,7 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testRetryAndReselectContactDetail() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
         mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(

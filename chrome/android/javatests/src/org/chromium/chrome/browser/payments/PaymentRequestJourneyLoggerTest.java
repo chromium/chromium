@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +22,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.payments.Event;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -33,15 +33,13 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallback {
+public class PaymentRequestJourneyLoggerTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_metrics_test.html", this);
+            new PaymentRequestTestRule("payment_request_metrics_test.html");
 
-    @Override
-    public void onMainActivityStarted() {}
-
-    private void createTestData() throws TimeoutException {
+    @Before
+    public void setUp() throws TimeoutException {
         AutofillTestHelper mHelper = new AutofillTestHelper();
         // The user has a shipping address.
         String mBillingAddressId = mHelper.setProfile(
@@ -62,8 +60,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testNumberOfSuggestionsShown_ShippingAddress_Completed() throws TimeoutException {
-        createTestData();
-
         // Complete a Payment Request with a credit card.
         mPaymentRequestTestRule.triggerUIAndWait("ccBuy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
@@ -88,8 +84,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
     @Feature({"Payments"})
     public void testNumberOfSuggestionsShown_ShippingAddress_AbortedByUser()
             throws InterruptedException, TimeoutException {
-        createTestData();
-
         // Cancel the payment request.
         mPaymentRequestTestRule.triggerUIAndWait("ccBuy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
@@ -115,8 +109,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-
-        createTestData();
 
         // Complete a Payment Request with the payment app.
         mPaymentRequestTestRule.triggerUIAndWait(
@@ -145,8 +137,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-
-        createTestData();
 
         // Cancel the payment request.
         mPaymentRequestTestRule.triggerUIAndWait(
@@ -177,8 +167,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        createTestData();
-
         // Cancel the payment request.
         mPaymentRequestTestRule.triggerUIAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
@@ -201,8 +189,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testNumberOfSuggestionsShown_ContactInfo_Completed() throws TimeoutException {
-        createTestData();
-
         // Complete a Payment Request with a credit card.
         mPaymentRequestTestRule.triggerUIAndWait(
                 "contactInfoBuy", mPaymentRequestTestRule.getReadyToPay());
@@ -228,8 +214,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
     @DisabledTest(message = "https://crbug.com/1197578")
     public void testNumberOfSuggestionsShown_ContactInfo_AbortedByUser()
             throws InterruptedException, TimeoutException {
-        createTestData();
-
         // Cancel the payment request.
         mPaymentRequestTestRule.triggerUIAndWait(
                 "contactInfoBuy", mPaymentRequestTestRule.getReadyToPay());
@@ -254,9 +238,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUserHadCompleteSuggestions_ShippingAndPayment() throws TimeoutException {
-        // Add two addresses and two cards.
-        createTestData();
-
         // Cancel the payment request.
         mPaymentRequestTestRule.triggerUIAndWait("ccBuy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
@@ -391,8 +372,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        createTestData();
-
         // Cancel the payment request.
         mPaymentRequestTestRule.triggerUIAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
@@ -454,8 +433,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testNoContactInfoHistogram() throws TimeoutException {
-        createTestData();
-
         // Complete a Payment Request with a credit card.
         mPaymentRequestTestRule.triggerUIAndWait("ccBuy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
@@ -484,8 +461,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        createTestData();
-
         // Complete a Payment Request with payment apps.
         mPaymentRequestTestRule.triggerUIAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
@@ -498,7 +473,7 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
                         "PaymentRequest.NumberOfSuggestionsShown.PaymentMethod.Completed", 2));
 
         // Complete a second Payment Request with payment apps.
-        mPaymentRequestTestRule.reTriggerUIAndWait(
+        mPaymentRequestTestRule.triggerUIAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
@@ -529,7 +504,7 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         // Android Pay has a factory but it does not return an app.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://android.com/pay", AppPresence.NO_APPS, FactorySpeed.SLOW_FACTORY);
-        mPaymentRequestTestRule.openPageAndClickNodeAndWait(
+        mPaymentRequestTestRule.clickNodeAndWait(
                 "androidPayBuy", mPaymentRequestTestRule.getShowFailed());
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"The payment method", "not supported"});

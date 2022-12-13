@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppSpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.concurrent.TimeoutException;
@@ -26,13 +25,10 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivityStartCallback {
+public class PaymentRequestShowPromiseDigitalGoodsTest {
     @Rule
     public PaymentRequestTestRule mRule =
-            new PaymentRequestTestRule("show_promise/digital_goods.html", this);
-
-    @Override
-    public void onMainActivityStarted() {}
+            new PaymentRequestTestRule("show_promise/digital_goods.html");
 
     @Test
     @MediumTest
@@ -40,9 +36,8 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
     public void testDigitalGoodsFastApp() throws TimeoutException {
         mRule.addPaymentAppFactory(
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-        mRule.openPage();
         mRule.executeJavaScriptAndWaitForResult("create('https://bobpay.test');");
-        mRule.triggerUIAndWait(mRule.getResultReady());
+        mRule.triggerUIAndWait("buy", mRule.getResultReady());
 
         mRule.expectResultContains(new String[] {"\"total\":\"1.00\""});
     }
@@ -53,9 +48,8 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
     public void testDigitalGoodsSlowApp() throws TimeoutException {
         mRule.addPaymentAppFactory("https://bobpay.test", AppPresence.HAVE_APPS,
                 FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
-        mRule.openPage();
         mRule.executeJavaScriptAndWaitForResult("create('https://bobpay.test');");
-        mRule.triggerUIAndWait(mRule.getResultReady());
+        mRule.triggerUIAndWait("buy", mRule.getResultReady());
 
         mRule.expectResultContains(new String[] {"\"total\":\"1.00\""});
     }
@@ -66,10 +60,8 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
     public void testSkipUIFastApp() throws TimeoutException {
         mRule.addPaymentAppFactory(
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-        mRule.openPage();
         mRule.executeJavaScriptAndWaitForResult("create('https://bobpay.test');");
-
-        mRule.openPageAndClickNodeAndWait("buy", mRule.getDismissed());
+        mRule.clickNodeAndWait("buy", mRule.getDismissed());
 
         mRule.expectResultContains(new String[] {"\"total\":\"1.00\""});
     }
@@ -80,10 +72,8 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
     public void testSkipUISlowApp() throws TimeoutException {
         mRule.addPaymentAppFactory("https://bobpay.test", AppPresence.HAVE_APPS,
                 FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
-        mRule.openPage();
         mRule.executeJavaScriptAndWaitForResult("create('https://bobpay.test');");
-
-        mRule.openPageAndClickNodeAndWait("buy", mRule.getDismissed());
+        mRule.clickNodeAndWait("buy", mRule.getDismissed());
 
         mRule.expectResultContains(new String[] {"\"total\":\"1.00\""});
     }

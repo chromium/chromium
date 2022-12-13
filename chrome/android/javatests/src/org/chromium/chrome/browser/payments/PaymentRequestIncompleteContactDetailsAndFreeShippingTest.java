@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +21,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.concurrent.TimeoutException;
@@ -32,14 +32,13 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PaymentRequestIncompleteContactDetailsAndFreeShippingTest
-        implements MainActivityStartCallback {
+public class PaymentRequestIncompleteContactDetailsAndFreeShippingTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule = new PaymentRequestTestRule(
-            "payment_request_contact_details_and_free_shipping_test.html", this);
+            "payment_request_contact_details_and_free_shipping_test.html");
 
-    @Override
-    public void onMainActivityStarted() throws TimeoutException {
+    @Before
+    public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a shipping address with a valid email address on disk. However the phone
         // number is invalid.
@@ -58,7 +57,7 @@ public class PaymentRequestIncompleteContactDetailsAndFreeShippingTest
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditIncompleteShippingAndPay() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
 
@@ -96,7 +95,7 @@ public class PaymentRequestIncompleteContactDetailsAndFreeShippingTest
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditIncompleteShippingAndContactAndPay() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
 

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +21,6 @@ import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.payments.Event;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -32,13 +32,13 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PaymentRequestNameTest implements MainActivityStartCallback {
+public class PaymentRequestNameTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_name_test.html", this);
+            new PaymentRequestTestRule("payment_request_name_test.html");
 
-    @Override
-    public void onMainActivityStarted() throws TimeoutException {
+    @Before
+    public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a valid payer name on disk.
         String billingAddressId = helper.setProfile(
@@ -76,7 +76,7 @@ public class PaymentRequestNameTest implements MainActivityStartCallback {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
         mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
@@ -92,7 +92,7 @@ public class PaymentRequestNameTest implements MainActivityStartCallback {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddInvalidNameAndCancel() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
@@ -115,7 +115,7 @@ public class PaymentRequestNameTest implements MainActivityStartCallback {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddNameAndPay() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
@@ -142,7 +142,7 @@ public class PaymentRequestNameTest implements MainActivityStartCallback {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testSuggestionsDeduped() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(1, mPaymentRequestTestRule.getNumberOfContactDetailSuggestions());
@@ -158,7 +158,7 @@ public class PaymentRequestNameTest implements MainActivityStartCallback {
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
         // Start and complete the Payment Request.
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
         mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(

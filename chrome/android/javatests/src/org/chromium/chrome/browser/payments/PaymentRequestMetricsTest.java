@@ -9,6 +9,7 @@ import android.support.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +25,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
-import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.payments.AbortReason;
@@ -40,13 +40,13 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PaymentRequestMetricsTest implements MainActivityStartCallback {
+public class PaymentRequestMetricsTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_metrics_test.html", this);
+            new PaymentRequestTestRule("payment_request_metrics_test.html");
 
-    @Override
-    public void onMainActivityStarted() throws TimeoutException {
+    @Before
+    public void setUp() throws TimeoutException {
         AutofillTestHelper mHelper = new AutofillTestHelper();
         // The user has a shipping address and a credit card associated with that address on disk.
         String mBillingAddressId =
@@ -291,7 +291,7 @@ public class PaymentRequestMetricsTest implements MainActivityStartCallback {
         // Android Pay has a factory, but it returns no apps.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://android.com/pay", AppPresence.NO_APPS, FactorySpeed.SLOW_FACTORY);
-        mPaymentRequestTestRule.openPageAndClickNodeAndWait(
+        mPaymentRequestTestRule.clickNodeAndWait(
                 "androidPayBuy", mPaymentRequestTestRule.getShowFailed());
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"The payment method", "not supported"});
