@@ -449,6 +449,7 @@ try_.builder(
 # TODO(crbug/1182468) Remove when coverage is enabled on CQ.
 try_.builder(
     name = "android-pie-arm64-coverage-rel",
+    mirrors = ["ci/android-code-coverage-native"],
     cores = 16,
     ssd = True,
     goma_backend = None,

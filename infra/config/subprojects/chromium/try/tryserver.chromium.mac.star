@@ -79,6 +79,7 @@ try_.builder(
 
 try_.builder(
     name = "mac-builder-next-rel",
+    mirrors = ["ci/Mac Builder Next"],
     builderless = False,
     os = os.MAC_13,
 )
@@ -407,6 +408,7 @@ ios_builder(
 
 ios_builder(
     name = "ios-simulator-multi-window",
+    mirrors = ["ci/ios-simulator-multi-window"],
 )
 
 ios_builder(
@@ -423,10 +425,12 @@ ios_builder(
 
 ios_builder(
     name = "ios15-beta-simulator",
+    mirrors = ["ci/ios15-beta-simulator"],
 )
 
 ios_builder(
     name = "ios15-sdk-simulator",
+    mirrors = ["ci/ios15-sdk-simulator"],
     os = os.MAC_12,
 )
 

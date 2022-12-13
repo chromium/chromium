@@ -34,6 +34,7 @@ consoles.list_view(
 
 try_.builder(
     name = "win-annotator-rel",
+    mirrors = ["ci/win-annotator-rel"],
 )
 
 try_.builder(

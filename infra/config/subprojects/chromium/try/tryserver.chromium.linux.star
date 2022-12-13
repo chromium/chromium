@@ -68,6 +68,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-annotator-rel",
+    mirrors = ["ci/linux-annotator-rel"],
 )
 
 try_.builder(
@@ -96,6 +97,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-blink-heap-verification-try",
+    mirrors = ["ci/linux-blink-heap-verification"],
     goma_backend = None,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
@@ -125,6 +127,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-headless-shell-rel",
+    mirrors = ["ci/linux-headless-shell-rel"],
     goma_backend = None,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
@@ -136,6 +139,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-fieldtrial-rel",
+    mirrors = ["ci/linux-fieldtrial-rel"],
 )
 
 try_.builder(
@@ -152,11 +156,16 @@ try_.builder(
 
 try_.builder(
     name = "linux-lacros-fyi-rel",
+    mirrors = [
+        "ci/linux-lacros-builder-fyi-rel",
+        "ci/linux-lacros-tester-fyi-rel",
+    ],
     goma_backend = None,
 )
 
 try_.builder(
     name = "linux-lacros-version-skew-fyi",
+    mirrors = ["ci/linux-lacros-version-skew-fyi"],
     goma_backend = None,
 )
 
@@ -175,6 +184,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-perfetto-rel",
+    mirrors = ["ci/linux-perfetto-rel"],
     goma_backend = None,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
@@ -277,6 +287,7 @@ try_.compilator_builder(
 
 try_.builder(
     name = "linux-viz-rel",
+    mirrors = ["ci/Linux Viz"],
 )
 
 try_.builder(
@@ -297,18 +308,21 @@ try_.builder(
 
 try_.builder(
     name = "linux-wpt-fyi-rel",
+    mirrors = ["ci/linux-wpt-fyi-rel"],
     goma_backend = None,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "linux-wpt-identity-fyi-rel",
+    mirrors = ["ci/linux-wpt-identity-fyi-rel"],
     goma_backend = None,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "linux-wpt-input-fyi-rel",
+    mirrors = ["ci/linux-wpt-input-fyi-rel"],
     goma_backend = None,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
