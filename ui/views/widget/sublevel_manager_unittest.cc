@@ -91,7 +91,7 @@ class SublevelManagerTest : public ViewsTestBase,
     test_name += "_";
     switch (std::get<Widget::InitParams::Activatable>(info.param)) {
       case Widget::InitParams::Activatable::kNo:
-        test_name += "Inactivatable";
+        test_name += "NotActivatable";
         break;
       case Widget::InitParams::Activatable::kYes:
         test_name += "Activatable";

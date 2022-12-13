@@ -45,7 +45,7 @@ void SublevelManager::EnsureOwnerSublevel() {
   // where showing an activatable widget brings its ancestors to the front.
   Widget* parent = owner_->parent();
   Widget* child = owner_;
-  while (parent) {
+  while (parent && parent->GetSublevelManager()->IsTrackingChildWidget(child)) {
     parent->GetSublevelManager()->OrderChildWidget(child);
     child = parent;
     parent = parent->parent();
@@ -94,6 +94,10 @@ void SublevelManager::OnWidgetDestroying(Widget* owner) {
   DCHECK(owner == owner_);
   if (owner->parent())
     owner->parent()->GetSublevelManager()->UntrackChildWidget(owner);
+}
+
+bool SublevelManager::IsTrackingChildWidget(Widget* child) {
+  return base::ranges::find(children_, child) != children_.end();
 }
 
 SublevelManager::ChildIterator SublevelManager::FindInsertPosition(

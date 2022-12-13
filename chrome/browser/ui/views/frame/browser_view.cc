@@ -251,6 +251,7 @@
 #include "ui/views/views_features.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/root_view.h"
+#include "ui/views/widget/sublevel_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -3501,6 +3502,15 @@ views::View* BrowserView::CreateMacOverlayView() {
   overlay_widget_ = new OverlayWidget(GetWidget());
   overlay_widget_->Init(std::move(params));
   overlay_widget_->SetNativeWindowProperty(kBrowserViewKey, this);
+
+  // Disable sublevel widget layering because in fullscreen the NSWindow of
+  // `overlay_widget_` is reparented to a AppKit-owned NSWindow that does not
+  // have an associated Widget. This will cause issues in sublevel manager
+  // which operates at the Widget level.
+  if (overlay_widget_->GetSublevelManager()) {
+    overlay_widget_->parent()->GetSublevelManager()->UntrackChildWidget(
+        overlay_widget_);
+  }
 
   // Create a new TopContainerOverlayView. The tab strip, omnibox, bookmarks
   // etc. will be contained within this view. Right clicking on the blank space

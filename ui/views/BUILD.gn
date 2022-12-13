@@ -1357,6 +1357,7 @@ test("views_unittests") {
       "view_unittest_mac.mm",
       "widget/ax_native_widget_mac_unittest.mm",
       "widget/native_widget_mac_unittest.mm",
+      "widget/sublevel_manager_mac_unittest.mm",
     ]
 
     # views_unittests not yet compiling on Mac. http://crbug.com/378134

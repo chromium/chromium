@@ -59,6 +59,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   void RevealUnlock();
   int reveal_lock_count() { return reveal_lock_count_; }
 
+  NSWindow* overlay_widget() { return overlay_widget_; }
+
  private:
   // Pin or unpin the titlebar.
   void SetTitlebarPinned(bool pinned);

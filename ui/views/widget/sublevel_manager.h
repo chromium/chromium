@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/views/views_export.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -17,7 +18,7 @@ namespace views {
 // The SublevelManager ensures a widget is shown at the correct sublevel.
 // It tracks the sublevel of the owner widget and the stacking state of
 // the owner's children widgets.
-class SublevelManager : public WidgetObserver {
+class VIEWS_EXPORT SublevelManager : public WidgetObserver {
  public:
   SublevelManager(Widget* owner, int sublevel);
 
@@ -27,6 +28,9 @@ class SublevelManager : public WidgetObserver {
   void TrackChildWidget(Widget* child);
 
   // Untracks a child widget.
+  // This is intended for internal use and to work around platform-specific
+  // compatibility issues.
+  // You should not use this.
   void UntrackChildWidget(Widget* child);
 
   // Sets the sublevel of `owner_` and triggers `EnsureOwnerSublevel()`.
@@ -46,6 +50,9 @@ class SublevelManager : public WidgetObserver {
   // Repositions `child_` among its siblings of the same z-order level
   // to ensure that its sublevel is respected.
   void OrderChildWidget(Widget* child);
+
+  // Check if a child widget is being tracked.
+  bool IsTrackingChildWidget(Widget* child);
 
   // Returns the position in `children_` before which `child` should be inserted
   // to maintain the sublevel ordering. This methods assumes that `child` is not
