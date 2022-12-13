@@ -456,10 +456,12 @@ try_.builder(
 
 try_.builder(
     name = "android-pie-arm64-wpt-rel-non-cq",
+    mirrors = ["ci/android-pie-arm64-wpt-rel-non-cq"],
 )
 
 try_.builder(
     name = "android-chrome-pie-x86-wpt-fyi-rel",
+    mirrors = ["ci/android-chrome-pie-x86-wpt-fyi-rel"],
 )
 
 try_.builder(
@@ -474,6 +476,7 @@ try_.builder(
 
 try_.builder(
     name = "android-webview-pie-x86-wpt-fyi-rel",
+    mirrors = ["ci/android-webview-pie-x86-wpt-fyi-rel"],
     goma_backend = None,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
