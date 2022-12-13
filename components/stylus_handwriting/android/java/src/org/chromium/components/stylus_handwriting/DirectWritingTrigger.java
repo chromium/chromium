@@ -19,7 +19,6 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.content_public.browser.StylusWritingHandler;
 import org.chromium.content_public.browser.StylusWritingImeCallback;
 import org.chromium.content_public.browser.WebContents;
@@ -441,7 +440,7 @@ class DirectWritingTrigger
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return false;
         PointerIcon icon = PointerIcon.getSystemIcon(
                 currentView.getContext(), DirectWritingConstants.STYLUS_WRITING_ICON_VALUE);
-        ApiHelperForN.setPointerIcon(currentView, icon);
+        currentView.setPointerIcon(icon);
         return true;
     }
 }
