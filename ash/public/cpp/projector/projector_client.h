@@ -16,7 +16,7 @@ class FilePath;
 namespace ash {
 
 struct NewScreencastPrecondition;
-enum class SpeechRecognitionAvailability;
+struct SpeechRecognitionAvailability;
 
 // Creates interface to access Browser side functionalities for the
 // ProjectorControllerImpl.

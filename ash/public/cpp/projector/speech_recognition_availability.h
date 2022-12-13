@@ -9,13 +9,10 @@
 
 namespace ash {
 
-// Enum class used to represent the availability of speech recognition.
-enum class ASH_PUBLIC_EXPORT SpeechRecognitionAvailability {
+enum class ASH_PUBLIC_EXPORT OnDeviceRecognitionAvailability : int {
   // Device does not support SODA (Speech on Device API)
-  kSodaNotAvailable,
-  // Server based feature is not supported.
-  kServerBasedRecognitionNotAvailable,
-  // User's language is not supported.
+  kSodaNotAvailable = 0,
+  // User's language is not supported by SODA.
   kUserLanguageNotAvailable,
   // SODA binary is not yet installed.
   kSodaNotInstalled,
@@ -26,9 +23,24 @@ enum class ASH_PUBLIC_EXPORT SpeechRecognitionAvailability {
   // SODA installation error needs reboot
   kSodaInstallationErrorNeedsReboot,
   // SODA is available to be used.
-  kSodaAvailable,
-  // Server based recognition is available.
-  kServerBasedRecognitionAvailable
+  kAvailable,
+};
+
+enum class ASH_PUBLIC_EXPORT ServerBasedRecognitionAvailability : int {
+  // Server based feature is not available.
+  kServerBasedRecognitionNotAvailable = 0,
+  // User's language is not supported by server based recognition.
+  kUserLanguageNotAvailable,
+  // Server based speech recognition is available.
+  kAvailable,
+};
+
+struct ASH_PUBLIC_EXPORT SpeechRecognitionAvailability {
+  bool use_on_device = true;
+  OnDeviceRecognitionAvailability on_device_availability;
+  ServerBasedRecognitionAvailability server_based_availability;
+
+  bool IsAvailable() const;
 };
 
 }  // namespace ash

@@ -32,12 +32,12 @@ class SpeechRecognitionRecognizerClientImpl
  public:
   // Returns the availability of on-device speech recognition for the given
   // language (BCP-47 format, e.g. "en-US").
-  static ash::SpeechRecognitionAvailability
+  static ash::OnDeviceRecognitionAvailability
   GetOnDeviceSpeechRecognitionAvailability(const std::string& language);
 
   // Returns the availability of server-based speech recognition for the given
   // language.
-  static ash::SpeechRecognitionAvailability
+  static ash::ServerBasedRecognitionAvailability
   GetServerBasedRecognitionAvailability(const std::string& language);
 
   SpeechRecognitionRecognizerClientImpl(

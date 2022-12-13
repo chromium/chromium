@@ -194,9 +194,11 @@ void ProjectorCaptureModeIntegrationHelper::SetUp() {
           []() { ProjectorController::Get()->OnSpeechRecognitionStopped(); }));
 
   // Simulate the availability of speech recognition.
+  SpeechRecognitionAvailability availability;
+  availability.on_device_availability =
+      OnDeviceRecognitionAvailability::kAvailable;
   ON_CALL(projector_client_, GetSpeechRecognitionAvailability)
-      .WillByDefault(
-          testing::Return(SpeechRecognitionAvailability::kSodaAvailable));
+      .WillByDefault(testing::Return(availability));
   EXPECT_CALL(projector_client_, IsDriveFsMounted())
       .WillRepeatedly(testing::Return(true));
 }

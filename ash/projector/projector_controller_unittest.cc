@@ -151,9 +151,12 @@ class ProjectorControllerTest : public AshTestBase {
     mock_metadata_controller_ = mock_metadata_controller.get();
     controller_->SetProjectorMetadataControllerForTest(
         std::move(mock_metadata_controller));
+
+    SpeechRecognitionAvailability availability;
+    availability.on_device_availability =
+        OnDeviceRecognitionAvailability::kAvailable;
     ON_CALL(mock_client_, GetSpeechRecognitionAvailability)
-        .WillByDefault(
-            testing::Return(SpeechRecognitionAvailability::kSodaAvailable));
+        .WillByDefault(testing::Return(availability));
     controller_->SetClient(&mock_client_);
   }
 
@@ -238,39 +241,45 @@ TEST_F(ProjectorControllerTest, OnAudioNodesChanged) {
 }
 
 TEST_F(ProjectorControllerTest, OnSpeechRecognitionAvailabilityChanged) {
+  SpeechRecognitionAvailability availability;
+
+  // Soda is not available.
+  availability.use_on_device = true;
+  availability.on_device_availability =
+      OnDeviceRecognitionAvailability::kSodaNotAvailable;
+  ON_CALL(mock_client_, GetSpeechRecognitionAvailability)
+      .WillByDefault(testing::Return(availability));
+  ON_CALL(mock_client_, IsDriveFsMounted())
+      .WillByDefault(testing::Return(true));
   EXPECT_CALL(mock_client_,
               OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
                   NewScreencastPreconditionState::kDisabled,
                   {NewScreencastPreconditionReason::
                        kOnDeviceSpeechRecognitionNotSupported})));
-  ON_CALL(mock_client_, GetSpeechRecognitionAvailability)
-      .WillByDefault(
-          testing::Return(SpeechRecognitionAvailability::kSodaNotAvailable));
-
   controller_->OnSpeechRecognitionAvailabilityChanged();
 
-  ON_CALL(mock_client_, IsDriveFsMounted())
-      .WillByDefault(testing::Return(true));
-
+  // Soda is available.
+  availability.on_device_availability =
+      OnDeviceRecognitionAvailability::kAvailable;
+  ON_CALL(mock_client_, GetSpeechRecognitionAvailability)
+      .WillByDefault(testing::Return(availability));
   EXPECT_CALL(mock_client_,
               OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
                   NewScreencastPreconditionState::kEnabled,
                   {NewScreencastPreconditionReason::kEnabledBySoda})));
-
-  ON_CALL(mock_client_, GetSpeechRecognitionAvailability)
-      .WillByDefault(
-          testing::Return(SpeechRecognitionAvailability::kSodaAvailable));
-
   controller_->OnSpeechRecognitionAvailabilityChanged();
 
+  // Server based available.
+  availability.use_on_device = false;
+  availability.server_based_availability =
+      ServerBasedRecognitionAvailability::kAvailable;
+  ON_CALL(mock_client_, GetSpeechRecognitionAvailability)
+      .WillByDefault(testing::Return(availability));
   EXPECT_CALL(mock_client_,
               OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
                   NewScreencastPreconditionState::kEnabled,
                   {NewScreencastPreconditionReason::
                        kEnabledByServerSideSpeechRecognition})));
-  ON_CALL(mock_client_, GetSpeechRecognitionAvailability)
-      .WillByDefault(testing::Return(
-          SpeechRecognitionAvailability::kServerBasedRecognitionAvailable));
   controller_->OnSpeechRecognitionAvailabilityChanged();
 }
 

@@ -109,7 +109,7 @@ void SpeechRecognitionPrivateRecognizer::HandleStart(
   Profile* profile = Profile::FromBrowserContext(context_);
   if (SpeechRecognitionRecognizerClientImpl::
           GetOnDeviceSpeechRecognitionAvailability(locale_) ==
-      ash::SpeechRecognitionAvailability::kSodaAvailable) {
+      ash::OnDeviceRecognitionAvailability::kAvailable) {
     type_ = speech::SpeechRecognitionType::kOnDevice;
     speech_recognizer_ =
         std::make_unique<SpeechRecognitionRecognizerClientImpl>(

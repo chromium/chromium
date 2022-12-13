@@ -15,8 +15,6 @@ struct NewScreencastPrecondition;
 
 class ProjectorClient;
 
-enum class SpeechRecognitionAvailability;
-
 // Interface to control projector in ash.
 class ASH_PUBLIC_EXPORT ProjectorController {
  public:
@@ -24,9 +22,6 @@ class ASH_PUBLIC_EXPORT ProjectorController {
   ProjectorController(const ProjectorController&) = delete;
   ProjectorController& operator=(const ProjectorController&) = delete;
   virtual ~ProjectorController();
-
-  static bool IsRecognitionAvailable(
-      SpeechRecognitionAvailability availability);
 
   static ProjectorController* Get();
 

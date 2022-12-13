@@ -83,6 +83,69 @@ scoped_refptr<base::RefCountedMemory> EncodeImage(
   return gfx::Image(image_skia).As1xPNGBytes();
 }
 
+NewScreencastPrecondition OnDeviceRecognitionAvailabilityToPrecondition(
+    OnDeviceRecognitionAvailability availability) {
+  NewScreencastPrecondition result;
+  switch (availability) {
+    case OnDeviceRecognitionAvailability::kAvailable:
+      result.state = NewScreencastPreconditionState::kEnabled;
+      result.reasons = {NewScreencastPreconditionReason::kEnabledBySoda};
+      return result;
+    case OnDeviceRecognitionAvailability::kSodaNotAvailable:
+      result.state = NewScreencastPreconditionState::kDisabled;
+      result.reasons = {NewScreencastPreconditionReason::
+                            kOnDeviceSpeechRecognitionNotSupported};
+      return result;
+    case OnDeviceRecognitionAvailability::kUserLanguageNotAvailable:
+      result.state = NewScreencastPreconditionState::kDisabled;
+      result.reasons = {
+          NewScreencastPreconditionReason::kUserLocaleNotSupported};
+      return result;
+
+    // We will attempt to install SODA.
+    case OnDeviceRecognitionAvailability::kSodaNotInstalled:
+    case OnDeviceRecognitionAvailability::kSodaInstalling:
+      result.state = NewScreencastPreconditionState::kDisabled;
+      result.reasons = {
+          NewScreencastPreconditionReason::kSodaDownloadInProgress};
+      return result;
+    case OnDeviceRecognitionAvailability::kSodaInstallationErrorUnspecified:
+      result.state = NewScreencastPreconditionState::kDisabled;
+      result.reasons = {
+          NewScreencastPreconditionReason::kSodaInstallationErrorUnspecified};
+      return result;
+    case OnDeviceRecognitionAvailability::kSodaInstallationErrorNeedsReboot:
+      result.state = NewScreencastPreconditionState::kDisabled;
+      result.reasons = {
+          NewScreencastPreconditionReason::kSodaInstallationErrorNeedsReboot};
+      return result;
+  }
+}
+
+NewScreencastPrecondition ServerBasedRecognitionAvailabilityToPrecondition(
+    ServerBasedRecognitionAvailability availability) {
+  NewScreencastPrecondition result;
+  switch (availability) {
+    case ServerBasedRecognitionAvailability::kAvailable:
+      result.state = NewScreencastPreconditionState::kEnabled;
+      result.reasons = {NewScreencastPreconditionReason::
+                            kEnabledByServerSideSpeechRecognition};
+      return result;
+    case ServerBasedRecognitionAvailability::kUserLanguageNotAvailable:
+      result.state = NewScreencastPreconditionState::kDisabled;
+      result.reasons = {
+          NewScreencastPreconditionReason::kUserLocaleNotSupported};
+      return result;
+    case ServerBasedRecognitionAvailability::
+        kServerBasedRecognitionNotAvailable:
+      result.state = NewScreencastPreconditionState::kDisabled;
+      // TODO(b:245613717): Add a precondition reason for server based not
+      // available.
+      result.reasons = {NewScreencastPreconditionReason::kOthers};
+      return result;
+  }
+}
+
 }  // namespace
 
 ProjectorControllerImpl::ProjectorControllerImpl()
@@ -202,46 +265,17 @@ ProjectorControllerImpl::GetNewScreencastPrecondition() const {
   // For development purposes on the x11 simulator, on-device speech recognition
   // and DriveFS are not supported.
   if (!ProjectorController::AreExtendedProjectorFeaturesDisabled()) {
-    switch (client_->GetSpeechRecognitionAvailability()) {
-      case SpeechRecognitionAvailability::kSodaAvailable:
-        result.state = NewScreencastPreconditionState::kEnabled;
-        result.reasons = {NewScreencastPreconditionReason::kEnabledBySoda};
-        break;
-      case SpeechRecognitionAvailability::kServerBasedRecognitionAvailable:
-        result.state = NewScreencastPreconditionState::kEnabled;
-        result.reasons = {NewScreencastPreconditionReason::
-                              kEnabledByServerSideSpeechRecognition};
-        break;
-      case SpeechRecognitionAvailability::kSodaNotAvailable:
-        result.state = NewScreencastPreconditionState::kDisabled;
-        result.reasons = {NewScreencastPreconditionReason::
-                              kOnDeviceSpeechRecognitionNotSupported};
-        return result;
-      case SpeechRecognitionAvailability::kUserLanguageNotAvailable:
-        result.state = NewScreencastPreconditionState::kDisabled;
-        result.reasons = {
-            NewScreencastPreconditionReason::kUserLocaleNotSupported};
-        return result;
-
-      // We will attempt to install SODA.
-      case SpeechRecognitionAvailability::kSodaNotInstalled:
-      case SpeechRecognitionAvailability::kSodaInstalling:
-        result.state = NewScreencastPreconditionState::kDisabled;
-        result.reasons = {
-            NewScreencastPreconditionReason::kSodaDownloadInProgress};
-        return result;
-      case SpeechRecognitionAvailability::kServerBasedRecognitionNotAvailable:
-      case SpeechRecognitionAvailability::kSodaInstallationErrorUnspecified:
-        result.state = NewScreencastPreconditionState::kDisabled;
-        result.reasons = {
-            NewScreencastPreconditionReason::kSodaInstallationErrorUnspecified};
-        return result;
-      case SpeechRecognitionAvailability::kSodaInstallationErrorNeedsReboot:
-        result.state = NewScreencastPreconditionState::kDisabled;
-        result.reasons = {
-            NewScreencastPreconditionReason::kSodaInstallationErrorNeedsReboot};
-        return result;
+    const auto availability = client_->GetSpeechRecognitionAvailability();
+    if (availability.use_on_device) {
+      result = OnDeviceRecognitionAvailabilityToPrecondition(
+          availability.on_device_availability);
+    } else {
+      result = ServerBasedRecognitionAvailabilityToPrecondition(
+          availability.server_based_availability);
     }
+
+    if (result.state != NewScreencastPreconditionState::kEnabled)
+      return result;
 
     if (!client_->IsDriveFsMounted()) {
       result.state = NewScreencastPreconditionState::kDisabled;
@@ -456,8 +490,7 @@ void ProjectorControllerImpl::StartSpeechRecognition() {
   if (ProjectorController::AreExtendedProjectorFeaturesDisabled() || !client_)
     return;
 
-  DCHECK(ProjectorController::IsRecognitionAvailable(
-      client_->GetSpeechRecognitionAvailability()));
+  DCHECK(client_->GetSpeechRecognitionAvailability().IsAvailable());
 
   DCHECK(!is_speech_recognition_on_);
   client_->StartSpeechRecognition();
@@ -471,8 +504,7 @@ void ProjectorControllerImpl::MaybeStopSpeechRecognition() {
     return;
   }
 
-  DCHECK(ProjectorController::IsRecognitionAvailable(
-      client_->GetSpeechRecognitionAvailability()));
+  DCHECK(client_->GetSpeechRecognitionAvailability().IsAvailable());
 
   client_->StopSpeechRecognition();
   is_speech_recognition_on_ = false;

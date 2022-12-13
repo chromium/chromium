@@ -207,6 +207,17 @@ namespace {
 const char kFrench[] = "fr";
 const char kUnsupportedLanguage[] = "am";
 
+bool IsEqualAvailability(const SpeechRecognitionAvailability& first,
+                         const SpeechRecognitionAvailability& second) {
+  if (first.use_on_device != second.use_on_device)
+    return false;
+
+  if (first.use_on_device)
+    return first.on_device_availability == second.on_device_availability;
+
+  return first.server_based_availability == second.server_based_availability;
+}
+
 }  // namespace
 
 TEST_P(ProjectorClientImplUnitTest, SpeechRecognitionAvailability) {
@@ -216,28 +227,53 @@ TEST_P(ProjectorClientImplUnitTest, SpeechRecognitionAvailability) {
       features::IsInternalServerSideSpeechRecognitionEnabled();
 
   SetLocale(kFrench);
+
+  SpeechRecognitionAvailability availability;
+  availability.use_on_device = false;
+  availability.server_based_availability =
+      ash::ServerBasedRecognitionAvailability::kAvailable;
   if (server_based_available) {
-    EXPECT_EQ(
-        projector_client_->GetSpeechRecognitionAvailability(),
-        ash::SpeechRecognitionAvailability::kServerBasedRecognitionAvailable);
+    EXPECT_TRUE(IsEqualAvailability(
+        projector_client_->GetSpeechRecognitionAvailability(), availability));
   } else {
-    EXPECT_EQ(projector_client_->GetSpeechRecognitionAvailability(),
-              ash::SpeechRecognitionAvailability::kUserLanguageNotAvailable);
+    availability.use_on_device = true;
+    availability.on_device_availability =
+        ash::OnDeviceRecognitionAvailability::kUserLanguageNotAvailable;
+    EXPECT_TRUE(IsEqualAvailability(
+        projector_client_->GetSpeechRecognitionAvailability(), availability));
   }
 
   SetLocale(kEnglishUS);
   if (force_enable_server_based && server_based_available) {
-    EXPECT_EQ(
-        projector_client_->GetSpeechRecognitionAvailability(),
-        ash::SpeechRecognitionAvailability::kServerBasedRecognitionAvailable);
+    availability.use_on_device = false;
+    availability.server_based_availability =
+        ash::ServerBasedRecognitionAvailability::kAvailable;
+    EXPECT_TRUE(IsEqualAvailability(
+        projector_client_->GetSpeechRecognitionAvailability(), availability));
   } else {
-    EXPECT_EQ(projector_client_->GetSpeechRecognitionAvailability(),
-              ash::SpeechRecognitionAvailability::kSodaAvailable);
+    availability.use_on_device = true;
+    availability.on_device_availability =
+        ash::OnDeviceRecognitionAvailability::kAvailable;
+    EXPECT_TRUE(IsEqualAvailability(
+        projector_client_->GetSpeechRecognitionAvailability(), availability));
   }
 
   SetLocale(kUnsupportedLanguage);
-  EXPECT_EQ(projector_client_->GetSpeechRecognitionAvailability(),
-            ash::SpeechRecognitionAvailability::kUserLanguageNotAvailable);
+
+  if (force_enable_server_based) {
+    availability.use_on_device = false;
+    availability.server_based_availability =
+        ash::ServerBasedRecognitionAvailability::kUserLanguageNotAvailable;
+    EXPECT_TRUE(IsEqualAvailability(
+        projector_client_->GetSpeechRecognitionAvailability(), availability));
+  } else {
+    availability.use_on_device = true;
+    availability.on_device_availability =
+        ash::OnDeviceRecognitionAvailability::kUserLanguageNotAvailable;
+    SetLocale(kUnsupportedLanguage);
+    EXPECT_TRUE(IsEqualAvailability(
+        projector_client_->GetSpeechRecognitionAvailability(), availability));
+  }
 }
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

@@ -95,7 +95,7 @@ void ProjectorSodaInstallationController::OnSodaInstallError(
 
   if (SpeechRecognitionRecognizerClientImpl::
           GetServerBasedRecognitionAvailability(current_locale) !=
-      ash::SpeechRecognitionAvailability::kServerBasedRecognitionAvailable) {
+      ash::ServerBasedRecognitionAvailability::kAvailable) {
     app_client_->OnSodaInstallError();
   }
 }

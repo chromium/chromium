@@ -67,41 +67,41 @@ inline bool IsLanguageSupported(const speech::SodaInstaller* soda_installer,
   return false;
 }
 
-inline ash::SpeechRecognitionAvailability InstallationErrorToAvailability(
+inline ash::OnDeviceRecognitionAvailability InstallationErrorToAvailability(
     speech::SodaInstaller::ErrorCode error_code) {
   switch (error_code) {
     case speech::SodaInstaller::ErrorCode::kUnspecifiedError:
-      return ash::SpeechRecognitionAvailability::
+      return ash::OnDeviceRecognitionAvailability::
           kSodaInstallationErrorUnspecified;
     case speech::SodaInstaller::ErrorCode::kNeedsReboot:
-      return ash::SpeechRecognitionAvailability::
+      return ash::OnDeviceRecognitionAvailability::
           kSodaInstallationErrorNeedsReboot;
   }
 }
 
 }  // namespace
 
-ash::SpeechRecognitionAvailability
+ash::OnDeviceRecognitionAvailability
 SpeechRecognitionRecognizerClientImpl::GetOnDeviceSpeechRecognitionAvailability(
     const std::string& language) {
   if (!base::FeatureList::IsEnabled(
           ash::features::kOnDeviceSpeechRecognition)) {
-    return ash::SpeechRecognitionAvailability::kSodaNotAvailable;
+    return ash::OnDeviceRecognitionAvailability::kSodaNotAvailable;
   }
 
   const auto language_code = speech::GetLanguageCode(language);
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
 
   if (soda_installer->IsSodaInstalled(language_code))
-    return ash::SpeechRecognitionAvailability::kSodaAvailable;
+    return ash::OnDeviceRecognitionAvailability::kAvailable;
 
   if (!IsLanguageSupported(soda_installer, language_code))
-    return ash::SpeechRecognitionAvailability::kUserLanguageNotAvailable;
+    return ash::OnDeviceRecognitionAvailability::kUserLanguageNotAvailable;
 
   // Maybe SODA is currently installing.
   if (soda_installer->IsSodaDownloading(language_code) ||
       soda_installer->IsSodaDownloading(speech::LanguageCode::kNone)) {
-    return ash::SpeechRecognitionAvailability::kSodaInstalling;
+    return ash::OnDeviceRecognitionAvailability::kSodaInstalling;
   }
 
   // It is possible that there was some installation issues for SODA which we
@@ -116,14 +116,14 @@ SpeechRecognitionRecognizerClientImpl::GetOnDeviceSpeechRecognitionAvailability(
   if (language_error_code)
     return InstallationErrorToAvailability(language_error_code.value());
 
-  return ash::SpeechRecognitionAvailability::kSodaNotInstalled;
+  return ash::OnDeviceRecognitionAvailability::kSodaNotInstalled;
 }
 
-ash::SpeechRecognitionAvailability
+ash::ServerBasedRecognitionAvailability
 SpeechRecognitionRecognizerClientImpl::GetServerBasedRecognitionAvailability(
     const std::string& language) {
   if (!ash::features::IsInternalServerSideSpeechRecognitionEnabled()) {
-    return ash::SpeechRecognitionAvailability::
+    return ash::ServerBasedRecognitionAvailability::
         kServerBasedRecognitionNotAvailable;
   }
 
@@ -143,10 +143,10 @@ SpeechRecognitionRecognizerClientImpl::GetServerBasedRecognitionAvailability(
 
   if (kSupportedLocales.contains(base::ToLowerASCII(language)) ||
       kDefaultLanguages.contains(base::ToLowerASCII(language))) {
-    return ash::SpeechRecognitionAvailability::kServerBasedRecognitionAvailable;
+    return ash::ServerBasedRecognitionAvailability::kAvailable;
   }
 
-  return ash::SpeechRecognitionAvailability::kUserLanguageNotAvailable;
+  return ash::ServerBasedRecognitionAvailability::kUserLanguageNotAvailable;
 }
 
 SpeechRecognitionRecognizerClientImpl::SpeechRecognitionRecognizerClientImpl(

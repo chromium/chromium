@@ -31,14 +31,6 @@ ProjectorController::~ProjectorController() {
 }
 
 // static
-bool ProjectorController::IsRecognitionAvailable(
-    SpeechRecognitionAvailability availability) {
-  return availability == SpeechRecognitionAvailability::kSodaAvailable ||
-         availability ==
-             SpeechRecognitionAvailability::kServerBasedRecognitionAvailable;
-}
-
-// static
 ProjectorController* ProjectorController::Get() {
   return g_instance;
 }

@@ -88,38 +88,29 @@ ProjectorClientImpl::~ProjectorClientImpl() {
 // based speech recognition.
 ash::SpeechRecognitionAvailability
 ProjectorClientImpl::GetSpeechRecognitionAvailability() const {
+  ash::SpeechRecognitionAvailability availability;
+  availability.use_on_device = true;
   const auto& locale = GetLocale();
-  if (ash::features::ShouldForceEnableServerSideSpeechRecognitionForDev()) {
-    return SpeechRecognitionRecognizerClientImpl::
-        GetServerBasedRecognitionAvailability(locale);
-  }
-
-  const auto on_device_availability = SpeechRecognitionRecognizerClientImpl::
+  availability.on_device_availability = SpeechRecognitionRecognizerClientImpl::
       GetOnDeviceSpeechRecognitionAvailability(locale);
-  if (on_device_availability ==
-      ash::SpeechRecognitionAvailability::kSodaAvailable) {
-    return on_device_availability;
+  availability.server_based_availability =
+      SpeechRecognitionRecognizerClientImpl::
+          GetServerBasedRecognitionAvailability(locale);
+
+  if (ash::features::ShouldForceEnableServerSideSpeechRecognitionForDev() ||
+      (availability.on_device_availability !=
+           ash::OnDeviceRecognitionAvailability::kAvailable &&
+       availability.server_based_availability ==
+           ash::ServerBasedRecognitionAvailability::kAvailable)) {
+    availability.use_on_device = false;
   }
 
-  const auto server_based_availability = SpeechRecognitionRecognizerClientImpl::
-      GetServerBasedRecognitionAvailability(locale);
-
-  if (server_based_availability ==
-      ash::SpeechRecognitionAvailability::kServerBasedRecognitionAvailable) {
-    return server_based_availability;
-  }
-
-  // TODO(b/245613717): Add a kSpeechRecognitionNotSupported message.
-  return on_device_availability;
+  return availability;
 }
 
 void ProjectorClientImpl::StartSpeechRecognition() {
   const auto availability = GetSpeechRecognitionAvailability();
-  DCHECK(ash::ProjectorController::IsRecognitionAvailable(availability));
-  const bool should_use_server_based =
-      availability ==
-      ash::SpeechRecognitionAvailability::kServerBasedRecognitionAvailable;
-
+  DCHECK(availability.IsAvailable());
   DCHECK_EQ(speech_recognizer_.get(), nullptr);
   recognizer_status_ = SPEECH_RECOGNIZER_OFF;
   speech_recognizer_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
@@ -127,7 +118,7 @@ void ProjectorClientImpl::StartSpeechRecognition() {
       media::mojom::SpeechRecognitionOptions::New(
           media::mojom::SpeechRecognitionMode::kCaption,
           /*enable_formatting=*/true, GetLocale(),
-          /*is_server_based=*/should_use_server_based,
+          /*is_server_based=*/!availability.use_on_device,
           media::mojom::RecognizerClientType::kProjector));
 }
 

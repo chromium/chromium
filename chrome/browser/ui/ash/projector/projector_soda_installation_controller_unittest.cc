@@ -89,9 +89,12 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
     ON_CALL(*mock_client_, GetSpeechRecognitionAvailability)
         .WillByDefault(
             testing::Invoke([&]() -> ash::SpeechRecognitionAvailability {
-              return SpeechRecognitionRecognizerClientImpl::
-                  GetOnDeviceSpeechRecognitionAvailability(
-                      g_browser_process->GetApplicationLocale());
+              SpeechRecognitionAvailability availability;
+              availability.on_device_availability =
+                  SpeechRecognitionRecognizerClientImpl::
+                      GetOnDeviceSpeechRecognitionAvailability(
+                          g_browser_process->GetApplicationLocale());
+              return availability;
             }));
 
     projector_controller().SetClient(mock_client_.get());
