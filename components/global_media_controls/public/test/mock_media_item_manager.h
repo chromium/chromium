@@ -24,6 +24,7 @@ class MockMediaItemManager : public MediaItemManager {
   MOCK_METHOD(void, RemoveItemProducer, (MediaItemProducer*));
   MOCK_METHOD(void, ShowItem, (const std::string&));
   MOCK_METHOD(void, HideItem, (const std::string&));
+  MOCK_METHOD(void, RefreshItem, (const std::string&));
   MOCK_METHOD(void, OnItemsChanged, ());
   MOCK_METHOD(void, SetDialogDelegate, (MediaDialogDelegate*));
   MOCK_METHOD(void,

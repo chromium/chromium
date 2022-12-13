@@ -9,7 +9,9 @@ namespace test {
 
 MockMediaItemUIDeviceSelector::MockMediaItemUIDeviceSelector() = default;
 
-MockMediaItemUIDeviceSelector::~MockMediaItemUIDeviceSelector() = default;
+MockMediaItemUIDeviceSelector::~MockMediaItemUIDeviceSelector() {
+  Die();
+}
 
 }  // namespace test
 }  // namespace global_media_controls

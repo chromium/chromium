@@ -23,6 +23,10 @@ class MockMediaDialogDelegate : public MediaDialogDelegate {
               (const std::string&,
                base::WeakPtr<media_message_center::MediaNotificationItem>));
   MOCK_METHOD(void, HideMediaItem, (const std::string&));
+  MOCK_METHOD(void,
+              RefreshMediaItem,
+              (const std::string&,
+               base::WeakPtr<media_message_center::MediaNotificationItem>));
   MOCK_METHOD(void, HideMediaDialog, ());
   MOCK_METHOD(void, Focus, ());
 };

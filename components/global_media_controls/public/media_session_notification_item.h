@@ -46,6 +46,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
     // The given item should be destroyed.
     virtual void RemoveItem(const std::string& id) = 0;
 
+    // The given item's UI should be refreshed.
+    virtual void RefreshItem(const std::string& id) = 0;
+
     // The given button has been pressed, and therefore the action should be
     // recorded.
     virtual void LogMediaSessionActionButtonPressed(

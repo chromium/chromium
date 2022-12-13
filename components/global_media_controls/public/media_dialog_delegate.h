@@ -31,6 +31,11 @@ class MediaDialogDelegate {
   // Hides a media item.
   virtual void HideMediaItem(const std::string& id) = 0;
 
+  // Updates the media item's UI.
+  virtual void RefreshMediaItem(
+      const std::string& id,
+      base::WeakPtr<media_message_center::MediaNotificationItem> item) = 0;
+
   // Closes the dialog.
   virtual void HideMediaDialog() = 0;
 

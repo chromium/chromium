@@ -57,6 +57,13 @@ void MediaItemManagerImpl::HideItem(const std::string& id) {
   dialog_delegate_->HideMediaItem(id);
 }
 
+void MediaItemManagerImpl::RefreshItem(const std::string& id) {
+  if (!dialog_delegate_)
+    return;
+
+  dialog_delegate_->RefreshMediaItem(id, GetItem(id));
+}
+
 void MediaItemManagerImpl::OnItemsChanged() {
   for (auto& observer : observers_)
     observer.OnItemListChanged();

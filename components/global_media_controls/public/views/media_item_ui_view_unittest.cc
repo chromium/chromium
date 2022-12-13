@@ -198,6 +198,10 @@ class MediaItemUIViewTest : public views::ViewsTestBase {
   notification_item() {
     return item_->GetWeakPtr();
   }
+  test::MockMediaItemUIFooter* footer() { return footer_; }
+  test::MockMediaItemUIDeviceSelector* device_selector() {
+    return device_selector_;
+  }
 
  private:
   void SimulateSessionInfo(bool playing) {
@@ -390,6 +394,16 @@ TEST_F(MediaItemUIViewTest, MetadataTest) {
   auto container_view = std::make_unique<MediaItemUIView>(
       kOtherTestNotificationId, notification_item(), nullptr, nullptr);
   views::test::TestViewMetadata(container_view.get());
+}
+
+TEST_F(MediaItemUIViewTest, UpdateView) {
+  EXPECT_CALL(*footer(), Die);
+  item_ui()->UpdateFooterView(
+      std::make_unique<NiceMock<test::MockMediaItemUIFooter>>());
+
+  EXPECT_CALL(*device_selector(), Die);
+  item_ui()->UpdateDeviceSelector(
+      std::make_unique<NiceMock<test::MockMediaItemUIDeviceSelector>>());
 }
 
 }  // namespace global_media_controls

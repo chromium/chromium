@@ -36,6 +36,7 @@ class MockMediaSessionNotificationItemDelegate
   MOCK_METHOD(void, ActivateItem, (const std::string&));
   MOCK_METHOD(void, HideItem, (const std::string&));
   MOCK_METHOD(void, RemoveItem, (const std::string&));
+  MOCK_METHOD(void, RefreshItem, (const std::string&));
   MOCK_METHOD(void,
               LogMediaSessionActionButtonPressed,
               (const std::string&, MediaSessionAction));

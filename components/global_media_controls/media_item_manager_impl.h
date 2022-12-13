@@ -40,6 +40,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemManagerImpl
   void RemoveItemProducer(MediaItemProducer* producer) override;
   void ShowItem(const std::string& id) override;
   void HideItem(const std::string& id) override;
+  void RefreshItem(const std::string& id) override;
   void OnItemsChanged() override;
   void SetDialogDelegate(MediaDialogDelegate* delegate) override;
   void SetDialogDelegateForId(MediaDialogDelegate* delegate,

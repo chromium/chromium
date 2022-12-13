@@ -86,7 +86,6 @@ MediaItemUIView::MediaItemUIView(
     : views::Button(base::BindRepeating(&MediaItemUIView::ContainerClicked,
                                         base::Unretained(this))),
       id_(id),
-      footer_view_(footer_view.get()),
       is_cros_(theme.has_value()) {
   DCHECK(item);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -133,6 +132,7 @@ MediaItemUIView::MediaItemUIView(
 
   std::unique_ptr<media_message_center::MediaNotificationView> view;
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
+    footer_view_ = footer_view_.get();
     view =
         std::make_unique<media_message_center::MediaNotificationViewModernImpl>(
             this, std::move(item), std::move(dismiss_button_placeholder),
@@ -143,19 +143,12 @@ MediaItemUIView::MediaItemUIView(
         this, std::move(item), std::move(dismiss_button_placeholder),
         std::u16string(), kWidth, /*should_show_icon=*/false, theme);
 
-    if (footer_view)
-      AddChildView(std::move(footer_view));
-
+    UpdateFooterView(std::move(footer_view));
     SetPreferredSize(kNormalSize);
   }
   view_ = swipeable_container_->AddChildView(std::move(view));
 
-  if (device_selector_view) {
-    device_selector_view_ = device_selector_view.get();
-    device_selector_view_->SetMediaItemUIView(this);
-    AddChildView(std::move(device_selector_view));
-    view_->UpdateCornerRadius(message_center::kNotificationCornerRadius, 0);
-  }
+  UpdateDeviceSelector(std::move(device_selector_view));
 
   ForceExpandedState();
 
@@ -320,6 +313,37 @@ const std::u16string& MediaItemUIView::GetTitle() const {
 
 void MediaItemUIView::SetScrollView(views::ScrollView* scroll_view) {
   scroll_view_ = scroll_view;
+}
+
+void MediaItemUIView::UpdateFooterView(
+    std::unique_ptr<MediaItemUIFooter> footer_view) {
+  if (footer_view_) {
+    RemoveChildView(footer_view_);
+    delete footer_view_;
+    footer_view_ = nullptr;
+  }
+
+  if (footer_view) {
+    footer_view->OnColorsChanged(foreground_color_, background_color_);
+    footer_view_ = AddChildView(std::move(footer_view));
+  }
+}
+
+void MediaItemUIView::UpdateDeviceSelector(
+    std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view) {
+  if (device_selector_view_) {
+    RemoveChildView(device_selector_view_);
+    delete device_selector_view_;
+    device_selector_view_ = nullptr;
+  }
+
+  if (device_selector_view) {
+    device_selector_view_ = AddChildView(std::move(device_selector_view));
+    device_selector_view_->SetMediaItemUIView(this);
+    view_->UpdateCornerRadius(message_center::kNotificationCornerRadius, 0);
+    device_selector_view_->OnColorsChanged(foreground_color_,
+                                           background_color_);
+  }
 }
 
 views::ImageButton* MediaItemUIView::GetDismissButtonForTesting() {

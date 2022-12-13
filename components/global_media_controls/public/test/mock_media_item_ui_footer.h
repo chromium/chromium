@@ -20,6 +20,8 @@ class MockMediaItemUIFooter : public MediaItemUIFooter {
 
   // MediaItemUIFooter:
   MOCK_METHOD(void, OnColorsChanged, (SkColor, SkColor));
+
+  MOCK_METHOD(void, Die, ());
 };
 
 }  // namespace test

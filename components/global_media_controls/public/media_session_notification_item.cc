@@ -69,6 +69,9 @@ MediaSessionNotificationItem::~MediaSessionNotificationItem() {
 
 void MediaSessionNotificationItem::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info) {
+  bool remote_playback_state_changed = GetRemotePlaybackStarted(session_info) !=
+                                       GetRemotePlaybackStarted(session_info_);
+
   session_info_ = std::move(session_info);
 
   MaybeUnfreeze();
@@ -76,6 +79,9 @@ void MediaSessionNotificationItem::MediaSessionInfoChanged(
 
   if (view_ && !frozen_) {
     UpdateViewCommon();
+    if (remote_playback_state_changed) {
+      delegate_->RefreshItem(request_id_);
+    }
   }
 }
 

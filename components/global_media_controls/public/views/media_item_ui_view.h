@@ -107,6 +107,11 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
   // Set the scroll view that is currently holding this item.
   void SetScrollView(views::ScrollView* scroll_view);
 
+  // Remove and add new views.
+  void UpdateDeviceSelector(
+      std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view);
+  void UpdateFooterView(std::unique_ptr<MediaItemUIFooter> footer_view);
+
   views::ImageButton* GetDismissButtonForTesting();
 
   media_message_center::MediaNotificationViewImpl* view_for_testing() {
@@ -157,8 +162,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
   raw_ptr<DismissButton> dismiss_button_ = nullptr;
   raw_ptr<media_message_center::MediaNotificationView> view_ = nullptr;
 
-  const raw_ptr<MediaItemUIFooter> footer_view_;
-
+  raw_ptr<MediaItemUIFooter> footer_view_ = nullptr;
   raw_ptr<MediaItemUIDeviceSelector> device_selector_view_ = nullptr;
 
   SkColor foreground_color_ = kDefaultForegroundColor;

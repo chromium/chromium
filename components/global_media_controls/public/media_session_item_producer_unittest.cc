@@ -212,6 +212,10 @@ class MediaSessionItemProducerTest : public testing::Test {
     producer_->OnMediaItemUIDismissed(id.ToString());
   }
 
+  void SimulateItemRefresh(const base::UnguessableToken& id) {
+    producer_->RefreshItem(id.ToString());
+  }
+
   void ExpectHistogramDismissReasonRecorded(
       GlobalMediaControlsDismissReason reason,
       int count) {
@@ -694,6 +698,13 @@ TEST_F(MediaSessionItemProducerTest, HidesSessionWithPresentation) {
   // The presentation gets its own item, so MediaSessionItemProducer's item has
   // become redundant and gets hidden.
   EXPECT_FALSE(HasActiveItems());
+}
+
+TEST_F(MediaSessionItemProducerTest, RefreshSessionWhenRemotePlaybackChanges) {
+  EXPECT_CALL(item_manager(), ShowItem(_));
+  const base::UnguessableToken id = SimulatePlayingControllableMedia();
+  EXPECT_CALL(item_manager(), RefreshItem(id.ToString()));
+  SimulateItemRefresh(id);
 }
 
 }  // namespace global_media_controls

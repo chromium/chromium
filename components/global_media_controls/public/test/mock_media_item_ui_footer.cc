@@ -9,7 +9,9 @@ namespace test {
 
 MockMediaItemUIFooter::MockMediaItemUIFooter() = default;
 
-MockMediaItemUIFooter::~MockMediaItemUIFooter() = default;
+MockMediaItemUIFooter::~MockMediaItemUIFooter() {
+  Die();
+}
 
 }  // namespace test
 }  // namespace global_media_controls

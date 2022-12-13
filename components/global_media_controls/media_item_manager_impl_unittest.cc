@@ -164,4 +164,21 @@ TEST_F(MediaItemManagerImplTest, CanOpenDialogForSpecificItem) {
   item_manager()->SetDialogDelegate(nullptr);
 }
 
+TEST_F(MediaItemManagerImplTest, RefreshItems) {
+  test::MockMediaItemProducer producer;
+  item_manager()->AddItemProducer(&producer);
+  producer.AddItem("foo", true, false, false);
+  item_manager()->ShowItem("foo");
+
+  // Then, open a dialog.
+  NiceMock<test::MockMediaDialogDelegate> dialog_delegate;
+  EXPECT_CALL(dialog_delegate, ShowMediaItem("foo", _));
+  item_manager()->SetDialogDelegate(&dialog_delegate);
+  testing::Mock::VerifyAndClearExpectations(&dialog_delegate);
+
+  // Refresh this item.
+  EXPECT_CALL(dialog_delegate, RefreshMediaItem("foo", _));
+  item_manager()->RefreshItem("foo");
+}
+
 }  // namespace global_media_controls

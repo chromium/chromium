@@ -39,6 +39,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemManager {
   // The notification with the given id should be hidden.
   virtual void HideItem(const std::string& id) = 0;
 
+  // The notification with the given id should be refreshed with new UI.
+  virtual void RefreshItem(const std::string& id) = 0;
+
   // Called by item producers when items have changed.
   virtual void OnItemsChanged() = 0;
 
