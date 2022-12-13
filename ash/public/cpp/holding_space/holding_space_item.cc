@@ -76,7 +76,7 @@ bool HoldingSpaceItem::operator==(const HoldingSpaceItem& rhs) const {
   return type_ == rhs.type_ && id_ == rhs.id_ && file_path_ == rhs.file_path_ &&
          file_system_url_ == rhs.file_system_url_ && text_ == rhs.text_ &&
          secondary_text_ == rhs.secondary_text_ &&
-         secondary_text_color_ == rhs.secondary_text_color_ &&
+         secondary_text_color_id_ == rhs.secondary_text_color_id_ &&
          *image_ == *rhs.image_ && progress_ == rhs.progress_ &&
          in_progress_commands_ == rhs.in_progress_commands_;
 }
@@ -269,12 +269,12 @@ bool HoldingSpaceItem::SetSecondaryText(
   return true;
 }
 
-bool HoldingSpaceItem::SetSecondaryTextColor(
-    const absl::optional<cros_styles::ColorName>& secondary_text_color) {
-  if (secondary_text_color_ == secondary_text_color)
+bool HoldingSpaceItem::SetSecondaryTextColorId(
+    const absl::optional<ui::ColorId>& secondary_text_color_id) {
+  if (secondary_text_color_id_ == secondary_text_color_id)
     return false;
 
-  secondary_text_color_ = secondary_text_color;
+  secondary_text_color_id_ = secondary_text_color_id;
   return true;
 }
 

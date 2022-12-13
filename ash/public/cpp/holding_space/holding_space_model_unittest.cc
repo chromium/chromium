@@ -20,7 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/chromeos/styles/cros_styles.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 namespace ash {
@@ -342,13 +342,12 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   // Update secondary text color.
   model()
       .UpdateItem(item_ptr->id())
-      ->SetSecondaryTextColor(cros_styles::ColorName::kTextColorAlert);
+      ->SetSecondaryTextColorId(cros_tokens::kTextColorAlert);
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
   EXPECT_EQ(observation.TakeLastUpdatedFields(),
             UpdatedField::kSecondaryTextColor);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
-  EXPECT_EQ(item_ptr->secondary_text_color(),
-            cros_styles::ColorName::kTextColorAlert);
+  EXPECT_EQ(item_ptr->secondary_text_color_id(), cros_tokens::kTextColorAlert);
 
   // Update all attributes.
   in_progress_commands.push_back(
@@ -362,7 +361,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
       .SetInProgressCommands(in_progress_commands)
       .SetText(u"updated_text")
       .SetSecondaryText(u"updated_secondary_text")
-      .SetSecondaryTextColor(cros_styles::ColorName::kTextColorWarning)
+      .SetSecondaryTextColorId(cros_tokens::kTextColorWarning)
       .SetProgress(
           HoldingSpaceProgress(/*current_bytes=*/75, /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
@@ -379,8 +378,8 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   EXPECT_EQ(item_ptr->progress().GetValue(), 0.75f);
   EXPECT_EQ(item_ptr->GetText(), u"updated_text");
   EXPECT_EQ(item_ptr->secondary_text(), u"updated_secondary_text");
-  EXPECT_EQ(item_ptr->secondary_text_color(),
-            cros_styles::ColorName::kTextColorWarning);
+  EXPECT_EQ(item_ptr->secondary_text_color_id(),
+            cros_tokens::kTextColorWarning);
 }
 
 // Verifies that updating items will no-op appropriately.
@@ -414,7 +413,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Noop) {
       .SetInProgressCommands({})
       .SetText(absl::nullopt)
       .SetSecondaryText(absl::nullopt)
-      .SetSecondaryTextColor(absl::nullopt)
+      .SetSecondaryTextColorId(absl::nullopt)
       .SetProgress(item_ptr->progress());
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 0);
 }

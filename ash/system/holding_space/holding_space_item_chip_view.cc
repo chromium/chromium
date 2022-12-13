@@ -606,14 +606,15 @@ void HoldingSpaceItemChipView::UpdateLabels() {
   const std::u16string last_secondary_text = secondary_label_->GetText();
   secondary_label_->SetText(
       item()->secondary_text().value_or(base::EmptyString16()));
-  secondary_label_->SetEnabledColor(
-      selected() && multiselect ? GetMultiSelectTextColor()
-      : item()->secondary_text_color()
-          ? cros_styles::ResolveColor(
-                item()->secondary_text_color().value(),
-                DarkLightModeControllerImpl::Get()->IsDarkModeEnabled())
-          : AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kTextColorSecondary));
+  if (GetWidget()) {
+    secondary_label_->SetEnabledColor(
+        selected() && multiselect ? GetMultiSelectTextColor()
+        : item()->secondary_text_color_id()
+            ? GetColorProvider()->GetColor(
+                  item()->secondary_text_color_id().value())
+            : AshColorProvider::Get()->GetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kTextColorSecondary));
+  }
   secondary_label_->SetVisible(!secondary_label_->GetText().empty());
 
   // Tooltip.

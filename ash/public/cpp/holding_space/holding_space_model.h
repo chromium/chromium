@@ -18,6 +18,7 @@
 #include "base/callback.h"
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_id.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -80,10 +81,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     ScopedItemUpdate& SetSecondaryText(
         const absl::optional<std::u16string>& secondary_text);
 
-    // Sets the color for the secondary text that should be shown for the item
-    // and returns a reference to `this`.
-    ScopedItemUpdate& SetSecondaryTextColor(
-        const absl::optional<cros_styles::ColorName>& secondary_text_color);
+    // Sets the color id for the secondary text that should be shown for the
+    // item and returns a reference to `this`.
+    ScopedItemUpdate& SetSecondaryTextColorId(
+        const absl::optional<ui::ColorId>& secondary_text_color);
 
     // Sets the text that should be shown for the item and returns a reference
     // to `this`. If absent, the lossy display name of the backing file will be
@@ -104,8 +105,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
         in_progress_commands_;
     absl::optional<HoldingSpaceProgress> progress_;
     absl::optional<absl::optional<std::u16string>> secondary_text_;
-    absl::optional<absl::optional<cros_styles::ColorName>>
-        secondary_text_color_;
+    absl::optional<absl::optional<ui::ColorId>> secondary_text_color_id_;
     absl::optional<absl::optional<std::u16string>> text_;
     bool invalidate_image_ = false;
   };

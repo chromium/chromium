@@ -29,6 +29,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -386,7 +388,7 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
 
   // Returns the color for the secondary text to display for the underlying
   // download.
-  absl::optional<cros_styles::ColorName> GetSecondaryTextColor() const {
+  absl::optional<ui::ColorId> GetSecondaryTextColorId() const {
     // Only in-progress download items have secondary text.
     if (!IsInProgress(mojo_download_item_.get()))
       return absl::nullopt;
@@ -394,18 +396,18 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
     // In-progress download items which are being scanned have a special
     // secondary text treatment.
     if (IsScanning(mojo_download_item_.get()))
-      return cros_styles::ColorName::kTextColorProminent;
+      return cros_tokens::kTextColorProminent;
 
     // In-progress download items which are dangerous but not malicious can be
     // kept or discarded by the user via notification. This being the case, such
     // items have a special secondary text treatment.
     if (IsDangerous() && !MightBeMalicious())
-      return cros_styles::ColorName::kTextColorWarning;
+      return cros_tokens::kTextColorWarning;
 
     // In-progress download items which are dangerous or insecure have a special
     // secondary text treatment.
     if (IsDangerous() || IsInsecure())
-      return cros_styles::ColorName::kTextColorAlert;
+      return cros_tokens::kTextColorAlert;
 
     return absl::nullopt;
   }
@@ -893,7 +895,7 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
       .SetInvalidateImage(invalidate_image)
       .SetText(in_progress_download->GetText())
       .SetSecondaryText(in_progress_download->GetSecondaryText())
-      .SetSecondaryTextColor(in_progress_download->GetSecondaryTextColor())
+      .SetSecondaryTextColorId(in_progress_download->GetSecondaryTextColorId())
       .SetProgress(in_progress_download->GetProgress());
 }
 

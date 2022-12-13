@@ -16,7 +16,7 @@
 #include "base/test/scoped_locale.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/chromeos/styles/cros_styles.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 namespace ash {
@@ -239,24 +239,25 @@ TEST_P(HoldingSpaceItemTest, SecondaryTextColor) {
       GURL("filesystem::file_system_url"),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 
-  // Initially the secondary text color should be absent.
-  EXPECT_FALSE(holding_space_item->secondary_text_color());
+  // Initially the secondary text color id should be absent.
+  EXPECT_FALSE(holding_space_item->secondary_text_color_id());
 
-  // It should be possible to update secondary text color to a new value.
-  EXPECT_TRUE(holding_space_item->SetSecondaryTextColor(
-      cros_styles::ColorName::kTextColorAlert));
-  EXPECT_EQ(holding_space_item->secondary_text_color().value(),
-            cros_styles::ColorName::kTextColorAlert);
+  // It should be possible to update secondary text color id to a new value.
+  EXPECT_TRUE(holding_space_item->SetSecondaryTextColorId(
+      cros_tokens::kTextColorAlert));
+  EXPECT_EQ(holding_space_item->secondary_text_color_id().value(),
+            cros_tokens::kTextColorAlert);
 
-  // It should no-op to try to update secondary text color to existing values.
-  EXPECT_FALSE(holding_space_item->SetSecondaryTextColor(
-      cros_styles::ColorName::kTextColorAlert));
-  EXPECT_EQ(holding_space_item->secondary_text_color().value(),
-            cros_styles::ColorName::kTextColorAlert);
+  // It should no-op to try to update secondary text color id to existing
+  // values.
+  EXPECT_FALSE(holding_space_item->SetSecondaryTextColorId(
+      cros_tokens::kTextColorAlert));
+  EXPECT_EQ(holding_space_item->secondary_text_color_id().value(),
+            cros_tokens::kTextColorAlert);
 
-  // It should be possible to unset secondary text color.
-  EXPECT_TRUE(holding_space_item->SetSecondaryTextColor(absl::nullopt));
-  EXPECT_FALSE(holding_space_item->secondary_text_color());
+  // It should be possible to unset secondary text color id.
+  EXPECT_TRUE(holding_space_item->SetSecondaryTextColorId(absl::nullopt));
+  EXPECT_FALSE(holding_space_item->secondary_text_color_id());
 }
 
 // Tests setting the text for each holding space item type.

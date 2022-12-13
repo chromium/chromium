@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
@@ -170,11 +171,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // if a change occurred or `false` to indicate no-op.
   bool SetSecondaryText(const absl::optional<std::u16string>& secondary_text);
 
-  // Sets the color for the secondary text that should be shown for the item,
+  // Sets the color id for the secondary text that should be shown for the item,
   // returning `true` if a change occurred or `false` to indicate no-op. If
   // `absl::nullopt` is provided, secondary text color will fallback to default.
-  bool SetSecondaryTextColor(
-      const absl::optional<cros_styles::ColorName>& secondary_text_color);
+  bool SetSecondaryTextColorId(
+      const absl::optional<ui::ColorId>& secondary_text_color_id);
 
   // Returns `accessible_name_`, falling back to a concatenation of primary
   // and secondary text if absent.
@@ -212,8 +213,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
     return secondary_text_;
   }
 
-  const absl::optional<cros_styles::ColorName>& secondary_text_color() const {
-    return secondary_text_color_;
+  const absl::optional<ui::ColorId>& secondary_text_color_id() const {
+    return secondary_text_color_id_;
   }
 
   const HoldingSpaceImage& image() const { return *image_; }
@@ -256,8 +257,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // If set, the secondary text that should be shown for the item.
   absl::optional<std::u16string> secondary_text_;
 
-  // If set, the color for the secondary text that should be shown for the item.
-  absl::optional<cros_styles::ColorName> secondary_text_color_;
+  // If set, the color resolved from the color id for the secondary text that
+  // should be shown for the item.
+  absl::optional<ui::ColorId> secondary_text_color_id_;
 
   // If set, the accessible name that should be used for the item.
   absl::optional<std::u16string> accessible_name_;
