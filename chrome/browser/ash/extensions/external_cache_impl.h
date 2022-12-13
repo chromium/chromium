@@ -22,6 +22,7 @@
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/common/extension_id.h"
+#include "net/base/backoff_entry.h"
 
 namespace extensions {
 class ExtensionDownloader;
@@ -83,6 +84,8 @@ class ExternalCacheImpl : public ExternalCache,
                             const base::FilePath& crx_file_path,
                             const std::string& version,
                             PutExternalExtensionCallback callback) override;
+  void SetBackoffPolicy(
+      absl::optional<net::BackoffEntry::Policy> backoff_policy) override;
 
   // Implementation of content::NotificationObserver:
   void Observe(int type,
@@ -169,6 +172,9 @@ class ExternalCacheImpl : public ExternalCache,
 
   // Used to download the extensions and to check for updates.
   std::unique_ptr<extensions::ExtensionDownloader> downloader_;
+
+  // Backoff policy of extension downloader.
+  absl::optional<net::BackoffEntry::Policy> backoff_policy_;
 
   // Observes failures to install CRX files.
   content::NotificationRegistrar notification_registrar_;

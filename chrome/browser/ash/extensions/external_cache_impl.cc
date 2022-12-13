@@ -169,6 +169,16 @@ void ExternalCacheImpl::PutExternalExtension(
                      weak_ptr_factory_.GetWeakPtr(), id, std::move(callback)));
 }
 
+void ExternalCacheImpl::SetBackoffPolicy(
+    absl::optional<net::BackoffEntry::Policy> backoff_policy) {
+  backoff_policy_ = backoff_policy;
+  if (downloader_) {
+    // If `backoff_policy` is `absl::nullopt`, it will reset to default backoff
+    // policy.
+    downloader_->SetBackoffPolicy(backoff_policy);
+  }
+}
+
 void ExternalCacheImpl::Observe(int type,
                                 const content::NotificationSource& source,
                                 const content::NotificationDetails& details) {
@@ -260,6 +270,9 @@ void ExternalCacheImpl::CheckCache() {
   if (url_loader_factory_) {
     downloader_ = ChromeExtensionDownloaderFactory::CreateForURLLoaderFactory(
         url_loader_factory_, this, extensions::GetExternalVerifierFormat());
+    if (backoff_policy_) {
+      downloader_->SetBackoffPolicy(backoff_policy_);
+    }
   }
 
   cached_extensions_.clear();

@@ -273,6 +273,16 @@ void KioskAppManager::SetAppWasAutoLaunchedWithZeroDelay(
   auto_launched_with_zero_delay_ = true;
 }
 
+void KioskAppManager::SetExtensionDownloaderBackoffPolicy(
+    absl::optional<net::BackoffEntry::Policy> backoff_policy) {
+  // In browser tests `external_cache_` is reset before `StartupAppLauncher`.
+  // Check before trying to set backoff policy here.
+  if (!external_cache_) {
+    return;
+  }
+  external_cache_->SetBackoffPolicy(backoff_policy);
+}
+
 void KioskAppManager::InitSession(Profile* profile, const std::string& app_id) {
   LOG_IF(FATAL, app_session_) << "Kiosk session is already initialized.";
 

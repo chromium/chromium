@@ -124,10 +124,11 @@ class ExtensionDownloader {
     ping_enabled_domain_ = domain;
   }
 
-  // Set backoff policy for manifest queue for testing with less initial delay
-  // so the tests do not timeout on retries.
-  void SetBackoffPolicyForTesting(
-      const net::BackoffEntry::Policy* backoff_policy);
+  // Set backoff policy for manifest and extension queue. Set `absl::nullopt` to
+  // restore to the default backoff policy. Used in tests and Kiosk launcher to
+  // reduce retry backoff.
+  void SetBackoffPolicy(
+      absl::optional<net::BackoffEntry::Policy> backoff_policy);
 
   bool HasActiveManifestRequestForTesting();
 

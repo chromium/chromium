@@ -242,11 +242,11 @@ ExtensionDownloader::ExtensionDownloader(
       url_loader_factory_(std::move(url_loader_factory)),
       profile_path_for_url_loader_factory_(profile_path),
       manifests_queue_(
-          &kDefaultBackoffPolicy,
+          kDefaultBackoffPolicy,
           base::BindRepeating(&ExtensionDownloader::CreateManifestLoader,
                               base::Unretained(this))),
       extensions_queue_(
-          &kDefaultBackoffPolicy,
+          kDefaultBackoffPolicy,
           base::BindRepeating(&ExtensionDownloader::CreateExtensionLoader,
                               base::Unretained(this))),
       extension_cache_(nullptr),
@@ -359,9 +359,12 @@ void ExtensionDownloader::set_test_delegate(
   g_test_delegate = delegate;
 }
 
-void ExtensionDownloader::SetBackoffPolicyForTesting(
-    const net::BackoffEntry::Policy* backoff_policy) {
-  manifests_queue_.set_backoff_policy(backoff_policy);
+void ExtensionDownloader::SetBackoffPolicy(
+    absl::optional<net::BackoffEntry::Policy> backoff_policy) {
+  manifests_queue_.set_backoff_policy(
+      backoff_policy.value_or(kDefaultBackoffPolicy));
+  extensions_queue_.set_backoff_policy(
+      backoff_policy.value_or(kDefaultBackoffPolicy));
 }
 
 bool ExtensionDownloader::HasActiveManifestRequestForTesting() {
