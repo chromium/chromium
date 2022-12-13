@@ -41,6 +41,8 @@ per-file dcheck*=olivierli@chromium.org
 per-file dcheck*=pbos@chromium.org
 per-file logging*=olivierli@chromium.org
 per-file logging*=pbos@chromium.org
+per-file notreached.h=olivierli@chromium.org
+per-file notreached.h=pbos@chromium.org
 
 # Restricted since rand_util.h also backs the cryptographically secure RNG.
 per-file rand_util*=set noparent
