@@ -54,7 +54,8 @@ ChromeNoStatePrefetchManagerDelegate::GetNoStatePrefetchContentsDelegate() {
 
 bool ChromeNoStatePrefetchManagerDelegate::
     IsNetworkPredictionPreferenceEnabled() {
-  return prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs());
+  return prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs()) ==
+         content::PreloadingEligibility::kEligible;
 }
 
 std::string

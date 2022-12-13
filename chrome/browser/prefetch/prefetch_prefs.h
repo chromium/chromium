@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PREFETCH_PREFETCH_PREFS_H_
 
 #include "base/feature_list.h"
+#include "content/public/browser/preloading.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -57,13 +58,16 @@ PreloadPagesState GetPreloadPagesState(const PrefService& prefs);
 // persist it in prefs.
 void SetPreloadPagesState(PrefService* prefs, PreloadPagesState state);
 
-// Returns true if preloading is not entirely disabled. Preloading might be
-// disabled by the user via UI settings stored in prefs or by Finch.
-bool IsSomePreloadingEnabled(const PrefService& prefs);
+// Returns PreloadingEligibility:kEligible if preloading is not entirely
+// disabled. Returns the first blocking reason encountered otherwise.
+content::PreloadingEligibility IsSomePreloadingEnabled(
+    const PrefService& prefs);
 
-// Returns true if preloading is not entirely disabled via the UI settings.
+// Returns PreloadingEligibility:kEligible if preloading is not entirely
+// disabled. Returns the first blocking reason encountered otherwise.
 // Ignores the PreloadingHoldback Finch feature.
-bool IsSomePreloadingEnabledIgnoringFinch(const PrefService& prefs);
+content::PreloadingEligibility IsSomePreloadingEnabledIgnoringFinch(
+    const PrefService& prefs);
 
 void RegisterPredictionOptionsProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry);

@@ -150,7 +150,8 @@ void PrivacyMetricsService::RecordStartupMetrics() {
       pref_service_->GetBoolean(prefs::kEnableDoNotTrack));
 
   base::UmaHistogramBoolean("Settings.PreloadStatus.OnStartup2",
-                            prefetch::IsSomePreloadingEnabled(*pref_service_));
+                            prefetch::IsSomePreloadingEnabled(*pref_service_) ==
+                                content::PreloadingEligibility::kEligible);
 
   base::UmaHistogramBoolean(
       "Settings.AutocompleteSearches.OnStartup2",

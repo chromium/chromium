@@ -36,7 +36,8 @@ bool IsPreconnectAllowed(Profile* profile) {
 
   // Checks that the preconnect is allowed by user settings.
   return profile && profile->GetPrefs() &&
-         prefetch::IsSomePreloadingEnabled(*profile->GetPrefs());
+         (prefetch::IsSomePreloadingEnabled(*profile->GetPrefs()) ==
+          content::PreloadingEligibility::kEligible);
 }
 
 std::string GetStringNameForHintOrigin(HintOrigin hint_origin) {

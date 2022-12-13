@@ -209,7 +209,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DisableNetworkPrediction) {
   PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
   prefetch::SetPreloadPagesState(prefs,
                                  prefetch::PreloadPagesState::kNoPreloading);
-  ASSERT_FALSE(prefetch::IsSomePreloadingEnabled(*prefs));
+  ASSERT_EQ(prefetch::IsSomePreloadingEnabled(*prefs),
+            content::PreloadingEligibility::kPreloadingDisabled);
 
   // Attempt to trigger prerendering.
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html?1");
@@ -225,7 +226,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DisableNetworkPrediction) {
   // Re-enable the setting.
   prefetch::SetPreloadPagesState(
       prefs, prefetch::PreloadPagesState::kStandardPreloading);
-  ASSERT_TRUE(prefetch::IsSomePreloadingEnabled(*prefs));
+  ASSERT_EQ(prefetch::IsSomePreloadingEnabled(*prefs),
+            content::PreloadingEligibility::kEligible);
 
   // Attempt to trigger prerendering again.
   content::test::PrerenderHostRegistryObserver registry_observer(

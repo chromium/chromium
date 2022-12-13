@@ -87,7 +87,8 @@ bool PreconnectManager::IsEnabled() {
   if (!profile) {
     return false;
   }
-  return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs());
+  return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs()) ==
+         content::PreloadingEligibility::kEligible;
 }
 
 void PreconnectManager::Start(const GURL& url,

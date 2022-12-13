@@ -22,8 +22,9 @@ bool AreThirdPartyCookiesBlocked(content::BrowserContext* browser_context) {
 
 bool IsNetworkPredictionDisabled(content::BrowserContext* browser_context) {
   DCHECK(Profile::FromBrowserContext(browser_context)->GetPrefs());
-  return !prefetch::IsSomePreloadingEnabled(
-      *Profile::FromBrowserContext(browser_context)->GetPrefs());
+  return prefetch::IsSomePreloadingEnabled(
+             *Profile::FromBrowserContext(browser_context)->GetPrefs()) !=
+         content::PreloadingEligibility::kEligible;
 }
 
 }  // namespace offline_pages

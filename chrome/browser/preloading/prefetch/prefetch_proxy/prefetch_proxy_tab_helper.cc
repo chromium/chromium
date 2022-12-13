@@ -1405,7 +1405,8 @@ void PrefetchProxyTabHelper::PrefetchUrls(
   }
 
   // This checks whether the user has disabled pre* actions in the settings UI.
-  if (!prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs())) {
+  if (prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs()) !=
+      content::PreloadingEligibility::kEligible) {
     return;
   }
 

@@ -57,11 +57,13 @@ void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
       ToPreloadingPredictor(ChromePreloadingPredictor::kPointerDownOnAnchor),
       content::PreloadingType::kPreconnect, match_callback);
 
-  if (!prefetch::IsSomePreloadingEnabled(
-          *Profile::FromBrowserContext(render_frame_host_->GetBrowserContext())
-               ->GetPrefs())) {
-    attempt->SetEligibility(
-        content::PreloadingEligibility::kPreloadingDisabled);
+  if (content::PreloadingEligibility eligibility =
+          prefetch::IsSomePreloadingEnabled(
+              *Profile::FromBrowserContext(
+                   render_frame_host_->GetBrowserContext())
+                   ->GetPrefs());
+      eligibility != content::PreloadingEligibility::kEligible) {
+    attempt->SetEligibility(eligibility);
     return;
   }
 

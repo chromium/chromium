@@ -18,7 +18,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, NetworkPrediction) {
   PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
 
   // Enabled by default.
-  EXPECT_TRUE(prefetch::IsSomePreloadingEnabled(*prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(*prefs),
+            content::PreloadingEligibility::kEligible);
 
   // Disabled by policy.
   PolicyMap policies;
@@ -28,7 +29,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, NetworkPrediction) {
                    prefetch::NetworkPredictionOptions::kDisabled)),
                nullptr);
   UpdateProviderPolicy(policies);
-  EXPECT_FALSE(prefetch::IsSomePreloadingEnabled(*prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(*prefs),
+            content::PreloadingEligibility::kPreloadingDisabled);
 
   // Enabled by policy.
   policies.Set(key::kNetworkPredictionOptions, POLICY_LEVEL_MANDATORY,
@@ -37,7 +39,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, NetworkPrediction) {
                    prefetch::NetworkPredictionOptions::kStandard)),
                nullptr);
   UpdateProviderPolicy(policies);
-  EXPECT_TRUE(prefetch::IsSomePreloadingEnabled(*prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(*prefs),
+            content::PreloadingEligibility::kEligible);
 
   policies.Set(key::kNetworkPredictionOptions, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
@@ -45,7 +48,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, NetworkPrediction) {
                    prefetch::NetworkPredictionOptions::kWifiOnlyDeprecated)),
                nullptr);
   UpdateProviderPolicy(policies);
-  EXPECT_TRUE(prefetch::IsSomePreloadingEnabled(*prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(*prefs),
+            content::PreloadingEligibility::kEligible);
 
   policies.Set(key::kNetworkPredictionOptions, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
@@ -53,7 +57,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, NetworkPrediction) {
                    prefetch::NetworkPredictionOptions::kExtended)),
                nullptr);
   UpdateProviderPolicy(policies);
-  EXPECT_TRUE(prefetch::IsSomePreloadingEnabled(*prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(*prefs),
+            content::PreloadingEligibility::kEligible);
 }
 
 }  // namespace policy

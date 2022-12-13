@@ -132,7 +132,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
   PrefService* prefs = GetProfile()->GetPrefs();
   prefetch::SetPreloadPagesState(prefs,
                                  prefetch::PreloadPagesState::kNoPreloading);
-  ASSERT_FALSE(prefetch::IsSomePreloadingEnabled(*prefs));
+  ASSERT_EQ(prefetch::IsSomePreloadingEnabled(*prefs),
+            content::PreloadingEligibility::kPreloadingDisabled);
 
   // Navigate to initial URL.
   ASSERT_TRUE(content::NavigateToURL(web_contents, kInitialUrl));
@@ -176,7 +177,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
   // Re-enable the setting.
   prefetch::SetPreloadPagesState(
       prefs, prefetch::PreloadPagesState::kStandardPreloading);
-  ASSERT_TRUE(prefetch::IsSomePreloadingEnabled(*prefs));
+  ASSERT_EQ(prefetch::IsSomePreloadingEnabled(*prefs),
+            content::PreloadingEligibility::kEligible);
 
   content::test::PrerenderHostRegistryObserver registry_observer(*web_contents);
   // Attempt to trigger prerendering again.

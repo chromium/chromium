@@ -7162,7 +7162,8 @@ bool ChromeContentBrowserClient::ShouldPreconnect(
   // at the start of navigation as part of the preloading holdback, so ignore
   // the Finch setting here.
   return prefetch::IsSomePreloadingEnabledIgnoringFinch(
-      *Profile::FromBrowserContext(browser_context)->GetPrefs());
+             *Profile::FromBrowserContext(browser_context)->GetPrefs()) ==
+         content::PreloadingEligibility::kEligible;
 }
 
 bool ChromeContentBrowserClient::ShouldPreconnectNavigation(

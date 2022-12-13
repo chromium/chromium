@@ -80,23 +80,27 @@ TEST(PrefetchPrefsTest, IsSomePreloadingEnabled) {
   prefs.SetInteger(
       prefs::kNetworkPredictionOptions,
       static_cast<int>(prefetch::NetworkPredictionOptions::kDisabled));
-  EXPECT_FALSE(prefetch::IsSomePreloadingEnabled(prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
+            content::PreloadingEligibility::kPreloadingDisabled);
 
   prefs.SetInteger(
       prefs::kNetworkPredictionOptions,
       static_cast<int>(prefetch::NetworkPredictionOptions::kStandard));
-  EXPECT_TRUE(prefetch::IsSomePreloadingEnabled(prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
+            content::PreloadingEligibility::kEligible);
 
   prefs.SetInteger(
       prefs::kNetworkPredictionOptions,
       static_cast<int>(
           prefetch::NetworkPredictionOptions::kWifiOnlyDeprecated));
-  EXPECT_TRUE(prefetch::IsSomePreloadingEnabled(prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
+            content::PreloadingEligibility::kEligible);
 
   prefs.SetInteger(
       prefs::kNetworkPredictionOptions,
       static_cast<int>(prefetch::NetworkPredictionOptions::kExtended));
-  EXPECT_TRUE(prefetch::IsSomePreloadingEnabled(prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
+            content::PreloadingEligibility::kEligible);
 }
 
 TEST(PrefetchPrefsTest, IsSomePreloadingEnabled_PreloadingHoldback) {
@@ -110,23 +114,27 @@ TEST(PrefetchPrefsTest, IsSomePreloadingEnabled_PreloadingHoldback) {
   prefs.SetInteger(
       prefs::kNetworkPredictionOptions,
       static_cast<int>(prefetch::NetworkPredictionOptions::kDisabled));
-  EXPECT_FALSE(prefetch::IsSomePreloadingEnabled(prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
+            content::PreloadingEligibility::kPreloadingDisabled);
 
   prefs.SetInteger(
       prefs::kNetworkPredictionOptions,
       static_cast<int>(prefetch::NetworkPredictionOptions::kStandard));
-  EXPECT_FALSE(prefetch::IsSomePreloadingEnabled(prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
+            content::PreloadingEligibility::kPreloadingDisabled);
 
   prefs.SetInteger(
       prefs::kNetworkPredictionOptions,
       static_cast<int>(
           prefetch::NetworkPredictionOptions::kWifiOnlyDeprecated));
-  EXPECT_FALSE(prefetch::IsSomePreloadingEnabled(prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
+            content::PreloadingEligibility::kPreloadingDisabled);
 
   prefs.SetInteger(
       prefs::kNetworkPredictionOptions,
       static_cast<int>(prefetch::NetworkPredictionOptions::kExtended));
-  EXPECT_FALSE(prefetch::IsSomePreloadingEnabled(prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
+            content::PreloadingEligibility::kPreloadingDisabled);
 }
 
 TEST(PrefetchPrefsTest, IsSomePreloadingEnabledIgnoringFinch) {
@@ -140,23 +148,27 @@ TEST(PrefetchPrefsTest, IsSomePreloadingEnabledIgnoringFinch) {
   prefs.SetInteger(
       prefs::kNetworkPredictionOptions,
       static_cast<int>(prefetch::NetworkPredictionOptions::kDisabled));
-  EXPECT_FALSE(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs),
+            content::PreloadingEligibility::kPreloadingDisabled);
 
   prefs.SetInteger(
       prefs::kNetworkPredictionOptions,
       static_cast<int>(prefetch::NetworkPredictionOptions::kStandard));
-  EXPECT_TRUE(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs),
+            content::PreloadingEligibility::kEligible);
 
   prefs.SetInteger(
       prefs::kNetworkPredictionOptions,
       static_cast<int>(
           prefetch::NetworkPredictionOptions::kWifiOnlyDeprecated));
-  EXPECT_TRUE(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs),
+            content::PreloadingEligibility::kEligible);
 
   prefs.SetInteger(
       prefs::kNetworkPredictionOptions,
       static_cast<int>(prefetch::NetworkPredictionOptions::kExtended));
-  EXPECT_TRUE(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs),
+            content::PreloadingEligibility::kEligible);
 }
 
 class PrefetchPrefsWithBatterySaverTest : public ::testing::Test {
@@ -175,10 +187,12 @@ TEST_F(PrefetchPrefsWithBatterySaverTest,
       static_cast<int>(prefetch::NetworkPredictionOptions::kDefault));
 
   battery::OverrideIsBatterySaverEnabledForTesting(false);
-  EXPECT_TRUE(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs),
+            content::PreloadingEligibility::kEligible);
 
   battery::OverrideIsBatterySaverEnabledForTesting(true);
-  EXPECT_FALSE(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs),
+            content::PreloadingEligibility::kBatterySaverEnabled);
 }
 
 TEST_F(PrefetchPrefsWithBatterySaverTest, IsSomePreloadingEnabled) {
@@ -190,11 +204,14 @@ TEST_F(PrefetchPrefsWithBatterySaverTest, IsSomePreloadingEnabled) {
   prefs.SetInteger(
       prefs::kNetworkPredictionOptions,
       static_cast<int>(prefetch::NetworkPredictionOptions::kStandard));
-  EXPECT_TRUE(prefetch::IsSomePreloadingEnabled(prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
+            content::PreloadingEligibility::kEligible);
 
   battery::OverrideIsBatterySaverEnabledForTesting(false);
-  EXPECT_TRUE(prefetch::IsSomePreloadingEnabled(prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
+            content::PreloadingEligibility::kEligible);
 
   battery::OverrideIsBatterySaverEnabledForTesting(true);
-  EXPECT_FALSE(prefetch::IsSomePreloadingEnabled(prefs));
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
+            content::PreloadingEligibility::kBatterySaverEnabled);
 }

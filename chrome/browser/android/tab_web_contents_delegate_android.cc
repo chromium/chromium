@@ -454,7 +454,8 @@ bool TabWebContentsDelegateAndroid::IsPrerender2Supported(
     content::WebContents& web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents.GetBrowserContext());
-  return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs());
+  return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs()) ==
+         content::PreloadingEligibility::kEligible;
 }
 
 std::unique_ptr<content::WebContents>
