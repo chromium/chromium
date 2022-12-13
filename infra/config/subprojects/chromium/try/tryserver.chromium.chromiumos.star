@@ -206,33 +206,12 @@ try_.builder(
 )
 
 try_.builder(
-    name = "chromeos-kevin-compile-rel",
-    mirrors = [
-        "ci/chromeos-kevin-rel",
-    ],
-    try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
-        is_compile_only = True,
-    ),
-)
-
-try_.builder(
     name = "chromeos-jacuzzi-rel",
     branch_selector = branches.CROS_LTS_MILESTONE,
     mirrors = [
         "ci/chromeos-jacuzzi-rel",
     ],
     main_list_view = "try",
-)
-
-try_.builder(
-    name = "chromeos-kevin-rel",
-    branch_selector = branches.CROS_LTS_MILESTONE,
-    mirrors = [
-        "ci/chromeos-kevin-rel",
-    ],
-    main_list_view = "try",
-    execution_timeout = 6 * time.hour,
 )
 
 try_.builder(
