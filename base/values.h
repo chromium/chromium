@@ -415,7 +415,7 @@ class BASE_EXPORT GSL_OWNER Value {
     bool contains(base::StringPiece key) const;
 
     // Removes all entries from this dictionary.
-    void clear();
+    REINITIALIZES_AFTER_MOVE void clear();
 
     // Removes the entry referenced by `pos` in this dictionary and returns an
     // iterator to the entry following the removed entry.
@@ -619,7 +619,7 @@ class BASE_EXPORT GSL_OWNER Value {
     Value& operator[](size_t index);
 
     // Removes all value from this list.
-    void clear();
+    REINITIALIZES_AFTER_MOVE void clear();
 
     // Removes the value referenced by `pos` in this list and returns an
     // iterator to the value following the removed value.
