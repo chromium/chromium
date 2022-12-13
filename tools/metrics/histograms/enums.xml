@@ -30846,6 +30846,15 @@ Called by update_document_policy_enum.py.-->
   <int value="9" label="FD close error"/>
 </enum>
 
+<enum name="EnterpriseDlpPolicyCrOSDaemonInitError">
+  <summary>
+    Type of errors triggered when performing initialization operations in the
+    ChromeOS Data Leak Prevention daemon.
+  </summary>
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Primary username retrieval error"/>
+</enum>
+
 <enum name="EnterpriseDlpPolicyCrOSFanotifyError">
   <summary>
     Type of errors triggered by fanotify usage in the ChromeOS Data Leak
