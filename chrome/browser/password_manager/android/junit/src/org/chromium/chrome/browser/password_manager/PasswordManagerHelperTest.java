@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
@@ -91,6 +92,10 @@ public class PasswordManagerHelperTest {
             "PasswordManager.CredentialManager.Account.GetIntent.Success";
     private static final String ACCOUNT_GET_INTENT_ERROR_HISTOGRAM =
             "PasswordManager.CredentialManager.Account.GetIntent.Error";
+    private static final String ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM =
+            "PasswordManager.CredentialManager.Account.GetIntent.APIError";
+    private static final String ACCOUNT_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM =
+            "PasswordManager.CredentialManager.Account.GetIntent.APIError.ConnectionResultCode";
     private static final String ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.CredentialManager.Account.Launch.Success";
 
@@ -511,7 +516,7 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier);
 
         verify(mCredentialManagerLauncherMock)
-                .getCredentialManagerIntentForAccount(eq(ManagePasswordsReferrer.CHROME_SETTINGS),
+                .getAccountCredentialManagerIntent(eq(ManagePasswordsReferrer.CHROME_SETTINGS),
                         eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
     }
 
@@ -558,7 +563,7 @@ public class PasswordManagerHelperTest {
     @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsErrorMetricsForAccountIntent() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
-        returnErrorWhenFetchingIntentForAccount(CredentialManagerError.API_ERROR);
+        returnErrorWhenFetchingIntentForAccount(CredentialManagerError.UNCATEGORIZED);
 
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock, mSyncServiceMock,
@@ -566,7 +571,7 @@ public class PasswordManagerHelperTest {
 
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        ACCOUNT_GET_INTENT_ERROR_HISTOGRAM, CredentialManagerError.API_ERROR));
+                        ACCOUNT_GET_INTENT_ERROR_HISTOGRAM, CredentialManagerError.UNCATEGORIZED));
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 0));
@@ -1418,6 +1423,66 @@ public class PasswordManagerHelperTest {
                 Optional.of(TEST_EMAIL_ADDRESS), mock(Callback.class), mock(Callback.class));
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testRecordsApiErrorWhenFetchingCredentialManagerIntent() {
+        chooseToSyncPasswordsWithoutCustomPassphrase();
+        ApiException returnedException =
+                new ApiException(new Status(CommonStatusCodes.INTERNAL_ERROR));
+        returnApiExceptionWhenFetchingIntentForAccount(returnedException);
+
+        PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
+                ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock, mSyncServiceMock,
+                mModalDialogManagerSupplier);
+
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 0));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        ACCOUNT_GET_INTENT_ERROR_HISTOGRAM, CredentialManagerError.API_ERROR));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM, CommonStatusCodes.INTERNAL_ERROR));
+        assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ACCOUNT_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM));
+        assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testRecordsConnectionResultWhenFetchingCredentialManagerIntent() {
+        chooseToSyncPasswordsWithoutCustomPassphrase();
+        ApiException returnedException = new ApiException(
+                new Status(new ConnectionResult(ConnectionResult.API_UNAVAILABLE), ""));
+        returnApiExceptionWhenFetchingIntentForAccount(returnedException);
+
+        PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
+                ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock, mSyncServiceMock,
+                mModalDialogManagerSupplier);
+
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 0));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        ACCOUNT_GET_INTENT_ERROR_HISTOGRAM, CredentialManagerError.API_ERROR));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM,
+                        CommonStatusCodes.API_NOT_CONNECTED));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        ACCOUNT_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM,
+                        ConnectionResult.API_UNAVAILABLE));
+        assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
+    }
+
     private void chooseToSyncPasswordsWithoutCustomPassphrase() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncServiceMock.getSelectedTypes())
@@ -1433,7 +1498,7 @@ public class PasswordManagerHelperTest {
             return true;
         })
                 .when(mCredentialManagerLauncherMock)
-                .getCredentialManagerIntentForAccount(eq(ManagePasswordsReferrer.CHROME_SETTINGS),
+                .getAccountCredentialManagerIntent(eq(ManagePasswordsReferrer.CHROME_SETTINGS),
                         eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
     }
 
@@ -1450,12 +1515,23 @@ public class PasswordManagerHelperTest {
 
     private void returnErrorWhenFetchingIntentForAccount(@CredentialManagerError int error) {
         doAnswer(invocation -> {
-            Callback<Integer> cb = invocation.getArgument(3);
-            cb.onResult(error);
+            Callback<Exception> cb = invocation.getArgument(3);
+            cb.onResult(new CredentialManagerBackendException("", error));
             return true;
         })
                 .when(mCredentialManagerLauncherMock)
-                .getCredentialManagerIntentForAccount(eq(ManagePasswordsReferrer.CHROME_SETTINGS),
+                .getAccountCredentialManagerIntent(eq(ManagePasswordsReferrer.CHROME_SETTINGS),
+                        eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
+    }
+
+    private void returnApiExceptionWhenFetchingIntentForAccount(ApiException exception) {
+        doAnswer(invocation -> {
+            Callback<Exception> cb = invocation.getArgument(3);
+            cb.onResult(exception);
+            return true;
+        })
+                .when(mCredentialManagerLauncherMock)
+                .getAccountCredentialManagerIntent(eq(ManagePasswordsReferrer.CHROME_SETTINGS),
                         eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
     }
 

@@ -21,6 +21,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.ApiException;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -88,6 +89,10 @@ public class PasswordManagerHelper {
             "PasswordManager.CredentialManager.Account.GetIntent.Success";
     private static final String ACCOUNT_GET_INTENT_ERROR_HISTOGRAM =
             "PasswordManager.CredentialManager.Account.GetIntent.Error";
+    private static final String ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM =
+            "PasswordManager.CredentialManager.Account.GetIntent.APIError";
+    private static final String ACCOUNT_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM =
+            "PasswordManager.CredentialManager.Account.GetIntent.APIError.ConnectionResultCode";
     private static final String ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.CredentialManager.Account.Launch.Success";
 
@@ -97,6 +102,11 @@ public class PasswordManagerHelper {
             "PasswordManager.CredentialManager.LocalProfile.GetIntent.Success";
     private static final String LOCAL_GET_INTENT_ERROR_HISTOGRAM =
             "PasswordManager.CredentialManager.LocalProfile.GetIntent.Error";
+    private static final String LOCAL_GET_INTENT_API_ERROR_HISTOGRAM =
+            "PasswordManager.CredentialManager.LocalProfile.GetIntent.APIError";
+    private static final String LOCAL_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM =
+            "PasswordManager.CredentialManager.LocalProfile.GetIntent.APIError"
+            + ".ConnectionResultCode";
     private static final String LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.CredentialManager.LocalProfile.Launch.Success";
 
@@ -211,8 +221,8 @@ public class PasswordManagerHelper {
      * PasswordSpecifics then saves it to the ChromeSync module.
      *
      * @param referrer the place that requested to start a check.
-     * @param accountName the account name that is syncing passwords. If no value was provided local
-     *         account will be used
+     * @param accountName the account name that is syncing passwords. If no value was provided, the
+     *         local account will be used
      * @param successCallback callback called when password check finishes successfully
      * @param failureCallback callback called if password check encountered an error
      */
@@ -249,8 +259,8 @@ public class PasswordManagerHelper {
      * Asynchronously returns the number of breached credentials for the provided account.
      *
      * @param referrer the place that requested number of breached credentials.
-     * @param accountName the account name that is syncing passwords. If no value was provided local
-     *         account will be used.
+     * @param accountName the account name that is syncing passwords. If no value was provided, the
+     *         local account will be used.
      * @param successCallback callback called with the number of breached passwords.
      * @param failureCallback callback called if encountered an error.
      */
@@ -284,8 +294,8 @@ public class PasswordManagerHelper {
     }
 
     /**
-     *  Checks whether the sync feature is enabled and the user has chosen to sync passwords.
-     *  Note that this doesn't mean that passwords are actively syncing.
+     * Checks whether the sync feature is enabled and the user has chosen to sync passwords.
+     * Note that this doesn't mean that passwords are actively syncing.
      *
      * @param syncService the service to query about the sync status.
      * @return true if syncing passwords is enabled
@@ -296,9 +306,10 @@ public class PasswordManagerHelper {
     }
 
     /**
-     *  Checks whether the sync feature is enabled, the user has chosen to sync passwords and
-     *  they haven't set up a custom passphrase.
-     *  The caller should make sure that the sync engine is initialized before calling this method.
+     * Checks whether the sync feature is enabled, the user has chosen to sync passwords and
+     * they haven't set up a custom passphrase.
+     * The caller should make sure that the sync engine is initialized before calling this
+     * method.
      *
      *  Note that this doesn't mean that passwords are actively syncing.
      *
@@ -313,7 +324,8 @@ public class PasswordManagerHelper {
 
     /**
      * Checks whether the user is actively syncing passwords without a custom passphrase.
-     * The caller should make sure that the sync engine is initialized before calling this method.
+     * The caller should make sure that the sync engine is initialized before calling this
+     * method.
      *
      * @param syncService the service to query about the sync status.
      * @return true if actively syncing passwords and no custom passphrase was set.
@@ -352,15 +364,16 @@ public class PasswordManagerHelper {
     // TODO(http://crbug.com/1371422): Remove method and manage eviction from native code
     // as this is covered by chrome://password-manager-internals page.
     public static void resetUpmUnenrollment() {
-        // Exit early if Chrome doesn't need UPM UI. Assumes the unenroll pref isn't included in the
-        // usesUnifiedPasswordManagementUI check.
+        // Exit early if Chrome doesn't need UPM UI. Assumes the unenroll pref isn't included in
+        // the usesUnifiedPasswordManagementUI check.
         if (!PasswordManagerHelper.usesUnifiedPasswordManagerUI()) return;
         PrefService prefs = UserPrefs.get(Profile.getLastUsedRegularProfile());
 
         // Exit early if the user is not unenrolled.
         if (!prefs.getBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS)) return;
 
-        // Re-enroll the user by resetting the enroll pref. Other state reset happens on unenroll.
+        // Re-enroll the user by resetting the enroll pref. Other state reset happens on
+        // unenroll.
         prefs.setBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS, false);
     }
 
@@ -401,13 +414,13 @@ public class PasswordManagerHelper {
         loadingDialogCoordinator.show();
 
         long startTimeMs = SystemClock.elapsedRealtime();
-        credentialManagerLauncher.getCredentialManagerIntentForAccount(referrer,
+        credentialManagerLauncher.getAccountCredentialManagerIntent(referrer,
                 CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()),
                 (intent)
                         -> PasswordManagerHelper.launchCredentialManagerIntent(
                                 intent, startTimeMs, true, loadingDialogCoordinator),
-                (error) -> {
-                    PasswordManagerHelper.recordFailureMetrics(error, true);
+                (exception) -> {
+                    PasswordManagerHelper.recordFailureMetrics(exception, true);
                     recordLoadingDialogMetrics(LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
                             loadingDialogCoordinator.getState());
                     loadingDialogCoordinator.dismiss();
@@ -450,8 +463,7 @@ public class PasswordManagerHelper {
                 });
     }
 
-    private static void recordFailureMetrics(
-            @CredentialManagerError int error, boolean forAccount) {
+    private static void recordFailureMetrics(Exception exception, boolean forAccount) {
         // While support for the local storage API exists in Chrome, it isn't used at this time.
         assert forAccount : "Local storage for preferences not ready for use";
         final String kGetIntentSuccessHistogram = forAccount ? ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM
@@ -459,8 +471,35 @@ public class PasswordManagerHelper {
         final String kGetIntentErrorHistogram =
                 forAccount ? ACCOUNT_GET_INTENT_ERROR_HISTOGRAM : LOCAL_GET_INTENT_ERROR_HISTOGRAM;
         RecordHistogram.recordBooleanHistogram(kGetIntentSuccessHistogram, false);
-        RecordHistogram.recordEnumeratedHistogram(
-                kGetIntentErrorHistogram, error, CredentialManagerError.COUNT);
+        if (exception instanceof CredentialManagerBackendException) {
+            int errorCode = ((CredentialManagerBackendException) exception).errorCode;
+            RecordHistogram.recordEnumeratedHistogram(
+                    kGetIntentErrorHistogram, errorCode, CredentialManagerError.COUNT);
+            return;
+        }
+
+        // If the exception is not a Chrome-defined one, it means that the call failed at the
+        // API call level.
+        RecordHistogram.recordEnumeratedHistogram(kGetIntentErrorHistogram,
+                CredentialManagerError.API_ERROR, CredentialManagerError.COUNT);
+
+        if (!(exception instanceof ApiException)) return;
+
+        final String kGetIntentApiErrorHistogram = forAccount
+                ? ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM
+                : LOCAL_GET_INTENT_API_ERROR_HISTOGRAM;
+        final String kGetIntentErrorConnectionResultCodeHistogram = forAccount
+                ? ACCOUNT_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM
+                : LOCAL_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM;
+
+        int apiErrorCode = PasswordManagerAndroidBackendUtil.getApiErrorCode(exception);
+        RecordHistogram.recordSparseHistogram(kGetIntentApiErrorHistogram, apiErrorCode);
+        Integer connectionResultCode =
+                PasswordManagerAndroidBackendUtil.getConnectionResultCode(exception);
+        if (connectionResultCode == null) return;
+
+        RecordHistogram.recordSparseHistogram(
+                kGetIntentErrorConnectionResultCodeHistogram, connectionResultCode);
     }
 
     private static void launchIntentAndRecordSuccess(
@@ -500,8 +539,9 @@ public class PasswordManagerHelper {
     }
 
     /**
-     * Launches the pending intent and reports metrics if the loading dialog was not cancelled or
-     * timed out. Intent launch metric is not recorded if the loading was cancelled or timed out.
+     * Launches the pending intent and reports metrics if the loading dialog was not cancelled
+     * or timed out. Intent launch metric is not recorded if the loading was cancelled or timed
+     * out.
      *
      * @param loadingDialogCoordinator {@link LoadingModalDialogCoordinator}.
      * @param intent {@link PendingIntent} to be launched.
@@ -514,8 +554,8 @@ public class PasswordManagerHelper {
         int loadingDialogState = loadingDialogCoordinator.getState();
         if (loadingDialogState == LoadingModalDialogCoordinator.State.CANCELLED
                 || loadingDialogState == LoadingModalDialogCoordinator.State.TIMED_OUT) {
-            // Dialog was dismissed or timeout occurred before the loading finished, do not launch
-            // the intent.
+            // Dialog was dismissed or timeout occurred before the loading finished, do not
+            // launch the intent.
             recordLoadingDialogMetrics(loadingDialogOutcomeHistogram, loadingDialogState);
             return;
         }
@@ -562,8 +602,8 @@ public class PasswordManagerHelper {
 
     /**
      * Reports metric for the GMS Core UI loading dialog.
-     * Should be called right before launching the loaded intent or before dismissing the dialog if
-     * the intent will not be launched.
+     * Should be called right before launching the loaded intent or before dismissing the dialog
+     * if the intent will not be launched.
      *
      * @param histogramName Name of the histogram to report metric via.
      * @param loadingDialogState State of the loading dialog before launching the intent.

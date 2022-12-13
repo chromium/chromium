@@ -1192,6 +1192,34 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.APIError"
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="M114">
+  <owner>ioanap@chromium.org</owner>
+  <owner>maxan@google.com</owner>
+  <summary>
+    Records the API error code encountered while attempting to fetch the
+    Credential Manager launch intent from Google Play Services for the
+    {ProfileType}. This is recorded after the asynchronous call comes back with
+    an error.
+  </summary>
+  <token key="ProfileType" variants="ProfileType"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.APIError.ConnectionResultCode"
+    enum="PasswordStoreAndroidBackendConnectionResultCode" expires_after="M114">
+  <owner>ioanap@chromium.org</owner>
+  <owner>maxan@google.com</owner>
+  <summary>
+    Records the API error code encountered while attempting to fetch the
+    Credential Manager launch intent from Google Play Services for the
+    {ProfileType}. This is recorded after the asynchronous call comes back with
+    an error only if ConnectionResult was set on the returned error.
+  </summary>
+  <token key="ProfileType" variants="ProfileType"/>
+</histogram>
+
+<histogram
     name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.Error"
     enum="CredentialManagerError" expires_after="M114">
   <owner>ioanap@chromium.org</owner>
