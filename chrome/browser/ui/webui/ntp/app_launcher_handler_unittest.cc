@@ -111,10 +111,10 @@ class AppLauncherHandlerTest : public BrowserWithTestWindowTest {
       return installed_app_id;
 
     auto* web_app_provider = WebAppProvider::GetForTest(profile());
-    web_app_provider->sync_bridge().SetAppIsLocallyInstalled(installed_app_id,
-                                                             false);
-    web_app_provider->sync_bridge().SetAppInstallTime(installed_app_id,
-                                                      base::Time::Min());
+    web_app_provider->sync_bridge_unsafe().SetAppIsLocallyInstalled(
+        installed_app_id, false);
+    web_app_provider->sync_bridge_unsafe().SetAppInstallTime(installed_app_id,
+                                                             base::Time::Min());
     return installed_app_id;
   }
 

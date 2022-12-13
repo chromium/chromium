@@ -962,7 +962,7 @@ void AppLauncherHandler::HandleSetLaunchType(const base::Value::List& args) {
         break;
     }
 
-    web_app_provider_->sync_bridge().SetAppUserDisplayMode(
+    web_app_provider_->sync_bridge_unsafe().SetAppUserDisplayMode(
         app_id, user_display_mode, /*is_user_action=*/true);
     return;
   }
@@ -1118,8 +1118,10 @@ void AppLauncherHandler::HandleInstallAppLocally(
 
   InstallOsHooks(app_id);
 
-  web_app_provider_->sync_bridge().SetAppIsLocallyInstalled(app_id, true);
-  web_app_provider_->sync_bridge().SetAppInstallTime(app_id, base::Time::Now());
+  web_app_provider_->sync_bridge_unsafe().SetAppIsLocallyInstalled(app_id,
+                                                                   true);
+  web_app_provider_->sync_bridge_unsafe().SetAppInstallTime(app_id,
+                                                            base::Time::Now());
 }
 
 void AppLauncherHandler::HandleShowAppInfo(const base::Value::List& args) {
