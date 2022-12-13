@@ -10,6 +10,7 @@
 
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_toast_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
@@ -294,6 +295,10 @@ class ASH_EXPORT CaptureModeSession
   // record button in the capture label view.
   void DoPerformCapture();
 
+  // Called when the drop-down button in the `capture_label_widget_` is pressed
+  // which toggles the recording type menu on and off.
+  void OnRecordingTypeDropDownButtonPressed();
+
   // Gets the bounds of current window selected for |kWindow| capture source.
   gfx::Rect GetSelectedWindowBounds() const;
 
@@ -420,12 +425,19 @@ class ASH_EXPORT CaptureModeSession
   // camera preview's bounds and visibility.
   void MaybeUpdateCameraPreviewBounds();
 
-  // Returns true if the given `event` is targeted on the capture bar.
-  bool IsEventTargetedOnCaptureBar(const ui::LocatedEvent& event) const;
+  // Creates or distroys the recording type menu widget based on the given
+  // `shown` value.
+  void SetRecordingTypeMenuShown(bool shown);
 
-  // Returns true if the given `event` is targeted on the setting menu if it
-  // exists.
-  bool IsEventTargetedOnSettingsMenu(const ui::LocatedEvent& event) const;
+  // Returns true if the given `screen_location` is on the drop down button in
+  // the `capture_label_widget_` which when clicked opens the recording type
+  // menu.
+  bool IsPointOnRecordingTypeDropDownButton(
+      const gfx::Point& screen_location) const;
+
+  // Updates the availability or bounds of the recording type menu widget
+  // according to the current state.
+  void MaybeUpdateRecordingTypeMenu();
 
   CaptureModeController* const controller_;
 
@@ -454,6 +466,11 @@ class ASH_EXPORT CaptureModeSession
   // starting capturing, the widget will transform into a 3-second countdown
   // timer.
   views::UniqueWidgetPtr capture_label_widget_;
+  CaptureLabelView* capture_label_view_ = nullptr;
+
+  // Widget that hosts the recording type menu, from which the user can pick the
+  // desired recording format type.
+  views::UniqueWidgetPtr recording_type_menu_widget_;
 
   // Magnifier glass used during a region capture session.
   MagnifierGlass magnifier_glass_;

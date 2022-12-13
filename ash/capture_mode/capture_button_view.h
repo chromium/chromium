@@ -32,6 +32,7 @@ class CaptureButtonView : public views::View {
   ~CaptureButtonView() override = default;
 
   views::LabelButton* capture_button() { return capture_button_; }
+  views::ImageButton* drop_down_button() { return drop_down_button_; }
 
   // Updates the icon and text of `capture_button_`, as well as the visibility
   // of the `separator_` and `drop_down_button_` depending on the current type

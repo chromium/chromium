@@ -518,4 +518,10 @@ ui::ColorProvider* GetColorProviderForNativeTheme() {
       native_theme->GetColorProviderKey(nullptr));
 }
 
+bool IsEventTargetedOnWidget(const ui::LocatedEvent& event,
+                             views::Widget* widget) {
+  auto* target = static_cast<aura::Window*>(event.target());
+  return widget && widget->GetNativeWindow()->Contains(target);
+}
+
 }  // namespace ash::capture_mode_util

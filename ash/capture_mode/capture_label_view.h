@@ -35,10 +35,23 @@ class ASH_EXPORT CaptureLabelView
   METADATA_HEADER(CaptureLabelView);
 
   CaptureLabelView(CaptureModeSession* capture_mode_session,
-                   base::RepeatingClosure on_capture_button_container_pressed);
+                   base::RepeatingClosure on_capture_button_pressed,
+                   base::RepeatingClosure on_drop_down_button_pressed);
   CaptureLabelView(const CaptureLabelView&) = delete;
   CaptureLabelView& operator=(const CaptureLabelView&) = delete;
   ~CaptureLabelView() override;
+
+  CaptureButtonView* capture_button_container() {
+    return capture_button_container_;
+  }
+
+  // Returns true if the given `screen_location` is on the drop down button,
+  // which when clicked opens the recording type menu.
+  bool IsPointOnRecordingTypeDropDownButton(
+      const gfx::Point& screen_location) const;
+
+  // Returns true if the recording drop down button is available and visible.
+  bool IsRecordingTypeDropDownButtonVisible() const;
 
   // Returns true if this view is hosting the capture button instead of just a
   // label, and can be interacted with by the user. In this case, this view has
