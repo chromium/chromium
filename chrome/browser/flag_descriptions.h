@@ -1335,6 +1335,9 @@ extern const char kPermissionPredictionsDescription[];
 extern const char kPermissionQuietChipName[];
 extern const char kPermissionQuietChipDescription[];
 
+extern const char kRecordPermissionExpirationTimestampsName[];
+extern const char kRecordPermissionExpirationTimestampsDescription[];
+
 extern const char kPointerLockOptionsName[];
 extern const char kPointerLockOptionsDescription[];
 

@@ -5854,6 +5854,14 @@
     "expiry_milestone": -1
   },
   {
+    "name": "record-permission-expiration-timestamps",
+    "owners": [
+      "sideyilmaz",
+      "dullweber",
+      "chrome-friendly-settings@google.com"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "record-snapshot-size",
     "owners": ["edchin","bling-flags@google.com"],
     "expiry_milestone": 91

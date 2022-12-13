@@ -2371,6 +2371,12 @@ const char kPermissionQuietChipDescription[] =
     "right-hand side address bar icon for quiet permission prompts. Requires "
     "chrome://flags/#quiet-notification-prompts to be enabled.";
 
+const char kRecordPermissionExpirationTimestampsName[] =
+    "Record permission expiration timestamps";
+const char kRecordPermissionExpirationTimestampsDescription[] =
+    "When enabled, permissions grants with a durable session model will have "
+    "an expiration date set.";
+
 const char kPointerLockOptionsName[] = "Enables pointer lock options";
 const char kPointerLockOptionsDescription[] =
     "Enables pointer lock unadjustedMovement. When unadjustedMovement is set "
