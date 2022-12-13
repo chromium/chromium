@@ -37,11 +37,11 @@
       </div>
       <div id="dialog-body" slot="body" scrollable>
         <iron-list class="ripple-padding" scroll-target="dialog-body"
-            items="[[getLanguages_(filterValue_)]]">
+            role="list" items="[[getLanguages_(filterValue_)]]">
           <template>
             <cr-checkbox class="list-item no-outline"
                 checked="[[willAdd_(item.code)]]" tab-index="[[tabIndex]]"
-                title$="[[item.nativeDisplayName]]"
+                title$="[[item.nativeDisplayName]]" role="listitem"
                 on-change="onLanguageCheckboxChange_">
               [[getDisplayText_(item)]]
             </cr-checkbox>

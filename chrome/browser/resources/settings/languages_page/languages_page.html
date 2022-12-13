@@ -70,12 +70,12 @@
       $i18n{addLanguages}
     </cr-button>
   </div>
-  <div class="list-frame vertical-list">
+  <div class="list-frame vertical-list" role="list">
     <template is="dom-repeat" items="[[languages.enabled]]">
       <div class$="list-item [[getLanguageItemClass_(
           item.language.code, language.prospectiveUILanguage)]]
           [[isTranslationTarget_(item.language.code,
-          languages.translateTarget)]]">
+          languages.translateTarget)]]" role="listitem">
         <div class="start cr-padded-text">
           <div title="[[item.language.nativeDisplayName]]">
             [[formatIndex_(index)]]. [[item.language.displayName]]

@@ -32,10 +32,10 @@
     </cr-button>
   </div>
   <div class="list-frame">
-    <div id="alwaysTranslateList" class="vertical-list">
+    <div id="alwaysTranslateList" class="vertical-list" role="list">
       <template is="dom-repeat" items="[[languages.alwaysTranslate]]"
           sort="alphabeticalSort_" filter="hasDisplayName_">
-        <div class="list-item">
+        <div class="list-item" role="listitem">
           <div class="start cr-padded-text">[[item.displayName]]</div>
           <cr-icon-button class="icon-delete-gray"
               on-click="onRemoveAlwaysTranslateLanguageClick_">
@@ -43,7 +43,7 @@
         </div>
       </template>
     </div>
-    <div id="noAlwaysTranslateLabel" class="list-item"
+    <div id="noAlwaysTranslateLabel" class="list-item" role="listitem"
         hidden$="[[hasSome_(languages.alwaysTranslate)]]">
       $i18n{noLanguagesAdded}
     </div>
@@ -56,10 +56,10 @@
     </cr-button>
   </div>
   <div class="list-frame">
-    <div id="neverTranslateList" class="vertical-list">
+    <div id="neverTranslateList" class="vertical-list" role="list">
       <template is="dom-repeat" items="[[languages.neverTranslate]]"
           sort="alphabeticalSort_" filter="hasDisplayName_">
-        <div class="list-item">
+        <div class="list-item" role="listitem">
           <div class="start cr-padded-text">[[item.displayName]]</div>
           <cr-icon-button class="icon-delete-gray" value="[[item.code]]"
               disabled="[[hasLength_(languages.neverTranslate, 1)]]"
@@ -68,7 +68,7 @@
         </div>
       </template>
     </div>
-    <div id="noNeverTranslateLabel" class="list-item"
+    <div id="noNeverTranslateLabel" class="list-item" role="listitem"
         hidden$="[[hasSome_(languages.neverTranslate)]]">
       $i18n{noLanguagesAdded}
     </div>
