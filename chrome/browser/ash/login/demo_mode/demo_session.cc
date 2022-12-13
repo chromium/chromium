@@ -339,16 +339,17 @@ bool DemoSession::ShouldShowExtensionInAppLauncher(const std::string& app_id) {
 
 // Static function to default region from VPD.
 static std::string GetDefaultRegion() {
-  std::string region_code;
-  bool found_region_code =
+  const absl::optional<base::StringPiece> region_code =
       chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-          chromeos::system::kRegionKey, &region_code);
-  if (found_region_code) {
-    std::string region_code_upper_case = base::ToUpperASCII(region_code);
+          chromeos::system::kRegionKey);
+  if (region_code) {
+    std::string region_code_upper_case =
+        base::ToUpperASCII(region_code.value());
     std::string region_upper_case =
         region_code_upper_case.substr(0, region_code_upper_case.find("."));
     return region_upper_case.length() == 2 ? region_upper_case : "";
   }
+
   return "";
 }
 
