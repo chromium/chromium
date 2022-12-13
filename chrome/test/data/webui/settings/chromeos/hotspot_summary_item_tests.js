@@ -93,10 +93,13 @@ suite('HotspotSummaryItemTest', function() {
         hotspotSummaryItem.shadowRoot.querySelector('#hotspotSecondaryLabel');
     const enableToggle =
         hotspotSummaryItem.shadowRoot.querySelector('#enableHotspotToggle');
+    const hotspotIcon =
+        hotspotSummaryItem.shadowRoot.querySelector('#hotspotIcon');
     await flushAsync();
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOff'),
         hotspotSecondaryLabel.textContent.trim());
+    assertEquals('os-settings:hotspot-disabled', hotspotIcon.icon);
 
     // Simulate turning on hotspot.
     hotspotConfig_.setFakeEnableHotspotResult(HotspotControlResult.kSuccess);
@@ -105,6 +108,7 @@ suite('HotspotSummaryItemTest', function() {
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOn'),
         hotspotSecondaryLabel.textContent.trim());
+    assertEquals('os-settings:hotspot-enabled', hotspotIcon.icon);
     assertTrue(enableToggle.checked);
 
     // Simulate turning off hotspot.
@@ -114,6 +118,7 @@ suite('HotspotSummaryItemTest', function() {
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOff'),
         hotspotSecondaryLabel.textContent.trim());
+    assertEquals('os-settings:hotspot-disabled', hotspotIcon.icon);
     assertFalse(enableToggle.checked);
 
     // Verify toggle is able to turn on/off by CrosHotspotConfig even when it is
@@ -129,6 +134,7 @@ suite('HotspotSummaryItemTest', function() {
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOn'),
         hotspotSecondaryLabel.textContent.trim());
+    assertEquals('os-settings:hotspot-enabled', hotspotIcon.icon);
     assertTrue(enableToggle.checked);
 
     hotspotConfig_.setFakeHotspotState(HotspotState.kDisabled);
@@ -136,6 +142,7 @@ suite('HotspotSummaryItemTest', function() {
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOff'),
         hotspotSecondaryLabel.textContent.trim());
+    assertEquals('os-settings:hotspot-disabled', hotspotIcon.icon);
     assertFalse(enableToggle.checked);
   });
 

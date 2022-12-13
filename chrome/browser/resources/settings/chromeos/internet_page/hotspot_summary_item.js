@@ -128,6 +128,18 @@ class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
         this.hotspotInfo.state === HotspotState.kDisabling;
   }
 
+  /**
+   * @return {string}
+   * @private
+   */
+  getIconClass_() {
+    if (!this.isHotspotToggleOn_) {
+      return 'os-settings:hotspot-disabled';
+    }
+
+    return 'os-settings:hotspot-enabled';
+  }
+
   /** @private */
   announceHotspotToggleChange_() {
     getAnnouncerInstance().announce(
