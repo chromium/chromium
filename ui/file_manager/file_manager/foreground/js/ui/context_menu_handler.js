@@ -189,8 +189,9 @@ import {positionPopupAtPoint} from './position_util.js';
             e.stopPropagation();
             e.preventDefault();
 
-            // If the menu is visible we let it handle all the keyboard events.
-          } else if (this.menu) {
+            // If the menu is visible we let it handle all the keyboard events
+            // unless Ctrl is held down.
+          } else if (this.menu && !e.ctrlKey) {
             this.menu.handleKeyDown(e);
             e.preventDefault();
             e.stopPropagation();
