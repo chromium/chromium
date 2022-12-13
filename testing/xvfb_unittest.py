@@ -106,6 +106,8 @@ class XvfbTest(unittest.TestCase):
 
   def test_send_sigint(self):
     self._proc = launch_process(['--sleep'])
+    # Give time for subprocess to install signal handlers
+    time.sleep(.3)
     send_signal(self._proc, signal.SIGINT, 1)
     sig = read_subprocess_message(self._proc, 'Signal :')
     self.assertIsNotNone(sig) # OpenBox likely failed to start
@@ -113,6 +115,8 @@ class XvfbTest(unittest.TestCase):
 
   def test_send_sigterm(self):
     self._proc = launch_process(['--sleep'])
+    # Give time for subprocess to install signal handlers
+    time.sleep(.3)
     send_signal(self._proc, signal.SIGTERM, 1)
     sig = read_subprocess_message(self._proc, 'Signal :')
     self.assertIsNotNone(sig) # OpenBox likely failed to start
