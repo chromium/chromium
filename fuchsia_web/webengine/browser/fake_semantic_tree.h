@@ -44,8 +44,10 @@ class FakeSemanticTree
                               base::OnceClosure node_updated_callback);
   fuchsia::accessibility::semantics::Node* GetNodeWithId(uint32_t id);
 
-  // For both functions below, it is possible there are multiple nodes with the
+  // For the functions below, it is possible there are multiple nodes with the
   // same identifier.
+  // Get the the first node in the document matching |label|, using a
+  // depth-first search.
   fuchsia::accessibility::semantics::Node* GetNodeFromLabel(
       base::StringPiece label);
   fuchsia::accessibility::semantics::Node* GetNodeFromRole(
@@ -67,6 +69,12 @@ class FakeSemanticTree
   void NotImplemented_(const std::string& name) final;
 
  private:
+  // Get the first node matching |label|, in the subtree rooted at |node|, using
+  // a depth first search.
+  fuchsia::accessibility::semantics::Node* GetNodeFromLabelRecursive(
+      fuchsia::accessibility::semantics::Node& node,
+      base::StringPiece label);
+
   fidl::Binding<fuchsia::accessibility::semantics::SemanticTree>
       semantic_tree_binding_;
   std::unordered_map<uint32_t, fuchsia::accessibility::semantics::Node> nodes_;
