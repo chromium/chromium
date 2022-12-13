@@ -130,6 +130,8 @@ def main():
   kasa_plug_controller = None
   if args.kasa_switch_ip:
     kasa_plug_controller = plug.get_plug_controller(args.kasa_switch_ip)
+    # Turn off power to pass environment checks below.
+    kasa_plug_controller.turn_off()
 
   logging.info(f'Outputing results in {os.path.abspath(output_dir)}')
   with DriverContext(output_dir, args.power_sampler) as driver:
@@ -153,7 +155,7 @@ def main():
       scenario.tag = args.tag
 
       if kasa_plug_controller:
-        kasa_plug_controller.charge_to(80)
+        kasa_plug_controller.charge_or_discharge_to(80)
 
       if args.tracing_mode:
         logging.info(f'Tracing scenario {scenario.name} ...')
