@@ -332,14 +332,17 @@ void HistoryClustersHandler::OpenHistoryCluster(
   if (!browser)
     return;
 
-  // Used to determine if default behavior should be open in current tab or new
-  // tab since it differs for side panel.
-  const bool in_side_panel = history_clusters_side_panel_embedder_ != nullptr;
+  // In the Side Panel, the default is the current tab. From History WebUI, the
+  // default is a new foreground tab.
+  WindowOpenDisposition default_disposition =
+      history_clusters_side_panel_embedder_
+          ? WindowOpenDisposition::CURRENT_TAB
+          : WindowOpenDisposition::NEW_FOREGROUND_TAB;
 
   WindowOpenDisposition open_location = ui::DispositionFromClick(
-      /*middle_button=*/!in_side_panel, click_modifiers->alt_key,
+      click_modifiers->middle_button, click_modifiers->alt_key,
       click_modifiers->ctrl_key, click_modifiers->meta_key,
-      click_modifiers->shift_key);
+      click_modifiers->shift_key, default_disposition);
   content::OpenURLParams params(url, content::Referrer(), open_location,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK,
                                 /*is_renderer_initiated=*/false);
