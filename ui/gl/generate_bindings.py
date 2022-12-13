@@ -389,13 +389,6 @@ GL_FUNCTIONS = [
       'GLboolean unpackFlipY, GLboolean unpackPremultiplyAlpha, '
       'GLboolean unpackUnmultiplyAlpha', },
 { 'return_type': 'void',
-  'names': ['glCoverageModulationNV'],
-  'versions': [{ 'name': 'glCoverageModulationNV',
-                 'extensions': ['GL_NV_framebuffer_mixed_samples'] },
-               { 'name': 'glCoverageModulationCHROMIUM',
-                 'extensions': ['GL_CHROMIUM_framebuffer_mixed_samples'] }],
-  'arguments': 'GLenum components'},
-{ 'return_type': 'void',
   'names': ['glCoverFillPathInstancedNV'],
   'versions': [{ 'name': 'glCoverFillPathInstancedNV',
                  'extensions': ['GL_NV_path_rendering'] },

@@ -314,7 +314,6 @@ typedef void(GL_BINDING_CALL* glCopyTextureCHROMIUMProc)(
     GLboolean unpackFlipY,
     GLboolean unpackPremultiplyAlpha,
     GLboolean unpackUnmultiplyAlpha);
-typedef void(GL_BINDING_CALL* glCoverageModulationNVProc)(GLenum components);
 typedef void(GL_BINDING_CALL* glCoverFillPathInstancedNVProc)(
     GLsizei numPaths,
     GLenum pathNameType,
@@ -2008,7 +2007,6 @@ struct ExtensionsGL {
   bool b_GL_ARB_vertex_array_object;
   bool b_GL_CHROMIUM_bind_uniform_location;
   bool b_GL_CHROMIUM_copy_texture;
-  bool b_GL_CHROMIUM_framebuffer_mixed_samples;
   bool b_GL_CHROMIUM_gles_depth_binding_hack;
   bool b_GL_CHROMIUM_glgetstringi_hack;
   bool b_GL_CHROMIUM_path_rendering;
@@ -2054,7 +2052,6 @@ struct ExtensionsGL {
   bool b_GL_NV_blend_equation_advanced;
   bool b_GL_NV_fence;
   bool b_GL_NV_framebuffer_blit;
-  bool b_GL_NV_framebuffer_mixed_samples;
   bool b_GL_NV_internalformat_sample_query;
   bool b_GL_NV_path_rendering;
   bool b_GL_OES_EGL_image;
@@ -2139,7 +2136,6 @@ struct ProcsGL {
   glCopyTexSubImage2DProc glCopyTexSubImage2DFn;
   glCopyTexSubImage3DProc glCopyTexSubImage3DFn;
   glCopyTextureCHROMIUMProc glCopyTextureCHROMIUMFn;
-  glCoverageModulationNVProc glCoverageModulationNVFn;
   glCoverFillPathInstancedNVProc glCoverFillPathInstancedNVFn;
   glCoverFillPathNVProc glCoverFillPathNVFn;
   glCoverStrokePathInstancedNVProc glCoverStrokePathInstancedNVFn;
@@ -2882,7 +2878,6 @@ class GL_EXPORT GLApi {
                                        GLboolean unpackFlipY,
                                        GLboolean unpackPremultiplyAlpha,
                                        GLboolean unpackUnmultiplyAlpha) = 0;
-  virtual void glCoverageModulationNVFn(GLenum components) = 0;
   virtual void glCoverFillPathInstancedNVFn(GLsizei numPaths,
                                             GLenum pathNameType,
                                             const void* paths,
@@ -4436,8 +4431,6 @@ class GL_EXPORT GLApi {
 #define glCopyTexSubImage3D ::gl::g_current_gl_context->glCopyTexSubImage3DFn
 #define glCopyTextureCHROMIUM \
   ::gl::g_current_gl_context->glCopyTextureCHROMIUMFn
-#define glCoverageModulationNV \
-  ::gl::g_current_gl_context->glCoverageModulationNVFn
 #define glCoverFillPathInstancedNV \
   ::gl::g_current_gl_context->glCoverFillPathInstancedNVFn
 #define glCoverFillPathNV ::gl::g_current_gl_context->glCoverFillPathNVFn

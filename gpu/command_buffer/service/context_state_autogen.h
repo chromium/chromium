@@ -68,7 +68,6 @@ GLboolean color_mask_blue;
 GLboolean cached_color_mask_blue;
 GLboolean color_mask_alpha;
 GLboolean cached_color_mask_alpha;
-GLenum coverage_modulation;
 GLenum cull_mode;
 GLenum depth_func;
 GLboolean depth_mask;

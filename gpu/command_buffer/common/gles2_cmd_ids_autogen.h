@@ -310,33 +310,32 @@
   OP(FlushDriverCachesCHROMIUM)                                /* 551 */ \
   OP(SetActiveURLCHROMIUM)                                     /* 552 */ \
   OP(ContextVisibilityHintCHROMIUM)                            /* 553 */ \
-  OP(CoverageModulationCHROMIUM)                               /* 554 */ \
-  OP(BlendBarrierKHR)                                          /* 555 */ \
-  OP(BindFragDataLocationIndexedEXTBucket)                     /* 556 */ \
-  OP(BindFragDataLocationEXTBucket)                            /* 557 */ \
-  OP(GetFragDataIndexEXT)                                      /* 558 */ \
-  OP(InitializeDiscardableTextureCHROMIUM)                     /* 559 */ \
-  OP(UnlockDiscardableTextureCHROMIUM)                         /* 560 */ \
-  OP(LockDiscardableTextureCHROMIUM)                           /* 561 */ \
-  OP(WindowRectanglesEXTImmediate)                             /* 562 */ \
-  OP(CreateGpuFenceINTERNAL)                                   /* 563 */ \
-  OP(WaitGpuFenceCHROMIUM)                                     /* 564 */ \
-  OP(DestroyGpuFenceCHROMIUM)                                  /* 565 */ \
-  OP(SetReadbackBufferShadowAllocationINTERNAL)                /* 566 */ \
-  OP(FramebufferTextureMultiviewOVR)                           /* 567 */ \
-  OP(MaxShaderCompilerThreadsKHR)                              /* 568 */ \
-  OP(CreateAndTexStorage2DSharedImageINTERNALImmediate)        /* 569 */ \
-  OP(BeginSharedImageAccessDirectCHROMIUM)                     /* 570 */ \
-  OP(EndSharedImageAccessDirectCHROMIUM)                       /* 571 */ \
-  OP(EnableiOES)                                               /* 572 */ \
-  OP(DisableiOES)                                              /* 573 */ \
-  OP(BlendEquationiOES)                                        /* 574 */ \
-  OP(BlendEquationSeparateiOES)                                /* 575 */ \
-  OP(BlendFunciOES)                                            /* 576 */ \
-  OP(BlendFuncSeparateiOES)                                    /* 577 */ \
-  OP(ColorMaskiOES)                                            /* 578 */ \
-  OP(IsEnablediOES)                                            /* 579 */ \
-  OP(ProvokingVertexANGLE)                                     /* 580 */
+  OP(BlendBarrierKHR)                                          /* 554 */ \
+  OP(BindFragDataLocationIndexedEXTBucket)                     /* 555 */ \
+  OP(BindFragDataLocationEXTBucket)                            /* 556 */ \
+  OP(GetFragDataIndexEXT)                                      /* 557 */ \
+  OP(InitializeDiscardableTextureCHROMIUM)                     /* 558 */ \
+  OP(UnlockDiscardableTextureCHROMIUM)                         /* 559 */ \
+  OP(LockDiscardableTextureCHROMIUM)                           /* 560 */ \
+  OP(WindowRectanglesEXTImmediate)                             /* 561 */ \
+  OP(CreateGpuFenceINTERNAL)                                   /* 562 */ \
+  OP(WaitGpuFenceCHROMIUM)                                     /* 563 */ \
+  OP(DestroyGpuFenceCHROMIUM)                                  /* 564 */ \
+  OP(SetReadbackBufferShadowAllocationINTERNAL)                /* 565 */ \
+  OP(FramebufferTextureMultiviewOVR)                           /* 566 */ \
+  OP(MaxShaderCompilerThreadsKHR)                              /* 567 */ \
+  OP(CreateAndTexStorage2DSharedImageINTERNALImmediate)        /* 568 */ \
+  OP(BeginSharedImageAccessDirectCHROMIUM)                     /* 569 */ \
+  OP(EndSharedImageAccessDirectCHROMIUM)                       /* 570 */ \
+  OP(EnableiOES)                                               /* 571 */ \
+  OP(DisableiOES)                                              /* 572 */ \
+  OP(BlendEquationiOES)                                        /* 573 */ \
+  OP(BlendEquationSeparateiOES)                                /* 574 */ \
+  OP(BlendFunciOES)                                            /* 575 */ \
+  OP(BlendFuncSeparateiOES)                                    /* 576 */ \
+  OP(ColorMaskiOES)                                            /* 577 */ \
+  OP(IsEnablediOES)                                            /* 578 */ \
+  OP(ProvokingVertexANGLE)                                     /* 579 */
 
 enum CommandId {
   kOneBeforeStartPoint =

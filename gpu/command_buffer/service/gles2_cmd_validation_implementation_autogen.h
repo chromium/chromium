@@ -174,13 +174,6 @@ bool Validators::CmpFunctionValidator::IsValid(const GLenum value) const {
   return false;
 }
 
-static const GLenum valid_coverage_modulation_components_table[] = {
-    GL_RGB,
-    GL_RGBA,
-    GL_ALPHA,
-    GL_NONE,
-};
-
 bool Validators::DrawModeValidator::IsValid(const GLenum value) const {
   switch (value) {
     case GL_POINTS:
@@ -1310,9 +1303,6 @@ Validators::Validators()
       bufferuiv(valid_bufferuiv_table, std::size(valid_bufferuiv_table)),
       capability(valid_capability_table, std::size(valid_capability_table)),
       compressed_texture_format(),
-      coverage_modulation_components(
-          valid_coverage_modulation_components_table,
-          std::size(valid_coverage_modulation_components_table)),
       dst_blend_factor(valid_dst_blend_factor_table,
                        std::size(valid_dst_blend_factor_table)),
       equation(valid_equation_table, std::size(valid_equation_table)),

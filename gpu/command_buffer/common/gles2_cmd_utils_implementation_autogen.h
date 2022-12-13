@@ -7012,17 +7012,6 @@ std::string GLES2Util::GetStringCompressedTextureFormat(uint32_t value) {
   return GLES2Util::GetQualifiedEnumString(nullptr, 0, value);
 }
 
-std::string GLES2Util::GetStringCoverageModulationComponents(uint32_t value) {
-  static const EnumToString string_table[] = {
-      {GL_RGB, "GL_RGB"},
-      {GL_RGBA, "GL_RGBA"},
-      {GL_ALPHA, "GL_ALPHA"},
-      {GL_NONE, "GL_NONE"},
-  };
-  return GLES2Util::GetQualifiedEnumString(string_table,
-                                           std::size(string_table), value);
-}
-
 std::string GLES2Util::GetStringDrawMode(uint32_t value) {
   static const EnumToString string_table[] = {
       {GL_POINTS, "GL_POINTS"},

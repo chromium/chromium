@@ -320,11 +320,6 @@ using Window = XID;
 #define GL_SAMPLE_ALPHA_TO_ONE_EXT 0x809F
 #endif /* GL_EXT_multisample_compatibility */
 
-#ifndef GL_CHROMIUM_framebuffer_mixed_samples
-#define GL_CHROMIUM_framebuffer_mixed_samples 1
-#define GL_COVERAGE_MODULATION_CHROMIUM 0x9332
-#endif /* GL_CHROMIUM_framebuffer_mixed_samples */
-
 #ifndef GL_KHR_blend_equation_advanced
 #define GL_KHR_blend_equation_advanced 1
 #define GL_COLORBURN_KHR                  0x929A

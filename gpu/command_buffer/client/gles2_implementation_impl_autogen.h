@@ -3397,16 +3397,6 @@ void GLES2Implementation::ContextVisibilityHintCHROMIUM(GLboolean visibility) {
   CheckGLError();
 }
 
-void GLES2Implementation::CoverageModulationCHROMIUM(GLenum components) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG(
-      "[" << GetLogPrefix() << "] glCoverageModulationCHROMIUM("
-          << GLES2Util::GetStringCoverageModulationComponents(components)
-          << ")");
-  helper_->CoverageModulationCHROMIUM(components);
-  CheckGLError();
-}
-
 void GLES2Implementation::BlendBarrierKHR() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glBlendBarrierKHR("

@@ -341,7 +341,6 @@
 #define glSetActiveURLCHROMIUM GLES2_GET_FUN(SetActiveURLCHROMIUM)
 #define glContextVisibilityHintCHROMIUM \
   GLES2_GET_FUN(ContextVisibilityHintCHROMIUM)
-#define glCoverageModulationCHROMIUM GLES2_GET_FUN(CoverageModulationCHROMIUM)
 #define glGetGraphicsResetStatusKHR GLES2_GET_FUN(GetGraphicsResetStatusKHR)
 #define glBlendBarrierKHR GLES2_GET_FUN(BlendBarrierKHR)
 #define glBindFragDataLocationIndexedEXT \

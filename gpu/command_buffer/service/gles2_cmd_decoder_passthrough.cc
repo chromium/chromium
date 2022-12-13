@@ -1032,7 +1032,6 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
         "GL_ANGLE_texture_compression_dxt3",
         "GL_ANGLE_texture_compression_dxt5",
         "GL_ANGLE_translated_shader_source",
-        "GL_CHROMIUM_framebuffer_mixed_samples",
         "GL_CHROMIUM_path_rendering",
         "GL_EXT_blend_minmax",
         "GL_EXT_discard_framebuffer",

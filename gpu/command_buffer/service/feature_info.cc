@@ -1460,12 +1460,6 @@ void FeatureInfo::InitializeFeatures() {
     }
   }
 
-  if (gfx::HasExtension(extensions, "GL_NV_framebuffer_mixed_samples")) {
-    AddExtensionString("GL_CHROMIUM_framebuffer_mixed_samples");
-    feature_flags_.chromium_framebuffer_mixed_samples = true;
-    validators_.g_l_state.AddValue(GL_COVERAGE_MODULATION_CHROMIUM);
-  }
-
   if ((gl_version_info_->is_es3 || gl_version_info_->is_desktop_core_profile ||
        gfx::HasExtension(extensions, "GL_EXT_texture_rg") ||
        gfx::HasExtension(extensions, "GL_ARB_texture_rg")) &&

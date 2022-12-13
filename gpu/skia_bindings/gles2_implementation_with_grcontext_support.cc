@@ -192,13 +192,6 @@ void GLES2ImplementationWithGrContextSupport::BlendFuncSeparate(
   ResetGrContextIfNeeded(kBlend_GrGLBackendState);
 }
 
-// Calls that invalidate kMSAAEnable_GrGLBackendState
-void GLES2ImplementationWithGrContextSupport::CoverageModulationCHROMIUM(
-    GLenum components) {
-  BaseClass::CoverageModulationCHROMIUM(components);
-  ResetGrContextIfNeeded(kMSAAEnable_GrGLBackendState);
-}
-
 // Calls that invalidate kVertex_GrGLBackendState
 void GLES2ImplementationWithGrContextSupport::BindVertexArrayOES(GLuint array) {
   BaseClass::BindVertexArrayOES(array);

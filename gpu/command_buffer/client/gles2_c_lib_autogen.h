@@ -1579,9 +1579,6 @@ void GL_APIENTRY GLES2SetActiveURLCHROMIUM(const char* url) {
 void GL_APIENTRY GLES2ContextVisibilityHintCHROMIUM(GLboolean visibility) {
   gles2::GetGLContext()->ContextVisibilityHintCHROMIUM(visibility);
 }
-void GL_APIENTRY GLES2CoverageModulationCHROMIUM(GLenum components) {
-  gles2::GetGLContext()->CoverageModulationCHROMIUM(components);
-}
 GLenum GL_APIENTRY GLES2GetGraphicsResetStatusKHR() {
   return gles2::GetGLContext()->GetGraphicsResetStatusKHR();
 }
@@ -2949,10 +2946,6 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glContextVisibilityHintCHROMIUM",
         reinterpret_cast<GLES2FunctionPointer>(glContextVisibilityHintCHROMIUM),
-    },
-    {
-        "glCoverageModulationCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(glCoverageModulationCHROMIUM),
     },
     {
         "glGetGraphicsResetStatusKHR",

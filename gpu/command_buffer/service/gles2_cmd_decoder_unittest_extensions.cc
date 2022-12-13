@@ -42,27 +42,6 @@ INSTANTIATE_TEST_SUITE_P(Service,
                          GLES2DecoderTestWithBlendEquationAdvanced,
                          ::testing::Bool());
 
-class GLES2DecoderTestWithCHROMIUMFramebufferMixedSamples
-    : public GLES2DecoderTest {
- public:
-  GLES2DecoderTestWithCHROMIUMFramebufferMixedSamples() = default;
-  void SetUp() override {
-    InitState init;
-    init.gl_version = "OpenGL ES 3.1";
-    init.has_alpha = true;
-    init.has_depth = true;
-    init.request_alpha = true;
-    init.request_depth = true;
-    init.bind_generates_resource = true;
-    init.extensions = "GL_NV_framebuffer_mixed_samples ";
-    InitDecoder(init);
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(Service,
-                         GLES2DecoderTestWithCHROMIUMFramebufferMixedSamples,
-                         ::testing::Bool());
-
 class GLES3DecoderTestWithEXTWindowRectangles : public GLES3DecoderTest {
  public:
   GLES3DecoderTestWithEXTWindowRectangles() = default;

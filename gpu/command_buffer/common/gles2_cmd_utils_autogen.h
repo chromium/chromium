@@ -27,7 +27,6 @@ static std::string GetStringBufferuiv(uint32_t value);
 static std::string GetStringCapability(uint32_t value);
 static std::string GetStringCmpFunction(uint32_t value);
 static std::string GetStringCompressedTextureFormat(uint32_t value);
-static std::string GetStringCoverageModulationComponents(uint32_t value);
 static std::string GetStringDrawMode(uint32_t value);
 static std::string GetStringDstBlendFactor(uint32_t value);
 static std::string GetStringEquation(uint32_t value);

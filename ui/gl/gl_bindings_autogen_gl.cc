@@ -369,8 +369,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_CHROMIUM_bind_uniform_location");
   ext.b_GL_CHROMIUM_copy_texture =
       gfx::HasExtension(extensions, "GL_CHROMIUM_copy_texture");
-  ext.b_GL_CHROMIUM_framebuffer_mixed_samples =
-      gfx::HasExtension(extensions, "GL_CHROMIUM_framebuffer_mixed_samples");
   ext.b_GL_CHROMIUM_gles_depth_binding_hack =
       gfx::HasExtension(extensions, "GL_CHROMIUM_gles_depth_binding_hack");
   ext.b_GL_CHROMIUM_glgetstringi_hack =
@@ -456,8 +454,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   ext.b_GL_NV_fence = gfx::HasExtension(extensions, "GL_NV_fence");
   ext.b_GL_NV_framebuffer_blit =
       gfx::HasExtension(extensions, "GL_NV_framebuffer_blit");
-  ext.b_GL_NV_framebuffer_mixed_samples =
-      gfx::HasExtension(extensions, "GL_NV_framebuffer_mixed_samples");
   ext.b_GL_NV_internalformat_sample_query =
       gfx::HasExtension(extensions, "GL_NV_internalformat_sample_query");
   ext.b_GL_NV_path_rendering =
@@ -800,14 +796,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (ext.b_GL_CHROMIUM_copy_texture) {
     fn.glCopyTextureCHROMIUMFn = reinterpret_cast<glCopyTextureCHROMIUMProc>(
         GetGLProcAddress("glCopyTextureCHROMIUM"));
-  }
-
-  if (ext.b_GL_NV_framebuffer_mixed_samples) {
-    fn.glCoverageModulationNVFn = reinterpret_cast<glCoverageModulationNVProc>(
-        GetGLProcAddress("glCoverageModulationNV"));
-  } else if (ext.b_GL_CHROMIUM_framebuffer_mixed_samples) {
-    fn.glCoverageModulationNVFn = reinterpret_cast<glCoverageModulationNVProc>(
-        GetGLProcAddress("glCoverageModulationCHROMIUM"));
   }
 
   if (ext.b_GL_NV_path_rendering) {
@@ -3568,10 +3556,6 @@ void GLApiBase::glCopyTextureCHROMIUMFn(GLuint sourceId,
   driver_->fn.glCopyTextureCHROMIUMFn(
       sourceId, sourceLevel, destTarget, destId, destLevel, internalFormat,
       destType, unpackFlipY, unpackPremultiplyAlpha, unpackUnmultiplyAlpha);
-}
-
-void GLApiBase::glCoverageModulationNVFn(GLenum components) {
-  driver_->fn.glCoverageModulationNVFn(components);
 }
 
 void GLApiBase::glCoverFillPathInstancedNVFn(GLsizei numPaths,
@@ -7022,11 +7006,6 @@ void TraceGLApi::glCopyTextureCHROMIUMFn(GLuint sourceId,
   gl_api_->glCopyTextureCHROMIUMFn(
       sourceId, sourceLevel, destTarget, destId, destLevel, internalFormat,
       destType, unpackFlipY, unpackPremultiplyAlpha, unpackUnmultiplyAlpha);
-}
-
-void TraceGLApi::glCoverageModulationNVFn(GLenum components) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glCoverageModulationNV");
-  gl_api_->glCoverageModulationNVFn(components);
 }
 
 void TraceGLApi::glCoverFillPathInstancedNVFn(GLsizei numPaths,
@@ -11177,12 +11156,6 @@ void LogGLApi::glCopyTextureCHROMIUMFn(GLuint sourceId,
   gl_api_->glCopyTextureCHROMIUMFn(
       sourceId, sourceLevel, destTarget, destId, destLevel, internalFormat,
       destType, unpackFlipY, unpackPremultiplyAlpha, unpackUnmultiplyAlpha);
-}
-
-void LogGLApi::glCoverageModulationNVFn(GLenum components) {
-  GL_SERVICE_LOG("glCoverageModulationNV"
-                 << "(" << GLEnums::GetStringEnum(components) << ")");
-  gl_api_->glCoverageModulationNVFn(components);
 }
 
 void LogGLApi::glCoverFillPathInstancedNVFn(GLsizei numPaths,
@@ -16119,10 +16092,6 @@ void NoContextGLApi::glCopyTextureCHROMIUMFn(GLuint sourceId,
                                              GLboolean unpackPremultiplyAlpha,
                                              GLboolean unpackUnmultiplyAlpha) {
   NoContextHelper("glCopyTextureCHROMIUM");
-}
-
-void NoContextGLApi::glCoverageModulationNVFn(GLenum components) {
-  NoContextHelper("glCoverageModulationNV");
 }
 
 void NoContextGLApi::glCoverFillPathInstancedNVFn(

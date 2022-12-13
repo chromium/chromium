@@ -1113,8 +1113,6 @@ void SetActiveURLCHROMIUM(const char* url) override;
 
 void ContextVisibilityHintCHROMIUM(GLboolean visibility) override;
 
-void CoverageModulationCHROMIUM(GLenum components) override;
-
 GLenum GetGraphicsResetStatusKHR() override;
 
 void BlendBarrierKHR() override;

@@ -827,7 +827,6 @@ virtual void FlushDriverCachesCHROMIUM() = 0;
 virtual GLuint GetLastFlushIdCHROMIUM() = 0;
 virtual void SetActiveURLCHROMIUM(const char* url) = 0;
 virtual void ContextVisibilityHintCHROMIUM(GLboolean visibility) = 0;
-virtual void CoverageModulationCHROMIUM(GLenum components) = 0;
 virtual GLenum GetGraphicsResetStatusKHR() = 0;
 virtual void BlendBarrierKHR() = 0;
 virtual void BindFragDataLocationIndexedEXT(GLuint program,

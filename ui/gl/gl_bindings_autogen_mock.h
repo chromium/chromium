@@ -444,9 +444,6 @@ Mock_glCoverStrokePathInstancedNV(GLsizei numPaths,
 static void GL_BINDING_CALL Mock_glCoverStrokePathNV(GLuint name,
                                                      GLenum coverMode);
 static void GL_BINDING_CALL
-Mock_glCoverageModulationCHROMIUM(GLenum components);
-static void GL_BINDING_CALL Mock_glCoverageModulationNV(GLenum components);
-static void GL_BINDING_CALL
 Mock_glCreateMemoryObjectsEXT(GLsizei n, GLuint* memoryObjects);
 static GLuint GL_BINDING_CALL Mock_glCreateProgram(void);
 static GLuint GL_BINDING_CALL Mock_glCreateShader(GLenum type);

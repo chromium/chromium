@@ -287,7 +287,6 @@ void glCopyTextureCHROMIUMFn(GLuint sourceId,
                              GLboolean unpackFlipY,
                              GLboolean unpackPremultiplyAlpha,
                              GLboolean unpackUnmultiplyAlpha) override;
-void glCoverageModulationNVFn(GLenum components) override;
 void glCoverFillPathInstancedNVFn(GLsizei numPaths,
                                   GLenum pathNameType,
                                   const void* paths,

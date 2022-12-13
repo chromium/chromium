@@ -336,9 +336,6 @@ GL_APICALL void         GL_APIENTRY glSetActiveURLCHROMIUM (const char* url);
 // Extension CHROMIUM_context_visibility_hint
 GL_APICALL void         GL_APIENTRY glContextVisibilityHintCHROMIUM (GLboolean visibility);
 
-// Extension CHROMIUM_framebuffer_mixed_samples
-GL_APICALL void         GL_APIENTRY glCoverageModulationCHROMIUM (GLenumCoverageModulationComponents components);
-
 // Extension KHR_robustness
 GL_APICALL GLenum       GL_APIENTRY glGetGraphicsResetStatusKHR (void);
 

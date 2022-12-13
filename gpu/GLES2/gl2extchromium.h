@@ -703,16 +703,6 @@ typedef GLint(GL_APIENTRYP PFNGLGETFRAGDATAINDEXEXT)(GLuint program,
 #define GL_MAX_DUAL_SOURCE_DRAW_BUFFERS_EXT 0x88FC
 #endif /* GL_EXT_blend_func_extended */
 
-#ifndef GL_CHROMIUM_framebuffer_mixed_samples
-#define GL_CHROMIUM_framebuffer_mixed_samples 1
-typedef void(GL_APIENTRYP PFNGLCOVERAGEMODULATIONCHROMIUMPROC)(
-    GLenum components);
-#ifdef GL_GLEXT_PROTOTYPES
-GL_APICALL void GL_APIENTRY glCoverageModulationCHROMIUM(GLenum components);
-#endif
-#define GL_COVERAGE_MODULATION_CHROMIUM 0x9332
-#endif /* GL_CHROMIUM_framebuffer_mixed_samples */
-
 #ifndef GL_ARB_occlusion_query
 #define GL_ARB_occlusion_query 1
 #define GL_SAMPLES_PASSED_ARB 0x8914

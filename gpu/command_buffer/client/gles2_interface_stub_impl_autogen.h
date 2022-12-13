@@ -1075,7 +1075,6 @@ GLuint GLES2InterfaceStub::GetLastFlushIdCHROMIUM() {
 void GLES2InterfaceStub::SetActiveURLCHROMIUM(const char* /* url */) {}
 void GLES2InterfaceStub::ContextVisibilityHintCHROMIUM(
     GLboolean /* visibility */) {}
-void GLES2InterfaceStub::CoverageModulationCHROMIUM(GLenum /* components */) {}
 GLenum GLES2InterfaceStub::GetGraphicsResetStatusKHR() {
   return 0;
 }

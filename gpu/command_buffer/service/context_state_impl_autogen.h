@@ -67,7 +67,6 @@ void ContextState::Initialize() {
   cached_color_mask_blue = true;
   color_mask_alpha = true;
   cached_color_mask_alpha = true;
-  coverage_modulation = GL_NONE;
   cull_mode = GL_BACK;
   depth_func = GL_LESS;
   depth_mask = true;
@@ -246,9 +245,6 @@ void ContextState::InitState(const ContextState* prev_state) const {
         (cached_color_mask_alpha != prev_state->cached_color_mask_alpha))
       api()->glColorMaskFn(cached_color_mask_red, cached_color_mask_green,
                            cached_color_mask_blue, cached_color_mask_alpha);
-    if (feature_info_->feature_flags().chromium_framebuffer_mixed_samples)
-      if ((coverage_modulation != prev_state->coverage_modulation))
-        api()->glCoverageModulationNVFn(coverage_modulation);
     if ((cull_mode != prev_state->cull_mode))
       api()->glCullFaceFn(cull_mode);
     if ((depth_func != prev_state->depth_func))
@@ -342,8 +338,6 @@ void ContextState::InitState(const ContextState* prev_state) const {
     api()->glClearStencilFn(stencil_clear);
     api()->glColorMaskFn(cached_color_mask_red, cached_color_mask_green,
                          cached_color_mask_blue, cached_color_mask_alpha);
-    if (feature_info_->feature_flags().chromium_framebuffer_mixed_samples)
-      api()->glCoverageModulationNVFn(coverage_modulation);
     api()->glCullFaceFn(cull_mode);
     api()->glDepthFuncFn(depth_func);
     api()->glDepthMaskFn(cached_depth_mask);
@@ -496,12 +490,6 @@ bool ContextState::GetStateAsGLint(GLenum pname,
         params[1] = static_cast<GLint>(color_mask_green);
         params[2] = static_cast<GLint>(color_mask_blue);
         params[3] = static_cast<GLint>(color_mask_alpha);
-      }
-      return true;
-    case GL_COVERAGE_MODULATION_CHROMIUM:
-      *num_written = 1;
-      if (params) {
-        params[0] = static_cast<GLint>(coverage_modulation);
       }
       return true;
     case GL_CULL_FACE_MODE:
@@ -924,12 +912,6 @@ bool ContextState::GetStateAsGLfloat(GLenum pname,
         params[1] = static_cast<GLfloat>(color_mask_green);
         params[2] = static_cast<GLfloat>(color_mask_blue);
         params[3] = static_cast<GLfloat>(color_mask_alpha);
-      }
-      return true;
-    case GL_COVERAGE_MODULATION_CHROMIUM:
-      *num_written = 1;
-      if (params) {
-        params[0] = static_cast<GLfloat>(coverage_modulation);
       }
       return true;
     case GL_CULL_FACE_MODE:

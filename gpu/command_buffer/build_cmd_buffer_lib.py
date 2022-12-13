@@ -180,18 +180,6 @@ _STATE_INFO = {
       {'name': 'stencil_clear', 'type': 'GLint', 'default': '0'},
     ],
   },
-  'CoverageModulationCHROMIUM': {
-    'type': 'Normal',
-    'func': 'CoverageModulationNV',
-    'extension_flag': 'chromium_framebuffer_mixed_samples',
-    'states': [
-      { 'enum': 'GL_COVERAGE_MODULATION_CHROMIUM',
-        'name': 'coverage_modulation',
-        'type': 'GLenum',
-        'default': 'GL_NONE',
-      },
-    ]
-  },
   'BlendColor': {
     'type': 'Normal',
     'func': 'BlendColor',

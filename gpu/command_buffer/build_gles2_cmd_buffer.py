@@ -40,12 +40,6 @@ _NAMED_TYPE_INFO = {
       'GL_LINEAR_MIPMAP_LINEAR',
     ],
   },
-  'CoverageModulationComponents': {
-    'type': 'GLenum',
-    'valid': [
-      'GL_RGB', 'GL_RGBA', 'GL_ALPHA', 'GL_NONE'
-    ],
-  },
   'FramebufferTarget': {
     'type': 'GLenum',
     'valid': [
@@ -1868,13 +1862,6 @@ _FUNCTION_INFO = {
     'impl_func': False,
     'unit_test': False,
     'es3': True,
-  },
-  'CoverageModulationCHROMIUM': {
-    'type': 'StateSet',
-    'state': 'CoverageModulationCHROMIUM',
-    'decoder_func': 'glCoverageModulationNV',
-    'extension': 'CHROMIUM_framebuffer_mixed_samples',
-    'extension_flag': 'chromium_framebuffer_mixed_samples',
   },
   'CreateAndConsumeTextureCHROMIUM': {
     'type': 'NoCommand',

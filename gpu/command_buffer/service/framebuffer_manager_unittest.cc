@@ -433,8 +433,6 @@ TEST_F(FramebufferInfoTest, AttachRenderbuffer) {
             framebuffer_->IsPossiblyComplete(feature_info_.get()));
 
   // Change samples.
-  ASSERT_FALSE(
-      feature_info_->feature_flags().chromium_framebuffer_mixed_samples);
   renderbuffer_manager_->SetInfoAndInvalidate(renderbuffer5, kDifferentSamples5,
                                               kFormat5, kWidth5, kHeight5);
   EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE),

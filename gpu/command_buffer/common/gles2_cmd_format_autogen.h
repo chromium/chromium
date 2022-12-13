@@ -14849,39 +14849,6 @@ static_assert(offsetof(ContextVisibilityHintCHROMIUM, header) == 0,
 static_assert(offsetof(ContextVisibilityHintCHROMIUM, visibility) == 4,
               "offset of ContextVisibilityHintCHROMIUM visibility should be 4");
 
-struct CoverageModulationCHROMIUM {
-  typedef CoverageModulationCHROMIUM ValueType;
-  static const CommandId kCmdId = kCoverageModulationCHROMIUM;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init(GLenum _components) {
-    SetHeader();
-    components = _components;
-  }
-
-  void* Set(void* cmd, GLenum _components) {
-    static_cast<ValueType*>(cmd)->Init(_components);
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-  uint32_t components;
-};
-
-static_assert(sizeof(CoverageModulationCHROMIUM) == 8,
-              "size of CoverageModulationCHROMIUM should be 8");
-static_assert(offsetof(CoverageModulationCHROMIUM, header) == 0,
-              "offset of CoverageModulationCHROMIUM header should be 0");
-static_assert(offsetof(CoverageModulationCHROMIUM, components) == 4,
-              "offset of CoverageModulationCHROMIUM components should be 4");
-
 struct BlendBarrierKHR {
   typedef BlendBarrierKHR ValueType;
   static const CommandId kCmdId = kBlendBarrierKHR;

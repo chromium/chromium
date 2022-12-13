@@ -89,9 +89,6 @@ class GLES2ImplementationWithGrContextSupport
                          GLenum srcAlpha,
                          GLenum dstAlpha) override;
 
-  // Calls that invalidate kMSAAEnable_GrGLBackendState
-  void CoverageModulationCHROMIUM(GLenum components) override;
-
   // Calls that invalidate kVertex_GrGLBackendState
   void BindVertexArrayOES(GLuint array) override;
   void DeleteVertexArraysOES(GLsizei n, const GLuint* arrays) override;

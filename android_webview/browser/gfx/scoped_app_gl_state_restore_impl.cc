@@ -300,9 +300,6 @@ void ScopedAppGLStateRestoreImpl::RestoreHWUIState(bool save_restore) {
   if (gl::g_current_gl_driver->fn.glWindowRectanglesEXTFn)
     glWindowRectanglesEXT(GL_EXCLUSIVE_EXT, 0, nullptr);
 
-  if (gl::g_current_gl_driver->fn.glCoverageModulationNVFn)
-    glCoverageModulationNV(GL_NONE);
-
   if (g_supports_arm_shader_framebuffer_fetch)
     GLEnableDisable(GL_FETCH_PER_SAMPLE_ARM, fetch_per_sample_arm_enabled_);
 

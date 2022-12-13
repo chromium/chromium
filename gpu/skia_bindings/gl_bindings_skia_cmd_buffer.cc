@@ -384,8 +384,6 @@ sk_sp<GrGLInterface> CreateGLES2InterfaceBindings(
       &GLES2Interface::BlitFramebufferCHROMIUM, impl, context_support);
   functions->fGenerateMipmap =
       gles_bind(&GLES2Interface::GenerateMipmap, impl, context_support);
-  functions->fCoverageModulation = gles_bind(
-      &GLES2Interface::CoverageModulationCHROMIUM, impl, context_support);
   functions->fWindowRectangles =
       gles_bind(&GLES2Interface::WindowRectanglesEXT, impl, context_support);
   // Skia should not use program binaries over the command buffer. Allowing
