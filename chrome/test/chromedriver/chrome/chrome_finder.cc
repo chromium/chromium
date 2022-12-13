@@ -49,6 +49,10 @@ void GetApplicationDirs(std::vector<base::FilePath>* locations) {
         installation_locations[i].Append(L"Google\\Chrome\\Application"));
   }
   for (size_t i = 0; i < installation_locations.size(); ++i) {
+    locations->push_back(installation_locations[i].Append(
+        L"Google\\Chrome for Testing\\Application"));
+  }
+  for (size_t i = 0; i < installation_locations.size(); ++i) {
     locations->push_back(
         installation_locations[i].Append(L"Chromium\\Application"));
   }
