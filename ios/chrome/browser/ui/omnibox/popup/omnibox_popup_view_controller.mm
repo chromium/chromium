@@ -648,6 +648,12 @@ const CGFloat kHeaderPadding = 2.0f;
     return FLT_MIN;
   }
 
+  // When most visited tiles are enabled, only allow section separator under the
+  // verbatim suggestion.
+  if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles) && section > 0) {
+    return FLT_MIN;
+  }
+
   return IsOmniboxActionsVisualTreatment1() ? kFooterHeightVariation1
                                             : kFooterHeightVariation2;
 }
