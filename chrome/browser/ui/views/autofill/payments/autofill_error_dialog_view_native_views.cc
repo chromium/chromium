@@ -75,7 +75,7 @@ views::View* AutofillErrorDialogViewNativeViews::GetContentsView() {
 
   auto* label = AddChildView(std::make_unique<views::Label>(
       controller_->GetDescription(),
-      ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL, STYLE_RED));
+      ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL));
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetMultiLine(true);
   return this;
