@@ -68,8 +68,7 @@ class ExtensionSupportsConnectionFromNativeAppTest : public ::testing::Test {
   void RegisterExtension(bool natively_connectable,
                          bool transient_background_permission,
                          bool native_messaging_permission) {
-    DictionaryBuilder manifest_builder(
-        static_cast<base::DictionaryValue&&>(base::test::ParseJson(R"(
+    DictionaryBuilder manifest_builder(base::test::ParseJson(R"(
             {
               "version": "1.0.0.0",
               "manifest_version": 2,
@@ -80,7 +79,8 @@ class ExtensionSupportsConnectionFromNativeAppTest : public ::testing::Test {
                 "persistent": false
               }
             }
-    )")));
+    )")
+                                           .GetDict());
 
     if (natively_connectable) {
       ListBuilder natively_connectable_hosts;

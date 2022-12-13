@@ -78,24 +78,23 @@ class MessageSender : public ExtensionHostRegistry::Observer {
   }
 
  private:
-  static std::unique_ptr<base::ListValue> BuildEventArguments(
-      const bool last_message,
-      const std::string& data) {
-    base::Value event(base::Value::Type::DICTIONARY);
-    event.SetBoolKey("lastMessage", last_message);
-    event.SetStringKey("data", data);
-    std::unique_ptr<base::ListValue> arguments(new base::ListValue());
-    arguments->Append(std::move(event));
+  static base::Value::List BuildEventArguments(const bool last_message,
+                                               const std::string& data) {
+    base::Value::Dict event;
+    event.Set("lastMessage", last_message);
+    event.Set("data", data);
+    base::Value::List arguments;
+    arguments.Append(std::move(event));
     return arguments;
   }
 
   static std::unique_ptr<Event> BuildEvent(
-      std::unique_ptr<base::ListValue> event_args,
+      base::Value::List event_args,
       content::BrowserContext* browser_context,
       GURL event_url) {
-    auto event = std::make_unique<Event>(
-        events::TEST_ON_MESSAGE, "test.onMessage",
-        std::move(*event_args).TakeList(), browser_context);
+    auto event =
+        std::make_unique<Event>(events::TEST_ON_MESSAGE, "test.onMessage",
+                                std::move(event_args), browser_context);
     event->event_url = std::move(event_url);
     return event;
   }

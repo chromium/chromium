@@ -17,14 +17,15 @@ namespace extensions {
 const char kTestPref[] = "unit_test.test_pref";
 
 TEST(NativeMessagingHostListPolicyHandlerTest, CheckPolicySettings) {
-  base::ListValue list;
+  base::Value::List list;
   policy::PolicyMap policy_map;
   NativeMessagingHostListPolicyHandler handler(
       policy::key::kNativeMessagingBlocklist, kTestPref, true);
 
   policy_map.Set(policy::key::kNativeMessagingBlocklist,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
+                 policy::POLICY_SOURCE_CLOUD, base::Value(list.Clone()),
+                 nullptr);
   {
     policy::PolicyErrorMap errors;
     EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
@@ -34,7 +35,8 @@ TEST(NativeMessagingHostListPolicyHandlerTest, CheckPolicySettings) {
   list.Append("test.a.b");
   policy_map.Set(policy::key::kNativeMessagingBlocklist,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
+                 policy::POLICY_SOURCE_CLOUD, base::Value(list.Clone()),
+                 nullptr);
   {
     policy::PolicyErrorMap errors;
     EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
@@ -44,7 +46,8 @@ TEST(NativeMessagingHostListPolicyHandlerTest, CheckPolicySettings) {
   list.Append("*");
   policy_map.Set(policy::key::kNativeMessagingBlocklist,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
+                 policy::POLICY_SOURCE_CLOUD, base::Value(list.Clone()),
+                 nullptr);
   {
     policy::PolicyErrorMap errors;
     EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
@@ -54,7 +57,8 @@ TEST(NativeMessagingHostListPolicyHandlerTest, CheckPolicySettings) {
   list.Append("invalid Name");
   policy_map.Set(policy::key::kNativeMessagingBlocklist,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
+                 policy::POLICY_SOURCE_CLOUD, base::Value(list.Clone()),
+                 nullptr);
   {
     policy::PolicyErrorMap errors;
     EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
@@ -65,11 +69,11 @@ TEST(NativeMessagingHostListPolicyHandlerTest, CheckPolicySettings) {
 }
 
 TEST(NativeMessagingHostListPolicyHandlerTest, ApplyPolicySettings) {
-  base::ListValue policy;
-  base::ListValue expected;
+  base::Value::List policy;
+  base::Value::List expected;
   policy::PolicyMap policy_map;
   PrefValueMap prefs;
-  base::Value* value = NULL;
+  base::Value* value = nullptr;
   NativeMessagingHostListPolicyHandler handler(
       policy::key::kNativeMessagingBlocklist, kTestPref, true);
 
@@ -78,28 +82,31 @@ TEST(NativeMessagingHostListPolicyHandlerTest, ApplyPolicySettings) {
 
   policy_map.Set(policy::key::kNativeMessagingBlocklist,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD, policy.Clone(), nullptr);
+                 policy::POLICY_SOURCE_CLOUD, base::Value(policy.Clone()),
+                 nullptr);
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
-  EXPECT_EQ(expected, *value);
+  EXPECT_EQ(expected, value->GetList());
 
   policy.Append("*");
   expected.Append("*");
 
   policy_map.Set(policy::key::kNativeMessagingBlocklist,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD, policy.Clone(), nullptr);
+                 policy::POLICY_SOURCE_CLOUD, base::Value(policy.Clone()),
+                 nullptr);
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
-  EXPECT_EQ(expected, *value);
+  EXPECT_EQ(expected, value->GetList());
 
   policy.Append("invalid Name");
   policy_map.Set(policy::key::kNativeMessagingBlocklist,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD, policy.Clone(), nullptr);
+                 policy::POLICY_SOURCE_CLOUD, base::Value(policy.Clone()),
+                 nullptr);
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
-  EXPECT_EQ(expected, *value);
+  EXPECT_EQ(expected, value->GetList());
 }
 
 }  // namespace extensions

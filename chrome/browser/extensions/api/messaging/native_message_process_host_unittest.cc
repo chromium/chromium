@@ -31,6 +31,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/messaging/native_messaging_launch_from_native.h"
 #include "chrome/browser/extensions/api/messaging/native_messaging_test_util.h"
@@ -46,6 +47,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -111,13 +113,11 @@ class FakeLauncher : public NativeProcessLauncher {
 };
 
 class NativeMessagingTest : public ::testing::Test,
-                            public NativeMessageHost::Client,
-                            public base::SupportsWeakPtr<NativeMessagingTest> {
+                            public NativeMessageHost::Client {
  protected:
   NativeMessagingTest()
       : current_channel_(version_info::Channel::DEV),
-        task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
-        channel_closed_(false) {}
+        task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
@@ -133,13 +133,12 @@ class NativeMessagingTest : public ::testing::Test,
     last_message_ = message;
 
     // Parse the message.
-    std::unique_ptr<base::DictionaryValue> dict_value =
-        base::DictionaryValue::From(base::JSONReader::ReadDeprecated(message));
-    if (dict_value) {
-      last_message_parsed_ = std::move(dict_value);
-    } else {
+    absl::optional<base::Value> dict_value = base::JSONReader::Read(message);
+    if (!dict_value || !dict_value->is_dict()) {
       LOG(ERROR) << "Failed to parse " << message;
       last_message_parsed_.reset();
+    } else {
+      last_message_parsed_ = std::move(*dict_value).TakeDict();
     }
 
     if (run_loop_)
@@ -179,8 +178,8 @@ class NativeMessagingTest : public ::testing::Test,
   TestingProfile profile_;
 
   std::string last_message_;
-  std::unique_ptr<base::DictionaryValue> last_message_parsed_;
-  bool channel_closed_;
+  absl::optional<base::Value::Dict> last_message_parsed_;
+  bool channel_closed_ = false;
 };
 
 // Read a single message from a local file.
@@ -288,18 +287,19 @@ TEST_F(NativeMessagingTest, EchoConnect) {
   run_loop_->Run();
   ASSERT_FALSE(last_message_.empty());
   ASSERT_TRUE(last_message_parsed_);
-  ASSERT_TRUE(last_message_parsed_->is_dict());
 
   std::string expected_url = std::string("chrome-extension://") +
                              ScopedTestNativeMessagingHost::kExtensionId + "/";
 
   {
-    const base::Value::Dict& dict = last_message_parsed_->GetDict();
-    EXPECT_EQ(1, last_message_parsed_->FindIntKey("id"));
-    const std::string* text = dict.FindStringByDottedPath("echo.text");
+    absl::optional<int> id = last_message_parsed_->FindInt("id");
+    ASSERT_TRUE(id);
+    EXPECT_EQ(1, *id);
+    const std::string* text =
+        last_message_parsed_->FindStringByDottedPath("echo.text");
     ASSERT_TRUE(text);
     EXPECT_EQ("Hello.", *text);
-    const std::string* url = dict.FindString("caller_url");
+    const std::string* url = last_message_parsed_->FindString("caller_url");
     EXPECT_TRUE(url);
     EXPECT_EQ(expected_url, *url);
   }
@@ -309,22 +309,25 @@ TEST_F(NativeMessagingTest, EchoConnect) {
   run_loop_->Run();
 
   {
-    const base::Value::Dict& dict = last_message_parsed_->GetDict();
-    EXPECT_EQ(2, last_message_parsed_->FindIntKey("id"));
-    const std::string* text = dict.FindStringByDottedPath("echo.foo");
+    absl::optional<int> id = last_message_parsed_->FindInt("id");
+    ASSERT_TRUE(id);
+    EXPECT_EQ(2, *id);
+    const std::string* text =
+        last_message_parsed_->FindStringByDottedPath("echo.foo");
     ASSERT_TRUE(text);
     EXPECT_EQ("bar", *text);
-    const std::string* url = dict.FindString("caller_url");
+    const std::string* url = last_message_parsed_->FindString("caller_url");
     ASSERT_TRUE(url);
     EXPECT_EQ(expected_url, *url);
   }
 
-  const base::Value* args = nullptr;
-  ASSERT_TRUE(last_message_parsed_->Get("args", &args));
+  const base::Value* args = last_message_parsed_->Find("args");
+  ASSERT_TRUE(args);
   EXPECT_TRUE(args->is_none());
 
-  const base::Value* connect_id_value = nullptr;
-  ASSERT_TRUE(last_message_parsed_->Get("connect_id", &connect_id_value));
+  const base::Value* connect_id_value =
+      last_message_parsed_->Find("connect_id");
+  ASSERT_TRUE(connect_id_value);
   EXPECT_TRUE(connect_id_value->is_none());
 }
 
@@ -358,11 +361,11 @@ TEST_F(NativeMessagingTest, MAYBE_ReconnectArgs) {
   ASSERT_FALSE(last_message_.empty());
   ASSERT_TRUE(last_message_parsed_);
 
-  const base::ListValue* args_value = nullptr;
-  ASSERT_TRUE(last_message_parsed_->GetList("args", &args_value));
+  const base::Value::List* args_value = last_message_parsed_->FindList("args");
+  ASSERT_TRUE(args_value);
   std::vector<base::CommandLine::StringType> args;
-  args.reserve(args_value->GetList().size());
-  for (auto& arg : args_value->GetList()) {
+  args.reserve(args_value->size());
+  for (auto& arg : *args_value) {
     ASSERT_TRUE(arg.is_string());
 #if BUILDFLAG(IS_WIN)
     args.push_back(base::UTF8ToWide(arg.GetString()));
@@ -412,8 +415,8 @@ TEST_F(NativeMessagingTest, ReconnectArgs_Disabled) {
   ASSERT_FALSE(last_message_.empty());
   ASSERT_TRUE(last_message_parsed_);
 
-  const base::Value* args = nullptr;
-  ASSERT_TRUE(last_message_parsed_->Get("args", &args));
+  const base::Value* args = last_message_parsed_->Find("args");
+  ASSERT_TRUE(args);
   EXPECT_TRUE(args->is_none());
 }
 
@@ -440,12 +443,13 @@ TEST_F(NativeMessagingTest, ReconnectArgsIfNativeConnectionDisallowed) {
   ASSERT_FALSE(last_message_.empty());
   ASSERT_TRUE(last_message_parsed_);
 
-  const base::Value* args_value = nullptr;
-  ASSERT_TRUE(last_message_parsed_->Get("args", &args_value));
+  const base::Value* args_value = last_message_parsed_->Find("args");
+  ASSERT_TRUE(args_value);
   EXPECT_TRUE(args_value->is_none());
 
-  const base::Value* connect_id_value = nullptr;
-  ASSERT_TRUE(last_message_parsed_->Get("connect_id", &connect_id_value));
+  const base::Value* connect_id_value =
+      last_message_parsed_->Find("connect_id");
+  ASSERT_TRUE(connect_id_value);
   EXPECT_TRUE(connect_id_value->is_none());
 }
 

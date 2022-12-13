@@ -8334,6 +8334,7 @@ test("unit_tests") {
       sources += [
         "../browser/extensions/api/messaging/native_message_process_host_unittest.cc",
         "../browser/extensions/api/messaging/native_messaging_launch_from_native_unittest.cc",
+        "../browser/extensions/api/messaging/native_messaging_policy_handler_unittest.cc",
       ]
     }
   }
