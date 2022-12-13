@@ -90,7 +90,7 @@ BASE_FEATURE(kWebViewJavaJsBridgeMojo,
 // measured.
 BASE_FEATURE(kWebViewMeasureScreenCoverage,
              "WebViewMeasureScreenCoverage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Field trial feature for controlling support of Origin Trials on WebView.
 BASE_FEATURE(kWebViewOriginTrials,
