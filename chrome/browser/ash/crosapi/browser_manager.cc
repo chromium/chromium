@@ -979,6 +979,17 @@ void BrowserManager::StartWithLogFile(LaunchParamsFromBackground params) {
     options.environment["WAYLAND_DEBUG"] = "1";
   }
 
+  // LsbRelease and LsbReleaseTime are used by sys_info in Lacros to determine
+  // hardware class.
+  std::unique_ptr<base::Environment> env = base::Environment::Create();
+  std::string lsb_release;
+  std::string lsb_release_time;
+  if (env->GetVar(base::kLsbReleaseKey, &lsb_release) &&
+      env->GetVar(base::kLsbReleaseTimeKey, &lsb_release_time)) {
+    options.environment[base::kLsbReleaseKey] = std::move(lsb_release);
+    options.environment[base::kLsbReleaseTimeKey] = std::move(lsb_release_time);
+  }
+
   std::string additional_env =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           ash::switches::kLacrosChromeAdditionalEnv);
