@@ -25,7 +25,6 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/reporting/resources/memory_resource_impl.h"
 #include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
@@ -74,7 +73,7 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
   void SetUp() override {
     mock_client_.SetDMToken(
         policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
-    memory_resource_ = base::MakeRefCounted<MemoryResourceImpl>(
+    memory_resource_ = base::MakeRefCounted<ResourceInterface>(
         4u * 1024LLu * 1024LLu);  // 4 MiB
   }
 

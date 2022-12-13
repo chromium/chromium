@@ -25,7 +25,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/reporting/resources/memory_resource_impl.h"
+#include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -74,7 +74,7 @@ class UploadClientTest : public ::testing::TestWithParam<
 
  protected:
   void SetUp() override {
-    memory_resource_ = base::MakeRefCounted<MemoryResourceImpl>(
+    memory_resource_ = base::MakeRefCounted<ResourceInterface>(
         4u * 1024LLu * 1024LLu);  // 4 MiB
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

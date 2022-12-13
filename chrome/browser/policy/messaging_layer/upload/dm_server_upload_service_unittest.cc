@@ -18,7 +18,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/reporting/resources/memory_resource_impl.h"
 #include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -73,7 +72,7 @@ class DmServerTest {
   DmServerTest()
       : sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
         handler_(std::make_unique<TestRecordHandler>()),
-        memory_resource_(base::MakeRefCounted<MemoryResourceImpl>(
+        memory_resource_(base::MakeRefCounted<ResourceInterface>(
             4u * 1024LLu * 1024LLu))  // 4 MiB
   {}
 

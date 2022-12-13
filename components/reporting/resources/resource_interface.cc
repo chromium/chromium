@@ -4,6 +4,7 @@
 
 #include "components/reporting/resources/resource_interface.h"
 
+#include <atomic>
 #include <utility>
 
 #include <cstdint>
@@ -11,9 +12,86 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
+
+ResourceInterface::ResourceInterface(uint64_t total_size)
+    : total_(total_size),
+      sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT})) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+ResourceInterface::~ResourceInterface() = default;
+
+bool ResourceInterface::Reserve(uint64_t size) {
+  uint64_t old_used = used_.fetch_add(size);
+  if (old_used + size > total_) {
+    used_.fetch_sub(size);
+    return false;
+  }
+  return true;
+}
+
+void ResourceInterface::Discard(uint64_t size) {
+  DCHECK_LE(size, used_.load());
+  used_.fetch_sub(size);
+
+  sequenced_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&ResourceInterface::FlushCallbacks,
+                                base::WrapRefCounted(this)));
+}
+
+uint64_t ResourceInterface::GetTotal() const {
+  return total_;
+}
+
+uint64_t ResourceInterface::GetUsed() const {
+  return used_.load();
+}
+
+void ResourceInterface::Test_SetTotal(uint64_t test_total) {
+  total_ = test_total;
+}
+
+void ResourceInterface::RegisterCallback(uint64_t size, base::OnceClosure cb) {
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<ResourceInterface> self, uint64_t size,
+             base::OnceClosure cb) {
+            DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+            self->resource_callbacks_.emplace(size, std::move(cb));
+
+            // Attempt to apply remaining callbacks
+            // (this is especially important if the new callback is registered
+            // with no allocations to be released - we don't want the callback
+            // to wait indefinitely in this case).
+            self->FlushCallbacks();
+          },
+          base::WrapRefCounted(this), size,
+          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                             std::move(cb))));
+}
+
+void ResourceInterface::FlushCallbacks() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  int64_t remained = GetTotal() - GetUsed();  // No synchronization whatsoever.
+  while (remained > 0 && !resource_callbacks_.empty()) {
+    auto& cb_pair = resource_callbacks_.front();
+    if (cb_pair.first > static_cast<uint64_t>(remained)) {
+      break;
+    }
+    remained -= cb_pair.first;
+    std::move(cb_pair.second).Run();
+    resource_callbacks_.pop();
+  }
+}
 
 ScopedReservation::ScopedReservation() noexcept = default;
 
@@ -82,5 +160,4 @@ ScopedReservation::~ScopedReservation() {
     resource_interface_->Discard(size_.value());
   }
 }
-
 }  // namespace reporting

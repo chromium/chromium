@@ -7,12 +7,12 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/task_runner.h"
+#include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
-#include "components/reporting/resources/disk_resource_impl.h"
-#include "components/reporting/resources/memory_resource_impl.h"
+#include "base/time/time.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,40 +22,36 @@ using ::testing::Eq;
 namespace reporting {
 namespace {
 
-class ResourceInterfaceTest
-    : public ::testing::TestWithParam<scoped_refptr<ResourceInterface>> {
+class ResourceInterfaceTest : public ::testing::TestWithParam<uint64_t> {
  protected:
   void SetUp() override {
+    resource_ = base::MakeRefCounted<ResourceInterface>(GetParam());
     // Make sure parameters define reasonably large total resource size.
-    ASSERT_GE(resource_interface()->GetTotal(), 1u * 1024LLu * 1024LLu);
+    ASSERT_GE(resource_->GetTotal(), 1u * 1024LLu * 1024LLu);
   }
 
-  scoped_refptr<ResourceInterface> resource_interface() const {
-    return GetParam();
-  }
+  void TearDown() override { EXPECT_THAT(resource_->GetUsed(), Eq(0u)); }
 
-  void TearDown() override {
-    EXPECT_THAT(resource_interface()->GetUsed(), Eq(0u));
-  }
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
- private:
-  base::test::TaskEnvironment task_environment_;
+  scoped_refptr<ResourceInterface> resource_;
 };
 
 TEST_P(ResourceInterfaceTest, NestedReservationTest) {
-  uint64_t size = resource_interface()->GetTotal();
+  uint64_t size = resource_->GetTotal();
   while ((size / 2) > 0u) {
     size /= 2;
-    EXPECT_TRUE(resource_interface()->Reserve(size));
+    EXPECT_TRUE(resource_->Reserve(size));
   }
 
-  for (; size < resource_interface()->GetTotal(); size *= 2) {
-    resource_interface()->Discard(size);
+  for (; size < resource_->GetTotal(); size *= 2) {
+    resource_->Discard(size);
   }
 }
 
 TEST_P(ResourceInterfaceTest, SimultaneousReservationTest) {
-  uint64_t size = resource_interface()->GetTotal();
+  uint64_t size = resource_->GetTotal();
 
   // Schedule reservations.
   test::TestCallbackWaiter reserve_waiter;
@@ -70,13 +66,13 @@ TEST_P(ResourceInterfaceTest, SimultaneousReservationTest) {
               EXPECT_TRUE(resource_interface->Reserve(size));
               waiter->Signal();
             },
-            size, resource_interface(), &reserve_waiter));
+            size, resource_, &reserve_waiter));
   }
   reserve_waiter.Wait();
 
   // Schedule discards.
   test::TestCallbackWaiter discard_waiter;
-  for (; size < resource_interface()->GetTotal(); size *= 2) {
+  for (; size < resource_->GetTotal(); size *= 2) {
     discard_waiter.Attach();
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
@@ -86,13 +82,13 @@ TEST_P(ResourceInterfaceTest, SimultaneousReservationTest) {
               resource_interface->Discard(size);
               waiter->Signal();
             },
-            size, resource_interface(), &discard_waiter));
+            size, resource_, &discard_waiter));
   }
   discard_waiter.Wait();
 }
 
 TEST_P(ResourceInterfaceTest, SimultaneousScopedReservationTest) {
-  uint64_t size = resource_interface()->GetTotal();
+  uint64_t size = resource_->GetTotal();
   test::TestCallbackWaiter waiter;
   while ((size / 2) > 0u) {
     size /= 2;
@@ -105,14 +101,14 @@ TEST_P(ResourceInterfaceTest, SimultaneousScopedReservationTest) {
               { ScopedReservation(size, resource_interface); }
               waiter->Signal();
             },
-            size, resource_interface(), &waiter));
+            size, resource_, &waiter));
   }
   waiter.Wait();
 }
 
 TEST_P(ResourceInterfaceTest, MoveScopedReservationTest) {
-  uint64_t size = resource_interface()->GetTotal();
-  ScopedReservation scoped_reservation(size / 2, resource_interface());
+  uint64_t size = resource_->GetTotal();
+  ScopedReservation scoped_reservation(size / 2, resource_);
   EXPECT_TRUE(scoped_reservation.reserved());
   {
     ScopedReservation moved_scoped_reservation(std::move(scoped_reservation));
@@ -123,29 +119,29 @@ TEST_P(ResourceInterfaceTest, MoveScopedReservationTest) {
 }
 
 TEST_P(ResourceInterfaceTest, ScopedReservationBasicReduction) {
-  uint64_t size = resource_interface()->GetTotal() / 2;
-  ScopedReservation scoped_reservation(size, resource_interface());
+  uint64_t size = resource_->GetTotal() / 2;
+  ScopedReservation scoped_reservation(size, resource_);
   EXPECT_TRUE(scoped_reservation.reserved());
   EXPECT_TRUE(scoped_reservation.Reduce(size / 2));
 }
 
 TEST_P(ResourceInterfaceTest, ScopedReservationReductionWithLargerNewSize) {
-  uint64_t size = resource_interface()->GetTotal() / 2;
-  ScopedReservation scoped_reservation(size, resource_interface());
+  uint64_t size = resource_->GetTotal() / 2;
+  ScopedReservation scoped_reservation(size, resource_);
   EXPECT_TRUE(scoped_reservation.reserved());
   EXPECT_FALSE(scoped_reservation.Reduce(size + 1));
 }
 
 TEST_P(ResourceInterfaceTest, ScopedReservationReductionWithNegativeNewSize) {
-  uint64_t size = resource_interface()->GetTotal() / 2;
-  ScopedReservation scoped_reservation(size, resource_interface());
+  uint64_t size = resource_->GetTotal() / 2;
+  ScopedReservation scoped_reservation(size, resource_);
   EXPECT_TRUE(scoped_reservation.reserved());
   EXPECT_FALSE(scoped_reservation.Reduce(-(size / 2)));
 }
 
 TEST_P(ResourceInterfaceTest, ScopedReservationRepeatingReductions) {
-  uint64_t size = resource_interface()->GetTotal() / 2;
-  ScopedReservation scoped_reservation(size, resource_interface());
+  uint64_t size = resource_->GetTotal() / 2;
+  ScopedReservation scoped_reservation(size, resource_);
   EXPECT_TRUE(scoped_reservation.reserved());
 
   for (; size >= 2; size /= 2) {
@@ -156,41 +152,37 @@ TEST_P(ResourceInterfaceTest, ScopedReservationRepeatingReductions) {
 }
 
 TEST_P(ResourceInterfaceTest, ScopedReservationBasicHandOver) {
-  uint64_t size = resource_interface()->GetTotal() / 2;
-  ScopedReservation scoped_reservation(size, resource_interface());
+  uint64_t size = resource_->GetTotal() / 2;
+  ScopedReservation scoped_reservation(size, resource_);
   ASSERT_TRUE(scoped_reservation.reserved());
   {
-    ScopedReservation another_reservation(size - 1, resource_interface());
+    ScopedReservation another_reservation(size - 1, resource_);
     ASSERT_TRUE(another_reservation.reserved());
-    EXPECT_THAT(resource_interface()->GetUsed(),
-                Eq(resource_interface()->GetTotal() - 1));
+    EXPECT_THAT(resource_->GetUsed(), Eq(resource_->GetTotal() - 1));
     EXPECT_TRUE(scoped_reservation.reserved());
     EXPECT_TRUE(another_reservation.reserved());
     scoped_reservation.HandOver(another_reservation);
-    EXPECT_THAT(resource_interface()->GetUsed(),
-                Eq(resource_interface()->GetTotal() - 1));
+    EXPECT_THAT(resource_->GetUsed(), Eq(resource_->GetTotal() - 1));
   }
   // Destruction of |anoter_reservation| does not change the amount used.
-  EXPECT_THAT(resource_interface()->GetUsed(),
-              Eq(resource_interface()->GetTotal() - 1));
+  EXPECT_THAT(resource_->GetUsed(), Eq(resource_->GetTotal() - 1));
 }
 
 TEST_P(ResourceInterfaceTest, ScopedReservationRepeatingHandOvers) {
-  uint64_t size = resource_interface()->GetTotal() / 2;
-  ScopedReservation scoped_reservation(size, resource_interface());
+  uint64_t size = resource_->GetTotal() / 2;
+  ScopedReservation scoped_reservation(size, resource_);
   EXPECT_TRUE(scoped_reservation.reserved());
 
   for (; size >= 2; size /= 2) {
-    ScopedReservation another_reservation(size / 2, resource_interface());
+    ScopedReservation another_reservation(size / 2, resource_);
     scoped_reservation.HandOver(another_reservation);
   }
-  EXPECT_THAT(resource_interface()->GetUsed(),
-              Eq(resource_interface()->GetTotal() - 1));
+  EXPECT_THAT(resource_->GetUsed(), Eq(resource_->GetTotal() - 1));
 }
 
 TEST_P(ResourceInterfaceTest, ScopedReservationRepeatingCopyHandOvers) {
-  uint64_t size = resource_interface()->GetTotal() / 2;
-  ScopedReservation scoped_reservation(size, resource_interface());
+  uint64_t size = resource_->GetTotal() / 2;
+  ScopedReservation scoped_reservation(size, resource_);
   EXPECT_TRUE(scoped_reservation.reserved());
 
   for (; size >= 2; size /= 2) {
@@ -198,13 +190,12 @@ TEST_P(ResourceInterfaceTest, ScopedReservationRepeatingCopyHandOvers) {
     EXPECT_TRUE(another_reservation.reserved());
     scoped_reservation.HandOver(another_reservation);
   }
-  EXPECT_THAT(resource_interface()->GetUsed(),
-              Eq(resource_interface()->GetTotal() - 1));
+  EXPECT_THAT(resource_->GetUsed(), Eq(resource_->GetTotal() - 1));
 }
 
 TEST_P(ResourceInterfaceTest, ScopedReservationFailureToCopyFromEmpty) {
   ScopedReservation scoped_reservation;
-  uint64_t size = resource_interface()->GetTotal() / 2;
+  uint64_t size = resource_->GetTotal() / 2;
   ScopedReservation another_reservation(size, scoped_reservation);
   EXPECT_FALSE(scoped_reservation.reserved());
 }
@@ -213,26 +204,24 @@ TEST_P(ResourceInterfaceTest, ScopedReservationRepeatingHandOversToEmpty) {
   ScopedReservation scoped_reservation;
   EXPECT_FALSE(scoped_reservation.reserved());
 
-  uint64_t size = resource_interface()->GetTotal();
+  uint64_t size = resource_->GetTotal();
   for (; size >= 2; size /= 2) {
-    ScopedReservation another_reservation(size / 2, resource_interface());
+    ScopedReservation another_reservation(size / 2, resource_);
     scoped_reservation.HandOver(another_reservation);
   }
-  EXPECT_THAT(resource_interface()->GetUsed(),
-              Eq(resource_interface()->GetTotal() - 1));
+  EXPECT_THAT(resource_->GetUsed(), Eq(resource_->GetTotal() - 1));
 }
 
 TEST_P(ResourceInterfaceTest, ScopedReservationEmptyHandOver) {
-  uint64_t size = resource_interface()->GetTotal() / 2;
-  ScopedReservation scoped_reservation(size, resource_interface());
+  uint64_t size = resource_->GetTotal() / 2;
+  ScopedReservation scoped_reservation(size, resource_);
 
   ASSERT_TRUE(scoped_reservation.reserved());
   {
-    ScopedReservation another_reservation(size - 1, resource_interface());
+    ScopedReservation another_reservation(size - 1, resource_);
     ASSERT_TRUE(another_reservation.reserved());
 
-    EXPECT_THAT(resource_interface()->GetUsed(),
-                Eq(resource_interface()->GetTotal() - 1));
+    EXPECT_THAT(resource_->GetUsed(), Eq(resource_->GetTotal() - 1));
     EXPECT_TRUE(scoped_reservation.reserved());
     EXPECT_TRUE(another_reservation.reserved());
 
@@ -240,24 +229,135 @@ TEST_P(ResourceInterfaceTest, ScopedReservationEmptyHandOver) {
     ASSERT_FALSE(another_reservation.reserved());
 
     scoped_reservation.HandOver(another_reservation);
-    EXPECT_THAT(resource_interface()->GetUsed(), Eq(size));
+    EXPECT_THAT(resource_->GetUsed(), Eq(size));
   }
   // Destruction of |anoter_reservation| does not change the amount used.
-  EXPECT_THAT(resource_interface()->GetUsed(), Eq(size));
+  EXPECT_THAT(resource_->GetUsed(), Eq(size));
 }
 
 TEST_P(ResourceInterfaceTest, ReservationOverMaxTest) {
-  EXPECT_FALSE(
-      resource_interface()->Reserve(resource_interface()->GetTotal() + 1));
-  EXPECT_TRUE(resource_interface()->Reserve(resource_interface()->GetTotal()));
-  resource_interface()->Discard(resource_interface()->GetTotal());
+  EXPECT_FALSE(resource_->Reserve(resource_->GetTotal() + 1));
+  EXPECT_TRUE(resource_->Reserve(resource_->GetTotal()));
+  resource_->Discard(resource_->GetTotal());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    VariousResources,
-    ResourceInterfaceTest,
-    testing::Values(
-        base::MakeRefCounted<DiskResourceImpl>(16u * 1024LLu * 1024LLu),
-        base::MakeRefCounted<MemoryResourceImpl>(4u * 1024LLu * 1024LLu)));
+// Helper class with the following behavior:
+// - Once created, immediately posts `Start` action on a dedicated task runner
+// - `Start` registers a callback for `size` resource
+// - When Callback happens (on the same task runner), the work is done;
+//   `done` is called and then teh `Actor` commits suiside.
+class Actor {
+ public:
+  Actor(uint64_t size,
+        base::OnceClosure done,
+        scoped_refptr<ResourceInterface> resource_interface)
+      : size_(size),
+        done_(std::move(done)),
+        resource_interface_(resource_interface) {
+    DETACH_FROM_SEQUENCE(sequence_checker_);
+    EXPECT_TRUE(done_);
+    sequenced_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&Actor::Start, base::Unretained(this)));
+  }
+
+  ~Actor() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    EXPECT_FALSE(done_);
+  }
+
+  void Start() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // Pretend that the reservation was unavailable, schedule callback when it
+    // becomes available.
+    resource_interface_->RegisterCallback(
+        size_,
+        base::BindOnce(&Actor::OnResourceRelease, base::Unretained(this)));
+  }
+
+  void Execute() {
+    auto done = std::move(done_);
+    resource_interface_->Discard(size_);
+    delete this;
+    // Signal after deletion, to prevent potential test flake.
+    std::move(done).Run();
+  }
+
+  void OnResourceRelease() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);  // Same task runner!
+    if (!resource_interface_->Reserve(size_)) {
+      // Still not available, reschedule callback.
+      resource_interface_->RegisterCallback(
+          size_,
+          base::BindOnce(&Actor::OnResourceRelease, base::Unretained(this)));
+      return;
+    }
+    // Reserved. Pause, then release and delete itself.
+    sequenced_task_runner_->PostDelayedTask(
+        FROM_HERE, base::BindOnce(&Actor::Execute, base::Unretained(this)),
+        base::Seconds(1));
+  }
+
+ private:
+  const uint64_t size_;
+  base::OnceClosure done_;
+  scoped_refptr<ResourceInterface> resource_interface_;
+  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_{
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT})};
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+TEST_P(ResourceInterfaceTest, ReservationWithWaits) {
+  static constexpr size_t kActorsCount = 64;
+
+  // Occupy whole resource.
+
+  ASSERT_TRUE(resource_->Reserve(resource_->GetTotal()));
+  // Create a number of Actors reserving 1/2 of total resource.
+  // Only two of them could fit simultaneously, others will wait and retry
+  // getting the resource after being called back.
+  test::TestCallbackAutoWaiter waiter;
+  waiter.Attach(kActorsCount - 1);
+  for (size_t i = 0; i < kActorsCount; ++i) {
+    new Actor(resource_->GetTotal() / 2,
+              base::BindOnce(&test::TestCallbackAutoWaiter::Signal,
+                             base::Unretained(&waiter)),
+              resource_);
+  }
+
+  // Release resource.
+  resource_->Discard(resource_->GetTotal());
+
+  // All waiting Actors are called back to get resource, finish work,
+  // and then the waiter will be signaled.
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
+
+TEST_P(ResourceInterfaceTest, ReservationWithWaitsOnEmptyReservation) {
+  // Similar to the previous test, but with no reservation other than
+  // the Actors.
+  static constexpr size_t kActorsCount = 64;
+
+  // Create a number of Actors reserving 1/2 of total resource.
+  // Only two of them could fit simultaneously, others will wait and retry
+  // getting the resource after being called back.
+  test::TestCallbackAutoWaiter waiter;
+  waiter.Attach(kActorsCount - 1);
+  for (size_t i = 0; i < kActorsCount; ++i) {
+    new Actor(resource_->GetTotal() / 2,
+              base::BindOnce(&test::TestCallbackAutoWaiter::Signal,
+                             base::Unretained(&waiter)),
+              resource_);
+  }
+
+  // Waiting Actors are called back to get resource, finish work,
+  // and then the waiter will be signaled.
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
+
+INSTANTIATE_TEST_SUITE_P(VariousResources,
+                         ResourceInterfaceTest,
+                         testing::Values(16u * 1024LLu * 1024LLu,
+                                         4u * 1024LLu * 1024LLu));
 }  // namespace
 }  // namespace reporting

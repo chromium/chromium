@@ -11,10 +11,6 @@ static_library("resource_interface") {
     "//components/reporting/*",
   ]
   sources = [
-    "disk_resource_impl.cc",
-    "disk_resource_impl.h",
-    "memory_resource_impl.cc",
-    "memory_resource_impl.h",
     "resource_interface.cc",
     "resource_interface.h",
   ]

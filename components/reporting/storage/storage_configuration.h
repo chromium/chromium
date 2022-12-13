@@ -14,8 +14,6 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/reporting/resources/disk_resource_impl.h"
-#include "components/reporting/resources/memory_resource_impl.h"
 #include "components/reporting/resources/resource_interface.h"
 
 namespace reporting {
@@ -60,12 +58,12 @@ class StorageOptions {
   }
   StorageOptions& set_max_total_files_size(uint64_t max_total_files_size) {
     disk_space_resource_ =
-        base::MakeRefCounted<DiskResourceImpl>(max_total_files_size);
+        base::MakeRefCounted<ResourceInterface>(max_total_files_size);
     return *this;
   }
   StorageOptions& set_max_total_memory_size(uint64_t max_total_memory_size) {
     memory_resource_ =
-        base::MakeRefCounted<MemoryResourceImpl>(max_total_memory_size);
+        base::MakeRefCounted<ResourceInterface>(max_total_memory_size);
     return *this;
   }
   const base::FilePath& directory() const { return directory_; }

@@ -5,43 +5,80 @@
 #ifndef COMPONENTS_REPORTING_RESOURCES_RESOURCE_INTERFACE_H_
 #define COMPONENTS_REPORTING_RESOURCES_RESOURCE_INTERFACE_H_
 
+#include <atomic>
 #include <cstdint>
+#include <queue>
+#include <utility>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
 // Interface to resources management by Storage module.
 // Must be implemented by the caller base on the platform limitations.
-// All APIs are non-blocking.
+// All APIs are non-blocking. The class is thread-safe.
+// TODO(b/258822636): The class is no longer interface, rename it and update the
+// comments.
 class ResourceInterface : public base::RefCountedThreadSafe<ResourceInterface> {
  public:
+  explicit ResourceInterface(uint64_t total_size);
+
   // Needs to be called before attempting to allocate specified size.
   // Returns true if requested amount can be allocated.
   // After that the caller can actually allocate it or must call
   // |Discard| if decided not to allocate.
-  virtual bool Reserve(uint64_t size) = 0;
+  bool Reserve(uint64_t size);
 
-  // Reverts reservation.
+  // Reverts reservation, arranges for callbacks calls as necessary.
   // Must be called after the specified amount is released.
-  virtual void Discard(uint64_t size) = 0;
+  void Discard(uint64_t size);
 
   // Returns total amount.
-  virtual uint64_t GetTotal() const = 0;
+  uint64_t GetTotal() const;
 
   // Returns current used amount.
-  virtual uint64_t GetUsed() const = 0;
+  uint64_t GetUsed() const;
+
+  // Registers a callback to be invoked once there is specified amount
+  // of resource available (does not reserve it, so once called back
+  // the respective code must attempt to reserve again, and if unsuccessful,
+  // may need ot re-register the callback).
+  // Callbacks will be invoked in the context of the sequenced task runner
+  // it was registered in.
+  void RegisterCallback(uint64_t size, base::OnceClosure cb);
 
   // Test only: Sets non-default usage limit.
-  virtual void Test_SetTotal(uint64_t test_total) = 0;
+  void Test_SetTotal(uint64_t test_total);
 
- protected:
+ private:
   friend class base::RefCountedThreadSafe<ResourceInterface>;
 
-  ResourceInterface() = default;
-  virtual ~ResourceInterface() = default;
+  ~ResourceInterface();
+
+  // Flushes as many callbacks as possible given the current resource
+  // availability. Callbacks only signal that resource may be available,
+  // the resumed task must try to actually reserve it after that.
+  void FlushCallbacks();
+
+  uint64_t total_;  // Remains constant in prod code, changes only in tests.
+  std::atomic<uint64_t> used_{0};
+
+  // Sequenced task runner for callbacks handling (not for calling callbacks!)
+  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Queue of pairs [size, callback].
+  // When `Discard` leaves enough space available (even momentarily),
+  // calls as many of the callbacks as fit in that size, in the queue order.
+  // Note that in a meantime reservation may change - the called back code
+  // must attempt reservation before using it.
+  std::queue<std::pair<uint64_t, base::OnceClosure>> resource_callbacks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 // Moveable RAII class used for scoped Reserve-Discard.

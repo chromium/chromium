@@ -21,7 +21,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/resources/memory_resource_impl.h"
 #include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,7 +39,7 @@ constexpr char kPoorlyCompressibleTestString[] = "AAAAA11111";
 class CompressionModuleTest : public ::testing::Test {
  protected:
   CompressionModuleTest()
-      : memory_resource_(base::MakeRefCounted<MemoryResourceImpl>(
+      : memory_resource_(base::MakeRefCounted<ResourceInterface>(
             4u * 1024LLu * 1024LLu))  // 4 MiB
   {}
 
@@ -58,9 +57,9 @@ class CompressionModuleTest : public ::testing::Test {
     scoped_feature_list_.InitAndDisableFeature(kCompressReportingPipeline);
   }
 
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<ResourceInterface> memory_resource_;
   scoped_refptr<CompressionModule> compression_module_;
-  base::test::TaskEnvironment task_environment_{};
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
