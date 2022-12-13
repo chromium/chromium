@@ -360,11 +360,11 @@ TEST_F(DevToolsClientImplTest, SendCommandAndGetResult) {
   ASSERT_EQ(kOk, client.Connect().code());
   base::Value::Dict params;
   params.Set("param", 1);
-  base::Value result;
+  base::Value::Dict result;
   Status status = client.SendCommandAndGetResult("method", params, &result);
   ASSERT_EQ(kOk, status.code());
   std::string json;
-  base::JSONWriter::Write(result, &json);
+  base::JSONWriter::Write(base::Value(std::move(result)), &json);
   ASSERT_STREQ("{\"param\":1}", json.c_str());
 }
 
@@ -850,10 +850,9 @@ TEST_F(DevToolsClientImplTest, SendCommandEventBeforeResponse) {
   client.SetParserFuncForTesting(
       base::BindRepeating(&ReturnEventThenResponse, &first));
   base::Value::Dict params;
-  base::Value result;
+  base::Value::Dict result;
   ASSERT_TRUE(client.SendCommandAndGetResult("method", params, &result).IsOk());
-  ASSERT_TRUE(result.is_dict());
-  absl::optional<int> key = result.GetDict().FindInt("key");
+  absl::optional<int> key = result.FindInt("key");
   ASSERT_TRUE(key);
   ASSERT_EQ(2, key.value());
 }
@@ -1380,10 +1379,9 @@ TEST_F(DevToolsClientImplTest, NestedCommandsWithOutOfOrderResults) {
       base::BindRepeating(&ReturnOutOfOrderResponses, &recurse_count, &client));
   base::Value::Dict params;
   params.Set("param", 1);
-  base::Value result;
+  base::Value::Dict result;
   ASSERT_TRUE(client.SendCommandAndGetResult("method", params, &result).IsOk());
-  ASSERT_TRUE(result.is_dict());
-  absl::optional<int> key = result.GetDict().FindInt("key");
+  absl::optional<int> key = result.FindInt("key");
   ASSERT_TRUE(key);
   ASSERT_EQ(2, key.value());
 }
@@ -2150,18 +2148,14 @@ class PingingListener : public DevToolsEventListener {
 
     base::Value::Dict params;
     params.Set("ping", ping_);
-    base::Value result;
+    base::Value::Dict result;
     event_handled_ = true;
     Status status = client_->SendCommandAndGetResult("method", params, &result);
     EXPECT_EQ(kOk, status.code());
     if (!status.IsOk()) {
       return status;
     }
-    EXPECT_TRUE(result.is_dict());
-    if (!result.is_dict()) {
-      return Status{kUnknownError, "result is not a dictionary"};
-    }
-    absl::optional<int> pong = result.GetDict().FindInt("pong");
+    absl::optional<int> pong = result.FindInt("pong");
     EXPECT_TRUE(pong);
     if (pong) {
       pong_ = *pong;
@@ -2275,20 +2269,18 @@ TEST_F(DevToolsClientImplTest, RoutingTwoChildren) {
   {
     base::Value::Dict params;
     params.Set("ping", 2);
-    base::Value result;
+    base::Value::Dict result;
     ASSERT_TRUE(StatusOk(
         red_client.SendCommandAndGetResult("method", params, &result)));
-    ASSERT_TRUE(result.is_dict());
-    EXPECT_EQ(result.GetDict().FindInt("pong").value_or(-1), 2);
+    EXPECT_EQ(result.FindInt("pong").value_or(-1), 2);
   }
   {
     base::Value::Dict params;
     params.Set("ping", 3);
-    base::Value result;
+    base::Value::Dict result;
     ASSERT_TRUE(StatusOk(
         blue_client.SendCommandAndGetResult("method", params, &result)));
-    ASSERT_TRUE(result.is_dict());
-    EXPECT_EQ(result.GetDict().FindInt("pong").value_or(-1), 3);
+    EXPECT_EQ(result.FindInt("pong").value_or(-1), 3);
   }
 }
 
@@ -2310,11 +2302,10 @@ TEST_F(DevToolsClientImplTest, RoutingWithEvent) {
   {
     base::Value::Dict params;
     params.Set("ping", 12);
-    base::Value result;
+    base::Value::Dict result;
     ASSERT_TRUE(StatusOk(
         red_client.SendCommandAndGetResult("method", params, &result)));
-    ASSERT_TRUE(result.is_dict());
-    EXPECT_EQ(result.GetDict().FindInt("pong").value_or(-1), 12);
+    EXPECT_EQ(result.FindInt("pong").value_or(-1), 12);
   }
 
   EXPECT_EQ(71, blue_listener.Ping());
@@ -2733,12 +2724,11 @@ TEST_F(DevToolsClientImplTest, CdpCommandTunneling) {
   {
     base::Value::Dict params;
     params.Set("wrapped-ping", 13);
-    base::Value result;
+    base::Value::Dict result;
     ASSERT_TRUE(StatusOk(
         page_client.SendCommandAndGetResult("method", params, &result)));
     EXPECT_EQ(wrapped_counter, 1);
-    ASSERT_TRUE(result.is_dict());
-    EXPECT_EQ(result.GetDict().FindInt("wrapped-pong").value_or(-1), 13);
+    EXPECT_EQ(result.FindInt("wrapped-pong").value_or(-1), 13);
   }
 }
 
@@ -2960,7 +2950,7 @@ TEST_F(DevToolsClientImplTest, CdpEventTunneling) {
   ASSERT_TRUE(StatusOk(mapper_client.AppointAsBidiServerForTesting()));
   ASSERT_TRUE(
       StatusOk(page_client.SetTunnelSessionId(mapper_client.SessionId())));
-  base::Value result;
+  base::Value::Dict result;
   page_client.SendCommandAndGetResult("method", base::Value::Dict(), &result);
 
   ASSERT_EQ(static_cast<size_t>(0), mapper_bidi_listener.payload_list.size());

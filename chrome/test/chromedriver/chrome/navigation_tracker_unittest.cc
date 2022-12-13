@@ -44,27 +44,23 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
 
   Status SendCommandAndGetResult(const std::string& method,
                                  const base::Value::Dict& params,
-                                 base::Value* result) override {
+                                 base::Value::Dict* result) override {
     if (method == "DOM.getDocument") {
-      base::Value::Dict result_dict;
       if (has_empty_base_url_) {
-        result_dict.SetByDottedPath("root.baseURL", "about:blank");
-        result_dict.SetByDottedPath("root.documentURL", "http://test");
+        result->SetByDottedPath("root.baseURL", "about:blank");
+        result->SetByDottedPath("root.documentURL", "http://test");
       } else {
-        result_dict.SetByDottedPath("root.baseURL", "http://test");
-        result_dict.SetByDottedPath("root.documentURL", "http://test");
+        result->SetByDottedPath("root.baseURL", "http://test");
+        result->SetByDottedPath("root.documentURL", "http://test");
       }
-      *result = base::Value(std::move(result_dict));
       return Status(kOk);
     } else if (method == "Runtime.evaluate") {
       const std::string* expression = params.FindString("expression");
       if (expression) {
-        base::Value::Dict result_dict;
         if (*expression == "1")
-          result_dict.SetByDottedPath("result.value", 1);
+          result->SetByDottedPath("result.value", 1);
         else if (*expression == "document.readyState")
-          result_dict.SetByDottedPath("result.value", "loading");
-        *result = base::Value(std::move(result_dict));
+          result->SetByDottedPath("result.value", "loading");
         return Status(kOk);
       }
     }
@@ -78,9 +74,7 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
       }
     }
 
-    base::Value result_dict(base::Value::Type::DICTIONARY);
-    result_dict.GetDict().SetByDottedPath("result.value", is_loading_);
-    *result = std::move(result_dict);
+    result->SetByDottedPath("result.value", is_loading_);
     return Status(kOk);
   }
 
@@ -397,16 +391,13 @@ class FailToEvalScriptDevToolsClient : public StubDevToolsClient {
 
   Status SendCommandAndGetResult(const std::string& method,
                                  const base::Value::Dict& params,
-                                 base::Value* result) override {
+                                 base::Value::Dict* result) override {
     if (!is_dom_getDocument_requested_ && method == "DOM.getDocument") {
       is_dom_getDocument_requested_ = true;
-      base::Value result_dict(base::Value::Type::DICTIONARY);
-      result_dict.GetDict().SetByDottedPath("root.baseURL", "http://test");
-      *result = std::move(result_dict);
+      result->SetByDottedPath("root.baseURL", "http://test");
       return Status(kOk);
     }
     EXPECT_STREQ("Runtime.evaluate", method.c_str());
-    *result = base::Value(base::Value::Type::DICTIONARY);
     return Status(kUnknownError, "failed to eval script");
   }
 
@@ -581,8 +572,7 @@ class TargetClosedDevToolsClient : public StubDevToolsClient {
 
   Status SendCommandAndGetResult(const std::string& method,
                                  const base::Value::Dict& params,
-                                 base::Value* result) override {
-    *result = base::Value(base::Value::Type::DICTIONARY);
+                                 base::Value::Dict* result) override {
     return Status(kUnknownError, "Inspected target navigated or closed");
   }
 };

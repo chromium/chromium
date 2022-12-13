@@ -121,7 +121,7 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
   // (see crbug.com/524079).
   base::Value::Dict params;
   params.Set("expression", "1");
-  base::Value result;
+  base::Value::Dict result;
   Status status = client_->SendCommandAndGetResultWithTimeout(
       "Runtime.evaluate", params, timeout, &result);
   if (status.code() == kDisconnected) {
@@ -148,7 +148,8 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
     *is_pending = true;
     return Status(kOk);
   }
-  if (status.IsError() || result.FindIntPath("result.value").value_or(0) != 1) {
+  if (status.IsError() ||
+      result.FindIntByDottedPath("result.value").value_or(0) != 1) {
     return MakeNavigationCheckFailedStatus(status);
   }
 
@@ -165,8 +166,8 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
         "DOM.getDocument", empty_params, timeout, &result);
     if (status.IsError())
       return MakeNavigationCheckFailedStatus(status);
-    std::string* base_url = result.FindStringPath("root.baseURL");
-    std::string* doc_url = result.FindStringPath("root.documentURL");
+    std::string* base_url = result.FindStringByDottedPath("root.baseURL");
+    std::string* doc_url = result.FindStringByDottedPath("root.documentURL");
     if (!base_url || !doc_url)
       return MakeNavigationCheckFailedStatus(status);
 
@@ -198,12 +199,12 @@ Status NavigationTracker::CheckFunctionExists(const Timeout* timeout,
                                               bool* exists) {
   base::Value::Dict params;
   params.Set("expression", "typeof(getWindowInfo)");
-  base::Value result;
+  base::Value::Dict result;
   Status status = client_->SendCommandAndGetResultWithTimeout(
       "Runtime.evaluate", params, timeout, &result);
   if (status.IsError())
     return MakeNavigationCheckFailedStatus(status);
-  std::string* type = result.FindStringPath("result.value");
+  std::string* type = result.FindStringByDottedPath("result.value");
   if (!type)
     return MakeNavigationCheckFailedStatus(status);
   *exists = *type == "function";
@@ -316,7 +317,7 @@ Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
     *loading_state_ = kUnknown;
     base::Value::Dict params;
     params.Set("expression", "document.URL");
-    base::Value result_dict;
+    base::Value::Dict result_dict;
     Status status(kOk);
     for (int attempt = 0; attempt < 3; attempt++) {
       status = client_->SendCommandAndGetResultWithTimeout(
@@ -329,7 +330,7 @@ Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
 
     if (status.IsError())
       return MakeNavigationCheckFailedStatus(status);
-    std::string* url = result_dict.FindStringPath("result.value");
+    std::string* url = result_dict.FindStringByDottedPath("result.value");
     if (!url)
       return MakeNavigationCheckFailedStatus(status);
     if (GetLoadingState() == kUnknown && url->empty())

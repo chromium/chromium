@@ -41,10 +41,10 @@ class FakeDevToolsClient : public StubDevToolsClient {
   // Overridden from DevToolsClient:
   Status SendCommandAndGetResult(const std::string& method,
                                  const base::Value::Dict& params,
-                                 base::Value* result) override {
+                                 base::Value::Dict* result) override {
     if (status_.IsError())
       return status_;
-    *result = base::Value(result_.Clone());
+    *result = result_.Clone();
     return Status(kOk);
   }
 

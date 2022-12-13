@@ -64,11 +64,10 @@ class FakeDevToolsClient : public StubDevToolsClient {
 
   Status SendCommandAndGetResult(const std::string& method,
                                  const base::Value::Dict& params,
-                                 base::Value* result) override {
+                                 base::Value::Dict* result) override {
     auto dict = std::make_unique<base::Value::Dict>(params.Clone());
     sent_commands_.push_back(
         std::make_unique<DevToolsCommand>(method, dict.release()));
-    *result = base::Value(base::Value::Type::DICTIONARY);
     return Status(kOk);
   }
 

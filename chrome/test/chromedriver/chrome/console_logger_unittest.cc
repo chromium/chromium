@@ -46,9 +46,8 @@ class FakeDevToolsClient : public StubDevToolsClient {
 
   Status SendCommandAndGetResult(const std::string& method,
                                  const base::Value::Dict& params,
-                                 base::Value* result) override {
+                                 base::Value::Dict* result) override {
     sent_command_queue_.push(method);
-    *result = base::Value(base::Value::Type::DICTIONARY);
     return Status(kOk);
   }
 

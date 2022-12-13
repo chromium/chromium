@@ -58,10 +58,10 @@ Status NetworkConditionsOverrideManager::ApplyOverride(
   if (status.IsError())
     return status;
 
-  base::Value result{base::Value::Type::DICT};
+  base::Value::Dict result;
   status = client_->SendCommandAndGetResult(
       "Network.canEmulateNetworkConditions", empty_params, &result);
-  absl::optional<bool> can = result.GetDict().FindBool("result");
+  absl::optional<bool> can = result.FindBool("result");
   if (status.IsError() || !can)
     return Status(kUnknownError,
         "unable to detect if chrome can emulate network conditions", status);

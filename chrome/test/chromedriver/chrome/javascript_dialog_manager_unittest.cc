@@ -97,7 +97,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
   // Overridden from StubDevToolsClient:
   Status SendCommandAndGetResult(const std::string& method,
                                  const base::Value::Dict& params,
-                                 base::Value* result) override {
+                                 base::Value::Dict* result) override {
     while (closing_count_ > 0) {
       Status status = listener_->OnEvent(this, "Page.javascriptDialogClosed",
                                          base::Value::Dict());
@@ -105,7 +105,6 @@ class FakeDevToolsClient : public StubDevToolsClient {
         return status;
       closing_count_--;
     }
-    *result = base::Value(base::Value::Type::DICTIONARY);
     return Status(kOk);
   }
   void AddListener(DevToolsEventListener* listener) override {

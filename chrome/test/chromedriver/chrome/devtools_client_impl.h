@@ -141,11 +141,11 @@ class DevToolsClientImpl : public DevToolsClient {
                           const base::Value::Dict& params) override;
   Status SendCommandAndGetResult(const std::string& method,
                                  const base::Value::Dict& params,
-                                 base::Value* result) override;
+                                 base::Value::Dict* result) override;
   Status SendCommandAndGetResultWithTimeout(const std::string& method,
                                             const base::Value::Dict& params,
                                             const Timeout* timeout,
-                                            base::Value* result) override;
+                                            base::Value::Dict* result) override;
   Status SendCommandAndIgnoreResponse(const std::string& method,
                                       const base::Value::Dict& params) override;
 
@@ -199,7 +199,7 @@ class DevToolsClientImpl : public DevToolsClient {
   Status SendCommandInternal(const std::string& method,
                              const base::Value::Dict& params,
                              const std::string& session_id,
-                             base::Value* result,
+                             base::Value::Dict* result,
                              bool expect_response,
                              bool wait_for_response,
                              int client_command_id,

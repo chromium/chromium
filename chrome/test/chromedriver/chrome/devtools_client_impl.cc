@@ -579,14 +579,14 @@ Status DevToolsClientImpl::SendCommandWithTimeout(
     const std::string& method,
     const base::Value::Dict& params,
     const Timeout* timeout) {
-  base::Value result;
+  base::Value::Dict result;
   return SendCommandInternal(method, params, session_id_, &result, true, true,
                              0, timeout);
 }
 
 Status DevToolsClientImpl::SendAsyncCommand(const std::string& method,
                                             const base::Value::Dict& params) {
-  base::Value result;
+  base::Value::Dict result;
   return SendCommandInternal(method, params, session_id_, &result, false, false,
                              0, nullptr);
 }
@@ -594,7 +594,7 @@ Status DevToolsClientImpl::SendAsyncCommand(const std::string& method,
 Status DevToolsClientImpl::SendCommandAndGetResult(
     const std::string& method,
     const base::Value::Dict& params,
-    base::Value* result) {
+    base::Value::Dict* result) {
   return SendCommandAndGetResultWithTimeout(method, params, nullptr, result);
 }
 
@@ -602,15 +602,13 @@ Status DevToolsClientImpl::SendCommandAndGetResultWithTimeout(
     const std::string& method,
     const base::Value::Dict& params,
     const Timeout* timeout,
-    base::Value* result) {
-  base::Value intermediate_result;
+    base::Value::Dict* result) {
+  base::Value::Dict intermediate_result;
   Status status =
       SendCommandInternal(method, params, session_id_, &intermediate_result,
                           true, true, 0, timeout);
   if (status.IsError())
     return status;
-  if (!intermediate_result.is_dict())
-    return Status(kUnknownError, "inspector response missing result");
   *result = std::move(intermediate_result);
   return Status(kOk);
 }
@@ -764,7 +762,7 @@ Status DevToolsClientImpl::PostBidiCommandInternal(std::string channel,
 Status DevToolsClientImpl::SendCommandInternal(const std::string& method,
                                                const base::Value::Dict& params,
                                                const std::string& session_id,
-                                               base::Value* result,
+                                               base::Value::Dict* result,
                                                bool expect_response,
                                                bool wait_for_response,
                                                const int client_command_id,
@@ -858,12 +856,10 @@ Status DevToolsClientImpl::SendCommandInternal(const std::string& method,
       if (!response.result) {
         return internal::ParseInspectorError(response.error);
       }
-      *result = base::Value(std::move(*response.result));
+      *result = std::move(*response.result);
     }
   } else {
     CHECK(!wait_for_response);
-    if (result)
-      *result = base::Value(base::Value::Type::DICTIONARY);
   }
   return Status(kOk);
 }

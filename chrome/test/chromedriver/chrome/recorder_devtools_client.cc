@@ -15,13 +15,12 @@ RecorderDevToolsClient::~RecorderDevToolsClient() {}
 Status RecorderDevToolsClient::SendCommandAndGetResult(
     const std::string& method,
     const base::Value::Dict& params,
-    base::Value* result) {
+    base::Value::Dict* result) {
   commands_.emplace_back(method, params.Clone());
 
   // For any tests that directly call SendCommandAndGetResults, we'll just
   // always return { "result": true }. Currently only used when testing
   // "canEmulateNetworkConditions".
-  *result = base::Value(base::Value::Type::DICTIONARY);
-  result->SetBoolKey("result", true);
+  result->Set("result", true);
   return Status(kOk);
 }

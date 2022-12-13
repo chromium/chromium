@@ -40,7 +40,7 @@ class RecorderDevToolsClient : public StubDevToolsClient {
   // Overridden from StubDevToolsClient:
   Status SendCommandAndGetResult(const std::string& method,
                                  const base::Value::Dict& params,
-                                 base::Value* result) override;
+                                 base::Value::Dict* result) override;
 
   std::vector<Command> commands_;
 };

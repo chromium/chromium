@@ -173,13 +173,13 @@ Status ChromeImpl::NewWindow(const std::string& target_id,
   params.Set("url", "about:blank");
   params.Set("newWindow", type == WindowType::kWindow);
   params.Set("background", true);
-  base::Value result;
+  base::Value::Dict result;
   status = devtools_websocket_client_->SendCommandAndGetResult(
       "Target.createTarget", params, &result);
   if (status.IsError())
     return status;
 
-  const std::string* target_id_str = result.FindStringKey("targetId");
+  const std::string* target_id_str = result.FindString("targetId");
   if (!target_id_str)
     return Status(kUnknownError, "no targetId from createTarget");
   *window_handle = *target_id_str;
@@ -193,7 +193,7 @@ Status ChromeImpl::CreateClient(const std::string& id,
   std::string session_id;
   {
     base::Value::Dict params;
-    base::Value result;
+    base::Value::Dict result;
     params.Set("targetId", id);
     params.Set("flatten", true);
     status = devtools_websocket_client_->SendCommandAndGetResult(
@@ -202,7 +202,7 @@ Status ChromeImpl::CreateClient(const std::string& id,
       return status;
     }
 
-    std::string* session_id_ptr = result.GetDict().FindString("sessionId");
+    std::string* session_id_ptr = result.FindString("sessionId");
 
     if (session_id_ptr == nullptr) {
       return Status(kUnknownError,
@@ -290,13 +290,13 @@ Status ChromeImpl::CloseFrontends(const std::string& for_client_id) {
 Status ChromeImpl::GetWindow(const std::string& target_id, Window* window) {
   base::Value::Dict params;
   params.Set("targetId", target_id);
-  base::Value result;
+  base::Value::Dict result;
   Status status = devtools_websocket_client_->SendCommandAndGetResult(
       "Browser.getWindowForTarget", params, &result);
   if (status.IsError())
     return status;
 
-  return ParseWindow(result, window);
+  return ParseWindow(base::Value(std::move(result)), window);
 }
 
 Status ChromeImpl::GetWindowRect(const std::string& target_id,
@@ -385,13 +385,13 @@ Status ChromeImpl::SetWindowRect(const std::string& target_id,
 Status ChromeImpl::GetWindowBounds(int window_id, Window* window) {
   base::Value::Dict params;
   params.Set("windowId", window_id);
-  base::Value result;
+  base::Value::Dict result;
   Status status = devtools_websocket_client_->SendCommandAndGetResult(
       "Browser.getWindowBounds", params, &result);
   if (status.IsError())
     return status;
 
-  return ParseWindowBounds(result, window);
+  return ParseWindowBounds(base::Value(std::move(result)), window);
 }
 
 Status ChromeImpl::SetWindowBounds(Window* window,
@@ -540,17 +540,13 @@ Status ChromeImpl::GetWebViewsInfo(WebViewsInfo* views_info) {
   Status status{kOk};
 
   base::Value::Dict params;
-  base::Value result;
+  base::Value::Dict result;
   status = devtools_websocket_client_->SendCommandAndGetResult(
       "Target.getTargets", params, &result);
   if (status.IsError()) {
     return status;
   }
-  if (!result.is_dict()) {
-    return Status(kUnknownError,
-                  "result of call to Target.getTargets is not a map");
-  }
-  base::Value* target_infos = result.GetDict().Find("targetInfos");
+  base::Value* target_infos = result.Find("targetInfos");
   if (!target_infos) {
     return Status(
         kUnknownError,

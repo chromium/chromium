@@ -42,11 +42,11 @@ class StubDevToolsClient : public DevToolsClient {
                           const base::Value::Dict& params) override;
   Status SendCommandAndGetResult(const std::string& method,
                                  const base::Value::Dict& params,
-                                 base::Value* result) override;
+                                 base::Value::Dict* result) override;
   Status SendCommandAndGetResultWithTimeout(const std::string& method,
                                             const base::Value::Dict& params,
                                             const Timeout* timeout,
-                                            base::Value* result) override;
+                                            base::Value::Dict* result) override;
   Status SendCommandAndIgnoreResponse(const std::string& method,
                                       const base::Value::Dict& params) override;
   void AddListener(DevToolsEventListener* listener) override;

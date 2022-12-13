@@ -66,17 +66,15 @@ class DevToolsClient {
   virtual Status SendAsyncCommand(const std::string& method,
                                   const base::Value::Dict& params) = 0;
 
-  // A base::Value(base::Value::Type::DICTIONARY) gets assigned to |result|.
   virtual Status SendCommandAndGetResult(const std::string& method,
                                          const base::Value::Dict& params,
-                                         base::Value* result) = 0;
+                                         base::Value::Dict* result) = 0;
 
-  // A base::Value(base::Value::Type::DICTIONARY) gets assigned to |result|.
   virtual Status SendCommandAndGetResultWithTimeout(
       const std::string& method,
       const base::Value::Dict& params,
       const Timeout* timeout,
-      base::Value* result) = 0;
+      base::Value::Dict* result) = 0;
 
   virtual Status SendCommandAndIgnoreResponse(
       const std::string& method,
