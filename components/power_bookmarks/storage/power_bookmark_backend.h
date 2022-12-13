@@ -15,6 +15,7 @@
 namespace power_bookmarks {
 
 struct SearchParams;
+class PowerBookmarkSyncBridge;
 
 // Class responsible for marshalling calls from the browser thread which the
 // service is called from and the background thread which the database is
@@ -67,6 +68,10 @@ class PowerBookmarkBackend {
 
   std::unique_ptr<PowerBookmarkDatabase> db_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Sync Bridge implementation. Only initialized when the sqlite database is
+  // used.
+  std::unique_ptr<PowerBookmarkSyncBridge> bridge_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

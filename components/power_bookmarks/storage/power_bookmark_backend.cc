@@ -7,6 +7,9 @@
 #include "components/power_bookmarks/core/powers/search_params.h"
 #include "components/power_bookmarks/storage/empty_power_bookmark_database.h"
 #include "components/power_bookmarks/storage/power_bookmark_database_impl.h"
+#include "components/power_bookmarks/storage/power_bookmark_sync_bridge.h"
+#include "components/power_bookmarks/storage/power_bookmark_sync_metadata_database.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 
 namespace power_bookmarks {
 
@@ -28,7 +31,17 @@ void PowerBookmarkBackend::Init(bool use_database) {
 
   // Substitute a dummy implementation when the feature is disabled.
   if (use_database) {
-    db_ = std::make_unique<PowerBookmarkDatabaseImpl>(database_dir_);
+    auto database = std::make_unique<PowerBookmarkDatabaseImpl>(database_dir_);
+
+    // TODO(crbug.com/1392502): Plumb in syncer::ReportUnrecoverableError as the
+    // dump_stack callback.
+    auto change_processor =
+        std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+            syncer::POWER_BOOKMARK, /*dump_stack=*/base::RepeatingClosure());
+    bridge_ = std::make_unique<PowerBookmarkSyncBridge>(
+        database->GetSyncMetadataDatabase(), database.get(),
+        std::move(change_processor));
+    db_ = std::move(database);
   } else {
     db_ = std::make_unique<EmptyPowerBookmarkDatabase>();
   }

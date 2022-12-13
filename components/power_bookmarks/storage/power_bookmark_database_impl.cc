@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "components/power_bookmarks/core/powers/search_params.h"
 #include "components/power_bookmarks/metrics/power_bookmark_metrics.h"
 #include "components/power_bookmarks/storage/power_bookmark_sync_metadata_database.h"
@@ -552,6 +553,103 @@ bool PowerBookmarkDatabaseImpl::DeletePowersForURL(
     return false;
 
   return transaction.Commit();
+}
+
+std::vector<std::unique_ptr<Power>>
+PowerBookmarkDatabaseImpl::GetPowersForGUIDs(
+    const std::vector<std::string>& guids) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (auto& guid : guids) {
+    DCHECK(base::IsValidGUID(guid));
+  }
+  static constexpr char kGetPowersForGUIDsSql[] =
+      // clang-format off
+      "SELECT blobs.id, blobs.specifics, saves.url "
+          "FROM blobs JOIN saves ON blobs.id=saves.id "
+          "WHERE saves.id IN ('";
+  // clang-format on
+  std::string sql_string = (std::string(kGetPowersForGUIDsSql) +
+                            base::JoinString(guids, "','") + "')");
+  db_.IsSQLValid(sql_string.c_str());
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, sql_string.c_str()));
+  std::vector<std::unique_ptr<Power>> powers;
+  while (statement.Step()) {
+    DCHECK_EQ(3, statement.ColumnCount());
+
+    absl::optional<sync_pb::PowerBookmarkSpecifics> specifics =
+        DeserializeOrDelete(
+            statement.ColumnString(1),
+            base::GUID::ParseLowercase(statement.ColumnString(0)));
+    if (!specifics.has_value())
+      continue;
+
+    powers.emplace_back(CreatePowerFromSpecifics(specifics.value()));
+  }
+
+  return powers;
+}
+
+std::vector<std::unique_ptr<Power>> PowerBookmarkDatabaseImpl::GetAllPowers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  static constexpr char kGetPowersSql[] =
+      // clang-format off
+      "SELECT blobs.id, blobs.specifics, saves.url "
+          "FROM blobs JOIN saves ON blobs.id=saves.id";
+  // clang-format on
+  DCHECK(db_.IsSQLValid(kGetPowersSql));
+
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kGetPowersSql));
+  std::vector<std::unique_ptr<Power>> powers;
+  while (statement.Step()) {
+    DCHECK_EQ(3, statement.ColumnCount());
+
+    absl::optional<sync_pb::PowerBookmarkSpecifics> specifics =
+        DeserializeOrDelete(
+            statement.ColumnString(1),
+            base::GUID::ParseLowercase(statement.ColumnString(0)));
+    if (!specifics.has_value())
+      continue;
+
+    powers.emplace_back(CreatePowerFromSpecifics(specifics.value()));
+  }
+
+  return powers;
+}
+
+std::unique_ptr<Power> PowerBookmarkDatabaseImpl::GetPowerForGUID(
+    const std::string& guid) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  static constexpr char kGetPowerForGUIDSql[] =
+      // clang-format off
+      "SELECT blobs.id, blobs.specifics, saves.url "
+          "FROM blobs JOIN saves ON blobs.id=saves.id "
+          "WHERE saves.id=?";
+  // clang-format on
+  DCHECK(db_.IsSQLValid(kGetPowerForGUIDSql));
+
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kGetPowerForGUIDSql));
+  statement.BindString(0, guid);
+  std::vector<std::unique_ptr<Power>> powers;
+  while (statement.Step()) {
+    DCHECK_EQ(3, statement.ColumnCount());
+
+    absl::optional<sync_pb::PowerBookmarkSpecifics> specifics =
+        DeserializeOrDelete(
+            statement.ColumnString(1),
+            base::GUID::ParseLowercase(statement.ColumnString(0)));
+    if (!specifics.has_value())
+      continue;
+
+    return CreatePowerFromSpecifics(specifics.value());
+  }
+
+  return nullptr;
 }
 
 absl::optional<sync_pb::PowerBookmarkSpecifics>

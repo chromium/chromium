@@ -595,4 +595,64 @@ TEST_F(PowerBookmarkDatabaseImplTest, DeletePowersForURLUnspecifiedType) {
   EXPECT_EQ(0u, stored_powers.size());
 }
 
+TEST_F(PowerBookmarkDatabaseImplTest, GetAllPowers) {
+  std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
+      std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
+  EXPECT_TRUE(pbdb->Init());
+
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://google.com"),
+                sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK)));
+
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://bing.com"),
+                sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK)));
+
+  std::vector<std::unique_ptr<Power>> stored_powers = pbdb->GetAllPowers();
+  EXPECT_EQ(2u, stored_powers.size());
+}
+
+TEST_F(PowerBookmarkDatabaseImplTest, GetPowersForGUIDs) {
+  std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
+      std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
+  EXPECT_TRUE(pbdb->Init());
+
+  auto power1 = MakePower(GURL("https://google.com"),
+                          sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK);
+  auto power2 = MakePower(GURL("https://google.com"),
+                          sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK);
+  auto power3 = MakePower(GURL("https://bing.com"),
+                          sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK);
+  auto guid1 = power1->guid().AsLowercaseString();
+  auto guid2 = power2->guid().AsLowercaseString();
+
+  EXPECT_TRUE(pbdb->CreatePower(std::move(power1)));
+  EXPECT_TRUE(pbdb->CreatePower(std::move(power2)));
+  EXPECT_TRUE(pbdb->CreatePower(std::move(power3)));
+
+  std::vector<std::unique_ptr<Power>> stored_powers =
+      pbdb->GetPowersForGUIDs({guid1, guid2});
+  EXPECT_EQ(2u, stored_powers.size());
+  EXPECT_EQ(GURL("https://google.com"), stored_powers[0]->url());
+  EXPECT_EQ(GURL("https://google.com"), stored_powers[1]->url());
+}
+
+TEST_F(PowerBookmarkDatabaseImplTest, GetPowerForGUID) {
+  std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
+      std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
+  EXPECT_TRUE(pbdb->Init());
+
+  auto power1 = MakePower(GURL("https://google.com"),
+                          sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK);
+  auto power2 = MakePower(GURL("https://bing.com"),
+                          sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK);
+  auto guid1 = power1->guid().AsLowercaseString();
+
+  EXPECT_TRUE(pbdb->CreatePower(std::move(power1)));
+  EXPECT_TRUE(pbdb->CreatePower(std::move(power2)));
+
+  std::unique_ptr<Power> stored_power = pbdb->GetPowerForGUID(guid1);
+  EXPECT_EQ(GURL("https://google.com"), stored_power->url());
+}
+
 }  // namespace power_bookmarks
