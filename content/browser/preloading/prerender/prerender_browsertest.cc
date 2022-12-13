@@ -1444,6 +1444,49 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_NE(second_host_id, RenderFrameHost::kNoFrameTreeNodeId);
 }
 
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RetriggerPrerenderAfterRemoval) {
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering.
+  const GURL kPrerenderingUrl = GetUrl("/title2.html");
+  {
+    test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+    ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
+                       JsReplace(
+                           R"(
+                          let sc = document.createElement('script');
+                          sc.type = 'speculationrules';
+                          sc.textContent = JSON.stringify({
+                            prerender: [
+                              {source: "list", urls: [$1]}
+                            ]
+                          });
+                          document.head.appendChild(sc);
+                          )",
+                           kPrerenderingUrl)));
+    registry_observer.WaitForTrigger(kPrerenderingUrl);
+    int host_id = GetHostForUrl(kPrerenderingUrl);
+    ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+    test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+
+    // Remove the rules and check that the prerender is cancelled with an
+    // appropriate final status.
+    ASSERT_TRUE(ExecJs(
+        web_contents_impl()->GetPrimaryMainFrame(),
+        "document.querySelector('script[type=speculationrules]').remove()"));
+    host_observer.WaitForDestroyed();
+    EXPECT_EQ(GetHostForUrl(kPrerenderingUrl),
+              RenderFrameHost::kNoFrameTreeNodeId);
+  }
+  {
+    AddPrerender(kPrerenderingUrl);
+    int host_id = GetHostForUrl(kPrerenderingUrl);
+    EXPECT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+  }
+}
+
 // Tests that prerendering triggered by prerendered pages is deferred until
 // activation.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderChain) {

@@ -42,6 +42,12 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer, WebContentsObserver {
   // are updated.
   // This is kept sorted by URL.
   struct PrerenderInfo;
+
+  // Counts the historical non-new-tab prerenders.
+  // TODO(crbug.com/1350676): Observe PrerenderHost created for
+  // prerendering in a new tab so that this counter can take new-tab prerender
+  // into account.
+  int count_started_same_tab_prerenders_ = 0;
   std::vector<PrerenderInfo> started_prerenders_;
 
   base::WeakPtr<PrerenderHostRegistry> registry_;

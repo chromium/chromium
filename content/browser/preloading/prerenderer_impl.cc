@@ -147,7 +147,6 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
       // which permit this prerender.
       if (matching_candidates.empty()) {
         removed_prerender_rules.push_back(prerender.prerender_host_id);
-        prerender.prerender_host_id = RenderFrameHost::kNoFrameTreeNodeId;
       }
     }
 
@@ -167,6 +166,25 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
   registry_->CancelHosts(
       removed_prerender_rules,
       PrerenderCancellationReason(PrerenderFinalStatus::kTriggerDestroyed));
+  {
+    base::flat_set<int> removed_prerender_rules_set(
+        removed_prerender_rules.begin(), removed_prerender_rules.end());
+
+    // Remove the canceled entries so that the page can re-trigger prerendering.
+    // Here are two options: to remove the entries whose prerender_host_id is
+    // invalid, or to remove the entries whose prerender_host_id is in the
+    // removed list. Here we go with the latter, to ensure the prerender
+    // requests rejected by PrerenderHostRegistry can be filtered out. But
+    // ideally PrerenderHostRegistry should implement the history management
+    // mechanism by itself.
+    started_prerenders_.erase(
+        std::remove_if(started_prerenders_.begin(), started_prerenders_.end(),
+                       [&](const PrerenderInfo& x) {
+                         return base::Contains(removed_prerender_rules_set,
+                                               x.prerender_host_id);
+                       }),
+        started_prerenders_.end());
+  }
 
   // Actually start the candidates once the diffing is done.
   for (const auto& candidate : candidates_to_start) {
@@ -266,6 +284,16 @@ bool PrerendererImpl::MaybePrerender(
 
         // TODO(crbug.com/1350676): Observe PrerenderHost created for
         // prerendering in a new tab like the kNoHint and kSelf cases.
+        // TODO(crbug.com/1350676): Update the counter of
+        // `count_started_same_tab_prerenders_`. We cannot update this counter
+        // at this point because the counter is used to calculate the
+        // percentage of started prerenders that failed due to
+        // kMemoryLimitExceeded, which is done by observing PrerenderHosts,
+        // but this class cannot observe the started new-tab prerender at this
+        // moment. Rational: COUNT(kMemoryLimitExceeded && non-new-tab) /
+        // COUNT(non-new-tab) should be close to COUNT(kMemoryLimitExceeded) /
+        // COUNT(*), but COUNT(kMemoryLimitExceeded && non-new-tab) / COUNT(*)
+        // would follow another distribution.
         break;
       }
       // Handle the rule as kNoHint if the prerender-in-new-tab is not
@@ -279,7 +307,7 @@ bool PrerendererImpl::MaybePrerender(
       started_prerenders_.insert(end, {.url = candidate->url,
                                        .referrer = referrer,
                                        .prerender_host_id = prerender_host_id});
-
+      count_started_same_tab_prerenders_++;
       // Start to observe PrerenderHost to get the information about
       // FinalStatus.
       observers_.push_back(std::make_unique<PrerenderHostObserver>(
@@ -306,14 +334,13 @@ void PrerendererImpl::CancelStartedPrerenders() {
   // This function can be called twice and the histogram should be recorded in
   // the first call. Also, skip recording the histogram when no prerendering
   // starts.
-  if (started_prerenders_.empty()) {
+  if (count_started_same_tab_prerenders_ == 0) {
     DCHECK(observers_.empty());
     return;
   }
 
   // Record the percentage of destroyed prerenders due to the excessive memory
-  // usage. `started_prerenders_` can include destroyed prerenders by other
-  // reasons.
+  // usage.
   // The closer the value is to 0, the less prerenders are cancelled by
   // FinalStatus::kMemoryLimitExceeded. The result depends on Finch params
   // `max_num_of_running_speculation_rules` and
@@ -322,7 +349,7 @@ void PrerendererImpl::CancelStartedPrerenders() {
       "Prerender.Experimental.CancellationPercentageByExcessiveMemoryUsage."
       "SpeculationRule",
       GetNumberOfDestroyedByMemoryExceeded() * 100 /
-          started_prerenders_.size());
+          count_started_same_tab_prerenders_);
 
   if (registry_) {
     std::vector<int> started_prerender_ids;
@@ -335,6 +362,7 @@ void PrerendererImpl::CancelStartedPrerenders() {
   }
 
   started_prerenders_.clear();
+  count_started_same_tab_prerenders_ = 0;
   observers_.clear();
 }
 
