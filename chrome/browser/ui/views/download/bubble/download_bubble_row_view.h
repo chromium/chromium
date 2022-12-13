@@ -98,6 +98,8 @@ class DownloadBubbleRowView : public views::View,
   views::ImageButton* AddQuickAction(DownloadCommands::Command command);
   views::ImageButton* GetActionButtonForCommand(
       DownloadCommands::Command command);
+  std::u16string GetAccessibleNameForQuickAction(
+      DownloadCommands::Command command);
 
   // If there is any change in state, update UI info.
   // Returns whether the ui info was changed.

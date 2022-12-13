@@ -2756,38 +2756,66 @@ are declared in tools/grit/grit_rule.gni.
         Anyone using this device can see downloaded files
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_RESUME_QUICK_ACTION"
-            desc="Accessibility/tooltip label for action to resume a download.">
+            desc="Tooltip label for action to resume a download.">
         Resume
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_RESUME_QUICK_ACTION_ACCESSIBILITY"
+            desc="Accessibility label for action to resume a download.">
+        Resume <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph>
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_PAUSE_QUICK_ACTION"
-              desc="Accessibility/tooltip label for action to pause a download.">
+              desc="Tooltip label for action to pause a download.">
         Pause
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_PAUSE_QUICK_ACTION_ACCESSIBILITY"
+              desc="Accessibility label for action to pause a download.">
+        Pause <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph>
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION"
-              desc="Accessibility/tooltip label for action to cancel a download.">
+              desc="Tooltip label for action to cancel a download.">
         Cancel
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION_ACCESSIBILITY"
+              desc="Accessibility label for action to cancel a download.">
+        Cancel <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph>
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_OPEN_QUICK_ACTION"
-              desc="Accessibility/tooltip label for action to open a download.">
+              desc="Tooltip label for action to open a download.">
         Open
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_OPEN_QUICK_ACTION_ACCESSIBILITY"
+              desc="Accessibility label for action to open a download.">
+        Open <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph>
       </message>
       <if expr="is_macosx">
             <message name="IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION"
-                  desc="Mac: Accessibility/tooltip label for showing the file in the Finder">
+                  desc="Mac: Tooltip label for showing the file in the Finder">
               Show in Finder
+            </message>
+            <message name="IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION_ACCESSIBILITY"
+                  desc="Mac: Accessibility label for showing the file in the Finder">
+              Show <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> in Finder
             </message>
       </if>
       <if expr="not is_macosx">
         <if expr="not use_titlecase">
             <message name="IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION"
-                     desc="Accessibility/tooltip label for showing the file in file explorer">
+                     desc="Tooltip label for showing the file in file explorer">
               Show in folder
+            </message>
+            <message name="IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION_ACCESSIBILITY"
+                     desc="Accessibility label for showing the file in file explorer">
+              Show <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> in folder
             </message>
           </if>
           <if expr="use_titlecase">
             <message name="IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION"
-                     desc="In Title Case: Accessibility/tooltip label for showing the file in file explorer">
+                     desc="In Title Case: Tooltip label for showing the file in file explorer">
               Show in Folder
+            </message>
+            <message name="IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION_ACCESSIBILITY"
+                     desc="In Title Case: Accessibility label for showing the file in file explorer">
+              Show <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> in Folder
             </message>
           </if>
       </if>

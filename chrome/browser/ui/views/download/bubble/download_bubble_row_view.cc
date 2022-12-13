@@ -593,7 +593,8 @@ void DownloadBubbleRowView::UpdateButtons() {
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(*(action.icon), ui::kColorIcon,
                                        GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
-    action_button->SetAccessibleName(action.hover_text);
+    action_button->SetAccessibleName(
+        GetAccessibleNameForQuickAction(action.command));
     action_button->SetTooltipText(action.hover_text);
     action_button->SetVisible(true);
   }
@@ -768,6 +769,35 @@ views::ImageButton* DownloadBubbleRowView::GetActionButtonForCommand(
       return show_in_folder_action_;
     default:
       return nullptr;
+  }
+}
+
+std::u16string DownloadBubbleRowView::GetAccessibleNameForQuickAction(
+    DownloadCommands::Command command) {
+  switch (command) {
+    case DownloadCommands::RESUME:
+      return l10n_util::GetStringFUTF16(
+          IDS_DOWNLOAD_BUBBLE_RESUME_QUICK_ACTION_ACCESSIBILITY,
+          model_->GetFileNameToReportUser().LossyDisplayName());
+    case DownloadCommands::PAUSE:
+      return l10n_util::GetStringFUTF16(
+          IDS_DOWNLOAD_BUBBLE_PAUSE_QUICK_ACTION_ACCESSIBILITY,
+          model_->GetFileNameToReportUser().LossyDisplayName());
+    case DownloadCommands::OPEN_WHEN_COMPLETE:
+      return l10n_util::GetStringFUTF16(
+          IDS_DOWNLOAD_BUBBLE_OPEN_QUICK_ACTION_ACCESSIBILITY,
+          model_->GetFileNameToReportUser().LossyDisplayName());
+    case DownloadCommands::CANCEL:
+      return l10n_util::GetStringFUTF16(
+          IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION_ACCESSIBILITY,
+          model_->GetFileNameToReportUser().LossyDisplayName());
+    case DownloadCommands::SHOW_IN_FOLDER:
+      return l10n_util::GetStringFUTF16(
+          IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION_ACCESSIBILITY,
+          model_->GetFileNameToReportUser().LossyDisplayName());
+    default:
+      NOTREACHED();
+      return u"";
   }
 }
 
