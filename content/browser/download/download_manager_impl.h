@@ -238,7 +238,7 @@ class CONTENT_EXPORT DownloadManagerImpl
 
   // Called with the result of CheckForFileExistence. Updates the state of the
   // file and then notifies this update to the file's observer.
-  void OnFileExistenceChecked(uint32_t download_id, bool result);
+  void OnFileExistenceChecked(const std::string& guid, bool result);
 
   // Overridden from DownloadItemImplDelegate
   void DetermineDownloadTarget(download::DownloadItemImpl* item,
@@ -392,7 +392,7 @@ class CONTENT_EXPORT DownloadManagerImpl
   const scoped_refptr<base::SequencedTaskRunner> disk_access_task_runner_;
 
   // DownloadItem for which a query is queued in the |disk_access_task_runner_|.
-  std::set<uint32_t> pending_disk_access_query_;
+  std::set<std::string> pending_disk_access_query_;
 
   base::WeakPtrFactory<DownloadManagerImpl> weak_factory_{this};
 };
