@@ -127,8 +127,8 @@ string LoopbackServerEntity::CreateId(const ModelType& model_type,
 
 // static
 std::string LoopbackServerEntity::GetTopLevelId(const ModelType& model_type) {
-  return LoopbackServerEntity::CreateId(model_type,
-                                        syncer::ModelTypeToRootTag(model_type));
+  return LoopbackServerEntity::CreateId(
+      model_type, syncer::ModelTypeToProtocolRootTag(model_type));
 }
 
 // static

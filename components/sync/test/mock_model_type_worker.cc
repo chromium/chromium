@@ -198,9 +198,10 @@ syncer::UpdateResponseData MockModelTypeWorker::GenerateUpdateData(
 syncer::UpdateResponseData MockModelTypeWorker::GenerateTypeRootUpdateData(
     const ModelType& model_type) {
   syncer::EntityData data;
-  data.id = syncer::ModelTypeToRootTag(model_type);
+  data.id = syncer::ModelTypeToProtocolRootTag(model_type);
   data.legacy_parent_id = "r";
-  data.server_defined_unique_tag = syncer::ModelTypeToRootTag(model_type);
+  data.server_defined_unique_tag =
+      syncer::ModelTypeToProtocolRootTag(model_type);
   syncer::AddDefaultFieldValue(model_type, &data.specifics);
   // These elements should have no effect on behavior, but we set them anyway
   // so we can test they are properly copied around the system if we want to.

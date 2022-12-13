@@ -200,9 +200,9 @@ syncer::UpdateResponseData CreateUpdateResponseData(
 
 syncer::UpdateResponseData CreateBookmarkRootUpdateData() {
   syncer::EntityData data;
-  data.id = syncer::ModelTypeToRootTag(syncer::BOOKMARKS);
+  data.id = syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS);
   data.server_defined_unique_tag =
-      syncer::ModelTypeToRootTag(syncer::BOOKMARKS);
+      syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS);
 
   data.specifics.mutable_bookmark();
 

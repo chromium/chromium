@@ -1806,7 +1806,7 @@ TEST(BookmarkModelMergerTest, ShouldLogMetricsForkDescendantOfRootNode) {
   updates.push_back(CreateBookmarkBarNodeUpdateData());
   updates.back().entity.id = kRootNodeId;
   updates.back().entity.server_defined_unique_tag =
-      syncer::ModelTypeToRootTag(syncer::BOOKMARKS);
+      syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS);
 
   updates.push_back(CreateUpdateResponseData(
       /*guid=*/base::GUID::GenerateRandomV4(),

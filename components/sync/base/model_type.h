@@ -432,13 +432,18 @@ std::ostream& operator<<(std::ostream& out, ModelTypeSet model_type_set);
 // Generates a base::Value::List from |model_types|.
 base::Value::List ModelTypeSetToValue(ModelTypeSet model_types);
 
-// Returns a string corresponding to the syncable tag for this datatype.
-std::string ModelTypeToRootTag(ModelType type);
+// Returns a string corresponding to the root tag as exposed in the sync
+// protocol as the root entity's ID, which makes the root entity trivially
+// distinguishable from regular entities. Note that the existence of a root
+// entity in the sync protocol is a legacy artifact, and modern clients ignore
+// it except for bookmarks and Nigori. For this reason, the server may or may
+// not return the root entity.
+std::string ModelTypeToProtocolRootTag(ModelType model_type);
 
-// Returns root_tag for |model_type| in ModelTypeInfo.
-// Difference with ModelTypeToRootTag(), this just simply returns root_tag in
-// ModelTypeInfo.
-const char* GetModelTypeRootTag(ModelType model_type);
+// As opposed to ModelTypeToProtocolRootTag(), this returns a string that isn't
+// exposed in the sync protocol, but that is still stable and thus can be used
+// for local persistence. It is guaranteed to be lowercase.
+const char* GetModelTypeLowerCaseRootTag(ModelType model_type);
 
 // Convert a real model type to a notification type (used for
 // subscribing to server-issued notifications).  Returns true iff
