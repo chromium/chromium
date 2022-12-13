@@ -1116,6 +1116,9 @@ extern const char
 extern const char
     kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsDescription[];
 
+extern const char kOmniboxKeepSecondaryZeroSuggestName[];
+extern const char kOmniboxKeepSecondaryZeroSuggestDescription[];
+
 extern const char kOmniboxMlLogUrlScoringSignalsName[];
 extern const char kOmniboxMlLogUrlScoringSignalsDescription[];
 
@@ -1181,9 +1184,6 @@ extern const char kOmniboxSiteSearchStarterPackDescription[];
 
 extern const char kOmniboxSpareRendererName[];
 extern const char kOmniboxSpareRendererDescription[];
-
-extern const char kOmniboxRetainSuggestionsWithHeadersName[];
-extern const char kOmniboxRetainSuggestionsWithHeadersDescription[];
 
 extern const char kOmniboxZeroSuggestPrefetchingName[];
 extern const char kOmniboxZeroSuggestPrefetchingDescription[];

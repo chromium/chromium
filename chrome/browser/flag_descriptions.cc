@@ -1965,6 +1965,12 @@ const char
     kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsDescription[] =
         "When enabled, HQP doesn't demote same-host suggestions.";
 
+const char kOmniboxKeepSecondaryZeroSuggestName[] =
+    "Keeps all secondary zero-prefix suggestions.";
+const char kOmniboxKeepSecondaryZeroSuggestDescription[] =
+    "Keeps all zero-prefix suggestions in the second column and does not count "
+    "them toward the overall zero-suggest limit.";
+
 const char kOmniboxMatchToolbarAndStatusBarColorName[] =
     "Omnibox Omnibox Match Toolbar And Status Bar Color";
 const char kOmniboxMatchToolbarAndStatusBarColorDescription[] =
@@ -2126,13 +2132,6 @@ const char kOmniboxShortcutExpandingName[] = "Omnibox shortcut expanding";
 const char kOmniboxShortcutExpandingDescription[] =
     "Expand the last word in the shortcut text to be a complete word from the "
     "suggestion text.";
-
-const char kOmniboxRetainSuggestionsWithHeadersName[] =
-    "Retain complete set of suggestions with headers";
-const char kOmniboxRetainSuggestionsWithHeadersDescription[] =
-    "Given a list of suggestions, all suggestions for which a header metadata "
-    "is available will be retained as a whole and not be counted towards the "
-    "limit.";
 
 const char kOmniboxMaxZeroSuggestMatchesName[] =
     "Omnibox Max Zero Suggest Matches";

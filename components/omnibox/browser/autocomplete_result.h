@@ -255,6 +255,12 @@ class AutocompleteResult {
   omnibox::GroupSection GetSectionForSuggestionGroup(
       omnibox::GroupId suggestion_group_id) const;
 
+  // Returns the side type associated with `suggestion_group_id`.
+  // Returns omnibox::DEFAULT_PRIMARY if `suggestion_group_id` is not found in
+  // `suggestion_groups_map_`.
+  omnibox::GroupConfig_SideType GetSideTypeForSuggestionGroup(
+      omnibox::GroupId suggestion_group_id) const;
+
   // Updates |suggestion_groups_map_| with the suggestion groups information
   // from |suggeston_groups_map|. Followed by GroupAndDemoteMatchesInGroups()
   // which sorts the matches based on the order in which their groups should

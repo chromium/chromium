@@ -5530,10 +5530,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxDynamicMaxAutocompleteVariations,
                                     "OmniboxBundledExperimentV1")},
 
-    {"omnibox-retain-suggestions-with-headers",
-     flag_descriptions::kOmniboxRetainSuggestionsWithHeadersName,
-     flag_descriptions::kOmniboxRetainSuggestionsWithHeadersDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kRetainSuggestionsWithHeaders)},
+    {"omnibox-keep-secondary-zero-suggest",
+     flag_descriptions::kOmniboxKeepSecondaryZeroSuggestName,
+     flag_descriptions::kOmniboxKeepSecondaryZeroSuggestDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kKeepSecondaryZeroSuggest)},
 
     {"omnibox-bookmark-paths", flag_descriptions::kOmniboxBookmarkPathsName,
      flag_descriptions::kOmniboxBookmarkPathsDescription, kOsAll,

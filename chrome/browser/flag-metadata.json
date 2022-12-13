@@ -5091,6 +5091,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "omnibox-keep-secondary-zero-suggest",
+    "owners": [ "ender@google.com", "mahmadi@google.com", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "omnibox-keyboard-paste-button",
     "owners": ["christianxu", "stkhapugin", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 110
@@ -5219,11 +5224,6 @@
     "name": "omnibox-report-searchbox-stats",
     "owners": [ "mahmadi", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 120
-  },
-  {
-    "name": "omnibox-retain-suggestions-with-headers",
-    "owners": [ "ender@google.com", "mahmadi@google.com", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 112
   },
   {
     "name": "omnibox-rich-autocompletion",

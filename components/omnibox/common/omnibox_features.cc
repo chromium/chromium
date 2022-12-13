@@ -195,6 +195,12 @@ BASE_FEATURE(kFocusTriggersSRPZeroSuggest,
              "OmniboxFocusTriggersSRPZeroSuggest",
              enabled_by_default_android_only);
 
+// If enabled, keeps all zero-prefix suggestions in the second column and does
+// not count them toward the overall zero-suggest limit.
+BASE_FEATURE(kKeepSecondaryZeroSuggest,
+             "KeepSecondaryZeroSuggest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Revamps how local search history is extracted and processed for generating
 // zero-prefix and prefix suggestions.
 BASE_FEATURE(kLocalHistorySuggestRevamp,
@@ -224,6 +230,12 @@ BASE_FEATURE(kOmniboxOnClobberFocusTypeOnContent,
              "OmniboxOnClobberFocusTypeOnContent",
              enabled_by_default_desktop_only);
 
+// If enabled, zero prefix suggestions will be stored using an in-memory caching
+// service, instead of using the existing prefs-based cache.
+BASE_FEATURE(kZeroSuggestInMemoryCaching,
+             "ZeroSuggestInMemoryCaching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables on-focus zero-prefix suggestions on the NTP for signed-out users.
 BASE_FEATURE(kZeroSuggestOnNTPForSignedOutUsers,
              "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
@@ -243,12 +255,6 @@ BASE_FEATURE(kZeroSuggestPrefetchingOnSRP,
 // Web (i.e. non-NTP and non-SRP URLs).
 BASE_FEATURE(kZeroSuggestPrefetchingOnWeb,
              "ZeroSuggestPrefetchingOnWeb",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, zero prefix suggestions will be stored using an in-memory caching
-// service, instead of using the existing prefs-based cache.
-BASE_FEATURE(kZeroSuggestInMemoryCaching,
-             "ZeroSuggestInMemoryCaching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Features to provide head and tail non personalized search suggestion from
@@ -490,12 +496,6 @@ BASE_FEATURE(kReportAssistedQueryStats,
 // Search Results Page URL.
 BASE_FEATURE(kReportSearchboxStats,
              "OmniboxReportSearchboxStats",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, retains all suggestions with headers to be presented entirely.
-// Disabling the feature trims the suggestions list to the predefined limit.
-BASE_FEATURE(kRetainSuggestionsWithHeaders,
-             "OmniboxRetainSuggestionsWithHeaders",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, logs Omnibox URL scoring signals to OmniboxEventProto in UMA.

@@ -303,8 +303,9 @@ void AutocompleteResult::SortAndCull(
   DemoteOnDeviceSearchSuggestions();
 #endif  // !BUILDFLAG(IS_IOS)
 
+  const auto& page_classification = input.current_page_classification();
   CompareWithDemoteByType<AutocompleteMatch> comparing_object(
-      input.current_page_classification());
+      page_classification);
 
 #if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
   // Because tail suggestions are a "last resort", we cull the tail suggestions
@@ -395,41 +396,49 @@ void AutocompleteResult::SortAndCull(
   const size_t num_matches =
       CalculateNumMatches(is_zero_suggest, matches_, comparing_object);
 
-  // TODO(manukh): Limiting should be done by the grouping framework.
-  if (!is_zero_suggest)
+  // Group and trim suggestions to the given limit.
+  if (!is_zero_suggest) {
+    // Until limits are applied by the grouping framework, typed suggestions are
+    // trimmed then grouped.
+    // TODO(manukh): Limiting should be done by the grouping framework.
     matches_.resize(num_matches);
 
     // Group search suggestions above URL suggestions.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  if (matches_.size() > 2 &&
-      !base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
-#else
-  if (matches_.size() > 2) {
-#endif
-    // TODO(manukh): Grouping search v URL (actually
-    //  `GroupSuggestionsBySearchVsURL` now groups by other types as well)
-    //  should be done by the grouping framework.
-    GroupSuggestionsBySearchVsURL(std::next(matches_.begin()), matches_.end());
-  }
-
-  GroupAndDemoteMatchesInGroups();
-
-  if (is_zero_suggest) {
-    if (base::FeatureList::IsEnabled(omnibox::kRetainSuggestionsWithHeaders)) {
-      size_t num_regular_suggestions = 0;
-      base::EraseIf(matches_,
-                    [&num_regular_suggestions, num_matches](const auto& match) {
-                      // Trim suggestions without group IDs to the given limit.
-                      if (!match.suggestion_group_id.has_value()) {
-                        num_regular_suggestions++;
-                        return num_regular_suggestions > num_matches;
-                      }
-                      // Do not trim suggestions with group IDs.
-                      return false;
-                    });
-    } else {
-      matches_.resize(num_matches);
+    if (matches_.size() > 2 &&
+        !base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
+      // TODO(manukh): Grouping search v URL (actually
+      //  `GroupSuggestionsBySearchVsURL` now groups by other types as well)
+      //  should be done by the grouping framework.
+      GroupSuggestionsBySearchVsURL(std::next(matches_.begin()),
+                                    matches_.end());
     }
+    GroupAndDemoteMatchesInGroups();
+
+  } else if (base::FeatureList::IsEnabled(omnibox::kKeepSecondaryZeroSuggest)) {
+    // Until limits are applied by the grouping framework, zero-prefix
+    // suggestions are grouped then trimmed.
+    // TODO(manukh): Limiting should be done by the grouping framework.
+    GroupAndDemoteMatchesInGroups();
+    size_t num_primary_suggestions = 0;
+    base::EraseIf(matches_, [&](const auto& match) {
+      if (!match.suggestion_group_id.has_value() ||
+          GetSideTypeForSuggestionGroup(match.suggestion_group_id.value()) ==
+              omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {
+        // Trim the primary suggestions to the given limit.
+        return ++num_primary_suggestions > num_matches;
+      } else {
+        // Keep the secondary suggestions for the NTP realbox.
+        // TODO(ender): Add appropriate page classification for Android.
+        return page_classification != OmniboxEventProto::NTP_REALBOX;
+      }
+    });
+
+  } else {
+    // Until limits are applied by the grouping framework, zero-prefix
+    // suggestions are grouped then trimmed.
+    // TODO(manukh): Limiting should be done by the grouping framework.
+    GroupAndDemoteMatchesInGroups();
+    matches_.resize(num_matches);
   }
 
 #if DCHECK_IS_ON()
@@ -1064,6 +1073,16 @@ omnibox::GroupSection AutocompleteResult::GetSectionForSuggestionGroup(
   }
 
   return it->second.section();
+}
+
+omnibox::GroupConfig_SideType AutocompleteResult::GetSideTypeForSuggestionGroup(
+    omnibox::GroupId suggestion_group_id) const {
+  auto it = suggestion_groups_map().find(suggestion_group_id);
+  if (it == suggestion_groups_map().end()) {
+    return omnibox::GroupConfig_SideType_DEFAULT_PRIMARY;
+  }
+
+  return it->second.side_type();
 }
 
 void AutocompleteResult::MergeSuggestionGroupsMap(
