@@ -98,7 +98,6 @@ polymorphic.launcher(
                 builderless = True,
                 os = os.WINDOWS_DEFAULT,
                 cpu = cpu.X86_64,
-                pool = ci.DEFAULT_POOL,
                 free_space = free_space.standard,
             ),
             testers = [
@@ -120,7 +119,6 @@ polymorphic.launcher(
                 builderless = True,
                 os = os.MAC_DEFAULT,
                 cpu = cpu.X86_64,
-                pool = ci.DEFAULT_POOL,
                 free_space = free_space.standard,
             ),
             testers = [
