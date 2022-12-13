@@ -77,10 +77,14 @@ message SystemProfileProto {
   // This field was renamed from |is_asan_build| to reflect its actual meaning.
   optional bool is_instrumented_build = 20 [default = false];
 
-  // The date the user enabled UMA, in seconds since the epoch.
+  // For Chrome, the date the user enabled UMA, in seconds since the epoch.
   // If the user has toggled the UMA enabled state multiple times, this will
   // be the most recent date on which UMA was enabled.
   // For privacy, this is rounded to the nearest hour (M30+).
+  // For WebView, the field stores the date "January 1st, 2014 00:00:00 UTC"
+  // if the user opted into metrics collection before WebView started tracking
+  // this information. Otherwise, the field value should correctly reflect the
+  // first startup for this app after the user opted into metrics collection.
   optional int64 uma_enabled_date = 3;
 
   // The time when the client was installed, in seconds since the epoch.
@@ -1073,8 +1077,14 @@ message SystemProfileProto {
   // installed in multiple profiles, it will be recorded multiple times.
   repeated ExtensionInstallProto extension_install = 25;
 
-  // The Chrome package name on Android, if it's different from
-  // "com.android.chrome".
+  // Android-only.
+  // For Chrome UMA records, this field contains the package name of the
+  // version of Chrome that is running if it's different from
+  // "com.android.chrome".  ("com.android.chrome" is the name of the Chrome
+  // stable channel app package name.)
+  // For WebView UMA records, under some conditions this field contains the
+  // package name of the currently-running app.  See http://shortn/_5HRGU153JL
+  // for details.
   optional string app_package_name = 26;
 
   // Indicates if the `app_package_name` should be filtered out on the
