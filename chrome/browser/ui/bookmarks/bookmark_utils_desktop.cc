@@ -379,14 +379,16 @@ void OpenSavedTabGroupHelper(Browser* browser,
   TabStripModel* model_for_creation = browser->tab_strip_model();
 
   std::vector<UrlAndId> url_and_ids;
-  auto get_url_and_ids = [&](const SavedTabGroupTab& saved_tab) {
+  for (const SavedTabGroupTab& saved_tab : saved_group->saved_tabs()) {
+    if (!saved_tab.url().is_valid())
+      continue;
+
     UrlAndId url_and_id;
     url_and_id.url = saved_tab.url();
     url_and_id.id = -1;
-    return url_and_id;
-  };
-  base::ranges::transform(saved_group->saved_tabs(),
-                          std::back_inserter(url_and_ids), get_url_and_ids);
+    url_and_ids.push_back(std::move(url_and_id));
+  }
+
   if (url_and_ids.empty())
     return;
   const auto opened_web_contents =
