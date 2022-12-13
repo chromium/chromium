@@ -943,6 +943,12 @@ StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(
   if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
       parent_rule_for_nesting != nullptr) {
     // Parse the interior as if it were a style rule.
+    if (observer_) {
+      // Observe an empty rule header to ensure the observer has a new rule data
+      // on the stack for the following ConsumeDeclarationList.
+      observer_->StartRuleHeader(StyleRule::kStyle, stream.Offset());
+      observer_->EndRuleHeader(stream.Offset());
+    }
     ConsumeDeclarationList(stream, StyleRule::kStyle, parent_rule_for_nesting,
                            &rules);
     if (!parsed_properties_.empty()) {
@@ -998,6 +1004,12 @@ StyleRuleSupports* CSSParserImpl::ConsumeSupportsRule(
   if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
       parent_rule_for_nesting != nullptr) {
     // Parse the interior as if it were a style rule.
+    if (observer_) {
+      // Observe an empty rule header to ensure the observer has a new rule data
+      // on the stack for the following ConsumeDeclarationList.
+      observer_->StartRuleHeader(StyleRule::kStyle, stream.Offset());
+      observer_->EndRuleHeader(stream.Offset());
+    }
     ConsumeDeclarationList(stream, StyleRule::kStyle, parent_rule_for_nesting,
                            &rules);
     if (!parsed_properties_.empty()) {
@@ -1460,6 +1472,12 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
   if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
       parent_rule_for_nesting != nullptr) {
     // Parse the interior as if it were a style rule.
+    if (observer_) {
+      // Observe an empty rule header to ensure the observer has a new rule data
+      // on the stack for the following ConsumeDeclarationList.
+      observer_->StartRuleHeader(StyleRule::kStyle, stream.Offset());
+      observer_->EndRuleHeader(stream.Offset());
+    }
     ConsumeDeclarationList(stream, StyleRule::kStyle, parent_rule_for_nesting,
                            &rules);
     if (!parsed_properties_.empty()) {

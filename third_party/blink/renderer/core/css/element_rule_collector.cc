@@ -752,19 +752,31 @@ CSSRule* ElementRuleCollector::FindStyleRule(CSSRuleCollection* css_rules,
                                              StyleRule* style_rule) {
   if (!css_rules)
     return nullptr;
-  CSSRule* result = nullptr;
-  for (unsigned i = 0; i < css_rules->length() && !result; ++i) {
+
+  for (unsigned i = 0; i < css_rules->length(); ++i) {
     CSSRule* css_rule = css_rules->item(i);
     if (auto* css_style_rule = DynamicTo<CSSStyleRule>(css_rule)) {
-      if (css_style_rule->GetStyleRule() == style_rule)
-        result = css_rule;
+      if (css_style_rule->GetStyleRule() == style_rule) {
+        return css_rule;
+      }
+      if (CSSRule* result =
+              FindStyleRule(css_style_rule->cssRules(), style_rule);
+          result) {
+        return result;
+      }
     } else if (auto* css_import_rule = DynamicTo<CSSImportRule>(css_rule)) {
-      result = FindStyleRule(css_import_rule->styleSheet(), style_rule);
-    } else {
-      result = FindStyleRule(css_rule->cssRules(), style_rule);
+      if (CSSRule* result =
+              FindStyleRule(css_import_rule->styleSheet(), style_rule);
+          result) {
+        return result;
+      }
+    } else if (CSSRule* result =
+                   FindStyleRule(css_rule->cssRules(), style_rule);
+               result) {
+      return result;
     }
   }
-  return result;
+  return nullptr;
 }
 
 void ElementRuleCollector::AppendCSSOMWrapperForRule(

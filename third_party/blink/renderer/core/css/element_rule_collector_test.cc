@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
@@ -95,6 +97,24 @@ class ElementRuleCollectorTest : public PageTestBase {
 
     collector.CollectMatchingRules(request);
     return Vector<MatchedRule>{collector.MatchedRulesForTest()};
+  }
+
+  RuleIndexList* GetMatchedCSSRuleList(Element* element,
+                                       RuleSet* rule_set,
+                                       const CSSStyleSheet* sheet) {
+    ElementResolveContext context(*element);
+    SelectorFilter filter;
+    MatchResult result;
+    ElementRuleCollector collector(context, StyleRecalcContext(), filter,
+                                   result, InsideLink(element));
+
+    MatchRequest request(rule_set, {}, sheet);
+
+    collector.SetMode(SelectorChecker::kCollectingCSSRules);
+    collector.CollectMatchingRules(request);
+    collector.SortAndTransferMatchedRules();
+
+    return collector.MatchedCSSRuleList();
   }
 };
 
@@ -476,6 +496,44 @@ TEST_F(ElementRuleCollectorTest, NestedRulesInMediaQuery) {
 
   Vector<MatchedRule> baz_rules = GetAllMatchedRules(baz, rule_set);
   EXPECT_EQ(0u, baz_rules.size());
+}
+
+TEST_F(ElementRuleCollectorTest, FindStyleRuleWithNesting) {
+  SetBodyInnerHTML(R"HTML(
+    <style id="style">
+      #foo {
+        color: green;
+        &.a { color: red; }
+        & > .b { color: navy; }
+      }
+    </style>
+    <div id="foo" class="a">
+      <div id="bar" class="b">
+      </div>
+    </div>
+  )HTML");
+  CSSStyleSheet* sheet =
+      To<HTMLStyleElement>(GetDocument().getElementById("style"))->sheet();
+
+  RuleSet* rule_set = &sheet->Contents()->GetRuleSet();
+  ASSERT_NE(nullptr, rule_set);
+
+  Element* foo = GetDocument().getElementById("foo");
+  Element* bar = GetDocument().getElementById("bar");
+  ASSERT_NE(nullptr, foo);
+  ASSERT_NE(nullptr, bar);
+
+  RuleIndexList* foo_css_rules = GetMatchedCSSRuleList(foo, rule_set, sheet);
+  ASSERT_EQ(2u, foo_css_rules->size());
+  CSSRule* foo_css_rule_1 = foo_css_rules->at(0).first;
+  EXPECT_EQ("#foo", DynamicTo<CSSStyleRule>(foo_css_rule_1)->selectorText());
+  CSSRule* foo_css_rule_2 = foo_css_rules->at(1).first;
+  EXPECT_EQ("&.a", DynamicTo<CSSStyleRule>(foo_css_rule_2)->selectorText());
+
+  RuleIndexList* bar_css_rules = GetMatchedCSSRuleList(bar, rule_set, sheet);
+  ASSERT_EQ(1u, bar_css_rules->size());
+  CSSRule* bar_css_rule_1 = bar_css_rules->at(0).first;
+  EXPECT_EQ("& > .b", DynamicTo<CSSStyleRule>(bar_css_rule_1)->selectorText());
 }
 
 }  // namespace blink

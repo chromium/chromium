@@ -247,6 +247,10 @@ class CORE_EXPORT ElementRuleCollector {
                     const CSSStyleSheet* style_sheet,
                     int style_sheet_index);
 
+  // Find the CSSRule within the CSSRuleCollection that corresponds to the
+  // incoming StyleRule. This mapping is needed because Inspector needs to
+  // interact with the CSSOM-wrappers (i.e. CSSRules) of the matched rules, but
+  // ElementRuleCollector's result is a list of StyleRules.
   template <class CSSRuleCollection>
   CSSRule* FindStyleRule(CSSRuleCollection*, StyleRule*);
   void AppendCSSOMWrapperForRule(CSSStyleSheet*, const RuleData*, wtf_size_t);

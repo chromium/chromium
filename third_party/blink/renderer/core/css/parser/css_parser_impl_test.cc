@@ -404,6 +404,31 @@ TEST(CSSParserImplTest, NestedRulesInsideMediaQueries) {
   EXPECT_EQ("& + #foo", child1->SelectorsText());
 }
 
+TEST(CSSParserImplTest, ObserveNestedMediaQuery) {
+  ScopedCSSNestingForTest enabled(true);
+  String sheet_text = R"CSS(
+    .element {
+      color: green;
+      @media (width < 1000px) {
+        color: navy;
+      }
+    }
+    )CSS";
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, sheet,
+                                             test_css_parser_observer);
+
+  EXPECT_EQ(test_css_parser_observer.rule_type_, StyleRule::RuleType::kStyle);
+  EXPECT_EQ(test_css_parser_observer.rule_header_start_, 67u);
+  EXPECT_EQ(test_css_parser_observer.rule_header_end_, 67u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 67u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 101u);
+}
+
 TEST(CSSParserImplTest, RemoveImportantAnnotationIfPresent) {
   struct TestCase {
     String input;
