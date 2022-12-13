@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_HEADERS_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_headers.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
@@ -15,16 +16,12 @@
 
 namespace blink {
 
-class ByteStringSequenceSequenceOrByteStringByteStringRecord;
 class ExceptionState;
 class ScriptState;
 
-using HeadersInit = ByteStringSequenceSequenceOrByteStringByteStringRecord;
-
 // http://fetch.spec.whatwg.org/#headers-class
-class CORE_EXPORT Headers final
-    : public ScriptWrappable,
-      public PairIterable<String, IDLString, String, IDLString> {
+class CORE_EXPORT Headers final : public ScriptWrappable,
+                                  public PairSyncIterable<Headers> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -81,16 +78,15 @@ class CORE_EXPORT Headers final
 
  private:
   class HeadersIterationSource final
-      : public PairIterable<String, IDLString, String, IDLString>::
-            IterationSource {
+      : public PairSyncIterable<Headers>::IterationSource {
    public:
     explicit HeadersIterationSource(Headers* headers);
     ~HeadersIterationSource() override;
 
-    bool Next(ScriptState* script_state,
-              String& key,
-              String& value,
-              ExceptionState& exception) override;
+    bool FetchNextItem(ScriptState* script_state,
+                       String& key,
+                       String& value,
+                       ExceptionState& exception) override;
 
     void Trace(Visitor*) const override;
 
@@ -115,7 +111,8 @@ class CORE_EXPORT Headers final
   Member<FetchHeaderList> header_list_;
   Guard guard_;
 
-  IterationSource* StartIteration(ScriptState*, ExceptionState&) override;
+  IterationSource* CreateIterationSource(ScriptState*,
+                                         ExceptionState&) override;
 
   HeapHashSet<WeakMember<HeadersIterationSource>> iterators_;
 };

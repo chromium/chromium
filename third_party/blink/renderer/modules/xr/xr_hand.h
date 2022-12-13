@@ -7,19 +7,17 @@
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_xr_hand.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
+class V8XRHandJoint;
 class XRInputSource;
 class XRJointSpace;
 
-class XRHand : public ScriptWrappable,
-               public PairIterable<String,
-                                   IDLString,
-                                   Member<XRJointSpace>,
-                                   XRJointSpace> {
+class XRHand : public ScriptWrappable, public PairSyncIterable<XRHand> {
   DEFINE_WRAPPERTYPEINFO();
 
   static const unsigned kNumJoints =
@@ -32,7 +30,7 @@ class XRHand : public ScriptWrappable,
 
   size_t size() const { return joints_.size(); }
 
-  XRJointSpace* get(const String& key);
+  XRJointSpace* get(const V8XRHandJoint& key) const;
 
   void updateFromHandTrackingData(
       const device::mojom::blink::XRHandTrackingData* state,
@@ -43,7 +41,8 @@ class XRHand : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
  private:
-  IterationSource* StartIteration(ScriptState*, ExceptionState&) override;
+  IterationSource* CreateIterationSource(ScriptState*,
+                                         ExceptionState&) override;
 
   HeapVector<Member<XRJointSpace>> joints_;
   bool has_missing_poses_ = true;

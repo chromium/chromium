@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/css/cssom/paint_worklet_style_property_map.h"
+
 #include <memory>
 #include <utility>
-
-#include "third_party/blink/renderer/core/css/cssom/paint_worklet_style_property_map.h"
 
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
@@ -25,19 +25,16 @@ namespace blink {
 namespace {
 
 class PaintWorkletStylePropertyMapIterationSource final
-    : public PairIterable<String,
-                          IDLString,
-                          CSSStyleValueVector,
-                          IDLSequence<CSSStyleValue>>::IterationSource {
+    : public PairSyncIterable<StylePropertyMapReadOnly>::IterationSource {
  public:
   explicit PaintWorkletStylePropertyMapIterationSource(
       HeapVector<PaintWorkletStylePropertyMap::StylePropertyMapEntry> values)
       : index_(0), values_(values) {}
 
-  bool Next(ScriptState*,
-            String& key,
-            CSSStyleValueVector& value,
-            ExceptionState&) override {
+  bool FetchNextItem(ScriptState*,
+                     String& key,
+                     CSSStyleValueVector& value,
+                     ExceptionState&) override {
     if (index_ >= values_.size())
       return false;
 
@@ -50,8 +47,7 @@ class PaintWorkletStylePropertyMapIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(values_);
-    PairIterable<String, IDLString, CSSStyleValueVector,
-                 IDLSequence<CSSStyleValue>>::IterationSource::Trace(visitor);
+    PairSyncIterable<StylePropertyMapReadOnly>::IterationSource::Trace(visitor);
   }
 
  private:
@@ -197,8 +193,9 @@ unsigned PaintWorkletStylePropertyMap::size() const {
 }
 
 PaintWorkletStylePropertyMap::IterationSource*
-PaintWorkletStylePropertyMap::StartIteration(ScriptState* script_state,
-                                             ExceptionState& exception_state) {
+PaintWorkletStylePropertyMap::CreateIterationSource(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   // TODO(xidachen): implement this function. Note that the output should be
   // sorted.
   HeapVector<PaintWorkletStylePropertyMap::StylePropertyMapEntry> result;

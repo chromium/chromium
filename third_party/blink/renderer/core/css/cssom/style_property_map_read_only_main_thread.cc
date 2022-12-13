@@ -24,20 +24,17 @@ namespace blink {
 namespace {
 
 class StylePropertyMapIterationSource final
-    : public PairIterable<String,
-                          IDLString,
-                          CSSStyleValueVector,
-                          IDLSequence<CSSStyleValue>>::IterationSource {
+    : public PairSyncIterable<StylePropertyMapReadOnly>::IterationSource {
  public:
   explicit StylePropertyMapIterationSource(
       HeapVector<StylePropertyMapReadOnlyMainThread::StylePropertyMapEntry>
           values)
       : index_(0), values_(values) {}
 
-  bool Next(ScriptState*,
-            String& key,
-            CSSStyleValueVector& value,
-            ExceptionState&) override {
+  bool FetchNextItem(ScriptState*,
+                     String& key,
+                     CSSStyleValueVector& value,
+                     ExceptionState&) override {
     if (index_ >= values_.size())
       return false;
 
@@ -50,8 +47,7 @@ class StylePropertyMapIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(values_);
-    PairIterable<String, IDLString, CSSStyleValueVector,
-                 IDLSequence<CSSStyleValue>>::IterationSource::Trace(visitor);
+    PairSyncIterable<StylePropertyMapReadOnly>::IterationSource::Trace(visitor);
   }
 
  private:
@@ -130,8 +126,9 @@ bool StylePropertyMapReadOnlyMainThread::has(
 }
 
 StylePropertyMapReadOnlyMainThread::IterationSource*
-StylePropertyMapReadOnlyMainThread::StartIteration(ScriptState* script_state,
-                                                   ExceptionState&) {
+StylePropertyMapReadOnlyMainThread::CreateIterationSource(
+    ScriptState* script_state,
+    ExceptionState&) {
   HeapVector<StylePropertyMapReadOnlyMainThread::StylePropertyMapEntry> result;
 
   ForEachProperty([&result](const CSSPropertyName& name,

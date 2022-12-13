@@ -50,7 +50,8 @@ class CORE_EXPORT StylePropertyMapReadOnlyMainThread
   virtual String SerializationForShorthand(const CSSProperty&) const = 0;
 
  private:
-  IterationSource* StartIteration(ScriptState*, ExceptionState&) override;
+  IterationSource* CreateIterationSource(ScriptState*,
+                                         ExceptionState&) override;
 
   CSSStyleValue* GetShorthandProperty(const CSSPropertyName&) const;
 };

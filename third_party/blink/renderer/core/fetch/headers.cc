@@ -26,10 +26,10 @@ void Headers::HeadersIterationSource::ResetHeaderList() {
   headers_list_ = headers_->HeaderList()->SortAndCombine();
 }
 
-bool Headers::HeadersIterationSource::Next(ScriptState* script_state,
-                                           String& key,
-                                           String& value,
-                                           ExceptionState& exception) {
+bool Headers::HeadersIterationSource::FetchNextItem(ScriptState* script_state,
+                                                    String& key,
+                                                    String& value,
+                                                    ExceptionState& exception) {
   // This simply advances an index and returns the next value if any;
   if (current_ >= headers_list_.size())
     return false;
@@ -42,10 +42,10 @@ bool Headers::HeadersIterationSource::Next(ScriptState* script_state,
 
 void Headers::HeadersIterationSource::Trace(Visitor* visitor) const {
   visitor->Trace(headers_);
-  PairIterable::IterationSource::Trace(visitor);
+  PairSyncIterable<Headers>::IterationSource::Trace(visitor);
 }
 
-Headers::HeadersIterationSource::~HeadersIterationSource() {}
+Headers::HeadersIterationSource::~HeadersIterationSource() = default;
 
 Headers* Headers::Create(ScriptState* script_state, ExceptionState&) {
   return MakeGarbageCollected<Headers>();
@@ -369,8 +369,9 @@ void Headers::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-PairIterable<String, IDLString, String, IDLString>::IterationSource*
-Headers::StartIteration(ScriptState*, ExceptionState&) {
+PairSyncIterable<Headers>::IterationSource* Headers::CreateIterationSource(
+    ScriptState*,
+    ExceptionState&) {
   auto* iter = MakeGarbageCollected<HeadersIterationSource>(this);
   iterators_.insert(iter);
   return iter;

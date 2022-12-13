@@ -75,7 +75,8 @@ class CORE_EXPORT PaintWorkletStylePropertyMap
   CrossThreadData& StyleMapData() { return data_; }
 
  private:
-  IterationSource* StartIteration(ScriptState*, ExceptionState&) override;
+  IterationSource* CreateIterationSource(ScriptState*,
+                                         ExceptionState&) override;
 
   CrossThreadData data_;
 };

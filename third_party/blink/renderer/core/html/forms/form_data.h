@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_FORM_DATA_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_form_data.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -47,12 +48,8 @@ class FormControlState;
 class HTMLFormElement;
 class ScriptState;
 
-class CORE_EXPORT FormData final
-    : public ScriptWrappable,
-      public PairIterable<String,
-                          IDLString,
-                          Member<V8FormDataEntryValue>,
-                          V8FormDataEntryValue> {
+class CORE_EXPORT FormData final : public ScriptWrappable,
+                                   public PairSyncIterable<FormData> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -109,7 +106,8 @@ class CORE_EXPORT FormData final
 
  private:
   void SetEntry(const Entry*);
-  IterationSource* StartIteration(ScriptState*, ExceptionState&) override;
+  IterationSource* CreateIterationSource(ScriptState*,
+                                         ExceptionState&) override;
 
   WTF::TextEncoding encoding_;
   // Entry pointers in entries_ never be nullptr.

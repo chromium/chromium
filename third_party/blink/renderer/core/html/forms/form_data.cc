@@ -50,18 +50,15 @@ namespace blink {
 namespace {
 
 class FormDataIterationSource final
-    : public PairIterable<String,
-                          IDLString,
-                          Member<V8FormDataEntryValue>,
-                          V8FormDataEntryValue>::IterationSource {
+    : public PairSyncIterable<FormData>::IterationSource {
  public:
   FormDataIterationSource(FormData* form_data)
       : form_data_(form_data), current_(0) {}
 
-  bool Next(ScriptState* script_state,
-            String& name,
-            Member<V8FormDataEntryValue>& value,
-            ExceptionState& exception_state) override {
+  bool FetchNextItem(ScriptState* script_state,
+                     String& name,
+                     V8FormDataEntryValue*& value,
+                     ExceptionState& exception_state) override {
     if (current_ >= form_data_->size())
       return false;
 
@@ -78,8 +75,7 @@ class FormDataIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(form_data_);
-    PairIterable<String, IDLString, Member<V8FormDataEntryValue>,
-                 V8FormDataEntryValue>::IterationSource::Trace(visitor);
+    PairSyncIterable<FormData>::IterationSource::Trace(visitor);
   }
 
  private:
@@ -323,11 +319,9 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
   return form_data;
 }
 
-PairIterable<String,
-             IDLString,
-             Member<V8FormDataEntryValue>,
-             V8FormDataEntryValue>::IterationSource*
-FormData::StartIteration(ScriptState*, ExceptionState&) {
+PairSyncIterable<FormData>::IterationSource* FormData::CreateIterationSource(
+    ScriptState*,
+    ExceptionState&) {
   return MakeGarbageCollected<FormDataIterationSource>(this);
 }
 
