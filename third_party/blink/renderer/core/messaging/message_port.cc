@@ -166,6 +166,11 @@ void MessagePort::close() {
   // A closed port should not be neutered, so rather than merely disconnecting
   // from the mojo message pipe, also entangle with a new dangling message pipe.
   if (!IsNeutered()) {
+    // Refuse to entangle the port at non-deterministic points, as this requires
+    // creating mojo resources.
+    if (recordreplay::AreEventsDisallowed())
+      return;
+
     Disentangle().ReleaseHandle();
     MessagePortDescriptorPair pipe;
     Entangle(pipe.TakePort0());
