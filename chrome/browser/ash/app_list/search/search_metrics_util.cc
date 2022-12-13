@@ -14,4 +14,30 @@ void LogError(Error error) {
                                 error);
 }
 
+void LogSessionError(Error error) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({kSessionHistogramPrefix, "Error"}), error);
+}
+
+std::string GetAppListOpenMethod(ash::AppListShowSource source) {
+  // This switch determines which metric we submit for the Apps.AppListOpenTime
+  // metric. Adding a string requires you update the apps histogram.xml as well.
+  switch (source) {
+    case ash::AppListShowSource::kSearchKey:
+    case ash::AppListShowSource::kSearchKeyFullscreen_DEPRECATED:
+      return "SearchKey";
+    case ash::AppListShowSource::kShelfButton:
+    case ash::AppListShowSource::kShelfButtonFullscreen_DEPRECATED:
+      return "HomeButton";
+    case ash::AppListShowSource::kSwipeFromShelf:
+      return "Swipe";
+    case ash::AppListShowSource::kScrollFromShelf:
+      return "Scroll";
+    case ash::AppListShowSource::kTabletMode:
+    case ash::AppListShowSource::kAssistantEntryPoint:
+    case ash::AppListShowSource::kBrowser:
+      return "Others";
+  }
+}
+
 }  // namespace app_list

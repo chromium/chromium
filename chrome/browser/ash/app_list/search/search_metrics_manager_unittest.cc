@@ -11,19 +11,13 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/app_list/search/search_metrics_util.h"
+#include "chrome/browser/ash/app_list/search/test/search_metrics_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list::test {
 namespace {
 
-using Result = ash::AppListNotifier::Result;
-using Location = ash::AppListNotifier::Location;
-using Type = ash::SearchResultType;
 using Action = SearchMetricsManager::Action;
-
-Result CreateFakeResult(Type type, const std::string& id = "fake_id") {
-  return Result(id, type);
-}
 
 }  // namespace
 
@@ -56,8 +50,8 @@ TEST_F(SearchMetricsManagerTest, OnImpression) {
   histogram_tester_.ExpectTotalCount(action_histogram, 0);
 
   // Metrics Updated for non_empty results.
-  results.emplace_back(CreateFakeResult(Type::ANSWER_CARD));
-  results.emplace_back(CreateFakeResult(Type::KEYBOARD_SHORTCUT));
+  results.emplace_back(CreateFakeResult(Type::ANSWER_CARD, "result_id"));
+  results.emplace_back(CreateFakeResult(Type::KEYBOARD_SHORTCUT, "result_id"));
   metrics_manager_->OnImpression(location, results, query);
 
   histogram_tester_.ExpectTotalCount(view_histogram, 2);
@@ -68,7 +62,7 @@ TEST_F(SearchMetricsManagerTest, OnImpression) {
                                        1);
 
   // Duplicate type is counted once only.
-  results.emplace_back(CreateFakeResult(Type::ANSWER_CARD));
+  results.emplace_back(CreateFakeResult(Type::ANSWER_CARD, "result_id"));
   metrics_manager_->OnImpression(location, results, query);
 
   histogram_tester_.ExpectTotalCount(view_histogram, 4);
@@ -100,9 +94,9 @@ TEST_F(SearchMetricsManagerTest, OnImpressionLogContinue) {
 
   // Without drive results.
   std::vector<Result> results;
-  results.emplace_back(CreateFakeResult(Type::ZERO_STATE_FILE));
-  results.emplace_back(CreateFakeResult(Type::HELP_APP_UPDATES));
-  results.emplace_back(CreateFakeResult(Type::HELP_APP_UPDATES));
+  results.emplace_back(CreateFakeResult(Type::ZERO_STATE_FILE, "result_id"));
+  results.emplace_back(CreateFakeResult(Type::HELP_APP_UPDATES, "result_id"));
+  results.emplace_back(CreateFakeResult(Type::HELP_APP_UPDATES, "result_id"));
   metrics_manager_->OnImpression(location, results, query);
 
   histogram_tester_.ExpectUniqueSample(total_histogram, 3, 1);
@@ -112,7 +106,7 @@ TEST_F(SearchMetricsManagerTest, OnImpressionLogContinue) {
   histogram_tester_.ExpectUniqueSample(bool_histogram, false, 1);
 
   // With drive results.
-  results.emplace_back(CreateFakeResult(Type::ZERO_STATE_DRIVE));
+  results.emplace_back(CreateFakeResult(Type::ZERO_STATE_DRIVE, "result_id"));
   metrics_manager_->OnImpression(location, results, query);
 
   histogram_tester_.ExpectTotalCount(total_histogram, 2);
@@ -150,8 +144,8 @@ TEST_F(SearchMetricsManagerTest, OnAbandon) {
   histogram_tester_.ExpectTotalCount(action_histogram, 0);
 
   // Metrics Updated for non_empty results.
-  results.emplace_back(CreateFakeResult(Type::FILE_SEARCH));
-  results.emplace_back(CreateFakeResult(Type::ASSISTANT));
+  results.emplace_back(CreateFakeResult(Type::FILE_SEARCH, "result_id"));
+  results.emplace_back(CreateFakeResult(Type::ASSISTANT, "result_id"));
   metrics_manager_->OnAbandon(location, results, query);
 
   histogram_tester_.ExpectTotalCount(view_histogram, 2);
@@ -160,7 +154,7 @@ TEST_F(SearchMetricsManagerTest, OnAbandon) {
   histogram_tester_.ExpectUniqueSample(action_histogram, Action::kAbandon, 1);
 
   // Duplicate type is counted once only.
-  results.emplace_back(CreateFakeResult(Type::FILE_SEARCH));
+  results.emplace_back(CreateFakeResult(Type::FILE_SEARCH, "result_id"));
   metrics_manager_->OnAbandon(location, results, query);
 
   histogram_tester_.ExpectTotalCount(view_histogram, 4);
@@ -231,8 +225,8 @@ TEST_F(SearchMetricsManagerTest, OnIgnore) {
   histogram_tester_.ExpectTotalCount(action_histogram, 0);
 
   // Metrics Updated for non_empty results.
-  results.emplace_back(CreateFakeResult(Type::FILE_SEARCH));
-  results.emplace_back(CreateFakeResult(Type::ASSISTANT));
+  results.emplace_back(CreateFakeResult(Type::FILE_SEARCH, "result_id"));
+  results.emplace_back(CreateFakeResult(Type::ASSISTANT, "result_id"));
   metrics_manager_->OnIgnore(location, results, query);
 
   histogram_tester_.ExpectTotalCount(view_histogram, 2);
@@ -241,7 +235,7 @@ TEST_F(SearchMetricsManagerTest, OnIgnore) {
   histogram_tester_.ExpectUniqueSample(action_histogram, Action::kIgnore, 1);
 
   // Duplicate type is counted once only.
-  results.emplace_back(CreateFakeResult(Type::FILE_SEARCH));
+  results.emplace_back(CreateFakeResult(Type::FILE_SEARCH, "result_id"));
   metrics_manager_->OnIgnore(location, results, query);
 
   histogram_tester_.ExpectTotalCount(view_histogram, 4);

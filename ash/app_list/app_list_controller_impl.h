@@ -105,6 +105,7 @@ class ASH_EXPORT AppListControllerImpl
   void DismissAppList() override;
   void GetAppInfoDialogBounds(GetAppInfoDialogBoundsCallback callback) override;
   void ShowAppList(AppListShowSource source) override;
+  AppListShowSource LastAppListShowSource() override;
   aura::Window* GetWindow() override;
   bool IsVisible(const absl::optional<int64_t>& display_id) override;
   bool IsVisible() override;

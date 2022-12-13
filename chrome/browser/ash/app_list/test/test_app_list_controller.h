@@ -36,6 +36,7 @@ class TestAppListController : public ash::AppListController {
                       ash::SearchModel* search_model) override {}
   void ClearActiveModel() override {}
   void ShowAppList(ash::AppListShowSource source) override;
+  ash::AppListShowSource LastAppListShowSource() override;
   void DismissAppList() override;
   void GetAppInfoDialogBounds(
       GetAppInfoDialogBoundsCallback callback) override {}
@@ -52,6 +53,9 @@ class TestAppListController : public ash::AppListController {
 
   // The visibility state set using (Show|Dismiss)AppList.
   bool visible_ = false;
+
+  // Tracks the most recent show source for the app list.
+  absl::optional<ash::AppListShowSource> last_open_source_;
 
   base::ObserverList<ash::AppListControllerObserver> observers_;
 };

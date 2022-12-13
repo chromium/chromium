@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/app_list/search/search_session_metrics_manager.h"
 
+#include "ash/public/cpp/app_list/app_list_controller.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ash/app_list/search/search_metrics_util.h"
 
 namespace app_list {
@@ -20,16 +23,21 @@ SearchSessionMetricsManager::SearchSessionMetricsManager(
   if (notifier) {
     observation_.Observe(notifier);
   } else {
-    LogError(Error::kMissingNotifier);
+    LogSessionError(Error::kMissingNotifier);
   }
 }
 
 SearchSessionMetricsManager::~SearchSessionMetricsManager() = default;
 
 void SearchSessionMetricsManager::EndSearchSession() {
-  // TODO (crbug/1380563) Log search metrics
+  std::string show_source = GetAppListOpenMethod(
+      ash::AppListController::Get()->LastAppListShowSource());
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({kSessionHistogramPrefix, show_source}), session_result_);
+
+  session_result_ = ash::SearchSessionResult::kQuit;
   session_active_ = false;
-  session_answer_card_impression_ = false;
 }
 
 void SearchSessionMetricsManager::OnSearchSessionStarted() {
@@ -46,7 +54,7 @@ void SearchSessionMetricsManager::OnImpression(
     const std::u16string& query) {
   if (location == Location::kAnswerCard) {
     DCHECK(session_active_);
-    session_answer_card_impression_ = true;
+    session_result_ = ash::SearchSessionResult::kAnswerCardImpression;
   }
 }
 
@@ -56,8 +64,7 @@ void SearchSessionMetricsManager::OnLaunch(Location location,
                                            const std::u16string& query) {
   if (location == Location::kList) {
     DCHECK(session_active_);
-    result_launched_ = true;
-    // TODO (crbug/1380563) Log search metrics
+    session_result_ = ash::SearchSessionResult::kLaunch;
   }
   EndSearchSession();
 }

@@ -61,14 +61,7 @@ enum class SearchSessionResult {
   kLaunch = 0,
   kAnswerCardImpression = 1,
   kQuit = 2,
-};
-
-// Tracks whether a best match result was shown and whether it was launched at
-// the conclusion of each search session.
-enum class SearchBestMatchState {
-  kBestMatchShownAndLaunched = 0,
-  kBestMatchShownAndIgnored = 1,
-  kBestMatchNotShown = 2,
+  kMaxValue = kQuit,
 };
 
 // The type of the ChromeSearchResult. This is used for logging so do not

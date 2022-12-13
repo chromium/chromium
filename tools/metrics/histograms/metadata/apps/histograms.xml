@@ -115,6 +115,15 @@ chromium-metrics-reviews@google.com.
   <variant name="User" summary="Installed by user"/>
 </variants>
 
+<variants name="LauncherSearchEntryPoint">
+  <variant name="HomeButton"
+      summary="Open launcher by activationg home button"/>
+  <variant name="Others" summary="Open launcher using a source we don't track"/>
+  <variant name="Scroll" summary="Open launcher by scrolling on the shelf"/>
+  <variant name="SearchKey" summary="Open launcher by pressing search key"/>
+  <variant name="Swipe" summary="Open launcher by swiping on the shelf"/>
+</variants>
+
 <variants name="LauncherUISurface">
   <variant name=".AppsSearch" summary="App tiles search"/>
   <variant name=".AppsZeroState" summary="App tiles zero-state"/>
@@ -849,6 +858,46 @@ chromium-metrics-reviews@google.com.
     Records errors in processing other Apps.AppList.Search.* metrics. These are
     expected to be rare and bucket proportion is not meaningful.
   </summary>
+</histogram>
+
+<histogram name="Apps.AppList.Search.Session.Error"
+    enum="AppListUserEventError" expires_after="2023-01-31">
+  <owner>yulunwu@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Records errors in processing other Apps.AppList.Search.Session.* metrics.
+    These are expected to be rare and bucket proportion is not meaningful.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.Search.Session.{LauncherSearchEntryPoint}"
+    enum="LauncherSearchSessionResult" expires_after="2023-01-31">
+  <owner>yulunwu@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Tracks search result launches, answer card impressions, and search session
+    abandons for launcher search sessions.
+
+    A search session is started when a query is entered into the bubble launcher
+    search box or when the tablet mode device enters the kFullscreenSearch
+    AppListViewState. Each search session must conclude one of following ways:
+
+    Quit: Recorded when ending a search session without launching a result and
+    no answer card was shown long enough to have make an impression.
+
+    Launch: Recorded when a search session is ended by launching a result. An
+    answer card may or may not have been shown long enough to make an
+    impression.
+
+    AnswerCardImpression: An answer card was shown long enough to the user to
+    have made an impression at some point during the search session. The answer
+    card may or may not be shown at the moment the search session ended.
+  </summary>
+  <token key="LauncherSearchEntryPoint" variants="LauncherSearchEntryPoint"/>
 </histogram>
 
 <histogram name="Apps.AppList.Search.{SearchView}" enum="AppListSearchAction"

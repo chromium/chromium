@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "base/scoped_observation.h"
 
@@ -45,10 +46,9 @@ class SearchSessionMetricsManager : ash::AppListNotifier::Observer {
  private:
   // Whether the metrics manager is tracking an active search session.
   bool session_active_ = false;
-  // Whether the current search session has had an answer card impression.
-  bool session_answer_card_impression_ = false;
-  // Whether a result was launched during the search session.
-  bool result_launched_ = false;
+  // Tracks the metric recorded when EndSearchSession() is called.
+  ash::SearchSessionResult session_result_ = ash::SearchSessionResult::kQuit;
+
   base::ScopedObservation<ash::AppListNotifier, ash::AppListNotifier::Observer>
       observation_{this};
 };

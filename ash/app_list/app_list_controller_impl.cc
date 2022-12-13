@@ -377,6 +377,11 @@ void AppListControllerImpl::ShowAppList(AppListShowSource source) {
        /*should_record_metrics=*/true);
 }
 
+AppListShowSource AppListControllerImpl::LastAppListShowSource() {
+  DCHECK(last_open_source_.has_value());
+  return last_open_source_.value();
+}
+
 aura::Window* AppListControllerImpl::GetWindow() {
   if (IsTabletMode())
     return fullscreen_presenter_->GetWindow();
@@ -538,8 +543,6 @@ ShelfAction AppListControllerImpl::ToggleAppList(
   if (IsKioskSession())
     return SHELF_ACTION_APP_LIST_DISMISSED;
 
-  last_open_source_ = show_source;
-
   if (IsTabletMode()) {
     bool handled = GoHome(display_id);
 
@@ -549,12 +552,15 @@ ShelfAction AppListControllerImpl::ToggleAppList(
       return SHELF_ACTION_APP_LIST_BACK;
     }
     LogAppListShowSource(show_source, /*app_list_bubble=*/false);
+    last_open_source_ = show_source;
     return SHELF_ACTION_APP_LIST_SHOWN;
   }
 
   ShelfAction action = bubble_presenter_->Toggle(display_id);
-  if (action == SHELF_ACTION_APP_LIST_SHOWN)
+  if (action == SHELF_ACTION_APP_LIST_SHOWN) {
     LogAppListShowSource(show_source, /*app_list_bubble=*/true);
+    last_open_source_ = show_source;
+  }
   return action;
 }
 

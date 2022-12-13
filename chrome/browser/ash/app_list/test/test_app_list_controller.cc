@@ -33,8 +33,14 @@ aura::Window* TestAppListController::GetWindow() {
 }
 
 void TestAppListController::ShowAppList(ash::AppListShowSource source) {
+  last_open_source_ = source;
   visible_ = true;
   NotifyAppListVisibilityChanged();
+}
+
+ash::AppListShowSource TestAppListController::LastAppListShowSource() {
+  DCHECK(last_open_source_.has_value());
+  return last_open_source_.value();
 }
 
 void TestAppListController::DismissAppList() {

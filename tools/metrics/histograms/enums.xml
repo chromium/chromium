@@ -55318,6 +55318,12 @@ chromeos/ash/components/language/language_packs/language_pack_manager.cc -->
   <int value="1003" label="LAUNCH_RESULT_FAILURE"/>
 </enum>
 
+<enum name="LauncherSearchSessionResult">
+  <int value="0" label="Quit"/>
+  <int value="1" label="Launch"/>
+  <int value="2" label="AnswerCardImpression"/>
+</enum>
+
 <enum name="LauncherUserAction">
   <summary>
     List of actions that represent a launcher workflow that the user can perform

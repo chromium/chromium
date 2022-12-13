@@ -5,13 +5,18 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_SEARCH_METRICS_UTIL_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_SEARCH_METRICS_UTIL_H_
 
+#include <string>
+
+#include "ash/public/cpp/app_list/app_list_metrics.h"
+
 namespace app_list {
 
 constexpr char kHistogramPrefix[] = "Apps.AppList.Search.";
+constexpr char kSessionHistogramPrefix[] = "Apps.AppList.Search.Session.";
 
 // Represents possible error states of the metrics observer itself. These
-// values persist to logs. Entries should not be renumbered and numeric values
-// should never be reused.
+// values persist to logs. Entries should not be renumbered and numeric
+// values should never be reused.
 enum class Error {
   kMissingNotifier = 0,
   kResultNotFound = 1,
@@ -21,6 +26,9 @@ enum class Error {
 };
 
 void LogError(Error error);
+void LogSessionError(Error error);
+
+std::string GetAppListOpenMethod(ash::AppListShowSource source);
 
 }  // namespace app_list
 
