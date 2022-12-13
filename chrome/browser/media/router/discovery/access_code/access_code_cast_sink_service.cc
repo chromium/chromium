@@ -179,6 +179,16 @@ void AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::OnRoutesUpdated(
   previous_routes_ = new_routes;
 
   if (added_routes.size() > 0) {
+    auto new_route_id = *added_routes.begin();
+
+    // Only record the start time for local routes
+    bool is_route_local = false;
+    for (const auto& route : routes) {
+      if (route.media_route_id() == new_route_id && route.is_local()) {
+        is_route_local = true;
+      }
+    }
+
     access_code_sink_service_->GetCastMediaSinkServiceImpl()
         ->task_runner()
         ->PostTaskAndReplyWithResult(
@@ -187,9 +197,10 @@ void AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::OnRoutesUpdated(
                 &CastMediaSinkServiceImpl::GetSinkById,
                 base::Unretained(
                     access_code_sink_service_->GetCastMediaSinkServiceImpl()),
-                MediaRoute::GetSinkIdFromMediaRouteId(*added_routes.begin())),
+                MediaRoute::GetSinkIdFromMediaRouteId(new_route_id)),
             base::BindOnce(&AccessCodeCastSinkService::HandleMediaRouteAdded,
-                           access_code_sink_service_->GetWeakPtr()));
+                           access_code_sink_service_->GetWeakPtr(),
+                           new_route_id, is_route_local));
   }
 
   // No routes were removed.
@@ -202,6 +213,16 @@ void AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::OnRoutesUpdated(
          "a time.";
   auto first = removed_routes.begin();
   removed_route_id_ = *first;
+
+  auto route_start_times =
+      access_code_sink_service_->current_route_start_times_;
+  auto route_start_time_iterator = route_start_times.find(removed_route_id_);
+  if (route_start_time_iterator != route_start_times.end()) {
+    base::Time route_start_time = route_start_time_iterator->second;
+    AccessCodeCastMetrics::RecordRouteDuration(base::Time::Now() -
+                                               route_start_time);
+    route_start_times.erase(removed_route_id_);
+  }
 
   access_code_sink_service_->GetCastMediaSinkServiceImpl()
       ->task_runner()
@@ -252,9 +273,15 @@ void AccessCodeCastSinkService::HandleMediaRouteRemovedByAccessCode(
 }
 
 void AccessCodeCastSinkService::HandleMediaRouteAdded(
+    const MediaRoute::Id route_id,
+    const bool is_route_local,
     const MediaSinkInternal* sink) {
   if (!IsSinkValidAccessCodeSink(sink))
     return;
+
+  if (is_route_local) {
+    current_route_start_times_[route_id] = base::Time::Now();
+  }
 
   AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
       GetAccessCodeDeviceDurationPref(profile_));

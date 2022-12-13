@@ -28,6 +28,8 @@ const char AccessCodeCastMetrics::kHistogramDialogOpenLocation[] =
     "AccessCodeCast.Ui.DialogOpenLocation";
 const char AccessCodeCastMetrics::kHistogramRememberedDevicesCount[] =
     "AccessCodeCast.Discovery.RememberedDevicesCount";
+const char AccessCodeCastMetrics::kHistogramRouteDuration[] =
+    "AccessCodeCast.Session.RouteDuration";
 const char AccessCodeCastMetrics::kHistogramUiTabSwitcherUsageType[] =
     "AccessCodeCast.Ui.TabSwitcherUsageType";
 const char AccessCodeCastMetrics::kHistogramUiTabSwitchingCount[] =
@@ -90,6 +92,17 @@ void AccessCodeCastMetrics::RecordDialogOpenLocation(
 // static
 void AccessCodeCastMetrics::RecordRememberedDevicesCount(int count) {
   base::UmaHistogramCounts100(kHistogramRememberedDevicesCount, count);
+}
+
+// static
+void AccessCodeCastMetrics::RecordRouteDuration(base::TimeDelta duration) {
+  base::TimeDelta min_time = base::Seconds(1);
+  base::UmaHistogramCustomTimes(
+      /*name=*/kHistogramRouteDuration,
+      /*sample=*/std::max(duration, min_time),
+      /*min=*/min_time,
+      /*max=*/base::Hours(8),
+      /*buckets=*/100);
 }
 
 // static

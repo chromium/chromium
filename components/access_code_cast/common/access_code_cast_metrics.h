@@ -98,6 +98,7 @@ class AccessCodeCastMetrics {
   static const char kHistogramDialogLoadTime[];
   static const char kHistogramDialogOpenLocation[];
   static const char kHistogramRememberedDevicesCount[];
+  static const char kHistogramRouteDuration[];
   static const char kHistogramUiTabSwitcherUsageType[];
   static const char kHistogramUiTabSwitchingCount[];
 
@@ -130,6 +131,12 @@ class AccessCodeCastMetrics {
   // Records the count of cast devices which are currently being remembered
   // being the AccessCodeCastSinkService.
   static void RecordRememberedDevicesCount(int count);
+
+  // Records the length of time that a route to an access code device lasts.
+  // The minimum length of time reported is one second, so any lower durations
+  // will be rounded up. Also, the largest time reported is 8 hours, and any
+  // longer times will be bucketed down.
+  static void RecordRouteDuration(base::TimeDelta duration);
 
   // Records the count of tabs a user switches to during a tab mirroring
   // session.

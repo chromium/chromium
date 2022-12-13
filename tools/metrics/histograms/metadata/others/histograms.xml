@@ -254,6 +254,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="AccessCodeCast.Session.RouteDuration" units="ms"
+    expires_after="2023-06-12">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    The amount of time in milliseconds that a route to an access code device
+    lasts. Recorded at the end of a local access code route; not recorded for
+    non-local routes. Logged only on desktop platforms.
+  </summary>
+</histogram>
+
 <histogram name="AccessCodeCast.Ui.AccessCodeInputTime" units="ms"
     expires_after="2023-05-14">
   <owner>bzielinski@google.com</owner>
