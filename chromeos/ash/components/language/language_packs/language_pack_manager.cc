@@ -138,10 +138,12 @@ const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
           {{kHandwritingFeatureId, "zh"}, "handwriting-zh"},
 
           // Text-To-Speech.
+          {{kTtsFeatureId, "en-us"}, "tts-en-us"},
           {{kTtsFeatureId, "es-es"}, "tts-es-es"},
           {{kTtsFeatureId, "es-us"}, "tts-es-us"},
           {{kTtsFeatureId, "fr-fr"}, "tts-fr-fr"},
           {{kTtsFeatureId, "hi-in"}, "tts-hi-in"},
+          {{kTtsFeatureId, "ja-jp"}, "tts-ja-jp"},
           {{kTtsFeatureId, "nl-nl"}, "tts-nl-nl"},
           {{kTtsFeatureId, "pt-br"}, "tts-pt-br"},
           {{kTtsFeatureId, "sv-se"}, "tts-sv-se"},
