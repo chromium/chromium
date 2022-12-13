@@ -156,7 +156,7 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
         // If we're in doze mode (N+ devices), onConnectionTypeChanged may not
         // be called, but this function should. So update the connection type
         // if necessary.
-        broadcastNetworkChangeIfNecessary(mNotifier.getCurrentNetworkState().getConnectionType());
+        broadcastNetworkChangeIfNecessary(connectionType);
     }
 
     @Override
