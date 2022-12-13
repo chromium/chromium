@@ -196,7 +196,8 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsAsync(
       mailbox_holder.sync_token.GetConstData());
   context_provider->RasterInterface()->ReadbackARGBPixelsAsync(
       mailbox_holder.mailbox, mailbox_holder.texture_target, image_origin,
-      src_point, info, temp_argb_frame->stride(media::VideoFrame::kARGBPlane),
+      image_size, src_point, info,
+      temp_argb_frame->stride(media::VideoFrame::kARGBPlane),
       temp_argb_frame->GetWritableVisibleData(media::VideoFrame::kARGBPlane),
       WTF::BindOnce(&StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync,
                     weak_ptr_factory_.GetWeakPtr(), image, temp_argb_frame,

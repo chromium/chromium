@@ -135,12 +135,15 @@ class RasterInterface : public InterfaceBase {
   // kBGRA_8888_SkColorType color types.
   // |out| must remain valid  until |readback_done| is called with
   // a bool indicating if the readback was successful.
+  // |source_size| describes dimensions of the |source_mailbox| texture.
+  // |dst_info| |source_starting_point| describe subregion that needs to be read
   // On success |out| will contain the pixel data copied back from the GPU
   // process.
   virtual void ReadbackARGBPixelsAsync(
       const gpu::Mailbox& source_mailbox,
       GLenum source_target,
       GrSurfaceOrigin source_origin,
+      const gfx::Size& source_size,
       const gfx::Point& source_starting_point,
       const SkImageInfo& dst_info,
       GLuint dst_row_bytes,

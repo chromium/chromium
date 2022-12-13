@@ -264,6 +264,7 @@ void RasterImplementationGLES::ReadbackARGBPixelsAsync(
     const gpu::Mailbox& source_mailbox,
     GLenum source_target,
     GrSurfaceOrigin src_origin,
+    const gfx::Size& source_size,
     const gfx::Point& source_starting_point,
     const SkImageInfo& dst_info,
     GLuint dst_row_bytes,
@@ -282,17 +283,29 @@ void RasterImplementationGLES::ReadbackARGBPixelsAsync(
   // Convert bottom-left GL coordinates to top-left coordinates expected
   // by RI clients.
   bool flip_y;
+  gfx::Point starting_point(source_starting_point);
   switch (src_origin) {
     case kTopLeft_GrSurfaceOrigin:
       flip_y = false;
       break;
     case kBottomLeft_GrSurfaceOrigin:
+      // Since RI clients always expect top-left origin, two things need to be
+      // done when texture's origin is bottom-left.
+
+      // 1. Rows in the output buffer need to be switched vertically.
       flip_y = true;
+
+      // 2. Starting of a target rectangle needs to be adjusted from top-left
+      //    to bottom-left. That's how glReadPixels expects it.
+      // It's okay if we accidentally go negative here, glReadPixels checks
+      // its input.
+      starting_point.set_y(source_size.height() - starting_point.y() -
+                           dst_gfx_size.height());
       break;
   }
 
   GetGLHelper()->ReadbackTextureAsync(
-      texture_id, source_target, source_starting_point, dst_gfx_size, out,
+      texture_id, source_target, starting_point, dst_gfx_size, out,
       dst_row_bytes, flip_y, format,
       base::BindOnce(&RasterImplementationGLES::OnReadARGBPixelsAsync,
                      weak_ptr_factory_.GetWeakPtr(), texture_id,

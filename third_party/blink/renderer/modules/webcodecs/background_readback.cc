@@ -220,9 +220,11 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
   gpu::MailboxHolder mailbox_holder = txt_frame->mailbox_holder(0);
   ri->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetConstData());
 
+  gfx::Size texture_size = txt_frame->coded_size();
   ri->ReadbackARGBPixelsAsync(
-      mailbox_holder.mailbox, mailbox_holder.texture_target, origin, src_point,
-      info, base::saturated_cast<GLuint>(rgba_stide), dst_pixels,
+      mailbox_holder.mailbox, mailbox_holder.texture_target, origin,
+      texture_size, src_point, info, base::saturated_cast<GLuint>(rgba_stide),
+      dst_pixels,
       WTF::BindOnce(&BackgroundReadback::OnARGBPixelsFrameReadCompleted,
                     MakeUnwrappingCrossThreadHandle(this), std::move(result_cb),
                     std::move(txt_frame), std::move(result)));
@@ -296,9 +298,11 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
   gpu::MailboxHolder mailbox_holder = txt_frame->mailbox_holder(0);
   ri->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetConstData());
 
+  gfx::Size texture_size = txt_frame->coded_size();
   ri->ReadbackARGBPixelsAsync(
-      mailbox_holder.mailbox, mailbox_holder.texture_target, origin, src_point,
-      info, base::saturated_cast<GLuint>(stride), dst_pixels,
+      mailbox_holder.mailbox, mailbox_holder.texture_target, origin,
+      texture_size, src_point, info, base::saturated_cast<GLuint>(stride),
+      dst_pixels,
       WTF::BindOnce(&BackgroundReadback::OnARGBPixelsBufferReadCompleted,
                     MakeUnwrappingCrossThreadHandle(this), std::move(txt_frame),
                     src_rect, dest_layout, dest_buffer, std::move(done_cb)));
