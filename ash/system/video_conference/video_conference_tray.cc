@@ -22,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -81,8 +82,8 @@ VideoConferenceTrayButton::VideoConferenceTrayButton(
                  accessible_name_id,
                  /*is_togglable=*/true,
                  /*has_border=*/true) {
-  // TODO(b/261620616): Update this color according to spec.
-  SetBackgroundToggledColorId(kColorAshControlBackgroundColorAlert);
+  SetBackgroundToggledColorId(cros_tokens::kCrosSysSystemNegativeContainer);
+  SetIconToggledColorId(cros_tokens::kCrosSysSystemOnNegativeContainer);
 
   SetToggledVectorIcon(*toggled_icon);
 }
@@ -137,7 +138,8 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
       std::make_unique<VideoConferenceTrayButton>(
           base::BindRepeating(&VideoConferenceTray::OnAudioButtonClicked,
                               weak_ptr_factory_.GetWeakPtr()),
-          &kPrivacyIndicatorsMicrophoneIcon, &kPrivacyIndicatorsMicrophoneIcon,
+          &kPrivacyIndicatorsMicrophoneIcon,
+          &kVideoConferenceMicrophoneMutedIcon,
           IDS_PRIVACY_NOTIFICATION_TITLE_MIC));
   camera_icon_ = tray_container()->AddChildView(
       std::make_unique<VideoConferenceTrayButton>(
