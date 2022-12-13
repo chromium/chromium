@@ -1351,11 +1351,6 @@ BASE_FEATURE(kWebUICodeCache,
              "WebUICodeCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables report-only Trusted Types experiment on WebUIs
-BASE_FEATURE(kWebUIReportOnlyTrustedTypes,
-             "WebUIReportOnlyTrustedTypes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether the WebUSB API is enabled:
 // https://wicg.github.io/webusb
 BASE_FEATURE(kWebUsb, "WebUSB", base::FEATURE_ENABLED_BY_DEFAULT);

@@ -10,7 +10,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -508,47 +507,6 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, DisallowWebRequestToSharedResources) {
       GURL("chrome-untrusted://resources/mojo/mojo/public/js/bindings.js");
   EXPECT_EQ("Load failed", EvalJs(shell(), JsReplace(kLoadResourceScript,
                                                      shared_resource_url)));
-}
-
-class WebUISecurityTestWithWebUIReportOnlyTrustedTypesEnabled
-    : public WebUISecurityTest {
- public:
-  WebUISecurityTestWithWebUIReportOnlyTrustedTypesEnabled() {
-    feature_list_.InitAndEnableFeature(features::kWebUIReportOnlyTrustedTypes);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Verify Report-Only Trusted Types won't block assignment to a dangerous sink,
-// but logs warning
-IN_PROC_BROWSER_TEST_F(WebUISecurityTestWithWebUIReportOnlyTrustedTypesEnabled,
-                       DoNotBlockSinkAssignmentOnReportOnlyTrustedTypes) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL test_url(GetWebUIURL("web-ui/title1.html"));
-
-  EXPECT_TRUE(NavigateToURL(shell(), test_url));
-
-  const char kDangerousSinkUse[] =
-      "(() => {"
-      "  try {"
-      "    document.body.innerHTML = 1;"
-      "    throw 'Assignment should have blocked';"
-      "  } catch(e) {"
-      "    return 'Assignment blocked';"
-      "  }"
-      "})();";
-  {
-    WebContentsConsoleObserver console_observer(shell()->web_contents());
-    console_observer.SetPattern(
-        "This document requires 'TrustedHTML' assignment.");
-
-    EXPECT_EQ("Assignment blocked",
-              EvalJs(shell(), kDangerousSinkUse, EXECUTE_SCRIPT_DEFAULT_OPTIONS,
-                     1 /* world_id */));
-    ASSERT_TRUE(console_observer.Wait());
-  }
 }
 
 namespace {
