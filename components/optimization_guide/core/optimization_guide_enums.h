@@ -110,11 +110,9 @@ enum class PredictionModelDownloadStatus {
   // The new directory to persist this model version's files could not be
   // created.
   kCouldNotCreateDirectory = 12,
-  // The model info was not saved to model store file.
-  kFailedModelInfoSaving = 13,
 
   // Add new values above this line.
-  kMaxValue = kFailedModelInfoSaving,
+  kMaxValue = kCouldNotCreateDirectory,
 };
 
 // The status for the page content annotations being stored.
