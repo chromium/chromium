@@ -10,7 +10,7 @@ import re
 import sys
 from typing import List, Optional
 
-_TOOLS_ANDROID_PATH = pathlib.Path(__file__).parents[1].resolve(strict=True)
+_TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve(strict=True).parents[1]
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
     sys.path.append(str(_TOOLS_ANDROID_PATH))
 from python_utils import git_metadata_utils

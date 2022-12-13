@@ -8,7 +8,7 @@ import os
 import pathlib
 import sys
 
-_TOOLS_ANDROID_PATH = pathlib.Path(__file__).parents[2].resolve()
+_TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve().parents[2]
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
     sys.path.append(str(_TOOLS_ANDROID_PATH))
 from python_utils import subprocess_utils

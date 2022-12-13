@@ -20,7 +20,7 @@ import sys
 
 from typing import Iterator, List, Optional, Tuple
 
-_TOOLS_ANDROID_PATH = pathlib.Path(__file__).parents[2].resolve()
+_TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve().parents[2]
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
     sys.path.append(str(_TOOLS_ANDROID_PATH))
 from python_utils import git_metadata_utils, subprocess_utils
@@ -117,6 +117,7 @@ class DepList:
 
 class BuildFile:
     """Represents the contents of a BUILD.gn file."""
+
     def __init__(self,
                  build_gn_path: str,
                  root_gn_path: str,
@@ -223,6 +224,7 @@ class BuildFile:
         return name
 
     def _find_all_list_assignments(self):
+
         def match_list_assignments(node):
             r"""Matches and returns the list being assigned.
 

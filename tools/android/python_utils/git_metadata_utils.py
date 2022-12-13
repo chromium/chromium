@@ -10,7 +10,7 @@ import pathlib
 import sys
 from typing import Optional, Union
 
-_PYTHON_UTILS_PATH = pathlib.Path(__file__).parents[0].resolve()
+_PYTHON_UTILS_PATH = pathlib.Path(__file__).resolve().parents[0]
 if str(_PYTHON_UTILS_PATH) not in sys.path:
     sys.path.append(str(_PYTHON_UTILS_PATH))
 import subprocess_utils
@@ -28,7 +28,7 @@ def get_chromium_src_path() -> pathlib.Path:
         The absolute path to the 'src' root directory of the Chromium Git
         checkout containing this file.
     """
-    _CHROMIUM_SRC_ROOT = pathlib.Path(__file__).parents[3].resolve(strict=True)
+    _CHROMIUM_SRC_ROOT = pathlib.Path(__file__).resolve(strict=True).parents[3]
     if _CHROMIUM_SRC_ROOT.name != 'src':
         raise AssertionError(
             f'_CHROMIUM_SRC_ROOT "{_CHROMIUM_SRC_ROOT}" should end in "src".')

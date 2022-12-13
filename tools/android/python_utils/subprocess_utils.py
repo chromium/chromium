@@ -12,7 +12,7 @@ import subprocess
 
 from typing import Optional, Sequence, Union
 
-_PYTHON_UTILS_PATH = pathlib.Path(__file__).parents[0].resolve()
+_PYTHON_UTILS_PATH = pathlib.Path(__file__).resolve().parents[0]
 if str(_PYTHON_UTILS_PATH) not in sys.path:
     sys.path.append(str(_PYTHON_UTILS_PATH))
 import git_metadata_utils

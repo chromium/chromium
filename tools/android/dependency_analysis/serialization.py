@@ -15,8 +15,9 @@ import json_consts
 import package_dependency
 import target_dependency
 
-_TOOLS_ANDROID_PATH = pathlib.Path(__file__).parents[1].resolve()
-sys.path.append(str(_TOOLS_ANDROID_PATH))
+_TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve().parents[1]
+if str(_TOOLS_ANDROID_PATH) not in sys.path:
+    sys.path.append(str(_TOOLS_ANDROID_PATH))
 from python_utils import git_metadata_utils
 
 

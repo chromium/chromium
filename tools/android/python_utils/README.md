@@ -9,7 +9,7 @@ and other modules in `//tools/android`.
 
 1. Add `chromium_git/src/tools/android` to your Python module search path, e.g.:
     ```
-    _TOOLS_ANDROID_PATH = pathlib.Path(__file__).parents[2].resolve()
+    _TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve().parents[2]
 
     if str(_TOOLS_ANDROID_PATH) not in sys.path:
         sys.path.append(str(_TOOLS_ANDROID_PATH))

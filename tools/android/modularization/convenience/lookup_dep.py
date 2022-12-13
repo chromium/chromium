@@ -27,7 +27,7 @@ import sys
 import zipfile
 from typing import Dict, List, Set
 
-_SRC_DIR = pathlib.Path(__file__).parents[4].resolve()
+_SRC_DIR = pathlib.Path(__file__).resolve().parents[4]
 
 sys.path.append(str(_SRC_DIR / 'build' / 'android'))
 from pylib import constants

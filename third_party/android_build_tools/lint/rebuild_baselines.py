@@ -10,7 +10,7 @@ import pathlib
 import subprocess
 from typing import List, Optional
 
-_SRC_PATH = pathlib.Path(__file__).parents[3].resolve()
+_SRC_PATH = pathlib.Path(__file__).resolve().parents[3]
 _CLANK_PATH = _SRC_PATH / 'clank'
 _OUTPUT_DIR_ROOT = _SRC_PATH / 'out'
 _AUTONINJA_PATH = _SRC_PATH / 'third_party' / 'depot_tools' / 'autoninja'
@@ -18,12 +18,12 @@ _NINJA_PATH = _SRC_PATH / 'third_party' / 'ninja' / 'ninja'
 _GN_PATH = _SRC_PATH / 'buildtools' / 'linux64' / 'gn'
 
 
-def build_all_lint_targets(out_dir: pathlib.Path,
-                           args_list: List[str],
-                           *,
-                           verbose: bool,
-                           built_targets: Optional[List[str]] = None
-                           ) -> List[str]:
+def build_all_lint_targets(
+        out_dir: pathlib.Path,
+        args_list: List[str],
+        *,
+        verbose: bool,
+        built_targets: Optional[List[str]] = None) -> List[str]:
     logging.info(f'Create output directory: {out_dir}')
     out_dir.mkdir(parents=True, exist_ok=True)
 
