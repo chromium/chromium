@@ -172,10 +172,11 @@ def UpdateHistogramDefinitions(histogram_enum_name, source_enum_values,
   new_comments = []
 
   # Add a "Generated from (...)" comment.
-  new_comments.append(document.createComment(
-    ' Generated from {0}.'.format(source_enum_path) + (
-        '\nCalled by {0}.'.format(caller_script_name) if caller_script_name
-             else '')))
+  new_comments.append(
+      document.createComment(
+          ' Generated from {0}.'.format(source_enum_path).replace('\\', '/') +
+          ('\nCalled by {0}.'.format(caller_script_name
+                                     ) if caller_script_name else '')))
 
   # Create item nodes for each of the enum values.
   for value, label in source_enum_values.items():
@@ -301,7 +302,7 @@ def UpdateHistogramFromDict(histogram_enum_name, source_enum_values,
     Log('Cancelled.')
     return
 
-  with io.open(ENUMS_PATH, 'w', encoding='utf-8') as f:
+  with io.open(ENUMS_PATH, 'w', encoding='utf-8', newline='') as f:
     f.write(new_xml)
 
   Log('Done.')
