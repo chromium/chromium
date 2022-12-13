@@ -20,10 +20,7 @@ ScopedJavaSurfaceControl::ScopedJavaSurfaceControl(
       release_on_destroy_(release_on_destroy) {}
 
 ScopedJavaSurfaceControl::~ScopedJavaSurfaceControl() {
-  if (release_on_destroy_ && j_surface_control_) {
-    Java_ScopedJavaSurfaceControl_releaseSurfaceControl(
-        base::android::AttachCurrentThread(), j_surface_control_);
-  }
+  DestroyIfNeeded();
 }
 
 ScopedJavaSurfaceControl::ScopedJavaSurfaceControl(
@@ -35,9 +32,12 @@ ScopedJavaSurfaceControl::ScopedJavaSurfaceControl(
 
 ScopedJavaSurfaceControl& ScopedJavaSurfaceControl::operator=(
     ScopedJavaSurfaceControl&& other) {
-  j_surface_control_ = std::move(other.j_surface_control_);
-  release_on_destroy_ = other.release_on_destroy_;
-  other.release_on_destroy_ = false;
+  if (this != &other) {
+    DestroyIfNeeded();
+    j_surface_control_ = std::move(other.j_surface_control_);
+    release_on_destroy_ = other.release_on_destroy_;
+    other.release_on_destroy_ = false;
+  }
   return *this;
 }
 
@@ -59,6 +59,15 @@ ScopedJavaSurfaceControl::MakeSurface() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return base::MakeRefCounted<gfx::SurfaceControl::Surface>(env,
                                                             j_surface_control_);
+}
+
+void ScopedJavaSurfaceControl::DestroyIfNeeded() {
+  if (release_on_destroy_ && j_surface_control_) {
+    Java_ScopedJavaSurfaceControl_releaseSurfaceControl(
+        base::android::AttachCurrentThread(), j_surface_control_);
+  }
+  j_surface_control_.Reset();
+  release_on_destroy_ = false;
 }
 
 }  // namespace gl

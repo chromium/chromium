@@ -47,6 +47,8 @@ class GL_EXPORT ScopedJavaSurfaceControl {
   scoped_refptr<gfx::SurfaceControl::Surface> MakeSurface();
 
  private:
+  void DestroyIfNeeded();
+
   base::android::ScopedJavaGlobalRef<jobject> j_surface_control_;
   bool release_on_destroy_ = false;
 };
