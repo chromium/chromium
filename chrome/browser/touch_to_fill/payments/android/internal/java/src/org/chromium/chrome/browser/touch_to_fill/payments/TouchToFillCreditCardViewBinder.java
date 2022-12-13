@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
@@ -65,7 +66,7 @@ class TouchToFillCreditCardViewBinder {
     private TouchToFillCreditCardViewBinder() {}
 
     /**
-     * Factory used to create a new View inside the ListView inside the TouchToFillCreditCardView.
+     * Factory used to create a card item inside the ListView inside the TouchToFillCreditCardView.
      * @param parent The parent {@link ViewGroup} of the new item.
      */
     static View createCardItemView(ViewGroup parent) {
@@ -75,19 +76,52 @@ class TouchToFillCreditCardViewBinder {
 
     /** Binds the item view to the model properties. */
     static void bindCardItemView(PropertyModel model, View view, PropertyKey propertyKey) {
-        ImageView icon = view.findViewById(R.id.favicon);
-        int iconId = model.get(CARD_ICON_ID);
-        // Generally the resource id for the icon can only be zero in the tests.
-        // For production code a general card icon id is set by default in the CreditCard
-        // constructor if the card issuer is unknown.
-        icon.setImageDrawable(
-                iconId != 0 ? AppCompatResources.getDrawable(view.getContext(), iconId) : null);
-        TextView cardName = view.findViewById(R.id.card_name);
-        cardName.setText(model.get(CARD_NAME));
-        TextView cardNumber = view.findViewById(R.id.card_number);
-        cardNumber.setText(model.get(CARD_NUMBER));
-        TextView expirationDate = view.findViewById(R.id.expiration_date);
-        expirationDate.setText(model.get(CARD_EXPIRATION));
-        view.setOnClickListener(unusedView -> model.get(ON_CLICK_ACTION).run());
+        if (propertyKey == CARD_ICON_ID) {
+            ImageView icon = view.findViewById(R.id.favicon);
+            int iconId = model.get(CARD_ICON_ID);
+            // Generally the resource id for the icon can only be zero in the tests.
+            // For production code a general card icon id is set by default in the CreditCard
+            // constructor if the card issuer is unknown.
+            icon.setImageDrawable(
+                    iconId != 0 ? AppCompatResources.getDrawable(view.getContext(), iconId) : null);
+        } else if (propertyKey == CARD_NAME) {
+            TextView cardName = view.findViewById(R.id.card_name);
+            cardName.setText(model.get(CARD_NAME));
+        } else if (propertyKey == CARD_NUMBER) {
+            TextView cardNumber = view.findViewById(R.id.card_number);
+            cardNumber.setText(model.get(CARD_NUMBER));
+        } else if (propertyKey == CARD_EXPIRATION) {
+            TextView expirationDate = view.findViewById(R.id.expiration_date);
+            expirationDate.setText(model.get(CARD_EXPIRATION));
+        } else if (propertyKey == ON_CLICK_ACTION) {
+            view.setOnClickListener(unusedView -> model.get(ON_CLICK_ACTION).run());
+        } else {
+            assert false : "Unhandled update to property:" + propertyKey;
+        }
+    }
+
+    /**
+     * Factory used to create a new header inside the ListView inside the TouchToFillCreditCardView.
+     * @param parent The parent {@link ViewGroup} of the new item.
+     */
+    static View createHeaderItemView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.touch_to_fill_credit_card_header_item, parent, false);
+    }
+
+    /**
+     * Called whenever a property in the given model changes. It updates the given view accordingly.
+     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
+     * @param view The {@link View} of the header to update.
+     * @param key The {@link PropertyKey} which changed.
+     */
+    static void bindHeaderView(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (propertyKey == IMAGE_DRAWABLE_ID) {
+            ImageView sheetHeaderImage = view.findViewById(R.id.branding_icon);
+            sheetHeaderImage.setImageDrawable(AppCompatResources.getDrawable(
+                    view.getContext(), model.get(IMAGE_DRAWABLE_ID)));
+        } else {
+            assert false : "Unhandled update to property:" + propertyKey;
+        }
     }
 }

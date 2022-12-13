@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHOW_CREDIT_CARD_SETTINGS_CALLBACK;
@@ -65,6 +66,8 @@ public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardCo
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(model.get(SHEET_ITEMS));
         adapter.registerType(CREDIT_CARD, TouchToFillCreditCardViewBinder::createCardItemView,
                 TouchToFillCreditCardViewBinder::bindCardItemView);
+        adapter.registerType(HEADER, TouchToFillCreditCardViewBinder::createHeaderItemView,
+                TouchToFillCreditCardViewBinder::bindHeaderView);
         view.setSheetItemListAdapter(adapter);
     }
 

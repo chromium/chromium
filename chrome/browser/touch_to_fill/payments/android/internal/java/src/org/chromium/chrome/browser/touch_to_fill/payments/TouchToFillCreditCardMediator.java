@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.ON_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
@@ -13,6 +14,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import android.content.Context;
 
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.HeaderProperties;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -40,6 +42,9 @@ class TouchToFillCreditCardMediator {
     void showSheet(CreditCard[] cards, boolean shouldShowScanCreditCard) {
         assert cards != null;
 
+        // TODO(1247698): Show GPay logo if there is at least one card coming from
+        // GPay, if there are only local cards show Chrome logo.
+        boolean hasOnlyLocalCards = true;
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
 
@@ -47,6 +52,9 @@ class TouchToFillCreditCardMediator {
             final PropertyModel model = createCardModel(card);
             sheetItems.add(new ListItem(CREDIT_CARD, model));
         }
+
+        sheetItems.add(0, buildHeader(hasOnlyLocalCards));
+
         mModel.set(VISIBLE, true);
         mModel.set(SHOULD_SHOW_SCAN_CREDIT_CARD, shouldShowScanCreditCard);
     }
@@ -88,5 +96,14 @@ class TouchToFillCreditCardMediator {
                                 .replace("$1", card.getFormattedExpirationDate(mContext)))
                 .with(ON_CLICK_ACTION, () -> { this.onSelectedCreditCard(card.getGUID()); })
                 .build();
+    }
+
+    private ListItem buildHeader(boolean hasOnlyLocalCards) {
+        return new ListItem(TouchToFillCreditCardProperties.ItemType.HEADER,
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(IMAGE_DRAWABLE_ID,
+                                hasOnlyLocalCards ? R.drawable.fre_product_logo
+                                                  : R.drawable.google_pay)
+                        .build());
     }
 }

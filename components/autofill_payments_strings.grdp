@@ -776,6 +776,9 @@
     <message name="IDS_AUTOFILL_BOTTOM_SHEET_MANAGE_PAYMENT_METHODS" desc="An option in the autofill bottom sheet that triggers navigation to the payment settings." formatter_data="android_java">
       Manage payment methods
     </message>
+    <message name="IDS_AUTOFILL_CREDIT_CARD_BOTTOM_SHEET_TITLE" desc="The title of the touch to fill bottom sheet for payments that appears under the GPay icon." formatter_data="android_java">
+      Autofill payment info
+    </message>
   </if>
 
 </grit-part>

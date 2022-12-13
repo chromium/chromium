@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHOW_CREDIT_CARD_SETTINGS_CALLBACK;
@@ -94,11 +95,13 @@ public class TouchToFillCreditCardControllerRobolectricTest {
         mMediator.showSheet(new CreditCard[] {VISA}, false);
 
         ModelList itemList = mTouchToFillCreditCardModel.get(SHEET_ITEMS);
-        assertThat(itemList.size(), is(1));
+        assertThat(itemList.size(), is(2));
 
-        assertThat(itemList.get(0).type, is(CREDIT_CARD));
-        assertThat(itemList.get(0).model.get(CARD_NAME), is(VISA.getCardNameForAutofillDisplay()));
-        assertThat(itemList.get(0).model.get(CARD_NUMBER), is(VISA.getObfuscatedLastFourDigits()));
+        assertThat(itemList.get(0).type, is(HEADER));
+
+        assertThat(itemList.get(1).type, is(CREDIT_CARD));
+        assertThat(itemList.get(1).model.get(CARD_NAME), is(VISA.getCardNameForAutofillDisplay()));
+        assertThat(itemList.get(1).model.get(CARD_NUMBER), is(VISA.getObfuscatedLastFourDigits()));
     }
 
     @Test
@@ -107,16 +110,18 @@ public class TouchToFillCreditCardControllerRobolectricTest {
         mMediator.showSheet(new CreditCard[] {VISA, MASTER_CARD}, false);
 
         ModelList itemList = mTouchToFillCreditCardModel.get(SHEET_ITEMS);
-        assertThat(itemList.size(), is(2));
+        assertThat(itemList.size(), is(3));
 
-        assertThat(itemList.get(0).type, is(CREDIT_CARD));
-        assertThat(itemList.get(0).model.get(CARD_NAME), is(VISA.getCardNameForAutofillDisplay()));
-        assertThat(itemList.get(0).model.get(CARD_NUMBER), is(VISA.getObfuscatedLastFourDigits()));
+        assertThat(itemList.get(0).type, is(HEADER));
 
         assertThat(itemList.get(1).type, is(CREDIT_CARD));
-        assertThat(itemList.get(0).model.get(CARD_NAME),
+        assertThat(itemList.get(1).model.get(CARD_NAME), is(VISA.getCardNameForAutofillDisplay()));
+        assertThat(itemList.get(1).model.get(CARD_NUMBER), is(VISA.getObfuscatedLastFourDigits()));
+
+        assertThat(itemList.get(2).type, is(CREDIT_CARD));
+        assertThat(itemList.get(2).model.get(CARD_NAME),
                 is(MASTER_CARD.getCardNameForAutofillDisplay()));
-        assertThat(itemList.get(0).model.get(CARD_NUMBER),
+        assertThat(itemList.get(2).model.get(CARD_NUMBER),
                 is(MASTER_CARD.getObfuscatedLastFourDigits()));
     }
 
@@ -142,9 +147,9 @@ public class TouchToFillCreditCardControllerRobolectricTest {
         mMediator.showSheet(new CreditCard[] {VISA}, false);
         assertThat(mTouchToFillCreditCardModel.get(VISIBLE), is(true));
         assertNotNull(
-                mTouchToFillCreditCardModel.get(SHEET_ITEMS).get(0).model.get(ON_CLICK_ACTION));
+                mTouchToFillCreditCardModel.get(SHEET_ITEMS).get(1).model.get(ON_CLICK_ACTION));
 
-        mTouchToFillCreditCardModel.get(SHEET_ITEMS).get(0).model.get(ON_CLICK_ACTION).run();
+        mTouchToFillCreditCardModel.get(SHEET_ITEMS).get(1).model.get(ON_CLICK_ACTION).run();
         verify(mDelegateMock).suggestionSelected(VISA.getGUID());
     }
 

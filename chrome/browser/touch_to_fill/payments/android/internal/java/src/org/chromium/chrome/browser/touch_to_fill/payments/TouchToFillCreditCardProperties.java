@@ -33,8 +33,11 @@ class TouchToFillCreditCardProperties {
             SHOW_CREDIT_CARD_SETTINGS_CALLBACK};
 
     @interface ItemType {
+        // The header at the top of the touch to fill sheet.
+        int HEADER = 0;
+
         // A section containing the credit card data.
-        int CREDIT_CARD = 0;
+        int CREDIT_CARD = 1;
     }
 
     /**
@@ -56,6 +59,19 @@ class TouchToFillCreditCardProperties {
                 CARD_ICON_ID, CARD_NAME, CARD_NUMBER, CARD_EXPIRATION, ON_CLICK_ACTION};
 
         private CreditCardProperties() {}
+    }
+
+    /**
+     * Properties defined here reflect the visible state of the header in the TouchToFill sheet for
+     * payments.
+     */
+    static class HeaderProperties {
+        static final PropertyModel.ReadableIntPropertyKey IMAGE_DRAWABLE_ID =
+                new PropertyModel.ReadableIntPropertyKey("image_drawable_id");
+
+        static final PropertyKey[] ALL_KEYS = {IMAGE_DRAWABLE_ID};
+
+        private HeaderProperties() {}
     }
 
     private TouchToFillCreditCardProperties() {}
