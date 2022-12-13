@@ -8,10 +8,8 @@ import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.move
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForSecondChromeTabbedActivity;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForTabs;
 
-import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -27,7 +25,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -50,7 +47,6 @@ import org.chromium.ui.test.util.UiRestriction;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@MinAndroidSdkLevel(Build.VERSION_CODES.N)
 public class MultiWindowIntegrationTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -71,7 +67,6 @@ public class MultiWindowIntegrationTest {
     @Test
     @MediumTest
     @Feature("MultiWindow")
-    @RequiresApi(Build.VERSION_CODES.N)
     @DisabledTest(message = "Flaky on test-n-phone https://crbug/1197125")
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     public void testIncognitoNtpHandledCorrectly() {
@@ -109,7 +104,6 @@ public class MultiWindowIntegrationTest {
     @Test
     @MediumTest
     @Feature("MultiWindow")
-    @RequiresApi(Build.VERSION_CODES.N)
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING,
             ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
     public void
@@ -145,7 +139,6 @@ public class MultiWindowIntegrationTest {
     @Test
     @MediumTest
     @Feature("MultiWindow")
-    @RequiresApi(Build.VERSION_CODES.N)
     @DisabledTest(message = "Flaky on test-n-phone https://crbug/1197125")
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING,
             ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
