@@ -47,6 +47,7 @@
 #include "extensions/common/value_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_service.h"
@@ -64,11 +65,15 @@ namespace {
 
 const char kAllHostsPermission[] = "*://*/*";
 
-std::unique_ptr<base::DictionaryValue> DeserializeJSONTestData(
+absl::optional<base::Value::Dict> DeserializeJSONTestData(
     const base::FilePath& path,
     std::string* error) {
   JSONFileValueDeserializer deserializer(path);
-  return base::DictionaryValue::From(deserializer.Deserialize(nullptr, error));
+  std::unique_ptr<base::Value> value = deserializer.Deserialize(nullptr, error);
+  if (!value || !value->is_dict()) {
+    return absl::nullopt;
+  }
+  return std::move(*value).TakeDict();
 }
 
 // Returns a pointer to the ExtensionInfo for an extension with |id| if it
@@ -210,8 +215,9 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
       InspectableViewsFinder::ViewList views,
       const base::FilePath& expected_output_path) {
     std::string error;
-    std::unique_ptr<base::Value> expected_output_data(
-        DeserializeJSONTestData(expected_output_path, &error));
+    absl::optional<base::Value::Dict> expected_output_data =
+        DeserializeJSONTestData(expected_output_path, &error);
+    ASSERT_TRUE(expected_output_data);
     EXPECT_EQ(std::string(), error);
 
     // Produce test output.
@@ -228,7 +234,7 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
         extension_path.MaybeAsASCII() + ")";
     std::string expected_string;
     std::string actual_string;
-    for (auto field : expected_output_data->DictItems()) {
+    for (auto field : *expected_output_data) {
       const base::Value& expected_value = field.second;
       base::Value* actual_value =
           actual_output_data.FindByDottedPath(field.first);
