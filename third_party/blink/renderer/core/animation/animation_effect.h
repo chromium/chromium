@@ -122,7 +122,7 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   void SetEventDelegate(EventDelegate* delegate) { event_delegate_ = delegate; }
 
   EffectTiming* getTiming() const;
-  ComputedEffectTiming* getComputedTiming() const;
+  ComputedEffectTiming* getComputedTiming();
   void updateTiming(OptionalEffectTiming*,
                     ExceptionState& = ASSERT_NO_EXCEPTION);
   AnimationTimeDelta GetCancelTime() const { return cancel_time_; }

@@ -2320,10 +2320,10 @@ bool Animation::Update(TimingUpdateReason reason) {
     if (idle || CalculateAnimationPlayState() == kFinished) {
       finished_ = true;
     }
+    NotifyProbe();
   }
 
   DCHECK(!outdated_);
-  NotifyProbe();
 
   return !finished_ || TimeToEffectChange() ||
          // Always return true for not idle animations attached to not

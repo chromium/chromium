@@ -212,7 +212,16 @@ EffectTiming* AnimationEffect::getTiming() const {
   return SpecifiedTiming().ConvertToEffectTiming();
 }
 
-ComputedEffectTiming* AnimationEffect::getComputedTiming() const {
+ComputedEffectTiming* AnimationEffect::getComputedTiming() {
+  // A composited animation does not need to tick main frame updates, and
+  // the cached state for localTime can become stale.
+  if (Animation* animation = GetAnimation()) {
+    absl::optional<AnimationTimeDelta> current_time =
+        animation->CurrentTimeInternal();
+    if (current_time != last_update_time_)
+      animation->Update(kTimingUpdateOnDemand);
+  }
+
   return SpecifiedTiming().getComputedTiming(
       EnsureCalculated(), NormalizedTiming(), IsA<KeyframeEffect>(this));
 }
