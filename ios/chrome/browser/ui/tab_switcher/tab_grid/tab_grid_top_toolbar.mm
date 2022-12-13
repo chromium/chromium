@@ -145,6 +145,10 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   _cancelSearchButton.action = action;
 }
 
+- (void)setSearchButtonEnabled:(BOOL)enabled {
+  _searchButton.enabled = enabled;
+}
+
 - (void)setNewTabButtonEnabled:(BOOL)enabled {
   _newTabButton.enabled = enabled;
 }

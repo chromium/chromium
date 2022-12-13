@@ -2393,6 +2393,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.topToolbar setNewTabButtonEnabled:NO];
   [self.topToolbar setSelectAllButtonEnabled:NO];
   [self.topToolbar setEditButtonEnabled:NO];
+  [self.topToolbar setSearchButtonEnabled:NO];
   [self.bottomToolbar setEditButtonEnabled:NO];
   [self.bottomToolbar setAddToButtonEnabled:NO];
   [self.bottomToolbar setShareTabsButtonEnabled:NO];
@@ -2405,6 +2406,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)gridViewControllerDragSessionDidEnd:
     (GridViewController*)gridViewController {
   self.dragSeesionInProgress = NO;
+
+  [self.topToolbar setSearchButtonEnabled:YES];
 
   // -configureDoneButtonBasedOnPage will enable the page control.
   [self configureDoneButtonBasedOnPage:self.currentPage];

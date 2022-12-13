@@ -51,6 +51,8 @@
 - (void)setCancelSearchButtonTarget:(id)target action:(SEL)action;
 // Sets the delegate for the searchbar.
 - (void)setSearchBarDelegate:(id<UISearchBarDelegate>)delegate;
+// Set `enabled` on the search button.
+- (void)setSearchButtonEnabled:(BOOL)enabled;
 // Set `enabled` on the new tab button.
 - (void)setNewTabButtonEnabled:(BOOL)enabled;
 // Set `enabled` on the select all button.
