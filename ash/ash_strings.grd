@@ -555,6 +555,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_CAST_STOP" desc="The label used in the tray popup to stop casting.">
         Stop
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_CAST_STOP_CASTING" desc="Label for a button in the system tray popup to stop casting to a Chromecast device.">
+        Stop casting
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_QUIET_MODE_TOOLTIP" desc="The tooltip text for the status area icon to tell do-not-disturb mode is currently on.">
         Do Not Disturb is on
       </message>

@@ -54,6 +54,9 @@ class ASH_EXPORT CastDetailedView : public TrayDetailedView,
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
 
+  // Stops casting the route identified by `route_id`.
+  void StopCasting(const std::string& route_id);
+
   // A mapping from the sink id to the receiver/activity data.
   std::map<std::string, SinkAndRoute> sinks_and_routes_;
 
