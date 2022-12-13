@@ -63,17 +63,15 @@ void AddSavedFileEntry(ExtensionPrefs* prefs,
   ExtensionPrefs::ScopedDictionaryUpdate update(
       prefs, extension_id, kFileEntries);
   auto file_entries = update.Create();
-  DCHECK(!file_entries->GetDictionaryWithoutPathExpansion(file_entry.id, NULL));
+  DCHECK(
+      !file_entries->GetDictionaryWithoutPathExpansion(file_entry.id, nullptr));
 
-  std::unique_ptr<base::DictionaryValue> file_entry_dict =
-      std::make_unique<base::DictionaryValue>();
-  file_entry_dict->SetKey(kFileEntryPath,
-                          base::FilePathToValue(file_entry.path));
-  file_entry_dict->SetBoolean(kFileEntryIsDirectory, file_entry.is_directory);
-  file_entry_dict->SetInteger(kFileEntrySequenceNumber,
-                              file_entry.sequence_number);
-  file_entries->SetWithoutPathExpansion(file_entry.id,
-                                        std::move(file_entry_dict));
+  base::Value::Dict file_entry_dict;
+  file_entry_dict.Set(kFileEntryPath, base::FilePathToValue(file_entry.path));
+  file_entry_dict.Set(kFileEntryIsDirectory, file_entry.is_directory);
+  file_entry_dict.Set(kFileEntrySequenceNumber, file_entry.sequence_number);
+  file_entries->SetDictionaryWithoutPathExpansion(file_entry.id,
+                                                  std::move(file_entry_dict));
 }
 
 // Updates the sequence_number of a SavedFileEntry persisted in ExtensionPrefs.
