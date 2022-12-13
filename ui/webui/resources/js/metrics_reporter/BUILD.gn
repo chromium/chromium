@@ -10,6 +10,7 @@ mojom("mojo_bindings") {
   sources = [ "metrics_reporter.mojom" ]
   webui_module_path = "chrome://resources/js/metrics_reporter"
   public_deps = [ "//mojo/public/mojom/base" ]
+  use_typescript_sources = true
 }
 
 # Output folder used to hold ts_library() output.
@@ -20,24 +21,24 @@ ts_library("build_ts") {
   root_dir = target_gen_dir
   out_dir = preprocess_folder
   composite = true
-  tsconfig_base = "tsconfig_base.json"
   in_files = [
     "metrics_reporter.ts",
     "browser_proxy.ts",
-    "metrics_reporter.mojom-webui.js",
+    "metrics_reporter.mojom-webui.ts",
   ]
   definitions = [ "//tools/typescript/definitions/chrome_timeticks.d.ts" ]
   deps = [
     "//ui/webui/resources:library",
     "//ui/webui/resources/mojo:library",
   ]
-  extra_deps = [ ":copy_src_and_mojom" ]
+  extra_deps = [
+    ":copy_src",
+    ":mojo_bindings_ts__generator",
+  ]
 }
 
-copy("copy_src_and_mojom") {
-  deps = [ ":mojo_bindings_js__generator" ]
+copy("copy_src") {
   sources = [
-    "$root_gen_dir/mojom-webui/ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom-webui.js",
     "browser_proxy.ts",
     "metrics_reporter.ts",
   ]
