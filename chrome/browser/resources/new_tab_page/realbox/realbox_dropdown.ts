@@ -8,6 +8,7 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 
+import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -17,6 +18,9 @@ import {decodeString16} from '../utils.js';
 
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {getTemplate} from './realbox_dropdown.html.js';
+
+const CHAR_TYPED_TO_PAINT = 'Realbox.CharTypedToRepaintLatency.ToPaint';
+const RESULT_CHANGED_TO_PAINT = 'Realbox.ResultChangedToRepaintLatency.ToPaint';
 
 export interface RealboxDropdownElement {
   $: {
@@ -160,6 +164,25 @@ export class RealboxDropdownElement extends PolymerElement {
       composed: true,
       detail: window.performance.now(),
     }));
+
+    const metricsReporter = MetricsReporterImpl.getInstance();
+    metricsReporter.measure('CharTyped')
+        .then(duration => {
+          metricsReporter.umaReportTime(CHAR_TYPED_TO_PAINT, duration);
+        })
+        .then(() => {
+          metricsReporter.clearMark('CharTyped');
+        })
+        .catch(() => {});  // Fail silently if 'CharTyped' is not marked.
+
+    metricsReporter.measure('ResultChanged')
+        .then(duration => {
+          metricsReporter.umaReportTime(RESULT_CHANGED_TO_PAINT, duration);
+        })
+        .then(() => {
+          metricsReporter.clearMark('ResultChanged');
+        })
+        .catch(() => {});  // Fail silently if 'ResultChanged' is not marked.
   }
 
   //============================================================================

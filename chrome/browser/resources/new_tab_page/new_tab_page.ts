@@ -11,6 +11,8 @@
 
 export {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 export {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
+export {BrowserProxyImpl} from 'chrome://resources/js/metrics_reporter/browser_proxy.js';
+export {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 export {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 export {AppElement, NtpElement} from './app.js';

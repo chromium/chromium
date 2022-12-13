@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
+#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/new_tab_page_resources.h"
@@ -499,9 +500,11 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
 RealboxHandler::RealboxHandler(
     mojo::PendingReceiver<omnibox::mojom::PageHandler> pending_page_handler,
     Profile* profile,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    MetricsReporter* metrics_reporter)
     : profile_(profile),
       web_contents_(web_contents),
+      metrics_reporter_(metrics_reporter),
       page_handler_(this, std::move(pending_page_handler)) {
   controller_emitter_observation_.Observe(
       OmniboxControllerEmitter::GetForBrowserContext(profile_));
@@ -795,6 +798,10 @@ void RealboxHandler::OnResultChanged(AutocompleteController* controller,
   if (!autocomplete_controller_ ||
       autocomplete_controller_.get() != controller) {
     return;
+  }
+
+  if (metrics_reporter_ && !metrics_reporter_->HasLocalMark("ResultChanged")) {
+    metrics_reporter_->Mark("ResultChanged");
   }
 
   page_->AutocompleteResultChanged(CreateAutocompleteResult(

@@ -39,6 +39,10 @@ ts_library("build_ts") {
     "chrome://webui-test/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                     target_gen_dir),
+    "chrome://webui-test/metrics_reporter/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/test/data/webui/metrics_reporter/tsc/*",
+            target_gen_dir),
   ]
   in_files = non_preprocessed_files
 
@@ -49,6 +53,7 @@ ts_library("build_ts") {
 
   deps = [
     "..:build_ts",
+    "../metrics_reporter:build_ts",
     "//chrome/browser/resources/new_tab_page:build_ts",
   ]
 }

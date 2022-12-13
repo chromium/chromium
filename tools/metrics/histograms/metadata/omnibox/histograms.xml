@@ -390,7 +390,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.CharTypedToRepaintLatency.PaintToPresent" units="ms"
-    expires_after="2021-06-30">
+    expires_after="2023-05-07">
   <owner>asvitkine@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -406,6 +406,9 @@ chromium-metrics-reviews@google.com.
     fixed by using callbacks that are only called after the first following
     successful presentation, so a slight change might be noticed in the
     histogram values.
+
+    Warning: this histogram was expired from 2021-06-30 to 2022-12-12; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -2531,6 +2534,36 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="SearchPrefetch" variants="SearchPrefetch"/>
   <token key="NavigationPrefetchOnly" variants="NavigationPrefetchOnly"/>
+</histogram>
+
+<histogram name="Realbox.CharTypedToRepaintLatency.ToPaint" units="ms"
+    expires_after="2023-05-07">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the time taken between a keystroke being typed in the NTP realbox
+    and the time when we're ready to render the results in the DOM. If there are
+    multiple keystrokes before the results are rendered, logs the time since the
+    earliest. This is comparable to Omnibox.CharTypedToRepaintLatency.ToPaint as
+    it does not take into account the time the DOM change task spends in the
+    message loop nor its duration.
+  </summary>
+</histogram>
+
+<histogram name="Realbox.ResultChangedToRepaintLatency.ToPaint" units="ms"
+    expires_after="2023-05-07">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the time taken between AutocompleteController::Observer's
+    OnResultChanged is called and the time when we're ready to render the
+    results in the NTP realbox. If there are multiple calls to OnResultChanged
+    before the results are rendered, logs the time since the earliest. This is
+    comparable to Realbox.CharTypedToRepaintLatency.ToPaint but excludes the
+    time taken to send the input to the browser and process it. Similarly this
+    does not take into account the time the DOM change task spends in the
+    message loop nor its duration.
+  </summary>
 </histogram>
 
 </histograms>

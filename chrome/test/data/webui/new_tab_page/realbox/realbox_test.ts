@@ -5,12 +5,14 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/new_tab_page.js';
 
-import {$$, decodeString16, mojoString16, RealboxBrowserProxy, RealboxElement, RealboxIconElement, RealboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, BrowserProxyImpl, decodeString16, MetricsReporterImpl, mojoString16, RealboxBrowserProxy, RealboxElement, RealboxIconElement, RealboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {AutocompleteMatch, NavigationPredictor} from 'chrome://new-tab-page/omnibox.mojom-webui.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter/metrics_reporter.mojom-webui.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {assertStyle} from '../test_support.js';
@@ -125,6 +127,8 @@ suite('NewTabPageRealboxTest', () => {
 
   let testProxy: TestRealboxBrowserProxy;
 
+  const testMetricsReporterProxy = TestBrowserProxy.fromClass(BrowserProxyImpl);
+
   suiteSetup(() => {
     loadTimeData.overrideValues({
       realboxMatchOmniboxTheme: true,
@@ -135,8 +139,18 @@ suite('NewTabPageRealboxTest', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    // Set up Realbox's browser proxy.
     testProxy = new TestRealboxBrowserProxy();
     RealboxBrowserProxy.setInstance(testProxy);
+
+    // Set up MetricsReporter's browser proxy.
+    testMetricsReporterProxy.reset();
+    const metricsReporterCallbackRouter = new PageMetricsCallbackRouter();
+    testMetricsReporterProxy.setResultFor(
+        'getCallbackRouter', metricsReporterCallbackRouter);
+    testMetricsReporterProxy.setResultFor('getMark', Promise.resolve(null));
+    BrowserProxyImpl.setInstance(testMetricsReporterProxy);
+    MetricsReporterImpl.setInstanceForTest(new MetricsReporterImpl());
 
     realbox = document.createElement('ntp-realbox');
     document.body.appendChild(realbox);
@@ -1864,7 +1878,7 @@ suite('NewTabPageRealboxTest', () => {
   });
 
   //============================================================================
-  // Test Metrics
+  // Test Responsiveness Metrics
   //============================================================================
 
   test('responsiveness metric is being recorded', async () => {
@@ -1951,6 +1965,86 @@ suite('NewTabPageRealboxTest', () => {
         });
     assertEquals(
         1, testProxy.handler.getCallCount('logCharTypedToRepaintLatency'));
+  });
+
+  test('new responsiveness metrics are being recorded', async () => {
+    realbox.$.input.value = 'he';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    // The responsiveness metrics are not recorded until the results are
+    // painted.
+    assertEquals(0, testMetricsReporterProxy.getCallCount('umaReportTime'));
+
+    let matches = [createSearchMatch()];
+    MetricsReporterImpl.getInstance().mark('ResultChanged');  // Marked in C++.
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: mojoString16(realbox.$.input.value.trimStart()),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    assertTrue(areMatchesShowing());
+
+    // The responsiveness metrics are recorded once the results are painted.
+    await testMetricsReporterProxy.whenCalled('umaReportTime');
+    assertEquals(2, testMetricsReporterProxy.getCallCount('umaReportTime'));
+    await testMetricsReporterProxy.whenCalled('clearMark');
+
+    // Delete the last character.
+    realbox.$.input.value = 'h';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    matches = [createSearchMatch({
+      allowedToBeDefaultMatch: true,
+      inlineAutocompletion: mojoString16('ello'),
+    })];
+    MetricsReporterImpl.getInstance().mark('ResultChanged');  // Marked in C++.
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: mojoString16(realbox.$.input.value.trimStart()),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    assertTrue(areMatchesShowing());
+
+    // Only one responsiveness metric is recorded when characters are deleted.
+    await testMetricsReporterProxy.whenCalled('umaReportTime');
+    assertEquals(3, testMetricsReporterProxy.getCallCount('umaReportTime'));
+    await testMetricsReporterProxy.whenCalled('clearMark');
+
+    assertEquals('hello', realbox.$.input.value);
+    const start = realbox.$.input.selectionStart!;
+    const end = realbox.$.input.selectionEnd!;
+    assertEquals('ello', realbox.$.input.value.substring(start, end));
+
+    // Type the next character of the inline autocompletion.
+    const keyEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'e',
+    });
+    realbox.$.input.dispatchEvent(keyEvent);
+    assertTrue(keyEvent.defaultPrevented);
+
+    matches = [createSearchMatch({
+      allowedToBeDefaultMatch: true,
+      inlineAutocompletion: mojoString16('llo'),
+    })];
+    MetricsReporterImpl.getInstance().mark('ResultChanged');  // Marked in C++.
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: mojoString16('he'),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    assertTrue(areMatchesShowing());
+
+    // The responsiveness metrics are recorded when the default match has
+    // inline autocompletion.
+    await testMetricsReporterProxy.whenCalled('umaReportTime');
+    assertEquals(5, testMetricsReporterProxy.getCallCount('umaReportTime'));
+    await testMetricsReporterProxy.whenCalled('clearMark');
   });
 
   //============================================================================

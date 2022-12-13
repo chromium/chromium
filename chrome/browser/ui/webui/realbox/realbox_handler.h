@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 class GURL;
+class MetricsReporter;
 class Profile;
 
 namespace content {
@@ -53,7 +54,8 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
   RealboxHandler(
       mojo::PendingReceiver<omnibox::mojom::PageHandler> pending_page_handler,
       Profile* profile,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      MetricsReporter* metrics_reporter);
 
   RealboxHandler(const RealboxHandler&) = delete;
   RealboxHandler& operator=(const RealboxHandler&) = delete;
@@ -113,6 +115,7 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
                           AutocompleteController::Observer>
       controller_emitter_observation_{this};
   base::TimeTicks time_user_first_modified_realbox_;
+  raw_ptr<MetricsReporter> metrics_reporter_;
 
   mojo::Remote<omnibox::mojom::Page> page_;
   mojo::Receiver<omnibox::mojom::PageHandler> page_handler_;

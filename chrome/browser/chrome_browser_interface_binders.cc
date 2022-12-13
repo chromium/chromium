@@ -1031,7 +1031,8 @@ void PopulateChromeWebUIFrameBinders(
                                          TabSearchUI>(map);
   if (base::FeatureList::IsEnabled(features::kTabSearchUseMetricsReporter)) {
     RegisterWebUIControllerInterfaceBinder<
-        metrics_reporter::mojom::PageMetricsHost, TabSearchUI>(map);
+        metrics_reporter::mojom::PageMetricsHost, TabSearchUI, NewTabPageUI>(
+        map);
   }
 
   RegisterWebUIControllerInterfaceBinder<

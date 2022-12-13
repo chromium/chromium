@@ -6,6 +6,7 @@ import './realbox_dropdown.js';
 import './realbox_icon.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -201,6 +202,7 @@ export class RealboxElement extends PolymerElement {
   realboxLensSearchEnabled: boolean;
   singleColoredIcons: boolean;
   private charTypedTime_: number;
+  private inputAriaLive_: string;
   private isDeletingInput_: boolean;
   private lastIgnoredEnterEvent_: KeyboardEvent|null;
   private lastInput_: Input;
@@ -212,7 +214,6 @@ export class RealboxElement extends PolymerElement {
   private result_: AutocompleteResult|null;
   private selectedMatch_: AutocompleteMatch|null;
   private selectedMatchIndex_: number;
-  private inputAriaLive_: string;
 
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
@@ -254,7 +255,7 @@ export class RealboxElement extends PolymerElement {
 
   private onAutocompleteResultChanged_(result: AutocompleteResult) {
     if (this.lastQueriedInput_ === null ||
-        this.lastQueriedInput_.trimLeft() !== decodeString16(result.input)) {
+        this.lastQueriedInput_.trimStart() !== decodeString16(result.input)) {
       return;  // Stale result; ignore.
     }
 
@@ -347,6 +348,19 @@ export class RealboxElement extends PolymerElement {
     this.charTypedTime_ =
         charTyped ? this.charTypedTime_ || window.performance.now() : 0;
 
+    // If a character has been typed, mark 'CharTyped'. Otherwise clear it. If
+    // 'CharTyped' mark already exists, there's a pending typed character for
+    // which the results have not been painted yet. In that case, keep the
+    // earlier mark.
+    const metricsReporter = MetricsReporterImpl.getInstance();
+    if (charTyped) {
+      if (!metricsReporter.hasLocalMark('CharTyped')) {
+        metricsReporter.mark('CharTyped');
+      }
+    } else {
+      metricsReporter.clearMark('CharTyped');
+    }
+
     if (inputValue.trim()) {
       // TODO(crbug.com/1149769): Rather than disabling inline autocompletion
       // when the input event is fired within a composition session, change the
@@ -388,6 +402,14 @@ export class RealboxElement extends PolymerElement {
       // which the results have not been painted yet. In that case, keep the
       // earlier time.
       this.charTypedTime_ = this.charTypedTime_ || window.performance.now();
+
+      // If 'CharTyped' mark already exists, there's a pending typed character
+      // for which the results have not been painted yet. In that case, keep the
+      // earlier mark.
+      const metricsReporter = MetricsReporterImpl.getInstance();
+      if (!metricsReporter.hasLocalMark('CharTyped')) {
+        metricsReporter.mark('CharTyped');
+      }
 
       this.queryAutocomplete_(this.lastInput_.text);
       e.preventDefault();
@@ -499,7 +521,7 @@ export class RealboxElement extends PolymerElement {
       const array: HTMLElement[] = [this.$.matches, this.$.input];
       if (array.includes(e.target as HTMLElement)) {
         if (this.lastQueriedInput_ !== null &&
-            this.lastQueriedInput_.trimLeft() ===
+            this.lastQueriedInput_.trimStart() ===
                 decodeString16(this.result_.input)) {
           if (this.selectedMatch_) {
             this.navigateToMatch_(this.selectedMatchIndex_, e);

@@ -162,9 +162,9 @@ class RealboxSearchBrowserTestPage : public omnibox::mojom::Page {
 IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadBrowserTest, SearchPreloadSuccess) {
   mojo::Remote<omnibox::mojom::PageHandler> remote_page_handler;
   RealboxSearchBrowserTestPage page;
-  RealboxHandler realbox_handler =
-      RealboxHandler(remote_page_handler.BindNewPipeAndPassReceiver(),
-                     browser()->profile(), GetWebContents());
+  RealboxHandler realbox_handler = RealboxHandler(
+      remote_page_handler.BindNewPipeAndPassReceiver(), browser()->profile(),
+      GetWebContents(), /*metrics_reporter=*/nullptr);
   realbox_handler.SetPage(page.GetRemotePage());
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetWebContents());
