@@ -35,8 +35,6 @@ class StartSurfaceProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_SHOWING_OVERVIEW =
             new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey IS_SHOWING_STACK_TAB_SWITCHER =
-            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel
             .WritableObjectPropertyKey<ExploreSurfaceCoordinator> EXPLORE_SURFACE_COORDINATOR =
             new PropertyModel.WritableObjectPropertyKey<>();
@@ -47,6 +45,5 @@ class StartSurfaceProperties {
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {BOTTOM_BAR_CLICKLISTENER,
             BOTTOM_BAR_HEIGHT, BOTTOM_BAR_SELECTED_TAB_POSITION, IS_BOTTOM_BAR_VISIBLE,
             IS_EXPLORE_SURFACE_VISIBLE, IS_SECONDARY_SURFACE_VISIBLE, IS_SHOWING_OVERVIEW,
-            IS_SHOWING_STACK_TAB_SWITCHER, EXPLORE_SURFACE_COORDINATOR, TOP_MARGIN,
-            RESET_FEED_SURFACE_SCROLL_POSITION};
+            EXPLORE_SURFACE_COORDINATOR, TOP_MARGIN, RESET_FEED_SURFACE_SCROLL_POSITION};
 }
