@@ -51,6 +51,8 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/display_manager_util.h"
 #include "ui/display/screen.h"
+#include "ui/views/corewm/tooltip_controller.h"
+#include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"
@@ -679,12 +681,16 @@ void AuraSurface::ShowTooltip(const char* text,
                               const base::TimeDelta& show_delay,
                               const base::TimeDelta& hide_delay) {
   tooltip_text_ = base::UTF8ToUTF16(text);
-  wm::SetTooltipText(surface_->window(), &tooltip_text_);
-  wm::SetTooltipId(surface_->window(), surface_);
+  auto* window = surface_->window();
+  wm::SetTooltipText(window, &tooltip_text_);
+  wm::SetTooltipId(window, surface_);
+  ash::Shell::Get()->tooltip_controller()->UpdateTooltip(window);
 }
 
 void AuraSurface::HideTooltip() {
   tooltip_text_ = std::u16string();
+  auto* window = surface_->window();
+  ash::Shell::Get()->tooltip_controller()->UpdateTooltip(window);
 }
 
 chromeos::OrientationType OrientationLock(uint32_t orientation_lock) {
@@ -1057,6 +1063,7 @@ const uint32_t kFixedBugIds[] = {
               // |wayland_simple_client|
     1352584,
     1358908,
+    1400226,
 };
 
 // Implements aura shell interface and monitors workspace state needed
