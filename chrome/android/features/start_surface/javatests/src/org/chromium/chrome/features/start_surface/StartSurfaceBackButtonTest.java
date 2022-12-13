@@ -225,9 +225,7 @@ public class StartSurfaceBackButtonTest {
         // Launches the first site in mv tiles.
         StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
 
-        if (isInstantReturn()
-                && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                        && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)) {
+        if (isInstantReturn() && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             // Fix the issue that failed to perform a single click on the tab switcher button.
             // See code below.
             return;
