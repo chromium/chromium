@@ -215,6 +215,12 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
                     candidates.set(1, null);
                 }
             } else {
+                // TODO(crbug.com/1382275): simplify this into one step.
+                // Split the transition: [m1, null] -> [m2, null] into two steps:
+                // [m1, null] -> [null, null] -> [m2, null]
+                nextFront = nextBack = null;
+                candidates.set(0, null);
+                candidates.set(1, null);
                 recordStackingAnimationType(StackingAnimationType.REMOVE_FRONT_ONLY);
             }
         } else if (currentFront == nextFront) {
@@ -253,8 +259,12 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
         if (currentFront == null) {
             // No message is being displayed now: trigger #onStartShowing.
             mCurrentDisplayedMessages = new ArrayList<>(candidates);
-            mMessageQueueDelegate.onStartShowing(
-                    () -> { triggerStackingAnimation(candidates, onFinished); });
+            mMessageQueueDelegate.onStartShowing(() -> {
+                if (candidates.get(0) == mCurrentDisplayedMessages.get(0)
+                        && candidates.get(1) == mCurrentDisplayedMessages.get(1)) {
+                    triggerStackingAnimation(candidates, onFinished);
+                }
+            });
         } else if (nextFront == null) {
             // All messages will be hidden: trigger #onFinishHiding.
             Runnable runnable = () -> {
@@ -280,8 +290,8 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
                 mMessageQueueDelegate.onAnimationEnd();
                 onFinished.run();
             }));
-            mAnimatorStartCallback.onResult(mAnimatorSet);
             mMessageQueueDelegate.onAnimationStart();
+            mAnimatorStartCallback.onResult(mAnimatorSet);
         };
         if (candidates.get(0) == null) {
             runnable.run();

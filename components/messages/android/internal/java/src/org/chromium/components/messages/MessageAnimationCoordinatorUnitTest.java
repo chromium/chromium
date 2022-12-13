@@ -7,6 +7,7 @@ package org.chromium.components.messages;
 import static android.os.Looper.getMainLooper;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doNothing;
@@ -343,6 +344,38 @@ public class MessageAnimationCoordinatorUnitTest {
         Assert.assertArrayEquals(new MessageState[] {m2, m1}, currentMessages.toArray());
         Assert.assertEquals(1, d1.getDelta());
         Assert.assertEquals(1, d2.getDelta());
+    }
+
+    // Test pushing front message to back.
+    // [m1, null] -> [m2, null]
+    // TODO(crbug.com/1382275): simplify this into one step.
+    // This should be done in two steps:  [m1, null] -> [null, null] -> [m2, null]
+    @Test
+    @SmallTest
+    public void testUpdateFrontMessageOnly() {
+        MessageState m1 = buildMessageState();
+        setMessageIdentifier(m1, 1);
+        MessageState m2 = buildMessageState();
+        setMessageIdentifier(m2, 2);
+        mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, null), false, () -> {});
+
+        verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
+        verify(m2.handler, never()).show(Position.FRONT, Position.BACK);
+
+        mAnimationCoordinator.updateWithStacking(Arrays.asList(m2, null), false, () -> {});
+        verify(m2.handler, never()).show(anyInt(), anyInt());
+        verify(m1.handler).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
+
+        var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
+        Assert.assertArrayEquals(new MessageState[] {null, null}, currentMessages.toArray());
+
+        mAnimationCoordinator.updateWithStacking(Arrays.asList(m2, null), false, () -> {});
+        verify(m2.handler).show(Position.INVISIBLE, Position.FRONT);
+        // Do not trigger #hide again.
+        verify(m1.handler, times(1)).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
+
+        currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
+        Assert.assertArrayEquals(new MessageState[] {m2, null}, currentMessages.toArray());
     }
 
     /**
