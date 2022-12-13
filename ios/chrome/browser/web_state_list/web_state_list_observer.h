@@ -92,6 +92,11 @@ class WebStateListObserver : public base::CheckedObserver {
                                    int active_index,
                                    ActiveWebStateChangeReason reason);
 
+  // Invoked when the pinned state of a tab changes.
+  virtual void WebStatePinnedStateChanged(WebStateList* web_state_list,
+                                          web::WebState* web_state,
+                                          int index);
+
   // Invoked before a batched operations begins. The observer can use this
   // notification if it is interested in considering all those individual
   // operations as a single mutation of the WebStateList (e.g. considering

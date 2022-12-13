@@ -54,6 +54,9 @@ class WebStateList {
     // If set, the WebState opener is set to the active WebState, otherwise
     // it must be explicitly passed.
     INSERT_INHERIT_OPENER = 1 << 2,
+
+    // Used to indicate that the WebState should be pinned on insertion.
+    INSERT_PINNED = 1 << 3,
   };
 
   // Constants used when closing WebStates.
@@ -112,6 +115,11 @@ class WebStateList {
   // non-active WebState with that URL exists.
   int GetIndexOfInactiveWebStateWithURL(const GURL& url) const;
 
+  // Returns the index of the first non-pinned WebState in the WebStateList.
+  // Returns 0 in case no pinned WebStates are present.
+  // Returns `count()` in case only pinned WebStates are present.
+  int GetIndexOfFirstNonPinnedWebState() const;
+
   // Returns information about the opener of the WebState at the specified
   // index. The structure `opener` will be null if there is no opener.
   WebStateOpener GetOpenerOfWebStateAt(int index) const;
@@ -125,6 +133,7 @@ class WebStateList {
   // from the specified WebState after `start_index`, or kInvalidIndex if there
   // are no such WebState. If `use_group` is true, the opener's navigation index
   // is used to detect navigation changes within the same session.
+  // If `exclude_pinned` is true, pinned WebStates are removed from search.
   int GetIndexOfNextWebStateOpenedBy(const web::WebState* opener,
                                      int start_index,
                                      bool use_group) const;
@@ -133,9 +142,18 @@ class WebStateList {
   // from the specified WebState after `start_index`, or kInvalidIndex if there
   // are no such WebState. If `use_group` is true, the opener's navigation index
   // is used to detect navigation changes within the same session.
+  // If `exclude_pinned` is true, pinned WebStates are removed from search.
   int GetIndexOfLastWebStateOpenedBy(const web::WebState* opener,
                                      int start_index,
                                      bool use_group) const;
+
+  // Changes the pinned state of the WebState at `index`. Returns the index the
+  // WebState is now at (it may have been moved to maintain contiguity of pinned
+  // WebStates at the beginning of the list).
+  int SetWebStatePinnedAt(int index, bool pinned);
+
+  // Returns true if the WebState at |index| is pinned.
+  bool IsWebStatePinnedAt(int index) const;
 
   // Inserts the specified WebState at the best position in the WebStateList
   // given the specified opener, recommended index, insertion flags, ... The
@@ -257,10 +275,28 @@ class WebStateList {
   // the element have been rearranged), or kInvalidIndex if there are no such
   // WebState. If `use_group` is true, the opener's navigation index is used
   // to detect navigation changes within the same session.
+  // If `exclude_pinned` is true, pinned WebStates are removed from search.
   int GetIndexOfNthWebStateOpenedBy(const web::WebState* opener,
                                     int start_index,
                                     bool use_group,
                                     int n) const;
+
+  // Changes the pinned state of the WebState at `index`, moving the tab to the
+  // end of the pinned/unpinned section in the process if necessary. Returns
+  // the new index of the WebState.
+  int SetWebStatePinnedImpl(int index, bool pinned);
+
+  // Verifies that WebState's insertion `index` is within the proper index
+  // range. `pinned` WebStates `index` should be within the pinned WebStates
+  // range. Regular WebState `index` should be outside of the pinned WebStates
+  // range. Returns an updated insertion `index` of the WebState.
+  int ConstrainInsertionIndex(int index, bool pinned) const;
+
+  // Verifies that WebState's move `index` is within the proper index range.
+  // `pinned` WebStates `index` should be within the pinned WebStates range.
+  // Regular WebState `index` should be outside of the pinned WebStates range.
+  // Returns an updated move `index` of the WebState.
+  int ConstrainMoveIndex(int index, bool pinned) const;
 
   // Returns the wrapper of the currently active WebState or null if there
   // is none.

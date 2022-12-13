@@ -55,6 +55,11 @@ void WebStateListObserver::WebStateActivatedAt(
     int active_index,
     ActiveWebStateChangeReason reason) {}
 
+void WebStateListObserver::WebStatePinnedStateChanged(
+    WebStateList* web_state_list,
+    web::WebState* web_state,
+    int index) {}
+
 void WebStateListObserver::WillBeginBatchOperation(
     WebStateList* web_state_list) {}
 
