@@ -341,6 +341,7 @@ generate_definitions_js_files = [
   "quick_unlock/pin_keyboard_icons.html.js",
   "store/store.js",
   "store/store_client.js",
+  "traffic_counters/traffic_counters_adapter.js",
   "util.js",
 ]
 
@@ -402,7 +403,6 @@ checked_in_dts_files = [
   "cr_picture/cr_picture_pane.d.ts",
   "smb_shares/add_smb_share_dialog.d.ts",
   "smb_shares/smb_browser_proxy.d.ts",
-  "traffic_counters/traffic_counters_adapter.d.ts",
   "traffic_counters/traffic_counters.d.ts",
   "quick_unlock/pin_keyboard.d.ts",
   "quick_unlock/setup_pin_keyboard.d.ts",
