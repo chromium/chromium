@@ -29,6 +29,12 @@ export class CrMenuSelector extends CrMenuSelectorBase {
     this.setAttribute('role', 'menu');
     this.addEventListener('focusin', this.onFocusin_.bind(this));
     this.addEventListener('keydown', this.onKeydown_.bind(this));
+    this.addEventListener(
+        'iron-deselect',
+        e => this.onIronDeselected_(e as CustomEvent<{item: HTMLElement}>));
+    this.addEventListener(
+        'iron-select',
+        e => this.onIronSelected_(e as CustomEvent<{item: HTMLElement}>));
   }
 
   private getAllFocusableItems_(): HTMLElement[] {
@@ -51,6 +57,14 @@ export class CrMenuSelector extends CrMenuSelectorBase {
     if (focusMovedWithKeyboard && focusMovedFromOutside) {
       this.getAllFocusableItems_()[0]!.focus();
     }
+  }
+
+  private onIronDeselected_(e: CustomEvent<{item: HTMLElement}>) {
+    e.detail.item.removeAttribute('aria-current');
+  }
+
+  private onIronSelected_(e: CustomEvent<{item: HTMLElement}>) {
+    e.detail.item.setAttribute('aria-current', 'page');
   }
 
   private onKeydown_(event: KeyboardEvent) {

@@ -141,10 +141,13 @@ suite('CrMenuSelectorFocusTest', () => {
     const firstItem = getChild(0);
     element.selected = firstItem.href;
     assertTrue(firstItem.hasAttribute('selected'));
+    assertEquals('page', firstItem.getAttribute('aria-current'));
     const secondItem = getChild(1);
     element.selected = secondItem.href;
     assertFalse(firstItem.hasAttribute('selected'));
+    assertFalse(firstItem.hasAttribute('aria-current'));
     assertTrue(secondItem.hasAttribute('selected'));
+    assertEquals('page', secondItem.getAttribute('aria-current'));
   });
 
   test('DoesNotSelectUnselectableItems', () => {
