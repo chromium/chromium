@@ -16,17 +16,23 @@ target(link_target_type, "service") {
   ]
 
   sources = [
-    "gpu_video_decode_accelerator.cc",
-    "gpu_video_decode_accelerator.h",
     "media_gpu_channel.cc",
     "media_gpu_channel.h",
     "media_gpu_channel_manager.cc",
     "media_gpu_channel_manager.h",
-    "picture_buffer_manager.cc",
-    "picture_buffer_manager.h",
-    "vda_video_decoder.cc",
-    "vda_video_decoder.h",
   ]
+
+  # The legacy VDA API is not supported on Android.
+  if (!is_android) {
+    sources += [
+      "gpu_video_decode_accelerator.cc",
+      "gpu_video_decode_accelerator.h",
+      "picture_buffer_manager.cc",
+      "picture_buffer_manager.h",
+      "vda_video_decoder.cc",
+      "vda_video_decoder.h",
+    ]
+  }
 
   include_dirs = [ "//third_party/mesa_headers" ]
 
@@ -57,10 +63,16 @@ target(link_target_type, "service") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "picture_buffer_manager_unittest.cc",
-    "vda_video_decoder_unittest.cc",
-  ]
+  sources = []
+
+  # The legacy VDA API is not supported on Android.
+  if (!is_android) {
+    sources += [
+      "picture_buffer_manager_unittest.cc",
+      "vda_video_decoder_unittest.cc",
+    ]
+  }
+
   deps = [
     ":service",
     "//base",

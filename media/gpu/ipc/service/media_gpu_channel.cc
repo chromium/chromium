@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "ipc/ipc_mojo_bootstrap.h"
@@ -47,6 +48,12 @@ class DecoderProviderImpl : public mojom::GpuAcceleratedVideoDecoderProvider,
           client,
       CreateAcceleratedVideoDecoderCallback callback) override {
     TRACE_EVENT0("gpu", "DecoderProviderImpl::CreateAcceleratedVideoDecoder");
+#if BUILDFLAG(IS_ANDROID)
+    NOTIMPLEMENTED()
+        << "The legacy VideoDecodeAccelerator API is not supported on Android";
+    std::move(callback).Run(false);
+    return;
+#else
     // Only allow stubs that have a ContextGroup, that is, the GLES2 ones. Later
     // code assumes the ContextGroup is valid.
     if (!stub_ || !stub_->decoder_context()->GetContextGroup()) {
@@ -59,6 +66,7 @@ class DecoderProviderImpl : public mojom::GpuAcceleratedVideoDecoderProvider,
         stub_, stub_->channel()->io_task_runner(), overlay_factory_cb_);
     std::move(callback).Run(
         decoder->Initialize(config, std::move(receiver), std::move(client)));
+#endif
   }
 
  private:
