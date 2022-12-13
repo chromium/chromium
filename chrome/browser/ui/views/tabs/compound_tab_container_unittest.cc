@@ -577,3 +577,54 @@ TEST_F(CompoundTabContainerTest, AvailableWidth) {
       tab_container_->GetAvailableSize(unpinned_container).width().value(),
       tab_container_->width() - pinned_container->GetPreferredSize().width());
 }
+
+TEST_F(CompoundTabContainerTest, GetEventAndTooltipHandlerForOverlappingArea) {
+  Tab* const pinned_tab = AddTab(0, TabPinned::kPinned);
+  views::View* const pinned_container = pinned_tab->parent();
+  Tab* const unpinned_tab = AddTab(1, TabPinned::kUnpinned);
+  views::View* const unpinned_container = unpinned_tab->parent();
+  tab_container_->CompleteAnimationAndLayout();
+
+  // Points squarely in each tab should be handled by the tab.
+  EXPECT_EQ(pinned_tab, tab_container_->GetEventHandlerForPoint(
+                            pinned_container->bounds().CenterPoint()));
+  LOG(ERROR) << tab_container_
+                    ->GetEventHandlerForPoint(
+                        pinned_container->bounds().CenterPoint())
+                    ->GetClassName();
+  EXPECT_EQ(pinned_tab, tab_container_->GetTooltipHandlerForPoint(
+                            pinned_container->bounds().CenterPoint()));
+  EXPECT_EQ(unpinned_tab, tab_container_->GetEventHandlerForPoint(
+                              unpinned_container->bounds().CenterPoint()));
+  EXPECT_EQ(unpinned_tab, tab_container_->GetTooltipHandlerForPoint(
+                              unpinned_container->bounds().CenterPoint()));
+
+  auto averagePoint = [](gfx::Point point, gfx::Point other) {
+    return gfx::Point((point.x() + other.x()) / 2, (point.y() + other.y()) / 2);
+  };
+
+  const gfx::Point pinned_container_right =
+      pinned_container->bounds().right_center();
+  const gfx::Point unpinned_container_left =
+      unpinned_container->bounds().left_center();
+  const gfx::Point center =
+      averagePoint(pinned_container_right, unpinned_container_left);
+
+  // A point in the overlap area, but left of the tab divider between the two
+  // containers, should go to the pinned container.
+  const gfx::Point pinned_overlap_test_point =
+      averagePoint(center, unpinned_container_left);
+  EXPECT_EQ(pinned_tab,
+            tab_container_->GetEventHandlerForPoint(pinned_overlap_test_point));
+  EXPECT_EQ(pinned_tab, tab_container_->GetTooltipHandlerForPoint(
+                            pinned_overlap_test_point));
+
+  // A point in the overlap area, but right of the tab divider between the two
+  // containers, should go to the unpinned container.
+  const gfx::Point unpinned_overlap_test_point =
+      averagePoint(center, pinned_container_right);
+  EXPECT_EQ(unpinned_tab, tab_container_->GetEventHandlerForPoint(
+                              unpinned_overlap_test_point));
+  EXPECT_EQ(unpinned_tab, tab_container_->GetTooltipHandlerForPoint(
+                              unpinned_overlap_test_point));
+}

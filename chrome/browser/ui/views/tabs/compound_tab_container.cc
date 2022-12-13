@@ -22,6 +22,7 @@
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
@@ -229,6 +230,8 @@ CompoundTabContainer::CompoundTabContainer(
       hover_card_controller_(hover_card_controller),
       scroll_contents_view_(scroll_contents_view),
       bounds_animator_(this) {
+  SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+
   if (!gfx::Animation::ShouldRenderRichAnimation())
     bounds_animator_.SetAnimationDuration(base::TimeDelta());
 }
@@ -479,6 +482,9 @@ void CompoundTabContainer::UpdateHoverCard(
 
 void CompoundTabContainer::HandleLongTap(ui::GestureEvent* const event) {
   TabContainer* const tab_container = GetTabContainerAt(event->location());
+  if (!tab_container)
+    return;
+
   ConvertEventToTarget(tab_container, event);
   tab_container->HandleLongTap(event);
 }
@@ -654,6 +660,14 @@ gfx::Size CompoundTabContainer::CalculatePreferredSize() const {
       unpinned_tab_container_->GetPreferredSize());
 }
 
+views::View* CompoundTabContainer::GetTooltipHandlerForPoint(
+    const gfx::Point& point) {
+  TabContainer* const sub_container = GetTabContainerAt(point);
+  return sub_container ? sub_container->GetTooltipHandlerForPoint(
+                             ConvertPointToTarget(this, sub_container, point))
+                       : this;
+}
+
 void CompoundTabContainer::Layout() {
   // Pinned container gets however much space it wants.
   pinned_tab_container_->SetBoundsRect(
@@ -726,7 +740,11 @@ BrowserRootView::DropIndex CompoundTabContainer::GetDropIndex(
 
 BrowserRootView::DropTarget* CompoundTabContainer::GetDropTarget(
     gfx::Point loc_in_local_coords) {
-  return GetTabContainerAt(loc_in_local_coords);
+  NOTREACHED();  // TODO(1346023): Implement text drag and drop.
+
+  // This might be a starting point for implementation though.
+  TabContainer* const tab_container = GetTabContainerAt(loc_in_local_coords);
+  return tab_container ? tab_container : this;
 }
 
 views::View* CompoundTabContainer::GetViewForDrop() {
@@ -744,6 +762,22 @@ void CompoundTabContainer::HandleDragUpdate(
 void CompoundTabContainer::HandleDragExited() {
   // TODO(1346023): Implement text drag and drop.
   NOTREACHED();
+}
+
+views::View* CompoundTabContainer::TargetForRect(views::View* root,
+                                                 const gfx::Rect& rect) {
+  CHECK_EQ(root, this);
+
+  if (!views::UsePointBasedTargeting(rect))
+    return views::ViewTargeterDelegate::TargetForRect(root, rect);
+
+  const gfx::Point point(rect.CenterPoint());
+  TabContainer* const sub_container = GetTabContainerAt(point);
+  if (sub_container == nullptr)
+    return this;
+
+  return sub_container->GetEventHandlerForRect(ToEnclosingRect(
+      ConvertRectToTarget(this, sub_container, gfx::RectF(rect))));
 }
 
 void CompoundTabContainer::UpdateAnimationTarget(TabSlotView* tab_slot_view,
@@ -858,15 +892,27 @@ raw_ref<TabContainer> CompoundTabContainer::GetTabContainerFor(
 
 TabContainer* CompoundTabContainer::GetTabContainerAt(
     gfx::Point point_in_local_coords) {
-  if (pinned_tab_container_->bounds().Contains(point_in_local_coords))
-    return base::to_address(pinned_tab_container_);
-  if (unpinned_tab_container_->bounds().Contains(point_in_local_coords))
+  const bool in_pinned =
+      pinned_tab_container_->bounds().Contains(point_in_local_coords);
+  const bool in_unpinned =
+      unpinned_tab_container_->bounds().Contains(point_in_local_coords);
+
+  if (in_pinned && in_unpinned) {
+    const int cutoff_x = (pinned_tab_container_->bounds().right() +
+                          unpinned_tab_container_->bounds().x()) /
+                         2;
+    if (point_in_local_coords.x() < cutoff_x)
+      return base::to_address(pinned_tab_container_);
     return base::to_address(unpinned_tab_container_);
-  NOTREACHED() << "point_in_local_coords " << point_in_local_coords.ToString()
-               << " is not in pinned at: "
-               << pinned_tab_container_->bounds().ToString()
-               << " or unpinned at: "
-               << unpinned_tab_container_->bounds().ToString();
+  }
+
+  if (in_pinned)
+    return base::to_address(pinned_tab_container_);
+  if (in_unpinned)
+    return base::to_address(unpinned_tab_container_);
+
+  // `point_in_local_coords` might be in neither sub container if our layout is
+  // (transiently) stale, e.g. during window creation.
   return nullptr;
 }
 
