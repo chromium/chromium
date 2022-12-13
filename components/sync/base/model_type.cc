@@ -26,7 +26,7 @@ struct ModelTypeInfo {
   const char* const notification_type;
   // Root tag for Model Type
   // This should be the same as the model type but all lowercase.
-  const char* const root_tag;
+  const char* const lowercase_root_tag;
   // String value for Model Type
   // This should be the same as the model type but space separated and the
   // first letter of every word capitalized.
@@ -537,18 +537,17 @@ base::Value::List ModelTypeSetToValue(ModelTypeSet model_types) {
   return value;
 }
 
-// TODO(zea): remove all hardcoded tags in model associators and have them use
-// this instead.
-std::string ModelTypeToRootTag(ModelType type) {
-  DCHECK(ProtocolTypes().Has(type));
-  DCHECK(IsRealDataType(type));
-  const std::string root_tag = std::string(kModelTypeInfoMap[type].root_tag);
+std::string ModelTypeToProtocolRootTag(ModelType model_type) {
+  DCHECK(ProtocolTypes().Has(model_type));
+  DCHECK(IsRealDataType(model_type));
+  const std::string root_tag =
+      std::string(kModelTypeInfoMap[model_type].lowercase_root_tag);
   DCHECK(!root_tag.empty());
   return "google_chrome_" + root_tag;
 }
 
-const char* GetModelTypeRootTag(ModelType model_type) {
-  return kModelTypeInfoMap[model_type].root_tag;
+const char* GetModelTypeLowerCaseRootTag(ModelType model_type) {
+  return kModelTypeInfoMap[model_type].lowercase_root_tag;
 }
 
 bool RealModelTypeToNotificationType(ModelType model_type,

@@ -1243,7 +1243,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // the current implementation still handles it.
   updates.push_back(CreateUpdateResponseData(
       {kBookmarksRootId, std::string(), std::string(), std::string(),
-       syncer::ModelTypeToRootTag(syncer::BOOKMARKS)},
+       syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS)},
       kRandomPosition, /*response_version=*/0));
 
   // Add update for another node under the bookmarks bar.
@@ -1293,7 +1293,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // the current implementation still handles it.
   updates.push_back(CreateUpdateResponseData(
       {kBookmarksRootId, std::string(), std::string(), std::string(),
-       syncer::ModelTypeToRootTag(syncer::BOOKMARKS)},
+       syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS)},
       kRandomPosition, /*response_version=*/0));
 
   // Add update for another node under the bookmarks bar.
@@ -1350,7 +1350,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // the current implementation still handles it.
   updates.push_back(CreateUpdateResponseData(
       {kBookmarksRootId, std::string(), std::string(), std::string(),
-       syncer::ModelTypeToRootTag(syncer::BOOKMARKS)},
+       syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS)},
       kRandomPosition, /*response_version=*/0));
 
   // Add update for another node under the bookmarks bar.
@@ -1425,7 +1425,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // the current implementation still handles it.
   updates.push_back(CreateUpdateResponseData(
       {kBookmarksRootId, std::string(), std::string(), std::string(),
-       syncer::ModelTypeToRootTag(syncer::BOOKMARKS)},
+       syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS)},
       kRandomPosition, /*response_version=*/0));
 
   // Add update for another node under the bookmarks bar.

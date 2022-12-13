@@ -258,7 +258,7 @@ sync_pb::SyncEntity* MockConnectionManager::SetNigori(
   sync_pb::SyncEntity* ent = GetUpdateResponse()->add_entries();
   ent->set_id_string(id);
   ent->set_parent_id_string("0");
-  ent->set_server_defined_unique_tag(ModelTypeToRootTag(NIGORI));
+  ent->set_server_defined_unique_tag(ModelTypeToProtocolRootTag(NIGORI));
   ent->set_name("Nigori");
   ent->set_non_unique_name("Nigori");
   ent->set_version(version);

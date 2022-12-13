@@ -286,7 +286,7 @@ bool LoopbackServer::CreatePermanentBookmarkFolder(
   std::unique_ptr<LoopbackServerEntity> entity =
       PersistentPermanentEntity::CreateNew(
           syncer::BOOKMARKS, server_tag, name,
-          ModelTypeToRootTag(syncer::BOOKMARKS));
+          ModelTypeToProtocolRootTag(syncer::BOOKMARKS));
   if (!entity)
     return false;
 

@@ -134,17 +134,17 @@ class LevelDbWriteBatch : public BlockingModelTypeStoreImpl::WriteBatch {
 
 // Formats key prefix for data records of |type|.
 std::string FormatDataPrefix(ModelType type) {
-  return std::string(GetModelTypeRootTag(type)) + kDataPrefix;
+  return std::string(GetModelTypeLowerCaseRootTag(type)) + kDataPrefix;
 }
 
 // Formats key prefix for metadata records of |type|.
 std::string FormatMetaPrefix(ModelType type) {
-  return std::string(GetModelTypeRootTag(type)) + kMetadataPrefix;
+  return std::string(GetModelTypeLowerCaseRootTag(type)) + kMetadataPrefix;
 }
 
 // Formats key for global metadata record of |type|.
 std::string FormatGlobalMetadataKey(ModelType type) {
-  return std::string(GetModelTypeRootTag(type)) + kGlobalMetadataKey;
+  return std::string(GetModelTypeLowerCaseRootTag(type)) + kGlobalMetadataKey;
 }
 
 BlockingModelTypeStoreImpl::BlockingModelTypeStoreImpl(
@@ -248,7 +248,8 @@ absl::optional<ModelError> BlockingModelTypeStoreImpl::CommitWriteBatch(
 absl::optional<ModelError>
 BlockingModelTypeStoreImpl::DeleteAllDataAndMetadata() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return backend_->DeleteDataAndMetadataForPrefix(GetModelTypeRootTag(type_));
+  return backend_->DeleteDataAndMetadataForPrefix(
+      GetModelTypeLowerCaseRootTag(type_));
 }
 
 // static
