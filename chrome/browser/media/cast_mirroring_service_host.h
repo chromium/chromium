@@ -128,6 +128,10 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
 
   void SwitchMirroringSourceTab(const content::DesktopMediaID& media_id);
 
+  // Records metrics about the usage of Tab Switcher UI, and resets data members
+  // used for metrics collection.
+  void RecordTabUIUsageMetricsIfNeededAndReset();
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // OffscreenTab::Owner implementation.
   void DestroyTab(OffscreenTab* tab) override;
@@ -169,6 +173,11 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   const bool tab_switching_ui_enabled_;
+
+  // Represents the number of times a tab was switched during an active
+  // mirroring session using tab switcher UI bar. Mainly used for metrics
+  // collecting.
+  absl::optional<int> tab_switching_count_;
 
   // Used for calls supplied to `media_stream_ui_`, mainly to handle callbacks
   // for TabSharingUIViews. Invalidated every time a new UI is created.

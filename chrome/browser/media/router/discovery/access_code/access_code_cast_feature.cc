@@ -27,6 +27,7 @@ BASE_FEATURE(kAccessCodeCastRememberDevices,
 
 // Provide a tab switching UI bar while casting (mirroring) when AccessCodeCast
 // is enabled.
+// To be enabled by Default.
 BASE_FEATURE(kAccessCodeCastTabSwitchingUI,
              "AccessCodeCastTabSwitchingUI",
              base::FEATURE_DISABLED_BY_DEFAULT);

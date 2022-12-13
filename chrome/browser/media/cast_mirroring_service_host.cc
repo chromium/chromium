@@ -24,6 +24,7 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
+#include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/mirroring/browser/single_client_video_capture_host.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/mirroring_service.mojom.h"
@@ -201,7 +202,9 @@ CastMirroringServiceHost::CastMirroringServiceHost(
     Observe(GetContents(source_media_id_.web_contents_id));
 }
 
-CastMirroringServiceHost::~CastMirroringServiceHost() {}
+CastMirroringServiceHost::~CastMirroringServiceHost() {
+  RecordTabUIUsageMetricsIfNeededAndReset();
+}
 
 void CastMirroringServiceHost::Start(
     mojom::SessionParametersPtr session_params,
@@ -473,6 +476,7 @@ void CastMirroringServiceHost::WebContentsDestroyed() {
   web_contents_audio_muter_.reset();
   audio_stream_factory_.reset();
   gpu_client_.reset();
+  RecordTabUIUsageMetricsIfNeededAndReset();
 }
 
 void CastMirroringServiceHost::ShowCaptureIndicator() {
@@ -539,6 +543,9 @@ void CastMirroringServiceHost::ShowTabSharingUI(
                           weak_factory_for_ui_.GetWeakPtr()),
       /*label=*/std::string(), /*screen_capture_ids=*/{},
       content::MediaStreamUI::StateChangeCallback());
+
+  if (!tab_switching_count_)
+    tab_switching_count_ = 0;
 }
 
 void CastMirroringServiceHost::SwitchMirroringSourceTab(
@@ -554,6 +561,26 @@ void CastMirroringServiceHost::SwitchMirroringSourceTab(
   web_contents_audio_muter_.reset();
 
   mirroring_service_->SwitchMirroringSourceTab();
+  tab_switching_count_.value() += 1;
+}
+
+void CastMirroringServiceHost::RecordTabUIUsageMetricsIfNeededAndReset() {
+  if (!tab_switching_count_)
+    return;
+
+  if (tab_switching_count_.value() > 0) {
+    AccessCodeCastMetrics::RecordTabSwitcherUsageCase(
+        AccessCodeCastUiTabSwitcherUsage::
+            kTabSwitcherUiShownAndUsedToSwitchTabs);
+  } else {
+    AccessCodeCastMetrics::RecordTabSwitcherUsageCase(
+        AccessCodeCastUiTabSwitcherUsage::kTabSwitcherUiShownAndNotUsed);
+  }
+
+  AccessCodeCastMetrics::RecordTabSwitchesCountInTabSession(
+      tab_switching_count_.value());
+
+  tab_switching_count_.reset();
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

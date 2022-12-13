@@ -172,6 +172,11 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="2" label="ChromeOS quick settings cast menu"/>
 </enum>
 
+<enum name="AccessCodeCastUiTabSwitcherUsage">
+  <int value="0" label="Tab switcher UI shown and not used"/>
+  <int value="1" label="Tab switcher UI shown and used to switch tabs"/>
+</enum>
+
 <enum name="AccessibilityAndroidAnimationsEnabled">
   <obsolete>
     Removed from code 2020/10.

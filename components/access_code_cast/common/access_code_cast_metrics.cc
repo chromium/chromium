@@ -28,6 +28,10 @@ const char AccessCodeCastMetrics::kHistogramDialogOpenLocation[] =
     "AccessCodeCast.Ui.DialogOpenLocation";
 const char AccessCodeCastMetrics::kHistogramRememberedDevicesCount[] =
     "AccessCodeCast.Discovery.RememberedDevicesCount";
+const char AccessCodeCastMetrics::kHistogramUiTabSwitcherUsageType[] =
+    "AccessCodeCast.Ui.TabSwitcherUsageType";
+const char AccessCodeCastMetrics::kHistogramUiTabSwitchingCount[] =
+    "AccessCodeCast.Ui.TabSwitchingCount";
 
 // static
 void AccessCodeCastMetrics::OnCastSessionResult(int route_request_result_code,
@@ -86,4 +90,15 @@ void AccessCodeCastMetrics::RecordDialogOpenLocation(
 // static
 void AccessCodeCastMetrics::RecordRememberedDevicesCount(int count) {
   base::UmaHistogramCounts100(kHistogramRememberedDevicesCount, count);
+}
+
+// static
+void AccessCodeCastMetrics::RecordTabSwitchesCountInTabSession(int count) {
+  base::UmaHistogramCounts100(kHistogramUiTabSwitchingCount, count);
+}
+
+// static
+void AccessCodeCastMetrics::RecordTabSwitcherUsageCase(
+    AccessCodeCastUiTabSwitcherUsage usage) {
+  base::UmaHistogramEnumeration(kHistogramUiTabSwitcherUsageType, usage);
 }
