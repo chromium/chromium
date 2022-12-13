@@ -229,6 +229,10 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
         return security_state::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING;
       case safe_browsing::SB_THREAT_TYPE_BILLING:
         return security_state::MALICIOUS_CONTENT_STATUS_BILLING;
+      case safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
+        return security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK;
+      case safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_WARN:
+        return security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_WARN;
       case safe_browsing::
           DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
       case safe_browsing::SB_THREAT_TYPE_URL_BINARY_MALWARE:
@@ -243,7 +247,6 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
       case safe_browsing::SB_THREAT_TYPE_SUSPICIOUS_SITE:
       case safe_browsing::SB_THREAT_TYPE_APK_DOWNLOAD:
       case safe_browsing::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
-      case safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY:
         // These threat types are not currently associated with
         // interstitials, and thus resources with these threat types are
         // not ever whitelisted or pending whitelisting.

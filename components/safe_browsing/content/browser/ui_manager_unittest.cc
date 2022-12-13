@@ -146,6 +146,27 @@ class TestSafeBrowsingBlockingPageFactory
     return new TestSafeBrowsingBlockingPage(delegate, web_contents,
                                             main_frame_url, unsafe_resources);
   }
+#if !BUILDFLAG(IS_ANDROID)
+  security_interstitials::SecurityInterstitialPage* CreateEnterpriseWarnPage(
+      BaseUIManager* ui_manager,
+      content::WebContents* web_contents,
+      const GURL& main_frame_url,
+      const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources)
+      override {
+    NOTREACHED();
+    return nullptr;
+  }
+
+  security_interstitials::SecurityInterstitialPage* CreateEnterpriseBlockPage(
+      BaseUIManager* ui_manager,
+      content::WebContents* web_contents,
+      const GURL& main_frame_url,
+      const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources)
+      override {
+    NOTREACHED();
+    return nullptr;
+  }
+#endif
 };
 
 class TestSafeBrowsingUIManagerDelegate

@@ -183,9 +183,12 @@ enum SBThreatType {
   // DEPRECATED: SB_THREAT_TYPE_ACCURACY_TIPS = 25,
 
   // Managed policy indicated to warn a navigation.
-  SB_THREAT_TYPE_MANAGED_POLICY = 26,
+  SB_THREAT_TYPE_MANAGED_POLICY_WARN = 26,
 
-  SB_THREAT_TYPE_MAX = SB_THREAT_TYPE_MANAGED_POLICY,
+  // Managed policy indicated to block a navigation.
+  SB_THREAT_TYPE_MANAGED_POLICY_BLOCK = 27,
+
+  SB_THREAT_TYPE_MAX = SB_THREAT_TYPE_MANAGED_POLICY_BLOCK,
 };
 
 using SBThreatTypeSet = base::flat_set<SBThreatType>;

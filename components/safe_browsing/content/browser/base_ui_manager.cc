@@ -122,6 +122,8 @@ ThreatSeverity GetThreatSeverity(safe_browsing::SBThreatType threat_type) {
     case safe_browsing::SB_THREAT_TYPE_URL_MALWARE:
     case safe_browsing::SB_THREAT_TYPE_URL_BINARY_MALWARE:
     case safe_browsing::SB_THREAT_TYPE_URL_PHISHING:
+    case safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
+    case safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_WARN:
       return 0;
     case safe_browsing::SB_THREAT_TYPE_URL_UNWANTED:
       return 1;
@@ -283,7 +285,9 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   }
 
   if (resource.threat_type != SB_THREAT_TYPE_SAFE &&
-      resource.threat_type != SB_THREAT_TYPE_BILLING) {
+      resource.threat_type != SB_THREAT_TYPE_BILLING &&
+      resource.threat_type != SB_THREAT_TYPE_MANAGED_POLICY_BLOCK &&
+      resource.threat_type != SB_THREAT_TYPE_MANAGED_POLICY_WARN) {
     // TODO(vakh): crbug/883462: The reports for SB_THREAT_TYPE_BILLING should
     // be disabled for M70 but enabled for a later release (M71?).
     CreateAndSendHitReport(resource);

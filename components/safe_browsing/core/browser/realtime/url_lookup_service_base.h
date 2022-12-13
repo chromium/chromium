@@ -69,10 +69,12 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Returns true if |url|'s scheme can be checked.
   static bool CanCheckUrl(const GURL& url);
 
-  // Returns the SBThreatType for a given
-  // RTLookupResponse::ThreatInfo::ThreatType
+  // Returns the SBThreatType for a combination of
+  // RTLookupResponse::ThreatInfo::ThreatType and
+  // RTLookupResponse::ThreatInfo::VerdictType
   static SBThreatType GetSBThreatTypeForRTThreatType(
-      RTLookupResponse::ThreatInfo::ThreatType rt_threat_type);
+      RTLookupResponse::ThreatInfo::ThreatType rt_threat_type,
+      RTLookupResponse::ThreatInfo::VerdictType rt_verdict_type);
 
   // Returns true if the real time lookups are currently in backoff mode due to
   // too many prior errors. If this happens, the checking falls back to

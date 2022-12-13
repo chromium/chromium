@@ -147,7 +147,24 @@ bool RealTimeUrlLookupServiceBase::CanCheckUrl(const GURL& url) {
 
 // static
 SBThreatType RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
-    RTLookupResponse::ThreatInfo::ThreatType rt_threat_type) {
+    RTLookupResponse::ThreatInfo::ThreatType rt_threat_type,
+    RTLookupResponse::ThreatInfo::VerdictType rt_verdict_type) {
+  if (rt_threat_type == RTLookupResponse::ThreatInfo::MANAGED_POLICY) {
+    switch (rt_verdict_type) {
+      case RTLookupResponse::ThreatInfo::DANGEROUS:
+        return SB_THREAT_TYPE_MANAGED_POLICY_BLOCK;
+      case RTLookupResponse::ThreatInfo::WARN:
+        return SB_THREAT_TYPE_MANAGED_POLICY_WARN;
+      default:
+        NOTREACHED();
+        return SB_THREAT_TYPE_SAFE;
+    }
+  }
+
+  if (rt_verdict_type != RTLookupResponse::ThreatInfo::DANGEROUS) {
+    return SB_THREAT_TYPE_SAFE;
+  }
+
   switch (rt_threat_type) {
     case RTLookupResponse::ThreatInfo::WEB_MALWARE:
       return SB_THREAT_TYPE_URL_MALWARE;
@@ -158,7 +175,6 @@ SBThreatType RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
     case RTLookupResponse::ThreatInfo::UNCLEAR_BILLING:
       return SB_THREAT_TYPE_BILLING;
     case RTLookupResponse::ThreatInfo::MANAGED_POLICY:
-      return SB_THREAT_TYPE_MANAGED_POLICY;
     case RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED:
       NOTREACHED() << "Unexpected RTLookupResponse::ThreatType encountered";
       return SB_THREAT_TYPE_SAFE;

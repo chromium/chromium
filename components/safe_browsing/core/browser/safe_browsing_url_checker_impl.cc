@@ -548,7 +548,6 @@ SBThreatType SafeBrowsingUrlCheckerImpl::CheckWebUIUrls(const GURL& url) {
     return safe_browsing::SB_THREAT_TYPE_URL_UNWANTED;
   if (url == kChromeUISafeBrowsingMatchBillingUrl)
     return safe_browsing::SB_THREAT_TYPE_BILLING;
-
   return safe_browsing::SB_THREAT_TYPE_SAFE;
 }
 
@@ -707,14 +706,27 @@ void SafeBrowsingUrlCheckerImpl::OnRTLookupResponse(
 
   LogRTLookupResponse(*response);
 
+  // Filter the response to remove enterprise verdicts if experiment is not
+  // enabled for Managed Policy UrlFiltering
+  if (!base::FeatureList::IsEnabled((kRealTimeUrlFilteringForEnterprise))) {
+    auto* response_threat_info = response->mutable_threat_info();
+    auto unsupported = std::remove_if(
+        response_threat_info->begin(), response_threat_info->end(),
+        [](const auto& threat_info) {
+          return threat_info.threat_type() ==
+                 RTLookupResponse::ThreatInfo::MANAGED_POLICY;
+        });
+    response_threat_info->erase(unsupported, response_threat_info->end());
+  }
+
   SBThreatType sb_threat_type = SB_THREAT_TYPE_SAFE;
-  if (response && (response->threat_info_size() > 0) &&
-      response->threat_info(0).verdict_type() ==
-          RTLookupResponse::ThreatInfo::DANGEROUS) {
+  if (response && (response->threat_info_size() > 0)) {
     sb_threat_type =
         RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
-            response->threat_info(0).threat_type());
+            response->threat_info(0).threat_type(),
+            response->threat_info(0).verdict_type());
   }
+
   if (is_cached_response && sb_threat_type == SB_THREAT_TYPE_SAFE) {
     urls_[next_index_].is_cached_safe_url = true;
     PerformHashBasedCheck(url);

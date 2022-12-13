@@ -13,6 +13,10 @@ namespace content {
 class WebContents;
 }
 
+namespace security_interstitials {
+class SecurityInterstitialPage;
+}
+
 namespace safe_browsing {
 
 class BaseUIManager;
@@ -28,6 +32,22 @@ class SafeBrowsingBlockingPageFactory {
       const GURL& main_frame_url,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
       bool should_trigger_reporting) = 0;
+
+#if !BUILDFLAG(IS_ANDROID)
+  virtual security_interstitials::SecurityInterstitialPage*
+  CreateEnterpriseWarnPage(
+      BaseUIManager* ui_manager,
+      content::WebContents* web_contents,
+      const GURL& main_frame_url,
+      const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources) = 0;
+
+  virtual security_interstitials::SecurityInterstitialPage*
+  CreateEnterpriseBlockPage(
+      BaseUIManager* ui_manager,
+      content::WebContents* web_contents,
+      const GURL& main_frame_url,
+      const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources) = 0;
+#endif
 };
 
 }  // namespace safe_browsing

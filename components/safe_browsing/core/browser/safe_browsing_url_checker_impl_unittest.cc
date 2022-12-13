@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
@@ -19,6 +20,7 @@
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -217,6 +219,14 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
         threat_type = RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED;
         verdict_type = RTLookupResponse::ThreatInfo::SAFE;
         break;
+      case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
+        threat_type = RTLookupResponse::ThreatInfo::MANAGED_POLICY;
+        verdict_type = RTLookupResponse::ThreatInfo::DANGEROUS;
+        break;
+      case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
+        threat_type = RTLookupResponse::ThreatInfo::MANAGED_POLICY;
+        verdict_type = RTLookupResponse::ThreatInfo::WARN;
+        break;
       default:
         NOTREACHED();
         threat_type = RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED;
@@ -339,6 +349,7 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
   std::unique_ptr<MockRealTimeUrlLookupService> url_lookup_service_;
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier>
       slow_check_notifier_callback_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_SafeUrl) {
@@ -571,6 +582,100 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   histograms.ExpectUniqueSample("SafeBrowsing.RT.GetCache.FallbackThreatType",
                                 /*sample=*/SB_THREAT_TYPE_URL_PHISHING,
                                 /*expected_bucket_count=*/1);
+}
+
+TEST_F(
+    SafeBrowsingUrlCheckerTest,
+    CheckUrl_RealTimeEnabledSafeBrowsingDisabled_ManagedWarn_FeatureEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(kRealTimeUrlFilteringForEnterprise);
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/false);
+
+  GURL url("https://example.test/");
+  url_lookup_service_->SetThreatTypeForUrl(url,
+                                           SB_THREAT_TYPE_MANAGED_POLICY_WARN);
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  // Should still show warning page because real time lookup is enabled.
+  EXPECT_CALL(
+      *url_checker_delegate_,
+      StartDisplayingBlockingPageHelper(
+          IsSameThreatSource(ThreatSource::REAL_TIME_CHECK), _, _, _, _))
+      .Times(1);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(
+    SafeBrowsingUrlCheckerTest,
+    CheckUrl_RealTimeEnabledSafeBrowsingDisabled_ManagedWarn_FeatureNotEnabled) {
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/false);
+
+  GURL url("https://example.test/");
+  url_lookup_service_->SetThreatTypeForUrl(url,
+                                           SB_THREAT_TYPE_MANAGED_POLICY_WARN);
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  // Should not show warning page because feature is not enabled.
+  EXPECT_CALL(
+      *url_checker_delegate_,
+      StartDisplayingBlockingPageHelper(
+          IsSameThreatSource(ThreatSource::REAL_TIME_CHECK), _, _, _, _))
+      .Times(0);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(
+    SafeBrowsingUrlCheckerTest,
+    CheckUrl_RealTimeEnabledSafeBrowsingDisabled_ManagedBlock_FeatureEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(kRealTimeUrlFilteringForEnterprise);
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/false);
+
+  GURL url("https://example.test/");
+  url_lookup_service_->SetThreatTypeForUrl(url,
+                                           SB_THREAT_TYPE_MANAGED_POLICY_BLOCK);
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  // Should still show blocking page because real time lookup is enabled.
+  EXPECT_CALL(
+      *url_checker_delegate_,
+      StartDisplayingBlockingPageHelper(
+          IsSameThreatSource(ThreatSource::REAL_TIME_CHECK), _, _, _, _))
+      .Times(1);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(
+    SafeBrowsingUrlCheckerTest,
+    CheckUrl_RealTimeEnabledSafeBrowsingDisabled_ManagedBlock_FeatureNotEnabled) {
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/false);
+
+  GURL url("https://example.test/");
+  url_lookup_service_->SetThreatTypeForUrl(url,
+                                           SB_THREAT_TYPE_MANAGED_POLICY_BLOCK);
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  // Should not show blocking page because the feature is not enabled.
+  EXPECT_CALL(
+      *url_checker_delegate_,
+      StartDisplayingBlockingPageHelper(
+          IsSameThreatSource(ThreatSource::REAL_TIME_CHECK), _, _, _, _))
+      .Times(0);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,

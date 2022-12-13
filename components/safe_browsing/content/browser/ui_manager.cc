@@ -235,6 +235,10 @@ std::string SafeBrowsingUIManager::GetThreatTypeStringForInterstitial(
       return "UNWANTED_SOFTWARE";
     case safe_browsing::SB_THREAT_TYPE_BILLING:
       return "THREAT_TYPE_UNSPECIFIED";
+    case safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_WARN:
+      return "MANAGED_POLICY_WARN";
+    case safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
+      return "MANAGED_POLICY_BLOCK";
     case safe_browsing::SB_THREAT_TYPE_UNUSED:
     case safe_browsing::SB_THREAT_TYPE_SAFE:
     case safe_browsing::SB_THREAT_TYPE_URL_BINARY_MALWARE:
@@ -255,7 +259,6 @@ std::string SafeBrowsingUIManager::GetThreatTypeStringForInterstitial(
     case safe_browsing::SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
     case safe_browsing::SB_THREAT_TYPE_APK_DOWNLOAD:
     case safe_browsing::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
-    case safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY:
       NOTREACHED();
       break;
   }

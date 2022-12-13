@@ -654,16 +654,32 @@ TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoffWithResetOnSuccess) {
 TEST_F(RealTimeUrlLookupServiceTest, TestGetSBThreatTypeForRTThreatType) {
   EXPECT_EQ(SB_THREAT_TYPE_URL_MALWARE,
             RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
-                RTLookupResponse::ThreatInfo::WEB_MALWARE));
+                RTLookupResponse::ThreatInfo::WEB_MALWARE,
+                RTLookupResponse::ThreatInfo::DANGEROUS));
   EXPECT_EQ(SB_THREAT_TYPE_URL_PHISHING,
             RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
-                RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING));
+                RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
+                RTLookupResponse::ThreatInfo::DANGEROUS));
   EXPECT_EQ(SB_THREAT_TYPE_URL_UNWANTED,
             RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
-                RTLookupResponse::ThreatInfo::UNWANTED_SOFTWARE));
+                RTLookupResponse::ThreatInfo::UNWANTED_SOFTWARE,
+                RTLookupResponse::ThreatInfo::DANGEROUS));
   EXPECT_EQ(SB_THREAT_TYPE_BILLING,
             RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
-                RTLookupResponse::ThreatInfo::UNCLEAR_BILLING));
+                RTLookupResponse::ThreatInfo::UNCLEAR_BILLING,
+                RTLookupResponse::ThreatInfo::DANGEROUS));
+  EXPECT_EQ(SB_THREAT_TYPE_MANAGED_POLICY_BLOCK,
+            RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
+                RTLookupResponse::ThreatInfo::MANAGED_POLICY,
+                RTLookupResponse::ThreatInfo::DANGEROUS));
+  EXPECT_EQ(SB_THREAT_TYPE_MANAGED_POLICY_WARN,
+            RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
+                RTLookupResponse::ThreatInfo::MANAGED_POLICY,
+                RTLookupResponse::ThreatInfo::WARN));
+  EXPECT_EQ(SB_THREAT_TYPE_SAFE,
+            RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
+                RTLookupResponse::ThreatInfo::UNWANTED_SOFTWARE,
+                RTLookupResponse::ThreatInfo::WARN));
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, TestCanCheckUrl) {

@@ -5,6 +5,10 @@
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/connectors/interstitials/enterprise_block_controller_client.h"
+#include "chrome/browser/enterprise/connectors/interstitials/enterprise_block_page.h"
+#include "chrome/browser/enterprise/connectors/interstitials/enterprise_warn_controller_client.h"
+#include "chrome/browser/enterprise/connectors/interstitials/enterprise_warn_page.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/chrome_settings_page_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -73,6 +77,32 @@ ChromeSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
       SafeBrowsingMetricsCollectorFactory::GetForProfile(profile),
       trigger_manager);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+security_interstitials::SecurityInterstitialPage*
+ChromeSafeBrowsingBlockingPageFactory::CreateEnterpriseWarnPage(
+    BaseUIManager* ui_manager,
+    content::WebContents* web_contents,
+    const GURL& main_frame_url,
+    const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources) {
+  return new EnterpriseWarnPage(
+      web_contents, main_frame_url,
+      std::make_unique<EnterpriseWarnControllerClient>(web_contents,
+                                                       main_frame_url));
+}
+
+security_interstitials::SecurityInterstitialPage*
+ChromeSafeBrowsingBlockingPageFactory::CreateEnterpriseBlockPage(
+    BaseUIManager* ui_manager,
+    content::WebContents* web_contents,
+    const GURL& main_frame_url,
+    const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources) {
+  return new EnterpriseBlockPage(
+      web_contents, main_frame_url,
+      std::make_unique<EnterpriseBlockControllerClient>(web_contents,
+                                                        main_frame_url));
+}
+#endif
 
 ChromeSafeBrowsingBlockingPageFactory::ChromeSafeBrowsingBlockingPageFactory() =
     default;

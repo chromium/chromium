@@ -458,7 +458,12 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
                                        IDS_PAGE_INFO_BILLING_SUMMARY,
                                        IDS_PAGE_INFO_BILLING_DETAILS,
                                        SecurityDescriptionType::SAFE_BROWSING);
-    case PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY:
+    case PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY_WARN:
+      return CreateSecurityDescription(SecuritySummaryColor::RED,
+                                       IDS_PAGE_INFO_ENTERPRISE_WARN_SUMMARY,
+                                       IDS_PAGE_INFO_ENTERPRISE_WARN_DETAILS,
+                                       SecurityDescriptionType::SAFE_BROWSING);
+    case PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY_BLOCK:
       return CreateSecurityDescription(SecuritySummaryColor::RED,
                                        IDS_PAGE_INFO_ENTERPRISE_WARN_SUMMARY,
                                        IDS_PAGE_INFO_ENTERPRISE_WARN_DETAILS,

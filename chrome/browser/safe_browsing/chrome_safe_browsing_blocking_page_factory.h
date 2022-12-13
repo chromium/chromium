@@ -20,6 +20,22 @@ class ChromeSafeBrowsingBlockingPageFactory
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
       bool should_trigger_reporting) override;
 
+#if !BUILDFLAG(IS_ANDROID)
+  security_interstitials::SecurityInterstitialPage* CreateEnterpriseWarnPage(
+      BaseUIManager* ui_manager,
+      content::WebContents* web_contents,
+      const GURL& main_frame_url,
+      const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources)
+      override;
+
+  security_interstitials::SecurityInterstitialPage* CreateEnterpriseBlockPage(
+      BaseUIManager* ui_manager,
+      content::WebContents* web_contents,
+      const GURL& main_frame_url,
+      const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources)
+      override;
+#endif
+
   ChromeSafeBrowsingBlockingPageFactory();
   ChromeSafeBrowsingBlockingPageFactory(
       const ChromeSafeBrowsingBlockingPageFactory&) = delete;

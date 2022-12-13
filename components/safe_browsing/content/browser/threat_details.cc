@@ -127,7 +127,8 @@ ClientSafeBrowsingReportRequest::ReportType GetReportTypeFromSBThreatType(
     case SB_THREAT_TYPE_CSD_ALLOWLIST:
     case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
     case DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
-    case SB_THREAT_TYPE_MANAGED_POLICY:
+    case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
+    case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
       // Gated by SafeBrowsingBlockingPage::ShouldReportThreatDetails.
       NOTREACHED() << "We should not send report for threat type: "
                    << threat_type;

@@ -58,10 +58,30 @@ SafeBrowsingNavigationThrottle::WillFailRequest() {
     // from BaseUIManager::DisplayBlockingPage.
     DCHECK(handle->IsInPrimaryMainFrame() ||
            handle->IsInPrerenderedMainFrame());
-    SafeBrowsingBlockingPage* blocking_page =
-        manager_->blocking_page_factory()->CreateSafeBrowsingPage(
-            manager_, handle->GetWebContents(), handle->GetURL(), {resource},
-            true);
+
+    security_interstitials::SecurityInterstitialPage* blocking_page = nullptr;
+#if !BUILDFLAG(IS_ANDROID)
+    if (resource.threat_type ==
+        SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN) {
+      blocking_page =
+          manager_->blocking_page_factory()->CreateEnterpriseWarnPage(
+              manager_, handle->GetWebContents(), handle->GetURL(), {resource});
+    } else if (resource.threat_type ==
+               SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK) {
+      blocking_page =
+          manager_->blocking_page_factory()->CreateEnterpriseBlockPage(
+              manager_, handle->GetWebContents(), handle->GetURL(), {resource});
+    } else {
+      blocking_page = manager_->blocking_page_factory()->CreateSafeBrowsingPage(
+          manager_, handle->GetWebContents(), handle->GetURL(), {resource},
+          true);
+    }
+
+#else
+    blocking_page = manager_->blocking_page_factory()->CreateSafeBrowsingPage(
+        manager_, handle->GetWebContents(), handle->GetURL(), {resource}, true);
+#endif
+
     manager_->ForwardSecurityInterstitialShownExtensionEventToEmbedder(
         handle->GetWebContents(), handle->GetURL(),
         SafeBrowsingUIManager::GetThreatTypeStringForInterstitial(

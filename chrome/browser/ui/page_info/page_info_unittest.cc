@@ -613,6 +613,30 @@ TEST_F(PageInfoTest, Malware) {
             page_info()->safe_browsing_status());
 }
 
+TEST_F(PageInfoTest, ManagedPolicyBlock) {
+  security_level_ = security_state::DANGEROUS;
+  visible_security_state_.malicious_content_status =
+      security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK;
+  SetDefaultUIExpectations(mock_ui());
+
+  EXPECT_EQ(PageInfo::SITE_CONNECTION_STATUS_UNENCRYPTED,
+            page_info()->site_connection_status());
+  EXPECT_EQ(PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY_BLOCK,
+            page_info()->safe_browsing_status());
+}
+
+TEST_F(PageInfoTest, ManagedPolicyWarn) {
+  security_level_ = security_state::DANGEROUS;
+  visible_security_state_.malicious_content_status =
+      security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_WARN;
+  SetDefaultUIExpectations(mock_ui());
+
+  EXPECT_EQ(PageInfo::SITE_CONNECTION_STATUS_UNENCRYPTED,
+            page_info()->site_connection_status());
+  EXPECT_EQ(PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY_WARN,
+            page_info()->safe_browsing_status());
+}
+
 TEST_F(PageInfoTest, SocialEngineering) {
   security_level_ = security_state::DANGEROUS;
   visible_security_state_.malicious_content_status =
