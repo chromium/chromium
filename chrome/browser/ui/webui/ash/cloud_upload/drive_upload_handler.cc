@@ -76,7 +76,7 @@ DriveUploadHandler::DriveUploadHandler(Profile* profile,
           base::MakeRefCounted<CloudUploadNotificationManager>(
               profile,
               source_url.path().BaseName().value(),
-              "OneDrive",
+              "Drive",
               GetTargetAppName(source_url.path()))),
       source_url_(source_url) {
   observed_task_id_ = -1;
