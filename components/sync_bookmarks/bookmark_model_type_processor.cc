@@ -254,11 +254,13 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
     updates_handler.Process(updates, got_new_encryption_requirements);
   }
 
-  // Issue error and disable sync if bookmarks count exceeds limit.
+  // Issue error and stop sync if bookmarks count exceeds limit.
   if (bookmark_tracker_->TrackedBookmarksCount() >
           max_bookmarks_till_sync_enabled_ &&
       base::FeatureList::IsEnabled(syncer::kSyncEnforceBookmarksCountLimit)) {
-    StopTrackingMetadataAndResetTracker();
+    // Local changes continue to be tracked in order to allow users to delete
+    // bookmarks and recover upon restart.
+    DisconnectSync();
     error_handler_.Run(
         syncer::ModelError(FROM_HERE, "Local bookmarks count exceed limit."));
     return;
@@ -301,7 +303,7 @@ std::string BookmarkModelTypeProcessor::EncodeSyncMetadata() const {
   std::string metadata_str;
   if (bookmark_tracker_) {
     // |last_initial_merge_remote_updates_exceeded_limit_| is only set in error
-    // case and thus tracker would be empty.
+    // cases where the tracker would not be initialized.
     DCHECK(!last_initial_merge_remote_updates_exceeded_limit_);
 
     sync_pb::BookmarkModelMetadata model_metadata =
@@ -424,6 +426,8 @@ void BookmarkModelTypeProcessor::ConnectIfReady() {
   }
 
   DCHECK(error_handler_);
+  // ConnectSync() should not have been called by now.
+  DCHECK(!worker_);
 
   // Report error if remote updates fetched last time during initial merge
   // exceeded limit.
@@ -439,16 +443,18 @@ void BookmarkModelTypeProcessor::ConnectIfReady() {
     return;
   }
 
-  // Issue error and disable sync if bookmarks exceed limit.
-  // TODO(ankushkush): Think about adding two different limits: one for when
-  // sync just starts, the other (larger one) as hard limit, incl. incremental
-  // changes.
+  // Issue error and stop sync if bookmarks exceed limit.
+  // TODO(crbug.com/1347466): Think about adding two different limits: one for
+  // when sync just starts, the other (larger one) as hard limit, incl.
+  // incremental changes.
   const size_t count = bookmark_tracker_
                            ? bookmark_tracker_->TrackedBookmarksCount()
                            : CountSyncableBookmarksFromModel(bookmark_model_);
   if (count > max_bookmarks_till_sync_enabled_ &&
       base::FeatureList::IsEnabled(syncer::kSyncEnforceBookmarksCountLimit)) {
-    StopTrackingMetadataAndResetTracker();
+    // For the case where a tracker already exists, local changes will continue
+    // to be tracked in order order to allow users to delete bookmarks and
+    // recover upon restart.
     start_callback_.Reset();
     error_handler_.Run(
         syncer::ModelError(FROM_HERE, "Local bookmarks count exceed limit."));
@@ -527,14 +533,16 @@ void BookmarkModelTypeProcessor::OnSyncStopping(
 void BookmarkModelTypeProcessor::NudgeForCommitIfNeeded() {
   DCHECK(bookmark_tracker_);
 
-  // Issue error and disable sync if the number of local bookmarks exceed limit.
+  // Issue error and stop sync if the number of local bookmarks exceed limit.
   // If |error_handler_| is not set, the check is ignored because this gets
   // re-evaluated in ConnectIfReady().
   if (error_handler_ &&
       bookmark_tracker_->TrackedBookmarksCount() >
           max_bookmarks_till_sync_enabled_ &&
       base::FeatureList::IsEnabled(syncer::kSyncEnforceBookmarksCountLimit)) {
-    StopTrackingMetadataAndResetTracker();
+    // Local changes continue to be tracked in order to allow users to delete
+    // bookmarks and recover upon restart.
+    DisconnectSync();
     start_callback_.Reset();
     error_handler_.Run(
         syncer::ModelError(FROM_HERE, "Local bookmarks count exceed limit."));
@@ -576,6 +584,7 @@ void BookmarkModelTypeProcessor::OnInitialUpdateReceived(
   // very unlikely that there will be many updates downloaded.
   if (updates.size() > max_initial_updates_count &&
       base::FeatureList::IsEnabled(syncer::kSyncEnforceBookmarksCountLimit)) {
+    DisconnectSync();
     last_initial_merge_remote_updates_exceeded_limit_ = true;
     error_handler_.Run(
         syncer::ModelError(FROM_HERE, "Remote bookmarks count exceed limit."));
@@ -756,18 +765,6 @@ void BookmarkModelTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
 void BookmarkModelTypeProcessor::SetMaxBookmarksTillSyncEnabledForTest(
     size_t limit) {
   max_bookmarks_till_sync_enabled_ = limit;
-}
-
-void BookmarkModelTypeProcessor::StopTrackingMetadataAndResetTracker() {
-  if (!bookmark_tracker_) {
-    return;
-  }
-  DCHECK(bookmark_model_);
-  DCHECK(bookmark_model_observer_);
-
-  StopTrackingMetadata();
-  bookmark_tracker_.reset();
-  schedule_save_closure_.Run();
 }
 
 }  // namespace sync_bookmarks

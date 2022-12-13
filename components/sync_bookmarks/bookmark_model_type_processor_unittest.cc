@@ -930,7 +930,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   // Expect failure when adding new bookmark.
   EXPECT_CALL(*error_handler(), Run);
-  EXPECT_CALL(*schedule_save_closure(), Run);
 
   SimulateOnSyncStarting();
   SimulateModelReadyToSyncWithInitialSyncDone();
@@ -950,6 +949,8 @@ TEST_F(BookmarkModelTypeProcessorTest,
       GURL(kUrl));
 
   EXPECT_FALSE(processor()->IsConnectedForTest());
+  // Expect tracking to still be enabled.
+  EXPECT_THAT(processor()->GetTrackerForTest(), NotNull());
 }
 
 TEST_F(
@@ -962,7 +963,6 @@ TEST_F(
 
   // Expect error twice. First, when new bookmark is added. Next after restart.
   EXPECT_CALL(*error_handler(), Run).Times(2);
-  EXPECT_CALL(*schedule_save_closure(), Run).Times(2);
 
   SimulateModelReadyToSyncWithInitialSyncDone();
   SimulateOnSyncStarting();
@@ -1001,7 +1001,8 @@ TEST_F(
   // Should invoke error_handler::Run and schedule_save_closure::Run.
   SimulateOnSyncStarting();
 
-  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+  // Expect tracking to still be enabled.
+  EXPECT_THAT(processor()->GetTrackerForTest(), NotNull());
 }
 
 TEST_F(
@@ -1014,9 +1015,6 @@ TEST_F(
 
   // Expect error twice. First, when new bookmark is added. Next after restart.
   EXPECT_CALL(*error_handler(), Run).Times(2);
-  // save closure is invoked only once because bookmark tracker won't be set by
-  // ModelReadyToSync().
-  EXPECT_CALL(*schedule_save_closure(), Run);
 
   SimulateModelReadyToSyncWithInitialSyncDone();
   SimulateOnSyncStarting();
@@ -1042,8 +1040,6 @@ TEST_F(
   EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
   // Should invoke error_handler::Run and schedule_save_closure::Run.
   SimulateOnSyncStarting();
-
-  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
 }
 
 TEST_F(
@@ -1133,6 +1129,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   SimulateModelReadyToSyncWithoutLocalMetadata();
   SimulateOnSyncStarting();
+  SimulateConnectSync();
 
   const syncer::UniquePosition kRandomPosition =
       syncer::UniquePosition::InitialPosition(
@@ -1157,12 +1154,13 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // Ensures that OnInitialUpdateReceived will be called.
   ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
   ASSERT_TRUE(bookmark_bar->children().empty());
+  ASSERT_TRUE(processor()->IsConnectedForTest());
 
   ASSERT_FALSE(error_reported);
   processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
                                 /*gc_directive=*/absl::nullopt);
   EXPECT_TRUE(error_reported);
-  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+  EXPECT_FALSE(processor()->IsConnectedForTest());
   // New bookmark gets added though. Note that this is as per the current
   // behaviour but is not a requirement.
   EXPECT_FALSE(bookmark_bar->children().empty());
@@ -1183,6 +1181,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   SimulateModelReadyToSyncWithInitialSyncDone();
   SimulateOnSyncStarting();
+  SimulateConnectSync();
 
   const syncer::UniquePosition kRandomPosition =
       syncer::UniquePosition::InitialPosition(
@@ -1205,11 +1204,14 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // Ensures that path for incremental updates will be called.
   ASSERT_THAT(processor()->GetTrackerForTest(), NotNull());
   ASSERT_TRUE(bookmark_bar->children().empty());
+  ASSERT_TRUE(processor()->IsConnectedForTest());
 
   ASSERT_FALSE(error_reported);
   processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
                                 /*gc_directive=*/absl::nullopt);
   EXPECT_TRUE(error_reported);
+  EXPECT_FALSE(processor()->IsConnectedForTest());
+  EXPECT_THAT(processor()->GetTrackerForTest(), NotNull());
   // New bookmark gets added though. Note that this is as per the current
   // behaviour but is not a requirement.
   EXPECT_FALSE(bookmark_bar->children().empty());
@@ -1231,6 +1233,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   SimulateModelReadyToSyncWithoutLocalMetadata();
   SimulateOnSyncStarting();
+  SimulateConnectSync();
 
   const syncer::UniquePosition kRandomPosition =
       syncer::UniquePosition::InitialPosition(
@@ -1262,11 +1265,13 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // Ensures that OnInitialUpdateReceived will be called.
   ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
   ASSERT_TRUE(bookmark_bar->children().empty());
+  ASSERT_TRUE(processor()->IsConnectedForTest());
 
   ASSERT_FALSE(error_reported);
   processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
                                 /*gc_directive=*/absl::nullopt);
   EXPECT_TRUE(error_reported);
+  EXPECT_FALSE(processor()->IsConnectedForTest());
   // Tracker should remain null and bookmark model unchanged.
   EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
   EXPECT_TRUE(bookmark_bar->children().empty());
@@ -1281,6 +1286,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   SimulateModelReadyToSyncWithoutLocalMetadata();
   SimulateOnSyncStarting();
+  SimulateConnectSync();
 
   const syncer::UniquePosition kRandomPosition =
       syncer::UniquePosition::InitialPosition(
@@ -1308,11 +1314,13 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   // Ensures that OnInitialUpdateReceived will be called.
   ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_TRUE(processor()->IsConnectedForTest());
 
   processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
                                 /*gc_directive=*/absl::nullopt);
 
   ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_FALSE(processor()->IsConnectedForTest());
 
   // Metadata should contain the relevant field.
   sync_pb::BookmarkModelMetadata model_metadata;
@@ -1338,6 +1346,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   SimulateModelReadyToSyncWithoutLocalMetadata();
   SimulateOnSyncStarting();
+  SimulateConnectSync();
 
   const syncer::UniquePosition kRandomPosition =
       syncer::UniquePosition::InitialPosition(
@@ -1371,6 +1380,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
                                 /*gc_directive=*/absl::nullopt);
   ASSERT_TRUE(error_reported);
   ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_FALSE(processor()->IsConnectedForTest());
 
   sync_pb::BookmarkModelMetadata model_metadata;
   std::string metadata_str = processor()->EncodeSyncMetadata();
@@ -1463,7 +1473,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
                                 bookmark_model());
   SimulateOnSyncStarting();
   EXPECT_TRUE(error_reported);
-
   // Tracker would not be initialised.
   EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
 
@@ -1482,7 +1491,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
                                 bookmark_model());
   SimulateOnSyncStarting();
   EXPECT_TRUE(error_reported);
-
   // Tracker would not be initialised.
   EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
 
