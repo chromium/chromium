@@ -409,7 +409,7 @@ TEST_F(PermissionsManagerUnittest, GetSiteAccess_ActiveTab) {
 }
 
 TEST_F(PermissionsManagerUnittest, GetSiteAccess_NoHostPermissions) {
-  auto extension = AddExtensionWithHostPermission("", "Extension");
+  auto extension = AddExtensionWithHostPermission("Test", "Extension");
 
   const GURL url("https://example.com");
   {

@@ -8162,6 +8162,7 @@ test("unit_tests") {
       "../common/extensions/manifest_tests/extension_manifests_kiosk_unittest.cc",
       "../common/extensions/manifest_tests/extension_manifests_launch_unittest.cc",
       "../common/extensions/manifest_tests/extension_manifests_manifest_version_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_name_unittest.cc",
       "../common/extensions/manifest_tests/extension_manifests_offline_unittest.cc",
       "../common/extensions/manifest_tests/extension_manifests_old_unittest.cc",
       "../common/extensions/manifest_tests/extension_manifests_options_unittest.cc",

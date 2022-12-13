@@ -64,7 +64,8 @@ class ExtensionBuilder {
   // Initializes an ExtensionBuilder that can be used with various utility
   // methods to automatically construct a manifest. |name| will be the name of
   // the extension and used to generate a stable ID.
-  ExtensionBuilder(const std::string& name, Type type = Type::EXTENSION);
+  explicit ExtensionBuilder(const std::string& name,
+                            Type type = Type::EXTENSION);
 
   ExtensionBuilder(const ExtensionBuilder&) = delete;
   ExtensionBuilder& operator=(const ExtensionBuilder&) = delete;

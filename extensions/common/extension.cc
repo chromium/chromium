@@ -657,7 +657,7 @@ bool Extension::LoadRequiredFeatures(std::u16string* error) {
 bool Extension::LoadName(std::u16string* error) {
   const std::string* non_localized_name_ptr =
       manifest_->FindStringPath(keys::kName);
-  if (non_localized_name_ptr == nullptr) {
+  if (non_localized_name_ptr == nullptr || *non_localized_name_ptr == "") {
     *error = errors::kInvalidName16;
     return false;
   }

@@ -130,34 +130,6 @@ TEST(ExtensionTest, EnsureWhitespacesInExtensionNameAreCollapsed) {
   EXPECT_EQ(unsanitized_name, extension->non_localized_name());
 }
 
-// TODO(crbug.com/794252): Disallow empty extension names from being locally
-// loaded.
-TEST(ExtensionTest, EmptyName) {
-  DictionaryBuilder manifest1;
-  manifest1.Set("name", "")
-      .Set("manifest_version", 2)
-      .Set("description", "some description");
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder()
-          .SetManifest(manifest1.BuildDict())
-          .MergeManifest(DictionaryBuilder().Set("version", "0.1").BuildDict())
-          .Build();
-  ASSERT_TRUE(extension.get());
-  EXPECT_EQ("", extension->name());
-
-  DictionaryBuilder manifest2;
-  manifest2.Set("name", " ")
-      .Set("manifest_version", 2)
-      .Set("description", "some description");
-  extension =
-      ExtensionBuilder()
-          .SetManifest(manifest2.BuildDict())
-          .MergeManifest(DictionaryBuilder().Set("version", "0.1").BuildDict())
-          .Build();
-  ASSERT_TRUE(extension.get());
-  EXPECT_EQ("", extension->name());
-}
-
 TEST(ExtensionTest, RTLNameInLTRLocale) {
   // Test the case when a directional override is the first character.
   auto run_rtl_test = [](const wchar_t* name, const wchar_t* expected) {
