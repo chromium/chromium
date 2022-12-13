@@ -4,41 +4,62 @@
 
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 
-#include <string>
+#include <array>
+#include <cstdint>
+#include <functional>
+#include <initializer_list>
+#include <ostream>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/adapters.h"
+#include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
+#include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
+#include "base/functional/identity.h"
+#include "base/hash/hash.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "skia/ext/image_operations.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkColorType.h"
 #include "ui/base/layout.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
-#include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia_rep_default.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
 namespace {
+
+using ReadCompressedIconCallback =
+    base::OnceCallback<void(std::vector<uint8_t> data)>;
 
 // This utility struct is to carry error logs between threads via return values.
 // If we weren't generating multithreaded errors we would just append the errors
@@ -436,13 +457,6 @@ WebAppIconManager::IconFilesCheck CheckForEmptyOrMissingIconFilesBlocking(
   return result;
 }
 
-void WrapReadCompressedIconWithPurposeCallback(
-    WebAppIconManager::ReadCompressedIconWithPurposeCallback callback,
-    IconPurpose purpose,
-    std::vector<uint8_t> data) {
-  std::move(callback).Run(purpose, std::move(data));
-}
-
 gfx::ImageSkia ConvertUiScaleFactorsBitmapsToImageSkia(
     const std::map<SquareSizePx, SkBitmap>& icon_bitmaps,
     SquareSizeDip size_in_dip) {
@@ -480,13 +494,6 @@ void WrapReadIconCallback(WebAppIconManager::ReadIconCallback callback,
                           IconPurpose ignored,
                           SkBitmap bitmap) {
   std::move(callback).Run(std::move(bitmap));
-}
-
-void WrapReadCompressedIconCallback(
-    WebAppIconManager::ReadCompressedIconCallback callback,
-    IconPurpose ignored,
-    std::vector<uint8_t> data) {
-  std::move(callback).Run(std::move(data));
 }
 
 // A utility that manages writing icons to disk for a single app. Should only be
@@ -978,8 +985,7 @@ void WebAppIconManager::ReadSmallestCompressedIcon(
   DCHECK(best_icon.has_value());
   IconId icon_id(app_id, best_icon->purpose, best_icon->size_px);
   ReadCompressedIconCallback wrapped =
-      base::BindOnce(WrapReadCompressedIconWithPurposeCallback,
-                     std::move(callback), best_icon->purpose);
+      base::BindOnce(std::move(callback), best_icon->purpose);
 
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -996,16 +1002,6 @@ void WebAppIconManager::ReadSmallestIconAny(const AppId& app_id,
       base::BindOnce(WrapReadIconCallback, std::move(callback));
   ReadSmallestIcon(app_id, {IconPurpose::ANY}, min_icon_size,
                    std::move(wrapped));
-}
-
-void WebAppIconManager::ReadSmallestCompressedIconAny(
-    const AppId& app_id,
-    SquareSizePx min_icon_size,
-    ReadCompressedIconCallback callback) {
-  ReadCompressedIconWithPurposeCallback wrapped =
-      base::BindOnce(WrapReadCompressedIconCallback, std::move(callback));
-  ReadSmallestCompressedIcon(app_id, {IconPurpose::ANY}, min_icon_size,
-                             std::move(wrapped));
 }
 
 SkBitmap WebAppIconManager::GetFavicon(const AppId& app_id) const {

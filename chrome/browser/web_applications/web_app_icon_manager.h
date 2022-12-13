@@ -5,31 +5,39 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_ICON_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_ICON_MANAGER_H_
 
+#include <stddef.h>
+#include <stdint.h>
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/time/time.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 
 class Profile;
 
+namespace base {
+class SequencedTaskRunner;
+class Time;
+}  // namespace base
+
 namespace web_app {
 
 class FileUtilsWrapper;
+class WebAppRegistrar;
 
 using SquareSizeDip = int;
 
@@ -141,14 +149,6 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   void ReadSmallestIconAny(const AppId& app_id,
                            SquareSizePx min_icon_size,
                            ReadIconCallback callback);
-
-  using ReadCompressedIconCallback =
-      base::OnceCallback<void(std::vector<uint8_t> data)>;
-  // Convenience method for |ReadSmallestCompressedIcon| with IconPurpose::ANY
-  // only.
-  void ReadSmallestCompressedIconAny(const AppId& app_id,
-                                     SquareSizePx min_icon_size,
-                                     ReadCompressedIconCallback callback);
 
   // Returns a square icon of gfx::kFaviconSize px, or an empty bitmap if not
   // found.
