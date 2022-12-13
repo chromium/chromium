@@ -1576,6 +1576,8 @@ static_library("ui") {
       "webui/ntp/ntp_resource_cache.h",
       "webui/ntp/ntp_resource_cache_factory.cc",
       "webui/ntp/ntp_resource_cache_factory.h",
+      "webui/omnibox_popup/omnibox_popup_ui.cc",
+      "webui/omnibox_popup/omnibox_popup_ui.h",
       "webui/page_not_available_for_guest/page_not_available_for_guest_ui.cc",
       "webui/page_not_available_for_guest/page_not_available_for_guest_ui.h",
       "webui/password_manager/password_manager_ui.cc",

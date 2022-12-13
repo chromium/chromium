@@ -448,6 +448,11 @@ BASE_FEATURE(kUniformRowHeight,
              "OmniboxUniformRowHeight",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, shows the omnibox suggestions popup in WebUI.
+BASE_FEATURE(kWebUIOmniboxPopup,
+             "WebUIOmniboxPopup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, use Assistant for omnibox voice query recognition instead of
 // Android's built-in voice recognition service. Only works on Android.
 BASE_FEATURE(kOmniboxAssistantVoiceSearch,

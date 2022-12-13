@@ -152,6 +152,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_ui.h"
@@ -172,6 +173,7 @@
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "media/base/media_switches.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1123,6 +1125,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIWhatsNewHost &&
       base::FeatureList::IsEnabled(features::kChromeWhatsNewUI)) {
     return &NewWebUI<WhatsNewUI>;
+  }
+  if (url.host_piece() == chrome::kChromeUIOmniboxPopupHost &&
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
+    return &NewWebUI<OmniboxPopupUI>;
   }
   if (url.host_piece() == chrome::kChromeUIMediaRouterInternalsHost &&
       media_router::MediaRouterEnabled(profile)) {

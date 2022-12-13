@@ -40,6 +40,7 @@ group("resources") {
       "new_tab_page:resources",
       "new_tab_page_instant:resources",
       "new_tab_page_third_party:resources",
+      "omnibox_popup:resources",
       "password_manager:resources",
       "privacy_sandbox:resources",
       "profile_internals:resources",

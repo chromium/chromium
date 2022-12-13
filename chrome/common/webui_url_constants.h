@@ -144,6 +144,8 @@ extern const char kChromeUINewTabPageThirdPartyURL[];
 extern const char kChromeUINewTabURL[];
 extern const char kChromeUIOfflineInternalsHost[];
 extern const char kChromeUIOmniboxHost[];
+extern const char kChromeUIOmniboxPopupHost[];
+extern const char kChromeUIOmniboxPopupURL[];
 extern const char kChromeUIOmniboxURL[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kChromeUIAppDisabledURL[];

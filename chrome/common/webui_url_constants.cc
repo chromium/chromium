@@ -271,6 +271,8 @@ const char kChromeUIUserNotesSidePanelHost[] =
     "user-notes-side-panel.top-chrome";
 const char kChromeUIUserNotesSidePanelURL[] =
     "chrome://user-notes-side-panel.top-chrome/";
+const char kChromeUIOmniboxPopupHost[] = "omnibox-popup.top-chrome";
+const char kChromeUIOmniboxPopupURL[] = "chrome://omnibox-popup.top-chrome/";
 const char kChromeUIWebAppInternalsHost[] = "web-app-internals";
 const char kChromeUIWebUITestHost[] = "webui-test";
 #endif

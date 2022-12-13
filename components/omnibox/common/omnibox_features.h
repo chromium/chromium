@@ -103,6 +103,7 @@ BASE_DECLARE_FEATURE(kOmniboxRemoveSuggestionHeaderChevron);
 BASE_DECLARE_FEATURE(kOmniboxMostVisitedTilesAddRecycledViewPool);
 BASE_DECLARE_FEATURE(kOmniboxMostVisitedTilesFadingOnTablet);
 BASE_DECLARE_FEATURE(kUniformRowHeight);
+BASE_DECLARE_FEATURE(kWebUIOmniboxPopup);
 
 // Omnibox UI - these affect the UI or function of the location bar (not the
 // popup).
