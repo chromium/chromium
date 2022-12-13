@@ -47,6 +47,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
@@ -185,6 +186,7 @@ class PaymentHandlerCloseButton : public views::ImageButton {
       views::Button::PressedCallback pressed_callback)
       : views::ImageButton(pressed_callback) {
     ConfigureVectorImageButton(this);
+    views::InstallCircleHighlightPathGenerator(this);
     constexpr int kCloseButtonSize = 16;
     SetSize(gfx::Size(kCloseButtonSize, kCloseButtonSize));
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
