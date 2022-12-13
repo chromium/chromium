@@ -9440,4 +9440,68 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, FocusChangeInPrerenderedPage) {
   EXPECT_FALSE(delegate.is_updated_target_url());
 }
 
+// Tests that an unused RenderWidgetHost (that is owned by a RenderViewHostImpl)
+// created by a prerendering FrameTree points to the primary frame tree after
+// activation. Regression test for crbug.com/1324149.
+IN_PROC_BROWSER_TEST_F(
+    PrerenderBrowserTest,
+    UnusedRenderWidgetHostFrameTreePointerUpdatedOnActivation) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  EXPECT_TRUE(AddTestUtilJS(current_frame_host()));
+
+  // Start a prerender.
+  const GURL kPrerenderingUrl = GetUrl("/title2.html");
+  int host_id = AddPrerender(kPrerenderingUrl);
+
+  // Add a cross-origin iframe to the prerendering page.
+  const GURL kCrossOriginSubframeUrl = GetCrossSiteUrl("/title2.html");
+  RenderFrameHostImpl* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
+  EXPECT_TRUE(AddTestUtilJS(prerender_rfh));
+  EXPECT_TRUE(ExecJs(prerender_rfh, JsReplace("add_iframe_async($1)",
+                                              kCrossOriginSubframeUrl)));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(prerender_rfh->child_count(), 1u);
+  FrameTreeNode* iframe = prerender_rfh->child_at(0);
+  // The cross-origin navigation in the iframe will be throttled, but not before
+  // creating a out-of-process speculative RFH (which would also result in an
+  // RVH created for the subframe speculatively).
+  ASSERT_TRUE(iframe->render_manager()->speculative_frame_host());
+  RenderViewHostImpl* render_view_host =
+      iframe->render_manager()->speculative_frame_host()->render_view_host();
+
+  // Activate.
+  NavigatePrimaryPage(kPrerenderingUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
+  // Wait for iframe to finish navigating.
+  ASSERT_EQ("LOADED",
+            EvalJs(prerender_rfh, JsReplace("wait_iframe_async($1)",
+                                            kCrossOriginSubframeUrl)));
+  // This asserts that the current RenderViewHost was created before activation
+  // (to make sure we're testing the right thing).
+  EXPECT_EQ(render_view_host, iframe->current_frame_host()->render_view_host());
+
+  // The unused RenderWidgetHost should point to the primary FrameTree now.
+  RenderWidgetHostImpl* render_widget_host = render_view_host->GetWidget();
+  EXPECT_NE(render_widget_host,
+            iframe->current_frame_host()->GetRenderWidgetHost());
+  EXPECT_EQ(render_widget_host->frame_tree(),
+            current_frame_host()->frame_tree());
+
+  // Navigate the primary main frame to the same origin as |iframe|; this
+  // should reuse |render_view_host|, and as a result |render_widget_host| will
+  // be used. If the |render_widget_host| points to the wrong frame_tree, this
+  // will result in a segfault (reproducing crbug.com/1324149) when we try to
+  // focus the new page's view.
+  const GURL kCrossOriginUrl = GetCrossSiteUrl("/title1.html");
+  DisableProactiveBrowsingInstanceSwapFor(current_frame_host());
+  NavigatePrimaryPage(kCrossOriginUrl);
+  ASSERT_EQ(current_frame_host()->render_view_host(), render_view_host);
+  ASSERT_EQ(current_frame_host()->GetRenderWidgetHost(), render_widget_host);
+}
+
 }  // namespace content

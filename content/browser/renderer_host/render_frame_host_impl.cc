@@ -13989,8 +13989,8 @@ void RenderFrameHostImpl::SetFrameTree(FrameTree& frame_tree) {
   DCHECK_EQ(&frame_tree_node_->frame_tree(), &frame_tree);
   frame_tree_ = &frame_tree;
   render_view_host()->SetFrameTree(frame_tree);
-  if (GetRenderWidgetHost()) {
-    GetRenderWidgetHost()->SetFrameTree(frame_tree);
+  if (owned_render_widget_host_) {
+    owned_render_widget_host_->SetFrameTree(frame_tree);
   }
 }
 

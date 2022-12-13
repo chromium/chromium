@@ -570,6 +570,7 @@ void RenderViewHostImpl::SetFrameTree(FrameTree& frame_tree) {
   frame_tree_->UnregisterRenderViewHost(render_view_host_map_id_, this);
   frame_tree_ = &frame_tree;
   frame_tree_->RegisterRenderViewHost(render_view_host_map_id_, this);
+  render_widget_host_->SetFrameTree(frame_tree);
 }
 
 void RenderViewHostImpl::EnterBackForwardCache() {

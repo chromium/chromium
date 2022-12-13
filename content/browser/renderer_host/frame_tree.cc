@@ -51,12 +51,8 @@ using perfetto::protos::pbzero::ChromeTrackEvent;
 // proxy_hosts_ because of openers).
 std::set<SiteInstanceGroup*> CollectSiteInstanceGroups(FrameTree* tree) {
   std::set<SiteInstanceGroup*> groups;
-  for (FrameTreeNode* node : tree->Nodes()) {
-    // TODO(crbug.com/1324149): Remove diagnostic asserts below.
-    CHECK(node->current_frame_host());
-    CHECK(node->current_frame_host()->GetSiteInstance());
+  for (FrameTreeNode* node : tree->Nodes())
     groups.insert(node->current_frame_host()->GetSiteInstance()->group());
-  }
   return groups;
 }
 
