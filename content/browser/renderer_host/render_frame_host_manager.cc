@@ -4293,7 +4293,10 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
     NotifyPrepareForInnerDelegateAttachComplete(false /* success */);
     return;
   }
-  DCHECK(!current_frame_host()->is_loading());
+  // Reset the loading state. Even though there should be no navigations in the
+  // injected frame, it might not have received a DidStopLoading call.
+  // See also https://crbug.com/1400157.
+  current_frame_host()->ResetLoadingState();
 
   DCHECK(!current_frame_host()->is_main_frame());
   if (current_frame_host()->GetSiteInstance() ==
