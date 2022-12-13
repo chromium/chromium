@@ -14,7 +14,7 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import './icons.js';
 import './shared_styles.js';
 
-import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addWebUIListener, sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @enum {string} */ var AudioNodeType = {

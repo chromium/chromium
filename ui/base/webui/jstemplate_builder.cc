@@ -134,7 +134,7 @@ void AppendJsonJS(const base::Value::Dict& json,
     // Imported for the side effect of setting the |window.loadTimeData| global,
     // which is relied on by ChromeOS Ash Tast Tests and some browser tests.
     // See https://www.crbug.com/1395148.
-    output->append("import '//resources/js/load_time_data.m.js';\n");
+    output->append("import '//resources/ash/common/load_time_data.m.js';\n");
 #endif
   }
 

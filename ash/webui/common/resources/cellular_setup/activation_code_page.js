@@ -15,7 +15,7 @@ import './cellular_setup_icons.html.js';
 
 import {focusWithoutInk} from '//resources/ash/common/focus_without_ink_js.js';
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {afterNextRender, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './activation_code_page.html.js';

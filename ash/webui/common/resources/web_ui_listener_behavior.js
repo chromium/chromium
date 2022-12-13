@@ -9,7 +9,7 @@
  * it in new code.
  */
 
-import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/ash/common/cr.m.js';
 
 
 /** @polymerBehavior */

@@ -37,8 +37,8 @@ import './user/user_subpage_element.js';
 import './utils.js';
 import './wallpaper/index.js';
 
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {emptyState} from './personalization_state.js';
 import {PersonalizationStore} from './personalization_store.js';

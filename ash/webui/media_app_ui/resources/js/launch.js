@@ -6,7 +6,7 @@ import './strings.m.js';
 import './unguessable_token.mojom-lite.js';
 import './file_system_access_transfer_token.mojom-lite.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import * as error_reporter from './error_reporter.js';
 import {assertCast, MessagePipe} from './message_pipe.m.js';

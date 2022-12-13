@@ -18,8 +18,8 @@ import './network_logs_ui.js';
 import './network_metrics_ui.js';
 
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {CrosNetworkConfig, CrosNetworkConfigRemote, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

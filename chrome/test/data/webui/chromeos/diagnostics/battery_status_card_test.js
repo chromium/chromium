@@ -16,7 +16,7 @@ import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
 import {BatteryChargeStatus, BatteryHealth, BatteryInfo, ExternalPowerSource} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
 import {RoutineType} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 import {TextBadgeElement} from 'chrome://diagnostics/text_badge.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';

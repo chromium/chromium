@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {MultiDeviceFeature, MultiDevicePageContentData, MultiDeviceSettingsMode} from 'chrome://os-settings/chromeos/os_settings.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 

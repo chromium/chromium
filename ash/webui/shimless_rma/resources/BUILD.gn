@@ -210,9 +210,9 @@ js_library("fake_data") {
 js_library("fake_shimless_rma_service") {
   deps = [
     ":shimless_rma_types",
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:fake_method_resolver",
     "//ash/webui/common/resources:fake_observables",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -221,8 +221,8 @@ js_library("mojo_interface_provider") {
     ":fake_data",
     ":fake_shimless_rma_service",
     ":shimless_rma_types",
+    "//ash/webui/common/resources:cr.m",
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 

@@ -136,8 +136,8 @@ js_library("launch") {
     ":error_reporter",
     ":message_types",
     ":mojo_api_bootstrap",
+    "//ash/webui/common/resources:load_time_data.m",
     "//ash/webui/system_apps/public/js:message_pipe.m",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 

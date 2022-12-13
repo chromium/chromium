@@ -50,7 +50,7 @@ files_app_path = rebase_path("$root_gen_dir/ui/file_manager/tsc/file_manager",
 js_type_check("closure_compile") {
   deps = [
     ":main_js",
-    "//ui/webui/resources/js:load_time_data.m",
+    "//ash/webui/common/resources:load_time_data.m",
   ]
   closure_flags =
       default_closure_args + mojom_js_args + [
@@ -141,7 +141,7 @@ files_webui_bundle("build") {
   ]
 
   excludes = [
-    "chrome://resources/js/load_time_data.m.js",
+    "chrome://resources/ash/common/load_time_data.m.js",
     "chrome://resources/mojo/mojo/public/js/bindings.js",
   ]
 

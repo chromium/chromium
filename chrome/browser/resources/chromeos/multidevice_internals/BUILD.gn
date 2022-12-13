@@ -119,7 +119,7 @@ js_library("camera_roll_manager_form") {
 }
 
 js_library("i18n_setup") {
-  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
+  deps = [ "//ash/webui/common/resources:load_time_data.m" ]
 }
 
 js_library("multidevice_phonehub_browser_proxy") {
@@ -135,9 +135,9 @@ js_library("logging_tab") {
     ":log_object",
     ":multidevice_logs_browser_proxy",
     ":types",
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:web_ui_listener_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -154,16 +154,16 @@ js_library("multidevice_internals") {
     ":log_object",
     ":logging_tab",
     ":phonehub_tab",
+    "//ash/webui/common/resources:cr.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
 js_library("multidevice_logs_browser_proxy") {
   deps = [
     ":types",
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:cr_deprecated",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -196,8 +196,8 @@ js_library("phonehub_tab") {
     ":phone_status_model_form",
     ":quick_action_controller_form",
     ":types",
+    "//ash/webui/common/resources:load_time_data.m",
     "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 

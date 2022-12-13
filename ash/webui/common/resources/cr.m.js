@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 // This file is a wrapper around cr.ts as a workaround for the closure compiler.
-// Do not use in TypeScript code, use cr.ts directly.
+// Do not use in TypeScript code, use ui/webui/resources/js/cr.ts directly.
 
-import {addWebUiListener as crAddWebUiListener, removeWebUiListener as crRemoveWebUiListener, sendWithPromise as crSendWithPromise, webUIListenerCallback as crWebUIListenerCallback, webUIResponse as crWebUIResponse} from './cr.js';
+import {addWebUiListener as crAddWebUiListener, removeWebUiListener as crRemoveWebUiListener, sendWithPromise as crSendWithPromise, webUIListenerCallback as crWebUIListenerCallback, webUIResponse as crWebUIResponse} from '//resources/js/cr.js';
 
 /** @typedef {{eventName: string, uid: number}} */
 export let WebUIListener;

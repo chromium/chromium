@@ -9,7 +9,7 @@ import {convertKibToGibDecimalString, getNetworkCardTitle, getRoutineGroups, get
 import {NetworkType} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {RoutineType} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 

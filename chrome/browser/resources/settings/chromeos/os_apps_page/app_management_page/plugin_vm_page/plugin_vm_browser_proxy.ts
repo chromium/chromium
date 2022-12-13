@@ -7,7 +7,7 @@
  * to manage the Plugin VM.
  */
 
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
 
 export interface PluginVmBrowserProxy {
   isRelaunchNeededForNewPermissions(): Promise<boolean>;

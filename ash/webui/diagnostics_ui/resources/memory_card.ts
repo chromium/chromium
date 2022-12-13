@@ -12,8 +12,8 @@ import './percent_bar_chart.js';
 import './routine_section.js';
 import './strings.m.js';
 
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {convertKibToGibDecimalString, convertKibToMib} from './diagnostics_utils.js';

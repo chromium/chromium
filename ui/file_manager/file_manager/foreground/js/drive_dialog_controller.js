@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';

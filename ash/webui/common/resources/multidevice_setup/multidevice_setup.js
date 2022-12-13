@@ -8,7 +8,7 @@ import './multidevice_setup_shared.css.js';
 import './password_page.js';
 import './setup_succeeded_page.js';
 import './start_setup_page.js';
-import '//resources/js/cr.m.js';
+import '//resources/ash/common/cr.m.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import {WebUIListenerBehavior} from '//resources/ash/common/web_ui_listener_behavior.js';

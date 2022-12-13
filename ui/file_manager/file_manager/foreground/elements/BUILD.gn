@@ -111,8 +111,8 @@ js_unittest("files_password_dialog_unittest") {
 
 js_library("files_password_dialog") {
   deps = [
+    "//ash/webui/common/resources:load_time_data.m",
     "//ui/file_manager/file_manager/common/js:async_util",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
@@ -178,11 +178,11 @@ js_unittest("files_toast_unittest") {
 js_unittest("files_xf_elements_unittest") {
   deps = [
     ":xf_display_panel",
+    "//ash/webui/common/resources:load_time_data.m",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 
   externs_list = [ "$externs_path/file_manager_private.js" ]

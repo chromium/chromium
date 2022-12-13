@@ -15,7 +15,7 @@ import 'chrome://crostini-installer/strings.m.js';
 
 import {BrowserProxy} from 'chrome://crostini-installer/browser_proxy.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';

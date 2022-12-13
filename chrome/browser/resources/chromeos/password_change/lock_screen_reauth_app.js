@@ -8,7 +8,7 @@
  */
 
 import {$} from 'chrome://resources/ash/common/util.js';
-export {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+export {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import './strings.m.js';
 import './lock_screen_reauth.js';

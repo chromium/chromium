@@ -14,8 +14,8 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '../../css/common.css.js';
 import '../../css/cros_button_style.css.js';
 
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 

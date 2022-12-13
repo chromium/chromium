@@ -139,20 +139,6 @@ group("closure_compile") {
 
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
-if (is_chromeos_ash) {
-  checked_in_dts_files = [
-    "js/cr.m.d.ts",
-    "js/load_time_data.m.d.ts",
-  ]
-
-  # Copies checked-in .d.ts files to the preprocess folder so that they are
-  # discovered by TSC the same way generated .d.ts files are.
-  copy("copy_checked_in_dts_files") {
-    sources = checked_in_dts_files
-    outputs = [ "$preprocessed_folder/{{source_target_relative}}" ]
-  }
-}
-
 # Files for which .d.ts files will be auto-generated with ts_definitions().
 if (is_chromeos_ash || is_ios) {
   generate_definitions_js_files = []
@@ -220,13 +206,6 @@ ts_library("library") {
     "//tools/typescript/definitions/settings_private.d.ts",
   ]
 
-  # Checked-in .d.ts files.
-  if (is_chromeos_ash) {
-    foreach(_file, checked_in_dts_files) {
-      definitions += [ "$root_dir/$_file" ]
-    }
-  }
-
   # Auto-generated .d.ts files.
   if (is_chromeos_ash || is_ios) {
     foreach(_file, generate_definitions_js_files) {
@@ -242,9 +221,6 @@ ts_library("library") {
 
   if (is_chromeos_ash || is_ios) {
     extra_deps += [ ":generate_definitions" ]
-  }
-  if (is_chromeos_ash) {
-    extra_deps += [ ":copy_checked_in_dts_files" ]
   }
 }
 
@@ -265,10 +241,5 @@ if (is_chromeos_ash || is_ios) {
       ":preprocess",
       "mojo:library",
     ]
-    if (is_chromeos_ash) {
-      # Copy checked-in d.ts files first, so that |generate_definitions|
-      # leverages these files, instead of accidentally auto-generating them.
-      extra_deps += [ ":copy_checked_in_dts_files" ]
-    }
   }
 }

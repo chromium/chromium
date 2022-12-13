@@ -7,7 +7,7 @@ import './strings.m.js';
 import './account_manager_shared.css.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';

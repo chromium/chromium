@@ -74,9 +74,9 @@ js_library("parent_access_ui") {
   deps = [
     ":parent_access_controller",
     ":parent_access_ui_handler",
+    "//ash/webui/common/resources:load_time_data.m",
     "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",

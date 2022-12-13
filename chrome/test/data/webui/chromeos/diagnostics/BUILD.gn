@@ -59,13 +59,13 @@ js_library("battery_status_card_test") {
   deps = [
     "..:chai_assert",
     "..:test_util",
+    "//ash/webui/common/resources:load_time_data.m",
     "//ash/webui/diagnostics_ui/mojom:mojom_webui_js",
     "//ash/webui/diagnostics_ui/resources:battery_status_card",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_data",
     "//ash/webui/diagnostics_ui/resources:routine_group",
     "//ash/webui/diagnostics_ui/resources:routine_section",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -97,11 +97,11 @@ js_library("cpu_card_test") {
   deps = [
     "..:chai_assert",
     "..:test_util",
+    "//ash/webui/common/resources:load_time_data.m",
     "//ash/webui/diagnostics_ui/mojom:mojom_webui_js",
     "//ash/webui/diagnostics_ui/resources:cpu_card",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:routine_section",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

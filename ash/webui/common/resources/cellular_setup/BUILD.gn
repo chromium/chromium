@@ -95,8 +95,8 @@ js_library("profile_discovery_list_page") {
 
 js_library("mojo_interface_provider") {
   deps = [
+    "//ash/webui/common/resources:cr.m",
     "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 

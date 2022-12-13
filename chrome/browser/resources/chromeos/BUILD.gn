@@ -109,16 +109,16 @@ js_type_check("closure_compile_local") {
 
 js_library("power") {
   deps = [
+    "//ash/webui/common/resources:cr.m",
+    "//ash/webui/common/resources:load_time_data.m",
     "//ash/webui/common/resources:util",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
 js_library("slow") {
   deps = [
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:util",
-    "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }

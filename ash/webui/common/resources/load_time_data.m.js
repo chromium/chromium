@@ -8,7 +8,7 @@
  * 'chrome://resources/js/load_time_data.js'.
  */
 
-import {loadTimeData as crLoadTimeData} from './load_time_data.js';
+import {loadTimeData as crLoadTimeData} from '//resources/js/load_time_data.js';
 
 /** @type {!LoadTimeData} */
 // eslint-disable-next-line no-var

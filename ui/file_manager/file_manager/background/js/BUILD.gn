@@ -125,11 +125,11 @@ js_library("file_manager_base") {
 
 js_library("crostini") {
   deps = [
+    "//ash/webui/common/resources:load_time_data.m",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:crostini",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
@@ -144,13 +144,13 @@ js_library("mock_crostini") {
 js_unittest("crostini_unittest") {
   deps = [
     ":mock_crostini",
+    "//ash/webui/common/resources:load_time_data.m",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:crostini",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
@@ -185,12 +185,12 @@ js_unittest("drive_sync_handler_unittest") {
   deps = [
     ":drive_sync_handler",
     ":mock_progress_center",
+    "//ash/webui/common/resources:load_time_data.m",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:url_constants",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
@@ -250,13 +250,13 @@ js_unittest("file_operation_manager_unittest") {
     ":file_operation_manager",
     ":file_operation_util",
     ":volume_manager_factory",
+    "//ash/webui/common/resources:load_time_data.m",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
@@ -406,12 +406,12 @@ js_unittest("volume_manager_unittest") {
     ":volume_manager_factory",
     ":volume_manager_impl",
     ":volume_manager_util",
+    "//ash/webui/common/resources:load_time_data.m",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 

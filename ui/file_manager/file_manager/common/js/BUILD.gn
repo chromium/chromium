@@ -217,10 +217,10 @@ js_library("filtered_volume_manager") {
 js_unittest("filtered_volume_manager_unittest") {
   deps = [
     ":filtered_volume_manager",
+    "//ash/webui/common/resources:load_time_data.m",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
@@ -279,8 +279,8 @@ js_unittest("recent_date_bucket_unittest") {
   deps = [
     ":mock_chrome",
     ":recent_date_bucket",
+    "//ash/webui/common/resources:load_time_data.m",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
@@ -308,6 +308,7 @@ js_library("url_constants") {
 js_library("util") {
   deps = [
     ":files_app_entry_types",
+    "//ash/webui/common/resources:load_time_data.m",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:ui",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
@@ -317,7 +318,6 @@ js_library("util") {
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 
   externs_list = [

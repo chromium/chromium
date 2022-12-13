@@ -6,7 +6,7 @@ import './webui_command_extender.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {DialogType, isModal} from '../../common/js/dialog_type.js';

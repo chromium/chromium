@@ -72,9 +72,9 @@ js_type_check("closure_compile") {
 
 js_library("bluetooth_pairing_dialog") {
   deps = [
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/bluetooth:bluetooth_pairing_ui",
-    "//ui/webui/resources/js:cr.m",
   ]
   externs_list = chrome_extension_public_externs + [
                    "$externs_path/bluetooth.js",

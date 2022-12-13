@@ -26,7 +26,7 @@ import './common_styles/oobe_common_styles.m.js';
 import './common_styles/oobe_dialog_host_styles.m.js';
 import './dialogs/oobe_content_dialog.js';
 
-import {sendWithPromise} from '//resources/js/cr.m.js';
+import {sendWithPromise} from '//resources/ash/common/cr.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Authenticator, AuthFlow} from '../../../gaia_auth_host/authenticator.js';

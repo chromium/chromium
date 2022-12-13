@@ -9,7 +9,7 @@ import './test_util_swa.js';
 import {background} from 'chrome://file-manager/background/js/file_manager_base.js';
 import {VolumeManagerImpl} from 'chrome://file-manager/background/js/volume_manager_impl.js';
 import {GlitchType, reportGlitch} from 'chrome://file-manager/common/js/glitch.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {ScriptLoader} from './script_loader.js';
 

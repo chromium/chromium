@@ -81,16 +81,16 @@ js_library("fake_data") {
 js_library("fake_update_controller") {
   deps = [
     ":firmware_update_types",
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:fake_observables",
     "//ash/webui/common/resources:promise_resolver",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
 js_library("fake_update_provider") {
   deps = [
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:fake_observables",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -134,7 +134,7 @@ js_library("mojo_interface_provider") {
     ":fake_update_controller",
     ":fake_update_provider",
     ":firmware_update_types",
-    "//ui/webui/resources/js:cr.m",
+    "//ash/webui/common/resources:cr.m",
   ]
 }
 

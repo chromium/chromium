@@ -15,13 +15,13 @@ js_library("trusted_annotator_library") {
     "trusted_annotator_comm_factory.js",
   ]
   deps = [
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:cr_deprecated",
     "//ash/webui/common/resources:web_ui_listener_behavior",
     "//ash/webui/common/resources/post_message_api:post_message_api_client",
     "//ash/webui/common/resources/post_message_api:post_message_api_request_handler",
     "//ash/webui/projector_app/resources/common:message_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [
     "$externs_path/chrome_send.js",

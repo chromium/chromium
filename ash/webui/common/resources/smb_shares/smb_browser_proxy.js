@@ -7,8 +7,8 @@
  * interact with the browser. Used only on Chrome OS.
  */
 
+import {sendWithPromise} from '//resources/ash/common/cr.m.js';
 import {addSingletonGetter} from '//resources/ash/common/cr_deprecated.js';
-import {sendWithPromise} from '//resources/js/cr.m.js';
 
 /**
  *  @enum {number}

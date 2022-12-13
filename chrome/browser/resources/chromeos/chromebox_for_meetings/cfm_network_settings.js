@@ -4,7 +4,7 @@
 
 import 'chrome://resources/ash/common/network/network_select.js';
 import 'chrome://resources/ash/common/network/network_list.js';
-import 'chrome://resources/js/load_time_data.m.js';
+import 'chrome://resources/ash/common/load_time_data.m.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import './strings.m.js';
 

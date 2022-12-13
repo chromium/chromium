@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AsyncQueue} from '../../common/js/async_util.js';

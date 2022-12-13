@@ -169,7 +169,7 @@ js_library("choobe") {
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
-    "//ui/webui/resources/js:cr.m",
+    "//ash/webui/common/resources:cr.m",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -261,8 +261,8 @@ js_library("fingerprint_setup") {
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
+    "//ash/webui/common/resources:load_time_data.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "//ui/webui/resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc_externs.js" ]
 
@@ -280,7 +280,7 @@ js_library("gesture_navigation") {
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
-    "//ui/webui/resources/js:cr.m",
+    "//ash/webui/common/resources:cr.m",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -298,8 +298,8 @@ js_library("gaia_signin") {
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
+    "//ash/webui/common/resources:cr.m",
+    "//ash/webui/common/resources:load_time_data.m",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -420,7 +420,7 @@ js_library("offline_ad_login") {
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
-    "//ui/webui/resources/js:load_time_data.m",
+    "//ash/webui/common/resources:load_time_data.m",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
@@ -531,9 +531,9 @@ js_library("pin_setup") {
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources/quick_unlock:lock_screen_constants",
     "//ash/webui/common/resources/quick_unlock:setup_pin_keyboard",
-    "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -550,8 +550,8 @@ js_library("recommend_apps") {
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_loading_dialog",
+    "//ash/webui/common/resources:load_time_data.m",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/webview_tag.js" ]
   extra_deps = [ ":web_components" ]
@@ -594,7 +594,7 @@ js_library("smart_privacy_protection") {
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
-    "//ui/webui/resources/js:load_time_data.m",
+    "//ash/webui/common/resources:load_time_data.m",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -623,7 +623,7 @@ js_library("theme_selection") {
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
-    "//ui/webui/resources/js:load_time_data.m",
+    "//ash/webui/common/resources:load_time_data.m",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -647,8 +647,8 @@ js_library("user_creation") {
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior",
+    "//ash/webui/common/resources:cr.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js",

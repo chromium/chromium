@@ -29,7 +29,7 @@ for excluded_file in [
     'resources/mojo/mojo/public/mojom/base/time.mojom-lite.js',
     'resources/polymer/v3_0/polymer/polymer_bundled.min.js',
     'resources/js/load_time_data.js',
-    'resources/js/load_time_data.m.js',
+    'resources/ash/common/load_time_data.m.js',
 ]:
   # Exclude both the chrome://resources form and the scheme-relative form for
   # files used in Polymer 3.

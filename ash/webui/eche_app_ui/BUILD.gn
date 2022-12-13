@@ -189,9 +189,9 @@ js_type_check("closure_compile") {
 
 js_library("app") {
   deps = [
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/eche_app_ui/mojom:mojom_js_library_for_compile",
     "//ash/webui/system_apps/public/js:message_pipe",
-    "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [ "$externs_path/metrics_private.js" ]
   sources = [

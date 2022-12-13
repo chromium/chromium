@@ -7,7 +7,7 @@ import '../strings.m.js';
 
 import {getImage} from '//resources/js/icon.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {Account, ArcAccountPickerBrowserProxy, ArcAccountPickerBrowserProxyImpl} from './arc_account_picker_browser_proxy.js';
 

@@ -24,8 +24,8 @@ js_library("add_supervision_api_server") {
 js_library("add_supervision_ui") {
   deps = [
     ":add_supervision_api_server",
+    "//ash/webui/common/resources:load_time_data.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",

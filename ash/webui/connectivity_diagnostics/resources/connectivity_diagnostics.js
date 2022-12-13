@@ -7,9 +7,9 @@ import 'chrome://resources/ash/common/network_health/network_health_summary.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './strings.m.js';
 
+import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
 import {CrContainerShadowBehavior} from 'chrome://resources/ash/common/cr_container_shadow_behavior.js';
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**

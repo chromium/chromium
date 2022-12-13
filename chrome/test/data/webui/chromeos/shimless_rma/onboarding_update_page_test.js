@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingUpdatePageElement} from 'chrome://shimless-rma/onboarding_update_page.js';

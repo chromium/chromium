@@ -4,7 +4,7 @@
 
 import './multidevice_setup_shared.css.js';
 import './ui_page.js';
-import '//resources/js/cr.m.js';
+import '//resources/ash/common/cr.m.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

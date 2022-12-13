@@ -265,6 +265,7 @@ _BANNED_JAVASCRIPT_FUNCTIONS : Sequence [BanRule] = (
           r'^(?!ash\/webui).+',
           # TODO(crbug.com/1385601): pre-existing violations still need to be
           # cleaned up.
+          'ash/webui/common/resources/cr.m.js',
           'ash/webui/common/resources/multidevice_setup/multidevice_setup_browser_proxy.js',
           'ash/webui/common/resources/quick_unlock/lock_screen_constants.js',
           'ash/webui/common/resources/smb_shares/smb_browser_proxy.js',

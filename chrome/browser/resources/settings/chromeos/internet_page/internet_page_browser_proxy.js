@@ -4,7 +4,7 @@
 
 /** @fileoverview A helper object used for Internet page. */
 
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUIListener} from 'chrome://resources/ash/common/cr.m.js';
 
 /** @interface */
 export class InternetPageBrowserProxy {

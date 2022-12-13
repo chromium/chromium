@@ -33,8 +33,8 @@ js_library("button_bar") {
 
 js_library("fake_mojo_service") {
   deps = [
+    "//ash/webui/common/resources:cr.m",
     "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -54,20 +54,20 @@ js_library("multidevice_setup") {
     ":password_page",
     ":setup_succeeded_page",
     ":start_setup_page",
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:cr_deprecated",
     "//ash/webui/common/resources:web_ui_listener_behavior",
     "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
 js_library("multidevice_setup_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [ "//ash/webui/common/resources:cr.m" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
 js_library("multidevice_setup_delegate") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [ "//ash/webui/common/resources:cr.m" ]
 }
 
 js_library("password_page") {
@@ -99,8 +99,8 @@ js_library("start_setup_page") {
 
 js_library("ui_page_container_behavior") {
   deps = [
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:i18n_behavior",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 

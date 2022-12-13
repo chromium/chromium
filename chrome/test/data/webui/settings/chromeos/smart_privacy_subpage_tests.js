@@ -5,7 +5,7 @@
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
 import {CrSettingsPrefs, Router} from 'chrome://os-settings/chromeos/os_settings.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

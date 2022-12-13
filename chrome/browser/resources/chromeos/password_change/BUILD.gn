@@ -97,9 +97,9 @@ js_library("password_change") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/password_change/password_change.js" ]
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources:load_time_data.m",
     "//chrome/browser/resources/gaia_auth_host:password_change_authenticator",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/webview_tag.js" ]
 
@@ -109,9 +109,9 @@ js_library("password_change") {
 js_library("lock_screen_network") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources:load_time_data.m",
     "//ash/webui/common/resources/network:network_select",
     "//ash/webui/common/resources/network:onc_mojo",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [
     "$externs_path/chrome_send.js",

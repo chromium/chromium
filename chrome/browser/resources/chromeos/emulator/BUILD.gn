@@ -18,8 +18,8 @@ js_type_check("closure_compile") {
 
 js_library("audio_settings") {
   deps = [
+    "//ash/webui/common/resources:cr.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }

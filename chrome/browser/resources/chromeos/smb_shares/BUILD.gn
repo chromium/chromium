@@ -23,12 +23,12 @@ js_library("smb_share_dialog") {
 
 js_library("smb_credentials_dialog") {
   deps = [
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources:load_time_data.m",
     "//ash/webui/common/resources/smb_shares:smb_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",

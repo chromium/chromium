@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './strings.m.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {PageName} from 'chrome://resources/ash/common/multidevice_setup/multidevice_setup.js';
 import {MultiDeviceSetupDelegate} from 'chrome://resources/ash/common/multidevice_setup/multidevice_setup_delegate.js';
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';

@@ -84,11 +84,7 @@ preprocess_if_expr("preprocess_src") {
 
   if (is_chromeos_ash) {
     # Used by ChromeOS UIs.
-    in_files += [
-      "assert.js",
-      "cr.m.js",
-      "load_time_data.m.js",
-    ]
+    in_files += [ "assert.js" ]
   }
 
   if (is_chromeos_ash || is_ios) {
@@ -132,19 +128,9 @@ if (is_chromeos_ash) {
 if (is_chromeos_ash) {
   js_type_check("closure_compile_modules") {
     is_polymer3 = true
-    deps = [
-      ":assert",
-      ":cr.m",
-      ":load_time_data.m",
-    ]
+    deps = [ ":assert" ]
   }
 
   js_library("assert") {
-  }
-
-  js_library("cr.m") {
-  }
-
-  js_library("load_time_data.m") {
   }
 }

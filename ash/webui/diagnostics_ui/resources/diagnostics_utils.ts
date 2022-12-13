@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {NavigationView, RoutineProperties} from './diagnostics_types.js';
 import {LockType, Network, NetworkState, NetworkType} from './network_health_provider.mojom-webui.js';

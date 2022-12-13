@@ -17,8 +17,8 @@ import './network_shared.css.js';
 import './sim_lock_dialogs.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
+import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {isActiveSim} from '//resources/ash/common/network/cellular_utils.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {GlobalPolicy} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 

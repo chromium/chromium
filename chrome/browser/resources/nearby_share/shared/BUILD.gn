@@ -114,8 +114,8 @@ js_type_check("closure_compile_module") {
 
 js_library("nearby_contact_manager") {
   deps = [
+    "//ash/webui/common/resources:cr.m",
     "//chrome/browser/ui/webui/nearby_share/public/mojom:mojom_js_library_for_compile",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -123,11 +123,11 @@ js_library("nearby_contact_visibility") {
   deps = [
     ":nearby_contact_manager",
     ":nearby_share_settings_behavior",
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources:load_time_data.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "//ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button_externs.js" ]
 }
@@ -193,14 +193,14 @@ js_library("nearby_progress") {
 js_library("nearby_share_settings_behavior") {
   deps = [
     ":nearby_share_settings",
-    "//ui/webui/resources/js:cr.m",
+    "//ash/webui/common/resources:cr.m",
   ]
 }
 
 js_library("nearby_share_settings") {
   deps = [
+    "//ash/webui/common/resources:cr.m",
     "//chrome/browser/ui/webui/nearby_share/public/mojom:mojom_js_library_for_compile",
-    "//ui/webui/resources/js:cr.m",
     "//url/mojom:url_mojom_gurl_js_library_for_compile",
   ]
 }
@@ -211,8 +211,8 @@ js_library("nearby_visibility_page") {
     ":nearby_page_template",
     ":nearby_share_settings_behavior",
     "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources:load_time_data.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 

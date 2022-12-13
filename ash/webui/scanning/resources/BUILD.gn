@@ -185,8 +185,8 @@ js_library("source_select") {
 
 js_library("scanning_browser_proxy") {
   deps = [
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:cr_deprecated",
-    "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
@@ -194,8 +194,8 @@ js_library("scanning_browser_proxy") {
 js_library("mojo_interface_provider") {
   deps = [
     "//ash/webui/common/mojom:mojom_js_library_for_compile",
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 

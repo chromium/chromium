@@ -12,8 +12,8 @@ js_type_check("closure_compile") {
 js_library("test_api.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/test_api/test_api.m.js" ]
   deps = [
+    "//ash/webui/common/resources:load_time_data.m",
     "//ash/webui/common/resources:util",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
   extra_deps = [ ":modulize" ]

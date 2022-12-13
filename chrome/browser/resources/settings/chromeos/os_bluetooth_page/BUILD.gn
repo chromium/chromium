@@ -60,7 +60,7 @@ js_library("os_bluetooth_devices_subpage") {
 }
 
 js_library("os_bluetooth_devices_subpage_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [ "//ash/webui/common/resources:cr.m" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 

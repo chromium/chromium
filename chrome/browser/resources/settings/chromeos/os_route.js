@@ -4,7 +4,7 @@
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import * as routesMojomWebui from '../mojom-webui/routes.mojom-webui.js';
 import {Route, Router} from './router.js';

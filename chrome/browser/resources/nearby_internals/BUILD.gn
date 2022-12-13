@@ -143,8 +143,8 @@ js_library("log_object") {
 js_library("nearby_logs_browser_proxy") {
   deps = [
     ":types",
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:cr_deprecated",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -158,8 +158,8 @@ js_library("nearby_prefs_browser_proxy") {
 js_library("nearby_http_browser_proxy") {
   deps = [
     ":types",
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:cr_deprecated",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -168,8 +168,8 @@ js_library("http_tab") {
     ":http_message_object",
     ":nearby_http_browser_proxy",
     ":types",
+    "//ash/webui/common/resources:cr.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -183,8 +183,8 @@ js_library("http_message_object") {
 js_library("nearby_ui_trigger_browser_proxy") {
   deps = [
     ":types",
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:cr_deprecated",
-    "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
@@ -194,8 +194,8 @@ js_library("ui_trigger_tab") {
     ":nearby_ui_trigger_browser_proxy",
     ":types",
     ":ui_trigger_list_object",
+    "//ash/webui/common/resources:cr.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -217,8 +217,8 @@ js_library("contact_tab") {
     ":contact_object",
     ":nearby_contact_browser_proxy",
     ":types",
+    "//ash/webui/common/resources:cr.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -232,8 +232,8 @@ js_library("contact_object") {
 js_library("nearby_contact_browser_proxy") {
   deps = [
     ":types",
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:cr_deprecated",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 

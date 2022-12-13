@@ -371,16 +371,16 @@ js_type_check("closure_compile_local") {
 # Closure compiler libraries below
 
 js_library("i18n_setup") {
-  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
+  deps = [ "//ash/webui/common/resources:load_time_data.m" ]
 }
 
 js_library("cr_ui") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/cr_ui.js" ]
   deps = [
     ":display_manager",
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:cr_deprecated",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
+    "//ash/webui/common/resources:load_time_data.m",
   ]
   extra_deps = [ ":copy_js" ]
 }

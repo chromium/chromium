@@ -12,7 +12,7 @@
  * code.
  */
 
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 
 import {parseHtmlSubset, sanitizeInnerHtml, SanitizeInnerHtmlOpts} from './parse_html_subset.js';
 

@@ -344,8 +344,8 @@ js_type_check("closure_compile_local_module") {
 
 js_library("router") {
   deps = [
+    "//ash/webui/common/resources:load_time_data.m",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/metrics_private.js" ]
 }
@@ -359,18 +359,18 @@ js_library("lazy_load") {
 js_library("deep_linking_behavior") {
   deps = [
     ":router",
+    "//ash/webui/common/resources:load_time_data.m",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_webui_js",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
 js_library("find_shortcut_behavior") {
   deps = [
+    "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:keyboard_shortcut_list_js",
     "//ash/webui/common/resources:util",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -390,23 +390,23 @@ js_library("metrics_recorder") {
 }
 
 js_library("os_page_visibility") {
-  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
+  deps = [ "//ash/webui/common/resources:load_time_data.m" ]
 }
 
 js_library("os_route") {
   deps = [
     ":os_settings_routes",
     ":router",
+    "//ash/webui/common/resources:cr.m",
+    "//ash/webui/common/resources:load_time_data.m",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_webui_js",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
 js_library("os_settings_routes") {
   deps = [
     ":router",
-    "//ui/webui/resources/js:load_time_data.m",
+    "//ash/webui/common/resources:load_time_data.m",
   ]
 }
 
@@ -425,7 +425,7 @@ js_library("route_observer_behavior") {
 js_library("route_origin_behavior") {
   deps = [
     ":os_route",
-    "//ui/webui/resources/js:cr.m",
+    "//ash/webui/common/resources:cr.m",
   ]
 }
 
