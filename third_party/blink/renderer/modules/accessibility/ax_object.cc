@@ -2924,6 +2924,8 @@ bool AXObject::IsInert() const {
 
 bool AXObject::ComputeIsInertViaStyle(const ComputedStyle* style,
                                       IgnoredReasons* ignored_reasons) const {
+  // TODO(szager): This method is n^2 -- it recurses into itself via
+  // ComputeIsInert(), and InertRoot() does as well.
   if (style) {
     if (style->IsInert()) {
       if (ignored_reasons) {
@@ -2959,6 +2961,8 @@ bool AXObject::ComputeIsInertViaStyle(const ComputedStyle* style,
       }
       return true;
     } else if (IsBlockedByAriaModalDialog(ignored_reasons)) {
+      if (ignored_reasons)
+        ignored_reasons->push_back(IgnoredReason(kAXAriaModalDialog));
       return true;
     } else if (const LocalFrame* frame = GetNode()->GetDocument().GetFrame()) {
       // Inert frames don't expose the inertness to the style of their contents,
@@ -2969,16 +2973,44 @@ bool AXObject::ComputeIsInertViaStyle(const ComputedStyle* style,
         return true;
       }
     }
-  } else {
-    // Either GetNode() is null, or it's locked by content-visibility, or we
-    // failed to obtain a ComputedStyle. Make a guess iterating the ancestors.
-    AXObject* parent = ParentObject();
-    if (parent && parent->IsInert()) {
-      if (ignored_reasons)
-        parent->ComputeIsInert(ignored_reasons);
-      return true;
+    return false;
+  }
+
+  // Either GetNode() is null, or it's locked by content-visibility, or we
+  // failed to obtain a ComputedStyle. Make a guess iterating the ancestors.
+  if (const AXObject* ax_inert_root = InertRoot()) {
+    if (ignored_reasons) {
+      if (ax_inert_root == this) {
+        ignored_reasons->push_back(IgnoredReason(kAXInertElement));
+      } else {
+        ignored_reasons->push_back(
+            IgnoredReason(kAXInertSubtree, ax_inert_root));
+      }
+    }
+    return true;
+  } else if (IsBlockedByAriaModalDialog(ignored_reasons)) {
+    if (ignored_reasons)
+      ignored_reasons->push_back(IgnoredReason(kAXAriaModalDialog));
+    return true;
+  } else if (GetNode()) {
+    if (const LocalFrame* frame = GetNode()->GetDocument().GetFrame()) {
+      // Inert frames don't expose the inertness to the style of their contents,
+      // but accessibility should consider them inert anyways.
+      if (frame->IsInert()) {
+        if (ignored_reasons)
+          ignored_reasons->push_back(IgnoredReason(kAXInertSubtree));
+        return true;
+      }
     }
   }
+
+  AXObject* parent = ParentObject();
+  if (parent && parent->IsInert()) {
+    if (ignored_reasons)
+      parent->ComputeIsInert(ignored_reasons);
+    return true;
+  }
+
   return false;
 }
 
@@ -3079,6 +3111,8 @@ const AXObject* AXObject::InertRoot() const {
   DCHECK(object);
 
   Node* node = object->GetNode();
+  if (!node)
+    return nullptr;
   auto* element = DynamicTo<Element>(node);
   if (!element)
     element = FlatTreeTraversal::ParentElement(*node);
@@ -3822,13 +3856,7 @@ const ComputedStyle* AXObject::GetComputedStyle() const {
   if (GetLayoutObject())
     return GetLayoutObject()->Style();
 
-  // No layout object: if possible, use EnsureComputedStyle().
-  // Cannot call EnsureComputedStyle() here because we may be in post lifecycle
-  // steps, and EnsureComputedStyle() can cause a style recalc which is not
-  // allowed at that time (enforced by DCHECK).
-  // TODO(szager) Figure out how to make this code cleaner.
-  return GetDocument()->InPostLifecycleSteps() ? node->GetComputedStyle()
-                                               : node->EnsureComputedStyle();
+  return node->GetComputedStyle();
 }
 
 // There are 4 ways to use CSS to hide something:
