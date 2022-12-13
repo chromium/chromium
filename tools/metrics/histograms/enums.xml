@@ -30875,6 +30875,8 @@ Called by update_document_policy_enum.py.-->
   <int value="4" label="Select error"/>
   <int value="5" label="Query error"/>
   <int value="6" label="Multiple entries for same inode error"/>
+  <int value="7" label="Create directory error"/>
+  <int value="8" label="Set ownership error"/>
 </enum>
 
 <enum name="EnterpriseDlpPolicyFileAction">
