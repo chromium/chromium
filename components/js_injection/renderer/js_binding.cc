@@ -29,10 +29,6 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_message_port_converter.h"
-#include "v8-array-buffer.h"
-#include "v8-local-handle.h"
-#include "v8-primitive.h"
-#include "v8-value.h"
 #include "v8/include/v8.h"
 
 namespace {
@@ -218,8 +214,7 @@ void JsBinding::PostMessage(gin::Arguments* args) {
                                            &string);
     message_payload = std::move(string);
   } else if (js_payload->IsArrayBuffer()) {
-    v8::Local<v8::ArrayBuffer> array_buffer =
-        v8::Local<v8::ArrayBuffer>::Cast(js_payload);
+    v8::Local<v8::ArrayBuffer> array_buffer = js_payload.As<v8::ArrayBuffer>();
     message_payload =
         std::make_unique<V8ArrayBufferPayload>(array_buffer->GetBackingStore());
   } else {
@@ -239,8 +234,7 @@ void JsBinding::PostMessage(gin::Arguments* args) {
   for (auto& obj : objs) {
     if (obj->IsArrayBuffer() && obj == js_payload) {
       // Simulate to transfer an ArrayBuffer.
-      v8::Local<v8::ArrayBuffer> array_buffer =
-          v8::Local<v8::ArrayBuffer>::Cast(obj);
+      v8::Local<v8::ArrayBuffer> array_buffer = obj.As<v8::ArrayBuffer>();
       if (!array_buffer->IsDetachable()) {
         // Only when the array buffer is detachable.
         args->ThrowError();
