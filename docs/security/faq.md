@@ -382,8 +382,9 @@ on the currently-loaded page when the user clicks the bookmark; these are called
 
 No. PDF files have the ability to run JavaScript, usually to facilitate field
 validation during form fill-out. Note that the set of bindings provided to
-the PDF are more limited than those provided by the DOM to HTML documents (e.g.
-no document.cookie).
+the PDF are more limited than those provided by the DOM to HTML documents, nor
+do PDFs get any ambient authority based upon the domain from which they are
+served (e.g. no document.cookie).
 
 <a name="TOC-Are-PDF-files-static-content-in-Chromium-"></a>
 ### Are PDF files static content in Chromium?
