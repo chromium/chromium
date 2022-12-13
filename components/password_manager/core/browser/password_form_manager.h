@@ -199,11 +199,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
                                 const std::u16string& generated_password,
                                 autofill::FieldRendererId generation_element);
 
-  // Return false and do nothing if |form_identifier| does not correspond to
-  // |observed_form()|. Otherwise set a value of the field with
-  // |field_identifier| of |observed_form()| to |field_value|. In case if there
-  // is a presaved credential this function updates the presaved credential.
-  bool UpdateStateOnUserInput(autofill::FormRendererId form_id,
+  // Sets a value of the field with |field_identifier| of |observed_form()|
+  // to |field_value|. In case if there is a presaved credential this function
+  // updates the presaved credential.
+  void UpdateStateOnUserInput(autofill::FormRendererId form_id,
                               autofill::FieldRendererId field_id,
                               const std::u16string& field_value);
 

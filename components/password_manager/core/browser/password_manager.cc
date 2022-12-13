@@ -119,6 +119,19 @@ bool ShouldPromptUserToSavePassword(const PasswordFormManager& manager) {
   return manager.IsNewLogin();
 }
 
+bool ShouldShowManualFallbackForGeneratedPassword(
+    const PasswordFormManager& manager) {
+#if !BUILDFLAG(IS_IOS)
+  // On non-iOS manual fallback menu shows a confirmation that the
+  // generated password is presaved.
+  return manager.HasGeneratedPassword();
+#else
+  // On iOS manual fallback menu is only used to edit the credential,
+  // and is not applicable to generated passwords.
+  return false;
+#endif
+}
+
 #if !BUILDFLAG(IS_IOS)
 // Finds the matched form manager with id |form_renderer_id| in
 // |form_managers|.
@@ -859,21 +872,12 @@ void PasswordManager::UpdateStateOnUserInput(
     FormRendererId form_id,
     FieldRendererId field_id,
     const std::u16string& field_value) {
-  for (std::unique_ptr<PasswordFormManager>& manager : form_managers_) {
-    if (!manager->DoesManage(form_id, driver)) {
-      continue;
-    }
+  PasswordFormManager* manager = GetMatchedManager(driver, form_id);
+  if (!manager)
+    return;
 
-    if (manager->UpdateStateOnUserInput(form_id, field_id, field_value)) {
-      ProvisionallySaveForm(*manager->observed_form(), driver, true);
-      if (manager->is_submitted() && !manager->HasGeneratedPassword()) {
-        ShowManualFallbackForSaving(manager.get(), *manager->observed_form());
-      } else {
-        HideManualFallbackForSaving();
-      }
-      break;
-    }
-  }
+  manager->UpdateStateOnUserInput(form_id, field_id, field_value);
+  OnInformAboutUserInput(driver, *manager->observed_form());
 }
 
 void PasswordManager::OnPasswordNoLongerGenerated(
@@ -1407,13 +1411,15 @@ void PasswordManager::ShowManualFallbackForSaving(
   }
 
   // Show the fallback if a prompt or a confirmation bubble should be available.
-  bool has_generated_password = form_manager->HasGeneratedPassword();
-  if (ShouldPromptUserToSavePassword(*form_manager) || has_generated_password) {
+  bool is_fallback_for_generated_password =
+      ShouldShowManualFallbackForGeneratedPassword(*form_manager);
+  if (ShouldPromptUserToSavePassword(*form_manager) ||
+      is_fallback_for_generated_password) {
     bool is_update = form_manager->IsPasswordUpdate();
     form_manager->GetMetricsRecorder()->RecordShowManualFallbackForSaving(
-        has_generated_password, is_update);
-    client_->ShowManualFallbackForSaving(form_manager->Clone(),
-                                         has_generated_password, is_update);
+        is_fallback_for_generated_password, is_update);
+    client_->ShowManualFallbackForSaving(
+        form_manager->Clone(), is_fallback_for_generated_password, is_update);
   } else {
     HideManualFallbackForSaving();
   }

@@ -2597,6 +2597,9 @@ TEST_P(PasswordManagerTest, ManualFallbackForSaving_SlowBackend) {
   manager()->OnInformAboutUserInput(&driver_, form_data);
 }
 
+// Test is not applicable to iOS, because there is no manual fallback for
+// generated passwords.
+#if !BUILDFLAG(IS_IOS)
 TEST_P(PasswordManagerTest, ManualFallbackForSaving_GeneratedPassword) {
   std::vector<FormData> observed;
   PasswordForm form(MakeSimpleForm());
@@ -2638,6 +2641,7 @@ TEST_P(PasswordManagerTest, ManualFallbackForSaving_GeneratedPassword) {
   EXPECT_THAT(store_->stored_passwords(),
               ElementsAre(Pair(form.signon_realm, testing::IsEmpty())));
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Sync password hash should be updated upon submission of change password page.
 TEST_P(PasswordManagerTest, SaveSyncPasswordHashOnChangePasswordPage) {

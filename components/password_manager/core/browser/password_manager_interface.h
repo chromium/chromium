@@ -78,9 +78,13 @@ class PasswordManagerInterface : public FormSubmissionObserver {
       const std::u16string& generated_password,
       autofill::FieldRendererId generation_element) = 0;
 
-  // Updates the state if the PasswordFormManager which corresponds to the form
-  // with |form_identifier|. In case if there is a presaved credential it
+  // Updates the state in the PasswordFormManager which corresponds to the form
+  // with |form_identifier|. In case there is a presaved credential, it
   // updates the presaved credential.
+  // Cross-platform method PasswordManager::OnInformAboutUserInput cannot
+  // replace this method, as it needs an observed FormData object on every
+  // keystroke and parsing the full FormData on iOS is more expensive operation,
+  // than in Blink.
   virtual void UpdateStateOnUserInput(PasswordManagerDriver* driver,
                                       autofill::FormRendererId form_id,
                                       autofill::FieldRendererId field_id,

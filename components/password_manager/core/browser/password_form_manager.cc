@@ -568,35 +568,29 @@ void PasswordFormManager::PresaveGeneratedPassword(
   votes_uploader_.set_generation_element(generation_element);
 }
 
-bool PasswordFormManager::UpdateStateOnUserInput(
+void PasswordFormManager::UpdateStateOnUserInput(
     FormRendererId form_id,
     FieldRendererId field_id,
     const std::u16string& field_value) {
-  DCHECK((form_id && observed_form()->is_form_tag &&
-          observed_form()->unique_renderer_id == form_id) ||
-         (!form_id && !observed_form()->is_form_tag));
-
-  bool form_data_changed = false;
-  for (FormFieldData& field : mutable_observed_form()->fields) {
-    if (field.unique_renderer_id == field_id) {
-      field.value = field_value;
-      form_data_changed = true;
-      break;
-    }
-  }
+  DCHECK(observed_form()->unique_renderer_id == form_id);
+  // Update the observed field value.
+  auto modified_field = base::ranges::find_if(
+      mutable_observed_form()->fields, [&field_id](const FormFieldData& field) {
+        return field.unique_renderer_id == field_id;
+      });
+  if (modified_field == mutable_observed_form()->fields.end())
+    return;
+  modified_field->value = field_value;
 
   if (!HasGeneratedPassword())
-    return true;
-
+    return;
+  // Update the presaved password form. Even if generated password was not
+  // modified, the user might have modified the username.
   std::u16string generated_password =
       password_save_manager_->GetGeneratedPassword();
-  if (votes_uploader_.get_generation_element() == field_id) {
+  if (votes_uploader_.get_generation_element() == field_id)
     generated_password = field_value;
-    form_data_changed = true;
-  }
-  if (form_data_changed)
-    PresaveGeneratedPasswordInternal(*observed_form(), generated_password);
-  return true;
+  PresaveGeneratedPasswordInternal(*observed_form(), generated_password);
 }
 
 void PasswordFormManager::SetDriver(

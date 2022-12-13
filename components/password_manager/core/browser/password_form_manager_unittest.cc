@@ -2161,9 +2161,9 @@ TEST_P(PasswordFormManagerTest, iOSUpdateStateWithoutPresaving) {
 
   // Check that nothing is saved on changing password, in case when there was no
   // pre-saving.
-  EXPECT_CALL(form_saver, Save(_, _, _)).Times(0);
-  EXPECT_TRUE(form_manager_->UpdateStateOnUserInput(
-      observed_form_.unique_renderer_id, password_field, new_field_value));
+  EXPECT_CALL(form_saver, Save).Times(0);
+  form_manager_->UpdateStateOnUserInput(observed_form_.unique_renderer_id,
+                                        password_field, new_field_value);
 
   EXPECT_EQ(new_field_value,
             form_manager_->observed_form()->fields[kPasswordFieldIndex].value);
