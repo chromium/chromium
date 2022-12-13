@@ -1942,11 +1942,11 @@ MLOperand* BuildResample2d(V8TestingScope& scope,
   EXPECT_NE(output, nullptr);
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
   EXPECT_EQ(output->Type(), input->Type());
-  auto* resample = output->Operator();
-  EXPECT_NE(resample, nullptr);
-  EXPECT_EQ(resample->Kind(), MLOperator::OperatorKind::kResample);
-  EXPECT_EQ(resample->IsConnected(), true);
-  EXPECT_NE(resample->Options(), nullptr);
+  auto* resample2d = output->Operator();
+  EXPECT_NE(resample2d, nullptr);
+  EXPECT_EQ(resample2d->Kind(), MLOperator::OperatorKind::kResample2d);
+  EXPECT_EQ(resample2d->IsConnected(), true);
+  EXPECT_NE(resample2d->Options(), nullptr);
   return output;
 }
 

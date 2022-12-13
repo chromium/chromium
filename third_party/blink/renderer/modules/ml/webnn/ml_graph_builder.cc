@@ -1152,20 +1152,20 @@ MLOperand* MLGraphBuilder::resample2d(const MLOperand* input,
     }
   }
 
-  auto* resample = MakeGarbageCollected<MLOperator>(
-      this, MLOperator::OperatorKind::kResample, options);
+  auto* resample2d = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kResample2d, options);
   String error_message;
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-resample2d, the output
   // tensor of resample2d has the same type as its input.
   auto* output = MLOperand::ValidateAndCreateOutput(
-      this, input->Type(), std::move(output_shape), resample, error_message);
+      this, input->Type(), std::move(output_shape), resample2d, error_message);
   if (!output) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       error_message);
     return nullptr;
   }
-  resample->Connect({input}, {output});
+  resample2d->Connect({input}, {output});
   return output;
 }
 
