@@ -17,7 +17,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
-#include "ash/system/video_conference/bubble/video_conference_bubble.h"
+#include "ash/system/video_conference/bubble/bubble_view.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/bind.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -241,7 +241,8 @@ void VideoConferenceTray::ToggleBubble(const ui::Event& event) {
   init_params.translucent = true;
 
   // Create top-level bubble.
-  auto bubble_view = std::make_unique<VideoConferenceBubbleView>(init_params);
+  auto bubble_view = std::make_unique<video_conference::BubbleView>(
+      init_params, VideoConferenceTrayController::Get());
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
   bubble_->ShowBubble(std::move(bubble_view));
 
