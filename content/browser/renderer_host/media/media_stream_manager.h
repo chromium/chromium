@@ -456,8 +456,12 @@ class CONTENT_EXPORT MediaStreamManager
 
   // Contains common data needed to keep track of requests.
   class DeviceRequest;
+  // Contains data specific for GenerateStreams requests
+  class GenerateStreamsRequest;
   // Contains data specific for GetOpenDevice requests
   class GetOpenDeviceRequest;
+  // Contains data specific for OpenDevice requests
+  class OpenDeviceRequest;
 
   // |DeviceRequests| is a list to ensure requests are processed in the order
   // they arrive. The first member of the pair is the label of the
@@ -584,12 +588,10 @@ class CONTENT_EXPORT MediaStreamManager
   void PanTiltZoomPermissionChecked(
       const std::string& label,
       const absl::optional<blink::MediaStreamDevice>& video_device,
-      base::OnceCallback<void(bool)> callback,
       bool pan_tilt_zoom_allowed);
   void FinalizeRequestFailed(const std::string& label,
                              DeviceRequest* request,
                              blink::mojom::MediaStreamRequestResult result);
-  void FinalizeOpenDevice(const std::string& label, DeviceRequest* request);
   void FinalizeChangeDevice(const std::string& label, DeviceRequest* request);
   void FinalizeMediaAccessRequest(
       const std::string& label,
