@@ -13,9 +13,10 @@
 #include "ui/views/layout/flex_layout.h"
 
 namespace ui::ime {
-const int kTopBottomPadding = 4;
+const int kTopPadding = 4;
+const int kBottomPadding = 0;
 const int kLeftRightPadding = 2;
-const int kBetweenSpacing = 4;
+const int kBetweenSpacing = 1;
 const int kBorderRadius = 2;
 const int kCandidateSquareSide = 24;
 const views::Label::CustomFont kCandidateTextFont = {
@@ -40,7 +41,7 @@ IndexedSuggestionCandidateButton::IndexedSuggestionCandidateButton(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets()
           .set_left_right(kLeftRightPadding, kLeftRightPadding)
-          .set_top_bottom(kTopBottomPadding, kTopBottomPadding),
+          .set_top_bottom(kTopPadding, kBottomPadding),
       /* between_child_spacing=*/kBetweenSpacing));
 
   if (create_legacy_candidate) {
