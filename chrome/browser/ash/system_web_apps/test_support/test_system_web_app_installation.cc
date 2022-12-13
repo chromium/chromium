@@ -894,7 +894,7 @@ web_app::AppId TestSystemWebAppInstallation::GetAppId() {
 
 const GURL& TestSystemWebAppInstallation::GetAppUrl() {
   return web_app::WebAppProvider::GetForTest(profile_)
-      ->registrar()
+      ->registrar_unsafe()
       .GetAppStartUrl(GetAppId());
 }
 

@@ -404,7 +404,7 @@ absl::optional<web_app::AppId> SystemWebAppManager::GetAppIdForSystemApp(
     SystemWebAppType type) const {
   if (!provider_->is_registry_ready())
     return absl::nullopt;
-  return web_app::GetAppIdForSystemApp(provider_->registrar(),
+  return web_app::GetAppIdForSystemApp(provider_->registrar_unsafe(),
                                        system_app_delegates_, type);
 }
 
@@ -412,7 +412,7 @@ absl::optional<SystemWebAppType> SystemWebAppManager::GetSystemAppTypeForAppId(
     const web_app::AppId& app_id) const {
   if (!provider_->is_registry_ready())
     return absl::nullopt;
-  return web_app::GetSystemAppTypeForAppId(provider_->registrar(),
+  return web_app::GetSystemAppTypeForAppId(provider_->registrar_unsafe(),
                                            system_app_delegates_, app_id);
 }
 
@@ -435,8 +435,8 @@ std::vector<web_app::AppId> SystemWebAppManager::GetAppIds() const {
 
 bool SystemWebAppManager::IsSystemWebApp(const web_app::AppId& app_id) const {
   DCHECK(provider_->is_registry_ready());
-  return web_app::IsSystemWebApp(provider_->registrar(), system_app_delegates_,
-                                 app_id);
+  return web_app::IsSystemWebApp(provider_->registrar_unsafe(),
+                                 system_app_delegates_, app_id);
 }
 
 const std::vector<std::string>* SystemWebAppManager::GetEnabledOriginTrials(
@@ -489,7 +489,7 @@ SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
     return absl::nullopt;
 
   absl::optional<web_app::AppId> app_id =
-      provider_->registrar().FindAppWithUrlInScope(url);
+      provider_->registrar_unsafe().FindAppWithUrlInScope(url);
   if (!app_id.has_value())
     return absl::nullopt;
 

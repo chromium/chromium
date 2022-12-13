@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTestBasicInstall, Install) {
 
   Profile* profile = app_browser->profile();
   web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::GetForTest(profile)->registrar();
+      web_app::WebAppProvider::GetForTest(profile)->registrar_unsafe();
 
   EXPECT_EQ("Test System App", registrar.GetAppShortName(app_id));
   EXPECT_EQ(SkColorSetRGB(0, 0xFF, 0), registrar.GetAppThemeColor(app_id));
@@ -1271,7 +1271,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerChromeUntrustedTest, Install) {
 
   Profile* profile = app_browser->profile();
   web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::GetForTest(profile)->registrar();
+      web_app::WebAppProvider::GetForTest(profile)->registrar_unsafe();
 
   EXPECT_EQ("Test System App", registrar.GetAppShortName(app_id));
   EXPECT_EQ(SkColorSetRGB(0, 0xFF, 0), registrar.GetAppThemeColor(app_id));

@@ -79,7 +79,7 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
     // URL matches the start URL.
     params.override_url =
         web_app::WebAppProvider::GetForLocalAppsUnchecked(browser()->profile())
-            ->registrar()
+            ->registrar_unsafe()
             .GetAppStartUrl(params.app_id);
   }
 
@@ -132,7 +132,7 @@ GURL SystemWebAppBrowserTestBase::GetStartUrl(
              ? params.override_url
              : web_app::WebAppProvider::GetForLocalAppsUnchecked(
                    browser()->profile())
-                   ->registrar()
+                   ->registrar_unsafe()
                    .GetAppStartUrl(params.app_id);
 }
 

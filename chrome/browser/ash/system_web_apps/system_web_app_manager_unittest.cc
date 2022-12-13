@@ -179,13 +179,13 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
   bool IsInstalled(const GURL& install_url) {
-    return provider().registrar().IsInstalled(
+    return provider().registrar_unsafe().IsInstalled(
         web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, install_url));
   }
 
   void InitRegistrarWithSystemApps(
       const std::vector<SystemAppData>& system_app_data_list) {
-    DCHECK(provider().registrar().is_empty());
+    DCHECK(provider().registrar_unsafe().is_empty());
     DCHECK(!system_app_data_list.empty());
 
     for (const SystemAppData& data : system_app_data_list) {
@@ -1559,7 +1559,7 @@ TEST_F(SystemWebAppManagerTest,
 
   // Before Apps are synchronized, WebAppRegistry should know about the App.
   const web_app::WebApp* web_app =
-      provider().registrar().GetAppById(*opt_app_id);
+      provider().registrar_unsafe().GetAppById(*opt_app_id);
   ASSERT_TRUE(web_app);
   ASSERT_TRUE(web_app->client_data().system_web_app_data.has_value());
   ASSERT_EQ(SystemWebAppType::SETTINGS,
