@@ -132,9 +132,12 @@ chromium-metrics-reviews@google.com.
   <summary>
     Success or Failure of special handling for BiosType: {BiosType}.
 
-    This is reported at the very end of postinstall, only on ChromeOS, and only
-    when USE=postinst_metrics. There's also an increased risk of losing metrics
-    recorded in postinstall, see:
+    This doesn't indicate overall success or failure of postinstall on these
+    systems.
+
+    This is reported after making changes to the EFI System Partition, only on
+    ChromeOS, and only when USE=postinst_metrics. There's also an increased risk
+    of losing metrics recorded in postinstall, see:
     https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/installer/docs/postinst_metrics.md
   </summary>
   <token key="BiosType">
