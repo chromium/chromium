@@ -20,7 +20,7 @@ import package_dependency
 import serialization
 import target_dependency
 
-_SRC_PATH = pathlib.Path(__file__).parents[3].resolve()
+_SRC_PATH = pathlib.Path(__file__).resolve().parents[3]
 sys.path.append(str(_SRC_PATH / 'build/android'))
 from pylib import constants
 
@@ -39,6 +39,20 @@ _IGNORED_JAR_PATHS = [
 
 def _relsrc(path: Union[str, pathlib.Path], src_path: pathlib.Path):
     return pathlib.Path(path).relative_to(src_path)
+
+
+def _is_relative_to(path: pathlib.Path, other_path: pathlib.Path):
+    """This replicates pathlib.Path.is_relative_to.
+
+    Since bots still run python3.8, they do not have access to is_relative_to,
+    which was introduced in python3.9.
+    """
+    try:
+        path.relative_to(other_path)
+        return True
+    except ValueError:
+        # This error is expected when path is not a subpath of other_path.
+        return False
 
 
 def class_is_interesting(name: str, prefixes: Tuple[str]):
@@ -127,7 +141,7 @@ def _calculate_cache_path(filepath: pathlib.Path, src_path: pathlib.Path,
       Returns: /cr/src/out/Debug/jdeps_cache/b/c/file.jdeps_cache
     """
     filepath = filepath.resolve(strict=True)
-    if filepath.is_relative_to(build_output_dir):
+    if _is_relative_to(filepath, build_output_dir):
         return filepath.with_suffix('.jdeps_cache')
     assert src_path in filepath.parents, f'Jar file not under src: {filepath}'
     jdeps_cache_dir = build_output_dir / 'jdeps_cache'
