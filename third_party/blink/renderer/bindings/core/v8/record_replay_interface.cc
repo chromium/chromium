@@ -2054,7 +2054,7 @@ const hook = {
 };
 
 Object.defineProperty(window, "__REACT_DEVTOOLS_GLOBAL_HOOK__", {
-  configurable: false,
+  configurable: true,
   enumerable: false,
   get() {
     return hook;
