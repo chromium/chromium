@@ -126,7 +126,9 @@ void NavigatorMediaStream::getUserMedia(
 
   String error_message;
   if (!request->IsSecureContextUse(error_message)) {
-    request->Fail(UserMediaRequest::Error::kSecurityError, error_message);
+    request->Fail(
+        mojom::blink::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
+        error_message);
     RecordIdentifiabilityMetric(
         surface, navigator.GetExecutionContext(),
         IdentifiabilityBenignStringToken(error_message));

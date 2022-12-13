@@ -66,6 +66,7 @@
 namespace blink {
 
 using mojom::blink::MediaStreamType;
+using Result = mojom::blink::MediaStreamRequestResult;
 
 namespace {
 
@@ -821,37 +822,37 @@ void UserMediaRequest::FailConstraint(const String& constraint_name,
   is_resolved_ = true;
 }
 
-void UserMediaRequest::Fail(Error name, const String& message) {
+void UserMediaRequest::Fail(Result error, const String& message) {
   DCHECK(!is_resolved_);
   if (!GetExecutionContext())
     return;
-
   DOMExceptionCode exception_code = DOMExceptionCode::kNotSupportedError;
-  switch (name) {
-    case Error::kPermissionDenied:
-    case Error::kPermissionDismissed:
-    case Error::kInvalidState:
-    case Error::kFailedDueToShutdown:
-    case Error::kKillSwitchOn:
-    case Error::kSystemPermissionDenied:
+  switch (error) {
+    case Result::PERMISSION_DENIED:
+    case Result::PERMISSION_DISMISSED:
+    case Result::INVALID_STATE:
+    case Result::FAILED_DUE_TO_SHUTDOWN:
+    case Result::KILL_SWITCH_ON:
+    case Result::SYSTEM_PERMISSION_DENIED:
       exception_code = DOMExceptionCode::kNotAllowedError;
       break;
-    case Error::kDevicesNotFound:
+    case Result::NO_HARDWARE:
       exception_code = DOMExceptionCode::kNotFoundError;
       break;
-    case Error::kTabCapture:
-    case Error::kScreenCapture:
-    case Error::kCapture:
+    case Result::TAB_CAPTURE_FAILURE:
+    case Result::SCREEN_CAPTURE_FAILURE:
+    case Result::CAPTURE_FAILURE:
       exception_code = DOMExceptionCode::kAbortError;
       break;
-    case Error::kTrackStart:
-    case Error::kDeviceInUse:
+    case Result::TRACK_START_FAILURE_AUDIO:
+    case Result::TRACK_START_FAILURE_VIDEO:
+    case Result::DEVICE_IN_USE:
       exception_code = DOMExceptionCode::kNotReadableError;
       break;
-    case Error::kNotSupported:
+    case Result::NOT_SUPPORTED:
       exception_code = DOMExceptionCode::kNotSupportedError;
       break;
-    case Error::kSecurityError:
+    case Result::INVALID_SECURITY_ORIGIN:
       exception_code = DOMExceptionCode::kSecurityError;
       break;
     default:

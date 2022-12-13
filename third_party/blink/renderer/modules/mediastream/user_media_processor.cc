@@ -253,6 +253,44 @@ Vector<blink::VideoInputDeviceCapabilities> ToVideoInputDeviceCapabilities(
   return capabilities;
 }
 
+String ErrorCodeToString(MediaStreamRequestResult result) {
+  switch (result) {
+    case MediaStreamRequestResult::PERMISSION_DENIED:
+      return "Permission denied";
+    case MediaStreamRequestResult::PERMISSION_DISMISSED:
+      return "Permission dismissed";
+    case MediaStreamRequestResult::INVALID_STATE:
+      return "Invalid state";
+    case MediaStreamRequestResult::NO_HARDWARE:
+      return "Requested device not found";
+    case MediaStreamRequestResult::INVALID_SECURITY_ORIGIN:
+      return "Invalid security origin";
+    case MediaStreamRequestResult::TAB_CAPTURE_FAILURE:
+      return "Error starting tab capture";
+    case MediaStreamRequestResult::SCREEN_CAPTURE_FAILURE:
+      return "Error starting screen capture";
+    case MediaStreamRequestResult::CAPTURE_FAILURE:
+      return "Error starting capture";
+    case MediaStreamRequestResult::TRACK_START_FAILURE_AUDIO:
+      return "Could not start audio source";
+    case MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO:
+      return "Could not start video source";
+    case MediaStreamRequestResult::NOT_SUPPORTED:
+      return "Not supported";
+    case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN:
+      return "Failed due to shutdown";
+    case MediaStreamRequestResult::KILL_SWITCH_ON:
+      return "";
+    case MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED:
+      return "Permission denied by system";
+    case MediaStreamRequestResult::DEVICE_IN_USE:
+      return "Device in use";
+    default:
+      NOTREACHED();
+      return "";
+  }
+}
+
 }  // namespace
 
 // Class for storing state of the the processing of getUserMedia requests.
@@ -1735,71 +1773,13 @@ void UserMediaProcessor::DelayedGetUserMediaRequestFailed(
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       NOTREACHED();
       return;
-    case MediaStreamRequestResult::PERMISSION_DENIED:
-      user_media_request->Fail(UserMediaRequest::Error::kPermissionDenied,
-                               "Permission denied");
-      return;
-    case MediaStreamRequestResult::PERMISSION_DISMISSED:
-      user_media_request->Fail(UserMediaRequest::Error::kPermissionDismissed,
-                               "Permission dismissed");
-      return;
-    case MediaStreamRequestResult::INVALID_STATE:
-      user_media_request->Fail(UserMediaRequest::Error::kInvalidState,
-                               "Invalid state");
-      return;
-    case MediaStreamRequestResult::NO_HARDWARE:
-      user_media_request->Fail(UserMediaRequest::Error::kDevicesNotFound,
-                               "Requested device not found");
-      return;
-    case MediaStreamRequestResult::INVALID_SECURITY_ORIGIN:
-      user_media_request->Fail(UserMediaRequest::Error::kSecurityError,
-                               "Invalid security origin");
-      return;
-    case MediaStreamRequestResult::TAB_CAPTURE_FAILURE:
-      user_media_request->Fail(UserMediaRequest::Error::kTabCapture,
-                               "Error starting tab capture");
-      return;
-    case MediaStreamRequestResult::SCREEN_CAPTURE_FAILURE:
-      user_media_request->Fail(UserMediaRequest::Error::kScreenCapture,
-                               "Error starting screen capture");
-      return;
-    case MediaStreamRequestResult::CAPTURE_FAILURE:
-      user_media_request->Fail(UserMediaRequest::Error::kCapture,
-                               "Error starting capture");
-      return;
     case MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED:
       user_media_request->FailConstraint(constraint_name, "");
       return;
-    case MediaStreamRequestResult::TRACK_START_FAILURE_AUDIO:
-      user_media_request->Fail(UserMediaRequest::Error::kTrackStart,
-                               "Could not start audio source");
-      return;
-    case MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO:
-      user_media_request->Fail(UserMediaRequest::Error::kTrackStart,
-                               "Could not start video source");
-      return;
-    case MediaStreamRequestResult::NOT_SUPPORTED:
-      user_media_request->Fail(UserMediaRequest::Error::kNotSupported,
-                               "Not supported");
-      return;
-    case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN:
-      user_media_request->Fail(UserMediaRequest::Error::kFailedDueToShutdown,
-                               "Failed due to shutdown");
-      return;
-    case MediaStreamRequestResult::KILL_SWITCH_ON:
-      user_media_request->Fail(UserMediaRequest::Error::kKillSwitchOn, "");
-      return;
-    case MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED:
-      user_media_request->Fail(UserMediaRequest::Error::kSystemPermissionDenied,
-                               "Permission denied by system");
-      return;
-    case MediaStreamRequestResult::DEVICE_IN_USE:
-      user_media_request->Fail(UserMediaRequest::Error::kDeviceInUse,
-                               "Device in use");
+    default:
+      user_media_request->Fail(result, ErrorCodeToString(result));
       return;
   }
-  NOTREACHED();
-  user_media_request->Fail(UserMediaRequest::Error::kPermissionDenied, "");
 }
 
 MediaStreamSource* UserMediaProcessor::FindLocalSource(

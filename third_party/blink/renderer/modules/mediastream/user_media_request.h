@@ -57,23 +57,6 @@ class MODULES_EXPORT UserMediaRequest final
     : public GarbageCollected<UserMediaRequest>,
       public ExecutionContextLifecycleObserver {
  public:
-  enum class Error {
-    kNotSupported,
-    kSecurityError,
-    kPermissionDenied,
-    kPermissionDismissed,
-    kInvalidState,
-    kDevicesNotFound,
-    kTabCapture,
-    kScreenCapture,
-    kCapture,
-    kTrackStart,
-    kFailedDueToShutdown,
-    kKillSwitchOn,
-    kSystemPermissionDenied,
-    kDeviceInUse
-  };
-
   class Callbacks : public GarbageCollected<Callbacks> {
    public:
     virtual ~Callbacks() = default;
@@ -122,7 +105,8 @@ class MODULES_EXPORT UserMediaRequest final
   void OnMediaStreamInitialized(MediaStream* stream);
   void OnMediaStreamsInitialized(MediaStreamVector streams);
   void FailConstraint(const String& constraint_name, const String& message);
-  void Fail(Error name, const String& message);
+  void Fail(mojom::blink::MediaStreamRequestResult error,
+            const String& message);
 
   UserMediaRequestType MediaRequestType() const;
   bool Audio() const;
