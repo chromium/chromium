@@ -16,8 +16,8 @@ class PriceTrackingActionModel : public ModelProvider {
   PriceTrackingActionModel();
   ~PriceTrackingActionModel() override = default;
 
-  PriceTrackingActionModel(PriceTrackingActionModel&) = delete;
-  PriceTrackingActionModel& operator=(PriceTrackingActionModel&) = delete;
+  PriceTrackingActionModel(const PriceTrackingActionModel&) = delete;
+  PriceTrackingActionModel& operator=(const PriceTrackingActionModel&) = delete;
 
   // ModelProvider implementation.
   void InitAndFetchModel(

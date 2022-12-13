@@ -66,8 +66,9 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
 
   void GetSegmentResult(std::unique_ptr<GetResultOptions> options) override;
 
-  SegmentResultProviderImpl(SegmentResultProviderImpl&) = delete;
-  SegmentResultProviderImpl& operator=(SegmentResultProviderImpl&) = delete;
+  SegmentResultProviderImpl(const SegmentResultProviderImpl&) = delete;
+  SegmentResultProviderImpl& operator=(const SegmentResultProviderImpl&) =
+      delete;
 
  private:
   struct RequestState {

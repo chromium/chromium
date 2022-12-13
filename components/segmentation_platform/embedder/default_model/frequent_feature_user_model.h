@@ -17,8 +17,8 @@ class FrequentFeatureUserModel : public ModelProvider {
   ~FrequentFeatureUserModel() override = default;
 
   // Disallow copy/assign.
-  FrequentFeatureUserModel(FrequentFeatureUserModel&) = delete;
-  FrequentFeatureUserModel& operator=(FrequentFeatureUserModel&) = delete;
+  FrequentFeatureUserModel(const FrequentFeatureUserModel&) = delete;
+  FrequentFeatureUserModel& operator=(const FrequentFeatureUserModel&) = delete;
 
   static std::unique_ptr<Config> GetConfig();
 

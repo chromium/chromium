@@ -30,8 +30,8 @@ class UkmDataManager {
   UkmDataManager() = default;
   virtual ~UkmDataManager() = default;
 
-  UkmDataManager(UkmDataManager&) = delete;
-  UkmDataManager& operator=(UkmDataManager&) = delete;
+  UkmDataManager(const UkmDataManager&) = delete;
+  UkmDataManager& operator=(const UkmDataManager&) = delete;
 
   // Initializes UKM database and the observer of all UKM events.
   virtual void Initialize(const base::FilePath& database_path,

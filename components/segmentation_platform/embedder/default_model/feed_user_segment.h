@@ -18,8 +18,8 @@ class FeedUserSegment : public ModelProvider {
   FeedUserSegment();
   ~FeedUserSegment() override = default;
 
-  FeedUserSegment(FeedUserSegment&) = delete;
-  FeedUserSegment& operator=(FeedUserSegment&) = delete;
+  FeedUserSegment(const FeedUserSegment&) = delete;
+  FeedUserSegment& operator=(const FeedUserSegment&) = delete;
 
   static std::unique_ptr<Config> GetConfig();
 

@@ -19,8 +19,8 @@ class ChromeStartModelV2 : public ModelProvider {
   ~ChromeStartModelV2() override = default;
 
   // Disallow copy/assign.
-  ChromeStartModelV2(ChromeStartModelV2&) = delete;
-  ChromeStartModelV2& operator=(ChromeStartModelV2&) = delete;
+  ChromeStartModelV2(const ChromeStartModelV2&) = delete;
+  ChromeStartModelV2& operator=(const ChromeStartModelV2&) = delete;
 
   static std::unique_ptr<Config> GetConfig();
 

@@ -31,8 +31,8 @@ class HistoryServiceObserver : public history::HistoryServiceObserver {
   HistoryServiceObserver();
   ~HistoryServiceObserver() override;
 
-  HistoryServiceObserver(HistoryServiceObserver&) = delete;
-  HistoryServiceObserver& operator=(HistoryServiceObserver&) = delete;
+  HistoryServiceObserver(const HistoryServiceObserver&) = delete;
+  HistoryServiceObserver& operator=(const HistoryServiceObserver&) = delete;
 
   // history::HistoryServiceObserver impl:
   void OnURLVisited(history::HistoryService* history_service,

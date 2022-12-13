@@ -20,8 +20,8 @@ class MetadataWriter {
   explicit MetadataWriter(proto::SegmentationModelMetadata* metadata);
   ~MetadataWriter();
 
-  MetadataWriter(MetadataWriter&) = delete;
-  MetadataWriter& operator=(MetadataWriter&) = delete;
+  MetadataWriter(const MetadataWriter&) = delete;
+  MetadataWriter& operator=(const MetadataWriter&) = delete;
 
   // Defines a feature based on UMA metric.
   struct UMAFeature {

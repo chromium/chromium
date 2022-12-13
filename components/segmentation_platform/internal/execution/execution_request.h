@@ -26,8 +26,8 @@ struct ModelExecutionResult {
   explicit ModelExecutionResult(ModelExecutionStatus status);
   ~ModelExecutionResult();
 
-  ModelExecutionResult(ModelExecutionResult&) = delete;
-  ModelExecutionResult& operator=(ModelExecutionResult&) = delete;
+  ModelExecutionResult(const ModelExecutionResult&) = delete;
+  ModelExecutionResult& operator=(const ModelExecutionResult&) = delete;
 
   // The float value is only valid when ModelExecutionStatus == kSuccess.
   // TODO(ritikagup): Change ModelProvider::Response as key value pair in

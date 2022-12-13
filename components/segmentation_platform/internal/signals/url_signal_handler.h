@@ -43,8 +43,8 @@ class UrlSignalHandler {
   explicit UrlSignalHandler(UkmDatabase* ukm_database);
   ~UrlSignalHandler();
 
-  UrlSignalHandler(UrlSignalHandler&) = delete;
-  UrlSignalHandler& operator=(UrlSignalHandler&) = delete;
+  UrlSignalHandler(const UrlSignalHandler&) = delete;
+  UrlSignalHandler& operator=(const UrlSignalHandler&) = delete;
 
   // Called by UKM observer when source URL for the |source_id| is updated.
   void OnUkmSourceUpdated(ukm::SourceId source_id,

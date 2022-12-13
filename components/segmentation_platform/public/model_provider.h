@@ -30,8 +30,8 @@ class ModelProvider {
   explicit ModelProvider(proto::SegmentId segment_id);
   virtual ~ModelProvider();
 
-  ModelProvider(ModelProvider&) = delete;
-  ModelProvider& operator=(ModelProvider&) = delete;
+  ModelProvider(const ModelProvider&) = delete;
+  ModelProvider& operator=(const ModelProvider&) = delete;
 
   // Implementation should return metadata that will be used to execute model.
   // The metadata provided should define the number of features needed by the

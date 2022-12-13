@@ -21,8 +21,8 @@ class InputDelegate {
   InputDelegate();
   virtual ~InputDelegate();
 
-  InputDelegate(InputDelegate&) = delete;
-  InputDelegate& operator=(InputDelegate&) = delete;
+  InputDelegate(const InputDelegate&) = delete;
+  InputDelegate& operator=(const InputDelegate&) = delete;
 
   // Processes the given `input`, and returns the result via `callback`. Should
   // return an error if the processing failed. On success, the number of outputs
@@ -39,8 +39,8 @@ class InputDelegateHolder {
   InputDelegateHolder();
   ~InputDelegateHolder();
 
-  InputDelegateHolder(InputDelegateHolder&) = delete;
-  InputDelegateHolder& operator=(InputDelegateHolder&) = delete;
+  InputDelegateHolder(const InputDelegateHolder&) = delete;
+  InputDelegateHolder& operator=(const InputDelegateHolder&) = delete;
 
   // Returns a delegate for the `policy` if available or nullptr otherwise.
   InputDelegate* GetDelegate(proto::CustomInput::FillPolicy policy);

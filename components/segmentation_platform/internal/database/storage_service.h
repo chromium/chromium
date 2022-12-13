@@ -94,8 +94,8 @@ class StorageService {
 
   ~StorageService();
 
-  StorageService(StorageService&) = delete;
-  StorageService& operator=(StorageService&) = delete;
+  StorageService(const StorageService&) = delete;
+  StorageService& operator=(const StorageService&) = delete;
 
   // Initialize all the databases and returns true when all of them are
   // initialized successfully.

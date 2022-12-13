@@ -39,8 +39,9 @@ class PriceTrackingInputDelegate : public InputDelegate {
       BookmarkModelGetter bookmark_model_getter);
   ~PriceTrackingInputDelegate() override;
 
-  PriceTrackingInputDelegate(PriceTrackingInputDelegate&) = delete;
-  PriceTrackingInputDelegate& operator=(PriceTrackingInputDelegate&) = delete;
+  PriceTrackingInputDelegate(const PriceTrackingInputDelegate&) = delete;
+  PriceTrackingInputDelegate& operator=(const PriceTrackingInputDelegate&) =
+      delete;
 
   // InputDelegate overrides.
   void Process(const proto::CustomInput& input,

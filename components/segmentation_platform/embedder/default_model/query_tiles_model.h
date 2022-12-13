@@ -19,8 +19,8 @@ class QueryTilesModel : public ModelProvider {
   ~QueryTilesModel() override = default;
 
   // Disallow copy/assign.
-  QueryTilesModel(QueryTilesModel&) = delete;
-  QueryTilesModel& operator=(QueryTilesModel&) = delete;
+  QueryTilesModel(const QueryTilesModel&) = delete;
+  QueryTilesModel& operator=(const QueryTilesModel&) = delete;
 
   static std::unique_ptr<Config> GetConfig();
 

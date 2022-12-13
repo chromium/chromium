@@ -31,8 +31,8 @@ class SignalHandler {
   SignalHandler();
   ~SignalHandler();
 
-  SignalHandler(SignalHandler&) = delete;
-  SignalHandler& operator=(SignalHandler&) = delete;
+  SignalHandler(const SignalHandler&) = delete;
+  SignalHandler& operator=(const SignalHandler&) = delete;
 
   void Initialize(StorageService* storage_service,
                   history::HistoryService* history_service,

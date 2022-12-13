@@ -39,8 +39,8 @@ class ExecutionService {
   ExecutionService();
   ~ExecutionService();
 
-  ExecutionService(ExecutionService&) = delete;
-  ExecutionService& operator=(ExecutionService&) = delete;
+  ExecutionService(const ExecutionService&) = delete;
+  ExecutionService& operator=(const ExecutionService&) = delete;
 
   void InitForTesting(
       std::unique_ptr<processing::FeatureListQueryProcessor> feature_processor,

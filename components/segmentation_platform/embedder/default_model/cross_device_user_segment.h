@@ -18,8 +18,8 @@ class CrossDeviceUserSegment : public ModelProvider {
   CrossDeviceUserSegment();
   ~CrossDeviceUserSegment() override = default;
 
-  CrossDeviceUserSegment(CrossDeviceUserSegment&) = delete;
-  CrossDeviceUserSegment& operator=(CrossDeviceUserSegment&) = delete;
+  CrossDeviceUserSegment(const CrossDeviceUserSegment&) = delete;
+  CrossDeviceUserSegment& operator=(const CrossDeviceUserSegment&) = delete;
 
   static std::unique_ptr<Config> GetConfig();
 

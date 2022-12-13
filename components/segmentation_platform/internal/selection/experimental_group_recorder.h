@@ -29,8 +29,9 @@ class ExperimentalGroupRecorder {
                             proto::SegmentId segment_id);
   ~ExperimentalGroupRecorder();
 
-  ExperimentalGroupRecorder(ExperimentalGroupRecorder&) = delete;
-  ExperimentalGroupRecorder& operator=(ExperimentalGroupRecorder&) = delete;
+  ExperimentalGroupRecorder(const ExperimentalGroupRecorder&) = delete;
+  ExperimentalGroupRecorder& operator=(const ExperimentalGroupRecorder&) =
+      delete;
 
  private:
   void OnGetSegment(

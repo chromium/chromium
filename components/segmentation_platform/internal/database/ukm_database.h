@@ -27,8 +27,8 @@ class UkmDatabase {
   UkmDatabase() = default;
   virtual ~UkmDatabase() = default;
 
-  UkmDatabase(UkmDatabase&) = delete;
-  UkmDatabase& operator=(UkmDatabase&) = delete;
+  UkmDatabase(const UkmDatabase&) = delete;
+  UkmDatabase& operator=(const UkmDatabase&) = delete;
 
   using SuccessCallback = base::OnceCallback<void(bool)>;
 

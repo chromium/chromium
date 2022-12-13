@@ -17,8 +17,8 @@ struct InputContext : base::RefCounted<InputContext> {
  public:
   InputContext();
 
-  InputContext(InputContext&) = delete;
-  InputContext& operator=(InputContext&) = delete;
+  InputContext(const InputContext&) = delete;
+  InputContext& operator=(const InputContext&) = delete;
 
   // A list of params that can be used as input either directly to the model, or
   // to SQL queries, or custom input delegates. The exact mechanism and

@@ -24,8 +24,8 @@ class UkmUrlTable {
   explicit UkmUrlTable(sql::Database* db);
   ~UkmUrlTable();
 
-  UkmUrlTable(UkmUrlTable&) = delete;
-  UkmUrlTable& operator=(UkmUrlTable&) = delete;
+  UkmUrlTable(const UkmUrlTable&) = delete;
+  UkmUrlTable& operator=(const UkmUrlTable&) = delete;
 
   // Converts the given GURL to string.
   static std::string GetDatabaseUrlString(const GURL& url);

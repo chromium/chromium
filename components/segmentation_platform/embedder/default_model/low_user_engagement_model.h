@@ -19,8 +19,8 @@ class LowUserEngagementModel : public ModelProvider {
   ~LowUserEngagementModel() override = default;
 
   // Disallow copy/assign.
-  LowUserEngagementModel(LowUserEngagementModel&) = delete;
-  LowUserEngagementModel& operator=(LowUserEngagementModel&) = delete;
+  LowUserEngagementModel(const LowUserEngagementModel&) = delete;
+  LowUserEngagementModel& operator=(const LowUserEngagementModel&) = delete;
 
   static std::unique_ptr<Config> GetConfig();
 

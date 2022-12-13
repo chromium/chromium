@@ -20,8 +20,8 @@ class ModelExecutor {
   ModelExecutor() = default;
   virtual ~ModelExecutor() = default;
 
-  ModelExecutor(ModelExecutor&) = delete;
-  ModelExecutor& operator=(ModelExecutor&) = delete;
+  ModelExecutor(const ModelExecutor&) = delete;
+  ModelExecutor& operator=(const ModelExecutor&) = delete;
 
   // Called to execute a given model. This assumes that data has been collected
   // for long enough for each of the individual ML features.

@@ -53,8 +53,8 @@ class SegmentResultProvider {
                   float rank,
                   std::unique_ptr<ModelExecutionResult> execution_result);
     ~SegmentResult();
-    SegmentResult(SegmentResult&) = delete;
-    SegmentResult& operator=(SegmentResult&) = delete;
+    SegmentResult(const SegmentResult&) = delete;
+    SegmentResult& operator=(const SegmentResult&) = delete;
 
     ResultState state = ResultState::kUnknown;
     absl::optional<float> rank;

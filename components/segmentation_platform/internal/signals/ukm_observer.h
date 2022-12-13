@@ -28,8 +28,8 @@ class UkmObserver : public ukm::UkmRecorderObserver {
   explicit UkmObserver(ukm::UkmRecorderImpl* ukm_recorder);
   ~UkmObserver() override;
 
-  UkmObserver(UkmObserver&) = delete;
-  UkmObserver& operator=(UkmObserver&) = delete;
+  UkmObserver(const UkmObserver&) = delete;
+  UkmObserver& operator=(const UkmObserver&) = delete;
 
   // Starts observing with the given |config| if not started. Otherwise, merges
   // the currently observed config with the new |config|, and observes a

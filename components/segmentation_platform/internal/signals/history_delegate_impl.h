@@ -31,8 +31,8 @@ class HistoryDelegateImpl : public UrlSignalHandler::HistoryDelegate {
                       UrlSignalHandler* url_signal_handler);
 
   ~HistoryDelegateImpl() override;
-  HistoryDelegateImpl(HistoryDelegateImpl&) = delete;
-  HistoryDelegateImpl& operator=(HistoryDelegateImpl&) = delete;
+  HistoryDelegateImpl(const HistoryDelegateImpl&) = delete;
+  HistoryDelegateImpl& operator=(const HistoryDelegateImpl&) = delete;
 
   // Called by history observer when URLs are added/removed in the history
   // database, useful to store a cache of recent visits.

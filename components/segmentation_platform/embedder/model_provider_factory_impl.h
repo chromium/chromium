@@ -31,8 +31,8 @@ class ModelProviderFactoryImpl : public ModelProviderFactory {
 
   ~ModelProviderFactoryImpl() override;
 
-  ModelProviderFactoryImpl(ModelProviderFactoryImpl&) = delete;
-  ModelProviderFactoryImpl& operator=(ModelProviderFactoryImpl&) = delete;
+  ModelProviderFactoryImpl(const ModelProviderFactoryImpl&) = delete;
+  ModelProviderFactoryImpl& operator=(const ModelProviderFactoryImpl&) = delete;
 
   // ModelProviderFactory impl:
   std::unique_ptr<ModelProvider> CreateProvider(

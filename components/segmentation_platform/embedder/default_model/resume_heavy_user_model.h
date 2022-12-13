@@ -20,8 +20,8 @@ class ResumeHeavyUserModel : public ModelProvider {
   ~ResumeHeavyUserModel() override = default;
 
   // Disallow copy/assign.
-  ResumeHeavyUserModel(ResumeHeavyUserModel&) = delete;
-  ResumeHeavyUserModel& operator=(ResumeHeavyUserModel&) = delete;
+  ResumeHeavyUserModel(const ResumeHeavyUserModel&) = delete;
+  ResumeHeavyUserModel& operator=(const ResumeHeavyUserModel&) = delete;
 
   static std::unique_ptr<Config> GetConfig();
 

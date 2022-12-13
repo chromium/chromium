@@ -22,8 +22,8 @@ class UkmConfig {
   UkmConfig();
   ~UkmConfig();
 
-  UkmConfig(UkmConfig&) = delete;
-  UkmConfig& operator=(UkmConfig&) = delete;
+  UkmConfig(const UkmConfig&) = delete;
+  UkmConfig& operator=(const UkmConfig&) = delete;
 
   // Merge all the events from the given |config|. Returns whether new UKM
   // events were added to the current config as a result of merging.

@@ -18,8 +18,8 @@ class PowerUserSegment : public ModelProvider {
   PowerUserSegment();
   ~PowerUserSegment() override = default;
 
-  PowerUserSegment(PowerUserSegment&) = delete;
-  PowerUserSegment& operator=(PowerUserSegment&) = delete;
+  PowerUserSegment(const PowerUserSegment&) = delete;
+  PowerUserSegment& operator=(const PowerUserSegment&) = delete;
 
   static std::unique_ptr<Config> GetConfig();
 

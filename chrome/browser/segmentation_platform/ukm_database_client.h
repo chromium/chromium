@@ -24,8 +24,8 @@ class UkmDatabaseClient {
  public:
   static UkmDatabaseClient& GetInstance();
 
-  UkmDatabaseClient(UkmDatabaseClient&) = delete;
-  UkmDatabaseClient& operator=(UkmDatabaseClient&) = delete;
+  UkmDatabaseClient(const UkmDatabaseClient&) = delete;
+  UkmDatabaseClient& operator=(const UkmDatabaseClient&) = delete;
 
   void PreProfileInit();
 

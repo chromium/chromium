@@ -19,8 +19,8 @@ class ShoppingUserModel : public ModelProvider {
   ~ShoppingUserModel() override = default;
 
   // Disallow copy/assign.
-  ShoppingUserModel(ShoppingUserModel&) = delete;
-  ShoppingUserModel& operator=(ShoppingUserModel&) = delete;
+  ShoppingUserModel(const ShoppingUserModel&) = delete;
+  ShoppingUserModel& operator=(const ShoppingUserModel&) = delete;
 
   static std::unique_ptr<Config> GetConfig();
 

@@ -36,8 +36,8 @@ class ModelExecutorImpl : public ModelExecutor {
       processing::FeatureListQueryProcessor* feature_list_query_processor);
   ~ModelExecutorImpl() override;
 
-  ModelExecutorImpl(ModelExecutorImpl&) = delete;
-  ModelExecutorImpl& operator=(ModelExecutorImpl&) = delete;
+  ModelExecutorImpl(const ModelExecutorImpl&) = delete;
+  ModelExecutorImpl& operator=(const ModelExecutorImpl&) = delete;
 
   // ModelExecutionManager impl:.
   void ExecuteModel(std::unique_ptr<ExecutionRequest> request) override;

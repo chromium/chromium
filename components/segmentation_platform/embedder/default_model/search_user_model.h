@@ -20,8 +20,8 @@ class SearchUserModel : public ModelProvider {
   ~SearchUserModel() override = default;
 
   // Disallow copy/assign.
-  SearchUserModel(SearchUserModel&) = delete;
-  SearchUserModel& operator=(SearchUserModel&) = delete;
+  SearchUserModel(const SearchUserModel&) = delete;
+  SearchUserModel& operator=(const SearchUserModel&) = delete;
 
   static std::unique_ptr<Config> GetConfig();
 

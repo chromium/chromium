@@ -16,8 +16,8 @@ class DummyUkmDataManager : public UkmDataManager {
   DummyUkmDataManager();
   ~DummyUkmDataManager() override;
 
-  DummyUkmDataManager(DummyUkmDataManager&) = delete;
-  DummyUkmDataManager& operator=(DummyUkmDataManager&) = delete;
+  DummyUkmDataManager(const DummyUkmDataManager&) = delete;
+  DummyUkmDataManager& operator=(const DummyUkmDataManager&) = delete;
 
   // UkmDataManager implementation:
   void Initialize(const base::FilePath& database_path,

@@ -29,8 +29,8 @@ class UkmDataManagerTestUtils {
   explicit UkmDataManagerTestUtils(ukm::TestUkmRecorder* ukm_recorder);
   ~UkmDataManagerTestUtils();
 
-  UkmDataManagerTestUtils(UkmDataManagerTestUtils&) = delete;
-  UkmDataManagerTestUtils& operator=(UkmDataManagerTestUtils&) = delete;
+  UkmDataManagerTestUtils(const UkmDataManagerTestUtils&) = delete;
+  UkmDataManagerTestUtils& operator=(const UkmDataManagerTestUtils&) = delete;
 
   // Must be called before the first profile initialization, sets up default
   // model overrides for the given `default_overrides`

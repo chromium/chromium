@@ -20,8 +20,8 @@ class IntentionalUserModel : public ModelProvider {
   ~IntentionalUserModel() override = default;
 
   // Disallow copy/assign.
-  IntentionalUserModel(IntentionalUserModel&) = delete;
-  IntentionalUserModel& operator=(IntentionalUserModel&) = delete;
+  IntentionalUserModel(const IntentionalUserModel&) = delete;
+  IntentionalUserModel& operator=(const IntentionalUserModel&) = delete;
 
   static std::unique_ptr<Config> GetConfig();
 
