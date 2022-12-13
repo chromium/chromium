@@ -1398,6 +1398,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
             GetLastCommittedEntry(), is_main_frame_navigation,
             params.document_sequence_number);
   }
+
   // Notify the last active entry that we have navigated away.
   if (is_main_frame_navigation && !is_same_document_navigation) {
     if (NavigationEntryImpl* navigation_entry = GetLastCommittedEntry()) {
@@ -3947,7 +3948,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           std::string() /* reduced_accept_language */,
           /*navigation_delivery_type=*/
           network::mojom::NavigationDeliveryType::kDefault,
-          /*view_transition_state=*/absl::nullopt);
+          /*view_transition_state=*/absl::nullopt,
+          /*not_restored_reasons=*/nullptr);
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->data();

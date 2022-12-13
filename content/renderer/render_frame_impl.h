@@ -76,7 +76,6 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
-#include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom.h"
@@ -448,7 +447,6 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
       mojom::CookieManagerInfoPtr cookie_manager_info,
       mojom::StorageInfoPtr storage_info,
-      blink::mojom::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons,
       mojom::NavigationClient::CommitNavigationCallback commit_callback);
   void CommitFailedNavigation(
       blink::mojom::CommonNavigationParamsPtr common_params,
@@ -957,7 +955,6 @@ class CONTENT_EXPORT RenderFrameImpl
       mojom::CookieManagerInfoPtr cookie_manager_info,
       mojom::StorageInfoPtr storage_info,
       std::unique_ptr<DocumentState> document_state,
-      blink::mojom::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons,
       std::unique_ptr<blink::WebNavigationParams> navigation_params);
 
   // Decodes a data url for navigation commit.

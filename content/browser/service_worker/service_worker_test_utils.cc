@@ -99,7 +99,6 @@ class FakeNavigationClient : public mojom::NavigationClient {
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
       mojom::CookieManagerInfoPtr cookie_manager_info,
       mojom::StorageInfoPtr storage_info,
-      blink::mojom::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons,
       CommitNavigationCallback callback) override {
     std::move(on_received_callback_).Run(std::move(container_info));
     std::move(callback).Run(MinimalDidCommitNavigationLoadParams(), nullptr);
@@ -263,7 +262,6 @@ void ServiceWorkerRemoteContainerEndpoint::BindForWindow(
       base::UnguessableToken::Create(),
       std::vector<blink::ParsedPermissionsPolicyDeclaration>(),
       CreateStubPolicyContainer(), mojo::NullRemote(), nullptr, nullptr,
-      /*not_restored_reasons=*/nullptr,
       base::BindOnce(
           [](mojom::DidCommitProvisionalLoadParamsPtr validated_params,
              mojom::DidCommitProvisionalLoadInterfaceParamsPtr

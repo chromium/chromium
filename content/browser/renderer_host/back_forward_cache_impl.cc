@@ -1515,7 +1515,6 @@ void BackForwardCacheCanStoreTreeResult::FlattenTreeHelper(
 std::unique_ptr<BackForwardCacheCanStoreTreeResult>
 BackForwardCacheCanStoreTreeResult::CreateEmptyTreeForNavigation(
     NavigationRequest* navigation) {
-  DCHECK(!navigation->GetRenderFrameHost()->IsNestedWithinFencedFrame());
   DCHECK(BackForwardCacheMetrics::IsCrossDocumentMainFrameHistoryNavigation(
       navigation));
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> empty_tree(
