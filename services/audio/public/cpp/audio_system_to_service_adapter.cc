@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_device_description.h"
@@ -180,6 +180,11 @@ OnInputDeviceInfoCallback WrapGetInputDeviceInfoReply(
       name, start_time, std::move(on_input_device_info_callback));
 }
 
+void ReportGetDeviceDescriptionResult(bool success) {
+  base::UmaHistogramBoolean("Media.AudioSystem.GetDeviceDescription.Result",
+                            success);
+}
+
 }  // namespace
 
 AudioSystemToServiceAdapter::AudioSystemToServiceAdapter(
@@ -240,16 +245,23 @@ void AudioSystemToServiceAdapter::HasOutputDevices(
 void AudioSystemToServiceAdapter::GetDeviceDescriptions(
     bool for_input,
     OnDeviceDescriptionsCallback on_descriptions_callback) {
+  base::OnceCallback reporting_wrapped_callback = base::BindOnce(
+      [](OnDeviceDescriptionsCallback cb, bool success,
+         media::AudioDeviceDescriptions descriptions) {
+        ReportGetDeviceDescriptionResult(success);
+        WrapCallbackWithDeviceNameLocalization(std::move(cb))
+            .Run(std::move(descriptions));
+      },
+      std::move(on_descriptions_callback));
   auto reply_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      WrapCallbackWithDeviceNameLocalization(
-          std::move(on_descriptions_callback)),
-      media::AudioDeviceDescriptions());
+      std::move(reporting_wrapped_callback),
+      /*success=*/false, media::AudioDeviceDescriptions());
   if (for_input)
-    GetSystemInfo()->GetInputDeviceDescriptions(
-        WrapGetDeviceDescriptionsReply(kInput, std::move(reply_callback)));
+    GetSystemInfo()->GetInputDeviceDescriptions(WrapGetDeviceDescriptionsReply(
+        kInput, base::BindOnce(std::move(reply_callback), /*success=*/true)));
   else
-    GetSystemInfo()->GetOutputDeviceDescriptions(
-        WrapGetDeviceDescriptionsReply(kOutput, std::move(reply_callback)));
+    GetSystemInfo()->GetOutputDeviceDescriptions(WrapGetDeviceDescriptionsReply(
+        kOutput, base::BindOnce(std::move(reply_callback), /*success=*/true)));
 }
 
 void AudioSystemToServiceAdapter::GetAssociatedOutputDeviceID(

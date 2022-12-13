@@ -1481,6 +1481,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.AudioSystem.GetDeviceDescription.Result"
+    enum="BooleanSuccess" expires_after="2023-05-13">
+  <owner>toprice@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <summary>
+    Records whether AudioSystemToServiceAdapter::GetDeviceDescriptions calls to
+    the audio service returned successfully, or failed and retured an default
+    empty list due to an audio service crash.
+  </summary>
+</histogram>
+
 <histogram name="Media.AudioThreadStatus" enum="AudioThreadStatus"
     expires_after="never">
 <!-- expires-never: Audio pipeline health metric. -->
