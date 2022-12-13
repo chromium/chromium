@@ -18,6 +18,10 @@ class PrivacyGuideMetricsDelegate {
      * Initial state of the MSBB when {@link MSBBFragment} is created.
      */
     private Boolean mInitialMsbbState;
+    /**
+     * Initial state of History Sync when {@link SyncFragment} is created.
+     */
+    private boolean mInitialHistorySyncState;
 
     /**
      * A method to record metrics on the next click of {@link MSBBFragment}
@@ -47,6 +51,31 @@ class PrivacyGuideMetricsDelegate {
     }
 
     /**
+     * A method to record metrics on the next click of {@link SyncFragment}.
+     */
+    private void recordMetricsOnNextForSyncCard() {
+        boolean currentValue = PrivacyGuideUtils.isHistorySyncEnabled();
+
+        int stateChange;
+
+        if (mInitialHistorySyncState && currentValue) {
+            stateChange = PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON;
+        } else if (mInitialHistorySyncState && !currentValue) {
+            stateChange = PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF;
+        } else if (!mInitialHistorySyncState && currentValue) {
+            stateChange = PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON;
+        } else {
+            stateChange = PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF;
+        }
+
+        // Record histogram comparing |mInitialHistorySyncState| and |currentValue|
+        RecordHistogram.recordEnumeratedHistogram("Settings.PrivacyGuide.SettingsStates",
+                stateChange, PrivacyGuideSettingsStates.MAX_VALUE);
+        // Record user action for clicking the next button on the Sync card
+        RecordUserAction.record("Settings.PrivacyGuide.NextClickHistorySync");
+    }
+
+    /**
      * A method to set the initial state of a card {@link PrivacyGuideFragment.FragmentType} in
      * Privacy Guide.
      * TODO(crbug.com/1238896): Support for other fragment types (SYNC, SAFE_BROWSING, COOKIES)
@@ -57,6 +86,10 @@ class PrivacyGuideMetricsDelegate {
         switch (fragmentType) {
             case PrivacyGuideFragment.FragmentType.MSBB: {
                 mInitialMsbbState = PrivacyGuideUtils.isMsbbEnabled();
+                break;
+            }
+            case PrivacyGuideFragment.FragmentType.SYNC: {
+                mInitialHistorySyncState = PrivacyGuideUtils.isHistorySyncEnabled();
                 break;
             }
         }
@@ -73,6 +106,10 @@ class PrivacyGuideMetricsDelegate {
         switch (fragmentType) {
             case PrivacyGuideFragment.FragmentType.MSBB: {
                 recordMetricsOnNextForMSBBCard();
+                break;
+            }
+            case PrivacyGuideFragment.FragmentType.SYNC: {
+                recordMetricsOnNextForSyncCard();
                 break;
             }
         }

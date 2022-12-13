@@ -6,6 +6,10 @@ package org.chromium.chrome.browser.privacy_guide;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
+import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
+
+import java.util.Set;
 
 /**
  * A utility class for Privacy Guide that fetches the current state of {@link
@@ -17,5 +21,9 @@ class PrivacyGuideUtils {
     public static boolean isMsbbEnabled() {
         return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
                 Profile.getLastUsedRegularProfile());
+    }
+    public static boolean isHistorySyncEnabled() {
+        Set<Integer> syncTypes = SyncService.get().getSelectedTypes();
+        return syncTypes.contains(UserSelectableType.HISTORY);
     }
 }

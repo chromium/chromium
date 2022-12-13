@@ -26,7 +26,11 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJni;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.content_settings.CookieControlsMode;
+import org.chromium.components.sync.UserSelectableType;
+
+import java.util.Set;
 
 /**
  * JUnit tests of the class {@link PrivacyGuideMetricsDelegate}.
@@ -44,6 +48,10 @@ public class PrivacyGuideMetricsDelegateTest {
     private Profile mProfile;
     @Mock
     private UnifiedConsentServiceBridge.Natives mNativeMock;
+    @Mock
+    private SyncService mSyncService;
+    @Mock
+    private Set<Integer> mSyncTypes;
 
     private final PrivacyGuideMetricsDelegate mPrivacyGuideMetricsDelegate =
             new PrivacyGuideMetricsDelegate();
@@ -53,11 +61,19 @@ public class PrivacyGuideMetricsDelegateTest {
     public void setUp() {
         Profile.setLastUsedProfileForTesting(mProfile);
         mocker.mock(UnifiedConsentServiceBridgeJni.TEST_HOOKS, mNativeMock);
+        SyncService.overrideForTests(mSyncService);
+        when(mSyncService.getSelectedTypes()).thenReturn(mSyncTypes);
     }
 
     private void mockMSBBState(boolean initialMSBBState, boolean finalMSBBState) {
         when(mNativeMock.isUrlKeyedAnonymizedDataCollectionEnabled(mProfile))
                 .thenReturn(initialMSBBState, finalMSBBState);
+    }
+
+    private void mockHistorySyncState(
+            boolean initialHistorySyncState, boolean finalHistorySyncState) {
+        when(mSyncTypes.contains(UserSelectableType.HISTORY))
+                .thenReturn(initialHistorySyncState, finalHistorySyncState);
     }
 
     private void triggerMetricsOnNext(@PrivacyGuideFragment.FragmentType int fragmentType) {
@@ -123,6 +139,67 @@ public class PrivacyGuideMetricsDelegateTest {
         mockMSBBState(false, false);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.MSBB);
         assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.NextClickMSBB"));
+    }
+
+    @Test
+    @SmallTest
+    public void testSync_offToOffSettingsStatesHistogram() {
+        mockHistorySyncState(false, false);
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF));
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SYNC);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF));
+    }
+
+    @Test
+    @SmallTest
+    public void testSync_offToOnSettingsStatesHistogram() {
+        mockHistorySyncState(false, true);
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON));
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SYNC);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON));
+    }
+
+    @Test
+    @SmallTest
+    public void testSync_onToOffSettingsStatesHistogram() {
+        mockHistorySyncState(true, false);
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF));
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SYNC);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF));
+    }
+
+    @Test
+    @SmallTest
+    public void testSync_onToOnSettingsStatesHistogram() {
+        mockHistorySyncState(true, true);
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON));
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SYNC);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON));
+    }
+
+    @Test
+    @SmallTest
+    public void testSync_nextClickUserAction() {
+        mockHistorySyncState(false, false);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SYNC);
+        assertTrue(
+                mActionTester.getActions().contains("Settings.PrivacyGuide.NextClickHistorySync"));
     }
 
     @Test
