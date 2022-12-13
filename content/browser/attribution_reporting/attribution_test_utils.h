@@ -8,18 +8,14 @@
 #include <stdint.h>
 
 #include <iosfwd>
-#include <limits>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/guid.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
@@ -36,7 +32,6 @@
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
@@ -53,7 +48,6 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/attribution_config.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -61,7 +55,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
-#include "url/origin.h"
 
 namespace mojo {
 
@@ -70,8 +63,13 @@ class PendingReceiver;
 
 }  // namespace mojo
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
+class AttributionDataHostManager;
 class AttributionObserver;
 class AttributionTrigger;
 
@@ -166,55 +164,7 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
   mojo::Receiver<blink::mojom::AttributionDataHost> receiver_{this};
 };
 
-class MockDataHostManager : public AttributionDataHostManager {
- public:
-  MockDataHostManager();
-  ~MockDataHostManager() override;
-
-  MOCK_METHOD(
-      void,
-      RegisterDataHost,
-      (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-       attribution_reporting::SuitableOrigin context_origin,
-       bool is_within_fenced_frame,
-       blink::mojom::AttributionRegistrationType),
-      (override));
-
-  MOCK_METHOD(
-      bool,
-      RegisterNavigationDataHost,
-      (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-       const blink::AttributionSrcToken& attribution_src_token,
-       AttributionInputEvent input_event,
-       blink::mojom::AttributionNavigationType),
-      (override));
-
-  MOCK_METHOD(void,
-              NotifyNavigationRedirectRegistration,
-              (const blink::AttributionSrcToken& attribution_src_token,
-               std::string header_value,
-               attribution_reporting::SuitableOrigin reporting_origin,
-               const attribution_reporting::SuitableOrigin& source_origin,
-               AttributionInputEvent input_event,
-               blink::mojom::AttributionNavigationType),
-              (override));
-
-  MOCK_METHOD(void,
-              NotifyNavigationForDataHost,
-              (const blink::AttributionSrcToken& attribution_src_token,
-               const attribution_reporting::SuitableOrigin& source_origin,
-               blink::mojom::AttributionNavigationType),
-              (override));
-
-  MOCK_METHOD(void,
-              NotifyNavigationFailure,
-              (const blink::AttributionSrcToken& attribution_src_token),
-              (override));
-};
-
 base::GUID DefaultExternalReportID();
-
-std::vector<base::GUID> DefaultExternalReportIDs(size_t size);
 
 class ConfigurableStorageDelegate : public AttributionStorageDelegate {
  public:

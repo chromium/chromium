@@ -4,7 +4,6 @@
 
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 
-#include <limits.h>
 #include <stdint.h>
 
 #include <algorithm>
@@ -13,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -32,15 +30,17 @@
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/public/browser/attribution_config.h"
+#include "content/public/browser/navigation_handle.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/attribution_reporting/attribution_input_event_tracker_android.h"
@@ -133,20 +133,12 @@ void MockDataHost::TriggerDataAvailable(
   wait_loop_.Quit();
 }
 
-MockDataHostManager::MockDataHostManager() = default;
-
-MockDataHostManager::~MockDataHostManager() = default;
-
 MockAttributionObserver::MockAttributionObserver() = default;
 
 MockAttributionObserver::~MockAttributionObserver() = default;
 
 base::GUID DefaultExternalReportID() {
   return base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e");
-}
-
-std::vector<base::GUID> DefaultExternalReportIDs(size_t size) {
-  return std::vector<base::GUID>(size, DefaultExternalReportID());
 }
 
 ConfigurableStorageDelegate::ConfigurableStorageDelegate()

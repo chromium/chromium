@@ -57,6 +57,52 @@ using ::blink::mojom::AttributionRegistrationType;
 
 const char kConversionUrl[] = "https://b.com";
 
+class MockDataHostManager : public AttributionDataHostManager {
+ public:
+  MockDataHostManager() = default;
+  ~MockDataHostManager() override = default;
+
+  MOCK_METHOD(
+      void,
+      RegisterDataHost,
+      (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+       SuitableOrigin context_origin,
+       bool is_within_fenced_frame,
+       AttributionRegistrationType),
+      (override));
+
+  MOCK_METHOD(
+      bool,
+      RegisterNavigationDataHost,
+      (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+       const blink::AttributionSrcToken& attribution_src_token,
+       AttributionInputEvent input_event,
+       AttributionNavigationType),
+      (override));
+
+  MOCK_METHOD(void,
+              NotifyNavigationRedirectRegistration,
+              (const blink::AttributionSrcToken& attribution_src_token,
+               std::string header_value,
+               SuitableOrigin reporting_origin,
+               const SuitableOrigin& source_origin,
+               AttributionInputEvent input_event,
+               AttributionNavigationType),
+              (override));
+
+  MOCK_METHOD(void,
+              NotifyNavigationForDataHost,
+              (const blink::AttributionSrcToken& attribution_src_token,
+               const SuitableOrigin& source_origin,
+               AttributionNavigationType),
+              (override));
+
+  MOCK_METHOD(void,
+              NotifyNavigationFailure,
+              (const blink::AttributionSrcToken& attribution_src_token),
+              (override));
+};
+
 class AttributionHostTest : public RenderViewHostTestHarness {
  public:
   AttributionHostTest() = default;
