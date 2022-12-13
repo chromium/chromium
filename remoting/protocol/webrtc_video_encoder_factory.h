@@ -12,7 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/base/session_options.h"
+#include "third_party/webrtc/api/video_codecs/av1_profile.h"
+#include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
+#include "third_party/webrtc/api/video_codecs/vp9_profile.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 
 namespace remoting::protocol {
@@ -40,7 +43,19 @@ class WebrtcVideoEncoderFactory : public webrtc::VideoEncoderFactory {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
-  std::vector<webrtc::SdpVideoFormat> formats_;
+  std::vector<webrtc::SdpVideoFormat> supported_formats_{
+      webrtc::SdpVideoFormat("VP8"),
+      webrtc::SdpVideoFormat("VP9"),
+      webrtc::SdpVideoFormat(
+          "VP9",
+          {{webrtc::kVP9FmtpProfileId,
+            webrtc::VP9ProfileToString(webrtc::VP9Profile::kProfile1)}}),
+      webrtc::SdpVideoFormat("AV1"),
+      webrtc::SdpVideoFormat(
+          "AV1",
+          {{webrtc::kAV1FmtpProfile,
+            webrtc::AV1ProfileToString(webrtc::AV1Profile::kProfile1)
+                .data()}})};
 
   SessionOptions session_options_;
 
