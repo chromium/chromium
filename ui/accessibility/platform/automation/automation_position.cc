@@ -125,7 +125,7 @@ gin::ObjectTemplateBuilder AutomationPosition::GetObjectTemplateBuilder(
 }
 
 std::string AutomationPosition::GetTreeID(gin::Arguments* arguments) {
-  return position_->GetTreeID().ToString();
+  return position_->tree_id().ToString();
 }
 
 int AutomationPosition::GetAnchorID(gin::Arguments* arguments) {

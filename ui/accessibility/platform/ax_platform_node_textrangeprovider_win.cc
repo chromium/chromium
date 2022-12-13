@@ -595,7 +595,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
 
   // Iterate over anchor positions
   for (auto it = normalized_start->AsLeafTextPosition();
-       it->anchor_id() != end->anchor_id() || it->GetTree() != end->GetTree();
+       it->anchor_id() != end->anchor_id() || it->tree_id() != end->tree_id();
        it = it->CreateNextAnchorPosition()) {
     // If the iterator creates a null position, then it has likely overrun the
     // range, return failure. This is unexpected but may happen if the range
@@ -621,7 +621,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
     base::win::VariantVector current_value;
     const bool at_end_leaf_text_anchor =
         it->anchor_id() == end_leaf_text_position->anchor_id() &&
-        it->GetTree() == end_leaf_text_position->GetTree();
+        it->tree_id() == end_leaf_text_position->tree_id();
     const absl::optional<int> start_offset =
         it->IsTextPosition() ? absl::make_optional(it->text_offset())
                              : absl::nullopt;
@@ -923,7 +923,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::Select() {
   // Blink only supports selections within a single tree. So if start_ and  end_
   // are in different trees, we can't directly pass them to the render process
   // for selection.
-  if (selection_start->GetTree() != selection_end->GetTree()) {
+  if (selection_start->tree_id() != selection_end->tree_id()) {
     // Prioritize the end position's tree, as a selection's focus object is the
     // end of a selection.
     selection_start = selection_end->CreatePositionAtStartOfAXTree();
@@ -931,7 +931,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::Select() {
 
   DCHECK(!selection_start->IsNullPosition());
   DCHECK(!selection_end->IsNullPosition());
-  DCHECK_EQ(selection_start->GetTree(), selection_end->GetTree());
+  DCHECK_EQ(selection_start->tree_id(), selection_end->tree_id());
 
   // TODO(crbug.com/1124051): Blink does not support selection on the list
   // markers. So if |selection_start| or |selection_end| are in list markers, we
@@ -943,7 +943,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::Select() {
   }
 
   AXPlatformNodeDelegate* delegate =
-      GetDelegate(selection_start->GetTreeID(), selection_start->anchor_id());
+      GetDelegate(selection_start->tree_id(), selection_start->anchor_id());
   DCHECK(delegate);
 
   AXNodeRange new_selection_range(std::move(selection_start),
@@ -992,7 +992,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ScrollIntoView(BOOL align_to_top) {
   const AXNode* common_ancestor_anchor = start_common_ancestor->GetAnchor();
   DCHECK(common_ancestor_anchor == end_common_ancestor->GetAnchor());
 
-  const AXTreeID common_ancestor_tree_id = start_common_ancestor->GetTreeID();
+  const AXTreeID common_ancestor_tree_id = start_common_ancestor->tree_id();
   const AXPlatformNodeDelegate* root_delegate =
       GetRootDelegate(common_ancestor_tree_id);
   DCHECK(root_delegate);
@@ -1178,7 +1178,7 @@ AXPlatformNodeWin* AXPlatformNodeTextRangeProviderWin::GetOwner() const {
 
 AXPlatformNodeDelegate* AXPlatformNodeTextRangeProviderWin::GetDelegate(
     const AXPositionInstanceType* position) const {
-  return GetDelegate(position->GetTreeID(), position->anchor_id());
+  return GetDelegate(position->tree_id(), position->anchor_id());
 }
 
 AXPlatformNodeDelegate* AXPlatformNodeTextRangeProviderWin::GetDelegate(
@@ -1631,52 +1631,54 @@ AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::~TextRangeEndpoints() {
 
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::SetStart(
     AXPositionInstance new_start) {
-  bool did_tree_change = start_->GetTree() != new_start->GetTree();
+  bool did_tree_change = start_->tree_id() != new_start->tree_id();
   // TODO(bebeaudr): We can't use IsNullPosition() here because of
   // https://crbug.com/1152939. Once this is fixed, we can go back to
   // IsNullPosition().
   if (did_tree_change && start_->kind() != AXPositionKind::NULL_POSITION &&
-      start_->GetTree() != end_->GetTree()) {
-    RemoveObserver(start_);
+      start_->tree_id() != end_->tree_id()) {
+    RemoveObserver(start_->tree_id());
   }
 
   start_ = std::move(new_start);
 
   if (did_tree_change && !start_->IsNullPosition() &&
-      start_->GetTree() != end_->GetTree()) {
-    AddObserver(start_);
+      start_->tree_id() != end_->tree_id()) {
+    AddObserver(start_->tree_id());
   }
 }
 
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::SetEnd(
     AXPositionInstance new_end) {
-  bool did_tree_change = end_->GetTree() != new_end->GetTree();
+  bool did_tree_change = end_->tree_id() != new_end->tree_id();
   // TODO(bebeaudr): We can't use IsNullPosition() here because of
   // https://crbug.com/1152939. Once this is fixed, we can go back to
   // IsNullPosition().
   if (did_tree_change && end_->kind() != AXPositionKind::NULL_POSITION &&
-      end_->GetTree() != start_->GetTree()) {
-    RemoveObserver(end_);
+      end_->tree_id() != start_->tree_id()) {
+    RemoveObserver(end_->tree_id());
   }
 
   end_ = std::move(new_end);
 
   if (did_tree_change && !end_->IsNullPosition() &&
-      start_->GetTree() != end_->GetTree()) {
-    AddObserver(end_);
+      start_->tree_id() != end_->tree_id()) {
+    AddObserver(end_->tree_id());
   }
 }
 
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::AddObserver(
-    const AXPositionInstance& position) {
-  if (position->GetTree())
-    position->GetTree()->AddObserver(this);
+    const AXTreeID tree_id) {
+  AXTreeManager* ax_tree_manager = AXTreeManager::FromID(tree_id);
+  DCHECK(ax_tree_manager);
+  ax_tree_manager->ax_tree()->AddObserver(this);
 }
 
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::RemoveObserver(
-    const AXPositionInstance& position) {
-  if (position->GetTree())
-    position->GetTree()->RemoveObserver(this);
+    const AXTreeID tree_id) {
+  AXTreeManager* ax_tree_manager = AXTreeManager::FromID(tree_id);
+  if (ax_tree_manager)
+    ax_tree_manager->ax_tree()->RemoveObserver(this);
 }
 
 // Ensures that our endpoints are located on non-deleted nodes (step 1, case A
@@ -1702,7 +1704,7 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
                                      bool is_start_endpoint) {
   AXPositionInstance endpoint =
       is_start_endpoint ? start_->Clone() : end_->Clone();
-  if (tree != endpoint->GetTree())
+  if (tree->GetAXTreeID() != endpoint->tree_id())
     return;
 
   // When the subtree of the root node will be deleted, we can be certain that
@@ -1814,11 +1816,9 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::OnNodeDeleted(
 
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
     OnTreeManagerWillBeRemoved(AXTreeID previous_tree_id) {
-  if (start_->GetTreeID() == previous_tree_id ||
-      end_->GetTreeID() == previous_tree_id) {
-    AXTreeManager* ax_tree_manager = AXTreeManager::FromID(previous_tree_id);
-    if (ax_tree_manager)
-      ax_tree_manager->ax_tree()->RemoveObserver(this);
+  if (start_->tree_id() == previous_tree_id ||
+      end_->tree_id() == previous_tree_id) {
+    RemoveObserver(previous_tree_id);
   }
 }
 

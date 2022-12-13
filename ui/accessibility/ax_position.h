@@ -447,7 +447,8 @@ class AXPosition {
   AXPositionKind kind() const { return kind_; }
 
   // Deprecated.
-  // TODO(crbug.com/1362839): replace on GetAnchorID().
+  // TODO(crbug.com/1362839): replace on GetTreeID()/GetAnchorID().
+  AXTreeID tree_id() const { return GetTreeID(); }
   AXNodeID anchor_id() const { return GetAnchorID(); }
 
   // Returns true if this position is within an "empty object", i.e. within a
@@ -1284,7 +1285,7 @@ class AXPosition {
     if (previous_anchor->IsNullPosition())
       return true;
 
-    return previous_anchor->GetTree() != GetTree();
+    return previous_anchor->tree_id() != tree_id();
   }
 
   // Returns true if this position is at the end of the current accessibility
