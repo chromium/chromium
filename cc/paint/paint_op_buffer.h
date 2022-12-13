@@ -310,6 +310,12 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   class CompositeIterator;
   class PlaybackFoldingIterator;
 
+  // STL-like container support:
+  using value_type = PaintOp;
+  using const_iterator = Iterator;
+  Iterator begin() const;
+  Iterator end() const;
+
  private:
   friend class DisplayItemList;
   friend class PaintOp;
