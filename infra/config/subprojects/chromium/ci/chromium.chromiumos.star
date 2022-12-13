@@ -36,6 +36,20 @@ consoles.console_view(
 
 ci.builder(
     name = "linux-ash-chromium-generator-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["chromeos"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-chromiumos-archive",
+    ),
     triggered_by = [],
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
