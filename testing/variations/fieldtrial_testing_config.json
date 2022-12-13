@@ -7452,6 +7452,23 @@
             ]
         }
     ],
+    "OmniboxOnFocusMVCarouseliOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxFocusTriggersContextualWebZeroSuggest",
+                        "OmniboxFocusTriggersSRPZeroSuggest",
+                        "OmniboxMostVisitedTiles"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxPedalsActionsIOS": [
         {
             "platforms": [
