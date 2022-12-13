@@ -110,7 +110,11 @@ class SkiaGoldProperties():
       # heuristic to determine whether we're running on a workstation or a bot.
       # This should always be set on swarming, but would be strange to be set on
       # a workstation.
-      self._local_pixel_tests = 'SWARMING_SERVER' not in os.environ
+      # However, since Skylab technically isn't swarming, we need to look for
+      # an alternative environment variable there.
+      in_swarming = 'SWARMING_SERVER' in os.environ
+      in_skylab = bool(int(os.environ.get('RUNNING_IN_SKYLAB', '0')))
+      self._local_pixel_tests = not (in_swarming or in_skylab)
       if self._local_pixel_tests:
         logging.warning(
             'Automatically determined that test is running on a workstation')

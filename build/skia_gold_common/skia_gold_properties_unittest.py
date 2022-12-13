@@ -133,11 +133,15 @@ class SkiaGoldPropertiesCalculationTest(unittest.TestCase):
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     with mock.patch.dict(os.environ, {}, clear=True):
       self.assertTrue(sgp.local_pixel_tests)
+    with mock.patch.dict(os.environ, {'RUNNING_IN_SKYLAB': '0'}, clear=True):
+      self.assertTrue(sgp.local_pixel_tests)
 
   def testLocalPixelTests_determineFalse(self) -> None:
     args = createSkiaGoldArgs()
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     with mock.patch.dict(os.environ, {'SWARMING_SERVER': ''}, clear=True):
+      self.assertFalse(sgp.local_pixel_tests)
+    with mock.patch.dict(os.environ, {'RUNNING_IN_SKYLAB': '1'}, clear=True):
       self.assertFalse(sgp.local_pixel_tests)
 
   def testIsTryjobRun_noIssue(self) -> None:
