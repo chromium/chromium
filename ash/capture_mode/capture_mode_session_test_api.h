@@ -9,17 +9,15 @@
 
 namespace ash {
 
-class CaptureLabelView;
-class CaptureModeBarView;
 class CaptureModeSession;
+class CaptureModeBarView;
 class CaptureModeSettingsView;
-class MagnifierGlass;
 class UserNudgeController;
+class MagnifierGlass;
 
 // Wrapper for CaptureModeSession that exposes internal state to test functions.
 class CaptureModeSessionTestApi {
  public:
-  CaptureModeSessionTestApi();
   explicit CaptureModeSessionTestApi(CaptureModeSession* session);
 
   CaptureModeSessionTestApi(CaptureModeSessionTestApi&) = delete;
@@ -30,13 +28,9 @@ class CaptureModeSessionTestApi {
 
   CaptureModeSettingsView* GetCaptureModeSettingsView();
 
-  CaptureLabelView* GetCaptureLabelView();
-
   views::Widget* GetCaptureModeSettingsWidget();
 
   views::Widget* GetCaptureLabelWidget();
-
-  views::Widget* GetRecordingTypeMenuWidget();
 
   views::Widget* GetDimensionsLabelWidget();
 
