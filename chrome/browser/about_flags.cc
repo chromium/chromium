@@ -1313,6 +1313,19 @@ const FeatureEntry::FeatureVariation kJourneysVisitDedupingVariations[] = {
      std::size(kJourneysVisitDedupingUseHostParams), nullptr},
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kLocalWebApprovalsPreferLocalParams[] = {
+    {"preferred_button", "local"}};
+const FeatureEntry::FeatureParam kLocalWebApprovalsPreferRemoteParams[] = {
+    {"preferred_button", "remote"}};
+const FeatureEntry::FeatureVariation kLocalWebApprovalsVariations[] = {
+    {"Prefer Local", kLocalWebApprovalsPreferLocalParams,
+     std::size(kLocalWebApprovalsPreferLocalParams), nullptr},
+    {"Prefer Remote", kLocalWebApprovalsPreferRemoteParams,
+     std::size(kLocalWebApprovalsPreferRemoteParams), nullptr},
+};
+#endif
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 const FeatureEntry::FeatureParam
@@ -7051,16 +7064,18 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-local-web-approvals", flag_descriptions::kLocalWebApprovalsName,
-     flag_descriptions::kLocalWebApprovalsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(supervised_users::kLocalWebApprovals)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-privacy-indicators", flag_descriptions::kPrivacyIndicatorsName,
      flag_descriptions::kPrivacyIndicatorsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPrivacyIndicators)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+    {"enable-local-web-approvals", flag_descriptions::kLocalWebApprovalsName,
+     flag_descriptions::kLocalWebApprovalsDescription, kOsCrOS | kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(supervised_users::kLocalWebApprovals,
+                                    kLocalWebApprovalsVariations,
+                                    "LocalWebApprovals")},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     {"enable-web-filter-interstitial-refresh",

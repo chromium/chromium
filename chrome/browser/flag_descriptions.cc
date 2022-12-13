@@ -226,8 +226,7 @@ const char kTextBasedAudioDescriptionDescription[] =
 const char kWebFilterInterstitialRefreshName[] =
     "Web filter interstitial refresh.";
 const char kWebFilterInterstitialRefreshDescription[] =
-    "Enable web filter interstitial refresh for Family Link users on Chrome "
-    "OS.";
+    "Enable web filter interstitial refresh for Family Link users.";
 #endif  // ENABLE_SUPERVISED_USERS
 
 const char kUpcomingSharingFeaturesName[] = "Enable upcoming sharing features.";
@@ -5664,11 +5663,6 @@ const char kListAllDisplayModesName[] = "List all display modes";
 const char kListAllDisplayModesDescription[] =
     "Enables listing all external displays' modes in the display settings.";
 
-const char kLocalWebApprovalsName[] = "Local web approvals";
-const char kLocalWebApprovalsDescription[] =
-    "Enable local web approvals for Family Link users on ChromeOS. Web filter "
-    "interstitial refresh needs to also be enabled.";
-
 const char kEnableHardwareMirrorModeName[] = "Enable Hardware Mirror Mode";
 const char kEnableHardwareMirrorModeDescription[] =
     "Enables hardware support when multiple displays are set to mirror mode.";
@@ -6362,6 +6356,13 @@ const char kFollowingFeedSidepanelDescription[] =
     "Enables the following feed in the sidepanel.";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+const char kLocalWebApprovalsName[] = "Local web approvals";
+const char kLocalWebApprovalsDescription[] =
+    "Enable local web approvals for Family Link users. Web filter interstitial "
+    "refresh needs to also be enabled.";
+#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 const char kWebShareName[] = "Web Share";
