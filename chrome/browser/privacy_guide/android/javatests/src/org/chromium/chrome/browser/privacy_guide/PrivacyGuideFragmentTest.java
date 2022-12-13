@@ -399,7 +399,7 @@ public class PrivacyGuideFragmentTest {
     @Test
     @SmallTest
     @Feature({"PrivacyGuide"})
-    public void testSyncCard_backButton() {
+    public void testSyncCard_backClickHistorySyncUserAction() {
         launchPrivacyGuide();
         mActionTester = new UserActionTester();
 
