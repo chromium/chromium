@@ -36,6 +36,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/omnibox_proto/entity_info.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "url/url_constants.h"
 
@@ -164,6 +165,29 @@ omnibox::GroupSection ChromeGroupSectionForRemoteGroupIndex(
     // Return a default section if we don't have any reserved sections left.
     return omnibox::SECTION_DEFAULT;
   }
+}
+
+// Decodes a proto object from its serialized Base64 string representation.
+template <typename T>
+bool DecodeProtoFromBase64(const std::string* encoded_data, T& result_proto) {
+  if (!encoded_data || encoded_data->empty()) {
+    return false;
+  }
+
+  std::string decoded_data;
+  if (!base::Base64Decode(*encoded_data, &decoded_data)) {
+    return false;
+  }
+
+  if (decoded_data.empty()) {
+    return false;
+  }
+
+  if (!result_proto.ParseFromString(decoded_data)) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -615,13 +639,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
     }
 
     const auto* groups_info_string = extras.FindStringKey("google:groupsinfo");
-    std::string groups_info_decoded;
-    if (groups_info_string && !groups_info_string->empty() &&
-        base::Base64Decode(*groups_info_string, &groups_info_decoded) &&
-        !groups_info_decoded.empty()) {
-      groups_info_parsed_from_proto =
-          groups_info.ParseFromString(groups_info_decoded);
-    }
+    groups_info_parsed_from_proto = DecodeProtoFromBase64<omnibox::GroupsInfo>(
+        groups_info_string, groups_info);
 
     const base::Value* header_texts = extras.FindDictKey("google:headertexts");
     if (!groups_info_parsed_from_proto && header_texts) {
@@ -783,25 +802,41 @@ bool SearchSuggestionParser::ParseSuggestResults(
       std::string additional_query_params;
       std::string entity_id;
       absl::optional<int> suggestion_group_id;
+      omnibox::EntityInfo entity_info;
 
       if (suggestion_details &&
           suggestion_details->GetList()[index].is_dict() &&
           !suggestion_details->GetList()[index].DictEmpty()) {
         const base::Value& suggestion_detail =
             suggestion_details->GetList()[index];
-        match_contents =
-            base::UTF8ToUTF16(FindStringKeyOrEmpty(suggestion_detail, "t"));
+
+        const auto* entity_info_string =
+            suggestion_detail.FindStringKey("google:entityinfo");
+
+        // Extract data from proto field, but fall back to individual JSON
+        // fields if necessary.
+        if (!DecodeProtoFromBase64<omnibox::EntityInfo>(entity_info_string,
+                                                        entity_info)) {
+          entity_info.set_name(FindStringKeyOrEmpty(suggestion_detail, "t"));
+          entity_info.set_annotation(
+              FindStringKeyOrEmpty(suggestion_detail, "a"));
+          entity_info.set_dominant_color(
+              FindStringKeyOrEmpty(suggestion_detail, "dc"));
+          entity_info.set_image_url(
+              FindStringKeyOrEmpty(suggestion_detail, "i"));
+          entity_info.set_entity_id(
+              FindStringKeyOrEmpty(suggestion_detail, "zae"));
+          entity_info.set_suggest_search_parameters(
+              FindStringKeyOrEmpty(suggestion_detail, "q"));
+        }
+
+        match_contents = base::UTF8ToUTF16(entity_info.name());
         if (match_contents.empty()) {
           match_contents = suggestion;
         }
+
         match_contents_prefix =
             base::UTF8ToUTF16(FindStringKeyOrEmpty(suggestion_detail, "mp"));
-        annotation =
-            base::UTF8ToUTF16(FindStringKeyOrEmpty(suggestion_detail, "a"));
-        image_dominant_color = FindStringKeyOrEmpty(suggestion_detail, "dc");
-        image_url = FindStringKeyOrEmpty(suggestion_detail, "i");
-        additional_query_params = FindStringKeyOrEmpty(suggestion_detail, "q");
-        entity_id = FindStringKeyOrEmpty(suggestion_detail, "zae");
 
         // Suggestion group Id.
         suggestion_group_id = suggestion_detail.FindIntKey("zl");
@@ -828,10 +863,11 @@ bool SearchSuggestionParser::ParseSuggestResults(
       results->suggest_results.push_back(SuggestResult(
           suggestion, match_type, subtypes[index],
           base::CollapseWhitespace(match_contents, false),
-          match_contents_prefix, annotation, additional_query_params, entity_id,
-          deletion_url, image_dominant_color, image_url, is_keyword_result,
-          relevance, relevances != nullptr, should_prefetch, should_prerender,
-          trimmed_input));
+          match_contents_prefix, base::UTF8ToUTF16(entity_info.annotation()),
+          entity_info.suggest_search_parameters(), entity_info.entity_id(),
+          deletion_url, entity_info.dominant_color(), entity_info.image_url(),
+          is_keyword_result, relevance, relevances != nullptr, should_prefetch,
+          should_prerender, trimmed_input));
 
       if (answer_parsed_successfully) {
         results->suggest_results.back().SetAnswer(answer);

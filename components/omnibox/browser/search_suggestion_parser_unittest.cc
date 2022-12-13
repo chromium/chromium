@@ -12,10 +12,21 @@
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/entity_info.pb.h"
 
 namespace {
 
-std::string SerializeGroupsInfo(const omnibox::GroupsInfo& groups_info) {
+std::string SerializeAndEncodeEntityInfo(
+    const omnibox::EntityInfo& entity_info) {
+  std::string serialized_entity_info;
+  entity_info.SerializeToString(&serialized_entity_info);
+  std::string encoded_entity_info;
+  base::Base64Encode(serialized_entity_info, &encoded_entity_info);
+  return encoded_entity_info;
+}
+
+std::string SerializeAndEncodeGroupsInfo(
+    const omnibox::GroupsInfo& groups_info) {
   std::string serialized_groups_info;
   groups_info.SerializeToString(&serialized_groups_info);
   std::string encoded_groups_info;
@@ -740,6 +751,96 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
   }
 }
 
+TEST(SearchSuggestionParserTest, ParseSuggestionEntityInfo) {
+  TestSchemeClassifier scheme_classifier;
+  AutocompleteInput input(u"the m", metrics::OmniboxEventProto::NTP_REALBOX,
+                          scheme_classifier);
+
+  std::string json_data = R"([
+    "the m",
+    ["the menu", "the menu", "the midnight club"],
+    ["", "", ""],
+    [],
+    {
+      "google:clientdata": {
+        "bpc": false,
+        "tlw": false
+      },
+      "google:suggestdetail": [
+        {},
+        {
+          "a": "2022 film",
+          "dc": "#424242",
+          "i": "https://encrypted-tbn0.gstatic.com/images?q=the+menu",
+          "q": "gs_ssp=eJzj4tVP1zc0LCwoKssryyg3YPTiKMlIVchNzSsFAGrSCGQ",
+          "t": "The Menu",
+          "zae": "/g/11qprvnvhw"
+        },
+        {
+          "a": "Thriller series",
+          "dc": "#283e75",
+          "i": "https://encrypted-tbn0.gstatic.com/images?q=the+midnight+club",
+          "q": "gs_ssp=eJzj4tVP1zc0zMqrNCvJNkwyYPQSLMlIVcjNTMnLTM8oUUjOKU0CALmyCz8",
+          "t": "The Midnight Club",
+          "zae": "/g/11jny6tk1b"
+        }
+      ],
+      "google:suggestrelevance": [701, 700, 553],
+      "google:suggestsubtypes": [
+        [512, 433, 131, 355],
+        [131, 433, 512],
+        [512, 433]
+      ],
+      "google:suggesttype": ["QUERY", "ENTITY", "ENTITY"],
+      "google:verbatimrelevance": 851
+    }])";
+
+  absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  ASSERT_TRUE(root_val);
+
+  SearchSuggestionParser::Results results;
+  ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
+      *root_val, input, scheme_classifier, /*default_result_relevance=*/400,
+      /*is_keyword_result=*/false, &results));
+
+  ASSERT_EQ(3U, results.suggest_results.size());
+
+  // For each suggestion, verify that the JSON fields were correctly parsed.
+  ASSERT_EQ(u"the menu", results.suggest_results[0].suggestion());
+  ASSERT_EQ(u"", results.suggest_results[0].annotation());
+  ASSERT_EQ("", results.suggest_results[0].image_dominant_color());
+  ASSERT_EQ("", results.suggest_results[0].image_url().spec());
+  ASSERT_EQ("", results.suggest_results[0].additional_query_params());
+  // Empty "t" value from server results in suggestion being used instead.
+  ASSERT_EQ(u"the menu", results.suggest_results[0].match_contents());
+  ASSERT_EQ("", results.suggest_results[0].entity_id());
+
+  ASSERT_EQ(u"the menu", results.suggest_results[1].suggestion());
+  ASSERT_EQ(u"2022 film", results.suggest_results[1].annotation());
+  ASSERT_EQ("#424242", results.suggest_results[1].image_dominant_color());
+  ASSERT_EQ(
+      "https://encrypted-tbn0.gstatic.com/"
+      "images?q=the+menu",
+      results.suggest_results[1].image_url().spec());
+  ASSERT_EQ("gs_ssp=eJzj4tVP1zc0LCwoKssryyg3YPTiKMlIVchNzSsFAGrSCGQ",
+            results.suggest_results[1].additional_query_params());
+  ASSERT_EQ(u"The Menu", results.suggest_results[1].match_contents());
+  ASSERT_EQ("/g/11qprvnvhw", results.suggest_results[1].entity_id());
+
+  ASSERT_EQ(u"the midnight club", results.suggest_results[2].suggestion());
+  ASSERT_EQ(u"Thriller series", results.suggest_results[2].annotation());
+  ASSERT_EQ("#283e75", results.suggest_results[2].image_dominant_color());
+  ASSERT_EQ(
+      "https://encrypted-tbn0.gstatic.com/"
+      "images?q=the+midnight+club",
+      results.suggest_results[2].image_url().spec());
+  ASSERT_EQ(
+      "gs_ssp=eJzj4tVP1zc0zMqrNCvJNkwyYPQSLMlIVcjNTMnLTM8oUUjOKU0CALmyCz8",
+      results.suggest_results[2].additional_query_params());
+  ASSERT_EQ(u"The Midnight Club", results.suggest_results[2].match_contents());
+  ASSERT_EQ("/g/11jny6tk1b", results.suggest_results[2].entity_id());
+}
+
 TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo_FromProto) {
   TestSchemeClassifier scheme_classifier;
   AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
@@ -774,7 +875,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo_FromProto) {
           "h":[10000, "10001"]
         },
         "google:groupsinfo": ")" +
-                            SerializeGroupsInfo(groups_info) + R"(",
+                            SerializeAndEncodeGroupsInfo(groups_info) + R"(",
         "google:suggestdetail":[
           {
           },
@@ -865,7 +966,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo_FromProto) {
           "h":[10000, "10001"]
         },
         "google:groupsinfo": ")" +
-                            SerializeGroupsInfo(groups_info) + R"(",
+                            SerializeAndEncodeGroupsInfo(groups_info) + R"(",
         "google:suggestdetail":[
           {
           },
@@ -984,7 +1085,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo_FromProto) {
         "tlw":false
       },
       "google:groupsinfo": ")" +
-                            SerializeGroupsInfo(groups_info) + R"(",
+                            SerializeAndEncodeGroupsInfo(groups_info) + R"(",
       "google:suggestdetail":[
         {
           "zl":10000
@@ -1116,6 +1217,209 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo_FromProto) {
     ASSERT_EQ(u"8", results.suggest_results[7].suggestion());
     // This suggestion does not belong to a group.
     ASSERT_EQ(absl::nullopt, results.suggest_results[7].suggestion_group_id());
+  }
+}
+
+TEST(SearchSuggestionParserTest, ParseSuggestionEntityInfo_FromProto) {
+  TestSchemeClassifier scheme_classifier;
+  AutocompleteInput input(u"the m", metrics::OmniboxEventProto::NTP_REALBOX,
+                          scheme_classifier);
+
+  // Parse EntityInfo data from properly encoded (base64) proto field.
+  {
+    omnibox::EntityInfo first_entity_info;
+    first_entity_info.set_annotation("2022 film");
+    first_entity_info.set_dominant_color("#424242");
+    first_entity_info.set_image_url(
+        "https://encrypted-tbn0.gstatic.com/"
+        "images?q=the+menu");
+    first_entity_info.set_suggest_search_parameters(
+        "gs_ssp=eJzj4tVP1zc0LCwoKssryyg3YPTiKMlIVchNzSsFAGrSCGQ");
+    first_entity_info.set_name("The Menu");
+    first_entity_info.set_entity_id("/g/11qprvnvhw");
+
+    omnibox::EntityInfo second_entity_info;
+    second_entity_info.set_annotation("Thriller series");
+    second_entity_info.set_dominant_color("#283e75");
+    second_entity_info.set_image_url(
+        "https://encrypted-tbn0.gstatic.com/"
+        "images?q=the+midnight+club");
+    second_entity_info.set_suggest_search_parameters(
+        "gs_ssp=eJzj4tVP1zc0zMqrNCvJNkwyYPQSLMlIVcjNTMnLTM8oUUjOKU0CALmyCz8");
+    second_entity_info.set_name("The Midnight Club");
+    second_entity_info.set_entity_id("/g/11jny6tk1b");
+
+    std::string json_data = R"([
+      "the m",
+      ["the menu", "the menu", "the midnight club"],
+      ["", "", ""],
+      [],
+      {
+        "google:clientdata": {
+          "bpc": false,
+          "tlw": false
+        },
+        "google:suggestdetail": [
+          {},
+          {
+            "google:entityinfo": ")" +
+                            SerializeAndEncodeEntityInfo(first_entity_info) +
+                            R"("
+          },
+          {
+            "google:entityinfo": ")" +
+                            SerializeAndEncodeEntityInfo(second_entity_info) +
+                            R"("
+          }
+        ],
+        "google:suggestrelevance": [701, 700, 553],
+        "google:suggestsubtypes": [
+          [512, 433, 131, 355],
+          [131, 433, 512],
+          [512, 433]
+        ],
+        "google:suggesttype": ["QUERY", "ENTITY", "ENTITY"],
+        "google:verbatimrelevance": 851
+      }])";
+
+    absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+    ASSERT_TRUE(root_val);
+
+    SearchSuggestionParser::Results results;
+    ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
+        *root_val, input, scheme_classifier, /*default_result_relevance=*/400,
+        /*is_keyword_result=*/false, &results));
+
+    ASSERT_EQ(3U, results.suggest_results.size());
+
+    // For each suggestion, verify that the JSON fields were correctly parsed.
+    ASSERT_EQ(u"the menu", results.suggest_results[0].suggestion());
+    ASSERT_EQ(u"", results.suggest_results[0].annotation());
+    ASSERT_EQ("", results.suggest_results[0].image_dominant_color());
+    ASSERT_EQ("", results.suggest_results[0].image_url().spec());
+    ASSERT_EQ("", results.suggest_results[0].additional_query_params());
+    // Empty "t" value from server results in suggestion being used instead.
+    ASSERT_EQ(u"the menu", results.suggest_results[0].match_contents());
+    ASSERT_EQ("", results.suggest_results[0].entity_id());
+
+    ASSERT_EQ(u"the menu", results.suggest_results[1].suggestion());
+    ASSERT_EQ(base::UTF8ToUTF16(first_entity_info.annotation()),
+              results.suggest_results[1].annotation());
+    ASSERT_EQ(first_entity_info.dominant_color(),
+              results.suggest_results[1].image_dominant_color());
+    ASSERT_EQ(first_entity_info.image_url(),
+              results.suggest_results[1].image_url().spec());
+    ASSERT_EQ(first_entity_info.suggest_search_parameters(),
+              results.suggest_results[1].additional_query_params());
+    ASSERT_EQ(base::UTF8ToUTF16(first_entity_info.name()),
+              results.suggest_results[1].match_contents());
+    ASSERT_EQ(first_entity_info.entity_id(),
+              results.suggest_results[1].entity_id());
+
+    ASSERT_EQ(u"the midnight club", results.suggest_results[2].suggestion());
+    ASSERT_EQ(base::UTF8ToUTF16(second_entity_info.annotation()),
+              results.suggest_results[2].annotation());
+    ASSERT_EQ(second_entity_info.dominant_color(),
+              results.suggest_results[2].image_dominant_color());
+    ASSERT_EQ(second_entity_info.image_url(),
+              results.suggest_results[2].image_url().spec());
+    ASSERT_EQ(second_entity_info.suggest_search_parameters(),
+              results.suggest_results[2].additional_query_params());
+    ASSERT_EQ(base::UTF8ToUTF16(second_entity_info.name()),
+              results.suggest_results[2].match_contents());
+    ASSERT_EQ(second_entity_info.entity_id(),
+              results.suggest_results[2].entity_id());
+  }
+
+  // If possible, fall back to individual JSON fields when attempting to parse
+  // EntityInfo data from garbled proto field.
+  {
+    std::string json_data = R"([
+      "the m",
+      ["the menu", "the menu", "the midnight club"],
+      ["", "", ""],
+      [],
+      {
+        "google:clientdata": {
+          "bpc": false,
+          "tlw": false
+        },
+        "google:suggestdetail": [
+          {},
+          {
+            "google:entityinfo": "<< invalid format >>",
+            "a": "2022 film",
+            "dc": "#424242",
+            "i": "https://encrypted-tbn0.gstatic.com/images?q=the+menu",
+            "q": "gs_ssp=eJzj4tVP1zc0LCwoKssryyg3YPTiKMlIVchNzSsFAGrSCGQ",
+            "t": "The Menu",
+            "zae": "/g/11qprvnvhw"
+          },
+          {
+            "google:entityinfo": "<< invalid format >>",
+            "a": "Thriller series",
+            "dc": "#283e75",
+            "i": "https://encrypted-tbn0.gstatic.com/images?q=the+midnight+club",
+            "q": "gs_ssp=eJzj4tVP1zc0zMqrNCvJNkwyYPQSLMlIVcjNTMnLTM8oUUjOKU0CALmyCz8",
+            "t": "The Midnight Club",
+            "zae": "/g/11jny6tk1b"
+          }
+        ],
+        "google:suggestrelevance": [701, 700, 553],
+        "google:suggestsubtypes": [
+          [512, 433, 131, 355],
+          [131, 433, 512],
+          [512, 433]
+        ],
+        "google:suggesttype": ["QUERY", "ENTITY", "ENTITY"],
+        "google:verbatimrelevance": 851
+      }])";
+
+    absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+    ASSERT_TRUE(root_val);
+
+    SearchSuggestionParser::Results results;
+    ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
+        *root_val, input, scheme_classifier, /*default_result_relevance=*/400,
+        /*is_keyword_result=*/false, &results));
+
+    ASSERT_EQ(3U, results.suggest_results.size());
+
+    // For each suggestion, verify that the JSON fields were correctly parsed.
+    ASSERT_EQ(u"the menu", results.suggest_results[0].suggestion());
+    ASSERT_EQ(u"", results.suggest_results[0].annotation());
+    ASSERT_EQ("", results.suggest_results[0].image_dominant_color());
+    ASSERT_EQ("", results.suggest_results[0].image_url().spec());
+    ASSERT_EQ("", results.suggest_results[0].additional_query_params());
+    // Empty "t" value from server results in suggestion being used instead.
+    ASSERT_EQ(u"the menu", results.suggest_results[0].match_contents());
+    ASSERT_EQ("", results.suggest_results[0].entity_id());
+
+    ASSERT_EQ(u"the menu", results.suggest_results[1].suggestion());
+    ASSERT_EQ(u"2022 film", results.suggest_results[1].annotation());
+    ASSERT_EQ("#424242", results.suggest_results[1].image_dominant_color());
+    ASSERT_EQ(
+        "https://encrypted-tbn0.gstatic.com/"
+        "images?q=the+menu",
+        results.suggest_results[1].image_url().spec());
+    ASSERT_EQ("gs_ssp=eJzj4tVP1zc0LCwoKssryyg3YPTiKMlIVchNzSsFAGrSCGQ",
+              results.suggest_results[1].additional_query_params());
+    ASSERT_EQ(u"The Menu", results.suggest_results[1].match_contents());
+    ASSERT_EQ("/g/11qprvnvhw", results.suggest_results[1].entity_id());
+
+    ASSERT_EQ(u"the midnight club", results.suggest_results[2].suggestion());
+    ASSERT_EQ(u"Thriller series", results.suggest_results[2].annotation());
+    ASSERT_EQ("#283e75", results.suggest_results[2].image_dominant_color());
+    ASSERT_EQ(
+        "https://encrypted-tbn0.gstatic.com/"
+        "images?q=the+midnight+club",
+        results.suggest_results[2].image_url().spec());
+    ASSERT_EQ(
+        "gs_ssp=eJzj4tVP1zc0zMqrNCvJNkwyYPQSLMlIVcjNTMnLTM8oUUjOKU0CALmyCz8",
+        results.suggest_results[2].additional_query_params());
+    ASSERT_EQ(u"The Midnight Club",
+              results.suggest_results[2].match_contents());
+    ASSERT_EQ("/g/11jny6tk1b", results.suggest_results[2].entity_id());
   }
 }
 
