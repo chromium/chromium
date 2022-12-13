@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_receiver/browser/public/application_client.h"
+#include "components/cast_receiver/browser/application_client.h"
 
 #include "base/supports_user_data.h"
 #include "components/media_control/browser/media_blocker.h"
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
+#include "components/url_rewrite/common/url_loader_throttle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace cast_receiver {
 namespace {
@@ -61,7 +64,10 @@ class ApplicationControlsImpl : public ApplicationClient::ApplicationControls,
 
 ApplicationClient::ApplicationControls::~ApplicationControls() = default;
 
-ApplicationClient::ApplicationClient() : weak_factory_(this) {}
+ApplicationClient::ApplicationClient(
+    NetworkContextGetter network_context_getter)
+    : network_context_getter_(std::move(network_context_getter)),
+      weak_factory_(this) {}
 
 ApplicationClient::~ApplicationClient() = default;
 
@@ -91,6 +97,29 @@ void ApplicationClient::OnWebContentsCreated(
   web_contents->SetUserData(
       &kApplicationControlsUserDataKey,
       std::make_unique<ApplicationControlsImpl>(*web_contents));
+}
+
+std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+ApplicationClient::CreateURLLoaderThrottles(
+    const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+    int frame_tree_node_id,
+    CorsExemptHeaderCallback is_cors_exempt_header_cb) {
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+  if (frame_tree_node_id == content::RenderFrameHost::kNoFrameTreeNodeId) {
+    return throttles;
+  }
+
+  content::WebContents* web_contents = wc_getter.Run();
+  if (web_contents) {
+    const auto& rules = GetApplicationControls(*web_contents)
+                            .GetUrlRequestRewriteRulesManager()
+                            .GetCachedRules();
+    if (rules) {
+      throttles.emplace_back(std::make_unique<url_rewrite::URLLoaderThrottle>(
+          rules, std::move(is_cors_exempt_header_cb)));
+    }
+  }
+  return throttles;
 }
 
 void ApplicationClient::OnStreamingResolutionChanged(

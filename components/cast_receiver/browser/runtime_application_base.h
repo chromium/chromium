@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "components/cast_receiver/browser/public/application_client.h"
+#include "components/cast_receiver/browser/application_client.h"
 #include "components/cast_receiver/browser/public/application_config.h"
 #include "components/cast_receiver/browser/public/content_window_controls.h"
 #include "components/cast_receiver/browser/public/embedder_application.h"
@@ -83,6 +83,8 @@ class RuntimeApplicationBase
 
   // NOTE: This field is empty until after Load() is called.
   const ApplicationConfig& config() const { return app_config_; }
+
+  ApplicationClient& application_client() { return *application_client_; }
 
   // Loads the page at the given |url| in the associated WebContents.
   void LoadPage(const GURL& url);

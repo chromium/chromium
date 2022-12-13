@@ -15,6 +15,8 @@
 
 namespace cast_receiver {
 
+class ApplicationClient;
+
 class WebRuntimeApplication final : public RuntimeApplicationBase,
                                     public content::WebContentsObserver,
                                     public BindingsManager::Client,

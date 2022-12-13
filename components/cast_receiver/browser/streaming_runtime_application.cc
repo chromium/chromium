@@ -5,7 +5,7 @@
 #include "components/cast_receiver/browser/streaming_runtime_application.h"
 
 #include "components/cast/message_port/platform_message_port.h"
-#include "components/cast_receiver/browser/public/application_client.h"
+#include "components/cast_receiver/browser/application_client.h"
 #include "components/cast_receiver/browser/public/embedder_application.h"
 #include "components/cast_receiver/browser/public/message_port_service.h"
 #include "components/cast_streaming/public/app_ids.h"
@@ -33,8 +33,7 @@ StreamingRuntimeApplication::StreamingRuntimeApplication(
     ApplicationClient& application_client)
     : RuntimeApplicationBase(std::move(cast_session_id),
                              std::move(app_config),
-                             application_client),
-      application_client_(application_client) {}
+                             application_client) {}
 
 StreamingRuntimeApplication::~StreamingRuntimeApplication() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -58,7 +57,7 @@ void StreamingRuntimeApplication::OnResolutionChanged(
     const gfx::Rect& size,
     const media::VideoTransformation& transformation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  application_client_->OnStreamingResolutionChanged(size, transformation);
+  application_client().OnStreamingResolutionChanged(size, transformation);
 }
 
 void StreamingRuntimeApplication::Launch(StatusCallback callback) {
@@ -78,7 +77,7 @@ void StreamingRuntimeApplication::Launch(StatusCallback callback) {
 
   // Initialize the streaming receiver.
   receiver_session_client_ = std::make_unique<StreamingReceiverSessionClient>(
-      task_runner(), application_client_->GetNetworkContextGetter(),
+      task_runner(), application_client().network_context_getter(),
       std::move(server_port), embedder_application().GetWebContents(), this,
       embedder_application().GetStreamingConfigManager(),
       /* supports_audio= */ GetAppId() !=

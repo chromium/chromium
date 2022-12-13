@@ -45,8 +45,6 @@ class StreamingRuntimeApplication final
       const gfx::Rect& size,
       const media::VideoTransformation& transformation) override;
 
-  base::raw_ref<ApplicationClient> const application_client_;
-
   // Returns the network context used by |receiver_session_client_|.
   const cast_streaming::NetworkContextGetter network_context_getter_;
 

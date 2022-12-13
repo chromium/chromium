@@ -2,14 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_APPLICATION_CLIENT_H_
-#define COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_APPLICATION_CLIENT_H_
+#ifndef COMPONENTS_CAST_RECEIVER_BROWSER_APPLICATION_CLIENT_H_
+#define COMPONENTS_CAST_RECEIVER_BROWSER_APPLICATION_CLIENT_H_
+
+#include <memory>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/strings/string_piece.h"
 #include "components/cast_receiver/browser/public/application_state_observer.h"
 #include "components/cast_receiver/browser/public/streaming_resolution_observer.h"
+
+namespace blink {
+class URLLoaderThrottle;
+}  // namespace blink
 
 namespace content {
 class WebContents;
@@ -63,41 +71,37 @@ class ApplicationClient : public StreamingResolutionObserver,
     GetUrlRequestRewriteRulesManager() = 0;
   };
 
-  ApplicationClient();
+  using NetworkContextGetter =
+      base::RepeatingCallback<network::mojom::NetworkContext*()>;
+  explicit ApplicationClient(NetworkContextGetter network_context_getter);
   ~ApplicationClient() override;
+
+  // Returns the NetworkContext to use with the cast_streaming component for
+  // network access to implement the Cast Streaming receiver.  (This
+  // NetworkContext is eventually passed to the Open Screen library platform
+  // implementation.)
+  NetworkContextGetter network_context_getter() const {
+    return network_context_getter_;
+  }
 
   // Returns the ApplicationControls associated with |web_contents|. The
   // lifetime of this instance is the same as that of |web_contents|.
   ApplicationControls& GetApplicationControls(
       const content::WebContents& web_contents);
 
-  // Adds or removes a ApplicationStateObserver. |observer| must not yet have
-  // been added, must be non-null, and is expected to remain valid for the
-  // duration of this instance's lifetime or until the associated Remove method
-  // below is called for a call to AddApplicationStateObserver(), and must
-  // have been previously added for a call to RemoveApplicationStateObserver().
+  // As defined in ContentBrowserClientMixins.
   void AddApplicationStateObserver(ApplicationStateObserver* observer);
   void RemoveApplicationStateObserver(ApplicationStateObserver* observer);
-
-  // Adds or removes a StreamingResolutionObserver. |observer| must not yet have
-  // been added, must be non-null, and is expected to remain valid for the
-  // duration of this instance's lifetime or until the associated Remove method
-  // below is called for a call to AddStreamingResolutionObserver(), and must
-  // have been previously added for a call to
-  // RemoveStreamingResolutionObserver().
   void AddStreamingResolutionObserver(StreamingResolutionObserver* observer);
   void RemoveStreamingResolutionObserver(StreamingResolutionObserver* observer);
-
-  // Returns the NetworkContext to use with the cast_streaming component for
-  // network access to implement the Cast Streaming receiver.  (This
-  // NetworkContext is eventually passed to the Open Screen library platform
-  // implementation.)
-  using NetworkContextGetter =
-      base::RepeatingCallback<network::mojom::NetworkContext*()>;
-  virtual NetworkContextGetter GetNetworkContextGetter() = 0;
-
-  // To be called for every new WebContents creation.
   void OnWebContentsCreated(content::WebContents* web_contents);
+  using CorsExemptHeaderCallback =
+      base::RepeatingCallback<bool(base::StringPiece)>;
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+  CreateURLLoaderThrottles(
+      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+      int frame_tree_node_id,
+      CorsExemptHeaderCallback is_cors_exempt_header_cb);
 
   // StreamingResolutionObserver implementation:
   void OnStreamingResolutionChanged(
@@ -108,6 +112,8 @@ class ApplicationClient : public StreamingResolutionObserver,
   void OnForegroundApplicationChanged(RuntimeApplication* app) final;
 
  private:
+  NetworkContextGetter network_context_getter_;
+
   base::ObserverList<StreamingResolutionObserver>
       streaming_resolution_observer_list_;
   base::ObserverList<ApplicationStateObserver> application_state_observer_list_;
@@ -117,4 +123,4 @@ class ApplicationClient : public StreamingResolutionObserver,
 
 }  // namespace cast_receiver
 
-#endif  // COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_APPLICATION_CLIENT_H_
+#endif  // COMPONENTS_CAST_RECEIVER_BROWSER_APPLICATION_CLIENT_H_

@@ -60,6 +60,7 @@ cast_source_set("grpc_webui") {
 }
 
 cast_source_set("runtime_service_impl") {
+  public = [ "runtime_service_impl.h" ]
   sources = [
     "core_conversions.cc",
     "core_conversions.h",
@@ -72,13 +73,9 @@ cast_source_set("runtime_service_impl") {
     "runtime_application_service_impl.cc",
     "runtime_application_service_impl.h",
     "runtime_service_impl.cc",
-    "runtime_service_impl.h",
   ]
 
-  public_deps = [
-    "//components/cast_receiver/browser:runtime",
-    "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto_castcore",
-  ]
+  public_deps = [ "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto_castcore" ]
 
   deps = [
     ":grpc_webui",
@@ -92,8 +89,6 @@ cast_source_set("runtime_service_impl") {
     "//chromecast/shared:platform_info_serializer",
     "//components/cast/message_port",
     "//components/cast_receiver/browser",
-    "//components/cast_receiver/browser:page_state_observer",
-    "//components/cast_receiver/browser:runtime",
     "//components/cast_receiver/common",
     "//components/cast_streaming/browser",
     "//components/cast_streaming/public",
@@ -117,6 +112,7 @@ cast_source_set("runtime_service_impl") {
     "//third_party/openscreen/src/cast/common:public",
     "//url",
   ]
+  friend = [ ":unit_tests" ]
 }
 
 cast_source_set("browser") {
@@ -176,7 +172,6 @@ cast_source_set("unit_tests") {
     "//chromecast/browser:test_support",
     "//chromecast/shared:platform_info_serializer",
     "//components/cast_receiver/browser",
-    "//components/cast_receiver/browser:streaming_receiver_session_client",
     "//components/cast_receiver/common",
     "//components/cast_streaming/browser",
     "//components/cast_streaming/public",

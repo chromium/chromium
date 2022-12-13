@@ -15,12 +15,15 @@
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_recorder.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_recorder_service.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_service_impl.h"
-#include "components/cast_receiver/browser/public/application_client.h"
 #include "components/cast_receiver/browser/public/runtime_application_dispatcher.h"
 #include "components/cast_receiver/common/public/status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cast_core/public/src/proto/metrics/metrics_recorder.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/runtime/runtime_service.castcore.pb.h"
+
+namespace cast_receiver {
+class ContentBrowserClientMixins;
+}  // namespace cast_receiver
 
 namespace chromecast {
 
@@ -32,7 +35,7 @@ class RuntimeServiceImpl final
  public:
   // |application_client| and |web_service| are expected to persist for the
   // lifetime of this instance.
-  RuntimeServiceImpl(cast_receiver::ApplicationClient& application_client,
+  RuntimeServiceImpl(cast_receiver::ContentBrowserClientMixins& browser_mixins,
                      CastWebService& web_service,
                      std::string runtime_id,
                      std::string runtime_service_endpoint);

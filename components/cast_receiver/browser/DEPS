@@ -4,6 +4,7 @@ include_rules = [
   "+components/media_control/browser",
   "+components/on_load_script_injector/browser",
   "+components/url_rewrite/browser",
+  "+components/url_rewrite/common",
   "+components/url_rewrite/mojom",
   "+content/public/browser",
   "+content/public/common",

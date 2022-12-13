@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chromecast/browser/cast_content_browser_client.h"
-#include "components/cast_receiver/browser/public/application_client.h"
+#include "components/cast_receiver/browser/public/content_browser_client_mixins.h"
 
 namespace gfx {
 class Rect;
@@ -32,9 +32,6 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
   explicit CastRuntimeContentBrowserClient(
       CastFeatureListCreator* feature_list_creator);
   ~CastRuntimeContentBrowserClient() override;
-
-  cast_receiver::ApplicationClient::NetworkContextGetter
-  GetNetworkContextGetter();
 
   // CastContentBrowserClient overrides:
   std::unique_ptr<CastService> CreateCastService(
@@ -64,11 +61,10 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
   void InitializeCoreComponents(CastWebService* web_service);
 
  private:
-  class ApplicationClientObservers
-      : public cast_receiver::StreamingResolutionObserver,
-        public cast_receiver::ApplicationStateObserver {
+  class Observer : public cast_receiver::StreamingResolutionObserver,
+                   public cast_receiver::ApplicationStateObserver {
    public:
-    ~ApplicationClientObservers() override;
+    ~Observer() override;
 
     void SetVideoPlaneController(
         media::VideoPlaneController* video_plane_controller);
@@ -95,10 +91,11 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
     std::atomic_bool is_buffering_enabled_{false};
   };
 
-  std::unique_ptr<cast_receiver::ApplicationClient> application_client_;
+  std::unique_ptr<cast_receiver::ContentBrowserClientMixins>
+      cast_browser_client_mixins_;
 
   // Wrapper around the observers used with the cast_receiver component.
-  ApplicationClientObservers application_client_observers_;
+  Observer observer_;
   std::unique_ptr<RuntimeServiceImpl> runtime_service_;
 };
 

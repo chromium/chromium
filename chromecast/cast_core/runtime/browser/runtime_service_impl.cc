@@ -15,9 +15,8 @@
 #include "chromecast/cast_core/runtime/browser/core_conversions.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_service_impl.h"
 #include "chromecast/metrics/cast_event_builder_simple.h"
-#include "components/cast_receiver/browser/public/application_client.h"
+#include "components/cast_receiver/browser/public/content_browser_client_mixins.h"
 #include "components/cast_receiver/browser/public/embedder_application.h"
-#include "components/cast_receiver/browser/runtime_application_dispatcher_impl.h"
 #include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
 
 namespace chromecast {
@@ -28,17 +27,15 @@ constexpr base::TimeDelta kDefaultMetricsReportInterval = base::Seconds(60);
 }  // namespace
 
 RuntimeServiceImpl::RuntimeServiceImpl(
-    cast_receiver::ApplicationClient& application_client,
+    cast_receiver::ContentBrowserClientMixins& browser_mixins,
     CastWebService& web_service,
     std::string runtime_id,
     std::string runtime_service_endpoint)
     : runtime_id_(std::move(runtime_id)),
       runtime_service_endpoint_(std::move(runtime_service_endpoint)),
-      // TODO(crbug.com/1359579): Move RuntimeApplicationDispatcher creation to
-      // cast_receiver::ApplicationClient.
       application_dispatcher_(
-          std::make_unique<cast_receiver::RuntimeApplicationDispatcherImpl<
-              RuntimeApplicationServiceImpl>>(application_client)),
+          browser_mixins
+              .CreateApplicationDispatcher<RuntimeApplicationServiceImpl>()),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       web_service_(web_service),
       metrics_recorder_(this) {

@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
-#include "components/cast_receiver/browser/public/application_client.h"
+#include "components/cast_receiver/browser/application_client.h"
 #include "components/cast_receiver/browser/public/application_config.h"
 #include "components/cast_receiver/browser/public/runtime_application_dispatcher.h"
 #include "components/cast_receiver/browser/runtime_application_base.h"
@@ -38,7 +38,7 @@ class RuntimeApplicationDispatcherImpl
       RuntimeApplicationDispatcherImpl& other) = delete;
 
  private:
-  using EmbedderApplicationFactory = RuntimeApplicationDispatcher<
+  using EmbedderApplicationFactory = typename RuntimeApplicationDispatcher<
       TEmbedderApplication>::EmbedderApplicationFactory;
 
   // RuntimeApplicationDispatcher implementation.
