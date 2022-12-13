@@ -2263,6 +2263,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputDate) {
   RunHtmlTest(FILE_PATH_LITERAL("input-date.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityInputDateDisabled) {
+  RunHtmlTest(FILE_PATH_LITERAL("input-date-disabled.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityInputColorDisabled) {
+  RunHtmlTest(FILE_PATH_LITERAL("input-color-disabled.html"));
+}
+
 // TODO: date and time controls drop their children, including the popup button,
 // on Android.
 // TODO(https://crbug.com/1378498): Flaky on every platform.

@@ -1,0 +1,6 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++colorWell inputType='color' value='#000000' restriction=disabled
+++++++++genericContainer ignored
+++++++++++genericContainer ignored

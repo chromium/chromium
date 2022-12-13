@@ -3222,8 +3222,9 @@ bool AXObject::ComputeIsDescendantOfDisabledNode() const {
   if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kDisabled, disabled))
     return disabled;
 
-  if (AXObject* parent = ParentObject())
-    return parent->IsDescendantOfDisabledNode();
+  if (AXObject* parent = ParentObject()) {
+    return parent->IsDisabled() || parent->IsDescendantOfDisabledNode();
+  }
 
   return false;
 }
@@ -4492,10 +4493,15 @@ bool AXObject::IsDisabled() const {
     auto* html_frame_owner_element = To<HTMLFrameOwnerElement>(GetElement());
     return !html_frame_owner_element->ContentFrame();
   }
-
   // Check for HTML form control with the disabled attribute.
   if (GetElement() && GetElement()->IsDisabledFormControl())
     return true;
+  Node* node = GetNode();
+  // This is for complex pickers, such as a date picker.
+  if ((node && node->OwnerShadowHost()) && AXObject::IsControl() &&
+      node->OwnerShadowHost()->FastHasAttribute(html_names::kDisabledAttr)) {
+    return true;
+  }
 
   // Check aria-disabled. According to ARIA in HTML section 3.1, aria-disabled
   // attribute does NOT override the native HTML disabled attribute.
