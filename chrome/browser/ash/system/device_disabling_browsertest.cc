@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(DeviceDisablingWithUsersTest, DialogNotHidden) {
 // Sets the device disabled policy before the browser is started.
 class PresetPolicyDeviceDisablingTest : public DeviceDisablingTest {
  public:
-  PresetPolicyDeviceDisablingTest() {}
+  PresetPolicyDeviceDisablingTest() = default;
 
   PresetPolicyDeviceDisablingTest(const PresetPolicyDeviceDisablingTest&) =
       delete;

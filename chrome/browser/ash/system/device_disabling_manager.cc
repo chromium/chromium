@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -26,11 +27,9 @@
 namespace ash {
 namespace system {
 
-DeviceDisablingManager::Observer::~Observer() {
-}
+DeviceDisablingManager::Observer::~Observer() = default;
 
-DeviceDisablingManager::Delegate::~Delegate() {
-}
+DeviceDisablingManager::Delegate::~Delegate() = default;
 
 DeviceDisablingManager::DeviceDisablingManager(
     Delegate* delegate,
@@ -45,8 +44,7 @@ DeviceDisablingManager::DeviceDisablingManager(
   CHECK(delegate_);
 }
 
-DeviceDisablingManager::~DeviceDisablingManager() {
-}
+DeviceDisablingManager::~DeviceDisablingManager() = default;
 
 void DeviceDisablingManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -98,7 +96,7 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
   }
 
   if (browser_policy_connector_->GetDeviceMode() ==
-          policy::DEVICE_MODE_PENDING) {
+      policy::DEVICE_MODE_PENDING) {
     // If the device mode is not known yet, request to be called back once it
     // becomes known.
     browser_policy_connector_->GetInstallAttributes()->ReadImmutableAttributes(
@@ -109,7 +107,7 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
   }
 
   if (browser_policy_connector_->GetDeviceMode() !=
-          policy::DEVICE_MODE_NOT_SET) {
+      policy::DEVICE_MODE_NOT_SET) {
     // If the device is owned already, this method must have been called after
     // OOBE, which is an error. Indicate that the device is not disabled to
     // prevent spurious disabling. Actual device disabling after OOBE will be
@@ -154,13 +152,22 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
 
 // static
 bool DeviceDisablingManager::IsDeviceDisabledDuringNormalOperation() {
-  bool device_disabled = false;
-  CrosSettings::Get()->GetBoolean(kDeviceDisabled, &device_disabled);
-  if (device_disabled && HonorDeviceDisablingDuringNormalOperation()) {
+  if (!HonorDeviceDisablingDuringNormalOperation()) {
+    return false;
+  }
+
+  // If Chromad features are disabled via flag, and the device is AD managed, we
+  // force disable the device.
+  if (!features::IsChromadAvailableEnabled() &&
+      g_browser_process->platform_part()
+          ->browser_policy_connector_ash()
+          ->IsActiveDirectoryManaged()) {
     return true;
   }
 
-  return false;
+  bool device_disabled = false;
+  CrosSettings::Get()->GetBoolean(kDeviceDisabled, &device_disabled);
+  return device_disabled;
 }
 
 // static
@@ -183,17 +190,10 @@ void DeviceDisablingManager::UpdateFromCrosSettings() {
     return;
   }
 
-  if (!HonorDeviceDisablingDuringNormalOperation()) {
-    // If the device is not enterprise managed or device disabling has been
-    // turned of by flag, device disabling is not available.
-    return;
-  }
-
-  bool should_device_be_disabled = false;
-  if (!cros_settings_->GetBoolean(kDeviceDisabled,
-                                  &should_device_be_disabled) ||
-      !should_device_be_disabled) {
-    // The device should not be disabled.
+  if (!IsDeviceDisabledDuringNormalOperation()) {
+    // The device should not be disabled because: (a) device is not enterprise
+    // managed, (b) device disabling has been turned off by flag, or (c)
+    // cros settings indicates that device should not be disabled.
 
     if (!device_disabled_) {
       // If the device is currently not disabled, there is nothing to do.

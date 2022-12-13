@@ -155,7 +155,7 @@ void ActiveDirectoryMigrationManager::TryToStartMigration() {
 
   // Theoretically, the following reschedule logic is not necessary. However, it
   // was added as a fallback, in case any of the signals this class listens is
-  // not triggered as expected. Ultimatelly, we want to avoid inactive devices
+  // not triggered as expected. Ultimately, we want to avoid inactive devices
   // getting stuck and not migrating.
   if (is_on_login_screen && !retry_already_scheduled_) {
     retry_already_scheduled_ = true;

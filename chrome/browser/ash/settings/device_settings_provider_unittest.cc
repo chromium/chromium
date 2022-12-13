@@ -10,11 +10,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
-#include "base/files/file_util.h"
-#include "base/json/json_reader.h"
-#include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
@@ -30,8 +25,6 @@
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/user.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -453,7 +446,7 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
   base::ScopedPathOverride user_data_dir_override_;
 };
 
-// Same as above, but enrolled into an enterprise
+// Same as above, but enrolled into an enterprise.
 class DeviceSettingsProviderTestEnterprise : public DeviceSettingsProviderTest {
  protected:
   void SetUp() override {
@@ -750,9 +743,9 @@ TEST_F(DeviceSettingsProviderTest, DecodeDeviceState) {
       ->mutable_disabled_state()
       ->set_message(kDisabledMessage);
   BuildAndInstallDevicePolicy();
+
   // Verify that the device state has been decoded correctly.
-  const base::Value expected_disabled_value(true);
-  EXPECT_EQ(expected_disabled_value, *provider_->Get(kDeviceDisabled));
+  EXPECT_TRUE(provider_->Get(kDeviceDisabled));
   const base::Value expected_disabled_message_value(kDisabledMessage);
   EXPECT_EQ(expected_disabled_message_value,
             *provider_->Get(kDeviceDisabledMessage));
