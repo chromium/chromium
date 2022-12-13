@@ -27,24 +27,29 @@ consoles.list_view(
 
 try_.builder(
     name = "android-rust-arm-dbg",
+    mirrors = ["ci/android-rust-arm-dbg"],
     goma_backend = None,
 )
 
 try_.builder(
     name = "android-rust-arm-rel",
+    mirrors = ["ci/android-rust-arm-rel"],
     goma_backend = None,
 )
 
 try_.builder(
     name = "linux-rust-x64-rel",
+    mirrors = ["ci/linux-rust-x64-rel"],
     goma_backend = None,
 )
 
 try_.builder(
     name = "linux-rust-x64-rel-android-toolchain",
+    mirrors = ["ci/linux-rust-x64-rel"],
 )
 
 try_.builder(
     name = "linux-rust-x64-dbg",
+    mirrors = ["ci/linux-rust-x64-dbg"],
     goma_backend = None,
 )
