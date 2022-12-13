@@ -117,7 +117,7 @@ id<GREYMatcher> cellWithLabel(NSString* label) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_kindOfClassName(@"PlusSignCell"),
-                                   grey_accessibilityLabel(@"Create new tab."),
+                                   grey_accessibilityLabel(@"Create New Tab"),
                                    nil)]
       assertWithMatcher:grey_minimumVisiblePercent(1)];
 
@@ -142,7 +142,7 @@ id<GREYMatcher> cellWithLabel(NSString* label) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_kindOfClassName(@"PlusSignCell"),
-                                   grey_accessibilityLabel(@"Create new tab."),
+                                   grey_accessibilityLabel(@"Create New Tab"),
                                    nil)]
       assertWithMatcher:grey_minimumVisiblePercent(1)];
   [[EarlGrey
@@ -159,7 +159,7 @@ id<GREYMatcher> cellWithLabel(NSString* label) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_kindOfClassName(@"PlusSignCell"),
-                                   grey_accessibilityLabel(@"Create new tab."),
+                                   grey_accessibilityLabel(@"Create New Tab"),
                                    nil)] assertWithMatcher:grey_notVisible()];
   // Even when visible, this button has a visibility percent of around 0.15
   // because it is mostly a gradient.
@@ -282,7 +282,7 @@ id<GREYMatcher> cellWithLabel(NSString* label) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_kindOfClassName(@"PlusSignCell"),
-                                   grey_accessibilityLabel(@"Create new tab."),
+                                   grey_accessibilityLabel(@"Create New Tab"),
                                    nil)]
       assertWithMatcher:grey_minimumVisiblePercent(1)];
 
@@ -353,7 +353,7 @@ id<GREYMatcher> cellWithLabel(NSString* label) {
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_kindOfClassName(@"PlusSignCell"),
-                                   grey_accessibilityLabel(@"Create new tab."),
+                                   grey_accessibilityLabel(@"Create New Tab"),
                                    nil)]
       assertWithMatcher:grey_minimumVisiblePercent(1)]
       performAction:grey_tap()];
