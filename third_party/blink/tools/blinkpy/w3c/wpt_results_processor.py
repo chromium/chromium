@@ -20,6 +20,7 @@ from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.typ_types import (
     Artifacts,
     Result,
+    ResultType,
     ResultSinkReporter,
 )
 
@@ -455,6 +456,13 @@ class WPTResultsProcessor:
         for iteration, (actual,
                         duration) in enumerate(zip(actual_statuses,
                                                    durations)):
+            if (self.run_info.get('sanitizer_enabled')
+                    and actual == ResultType.Failure):
+                # `--enable-sanitizer` is equivalent to running every test as a
+                # crashtest. It suffices for a crashtest to not suffer a timeout
+                # or low-level crash to pass:
+                #   https://web-platform-tests.org/writing-tests/crashtest.html
+                actual = ResultType.Pass
             result = Result(
                 name=test_name,
                 actual=actual,

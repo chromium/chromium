@@ -252,6 +252,7 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             # suite.
             'flag_specific': self.options.flag_specific or '',
             'used_upstream': self.options.use_upstream_wpt,
+            'sanitizer_enabled': self.options.enable_sanitizer,
         }
         if self.options.use_upstream_wpt:
             # `run_wpt_tests` does not run in the upstream checkout's git
@@ -324,11 +325,6 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
                                   'the upstream github wpt to a temporary '
                                   'directory and will use the binary and '
                                   'tests from upstream'))
-        parser.add_argument('--no-wpt-internal',
-                            action='store_false',
-                            dest='run_wpt_internal',
-                            default=True,
-                            help=('Do not run internal WPTs.'))
         parser.add_argument('--flag-specific',
                             choices=sorted(self.port.flag_specific_configs()),
                             metavar='FLAG_SPECIFIC',
@@ -339,12 +335,13 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
                             default=True,
                             help=('Use this tag to not run wptrunner in'
                                   'headless mode'))
-        # TODO(crbug.com/1377834) show results in browser in future.
-        # currently this flag is no-op
         parser.add_argument('--show-results-in-browser',
                             action='store_true',
-                            help='adding this tag will show results in'
-                            'the browser')
+                            help='Open the results viewer in a browser.')
+        parser.add_argument(
+            '--enable-sanitizer',
+            action='store_true',
+            help='Only report sanitizer-related errors and crashes.')
 
     def add_binary_arguments(self, parser):
         group = parser.add_argument_group(
@@ -385,6 +382,11 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             '--gtest_filter',
             metavar='TESTS_OR_DIRS',
             help='Colon-separated list of test names (URL prefixes).')
+        parser.add_argument('--no-wpt-internal',
+                            action='store_false',
+                            dest='run_wpt_internal',
+                            default=True,
+                            help='Do not run internal WPTs.')
         return group
 
     def add_mode_arguments(self, parser):

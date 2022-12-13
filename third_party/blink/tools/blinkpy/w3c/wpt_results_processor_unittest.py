@@ -319,6 +319,25 @@ class WPTResultsProcessorTest(LoggingTestCase):
                              },
                          }])
 
+    def test_result_sink_with_sanitizer(self):
+        self._create_json_output({
+            'tests': {
+                'fail': {
+                    'test.html': {
+                        'expected': 'PASS',
+                        'actual': 'FAIL',
+                    },
+                },
+            },
+            'path_delimiter': '/',
+        })
+        self.processor.run_info['sanitizer_enabled'] = True
+        self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
+        (request, ) = self.processor.sink.sink_requests
+        self.assertEqual(request['result']['actual'], 'PASS')
+        self.assertEqual(request['result']['expected'], {'PASS'})
+        self.assertEqual(request['result']['unexpected'], False)
+
     def test_result_sink_for_multiple_runs(self):
         json_dict = {
             'tests': {
