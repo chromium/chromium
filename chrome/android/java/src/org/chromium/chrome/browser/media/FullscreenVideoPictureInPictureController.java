@@ -239,6 +239,8 @@ public class FullscreenVideoPictureInPictureController {
     public void attemptPictureInPicture() {
         // If there are already callbacks registered, then do nothing.
         final @MetricsAttemptResult int result = getAttemptResult();
+        Log.i(TAG, "Attempted picture-in-picture with result: " + result);
+
         recordAttemptResult(result);
         if (result != MetricsAttemptResult.SUCCESS) return;
 
@@ -266,6 +268,8 @@ public class FullscreenVideoPictureInPictureController {
      * {@link #attemptPictureInPicture()} or because we auto-entered Picture in Picture.
      */
     public void onEnteredPictureInPictureMode() {
+        Log.i(TAG, "Entered Picture-in-picture.");
+
         // Inform the WebContents when we enter and when we leave PiP.
         final WebContents webContents = getWebContents();
         // If we're closing the tab, just stop here.
@@ -346,6 +350,8 @@ public class FullscreenVideoPictureInPictureController {
      * It's okay if we're not currently in Picture in Picture mode.
      */
     private void onExitedPictureInPicture(@MetricsEndReason int reason) {
+        Log.i(TAG, "Exited picture in picture with reason: " + reason);
+
         // If we don't believe that a Picture in Picture session is active, it means that the
         // cleanup call happened while Chrome was not PIP'ing. The early return also avoid recording
         // the reason why the (non-)PIP session ended.

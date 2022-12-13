@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -43,8 +44,10 @@ import org.chromium.net.test.EmbeddedTestServer;
  * Tests for FullscreenVideoPictureInPictureController and related methods.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY})
+@Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @RequiresApi(Build.VERSION_CODES.O)
 public class FullscreenVideoPictureInPictureControllerTest {
     // TODO(peconn): Add a test for exit on Tab Reparenting.
@@ -74,7 +77,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @DisabledTest(message = "https://crbug.com/1332360")
     public void testFullscreenVideoDetected() throws Throwable {
         enterFullscreen();
     }
@@ -83,7 +85,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testFullscreenVideoDetectedOnlyWhenPlaying() throws Throwable {
         enterFullscreen();
 
@@ -95,7 +96,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @DisabledTest(message = "https://crbug.com/1211930/#c10")
     public void testEnterPip() throws Throwable {
         enterFullscreen();
         triggerAutoPiPAndWait();
@@ -105,7 +105,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @DisabledTest(message = "https://crbug.com/1211930/#c10")
     public void testExitPipOnNavigation() throws Throwable {
         testExitOn(()
                            -> JavaScriptUtils.executeJavaScript(getWebContents(),
@@ -116,8 +115,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @MediumTest
     @CommandLineFlags.Add({"enable-features=Portals"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @DisabledTest(message = "https://crbug.com/1374237/")
     public void testExitPipOnPortalActivation() throws Throwable {
         testExitOn(()
                            -> JavaScriptUtils.executeJavaScript(getWebContents(),
@@ -128,7 +125,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @DisabledTest(message = "crbug.com/1330630")
     public void testExitOnLeaveFullscreen() throws Throwable {
         testExitOn(() -> DOMUtils.exitFullscreen(getWebContents()));
     }
@@ -137,7 +133,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testExitOnCloseTab() throws Throwable {
         // We want 2 Tabs so we can close the first without any special behaviour.
         mActivityTestRule.loadUrlInNewTab(mTestServer.getURL(TEST_PATH));
@@ -149,7 +144,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @DisabledTest(message = "crbug.com/1333963")
     public void testExitOnCrash() throws Throwable {
         testExitOn(() -> WebContentsUtils.simulateRendererKilled(getWebContents()));
     }
@@ -158,7 +152,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @DisabledTest(message = "crbug.com/1249669")
     public void testExitOnNewForegroundTab() throws Throwable {
         testExitOn(new Runnable() {
             @Override
@@ -172,7 +165,12 @@ public class FullscreenVideoPictureInPictureControllerTest {
         });
     }
 
-    /** Tests that a navigation in an iframe other than the fullscreen one does not exit PiP. */
+    /**
+     * Tests that a navigation in an iframe other than the fullscreen one does not exit PiP.
+     * TODO(jazzhsu): This test is failing because the navigation observer is no longer observing
+     * child frame navigation. Should fix this after the navigation observer can observe child
+     * frame navigation.
+     */
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
@@ -181,7 +179,8 @@ public class FullscreenVideoPictureInPictureControllerTest {
         // Add a TabObserver so we know when the iFrame navigation has occurred before we check that
         // we are still in PiP.
         final NavigationObserver navigationObserver = new NavigationObserver();
-        mActivity.getActivityTab().addObserver(navigationObserver);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivity.getActivityTab().addObserver(navigationObserver));
 
         enterFullscreen();
         triggerAutoPiPAndWait();
@@ -202,13 +201,11 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @DisabledTest(message = "crbug.com/1038151")
     public void testReenterPip() throws Throwable {
         enterFullscreen();
         triggerAutoPiPAndWait();
 
-        // This waits for Stage.CREATED, but we never get one.  We go right to Stage.RESUMED .
-        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.resumeMainActivityFromLauncher();
         CriteriaHelper.pollUiThread(() -> !mActivity.getLastPictureInPictureModeForTesting());
 
         enterFullscreen(false);
