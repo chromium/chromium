@@ -426,8 +426,7 @@ public class OverlayPanel extends OverlayPanelAnimation
 
     @Override
     public void onActivityStateChange(Activity activity, int newState) {
-        boolean isMultiWindowMode = MultiWindowUtils.getInstance().isLegacyMultiWindow(mActivity)
-                || MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
+        boolean isMultiWindowMode = MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
 
         // In multi-window mode the activity that was interacted with last is resumed and
         // all others are paused. We should not close Contextual Search in this case,

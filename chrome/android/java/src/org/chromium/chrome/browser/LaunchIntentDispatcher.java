@@ -476,9 +476,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
             isContentScheme = true;
             newIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
-        if (MultiWindowUtils.getInstance().shouldRunInLegacyMultiInstanceMode(mActivity, mIntent)) {
-            MultiWindowUtils.getInstance().makeLegacyMultiInstanceIntent(mActivity, newIntent);
-        }
 
         if (newIntent.getComponent().getClassName().equals(mActivity.getClass().getName())) {
             // We're trying to start activity that is already running - just continue.

@@ -197,8 +197,7 @@ public class CompositorView
             mPreviousWindowTop = windowTop;
 
             Activity activity = mWindowAndroid != null ? mWindowAndroid.getActivity().get() : null;
-            boolean isMultiWindow = MultiWindowUtils.getInstance().isLegacyMultiWindow(activity)
-                    || MultiWindowUtils.getInstance().isInMultiWindowMode(activity);
+            boolean isMultiWindow = MultiWindowUtils.getInstance().isInMultiWindowMode(activity);
 
             // If the measured width is the same as the allowed width (i.e. the orientation has
             // not changed) and multi-window mode is off, use the largest measured height seen thus

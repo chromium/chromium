@@ -594,8 +594,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
             systemUiVisibility = applyEnterFullscreenUIFlags(systemUiVisibility);
         } else {
             Activity activity = TabUtils.getActivity(tab);
-            boolean isMultiWindow = MultiWindowUtils.getInstance().isLegacyMultiWindow(activity)
-                    || MultiWindowUtils.getInstance().isInMultiWindowMode(activity);
+            boolean isMultiWindow = MultiWindowUtils.getInstance().isInMultiWindowMode(activity);
 
             // To avoid a double layout that is caused by the system when just hiding
             // the status bar set the status bar as translucent immediately. This causes

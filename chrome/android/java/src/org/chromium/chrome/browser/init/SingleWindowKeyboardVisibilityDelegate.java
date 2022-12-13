@@ -9,7 +9,6 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 
 import java.lang.ref.WeakReference;
@@ -30,9 +29,6 @@ public class SingleWindowKeyboardVisibilityDelegate extends ActivityKeyboardVisi
             activity = (Activity) view.getContext();
         }
 
-        if (activity != null && MultiWindowUtils.getInstance().isLegacyMultiWindow(activity)) {
-            return false; // For multi-window mode we do not track keyboard visibility.
-        }
         return super.isKeyboardShowing(context, view);
     }
 }
