@@ -259,8 +259,9 @@ class WebUITabStripDragInteractiveTest : public InteractiveBrowserTest {
 //
 // This sequence of events would crash without the associated bugfix. More
 // detail is provided in the actual test sequence.
+// TODO(https://crbug.com/1399655): Reenable this test.
 IN_PROC_BROWSER_TEST_F(WebUITabStripDragInteractiveTest,
-                       CloseTabDuringDragDoesNotCrash) {
+                       DISABLED_CloseTabDuringDragDoesNotCrash) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUiTabStripElementId);
 
