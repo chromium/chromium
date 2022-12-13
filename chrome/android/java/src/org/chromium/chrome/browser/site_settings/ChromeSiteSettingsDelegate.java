@@ -125,11 +125,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                 return ContentFeatureList.isEnabled(ContentFeatures.FED_CM);
             case SiteSettingsCategory.Type.NFC:
                 return ContentFeatureList.isEnabled(ContentFeatureList.WEB_NFC);
-            case SiteSettingsCategory.Type.COOKIES:
-                return !isPrivacySandboxSettings4Enabled();
-            case SiteSettingsCategory.Type.SITE_DATA:
-            case SiteSettingsCategory.Type.THIRD_PARTY_COOKIES:
-                return isPrivacySandboxSettings4Enabled();
             default:
                 return true;
         }

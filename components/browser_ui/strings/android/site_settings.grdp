@@ -5,6 +5,13 @@
     Site settings
   </message>
 
+  <message name="IDS_SITE_SETTINGS_PERMISSION_CATEGORY" desc="Title permissions section in site settings. [CHAR_LIMIT=32]">
+    Permissions
+  </message>
+  <message name="IDS_SITE_SETTINGS_CONTENT_CATEGORY" desc="Title content settings section in site settings. [CHAR_LIMIT=32]">
+    Content
+  </message>
+
   <!-- Site settings categories -->
   <message name="IDS_ALL_SITES" desc='Title of the "All sites" settings screen that allows the user to see permissions for all websites. [CHAR_LIMIT=32]'>
     All sites
