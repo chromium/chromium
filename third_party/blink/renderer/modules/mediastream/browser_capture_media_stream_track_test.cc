@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
 
 #include "base/guid.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_heap.h"
@@ -64,9 +65,21 @@ class BrowserCaptureMediaStreamTrackTest : public testing::Test {
  public:
   ~BrowserCaptureMediaStreamTrackTest() override = default;
 
+  void CheckHistograms(
+      int expected_count,
+      BrowserCaptureMediaStreamTrack::CropToResult expected_result) {
+    histogram_tester_.ExpectTotalCount("Media.RegionCapture.CropTo.Result",
+                                       expected_count);
+    histogram_tester_.ExpectUniqueSample("Media.RegionCapture.CropTo.Result",
+                                         expected_result, expected_count);
+    histogram_tester_.ExpectTotalCount("Media.RegionCapture.CropTo.Latency",
+                                       expected_count);
+  }
+
   void TearDown() override { WebHeap::CollectAllGarbageForTesting(); }
 
  protected:
+  base::HistogramTester histogram_tester_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 };
 
@@ -104,6 +117,8 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToOnValidIdResultFirst) {
   ScriptPromiseTester script_promise_tester(v8_scope.GetScriptState(), promise);
   script_promise_tester.WaitUntilSettled();
   EXPECT_TRUE(script_promise_tester.IsFulfilled());
+  CheckHistograms(
+      /*expected_count=*/1, BrowserCaptureMediaStreamTrack::CropToResult::kOk);
 }
 
 TEST_F(BrowserCaptureMediaStreamTrackTest,
@@ -140,6 +155,9 @@ TEST_F(BrowserCaptureMediaStreamTrackTest,
   ScriptPromiseTester script_promise_tester(v8_scope.GetScriptState(), promise);
   script_promise_tester.WaitUntilSettled();
   EXPECT_TRUE(script_promise_tester.IsRejected());
+  CheckHistograms(
+      /*expected_count=*/1,
+      BrowserCaptureMediaStreamTrack::CropToResult::kRejectedWithErrorGeneric);
 }
 
 TEST_F(BrowserCaptureMediaStreamTrackTest,
@@ -170,6 +188,9 @@ TEST_F(BrowserCaptureMediaStreamTrackTest,
   ScriptPromiseTester script_promise_tester(v8_scope.GetScriptState(), promise);
   script_promise_tester.WaitUntilSettled();
   EXPECT_TRUE(script_promise_tester.IsRejected());
+  CheckHistograms(
+      /*expected_count=*/1,
+      BrowserCaptureMediaStreamTrack::CropToResult::kInvalidCropTarget);
 }
 
 #else
@@ -196,6 +217,9 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToFailsOnAndroid) {
   ScriptPromiseTester script_promise_tester(v8_scope.GetScriptState(), promise);
   script_promise_tester.WaitUntilSettled();
   EXPECT_TRUE(script_promise_tester.IsRejected());
+  CheckHistograms(
+      /*expected_count=*/1,
+      BrowserCaptureMediaStreamTrack::CropToResult::kUnsupportedPlatform);
 }
 #endif
 

@@ -21574,7 +21574,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
 </enum>
 
 <enum name="CropToResult">
-  <int value="0" label="Resolved"/>
+  <int value="0" label="Ok"/>
   <int value="1" label="UnsupportedPlatform"/>
   <int value="2" label="InvalidCropTargetFormat"/>
   <int value="3" label="RejectedWithErrorGeneric"/>
@@ -21583,6 +21583,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="6" label="RejectedWithNotImplemented"/>
   <int value="7" label="NonIncreasingCropVersion"/>
   <int value="8" label="InvalidCropTarget"/>
+  <int value="9" label="TimedOut"/>
 </enum>
 
 <enum name="CrOSActionRecorderEvent">
