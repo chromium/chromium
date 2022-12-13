@@ -7223,6 +7223,25 @@
             ]
         }
     ],
+    "NtpComprehensiveTheming": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20221129",
+                    "enable_features": [
+                        "NtpComprehensiveTheming"
+                    ]
+                }
+            ]
+        }
+    ],
     "NtpRealboxRundedCorners": [
         {
             "platforms": [
