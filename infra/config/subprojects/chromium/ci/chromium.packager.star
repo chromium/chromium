@@ -14,9 +14,6 @@ ci.defaults.set(
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
     service_account = "chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com",
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 consoles.console_view(
@@ -50,9 +47,6 @@ ci.builder(
     # Every 6 hours starting at 5am UTC.
     schedule = "0 5/6 * * * *",
     triggered_by = [],
-
-    # TODO(crbug.com/1366968): Default omit_python2 to True for all builders
-    omit_python2 = True,
 )
 
 ci.builder(
@@ -75,9 +69,6 @@ ci.builder(
     # TODO(crbug.com/1267449): Trigger builds routinely once works fine.
     schedule = "triggered",
     triggered_by = [],
-
-    # TODO(crbug.com/1366968): Default omit_python2 to True for all builders
-    omit_python2 = True,
 )
 
 ci.builder(
@@ -91,9 +82,6 @@ ci.builder(
     schedule = "0 7,14,22 * * * *",
     sheriff_rotations = sheriff_rotations.ANDROID,
     triggered_by = [],
-
-    # TODO(crbug.com/1366968): Default omit_python2 to True for all builders
-    omit_python2 = True,
 )
 
 ci.builder(
@@ -135,9 +123,6 @@ ci.builder(
     # https://luci-scheduler.appspot.com/jobs/chromium/android-avd-packager
     schedule = "triggered",
     triggered_by = [],
-
-    # TODO(crbug.com/1366968): Default omit_python2 to True for all builders
-    omit_python2 = True,
 )
 
 ci.builder(
@@ -284,9 +269,6 @@ ci.builder(
     },
     schedule = "0 7 * * *",
     triggered_by = [],
-
-    # TODO(crbug.com/1366968): Default omit_python2 to True for all builders
-    omit_python2 = True,
 )
 
 ci.builder(
@@ -308,7 +290,4 @@ ci.builder(
     ],
     schedule = "0 9 * * *",  # at 1AM or 2AM PT (depending on DST), once a day.
     triggered_by = [],
-
-    # TODO(crbug.com/1366968): Default omit_python2 to True for all builders
-    omit_python2 = True,
 )
