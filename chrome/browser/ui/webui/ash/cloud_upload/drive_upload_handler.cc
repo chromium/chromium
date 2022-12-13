@@ -164,7 +164,7 @@ void DriveUploadHandler::OnEndUpload(GURL hosted_url,
   // Resolve notifications.
   if (notification_manager_) {
     if (hosted_url.is_valid()) {
-      notification_manager_->MarkUploadComplete();
+      notification_manager_->ShowUploadComplete();
     } else if (!error_message.empty()) {
       LOG(ERROR) << "Cloud upload: " << error_message;
       notification_manager_->ShowUploadError(error_message);
