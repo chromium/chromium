@@ -197,6 +197,7 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   bool IsPressActionSupported();
   bool IsIncrementActionSupported();
   bool IsDecrementActionSupported();
+  bool HasDefaultAction();
   v8::Local<v8::Object> ParentElement();
   void Increment();
   void Decrement();

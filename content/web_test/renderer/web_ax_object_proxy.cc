@@ -398,6 +398,7 @@ gin::ObjectTemplateBuilder WebAXObjectProxy::GetObjectTemplateBuilder(
       .SetMethod("isAttributeSettable", &WebAXObjectProxy::IsAttributeSettable)
       .SetMethod("isPressActionSupported",
                  &WebAXObjectProxy::IsPressActionSupported)
+      .SetMethod("hasDefaultAction", &WebAXObjectProxy::HasDefaultAction)
       .SetMethod("parentElement", &WebAXObjectProxy::ParentElement)
       .SetMethod("increment", &WebAXObjectProxy::Increment)
       .SetMethod("decrement", &WebAXObjectProxy::Decrement)
@@ -1373,6 +1374,11 @@ bool WebAXObjectProxy::IsAttributeSettable(const std::string& attribute) {
 bool WebAXObjectProxy::IsPressActionSupported() {
   UpdateLayout();
   return accessibility_object_.Action() == ax::mojom::DefaultActionVerb::kPress;
+}
+
+bool WebAXObjectProxy::HasDefaultAction() {
+  UpdateLayout();
+  return accessibility_object_.Action() != ax::mojom::DefaultActionVerb::kNone;
 }
 
 v8::Local<v8::Object> WebAXObjectProxy::ParentElement() {

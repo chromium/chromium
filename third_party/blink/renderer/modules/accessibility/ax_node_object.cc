@@ -1645,6 +1645,14 @@ bool AXNodeObject::IsClickable() const {
   if (HasContentEditableAttributeSet())
     return true;
 
+  // Certain user-agent shadow DOM elements are expected to be clickable but
+  // they do not have event listeners attached or a clickable native role. We
+  // whitelist them here.
+  if (element->ShadowPseudoId() ==
+      shadow_element_names::kPseudoCalendarPickerIndicator) {
+    return true;
+  }
+
   // Only use native roles. For ARIA elements, require a click listener.
   return ui::IsClickable(native_role_);
 }

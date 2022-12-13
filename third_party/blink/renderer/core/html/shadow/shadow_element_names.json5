@@ -102,6 +102,10 @@
       Symbol: "kPseudoMediaControlsSegmentedTrack",
     },
     {
+      name: "-webkit-calendar-picker-indicator",
+      Symbol: "kPseudoCalendarPickerIndicator",
+    },
+    {
       name: "-webkit-media-slider-container",
       Symbol: "kPseudoMediaSliderContainer",
     },

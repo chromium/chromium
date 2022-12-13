@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<script src="../resources/gc.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<input id="dateInput" type="date">
+<input id="timeInput" type="time">
+
+<script>
+test(function(t) {
+  const axInputElement =
+      accessibilityController.accessibleElementById("dateInput");
+  const axButton = axInputElement.childAtIndex(1);
+  assert_true(axButton.hasDefaultAction());
+
+}, "Test there is a default action for the button in input type=date");
+
+test(function(t) {
+  const axInputElement =
+      accessibilityController.accessibleElementById("timeInput");
+  const axButton = axInputElement.childAtIndex(1);
+  assert_true(axButton.hasDefaultAction());
+
+}, "Test there is a default action for the button in input type=time");
+</script>
