@@ -6,15 +6,33 @@
 
 #include <windows.h>
 
+#include <shellapi.h>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 namespace win {
 
+TEST(ScopedLocalAlloc, SimpleUsage) {
+  ScopedLocalAlloc scoped_local_alloc(::LocalAlloc(LMEM_FIXED, 0x1000));
+  EXPECT_TRUE(scoped_local_alloc);
+  scoped_local_alloc.reset();
+  EXPECT_FALSE(scoped_local_alloc);
+
+  std::wstring input_command_line = L"c:\\test\\process.exe --p1=1";
+  int num_args = 0;
+  base::win::ScopedLocalAllocTyped<wchar_t*> argv(
+      ::CommandLineToArgvW(&input_command_line[0], &num_args));
+  EXPECT_TRUE(argv);
+  EXPECT_STREQ(argv.get()[0], L"c:\\test\\process.exe");
+  argv.reset();
+  EXPECT_FALSE(argv);
+}
+
 TEST(ScopedLocalAlloc, Transfer) {
   HLOCAL ptr = ::LocalAlloc(LMEM_FIXED, 0x1000);
   ASSERT_TRUE(ptr);
-  ScopedLocalAllocTyped<void> scoped_ptr = TakeLocalAlloc(ptr);
+  ScopedLocalAlloc scoped_ptr = TakeLocalAlloc(ptr);
   EXPECT_TRUE(scoped_ptr);
   EXPECT_FALSE(ptr);
   scoped_ptr.reset();
