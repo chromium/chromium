@@ -110145,6 +110145,7 @@ Called by update_scheduler_enums.py.-->
   <int value="1" label="USB4 peripheral - wrong cable"/>
   <int value="2" label="DisplayPort peripheral - wrong cable"/>
   <int value="3" label="Cable Limiting Speed"/>
+  <int value="4" label="None"/>
 </enum>
 
 <enum name="XFrameOptions">
