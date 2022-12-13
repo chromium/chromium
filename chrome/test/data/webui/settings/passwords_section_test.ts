@@ -1711,4 +1711,18 @@ suite('PasswordsSection', function() {
     assertFalse(authTimeoutDialog.open);
     assertFalse(!!Router.getInstance().getQueryParameters().get('authTimeout'));
   });
+
+  test('notAllPasswordsShownAtOnce', async function() {
+    const passwordList: chrome.passwordsPrivate.PasswordUiEntry[] = [];
+    for (let i = 0; i < 1000; i++) {
+      passwordList.push(
+          createPasswordEntry({url: `test${i}.com`, username: 'test', id: i}));
+    }
+    const passwordsSection = await createPasswordsSection(
+        elementFactory, passwordManager, passwordList, []);
+
+    assertTrue(passwordsSection.$.passwordList.hasAttribute('initial-count'));
+    assertEquals(
+        '50', passwordsSection.$.passwordList.getAttribute('initial-count'));
+  });
 });
