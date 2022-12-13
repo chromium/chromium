@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <head>
+    <script type="module">
+      moduleCallback();
+    </script>
+    <script>
+      let asyncScriptCallback;
+      let blockingHandlerCallback;
+      let moduleCallback;
+      window.__modulePromise = new Promise(res => moduleCallback = res);
+      window.__asyncScriptPromise = new Promise(res => asyncScriptCallback = res);
+      window.__blockingHandlerPromise = new Promise(res => blockingHandlerCallback = res);
+
+      function somethingElse() {
+        const startTime = performance.now();
+        while (performance.now() - startTime < 200);
+        blockingHandlerCallback()
+      }
+      function executeSomething() {
+        something();
+        somethingElse();
+      }
+      function something() {
+      }
+    </script>
+    <script src="coop.php" async onload="asyncScriptCallback()">
+    </script>
+  </head>
+  <body onload="executeSomething()">
+    <p>
+        CPU Profiling
+    </p>
+  </body>
+</html>
