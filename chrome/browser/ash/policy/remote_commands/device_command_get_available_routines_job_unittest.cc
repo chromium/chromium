@@ -99,11 +99,11 @@ std::string DeviceCommandGetAvailableRoutinesJobTest::CreateSuccessPayload(
     const std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>&
         available_routines) {
   std::string payload;
-  base::Value root_dict(base::Value::Type::DICTIONARY);
-  base::Value routine_list(base::Value::Type::LIST);
+  base::Value::Dict root_dict;
+  base::Value::List routine_list;
   for (const auto& routine : available_routines)
     routine_list.Append(static_cast<int>(routine));
-  root_dict.SetPath(kRoutinesFieldName, std::move(routine_list));
+  root_dict.Set(kRoutinesFieldName, std::move(routine_list));
   base::JSONWriter::Write(root_dict, &payload);
   return payload;
 }
