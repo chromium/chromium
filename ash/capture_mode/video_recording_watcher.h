@@ -149,7 +149,7 @@ class ASH_EXPORT VideoRecordingWatcher
 
   void SendThrottledWindowSizeChangedNowForTesting();
 
-  CaptureModeDemoToolsController* demo_tools_controller_for_testing() {
+  CaptureModeDemoToolsController* demo_tools_controller_for_testing() const {
     return demo_tools_controller_.get();
   }
 

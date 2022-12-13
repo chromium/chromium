@@ -18,7 +18,6 @@
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -29,12 +28,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/client/cursor_shape_client.h"
-#include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/screen.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/point.h"
@@ -527,6 +526,8 @@ void VideoRecordingWatcher::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void VideoRecordingWatcher::OnMouseEvent(ui::MouseEvent* event) {
+  const gfx::PointF location_in_window =
+      GetEventLocationInWindow(window_being_recorded_, *event);
   switch (event->type()) {
     case ui::ET_MOUSEWHEEL:
     case ui::ET_MOUSE_CAPTURE_CHANGED:
@@ -536,17 +537,18 @@ void VideoRecordingWatcher::OnMouseEvent(ui::MouseEvent* event) {
       auto* camera_preview_view = GetCameraPreviewView();
       if (camera_preview_view)
         camera_preview_view->MaybeBlurFocus(*event);
+
+      if (demo_tools_controller_)
+        demo_tools_controller_->PerformMousePressAnimation(location_in_window);
     }
       [[fallthrough]];
     case ui::ET_MOUSE_RELEASED:
       // Pressed/released events are important, so we handle them immediately.
-      UpdateCursorOverlayNow(
-          GetEventLocationInWindow(window_being_recorded_, *event));
+      UpdateCursorOverlayNow(location_in_window);
       return;
 
     default:
-      UpdateOrThrottleCursorOverlay(
-          GetEventLocationInWindow(window_being_recorded_, *event));
+      UpdateOrThrottleCursorOverlay(location_in_window);
   }
 }
 

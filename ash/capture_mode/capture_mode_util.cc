@@ -78,11 +78,6 @@ bool CalculateCameraPreviewTargetVisibility(
              ->CalculateCameraPreviewTargetVisibility();
 }
 
-// Returns the local center point of the given `layer`.
-gfx::Point GetLocalCenterPoint(ui::Layer* layer) {
-  return gfx::Rect(layer->GetTargetBounds().size()).CenterPoint();
-}
-
 void FadeInWidget(views::Widget* widget,
                   const AnimationParams& animation_params) {
   DCHECK(widget);
@@ -355,6 +350,10 @@ std::unique_ptr<views::View> CreatePlayIconView() {
   return play_view;
 }
 
+gfx::Point GetLocalCenterPoint(ui::Layer* layer) {
+  return gfx::Rect(layer->GetTargetBounds().size()).CenterPoint();
+}
+
 gfx::Transform GetScaleTransformAboutCenter(ui::Layer* layer, float scale) {
   return gfx::GetScaleTransform(GetLocalCenterPoint(layer), scale);
 }
@@ -511,6 +510,12 @@ void MaybeUpdateMicrophonePrivacyIndicator(bool mic_on) {
     UpdatePrivacyIndicatorsView(kMicrophonePrivacyIndicatorId,
                                 /*is_camera_used=*/false, mic_on);
   }
+}
+
+ui::ColorProvider* GetColorProviderForNativeTheme() {
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  return ui::ColorProviderManager::Get().GetColorProviderFor(
+      native_theme->GetColorProviderKey(nullptr));
 }
 
 }  // namespace ash::capture_mode_util
