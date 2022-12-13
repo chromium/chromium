@@ -20,9 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_service_impl.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
-#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -126,11 +124,6 @@ const char kTestAndroidRealmBeta2[] =
 const char kTestAndroidRealmBeta3[] =
     "android://hash@com.yetanother.beta.android/";
 
-const char kTestAndroidFacetURIGamma[] =
-    "android://hash@com.example.gamma.android";
-const char kTestAndroidRealmGamma[] =
-    "android://hash@com.example.gamma.android";
-
 const char16_t kTestUsername[] = u"JohnDoe";
 const char16_t kTestPassword[] = u"secret";
 
@@ -165,14 +158,6 @@ PasswordForm GetTestAndroidCredentials(const char* signon_realm) {
   return form;
 }
 
-PasswordForm GetTestBlocklistedAndroidCredentials(const char* signon_realm) {
-  PasswordForm form = GetTestAndroidCredentials(signon_realm);
-  form.blocked_by_user = true;
-  form.username_value.clear();
-  form.password_value.clear();
-  return form;
-}
-
 PasswordFormDigest GetTestObservedWebForm(const char* signon_realm,
                                           const char* origin) {
   return {PasswordForm::Scheme::kHtml, signon_realm,
@@ -190,136 +175,11 @@ class AffiliatedMatchHelperTest : public testing::Test,
   }
 
  protected:
-  void RunDeferredInitialization() {
-    mock_time_task_runner_->RunUntilIdle();
-    ASSERT_EQ(AffiliatedMatchHelper::kInitializationDelayOnStartup,
-              mock_time_task_runner_->NextPendingTaskDelay());
-    mock_affiliation_service()->ExpectCallToTrimUnusedCache();
-    mock_time_task_runner_->FastForwardBy(
-        AffiliatedMatchHelper::kInitializationDelayOnStartup);
-  }
-
-  void ExpectNoDeferredTasks() {
-    mock_time_task_runner_->RunUntilIdle();
-    ASSERT_FALSE(mock_time_task_runner_->HasPendingTask());
-  }
-
   void RunUntilIdle() {
     // TODO(gab): Add support for base::RunLoop().RunUntilIdle() in scope of
     // ScopedMockTimeMessageLoopTaskRunner and use it instead of this helper
     // method.
     mock_time_task_runner_->RunUntilIdle();
-  }
-
-  void AddLoginAndWait(const PasswordForm& form) {
-    password_store_->AddLogin(form);
-    RunUntilIdle();
-  }
-
-  void UpdateLoginWithPrimaryKey(const PasswordForm& new_form,
-                                 const PasswordForm& old_primary_key) {
-    password_store_->UpdateLoginWithPrimaryKey(new_form, old_primary_key);
-    RunUntilIdle();
-  }
-
-  void RemoveLogin(const PasswordForm& form) {
-    password_store_->RemoveLogin(form);
-    RunUntilIdle();
-  }
-
-  void AddAndroidAndNonAndroidTestLogins() {
-    AddLoginAndWait(GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
-    AddLoginAndWait(GetTestAndroidCredentials(kTestAndroidRealmBeta2));
-    AddLoginAndWait(
-        GetTestBlocklistedAndroidCredentials(kTestAndroidRealmBeta3));
-    AddLoginAndWait(GetTestAndroidCredentials(kTestAndroidRealmGamma));
-
-    AddLoginAndWait(GetTestAndroidCredentials(kTestWebRealmAlpha1));
-    AddLoginAndWait(GetTestAndroidCredentials(kTestWebRealmAlpha2));
-  }
-
-  void RemoveAndroidAndNonAndroidTestLogins() {
-    RemoveLogin(GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
-    RemoveLogin(GetTestAndroidCredentials(kTestAndroidRealmBeta2));
-    RemoveLogin(GetTestBlocklistedAndroidCredentials(kTestAndroidRealmBeta3));
-    RemoveLogin(GetTestAndroidCredentials(kTestAndroidRealmGamma));
-
-    RemoveLogin(GetTestAndroidCredentials(kTestWebRealmAlpha1));
-    RemoveLogin(GetTestAndroidCredentials(kTestWebRealmAlpha2));
-  }
-
-  void ExpectPrefetchForTestLogins() {
-    mock_affiliation_service()->ExpectCallToPrefetch(
-        kTestAndroidFacetURIAlpha3);
-    mock_affiliation_service()->ExpectCallToPrefetch(kTestAndroidFacetURIBeta2);
-    mock_affiliation_service()->ExpectCallToPrefetch(kTestAndroidFacetURIBeta3);
-    mock_affiliation_service()->ExpectCallToPrefetch(kTestAndroidFacetURIGamma);
-
-    if (base::FeatureList::IsEnabled(
-            features::kFillingAcrossAffiliatedWebsites)) {
-      mock_affiliation_service()->ExpectCallToPrefetch(kTestWebFacetURIAlpha1);
-      mock_affiliation_service()->ExpectCallToPrefetch(kTestWebFacetURIAlpha2);
-    }
-  }
-
-  void ExpectKeepPrefetchForTestLogins() {
-    std::vector<FacetURI> expected_facets;
-    expected_facets.push_back(
-        FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3));
-    expected_facets.push_back(
-        FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2));
-    expected_facets.push_back(
-        FacetURI::FromCanonicalSpec(kTestAndroidFacetURIGamma));
-    expected_facets.push_back(
-        FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta3));
-
-    if (base::FeatureList::IsEnabled(
-            features::kFillingAcrossAffiliatedWebsites)) {
-      expected_facets.push_back(
-          FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1));
-      expected_facets.push_back(
-          FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha2));
-    }
-
-    mock_affiliation_service()->ExpectKeepPrefetchForFacets(expected_facets);
-  }
-
-  void ExpectCancelPrefetchForTestLogins() {
-    mock_affiliation_service()->ExpectCallToCancelPrefetch(
-        kTestAndroidFacetURIAlpha3);
-    mock_affiliation_service()->ExpectCallToCancelPrefetch(
-        kTestAndroidFacetURIBeta2);
-    mock_affiliation_service()->ExpectCallToCancelPrefetch(
-        kTestAndroidFacetURIBeta3);
-    mock_affiliation_service()->ExpectCallToCancelPrefetch(
-        kTestAndroidFacetURIGamma);
-
-    if (base::FeatureList::IsEnabled(
-            features::kFillingAcrossAffiliatedWebsites)) {
-      mock_affiliation_service()->ExpectCallToCancelPrefetch(
-          kTestWebFacetURIAlpha1);
-      mock_affiliation_service()->ExpectCallToCancelPrefetch(
-          kTestWebFacetURIAlpha2);
-    }
-  }
-
-  void ExpectTrimCacheForTestLogins() {
-    mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
-        kTestAndroidFacetURIAlpha3);
-    mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
-        kTestAndroidFacetURIBeta2);
-    mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
-        kTestAndroidFacetURIBeta3);
-    mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
-        kTestAndroidFacetURIGamma);
-
-    if (base::FeatureList::IsEnabled(
-            features::kFillingAcrossAffiliatedWebsites)) {
-      mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
-          kTestWebFacetURIAlpha1);
-      mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
-          kTestWebFacetURIAlpha2);
-    }
   }
 
   std::vector<std::string> GetAffiliatedAndroidAndWebRealms(
@@ -334,18 +194,11 @@ class AffiliatedMatchHelperTest : public testing::Test,
     return last_result_realms_;
   }
 
-  void DestroyPasswordStore() {
-    password_store_->ShutdownOnUIThread();
-    password_store_ = nullptr;
-  }
-
-  TestPasswordStore* password_store() { return password_store_.get(); }
-
   OverloadedMockAffiliationService* mock_affiliation_service() {
     return mock_affiliation_service_.get();
   }
 
-  AffiliatedMatchHelper* match_helper() { return match_helper_; }
+  AffiliatedMatchHelper* match_helper() { return match_helper_.get(); }
 
  private:
   void OnAffiliatedRealmsCallback(
@@ -359,16 +212,11 @@ class AffiliatedMatchHelperTest : public testing::Test,
   void SetUp() override {
     mock_affiliation_service_ = std::make_unique<
         testing::StrictMock<OverloadedMockAffiliationService>>();
-    auto match_helper =
+    match_helper_ =
         std::make_unique<AffiliatedMatchHelper>(mock_affiliation_service());
-    match_helper_ = match_helper.get();
-    // Initializing PasswordStore initializes AffiliatedMatchHelper.
-    password_store()->Init(/*prefs=*/nullptr, std::move(match_helper));
   }
 
   void TearDown() override {
-    if (password_store_)
-      DestroyPasswordStore();
     mock_affiliation_service_.reset();
     // Clean up on the background thread.
     RunUntilIdle();
@@ -381,9 +229,7 @@ class AffiliatedMatchHelperTest : public testing::Test,
   std::vector<std::string> last_result_realms_;
   bool expecting_result_callback_ = false;
 
-  scoped_refptr<TestPasswordStore> password_store_ =
-      base::MakeRefCounted<TestPasswordStore>();
-  raw_ptr<AffiliatedMatchHelper> match_helper_;
+  std::unique_ptr<AffiliatedMatchHelper> match_helper_;
 
   std::unique_ptr<OverloadedMockAffiliationService> mock_affiliation_service_;
 };
@@ -456,146 +302,6 @@ TEST_P(AffiliatedMatchHelperTest,
               testing::IsEmpty());
 }
 
-// Verifies that affiliations for Android applications with pre-existing
-// credentials on start-up are prefetched.
-TEST_P(
-    AffiliatedMatchHelperTest,
-    PrefetchAffiliationsAndBrandingForPreexistingAndroidCredentialsOnStartup) {
-  AddAndroidAndNonAndroidTestLogins();
-  RunUntilIdle();
-
-  ExpectKeepPrefetchForTestLogins();
-  ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
-}
-
-// Stores credentials for Android applications between Initialize() and
-// DoDeferredInitialization(). Verifies that corresponding affiliation
-// information gets prefetched.
-TEST_P(AffiliatedMatchHelperTest,
-       PrefetchAffiliationsForAndroidCredentialsAddedInInitializationDelay) {
-  // Wait until PasswordStore initialisation is complete and
-  // AffiliatedMatchHelper::Initialize is called.
-  RunUntilIdle();
-
-  AddAndroidAndNonAndroidTestLogins();
-
-  ExpectKeepPrefetchForTestLogins();
-  ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
-}
-
-// Stores credentials for Android applications after DoDeferredInitialization().
-// Verifies that corresponding affiliation information gets prefetched.
-TEST_P(AffiliatedMatchHelperTest,
-       PrefetchAffiliationsForAndroidCredentialsAddedAfterInitialization) {
-  mock_affiliation_service()->ExpectKeepPrefetchForFacets({});
-  ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
-
-  ExpectPrefetchForTestLogins();
-  AddAndroidAndNonAndroidTestLogins();
-}
-
-TEST_P(AffiliatedMatchHelperTest,
-       CancelPrefetchingAffiliationsAndBrandingForRemovedAndroidCredentials) {
-  AddAndroidAndNonAndroidTestLogins();
-
-  ExpectKeepPrefetchForTestLogins();
-  ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
-
-  ExpectCancelPrefetchForTestLogins();
-  ExpectTrimCacheForTestLogins();
-
-  RemoveAndroidAndNonAndroidTestLogins();
-}
-
-// Verify that whenever the primary key is updated for a credential (in which
-// case both REMOVE and ADD change notifications are sent out), then Prefetch()
-// is called in response to the addition before the call to
-// TrimCacheForFacetURI() in response to the removal, so that cached data is not
-// deleted and then immediately re-fetched.
-TEST_P(AffiliatedMatchHelperTest, PrefetchBeforeTrimForPrimaryKeyUpdates) {
-  AddAndroidAndNonAndroidTestLogins();
-
-  ExpectKeepPrefetchForTestLogins();
-  ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
-
-  mock_affiliation_service()->ExpectCallToCancelPrefetch(
-      kTestAndroidFacetURIAlpha3);
-
-  {
-    testing::InSequence in_sequence;
-    mock_affiliation_service()->ExpectCallToPrefetch(
-        kTestAndroidFacetURIAlpha3);
-    mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
-        kTestAndroidFacetURIAlpha3);
-  }
-
-  PasswordForm old_form(GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
-  PasswordForm new_form(old_form);
-  new_form.username_value = u"NewUserName";
-  UpdateLoginWithPrimaryKey(new_form, old_form);
-}
-
-// Stores and removes four credentials for the same an Android application, and
-// expects that Prefetch() and CancelPrefetch() will each be called four times.
-TEST_P(AffiliatedMatchHelperTest,
-       DuplicateCredentialsArePrefetchWithMultiplicity) {
-  mock_affiliation_service()->ExpectKeepPrefetchForFacets(
-      {FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3),
-       FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3),
-       FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3)});
-
-  PasswordForm android_form(GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
-  password_store()->AddLogin(android_form);
-
-  // Store two credentials before initialization.
-  PasswordForm android_form2(android_form);
-  android_form2.username_value = u"JohnDoe2";
-  password_store()->AddLogin(android_form2);
-
-  // Wait until PasswordStore initializes AffiliatedMatchHelper and processes
-  // added logins.
-  RunUntilIdle();
-
-  // Store one credential between initialization and deferred initialization.
-  PasswordForm android_form3(android_form);
-  android_form3.username_value = u"JohnDoe3";
-  password_store()->AddLogin(android_form3);
-
-  ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
-
-  EXPECT_CALL(*mock_affiliation_service(),
-              Prefetch(FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3),
-                       base::Time::Max()))
-      .Times(1);
-
-  // Store one credential after deferred initialization.
-  PasswordForm android_form4(android_form);
-  android_form4.username_value = u"JohnDoe4";
-  AddLoginAndWait(android_form4);
-
-  for (size_t i = 0; i < 4; ++i) {
-    mock_affiliation_service()->ExpectCallToCancelPrefetch(
-        kTestAndroidFacetURIAlpha3);
-    mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
-        kTestAndroidFacetURIAlpha3);
-  }
-
-  RemoveLogin(android_form);
-  RemoveLogin(android_form2);
-  RemoveLogin(android_form3);
-  RemoveLogin(android_form4);
-}
-
-TEST_P(AffiliatedMatchHelperTest, DestroyBeforeDeferredInitialization) {
-  // Wait until PasswordStore initialisation is complete and
-  // AffiliatedMatchHelper::Initialize is called.
-  RunUntilIdle();
-
-  // Destroy PasswordStore to destroy AffiliatedMatchHelper.
-  DestroyPasswordStore();
-  ASSERT_NO_FATAL_FAILURE(ExpectNoDeferredTasks());
-}
-
 TEST_P(AffiliatedMatchHelperTest, GetAffiliatedAndroidRealmsAndWebsites) {
   // Disable this test when filling across affiliated websites disabled.
   if (!base::FeatureList::IsEnabled(features::kFillingAcrossAffiliatedWebsites))
@@ -609,26 +315,6 @@ TEST_P(AffiliatedMatchHelperTest, GetAffiliatedAndroidRealmsAndWebsites) {
                   GetTestObservedWebForm(kTestWebRealmAlpha1, nullptr)),
               testing::UnorderedElementsAre(kTestWebRealmAlpha2,
                                             kTestAndroidRealmAlpha3));
-}
-
-TEST_P(AffiliatedMatchHelperTest, OnLoginsRetained) {
-  std::vector<PasswordForm> forms = {
-      GetTestAndroidCredentials(kTestWebFacetURIAlpha1),
-      GetTestAndroidCredentials(kTestAndroidFacetURIBeta2)};
-  std::vector<FacetURI> expected_facets;
-
-  if (base::FeatureList::IsEnabled(
-          features::kFillingAcrossAffiliatedWebsites)) {
-    expected_facets = {FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1),
-                       FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2)};
-  } else {
-    expected_facets = {FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2)};
-  }
-
-  mock_affiliation_service()->ExpectKeepPrefetchForFacets(expected_facets);
-
-  (static_cast<PasswordStoreInterface::Observer*>(match_helper()))
-      ->OnLoginsRetained(nullptr, forms);
 }
 
 INSTANTIATE_TEST_SUITE_P(FillingAcrossAffiliatedWebsites,

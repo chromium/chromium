@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/login_database_async_helper.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_backend_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_util.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 

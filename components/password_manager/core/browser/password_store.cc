@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_service.h"
 #include "components/password_manager/core/browser/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
