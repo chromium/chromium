@@ -7,7 +7,6 @@
 #include <map>
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
@@ -93,16 +92,6 @@ class AccessibilityNodeInfoDataWrapperTest : public testing::Test,
   }
   void SetParentId(int32_t child_id, int32_t parent_id) {
     tree_source_->SetParentId(child_id, parent_id);
-  }
-  void ForcePopulateChildrenOverride(
-      AccessibilityNodeInfoDataWrapper& wrapper) {
-    wrapper.PopulateChildrenOverride();
-  }
-  std::vector<int>* GetChildrenOverride(
-      AccessibilityNodeInfoDataWrapper& wrapper) {
-    return wrapper.children_override_.has_value()
-               ? &wrapper.children_override_.value()
-               : nullptr;
   }
 
   // AXTreeSourceArc::Delegate overrides.
@@ -851,112 +840,5 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, ActionLabel) {
   EXPECT_TRUE(data.GetStringAttribute(
       ax::mojom::StringAttribute::kLongClickLabel, &val));
   EXPECT_EQ("long click label", val);
-}
-
-TEST_F(AccessibilityNodeInfoDataWrapperTest, ChildrenModifiers) {
-  AXTreeSourceArc* tree = tree_source();
-
-  AXNodeInfoData parent;
-  parent.id = 1;
-  AccessibilityNodeInfoDataWrapper parent_wrapper(tree, &parent);
-  SetIdToWrapper(&parent_wrapper);
-
-  AXNodeInfoData child_1;
-  child_1.id = 2;
-  AccessibilityNodeInfoDataWrapper child_1_wrapper(tree, &child_1);
-  SetIdToWrapper(&child_1_wrapper);
-
-  AXNodeInfoData child_2;
-  child_2.id = 3;
-  AccessibilityNodeInfoDataWrapper child_2_wrapper(tree, &child_2);
-  SetIdToWrapper(&child_2_wrapper);
-
-  // Get children
-  std::vector<AccessibilityInfoDataWrapper*> children;
-  parent_wrapper.GetChildren(&children);
-  // Check size
-  int size = children.size();
-  EXPECT_EQ(size, 0);
-  children.clear();
-  // Add one child
-  parent_wrapper.AppendChild(child_1.id);
-  parent_wrapper.GetChildren(&children);
-  // Check size
-  size = children.size();
-  EXPECT_EQ(size, 1);
-  // Check that node is the child
-  EXPECT_EQ(children[0]->GetId(), child_1.id);
-  children.clear();
-
-  // Replace Child 1 with child 2
-  parent_wrapper.ReplaceChild(child_1.id, child_2.id);
-  parent_wrapper.GetChildren(&children);
-  // Check size
-  size = children.size();
-  EXPECT_EQ(size, 1);
-  // Check that node is the child
-  EXPECT_EQ(children[0]->GetId(), child_2.id);
-  children.clear();
-  // Remove child 2
-  parent_wrapper.RemoveChild(child_2.id);
-  parent_wrapper.GetChildren(&children);
-  // Check size
-  size = children.size();
-  EXPECT_EQ(size, 0);
-}
-
-TEST_F(AccessibilityNodeInfoDataWrapperTest, TraversalProperties) {
-  AXNodeInfoData node_a;
-  node_a.id = 1;
-  AccessibilityNodeInfoDataWrapper node_a_w(tree_source(), &node_a);
-  SetIdToWrapper(&node_a_w);
-
-  AXNodeInfoData node_b;
-  node_b.id = 1;
-  AccessibilityNodeInfoDataWrapper node_b_w(tree_source(), &node_b);
-  SetIdToWrapper(&node_b_w);
-
-  AXNodeInfoData node_c;
-  node_c.id = 1;
-  AccessibilityNodeInfoDataWrapper node_c_w(tree_source(), &node_c);
-  SetIdToWrapper(&node_c_w);
-
-  SetProperty(node_b.int_properties, AXIntProperty::TRAVERSAL_BEFORE,
-              node_c.id);
-  SetProperty(node_b.int_properties, AXIntProperty::TRAVERSAL_AFTER, node_a.id);
-
-  // Traversal Before for b = c, and not nullptr;
-  EXPECT_NE(node_b_w.GetTraversalBefore(), nullptr);
-  EXPECT_EQ(node_c.id, node_b_w.GetTraversalBefore()->GetId());
-
-  // Traversal after for b = a, and not nullptr;
-  EXPECT_NE(node_b_w.GetTraversalAfter(), nullptr);
-  EXPECT_EQ(node_c.id, node_b_w.GetTraversalAfter()->GetId());
-
-  // Traversal before/after for a = nullptr;
-  EXPECT_EQ(node_a_w.GetTraversalBefore(), nullptr);
-  EXPECT_EQ(node_a_w.GetTraversalAfter(), nullptr);
-}
-
-TEST_F(AccessibilityNodeInfoDataWrapperTest, PopulateChildrenOverride) {
-  // Test populating from existing children.
-  AXNodeInfoData node_a;
-  node_a.id = 1;
-  AccessibilityNodeInfoDataWrapper node_a_w(tree_source(), &node_a);
-  SetIdToWrapper(&node_a_w);
-  SetProperty(node_a.int_list_properties, AXIntListProperty::CHILD_NODE_IDS,
-              {2, 3});
-  ForcePopulateChildrenOverride(node_a_w);
-  auto* override = GetChildrenOverride(node_a_w);
-  EXPECT_NE(override, nullptr);
-  EXPECT_EQ(2U, override->size());
-  // Test that running override again will not repopulate.
-  SetProperty(node_a.int_list_properties, AXIntListProperty::CHILD_NODE_IDS,
-              {});
-  ForcePopulateChildrenOverride(node_a_w);
-  auto* latest_override = GetChildrenOverride(node_a_w);
-  EXPECT_NE(latest_override, nullptr);
-  // The size should remain the same since forcing populate should do nothing.
-  EXPECT_EQ(2U, latest_override->size());
 }
 }  // namespace arc

@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "base/containers/flat_map.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "ui/accessibility/ax_action_handler.h"
 #include "ui/accessibility/ax_node.h"
@@ -128,60 +128,9 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
  private:
   friend class arc::AXTreeSourceArcTest;
 
-  class TreeOrderer {
-   public:
-    explicit TreeOrderer(AXTreeSourceArc& tree_source);
-    ~TreeOrderer() = default;
-
-    // Reorders the tree to deal with Traversal Before/After.
-    void ReorderTree(
-        std::vector<AccessibilityNodeInfoDataWrapper*>& nodes_to_reorder);
-
-    // Returns the LCAs of the nodes / will return ancestors that are all on the
-    // same level.
-    std::set<int> GetLeastCommonAncestors(
-        std::vector<AccessibilityNodeInfoDataWrapper*>& nodes) const;
-
-   private:
-    // Determines if `after` is down the traversal chain from `before`
-    bool InTraversalChain(AccessibilityInfoDataWrapper* before,
-                          AccessibilityInfoDataWrapper* after,
-                          std::set<int>& visited) const;
-
-    // Determines if node with parent_id has a descendant with child_id
-    bool HasDescendant(int32_t parent_id, int32_t child_id) const;
-
-    // moves moving_node before target_node in the traversal order
-    void MoveNodeBefore(AccessibilityInfoDataWrapper& moving_node,
-                        AccessibilityInfoDataWrapper& target_node);
-    // moves moving_node after target_node in the traversal order
-    void MoveNodeAfter(AccessibilityInfoDataWrapper& moving_node,
-                       AccessibilityInfoDataWrapper& target_node);
-    void AppendChild(AccessibilityInfoDataWrapper& new_parent,
-                     AccessibilityInfoDataWrapper& new_child);
-
-    // This method is called before moving subtree. It checks if parent of that
-    // node was moved on its place because it has before property to that node.
-    // In that case parent node should be moved with moving_node.
-    //
-    // Returns top node that should be moved with moving_node.
-    AccessibilityInfoDataWrapper& GetParentsThatAreMovedBeforeOrSameNode(
-        AccessibilityInfoDataWrapper& moving_node);
-
-    void DetachFromParent(AccessibilityInfoDataWrapper& node);
-
-    int32_t GetLevel(AccessibilityInfoDataWrapper& node) const;
-
-    AXTreeSourceArc& tree_source_;
-  };
-
   // Actual implementation of NotifyAccessibilityEvent.
   void NotifyAccessibilityEventInternal(
       const mojom::AccessibilityEventData& event_data);
-
-  void BuildNodeTree(
-      const std::vector<mojom::AccessibilityNodeInfoDataPtr>& node_data,
-      std::vector<AccessibilityNodeInfoDataWrapper*>& nodes_to_reorder);
 
   // Returns AutomationEventRouter.
   extensions::AutomationEventRouterInterface* GetAutomationEventRouter() const;

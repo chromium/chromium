@@ -4,13 +4,9 @@
 
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 
-#include <cstddef>
-#include <string>
 #include <utility>
-#include <vector>
 
 #include "ash/components/arc/mojom/accessibility_helper.mojom.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
@@ -118,29 +114,6 @@ class AXTreeSourceArcTest : public testing::Test,
     tree_source_->NotifyAccessibilityEvent(event_data);
   }
 
-  std::vector<AccessibilityNodeInfoDataWrapper*> CallBuildNodeTree(
-      AXEventData* event_data) {
-    std::vector<AccessibilityNodeInfoDataWrapper*> nodes_to_reorder;
-    tree_source_->BuildNodeTree(event_data->node_data, nodes_to_reorder);
-    return nodes_to_reorder;
-  }
-
-  std::set<int> GetLeastCommonAncestors(
-      std::vector<AccessibilityNodeInfoDataWrapper*>& nodes) {
-    AXTreeSourceArc::TreeOrderer orderer(*tree_source_);
-    return orderer.GetLeastCommonAncestors(nodes);
-  }
-
-  void ReorderTree(std::vector<AccessibilityNodeInfoDataWrapper*>& nodes) {
-    AXTreeSourceArc::TreeOrderer orderer(*tree_source_);
-    orderer.ReorderTree(nodes);
-  }
-
-  AccessibilityNodeInfoDataWrapper* GetNodeWrapper(AXNodeInfoData& node) {
-    auto* node_wrapper = tree_source_->GetFromId(node.id);
-    return static_cast<AccessibilityNodeInfoDataWrapper*>(node_wrapper);
-  }
-
   const std::vector<ui::AXNode*>& GetChildren(int32_t node_id) {
     ui::AXNode* ax_node = tree()->GetFromId(node_id);
     return ax_node->children();
@@ -182,31 +155,9 @@ class AXTreeSourceArcTest : public testing::Test,
     EXPECT_EQ(expected, tree_text.substr(first_new_line));
   }
 
-  // Order contains a list of Ids in the order it should be traversed.
-  void ExpectTraversalOrder(std::vector<int32_t>& order,
-                            AccessibilityInfoDataWrapper* current_node) {
-    int index = 0;
-    ExpectTraversalOrder(order, current_node, &index);
-  }
-
   void set_full_focus_mode(bool enabled) { full_focus_mode_ = enabled; }
 
  private:
-  void ExpectTraversalOrder(std::vector<int32_t>& order,
-                            AccessibilityInfoDataWrapper* current_node,
-                            int* index) {
-    EXPECT_NE(current_node, nullptr);
-
-    int32_t current_id = current_node->GetId();
-    EXPECT_EQ(current_id, order[*index]);
-    std::vector<AccessibilityInfoDataWrapper*> children;
-    current_node->GetChildren(&children);
-    for (auto* child : children) {
-      (*index)++;
-      ExpectTraversalOrder(order, child, index);
-    }
-  }
-
   const std::unique_ptr<MockAutomationEventRouter> router_;
   const std::unique_ptr<AXTreeSourceArc> tree_source_;
 
@@ -1612,208 +1563,5 @@ TEST_F(AXTreeSourceArcTest, EventFrom) {
   actual = last_dispatched_events()[0];
   EXPECT_EQ(ax::mojom::EventFrom::kAction, actual.event_from);
   EXPECT_EQ(ax::mojom::Action::kDoDefault, actual.event_from_action);
-}
-
-TEST_F(AXTreeSourceArcTest, GetLeastCommonAncestors) {
-  auto event = AXEventData::New();
-  event->source_id = 10;
-  event->task_id = 1;
-  event->event_type = AXEventType::VIEW_FOCUSED;
-
-  event->window_data = std::vector<mojom::AccessibilityWindowInfoDataPtr>();
-  event->window_data->push_back(AXWindowInfoData::New());
-  AXWindowInfoData* root_window = event->window_data->back().get();
-  root_window->window_id = 100;
-  root_window->root_node_id = 10;
-
-  // Tree Structure for test
-  // root[10]
-  // |-- A[11]
-  // |   |-- 1[21]
-  // |   `-- 2[22]
-  // `-- B[12]
-  //     |-- 3[31]
-  //     |   |-- u[41]
-  //     |   |-- v[42]
-  //     |   `-- w[43]
-  //     `-- 4[32]
-  //         |-- x[51]
-  //         `-- y[52]
-
-  // Root : 10
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* root = event->node_data.back().get();
-  root->id = 10;
-  SetProperty(root, AXIntListProperty::CHILD_NODE_IDS, {11, 12});
-  SetProperty(root, AXBooleanProperty::IMPORTANCE, true);
-  // A : 11
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_A = event->node_data.back().get();
-  node_A->id = 11;
-  SetProperty(node_A, AXIntListProperty::CHILD_NODE_IDS, {21, 22});
-
-  // 1 : 21
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_1 = event->node_data.back().get();
-  node_1->id = 21;
-
-  // 2 : 22
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_2 = event->node_data.back().get();
-  node_2->id = 22;
-
-  // B : 12
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_B = event->node_data.back().get();
-  node_B->id = 12;
-  SetProperty(node_B, AXIntListProperty::CHILD_NODE_IDS, {31, 32});
-
-  // 3 : 31
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_3 = event->node_data.back().get();
-  node_3->id = 31;
-  SetProperty(node_3, AXIntListProperty::CHILD_NODE_IDS, {41, 42, 43});
-
-  // 4 : 32
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_4 = event->node_data.back().get();
-  node_4->id = 32;
-  SetProperty(node_4, AXIntListProperty::CHILD_NODE_IDS, {51, 52});
-
-  // u : 41
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_u = event->node_data.back().get();
-  node_u->id = 41;
-
-  // v : 42
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_v = event->node_data.back().get();
-  node_v->id = 42;
-
-  // w : 43
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_w = event->node_data.back().get();
-  node_w->id = 43;
-
-  // x : 51
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_x = event->node_data.back().get();
-  node_x->id = 51;
-
-  // y : 52
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_y = event->node_data.back().get();
-  node_y->id = 52;
-
-  CallBuildNodeTree(event.get());
-  // Get LCAs for x,w,4 = [4,3]
-  std::vector<AccessibilityNodeInfoDataWrapper*> nodes{GetNodeWrapper(*node_x),
-                                                       GetNodeWrapper(*node_w),
-                                                       GetNodeWrapper(*node_4)};
-  auto lcas = GetLeastCommonAncestors(nodes);
-  EXPECT_TRUE(lcas.find(node_4->id) != lcas.end());
-  EXPECT_TRUE(lcas.find(node_3->id) != lcas.end());
-  EXPECT_EQ(2U, lcas.size());
-}
-
-TEST_F(AXTreeSourceArcTest, TreeOrderer) {
-  auto event = AXEventData::New();
-  event->source_id = 10;
-  event->task_id = 1;
-  event->event_type = AXEventType::VIEW_FOCUSED;
-
-  event->window_data = std::vector<mojom::AccessibilityWindowInfoDataPtr>();
-  event->window_data->push_back(AXWindowInfoData::New());
-  AXWindowInfoData* root_window = event->window_data->back().get();
-  root_window->window_id = 100;
-  root_window->root_node_id = 10;
-
-  // Based Tree Structure for test
-  // TA = Traversal After / TB = Traversal Before
-  // root[10]
-  // |-- A[11]
-  // |   |-- 1[21]
-  // |   `-- 2[22]
-  // `-- B[12] : TB = A
-  //     |-- 3[31] : TA = 4
-  //     |   |-- u[41]
-  //     |   |-- v[42]
-  //     |   `-- w[43]
-  //     `-- 4[32]
-  //         |-- x[51]
-  //         `-- y[52]
-
-  // Root : 10
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* root = event->node_data.back().get();
-  root->id = 10;
-  SetProperty(root, AXIntListProperty::CHILD_NODE_IDS, {11, 12});
-  SetProperty(root, AXBooleanProperty::IMPORTANCE, true);
-  // A : 11
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_A = event->node_data.back().get();
-  node_A->id = 11;
-  SetProperty(node_A, AXIntListProperty::CHILD_NODE_IDS, {21, 22});
-
-  // 1 : 21
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_1 = event->node_data.back().get();
-  node_1->id = 21;
-
-  // 2 : 22
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_2 = event->node_data.back().get();
-  node_2->id = 22;
-
-  // B : 12
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_B = event->node_data.back().get();
-  node_B->id = 12;
-  SetProperty(node_B, AXIntListProperty::CHILD_NODE_IDS, {31, 32});
-  SetProperty(node_B, AXIntProperty::TRAVERSAL_BEFORE, 11);
-
-  // 3 : 31
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_3 = event->node_data.back().get();
-  node_3->id = 31;
-  SetProperty(node_3, AXIntListProperty::CHILD_NODE_IDS, {41, 42, 43});
-  SetProperty(node_3, AXIntProperty::TRAVERSAL_AFTER, 32);
-
-  // 4 : 32
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_4 = event->node_data.back().get();
-  node_4->id = 32;
-  SetProperty(node_4, AXIntListProperty::CHILD_NODE_IDS, {51, 52});
-
-  // u : 41
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_u = event->node_data.back().get();
-  node_u->id = 41;
-
-  // v : 42
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_v = event->node_data.back().get();
-  node_v->id = 42;
-
-  // w : 43
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_w = event->node_data.back().get();
-  node_w->id = 43;
-
-  // x : 51
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_x = event->node_data.back().get();
-  node_x->id = 51;
-
-  // y : 52
-  event->node_data.push_back(AXNodeInfoData::New());
-  AXNodeInfoData* node_y = event->node_data.back().get();
-  node_y->id = 52;
-
-  auto nodes_to_reorder = CallBuildNodeTree(event.get());
-  ReorderTree(nodes_to_reorder);
-  // Expected order root,B,4,x,y,3,u,v,w,A,1,2
-  std::vector<int32_t> order{10, 12, 32, 51, 52, 31, 41, 42, 43, 11, 21, 22};
-  ExpectTraversalOrder(order, GetNodeWrapper(*root));
 }
 }  // namespace arc

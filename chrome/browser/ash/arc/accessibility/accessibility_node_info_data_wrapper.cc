@@ -5,9 +5,7 @@
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 
 #include <algorithm>
-#include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
@@ -591,75 +589,24 @@ std::string AccessibilityNodeInfoDataWrapper::ComputeAXName(
 
 void AccessibilityNodeInfoDataWrapper::GetChildren(
     std::vector<AccessibilityInfoDataWrapper*>* children) const {
-  if (children_override_.has_value()) {
-    for (const int32_t id : children_override_.value()) {
-      auto* child = tree_source_->GetFromId(id);
-      if (child != nullptr) {
-        children->push_back(child);
-      } else {
-        LOG(WARNING) << "Unexpected nullptr found while GetChildren";
-      }
-    }
-  } else {
-    if (!node_ptr_->int_list_properties)
-      return;
-    const auto& it =
-        node_ptr_->int_list_properties->find(AXIntListProperty::CHILD_NODE_IDS);
-    if (it == node_ptr_->int_list_properties->end())
-      return;
-    for (const int32_t id : it->second) {
-      auto* child = tree_source_->GetFromId(id);
-      if (child != nullptr) {
-        children->push_back(child);
-      } else {
-        LOG(WARNING) << "Unexpected nullptr found while GetChildren";
-      }
+  if (!node_ptr_->int_list_properties)
+    return;
+  const auto& it =
+      node_ptr_->int_list_properties->find(AXIntListProperty::CHILD_NODE_IDS);
+  if (it == node_ptr_->int_list_properties->end())
+    return;
+  for (const int32_t id : it->second) {
+    auto* child = tree_source_->GetFromId(id);
+    if (child != nullptr) {
+      children->push_back(child);
+    } else {
+      LOG(WARNING) << "Unexpected nullptr found while GetChildren";
     }
   }
 }
 
 int32_t AccessibilityNodeInfoDataWrapper::GetWindowId() const {
   return node_ptr_->window_id;
-}
-
-AccessibilityInfoDataWrapper*
-AccessibilityNodeInfoDataWrapper::GetTraversalBefore() const {
-  int32_t before_id = -1;
-  if (GetProperty(AXIntProperty::TRAVERSAL_BEFORE, &before_id))
-    return tree_source_->GetFromId(before_id);
-
-  return nullptr;
-}
-
-AccessibilityInfoDataWrapper*
-AccessibilityNodeInfoDataWrapper::GetTraversalAfter() const {
-  int32_t after_id = -1;
-  if (GetProperty(AXIntProperty::TRAVERSAL_AFTER, &after_id))
-    return tree_source_->GetFromId(after_id);
-
-  return nullptr;
-}
-
-void AccessibilityNodeInfoDataWrapper::PopulateChildrenOverride() {
-  // Don't repopulate if the override already exists.
-  if (children_override_.has_value())
-    return;
-
-  // If there are no int list properties, there aren't any children.
-  if (!node_ptr_->int_list_properties.has_value()) {
-    children_override_ = std::vector<int>();
-    return;
-  }
-
-  auto& int_properties = node_ptr_->int_list_properties.value();
-  // If the map doesn't contain child nodes, do the same as above.
-  if (auto it = int_properties.find(AXIntListProperty::CHILD_NODE_IDS);
-      it != int_properties.end()) {
-    // If it did have children, copy them into the override
-    children_override_ = it->second;
-    return;
-  }
-  children_override_ = std::vector<int>();
 }
 
 bool AccessibilityNodeInfoDataWrapper::GetProperty(

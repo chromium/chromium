@@ -19,7 +19,6 @@ namespace arc {
 AccessibilityInfoDataWrapper::AccessibilityInfoDataWrapper(
     AXTreeSourceArc* tree_source)
     : tree_source_(tree_source) {}
-AccessibilityInfoDataWrapper::~AccessibilityInfoDataWrapper() = default;
 
 void AccessibilityInfoDataWrapper::Serialize(ui::AXNodeData* out_data) const {
   out_data->id = GetId();
@@ -78,39 +77,6 @@ void AccessibilityInfoDataWrapper::PopulateBounds(
     out_bounds_px.SetRect(info_data_bounds.x(), info_data_bounds.y(),
                           info_data_bounds.width(), info_data_bounds.height());
   }
-}
-
-void AccessibilityInfoDataWrapper::ReplaceChild(int32_t current_child_id,
-                                                int32_t new_child_id) {
-  // A node can not be a child of itself.
-  if (new_child_id == GetId())
-    return;
-
-  if (!children_override_.has_value())
-    PopulateChildrenOverride();
-
-  base::ranges::replace(children_override_.value(), current_child_id,
-                        new_child_id);
-}
-
-void AccessibilityInfoDataWrapper::AppendChild(int32_t new_child_id) {
-  // A node can not be a child of itself.
-  if (new_child_id == GetId())
-    return;
-
-  if (!children_override_.has_value())
-    PopulateChildrenOverride();
-
-  children_override_->push_back(new_child_id);
-}
-
-void AccessibilityInfoDataWrapper::RemoveChild(int32_t child_id) {
-  if (!children_override_.has_value())
-    PopulateChildrenOverride();
-
-  auto it = base::ranges::find(children_override_.value(), child_id);
-  if (it != children_override_->end())
-    children_override_->erase(it);
 }
 
 }  // namespace arc

@@ -4,18 +4,14 @@
 
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 
-#include <algorithm>
-#include <cstdint>
 #include <memory>
-#include <set>
 #include <stack>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/containers/cxx20_erase.h"
 #include "base/dcheck_is_on.h"
-#include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
+#include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/ash/arc/accessibility/auto_complete_handler.h"
@@ -23,7 +19,6 @@
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "extensions/common/extension_messages.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_source_checker.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -149,29 +144,6 @@ void AXTreeSourceArc::SerializeNode(AccessibilityInfoDataWrapper* info_data,
     itr->second->PostSerializeNode(out_data);
 }
 
-void AXTreeSourceArc::BuildNodeTree(
-    const std::vector<mojom::AccessibilityNodeInfoDataPtr>& node_data,
-    std::vector<AccessibilityNodeInfoDataWrapper*>& nodes_to_reorder) {
-  for (auto& node_ptr : node_data) {
-    int32_t node_id = node_ptr->id;
-    AXNodeInfoData* node = node_ptr.get();
-    AccessibilityNodeInfoDataWrapper* node_wrapper_ptr =
-        new AccessibilityNodeInfoDataWrapper(this, node);
-    tree_map_[node_id] =
-        base::WrapUnique<AccessibilityNodeInfoDataWrapper>(node_wrapper_ptr);
-    std::vector<int32_t> children;
-    if (GetProperty(node->int_list_properties,
-                    AXIntListProperty::CHILD_NODE_IDS, &children)) {
-      for (const int32_t child : children)
-        parent_map_[child] = node_id;
-    }
-    if (HasProperty(node->int_properties, AXIntProperty::TRAVERSAL_BEFORE) ||
-        HasProperty(node->int_properties, AXIntProperty::TRAVERSAL_AFTER)) {
-      nodes_to_reorder.push_back(node_wrapper_ptr);
-    }
-  }
-}
-
 void AXTreeSourceArc::NotifyAccessibilityEventInternal(
     const AXEventData& event_data) {
   if (window_id_ != event_data.window_id) {
@@ -206,8 +178,19 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
     }
   }
 
-  std::vector<AccessibilityNodeInfoDataWrapper*> nodes_to_reorder;
-  BuildNodeTree(event_data.node_data, nodes_to_reorder);
+  for (size_t i = 0; i < event_data.node_data.size(); ++i) {
+    int32_t node_id = event_data.node_data[i]->id;
+    AXNodeInfoData* node = event_data.node_data[i].get();
+    tree_map_[node_id] =
+        std::make_unique<AccessibilityNodeInfoDataWrapper>(this, node);
+
+    std::vector<int32_t> children;
+    if (GetProperty(event_data.node_data[i].get()->int_list_properties,
+                    AXIntListProperty::CHILD_NODE_IDS, &children)) {
+      for (const int32_t child : children)
+        parent_map_[child] = node_id;
+    }
+  }
 
   // Compute each node's bounds, based on its descendants.
   // Assuming |nodeData| is in pre-order, compute cached bounds in post-order to
@@ -222,22 +205,12 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
     computed_bounds_[id] = ComputeEnclosingBounds(tree_map_[id].get());
   }
 
-  // This call contains the only code path that will sort the nodes by bounds.
-  // Thus the reorder by traversal must occur after this.
   if (!UpdateAndroidFocusedId(event_data)) {
     // Exit this function if the focused node doesn't exist nor isn't visible.
     return;
   }
 
   std::vector<int32_t> update_ids = ProcessHooksOnEvent(event_data);
-
-  // Reorder for traversal
-  if (nodes_to_reorder.size() > 0) {
-    TreeOrderer orderer(*this);
-    orderer.ReorderTree(nodes_to_reorder);
-    auto lcas = orderer.GetLeastCommonAncestors(nodes_to_reorder);
-    update_ids.insert(update_ids.end(), lcas.begin(), lcas.end());
-  }
 
   // Prep the event and send it to automation.
   AccessibilityInfoDataWrapper* focused_node =
@@ -651,233 +624,6 @@ AccessibilityInfoDataWrapper* AXTreeSourceArc::GetNull() const {
 
 void AXTreeSourceArc::PerformAction(const ui::AXActionData& data) {
   delegate_->OnAction(data);
-}
-
-// class TreeOrderer
-
-AXTreeSourceArc::TreeOrderer::TreeOrderer(AXTreeSourceArc& tree_source)
-    : tree_source_(tree_source) {}
-
-void AXTreeSourceArc::TreeOrderer::ReorderTree(
-    std::vector<AccessibilityNodeInfoDataWrapper*>& nodes_to_reorder) {
-  for (AccessibilityNodeInfoDataWrapper* node_wrapper_ptr : nodes_to_reorder) {
-    if (AccessibilityInfoDataWrapper* before_node =
-            node_wrapper_ptr->GetTraversalBefore();
-        before_node) {
-      MoveNodeBefore(*node_wrapper_ptr, *before_node);
-    } else if (AccessibilityInfoDataWrapper* after_node =
-                   node_wrapper_ptr->GetTraversalAfter();
-               after_node) {
-      MoveNodeAfter(*node_wrapper_ptr, *after_node);
-    }
-  }
-}
-
-void AXTreeSourceArc::TreeOrderer::AppendChild(
-    AccessibilityInfoDataWrapper& new_parent,
-    AccessibilityInfoDataWrapper& new_child) {
-  new_parent.AppendChild(new_child.GetId());
-  tree_source_.parent_map_[new_child.GetId()] = new_parent.GetId();
-}
-
-std::set<int> AXTreeSourceArc::TreeOrderer::GetLeastCommonAncestors(
-    std::vector<AccessibilityNodeInfoDataWrapper*>& nodes) const {
-  // Find LCA using parent_map
-  auto& parent_map = tree_source_.parent_map_;
-  int32_t lowest_level = INT32_MAX;
-  int len = nodes.size();
-  std::vector<int> levels(len);
-  // Loop through the nodes to find the one at the lowest level where root = 0.
-  for (int i = 0; i < len; ++i) {
-    AccessibilityInfoDataWrapper* node = nodes[i];
-    // Replace any node that has traversal after with the node it comes after,
-    // it will never be an LCA.
-    auto* after_node = node->GetTraversalAfter();
-    // Once there are no more traversal afters, or a cycle is detected.
-    while (after_node && after_node->GetId() != nodes[i]->GetId()) {
-      node = after_node;
-      after_node = node->GetTraversalAfter();
-    }
-    // Replace the existing node with the traversal after.
-    // Traversal after will always be a NodeInfoDataWrapper.
-    nodes[i] = static_cast<AccessibilityNodeInfoDataWrapper*>(node);
-    int32_t level = GetLevel(*node);
-    levels[i] = level;
-    if (level < lowest_level)
-      lowest_level = level;
-  }
-  // Find the ancestors of the nodes not already at the lowest level
-  std::set<int> nodes_at_lowest_level;
-  for (int i = 0; i < len; ++i) {
-    int32_t node_id = nodes[i]->GetId();
-    int level = levels[i];
-    int current_id = node_id;
-    while (level > lowest_level) {
-      current_id = parent_map[current_id];
-      level--;
-    }
-    nodes_at_lowest_level.insert(current_id);
-  }
-  // The only items left should be the LCAs
-  return nodes_at_lowest_level;
-}
-
-int32_t AXTreeSourceArc::TreeOrderer::GetLevel(
-    AccessibilityInfoDataWrapper& node) const {
-  auto& parent_map = tree_source_.parent_map_;
-  auto current_it = parent_map.find(node.GetId());
-  int level = 0;
-  while (current_it != parent_map.end()) {
-    level++;
-    current_it = parent_map.find(current_it->second);
-  }
-
-  return level;
-}
-
-AccessibilityInfoDataWrapper&
-AXTreeSourceArc::TreeOrderer::GetParentsThatAreMovedBeforeOrSameNode(
-    AccessibilityInfoDataWrapper& moving_node) {
-  auto* parent = tree_source_.GetParent(&moving_node);
-  if (!parent)
-    return moving_node;
-
-  std::set<int> visited;
-  if (InTraversalChain(parent, &moving_node, visited))
-    return GetParentsThatAreMovedBeforeOrSameNode(*parent);
-
-  return moving_node;
-}
-
-void AXTreeSourceArc::TreeOrderer::DetachFromParent(
-    AccessibilityInfoDataWrapper& node) {
-  auto& parent_map = tree_source_.parent_map_;
-  auto* parent_wrapper = tree_source_.GetParent(&node);
-  if (parent_wrapper) {
-    parent_wrapper->RemoveChild(node.GetId());
-    parent_map.erase(node.GetId());
-  }
-}
-
-bool AXTreeSourceArc::TreeOrderer::HasDescendant(int parent_id,
-                                                 int child_id) const {
-  while (child_id != parent_id) {
-    if (tree_source_.parent_map_.find(child_id) !=
-        tree_source_.parent_map_.end()) {
-      child_id = tree_source_.parent_map_[child_id];
-    } else {
-      return false;
-    }
-  }
-  return true;
-}
-
-void AXTreeSourceArc::TreeOrderer::MoveNodeBefore(
-    AccessibilityInfoDataWrapper& moving_node,
-    AccessibilityInfoDataWrapper& target_node) {
-  // traversal order: |moving_node| -> |target_node|
-
-  if (HasDescendant(moving_node.GetId(), target_node.GetId())) {
-    // no-op already a descendant.
-    return;
-  }
-
-  AccessibilityInfoDataWrapper& moving_root =
-      GetParentsThatAreMovedBeforeOrSameNode(moving_node);
-  if (tree_source_.IsEqual(&moving_root, &target_node))
-    return;
-
-  auto* target_parent = tree_source_.GetParent(&target_node);
-  if (target_parent &&
-      HasDescendant(moving_root.GetId(), target_parent->GetId())) {
-    // Moving moving_root under its own descendant would create a loop.
-    return;
-  }
-
-  auto& parent_map = tree_source_.parent_map_;
-  // detachSubtree
-  DetachFromParent(moving_root);
-  // If the parent exists replace target with moving_root since we will move the
-  // target under moving root.
-  if (target_parent && !tree_source_.IsEqual(&moving_root, target_parent)) {
-    target_parent->ReplaceChild(target_node.GetId(), moving_root.GetId());
-    // Set moving root parent = target_parent
-    parent_map[moving_root.GetId()] = target_parent->GetId();
-    parent_map.erase(target_node.GetId());
-  }
-
-  // Make target node a child of moving root
-  if (!tree_source_.IsEqual(&moving_root, &target_node))
-    AppendChild(moving_root, target_node);
-}
-
-void AXTreeSourceArc::TreeOrderer::MoveNodeAfter(
-    AccessibilityInfoDataWrapper& moving_node,
-    AccessibilityInfoDataWrapper& target_node) {
-  // traversal order: |target_node| -> |moving_node|
-  if (HasDescendant(moving_node.GetId(), target_node.GetId())) {
-    // Moving moving_node under its own descendant would create a loop.
-    return;
-  }
-
-  AccessibilityInfoDataWrapper& moving_root =
-      GetParentsThatAreMovedBeforeOrSameNode(moving_node);
-
-  if (tree_source_.IsEqual(&moving_root, &target_node)) {
-    // Cycle detected, stop processing for this node.
-    return;
-  }
-
-  if (HasDescendant(moving_root.GetId(), target_node.GetId())) {
-    // Moving moving_root under its own descendant would create a loop.
-    return;
-  }
-  // Remove moving_root from parent since we will move it underneath target.
-  DetachFromParent(moving_root);
-
-  if (!tree_source_.IsEqual(&target_node, &moving_root))
-    AppendChild(target_node, moving_root);
-}
-
-bool AXTreeSourceArc::TreeOrderer::InTraversalChain(
-    AccessibilityInfoDataWrapper* before,
-    AccessibilityInfoDataWrapper* after,
-    std::set<int>& visited) const {
-  if (!before || !after)
-    return false;
-
-  AXNodeInfoData* before_node = before->GetNode();
-  AXNodeInfoData* after_node = after->GetNode();
-  if (!before_node || !after_node)
-    return false;
-
-  int id = -1;
-
-  auto& tree_map = tree_source_.tree_map_;
-  if (visited.find(before_node->id) == visited.end() &&
-      GetProperty(before_node->int_properties, AXIntProperty::TRAVERSAL_BEFORE,
-                  &id)) {
-    if (after_node->id == id)
-      return true;
-
-    visited.insert(before_node->id);
-    if (auto it = tree_map.find(id); it != tree_map.end()) {
-      const auto& next_node_ptr = it->second;
-      return InTraversalChain(next_node_ptr.get(), after, visited);
-    }
-  } else if (visited.find(after_node->id) == visited.end() &&
-             GetProperty(after_node->int_properties,
-                         AXIntProperty::TRAVERSAL_AFTER, &id)) {
-    if (before_node->id == id)
-      return true;
-
-    visited.insert(after_node->id);
-    if (auto it = tree_map.find(id); it != tree_map.end()) {
-      const auto& prev_node_ptr = it->second;
-      return InTraversalChain(before, prev_node_ptr.get(), visited);
-    }
-  }
-  return false;
 }
 
 }  // namespace arc
