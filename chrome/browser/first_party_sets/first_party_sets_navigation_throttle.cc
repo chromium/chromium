@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -66,9 +67,17 @@ std::unique_ptr<FirstPartySetsNavigationThrottle>
 FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  Profile* profile = Profile::FromBrowserContext(
+      navigation_handle->GetWebContents()->GetBrowserContext());
+  // The `service` might be null for some irregular profiles.
+  // TODO(https://crbug.com/1348572): regular profiles and guest sessions
+  // aren't mutually exclusive on ChromeOS.
+  if (!profile->IsRegularProfile() || profile->IsGuestSession())
+    return nullptr;
+
   FirstPartySetsPolicyService* service =
-      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
-          navigation_handle->GetWebContents()->GetBrowserContext());
+      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(profile);
+  DCHECK(service);
   if (!features::kFirstPartySetsClearSiteDataOnChangedSets.Get() ||
       navigation_handle->GetParentFrameOrOuterDocument() ||
       service->is_ready()) {

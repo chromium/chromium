@@ -36,9 +36,9 @@ class FirstPartySetsNavigationThrottle : public content::NavigationThrottle {
   const char* GetNameForLogging() override;
   void Resume() override;
 
-  // Only create throttle if FPS initialization has not completed and FPS
-  // clearing is enabled and this is the outermost frame navigation; returns
-  // nullptr otherwise.
+  // Only create throttle for the regular profile if FPS initialization has not
+  // completed and FPS clearing is enabled and this is the outermost frame
+  // navigation; returns nullptr otherwise.
   static std::unique_ptr<FirstPartySetsNavigationThrottle>
   MaybeCreateNavigationThrottle(content::NavigationHandle* navigation_handle);
 
