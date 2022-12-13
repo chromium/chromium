@@ -34,6 +34,7 @@
   X(maxInterStageShaderComponents)             \
   X(maxInterStageShaderVariables)              \
   X(maxColorAttachments)                       \
+  X(maxColorAttachmentBytesPerSample)          \
   X(maxComputeWorkgroupStorageSize)            \
   X(maxComputeInvocationsPerWorkgroup)         \
   X(maxComputeWorkgroupSizeX)                  \
