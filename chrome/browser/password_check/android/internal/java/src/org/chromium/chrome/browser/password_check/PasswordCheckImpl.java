@@ -154,12 +154,6 @@ class PasswordCheckImpl implements PasswordCheck, PasswordCheckObserver {
     }
 
     @Override
-    public void onAutomatedPasswordChangeStarted(CompromisedCredential credential) {
-        PasswordChangeSuccessTrackerBridge.onAutomatedPasswordChangeStarted(
-                credential.getAssociatedUrl(), credential.getUsername());
-    }
-
-    @Override
     public void onManualPasswordChangeStarted(CompromisedCredential credential) {
         PasswordChangeSuccessTrackerBridge.onManualPasswordChangeStarted(
                 credential.getAssociatedUrl(), credential.getUsername());

@@ -25,20 +25,6 @@ PasswordChangeSuccessTracker* GetPasswordChangeSuccessTracker() {
 
 }  // namespace
 
-// Called by Java to register the start of an automated password change flow.
-void JNI_PasswordChangeSuccessTrackerBridge_OnAutomatedPasswordChangeStarted(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& url,
-    const base::android::JavaParamRef<jstring>& username) {
-  std::unique_ptr<GURL> native_gurl = url::GURLAndroid::ToNativeGURL(env, url);
-  if (!native_gurl->is_empty()) {
-    GetPasswordChangeSuccessTracker()->OnChangePasswordFlowStarted(
-        *native_gurl, ConvertJavaStringToUTF8(env, username),
-        PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
-        PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings);
-  }
-}
-
 // Called by Java to register the start of a manual password change flow.
 void JNI_PasswordChangeSuccessTrackerBridge_OnManualPasswordChangeStarted(
     JNIEnv* env,

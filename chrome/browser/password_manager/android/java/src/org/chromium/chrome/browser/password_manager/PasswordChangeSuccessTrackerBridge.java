@@ -19,16 +19,6 @@ public class PasswordChangeSuccessTrackerBridge {
             "org.chromium.chrome.browser.password_change.username";
 
     /**
-     * Register the start of an automated password change flow. Notifies the
-     * password change success tracker.
-     * @param url The URL associated with the credential that is to be changed.
-     * @param username The username of the credential that is to be changed.
-     */
-    public static void onAutomatedPasswordChangeStarted(GURL url, String username) {
-        PasswordChangeSuccessTrackerBridgeJni.get().onAutomatedPasswordChangeStarted(url, username);
-    }
-
-    /**
      * Register the start of a manual password change flow. Notifies the
      * password change success tracker.
      * @param url The URL associated with the credential that is to be changed.
@@ -43,7 +33,6 @@ public class PasswordChangeSuccessTrackerBridge {
      */
     @NativeMethods
     public interface Natives {
-        void onAutomatedPasswordChangeStarted(GURL url, String username);
         void onManualPasswordChangeStarted(GURL url, String username);
     }
 }

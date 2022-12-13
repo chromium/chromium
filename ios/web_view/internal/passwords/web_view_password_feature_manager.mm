@@ -23,12 +23,6 @@ bool WebViewPasswordFeatureManager::IsGenerationEnabled() const {
   return true;
 }
 
-bool WebViewPasswordFeatureManager::
-    AreRequirementsForAutomatedPasswordChangeFulfilled() const {
-  // This is only a stub while APC is not implemented on iOS.
-  return false;
-}
-
 bool WebViewPasswordFeatureManager::IsOptedInForAccountStorage() const {
   // Although ios/web_view will only write to the account store, this should
   // still be controlled on a per user basis to ensure that the logged out user

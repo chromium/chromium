@@ -34,19 +34,6 @@ bool PasswordFeatureManagerImpl::IsGenerationEnabled() const {
   }
 }
 
-bool PasswordFeatureManagerImpl::
-    AreRequirementsForAutomatedPasswordChangeFulfilled() const {
-  switch (password_manager_util::GetPasswordSyncState(sync_service_)) {
-    case SyncState::kNotSyncing:
-    case SyncState::kAccountPasswordsActiveNormalEncryption:
-      return base::FeatureList::IsEnabled(
-          features::kPasswordChangeAccountStoreUsers);
-    case SyncState::kSyncingWithCustomPassphrase:
-    case SyncState::kSyncingNormalEncryption:
-      return true;
-  }
-}
-
 bool PasswordFeatureManagerImpl::IsOptedInForAccountStorage() const {
   return features_util::IsOptedInForAccountStorage(pref_service_,
                                                    sync_service_);

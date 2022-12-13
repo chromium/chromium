@@ -22,11 +22,6 @@ class PasswordFeatureManager {
 
   virtual bool IsGenerationEnabled() const = 0;
 
-  // Whether the entry-point independent requirements are met to offer
-  // automated password change. Currently, that means that a user must be
-  // syncing.
-  virtual bool AreRequirementsForAutomatedPasswordChangeFulfilled() const = 0;
-
   // Whether the current signed-in user (aka unconsented primary account) has
   // opted in to use the Google account storage for passwords (as opposed to
   // local/profile storage).

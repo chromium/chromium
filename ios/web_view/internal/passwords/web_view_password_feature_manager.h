@@ -28,7 +28,6 @@ class WebViewPasswordFeatureManager
   ~WebViewPasswordFeatureManager() override = default;
 
   bool IsGenerationEnabled() const override;
-  bool AreRequirementsForAutomatedPasswordChangeFulfilled() const override;
   bool IsOptedInForAccountStorage() const override;
   bool ShouldShowAccountStorageOptIn() const override;
   bool ShouldShowAccountStorageReSignin(
