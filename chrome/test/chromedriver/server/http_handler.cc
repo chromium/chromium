@@ -1238,17 +1238,17 @@ std::unique_ptr<net::HttpServerResponseInfo> HttpHandler::PrepareLegacyResponse(
         kChromeDriverVersion, base::SysInfo::OperatingSystemName().c_str(),
         base::SysInfo::OperatingSystemVersion().c_str(),
         base::SysInfo::OperatingSystemArchitecture().c_str()));
-    std::unique_ptr<base::DictionaryValue> error(new base::DictionaryValue());
-    error->SetString("message", full_status.message());
-    value = std::move(error);
+    base::Value::Dict error;
+    error.Set("message", full_status.message());
+    value = std::make_unique<base::Value>(std::move(error));
   }
   if (!value)
     value = std::make_unique<base::Value>();
 
-  base::DictionaryValue body_params;
-  body_params.SetInteger("status", status.code());
-  body_params.Set("value", std::move(value));
-  body_params.SetString("sessionId", session_id);
+  base::Value::Dict body_params;
+  body_params.Set("status", status.code());
+  body_params.Set("value", base::Value::FromUniquePtrValue(std::move(value)));
+  body_params.Set("sessionId", session_id);
   std::string body;
   base::JSONWriter::WriteWithOptions(
       body_params, base::JSONWriter::OPTIONS_OMIT_DOUBLE_TYPE_PRESERVATION,
@@ -1401,10 +1401,10 @@ HttpHandler::PrepareStandardResponse(
   if (!value)
     value = std::make_unique<base::Value>();
 
-  base::DictionaryValue body_params;
+  base::Value::Dict body_params;
   if (status.IsError()){
     base::Value* inner_params =
-        body_params.SetKey("value", base::Value(base::Value::Type::DICTIONARY));
+        body_params.Set("value", base::Value(base::Value::Type::DICTIONARY));
     inner_params->SetStringKey("error", StatusCodeToString(status.code()));
     inner_params->SetStringKey("message", status.message());
     inner_params->SetStringKey("stacktrace", status.stack_trace());
@@ -1426,8 +1426,7 @@ HttpHandler::PrepareStandardResponse(
       }
     }
   } else {
-    body_params.SetKey("value",
-                       base::Value::FromUniquePtrValue(std::move(value)));
+    body_params.Set("value", base::Value::FromUniquePtrValue(std::move(value)));
   }
 
   std::string body;
