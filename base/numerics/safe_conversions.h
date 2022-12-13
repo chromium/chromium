@@ -20,10 +20,6 @@
 #define BASE_HAS_OPTIMIZED_SAFE_CONVERSIONS (0)
 #endif
 
-#if !BASE_NUMERICS_DISABLE_OSTREAM_OPERATORS
-#include <ostream>
-#endif
-
 namespace base {
 namespace internal {
 
