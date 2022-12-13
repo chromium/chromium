@@ -1,7 +1,7 @@
 # FedCM Browser side
 
 This folder contains the implementation of the browser side logic for the
-[FedCM](https://github.com/fedidcg/FedCM/blob/main/explainer/README.md) feature. It is responsible for making all of the
+[FedCM](https://github.com/fedidcg/FedCM/blob/main/explainer.md) feature. It is responsible for making all of the
 network requests needed to implement a FedCM request and also controls what UI and at which point in
 the process is shown to the user.
 
