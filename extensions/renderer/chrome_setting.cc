@@ -179,7 +179,7 @@ void ChromeSetting::HandleFunction(const std::string& method_name,
                                       base::Value(pref_name_));
 
   v8::Local<v8::Promise> promise = request_handler_->StartRequest(
-      context, full_name, std::move(parse_result.arguments_list),
+      context, full_name, std::move(*parse_result.arguments_list),
       parse_result.async_type, parse_result.callback, v8::Local<v8::Function>(),
       binding::ResultModifierFunction());
   if (!promise.IsEmpty())

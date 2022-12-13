@@ -100,12 +100,12 @@ class APISignature {
     JSONParseResult(JSONParseResult&& other);
     JSONParseResult& operator=(JSONParseResult&& other);
 
-    bool succeeded() const { return !!arguments_list; }
+    bool succeeded() const { return arguments_list.has_value(); }
 
     // The parsed JSON arguments, with null-filled optional arguments filled in.
     // Populated if parsing was successful. Does not include the callback (if
     // any).
-    std::unique_ptr<base::Value::List> arguments_list;
+    absl::optional<base::Value::List> arguments_list;
 
     // The callback, if one was provided.
     v8::Local<v8::Function> callback;

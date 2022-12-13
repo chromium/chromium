@@ -704,7 +704,7 @@ void APIBinding::HandleCall(const std::string& name,
   }
 
   v8::Local<v8::Promise> promise = request_handler_->StartRequest(
-      context, name, std::move(parse_result.arguments_list),
+      context, name, std::move(*parse_result.arguments_list),
       parse_result.async_type, parse_result.callback, custom_callback,
       std::move(result_modifier));
   if (!promise.IsEmpty())

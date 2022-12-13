@@ -426,7 +426,7 @@ v8::Local<v8::Value> APIBindingUnittest::RunTest(
       return v8::Local<v8::Value>();
     }
     EXPECT_EQ(expected_json_arguments,
-              ValueToString(*last_request_->arguments_list));
+              ValueToString(last_request_->arguments_list));
     EXPECT_EQ(expect_async_handler, last_request_->has_async_response_handler)
         << script_source;
   } else {
@@ -1820,8 +1820,7 @@ TEST_F(APIBindingUnittest, TestSendingRequestsAndSilentRequestsWithHooks) {
          std::vector<v8::Local<v8::Value>>* arguments,
          const APITypeReferenceMap& map) {
         handler->StartRequest(
-            context, "test.handleAndSendRequest",
-            std::make_unique<base::Value::List>(),
+            context, "test.handleAndSendRequest", base::Value::List(),
             binding::AsyncResponseType::kNone, v8::Local<v8::Function>(),
             v8::Local<v8::Function>(), binding::ResultModifierFunction());
         return RequestResult(RequestResult::HANDLED);
