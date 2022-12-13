@@ -73,6 +73,8 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"addCurrentTab", IDS_READ_LATER_ADD_CURRENT_TAB},
       {"emptyTitle", IDS_BOOKMARKS_EMPTY_STATE_TITLE},
       {"emptyBody", IDS_BOOKMARKS_EMPTY_STATE_BODY},
+      {"emptyTitleGuest", IDS_BOOKMARKS_EMPTY_STATE_TITLE_GUEST},
+      {"emptyBodyGuest", IDS_BOOKMARKS_EMPTY_STATE_BODY_GUEST},
       {"searchBookmarks", IDS_BOOKMARK_MANAGER_SEARCH_BUTTON},
       {"clearSearch", IDS_BOOKMARK_MANAGER_CLEAR_SEARCH},
       {"selectedBookmarkCount", IDS_BOOKMARK_MANAGER_ITEMS_SELECTED},
@@ -92,8 +94,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean("unifiedSidePanel",
                      base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
 
-  source->AddBoolean("canModifyBookmarks", !profile->IsGuestSession() &&
-                                               !profile->IsIncognitoProfile());
+  source->AddBoolean("guestMode", profile->IsGuestSession());
 
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);

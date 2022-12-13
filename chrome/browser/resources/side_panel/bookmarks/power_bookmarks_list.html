@@ -95,6 +95,10 @@
     text-align: center;
   }
 
+  .empty[guest] {
+    margin-top: 66px;
+  }
+
   .empty-body {
     color: var(--cr-secondary-text-color);
     font-size: 13px;
@@ -227,9 +231,9 @@
 <div class="column" id="powerBookmarksContainer">
   <cr-toolbar-search-field label="$i18n{searchBookmarks}"
       clear-label="$i18n{clearSearch}" on-search-changed="onSearchChanged_"
-      disabled="[[editing_]]">
+      disabled="[[editing_]]" hidden="[[guestMode_]]">
   </cr-toolbar-search-field>
-  <div class="label-row">
+  <div class="label-row" hidden="[[guestMode_]]">
     <template is="dom-repeat" items="[[labels_]]">
       <button class="label" selected$="[[item.active]]" disabled="[[editing_]]"
           on-click="onLabelClicked_" aria-pressed="[[item.active]]">
@@ -239,7 +243,7 @@
       </button>
     </template>
   </div>
-  <div class="heading-row">
+  <div class="heading-row" hidden="[[guestMode_]]">
     <button class="back-button" on-click="onBackClicked_"
         disabled="[[disableBackButton_(activeFolderPath_.*, editing_)]]">
       <div class="icon-arrow-back" hidden="[[!activeFolderPath_.length]]">
@@ -299,12 +303,13 @@
     </template>
   </div>
   <div class="footer-or-empty-state" empty$="[[!shownBookmarks_.length]]">
-    <div class="empty" hidden="[[shownBookmarks_.length]]">
+    <div class="empty" hidden="[[shownBookmarks_.length]]"
+        guest$="[[guestMode_]]">
       <div class="empty-image"></div>
-      <div class="empty-title">$i18n{emptyTitle}</div>
-      <div class="empty-body">$i18n{emptyBody}</div>
+      <div class="empty-title">[[getEmptyTitle_()]]</div>
+      <div class="empty-body">[[getEmptyBody_()]]</div>
     </div>
-    <cr-button class="footer-button" hidden="[[editing_]]"
+    <cr-button class="footer-button" hidden="[[hideAddTabButton_(editing_)]]"
         on-click="onAddTabClicked_"
         disabled="[[!canAddCurrentUrl_(shownBookmarks_.*, activeFolderPath_.*,
                      currentUrl_)]]">

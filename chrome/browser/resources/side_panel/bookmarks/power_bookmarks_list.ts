@@ -116,6 +116,12 @@ export class PowerBookmarksListElement extends PolymerElement {
         type: Array,
         value: () => [],
       },
+
+      guestMode_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('guestMode'),
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -147,6 +153,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private currentUrl_: string|undefined;
   private editing_: boolean;
   private selectedBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
+  private guestMode_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -476,9 +483,6 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private canAddCurrentUrl_(): boolean {
-    if (!loadTimeData.getBoolean('canModifyBookmarks')) {
-      return false;
-    }
     const activeFolder =
         this.activeFolderPath_[this.activeFolderPath_.length - 1];
     let unfilteredShownBookmarks: chrome.bookmarks.BookmarkTreeNode[] = [];
@@ -704,8 +708,28 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.bookmarksApi_.bookmarkCurrentTabInFolder(newParent!.id);
   }
 
+  private hideAddTabButton_() {
+    return this.editing_ || this.guestMode_;
+  }
+
   private disableBackButton_(): boolean {
     return !this.activeFolderPath_.length || this.editing_;
+  }
+
+  private getEmptyTitle_(): string {
+    if (this.guestMode_) {
+      return loadTimeData.getString('emptyTitleGuest');
+    } else {
+      return loadTimeData.getString('emptyTitle');
+    }
+  }
+
+  private getEmptyBody_(): string {
+    if (this.guestMode_) {
+      return loadTimeData.getString('emptyBodyGuest');
+    } else {
+      return loadTimeData.getString('emptyBody');
+    }
   }
 
   /**
