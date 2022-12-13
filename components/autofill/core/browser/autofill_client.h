@@ -77,6 +77,7 @@ enum class CreditCardFetchResult;
 class CreditCardOtpAuthenticator;
 class FormDataImporter;
 class FormStructure;
+class IBAN;
 class IBANManager;
 class LogManager;
 class MigratableCreditCard;
@@ -314,6 +315,14 @@ class AutofillClient : public RiskDataLoader {
   typedef base::RepeatingCallback<void(const std::string&)>
       MigrationDeleteCardCallback;
 
+  // Callback to run after local IBAN save is offered. The callback runs with
+  // `user_decision` indicating whether the prompt was accepted, declined,
+  // or ignored. `nickname` is optionally provided by the user when IBAN local
+  // save is offered, and can be nullopt.
+  using LocalSaveIBANPromptCallback =
+      base::OnceCallback<void(SaveIBANOfferUserDecision user_decision,
+                              const absl::optional<std::u16string>& nickname)>;
+
   // Callback to run if the OK button or the cancel button in a
   // Webauthn dialog is clicked.
   typedef base::RepeatingCallback<void(WebauthnDialogCallbackType)>
@@ -498,6 +507,13 @@ class AutofillClient : public RiskDataLoader {
       const std::u16string& tip_message,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       MigrationDeleteCardCallback delete_local_card_callback) = 0;
+
+  // Runs `callback` once the user makes a decision with respect to the
+  // offer-to-save prompt. On desktop, shows the offer-to-save bubble if
+  // `should_show_prompt` is true; otherwise only shows the omnibox icon.
+  virtual void ConfirmSaveIBANLocally(const IBAN& iban,
+                                      bool should_show_prompt,
+                                      LocalSaveIBANPromptCallback callback) = 0;
 
   // TODO(crbug.com/991037): Find a way to merge these two functions. Shouldn't
   // use WebauthnDialogState as that state is a purely UI state (should not be

@@ -210,7 +210,7 @@ class CreditCardSaveManagerTest : public testing::Test {
         new TestFormDataImporter(
             &autofill_client_, payments_client_,
             std::unique_ptr<CreditCardSaveManager>(credit_card_save_manager_),
-            &personal_data(), "en-US");
+            /*iban_save_manager=*/nullptr, &personal_data(), "en-US");
     autofill_client_.set_test_form_data_importer(
         std::unique_ptr<TestFormDataImporter>(test_form_data_importer));
     autofill_client_.GetStrikeDatabase();

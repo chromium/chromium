@@ -14,7 +14,6 @@
 namespace autofill {
 
 class IBANSaveStrikeDatabase;
-class PersonalDataManager;
 
 // Decides whether an IBAN local save should be offered and handles the workflow
 // for local saves.
@@ -25,10 +24,13 @@ class IBANSaveManager {
   IBANSaveManager& operator=(const IBANSaveManager&) = delete;
   virtual ~IBANSaveManager();
 
-  // Checks that all requirements for offering local IBAN save are fulfilled,
-  // and if they are, offers local IBAN save.
-  bool AttemptToOfferIBANLocalSave(
-      const absl::optional<IBAN>& iban_import_candidate);
+  // Checks that all requirements for offering local IBAN save are fulfilled.
+  // Returns true if the save prompt was shown, and false otherwise.
+  // Note that on desktop if this returns false, the show save prompt will not
+  // be popped up but the omnibox icon still will be shown so the user can
+  // trigger the save prompt manually.
+  [[nodiscard]] bool AttemptToOfferIBANLocalSave(
+      const IBAN& iban_import_candidate);
 
   void OnUserDidDecideOnLocalSaveForTesting(
       AutofillClient::SaveIBANOfferUserDecision user_decision,
@@ -44,14 +46,18 @@ class IBANSaveManager {
       AutofillClient::SaveIBANOfferUserDecision user_decision,
       const absl::optional<std::u16string>& nickname = absl::nullopt);
 
-  // The personal data manager, used to save and load IBAN data to/from the
-  // web database.
-  // Weak reference, should outlive this object.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
+  // Returns the IBANSaveStrikeDatabase for `client_`.
+  IBANSaveStrikeDatabase* GetIBANSaveStrikeDatabase();
 
   // The IBAN to be saved if local IBAN save is accepted. It will be set if
   // imported IBAN is not empty.
   IBAN iban_save_candidate_;
+
+  // True if the offer-to-save bubble should pop-up, false if not.
+  bool show_save_prompt_ = false;
+
+  // The associated autofill client. Weak reference.
+  const raw_ptr<AutofillClient> client_;
 
   // StrikeDatabase used to check whether to offer to save the IBAN or not.
   std::unique_ptr<IBANSaveStrikeDatabase> iban_save_strike_database_;

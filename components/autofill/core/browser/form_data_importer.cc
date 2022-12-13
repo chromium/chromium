@@ -149,6 +149,10 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
           std::make_unique<AddressProfileSaveManager>(client,
                                                       personal_data_manager)),
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      iban_save_manager_(
+          base::FeatureList::IsEnabled(features::kAutofillFillIbanFields)
+              ? std::make_unique<IBANSaveManager>(client)
+              : nullptr),
       local_card_migration_manager_(
           std::make_unique<LocalCardMigrationManager>(client,
                                                       payments_client,
@@ -207,11 +211,18 @@ void FormDataImporter::ImportAndProcessFormData(
       credit_card_save_manager_->IsCreditCardUploadEnabled());
   fetched_card_instrument_id_.reset();
 
+  bool iban_prompt_potentially_shown = false;
+  if (imported_data.iban_import_candidate.has_value() &&
+      payment_methods_autofill_enabled) {
+    iban_prompt_potentially_shown =
+        ProcessIBANImportCandidate(*imported_data.iban_import_candidate);
+  }
+
   // If a prompt for credit cards or IBANs is potentially shown, do not allow
   // for a second address profile import dialog.
   ProcessAddressProfileImportCandidates(
       imported_data.address_profile_import_candidates,
-      !cc_prompt_potentially_shown);
+      !cc_prompt_potentially_shown && !iban_prompt_potentially_shown);
 }
 
 bool FormDataImporter::ComplementCountry(
@@ -683,9 +694,12 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
     const std::vector<FormDataImporter::AddressProfileImportCandidate>&
         address_profile_import_candidates,
     bool allow_prompt) {
-  // At this point, no credit card prompt was shown. Initiate the import of
-  // addresses is possible.
   int imported_profiles = 0;
+
+  // `allow_prompt` is true if no credit card or IBAN prompt was shown. If it is
+  // true, we know there is no UI currently displaying, so we can display UI to
+  // import addresses. If it is false, we should not display UI to import
+  // addresses due to a possible dialog or bubble conflict.
   if (allow_prompt) {
     for (const auto& candidate : address_profile_import_candidates) {
       // First try to import a single complete profile.
@@ -796,6 +810,19 @@ bool FormDataImporter::ProcessCreditCardImportCandidate(
   return false;
 }
 
+bool FormDataImporter::ProcessIBANImportCandidate(
+    const IBAN& iban_import_candidate) {
+  if (!iban_save_manager_)
+    return false;
+
+  if (iban_import_candidate.record_type() == IBAN::NEW_IBAN) {
+    return iban_save_manager_->AttemptToOfferIBANLocalSave(
+        iban_import_candidate);
+  }
+
+  return false;
+}
+
 absl::optional<CreditCard> FormDataImporter::ImportCreditCard(
     const FormStructure& form) {
   // The candidate for credit card import. There are many ways for the candidate
@@ -899,12 +926,13 @@ absl::optional<IBAN> FormDataImporter::ImportIBAN(const FormStructure& form) {
   if (candidate_iban.value().empty())
     return absl::nullopt;
 
-  bool found_existing_iban = base::ranges::any_of(
+  bool found_existing_local_iban = base::ranges::any_of(
       personal_data_manager_->GetLocalIBANs(), [&](const auto& iban) {
         return iban->value() == candidate_iban.value();
       });
 
-  if (found_existing_iban) {
+  // TODO(crbug.com/1349109): Return nullopt if it is not `NEW_IBAN`.
+  if (found_existing_local_iban) {
     // Don't offer to update existing local IBANs. Users can go to the payment
     // methods settings page to update local IBANs if desired.
     candidate_iban.set_record_type(IBAN::LOCAL_IBAN);

@@ -117,6 +117,9 @@ class TestAutofillClient : public AutofillClient {
       const std::u16string& tip_message,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       MigrationDeleteCardCallback delete_local_card_callback) override;
+  void ConfirmSaveIBANLocally(const IBAN& iban,
+                              bool should_show_prompt,
+                              LocalSaveIBANPromptCallback callback) override;
   void ShowWebauthnOfferDialog(
       WebauthnDialogCallback offer_dialog_callback) override;
   void ShowWebauthnVerifyPendingDialog(
@@ -278,8 +281,21 @@ class TestAutofillClient : public AutofillClient {
     should_save_autofill_profiles_ = value;
   }
 
+  void Reset() {
+    confirm_save_iban_locally_called_ = false;
+    offer_to_save_iban_bubble_was_shown_ = false;
+  }
+
   bool ConfirmSaveCardLocallyWasCalled() {
     return confirm_save_credit_card_locally_called_;
+  }
+
+  bool ConfirmSaveIBANLocallyWasCalled() {
+    return confirm_save_iban_locally_called_;
+  }
+
+  bool offer_to_save_iban_bubble_was_shown() {
+    return offer_to_save_iban_bubble_was_shown_;
   }
 
   bool get_offer_to_save_credit_card_bubble_was_shown() {
@@ -376,6 +392,8 @@ class TestAutofillClient : public AutofillClient {
 
   bool confirm_save_credit_card_locally_called_ = false;
 
+  bool confirm_save_iban_locally_called_ = false;
+
   bool virtual_card_error_dialog_shown_ = false;
 
   // Context parameters that are used to display an error dialog during card
@@ -396,8 +414,12 @@ class TestAutofillClient : public AutofillClient {
 
   version_info::Channel channel_for_testing_ = version_info::Channel::UNKNOWN;
 
-  // Populated if local save or upload was offered.
+  // Populated if credit card local save or upload was offered.
   absl::optional<SaveCreditCardOptions> save_credit_card_options_;
+
+  // Populated if IBAN save was offered. True if bubble was shown, false
+  // otherwise.
+  bool offer_to_save_iban_bubble_was_shown_ = false;
 
   std::vector<std::string> migration_card_selection_;
 

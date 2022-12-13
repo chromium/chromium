@@ -512,6 +512,15 @@ void ChromeAutofillClient::ShowLocalCardMigrationResults(
                                    delete_local_card_callback);
 }
 
+void ChromeAutofillClient::ConfirmSaveIBANLocally(
+    const IBAN& iban,
+    bool should_show_prompt,
+    LocalSaveIBANPromptCallback callback) {
+  NOTIMPLEMENTED();
+  // TODO(crbug.com/1349109): Implement SaveIBANBubbleController to show
+  // prompt bubble for local save.
+}
+
 void ChromeAutofillClient::ShowWebauthnOfferDialog(
     WebauthnDialogCallback offer_dialog_callback) {
   WebauthnDialogControllerImpl::GetOrCreateForPage(

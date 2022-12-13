@@ -12,6 +12,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -35,6 +36,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/iban_save_strike_database.h"
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -547,6 +549,8 @@ class FormDataImporterTestBase {
     autofill_database_service_->Init(base::NullCallback());
 
     autofill_client_ = std::make_unique<TestAutofillClient>();
+    autofill_client_->set_test_strike_database(
+        std::make_unique<TestStrikeDatabase>());
 
     test::DisableSystemServices(prefs_.get());
     // This will also initialize the `form_data_importer()`.
@@ -657,7 +661,7 @@ class FormDataImporterTestBase {
       const FormStructure& form,
       bool profile_autofill_enabled,
       bool payment_methods_autofill_enabled) {
-    auto imported_data = form_data_importer().ImportFormData(
+    ImportFormDataResult imported_data = form_data_importer().ImportFormData(
         form, profile_autofill_enabled, payment_methods_autofill_enabled);
     form_data_importer().ProcessAddressProfileImportCandidates(
         imported_data.address_profile_import_candidates);
@@ -669,6 +673,20 @@ class FormDataImporterTestBase {
     std::ignore = ImportFormDataAndProcessAddressCandidates(
         form, /*profile_autofill_enabled=*/true,
         /*payment_methods_autofill_enabled=*/true);
+  }
+
+  // Convenience wrapper that calls `FormDataImporter::ImportFormData()` and
+  // subsequently processes the candidates for IBAN import candidate.
+  // Returns the result of `FormDataImporter::ProcessIBANImportCandidate()`.
+  bool ImportFormDataAndProcessIBANCandidates(
+      const FormStructure& form,
+      bool profile_autofill_enabled,
+      bool payment_methods_autofill_enabled) {
+    ImportFormDataResult imported_data = form_data_importer().ImportFormData(
+        form, profile_autofill_enabled, payment_methods_autofill_enabled);
+    return imported_data.iban_import_candidate &&
+           form_data_importer().ProcessIBANImportCandidate(
+               imported_data.iban_import_candidate.value());
   }
 
   void ImportAddressProfilesAndVerifyExpectation(
@@ -741,9 +759,16 @@ class FormDataImporterTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class FormDataImporterTest : public FormDataImporterTestBase,
-                             public testing::Test,
-                             public testing::WithParamInterface<bool> {
+// Parameters of the FormDataImporterTest fixture.
+using AutofillEnableSupportForApartmentNumbers = bool;
+using AutofillFillIbanFields = bool;
+
+class FormDataImporterTest
+    : public FormDataImporterTestBase,
+      public testing::Test,
+      public testing::WithParamInterface<
+          std::tuple<AutofillEnableSupportForApartmentNumbers,
+                     AutofillFillIbanFields>> {
  public:
   using ImportFormDataResult = FormDataImporter::ImportFormDataResult;
 
@@ -756,19 +781,18 @@ class FormDataImporterTest : public FormDataImporterTestBase,
   void TearDown() override { TearDownHelper(); }
 
   void InitializeFeatures() {
-    support_for_apartment_numbers_ = GetParam();
-
-    // Enable all those features by default.
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
+    // Always enable parsing IBAN fields from the form.
+    enabled_features.push_back(features::kAutofillParseIBANFields);
 
-    (support_for_apartment_numbers_ ? enabled_features : disabled_features)
+    (std::get<0>(GetParam()) ? enabled_features : disabled_features)
         .push_back(features::kAutofillEnableSupportForApartmentNumbers);
+    (std::get<1>(GetParam()) ? enabled_features : disabled_features)
+        .push_back(features::kAutofillFillIbanFields);
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
-
-  bool support_for_apartment_numbers_;
 };
 
 TEST_P(FormDataImporterTest, ComplementCountry) {
@@ -3260,9 +3284,6 @@ TEST_P(FormDataImporterTest, ImportFormData_TwoAddressesOneCreditCard) {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_P(FormDataImporterTest, ImportFormData_ImportIbanRecordType_NoIban) {
-  base::test::ScopedFeatureList multistep_import_feature;
-  multistep_import_feature.InitAndEnableFeature(
-      features::kAutofillParseIBANFields);
   // Simulate a form submission with no IBAN.
   FormData form;
   form.url = GURL("https://www.foo.com");
@@ -3277,11 +3298,6 @@ TEST_P(FormDataImporterTest, ImportFormData_ImportIbanRecordType_NoIban) {
 
 TEST_P(FormDataImporterTest,
        ImportFormData_ImportIbanRecordType_IbanAutofill_NewIban) {
-  base::test::ScopedFeatureList multistep_import_feature;
-  multistep_import_feature.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillParseIBANFields,
-                            features::kAutofillFillIbanFields},
-      /*disabled_features=*/{});
   // Simulate a form submission with a new IBAN.
   FormData form;
   form.url = GURL("https://www.foo.com");
@@ -3293,40 +3309,16 @@ TEST_P(FormDataImporterTest,
   auto imported_data = ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true);
-  ASSERT_TRUE(imported_data.iban_import_candidate);
-  ASSERT_TRUE(imported_data.iban_import_candidate->record_type() ==
-              IBAN::NEW_IBAN);
-}
-
-TEST_P(
-    FormDataImporterTest,
-    ImportFormData_ImportIbanRecordType_IbanAutofill_NewIban_DoesNotImportIfFlagOff) {
-  base::test::ScopedFeatureList multistep_import_feature;
-  multistep_import_feature.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillParseIBANFields},
-      /*disabled_features=*/{features::kAutofillFillIbanFields});
-  // Simulate a form submission with a new IBAN.
-  FormData form;
-  form.url = GURL("https://www.foo.com");
-
-  AddIBANForm(&form, kIbanValue);
-
-  FormStructure form_structure(form);
-  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  auto imported_data =
-
-      ImportFormDataAndProcessAddressCandidates(
-          form_structure, /*profile_autofill_enabled=*/true,
-          /*payment_methods_autofill_enabled=*/true);
-  ASSERT_FALSE(imported_data.iban_import_candidate);
+  if (base::FeatureList::IsEnabled(features::kAutofillFillIbanFields)) {
+    ASSERT_TRUE(imported_data.iban_import_candidate);
+    ASSERT_TRUE(imported_data.iban_import_candidate->record_type() ==
+                IBAN::NEW_IBAN);
+  } else {
+    ASSERT_FALSE(imported_data.iban_import_candidate);
+  }
 }
 
 TEST_P(FormDataImporterTest, ImportFormData_ImportIbanRecordType_LocalIban) {
-  base::test::ScopedFeatureList multistep_import_feature;
-  multistep_import_feature.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillParseIBANFields,
-                            features::kAutofillFillIbanFields},
-      /*disabled_features=*/{});
   IBAN iban;
   iban.set_value(u"IE12 BOFI 9000 0112 3456 78");
   personal_data_manager_->AddIBAN(iban);
@@ -3348,40 +3340,15 @@ TEST_P(FormDataImporterTest, ImportFormData_ImportIbanRecordType_LocalIban) {
   auto imported_data = ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true);
-  ASSERT_TRUE(imported_data.iban_import_candidate);
-  ASSERT_TRUE(imported_data.iban_import_candidate->record_type() ==
-              IBAN::LOCAL_IBAN);
+  if (base::FeatureList::IsEnabled(features::kAutofillFillIbanFields)) {
+    ASSERT_TRUE(imported_data.iban_import_candidate);
+    ASSERT_TRUE(imported_data.iban_import_candidate->record_type() ==
+                IBAN::LOCAL_IBAN);
+  } else {
+    ASSERT_FALSE(imported_data.iban_import_candidate);
+  }
 }
 
-TEST_P(FormDataImporterTest,
-       ImportFormData_ImportIbanRecordType_LocalIban_DoesNotImportIfFlagOff) {
-  base::test::ScopedFeatureList multistep_import_feature;
-  multistep_import_feature.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillParseIBANFields},
-      /*disabled_features=*/{features::kAutofillFillIbanFields});
-  IBAN iban;
-  iban.set_value(u"IE12 BOFI 9000 0112 3456 78");
-  personal_data_manager_->AddIBAN(iban);
-
-  WaitForOnPersonalDataChanged();
-
-  const std::vector<IBAN*>& results = personal_data_manager_->GetLocalIBANs();
-  ASSERT_EQ(1U, results.size());
-  EXPECT_THAT(*results[0], ComparesEqual(iban));
-
-  // Simulate a form submission with the same IBAN.
-  FormData form;
-  form.url = GURL("https://www.foo.com");
-
-  AddIBANForm(&form, kIbanValue);
-
-  FormStructure form_structure(form);
-  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  auto imported_data = ImportFormDataAndProcessAddressCandidates(
-      form_structure, /*profile_autofill_enabled=*/true,
-      /*payment_methods_autofill_enabled=*/true);
-  ASSERT_FALSE(imported_data.iban_import_candidate);
-}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Test that a form with both address and credit card sections imports only the
@@ -4495,9 +4462,115 @@ TEST_P(FormDataImporterTest, FormAssociator) {
   EXPECT_FALSE(associations->last_credit_card_form_submitted);
 }
 
-// Runs the suite with the feature `kAutofillEnableSupportForApartmentNumbers`
-// enabled and disabled.
-INSTANTIATE_TEST_SUITE_P(, FormDataImporterTest, testing::Bool());
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_P(FormDataImporterTest,
+       ProcessIBANImportCandidate_ShouldOfferLocalSave_NewIBAN) {
+  IBAN iban_import_candidate = test::GetIBAN();
+  iban_import_candidate.set_record_type(IBAN::NEW_IBAN);
+
+  EXPECT_EQ(
+      base::FeatureList::IsEnabled(features::kAutofillFillIbanFields),
+      form_data_importer().ProcessIBANImportCandidate(iban_import_candidate));
+}
+
+TEST_P(FormDataImporterTest, ImportFormData_ProcessIBANImportCandidate_NoIban) {
+  // Simulate a form submission with a new IBAN.
+  FormData form;
+  form.url = GURL("https://www.foo.com");
+
+  AddIBANForm(&form, "");
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+
+  ASSERT_FALSE(ImportFormDataAndProcessIBANCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true));
+}
+
+TEST_P(
+    FormDataImporterTest,
+    ImportFormData_ProcessIBANImportCandidate_PaymentMethodsSettingDisabled) {
+  // Simulate a form submission with a new IBAN.
+  FormData form;
+  form.url = GURL("https://www.foo.com");
+
+  AddIBANForm(&form, kIbanValue);
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+
+  ASSERT_FALSE(ImportFormDataAndProcessIBANCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/false));
+}
+
+TEST_P(FormDataImporterTest,
+       ImportFormData_ProcessIBANImportCandidate_NewIban) {
+  // Simulate a form submission with a new IBAN.
+  FormData form;
+  form.url = GURL("https://www.foo.com");
+
+  AddIBANForm(&form, kIbanValue);
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+
+  ASSERT_EQ(base::FeatureList::IsEnabled(features::kAutofillFillIbanFields),
+            ImportFormDataAndProcessIBANCandidates(
+                form_structure, /*profile_autofill_enabled=*/true,
+                /*payment_methods_autofill_enabled=*/true));
+}
+
+TEST_P(FormDataImporterTest,
+       ImportFormData_ProcessIBANImportCandidate_LocalIban) {
+  IBAN iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
+  personal_data_manager_->AddIBAN(iban);
+
+  WaitForOnPersonalDataChanged();
+  // Simulate a form submission with a new IBAN.
+  FormData form;
+  form.url = GURL("https://www.foo.com");
+
+  AddIBANForm(&form, kIbanValue);
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+
+  ASSERT_FALSE(ImportFormDataAndProcessIBANCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true));
+}
+
+TEST_P(FormDataImporterTest,
+       ImportFormData_ProcessIBANImportCandidate_MaxStrikes) {
+  IBANSaveStrikeDatabase iban_save_strike_database =
+      IBANSaveStrikeDatabase(autofill_client_->GetStrikeDatabase());
+
+  iban_save_strike_database.AddStrikes(
+      iban_save_strike_database.GetMaxStrikesLimit(), kIbanValue);
+
+  // Simulate a form submission with a new IBAN.
+  FormData form;
+  form.url = GURL("https://www.foo.com");
+
+  AddIBANForm(&form, kIbanValue);
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+
+  ASSERT_FALSE(ImportFormDataAndProcessIBANCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+// Runs the suite with the features `kAutofillEnableSupportForApartmentNumbers`
+// and `kAutofillFillIbanFields` enabled and disabled.
+INSTANTIATE_TEST_SUITE_P(,
+                         FormDataImporterTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 class FormDataImporterNonParameterizedTest : public FormDataImporterTestBase,
                                              public testing::Test {

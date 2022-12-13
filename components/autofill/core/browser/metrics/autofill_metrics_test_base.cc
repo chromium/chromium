@@ -62,7 +62,8 @@ void AutofillMetricsBaseTest::SetUp() {
   autofill_client_->set_test_form_data_importer(
       std::make_unique<TestFormDataImporter>(
           autofill_client_.get(), payments_client,
-          std::move(credit_card_save_manager), &personal_data(), "en-US"));
+          std::move(credit_card_save_manager),
+          /*iban_save_manager=*/nullptr, &personal_data(), "en-US"));
   autofill_client_->set_autofill_offer_manager(
       std::make_unique<AutofillOfferManager>(
           &personal_data(), /*coupon_service_delegate=*/nullptr));

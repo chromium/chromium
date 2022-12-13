@@ -426,7 +426,7 @@ class BrowserAutofillManagerTest : public testing::Test {
         std::make_unique<autofill::TestFormDataImporter>(
             &autofill_client_, payments_client_,
             std::unique_ptr<CreditCardSaveManager>(credit_card_save_manager),
-            &personal_data(), "en-US");
+            /*iban_save_manager=*/nullptr, &personal_data(), "en-US");
     test_form_data_importer_ = test_form_data_importer.get();
     autofill_client_.set_test_form_data_importer(
         std::move(test_form_data_importer));

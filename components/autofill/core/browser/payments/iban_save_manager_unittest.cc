@@ -18,6 +18,10 @@
 
 namespace autofill {
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+constexpr char kIbanValue[] = "DE91 1000 0000 0123 4567 89";
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 class IBANSaveManagerTest : public testing::Test {
  public:
   IBANSaveManagerTest() {
@@ -39,12 +43,7 @@ class IBANSaveManagerTest : public testing::Test {
     iban_save_manager_ = std::make_unique<IBANSaveManager>(&autofill_client_);
   }
 
-  void OnUserDidDecideOnLocalSave(
-      AutofillClient::SaveIBANOfferUserDecision user_decision,
-      const absl::optional<std::u16string>& nickname = absl::nullopt) {
-    iban_save_manager_->OnUserDidDecideOnLocalSaveForTesting(user_decision,
-                                                             nickname);
-  }
+  IBANSaveManager& GetIBANSaveManager() { return *iban_save_manager_; }
 
  protected:
   TestPersonalDataManager& personal_data() {
@@ -62,34 +61,28 @@ class IBANSaveManagerTest : public testing::Test {
 };
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(IBANSaveManagerTest, AttemptToOfferIBANLocalSave_validIBAN) {
+TEST_F(IBANSaveManagerTest, AttemptToOfferIBANLocalSave_ValidIBAN) {
   IBAN iban(base::GenerateGUID());
-  iban.set_value(u"DE91 1000 0000 0123 4567 89");
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
 
-  EXPECT_TRUE(iban_save_manager_->AttemptToOfferIBANLocalSave(iban));
-}
-
-TEST_F(IBANSaveManagerTest, AttemptToOfferIBANLocalSave_NoIBAN) {
-  EXPECT_FALSE(iban_save_manager_->AttemptToOfferIBANLocalSave(absl::nullopt));
+  EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
 }
 
 TEST_F(IBANSaveManagerTest, AttemptToOfferIBANLocalSave_IsOffTheRecord) {
   personal_data().set_is_off_the_record_for_testing(true);
-
   IBAN iban(base::GenerateGUID());
-  iban.set_value(u"DE91 1000 0000 0123 4567 89");
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
 
-  EXPECT_FALSE(iban_save_manager_->AttemptToOfferIBANLocalSave(iban));
+  EXPECT_FALSE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
 }
 
 TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted) {
   IBAN iban(base::GenerateGUID());
-  std::u16string value = u"DE91 1000 0000 0123 4567 89";
-  iban.set_value(value);
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
 
-  EXPECT_TRUE(iban_save_manager_->AttemptToOfferIBANLocalSave(iban));
+  EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
 
-  OnUserDidDecideOnLocalSave(
+  GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
       AutofillClient::SaveIBANOfferUserDecision::kAccepted,
       u"  My teacher's IBAN ");
   const std::vector<IBAN*> ibans = personal_data().GetLocalIBANs();
@@ -97,18 +90,17 @@ TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted) {
   // Verify IBAN has been successfully updated with the new nickname on accept.
   EXPECT_EQ(ibans.size(), 1U);
   EXPECT_EQ(ibans[0]->nickname(), u"My teacher's IBAN");
-  EXPECT_EQ(ibans[0]->value(), value);
+  EXPECT_EQ(ibans[0]->value(), base::UTF8ToUTF16(std::string(kIbanValue)));
 }
 
 TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Declined) {
   IBAN iban(base::GenerateGUID());
-  std::u16string value = u"DE91 1000 0000 0123 4567 89";
-  iban.set_value(value);
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
 
   EXPECT_TRUE(iban_save_manager_->AttemptToOfferIBANLocalSave(iban));
   EXPECT_TRUE(personal_data().GetLocalIBANs().empty());
 
-  OnUserDidDecideOnLocalSave(
+  GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
       AutofillClient::SaveIBANOfferUserDecision::kDeclined);
   const std::vector<IBAN*> ibans = personal_data().GetLocalIBANs();
 
@@ -117,13 +109,12 @@ TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Declined) {
 
 TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored) {
   IBAN iban(base::GenerateGUID());
-  std::u16string value = u"DE91 1000 0000 0123 4567 89";
-  iban.set_value(value);
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
 
   EXPECT_TRUE(iban_save_manager_->AttemptToOfferIBANLocalSave(iban));
   EXPECT_TRUE(personal_data().GetLocalIBANs().empty());
 
-  OnUserDidDecideOnLocalSave(
+  GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
       AutofillClient::SaveIBANOfferUserDecision::kIgnored);
   const std::vector<IBAN*> ibans = personal_data().GetLocalIBANs();
 
@@ -132,103 +123,95 @@ TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored) {
 
 TEST_F(IBANSaveManagerTest, LocallySaveIBAN_NotEnoughStrikesShouldOfferToSave) {
   IBAN iban(base::GenerateGUID());
-  const std::u16string iban_value = u"DE91 1000 0000 0123 4567 89";
-  iban.set_value(iban_value);
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
 
   IBANSaveStrikeDatabase iban_save_strike_database =
       IBANSaveStrikeDatabase(strike_database_);
+  iban_save_strike_database.AddStrike(kIbanValue);
 
-  iban_save_strike_database.AddStrike(base::UTF16ToUTF8(iban_value));
-
-  // Verify `iban_value` has been successfully added to the strike database.
-  EXPECT_EQ(
-      1, iban_save_strike_database.GetStrikes(base::UTF16ToUTF8(iban_value)));
-  EXPECT_TRUE(iban_save_manager_->AttemptToOfferIBANLocalSave(iban));
+  // Verify `kIbanValue` has been successfully added to the strike database.
+  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(kIbanValue));
+  EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
 }
 
 TEST_F(IBANSaveManagerTest, LocallySaveIBAN_MaxStrikesShouldNotOfferToSave) {
   IBAN iban(base::GenerateGUID());
-  const std::u16string iban_value = u"DE91 1000 0000 0123 4567 89";
-  iban.set_value(iban_value);
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
 
   IBANSaveStrikeDatabase iban_save_strike_database =
       IBANSaveStrikeDatabase(strike_database_);
+  iban_save_strike_database.AddStrikes(
+      iban_save_strike_database.GetMaxStrikesLimit(), kIbanValue);
 
-  for (int i = 0; i < iban_save_strike_database.GetMaxStrikesLimit(); ++i) {
-    iban_save_strike_database.AddStrike(base::UTF16ToUTF8(iban_value));
-  }
-  EXPECT_EQ(
-      iban_save_strike_database.GetMaxStrikesLimit(),
-      iban_save_strike_database.GetStrikes(base::UTF16ToUTF8(iban_value)));
-
-  EXPECT_FALSE(iban_save_manager_->AttemptToOfferIBANLocalSave(iban));
+  EXPECT_EQ(iban_save_strike_database.GetMaxStrikesLimit(),
+            iban_save_strike_database.GetStrikes(kIbanValue));
+  EXPECT_FALSE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
 }
 
 TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted_ClearsStrikes) {
   IBAN iban(base::GenerateGUID());
-  const std::u16string iban_value = u"DE91 1000 0000 0123 4567 89";
-  iban.set_value(iban_value);
-  iban_save_manager_->AttemptToOfferIBANLocalSave(iban);
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
+  EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
 
   IBANSaveStrikeDatabase iban_save_strike_database =
       IBANSaveStrikeDatabase(strike_database_);
+  iban_save_strike_database.AddStrike(kIbanValue);
 
-  iban_save_strike_database.AddStrike(base::UTF16ToUTF8(iban_value));
-
-  // Verify `iban_value` has been successfully added to the strike database.
-  EXPECT_EQ(
-      1, iban_save_strike_database.GetStrikes(base::UTF16ToUTF8(iban_value)));
-  OnUserDidDecideOnLocalSave(
+  // Verify `kIbanValue` has been successfully added to the strike database.
+  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(kIbanValue));
+  GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
       AutofillClient::SaveIBANOfferUserDecision::kAccepted,
       u"My teacher's IBAN");
 
-  // Verify `iban_value` has been cleared in the strike database.
-  EXPECT_EQ(
-      0, iban_save_strike_database.GetStrikes(base::UTF16ToUTF8(iban_value)));
+  // Verify `kIbanValue` has been cleared in the strike database.
+  EXPECT_EQ(0, iban_save_strike_database.GetStrikes(kIbanValue));
 }
 
 TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Declined_AddsStrike) {
   IBAN iban(base::GenerateGUID());
-  const std::u16string iban_value = u"DE91 1000 0000 0123 4567 89";
-  iban.set_value(iban_value);
-  iban_save_manager_->AttemptToOfferIBANLocalSave(iban);
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
+  EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
 
   IBANSaveStrikeDatabase iban_save_strike_database =
       IBANSaveStrikeDatabase(strike_database_);
 
-  // Verify `iban_value` has been successfully added to the strike database.
-  EXPECT_EQ(
-      0, iban_save_strike_database.GetStrikes(base::UTF16ToUTF8(iban_value)));
+  // Verify `kIbanValue` has been successfully added to the strike database.
+  EXPECT_EQ(0, iban_save_strike_database.GetStrikes(kIbanValue));
 
-  OnUserDidDecideOnLocalSave(
+  GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
       AutofillClient::SaveIBANOfferUserDecision::kDeclined,
       u"My teacher's IBAN");
 
-  // Verify `iban_value` has been added to the strike database.
-  EXPECT_EQ(
-      1, iban_save_strike_database.GetStrikes(base::UTF16ToUTF8(iban_value)));
+  // Verify `kIbanValue` has been added to the strike database.
+  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(kIbanValue));
 }
 
 TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored_AddsStrike) {
   IBAN iban(base::GenerateGUID());
-  const std::u16string iban_value = u"DE91 1000 0000 0123 4567 89";
-  iban.set_value(iban_value);
-  iban_save_manager_->AttemptToOfferIBANLocalSave(iban);
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
+
+  EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
 
   IBANSaveStrikeDatabase iban_save_strike_database =
       IBANSaveStrikeDatabase(strike_database_);
 
-  // Verify `iban_value` has been successfully added to the strike database.
-  EXPECT_EQ(
-      0, iban_save_strike_database.GetStrikes(base::UTF16ToUTF8(iban_value)));
+  // Verify `kIbanValue` has been successfully added to the strike database.
+  EXPECT_EQ(0, iban_save_strike_database.GetStrikes(kIbanValue));
 
-  OnUserDidDecideOnLocalSave(
+  GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
       AutofillClient::SaveIBANOfferUserDecision::kDeclined,
       u"My teacher's IBAN");
 
-  // Verify `iban_value` has been added to the strike database.
-  EXPECT_EQ(
-      1, iban_save_strike_database.GetStrikes(base::UTF16ToUTF8(iban_value)));
+  // Verify `kIbanValue` has been added to the strike database.
+  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(kIbanValue));
+}
+
+TEST_F(IBANSaveManagerTest, LocallySaveIBAN_AttemptToOfferIBANLocalSave) {
+  IBAN iban(base::GenerateGUID());
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
+
+  EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
+  EXPECT_TRUE(autofill_client_.ConfirmSaveIBANLocallyWasCalled());
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

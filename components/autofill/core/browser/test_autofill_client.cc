@@ -205,6 +205,15 @@ void TestAutofillClient::ShowLocalCardMigrationResults(
     const std::u16string& tip_message,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
     MigrationDeleteCardCallback delete_local_card_callback) {}
+
+void TestAutofillClient::ConfirmSaveIBANLocally(
+    const IBAN& iban,
+    bool should_show_prompt,
+    LocalSaveIBANPromptCallback callback) {
+  confirm_save_iban_locally_called_ = true;
+  offer_to_save_iban_bubble_was_shown_ = should_show_prompt;
+}
+
 void TestAutofillClient::ShowWebauthnOfferDialog(
     WebauthnDialogCallback offer_dialog_callback) {}
 

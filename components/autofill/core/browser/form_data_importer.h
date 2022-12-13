@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/form_data_importer_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
+#include "components/autofill/core/browser/payments/iban_save_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/upi_vpa_save_manager.h"
@@ -82,6 +83,9 @@ class FormDataImporter : public PersonalDataManagerObserver {
   ExtractCreditCardFromFormResult ExtractCreditCardFromForm(
       const FormStructure& form);
 
+  // Tries to initiate the saving of `iban_import_candidate` if applicable.
+  bool ProcessIBANImportCandidate(const IBAN& iban_import_candidate);
+
   // Cache the last four of the fetched virtual card so we don't offer saving
   // them.
   void CacheFetchedVirtualCard(const std::u16string& last_four);
@@ -133,7 +137,10 @@ class FormDataImporter : public PersonalDataManagerObserver {
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Exposed for testing.
+  void set_iban_save_manager_for_testing(
+      std::unique_ptr<IBANSaveManager> iban_save_manager) {
+    iban_save_manager_ = std::move(iban_save_manager);
+  }
   void set_local_card_migration_manager_for_testing(
       std::unique_ptr<LocalCardMigrationManager> local_card_migration_manager) {
     local_card_migration_manager_ = std::move(local_card_migration_manager);
@@ -317,6 +324,9 @@ class FormDataImporter : public PersonalDataManagerObserver {
 
   // Responsible for managing address profiles save flows.
   std::unique_ptr<AddressProfileSaveManager> address_profile_save_manager_;
+
+  // Responsible for managing IBAN save flows.
+  std::unique_ptr<IBANSaveManager> iban_save_manager_;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Responsible for migrating locally saved credit cards to Google Pay.
