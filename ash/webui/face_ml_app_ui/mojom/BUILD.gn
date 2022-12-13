@@ -23,13 +23,11 @@ ts_library("mojom_ts") {
   tsconfig_base = "../tsconfig_base.json"
   in_files = [ "face_ml_app_ui.mojom-webui.js" ]
 
-  # Targets that generate the above .mojom-webui.js files.
-  extra_deps = [
-    ":trusted_webui_js",
+  # Required for Mojo's bindings.js resolution.
+  deps = [ "//ui/webui/resources/mojo:library" ]
 
-    # Required for Mojo's bindings.js resolution.
-    "//ui/webui/resources:generate_definitions",
-  ]
+  # Targets that generate the above .mojom-webui.js files.
+  extra_deps = [ ":trusted_webui_js" ]
 
   # Generates d.ts files which allows this library to be depended upon.
   composite = true

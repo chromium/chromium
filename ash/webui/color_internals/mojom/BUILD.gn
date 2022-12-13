@@ -39,9 +39,7 @@ ts_library("mojom_ts") {
   out_dir = "$mojom_gen_dir/tsc"
   tsconfig_base = "../resources/tsconfig_base.json"
   in_files = [ "color_internals.mojom-webui.js" ]
-  extra_deps = [
-    ":mojom_webui_js",
-    "//ui/webui/resources:generate_definitions",
-  ]
+  deps = [ "//ui/webui/resources/mojo:library" ]
+  extra_deps = [ ":mojom_webui_js" ]
   composite = true
 }

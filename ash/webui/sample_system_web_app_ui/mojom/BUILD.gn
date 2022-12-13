@@ -55,14 +55,14 @@ ts_library("mojom_ts") {
     "sample_system_web_app_shared_ui.mojom-webui.js",
   ]
 
+  # Required for Mojo's bindings.js resolution.
+  deps = [ "//ui/webui/resources/mojo:library" ]
+
   # Targets that generate the above .mojom-webui.js files.
   extra_deps = [
     ":shared_webui_js",
     ":trusted_webui_js",
     ":untrusted_webui_js",
-
-    # Required for Mojo's bindings.js resolution.
-    "//ui/webui/resources:generate_definitions",
   ]
 
   # Generates d.ts files which allows this library to be depended upon.
