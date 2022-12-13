@@ -87,4 +87,14 @@ suite('CategoriesTest', () => {
     const event = await eventPromise;
     assertTrue(!!event);
   });
+
+  test('clicking classic chrome sets theme and sends event', async () => {
+    await setInitialSettings(0);
+
+    const eventPromise = eventToPromise('theme-select', categoriesElement);
+    categoriesElement.$.classicChromeTile.click();
+    const event = await eventPromise;
+    assertTrue(!!event);
+    assertEquals(1, handler.getCallCount('setClassicChromeDefaultTheme'));
+  });
 });

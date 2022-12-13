@@ -32,16 +32,27 @@
   .tile {
     cursor: pointer;
     grid-column: span 2;
+    outline-width: 0;
     place-self: stretch;
   }
 
+  .tile:focus {
+    box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
+  }
+
   .image-container {
-    /* TODO(crbug.com/1384246): use i18n for title */
     background-color: var(--google-grey-100);
     overflow: hidden;
     padding-top: 100%;
     position: relative;
     width: 100%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .image-container {
+      background-color: var(--google-grey-900);
+      border: 1px solid var(--google-grey-700);
+    }
   }
 
   .image-container img {
@@ -97,7 +108,9 @@
     <h1>Themes</h1>
   </div>
   <cr-grid columns="6">
-    <div class="tile" tabindex="0" role="button">
+    <div class="tile" tabindex="0" id="classicChromeTile"
+        role="button" on-click="onClassicChromeClick_">
+      <!-- TODO(crbug.com/1384245): add image for classic chrome -->
       <div class="image-container"></div>
       <!-- TODO(crbug.com/1399596): use i18n for label -->
       <div class="label">Classic Chrome</div>

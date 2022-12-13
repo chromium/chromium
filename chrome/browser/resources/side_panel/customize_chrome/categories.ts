@@ -16,6 +16,7 @@ import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 export interface CategoriesElement {
   $: {
     backButton: HTMLElement,
+    classicChromeTile: HTMLElement,
   };
 }
 
@@ -44,6 +45,11 @@ export class CategoriesElement extends PolymerElement {
     this.pageHandler_.getBackgroundCollections().then(({collections}) => {
       this.collections_ = collections;
     });
+  }
+
+  private onClassicChromeClick_() {
+    this.pageHandler_.setClassicChromeDefaultTheme();
+    this.dispatchEvent(new Event('theme-select'));
   }
 
   private onCollectionClick_(e: DomRepeatEvent<BackgroundCollection>) {
