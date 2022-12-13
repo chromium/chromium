@@ -78,11 +78,6 @@ bool RunFunction(ExtensionFunction* function,
                  base::Value::List args,
                  Browser* browser,
                  extensions::api_test_utils::RunFunctionFlags flags);
-// DEPRECATED. Use the version above.
-bool RunFunction(ExtensionFunction* function,
-                 std::unique_ptr<base::ListValue> args,
-                 Browser* browser,
-                 extensions::api_test_utils::RunFunctionFlags flags);
 
 } // namespace extension_function_test_utils
 

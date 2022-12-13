@@ -168,11 +168,4 @@ bool RunFunction(ExtensionFunction* function,
                                                  std::move(dispatcher), flags);
 }
 
-bool RunFunction(ExtensionFunction* function,
-                 std::unique_ptr<base::ListValue> args,
-                 Browser* browser,
-                 extensions::api_test_utils::RunFunctionFlags flags) {
-  return RunFunction(function, std::move(*args).TakeList(), browser, flags);
-}
-
 } // namespace extension_function_test_utils
