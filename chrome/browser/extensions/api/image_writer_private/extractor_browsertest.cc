@@ -109,10 +109,10 @@ IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractNonExistentTarXz) {
   run_loop.Run();
 }
 
-// Verify that tar.xz with a 0 byte file works.
 IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ZeroByteTarXzFile) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
+  // Use a tar.xz containing an empty file.
   base::FilePath test_data_dir;
   ASSERT_TRUE(GetTestDataDirectory(&test_data_dir));
   properties_.image_path = test_data_dir.AppendASCII("empty_file.tar.xz");

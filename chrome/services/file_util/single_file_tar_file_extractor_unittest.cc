@@ -133,10 +133,10 @@ TEST_F(SingleFileTarFileExtractorTest, ExtractNonExistentTar) {
   EXPECT_EQ(chrome::file_util::mojom::ExtractionResult::kGenericError, result);
 }
 
-// Verify that a .tar file with a 0 byte file works.
 TEST_F(SingleFileTarFileExtractorTest, ZeroByteFile) {
   base::test::TestFuture<chrome::file_util::mojom::ExtractionResult> future;
 
+  // Use a tar.xz containing an empty file.
   base::FilePath path;
   ASSERT_NO_FATAL_FAILURE(path = GetFilePath("empty_file.tar"));
   base::File src_file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);

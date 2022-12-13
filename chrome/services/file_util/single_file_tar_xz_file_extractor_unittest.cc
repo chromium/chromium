@@ -112,6 +112,7 @@ TEST_F(SingleFileTarXzFileExtractorTest, ExtractNonExistentTarXz) {
 TEST_F(SingleFileTarXzFileExtractorTest, ZeroByteFile) {
   base::test::TestFuture<chrome::file_util::mojom::ExtractionResult> future;
 
+  // Use a tar.xz containing an empty file.
   base::FilePath path;
   ASSERT_NO_FATAL_FAILURE(path = GetFilePath("empty_file.tar.xz"));
   base::File src_file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
