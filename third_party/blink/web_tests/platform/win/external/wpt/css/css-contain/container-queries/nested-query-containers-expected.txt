@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+PASS test1 - inline - 0b000
+FAIL test2 - inline - 0b001 assert_equals: expected "block" but got "inline"
+PASS test3 - inline - 0b010
+PASS test4 - inline - 0b011
+FAIL test5 - inline - 0b100 assert_equals: expected "block" but got "inline"
+FAIL test6 - inline - 0b101 assert_equals: expected "block" but got "inline"
+PASS test7 - inline - 0b110
+PASS test8 - inline - 0b111
+PASS test9 - contents - 0b000
+PASS test10 - contents - 0b001
+PASS test11 - contents - 0b010
+PASS test12 - contents - 0b011
+PASS test13 - contents - 0b100
+PASS test14 - contents - 0b101
+PASS test15 - contents - 0b110
+PASS test16 - contents - 0b111
+PASS test17 - table-cell - 0b000
+FAIL test18 - table-cell - 0b001 assert_equals: clientWidth expected 2 but got 10
+PASS test19 - table-cell - 0b010
+PASS test20 - table-cell - 0b011
+FAIL test21 - table-cell - 0b100 assert_equals: clientWidth expected 2 but got 4
+FAIL test22 - table-cell - 0b101 assert_equals: clientWidth expected 2 but got 10
+PASS test23 - table-cell - 0b110
+PASS test24 - table-cell - 0b111
+PASS test25 - table - 0b000
+FAIL test26 - table - 0b001 assert_equals: clientWidth expected 4 but got 12
+PASS test27 - table - 0b010
+PASS test28 - table - 0b011
+FAIL test29 - table - 0b100 assert_equals: clientWidth expected 4 but got 6
+FAIL test30 - table - 0b101 assert_equals: clientWidth expected 4 but got 12
+PASS test31 - table - 0b110
+PASS test32 - table - 0b111
+Harness: the test ran to completion.
+

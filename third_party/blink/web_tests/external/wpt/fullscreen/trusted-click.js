@@ -14,6 +14,7 @@ function trusted_click(container = document.body) {
         button.remove();
     });
     container.appendChild(button);
+    if (window.top !== window) test_driver.set_test_context(window.top);
     // Race them for manually testing...
     return Promise.race([
         test_driver.click(button),

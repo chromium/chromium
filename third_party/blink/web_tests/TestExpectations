@@ -1610,7 +1610,7 @@ crbug.com/6606 [ Win ] external/wpt/mathml/presentation-markup/fractions/frac-1.
 # Tests failing only on certain platforms.
 crbug.com/6606 [ Win ] external/wpt/mathml/presentation-markup/operators/mo-axis-height-1.html [ Failure ]
 crbug.com/6606 [ Mac ] external/wpt/mathml/relations/text-and-math/use-typo-metrics-1.html [ Failure ]
-crbug.com/1395443 [ Win ] external/wpt/mathml/presentation-markup/mrow/inferred-mrow-stretchy.html [ Pass Crash ]
+crbug.com/1395443 [ Win ] external/wpt/mathml/presentation-markup/mrow/inferred-mrow-stretchy.html [ Crash Pass ]
 
 # Additonal presentation-markup failures
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-lspace-rspace-2.html [ Failure ]
@@ -3016,6 +3016,8 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/storage-founda
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-contain/container-queries/nested-query-containers.html [ Crash Failure Timeout ]
+crbug.com/626703 [ Mac12 ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/content-security-policy/embedded-enforcement/subsumption_algorithm-general.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/content-security-policy/embedded-enforcement/subsumption_algorithm-nonces.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]

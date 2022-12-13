@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS single_email doesn't have the multiple attribute
+PASS value should be sanitized: strip line breaks
+PASS Email address validity
+PASS When the multiple attribute is removed, the user agent must run the value sanitization algorithm
+PASS multiple_email has the multiple attribute
+PASS run the value sanitization algorithm after setting a new value
+PASS valid value is a set of valid email addresses separated by a single ','
+FAIL When the multiple attribute is set, the user agent must run the value sanitization algorithm assert_equals: expected "user1@example.com,user2@example.com" but got "user1@example.com , user2@example.com"
+Harness: the test ran to completion.
+
