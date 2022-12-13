@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/maplike.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_css_font_feature_values_map.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_unsignedlong_unsignedlongsequence.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
@@ -18,8 +19,7 @@ namespace blink {
 
 class CSSFontFeatureValuesRule;
 
-using FeatureValuesMaplike =
-    Maplike<String, IDLString, Vector<uint32_t>, IDLSequence<IDLUnsignedLong>>;
+using FeatureValuesMaplike = MaplikeReadAPIs<CSSFontFeatureValuesMap>;
 
 class CSSFontFeatureValuesMap : public ScriptWrappable,
                                 public FeatureValuesMaplike {
@@ -55,11 +55,8 @@ class CSSFontFeatureValuesMap : public ScriptWrappable,
  private:
   CSSFontFeatureValuesMap() = default;
 
-  PairIterable<String,
-               IDLString,
-               Vector<uint32_t>,
-               IDLSequence<IDLUnsignedLong>>::IterationSource*
-  StartIteration(ScriptState*, ExceptionState&) override;
+  PairSyncIterable<CSSFontFeatureValuesMap>::IterationSource*
+  CreateIterationSource(ScriptState*, ExceptionState&) override;
   bool GetMapEntry(ScriptState*,
                    const String& key,
                    Vector<uint32_t>& value,

@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/maplike.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_event_counts.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -14,9 +15,8 @@
 
 namespace blink {
 
-class EventCounts final
-    : public ScriptWrappable,
-      public Maplike<AtomicString, IDLString, uint64_t, IDLUnsignedLongLong> {
+class EventCounts final : public ScriptWrappable,
+                          public MaplikeReadAPIs<EventCounts> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -40,11 +40,11 @@ class EventCounts final
 
  private:
   // Maplike implementation.
-  PairIterable<AtomicString, IDLString, uint64_t, IDLUnsignedLongLong>::
-      IterationSource*
-      StartIteration(ScriptState*, ExceptionState&) override;
+  PairSyncIterable<EventCounts>::IterationSource* CreateIterationSource(
+      ScriptState*,
+      ExceptionState&) override;
   bool GetMapEntry(ScriptState*,
-                   const AtomicString& key,
+                   const String& key,
                    uint64_t& value,
                    ExceptionState&) override;
 

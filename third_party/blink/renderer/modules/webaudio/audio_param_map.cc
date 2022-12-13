@@ -7,22 +7,23 @@
 namespace blink {
 
 class AudioParamMapIterationSource final
-    : public PairIterable<String, IDLString, AudioParam*, AudioParam>::
-          IterationSource {
+    : public PairSyncIterable<AudioParamMap>::IterationSource {
  public:
   explicit AudioParamMapIterationSource(
       const HeapHashMap<String, Member<AudioParam>>& map) {
-    for (const auto& name : map.Keys()) {
-      parameter_names_.push_back(name);
-      parameter_objects_.push_back(map.at(name));
+    parameter_names_.ReserveInitialCapacity(map.size());
+    parameter_objects_.ReserveInitialCapacity(map.size());
+    for (const auto& item : map) {
+      parameter_names_.push_back(item.key);
+      parameter_objects_.push_back(item.value);
     }
   }
 
-  bool Next(ScriptState* scrip_state,
-            String& key,
-            AudioParam*& audio_param,
-            ExceptionState&) override {
-    if (current_index_ == parameter_names_.size()) {
+  bool FetchNextItem(ScriptState* scrip_state,
+                     String& key,
+                     AudioParam*& audio_param,
+                     ExceptionState&) override {
+    if (current_index_ >= parameter_names_.size()) {
       return false;
     }
     key = parameter_names_[current_index_];
@@ -33,12 +34,10 @@ class AudioParamMapIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(parameter_objects_);
-    PairIterable<String, IDLString, AudioParam*,
-                 AudioParam>::IterationSource::Trace(visitor);
+    PairSyncIterable<AudioParamMap>::IterationSource::Trace(visitor);
   }
 
  private:
-  // For sequential iteration (e.g. Next()).
   Vector<String> parameter_names_;
   HeapVector<Member<AudioParam>> parameter_objects_;
   unsigned current_index_;
@@ -48,21 +47,20 @@ AudioParamMap::AudioParamMap(
     const HeapHashMap<String, Member<AudioParam>>& parameter_map)
     : parameter_map_(parameter_map) {}
 
-PairIterable<String, IDLString, AudioParam*, AudioParam>::IterationSource*
-AudioParamMap::StartIteration(ScriptState*, ExceptionState&) {
+PairSyncIterable<AudioParamMap>::IterationSource*
+AudioParamMap::CreateIterationSource(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<AudioParamMapIterationSource>(parameter_map_);
 }
 
 bool AudioParamMap::GetMapEntry(ScriptState*,
                                 const String& key,
-                                AudioParam*& audio_param,
+                                AudioParam*& value,
                                 ExceptionState&) {
-  if (parameter_map_.Contains(key)) {
-    audio_param = parameter_map_.at(key);
-    return true;
-  }
-
-  return false;
+  auto it = parameter_map_.find(key);
+  if (it == parameter_map_.end())
+    return false;
+  value = it->value;
+  return true;
 }
 
 }  // namespace blink

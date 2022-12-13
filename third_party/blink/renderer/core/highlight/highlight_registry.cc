@@ -179,10 +179,10 @@ HighlightRegistry::IterationSource::IterationSource(
   }
 }
 
-bool HighlightRegistry::IterationSource::Next(ScriptState*,
-                                              AtomicString& key,
-                                              Member<Highlight>& value,
-                                              ExceptionState&) {
+bool HighlightRegistry::IterationSource::FetchNextItem(ScriptState*,
+                                                       String& key,
+                                                       Highlight*& value,
+                                                       ExceptionState&) {
   if (index_ >= highlights_snapshot_.size())
     return false;
   key = highlights_snapshot_[index_]->highlight_name;
@@ -196,7 +196,7 @@ void HighlightRegistry::IterationSource::Trace(blink::Visitor* visitor) const {
 }
 
 HighlightRegistryMapIterable::IterationSource*
-HighlightRegistry::StartIteration(ScriptState*, ExceptionState&) {
+HighlightRegistry::CreateIterationSource(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<IterationSource>(*this);
 }
 

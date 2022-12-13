@@ -12,18 +12,15 @@
 namespace blink {
 
 class EventCountsIterationSource final
-    : public PairIterable<AtomicString,
-                          IDLString,
-                          uint64_t,
-                          IDLUnsignedLongLong>::IterationSource {
+    : public PairSyncIterable<EventCounts>::IterationSource {
  public:
   explicit EventCountsIterationSource(const EventCounts& map)
       : map_(map), iterator_(map_->Map().begin()) {}
 
-  bool Next(ScriptState* script_state,
-            AtomicString& map_key,
-            uint64_t& map_value,
-            ExceptionState&) override {
+  bool FetchNextItem(ScriptState* script_state,
+                     String& map_key,
+                     uint64_t& map_value,
+                     ExceptionState&) override {
     if (iterator_ == map_->Map().end())
       return false;
     map_key = iterator_->key;
@@ -34,8 +31,7 @@ class EventCountsIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(map_);
-    PairIterable<AtomicString, IDLString, uint64_t,
-                 IDLUnsignedLongLong>::IterationSource::Trace(visitor);
+    PairSyncIterable<EventCounts>::IterationSource::Trace(visitor);
   }
 
  private:
@@ -98,17 +94,16 @@ EventCounts::EventCounts() {
   }
 }
 
-PairIterable<AtomicString, IDLString, uint64_t, IDLUnsignedLongLong>::
-    IterationSource*
-    EventCounts::StartIteration(ScriptState*, ExceptionState&) {
+PairSyncIterable<EventCounts>::IterationSource*
+EventCounts::CreateIterationSource(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<EventCountsIterationSource>(*this);
 }
 
 bool EventCounts::GetMapEntry(ScriptState*,
-                              const AtomicString& key,
+                              const String& key,
                               uint64_t& value,
                               ExceptionState&) {
-  auto it = event_count_map_.find(key);
+  auto it = event_count_map_.find(AtomicString(key));
   if (it == event_count_map_.end())
     return false;
 

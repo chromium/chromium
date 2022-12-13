@@ -7,16 +7,15 @@
 namespace blink {
 
 class KeyboardLayoutMapIterationSource final
-    : public PairIterable<String, IDLString, String, IDLString>::
-          IterationSource {
+    : public PairSyncIterable<KeyboardLayoutMap>::IterationSource {
  public:
-  KeyboardLayoutMapIterationSource(const KeyboardLayoutMap& map)
+  explicit KeyboardLayoutMapIterationSource(const KeyboardLayoutMap& map)
       : map_(map), iterator_(map_->Map().begin()) {}
 
-  bool Next(ScriptState* script_state,
-            String& map_key,
-            String& map_value,
-            ExceptionState&) override {
+  bool FetchNextItem(ScriptState* script_state,
+                     String& map_key,
+                     String& map_value,
+                     ExceptionState&) override {
     if (iterator_ == map_->Map().end())
       return false;
     map_key = iterator_->key;
@@ -27,8 +26,7 @@ class KeyboardLayoutMapIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(map_);
-    PairIterable<String, IDLString, String, IDLString>::IterationSource::Trace(
-        visitor);
+    PairSyncIterable<KeyboardLayoutMap>::IterationSource::Trace(visitor);
   }
 
  private:
@@ -40,8 +38,8 @@ class KeyboardLayoutMapIterationSource final
 KeyboardLayoutMap::KeyboardLayoutMap(const HashMap<String, String>& map)
     : layout_map_(map) {}
 
-PairIterable<String, IDLString, String, IDLString>::IterationSource*
-KeyboardLayoutMap::StartIteration(ScriptState*, ExceptionState&) {
+PairSyncIterable<KeyboardLayoutMap>::IterationSource*
+KeyboardLayoutMap::CreateIterationSource(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<KeyboardLayoutMapIterationSource>(*this);
 }
 

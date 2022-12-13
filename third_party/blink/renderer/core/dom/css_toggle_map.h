@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CSS_TOGGLE_MAP_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/maplike.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_css_toggle_map.h"
 #include "third_party/blink/renderer/core/dom/css_toggle.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -24,8 +25,7 @@ class ToggleRootList;
 // Represents the set of toggles on an element.
 using ToggleMap = HeapHashMap<AtomicString, Member<CSSToggle>>;
 
-using CSSToggleMapMaplike =
-    Maplike<AtomicString, IDLString, Member<CSSToggle>, CSSToggle>;
+using CSSToggleMapMaplike = MaplikeReadAPIs<CSSToggleMap>;
 
 class CORE_EXPORT CSSToggleMap : public ScriptWrappable,
                                  public CSSToggleMapMaplike,
@@ -52,20 +52,21 @@ class CORE_EXPORT CSSToggleMap : public ScriptWrappable,
 
  private:
   bool GetMapEntry(ScriptState*,
-                   const AtomicString& key,
-                   Member<CSSToggle>& value,
+                   const String& key,
+                   CSSToggle*& value,
                    ExceptionState&) final;
-  CSSToggleMapMaplike::IterationSource* StartIteration(ScriptState*,
-                                                       ExceptionState&) final;
+  CSSToggleMapMaplike::IterationSource* CreateIterationSource(
+      ScriptState*,
+      ExceptionState&) final;
 
   class IterationSource final : public CSSToggleMapMaplike::IterationSource {
    public:
     explicit IterationSource(const CSSToggleMap& toggle_map);
 
-    bool Next(ScriptState*,
-              AtomicString&,
-              Member<CSSToggle>&,
-              ExceptionState&) override;
+    bool FetchNextItem(ScriptState*,
+                       String&,
+                       CSSToggle*&,
+                       ExceptionState&) override;
 
     void Trace(blink::Visitor*) const override;
 

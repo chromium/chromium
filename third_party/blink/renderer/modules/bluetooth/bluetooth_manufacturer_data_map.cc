@@ -10,32 +10,29 @@
 namespace blink {
 
 class BluetoothManufacturerDataMapIterationSource final
-    : public PairIterable<uint16_t,
-                          IDLUnsignedShort,
-                          Member<DOMDataView>,
-                          DOMDataView>::IterationSource {
+    : public PairSyncIterable<BluetoothManufacturerDataMap>::IterationSource {
  public:
   explicit BluetoothManufacturerDataMapIterationSource(
       const BluetoothManufacturerDataMap& map)
       : map_(map), iterator_(map_->Map().begin()) {}
 
-  bool Next(ScriptState* script_state,
-            uint16_t& map_key,
-            Member<DOMDataView>& map_value,
-            ExceptionState&) override {
+  bool FetchNextItem(ScriptState* script_state,
+                     uint16_t& map_key,
+                     NotShared<DOMDataView>& map_value,
+                     ExceptionState&) override {
     if (iterator_ == map_->Map().end())
       return false;
     map_key = iterator_->key;
-    map_value =
-        BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(iterator_->value);
+    map_value = NotShared<DOMDataView>(
+        BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(iterator_->value));
     ++iterator_;
     return true;
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(map_);
-    PairIterable<uint16_t, IDLUnsignedShort, Member<DOMDataView>,
-                 DOMDataView>::IterationSource::Trace(visitor);
+    PairSyncIterable<BluetoothManufacturerDataMap>::IterationSource::Trace(
+        visitor);
   }
 
  private:
@@ -50,17 +47,16 @@ BluetoothManufacturerDataMap::BluetoothManufacturerDataMap(
 
 BluetoothManufacturerDataMap::~BluetoothManufacturerDataMap() {}
 
-PairIterable<uint16_t, IDLUnsignedShort, Member<DOMDataView>, DOMDataView>::
-    IterationSource*
-    BluetoothManufacturerDataMap::StartIteration(ScriptState*,
-                                                 ExceptionState&) {
+PairSyncIterable<BluetoothManufacturerDataMap>::IterationSource*
+BluetoothManufacturerDataMap::CreateIterationSource(ScriptState*,
+                                                    ExceptionState&) {
   return MakeGarbageCollected<BluetoothManufacturerDataMapIterationSource>(
       *this);
 }
 
 bool BluetoothManufacturerDataMap::GetMapEntry(ScriptState*,
                                                const uint16_t& key,
-                                               Member<DOMDataView>& value,
+                                               NotShared<DOMDataView>& value,
                                                ExceptionState&) {
   auto it = parameter_map_.find(key);
   if (it == parameter_map_.end())
@@ -69,7 +65,7 @@ bool BluetoothManufacturerDataMap::GetMapEntry(ScriptState*,
   DOMDataView* dom_data_view =
       BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(it->value);
 
-  value = dom_data_view;
+  value = NotShared<DOMDataView>(dom_data_view);
   return true;
 }
 

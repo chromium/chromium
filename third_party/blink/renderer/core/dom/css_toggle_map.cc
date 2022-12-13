@@ -100,10 +100,10 @@ bool CSSToggleMap::deleteForBinding(ScriptState*,
 }
 
 bool CSSToggleMap::GetMapEntry(ScriptState*,
-                               const AtomicString& key,
-                               Member<CSSToggle>& value,
+                               const String& key,
+                               CSSToggle*& value,
                                ExceptionState&) {
-  auto iterator = toggles_.find(key);
+  auto iterator = toggles_.find(AtomicString(key));
   if (iterator == toggles_.end())
     return false;
 
@@ -111,7 +111,7 @@ bool CSSToggleMap::GetMapEntry(ScriptState*,
   return true;
 }
 
-CSSToggleMapMaplike::IterationSource* CSSToggleMap::StartIteration(
+CSSToggleMapMaplike::IterationSource* CSSToggleMap::CreateIterationSource(
     ScriptState*,
     ExceptionState&) {
   return MakeGarbageCollected<IterationSource>(*this);
@@ -126,10 +126,10 @@ CSSToggleMap::IterationSource::IterationSource(const CSSToggleMap& toggle_map) {
   }
 }
 
-bool CSSToggleMap::IterationSource::Next(ScriptState*,
-                                         AtomicString& key,
-                                         Member<CSSToggle>& value,
-                                         ExceptionState&) {
+bool CSSToggleMap::IterationSource::FetchNextItem(ScriptState*,
+                                                  String& key,
+                                                  CSSToggle*& value,
+                                                  ExceptionState&) {
   if (index_ >= toggles_snapshot_.size())
     return false;
   value = toggles_snapshot_[index_++];

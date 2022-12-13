@@ -7,19 +7,19 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/maplike.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_keyboard_layout_map.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-class KeyboardLayoutMap final
-    : public ScriptWrappable,
-      public Maplike<String, IDLString, String, IDLString> {
+class KeyboardLayoutMap final : public ScriptWrappable,
+                                public MaplikeReadAPIs<KeyboardLayoutMap> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  KeyboardLayoutMap(const HashMap<String, String>& map);
+  explicit KeyboardLayoutMap(const HashMap<String, String>& map);
 
   const HashMap<String, String>& Map() const { return layout_map_; }
 
@@ -32,8 +32,9 @@ class KeyboardLayoutMap final
 
  private:
   // Maplike implementation.
-  PairIterable<String, IDLString, String, IDLString>::IterationSource*
-  StartIteration(ScriptState*, ExceptionState&) override;
+  PairSyncIterable<KeyboardLayoutMap>::IterationSource* CreateIterationSource(
+      ScriptState*,
+      ExceptionState&) override;
   bool GetMapEntry(ScriptState*,
                    const String& key,
                    String& value,

@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/maplike.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_audio_param_map.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -18,9 +19,8 @@ namespace blink {
 
 class AudioParam;
 
-class AudioParamMap final
-    : public ScriptWrappable,
-      public Maplike<String, IDLString, AudioParam*, AudioParam> {
+class AudioParamMap final : public ScriptWrappable,
+                            public MaplikeReadAPIs<AudioParamMap> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -39,11 +39,12 @@ class AudioParamMap final
   }
 
  private:
-  PairIterable<String, IDLString, AudioParam*, AudioParam>::IterationSource*
-  StartIteration(ScriptState*, ExceptionState&) override;
+  PairSyncIterable<AudioParamMap>::IterationSource* CreateIterationSource(
+      ScriptState*,
+      ExceptionState&) override;
   bool GetMapEntry(ScriptState*,
                    const String& key,
-                   AudioParam*&,
+                   AudioParam*& value,
                    ExceptionState&) override;
 
   const MapType parameter_map_;

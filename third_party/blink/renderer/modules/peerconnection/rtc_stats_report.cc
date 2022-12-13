@@ -130,21 +130,22 @@ v8::Local<v8::Object> RTCStatsToV8Object(ScriptState* script_state,
 }
 
 class RTCStatsReportIterationSource final
-    : public PairIterable<String, IDLString, v8::Local<v8::Object>, IDLObject>::
-          IterationSource {
+    : public PairSyncIterable<RTCStatsReport>::IterationSource {
  public:
-  RTCStatsReportIterationSource(std::unique_ptr<RTCStatsReportPlatform> report)
+  explicit RTCStatsReportIterationSource(
+      std::unique_ptr<RTCStatsReportPlatform> report)
       : report_(std::move(report)) {}
 
-  bool Next(ScriptState* script_state,
-            String& key,
-            v8::Local<v8::Object>& value,
-            ExceptionState& exception_state) override {
+  bool FetchNextItem(ScriptState* script_state,
+                     String& key,
+                     ScriptValue& value,
+                     ExceptionState& exception_state) override {
     std::unique_ptr<RTCStats> stats = report_->Next();
     if (!stats)
       return false;
     key = stats->Id();
-    value = RTCStatsToV8Object(script_state, stats.get());
+    value = ScriptValue(script_state->GetIsolate(),
+                        RTCStatsToV8Object(script_state, stats.get()));
     return true;
   }
 
@@ -178,21 +179,21 @@ uint32_t RTCStatsReport::size() const {
   return base::saturated_cast<uint32_t>(report_->Size());
 }
 
-PairIterable<String, IDLString, v8::Local<v8::Object>, IDLObject>::
-    IterationSource*
-    RTCStatsReport::StartIteration(ScriptState*, ExceptionState&) {
+PairSyncIterable<RTCStatsReport>::IterationSource*
+RTCStatsReport::CreateIterationSource(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<RTCStatsReportIterationSource>(
       report_->CopyHandle());
 }
 
 bool RTCStatsReport::GetMapEntry(ScriptState* script_state,
                                  const String& key,
-                                 v8::Local<v8::Object>& value,
+                                 ScriptValue& value,
                                  ExceptionState&) {
   std::unique_ptr<RTCStats> stats = report_->GetStats(key);
   if (!stats)
     return false;
-  value = RTCStatsToV8Object(script_state, stats.get());
+  value = ScriptValue(script_state->GetIsolate(),
+                      RTCStatsToV8Object(script_state, stats.get()));
   return true;
 }
 

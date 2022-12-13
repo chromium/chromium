@@ -3,25 +3,23 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/css_font_feature_values_map.h"
+
 #include "third_party/blink/renderer/core/css/css_font_feature_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 
 namespace blink {
 
 class FontFeatureValuesMapIterationSource final
-    : public PairIterable<String,
-                          IDLString,
-                          Vector<uint32_t>,
-                          IDLSequence<IDLUnsignedLong>>::IterationSource {
+    : public PairSyncIterable<CSSFontFeatureValuesMap>::IterationSource {
  public:
   FontFeatureValuesMapIterationSource(const CSSFontFeatureValuesMap& map,
                                       const FontFeatureAliases* aliases)
       : map_(map), aliases_(aliases), iterator_(aliases->begin()) {}
 
-  bool Next(ScriptState* script_state,
-            String& map_key,
-            Vector<uint32_t>& map_value,
-            ExceptionState&) override {
+  bool FetchNextItem(ScriptState* script_state,
+                     String& map_key,
+                     Vector<uint32_t>& map_value,
+                     ExceptionState&) override {
     if (!aliases_)
       return false;
     if (iterator_ == aliases_->end())
@@ -34,8 +32,7 @@ class FontFeatureValuesMapIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(map_);
-    PairIterable<String, IDLString, Vector<uint32_t>,
-                 IDLSequence<IDLUnsignedLong>>::IterationSource::Trace(visitor);
+    PairSyncIterable<CSSFontFeatureValuesMap>::IterationSource::Trace(visitor);
   }
 
  private:
@@ -49,11 +46,8 @@ uint32_t CSSFontFeatureValuesMap::size() const {
   return aliases_ ? aliases_->size() : 0u;
 }
 
-PairIterable<String,
-             IDLString,
-             Vector<uint32_t>,
-             IDLSequence<IDLUnsignedLong>>::IterationSource*
-CSSFontFeatureValuesMap::StartIteration(ScriptState*, ExceptionState&) {
+PairSyncIterable<CSSFontFeatureValuesMap>::IterationSource*
+CSSFontFeatureValuesMap::CreateIterationSource(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<FontFeatureValuesMapIterationSource>(*this,
                                                                    aliases_);
 }

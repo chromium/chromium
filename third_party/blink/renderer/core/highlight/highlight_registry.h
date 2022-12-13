@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HIGHLIGHT_HIGHLIGHT_REGISTRY_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/maplike.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_highlight_registry.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/highlight/highlight_registry_map_entry.h"
@@ -25,8 +26,7 @@ namespace blink {
 using HighlightRegistryMap =
     HeapLinkedHashSet<Member<HighlightRegistryMapEntry>,
                       HashTraits<Member<HighlightRegistryMapEntry>>>;
-using HighlightRegistryMapIterable =
-    Maplike<AtomicString, IDLString, Member<Highlight>, Highlight>;
+using HighlightRegistryMapIterable = MaplikeReadAPIs<HighlightRegistry>;
 class LocalFrame;
 
 class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
@@ -72,10 +72,10 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
    public:
     explicit IterationSource(const HighlightRegistry& highlight_registry);
 
-    bool Next(ScriptState*,
-              AtomicString&,
-              Member<Highlight>&,
-              ExceptionState&) override;
+    bool FetchNextItem(ScriptState* script_state,
+                       String& key,
+                       Highlight*& value,
+                       ExceptionState& exception_state) override;
 
     void Trace(blink::Visitor*) const override;
 
@@ -97,10 +97,10 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
   }
 
   bool GetMapEntry(ScriptState*,
-                   const AtomicString& key,
-                   Member<Highlight>& value,
+                   const String& key,
+                   Highlight*& value,
                    ExceptionState&) override {
-    auto iterator = GetMapIterator(key);
+    auto iterator = GetMapIterator(AtomicString(key));
     if (iterator == highlights_.end())
       return false;
 
@@ -108,7 +108,7 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
     return true;
   }
 
-  HighlightRegistryMapIterable::IterationSource* StartIteration(
+  HighlightRegistryMapIterable::IterationSource* CreateIterationSource(
       ScriptState*,
       ExceptionState&) override;
 };
