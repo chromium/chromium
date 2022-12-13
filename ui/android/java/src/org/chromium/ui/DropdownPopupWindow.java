@@ -5,20 +5,15 @@
 package org.chromium.ui;
 
 import android.content.Context;
-import android.os.Build;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 
+// TODO(https://crbug.com/1400723): This class is a noop now, so we should remove it.
 /**
  * The dropdown popup window that decides what widget should be used for the popup.
- * For Android K+, DropdownPopupWindow is used, which is based on AnchoredPopupWindow.
- * For devices before Android K, DropdowPopupWindowJellyBean is used, which is based
- * on ListPopupWindow.
- * Note that AnchoredPopupWindow can not be used on Android J due to a focus issue
- * that blocks user from selecting the items.
  */
 public class DropdownPopupWindow {
     private DropdownPopupWindowInterface mPopup;
@@ -29,11 +24,7 @@ public class DropdownPopupWindow {
      * @param anchorView Popup view to be anchored.
      */
     public DropdownPopupWindow(Context context, View anchorView) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            mPopup = new DropdownPopupWindowImpl(context, anchorView);
-        } else {
-            mPopup = new DropdownPopupWindowJellyBean(context, anchorView);
-        }
+        mPopup = new DropdownPopupWindowImpl(context, anchorView);
     }
 
     /**
