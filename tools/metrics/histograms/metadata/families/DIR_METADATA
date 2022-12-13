@@ -1,0 +1,4 @@
+# Chrome Browser
+mixins: "//chrome/browser/supervised_user/android/COMMON_METADATA"
+# ChromeOS specific
+mixins: "//chrome/browser/supervised_user/chromeos/COMMON_METADATA"
