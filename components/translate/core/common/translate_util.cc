@@ -63,7 +63,7 @@ const base::FeatureParam<int> kDesktopPartialTranslateBubbleShowDelayMs{
 #if !BUILDFLAG(IS_WIN)
 BASE_FEATURE(kMmapLanguageDetectionModel,
              "MmapLanguageDetectionModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 GURL GetTranslateSecurityOrigin() {

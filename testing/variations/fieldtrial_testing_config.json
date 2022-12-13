@@ -6894,26 +6894,6 @@
             ]
         }
     ],
-    "MmapLanguageDetectionModel": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220927",
-                    "enable_features": [
-                        "MmapLanguageDetectionModel"
-                    ]
-                }
-            ]
-        }
-    ],
     "MojoInlineMessagePayloads": [
         {
             "platforms": [
