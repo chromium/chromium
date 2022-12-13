@@ -2001,7 +2001,13 @@ Press an assigned switch or key to remove assignment.
     Container name
   </message>
   <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CONTAINER_IP_LABEL" desc="Column heading for container IP address.">
-    IP
+    IP address
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_SHARE_MICROPHONE" desc="Toggle label to share host microhone with this container.">
+    Share microphone
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_APP_BADGE_COLOR" desc="Label for color picker to choose a badge color for this container's apps.">
+    App badge color
   </message>
   <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_TITLE" desc="Title of the dialog for entering details to create a new Linux container.">
     Create a new container

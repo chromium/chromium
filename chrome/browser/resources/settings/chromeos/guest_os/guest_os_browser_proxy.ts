@@ -44,6 +44,12 @@ export function getVMNameForGuestOsType(guestOs: GuestOsType): string {
   }[guestOs];
 }
 
+export const VM_DEVICE_MICROPHONE = 'microphone';
+
+export interface ShareableDevices {
+  [VM_DEVICE_MICROPHONE]: boolean;
+}
+
 /**
  * |ipv4| below is null if the guest is not currently running.
  */

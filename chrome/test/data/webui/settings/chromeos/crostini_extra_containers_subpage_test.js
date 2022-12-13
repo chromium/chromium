@@ -20,7 +20,7 @@ suite('CrostiniExtraContainersSubpageTests', function() {
   /** @type {?TestCrostiniBrowserProxy} */
   let crostiniBrowserProxy = null;
 
-  /** @type {?SettingsCrostiniSubPageElement} */
+  /** @type {?SettingsCrostinuExtraContainersElement} */
   let subpage;
 
   setup(async function() {
@@ -43,13 +43,33 @@ suite('CrostiniExtraContainersSubpageTests', function() {
       },
     ];
 
+    const sharedVmDevices_ = [
+      {
+        id: allContainers_[0].id,
+        vmDevices: {microphone: true},
+      },
+      {
+        id: allContainers_[1].id,
+        vmDevices: {microphone: false},
+      },
+      {
+        id: allContainers_[2].id,
+        vmDevices: {microphone: true},
+      },
+    ];
+
     crostiniBrowserProxy.containerInfo = allContainers_;
+    crostiniBrowserProxy.sharedVmDevices = sharedVmDevices_;
     crostiniPage.prefs = {
       crostini: {
         enabled: {value: true},
       },
     };
     flush();
+    assertEquals(0, crostiniBrowserProxy.getCallCount('requestContainerInfo'));
+    assertEquals(
+        0, crostiniBrowserProxy.getCallCount('requestSharedVmDevices'));
+
     Router.getInstance().navigateTo(
         routes.CROSTINI_EXTRA_CONTAINERS);
 
@@ -57,6 +77,9 @@ suite('CrostiniExtraContainersSubpageTests', function() {
     subpage = crostiniPage.shadowRoot.querySelector(
         'settings-crostini-extra-containers');
     assertTrue(!!subpage);
+    assertEquals(1, crostiniBrowserProxy.getCallCount('requestContainerInfo'));
+    assertEquals(
+        1, crostiniBrowserProxy.getCallCount('requestSharedVmDevices'));
   });
 
   teardown(function() {
@@ -316,5 +339,62 @@ suite('CrostiniExtraContainersSubpageTests', function() {
           assertFalse(subpage.shadowRoot.querySelector('#importContainerButton')
                           .disabled);
         });
+  });
+
+  suite('ContainerDetails', function() {
+    test('ExpandButton', async function() {
+      const expandButton =
+          subpage.shadowRoot.querySelector('#expand-button-termina-penguin');
+      assertTrue(!!expandButton);
+
+      // The collapse element should open/close on clicking |expandButton|.
+      const collapse =
+          subpage.shadowRoot.querySelector('#collapse-termina-penguin');
+      assertTrue(!!collapse);
+
+      assertFalse(collapse.opened);
+      expandButton.click();
+      await flushTasks();
+      assertTrue(collapse.opened);
+
+      expandButton.click();
+      await flushTasks();
+      assertFalse(collapse.opened);
+    });
+
+    test('ToggleMicrophoneOff', async function() {
+      // The toggle is inside an iron-collapse, but we can still click it
+      // via the testing apis.
+      const toggle =
+          subpage.shadowRoot.querySelector('#microphone-termina-penguin');
+
+      assertTrue(!!toggle);
+      assertTrue(toggle.checked);
+
+      toggle.click();
+      await crostiniBrowserProxy.resolvePromises('setVmDeviceShared', true);
+      await crostiniBrowserProxy.resolvePromises('isVmDeviceShared', false);
+
+      assertFalse(toggle.checked);
+
+      assertEquals(1, crostiniBrowserProxy.getCallCount('setVmDeviceShared'));
+      const args1 = crostiniBrowserProxy.getArgs('setVmDeviceShared')[0];
+      assertArrayEquals(
+          [
+            {vm_name: 'termina', container_name: 'penguin'},
+            'microphone',
+            false,
+          ],
+          args1);
+
+      assertEquals(1, crostiniBrowserProxy.getCallCount('isVmDeviceShared'));
+      const args2 = crostiniBrowserProxy.getArgs('isVmDeviceShared')[0];
+      assertArrayEquals(
+          [
+            {vm_name: 'termina', container_name: 'penguin'},
+            'microphone',
+          ],
+          args2);
+    });
   });
 });

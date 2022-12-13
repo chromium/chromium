@@ -273,6 +273,28 @@ export interface CrostiniBrowserProxy {
    * @return Returns a filepath to the selected file.
    */
   openContainerFileSelector(): Promise<string>;
+
+  /**
+   * Fetches vmdevice sharing info for all known containers and invokes listener
+   * callback.
+   */
+  requestSharedVmDevices(): void;
+
+  /**
+   * @param id GuestId in question.
+   * @param device VmDevice which might be shared.
+   * @return Whether the device is shared.
+   */
+  isVmDeviceShared(id: GuestId, device: string): Promise<boolean>;
+
+  /**
+   * @param id GuestId in question.
+   * @param device VmDevice which might be shared.
+   * @param shared Whether to share the device with the guest.
+   * @return Whether the sharing could be applied.
+   */
+  setVmDeviceShared(id: GuestId, device: string, shared: boolean):
+      Promise<boolean>;
 }
 
 let instance: CrostiniBrowserProxy|null = null;
@@ -429,5 +451,18 @@ export class CrostiniBrowserProxyImpl implements CrostiniBrowserProxy {
 
   openContainerFileSelector(): Promise<string> {
     return sendWithPromise('openContainerFileSelector');
+  }
+
+  requestSharedVmDevices() {
+    chrome.send('requestSharedVmDevices');
+  }
+
+  isVmDeviceShared(id: GuestId, device: string): Promise<boolean> {
+    return sendWithPromise('isVmDeviceShared', id, device);
+  }
+
+  setVmDeviceShared(id: GuestId, device: string, shared: boolean):
+      Promise<boolean> {
+    return sendWithPromise('setVmDeviceShared', id, device, shared);
   }
 }

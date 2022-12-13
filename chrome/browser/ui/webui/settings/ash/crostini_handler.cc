@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/crostini/crostini_installer.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
+#include "chrome/browser/ash/crostini/crostini_shared_devices.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -29,6 +30,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/display/screen.h"
@@ -178,6 +181,18 @@ void CrostiniHandler::RegisterMessages() {
     web_ui()->RegisterMessageCallback(
         "openContainerFileSelector",
         base::BindRepeating(&CrostiniHandler::HandleOpenContainerFileSelector,
+                            handler_weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
+        "requestSharedVmDevices",
+        base::BindRepeating(&CrostiniHandler::HandleRequestSharedVmDevices,
+                            handler_weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
+        "isVmDeviceShared",
+        base::BindRepeating(&CrostiniHandler::HandleIsVmDeviceShared,
+                            handler_weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
+        "setVmDeviceShared",
+        base::BindRepeating(&CrostiniHandler::HandleSetVmDeviceShared,
                             handler_weak_ptr_factory_.GetWeakPtr()));
   }
 }
@@ -661,14 +676,26 @@ void CrostiniHandler::HandleCheckCrostiniIsRunning(
 
 void CrostiniHandler::OnContainerStarted(
     const guest_os::GuestId& container_id) {
-  FireWebUIListener("crostini-status-changed", base::Value(true));
-  HandleRequestContainerInfo(base::Value::List());
+  if (container_id == crostini::DefaultContainerId()) {
+    FireWebUIListener("crostini-status-changed", base::Value(true));
+  }
+  // After other observers have run, we can send container info.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&CrostiniHandler::HandleRequestContainerInfo,
+                                handler_weak_ptr_factory_.GetWeakPtr(),
+                                base::Value::List()));
 }
 
 void CrostiniHandler::OnContainerShutdown(
     const guest_os::GuestId& container_id) {
-  FireWebUIListener("crostini-status-changed", base::Value(false));
-  HandleRequestContainerInfo(base::Value::List());
+  if (container_id == crostini::DefaultContainerId()) {
+    FireWebUIListener("crostini-status-changed", base::Value(false));
+  }
+  // After other observers have run, we can send container info.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&CrostiniHandler::HandleRequestContainerInfo,
+                                handler_weak_ptr_factory_.GetWeakPtr(),
+                                base::Value::List()));
 }
 
 void CrostiniHandler::HandleShutdownCrostini(const base::Value::List& args) {
@@ -850,7 +877,7 @@ void CrostiniHandler::HandleOpenContainerFileSelector(
   file_selector_ = std::make_unique<crostini::CrostiniFileSelector>(web_ui());
   file_selector_->SelectFile(
       base::BindOnce(&CrostiniHandler::OnContainerFileSelected,
-                     handler_weak_ptr_factory_.GetWeakPtr(), callback_id),
+                     callback_weak_ptr_factory_.GetWeakPtr(), callback_id),
       base::DoNothing());
 }
 
@@ -858,6 +885,66 @@ void CrostiniHandler::OnContainerFileSelected(const std::string& callback_id,
                                               const base::FilePath& path) {
   base::Value filePath(path.value());
   ResolveJavascriptCallback(base::Value(callback_id), filePath);
+}
+
+void CrostiniHandler::HandleRequestSharedVmDevices(
+    const base::Value::List& args) {
+  constexpr char kIdKey[] = "id";
+  constexpr char kVmDevicesKey[] = "vmDevices";
+  constexpr char kMicrophone[] = "microphone";
+
+  auto* crostini_shared_devices =
+      crostini::CrostiniSharedDevices::GetForProfile(profile_);
+
+  base::Value::List shared_vmdevices;
+  for (const auto& container_id :
+       guest_os::GetContainers(profile_, guest_os::VmType::TERMINA)) {
+    base::Value::Dict container_shared_devices;
+    container_shared_devices.Set(kIdKey, container_id.ToDictValue());
+
+    base::Value::Dict device_dict;
+    device_dict.Set(kMicrophone, crostini_shared_devices->IsVmDeviceShared(
+                                     container_id, kMicrophone));
+
+    container_shared_devices.Set(kVmDevicesKey, std::move(device_dict));
+
+    shared_vmdevices.Append(std::move(container_shared_devices));
+  }
+
+  FireWebUIListener("crostini-shared-vmdevices", shared_vmdevices);
+}
+
+void CrostiniHandler::HandleIsVmDeviceShared(const base::Value::List& args) {
+  CHECK_EQ(3U, args.size());
+
+  const std::string& callback_id = args[0].GetString();
+  guest_os::GuestId container_id(args[1]);
+  const std::string& vm_device = args[2].GetString();
+
+  ResolveJavascriptCallback(
+      base::Value(callback_id),
+      crostini::CrostiniSharedDevices::GetForProfile(profile_)
+          ->IsVmDeviceShared(container_id, vm_device));
+}
+
+void CrostiniHandler::HandleSetVmDeviceShared(const base::Value::List& args) {
+  CHECK_EQ(4U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  guest_os::GuestId container_id(args[1]);
+  const std::string& vm_device = args[2].GetString();
+  bool shared = args[3].GetBool();
+
+  crostini::CrostiniSharedDevices::GetForProfile(profile_)->SetVmDeviceShared(
+      container_id, vm_device, shared,
+      base::BindOnce(
+          [](base::WeakPtr<CrostiniHandler> weak_this,
+             const std::string callback_id, bool was_applied) {
+            if (weak_this) {
+              weak_this->ResolveJavascriptCallback(base::Value(callback_id),
+                                                   was_applied);
+            }
+          },
+          callback_weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
 
 }  // namespace ash::settings
