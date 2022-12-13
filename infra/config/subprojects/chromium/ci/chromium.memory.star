@@ -541,6 +541,21 @@ ci.builder(
 
 ci.builder(
     name = "android-asan",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["android"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android_asan",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "main_builder"),
+        build_gs_bucket = "chromium-memory-archive",
+    ),
     os = os.LINUX_DEFAULT,
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,

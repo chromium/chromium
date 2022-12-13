@@ -138,6 +138,7 @@ try_.compilator_builder(
 
 try_.builder(
     name = "android-asan",
+    mirrors = ["ci/android-asan"],
     goma_backend = None,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
