@@ -20,7 +20,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
-#include "chrome/browser/ash/app_list/arc/arc_default_app_list.h"
 #include "chrome/browser/ash/app_list/search/app_search_data_source.h"
 #include "chrome/browser/ash/app_list/search/app_search_provider.h"
 #include "chrome/browser/ash/app_list/search/app_zero_state_provider.h"
@@ -31,7 +30,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync/model/string_ordinal.h"
-#include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -104,6 +102,13 @@ std::string AppSearchProviderTestBase::GetSortedResultsString() {
     result_str += base::UTF16ToUTF8(result->title());
   }
   return result_str;
+}
+
+std::vector<ChromeSearchResult*> AppSearchProviderTestBase::GetLastResults() {
+  std::vector<ChromeSearchResult*> sorted_results;
+  for (const auto& result : search_controller_->last_results())
+    sorted_results.emplace_back(result.get());
+  return sorted_results;
 }
 
 std::string AppSearchProviderTestBase::AddArcApp(const std::string& name,

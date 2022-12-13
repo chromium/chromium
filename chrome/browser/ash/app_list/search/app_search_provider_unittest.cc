@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "ash/components/arc/test/fake_app_instance.h"
+#include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
 #include "base/run_loop.h"
@@ -334,6 +335,24 @@ TEST_F(AppSearchProviderTest, WebApp) {
 
   InitializeSearchProvider();
   EXPECT_EQ("WebApp1", RunQuery("WebA"));
+}
+
+TEST_F(AppSearchProviderTest, BasicAppServiceAppResult) {
+  InitializeSearchProvider();
+  RunQuery("Keyboard");
+  std::vector<ChromeSearchResult*> keyboard_results = GetLastResults();
+  EXPECT_EQ(keyboard_results.size(), 1u);
+  EXPECT_EQ(base::UTF16ToUTF8(keyboard_results[0]->title()),
+            kKeyboardShortcutHelperInternalName);
+  EXPECT_EQ(keyboard_results[0]->display_type(),
+            ash::SearchResultDisplayType::kList);
+  EXPECT_EQ(keyboard_results[0]->result_type(),
+            ash::AppListSearchResultType::kInternalApp);
+  EXPECT_EQ(keyboard_results[0]->metrics_type(), ash::INTERNAL_APP);
+  EXPECT_EQ(keyboard_results[0]->is_recommendation(), false);
+  EXPECT_EQ(keyboard_results[0]->category(), Category::kApps);
+  EXPECT_EQ(keyboard_results[0]->id(),
+            ash::kInternalAppIdKeyboardShortcutViewer);
 }
 
 class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
