@@ -98,7 +98,7 @@ bool OSFeedbackAppDelegate::ShouldAllowResize() const {
 }
 
 bool OSFeedbackAppDelegate::ShouldShowInLauncher() const {
-  return IsUserFeedbackAllowed(profile());
+  return false;
 }
 
 bool OSFeedbackAppDelegate::ShouldShowInSearch() const {

@@ -414,7 +414,10 @@ testcase.newFolderInDownloads = async () => {
  * opens the feedback window.
  */
 testcase.showSendFeedbackAction = async () => {
-  const feedbackWindowUrl = 'chrome://feedback/';
+  const isOsFeedbackEnabled =
+      await sendTestMessage({name: 'isOsFeedbackEnabled'}) === 'true';
+  const feedbackWindowOrigin =
+      isOsFeedbackEnabled ? 'chrome://os-feedback' : 'chrome://feedback';
 
   // Open Files.App on Downloads.
   const appId = await openNewWindow(RootPath.DOWNLOADS);
@@ -431,7 +434,8 @@ testcase.showSendFeedbackAction = async () => {
   await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
 
   // Check that there is no feedback window opened.
-  chrome.test.assertFalse(await remoteCall.windowUrlExists(feedbackWindowUrl));
+  chrome.test.assertFalse(
+      await remoteCall.windowOriginExists(feedbackWindowOrigin));
 
   // Click #send-feedback, which should be shown and enabled.
   await remoteCall.waitAndClickElement(
@@ -443,8 +447,8 @@ testcase.showSendFeedbackAction = async () => {
   // Check that the feedback window is open.
   const caller = getCaller();
   return repeatUntil(async () => {
-    if (!await remoteCall.windowUrlExists(feedbackWindowUrl)) {
-      return pending(caller, `Waiting for ${feedbackWindowUrl} to open`);
+    if (!await remoteCall.windowOriginExists(feedbackWindowOrigin)) {
+      return pending(caller, `Waiting for ${feedbackWindowOrigin} to open`);
     }
   });
 };

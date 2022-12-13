@@ -138,6 +138,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
     // Whether tests should enable V2 of search.
     bool enable_search_v2 = false;
+
+    // Whether testt should enable OS Feedback.
+    bool enable_os_feedback = false;
   };
 
   FileManagerBrowserTestBase(const FileManagerBrowserTestBase&) = delete;

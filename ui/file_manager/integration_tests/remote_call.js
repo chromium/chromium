@@ -556,13 +556,13 @@ export class RemoteCallFilesApp extends RemoteCall {
   }
 
   /**
-   * Returns whether an window exists with the expected URL.
-   * @param {string} expectedUrl
+   * Returns whether a window exists with the expected origin.
+   * @param {string} expectedOrigin
    * @return {!Promise<boolean>} Promise resolved with true or false depending
    *     on whether such window exists.
    */
-  async windowUrlExists(expectedUrl) {
-    const command = {name: 'expectWindowURL', expectedUrl: expectedUrl};
+  async windowOriginExists(expectedOrigin) {
+    const command = {name: 'expectWindowOrigin', expectedOrigin};
     const windowExists = await sendTestMessage(command);
     return windowExists == 'true';
   }

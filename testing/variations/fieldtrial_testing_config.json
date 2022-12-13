@@ -7853,6 +7853,22 @@
             ]
         }
     ],
+    "OsFeedback": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20221130",
+                    "enable_features": [
+                        "OsFeedback"
+                    ]
+                }
+            ]
+        }
+    ],
     "OutOfProcessSystemDnsResolution": [
         {
             "platforms": [

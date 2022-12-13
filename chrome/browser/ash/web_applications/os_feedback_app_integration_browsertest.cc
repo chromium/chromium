@@ -189,28 +189,12 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, FeedbackAppAttributes) {
   // Check the correct attributes for Feedback App.
   auto* system_app =
       GetManager().GetSystemApp(ash::SystemWebAppType::OS_FEEDBACK);
-  EXPECT_TRUE(system_app->ShouldShowInLauncher());
-  EXPECT_TRUE(system_app->ShouldShowInSearch());
+  EXPECT_FALSE(system_app->ShouldShowInLauncher());
+  EXPECT_FALSE(system_app->ShouldShowInSearch());
   EXPECT_FALSE(system_app->ShouldShowNewWindowMenuOption());
   EXPECT_TRUE(system_app->ShouldAllowScriptsToCloseWindows());
   EXPECT_FALSE(system_app->ShouldAllowResize());
   EXPECT_FALSE(system_app->ShouldAllowMaximize());
-}
-
-// Test that when the policy UserFeedbackAllowed is false, the Feedback App
-//  1) does not show in launcher
-//  2) does not show in search
-IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest,
-                       HideInLauncherAndSearchWhenUserFeedbackNotAllowed) {
-  WaitForTestSystemAppInstall();
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
-                                               false);
-
-  // Check the correct attributes for Feedback App.
-  auto* system_app =
-      GetManager().GetSystemApp(ash::SystemWebAppType::OS_FEEDBACK);
-  EXPECT_FALSE(system_app->ShouldShowInLauncher());
-  EXPECT_FALSE(system_app->ShouldShowInSearch());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

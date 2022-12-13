@@ -2001,6 +2001,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(ash::features::kFilesSearchV2);
   }
 
+  if (options.enable_os_feedback) {
+    enabled_features.push_back(ash::features::kOsFeedback);
+  } else {
+    disabled_features.push_back(ash::features::kOsFeedback);
+  }
+
   // This is destroyed in |TearDown()|. We cannot initialize this in the
   // constructor due to this feature values' above dependence on virtual
   // method calls, but by convention subclasses of this fixture may initialize
@@ -2401,12 +2407,13 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
-  if (name == "expectWindowURL") {
-    const std::string* expected_url = value.FindString("expectedUrl");
-    EXPECT_TRUE(expected_url);
+  if (name == "expectWindowOrigin") {
+    const std::string* expected_origin = value.FindString("expectedOrigin");
+    EXPECT_TRUE(expected_origin);
     for (auto* web_contents : GetAllWebContents()) {
-      const std::string& url = web_contents->GetVisibleURL().spec();
-      if (url == *expected_url) {
+      const std::string& origin =
+          url::Origin::Create(web_contents->GetVisibleURL()).Serialize();
+      if (origin == *expected_origin) {
         *output = "true";
         return;
       }
@@ -3055,6 +3062,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isInlineStatusSyncEnabled") {
     *output = options.enable_inline_status_sync ? "true" : "false";
+    return;
+  }
+
+  if (name == "isOsFeedbackEnabled") {
+    *output = options.enable_os_feedback ? "true" : "false";
     return;
   }
 

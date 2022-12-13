@@ -187,6 +187,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableOsFeedback() {
+    options.enable_os_feedback = true;
+    return *this;
+  }
+
   std::string GetFullName() const {
     std::string full_name = name;
 
@@ -234,6 +239,9 @@ struct TestCase {
 
     if (options.enable_search_v2)
       full_name += "_SearchV2";
+
+    if (options.enable_os_feedback)
+      full_name += "_OsFeedback";
 
     return full_name;
   }
@@ -1549,6 +1557,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("hideCurrentDirectoryByTogglingHiddenAndroidFolders"),
         TestCase("newFolderInDownloads"),
         TestCase("showSendFeedbackAction"),
+        TestCase("showSendFeedbackAction").EnableOsFeedback(),
         TestCase("enableDisableStorageSettingsLink"),
         TestCase("showAvailableStorageMyFiles"),
         TestCase("showAvailableStorageDrive"),
