@@ -160,8 +160,7 @@ void WaylandZwpLinuxDmabuf::Modifiers(
     uint32_t format,
     uint32_t modifier_hi,
     uint32_t modifier_lo) {
-  WaylandZwpLinuxDmabuf* self = static_cast<WaylandZwpLinuxDmabuf*>(data);
-  if (self) {
+  if (auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data)) {
     uint64_t modifier = static_cast<uint64_t>(modifier_hi) << 32 | modifier_lo;
     self->AddSupportedFourCCFormatAndModifier(format, {modifier});
   }
@@ -171,8 +170,7 @@ void WaylandZwpLinuxDmabuf::Modifiers(
 void WaylandZwpLinuxDmabuf::Format(void* data,
                                    struct zwp_linux_dmabuf_v1* zwp_linux_dmabuf,
                                    uint32_t format) {
-  WaylandZwpLinuxDmabuf* self = static_cast<WaylandZwpLinuxDmabuf*>(data);
-  if (self)
+  if (auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data))
     self->AddSupportedFourCCFormatAndModifier(format, absl::nullopt);
 }
 
@@ -181,8 +179,7 @@ void WaylandZwpLinuxDmabuf::CreateSucceeded(
     void* data,
     struct zwp_linux_buffer_params_v1* params,
     struct wl_buffer* new_buffer) {
-  WaylandZwpLinuxDmabuf* self = static_cast<WaylandZwpLinuxDmabuf*>(data);
-  if (self)
+  if (auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data))
     self->NotifyRequestCreateBufferDone(params, new_buffer);
 }
 
@@ -190,8 +187,7 @@ void WaylandZwpLinuxDmabuf::CreateSucceeded(
 void WaylandZwpLinuxDmabuf::CreateFailed(
     void* data,
     struct zwp_linux_buffer_params_v1* params) {
-  WaylandZwpLinuxDmabuf* self = static_cast<WaylandZwpLinuxDmabuf*>(data);
-  if (self)
+  if (auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data))
     self->NotifyRequestCreateBufferDone(params, nullptr);
 }
 

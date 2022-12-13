@@ -597,7 +597,7 @@ const gfx::PointF WaylandConnection::MaybeConvertLocation(
 void WaylandConnection::GlobalRemove(void* data,
                                      wl_registry* registry,
                                      uint32_t name) {
-  WaylandConnection* connection = static_cast<WaylandConnection*>(data);
+  auto* connection = static_cast<WaylandConnection*>(data);
   // The Wayland protocol distinguishes global objects by unique numeric names,
   // which the WaylandOutputManager uses as unique output ids. But, it is only
   // possible to figure out, what global object is going to be removed on the
@@ -610,7 +610,7 @@ void WaylandConnection::GlobalRemove(void* data,
 
 // static
 void WaylandConnection::Ping(void* data, xdg_wm_base* shell, uint32_t serial) {
-  WaylandConnection* connection = static_cast<WaylandConnection*>(data);
+  auto* connection = static_cast<WaylandConnection*>(data);
   xdg_wm_base_pong(shell, serial);
   connection->Flush();
 }
@@ -621,7 +621,7 @@ void WaylandConnection::ClockId(void* data,
                                 uint32_t clk_id) {
   DCHECK_EQ(base::TimeTicks::GetClock(),
             base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
-  WaylandConnection* connection = static_cast<WaylandConnection*>(data);
+  auto* connection = static_cast<WaylandConnection*>(data);
   connection->presentation_clk_id_ = clk_id;
 }
 

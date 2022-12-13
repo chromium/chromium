@@ -639,13 +639,13 @@ void WaylandToplevelWindow::OcclusionChanged(void* data,
                                              uint32_t occlusion_reason) {}
 
 void WaylandToplevelWindow::LockFrame(void* data, zaura_surface* surface) {
-  WaylandToplevelWindow* self = static_cast<WaylandToplevelWindow*>(data);
+  auto* self = static_cast<WaylandToplevelWindow*>(data);
   DCHECK(self);
   self->OnFrameLockingChanged(true);
 }
 
 void WaylandToplevelWindow::UnlockFrame(void* data, zaura_surface* surface) {
-  WaylandToplevelWindow* self = static_cast<WaylandToplevelWindow*>(data);
+  auto* self = static_cast<WaylandToplevelWindow*>(data);
   DCHECK(self);
   self->OnFrameLockingChanged(false);
 }
@@ -653,7 +653,7 @@ void WaylandToplevelWindow::UnlockFrame(void* data, zaura_surface* surface) {
 void WaylandToplevelWindow::OcclusionStateChanged(void* data,
                                                   zaura_surface* surface,
                                                   uint32_t mode) {
-  WaylandToplevelWindow* self = static_cast<WaylandToplevelWindow*>(data);
+  auto* self = static_cast<WaylandToplevelWindow*>(data);
   DCHECK(self);
   auto state = PlatformWindowOcclusionState::kUnknown;
   switch (mode) {
@@ -676,18 +676,18 @@ void WaylandToplevelWindow::OcclusionStateChanged(void* data,
 void WaylandToplevelWindow::DeskChanged(void* data,
                                         zaura_surface* surface,
                                         int state) {
-  WaylandToplevelWindow* self = static_cast<WaylandToplevelWindow*>(data);
+  auto* self = static_cast<WaylandToplevelWindow*>(data);
   DCHECK(self);
   self->OnDeskChanged(state);
 }
 
 void WaylandToplevelWindow::StartThrottle(void* data, zaura_surface* surface) {
-  WaylandToplevelWindow* self = static_cast<WaylandToplevelWindow*>(data);
+  auto* self = static_cast<WaylandToplevelWindow*>(data);
   self->delegate()->SetFrameRateThrottleEnabled(true);
 }
 
 void WaylandToplevelWindow::EndThrottle(void* data, zaura_surface* surface) {
-  WaylandToplevelWindow* self = static_cast<WaylandToplevelWindow*>(data);
+  auto* self = static_cast<WaylandToplevelWindow*>(data);
   self->delegate()->SetFrameRateThrottleEnabled(false);
 }
 

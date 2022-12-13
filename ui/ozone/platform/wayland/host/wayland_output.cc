@@ -214,7 +214,7 @@ void WaylandOutput::TriggerDelegateNotifications() {
 
 // static
 void WaylandOutput::OutputHandleGeometry(void* data,
-                                         wl_output* output,
+                                         wl_output* obj,
                                          int32_t x,
                                          int32_t y,
                                          int32_t physical_width,
@@ -223,8 +223,7 @@ void WaylandOutput::OutputHandleGeometry(void* data,
                                          const char* make,
                                          const char* model,
                                          int32_t output_transform) {
-  WaylandOutput* wayland_output = static_cast<WaylandOutput*>(data);
-  if (wayland_output) {
+  if (auto* output = static_cast<WaylandOutput*>(data)) {
     // It looks like there is a bug in libffi - only the 8th arg is affected.
     // Possibly it is not following the calling convention of the ABI? Eg. the
     // lib has some off-by-1-error where it's supposed to pass 8 args in regs
@@ -232,8 +231,8 @@ void WaylandOutput::OutputHandleGeometry(void* data,
     // out of our control. Given the output_transform is always correct,
     // unpoison the value to make MSAN happy.
     MSAN_UNPOISON(&output_transform, sizeof(int32_t));
-    wayland_output->origin_ = gfx::Point(x, y);
-    wayland_output->panel_transform_ = output_transform;
+    output->origin_ = gfx::Point(x, y);
+    output->panel_transform_ = output_transform;
   }
 }
 
@@ -244,9 +243,9 @@ void WaylandOutput::OutputHandleMode(void* data,
                                      int32_t width,
                                      int32_t height,
                                      int32_t refresh) {
-  WaylandOutput* wayland_output = static_cast<WaylandOutput*>(data);
-  if (wayland_output && (flags & WL_OUTPUT_MODE_CURRENT))
-    wayland_output->physical_size_ = gfx::Size(width, height);
+  auto* output = static_cast<WaylandOutput*>(data);
+  if (output && (flags & WL_OUTPUT_MODE_CURRENT))
+    output->physical_size_ = gfx::Size(width, height);
 }
 
 // static
@@ -259,25 +258,24 @@ void WaylandOutput::OutputHandleDone(void* data, struct wl_output* wl_output) {
 void WaylandOutput::OutputHandleScale(void* data,
                                       struct wl_output* wl_output,
                                       int32_t factor) {
-  WaylandOutput* wayland_output = static_cast<WaylandOutput*>(data);
-  if (wayland_output)
-    wayland_output->scale_factor_ = factor;
+  if (auto* output = static_cast<WaylandOutput*>(data))
+    output->scale_factor_ = factor;
 }
 
 // static
 void WaylandOutput::OutputHandleName(void* data,
                                      struct wl_output* wl_output,
                                      const char* name) {
-  if (WaylandOutput* wayland_output = static_cast<WaylandOutput*>(data))
-    wayland_output->name_ = name ? std::string(name) : std::string{};
+  if (auto* output = static_cast<WaylandOutput*>(data))
+    output->name_ = name ? std::string(name) : std::string{};
 }
 
 // static
 void WaylandOutput::OutputHandleDescription(void* data,
                                             struct wl_output* wl_output,
                                             const char* description) {
-  if (WaylandOutput* wayland_output = static_cast<WaylandOutput*>(data)) {
-    wayland_output->description_ =
+  if (auto* output = static_cast<WaylandOutput*>(data)) {
+    output->description_ =
         description ? std::string(description) : std::string{};
   }
 }

@@ -359,7 +359,7 @@ void WaylandInputEmulate::HandlePointerPosition(void* data,
                                                 struct weston_test* weston_test,
                                                 wl_fixed_t x,
                                                 wl_fixed_t y) {
-  WaylandInputEmulate* emulate = static_cast<WaylandInputEmulate*>(data);
+  auto* emulate = static_cast<WaylandInputEmulate*>(data);
   gfx::Point mouse_position_on_screen_px(wl_fixed_to_int(x),
                                          wl_fixed_to_int(y));
   for (WaylandInputEmulate::Observer& observer : emulate->observers_)
@@ -371,7 +371,7 @@ void WaylandInputEmulate::HandlePointerButton(void* data,
                                               struct weston_test* weston_test,
                                               int32_t button,
                                               uint32_t state) {
-  WaylandInputEmulate* emulate = static_cast<WaylandInputEmulate*>(data);
+  auto* emulate = static_cast<WaylandInputEmulate*>(data);
   for (WaylandInputEmulate::Observer& observer : emulate->observers_) {
     observer.OnPointerButtonGlobal(button,
                                    state == WL_POINTER_BUTTON_STATE_PRESSED);
@@ -383,7 +383,7 @@ void WaylandInputEmulate::HandleKeyboardKey(void* data,
                                             struct weston_test* weston_test,
                                             uint32_t key,
                                             uint32_t state) {
-  WaylandInputEmulate* emulate = static_cast<WaylandInputEmulate*>(data);
+  auto* emulate = static_cast<WaylandInputEmulate*>(data);
   for (WaylandInputEmulate::Observer& observer : emulate->observers_)
     observer.OnKeyboardKey(key, state == WL_KEYBOARD_KEY_STATE_PRESSED);
 }
@@ -393,7 +393,7 @@ void WaylandInputEmulate::HandleTouchReceived(void* data,
                                               struct weston_test* weston_test,
                                               wl_fixed_t x,
                                               wl_fixed_t y) {
-  WaylandInputEmulate* emulate = static_cast<WaylandInputEmulate*>(data);
+  auto* emulate = static_cast<WaylandInputEmulate*>(data);
   auto touch_position_on_screen_px =
       gfx::Point(wl_fixed_to_int(x), wl_fixed_to_int(y));
   for (WaylandInputEmulate::Observer& observer : emulate->observers_)
@@ -408,7 +408,7 @@ void WaylandInputEmulate::Global(void* data,
                                  uint32_t version) {
   auto* emulate = static_cast<WaylandInputEmulate*>(data);
   if (strcmp(interface, "weston_test") == 0) {
-    const struct wl_interface* wayland_interface =
+    const auto* wayland_interface =
         static_cast<const struct wl_interface*>(&weston_test_interface);
     emulate->weston_test_ = static_cast<struct weston_test*>(
         wl_registry_bind(registry, name, wayland_interface, version));
@@ -419,7 +419,7 @@ void WaylandInputEmulate::Global(void* data,
 void WaylandInputEmulate::FrameCallbackHandler(void* data,
                                                struct wl_callback* callback,
                                                uint32_t time) {
-  WaylandInputEmulate* emulate = static_cast<WaylandInputEmulate*>(data);
+  auto* emulate = static_cast<WaylandInputEmulate*>(data);
   CHECK(emulate)
       << "WaylandInputEmulate was destroyed before a frame callback arrived";
 

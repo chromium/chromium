@@ -430,7 +430,7 @@ void WaylandFrameManager::ApplySurfaceConfigure(
 void WaylandFrameManager::FrameCallbackDone(void* data,
                                             struct wl_callback* callback,
                                             uint32_t time) {
-  WaylandFrameManager* self = static_cast<WaylandFrameManager*>(data);
+  auto* self = static_cast<WaylandFrameManager*>(data);
   DCHECK(self);
   self->OnFrameCallback(callback);
 }
@@ -458,7 +458,7 @@ void WaylandFrameManager::FeedbackPresented(
     uint32_t seq_hi,
     uint32_t seq_lo,
     uint32_t flags) {
-  WaylandFrameManager* self = static_cast<WaylandFrameManager*>(data);
+  auto* self = static_cast<WaylandFrameManager*>(data);
   DCHECK(self);
   self->OnPresentation(
       wp_presentation_feedback,
@@ -472,7 +472,7 @@ void WaylandFrameManager::FeedbackPresented(
 void WaylandFrameManager::FeedbackDiscarded(
     void* data,
     struct wp_presentation_feedback* wp_presentation_feedback) {
-  WaylandFrameManager* self = static_cast<WaylandFrameManager*>(data);
+  auto* self = static_cast<WaylandFrameManager*>(data);
   DCHECK(self);
   self->OnPresentation(wp_presentation_feedback,
                        gfx::PresentationFeedback::Failure(),

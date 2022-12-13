@@ -56,7 +56,7 @@ base::WeakPtr<WaylandBufferHandle> WaylandBufferHandle::AsWeakPtr() {
 // static
 void WaylandBufferHandle::BufferRelease(void* data,
                                         struct wl_buffer* wl_buffer) {
-  WaylandBufferHandle* self = static_cast<WaylandBufferHandle*>(data);
+  auto* self = static_cast<WaylandBufferHandle*>(data);
   DCHECK(self);
   self->OnWlBufferRelease(wl_buffer);
 }
