@@ -3,7 +3,6 @@ PASS checkAddTransceiverNoTrack
 PASS checkAddTransceiverWithTrack
 PASS checkAddTransceiverWithAddTrack
 PASS checkAddTransceiverWithDirection
-FAIL checkMsidNoTrackId promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Failed to parse SessionDescription. a=msid:fake-stream-id Expects 2 fields."
 PASS checkAddTransceiverWithSetRemoteOfferSending
 PASS checkAddTransceiverWithSetRemoteOfferNoSend
 PASS checkAddTransceiverBadKind
