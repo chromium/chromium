@@ -373,7 +373,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
         if (fragment instanceof SafetyCheckSettingsFragment) {
             SafetyCheckCoordinator.create((SafetyCheckSettingsFragment) fragment,
-                    new SafetyCheckUpdatesDelegateImpl(this), mSettingsLauncher,
+                    new SafetyCheckUpdatesDelegateImpl(), mSettingsLauncher,
                     SyncConsentActivityLauncherImpl.get(), getModalDialogManagerSupplier());
         }
         if (fragment instanceof PasswordCheckFragmentView) {

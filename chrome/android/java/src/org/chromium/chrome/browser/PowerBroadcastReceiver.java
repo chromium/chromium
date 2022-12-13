@@ -92,8 +92,7 @@ public class PowerBroadcastReceiver extends BroadcastReceiver {
          * Executed when all of the system conditions are met.
          */
         public void runActions() {
-            Context context = ContextUtils.getApplicationContext();
-            OmahaBase.onForegroundSessionStart(context);
+            OmahaBase.onForegroundSessionStart();
         }
 
     }

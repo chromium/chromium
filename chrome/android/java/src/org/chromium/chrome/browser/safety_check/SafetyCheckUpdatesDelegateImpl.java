@@ -31,8 +31,8 @@ public class SafetyCheckUpdatesDelegateImpl implements SafetyCheckUpdatesDelegat
      * {@link SafetyCheckSettingsFragment}.
      * @param context A {@link Context} object, used by Omaha.
      */
-    public SafetyCheckUpdatesDelegateImpl(Context context) {
-        mOmaha = OmahaService.getInstance(context);
+    public SafetyCheckUpdatesDelegateImpl() {
+        mOmaha = OmahaService.getInstance();
     }
 
     /**

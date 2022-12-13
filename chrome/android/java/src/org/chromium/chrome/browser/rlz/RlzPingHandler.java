@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.rlz;
 import android.text.TextUtils;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -36,9 +35,7 @@ public class RlzPingHandler {
      */
     public static void startPing(
             String brand, List<String> events, final Callback<Boolean> callback) {
-        String id =
-                new SettingsSecureBasedIdentificationGenerator(ContextUtils.getApplicationContext())
-                        .getUniqueId(ID_SALT);
+        String id = new SettingsSecureBasedIdentificationGenerator().getUniqueId(ID_SALT);
         id = generate50CharacterId(id.toUpperCase(Locale.getDefault()));
 
         RlzPingHandlerJni.get().startPing(Profile.getLastUsedRegularProfile(), brand,

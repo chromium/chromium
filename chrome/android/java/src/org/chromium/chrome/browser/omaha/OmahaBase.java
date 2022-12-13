@@ -227,7 +227,7 @@ public class OmahaBase {
             return;
         }
 
-        restoreState(getContext());
+        restoreState();
 
         long nextTimestamp = Long.MAX_VALUE;
         if (mDelegate.isChromeBeingUsed()) {
@@ -251,7 +251,7 @@ public class OmahaBase {
             mDelegate.scheduleService(currentTimestamp, nextTimestamp);
         }
 
-        saveState(getContext());
+        saveState();
     }
 
     /**
@@ -480,7 +480,7 @@ public class OmahaBase {
      * Reads the data back from the file it was saved to.  Uses SharedPreferences to handle I/O.
      * Sanity checks are performed on the timestamps to guard against clock changing.
      */
-    private void restoreState(Context context) {
+    private void restoreState() {
         if (mStateHasBeenRestored) return;
 
         String installSource =
@@ -535,7 +535,7 @@ public class OmahaBase {
     /**
      * Writes out the current state to a file.
      */
-    private void saveState(Context context) {
+    private void saveState() {
         SharedPreferences prefs = OmahaBase.getSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean(OmahaBase.PREF_SEND_INSTALL_EVENT, mSendInstallEvent);
@@ -554,10 +554,6 @@ public class OmahaBase {
         mDelegate.onSaveStateDone(mTimestampForNewRequest, mTimestampForNextPostAttempt);
     }
 
-    private Context getContext() {
-        return mDelegate.getContext();
-    }
-
     private RequestGenerator getRequestGenerator() {
         return mDelegate.getRequestGenerator();
     }
@@ -567,13 +563,13 @@ public class OmahaBase {
     }
 
     /** Begin communicating with the Omaha Update Server. */
-    public static void onForegroundSessionStart(Context context) {
+    public static void onForegroundSessionStart() {
         if (!VersionInfo.isOfficialBuild() || isDisabled()) return;
-        OmahaService.startServiceImmediately(context);
+        OmahaService.startServiceImmediately();
     }
 
     /** Checks whether Chrome has ever tried contacting Omaha before. */
-    public static boolean isProbablyFreshInstall(Context context) {
+    public static boolean isProbablyFreshInstall() {
         SharedPreferences prefs = getSharedPreferences();
         return prefs.getLong(PREF_TIMESTAMP_OF_INSTALL, -1) == -1;
     }

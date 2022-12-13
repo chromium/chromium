@@ -35,13 +35,20 @@ public abstract class RequestGenerator {
     private static final String SALT = "omahaSalt";
     private static final String URL_OMAHA_SERVER = "https://update.googleapis.com/service/update2";
 
-    private final Context mApplicationContext;
+    // TODO(agrieve): Delete when downstream reference is removed.
+    protected RequestGenerator(Context unused) {
+        this();
+    }
 
-    protected RequestGenerator(Context context) {
-        mApplicationContext = context.getApplicationContext();
+    // TODO(agrieve): Delete when downstream reference is removed.
+    protected Context getContext() {
+        return null;
+    }
+
+    protected RequestGenerator() {
         UniqueIdentificationGeneratorFactory.registerGenerator(
                 SettingsSecureBasedIdentificationGenerator.GENERATOR_ID,
-                new SettingsSecureBasedIdentificationGenerator(getContext()), false);
+                new SettingsSecureBasedIdentificationGenerator(), false);
     }
 
     /**
@@ -134,13 +141,6 @@ public abstract class RequestGenerator {
         }
 
         return writer.toString();
-    }
-
-    /**
-     * Returns the application context.
-     */
-    protected Context getContext() {
-        return mApplicationContext;
     }
 
     @VisibleForTesting

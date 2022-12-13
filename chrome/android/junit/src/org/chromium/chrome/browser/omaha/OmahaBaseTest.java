@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omaha;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.IntDef;
@@ -12,17 +11,17 @@ import androidx.annotation.IntDef;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.MockRequestGenerator.DeviceType;
 
@@ -64,11 +63,10 @@ public class OmahaBaseTest {
         private final List<Integer> mPostResults = new ArrayList<Integer>();
         private final List<Boolean> mGenerateAndPostRequestResults = new ArrayList<Boolean>();
 
-        private final Context mContext;
         private final boolean mIsOnTablet;
         private final boolean mIsInForeground;
         private final boolean mIsInSystemImage;
-        private final MockExponentialBackoffScheduler mMockScheduler;
+        private final ExponentialBackoffScheduler mScheduler;
         private MockRequestGenerator mMockGenerator;
 
         private int mNumUUIDsGenerated;
@@ -78,21 +76,19 @@ public class OmahaBaseTest {
         private TimestampPair mTimestampsOnRegisterNewRequest;
         private TimestampPair mTimestampsOnSaveState;
 
-        MockOmahaDelegate(
-                Context context, DeviceType deviceType, @InstallSource int installSource) {
-            mContext = context;
+        MockOmahaDelegate(DeviceType deviceType, @InstallSource int installSource) {
             mIsOnTablet = deviceType == DeviceType.TABLET;
             mIsInForeground = true;
             mIsInSystemImage = installSource == InstallSource.SYSTEM_IMAGE;
 
-            mMockScheduler = new MockExponentialBackoffScheduler(OmahaBase.PREF_PACKAGE, context,
+            mScheduler = new ExponentialBackoffScheduler(OmahaBase.PREF_PACKAGE,
                     OmahaBase.MS_POST_BASE_DELAY, OmahaBase.MS_POST_MAX_DELAY);
         }
 
         @Override
-        protected RequestGenerator createRequestGenerator(Context context) {
-            mMockGenerator = new MockRequestGenerator(
-                    context, mIsOnTablet ? DeviceType.TABLET : DeviceType.HANDSET);
+        protected RequestGenerator createRequestGenerator() {
+            mMockGenerator =
+                    new MockRequestGenerator(mIsOnTablet ? DeviceType.TABLET : DeviceType.HANDSET);
             return mMockGenerator;
         }
 
@@ -102,8 +98,8 @@ public class OmahaBaseTest {
         }
 
         @Override
-        MockExponentialBackoffScheduler getScheduler() {
-            return mMockScheduler;
+        ExponentialBackoffScheduler getScheduler() {
+            return mScheduler;
         }
 
         @Override
@@ -143,11 +139,6 @@ public class OmahaBaseTest {
         void onSaveStateDone(long nextRequestTimestamp, long nextPostTimestamp) {
             mTimestampsOnSaveState = new TimestampPair(nextRequestTimestamp, nextPostTimestamp);
         }
-
-        @Override
-        Context getContext() {
-            return mContext;
-        }
     }
 
     private static class ClosableThreadAssertsDisabler implements AutoCloseable {
@@ -182,9 +173,11 @@ public class OmahaBaseTest {
         int TIMES_OUT = 1;
     }
 
-    private InMemorySharedPreferencesContext mContext;
     private MockOmahaDelegate mDelegate;
     private MockOmahaBase mOmahaBase;
+
+    @Rule
+    public FakeTimeTestRule mFakeTimeRule = new FakeTimeTestRule();
 
     private MockOmahaBase createOmahaBase() {
         return createOmahaBase(
@@ -200,10 +193,10 @@ public class OmahaBaseTest {
     @Before
     public void setUp() {
         OmahaBase.setIsDisabledForTesting(false);
-        mContext = new InMemorySharedPreferencesContext(RuntimeEnvironment.getApplication());
         FeatureList.TestValues overrides = new FeatureList.TestValues();
         overrides.addFeatureFlagOverride(ChromeFeatureList.ANONYMOUS_UPDATE_CHECKS, true);
         FeatureList.setTestValues(overrides);
+        mDelegate = new MockOmahaDelegate(DeviceType.HANDSET, InstallSource.ORGANIC);
     }
 
     @After
@@ -292,10 +285,7 @@ public class OmahaBaseTest {
     @Test
     @Feature({"Omaha"})
     public void testPipelineFreshInstall() {
-        final long now = 11684;
-
-        mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
-        mDelegate.getScheduler().setCurrentTime(now);
+        final long now = mDelegate.getScheduler().getCurrentTime();
 
         // Trigger Omaha.
         mOmahaBase = createOmahaBase();
@@ -320,10 +310,7 @@ public class OmahaBaseTest {
     @Test
     @Feature({"Omaha"})
     public void testPipelineRegularPing() {
-        final long now = 11684;
-
-        mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
-        mDelegate.getScheduler().setCurrentTime(now);
+        final long now = mDelegate.getScheduler().getCurrentTime();
 
         // Record that an install event has already been sent and that we're due for a new request.
         SharedPreferences.Editor editor = OmahaBase.getSharedPreferences().edit();
@@ -353,11 +340,8 @@ public class OmahaBaseTest {
     @Test
     @Feature({"Omaha"})
     public void testPipelineFreshInstallUpdatedAvailable_crbug_1095755() {
-        final long now = 11684;
+        final long now = mDelegate.getScheduler().getCurrentTime();
         final String updateVersion = "10.0.0.0";
-
-        mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
-        mDelegate.getScheduler().setCurrentTime(now);
 
         // Trigger Omaha.
         mOmahaBase = createOmahaBase();
@@ -378,11 +362,8 @@ public class OmahaBaseTest {
     @Test
     @Feature({"Omaha"})
     public void testPipelineRegularPingUpdateAvailable_crbug_1095755() {
-        final long now = 11684;
+        final long now = mDelegate.getScheduler().getCurrentTime();
         String updateVersion = "10.0.0.0";
-
-        mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
-        mDelegate.getScheduler().setCurrentTime(now);
 
         // Record that an install event has already been sent and that we're due for a new request.
         SharedPreferences.Editor editor = OmahaBase.getSharedPreferences().edit();
@@ -410,11 +391,8 @@ public class OmahaBaseTest {
     @Test
     @Feature({"Omaha"})
     public void testTooEarlyToPing() {
-        final long now = 0;
-        final long later = 10000;
-
-        mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
-        mDelegate.getScheduler().setCurrentTime(now);
+        final long now = mDelegate.getScheduler().getCurrentTime();
+        final long later = now + 10000;
 
         // Put the time for the next request in the future.
         SharedPreferences prefs = OmahaBase.getSharedPreferences();
@@ -438,13 +416,9 @@ public class OmahaBaseTest {
     @Test
     @Feature({"Omaha"})
     public void testTooEarlyToPostExistingRequest() {
-        final long timeGeneratedRequest = 0L;
-        final long now = 10000L;
-        final long timeSendNewPost = 20000L;
-        final long timeSendNewRequest = 50000L;
-
-        mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
-        mDelegate.getScheduler().setCurrentTime(now);
+        final long timeGeneratedRequest = mDelegate.getScheduler().getCurrentTime() - 10000;
+        final long timeSendNewPost = timeGeneratedRequest + 20000L;
+        final long timeSendNewRequest = timeSendNewPost + 30000L;
 
         SharedPreferences prefs = OmahaBase.getSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
@@ -480,13 +454,10 @@ public class OmahaBaseTest {
     @Test
     @Feature({"Omaha"})
     public void testPostExistingRequestSuccessfully() {
-        final long timeGeneratedRequest = 0L;
-        final long now = 10000L;
+        final long now = mDelegate.getScheduler().getCurrentTime();
+        final long timeGeneratedRequest = now - 10000;
         final long timeSendNewPost = now;
-        final long timeRegisterNewRequest = 20000L;
-
-        mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
-        mDelegate.getScheduler().setCurrentTime(now);
+        final long timeRegisterNewRequest = now + 10000;
 
         SharedPreferences prefs = OmahaBase.getSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
@@ -524,13 +495,10 @@ public class OmahaBaseTest {
     @Test
     @Feature({"Omaha"})
     public void testPostExistingButFails() {
-        final long timeGeneratedRequest = 0L;
-        final long now = 10000L;
+        final long now = mDelegate.getScheduler().getCurrentTime();
+        final long timeGeneratedRequest = now - 10000;
         final long timeSendNewPost = now;
         final long timeRegisterNewRequest = timeGeneratedRequest + OmahaBase.MS_BETWEEN_REQUESTS;
-
-        mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
-        mDelegate.getScheduler().setCurrentTime(now);
 
         SharedPreferences prefs = OmahaBase.getSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
@@ -570,11 +538,8 @@ public class OmahaBaseTest {
     @Test
     @Feature({"Omaha"})
     public void testTimestampWithinBounds() {
-        final long now = 0L;
+        final long now = mDelegate.getScheduler().getCurrentTime();
         final long timeRegisterNewRequest = OmahaBase.MS_BETWEEN_REQUESTS + 1;
-
-        mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
-        mDelegate.getScheduler().setCurrentTime(now);
 
         SharedPreferences prefs = OmahaBase.getSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
@@ -608,13 +573,10 @@ public class OmahaBaseTest {
     @Feature({"Omaha"})
     public void testOverdueRequestCausesNewRegistration() {
         final long timeGeneratedRequest = 0L;
-        final long now = 10000L;
+        final long now = mDelegate.getScheduler().getCurrentTime();
         final long timeSendNewPost = now;
         final long timeRegisterNewRequest =
                 timeGeneratedRequest + OmahaBase.MS_BETWEEN_REQUESTS * 5;
-
-        mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
-        mDelegate.getScheduler().setCurrentTime(now);
 
         // Record that a regular <ping> was generated, but not sent, then assign it an invalid
         // timestamp and try to send it now.
@@ -651,10 +613,6 @@ public class OmahaBaseTest {
     @Test
     @Feature({"Omaha"})
     public void testCheckForUpdatesConnectionTimesOut() throws Exception {
-        final long now = 10000L;
-
-        mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
-        mDelegate.getScheduler().setCurrentTime(now);
         mOmahaBase = createOmahaBase(
                 ServerResponse.FAILURE, ConnectionStatus.TIMES_OUT, DeviceType.HANDSET);
 
@@ -669,11 +627,8 @@ public class OmahaBaseTest {
     @Test
     @Feature({"Omaha"})
     public void testCheckForUpdatesUpdated() throws Exception {
-        final long now = 10000L;
         final String version = "89.0.12.5342";
 
-        mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
-        mDelegate.getScheduler().setCurrentTime(now);
         mOmahaBase = createOmahaBase();
         mOmahaBase.setInstalledVersion(version);
         mOmahaBase.setUpdateVersion(version);
@@ -689,12 +644,9 @@ public class OmahaBaseTest {
     @Test
     @Feature({"Omaha"})
     public void testCheckForUpdatesOutdated() throws Exception {
-        final long now = 10000L;
         final String oldVersion = "89.0.12.5342";
         final String newVersion = "89.0.13.1242";
 
-        mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
-        mDelegate.getScheduler().setCurrentTime(now);
         mOmahaBase = createOmahaBase();
         mOmahaBase.setInstalledVersion(oldVersion);
         mOmahaBase.setUpdateVersion(newVersion);
@@ -710,12 +662,9 @@ public class OmahaBaseTest {
     @Test
     @Feature({"Omaha"})
     public void testCheckForUpdatesFailedIncorrectNewVersion() throws Exception {
-        final long now = 10000L;
         final String oldVersion = "89.0.12.5342";
         final String newVersion = "Unknown";
 
-        mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
-        mDelegate.getScheduler().setCurrentTime(now);
         mOmahaBase = createOmahaBase();
         mOmahaBase.setInstalledVersion(oldVersion);
         mOmahaBase.setUpdateVersion(newVersion);
@@ -731,12 +680,9 @@ public class OmahaBaseTest {
     @Test
     @Feature({"Omaha"})
     public void testCheckForUpdatesFailedIncorrectOldVersion() throws Exception {
-        final long now = 10000L;
         final String oldVersion = "Unknown";
         final String newVersion = "89.0.13.1242";
 
-        mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
-        mDelegate.getScheduler().setCurrentTime(now);
         mOmahaBase = createOmahaBase();
         mOmahaBase.setInstalledVersion(oldVersion);
         mOmahaBase.setUpdateVersion(newVersion);

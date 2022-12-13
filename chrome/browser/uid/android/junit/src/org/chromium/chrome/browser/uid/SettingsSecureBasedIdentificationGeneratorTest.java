@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.uid;
 
 import static org.mockito.Mockito.doReturn;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -31,8 +30,7 @@ public class SettingsSecureBasedIdentificationGeneratorTest {
 
     @Before
     public void setUp() {
-        mGenerator = Mockito.spy(new SettingsSecureBasedIdentificationGenerator(
-                ApplicationProvider.getApplicationContext()));
+        mGenerator = Mockito.spy(new SettingsSecureBasedIdentificationGenerator());
     }
 
     @Test

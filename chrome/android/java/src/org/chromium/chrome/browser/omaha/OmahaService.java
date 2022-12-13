@@ -27,15 +27,11 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
  */
 public class OmahaService extends OmahaBase implements BackgroundTask {
     private static class OmahaClientDelegate extends OmahaDelegateBase {
-        public OmahaClientDelegate(Context context) {
-            super(context);
-        }
-
         @Override
         public void scheduleService(long currentTimestampMs, long nextTimestampMs) {
             final long delay = nextTimestampMs - currentTimestampMs;
             PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-                if (scheduleJobService(getContext(), delay)) {
+                if (scheduleJobService(delay)) {
                     Log.i(OmahaBase.TAG, "Scheduled using JobService");
                 } else {
                     Log.e(OmahaBase.TAG, "Failed to schedule job");
@@ -48,9 +44,9 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
     private static OmahaService sInstance;
 
     @Nullable
-    public static OmahaService getInstance(Context context) {
+    public static OmahaService getInstance() {
         synchronized (DELEGATE_LOCK) {
-            if (sInstance == null) sInstance = new OmahaService(context);
+            if (sInstance == null) sInstance = new OmahaService();
             return sInstance;
         }
     }
@@ -59,19 +55,15 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
 
     /** Used only by {@link BackgroundTaskScheduler}. */
     public OmahaService() {
-        this(ContextUtils.getApplicationContext());
-    }
-
-    private OmahaService(Context context) {
-        super(new OmahaClientDelegate(context));
+        super(new OmahaClientDelegate());
     }
 
     /**
      * Trigger the {@link BackgroundTaskScheduler} immediately.
      * Must only be called by {@link OmahaBase#onForegroundSessionStart}.
      */
-    static void startServiceImmediately(Context context) {
-        scheduleJobService(context, 0);
+    static void startServiceImmediately() {
+        scheduleJobService(0);
     }
 
     // Incorrectly infers that this is called on a worker thread because of AsyncTask doInBackground
@@ -111,14 +103,14 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
 
     /**
      * Schedules the Omaha code to run at the given time.
-     * @param context Context to use.
      * @param delayMs How long to wait until the job should be triggered.
      */
-    static boolean scheduleJobService(Context context, long delayMs) {
+    static boolean scheduleJobService(long delayMs) {
         long latency = Math.max(0, delayMs);
 
         TaskInfo taskInfo =
                 TaskInfo.createOneOffTask(TaskIds.OMAHA_JOB_ID, latency, latency).build();
-        return BackgroundTaskSchedulerFactory.getScheduler().schedule(context, taskInfo);
+        return BackgroundTaskSchedulerFactory.getScheduler().schedule(
+                ContextUtils.getApplicationContext(), taskInfo);
     }
 }

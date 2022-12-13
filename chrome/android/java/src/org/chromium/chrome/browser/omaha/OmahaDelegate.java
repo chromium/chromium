@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.omaha;
 
-import android.content.Context;
-
 import org.chromium.chrome.browser.omaha.OmahaBase.PostResult;
 
 /** Delegates calls out from {@link OmahaBase}. */
@@ -13,9 +11,6 @@ public abstract class OmahaDelegate {
     private RequestGenerator mRequestGenerator;
 
     OmahaDelegate() {}
-
-    /** @return Context that is used to interact with the system. */
-    abstract Context getContext();
 
     /** @return Whether Chrome is installed as part of the system image. */
     abstract boolean isInSystemImage();
@@ -25,7 +20,7 @@ public abstract class OmahaDelegate {
 
     /** @return The {@link RequestGenerator} used to create Omaha XML. */
     final RequestGenerator getRequestGenerator() {
-        if (mRequestGenerator == null) mRequestGenerator = createRequestGenerator(getContext());
+        if (mRequestGenerator == null) mRequestGenerator = createRequestGenerator();
         return mRequestGenerator;
     }
 
@@ -43,7 +38,7 @@ public abstract class OmahaDelegate {
     abstract void scheduleService(long currentTimestampMs, long nextTimestampMs);
 
     /** Creates a {@link RequestGenerator}. */
-    abstract RequestGenerator createRequestGenerator(Context context);
+    abstract RequestGenerator createRequestGenerator();
 
     /**
      * Called when {@link OmahaBase#registerNewRequest} finishes.

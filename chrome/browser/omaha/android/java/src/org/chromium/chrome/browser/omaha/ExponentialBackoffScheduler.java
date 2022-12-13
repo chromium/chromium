@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.omaha;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.TimeUtils;
+
 import java.util.Random;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -43,20 +46,17 @@ public class ExponentialBackoffScheduler {
 
     private final long mBaseMilliseconds;
     private final long mMaxMilliseconds;
-    private final Context mContext;
     private final String mPreferencePackage;
 
     /**
      * Creates a new scheduler.
      * @param packageName The name under which to store its state in SharedPreferences.
-     * @param context The application's context.
      * @param baseMilliseconds Used to calculate random backoff times.
      * @param maxMilliseconds The absolute maximum delay allowed.
      */
     public ExponentialBackoffScheduler(
-            String packageName, Context context, long baseMilliseconds, long maxMilliseconds) {
+            String packageName, long baseMilliseconds, long maxMilliseconds) {
         mPreferencePackage = packageName;
-        mContext = context;
         mBaseMilliseconds = baseMilliseconds;
         mMaxMilliseconds = maxMilliseconds;
     }
@@ -88,7 +88,7 @@ public class ExponentialBackoffScheduler {
      * Returns a timestamp representing now, according to the backoff scheduler.
      */
     public long getCurrentTime() {
-        return System.currentTimeMillis();
+        return TimeUtils.currentTimeMillis();
     }
 
     /**
@@ -133,8 +133,8 @@ public class ExponentialBackoffScheduler {
     }
 
     private SharedPreferences getSharedPreferences() {
-        SharedPreferences preferences =
-                mContext.getSharedPreferences(mPreferencePackage, Context.MODE_PRIVATE);
+        SharedPreferences preferences = ContextUtils.getApplicationContext().getSharedPreferences(
+                mPreferencePackage, Context.MODE_PRIVATE);
         return preferences;
     }
 }

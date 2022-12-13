@@ -4,26 +4,26 @@
 
 package org.chromium.chrome.browser.omaha;
 
-import android.content.Context;
-
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 
 /** Tests the ExponentialBackoffScheduler. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ExponentialBackoffSchedulerTest {
-    private static final String INTENT_STRING = "schedulerIntent";
     private static final String PREFERENCE_NAME = "scheduler";
     private static final long BACKOFF_MS = 15000;
     private static final long MAX_MS = 1000000;
+
+    @Rule
+    public FakeTimeTestRule mFakeTimeRule = new FakeTimeTestRule();
 
     /**
      * Checks that the correct number of failures are set/reset.
@@ -31,12 +31,10 @@ public class ExponentialBackoffSchedulerTest {
     @Test
     @Feature({"Omaha", "Sync"})
     public void testExponentialBackoffSchedulerFailureSetting() {
-        TestContext context = new TestContext(RuntimeEnvironment.getApplication());
-
         ExponentialBackoffScheduler writer =
-                new ExponentialBackoffScheduler(PREFERENCE_NAME, context, BACKOFF_MS, MAX_MS);
+                new ExponentialBackoffScheduler(PREFERENCE_NAME, BACKOFF_MS, MAX_MS);
         ExponentialBackoffScheduler reader =
-                new ExponentialBackoffScheduler(PREFERENCE_NAME, context, BACKOFF_MS, MAX_MS);
+                new ExponentialBackoffScheduler(PREFERENCE_NAME, BACKOFF_MS, MAX_MS);
 
         Assert.assertEquals(
                 "Expected no failures for freshly created class", 0, reader.getNumFailedAttempts());
@@ -54,9 +52,8 @@ public class ExponentialBackoffSchedulerTest {
     @Test
     @Feature({"Omaha", "Sync"})
     public void testExponentialBackoffSchedulerDelayCalculation() {
-        TestContext context = new TestContext(RuntimeEnvironment.getApplication());
-        MockExponentialBackoffScheduler scheduler =
-                new MockExponentialBackoffScheduler(PREFERENCE_NAME, context, BACKOFF_MS, MAX_MS);
+        ExponentialBackoffScheduler scheduler =
+                new ExponentialBackoffScheduler(PREFERENCE_NAME, BACKOFF_MS, MAX_MS);
 
         // With no failures, expect the base backoff delay.
         long delay = scheduler.calculateNextTimestamp() - scheduler.getCurrentTime();
@@ -66,35 +63,11 @@ public class ExponentialBackoffSchedulerTest {
         // With two failures, expect a delay within [BACKOFF_MS, BACKOFF_MS * 2^2].
         scheduler.increaseFailedAttempts();
         scheduler.increaseFailedAttempts();
-
         delay = scheduler.calculateNextTimestamp() - scheduler.getCurrentTime();
+
         final long minDelay = BACKOFF_MS;
         final long maxDelay = BACKOFF_MS * (1 << scheduler.getNumFailedAttempts());
         Assert.assertTrue("Expected delay greater than the minimum.", delay >= minDelay);
         Assert.assertTrue("Expected delay within maximum of " + maxDelay, delay <= maxDelay);
-    }
-
-    /**
-     * Ensures that the AlarmManager is the only service requested.
-     */
-    private static class TestContext extends InMemorySharedPreferencesContext {
-        public boolean mRequestedAlarmManager;
-
-        public TestContext(Context context) {
-            super(context);
-        }
-
-        /**
-         * Checks that we're requesting the AlarmManager.
-         * @param name Name of the service.  Should be the AlarmManager's service name.
-         * @return null since we can't create an AlarmManager.
-         */
-        @Override
-        public Object getSystemService(final String name) {
-            Assert.assertTrue("Requested service other than AlarmManager.",
-                    Context.ALARM_SERVICE.equals(name));
-            mRequestedAlarmManager = true;
-            return super.getSystemService(name);
-        }
     }
 }

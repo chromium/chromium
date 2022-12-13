@@ -206,7 +206,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/offlinepages/prefetch/PrefetchBackgroundTaskUnitTest.java",
   "junit/src/org/chromium/chrome/browser/omaha/AttributeFinder.java",
   "junit/src/org/chromium/chrome/browser/omaha/ExponentialBackoffSchedulerTest.java",
-  "junit/src/org/chromium/chrome/browser/omaha/MockExponentialBackoffScheduler.java",
   "junit/src/org/chromium/chrome/browser/omaha/MockRequestGenerator.java",
   "junit/src/org/chromium/chrome/browser/omaha/OmahaBaseTest.java",
   "junit/src/org/chromium/chrome/browser/omaha/RequestGeneratorTest.java",

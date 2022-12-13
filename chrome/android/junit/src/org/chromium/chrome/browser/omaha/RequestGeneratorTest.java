@@ -15,7 +15,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -89,7 +88,7 @@ public class RequestGeneratorTest {
         UniqueIdentificationGeneratorFactory.clearGeneratorMapForTest();
 
         // Creating a RequestGenerator should register the identification generator.
-        new MockRequestGenerator(RuntimeEnvironment.getApplication(), DeviceType.HANDSET);
+        new MockRequestGenerator(DeviceType.HANDSET);
 
         // Verify the identification generator exists and is of the correct type.
         UniqueIdentificationGenerator instance = UniqueIdentificationGeneratorFactory.getInstance(
@@ -130,8 +129,7 @@ public class RequestGeneratorTest {
                 .thenReturn(mock(IdentityManager.class));
         when(IdentityServicesProvider.get().getIdentityManager(any()).hasPrimaryAccount(anyInt()))
                 .thenReturn(true);
-        MockRequestGenerator generator =
-                new MockRequestGenerator(RuntimeEnvironment.getApplication(), DeviceType.TABLET);
+        MockRequestGenerator generator = new MockRequestGenerator(DeviceType.TABLET);
         String xml = null;
         try {
             xml = generator.generateXML(
@@ -158,8 +156,7 @@ public class RequestGeneratorTest {
         long installAge = 42;
         int dateLastActive = 4088;
 
-        MockRequestGenerator generator =
-                new MockRequestGenerator(RuntimeEnvironment.getApplication(), deviceType);
+        MockRequestGenerator generator = new MockRequestGenerator(deviceType);
 
         String xml = null;
         try {
