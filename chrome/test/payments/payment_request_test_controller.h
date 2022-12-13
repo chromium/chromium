@@ -102,9 +102,6 @@ class PaymentRequestTestController {
   // link was available, false if not.
   bool ClickOptOut();
 
-  // Returns true when running on Android M or L.
-  bool IsAndroidMarshmallowOrLollipop();
-
   // Sets the list of apps available for the current payment request.
   void set_app_descriptions(
       const std::vector<AppDescription>& app_descriptions) {

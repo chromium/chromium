@@ -150,10 +150,6 @@ bool PaymentRequestTestController::CloseDialog() {
   return true;
 }
 
-bool PaymentRequestTestController::IsAndroidMarshmallowOrLollipop() {
-  return false;
-}
-
 void PaymentRequestTestController::SetUpOnMainThread() {
   // Register all prefs with our pref testing service, since we're not using the
   // one chrome sets up.

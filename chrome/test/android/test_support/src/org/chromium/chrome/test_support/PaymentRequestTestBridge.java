@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test_support;
 
-import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -279,13 +278,6 @@ public class PaymentRequestTestBridge {
                 PaymentRequestService.getSecurePaymentConfirmationNoMatchingCredUiForTesting();
         if (noMatchingUi != null) return noMatchingUi.optOutForTest();
         return false;
-    }
-
-    @CalledByNative
-    private static boolean isAndroidMarshmallowOrLollipopForTest() {
-        return Build.VERSION.SDK_INT == Build.VERSION_CODES.M
-                || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP
-                || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1;
     }
 
     /**

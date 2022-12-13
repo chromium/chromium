@@ -50,11 +50,6 @@ bool CloseDialogForTest() {
   return Java_PaymentRequestTestBridge_closeDialogForTest(env);
 }
 
-bool IsAndroidMarshmallowOrLollipopForTest() {
-  return Java_PaymentRequestTestBridge_isAndroidMarshmallowOrLollipopForTest(
-      base::android::AttachCurrentThread());
-}
-
 bool ClickSecurePaymentConfirmationOptOutForTest() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_PaymentRequestTestBridge_clickSecurePaymentConfirmationOptOutForTest(

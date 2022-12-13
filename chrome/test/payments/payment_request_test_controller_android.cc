@@ -41,10 +41,6 @@ bool PaymentRequestTestController::ClickOptOut() {
   return ClickSecurePaymentConfirmationOptOutForTest();
 }
 
-bool PaymentRequestTestController::IsAndroidMarshmallowOrLollipop() {
-  return IsAndroidMarshmallowOrLollipopForTest();
-}
-
 void PaymentRequestTestController::SetUpOnMainThread() {
   ChromeBackgroundTaskFactory::SetAsDefault();
 
