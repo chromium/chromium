@@ -10,8 +10,9 @@ import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrosNetworkConfig, CrosNetworkConfigRemote, FilterType, ManagedProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './network_state_ui.html.js';
 import {NetworkUIBrowserProxy, NetworkUIBrowserProxyImpl} from './network_ui_browser_proxy.js';
 
 /**
@@ -22,7 +23,7 @@ OncMojo.StateProperties;
 Polymer({
   is: 'network-state-ui',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   properties: {},
 

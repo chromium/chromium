@@ -6,7 +6,7 @@ import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 preprocess_folder = "preprocessed"
@@ -33,22 +33,26 @@ preprocess_if_expr("preprocess") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
+    "network_logs_ui.js",
+    "network_metrics_ui.js",
+    "network_state_ui.js",
     "network_ui_browser_proxy.js",
+    "network_ui.js",
     "third_party/uPlot.iife.min.js",
     "third_party/uPlot.min.css",
   ]
 }
 
 preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
+  deps = [ ":html_wrapper_files" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
-    "network_logs_ui.js",
-    "network_state_ui.js",
-    "network_ui.js",
-    "network_metrics_ui.js",
+    "network_logs_ui.html.js",
+    "network_state_ui.html.js",
+    "network_ui.html.js",
+    "network_metrics_ui.html.js",
   ]
 }
 
@@ -126,11 +130,12 @@ js_library("network_ui_browser_proxy") {
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
-html_to_js("web_components") {
-  js_files = [
-    "network_logs_ui.js",
-    "network_state_ui.js",
-    "network_ui.js",
-    "network_metrics_ui.js",
+html_to_wrapper("html_wrapper_files") {
+  in_files = [
+    "network_logs_ui.html",
+    "network_state_ui.html",
+    "network_ui.html",
+    "network_metrics_ui.html",
   ]
+  use_js = true
 }

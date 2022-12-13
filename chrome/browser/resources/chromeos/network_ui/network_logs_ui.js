@@ -9,8 +9,9 @@ import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './network_logs_ui.html.js';
 import {NetworkUIBrowserProxy, NetworkUIBrowserProxyImpl} from './network_ui_browser_proxy.js';
 
 /**
@@ -21,7 +22,7 @@ import {NetworkUIBrowserProxy, NetworkUIBrowserProxyImpl} from './network_ui_bro
 Polymer({
   is: 'network-logs-ui',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   behaviors: [I18nBehavior],
 
