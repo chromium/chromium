@@ -35,7 +35,8 @@ enum class AutocorrectPrefStateTransition {
   kDefaultToForceEnabled = 5,
   kForceEnabledToDisabled = 6,
   kForceEnabledToDefault = 7,
-  kMaxValue = kForceEnabledToDefault,
+  kForceEnabledToEnabled = 8,
+  kMaxValue = kForceEnabledToEnabled,
 };
 
 // Must match with IMEAutocorrectCompatibilitySummary in enums.xml

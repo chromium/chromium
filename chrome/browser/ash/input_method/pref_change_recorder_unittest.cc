@@ -308,6 +308,48 @@ TEST_P(RecordsEnabledByDefaultTransitions, RecordsEnabledByDefaultToDisabled) {
       /*expected_bucket_count=*/1);
 }
 
+TEST_P(RecordsEnabledByDefaultTransitions,
+       RecordsEnabledByDefaultToEnabledWhenSetToModest) {
+  const EnabledByDefaultMetricCase& test_case = GetParam();
+  base::HistogramTester histograms_;
+  FakeInputMethodOptions options(profile_.GetPrefs(), test_case.engine_id);
+  feature_list_.InitWithFeatures({features::kAutocorrectByDefault}, {});
+
+  // User was previously marked as active in the enabled by default group.
+  SetPhysicalKeyboardAutocorrectAsEnabledByDefault(profile_.GetPrefs(),
+                                                   test_case.engine_id);
+  // Start observing changes ...
+  PrefChangeRecorder recorder(profile_.GetPrefs());
+  options.SetPkAutocorrectLevel(1);  // set as enabled (modest)
+
+  histograms_.ExpectTotalCount(test_case.metric_name, 1);
+  histograms_.ExpectUniqueSample(
+      test_case.metric_name,
+      /*sample=*/AutocorrectPrefStateTransition::kForceEnabledToEnabled,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_P(RecordsEnabledByDefaultTransitions,
+       RecordsEnabledByDefaultToEnabledWhenSetToAggressive) {
+  const EnabledByDefaultMetricCase& test_case = GetParam();
+  base::HistogramTester histograms_;
+  FakeInputMethodOptions options(profile_.GetPrefs(), test_case.engine_id);
+  feature_list_.InitWithFeatures({features::kAutocorrectByDefault}, {});
+
+  // User was previously marked as active in the enabled by default group.
+  SetPhysicalKeyboardAutocorrectAsEnabledByDefault(profile_.GetPrefs(),
+                                                   test_case.engine_id);
+  // Start observing changes ...
+  PrefChangeRecorder recorder(profile_.GetPrefs());
+  options.SetPkAutocorrectLevel(2);  // set as enabled (aggressive)
+
+  histograms_.ExpectTotalCount(test_case.metric_name, 1);
+  histograms_.ExpectUniqueSample(
+      test_case.metric_name,
+      /*sample=*/AutocorrectPrefStateTransition::kForceEnabledToEnabled,
+      /*expected_bucket_count=*/1);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     PrefChangeRecorderTest,
     RecordsEnabledByDefaultTransitions,

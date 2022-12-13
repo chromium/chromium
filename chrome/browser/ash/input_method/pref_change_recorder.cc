@@ -122,6 +122,11 @@ AutocorrectPrefStateTransition MapToAutocorrectPrefStateTransition(
     return AutocorrectPrefStateTransition::kForceEnabledToDisabled;
   }
 
+  if (previous_value == AutocorrectPreference::kEnabledByDefault &&
+      new_value == AutocorrectPreference::kEnabled) {
+    return AutocorrectPrefStateTransition::kForceEnabledToEnabled;
+  }
+
   // Note that we do not record kEnabledByDefault to kDefault (this transition
   // would occur in a rampdown of the enabled by default experiment). Recording
   // this transition would require code to run outside of the enabled by default

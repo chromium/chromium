@@ -50773,6 +50773,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="DEFAULT_TO_FORCE_ENABLED"/>
   <int value="6" label="FORCE_ENABLED_TO_DISABLED"/>
   <int value="7" label="FORCE_ENABLED_TO_DEFAULT"/>
+  <int value="8" label="FORCE_ENABLED_TO_ENABLED"/>
 </enum>
 
 <enum name="IMEAutocorrectQualityBreakdown">
