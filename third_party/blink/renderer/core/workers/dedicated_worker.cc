@@ -460,9 +460,7 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     // When the main thread creates a new DedicatedWorker.
     auto* frame = window->GetFrame();
-    if (frame) {
-      parent_devtools_token = frame->GetDevToolsFrameToken();
-    }
+    parent_devtools_token = frame->GetDevToolsFrameToken();
     settings = std::make_unique<WorkerSettings>(frame->GetSettings());
     agent_group_scheduler_compositor_task_runner =
         execution_context->GetScheduler()
