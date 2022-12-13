@@ -35,12 +35,18 @@ export const keyToIconNameMap: {[key: string]: string} = {
   'BrowserBack': 'back',
   'BrowserForward': 'forward',
   'BrowserRefresh': 'refresh',
+  'KeyboardBacklightToggle': 'keyboard-brightness-toggle',
+  'KeyboardBrightnessUp': 'keyboard-brightness-up',
+  'KeyboardBrightnessDown': 'keyboard-brightness-down',
   'LaunchApplication1': 'overview',
   'LaunchAssistant': 'assistant',
   'MediaPlayPause': 'play-pause',
   'MediaTrackNext': 'next-track',
   'MediaTrackPrevious': 'last-track',
   'MicrophoneMuteToggle': 'microphone-mute',
+  // TODO(cambickel) The launcher icon will vary per-device; update this when
+  // we're able to detect which one to show.
+  'OpenLauncher': 'launcher',
   'Power': 'power',
   'PrintScreen': 'screenshot',
   'PrivacyScreenToggle': 'electronic-privacy-screen',
