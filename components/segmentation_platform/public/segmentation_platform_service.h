@@ -47,18 +47,6 @@ class SegmentationPlatformService : public KeyedService,
   SegmentationPlatformService& operator=(const SegmentationPlatformService&) =
       delete;
 
-  struct PredictionOptions {
-    PredictionOptions() = default;
-    ~PredictionOptions() = default;
-
-    // Disallow copy/assign.
-    PredictionOptions(const PredictionOptions&) = delete;
-    PredictionOptions& operator=(const PredictionOptions&) = delete;
-
-    // Set to true if on demand execution is to be done.
-    bool on_demand_execution = false;
-  };
-
   // Registers preferences used by this class in the provided |registry|.  This
   // should be called for the Profile registry.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
