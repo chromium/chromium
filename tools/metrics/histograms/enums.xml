@@ -84158,21 +84158,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 
 <enum name="ProfileImageDownloadResult">
   <int value="0" label="DownloadSuccessChanged">
-    <summary>
-      Reported when image download succeeds and the image is newer than what we
-      already have so we update it.
-    </summary>
+    Reported when image download succeeds and the image is newer than what we
+    already have so we update it.
   </int>
   <int value="1" label="DownloadSuccess">
-    <summary>Reported anytime we download profile image successfully.</summary>
+    Reported anytime we download profile image successfully.
   </int>
   <int value="2" label="DownloadFailure">
-    <summary>Download failed because of network errors.</summary>
+    Download failed because of network errors.
   </int>
   <int value="3" label="DownloadDefault">
-    <summary>
-      We didn't download the image because it's the default one.
-    </summary>
+    We didn't download the image because it's the default one.
   </int>
 </enum>
 
