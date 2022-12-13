@@ -858,6 +858,7 @@ var CrSettingsSiteSettingsPageTest = class extends CrSettingsBrowserTest {
     return {
       enabled: [
         'privacy_sandbox::kPrivacySandboxSettings4',
+        'content_settings::features::kSafetyCheckUnusedSitePermissions',
       ],
     };
   }
@@ -869,6 +870,18 @@ TEST_F('CrSettingsSiteSettingsPageTest', 'SiteSettingsPage', function() {
 
 TEST_F(
     'CrSettingsSiteSettingsPageTest', 'PrivacySandboxSettings4Disabled',
+    function() {
+      mocha.run();
+    });
+
+TEST_F(
+    'CrSettingsSiteSettingsPageTest', 'UnusedSitePermissionsReview',
+    function() {
+      mocha.run();
+    });
+
+TEST_F(
+    'CrSettingsSiteSettingsPageTest', 'UnusedSitePermissionsReviewDisabled',
     function() {
       mocha.run();
     });

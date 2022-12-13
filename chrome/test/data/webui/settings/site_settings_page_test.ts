@@ -6,12 +6,13 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ContentSetting, defaultSettingLabel, NotificationSetting, SettingsSiteSettingsPageElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, ContentSettingsTypes, defaultSettingLabel, NotificationSetting, SettingsSiteSettingsPageElement, SiteSettingsPermissionsBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrLinkRowElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
+import {TestSiteSettingsPermissionsBrowserProxy} from './test_site_settings_permissions_browser_proxy.js';
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
 // clang-format on
@@ -147,5 +148,97 @@ suite('PrivacySandboxSettings4Disabled', function() {
 
     assertFalse(isChildVisible(
         page.shadowRoot!.querySelector('#advancedContentList')!, '#site-data'));
+  });
+});
+
+const unusedSitePermissionMockData = [{
+  origin: 'www.example.com',
+  permissions: [ContentSettingsTypes.CAMERA],
+}];
+
+suite('UnusedSitePermissionsReview', function() {
+  let page: SettingsSiteSettingsPageElement;
+  let siteSettingsPermissionsBrowserProxy:
+      TestSiteSettingsPermissionsBrowserProxy;
+
+  setup(function() {
+    siteSettingsPermissionsBrowserProxy =
+        new TestSiteSettingsPermissionsBrowserProxy();
+    SiteSettingsPermissionsBrowserProxyImpl.setInstance(
+        siteSettingsPermissionsBrowserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  });
+
+  test('VisibilityWithChangingPermissionList', async function() {
+    // The element is not visible when there is nothing to review.
+    siteSettingsPermissionsBrowserProxy.setUnusedSitePermissions([]);
+    page = document.createElement('settings-site-settings-page');
+    document.body.appendChild(page);
+    await flushTasks();
+    assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
+
+    // The element becomes visible if the list of permissions is no longer
+    // empty.
+    webUIListenerCallback(
+        'unused-permission-review-list-maybe-changed',
+        unusedSitePermissionMockData);
+    await flushTasks();
+    assertTrue(isChildVisible(page, 'settings-unused-site-permissions'));
+
+    // Once visible, it remains visible regardless of list length.
+    webUIListenerCallback('unused-permission-review-list-maybe-changed', []);
+    await flushTasks();
+    assertTrue(isChildVisible(page, 'settings-unused-site-permissions'));
+
+    webUIListenerCallback(
+        'unused-permission-review-list-maybe-changed',
+        unusedSitePermissionMockData);
+    await flushTasks();
+    assertTrue(isChildVisible(page, 'settings-unused-site-permissions'));
+  });
+});
+
+/**
+ * If feature is not enabled, the UI should not be shown regardless of whether
+ * there would be unused site permissions for the user to review.
+ *
+ * TODO(crbug/1345920): Remove after crbug/1345920 launched.
+ */
+suite('UnusedSitePermissionsReviewDisabled', function() {
+  let page: SettingsSiteSettingsPageElement;
+  let siteSettingsPermissionsBrowserProxy:
+      TestSiteSettingsPermissionsBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      safetyCheckUnusedSitePermissionsEnabled: false,
+    });
+  });
+
+  setup(function() {
+    siteSettingsPermissionsBrowserProxy =
+        new TestSiteSettingsPermissionsBrowserProxy();
+    SiteSettingsPermissionsBrowserProxyImpl.setInstance(
+        siteSettingsPermissionsBrowserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  });
+
+  test('InvisibleWhenFeatureDisabled', async function() {
+    siteSettingsPermissionsBrowserProxy.setUnusedSitePermissions([]);
+    page = document.createElement('settings-site-settings-page');
+    document.body.appendChild(page);
+    await flushTasks();
+
+    assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
+  });
+
+  test('InvisibleWhenFeatureDisabledWithItemsToReview', async function() {
+    siteSettingsPermissionsBrowserProxy.setUnusedSitePermissions(
+        unusedSitePermissionMockData);
+    page = document.createElement('settings-site-settings-page');
+    document.body.appendChild(page);
+    await flushTasks();
+
+    assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
   });
 });
