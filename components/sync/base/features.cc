@@ -148,4 +148,8 @@ BASE_FEATURE(kSyncIgnoreAccountWithoutRefreshToken,
              "SyncIgnoreAccountWithoutRefreshToken",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncDoNotPropagateBrowserShutdownToDataTypes,
+             "SyncDoNotPropagateBrowserShutdownToDataTypes",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace syncer

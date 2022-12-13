@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_SYNC_HISTORY_DELETE_DIRECTIVES_MODEL_TYPE_CONTROLLER_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_SYNC_HISTORY_DELETE_DIRECTIVES_MODEL_TYPE_CONTROLLER_H_
 
+#include "base/scoped_observation.h"
 #include "components/history/core/browser/sync/history_model_type_controller_helper.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/sync/driver/syncable_service_based_model_type_controller.h"
@@ -54,6 +55,8 @@ class HistoryDeleteDirectivesModelTypeController
 
  private:
   history::HistoryModelTypeControllerHelper helper_;
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
 };
 
 }  // namespace history

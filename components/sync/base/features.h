@@ -175,6 +175,11 @@ BASE_DECLARE_FEATURE(kSyncEnforceBookmarksCountLimit);
 // token. (This state should only ever occur temporarily during signout.)
 BASE_DECLARE_FEATURE(kSyncIgnoreAccountWithoutRefreshToken);
 
+// Enabled by default, it acts as a kill switch for a newly-introduced logic,
+// which implies that DataTypeManager (and hence individual datatypes) won't be
+// notified about browser shutdown.
+BASE_DECLARE_FEATURE(kSyncDoNotPropagateBrowserShutdownToDataTypes);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

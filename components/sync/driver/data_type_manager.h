@@ -81,11 +81,13 @@ class DataTypeManager {
 
   virtual void PurgeForMigration(ModelTypeSet undesired_types) = 0;
 
-  // Synchronously stops all registered data types. If called after
-  // Configure() is called but before it finishes, it will abort the
-  // configure and any data types that have been started will be
-  // stopped.
-  // If called with reason |DISABLE_SYNC|, purges sync data for all datatypes.
+  // Synchronously stops all registered data types. If called after Configure()
+  // is called but before it finishes, it will abort the configure and any data
+  // types that have been started will be stopped. If called with reason
+  // |DISABLE_SYNC_AND_CLEAR_DATA|, purges sync data for all datatypes.
+  // TODO(crbug.com/1400437): Replace ShutdownReason with SyncStopMetadataFate,
+  // so it's clear that |BROWSER_SHUTDOWN_AND_KEEP_DATA| isn't propagated. This
+  // will also mean KEEP_METADATA can be interpreted as paused.
   virtual void Stop(ShutdownReason reason) = 0;
 
   // Get the set of current active data types (those chosen or configured by the

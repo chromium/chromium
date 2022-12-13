@@ -58,7 +58,7 @@ void HistoryDeleteDirectivesModelTypeController::LoadModels(
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(NOT_RUNNING, state());
 
-  helper_.sync_service()->AddObserver(this);
+  sync_service_observation_.Observe(helper_.sync_service());
   SyncableServiceBasedModelTypeController::LoadModels(configure_context,
                                                       model_load_callback);
 }
@@ -68,7 +68,7 @@ void HistoryDeleteDirectivesModelTypeController::Stop(
     StopCallback callback) {
   DCHECK(CalledOnValidThread());
 
-  helper_.sync_service()->RemoveObserver(this);
+  sync_service_observation_.Reset();
 
   SyncableServiceBasedModelTypeController::Stop(shutdown_reason,
                                                 std::move(callback));

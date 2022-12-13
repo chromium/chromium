@@ -65,7 +65,7 @@ PasswordModelTypeController::PasswordModelTypeController(
           base::BindRepeating(
               &PasswordModelTypeController::OnOptInStateMaybeChanged,
               base::Unretained(this))) {
-  identity_manager_->AddObserver(this);
+  identity_manager_observation_.Observe(identity_manager_);
 
   if (account_password_store_for_cleanup) {
     DCHECK(
@@ -81,15 +81,13 @@ PasswordModelTypeController::PasswordModelTypeController(
   }
 }
 
-PasswordModelTypeController::~PasswordModelTypeController() {
-  identity_manager_->RemoveObserver(this);
-}
+PasswordModelTypeController::~PasswordModelTypeController() = default;
 
 void PasswordModelTypeController::LoadModels(
     const syncer::ConfigureContext& configure_context,
     const ModelLoadCallback& model_load_callback) {
   DCHECK(CalledOnValidThread());
-  sync_service_->AddObserver(this);
+  sync_service_observation_.Observe(sync_service_);
   sync_mode_ = configure_context.sync_mode;
   ModelTypeController::LoadModels(configure_context, model_load_callback);
 }
@@ -97,7 +95,7 @@ void PasswordModelTypeController::LoadModels(
 void PasswordModelTypeController::Stop(syncer::ShutdownReason shutdown_reason,
                                        StopCallback callback) {
   DCHECK(CalledOnValidThread());
-  sync_service_->RemoveObserver(this);
+  sync_service_observation_.Reset();
   // In transport-only mode, our storage is scoped to the Gaia account. That
   // means it should be cleared if Sync is stopped for any reason (other than
   // just browser shutdown). E.g. when switching to full-Sync mode, we don't
