@@ -30,6 +30,8 @@ class GL_EXPORT GLFenceEGL : public GLFence {
   // i965 platforms. TODO(crbug.com/1246254): Remove this.
   static void CheckEGLFenceBeforeWait();
 
+  static void FlushBeforeCreateFence();
+
   // GLFence implementation:
   bool HasCompleted() override;
   void ClientWait() override;

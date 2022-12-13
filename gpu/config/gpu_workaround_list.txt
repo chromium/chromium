@@ -79,6 +79,7 @@ enable_bgra8_overlays_with_yuv_overlay_support
 enable_webgl_timer_query_extensions
 etc1_power_of_two_only
 exit_on_context_lost
+flush_before_create_fence
 flush_on_framebuffer_change
 force_cube_complete
 force_cube_map_positive_x_allocation
