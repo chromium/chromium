@@ -6424,6 +6424,25 @@
             ]
         }
     ],
+    "LauncherGameSearchStudy": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "enabled_override": "true"
+                    },
+                    "enable_features": [
+                        "AppProvisioningStatic",
+                        "LauncherGameSearch"
+                    ]
+                }
+            ]
+        }
+    ],
     "LayoutMediaNGContainer": [
         {
             "platforms": [
