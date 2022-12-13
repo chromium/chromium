@@ -48,7 +48,7 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor>,
   virtual ~SelectionEditor();
   void Dispose();
 
-  SelectionInDOMTree GetSelectionInDOMTree() const;
+  const SelectionInDOMTree& GetSelectionInDOMTree() const;
 
   VisibleSelection ComputeVisibleSelectionInDOMTree() const;
   VisibleSelectionInFlatTree ComputeVisibleSelectionInFlatTree() const;

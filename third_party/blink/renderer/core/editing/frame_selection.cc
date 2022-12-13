@@ -138,7 +138,7 @@ VisibleSelectionInFlatTree FrameSelection::ComputeVisibleSelectionInFlatTree()
   return selection_editor_->ComputeVisibleSelectionInFlatTree();
 }
 
-SelectionInDOMTree FrameSelection::GetSelectionInDOMTree() const {
+const SelectionInDOMTree& FrameSelection::GetSelectionInDOMTree() const {
   return selection_editor_->GetSelectionInDOMTree();
 }
 
@@ -851,8 +851,7 @@ void FrameSelection::NotifyAccessibilityForSelectionChange() {
   AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
   if (!cache)
     return;
-  const Position& extent = GetSelectionInDOMTree().Extent();
-  Node* anchor = extent.ComputeContainerNode();
+  Node* anchor = GetSelectionInDOMTree().Extent().ComputeContainerNode();
   if (anchor) {
     cache->SelectionChanged(anchor);
   } else {

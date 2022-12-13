@@ -140,8 +140,10 @@ void TextControlElement::DefaultEventHandler(Event& event) {
       // - The caret is on the beginning of a Text node, and its previous node
       //   is updated, or
       // - The caret is on the end of a text node, and its next node is updated.
-      CacheSelection(ComputeSelectionStart(), ComputeSelectionEnd(),
-                     ComputeSelectionDirection());
+      ComputedSelection computed_selection;
+      ComputeSelection(kStart | kEnd | kDirection, computed_selection);
+      CacheSelection(computed_selection.start, computed_selection.end,
+                     computed_selection.direction);
     }
 
     SubtreeHasChanged();
@@ -545,14 +547,25 @@ unsigned TextControlElement::selectionStart() const {
   if (ShouldApplySelectionCache())
     return cached_selection_start_;
 
-  return ComputeSelectionStart();
+  ComputedSelection computed_selection;
+  ComputeSelection(kStart, computed_selection);
+  return computed_selection.start;
 }
 
-unsigned TextControlElement::ComputeSelectionStart() const {
+void TextControlElement::ComputeSelection(
+    uint32_t flags,
+    ComputedSelection& computed_selection) const {
   DCHECK(IsTextControl());
+#if DCHECK_IS_ON()
+  // This code does not set all values of `computed_selection`. Ensure they
+  // are set to the default.
+  DCHECK_EQ(0u, computed_selection.start);
+  DCHECK_EQ(0u, computed_selection.end);
+  DCHECK_EQ(kSelectionHasNoDirection, computed_selection.direction);
+#endif
   LocalFrame* frame = GetDocument().GetFrame();
   if (!frame)
-    return 0;
+    return;
 
   // To avoid regression on speedometer benchmark[1] test, we should not
   // update layout tree in this code block.
@@ -561,8 +574,24 @@ unsigned TextControlElement::ComputeSelectionStart() const {
       GetDocument().Lifecycle());
   const SelectionInDOMTree& selection =
       frame->Selection().GetSelectionInDOMTree();
-  return IndexForPosition(InnerEditorElement(),
-                          selection.ComputeStartPosition());
+  if (flags & kStart) {
+    computed_selection.start = IndexForPosition(
+        InnerEditorElement(), selection.ComputeStartPosition());
+  }
+  if (flags & kEnd) {
+    if (flags & kStart && (selection.Base() == selection.Extent())) {
+      computed_selection.end = computed_selection.start;
+    } else {
+      computed_selection.end = IndexForPosition(InnerEditorElement(),
+                                                selection.ComputeEndPosition());
+    }
+  }
+  if (flags & kDirection && frame->Selection().IsDirectional()) {
+    computed_selection.direction =
+        (selection.Base() == selection.ComputeStartPosition())
+            ? kSelectionHasForwardDirection
+            : kSelectionHasBackwardDirection;
+  }
 }
 
 unsigned TextControlElement::selectionEnd() const {
@@ -570,23 +599,9 @@ unsigned TextControlElement::selectionEnd() const {
     return 0;
   if (ShouldApplySelectionCache())
     return cached_selection_end_;
-  return ComputeSelectionEnd();
-}
-
-unsigned TextControlElement::ComputeSelectionEnd() const {
-  DCHECK(IsTextControl());
-  LocalFrame* frame = GetDocument().GetFrame();
-  if (!frame)
-    return 0;
-
-  // To avoid regression on speedometer benchmark[1] test, we should not
-  // update layout tree in this code block.
-  // [1] http://browserbench.org/Speedometer/
-  DocumentLifecycle::DisallowTransitionScope disallow_transition(
-      GetDocument().Lifecycle());
-  const SelectionInDOMTree& selection =
-      frame->Selection().GetSelectionInDOMTree();
-  return IndexForPosition(InnerEditorElement(), selection.ComputeEndPosition());
+  ComputedSelection computed_selection;
+  ComputeSelection(kEnd, computed_selection);
+  return computed_selection.end;
 }
 
 static const AtomicString& DirectionString(
@@ -613,28 +628,9 @@ const AtomicString& TextControlElement::selectionDirection() const {
   DCHECK(IsTextControl());
   if (ShouldApplySelectionCache())
     return DirectionString(cached_selection_direction_);
-  return DirectionString(ComputeSelectionDirection());
-}
-
-TextFieldSelectionDirection TextControlElement::ComputeSelectionDirection()
-    const {
-  DCHECK(IsTextControl());
-  LocalFrame* frame = GetDocument().GetFrame();
-  if (!frame)
-    return kSelectionHasNoDirection;
-
-  // To avoid regression on speedometer benchmark[1] test, we should not
-  // update layout tree in this code block.
-  // [1] http://browserbench.org/Speedometer/
-  DocumentLifecycle::DisallowTransitionScope disallow_transition(
-      GetDocument().Lifecycle());
-  const SelectionInDOMTree& selection =
-      frame->Selection().GetSelectionInDOMTree();
-  const Position& start = selection.ComputeStartPosition();
-  return frame->Selection().IsDirectional()
-             ? (selection.Base() == start ? kSelectionHasForwardDirection
-                                          : kSelectionHasBackwardDirection)
-             : kSelectionHasNoDirection;
+  ComputedSelection computed_selection;
+  ComputeSelection(kDirection, computed_selection);
+  return DirectionString(computed_selection.direction);
 }
 
 static inline void SetContainerAndOffsetForRange(Node* node,
@@ -765,8 +761,10 @@ void TextControlElement::SelectionChanged(bool user_triggered) {
 
   // selectionStart() or selectionEnd() will return cached selection when this
   // node doesn't have focus.
-  CacheSelection(ComputeSelectionStart(), ComputeSelectionEnd(),
-                 ComputeSelectionDirection());
+  ComputedSelection computed_selection;
+  ComputeSelection(kStart | kEnd | kDirection, computed_selection);
+  CacheSelection(computed_selection.start, computed_selection.end,
+                 computed_selection.direction);
 
   LocalFrame* frame = GetDocument().GetFrame();
   if (!frame || !user_triggered)

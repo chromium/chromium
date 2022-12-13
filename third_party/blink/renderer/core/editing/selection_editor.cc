@@ -108,7 +108,7 @@ bool SelectionEditor::ComputeAbsoluteBounds(gfx::Rect& anchor,
   return has_selection_bounds_;
 }
 
-SelectionInDOMTree SelectionEditor::GetSelectionInDOMTree() const {
+const SelectionInDOMTree& SelectionEditor::GetSelectionInDOMTree() const {
   AssertSelectionValid();
   return selection_;
 }

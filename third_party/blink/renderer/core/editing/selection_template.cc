@@ -56,7 +56,7 @@ void SelectionTemplate<Strategy>::Trace(Visitor* visitor) const {
 }
 
 template <typename Strategy>
-PositionTemplate<Strategy> SelectionTemplate<Strategy>::Base() const {
+const PositionTemplate<Strategy>& SelectionTemplate<Strategy>::Base() const {
   DCHECK(AssertValid());
   DCHECK(!base_.IsOrphan()) << base_;
   return base_;
@@ -69,7 +69,7 @@ Document* SelectionTemplate<Strategy>::GetDocument() const {
 }
 
 template <typename Strategy>
-PositionTemplate<Strategy> SelectionTemplate<Strategy>::Extent() const {
+const PositionTemplate<Strategy>& SelectionTemplate<Strategy>::Extent() const {
   DCHECK(AssertValid());
   DCHECK(!extent_.IsOrphan()) << extent_;
   return extent_;
@@ -140,14 +140,14 @@ void SelectionTemplate<Strategy>::ShowTreeForThis() const {
 #endif
 
 template <typename Strategy>
-PositionTemplate<Strategy> SelectionTemplate<Strategy>::ComputeEndPosition()
-    const {
+const PositionTemplate<Strategy>&
+SelectionTemplate<Strategy>::ComputeEndPosition() const {
   return IsBaseFirst() ? extent_ : base_;
 }
 
 template <typename Strategy>
-PositionTemplate<Strategy> SelectionTemplate<Strategy>::ComputeStartPosition()
-    const {
+const PositionTemplate<Strategy>&
+SelectionTemplate<Strategy>::ComputeStartPosition() const {
   return IsBaseFirst() ? base_ : extent_;
 }
 
