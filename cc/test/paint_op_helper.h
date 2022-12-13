@@ -623,10 +623,6 @@ class PaintOpHelper {
   }
 };
 
-inline std::ostream& operator<<(std::ostream& os, const PaintOp& op) {
-  return os << PaintOpHelper::ToString(&op);
-}
-
 }  // namespace cc
 
 #endif  // CC_TEST_PAINT_OP_HELPER_H_
