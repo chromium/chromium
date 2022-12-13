@@ -111,14 +111,14 @@ TEST_P(ChromeAndroidMetricsProviderTest, ProvideCurrentSessionData_CustomTabs) {
   histogram_tester_.ExpectTotalCount("Android.ChromeActivity.Type", 0);
 }
 
-// Tests initial transition from kUndeclared to !kUndeclared.
+// Tests initial transition from kPreFirstTab to !kPreFirstTab.
 TEST_P(ChromeAndroidMetricsProviderTest, SetActivityType_CustomTabs) {
-  // kUndeclared -> kUndeclared is not a valid scenario. Early exit.
-  if (activity_type() == ActivityType::kUndeclared)
+  // kPreFirstTab -> kPreFirstTab is not a valid scenario. Early exit.
+  if (activity_type() == ActivityType::kPreFirstTab)
     return;
 
-  // Validating startup, so seed the activity type to kUndeclared,
-  SetInitialActivityTypeForTesting(ActivityType::kUndeclared);
+  // Validating startup, so seed the activity type to kPreFirstTab,
+  SetInitialActivityTypeForTesting(ActivityType::kPreFirstTab);
 
   // Set the activity type as if a new tab was created..
   SetActivityType(&pref_service_, activity_type());
@@ -133,8 +133,8 @@ TEST_P(ChromeAndroidMetricsProviderTest, SetActivityType_CustomTabs) {
 
 // Tests initial warmup records, no tab becomes visible
 TEST_F(ChromeAndroidMetricsProviderTest, NoInitialTab) {
-  // Validating startup, so seed the activity type to kUndeclared,
-  SetInitialActivityTypeForTesting(ActivityType::kUndeclared);
+  // Validating startup, so seed the activity type to kPreFirstTab,
+  SetInitialActivityTypeForTesting(ActivityType::kPreFirstTab);
 
   // On startup an initial record is created... but no tab becomes active
   // (example: background warmup or user is still going through FRE), and
@@ -145,33 +145,33 @@ TEST_F(ChromeAndroidMetricsProviderTest, NoInitialTab) {
   // Only one sample issued over lifetime of first record.
   histogram_tester_.ExpectUniqueSample(
       "CustomTabs.Visible",
-      GetCustomTabsVisibleValue(ActivityType::kUndeclared), 1);
+      GetCustomTabsVisibleValue(ActivityType::kPreFirstTab), 1);
   histogram_tester_.ExpectUniqueSample("Android.ChromeActivity.Type",
-                                       ActivityType::kUndeclared, 1);
+                                       ActivityType::kPreFirstTab, 1);
 
   // ... and a new record opened...  triggering another sample.
   metrics_provider_.OnDidCreateMetricsLog();
   histogram_tester_.ExpectUniqueSample(
       "CustomTabs.Visible",
-      GetCustomTabsVisibleValue(ActivityType::kUndeclared), 2);
+      GetCustomTabsVisibleValue(ActivityType::kPreFirstTab), 2);
 
   // ... and subsequently closed...
   metrics_provider_.ProvideCurrentSessionData(&uma_proto_);
   histogram_tester_.ExpectUniqueSample(
       "CustomTabs.Visible",
-      GetCustomTabsVisibleValue(ActivityType::kUndeclared), 2);
+      GetCustomTabsVisibleValue(ActivityType::kPreFirstTab), 2);
   histogram_tester_.ExpectUniqueSample("Android.ChromeActivity.Type",
-                                       ActivityType::kUndeclared, 2);
+                                       ActivityType::kPreFirstTab, 2);
 }
 
-// Tests initial transition from kUndeclared to !kUndeclared.
+// Tests initial transition from kPreFirstTab to !kPreFirstTab.
 TEST_P(ChromeAndroidMetricsProviderTest, InitialTab) {
-  // kUndeclared -> kUndeclared is not a valid scenario. Early exit.
-  if (activity_type() == ActivityType::kUndeclared)
+  // kPreFirstTab -> kPreFirstTab is not a valid scenario. Early exit.
+  if (activity_type() == ActivityType::kPreFirstTab)
     return;
 
-  // Validating startup, so seed the activity type to kUndeclared,
-  SetInitialActivityTypeForTesting(ActivityType::kUndeclared);
+  // Validating startup, so seed the activity type to kPreFirstTab,
+  SetInitialActivityTypeForTesting(ActivityType::kPreFirstTab);
 
   // On startup an initial record is created... then a tab is resumed which
   // sets the activity type and eventually closes the first log record.
@@ -184,12 +184,12 @@ TEST_P(ChromeAndroidMetricsProviderTest, InitialTab) {
   histogram_tester_.ExpectTotalCount("CustomTabs.Visible", 2);
   histogram_tester_.ExpectBucketCount(
       "CustomTabs.Visible",
-      GetCustomTabsVisibleValue(ActivityType::kUndeclared), 1);
+      GetCustomTabsVisibleValue(ActivityType::kPreFirstTab), 1);
   histogram_tester_.ExpectBucketCount(
       "CustomTabs.Visible", GetCustomTabsVisibleValue(activity_type()), 1);
   histogram_tester_.ExpectTotalCount("Android.ChromeActivity.Type", 2);
   histogram_tester_.ExpectBucketCount("Android.ChromeActivity.Type",
-                                      ActivityType::kUndeclared, 1);
+                                      ActivityType::kPreFirstTab, 1);
   histogram_tester_.ExpectBucketCount("Android.ChromeActivity.Type",
                                       activity_type(), 1);
 
@@ -201,20 +201,20 @@ TEST_P(ChromeAndroidMetricsProviderTest, InitialTab) {
   histogram_tester_.ExpectTotalCount("CustomTabs.Visible", 3);
   histogram_tester_.ExpectBucketCount(
       "CustomTabs.Visible",
-      GetCustomTabsVisibleValue(ActivityType::kUndeclared), 1);
+      GetCustomTabsVisibleValue(ActivityType::kPreFirstTab), 1);
   histogram_tester_.ExpectBucketCount(
       "CustomTabs.Visible", GetCustomTabsVisibleValue(activity_type()), 2);
   histogram_tester_.ExpectTotalCount("Android.ChromeActivity.Type", 3);
   histogram_tester_.ExpectBucketCount("Android.ChromeActivity.Type",
-                                      ActivityType::kUndeclared, 1);
+                                      ActivityType::kPreFirstTab, 1);
   histogram_tester_.ExpectBucketCount("Android.ChromeActivity.Type",
                                       activity_type(), 2);
 }
 
-// Tests initial transition from kUndeclared to !kUndeclared.
+// Tests initial transition from kPreFirstTab to !kPreFirstTab.
 TEST_P(ChromeAndroidMetricsProviderTest, TabSwitching) {
-  // kUndeclared -> kUndeclared is not a valid scenario. Early exit.
-  if (activity_type() == ActivityType::kUndeclared)
+  // kPreFirstTab -> kPreFirstTab is not a valid scenario. Early exit.
+  if (activity_type() == ActivityType::kPreFirstTab)
     return;
 
   const auto first_activity_type = activity_type();
@@ -222,8 +222,8 @@ TEST_P(ChromeAndroidMetricsProviderTest, TabSwitching) {
       static_cast<ActivityType>((static_cast<int>(first_activity_type) + 1) %
                                 static_cast<int>(ActivityType::kMaxValue));
 
-  // Validating startup, so seed the activity type to kUndeclared,
-  SetInitialActivityTypeForTesting(ActivityType::kUndeclared);
+  // Validating startup, so seed the activity type to kPreFirstTab,
+  SetInitialActivityTypeForTesting(ActivityType::kPreFirstTab);
 
   // On startup an initial record is created
   metrics_provider_.OnDidCreateMetricsLog();
@@ -260,4 +260,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          ActivityType::kTrustedWebActivity,
                                          ActivityType::kWebapp,
                                          ActivityType::kWebApk,
-                                         ActivityType::kUndeclared));
+                                         ActivityType::kPreFirstTab));

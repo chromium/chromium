@@ -17,7 +17,7 @@ using chrome::android::DarkModeState;
 using chrome::android::MultipleUserProfilesState;
 
 namespace {
-ActivityType activity_type = ActivityType::kUndeclared;
+ActivityType activity_type = ActivityType::kPreFirstTab;
 bool is_in_multi_window_mode = false;
 DarkModeState dark_mode_state = DarkModeState::kUnknown;
 MultipleUserProfilesState multiple_user_profiles_state =
@@ -42,7 +42,7 @@ CustomTabsVisibilityHistogram GetCustomTabsVisibleValue(
     case ActivityType::kCustomTab:
     case ActivityType::kTrustedWebActivity:
       return VISIBLE_CUSTOM_TAB;
-    case ActivityType::kUndeclared:
+    case ActivityType::kPreFirstTab:
       return NO_VISIBLE_TAB;
   }
   NOTREACHED();
@@ -59,13 +59,13 @@ void SetInitialActivityTypeForTesting(ActivityType type) {
 
 void SetActivityType(PrefService* local_state, ActivityType type) {
   DCHECK(local_state);
-  DCHECK_NE(type, ActivityType::kUndeclared);
+  DCHECK_NE(type, ActivityType::kPreFirstTab);
 
   ActivityType prev_activity_type = activity_type;
   activity_type = type;
 
   // EmitActivityTypeHistograms on first SetActivityType call.
-  if (prev_activity_type == ActivityType::kUndeclared) {
+  if (prev_activity_type == ActivityType::kPreFirstTab) {
     EmitActivityTypeHistograms(activity_type);
     SaveActivityTypeToLocalState(local_state, activity_type);
   }

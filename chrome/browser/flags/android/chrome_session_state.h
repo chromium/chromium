@@ -24,13 +24,37 @@ enum CustomTabsVisibilityHistogram {
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.flags
 enum class ActivityType {
+  // Chrome is running as the Chrome Android Browser App (i.e., traditional Chrome).
   kTabbed,
+
+  // Chrome is running embedded in another application as a Custom Tab.
+  // See:
+  //   - https://developer.chrome.com/docs/android/custom-tabs/
   kCustomTab,
+
+  // Chrome is running as a Trusted Web Activity.
+  //
+  // See:
+  //   - https://developer.chrome.com/docs/android/trusted-web-activity/
   kTrustedWebActivity,
+
+  // Chrome is running as a Web App
+  //
+  // See
+  //   - https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webapps/README.md
   kWebapp,
+
+  // Chrome is running as a WebAPK.
+  //
+  // See:
+  //   - https://web.dev/webapks/
+  //   - https://chromium.googlesource.com/chromium/src/+/refs/heads/main/chrome/android/webapk/README.md
   kWebApk,
-  kUndeclared,
-  kMaxValue = kUndeclared,
+
+  // Chrome has started running, but no tab has yet become visible (for example: warm-up,
+  // FRE, downloads manager shown in response to a notification click, etc).
+  kPreFirstTab,
+  kMaxValue = kPreFirstTab,
 };
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.flags

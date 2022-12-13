@@ -119,7 +119,7 @@ history::VisitContextAnnotations::BrowserType GetBrowserType(
     case chrome::android::ActivityType::kTrustedWebActivity:
     case chrome::android::ActivityType::kWebapp:
     case chrome::android::ActivityType::kWebApk:
-    case chrome::android::ActivityType::kUndeclared:
+    case chrome::android::ActivityType::kPreFirstTab:
       return history::VisitContextAnnotations::BrowserType::kUnknown;
   }
 #else
