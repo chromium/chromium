@@ -539,6 +539,10 @@ const char kSavedDevicesCount[] =
 constexpr char kFastPairGattConnectionStep[] = "FastPair.GattConnection";
 constexpr char kInitialSuccessFunnelMetric[] = "FastPair.InitialPairing";
 constexpr char kSubsequentSuccessFunnelMetric[] = "FastPair.SubsequentPairing";
+constexpr char kProtocolPairingStepInitial[] =
+    "FastPair.InitialPairing.Pairing";
+constexpr char kProtocolPairingStepSubsequent[] =
+    "FastPair.SubsequentPairing.Pairing";
 
 const std::string GetEngagementFlowInitialModelIdMetric(
     const ash::quick_pair::Device& device) {
@@ -911,6 +915,21 @@ void RecordHandshakeResult(bool success) {
 
 void RecordHandshakeFailureReason(HandshakeFailureReason failure_reason) {
   base::UmaHistogramEnumeration(kHandshakeFailureReason, failure_reason);
+}
+
+void RecordProtocolPairingStep(FastPairProtocolPairingSteps pairing_step,
+                               const Device& device) {
+  switch (device.protocol) {
+    case Protocol::kFastPairInitial:
+      base::UmaHistogramEnumeration(kProtocolPairingStepInitial, pairing_step);
+      break;
+    case Protocol::kFastPairSubsequent:
+      base::UmaHistogramEnumeration(kProtocolPairingStepSubsequent,
+                                    pairing_step);
+      break;
+    case Protocol::kFastPairRetroactive:
+      break;
+  }
 }
 
 void RecordHandshakeStep(FastPairHandshakeSteps handshake_step,

@@ -208,6 +208,9 @@ FastPairPairerImpl::~FastPairPairerImpl() {
 }
 
 void FastPairPairerImpl::StartPairing() {
+  RecordProtocolPairingStep(FastPairProtocolPairingSteps::kPairingStarted,
+                            *device_);
+
   std::string device_address = device_->classic_address().value();
   device::BluetoothDevice* bt_device = adapter_->GetDevice(device_address);
   switch (device_->protocol) {
@@ -226,13 +229,15 @@ void FastPairPairerImpl::StartPairing() {
         QP_LOG(INFO) << __func__
                      << ": Trying to pair to device that is already paired; "
                         "returning success.";
-        std::move(paired_callback_).Run(device_);
-
-        // In addition to recording kPairingSuccess in the callback above,
-        // also record that the device was already paired.
+        RecordProtocolPairingStep(FastPairProtocolPairingSteps::kAlreadyPaired,
+                                  *device_);
+        RecordProtocolPairingStep(
+            FastPairProtocolPairingSteps::kPairingComplete, *device_);
         AttemptRecordingFastPairEngagementFlow(
             *device_,
             FastPairEngagementFlowEvent::kPairingSucceededAlreadyPaired);
+
+        std::move(paired_callback_).Run(device_);
         AttemptSendAccountKey();
         return;
       }
@@ -287,6 +292,8 @@ void FastPairPairerImpl::OnPairConnected(
     return;
   }
 
+  RecordProtocolPairingStep(FastPairProtocolPairingSteps::kBondSuccessful,
+                            *device_);
   ask_confirm_passkey_initial_time_ = base::TimeTicks::Now();
 }
 
@@ -295,6 +302,8 @@ void FastPairPairerImpl::OnConnectDevice(device::BluetoothDevice* device) {
     return;
 
   QP_LOG(INFO) << __func__;
+  RecordProtocolPairingStep(FastPairProtocolPairingSteps::kBondSuccessful,
+                            *device_);
   ask_confirm_passkey_initial_time_ = base::TimeTicks::Now();
   RecordConnectDeviceResult(/*success=*/true);
   // The device ID can change between device discovery and connection, so
@@ -315,6 +324,8 @@ void FastPairPairerImpl::OnConnectError(const std::string& error_message) {
 void FastPairPairerImpl::ConfirmPasskey(device::BluetoothDevice* device,
                                         uint32_t passkey) {
   QP_LOG(INFO) << __func__;
+  RecordProtocolPairingStep(FastPairProtocolPairingSteps::kPasskeyNegotiated,
+                            *device_);
   RecordConfirmPasskeyAskTime(base::TimeTicks::Now() -
                               ask_confirm_passkey_initial_time_);
   confirm_passkey_initial_time_ = base::TimeTicks::Now();
@@ -349,6 +360,8 @@ void FastPairPairerImpl::OnPasskeyResponse(
     absl::optional<PairFailure> failure) {
   QP_LOG(INFO) << __func__;
   RecordWritePasskeyCharacteristicResult(/*success=*/!failure.has_value());
+  RecordProtocolPairingStep(
+      FastPairProtocolPairingSteps::kRecievedPasskeyResponse, *device_);
 
   if (failure) {
     QP_LOG(WARNING) << __func__
@@ -389,6 +402,9 @@ void FastPairPairerImpl::OnParseDecryptedPasskey(
     return;
   }
 
+  RecordProtocolPairingStep(FastPairProtocolPairingSteps::kPasskeyValidated,
+                            *device_);
+
   if (passkey->passkey != expected_passkey_) {
     QP_LOG(ERROR) << "Passkeys do not match. Expected: " << expected_passkey_
                   << ". Actual: " << passkey->passkey;
@@ -399,6 +415,8 @@ void FastPairPairerImpl::OnParseDecryptedPasskey(
     return;
   }
 
+  RecordProtocolPairingStep(FastPairProtocolPairingSteps::kPasskeyConfirmed,
+                            *device_);
   RecordPasskeyCharacteristicDecryptResult(/*success=*/true);
   RecordPasskeyCharacteristicDecryptTime(base::TimeTicks::Now() -
                                          decrypt_start_time);
@@ -635,6 +653,9 @@ void FastPairPairerImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
   if (device->GetAddress() == device_->ble_address ||
       device->GetAddress() == device_->classic_address()) {
     QP_LOG(INFO) << __func__ << ": Completing pairing procedure " << device_;
+    RecordProtocolPairingStep(FastPairProtocolPairingSteps::kPairingComplete,
+                              *device_);
+
     std::move(paired_callback_).Run(device_);
 
     // For V2 devices we still need to remove the Pairing Delegate and write the

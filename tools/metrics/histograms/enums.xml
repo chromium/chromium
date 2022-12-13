@@ -36641,6 +36641,18 @@ Called by update_extension_permission.py.-->
   <int value="1" label="System UI Pairing"/>
 </enum>
 
+<enum name="FastPairProtocolPairingSteps">
+  <int value="0" label="Pairing started"/>
+  <int value="1" label="Exhausted retries"/>
+  <int value="2" label="Device already paired"/>
+  <int value="3" label="Bond successful"/>
+  <int value="4" label="Passkey negotiated"/>
+  <int value="5" label="Recieved passkey response"/>
+  <int value="6" label="Passkey validated"/>
+  <int value="7" label="Passkey confirmed"/>
+  <int value="8" label="Pairing complete"/>
+</enum>
+
 <enum name="FastPairRetroactiveEngagementFlowEvent">
   <int value="1" label="Associate Account UI Shown"/>
   <int value="11" label="Associate Account Dismissed By User"/>

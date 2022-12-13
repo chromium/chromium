@@ -34,6 +34,11 @@ constexpr base::TimeDelta kCancelPairingRetryDelay = base::Seconds(1);
 const char kFastPairRetryCountMetricName[] =
     "Bluetooth.ChromeOS.FastPair.PairRetry.Count";
 
+constexpr char kProtocolPairingStepInitial[] =
+    "FastPair.InitialPairing.Pairing";
+constexpr char kProtocolPairingStepSubsequent[] =
+    "FastPair.SubsequentPairing.Pairing";
+
 class FakeFastPairPairer : public ash::quick_pair::FastPairPairer {
  public:
   FakeFastPairPairer(
@@ -350,6 +355,7 @@ TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Initial) {
   EXPECT_FALSE(pairer_broker_->IsPairing());
   EXPECT_EQ(pair_failure_count_, 1);
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
+  histogram_tester_.ExpectTotalCount(kProtocolPairingStepInitial, 1);
 }
 
 TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Subsequent) {
@@ -372,6 +378,7 @@ TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Subsequent) {
   EXPECT_FALSE(pairer_broker_->IsPairing());
   EXPECT_EQ(pair_failure_count_, 1);
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
+  histogram_tester_.ExpectTotalCount(kProtocolPairingStepSubsequent, 1);
 }
 
 TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Retroactive) {

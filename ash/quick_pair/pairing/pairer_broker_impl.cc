@@ -152,6 +152,8 @@ void PairerBrokerImpl::OnFastPairPairingFailure(scoped_refptr<Device> device,
   if (pair_failure_counts_[device->ble_address] == kMaxFailureRetryCount) {
     QP_LOG(INFO) << __func__
                  << ": Reached max failure count. Notifying observers.";
+    RecordProtocolPairingStep(FastPairProtocolPairingSteps::kExhaustedRetries,
+                              *device);
     for (auto& observer : observers_) {
       observer.OnPairFailure(device, failure);
     }

@@ -59,6 +59,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FastPair.{FastPairPairingProtocol}.Pairing"
+    enum="FastPairProtocolPairingSteps" expires_after="2023-02-26">
+  <owner>jackshira@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records each sucessful step in the Protocol-based Pairing flow. These steps
+    are: on pairing start, when retries have been exhausted, when device is
+    already paired, on successful bond, on passkey negotiated, on passkey
+    characteristic found, on notifications enabled for passkey characteristic,
+    on passkey response, on passkey validation, on passkey confirmation, and on
+    pairing complete.
+  </summary>
+  <token key="FastPairPairingProtocol">
+    <variant name="InitialPairing" summary="Initial pairing protocol"/>
+    <variant name="SubsequentPairing" summary="Subsequent pairing protocol"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
