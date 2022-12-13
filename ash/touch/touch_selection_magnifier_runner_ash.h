@@ -7,15 +7,13 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/touch_selection/touch_selection_magnifier_runner.h"
 
 namespace aura {
 class Window;
 }  // namespace aura
-
-namespace gfx {
-class PointF;
-}  // namespace gfx
 
 namespace ui {
 class Layer;
@@ -35,6 +33,17 @@ class ASH_EXPORT TouchSelectionMagnifierRunnerAsh
       const TouchSelectionMagnifierRunnerAsh&) = delete;
 
   ~TouchSelectionMagnifierRunnerAsh() override;
+
+  static constexpr float kMagnifierScale = 2.0f;
+
+  static constexpr gfx::Size kMagnifierLayerSize{100, 48};
+
+  static constexpr gfx::RoundedCornersF kMagnifierRoundedCorners{20};
+
+  // Offset to apply so that the magnifier is shown vertically above the point
+  // of interest. The offset specifies vertical displacement from the center of
+  // the text selection caret to the center of the magnifier bounds.
+  static constexpr int kMagnifierVerticalOffset = -32;
 
   // ui::TouchSelectionMagnifierRunner:
   void ShowMagnifier(aura::Window* context,

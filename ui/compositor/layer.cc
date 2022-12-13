@@ -255,6 +255,7 @@ std::unique_ptr<Layer> Layer::Clone() const {
   // Background filters.
   clone->SetBackgroundBlur(background_blur_sigma_);
   clone->SetBackgroundZoom(zoom_, zoom_inset_);
+  clone->SetBackgroundOffset(background_offset_);
 
   // Filters.
   clone->SetLayerSaturation(layer_saturation_);
@@ -676,6 +677,11 @@ void Layer::SetBackgroundZoom(float zoom, int inset) {
   SetLayerBackgroundFilters();
 }
 
+void Layer::SetBackgroundOffset(const gfx::Point& background_offset) {
+  background_offset_ = background_offset;
+  SetLayerBackgroundFilters();
+}
+
 void Layer::SetAlphaShape(std::unique_ptr<ShapeRects> shape) {
   alpha_shape_ = std::move(shape);
 
@@ -734,6 +740,10 @@ void Layer::SetLayerBackgroundFilters() {
   if (background_blur_sigma_) {
     filters.Append(cc::FilterOperation::CreateBlurFilter(background_blur_sigma_,
                                                          SkTileMode::kClamp));
+  }
+
+  if (!background_offset_.IsOrigin()) {
+    filters.Append(cc::FilterOperation::CreateOffsetFilter(background_offset_));
   }
   cc_layer_->SetBackdropFilters(filters);
 }

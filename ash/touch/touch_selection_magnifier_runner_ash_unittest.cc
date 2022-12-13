@@ -17,10 +17,6 @@ namespace ash {
 
 namespace {
 
-// Should match `kMagnifierLayerSize` in
-// touch_selection_magnifier_runner_ash.cc.
-constexpr gfx::Size kMagnifierLayerSize(100, 48);
-
 TouchSelectionMagnifierRunnerAsh* GetMagnifierRunner() {
   return static_cast<TouchSelectionMagnifierRunnerAsh*>(
       ui::TouchSelectionMagnifierRunner::GetInstance());
@@ -135,8 +131,14 @@ TEST_F(TouchSelectionMagnifierRunnerAshTest, LayerBounds) {
   ASSERT_TRUE(magnifier_layer);
 
   gfx::Rect bounds = magnifier_layer->bounds();
-  EXPECT_EQ(bounds.size(), kMagnifierLayerSize);
-  EXPECT_EQ(bounds.CenterPoint(), gfx::Point(position.x(), position.y()));
+  EXPECT_EQ(bounds.size(),
+            TouchSelectionMagnifierRunnerAsh::kMagnifierLayerSize);
+  EXPECT_EQ(
+      bounds.CenterPoint(),
+      gfx::Point(
+          position.x(),
+          position.y() +
+              TouchSelectionMagnifierRunnerAsh::kMagnifierVerticalOffset));
 
   magnifier_runner->CloseMagnifier();
   RunPendingMessages();
@@ -154,8 +156,14 @@ TEST_F(TouchSelectionMagnifierRunnerAshTest, LayerUpdatesBounds) {
   ASSERT_TRUE(magnifier_layer);
 
   gfx::Rect bounds = magnifier_layer->bounds();
-  EXPECT_EQ(bounds.size(), kMagnifierLayerSize);
-  EXPECT_EQ(bounds.CenterPoint(), gfx::Point(position.x(), position.y()));
+  EXPECT_EQ(bounds.size(),
+            TouchSelectionMagnifierRunnerAsh::kMagnifierLayerSize);
+  EXPECT_EQ(
+      bounds.CenterPoint(),
+      gfx::Point(
+          position.x(),
+          position.y() +
+              TouchSelectionMagnifierRunnerAsh::kMagnifierVerticalOffset));
 
   // Move the magnifier.
   position = gfx::PointF(400, 150);
@@ -163,8 +171,14 @@ TEST_F(TouchSelectionMagnifierRunnerAshTest, LayerUpdatesBounds) {
   EXPECT_EQ(magnifier_layer, magnifier_runner->GetMagnifierLayerForTesting());
 
   bounds = magnifier_layer->bounds();
-  EXPECT_EQ(bounds.size(), kMagnifierLayerSize);
-  EXPECT_EQ(bounds.CenterPoint(), gfx::Point(position.x(), position.y()));
+  EXPECT_EQ(bounds.size(),
+            TouchSelectionMagnifierRunnerAsh::kMagnifierLayerSize);
+  EXPECT_EQ(
+      bounds.CenterPoint(),
+      gfx::Point(
+          position.x(),
+          position.y() +
+              TouchSelectionMagnifierRunnerAsh::kMagnifierVerticalOffset));
 
   magnifier_runner->CloseMagnifier();
   RunPendingMessages();

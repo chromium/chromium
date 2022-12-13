@@ -49,7 +49,8 @@ class CC_PAINT_EXPORT FilterOperation {
     REFERENCE,
     SATURATING_BRIGHTNESS,  // Not used in CSS/SVG.
     ALPHA_THRESHOLD,        // Not used in CSS/SVG.
-    FILTER_TYPE_LAST = ALPHA_THRESHOLD
+    OFFSET,                 // Not used in CSS/SVG.
+    FILTER_TYPE_LAST = OFFSET
   };
 
   FilterOperation();
@@ -71,9 +72,9 @@ class CC_PAINT_EXPORT FilterOperation {
     return outer_threshold_;
   }
 
-  gfx::Point drop_shadow_offset() const {
-    DCHECK_EQ(type_, DROP_SHADOW);
-    return drop_shadow_offset_;
+  gfx::Point offset() const {
+    DCHECK(type_ == DROP_SHADOW || type_ == OFFSET);
+    return offset_;
   }
 
   SkColor4f drop_shadow_color() const {
@@ -174,6 +175,10 @@ class CC_PAINT_EXPORT FilterOperation {
                            outer_threshold);
   }
 
+  static FilterOperation CreateOffsetFilter(const gfx::Point& offset) {
+    return FilterOperation(OFFSET, offset);
+  }
+
   bool operator==(const FilterOperation& other) const;
 
   bool operator!=(const FilterOperation& other) const {
@@ -198,9 +203,9 @@ class CC_PAINT_EXPORT FilterOperation {
     outer_threshold_ = outer_threshold;
   }
 
-  void set_drop_shadow_offset(const gfx::Point& offset) {
-    DCHECK_EQ(type_, DROP_SHADOW);
-    drop_shadow_offset_ = offset;
+  void set_offset(const gfx::Point& offset) {
+    DCHECK(type_ == DROP_SHADOW || type_ == OFFSET);
+    offset_ = offset;
   }
 
   void set_drop_shadow_color(SkColor4f color) {
@@ -268,6 +273,8 @@ class CC_PAINT_EXPORT FilterOperation {
 
   FilterOperation(FilterType type, float amount, int inset);
 
+  FilterOperation(FilterType type, const gfx::Point& offset);
+
   FilterOperation(FilterType type, sk_sp<PaintFilter> image_filter);
 
   FilterOperation(FilterType type,
@@ -278,7 +285,7 @@ class CC_PAINT_EXPORT FilterOperation {
   FilterType type_;
   float amount_;
   float outer_threshold_;
-  gfx::Point drop_shadow_offset_;
+  gfx::Point offset_;
   SkColor4f drop_shadow_color_;
   sk_sp<PaintFilter> image_filter_;
   Matrix matrix_;

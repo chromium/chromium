@@ -91,7 +91,7 @@ TEST(RenderPassIOTest, FilterOperations) {
     EXPECT_EQ(SkColors::kYellow,
               render_pass1->backdrop_filters.at(0).drop_shadow_color());
     EXPECT_EQ(gfx::Point(1.0f, 2.0f),
-              render_pass1->backdrop_filters.at(0).drop_shadow_offset());
+              render_pass1->backdrop_filters.at(0).offset());
     EXPECT_EQ(cc::FilterOperation::INVERT,
               render_pass1->backdrop_filters.at(1).type());
     EXPECT_EQ(0.64f, render_pass1->backdrop_filters.at(1).amount());

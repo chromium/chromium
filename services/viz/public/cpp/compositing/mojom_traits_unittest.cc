@@ -151,7 +151,7 @@ void ExpectEqual(const cc::FilterOperation& input,
       break;
     case cc::FilterOperation::DROP_SHADOW:
       EXPECT_EQ(input.amount(), output.amount());
-      EXPECT_EQ(input.drop_shadow_offset(), output.drop_shadow_offset());
+      EXPECT_EQ(input.offset(), output.offset());
       EXPECT_EQ(input.drop_shadow_color(), output.drop_shadow_color());
       break;
     case cc::FilterOperation::COLOR_MATRIX:
@@ -170,6 +170,9 @@ void ExpectEqual(const cc::FilterOperation& input,
     }
     case cc::FilterOperation::ALPHA_THRESHOLD:
       NOTREACHED();
+      break;
+    case cc::FilterOperation::OFFSET:
+      EXPECT_EQ(input.offset(), output.offset());
       break;
   }
 }

@@ -199,8 +199,7 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
         break;
       case FilterOperation::DROP_SHADOW:
         image_filter = sk_make_sp<DropShadowPaintFilter>(
-            SkIntToScalar(op.drop_shadow_offset().x()),
-            SkIntToScalar(op.drop_shadow_offset().y()),
+            SkIntToScalar(op.offset().x()), SkIntToScalar(op.offset().y()),
             SkIntToScalar(op.amount()), SkIntToScalar(op.amount()),
             op.drop_shadow_color(),
             DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground,
@@ -293,6 +292,12 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
         } else {
           image_filter = std::move(alpha_filter);
         }
+        break;
+      }
+      case FilterOperation::OFFSET: {
+        image_filter = sk_make_sp<OffsetPaintFilter>(
+            SkIntToScalar(op.offset().x()), SkIntToScalar(op.offset().y()),
+            std::move(image_filter));
         break;
       }
     }

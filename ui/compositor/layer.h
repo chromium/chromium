@@ -305,6 +305,9 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // edge across |inset| pixels.
   void SetBackgroundZoom(float zoom, int inset);
 
+  // Applies an offset when drawing pixels for the layer background filter.
+  void SetBackgroundOffset(const gfx::Point& background_offset);
+
   // Set the shape of this layer.
   const ShapeRects* alpha_shape() const { return alpha_shape_.get(); }
   void SetAlphaShape(std::unique_ptr<ShapeRects> shape);
@@ -763,6 +766,9 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   // Width of the border in pixels, where the scaling is blended.
   int zoom_inset_;
+
+  // Offset to apply when drawing pixels for the layer background filter.
+  gfx::Point background_offset_;
 
   // Shape of the window.
   std::unique_ptr<ShapeRects> alpha_shape_;

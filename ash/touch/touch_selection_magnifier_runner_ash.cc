@@ -16,16 +16,16 @@ namespace ash {
 
 namespace {
 
-constexpr float kMagnifierScale = 2.0f;
-
-constexpr gfx::RoundedCornersF kMagnifierRoundedCorners(20);
-
-constexpr gfx::Size kMagnifierLayerSize(100, 48);
-
-gfx::Rect GetBounds(const gfx::Point& point) {
-  return gfx::Rect(gfx::Point(point.x() - kMagnifierLayerSize.width() / 2,
-                              point.y() - kMagnifierLayerSize.height() / 2),
-                   kMagnifierLayerSize);
+// Gets the bounds of the magnifier when showing the specified point of
+// interest. `point_of_interest` and returned bounds are in root window
+// coordinates.
+gfx::Rect GetBounds(const gfx::Point& point_of_interest) {
+  const gfx::Size size = TouchSelectionMagnifierRunnerAsh::kMagnifierLayerSize;
+  const gfx::Point origin(
+      point_of_interest.x() - size.width() / 2,
+      point_of_interest.y() - size.height() / 2 +
+          TouchSelectionMagnifierRunnerAsh::kMagnifierVerticalOffset);
+  return gfx::Rect(origin, size);
 }
 
 // Returns the child container in `root` that should parent the magnifier layer.
@@ -90,6 +90,8 @@ void TouchSelectionMagnifierRunnerAsh::CreateMagnifierLayer(
   magnifier_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
   magnifier_layer_->SetBounds(GetBounds(gfx::ToRoundedPoint(position_in_root)));
   magnifier_layer_->SetBackgroundZoom(kMagnifierScale, 0);
+  magnifier_layer_->SetBackgroundOffset(
+      gfx::Point(0, kMagnifierVerticalOffset));
   magnifier_layer_->SetFillsBoundsOpaquely(false);
   magnifier_layer_->SetRoundedCornerRadius(kMagnifierRoundedCorners);
   parent_layer->Add(magnifier_layer_.get());

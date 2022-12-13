@@ -25,7 +25,8 @@ enum FilterType {
   REFERENCE,
   SATURATING_BRIGHTNESS,
   ALPHA_THRESHOLD,
-  FILTER_TYPE_LAST = ALPHA_THRESHOLD
+  OFFSET,
+  FILTER_TYPE_LAST = OFFSET
 };
 
 // See cc/paint/filter_operation.h.
@@ -33,7 +34,7 @@ struct FilterOperation {
   FilterType type;
   float amount;
   float outer_threshold;
-  gfx.mojom.Point drop_shadow_offset;
+  gfx.mojom.Point offset;
   skia.mojom.SkColor4f drop_shadow_color;
   PaintFilter image_filter;
   array<float, 20>? matrix;

@@ -213,6 +213,29 @@ TEST(FilterOperationsTest, MapRectReverseDropShadowDoesNotContract) {
             ops.MapRectReverse(gfx::Rect(0, 0, 10, 10), SkMatrix::I()));
 }
 
+TEST(FilterOperationsTest, MapRectOffset) {
+  FilterOperations ops;
+  ops.Append(FilterOperation::CreateOffsetFilter(gfx::Point(30, 40)));
+  EXPECT_EQ(gfx::Rect(30, 40, 10, 10),
+            ops.MapRect(gfx::Rect(0, 0, 10, 10), SkMatrix::I()));
+  EXPECT_EQ(gfx::Rect(60, 80, 20, 20),
+            ops.MapRect(gfx::Rect(0, 0, 20, 20), SkMatrix::Scale(2, 2)));
+  EXPECT_EQ(gfx::Rect(30, -50, 10, 10),
+            ops.MapRect(gfx::Rect(0, -10, 10, 10), SkMatrix::Scale(1, -1)));
+}
+
+TEST(FilterOperationsTest, MapRectReverseOffset) {
+  FilterOperations ops;
+  ops.Append(FilterOperation::CreateOffsetFilter(gfx::Point(30, 40)));
+  EXPECT_EQ(gfx::Rect(-30, -40, 10, 10),
+            ops.MapRectReverse(gfx::Rect(0, 0, 10, 10), SkMatrix::I()));
+  EXPECT_EQ(gfx::Rect(-60, -80, 20, 20),
+            ops.MapRectReverse(gfx::Rect(0, 0, 20, 20), SkMatrix::Scale(2, 2)));
+  EXPECT_EQ(
+      gfx::Rect(-30, 30, 10, 10),
+      ops.MapRectReverse(gfx::Rect(0, -10, 10, 10), SkMatrix::Scale(1, -1)));
+}
+
 TEST(FilterOperationsTest, MapRectTypeConversionDoesNotOverflow) {
   // Must be bigger than half of the positive range so that the width/height
   // overflow happens, but small enough that there aren't other issues before
@@ -253,23 +276,23 @@ TEST(FilterOperationsTest, MapRectTypeConversionDoesNotOverflow) {
     FilterOperation op =                                                    \
         FilterOperation::Create##filter_name##Filter(a, b, c);              \
     EXPECT_EQ(FilterOperation::filter_type, op.type());                     \
-    EXPECT_EQ(a, op.drop_shadow_offset());                                  \
+    EXPECT_EQ(a, op.offset());                                              \
     EXPECT_EQ(b, op.amount());                                              \
     EXPECT_EQ(c, op.drop_shadow_color());                                   \
                                                                             \
     FilterOperation op2 = FilterOperation::CreateEmptyFilter();             \
     op2.set_type(FilterOperation::filter_type);                             \
                                                                             \
-    EXPECT_NE(a, op2.drop_shadow_offset());                                 \
+    EXPECT_NE(a, op2.offset());                                             \
     EXPECT_NE(b, op2.amount());                                             \
     EXPECT_NE(c, op2.drop_shadow_color());                                  \
                                                                             \
-    op2.set_drop_shadow_offset(a);                                          \
+    op2.set_offset(a);                                                      \
     op2.set_amount(b);                                                      \
     op2.set_drop_shadow_color(c);                                           \
                                                                             \
     EXPECT_EQ(FilterOperation::filter_type, op2.type());                    \
-    EXPECT_EQ(a, op2.drop_shadow_offset());                                 \
+    EXPECT_EQ(a, op2.offset());                                             \
     EXPECT_EQ(b, op2.amount());                                             \
     EXPECT_EQ(c, op2.drop_shadow_color());                                  \
   }
@@ -977,6 +1000,10 @@ TEST(FilterOperationsTest, MaximumPixelMovement) {
   filters.Append(FilterOperation::CreateZoomFilter(2, 3));
   // max movement = zoom_inset = 3
   EXPECT_FLOAT_EQ(3.f, filters.MaximumPixelMovement());
+
+  filters.Clear();
+  filters.Append(FilterOperation::CreateOffsetFilter(gfx::Point(3, -4)));
+  EXPECT_FLOAT_EQ(4.0f, filters.MaximumPixelMovement());
 
   filters.Clear();
   filters.Append(FilterOperation::CreateReferenceFilter(

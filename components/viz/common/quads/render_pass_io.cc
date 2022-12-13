@@ -548,7 +548,8 @@ base::Value FilterOperationToDict(const cc::FilterOperation& filter) {
 
   dict.SetIntKey("type", type);
   if (type != cc::FilterOperation::COLOR_MATRIX &&
-      type != cc::FilterOperation::REFERENCE) {
+      type != cc::FilterOperation::REFERENCE &&
+      type != cc::FilterOperation::OFFSET) {
     dict.SetDoubleKey("amount", filter.amount());
   }
   switch (type) {
@@ -557,8 +558,7 @@ base::Value FilterOperationToDict(const cc::FilterOperation& filter) {
       dict.SetKey("shape", ShapeRectsToList(filter.shape()));
       break;
     case cc::FilterOperation::DROP_SHADOW:
-      dict.SetKey("drop_shadow_offset",
-                  PointToDict(filter.drop_shadow_offset()));
+      dict.SetKey("offset", PointToDict(filter.offset()));
       dict.SetKey("drop_shadow_color",
                   SkColor4fToDict(filter.drop_shadow_color()));
       break;
@@ -575,6 +575,9 @@ base::Value FilterOperationToDict(const cc::FilterOperation& filter) {
     case cc::FilterOperation::BLUR:
       dict.SetIntKey("blur_tile_mode",
                      static_cast<int>(filter.blur_tile_mode()));
+      break;
+    case cc::FilterOperation::OFFSET:
+      dict.SetKey("offset", PointToDict(filter.offset()));
       break;
     default:
       break;
@@ -593,8 +596,7 @@ bool FilterOperationFromDict(const base::Value& dict_value,
   absl::optional<int> type = dict.FindInt("type");
   absl::optional<double> amount = dict.FindDouble("amount");
   absl::optional<double> outer_threshold = dict.FindDouble("outer_threshold");
-  const base::Value::Dict* drop_shadow_offset =
-      dict.FindDict("drop_shadow_offset");
+  const base::Value::Dict* offset = dict.FindDict("offset");
   const std::string* image_filter = dict.FindString("image_filter");
   const base::Value::List* matrix = dict.FindList("matrix");
   absl::optional<int> zoom_inset = dict.FindInt("zoom_inset");
@@ -609,7 +611,8 @@ bool FilterOperationFromDict(const base::Value& dict_value,
       static_cast<cc::FilterOperation::FilterType>(type.value());
   filter.set_type(filter_type);
   if (filter_type != cc::FilterOperation::COLOR_MATRIX &&
-      filter_type != cc::FilterOperation::REFERENCE) {
+      filter_type != cc::FilterOperation::REFERENCE &&
+      filter_type != cc::FilterOperation::OFFSET) {
     if (!amount)
       return false;
     filter.set_amount(static_cast<float>(amount.value()));
@@ -625,11 +628,11 @@ bool FilterOperationFromDict(const base::Value& dict_value,
       filter.set_shape(shape_rects);
     } break;
     case cc::FilterOperation::DROP_SHADOW: {
-      gfx::Point offset;
-      if (!drop_shadow_offset || !PointFromDict(*drop_shadow_offset, &offset)) {
+      gfx::Point drop_shadow_offset;
+      if (!offset || !PointFromDict(*offset, &drop_shadow_offset)) {
         return false;
       }
-      filter.set_drop_shadow_offset(offset);
+      filter.set_offset(drop_shadow_offset);
 
       SkColor4f t_drop_shadow_color;
       if (!ColorFromDict(dict, "drop_shadow_color", &t_drop_shadow_color)) {
@@ -659,6 +662,13 @@ bool FilterOperationFromDict(const base::Value& dict_value,
       filter.set_blur_tile_mode(
           static_cast<SkTileMode>(blur_tile_mode.value()));
       break;
+    case cc::FilterOperation::OFFSET: {
+      gfx::Point filter_offset;
+      if (!offset || !PointFromDict(*offset, &filter_offset)) {
+        return false;
+      }
+      filter.set_offset(filter_offset);
+    } break;
     default:
       break;
   }
