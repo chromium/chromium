@@ -12,13 +12,13 @@ import '../../prefs/prefs.js';
 import '../../settings_shared.css.js';
 
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, Router} from '../router.js';
 import {routes} from '../os_route.js';
-import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
+import {Route, Router} from '../router.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, StorageSpaceState} from './device_page_browser_proxy.js';
 import {getTemplate} from './storage.html.js';
@@ -40,11 +40,7 @@ interface SettingsStorageElement {
 }
 
 const SettingsStorageElementBase =
-    mixinBehaviors([RouteOriginBehavior], WebUiListenerMixin(PolymerElement)) as
-    {
-      new (): PolymerElement & WebUiListenerMixinInterface &
-          RouteOriginBehaviorInterface,
-    };
+    RouteOriginMixin(WebUiListenerMixin(PolymerElement));
 
 class SettingsStorageElement extends SettingsStorageElementBase {
   static get is() {
@@ -101,7 +97,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
   constructor() {
     super();
 
-    /** RouteOriginBehavior override */
+    /** RouteOriginMixin override */
     this.route_ = routes.STORAGE;
 
     /**

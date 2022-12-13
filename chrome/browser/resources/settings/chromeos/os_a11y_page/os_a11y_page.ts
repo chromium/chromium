@@ -28,10 +28,10 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, Router} from '../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
+import {RouteOriginMixin, RouteOriginMixinInterface} from '../route_origin_mixin.js';
+import {Route, Router} from '../router.js';
 
 import {getTemplate} from './os_a11y_page.html.js';
 import {OsA11yPageBrowserProxy, OsA11yPageBrowserProxyImpl} from './os_a11y_page_browser_proxy.js';
@@ -44,10 +44,10 @@ interface OsSettingsA11yPageElement {
 
 const OsSettingsA11yPageElementBase =
     mixinBehaviors(
-        [RouteOriginBehavior, DeepLinkingBehavior],
-        WebUiListenerMixin(PolymerElement)) as {
+        [DeepLinkingBehavior],
+        RouteOriginMixin(WebUiListenerMixin(PolymerElement))) as {
       new (): PolymerElement & WebUiListenerMixinInterface &
-          RouteOriginBehaviorInterface & DeepLinkingBehaviorInterface,
+          RouteOriginMixinInterface & DeepLinkingBehaviorInterface,
     };
 
 class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
@@ -184,8 +184,10 @@ class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
     this.browserProxy_.a11yPageReady();
   }
 
-  override currentRouteChanged(route: Route) {
-    if (route === routes.OS_ACCESSIBILITY) {
+  override currentRouteChanged(newRoute: Route, prevRoute?: Route) {
+    super.currentRouteChanged(newRoute, prevRoute);
+
+    if (newRoute === routes.OS_ACCESSIBILITY) {
       this.attemptDeepLink();
     }
   }

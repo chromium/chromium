@@ -11,18 +11,15 @@
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../../settings_shared.css.js';
 
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, Router} from '../router.js';
 import {routes} from '../os_route.js';
-import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
+import {Route, Router} from '../router.js';
 
 import {getTemplate} from './bruschetta_subpage.html.js';
 
-const BruschettaSubpageElementBase =
-    mixinBehaviors([RouteOriginBehavior], PolymerElement) as {
-      new (): PolymerElement & RouteOriginBehaviorInterface,
-    };
+const BruschettaSubpageElementBase = RouteOriginMixin(PolymerElement);
 
 class BruschettaSubpageElement extends BruschettaSubpageElementBase {
   static get is() {
@@ -38,7 +35,7 @@ class BruschettaSubpageElement extends BruschettaSubpageElementBase {
   constructor() {
     super();
 
-    /** RouteOriginBehavior override */
+    /** RouteOriginMixin override */
     this.route_ = routes.BRUSCHETTA_DETAILS;
   }
 

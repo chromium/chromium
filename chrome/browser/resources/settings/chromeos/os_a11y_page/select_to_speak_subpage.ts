@@ -23,7 +23,7 @@ import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
 import {routes} from '../os_route.js';
-import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
+import {RouteOriginMixin, RouteOriginMixinInterface} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {getTemplate} from './select_to_speak_subpage.html.js';
@@ -79,12 +79,12 @@ const SettingsSelectToSpeakSubpageElementBase =
     mixinBehaviors(
         [
           DeepLinkingBehavior,
-          RouteOriginBehavior,
         ],
-        PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as {
+        RouteOriginMixin(
+            PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))) as {
       new (): PolymerElement & I18nMixinInterface &
           WebUiListenerMixinInterface & PrefsMixinInterface &
-          DeepLinkingBehaviorInterface & RouteOriginBehaviorInterface,
+          RouteOriginMixinInterface & DeepLinkingBehaviorInterface,
     };
 
 class SettingsSelectToSpeakSubpageElement extends
@@ -244,7 +244,7 @@ class SettingsSelectToSpeakSubpageElement extends
         SelectToSpeakSubpageBrowserProxyImpl.getInstance();
     this.langBrowserProxy_ = LanguagesBrowserProxyImpl.getInstance();
 
-    /** RouteOriginBehavior override */
+    /** RouteOriginMixin override */
     this.route_ = routes.A11Y_SELECT_TO_SPEAK;
   }
 
@@ -271,7 +271,7 @@ class SettingsSelectToSpeakSubpageElement extends
   }
 
   /**
-   * Note: Overrides RouteOriginBehavior implementation.
+   * Note: Overrides RouteOriginMixin implementation.
    */
   override currentRouteChanged(newRoute: Route, prevRoute?: Route) {
     super.currentRouteChanged(newRoute, prevRoute);

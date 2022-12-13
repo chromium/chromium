@@ -18,11 +18,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, Router} from '../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
 import {routes} from '../os_route.js';
-import {RouteOriginBehavior, RouteOriginBehaviorImpl, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
+import {RouteOriginMixin, RouteOriginMixinInterface} from '../route_origin_mixin.js';
+import {Route, Router} from '../router.js';
 
 import {getTemplate} from './text_to_speech_page.html.js';
 import {TextToSpeechPageBrowserProxy, TextToSpeechPageBrowserProxyImpl} from './text_to_speech_page_browser_proxy.js';
@@ -31,12 +31,11 @@ const SettingsTextToSpeechPageElementBase =
     mixinBehaviors(
         [
           DeepLinkingBehavior,
-          RouteOriginBehavior,
         ],
-        WebUiListenerMixin(I18nMixin(PolymerElement))) as {
+        RouteOriginMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as {
       new (): PolymerElement & I18nMixinInterface &
-          WebUiListenerMixinInterface & DeepLinkingBehaviorInterface &
-          RouteOriginBehaviorInterface,
+          WebUiListenerMixinInterface & RouteOriginMixinInterface &
+          DeepLinkingBehaviorInterface,
     };
 
 class SettingsTextToSpeechPageElement extends
@@ -95,7 +94,7 @@ class SettingsTextToSpeechPageElement extends
   constructor() {
     super();
 
-    /** RouteOriginBehavior override */
+    /** RouteOriginMixin override */
     this.route_ = routes.A11Y_TEXT_TO_SPEECH;
 
     this.textToSpeechBrowserProxy_ =
@@ -122,10 +121,10 @@ class SettingsTextToSpeechPageElement extends
   }
 
   /**
-   * Note: Overrides RouteOriginBehavior implementation
+   * Note: Overrides RouteOriginMixin implementation
    */
   override currentRouteChanged(newRoute: Route, prevRoute?: Route) {
-    RouteOriginBehaviorImpl.currentRouteChanged.call(this, newRoute, prevRoute);
+    super.currentRouteChanged(newRoute, prevRoute);
 
     // Does not apply to this page.
     if (newRoute !== routes.A11Y_TEXT_TO_SPEECH) {

@@ -26,11 +26,11 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
-import {Route, Router} from '../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
 import {routes} from '../os_route.js';
-import {RouteOriginBehavior, RouteOriginBehaviorImpl, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
+import {RouteOriginMixin, RouteOriginMixinInterface} from '../route_origin_mixin.js';
+import {Route, Router} from '../router.js';
 
 import {getTemplate} from './cursor_and_touchpad_page.html.js';
 import {CursorAndTouchpadPageBrowserProxy, CursorAndTouchpadPageBrowserProxyImpl} from './cursor_and_touchpad_page_browser_proxy.js';
@@ -52,12 +52,12 @@ const SettingsCursorAndTouchpadPageElementBase =
     mixinBehaviors(
         [
           DeepLinkingBehavior,
-          RouteOriginBehavior,
         ],
-        PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as {
+        RouteOriginMixin(
+            PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))) as {
       new (): PolymerElement & I18nMixinInterface &
           WebUiListenerMixinInterface & PrefsMixinInterface &
-          DeepLinkingBehaviorInterface & RouteOriginBehaviorInterface,
+          RouteOriginMixinInterface & DeepLinkingBehaviorInterface,
     };
 
 class SettingsCursorAndTouchpadPageElement extends
@@ -264,7 +264,7 @@ class SettingsCursorAndTouchpadPageElement extends
   constructor() {
     super();
 
-    /** RouteOriginBehavior override */
+    /** RouteOriginMixin override */
     this.route_ = routes.A11Y_CURSOR_AND_TOUCHPAD;
 
     this.cursorAndTouchpadBrowserProxy_ =
@@ -295,10 +295,10 @@ class SettingsCursorAndTouchpadPageElement extends
   }
 
   /**
-   * Note: Overrides RouteOriginBehavior implementation
+   * Note: Overrides RouteOriginMixin implementation
    */
   override currentRouteChanged(newRoute: Route, prevRoute?: Route) {
-    RouteOriginBehaviorImpl.currentRouteChanged.call(this, newRoute, prevRoute);
+    super.currentRouteChanged(newRoute, prevRoute);
 
     // Does not apply to this page.
     if (newRoute !== routes.A11Y_CURSOR_AND_TOUCHPAD) {
