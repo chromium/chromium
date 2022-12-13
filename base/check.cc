@@ -174,17 +174,6 @@ CheckError CheckError::NotImplemented(const char* file,
   return CheckError(log_message);
 }
 
-CheckError CheckError::NotReached(const char* file, int line) {
-  // Outside DCHECK builds NOTREACHED() should not be FATAL. For now.
-  const LogSeverity severity = DCHECK_IS_ON() ? LOGGING_DCHECK : LOGGING_ERROR;
-  auto* const log_message = new NotReachedLogMessage(file, line, severity);
-
-  // TODO(pbos): Consider a better message for NotReached(), this is here to
-  // match existing behavior + test expectations.
-  log_message->stream() << "Check failed: false. ";
-  return CheckError(log_message);
-}
-
 std::ostream& CheckError::stream() {
   return log_message_->stream();
 }
@@ -195,6 +184,19 @@ CheckError::~CheckError() {
   // See cl/306632920.
   delete log_message_;
 }
+
+NotReachedError NotReachedError::NotReached(const char* file, int line) {
+  // Outside DCHECK builds NOTREACHED() should not be FATAL. For now.
+  const LogSeverity severity = DCHECK_IS_ON() ? LOGGING_DCHECK : LOGGING_ERROR;
+  auto* const log_message = new NotReachedLogMessage(file, line, severity);
+
+  // TODO(pbos): Consider a better message for NotReached(), this is here to
+  // match existing behavior + test expectations.
+  log_message->stream() << "Check failed: false. ";
+  return NotReachedError(log_message);
+}
+
+NotReachedError::~NotReachedError() = default;
 
 void RawCheck(const char* message) {
   RawLog(LOGGING_FATAL, message);

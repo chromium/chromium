@@ -78,8 +78,6 @@ class BASE_EXPORT CheckError {
                                    int line,
                                    const char* function);
 
-  static CheckError NotReached(const char* file, int line);
-
   // Stream for adding optional details to the error message.
   std::ostream& stream();
 
@@ -95,6 +93,18 @@ class BASE_EXPORT CheckError {
 
  private:
   LogMessage* const log_message_;
+};
+
+class BASE_EXPORT NotReachedError : public CheckError {
+ public:
+  static NotReachedError NotReached(const char* file, int line);
+
+  // TODO(crbug.com/851128): Mark [[noreturn]] once this is CHECK-fatal on all
+  // builds.
+  NOMERGE NOT_TAIL_CALLED ~NotReachedError();
+
+ private:
+  using CheckError::CheckError;
 };
 
 // The 'switch' is used to prevent the 'else' from being ambiguous when the
