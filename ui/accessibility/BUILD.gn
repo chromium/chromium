@@ -366,6 +366,7 @@ test("accessibility_unittests") {
         "platform/ax_platform_node_textrangeprovider_win_unittest.cc",
         "platform/ax_platform_node_win_unittest.cc",
         "platform/ax_platform_node_win_unittest.h",
+        "platform/iaccessible2/scoped_co_mem_array_unittest.cc",
       ]
 
       deps += [
