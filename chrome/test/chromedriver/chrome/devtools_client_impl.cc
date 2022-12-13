@@ -298,9 +298,6 @@ Status DevToolsClientImpl::StartBidiServer(std::string bidi_mapper_script,
                   "BiDi tunnel is already set up in this client"};
   }
   Status status{kOk};
-  // TODO(https://crbug.com/chromedriver/4295#c1): implement the proper solution
-  // by waiting for the initial page navigation to be finished.
-  base::PlatformThread::Sleep(base::Milliseconds(200));
   // Page clients have target_id coinciding with id
   std::string target_id = id_;
   {

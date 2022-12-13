@@ -371,6 +371,15 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
       return status;
     session->bidi_mapper_web_view_id = session->window;
 
+    // Wait until the default page navigation is over to prevent the mapper
+    // from begin evicted by the navigation.
+    status = web_view->WaitForPendingNavigations(
+        session->GetCurrentFrameId(), Timeout(session->page_load_timeout),
+        true);
+    if (status.IsError()) {
+      return status;
+    }
+
     status = web_view->StartBidiServer(kMapperScript);
     if (status.IsError()) {
       return status;
