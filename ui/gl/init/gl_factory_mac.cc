@@ -5,6 +5,7 @@
 #include "ui/gl/init/gl_factory.h"
 
 #include "base/check_op.h"
+#include "base/mac/mac_util.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/buildflags.h"
@@ -25,7 +26,16 @@ namespace init {
 
 std::vector<GLImplementationParts> GetAllowedGLImplementations() {
   std::vector<GLImplementationParts> impls;
-  impls.emplace_back(GLImplementationParts(kGLImplementationEGLANGLE));
+  impls.emplace_back(GLImplementationParts(gl::ANGLEImplementation::kDefault));
+  impls.emplace_back(GLImplementationParts(gl::ANGLEImplementation::kOpenGL));
+  impls.emplace_back(GLImplementationParts(gl::ANGLEImplementation::kMetal));
+  // crbug.com/1378476: LLVM 10 is used as the JIT compiler for SwiftShader,
+  // which doesn't properly support ARM. Disable Swiftshader on ARM CPUs until
+  // LLVM is upgraded.
+  if (base::mac::GetCPUType() != base::mac::CPUType::kArm) {
+    impls.emplace_back(
+        GLImplementationParts(gl::ANGLEImplementation::kSwiftShader));
+  }
   return impls;
 }
 
