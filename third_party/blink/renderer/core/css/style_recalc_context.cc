@@ -16,7 +16,14 @@ Element* ClosestInclusiveAncestorContainer(Element& element,
                                            Element* stay_within = nullptr) {
   for (auto* container = &element; container && container != stay_within;
        container = container->ParentOrShadowHostElement()) {
-    if (container->ComputedStyleRef().IsContainerForSizeContainerQueries())
+    const ComputedStyle* style = container->GetComputedStyle();
+    if (!style) {
+      // TODO(crbug.com/1400631): Eliminate all invalid calls to
+      // StyleRecalcContext::From[Inclusive]Ancestors.
+      NOTREACHED();
+      return nullptr;
+    }
+    if (style->IsContainerForSizeContainerQueries())
       return container;
   }
   return nullptr;
@@ -26,7 +33,6 @@ Element* ClosestInclusiveAncestorContainer(Element& element,
 
 StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
     Element& element) {
-  DCHECK(element.GetComputedStyle());
   return StyleRecalcContext{ClosestInclusiveAncestorContainer(element)};
 }
 
