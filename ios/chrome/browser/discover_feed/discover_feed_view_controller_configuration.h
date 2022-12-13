@@ -9,6 +9,7 @@
 
 class Browser;
 @protocol DiscoverFeedPreviewDelegate;
+@protocol FeedSignInPromoDelegate;
 @protocol UIScrollViewDelegate;
 
 // Configuration object used to create and configure a
@@ -23,6 +24,9 @@ class Browser;
 
 // DiscoverFeedPreviewDelegate used by Discover Feed ViewController.
 @property(nonatomic, weak) id<DiscoverFeedPreviewDelegate> previewDelegate;
+
+// FeedSignInPromoDelegate used by Discover Feed ViewController.
+@property(nonatomic, weak) id<FeedSignInPromoDelegate> signInPromoDelegate;
 
 @end
 

@@ -12,6 +12,7 @@ source_set("ntp") {
     "discover_feed_preview_delegate.h",
     "feed_control_delegate.h",
     "feed_delegate.h",
+    "feed_sign_in_promo_delegate.h",
     "new_tab_page_configuring.h",
     "new_tab_page_content_delegate.h",
     "new_tab_page_controller_delegate.h",

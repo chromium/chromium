@@ -75,20 +75,31 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperationSigninAndSync
-            accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN];
-  [handler showSignin:command baseViewController:self.baseViewController];
+  if (self.baseViewController.presentedViewController) {
+    __weak __typeof(self) weakSelf = self;
+    [self.baseViewController dismissViewControllerAnimated:YES
+                                                completion:^{
+                                                  [weakSelf showSignInFlow];
+                                                }];
+  }
   // TODO(crbug.com/1382615): add metrics.
 }
 
 - (void)confirmationAlertSecondaryAction {
-  if (self.baseViewController.presentedViewController) {
-    [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
-  }
+  [self stop];
   // TODO(crbug.com/1382615): add metrics.
+}
+
+#pragma mark - Helpers
+
+- (void)showSignInFlow {
+  using AccessPoint = signin_metrics::AccessPoint;
+  id<ApplicationCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+      initWithOperation:AuthenticationOperationSigninAndSync
+            accessPoint:AccessPoint::ACCESS_POINT_UNKNOWN];
+  [handler showSignin:command baseViewController:self.baseViewController];
 }
 
 @end
