@@ -383,7 +383,7 @@
     [NSLayoutConstraint deactivateConstraints:_floatingConstraints];
     [_toolbar removeFromSuperview];
     [_largeNewTabButton removeFromSuperview];
-    self.hidden = !self.subviews.count;
+    self.hidden = YES;
     return;
   }
   _largeNewTabButtonBottomAnchor.constant =
@@ -397,7 +397,7 @@
     ]];
     [self addSubview:_toolbar];
     [NSLayoutConstraint activateConstraints:_compactConstraints];
-    self.hidden = !self.subviews.count;
+    self.hidden = NO;
     return;
   }
   UIBarButtonItem* leadingButton = _closeAllOrUndoButton;
