@@ -2023,7 +2023,7 @@ class AuctionRunnerTest : public testing::Test,
         /*priority_signals_overrides=*/absl::nullopt,
         /*seller_capabilities=*/absl::nullopt,
         /*all_sellers_capabilities=*/
-        blink::InterestGroup::SellerCapabilitiesType(),
+        {},
         /*execution_mode=*/
         blink::InterestGroup::ExecutionMode::kCompatibilityMode,
         std::move(bidding_url),

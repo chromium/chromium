@@ -120,15 +120,12 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeSellerCapabilities) {
   InterestGroup interest_group = CreateInterestGroup();
 
   interest_group.seller_capabilities = {
-      {url::Origin::Create(GURL(kOrigin1)),
-       InterestGroup::SellerCapabilitiesType()}};
+      {{url::Origin::Create(GURL(kOrigin1)), {}}}};
   SerializeAndDeserializeAndCompare(interest_group);
 
   interest_group.seller_capabilities = {
-      {url::Origin::Create(GURL(kOrigin1)),
-       InterestGroup::SellerCapabilitiesType()},
-      {url::Origin::Create(GURL(kOrigin2)),
-       InterestGroup::SellerCapabilitiesType()}};
+      {{url::Origin::Create(GURL(kOrigin1)), {}},
+       {url::Origin::Create(GURL(kOrigin2)), {}}}};
   SerializeAndDeserializeAndCompare(interest_group);
 }
 

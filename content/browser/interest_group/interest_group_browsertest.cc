@@ -878,8 +878,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
             /*priority_signals_overrides=*/absl::nullopt,
             /*seller_capabilities=*/absl::nullopt,
             /*all_sellers_capabilities=*/
-            blink::InterestGroup::SellerCapabilitiesType(), execution_mode,
-            std::move(bidding_url),
+            {}, execution_mode, std::move(bidding_url),
             /*bidding_wasm_helper_url=*/absl::nullopt,
             /*daily_update_url=*/absl::nullopt,
             /*trusted_bidding_signals_url=*/absl::nullopt,
@@ -1589,7 +1588,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/GURL("https://bid.a.test"),
@@ -1620,7 +1619,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/absl::nullopt,
@@ -1652,7 +1651,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/absl::nullopt,
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -1702,7 +1701,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/absl::nullopt,
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -3641,7 +3640,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -3729,7 +3728,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(test_url.host(),
@@ -3792,7 +3791,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -3991,7 +3990,7 @@ IN_PROC_BROWSER_TEST_F(
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -4042,7 +4041,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionCancel) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/hung"),
@@ -4096,7 +4095,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionCancelLate) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -4158,7 +4157,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionCancelBefore) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -4213,7 +4212,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithBidderWasm) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test",
@@ -4259,7 +4258,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
@@ -4283,7 +4282,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
@@ -4307,7 +4306,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
@@ -4416,7 +4415,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
@@ -4439,7 +4438,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test",
@@ -4519,7 +4518,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -4666,7 +4665,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -4900,7 +4899,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -4965,7 +4964,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -5018,7 +5017,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest, CrossOrigin) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(kBidder, "/interest_group/bidding_logic.js"),
@@ -5125,7 +5124,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -5187,7 +5186,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, TopFrameHostname) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
@@ -5340,7 +5339,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
@@ -5364,7 +5363,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -5388,7 +5387,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -5410,7 +5409,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -5463,7 +5462,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionAllGroupsLimited) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -5485,7 +5484,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionAllGroupsLimited) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -5510,7 +5509,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionAllGroupsLimited) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -5568,7 +5567,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionOneGroupLimited) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -5593,7 +5592,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionOneGroupLimited) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -5618,7 +5617,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionOneGroupLimited) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -5643,7 +5642,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionOneGroupLimited) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -5666,7 +5665,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionOneGroupLimited) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -5691,7 +5690,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionOneGroupLimited) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -5758,7 +5757,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -5783,7 +5782,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -5808,7 +5807,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -5833,7 +5832,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -5856,7 +5855,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -5881,7 +5880,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -5952,7 +5951,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             /*priority_signals_overrides=*/absl::nullopt,
             /*seller_capabilities=*/absl::nullopt,
             /*all_sellers_capabilities=*/
-            blink::InterestGroup::SellerCapabilitiesType(),
+            {},
             /*execution_mode=*/
             blink::InterestGroup::ExecutionMode::kCompatibilityMode,
             /*bidding_url=*/
@@ -6028,7 +6027,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
@@ -6057,7 +6056,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("b.test", "/interest_group/bidding_logic.js"),
@@ -6212,7 +6211,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
@@ -6241,7 +6240,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
@@ -6300,7 +6299,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
@@ -6490,7 +6489,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithInvalidAdUrl) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
@@ -6876,7 +6875,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test",
@@ -7121,7 +7120,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
           /*priority_signals_overrides=*/{{{"foo", 1}}},
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
@@ -7242,7 +7241,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/{{{"foo", 1}}},
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
@@ -7367,7 +7366,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/{{{"FOO", 1}}},
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
@@ -7532,7 +7531,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -7738,7 +7737,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, QuitWithRunningAuction) {
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/hanging_url,
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -7801,7 +7800,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Update) {
           /*priority_signals_overrides=*/{{{"two", 2}}},
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -7876,7 +7875,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -8060,7 +8059,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(kBidder, "/interest_group/bidding_logic.js"),
@@ -8131,7 +8130,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(kBidder, "/interest_group/bidding_logic.js"),
@@ -8162,7 +8161,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(kBidder2, "/interest_group/bidding_logic.js"),
@@ -8471,7 +8470,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode, bidder_url,
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -8586,7 +8585,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
             /*priority_signals_overrides=*/absl::nullopt,
             /*seller_capabilities=*/absl::nullopt,
             /*all_sellers_capabilities=*/
-            blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+            {}, /*execution_mode=*/
             blink::InterestGroup::ExecutionMode::kCompatibilityMode,
             initial_bidding_url,
             /*bidding_wasm_helper_url=*/absl::nullopt, update_url,
@@ -8724,7 +8723,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           initial_bidding_url_a,
           /*bidding_wasm_helper_url=*/absl::nullopt, update_url_a,
@@ -8758,7 +8757,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           initial_bidding_url_b,
           /*bidding_wasm_helper_url=*/absl::nullopt, update_url_b,
@@ -8786,7 +8785,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+          {}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           initial_bidding_url_c,
           /*bidding_wasm_helper_url=*/absl::nullopt, update_url_c,
@@ -8907,7 +8906,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
             /*priority_signals_overrides=*/absl::nullopt,
             /*seller_capabilities=*/absl::nullopt,
             /*all_sellers_capabilities=*/
-            blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+            {}, /*execution_mode=*/
             blink::InterestGroup::ExecutionMode::kCompatibilityMode,
             /*bidding_url=*/
             https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
@@ -8933,7 +8932,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
             /*priority_signals_overrides=*/absl::nullopt,
             /*seller_capabilities=*/absl::nullopt,
             /*all_sellers_capabilities=*/
-            blink::InterestGroup::SellerCapabilitiesType(), /*execution_mode=*/
+            {}, /*execution_mode=*/
             blink::InterestGroup::ExecutionMode::kCompatibilityMode,
             /*bidding_url=*/
             https_server_->GetURL("b.test", "/interest_group/bidding_logic.js"),
@@ -9620,7 +9619,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ExecutionModeGroupByOrigin) {
                     /*priority_signals_overrides=*/absl::nullopt,
                     /*seller_capabilities=*/absl::nullopt,
                     /*all_sellers_capabilities=*/
-                    blink::InterestGroup::SellerCapabilitiesType(),
+                    {},
                     /*execution_mode=*/
                     execution_mode,
                     /*bidding_url=*/
@@ -9678,7 +9677,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -9762,7 +9761,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -9849,7 +9848,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -9943,7 +9942,7 @@ IN_PROC_BROWSER_TEST_F(
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
@@ -9968,7 +9967,7 @@ IN_PROC_BROWSER_TEST_F(
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/absl::nullopt,
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilitiesType(),
+          {},
           /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
