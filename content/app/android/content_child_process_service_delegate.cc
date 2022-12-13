@@ -65,34 +65,6 @@ class ChildProcessSurfaceManager : public gpu::ScopedSurfaceRequestConduit,
   }
 
   // Overridden from GpuSurfaceLookup:
-  gfx::AcceleratedWidget AcquireNativeWidget(
-      int surface_id,
-      bool* can_be_used_with_surface_control) override {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    base::android::ScopedJavaLocalRef<jobject> surface_wrapper =
-        content::Java_ContentChildProcessServiceDelegate_getViewSurface(
-            env, service_impl_, surface_id);
-    if (!surface_wrapper)
-      return gfx::kNullAcceleratedWidget;
-
-    gl::ScopedJavaSurface surface(
-        content::JNI_SurfaceWrapper_getSurface(env, surface_wrapper));
-    DCHECK(!surface.j_surface().is_null());
-
-    // Note: This ensures that any local references used by
-    // ANativeWindow_fromSurface are released immediately. This is needed as a
-    // workaround for https://code.google.com/p/android/issues/detail?id=68174
-    base::android::ScopedJavaLocalFrame scoped_local_reference_frame(env);
-    ANativeWindow* native_window =
-        ANativeWindow_fromSurface(env, surface.j_surface().obj());
-
-    *can_be_used_with_surface_control =
-        content::JNI_SurfaceWrapper_canBeUsedWithSurfaceControl(
-            env, surface_wrapper);
-    return native_window;
-  }
-
-  // Overridden from GpuSurfaceLookup:
   gl::ScopedJavaSurface AcquireJavaSurface(
       int surface_id,
       bool* can_be_used_with_surface_control) override {

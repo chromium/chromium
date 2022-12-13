@@ -29,6 +29,8 @@
 #include "ui/gl/gl_surface.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "ui/gl/android/scoped_a_native_window.h"
+#include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/gl_surface_egl_surface_control.h"
 #endif
 
@@ -139,21 +141,16 @@ std::unique_ptr<OutputPresenterGL> OutputPresenterGL::Create(
   }
 
   bool can_be_used_with_surface_control = false;
-  ANativeWindow* window =
-      gpu::GpuSurfaceLookup::GetInstance()->AcquireNativeWidget(
+  gl::ScopedJavaSurface scoped_java_surface =
+      gpu::GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(
           deps->GetSurfaceHandle(), &can_be_used_with_surface_control);
-  base::ScopedClosureRunner release_runner(base::BindOnce(
-      [](gfx::AcceleratedWidget widget) {
-        if (widget)
-          ANativeWindow_release(widget);
-      },
-      window));
+  gl::ScopedANativeWindow window(scoped_java_surface);
   if (!window || !can_be_used_with_surface_control)
     return nullptr;
   // TODO(https://crbug.com/1012401): don't depend on GL.
   auto gl_surface = base::MakeRefCounted<gl::GLSurfaceEGLSurfaceControl>(
       deps->GetSharedContextState()->display()->GetAs<gl::GLDisplayEGL>(),
-      window, base::SingleThreadTaskRunner::GetCurrentDefault());
+      std::move(window), base::SingleThreadTaskRunner::GetCurrentDefault());
   if (!gl_surface->Initialize(gl::GLSurfaceFormat())) {
     LOG(ERROR) << "Failed to initialize GLSurfaceEGLSurfaceControl.";
     return nullptr;

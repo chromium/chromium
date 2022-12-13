@@ -16,10 +16,6 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_swap_chain.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include <android/native_window_jni.h>
-#endif
-
 namespace gpu {
 
 namespace {
@@ -81,10 +77,6 @@ uint32_t kMinImageCount = 3u;
 
 VulkanSurface::~VulkanSurface() {
   DCHECK_EQ(static_cast<VkSurfaceKHR>(VK_NULL_HANDLE), surface_);
-#if BUILDFLAG(IS_ANDROID)
-  if (accelerated_widget_)
-    ANativeWindow_release(accelerated_widget_);
-#endif
 }
 
 VulkanSurface::VulkanSurface(VkInstance vk_instance,
@@ -93,6 +85,9 @@ VulkanSurface::VulkanSurface(VkInstance vk_instance,
                              uint64_t acquire_next_image_timeout_ns,
                              std::unique_ptr<gfx::VSyncProvider> vsync_provider)
     : vk_instance_(vk_instance),
+#if BUILDFLAG(IS_ANDROID)
+      a_native_window_(gl::ScopedANativeWindow::Wrap(accelerated_widget)),
+#endif
       accelerated_widget_(accelerated_widget),
       surface_(surface),
       acquire_next_image_timeout_ns_(acquire_next_image_timeout_ns),
@@ -102,11 +97,6 @@ VulkanSurface::VulkanSurface(VkInstance vk_instance,
     vsync_provider_ = std::make_unique<gfx::FixedVSyncProvider>(
         base::TimeTicks(), base::Seconds(1) / 60);
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  if (accelerated_widget_)
-    ANativeWindow_acquire(accelerated_widget_);
-#endif
 }
 
 bool VulkanSurface::Initialize(VulkanDeviceQueue* device_queue,

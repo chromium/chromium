@@ -4,6 +4,8 @@
 
 #include "gpu/ipc/service/image_transport_surface.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -11,6 +13,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "gpu/ipc/service/pass_through_image_transport_surface.h"
+#include "ui/gl/android/scoped_a_native_window.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_surface_egl_surface_control.h"
 #include "ui/gl/gl_surface_stub.h"
@@ -31,10 +34,12 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
   // On Android, the surface_handle is the id of the surface in the
   // GpuSurfaceTracker/GpuSurfaceLookup
   bool can_be_used_with_surface_control = false;
-  ANativeWindow* window = GpuSurfaceLookup::GetInstance()->AcquireNativeWidget(
-      surface_handle, &can_be_used_with_surface_control);
+  gl::ScopedJavaSurface scoped_java_surface =
+      GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(
+          surface_handle, &can_be_used_with_surface_control);
+  gl::ScopedANativeWindow window(scoped_java_surface);
   if (!window) {
-    LOG(WARNING) << "Failed to acquire native widget.";
+    LOG(WARNING) << "Failed to acquire ANativeWindow";
     return nullptr;
   }
   scoped_refptr<gl::GLSurface> surface;
@@ -43,15 +48,14 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
       delegate->GetFeatureInfo()->feature_flags().android_surface_control &&
       can_be_used_with_surface_control) {
     surface = new gl::GLSurfaceEGLSurfaceControl(
-        display->GetAs<gl::GLDisplayEGL>(), window,
+        display->GetAs<gl::GLDisplayEGL>(), std::move(window),
         base::SingleThreadTaskRunner::GetCurrentDefault());
   } else {
     surface = new gl::NativeViewGLSurfaceEGL(display->GetAs<gl::GLDisplayEGL>(),
-                                             window, nullptr);
+                                             std::move(window), nullptr);
   }
 
   bool initialize_success = surface->Initialize(format);
-  ANativeWindow_release(window);
   if (!initialize_success)
     return scoped_refptr<gl::GLSurface>();
 

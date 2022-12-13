@@ -139,6 +139,8 @@ component("gl") {
 
   if (is_android) {
     sources += [
+      "android/scoped_a_native_window.cc",
+      "android/scoped_a_native_window.h",
       "android/scoped_java_surface.cc",
       "android/scoped_java_surface.h",
       "android/scoped_java_surface_control.cc",

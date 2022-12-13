@@ -50,19 +50,13 @@ class GPU_EXPORT GpuSurfaceTracker : public gpu::GpuSurfaceLookup {
     SurfaceRecord(SurfaceRecord&&);
     SurfaceRecord(const SurfaceRecord&) = delete;
 
+    // TODO(crbug.com/1399516): Make this non-android.
     gfx::AcceleratedWidget widget;
 #if BUILDFLAG(IS_ANDROID)
     gl::ScopedJavaSurface surface;
     bool can_be_used_with_surface_control;
 #endif
   };
-
-  // GpuSurfaceLookup implementation:
-  // Returns the native widget associated with a given surface_handle.
-  // On Android, this adds a reference on the ANativeWindow.
-  gfx::AcceleratedWidget AcquireNativeWidget(
-      gpu::SurfaceHandle surface_handle,
-      bool* can_be_used_with_surface_control) override;
 
 #if BUILDFLAG(IS_ANDROID)
   gl::ScopedJavaSurface AcquireJavaSurface(

@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
+#include "ui/gl/android/scoped_a_native_window.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_context_egl.h"
@@ -125,7 +126,8 @@ scoped_refptr<GLSurface> CreateViewGLSurface(GLDisplay* display,
     case kGLImplementationEGLANGLE:
       if (window != gfx::kNullAcceleratedWidget) {
         return InitializeGLSurface(new NativeViewGLSurfaceEGL(
-            display->GetAs<gl::GLDisplayEGL>(), window, nullptr));
+            display->GetAs<gl::GLDisplayEGL>(),
+            ScopedANativeWindow::Wrap(window), nullptr));
       } else {
         return InitializeGLSurface(new GLSurfaceStub());
       }

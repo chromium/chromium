@@ -29,13 +29,14 @@ class ScopedHardwareBufferFenceSync;
 
 namespace gl {
 
+class ScopedANativeWindow;
 class ScopedJavaSurfaceControl;
 
 class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
  public:
   GLSurfaceEGLSurfaceControl(
       GLDisplayEGL* display,
-      ANativeWindow* window,
+      gl::ScopedANativeWindow window,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   GLSurfaceEGLSurfaceControl(
       GLDisplayEGL* display,

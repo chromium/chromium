@@ -29,6 +29,10 @@
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_surface_overlay.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/gl/android/scoped_a_native_window.h"
+#endif
+
 namespace gl {
 
 class GLSurfacePresentationHelper;
@@ -62,9 +66,15 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
 class GL_EXPORT NativeViewGLSurfaceEGL : public GLSurfaceEGL,
                                          public EGLTimestampClient {
  public:
+#if BUILDFLAG(IS_ANDROID)
+  NativeViewGLSurfaceEGL(GLDisplayEGL* display,
+                         ScopedANativeWindow scoped_window,
+                         std::unique_ptr<gfx::VSyncProvider> vsync_provider);
+#else
   NativeViewGLSurfaceEGL(GLDisplayEGL* display,
                          EGLNativeWindowType window,
                          std::unique_ptr<gfx::VSyncProvider> vsync_provider);
+#endif
 
   NativeViewGLSurfaceEGL(const NativeViewGLSurfaceEGL&) = delete;
   NativeViewGLSurfaceEGL& operator=(const NativeViewGLSurfaceEGL&) = delete;
@@ -119,6 +129,9 @@ class GL_EXPORT NativeViewGLSurfaceEGL : public GLSurfaceEGL,
  protected:
   ~NativeViewGLSurfaceEGL() override;
 
+#if BUILDFLAG(IS_ANDROID)
+  ScopedANativeWindow scoped_window_;
+#endif
   EGLNativeWindowType window_ = 0;
   gfx::Size size_ = gfx::Size(1, 1);
   bool enable_fixed_size_angle_ = true;

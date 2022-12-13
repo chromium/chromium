@@ -28,6 +28,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include <android/native_window_jni.h>
+#include "ui/gl/android/scoped_a_native_window.h"
+#include "ui/gl/android/scoped_java_surface.h"
 #endif
 
 namespace viz {
@@ -260,15 +262,11 @@ bool SkiaOutputDeviceVulkan::Initialize() {
   gfx::AcceleratedWidget accelerated_widget = gfx::kNullAcceleratedWidget;
 #if BUILDFLAG(IS_ANDROID)
   bool can_be_used_with_surface_control = false;
-  accelerated_widget =
-      gpu::GpuSurfaceLookup::GetInstance()->AcquireNativeWidget(
+  gl::ScopedJavaSurface scoped_java_surface =
+      gpu::GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(
           surface_handle_, &can_be_used_with_surface_control);
-  base::ScopedClosureRunner release_runner(base::BindOnce(
-      [](gfx::AcceleratedWidget widget) {
-        if (widget)
-          ANativeWindow_release(widget);
-      },
-      accelerated_widget));
+  gl::ScopedANativeWindow window(scoped_java_surface);
+  accelerated_widget = window.a_native_window();
 #else
   accelerated_widget = surface_handle_;
 #endif

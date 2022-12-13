@@ -17,6 +17,7 @@
 #include "cc/base/math_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/overlay_transform_utils.h"
+#include "ui/gl/android/scoped_a_native_window.h"
 #include "ui/gl/android/scoped_java_surface_control.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_context.h"
@@ -58,12 +59,12 @@ base::TimeTicks GetSignalTime(const base::ScopedFD& fence) {
 
 GLSurfaceEGLSurfaceControl::GLSurfaceEGLSurfaceControl(
     GLDisplayEGL* display,
-    ANativeWindow* window,
+    gl::ScopedANativeWindow window,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : GLSurfaceEGLSurfaceControl(
           display,
           base::MakeRefCounted<gfx::SurfaceControl::Surface>(
-              window,
+              window.a_native_window(),
               BuildSurfaceName(kRootSurfaceName).c_str()),
           std::move(task_runner)) {}
 

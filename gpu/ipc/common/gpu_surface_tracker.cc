@@ -66,24 +66,6 @@ void GpuSurfaceTracker::RemoveSurface(gpu::SurfaceHandle surface_handle) {
   surface_map_.erase(surface_handle);
 }
 
-gfx::AcceleratedWidget GpuSurfaceTracker::AcquireNativeWidget(
-    gpu::SurfaceHandle surface_handle,
-    bool* can_be_used_with_surface_control) {
-  base::AutoLock lock(surface_map_lock_);
-  SurfaceMap::iterator it = surface_map_.find(surface_handle);
-  if (it == surface_map_.end())
-    return gfx::kNullAcceleratedWidget;
-
-#if BUILDFLAG(IS_ANDROID)
-  if (it->second.widget != gfx::kNullAcceleratedWidget)
-    ANativeWindow_acquire(it->second.widget);
-  *can_be_used_with_surface_control =
-      it->second.can_be_used_with_surface_control;
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  return it->second.widget;
-}
-
 #if BUILDFLAG(IS_ANDROID)
 gl::ScopedJavaSurface GpuSurfaceTracker::AcquireJavaSurface(
     gpu::SurfaceHandle surface_handle,

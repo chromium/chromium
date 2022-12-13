@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_swap_chain.h"
 #include "ui/gfx/geometry/size.h"
@@ -19,6 +20,10 @@
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gfx/vsync_provider.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/gl/android/scoped_a_native_window.h"
+#endif
 
 namespace gpu {
 
@@ -93,6 +98,9 @@ class COMPONENT_EXPORT(VULKAN) VulkanSurface {
 
   const VkInstance vk_instance_;
 
+#if BUILDFLAG(IS_ANDROID)
+  const gl::ScopedANativeWindow a_native_window_;
+#endif
   const gfx::AcceleratedWidget accelerated_widget_;
   VkSurfaceKHR surface_ = VK_NULL_HANDLE;
   VkSurfaceFormatKHR surface_format_ = {};
