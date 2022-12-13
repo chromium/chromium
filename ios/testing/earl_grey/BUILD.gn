@@ -51,6 +51,8 @@ source_set("eg_test_support+eg2") {
     "earl_grey_test.h",
     "matchers.h",
     "matchers.mm",
+    "system_alert_handler.h",
+    "system_alert_handler.mm",
   ]
 
   deps = [
@@ -58,6 +60,7 @@ source_set("eg_test_support+eg2") {
     "//base/ios",
     "//base/test:test_support",
     "//components/variations",
+    "//ios/testing:system_alert_handler",
     "//ios/third_party/earl_grey2:test_lib",
     "//ios/third_party/edo",
     "//ios/web/common",

@@ -30,6 +30,7 @@ source_set("device_check_xcuitests") {
   deps = [
     "//base/test:test_support",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
+    "//ios/testing:system_alert_handler",
   ]
   frameworks = [ "UIKit.framework" ]
 }
