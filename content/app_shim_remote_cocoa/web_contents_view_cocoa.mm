@@ -4,25 +4,25 @@
 
 #import "content/app_shim_remote_cocoa/web_contents_view_cocoa.h"
 
-#import "content/browser/web_contents/web_contents_view_mac.h"
+#include <AppKit/AppKit.h>
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #import "base/mac/mac_util.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #import "content/app_shim_remote_cocoa/web_contents_occlusion_checker_mac.h"
 #import "content/app_shim_remote_cocoa/web_drag_source_mac.h"
+#import "content/browser/web_contents/web_contents_view_mac.h"
 #import "content/browser/web_contents/web_drag_dest_mac.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
-#import "third_party/mozilla/NSPasteboard+Utils.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
-#include "ui/base/dragdrop/cocoa_dnd_util.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
-
-#include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 
 using content::DropData;
 using features::kMacWebContentsOcclusion;
@@ -170,10 +170,11 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
       gfx::PointF(screenPoint.x, screenFrame.size.height - screenPoint.y);
 
   NSPasteboard* pboard = [nsInfo draggingPasteboard];
-  if ([pboard containsURLDataConvertingTextToURL:YES]) {
-    GURL url;
-    ui::PopulateURLAndTitleFromPasteboard(&url, NULL, pboard, YES);
-    info->url.emplace(url);
+  NSArray<NSString*>* urls;
+  NSArray<NSString*>* titles;
+  if (ui::ClipboardUtil::URLsAndTitlesFromPasteboard(
+          pboard, /*include_files=*/true, &urls, &titles)) {
+    info->url = GURL(base::SysNSStringToUTF8(urls.firstObject));
   }
   info->operation_mask = ui::DragDropTypes::NSDragOperationToDragOperation(
       [nsInfo draggingSourceOperationMask]);
@@ -190,9 +191,9 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 // Registers for the view for the appropriate drag types.
 - (void)registerDragTypes {
   [self registerForDraggedTypes:@[
-    ui::kUTTypeChromiumInitiatedDrag, kWebURLsWithTitlesPboardType,
-    NSURLPboardType, NSStringPboardType, NSHTMLPboardType, NSRTFPboardType,
-    NSFilenamesPboardType, ui::kUTTypeChromiumWebCustomData
+    ui::kUTTypeChromiumInitiatedDrag, ui::kUTTypeWebKitWebURLsWithTitles,
+    NSPasteboardTypeURL, NSPasteboardTypeString, NSPasteboardTypeHTML,
+    NSPasteboardTypeRTF, NSFilenamesPboardType, ui::kUTTypeChromiumWebCustomData
   ]];
 }
 

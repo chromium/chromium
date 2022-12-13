@@ -40,12 +40,14 @@ NSArray<NSPasteboardItem*>* PasteboardItemsFromUrls(NSArray<NSString*>* urls,
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
 void AddDataToPasteboard(NSPasteboard* pboard, NSPasteboardItem* item);
 
-// For a given pasteboard, reads and extracts the URLs to be found on it. The
-// two out-parameter arrays are guaranteed to be the same length when this
-// function completes. Returns true if at least one URL was successfully read,
-// and false otherwise.
+// For a given pasteboard, reads and extracts the URLs to be found on it. If
+// `include_files` is set, then any file references on the pasteboard will be
+// returned as file URLs. The two out-parameter arrays are guaranteed to be the
+// same length when this function completes. Returns true if at least one URL
+// was successfully read, and false otherwise.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
 bool URLsAndTitlesFromPasteboard(NSPasteboard* pboard,
+                                 bool include_files,
                                  NSArray<NSString*>** urls,
                                  NSArray<NSString*>** titles);
 

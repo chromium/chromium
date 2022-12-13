@@ -12,14 +12,13 @@
 #include "base/pickle.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#import "third_party/mozilla/NSPasteboard+Utils.h"
+#include "net/base/filename_util.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
-#import "ui/base/dragdrop/cocoa_dnd_util.h"
 #include "url/gurl.h"
 
 @interface CrPasteboardItemWrapper : NSObject <NSPasteboardWriting>
@@ -218,24 +217,30 @@ bool OSExchangeDataProviderMac::GetURLAndTitle(FilenameToURLPolicy policy,
   DCHECK(url);
   DCHECK(title);
 
-  if (PopulateURLAndTitleFromPasteboard(url, title, GetPasteboard(), false)) {
+  NSArray<NSString*>* urls;
+  NSArray<NSString*>* titles;
+  if (ui::ClipboardUtil::URLsAndTitlesFromPasteboard(
+          GetPasteboard(), /*include_files=*/false, &urls, &titles)) {
+    *url = GURL(base::SysNSStringToUTF8(urls.firstObject));
+    *title = base::SysNSStringToUTF16(titles.firstObject);
     return true;
   }
 
   // If there are no URLs, try to convert a filename to a URL if the policy
   // allows it. The title remains blank.
   //
-  // This could be done in the call to PopulateURLAndTitleFromPasteboard above
-  // if |true| were passed in as the last parameter, but that function strips
-  // the trailing slashes off of paths and always returns the last path element
-  // as the title whereas no path conversion nor title is wanted.
+  // This could be done in the call to `URLsAndTitlesFromPasteboard` above if
+  // `true` were passed in for the `include_files` parameter, but that function
+  // strips the trailing slashes off of paths and always returns the last path
+  // element as the title whereas no path conversion nor title is wanted.
+  //
+  // TODO(avi): What is going on here? This comment and code was written for the
+  // old pasteboard code; is this still true with the new pasteboard code? What
+  // uses this, and why does it care about titles or path conversion?
   base::FilePath path;
   if (policy != FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES &&
       GetFilename(&path)) {
-    NSURL* fileUrl =
-        [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
-    *url =
-        GURL([[fileUrl absoluteString] stringByStandardizingPath].UTF8String);
+    *url = net::FilePathToFileURL(path);
     return true;
   }
 

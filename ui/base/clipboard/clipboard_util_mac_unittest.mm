@@ -11,7 +11,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
-#include "third_party/mozilla/NSPasteboard+Utils.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
 namespace ui {
@@ -36,7 +35,8 @@ TEST_F(ClipboardUtilMacTest, PasteboardItemsFromUrlsRoundtrip) {
 
   NSArray* urls = nil;
   NSArray* titles = nil;
-  ClipboardUtil::URLsAndTitlesFromPasteboard(pasteboard->get(), &urls, &titles);
+  ClipboardUtil::URLsAndTitlesFromPasteboard(
+      pasteboard->get(), /*include_files=*/false, &urls, &titles);
 
   ASSERT_EQ(2u, urls.count);
   EXPECT_NSEQ(url_string_1, urls[0]);
@@ -61,7 +61,8 @@ TEST_F(ClipboardUtilMacTest, PasteboardItemsFromString) {
 
   NSArray* urls = nil;
   NSArray* titles = nil;
-  ClipboardUtil::URLsAndTitlesFromPasteboard(pasteboard->get(), &urls, &titles);
+  ClipboardUtil::URLsAndTitlesFromPasteboard(
+      pasteboard->get(), /*include_files=*/false, &urls, &titles);
 
   ASSERT_EQ(1u, urls.count);
   EXPECT_NSEQ(@"https://www.google.com/", urls[0]);
@@ -74,22 +75,30 @@ TEST_F(ClipboardUtilMacTest, PasteboardItemWithFilePath) {
   ASSERT_TRUE(url);
   NSString* url_string = url.absoluteString;
 
-  NSArray<NSPasteboardItem*>* items =
-      ClipboardUtil::PasteboardItemsFromUrls(@[ url_string ], @[ @"" ]);
+  NSPasteboardItem* item = [[[NSPasteboardItem alloc] init] autorelease];
+  [item setString:url_string forType:NSPasteboardTypeFileURL];
+
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
-  [pasteboard->get() writeObjects:items];
+  [pasteboard->get() writeObjects:@[ item ]];
+
+  // Read without translating file URLs, expect to not find it.
 
   NSArray* urls = nil;
   NSArray* titles = nil;
-  ClipboardUtil::URLsAndTitlesFromPasteboard(pasteboard->get(), &urls, &titles);
+  ClipboardUtil::URLsAndTitlesFromPasteboard(
+      pasteboard->get(), /*include_files=*/false, &urls, &titles);
+
+  ASSERT_EQ(0u, urls.count);
+  ASSERT_EQ(0u, titles.count);
+
+  // Read with translating file URLs, expect to find it.
+
+  ClipboardUtil::URLsAndTitlesFromPasteboard(
+      pasteboard->get(), /*include_files=*/true, &urls, &titles);
 
   ASSERT_EQ(1u, urls.count);
   EXPECT_NSEQ(url_string, urls[0]);
   ASSERT_EQ(1u, titles.count);
-  EXPECT_NSEQ(@"", titles[0]);
-
-  NSURL* urlFromPasteboard = [NSURL URLFromPasteboard:pasteboard->get()];
-  EXPECT_NSEQ(urlFromPasteboard, url);
 }
 
 TEST_F(ClipboardUtilMacTest, CheckForLeak) {

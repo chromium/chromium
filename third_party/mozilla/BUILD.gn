@@ -5,12 +5,6 @@
 component("mozilla") {
   sources = [
     "MozillaExport.h",
-    "NSPasteboard+Utils.h",
-    "NSPasteboard+Utils.mm",
-    "NSString+Utils.h",
-    "NSString+Utils.mm",
-    "NSURL+Utils.h",
-    "NSURL+Utils.m",
     "NSWorkspace+Utils.h",
     "NSWorkspace+Utils.m",
   ]

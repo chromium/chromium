@@ -253,9 +253,34 @@ URLAndTitle ExtractURLFromStringValue(NSPasteboardItem* item) {
   return {};
 }
 
-// Reads the given pasteboard, and returns URLs/titles found on it. Returns true
-// if at least one URL was found on the pasteboard, and false if none were.
+// If there is a file URL on the pasteboard, returns that file as the URL and
+// returns the file's name as the title.
+URLAndTitle ExtractFileURL(NSPasteboardItem* item) {
+  NSString* file = [item stringForType:NSPasteboardTypeFileURL];
+  if (!file) {
+    return {};
+  }
+  NSURL* file_url = [NSURL URLWithString:file].filePathURL;
+
+  NSString* filename;
+  BOOL success = [file_url getResourceValue:&filename
+                                     forKey:NSURLLocalizedNameKey
+                                      error:nil];
+
+  if (success) {
+    return {.url = file_url.absoluteString, .title = filename};
+  } else {
+    return {.url = file_url.absoluteString,
+            .title = file_url.lastPathComponent};
+  }
+}
+
+// Reads the given pasteboard, and returns URLs/titles found on it. If
+// `include_files` is set, then any file references on the pasteboard will be
+// returned as file URLs. Returns true if at least one URL was found on the
+// pasteboard, and false if none were.
 bool ReadURLItemsWithTitles(NSPasteboard* pboard,
+                            bool include_files,
                             NSArray<NSString*>** urls,
                             NSArray<NSString*>** titles) {
   NSMutableArray<NSString*>* urls_array = [NSMutableArray array];
@@ -274,6 +299,10 @@ bool ReadURLItemsWithTitles(NSPasteboard* pboard,
 
     if (!url_and_title.url) {
       url_and_title = ExtractURLFromStringValue(item);
+    }
+
+    if (!url_and_title.url && include_files) {
+      url_and_title = ExtractFileURL(item);
     }
 
     if (url_and_title.url) {
@@ -354,10 +383,11 @@ void ClipboardUtil::AddDataToPasteboard(NSPasteboard* pboard,
 }
 
 bool ClipboardUtil::URLsAndTitlesFromPasteboard(NSPasteboard* pboard,
+                                                bool include_files,
                                                 NSArray<NSString*>** urls,
                                                 NSArray<NSString*>** titles) {
   return ReadWebURLsWithTitlesPboardType(pboard, urls, titles) ||
-         ReadURLItemsWithTitles(pboard, urls, titles);
+         ReadURLItemsWithTitles(pboard, include_files, urls, titles);
 }
 
 NSPasteboard* ClipboardUtil::PasteboardFromBuffer(ClipboardBuffer buffer) {
