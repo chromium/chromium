@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/guid.h"
+#include "base/token.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -20,6 +21,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace {
 
@@ -965,4 +967,39 @@ TEST_F(SavedTabGroupModelObserverTest, MoveElement) {
 
   EXPECT_TRUE(reordered_called_);
   EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(stg_2.saved_guid()));
+}
+
+TEST_F(SavedTabGroupModelObserverTest, GetGroupContainingTab) {
+  // Add a non matching SavedTabGroup.
+  saved_tab_group_model_->Add(CreateTestSavedTabGroup());
+
+  // Add a matching group/tab and save the ids used for GetGroupContainingTab.
+  SavedTabGroup matching_group = CreateTestSavedTabGroup();
+  base::GUID matching_group_guid = matching_group.saved_guid();
+
+  base::GUID matching_tab_guid = GenerateNextGUID();
+  base::Token matching_local_tab_id = base::Token::CreateRandom();
+
+  SavedTabGroupTab tab(GURL(url::kAboutBlankURL), std::u16string(u"title"),
+                       matching_group.saved_guid(), &matching_group,
+                       matching_tab_guid, matching_local_tab_id);
+  matching_group.AddTab(0, std::move(tab));
+  saved_tab_group_model_->Add(std::move(matching_group));
+
+  // Add another non matching SavedTabGroup.
+  saved_tab_group_model_->Add(CreateTestSavedTabGroup());
+  ASSERT_EQ(3, saved_tab_group_model_->Count());
+
+  // call GetGroupContainingTab with the 2 ids and expect them to return.
+  EXPECT_EQ(saved_tab_group_model_->Get(matching_group_guid),
+            saved_tab_group_model_->GetGroupContainingTab(matching_tab_guid));
+  EXPECT_EQ(
+      saved_tab_group_model_->Get(matching_group_guid),
+      saved_tab_group_model_->GetGroupContainingTab(matching_local_tab_id));
+
+  // Expect GetGroupContainingTab to return null when there is no match.
+  EXPECT_EQ(nullptr,
+            saved_tab_group_model_->GetGroupContainingTab(GenerateNextGUID()));
+  EXPECT_EQ(nullptr,
+            saved_tab_group_model_->GetGroupContainingTab(base::Token()));
 }

@@ -200,6 +200,26 @@ void SavedTabGroupModel::UpdatedVisualDataFromSync(
     observer.SavedTabGroupUpdatedFromSync(id);
 }
 
+SavedTabGroup* SavedTabGroupModel::GetGroupContainingTab(
+    const base::GUID& saved_tab_guid) {
+  for (auto& saved_group : saved_tab_groups_) {
+    if (saved_group.ContainsTab(saved_tab_guid))
+      return &saved_group;
+  }
+
+  return nullptr;
+}
+
+SavedTabGroup* SavedTabGroupModel::GetGroupContainingTab(
+    const base::Token& local_tab_id) {
+  for (auto& saved_group : saved_tab_groups_) {
+    if (saved_group.ContainsTab(local_tab_id))
+      return &saved_group;
+  }
+
+  return nullptr;
+}
+
 void SavedTabGroupModel::AddTabToGroup(const base::GUID& group_id,
                                        SavedTabGroupTab tab,
                                        int index) {

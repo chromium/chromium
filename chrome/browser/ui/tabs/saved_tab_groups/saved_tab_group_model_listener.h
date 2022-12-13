@@ -26,6 +26,9 @@ class SavedTabGroupBrowserListener : public TabStripModelObserver {
 
   // TabStripModelObserver:
   void OnTabGroupChanged(const TabGroupChange& change) override;
+  void TabGroupedStateChanged(absl::optional<tab_groups::TabGroupId> group,
+                              content::WebContents* contents,
+                              int index) override;
 
   Browser* browser() { return browser_; }
   SavedTabGroupModel* saved_tab_group_model() { return model_; }

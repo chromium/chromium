@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -40,17 +41,9 @@ void SavedTabGroupBrowserListener::OnTabGroupChanged(
   const TabStripModel* tab_strip_model = change.model;
   if (!model_->Contains(change.group))
     return;
-
   const TabGroup* group =
       tab_strip_model->group_model()->GetTabGroup(change.group);
   switch (change.type) {
-    // Called when the tabs in the group changes.
-    case TabGroupChange::kContentsChanged: {
-      // TODO(dljames): kContentsChanged will update the urls associated with
-      // the group stored in the model with TabGroupId change.group.
-      NOTIMPLEMENTED();
-      return;
-    }
     // Called when a groups title or color changes
     case TabGroupChange::kVisualsChanged: {
       const tab_groups::TabGroupVisualData* visual_data = group->visual_data();
@@ -66,6 +59,7 @@ void SavedTabGroupBrowserListener::OnTabGroupChanged(
     // tab group outside of the observer flow. kEditorOpened does not affect the
     // SavedTabGroup, and kMoved does not affect the order of the saved tab
     // groups.
+    case TabGroupChange::kContentsChanged:
     case TabGroupChange::kCreated:
     case TabGroupChange::kEditorOpened:
     case TabGroupChange::kMoved: {
@@ -73,6 +67,59 @@ void SavedTabGroupBrowserListener::OnTabGroupChanged(
       return;
     }
   }
+}
+
+void SavedTabGroupBrowserListener::TabGroupedStateChanged(
+    absl::optional<tab_groups::TabGroupId> new_local_group_id,
+    content::WebContents* contents,
+    int index) {
+  // If the webcontents is already saved then its moving saved groups.
+  if (web_contents_to_tab_id_map_.count(contents) > 0) {
+    // Remove the tab from it's old group.
+    base::Token local_tab_id = web_contents_to_tab_id_map_[contents];
+    SavedTabGroup* old_group = model_->GetGroupContainingTab(local_tab_id);
+    SavedTabGroupTab* tab = old_group->GetTab(local_tab_id);
+    model_->RemoveTabFromGroup(old_group->saved_guid(), tab->saved_tab_guid());
+
+    // Remove the tab from the mapping.
+    web_contents_to_tab_id_map_.erase(contents);
+  }
+
+  // If there's no new group then there's nothing to do since we've already
+  // removed from the old SavedTabGroup if the tab was saved.
+  if (!new_local_group_id.has_value())
+    return;
+
+  // If the group is not currently saved then there is nothing to do.
+  SavedTabGroup* new_saved_group = model_->Get(new_local_group_id.value());
+  if (new_saved_group == nullptr)
+    return;
+
+  absl::optional<int> first_tab_in_group_index_in_tabstrip =
+      browser_->tab_strip_model()
+          ->group_model()
+          ->GetTabGroup(new_saved_group->local_group_id().value())
+          ->GetFirstTab();
+  DCHECK(first_tab_in_group_index_in_tabstrip.has_value());
+
+  int relative_index_of_tab_in_group =
+      browser_->tab_strip_model()->GetIndexOfWebContents(contents) -
+      first_tab_in_group_index_in_tabstrip.value();
+
+  SavedTabGroupTab tab =
+      SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
+          contents, new_saved_group->saved_guid());
+
+  // Add the token for mapping the local web contents to the SavedTabGroupTab.
+  base::Token token = base::Token::CreateRandom();
+  tab.SetLocalTabID(token);
+
+  // Create a SavedTabGroupTab for the contents and store.
+  model_->AddTabToGroup(new_saved_group->saved_guid(), std::move(tab),
+                        relative_index_of_tab_in_group);
+
+  // save the contents in the mapping
+  web_contents_to_tab_id_map_[contents] = std::move(token);
 }
 
 SavedTabGroupModelListener::SavedTabGroupModelListener() = default;

@@ -86,6 +86,9 @@ class SavedTabGroupModel {
       const base::GUID& id,
       const tab_groups::TabGroupVisualData* visual_data);
 
+  SavedTabGroup* GetGroupContainingTab(const base::GUID& saved_tab_guid);
+  SavedTabGroup* GetGroupContainingTab(const base::Token& local_tab_id);
+
   // Adds a saved tab to `index` in the specified group denoted by `group_id` if
   // it exists.
   void AddTabToGroup(const base::GUID& group_id,
