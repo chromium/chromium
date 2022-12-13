@@ -1201,10 +1201,11 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
   ASSERT_EQ(1, test_event_router_->GetEventCount(
                    OnPolicySpecifiedPasswordReuseDetected::kEventName));
-  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
-  EXPECT_EQ(kPasswordReuseURL, captured_args.FindKey("url")->GetString());
-  EXPECT_EQ(kUserName, captured_args.FindKey("userName")->GetString());
-  EXPECT_TRUE(captured_args.FindKey("isPhishingUrl")->GetBool());
+  const auto captured_args =
+      std::move(event_observer.PassEventArgs().GetList()[0].GetDict());
+  EXPECT_EQ(kPasswordReuseURL, *captured_args.FindString("url"));
+  EXPECT_EQ(kUserName, *captured_args.FindString("userName"));
+  EXPECT_TRUE(*captured_args.FindBool("isPhishingUrl"));
 
   // If the reused password is not Enterprise password but the account is
   // GSuite, event should be sent.

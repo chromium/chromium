@@ -195,11 +195,12 @@ SettingsResetPromptConfig::ParseDomainHashes(
     return CONFIG_ERROR_MISSING_DOMAIN_HASHES_PARAM;
 
   // Is the input parseable JSON?
-  std::unique_ptr<base::DictionaryValue> domains_dict =
-      base::DictionaryValue::From(
-          base::JSONReader::ReadDeprecated(domain_hashes_json));
-  if (!domains_dict || domains_dict->DictEmpty())
+  absl::optional<base::Value> domains_dict =
+      base::JSONReader::Read(domain_hashes_json);
+  if (!domains_dict || !domains_dict->is_dict() ||
+      domains_dict->GetDict().empty()) {
     return CONFIG_ERROR_BAD_DOMAIN_HASHES_PARAM;
+  }
 
   // The input JSON should be a hash object with hex-encoded 32-byte
   // hashes as keys and integer IDs as values. For example,

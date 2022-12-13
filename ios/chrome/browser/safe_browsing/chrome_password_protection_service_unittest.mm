@@ -388,11 +388,11 @@ TEST_F(ChromePasswordProtectionServiceTest,
       GURL("https://www.mydomain.com")));
 
   // Verify URL is allowed after setting allowlist in prefs.
-  base::Value allowlist(base::Value::Type::LIST);
+  base::Value::List allowlist;
   allowlist.Append("mydomain.com");
   allowlist.Append("mydomain.net");
-  browser_state_->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
-                                  allowlist);
+  browser_state_->GetPrefs()->SetList(prefs::kSafeBrowsingAllowlistDomains,
+                                      std::move(allowlist));
   EXPECT_TRUE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
 
@@ -414,10 +414,10 @@ TEST_F(ChromePasswordProtectionServiceTest,
       prefs::kPasswordProtectionChangePasswordURL);
   EXPECT_FALSE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
-  base::Value login_urls(base::Value::Type::LIST);
+  base::Value::List login_urls;
   login_urls.Append("https://mydomain.com/login.html");
-  browser_state_->GetPrefs()->Set(prefs::kPasswordProtectionLoginURLs,
-                                  login_urls);
+  browser_state_->GetPrefs()->SetList(prefs::kPasswordProtectionLoginURLs,
+                                      std::move(login_urls));
   EXPECT_TRUE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://mydomain.com/login.html#ref?user_name=alice")));
 }
@@ -572,11 +572,11 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
     browser_state_->GetPrefs()->SetInteger(
         prefs::kPasswordProtectionWarningTrigger,
         safe_browsing::PHISHING_REUSE);
-    base::Value allowlist(base::Value::Type::LIST);
+    base::Value::List allowlist;
     allowlist.Append("mydomain.com");
     allowlist.Append("mydomain.net");
-    browser_state_->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
-                                    allowlist);
+    browser_state_->GetPrefs()->SetList(prefs::kSafeBrowsingAllowlistDomains,
+                                        std::move(allowlist));
     EXPECT_EQ(RequestOutcome::MATCHED_ENTERPRISE_ALLOWLIST,
               service_->GetPingNotSentReason(
                   LoginReputationClientRequest::PASSWORD_REUSE_EVENT,

@@ -51,18 +51,16 @@ void TestExtensionEventObserver::VerifyLatestSecurityInterstitialEvent(
     const std::string& expected_username,
     int expected_net_error_code) {
   EXPECT_EQ(expected_event_name, latest_event_name_);
-  auto captured_args = PassEventArgs().GetList()[0].Clone();
-  EXPECT_EQ(expected_page_url.spec(),
-            captured_args.FindKey("url")->GetString());
-  EXPECT_EQ(expected_reason, captured_args.FindKey("reason")->GetString());
+  const auto captured_args = std::move(PassEventArgs().GetList()[0].GetDict());
+  EXPECT_EQ(expected_page_url.spec(), *captured_args.FindString("url"));
+  EXPECT_EQ(expected_reason, *captured_args.FindString("reason"));
   if (!expected_username.empty())
-    EXPECT_EQ(expected_username,
-              captured_args.FindKey("userName")->GetString());
+    EXPECT_EQ(expected_username, *captured_args.FindString("userName"));
   if (expected_net_error_code == 0)
-    EXPECT_FALSE(captured_args.FindKey("netErrorCode"));
+    EXPECT_FALSE(captured_args.Find("netErrorCode"));
   else
     EXPECT_EQ(base::NumberToString(expected_net_error_code),
-              captured_args.FindKey("netErrorCode")->GetString());
+              *captured_args.FindString("netErrorCode"));
 }
 
 std::unique_ptr<KeyedService> BuildSafeBrowsingPrivateEventRouter(

@@ -153,16 +153,16 @@ class PreferenceValidationDelegateValues
       case Value::Type::STRING:
         return Value("i have a spleen");
       case Value::Type::DICTIONARY: {
-        Value value(base::Value::Type::DICTIONARY);
-        value.SetKey("twenty-two", Value(22));
-        value.SetKey("forty-seven", Value(47));
-        return value;
+        Value::Dict dict;
+        dict.Set("twenty-two", 22);
+        dict.Set("forty-seven", 47);
+        return base::Value(std::move(dict));
       }
       case Value::Type::LIST: {
-        Value value(base::Value::Type::LIST);
-        value.Append(22);
-        value.Append(47);
-        return value;
+        Value::List list;
+        list.Append(22);
+        list.Append(47);
+        return base::Value(std::move(list));
       }
       default:
         ADD_FAILURE() << "unsupported value type " << value_type;

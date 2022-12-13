@@ -3112,13 +3112,12 @@ TEST_F(DownloadProtectionServiceTest, VerifyDangerousDownloadOpenedAPICall) {
   download_service_->MaybeSendDangerousDownloadOpenedReport(&item, false);
   ASSERT_EQ(1, test_event_router_->GetEventCount(
                    OnDangerousDownloadOpened::kEventName));
-  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
-  EXPECT_EQ("http://example.com/a.exe",
-            captured_args.FindKey("url")->GetString());
+  const auto captured_args =
+      std::move(event_observer.PassEventArgs().GetList()[0].GetDict());
+  EXPECT_EQ("http://example.com/a.exe", *captured_args.FindString("url"));
   EXPECT_EQ(base::HexEncode(hash.data(), hash.size()),
-            captured_args.FindKey("downloadDigestSha256")->GetString());
-  EXPECT_EQ(target_path.MaybeAsASCII(),
-            captured_args.FindKey("fileName")->GetString());
+            *captured_args.FindString("downloadDigestSha256"));
+  EXPECT_EQ(target_path.MaybeAsASCII(), *captured_args.FindString("fileName"));
 
   // No event is triggered if in incognito mode..
   content::DownloadItemUtils::AttachInfoForTesting(

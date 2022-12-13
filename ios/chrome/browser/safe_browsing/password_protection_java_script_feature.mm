@@ -58,13 +58,14 @@ void PasswordProtectionJavaScriptFeature::ScriptMessageReceived(
   if (!message.body()->is_dict()) {
     return;
   }
+  const base::Value::Dict& dict = message.body()->GetDict();
 
-  std::string* event_type = message.body()->FindStringKey("eventType");
+  const std::string* event_type = dict.FindString("eventType");
   if (!event_type || event_type->empty()) {
     return;
   }
 
-  std::string* text = message.body()->FindStringKey("text");
+  const std::string* text = dict.FindString("text");
   if (!text || text->empty()) {
     return;
   }

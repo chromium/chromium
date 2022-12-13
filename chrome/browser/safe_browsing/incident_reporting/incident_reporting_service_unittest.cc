@@ -245,10 +245,11 @@ class IncidentReportingServiceTest : public testing::Test {
   // without safe browsing enabled. An incident will be created within
   // PreProfileAdd if requested. |incidents_sent|, if provided, will be set
   // in the profile's preference.
-  TestingProfile* CreateProfile(const std::string& profile_name,
-                                SafeBrowsingDisposition safe_browsing_opt_in,
-                                OnProfileAdditionAction on_addition_action,
-                                std::unique_ptr<base::Value> incidents_sent) {
+  TestingProfile* CreateProfile(
+      const std::string& profile_name,
+      SafeBrowsingDisposition safe_browsing_opt_in,
+      OnProfileAdditionAction on_addition_action,
+      absl::optional<base::Value::Dict> incidents_sent) {
     // Create prefs for the profile with safe browsing enabled or not.
     std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> prefs(
         new sync_preferences::TestingPrefServiceSyncable);
@@ -262,7 +263,8 @@ class IncidentReportingServiceTest : public testing::Test {
         safe_browsing_opt_in == EXTENDED_REPORTING_ONLY ||
             safe_browsing_opt_in == SAFE_BROWSING_AND_EXTENDED_REPORTING);
     if (incidents_sent)
-      prefs->Set(prefs::kSafeBrowsingIncidentsSent, *incidents_sent);
+      prefs->SetDict(prefs::kSafeBrowsingIncidentsSent,
+                     std::move(*incidents_sent));
 
     // Remember whether or not to create an incident.
     profile_properties_[profile_name].on_addition_action = on_addition_action;
@@ -627,7 +629,7 @@ TEST_F(IncidentReportingServiceTest, AddIncident) {
 
   // Create the profile, thereby causing the test to begin.
   CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                ON_PROFILE_ADDITION_ADD_INCIDENT, nullptr);
+                ON_PROFILE_ADDITION_ADD_INCIDENT, absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -656,7 +658,7 @@ TEST_F(IncidentReportingServiceTest, CoalesceIncidents) {
 
   // Create the profile, thereby causing the test to begin.
   CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                ON_PROFILE_ADDITION_ADD_TWO_INCIDENTS, nullptr);
+                ON_PROFILE_ADDITION_ADD_TWO_INCIDENTS, absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -685,7 +687,7 @@ TEST_F(IncidentReportingServiceTest, NoSafeBrowsing) {
   CreateIncidentReportingService();
   // Create the profile, thereby causing the test to begin.
   CreateProfile("profile1", EXTENDED_REPORTING_ONLY,
-                ON_PROFILE_ADDITION_ADD_INCIDENT, nullptr);
+                ON_PROFILE_ADDITION_ADD_INCIDENT, absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -702,8 +704,9 @@ TEST_F(IncidentReportingServiceTest, NoSafeBrowsing) {
 TEST_F(IncidentReportingServiceTest, NoUploadBeforeExtendedReporting) {
   CreateIncidentReportingService();
   // Create the profile, thereby causing the test to begin.
-  Profile* profile = CreateProfile("profile1", SAFE_BROWSING_ONLY,
-                                   ON_PROFILE_ADDITION_NO_ACTION, nullptr);
+  Profile* profile =
+      CreateProfile("profile1", SAFE_BROWSING_ONLY,
+                    ON_PROFILE_ADDITION_NO_ACTION, absl::nullopt);
 
   std::unique_ptr<safe_browsing::IncidentReceiver> receiver(
       instance_->GetIncidentReceiver());
@@ -757,7 +760,7 @@ TEST_F(IncidentReportingServiceTest, NoDownloadNoUpload) {
 
   // Create the profile, thereby causing the test to begin.
   CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                ON_PROFILE_ADDITION_ADD_INCIDENT, nullptr);
+                ON_PROFILE_ADDITION_ADD_INCIDENT, absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -782,7 +785,7 @@ TEST_F(IncidentReportingServiceTest, NoDownloadPrunedIncidentOneUpload) {
   // Create the profile, thereby causing the test to begin.
   Profile* profile =
       CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                    ON_PROFILE_ADDITION_ADD_INCIDENT, nullptr);
+                    ON_PROFILE_ADDITION_ADD_INCIDENT, absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -817,7 +820,7 @@ TEST_F(IncidentReportingServiceTest, NoDownloadPrunedSameIncidentNoUpload) {
   // Create the profile, thereby causing the test to begin.
   Profile* profile =
       CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                    ON_PROFILE_ADDITION_ADD_INCIDENT, nullptr);
+                    ON_PROFILE_ADDITION_ADD_INCIDENT, absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -850,7 +853,7 @@ TEST_F(IncidentReportingServiceTest, NoProfilesNoUpload) {
 
   // Create the profile, thereby causing the test to begin.
   CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                ON_PROFILE_ADDITION_ADD_INCIDENT, nullptr);
+                ON_PROFILE_ADDITION_ADD_INCIDENT, absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -873,7 +876,7 @@ TEST_F(IncidentReportingServiceTest, OneIncidentOneUpload) {
   // Create the profile, thereby causing the test to begin.
   Profile* profile =
       CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                    ON_PROFILE_ADDITION_ADD_INCIDENT, nullptr);
+                    ON_PROFILE_ADDITION_ADD_INCIDENT, absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -902,7 +905,7 @@ TEST_F(IncidentReportingServiceTest, TwoIncidentsTwoUploads) {
   // Create the profile, thereby causing the test to begin.
   Profile* profile =
       CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                    ON_PROFILE_ADDITION_ADD_INCIDENT, nullptr);
+                    ON_PROFILE_ADDITION_ADD_INCIDENT, absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -931,7 +934,7 @@ TEST_F(IncidentReportingServiceTest, TwoProfilesTwoUploads) {
   CreateIncidentReportingService();
   // Create the profile, thereby causing the test to begin.
   CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                ON_PROFILE_ADDITION_ADD_INCIDENT, nullptr);
+                ON_PROFILE_ADDITION_ADD_INCIDENT, absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -942,7 +945,7 @@ TEST_F(IncidentReportingServiceTest, TwoProfilesTwoUploads) {
 
   // Create a second profile with its own incident on addition.
   CreateProfile("profile2", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                ON_PROFILE_ADDITION_ADD_INCIDENT, nullptr);
+                ON_PROFILE_ADDITION_ADD_INCIDENT, absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -961,7 +964,7 @@ TEST_F(IncidentReportingServiceTest, ProfileDestroyedDuringUpload) {
   // Create a profile for which an incident will be added.
   Profile* profile =
       CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                    ON_PROFILE_ADDITION_ADD_INCIDENT, nullptr);
+                    ON_PROFILE_ADDITION_ADD_INCIDENT, absl::nullopt);
 
   // Hook up a callback to run when the upload is started that will post a task
   // to delete the profile. This task will run before the upload finishes.
@@ -1004,7 +1007,7 @@ TEST_F(IncidentReportingServiceTest, ProcessWideOneUpload) {
   CreateIncidentReportingService();
   // Add a profile that participates in safe browsing extended reporting.
   CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                ON_PROFILE_ADDITION_NO_ACTION, nullptr);
+                ON_PROFILE_ADDITION_NO_ACTION, absl::nullopt);
 
   // Add the test incident.
   AddTestIncident(nullptr);
@@ -1034,7 +1037,7 @@ TEST_F(IncidentReportingServiceTest, ProcessWideTwoUploads) {
   CreateIncidentReportingService();
   // Add a profile that participates in safe browsing extended reporting.
   CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                ON_PROFILE_ADDITION_NO_ACTION, nullptr);
+                ON_PROFILE_ADDITION_NO_ACTION, absl::nullopt);
 
   // Add the test incident.
   std::unique_ptr<safe_browsing::IncidentReceiver> receiver(
@@ -1075,7 +1078,7 @@ TEST_F(IncidentReportingServiceTest, ProcessWideNoUploadAfterProfile) {
 
   // Add a profile that participates in safe browsing extended reporting.
   CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                ON_PROFILE_ADDITION_NO_ACTION, nullptr);
+                ON_PROFILE_ADDITION_NO_ACTION, absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -1103,7 +1106,7 @@ TEST_F(IncidentReportingServiceTest, NoCollectionWithoutIncident) {
 
   // Add a profile that participates in safe browsing extended reporting.
   CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                ON_PROFILE_ADDITION_NO_ACTION, nullptr);
+                ON_PROFILE_ADDITION_NO_ACTION, absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -1133,7 +1136,7 @@ TEST_F(IncidentReportingServiceTest, AnalysisAfterProfile) {
 
   // Add a profile that participates in safe browsing extended reporting.
   CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                ON_PROFILE_ADDITION_NO_ACTION, nullptr);
+                ON_PROFILE_ADDITION_NO_ACTION, absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -1152,7 +1155,7 @@ TEST_F(IncidentReportingServiceTest, AnalysisWhenRegisteredWithProfile) {
   CreateIncidentReportingService();
   // Add a profile that participates in safe browsing.
   CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                ON_PROFILE_ADDITION_NO_ACTION, nullptr);
+                ON_PROFILE_ADDITION_NO_ACTION, absl::nullopt);
 
   // Register a callback.
   RegisterAnalysis(ON_DELAYED_ANALYSIS_NO_ACTION);
@@ -1177,7 +1180,7 @@ TEST_F(IncidentReportingServiceTest, DelayedAnalysisNoProfileNoUpload) {
   // Add a profile that does not participate in safe browsing extended
   // reporting.
   CreateProfile("profile1", SAFE_BROWSING_ONLY, ON_PROFILE_ADDITION_NO_ACTION,
-                nullptr);
+                absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -1201,7 +1204,7 @@ TEST_F(IncidentReportingServiceTest, DelayedAnalysisOneUpload) {
 
   // Add a profile that participates in safe browsing extended reporting.
   CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                ON_PROFILE_ADDITION_NO_ACTION, nullptr);
+                ON_PROFILE_ADDITION_NO_ACTION, absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -1237,7 +1240,7 @@ TEST_F(IncidentReportingServiceTest, NoDownloadNoWaiting) {
   // Add a profile that participates in safe browsing extended reporting.
   Profile* profile =
       CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                    ON_PROFILE_ADDITION_NO_ACTION, nullptr);
+                    ON_PROFILE_ADDITION_NO_ACTION, absl::nullopt);
 
   // Add an incident.
   AddTestIncident(profile);
@@ -1267,7 +1270,7 @@ TEST_F(IncidentReportingServiceTest, NonBinaryDownloadStillUploads) {
 
   // Add a profile that participates in safe browsing extended reporting.
   CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                ON_PROFILE_ADDITION_NO_ACTION, nullptr);
+                ON_PROFILE_ADDITION_NO_ACTION, absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -1293,7 +1296,7 @@ TEST_F(IncidentReportingServiceTest, UploadsWithBothDownloadTypes) {
 
   // Add a profile that participates in safe browsing extended reporting.
   CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                ON_PROFILE_ADDITION_NO_ACTION, nullptr);
+                ON_PROFILE_ADDITION_NO_ACTION, absl::nullopt);
 
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -1317,16 +1320,13 @@ TEST_F(IncidentReportingServiceTest, CleanLegacyPruneState) {
       static_cast<int>(safe_browsing::IncidentType::TRACKED_PREFERENCE)));
 
   // Set up a prune state dict with data to be cleared (and not).
-  std::unique_ptr<base::DictionaryValue> incidents_sent(
-      new base::DictionaryValue());
-  auto type_dict = std::make_unique<base::DictionaryValue>();
-  type_dict->SetKey("foo", base::Value("47"));
-  incidents_sent->SetKey(blocklist_load_type,
-                         base::Value::FromUniquePtrValue(std::move(type_dict)));
-  type_dict = std::make_unique<base::DictionaryValue>();
-  type_dict->SetKey("bar", base::Value("43"));
-  incidents_sent->SetKey(preference_type,
-                         base::Value::FromUniquePtrValue(std::move(type_dict)));
+  base::Value::Dict incidents_sent;
+  base::Value::Dict type_dict;
+  type_dict.Set("foo", "47");
+  incidents_sent.Set(blocklist_load_type, std::move(type_dict));
+  type_dict = base::Value::Dict();
+  type_dict.Set("bar", "43");
+  incidents_sent.Set(preference_type, std::move(type_dict));
 
   // Add a profile.
   Profile* profile =
@@ -1350,7 +1350,7 @@ TEST_F(IncidentReportingServiceTest, ProcessWideUploadClearUpload) {
   CreateIncidentReportingService();
   // Add a profile that participates in safe browsing extended reporting.
   CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                ON_PROFILE_ADDITION_NO_ACTION, nullptr);
+                ON_PROFILE_ADDITION_NO_ACTION, absl::nullopt);
 
   std::unique_ptr<safe_browsing::IncidentReceiver> receiver(
       instance_->GetIncidentReceiver());
@@ -1390,7 +1390,7 @@ TEST_F(IncidentReportingServiceTest, ClearProcessIncidentOnCleanState) {
   CreateIncidentReportingService();
   // Add a profile that participates in safe browsing extended reporting.
   CreateProfile("profile1", SAFE_BROWSING_AND_EXTENDED_REPORTING,
-                ON_PROFILE_ADDITION_NO_ACTION, nullptr);
+                ON_PROFILE_ADDITION_NO_ACTION, absl::nullopt);
 
   std::unique_ptr<safe_browsing::IncidentReceiver> receiver(
       instance_->GetIncidentReceiver());

@@ -595,21 +595,21 @@ void SetAnalysisConnector(PrefService* prefs,
       machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
 }
 
-base::Value CreateOptInEventsValue(
+base::Value::List CreateOptInEventsList(
     const std::map<std::string, std::vector<std::string>>&
         enabled_opt_in_events) {
-  base::Value enabled_opt_in_events_list(base::Value::Type::LIST);
+  base::Value::List enabled_opt_in_events_list;
   for (const auto& enabled_opt_in_event : enabled_opt_in_events) {
-    base::Value event_value(base::Value::Type::DICTIONARY);
-    event_value.SetStringKey(enterprise_connectors::kKeyOptInEventName,
-                             enabled_opt_in_event.first);
+    base::Value::Dict event_value;
+    event_value.Set(enterprise_connectors::kKeyOptInEventName,
+                    enabled_opt_in_event.first);
 
-    base::Value url_patterns_list(base::Value::Type::LIST);
+    base::Value::List url_patterns_list;
     for (const auto& url_pattern : enabled_opt_in_event.second) {
       url_patterns_list.Append(url_pattern);
     }
-    event_value.SetKey(enterprise_connectors::kKeyOptInEventUrlPatterns,
-                       std::move(url_patterns_list));
+    event_value.Set(enterprise_connectors::kKeyOptInEventUrlPatterns,
+                    std::move(url_patterns_list));
 
     enabled_opt_in_events_list.Append(std::move(event_value));
   }
@@ -632,22 +632,22 @@ void SetOnSecurityEventReporting(
   }
 
   if (settings_list->empty()) {
-    base::Value settings(base::Value::Type::DICTIONARY);
+    base::Value::Dict settings;
 
-    settings.SetKey(enterprise_connectors::kKeyServiceProvider,
-                    base::Value("google"));
+    settings.Set(enterprise_connectors::kKeyServiceProvider,
+                 base::Value("google"));
     if (!enabled_event_names.empty()) {
-      base::Value enabled_event_name_list(base::Value::Type::LIST);
+      base::Value::List enabled_event_name_list;
       for (const auto& enabled_event_name : enabled_event_names) {
         enabled_event_name_list.Append(enabled_event_name);
       }
-      settings.SetKey(enterprise_connectors::kKeyEnabledEventNames,
-                      std::move(enabled_event_name_list));
+      settings.Set(enterprise_connectors::kKeyEnabledEventNames,
+                   std::move(enabled_event_name_list));
     }
 
     if (!enabled_opt_in_events.empty()) {
-      settings.SetKey(enterprise_connectors::kKeyEnabledOptInEvents,
-                      CreateOptInEventsValue(enabled_opt_in_events));
+      settings.Set(enterprise_connectors::kKeyEnabledOptInEvents,
+                   CreateOptInEventsList(enabled_opt_in_events));
     }
 
     settings_list->Append(std::move(settings));
