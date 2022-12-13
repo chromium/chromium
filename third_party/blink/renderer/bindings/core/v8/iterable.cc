@@ -40,4 +40,26 @@ v8::Local<v8::Object> ESCreateIterResultObject(ScriptState* script_state,
 }
 
 }  // namespace bindings
+
+bool V8UnpackIterationResult(ScriptState* script_state,
+                             v8::Local<v8::Object> sync_iteration_result,
+                             v8::Local<v8::Value>* out_value,
+                             bool* out_done) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Context> context = script_state->GetContext();
+  v8::TryCatch try_block(isolate);
+
+  if (!sync_iteration_result->Get(context, V8AtomicString(isolate, "value"))
+           .ToLocal(out_value)) {
+    return false;
+  }
+  v8::Local<v8::Value> done_value;
+  if (!sync_iteration_result->Get(context, V8AtomicString(isolate, "done"))
+           .ToLocal(&done_value)) {
+    return false;
+  }
+  *out_done = done_value->BooleanValue(isolate);
+  return true;
+}
+
 }  // namespace blink

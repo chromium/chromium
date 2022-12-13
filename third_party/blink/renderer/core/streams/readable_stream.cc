@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_abort_signal.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_get_reader_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_writable_pair.h"
@@ -479,9 +479,8 @@ class ReadableStream::PipeToEngine final
     auto* isolate = script_state_->GetIsolate();
     v8::Local<v8::Value> value;
     bool done = false;
-    bool unpack_succeeded =
-        V8UnpackIteratorResult(script_state_, result.As<v8::Object>(), &done)
-            .ToLocal(&value);
+    bool unpack_succeeded = V8UnpackIterationResult(
+        script_state_, result.As<v8::Object>(), &value, &done);
     DCHECK(unpack_succeeded);
     if (done) {
       ReadableClosed();
@@ -930,9 +929,8 @@ class ReadableStream::TeeEngine::PullAlgorithm final : public StreamAlgorithm {
       // "Get" operations cannot have side-effects.
       v8::Local<v8::Value> value;
       bool done = false;
-      bool unpack_succeeded =
-          V8UnpackIteratorResult(script_state, result.As<v8::Object>(), &done)
-              .ToLocal(&value);
+      bool unpack_succeeded = V8UnpackIterationResult(
+          script_state, result.As<v8::Object>(), &value, &done);
       CHECK(unpack_succeeded);
 
       //   vi. Assert: Type(done) is Boolean.

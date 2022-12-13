@@ -6,12 +6,12 @@
 
 #include "base/types/strong_alias.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_default_reader.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream_default_writer.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -125,8 +125,8 @@ void ExpectValue(int line,
   }
   v8::Local<v8::Value> value;
   bool done = false;
-  if (!V8UnpackIteratorResult(script_state, result.As<v8::Object>(), &done)
-           .ToLocal(&value)) {
+  if (!V8UnpackIterationResult(script_state, result.As<v8::Object>(), &value,
+                               &done)) {
     ADD_FAILURE() << "Failed to unpack the iterator result.";
     return;
   }
@@ -144,8 +144,8 @@ void ExpectDone(int line,
   SCOPED_TRACE(testing::Message() << "__LINE__ = " << line);
   v8::Local<v8::Value> value;
   bool done = false;
-  if (!V8UnpackIteratorResult(script_state, result.As<v8::Object>(), &done)
-           .ToLocal(&value)) {
+  if (!V8UnpackIterationResult(script_state, result.As<v8::Object>(), &value,
+                               &done)) {
     ADD_FAILURE() << "Failed to unpack the iterator result.";
     return;
   }
@@ -187,19 +187,17 @@ TEST(TransferableStreamsTest, SmokeTest) {
         ADD_FAILURE() << "iterator must be an object";
         return ScriptValue();
       }
-      bool done = false;
-      auto chunk_maybe =
-          V8UnpackIteratorResult(script_state,
-                                 value.V8Value()
-                                     ->ToObject(script_state->GetContext())
-                                     .ToLocalChecked(),
-                                 &done);
-      EXPECT_FALSE(done);
       v8::Local<v8::Value> chunk;
-      if (!chunk_maybe.ToLocal(&chunk)) {
-        ADD_FAILURE() << "V8UnpackIteratorResult failed";
+      bool done = false;
+      if (!V8UnpackIterationResult(script_state,
+                                   value.V8Value()
+                                       ->ToObject(script_state->GetContext())
+                                       .ToLocalChecked(),
+                                   &chunk, &done)) {
+        ADD_FAILURE() << "V8UnpackIterationResult failed";
         return ScriptValue();
       }
+      EXPECT_FALSE(done);
       EXPECT_TRUE(chunk->IsNull());
       return ScriptValue();
     }

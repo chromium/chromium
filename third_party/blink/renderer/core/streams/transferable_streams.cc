@@ -7,10 +7,10 @@
 
 #include "third_party/blink/renderer/core/streams/transferable_streams.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_default_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -810,11 +810,10 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
     ScriptValue Call(ScriptState* script_state,
                      ScriptValue read_result) override {
       DCHECK(read_result.IsObject());
+      v8::Local<v8::Value> value;
       bool done = false;
-      v8::Local<v8::Value> value =
-          V8UnpackIteratorResult(script_state,
-                                 read_result.V8Value().As<v8::Object>(), &done)
-              .ToLocalChecked();
+      CHECK(V8UnpackIterationResult(
+          script_state, read_result.V8Value().As<v8::Object>(), &value, &done));
       if (done) {
         // We've finished reading `source1_`. Let's start reading `source2_`.
         source_->has_finished_reading_stream1_ = true;

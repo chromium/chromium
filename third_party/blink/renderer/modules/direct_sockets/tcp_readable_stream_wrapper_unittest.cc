@@ -7,10 +7,10 @@
 #include "base/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "net/base/net_errors.h"
+#include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -105,11 +105,11 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
     CHECK(result->IsObject());
     Iterator ret;
     v8::Local<v8::Value> v8value;
-    if (!V8UnpackIteratorResult(scope.GetScriptState(), result.As<v8::Object>(),
-                                &ret.done)
-             .ToLocal(&v8value)) {
+    if (!V8UnpackIterationResult(scope.GetScriptState(),
+                                 result.As<v8::Object>(), &v8value,
+                                 &ret.done)) {
       ADD_FAILURE() << "Couldn't unpack iterator";
-      return ret;
+      return {};
     }
     if (ret.done) {
       EXPECT_TRUE(v8value->IsUndefined());

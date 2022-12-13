@@ -9,13 +9,13 @@
 #include "base/test/mock_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
@@ -122,11 +122,11 @@ class IncomingStreamTest : public ::testing::Test {
     CHECK(result->IsObject());
     Iterator ret;
     v8::Local<v8::Value> v8value;
-    if (!V8UnpackIteratorResult(scope.GetScriptState(), result.As<v8::Object>(),
-                                &ret.done)
-             .ToLocal(&v8value)) {
+    if (!V8UnpackIterationResult(scope.GetScriptState(),
+                                 result.As<v8::Object>(), &v8value,
+                                 &ret.done)) {
       ADD_FAILURE() << "Couldn't unpack iterator";
-      return ret;
+      return {};
     }
     if (ret.done) {
       EXPECT_TRUE(v8value->IsUndefined());

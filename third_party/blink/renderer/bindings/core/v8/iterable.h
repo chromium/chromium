@@ -552,6 +552,14 @@ class SetlikeIterable
   }
 };
 
+// Unpacks `sync_iteration_result`, stores 'value' and 'done' properties in
+// `out_value` and 'out_done` respectively, and returns true on success.
+[[nodiscard]] CORE_EXPORT bool V8UnpackIterationResult(
+    ScriptState* script_state,
+    v8::Local<v8::Object> sync_iteration_result,
+    v8::Local<v8::Value>* out_value,
+    bool* out_done);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ITERABLE_H_

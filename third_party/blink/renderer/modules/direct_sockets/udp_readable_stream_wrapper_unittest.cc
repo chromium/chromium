@@ -10,11 +10,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_message.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -98,9 +98,9 @@ std::pair<UDPMessage*, bool> UnpackPromiseResult(const V8TestingScope& scope,
   EXPECT_TRUE(result->IsObject());
   v8::Local<v8::Value> udp_message_packed;
   bool done = false;
-  EXPECT_TRUE(V8UnpackIteratorResult(scope.GetScriptState(),
-                                     result.As<v8::Object>(), &done)
-                  .ToLocal(&udp_message_packed));
+  EXPECT_TRUE(V8UnpackIterationResult(scope.GetScriptState(),
+                                      result.As<v8::Object>(),
+                                      &udp_message_packed, &done));
   if (done) {
     return {nullptr, true};
   }

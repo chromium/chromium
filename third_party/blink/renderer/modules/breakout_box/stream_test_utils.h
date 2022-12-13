@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_STREAM_TEST_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_STREAM_TEST_UTILS_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -31,9 +31,8 @@ T* ReadObjectFromStream(const V8TestingScope& v8_scope,
   EXPECT_TRUE(result->IsObject());
   v8::Local<v8::Value> v8_signal;
   bool done = false;
-  EXPECT_TRUE(
-      V8UnpackIteratorResult(script_state, result.As<v8::Object>(), &done)
-          .ToLocal(&v8_signal));
+  EXPECT_TRUE(V8UnpackIterationResult(script_state, result.As<v8::Object>(),
+                                      &v8_signal, &done));
   EXPECT_FALSE(done);
   return NativeValueTraits<T>::NativeValue(v8_scope.GetIsolate(), v8_signal,
                                            ASSERT_NO_EXCEPTION);

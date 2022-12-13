@@ -18,6 +18,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -25,7 +26,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
@@ -926,9 +926,9 @@ Vector<uint8_t> GetValueAsVector(ScriptState* script_state,
                                  ScriptValue iterator_result) {
   bool done = false;
   v8::Local<v8::Value> value;
-  if (!V8UnpackIteratorResult(script_state,
-                              iterator_result.V8Value().As<v8::Object>(), &done)
-           .ToLocal(&value)) {
+  if (!V8UnpackIterationResult(script_state,
+                               iterator_result.V8Value().As<v8::Object>(),
+                               &value, &done)) {
     ADD_FAILURE() << "unable to unpack iterator_result";
     return {};
   }
@@ -1764,9 +1764,8 @@ TEST_F(WebTransportTest, CreateReceiveStream) {
   ASSERT_TRUE(read_result->IsObject());
   v8::Local<v8::Value> value;
   bool done = false;
-  ASSERT_TRUE(
-      V8UnpackIteratorResult(script_state, read_result.As<v8::Object>(), &done)
-          .ToLocal(&value));
+  ASSERT_TRUE(V8UnpackIterationResult(
+      script_state, read_result.As<v8::Object>(), &value, &done));
   NotShared<DOMUint8Array> u8array =
       NativeValueTraits<NotShared<DOMUint8Array>>::NativeValue(
           scope.GetIsolate(), value, ASSERT_NO_EXCEPTION);

@@ -19,11 +19,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_bidirectional_stream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -362,9 +362,8 @@ TEST(BidirectionalStreamTest, IncomingStreamCleanClose) {
   DCHECK(result->IsObject());
   v8::Local<v8::Value> v8value;
   bool done = false;
-  EXPECT_TRUE(
-      V8UnpackIteratorResult(script_state, result.As<v8::Object>(), &done)
-          .ToLocal(&v8value));
+  EXPECT_TRUE(V8UnpackIterationResult(script_state, result.As<v8::Object>(),
+                                      &v8value, &done));
   EXPECT_TRUE(done);
 }
 

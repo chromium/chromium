@@ -8,10 +8,10 @@
 
 #include <algorithm>
 
+#include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
@@ -29,15 +29,15 @@ class ReadableStreamBytesConsumer::Fulfilled final
       : consumer_(consumer) {}
 
   ScriptValue Call(ScriptState* script_state, ScriptValue v) override {
-    bool done;
     v8::Local<v8::Value> item = v.V8Value();
     if (!item->IsObject()) {
       consumer_->OnRejected();
       return ScriptValue();
     }
     v8::Local<v8::Value> value;
-    if (!V8UnpackIteratorResult(script_state, item.As<v8::Object>(), &done)
-             .ToLocal(&value)) {
+    bool done;
+    if (!V8UnpackIterationResult(script_state, item.As<v8::Object>(), &value,
+                                 &done)) {
       consumer_->OnRejected();
       return ScriptValue();
     }

@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -15,7 +16,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/test_utils.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_default_controller.h"
@@ -219,15 +219,18 @@ bool IsIteratorForStringMatching(ScriptState* script_state,
   if (!value.IsObject()) {
     return false;
   }
+  v8::Local<v8::Value> chunk;
   bool done = false;
-  auto chunk = V8UnpackIteratorResult(
-      script_state,
-      value.V8Value()->ToObject(script_state->GetContext()).ToLocalChecked(),
-      &done);
-  if (done || chunk.IsEmpty())
+  if (!V8UnpackIterationResult(script_state,
+                               value.V8Value()
+                                   ->ToObject(script_state->GetContext())
+                                   .ToLocalChecked(),
+                               &chunk, &done)) {
     return false;
-  return ToCoreStringWithUndefinedOrNullCheck(chunk.ToLocalChecked()) ==
-         expected;
+  }
+  if (done)
+    return false;
+  return ToCoreStringWithUndefinedOrNullCheck(chunk) == expected;
 }
 
 bool IsTypeError(ScriptState* script_state,
