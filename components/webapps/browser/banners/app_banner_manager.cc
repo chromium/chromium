@@ -152,9 +152,6 @@ void TrackBeforeInstallEventPrompt(AppBannerManager::State state) {
     default:
       NOTREACHED();
   }
-
-  TrackBeforeInstallEvent(
-      BEFORE_INSTALL_EVENT_PROMPT_CALLED_AFTER_PREVENT_DEFAULT);
 }
 }  // anonymous namespace
 
