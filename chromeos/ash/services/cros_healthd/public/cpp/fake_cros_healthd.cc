@@ -796,12 +796,6 @@ void FakeCrosHealthd::RunLedLitUpRoutine(
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
-void FakeCrosHealthd::RunEmmcLifetimeRoutine(
-    RunEmmcLifetimeRoutineCallback callback) {
-  last_run_routine_ = mojom::DiagnosticRoutineEnum::kEmmcLifetime;
-  std::move(callback).Run(run_routine_response_.Clone());
-}
-
 void FakeCrosHealthd::AddBluetoothObserver(
     mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer) {
   bluetooth_observers_.Add(std::move(observer));

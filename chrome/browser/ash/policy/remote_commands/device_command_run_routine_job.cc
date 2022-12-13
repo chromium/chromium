@@ -524,10 +524,6 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       NOTIMPLEMENTED();
       break;
     }
-    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kEmmcLifetime: {
-      diagnostics_service->RunEmmcLifetimeRoutine(std::move(response_callback));
-      break;
-    }
   }
 }
 

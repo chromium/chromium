@@ -1567,28 +1567,4 @@ TEST_F(DeviceCommandRunRoutineJobTest,
              })));
 }
 
-// Note that the eMMC lifetime routine has no parameters, so we only need to
-// test that it can be run successfully.
-TEST_F(DeviceCommandRunRoutineJobTest, RunEmmcLifetimeRoutineSuccess) {
-  auto run_routine_response =
-      ash::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
-  ash::cros_healthd::FakeCrosHealthd::Get()->SetRunRoutineResponseForTesting(
-      run_routine_response);
-  base::Value params_dict(base::Value::Type::DICTIONARY);
-  EXPECT_TRUE(RunJob(
-      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kEmmcLifetime,
-      std::move(params_dict),
-      base::BindLambdaForTesting([](RemoteCommandJob* job) {
-        EXPECT_EQ(
-            ash::cros_healthd::FakeCrosHealthd::Get()
-                ->GetLastRunRoutine()
-                .value(),
-            ash::cros_healthd::mojom::DiagnosticRoutineEnum::kEmmcLifetime);
-        EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
-        std::unique_ptr<std::string> payload = job->GetResultPayload();
-        EXPECT_TRUE(payload);
-        EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
-      })));
-}
-
 }  // namespace policy
