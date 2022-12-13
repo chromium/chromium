@@ -275,6 +275,8 @@ void WorkerThread::Resume() {
 }
 
 void WorkerThread::Terminate() {
+  CHECK(!recordreplay::AreEventsDisallowed());
+
   DCHECK_CALLED_ON_VALID_THREAD(parent_thread_checker_);
   {
     base::AutoLock locker(lock_);
