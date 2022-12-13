@@ -477,6 +477,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram base="true"
+    name="RendererScheduler.QueueingDuration.{Priority}Priority"
+    units="microseconds" expires_after="2023-10-31">
+  <owner>szager@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Time between when a new task is added to a TaskQueue with priority
+    k{Priority}Priority, and when the task begins execution. For delayed (i.e.
+    timer-based) tasks, the initial timestamp is based on the ideal starting
+    time, rather than the time when the event loop notices that the timer has
+    expired.
+
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+  </summary>
+  <token key="Priority">
+    <variant name="BestEffort"/>
+    <variant name="Control"/>
+    <variant name="High"/>
+    <variant name="Highest"/>
+    <variant name="Low"/>
+    <variant name="Normal"/>
+    <variant name="VeryHigh"/>
+  </token>
+</histogram>
+
 <histogram name="RendererScheduler.RendererMainThreadLoad5" units="%"
     expires_after="2023-04-30">
   <owner>altimin@chromium.org</owner>

@@ -32,8 +32,9 @@ class ScopedUsHistogramTimerTest : public testing::Test {
 };
 
 TEST_F(ScopedUsHistogramTimerTest, Basic) {
-  TestCustomCountHistogram scoped_us_counter("ScopedUsHistogramTimerTest.Basic",
-                                             0, 10000000, 50);
+  TestCustomCountHistogram scoped_us_counter(
+      "ScopedUsHistogramTimerTest.Basic", kTimeBasedHistogramMinSample,
+      kTimeBasedHistogramMaxSample, kTimeBasedHistogramBucketCount);
   {
     ScopedUsHistogramTimer timer(scoped_us_counter,
                                  test_task_runner_->GetMockTickClock());
@@ -45,7 +46,8 @@ TEST_F(ScopedUsHistogramTimerTest, Basic) {
 
 TEST_F(ScopedUsHistogramTimerTest, BasicHighRes) {
   TestCustomCountHistogram scoped_us_counter(
-      "ScopedHighResUsHistogramTimerTest.Basic", 0, 10000000, 50);
+      "ScopedHighResUsHistogramTimerTest.Basic", kTimeBasedHistogramMinSample,
+      kTimeBasedHistogramMaxSample, kTimeBasedHistogramBucketCount);
   {
     ScopedHighResUsHistogramTimer timer(scoped_us_counter,
                                         test_task_runner_->GetMockTickClock());

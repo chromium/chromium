@@ -77,9 +77,17 @@ class ScopedHighResUsHistogramTimer
   static bool ShouldRecord() { return base::TimeTicks::IsHighResolution(); }
 };
 
+static constexpr base::HistogramBase::Sample kTimeBasedHistogramMinSample = 1;
+static constexpr base::HistogramBase::Sample kTimeBasedHistogramMaxSample =
+    static_cast<base::Histogram::Sample>(base::Seconds(10).InMicroseconds());
+static constexpr int32_t kTimeBasedHistogramBucketCount = 50;
+
 #define SCOPED_BLINK_UMA_HISTOGRAM_TIMER_IMPL(name, allow_cross_thread)  \
-  DEFINE_STATIC_LOCAL_IMPL(CustomCountHistogram, scoped_us_counter,      \
-                           (name, 0, 10000000, 50), allow_cross_thread); \
+  DEFINE_STATIC_LOCAL_IMPL(                                              \
+      CustomCountHistogram, scoped_us_counter,                           \
+      (name, kTimeBasedHistogramMinSample, kTimeBasedHistogramMaxSample, \
+       kTimeBasedHistogramBucketCount),                                  \
+      allow_cross_thread);                                               \
   ScopedUsHistogramTimer timer(scoped_us_counter);
 
 #define SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES_IMPL(name,               \

@@ -72,45 +72,23 @@ class MainThreadMetricsHelperTest : public testing::Test {
   }
 
   void RunTask(MainThreadTaskQueue::QueueType queue_type,
-               base::TimeTicks start,
-               base::TimeDelta duration) {
-    DCHECK_LE(Now(), start);
-    FastForwardTo(start + duration);
-    scoped_refptr<MainThreadTaskQueueForTest> queue;
+               base::TimeTicks queue_time,
+               base::TimeDelta queue_duration,
+               base::TimeDelta task_duration) {
+    base::TimeTicks start_time = queue_time + queue_duration;
+    base::TimeTicks end_time = start_time + task_duration;
+    FastForwardTo(end_time);
+    scoped_refptr<MainThreadTaskQueue> queue;
     if (queue_type != MainThreadTaskQueue::QueueType::kDetached) {
-      queue = scoped_refptr<MainThreadTaskQueueForTest>(
-          new MainThreadTaskQueueForTest(queue_type));
+      queue = scheduler_->GetHelper().NewTaskQueue(
+          MainThreadTaskQueue::QueueCreationParams(queue_type));
     }
 
-    metrics_helper_->RecordTaskMetrics(queue.get(), FakeTask(),
-                                       FakeTaskTiming(start, start + duration));
+    FakeTask task;
+    task.queue_time = queue_time;
+    metrics_helper_->RecordTaskMetrics(queue.get(), task,
+                                       FakeTaskTiming(start_time, end_time));
   }
-
-  void RunTask(FrameSchedulerImpl* scheduler,
-               base::TimeTicks start,
-               base::TimeDelta duration) {
-    DCHECK_LE(Now(), start);
-    FastForwardTo(start + duration);
-    scoped_refptr<MainThreadTaskQueueForTest> queue(
-        new MainThreadTaskQueueForTest(QueueType::kDefault));
-    queue->SetFrameSchedulerForTest(scheduler);
-    metrics_helper_->RecordTaskMetrics(queue.get(), FakeTask(),
-                                       FakeTaskTiming(start, start + duration));
-  }
-
-  void RunTask(UseCase use_case,
-               base::TimeTicks start,
-               base::TimeDelta duration) {
-    DCHECK_LE(Now(), start);
-    FastForwardTo(start + duration);
-    scoped_refptr<MainThreadTaskQueueForTest> queue(
-        new MainThreadTaskQueueForTest(QueueType::kDefault));
-    scheduler_->SetCurrentUseCaseForTest(use_case);
-    metrics_helper_->RecordTaskMetrics(queue.get(), FakeTask(),
-                                       FakeTaskTiming(start, start + duration));
-  }
-
-  void ForceUpdatePolicy() { scheduler_->ForceUpdatePolicy(); }
 
   std::unique_ptr<FakeFrameScheduler> CreateFakeFrameSchedulerWithType(
       FrameStatus frame_status) {
@@ -248,6 +226,17 @@ TEST_F(MainThreadMetricsHelperTest, GetFrameStatusTest) {
         CreateFakeFrameSchedulerWithType(frame_status);
     EXPECT_EQ(GetFrameStatus(frame.get()), frame_status);
   }
+}
+
+TEST_F(MainThreadMetricsHelperTest, TaskQueueingDelay) {
+  base::TimeTicks queue_time = Now();
+  base::TimeDelta queue_duration = base::Microseconds(11);
+  base::TimeDelta task_duration = base::Microseconds(97);
+  RunTask(MainThreadTaskQueue::QueueType::kDefault, queue_time, queue_duration,
+          task_duration);
+  histogram_tester_->ExpectUniqueSample(
+      "RendererScheduler.QueueingDuration.NormalPriority",
+      queue_duration.InMicroseconds(), 1);
 }
 
 }  // namespace scheduler

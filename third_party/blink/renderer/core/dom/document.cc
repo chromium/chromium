@@ -3994,7 +3994,8 @@ void Document::DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info) {
     const base::TimeTicks pagehide_event_end = base::TimeTicks::Now();
     DEFINE_STATIC_LOCAL(
         CustomCountHistogram, pagehide_histogram,
-        ("DocumentEventTiming.PageHideDuration", 0, 10000000, 50));
+        ("DocumentEventTiming.PageHideDuration", kTimeBasedHistogramMinSample,
+         kTimeBasedHistogramMaxSample, kTimeBasedHistogramBucketCount));
     pagehide_histogram.CountMicroseconds(pagehide_event_end -
                                          pagehide_event_start);
   }
@@ -4015,7 +4016,9 @@ void Document::DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info) {
         base::TimeTicks::Now();
     DEFINE_STATIC_LOCAL(
         CustomCountHistogram, pagevisibility_histogram,
-        ("DocumentEventTiming.PageVibilityHiddenDuration", 0, 10000000, 50));
+        ("DocumentEventTiming.PageVibilityHiddenDuration",
+         kTimeBasedHistogramMinSample, kTimeBasedHistogramMaxSample,
+         kTimeBasedHistogramBucketCount));
     pagevisibility_histogram.CountMicroseconds(
         pagevisibility_hidden_event_end - pagevisibility_hidden_event_start);
     DispatchEvent(
@@ -4036,7 +4039,8 @@ void Document::DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info) {
     // Record unload event timing when navigating cross-document.
     DEFINE_STATIC_LOCAL(
         CustomCountHistogram, unload_histogram,
-        ("DocumentEventTiming.UnloadDuration", 0, 10000000, 50));
+        ("DocumentEventTiming.UnloadDuration", kTimeBasedHistogramMinSample,
+         kTimeBasedHistogramMaxSample, kTimeBasedHistogramBucketCount));
     unload_histogram.CountMicroseconds(unload_event_end - unload_event_start);
 
     auto& timing = unload_timing_info->unload_timing.emplace();
@@ -4054,8 +4058,10 @@ void Document::DispatchFreezeEvent() {
   DispatchEvent(*Event::Create(event_type_names::kFreeze));
   SetFreezingInProgress(false);
   const base::TimeTicks freeze_event_end = base::TimeTicks::Now();
-  DEFINE_STATIC_LOCAL(CustomCountHistogram, freeze_histogram,
-                      ("DocumentEventTiming.FreezeDuration", 0, 10000000, 50));
+  DEFINE_STATIC_LOCAL(
+      CustomCountHistogram, freeze_histogram,
+      ("DocumentEventTiming.FreezeDuration", kTimeBasedHistogramMinSample,
+       kTimeBasedHistogramMaxSample, kTimeBasedHistogramBucketCount));
   freeze_histogram.CountMicroseconds(freeze_event_end - freeze_event_start);
   UseCounter::Count(*this, WebFeature::kPageLifeCycleFreeze);
 }

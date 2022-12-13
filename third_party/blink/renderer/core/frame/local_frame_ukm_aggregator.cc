@@ -142,12 +142,16 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator(
 
   // Define the UMA for the primary metric.
   primary_metric_.pre_fcp_uma_counter = std::make_unique<CustomCountHistogram>(
-      "Blink.MainFrame.UpdateTime.PreFCP", 1, 10000000, 50);
+      "Blink.MainFrame.UpdateTime.PreFCP", kTimeBasedHistogramMinSample,
+      kTimeBasedHistogramMaxSample, kTimeBasedHistogramBucketCount);
   primary_metric_.post_fcp_uma_counter = std::make_unique<CustomCountHistogram>(
-      "Blink.MainFrame.UpdateTime.PostFCP", 1, 10000000, 50);
+      "Blink.MainFrame.UpdateTime.PostFCP", kTimeBasedHistogramMinSample,
+      kTimeBasedHistogramMaxSample, kTimeBasedHistogramBucketCount);
   primary_metric_.uma_aggregate_counter =
       std::make_unique<CustomCountHistogram>(
-          "Blink.MainFrame.UpdateTime.AggregatedPreFCP", 1, 10000000, 50);
+          "Blink.MainFrame.UpdateTime.AggregatedPreFCP",
+          kTimeBasedHistogramMinSample, kTimeBasedHistogramMaxSample,
+          kTimeBasedHistogramBucketCount);
 
   // Set up the substrings to create the UMA names
   const char* const uma_prefcp_postscript = ".PreFCP";
