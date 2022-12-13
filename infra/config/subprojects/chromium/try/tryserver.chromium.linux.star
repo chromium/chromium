@@ -40,6 +40,7 @@ try_.builder(
 
 try_.builder(
     name = "leak_detection_linux",
+    mirrors = ["ci/Leak Detection Linux"],
     goma_backend = None,
 )
 
