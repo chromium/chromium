@@ -17,7 +17,11 @@
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/pii_types.h"
 #include "net/base/ip_address.h"
+#ifdef USE_SYSTEM_RE2
+#include <re2/re2.h>
+#else
 #include "third_party/re2/src/re2/re2.h"
+#endif //USE_SYSTEM_RE2
 
 using re2::RE2;
 
