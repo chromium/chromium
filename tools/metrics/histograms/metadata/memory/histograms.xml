@@ -579,11 +579,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Browser2" units="MB"
-    expires_after="2023-01-10">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocator2" -->
 
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The browser process's memory usage reported by the memory instrumentation
     service in MB.
@@ -594,13 +595,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Browser2.Custom" units="bytes"
-    expires_after="2023-01-10">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorCustom2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The browser process's memory usage reported by the memory instrumentation
     service in bytes.
@@ -611,11 +613,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Browser2.Small" units="KB"
-    expires_after="2023-05-14">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorSmall2" -->
 
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The browser process's memory usage reported by the memory instrumentation
     service in KB.
@@ -626,13 +629,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Browser2.Tiny" units="bytes"
-    expires_after="2023-05-14">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorTiny2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The browser process's memory usage reported by the memory instrumentation
     service in bytes.
@@ -683,11 +687,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Extension2" units="MB"
-    expires_after="2023-01-10">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocator2" -->
 
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The extension process's memory usage reported by the memory instrumentation
     service in MB.
@@ -698,13 +703,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Extension2.Custom"
-    units="bytes" expires_after="2023-01-10">
+    units="bytes" expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorCustom2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The extension process's memory usage reported by the memory instrumentation
     service in bytes.
@@ -715,11 +721,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Extension2.Small" units="KB"
-    expires_after="2023-05-14">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorSmall2" -->
 
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The extension process's memory usage reported by the memory instrumentation
     service in KB.
@@ -730,13 +737,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Extension2.Tiny" units="bytes"
-    expires_after="2023-05-14">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorTiny2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The extension process's memory usage reported by the memory instrumentation
     service in bytes.
@@ -761,11 +769,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Gpu2" units="MB"
-    expires_after="2023-05-14">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocator2" -->
 
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The gpu process's memory usage reported by the memory instrumentation
     service in MB.
@@ -776,13 +785,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Gpu2.Custom" units="bytes"
-    expires_after="2023-05-14">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorCustom2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The gpu process's memory usage reported by the memory instrumentation
     service in bytes.
@@ -793,11 +803,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Gpu2.Small" units="KB"
-    expires_after="2023-05-14">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorSmall2" -->
 
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The gpu process's memory usage reported by the memory instrumentation
     service in KB.
@@ -808,13 +819,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Gpu2.Tiny" units="bytes"
-    expires_after="2023-05-14">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorTiny2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The gpu process's memory usage reported by the memory instrumentation
     service in bytes.
@@ -825,13 +837,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.NetworkService2" units="MiB"
-    expires_after="2023-01-10">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocator2" -->
 
   <owner>mmenke@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The network service process's memory usage reported by the memory
     instrumentation service in MiB.
@@ -842,13 +855,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.NetworkService2.Custom"
-    units="bytes" expires_after="2023-01-10">
+    units="bytes" expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorCustom2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The network service process's memory usage reported by the memory
     instrumentation service in bytes.
@@ -859,13 +873,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.NetworkService2.Small"
-    units="KiB" expires_after="2023-05-14">
+    units="KiB" expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorSmall2" -->
 
   <owner>mmenke@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The network service process's memory usage reported by the memory
     instrumentation service in KiB.
@@ -876,13 +891,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.NetworkService2.Tiny"
-    units="bytes" expires_after="2023-05-14">
+    units="bytes" expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorTiny2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The network service process's memory usage reported by the memory
     instrumentation service in bytes.
@@ -1031,11 +1047,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Renderer2" units="MB"
-    expires_after="2023-05-14">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocator2" -->
 
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The renderer process's memory usage reported by the memory instrumentation
     service in MB.
@@ -1046,13 +1063,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Renderer2.Custom"
-    units="bytes" expires_after="2023-01-10">
+    units="bytes" expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorCustom2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The renderer process's memory usage reported by the memory instrumentation
     service in bytes.
@@ -1063,11 +1081,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Renderer2.Small" units="KB"
-    expires_after="2023-05-14">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorSmall2" -->
 
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The renderer process's memory usage reported by the memory instrumentation
     service in KB.
@@ -1078,13 +1097,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Renderer2.Tiny" units="bytes"
-    expires_after="2023-05-14">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorTiny2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The renderer process's memory usage reported by the memory instrumentation
     service in bytes.
@@ -1124,11 +1144,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Utility2" units="MB"
-    expires_after="2023-05-14">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocator2" -->
 
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The utility process's memory usage reported by the memory instrumentation
     service in MB.
@@ -1139,13 +1160,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Utility2.Custom" units="bytes"
-    expires_after="2023-01-10">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorCustom2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The utility process's memory usage reported by the memory instrumentation
     service in bytes.
@@ -1156,11 +1178,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Utility2.Small" units="KB"
-    expires_after="2023-05-14">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorSmall2" -->
 
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The utility process's memory usage reported by the memory instrumentation
     service in KB.
@@ -1171,13 +1194,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Utility2.Tiny" units="bytes"
-    expires_after="2023-05-14">
+    expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorTiny2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     The utility process's memory usage reported by the memory instrumentation
     service in bytes.
