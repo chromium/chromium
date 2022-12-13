@@ -52,6 +52,9 @@ IpczDriverHandle ObjectBase::PeekBox(IpczHandle box) {
       .object = {.driver_object = IPCZ_INVALID_DRIVER_HANDLE},
   };
   GetIpczAPI().Unbox(box, IPCZ_UNBOX_PEEK, nullptr, &contents);
+  if (contents.type != IPCZ_BOX_TYPE_DRIVER_OBJECT) {
+    return IPCZ_INVALID_DRIVER_HANDLE;
+  }
   return contents.object.driver_object;
 }
 
