@@ -80,7 +80,9 @@ CSSValue* ConsumeAnimationValue(CSSPropertyID property,
     case CSSPropertyID::kAnimationTimingFunction:
       return css_parsing_utils::ConsumeAnimationTimingFunction(range, context);
     case CSSPropertyID::kAnimationTimeline:
-      return css_parsing_utils::ConsumeAnimationTimeline(range, context);
+      // New animation-* properties are  "reset only", see kAnimationDelayEnd.
+      DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+      return nullptr;
     default:
       NOTREACHED();
       return nullptr;

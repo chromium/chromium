@@ -121,7 +121,8 @@ TEST_F(CSSScrollTimelineTest, MultipleLifecyclePasses) {
       }
       #element {
         color: red;
-        animation: anim 10s timeline;
+        animation: anim 10s;
+        animation-timeline: timeline;
       }
     </style>
     <div id=scroller>
