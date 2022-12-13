@@ -20,10 +20,10 @@ import './add_site_dialog.js';
 import './edit_exception_dialog.js';
 import './site_list_entry.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -32,7 +32,7 @@ import {loadTimeData} from '../i18n_setup.js';
 
 import {AndroidInfoBrowserProxyImpl, AndroidSmsInfo} from './android_info_browser_proxy.js';
 // </if>
-import {ContentSetting, ContentSettingsTypes, INVALID_CATEGORY_SUBTYPE} from './constants.js';
+import {ContentSetting, ContentSettingsTypes, CookiesExceptionType, INVALID_CATEGORY_SUBTYPE, SITE_EXCEPTION_WILDCARD} from './constants.js';
 import {getTemplate} from './site_list.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {RawSiteException, SiteException, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
@@ -100,6 +100,19 @@ export class SiteListElement extends SiteListElementBase {
         type: String,
         value: INVALID_CATEGORY_SUBTYPE,
       },
+
+      /**
+       * Filters cookies exceptions based on the type (CookiesExceptionType):
+       * - THIRD_PARTY: Only show cookies exceptions that have primary pattern
+       * as wildcard (third-party cookies exceptions).
+       * - SITE_DATA: Only show cookies exceptions that have primary pattern
+       * set. This includes site data exceptions (secondary pattern is wildcard)
+       * and exceptions with both patterns set (currently possible only via
+       * exceptions API).
+       * - COMBINED: Doesn't apply any filters, will show exceptions with both
+       * pattern types.
+       */
+      cookiesExceptionType: String,
 
       hasIncognito_: Boolean,
 
@@ -171,6 +184,7 @@ export class SiteListElement extends SiteListElementBase {
   private listBlurred_: boolean;
   private tooltipText_: string;
   searchFilter: string;
+  cookiesExceptionType: CookiesExceptionType;
 
   private activeDialogAnchor_: HTMLElement|null;
   private browserProxy_: SiteSettingsPrefsBrowserProxy =
@@ -397,8 +411,28 @@ export class SiteListElement extends SiteListElementBase {
                     .filter(
                         site => site.setting !== ContentSetting.DEFAULT &&
                             site.setting === this.categorySubtype)
+                    .filter(site => {
+                      if (this.category !== ContentSettingsTypes.COOKIES) {
+                        return true;
+                      }
+                      assert(this.cookiesExceptionType !== undefined);
+                      switch (this.cookiesExceptionType) {
+                        case CookiesExceptionType.THIRD_PARTY:
+                          return site.origin === SITE_EXCEPTION_WILDCARD;
+                        case CookiesExceptionType.SITE_DATA:
+                          // Site data exceptions include all exceptions that
+                          // have `origin` set. This includes site data
+                          // exceptions and exceptions with both patterns set
+                          // (currently possible only via exceptions API).
+                          return site.origin !== SITE_EXCEPTION_WILDCARD;
+                        case CookiesExceptionType.COMBINED:
+                          // For cookies exception type COMBINED, don't apply
+                          // any filters and show exceptions with both pattern
+                          // types.
+                          return true;
+                      }
+                    })
                     .map(site => this.expandSiteException(site));
-
     // <if expr="chromeos_ash">
     sites = this.processExceptionsForAndroidSmsInfo_(sites);
     // </if>

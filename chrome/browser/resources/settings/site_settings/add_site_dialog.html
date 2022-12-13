@@ -17,7 +17,8 @@
           $i18n{incognitoSiteOnly}
         </cr-checkbox>
         <cr-checkbox id="thirdParties"
-            hidden$="[[shouldHideThirdPartyCookieCheckbox_(category)]]">
+            hidden$="[[shouldHideThirdPartyCookieCheckbox_(category,
+                cookiesExceptionType)]]">
           $i18n{siteSettingsCookiesThirdPartyExceptionLabel}
         </cr-checkbox>
       </div>

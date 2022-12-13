@@ -7,7 +7,7 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AddSiteDialogElement, ContentSetting, ContentSettingsTypes, SettingsEditExceptionDialogElement, SITE_EXCEPTION_WILDCARD, SiteException, SiteListElement, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {AddSiteDialogElement, CookiesExceptionType, ContentSetting, ContentSettingsTypes, SettingsEditExceptionDialogElement, SITE_EXCEPTION_WILDCARD, SiteException, SiteListElement, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData, Router} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -90,6 +90,14 @@ let prefsEmbargo: SiteSettingsPref;
  * An example pref with Isolated Web App having notification.
  */
 let prefsIsolatedWebApp: SiteSettingsPref;
+
+
+/**
+ * An example pref with mixed cookies exception types: 2 exceptions with primary
+ * pattern wildcard, 2 exceptions with secondary pattern wildcard and 1
+ * exception with both patterns set.
+ */
+let prefsMixedCookiesExceptionTypes: SiteSettingsPref;
 
 /**
  * Creates all the test |SiteSettingsPref|s that are needed for the tests in
@@ -286,6 +294,30 @@ function populateTestExceptions() {
           }),
         ]),
   ]);
+
+  prefsMixedCookiesExceptionTypes = createSiteSettingsPrefs([], [
+    createContentSettingTypeToValuePair(
+        ContentSettingsTypes.COOKIES,
+        [
+          createRawSiteException('http://foo-block.com', {
+            embeddingOrigin: '',
+            setting: ContentSetting.BLOCK,
+          }),
+          createRawSiteException('http://foo-allow.com', {
+            embeddingOrigin: '',
+          }),
+          createRawSiteException(SITE_EXCEPTION_WILDCARD, {
+            embeddingOrigin: 'http://3pc-block.com',
+            setting: ContentSetting.BLOCK,
+          }),
+          createRawSiteException(SITE_EXCEPTION_WILDCARD, {
+            embeddingOrigin: 'http://3pc-allow.com',
+          }),
+          createRawSiteException('http://mixed-primary-allow.com', {
+            embeddingOrigin: 'http://mixed-secondary-allow.com',
+          }),
+        ]),
+  ]);
 }
 
 suite('SiteListEmbargoedOrigin', function() {
@@ -361,7 +393,97 @@ suite('SiteListEmbargoedOrigin', function() {
   });
 });
 
+suite('SiteListCookiesExceptionTypes', function() {
+  /**
+   * A site list element created before each test.
+   */
+  let testElement: SiteListElement;
 
+  /**
+   * The mock proxy object to use during test.
+   */
+  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+
+  suiteSetup(function() {
+    CrSettingsPrefs.setInitialized();
+  });
+
+  suiteTeardown(function() {
+    CrSettingsPrefs.resetForTesting();
+  });
+
+  // Initialize a site-list before each test.
+  setup(function() {
+    populateTestExceptions();
+
+    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testElement = document.createElement('site-list');
+    testElement.searchFilter = '';
+    document.body.appendChild(testElement);
+  });
+
+  /**
+   * Configures the test element for a particular category.
+   * @param category The category to set up.
+   * @param subtype Type of list to use.
+   * @param prefs The prefs to use.
+   */
+  function setUpCategory(
+      category: ContentSettingsTypes, subtype: ContentSetting,
+      prefs: SiteSettingsPref) {
+    browserProxy.setPrefs(prefs);
+    testElement.categorySubtype = subtype;
+    testElement.category = category;
+  }
+
+  test('only shows third party cookies exceptions', function() {
+    testElement.cookiesExceptionType = CookiesExceptionType.THIRD_PARTY;
+    setUpCategory(
+        ContentSettingsTypes.COOKIES, ContentSetting.ALLOW,
+        prefsMixedCookiesExceptionTypes);
+    return browserProxy.whenCalled('getExceptionList').then(() => {
+      assertEquals(1, testElement.sites.length);
+      assertEquals(
+          testElement.sites[0]!.embeddingOrigin, 'http://3pc-allow.com');
+    });
+  });
+
+  test('only shows site data cookies exceptions', function() {
+    testElement.cookiesExceptionType = CookiesExceptionType.SITE_DATA;
+    setUpCategory(
+        ContentSettingsTypes.COOKIES, ContentSetting.ALLOW,
+        prefsMixedCookiesExceptionTypes);
+    return browserProxy.whenCalled('getExceptionList').then(() => {
+      assertEquals(2, testElement.sites.length);
+      assertEquals(testElement.sites[0]!.origin, 'http://foo-allow.com');
+      assertEquals(
+          testElement.sites[1]!.origin, 'http://mixed-primary-allow.com');
+      assertEquals(
+          testElement.sites[1]!.embeddingOrigin,
+          'http://mixed-secondary-allow.com');
+    });
+  });
+
+  test('shows all cookies exceptions', function() {
+    testElement.cookiesExceptionType = CookiesExceptionType.COMBINED;
+    setUpCategory(
+        ContentSettingsTypes.COOKIES, ContentSetting.ALLOW,
+        prefsMixedCookiesExceptionTypes);
+    return browserProxy.whenCalled('getExceptionList').then(() => {
+      assertEquals(3, testElement.sites.length);
+      assertEquals(testElement.sites[0]!.origin, 'http://foo-allow.com');
+      assertEquals(
+          testElement.sites[1]!.embeddingOrigin, 'http://3pc-allow.com');
+      assertEquals(
+          testElement.sites[2]!.origin, 'http://mixed-primary-allow.com');
+      assertEquals(
+          testElement.sites[2]!.embeddingOrigin,
+          'http://mixed-secondary-allow.com');
+    });
+  });
+});
 
 suite('SiteList', function() {
   /**
@@ -1149,6 +1271,22 @@ suite('AddExceptionDialog', function() {
   let dialog: AddSiteDialogElement;
   let browserProxy: TestSiteSettingsPrefsBrowserProxy;
 
+  async function inputText(expectedPattern: string) {
+    const actionButton = dialog.$.add;
+    assertTrue(!!actionButton);
+    assertTrue(actionButton.disabled);
+
+    const input = dialog.shadowRoot!.querySelector('cr-input');
+    input!.value = expectedPattern;
+    input!.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
+
+    const [pattern, _category] =
+        await browserProxy.whenCalled('isPatternValidForType');
+    assertEquals(expectedPattern, pattern);
+    assertFalse(actionButton.disabled);
+  }
+
   setup(function() {
     populateTestExceptions();
 
@@ -1200,5 +1338,71 @@ suite('AddExceptionDialog', function() {
     assertEquals(expectedPattern, pattern);
     assertTrue(actionButton.disabled);
     assertTrue(input!.invalid);
+  });
+
+  test(
+      'add cookie exception for combined cookie exception type',
+      async function() {
+        dialog.set('category', ContentSettingsTypes.COOKIES);
+        dialog.set('cookiesExceptionType', CookiesExceptionType.COMBINED);
+        flush();
+        // Cookie exceptions that support all wildcard patterns (both primary
+        // and secondary) have a checkbox to control the type of exception.
+        assertFalse(dialog.$.thirdParties.hidden);
+        assertFalse(dialog.$.thirdParties.checked);
+
+        // Enter a pattern and click the button.
+        const expectedPattern = 'foo-bar.com';
+        await inputText(expectedPattern);
+        dialog.$.add.click();
+
+        // The created exception has secondary pattern wildcard by default
+        // (created site data cookie exception).
+        const [primaryPattern, secondaryPattern] =
+            await browserProxy.whenCalled('setCategoryPermissionForPattern');
+        assertEquals(primaryPattern, expectedPattern);
+        assertEquals(secondaryPattern, SITE_EXCEPTION_WILDCARD);
+      });
+
+  test('add third party cookie exception', async function() {
+    dialog.set('category', ContentSettingsTypes.COOKIES);
+    dialog.set('cookiesExceptionType', CookiesExceptionType.THIRD_PARTY);
+    flush();
+    // Third party cookies exceptions don't need checkbox to control the
+    // exception mode. Exceptions with primary pattern wildcard are created.
+    assertTrue(dialog.$.thirdParties.hidden);
+
+    // Enter a pattern and click the button.
+    const expectedPattern = 'foo-bar.com';
+    await inputText(expectedPattern);
+    dialog.$.add.click();
+
+    // The created exception has primary pattern wildcard (third party
+    // exception).
+    const [primaryPattern, secondaryPattern] =
+        await browserProxy.whenCalled('setCategoryPermissionForPattern');
+    assertEquals(primaryPattern, SITE_EXCEPTION_WILDCARD);
+    assertEquals(secondaryPattern, expectedPattern);
+  });
+
+  test('add site data cookie exception', async function() {
+    dialog.set('category', ContentSettingsTypes.COOKIES);
+    dialog.set('cookiesExceptionType', CookiesExceptionType.SITE_DATA);
+    flush();
+    // Site data cookie exceptions don't need checkbox to control the exception
+    // mode. Exceptions with secondary pattern wildcard are created.
+    assertTrue(dialog.$.thirdParties.hidden);
+
+    // Enter a pattern and click the button.
+    const expectedPattern = 'foo-bar.com';
+    await inputText(expectedPattern);
+    dialog.$.add.click();
+
+    // The created exception has secondary pattern wildcard (site data
+    // exception).
+    const [primaryPattern, secondaryPattern] =
+        await browserProxy.whenCalled('setCategoryPermissionForPattern');
+    assertEquals(primaryPattern, expectedPattern);
+    assertEquals(secondaryPattern, SITE_EXCEPTION_WILDCARD);
   });
 });

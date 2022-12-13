@@ -174,21 +174,25 @@
         category-subtype="[[contentSetting_.ALLOW]]"
         category-header="$i18n{cookiePageAllowExceptions}"
         read-only-list="[[exceptionListsReadOnly_]]"
-        search-filter="[[searchTerm]]">
+        search-filter="[[searchTerm]]"
+        cookies-exception-type="combined">
+    </site-list>
     </site-list>
     <site-list id="sessionOnlyExceptionsList"
         category="[[cookiesContentSettingType_]]"
         category-subtype="[[contentSetting_.SESSION_ONLY]]"
         category-header="$i18n{cookiePageSessionOnlyExceptions}"
         read-only-list="[[exceptionListsReadOnly_]]"
-        search-filter="[[searchTerm]]">
+        search-filter="[[searchTerm]]"
+        cookies-exception-type="combined">
     </site-list>
     <site-list id="blockExceptionsList"
         category="[[cookiesContentSettingType_]]"
         category-subtype="[[contentSetting_.BLOCK]]"
         category-header="$i18n{cookiePageBlockExceptions}"
         read-only-list="[[exceptionListsReadOnly_]]"
-        search-filter="[[searchTerm]]">
+        search-filter="[[searchTerm]]"
+        cookies-exception-type="combined">
     </site-list>
     <cr-toast id="toast">
       <div id="toastText">$i18n{privacySandboxCookiesDialog}</div>

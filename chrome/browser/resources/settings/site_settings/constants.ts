@@ -176,3 +176,16 @@ export const SITE_EXCEPTION_WILDCARD: string = '*';
  * finished before updating the model for the right visual effect.
  */
 export const MODEL_UPDATE_DELAY_MS = 300;
+
+/**
+ * Types of cookies exceptions based on the use of wildcard in the patterns:
+ * - THIRD_PARTY: primary pattern is wildcard (third-party exception).
+ * - SITE_DATA: primary pattern is set, secondary pattern is wildcard (site data
+ * exceptions) or is set (only possible via extensions API).
+ * - COMBINED: any pattern combination can be used.
+ */
+export enum CookiesExceptionType {
+  THIRD_PARTY = 'third-party',
+  SITE_DATA = 'site-data',
+  COMBINED = 'combined',
+}

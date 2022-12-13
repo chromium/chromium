@@ -381,9 +381,15 @@ TEST_F('CrSettingsSiteListTest', 'DISABLED_SiteList', function() {
 });
 
 // TODO(crbug.com/929455): When the bug is fixed, merge
-// SiteListEmbargoedOrigin into SiteList
+// SiteListEmbargoedOrigin into SiteList.
 TEST_F('CrSettingsSiteListTest', 'SiteListEmbargoedOrigin', function() {
   runMochaSuite('SiteListEmbargoedOrigin');
+});
+
+// TODO(crbug.com/929455): When the bug is fixed, merge
+// SiteListCookiesExceptionTypes into SiteList.
+TEST_F('CrSettingsSiteListTest', 'SiteListCookiesExceptionTypes', function() {
+  runMochaSuite('SiteListCookiesExceptionTypes');
 });
 
 TEST_F('CrSettingsSiteListTest', 'EditExceptionDialog', function() {

@@ -23,7 +23,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './add_site_dialog.html.js';
-import {ContentSetting, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD} from './constants.js';
+import {ContentSetting, ContentSettingsTypes, CookiesExceptionType, SITE_EXCEPTION_WILDCARD} from './constants.js';
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 
 export interface AddSiteDialogElement {
@@ -61,6 +61,18 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
       },
 
       /**
+       * Controls what kind of patterns the created cookies exception will have
+       * (based on the CookiesExceptionType):
+       * - THIRD_PARTY: Exception that will have primary pattern as wildcard
+       * (third-party cookie exceptions).
+       * - SITE_DATA: Exception that will have secondary pattern as wildcard
+       * (regular exceptions).
+       * - COMBINED: Support both pattern types and have a checkbox to control
+       * the mode.
+       */
+      cookiesExceptionType: String,
+
+      /**
        * The site to add an exception for.
        */
       site_: String,
@@ -76,6 +88,7 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
   hasIncognito: boolean;
   private site_: string;
   private errorMessage_: string;
+  cookiesExceptionType: CookiesExceptionType;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -120,7 +133,8 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
     let primaryPattern = this.site_;
     let secondaryPattern = SITE_EXCEPTION_WILDCARD;
 
-    if (this.$.thirdParties.checked) {
+    if (this.$.thirdParties.checked ||
+        this.cookiesExceptionType === CookiesExceptionType.THIRD_PARTY) {
       primaryPattern = SITE_EXCEPTION_WILDCARD;
       secondaryPattern = this.site_;
     }
@@ -144,7 +158,10 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
   }
 
   private shouldHideThirdPartyCookieCheckbox_(): boolean {
-    return this.category !== ContentSettingsTypes.COOKIES;
+    // TODO(crbug.com/1378703): Remove checkbox support after feature is
+    // launched.
+    return this.cookiesExceptionType !== CookiesExceptionType.COMBINED ||
+        this.category !== ContentSettingsTypes.COOKIES;
   }
 }
 

@@ -9,7 +9,7 @@ import 'chrome://webui-test/cr_elements/cr_policy_strings.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ContentSetting, ContentSettingsTypes, SiteListEntryElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, ContentSettingsTypes, CookiesExceptionType, SITE_EXCEPTION_WILDCARD, SiteListEntryElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -162,5 +162,75 @@ suite('SiteListEntry', function() {
     assertEquals(
         routes.SITE_SETTINGS_SITE_DETAILS.path,
         Router.getInstance().getCurrentRoute().path);
+  });
+
+  // Verify that third-party exceptions in a combined list have an additional
+  // description.
+  test('third-party exception in a combined exceptions list', function() {
+    testElement.model = {
+      category: ContentSettingsTypes.COOKIES,
+      controlledBy: chrome.settingsPrivate.ControlledBy.OWNER,
+      displayName: '',
+      embeddingOrigin: 'http://example.com',
+      enforcement: null,
+      incognito: false,
+      isEmbargoed: false,
+      origin: SITE_EXCEPTION_WILDCARD,
+      setting: ContentSetting.DEFAULT,
+    };
+    testElement.cookiesExceptionType = CookiesExceptionType.COMBINED;
+    flush();
+    const siteDescription = testElement.$$('#siteDescription')!;
+    assertEquals(
+        loadTimeData.getString('siteSettingsCookiesThirdPartyExceptionLabel'),
+        siteDescription.textContent);
+  });
+
+  // Verify that third-party exceptions in a third-party exceptions list don't
+  // have an additional description.
+  test('third-party exception in a third-party exceptions list', function() {
+    testElement.model = {
+      category: ContentSettingsTypes.COOKIES,
+      controlledBy: chrome.settingsPrivate.ControlledBy.OWNER,
+      displayName: '',
+      embeddingOrigin: 'http://example.com',
+      enforcement: null,
+      incognito: false,
+      isEmbargoed: false,
+      origin: SITE_EXCEPTION_WILDCARD,
+      setting: ContentSetting.DEFAULT,
+    };
+    testElement.cookiesExceptionType = CookiesExceptionType.THIRD_PARTY;
+    flush();
+    const siteDescription = testElement.$$('#siteDescription')!;
+    assertEquals('', siteDescription.textContent);
+  });
+
+  // Verify that exceptions with both patterns have proper description for both
+  // lists.
+  test('cookies exception with both patterns set', function() {
+    testElement.model = {
+      category: ContentSettingsTypes.COOKIES,
+      controlledBy: chrome.settingsPrivate.ControlledBy.OWNER,
+      displayName: '',
+      embeddingOrigin: 'http://example1.com',
+      enforcement: null,
+      incognito: false,
+      isEmbargoed: false,
+      origin: 'http://example2.com',
+      setting: ContentSetting.DEFAULT,
+    };
+    testElement.cookiesExceptionType = CookiesExceptionType.COMBINED;
+    flush();
+    const siteDescription = testElement.$$('#siteDescription')!;
+    assertEquals(
+        loadTimeData.getStringF('embeddedOnHost', 'http://example1.com'),
+        siteDescription.textContent);
+
+    testElement.cookiesExceptionType = CookiesExceptionType.THIRD_PARTY;
+    flush();
+    assertEquals(
+        loadTimeData.getStringF('embeddedOnHost', 'http://example1.com'),
+        siteDescription.textContent);
   });
 });

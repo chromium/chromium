@@ -51,7 +51,8 @@
                 on-show-action-menu="onShowActionMenu_" tabindex$="[[tabIndex]]"
                 first$="[[!index]]" iron-list-tab-index="[[tabIndex]]"
                 last-focused="{{lastFocused_}}" list-blurred="{{listBlurred_}}"
-                on-show-tooltip="onShowTooltip_" focus-row-index="[[index]]">
+                on-show-tooltip="onShowTooltip_" focus-row-index="[[index]]"
+                cookies-exception-type="[[cookiesExceptionType]]">
             </site-list-entry>
           </template>
         </iron-list>
@@ -69,6 +70,7 @@
     <template is="dom-if" if="[[showAddSiteDialog_]]" restamp>
       <add-site-dialog has-incognito="[[hasIncognito_]]" category="[[category]]"
           content-setting="[[categorySubtype]]"
-          on-close="onAddSiteDialogClosed_">
+          on-close="onAddSiteDialogClosed_"
+          cookies-exception-type="[[cookiesExceptionType]]">
       </add-site-dialog>
     </template>
