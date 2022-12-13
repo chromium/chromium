@@ -88,7 +88,8 @@ void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
   // frames, and ask client to render audio.  Since |output_bus_| is wrapping
   // the shared memory the Render() call is writing directly into the shared
   // memory.
-  render_callback_->Render(delay, delay_timestamp, 0, output_bus_.get());
+  render_callback_->Render(delay, delay_timestamp, glitch_info,
+                           output_bus_.get());
 
   if (audio_parameters_.IsBitstreamFormat()) {
     buffer->params.bitstream_data_size = output_bus_->GetBitstreamDataSize();

@@ -56,7 +56,7 @@ class MockRenderCallback : public AudioRendererSink::RenderCallback {
   MOCK_METHOD4(Render,
                int(base::TimeDelta delay,
                    base::TimeTicks timestamp,
-                   int prior_frames_skipped,
+                   const AudioGlitchInfo& glitch_info,
                    AudioBus* dest));
   MOCK_METHOD0(OnRenderError, void());
 };

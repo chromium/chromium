@@ -18,6 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "media/audio/null_audio_sink.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/limits.h"
 #include "media/base/silent_sink_suspender.h"
@@ -263,10 +264,11 @@ void RendererWebAudioDeviceImpl::SetDetectSilence(
     silent_sink_suspender_->SetDetectSilence(enable_silence_detection);
 }
 
-int RendererWebAudioDeviceImpl::Render(base::TimeDelta delay,
-                                       base::TimeTicks delay_timestamp,
-                                       int prior_frames_skipped,
-                                       media::AudioBus* dest) {
+int RendererWebAudioDeviceImpl::Render(
+    base::TimeDelta delay,
+    base::TimeTicks delay_timestamp,
+    const media::AudioGlitchInfo& glitch_info,
+    media::AudioBus* dest) {
   // Wrap the output pointers using WebVector.
   CHECK_EQ(dest->channels(), sink_params_.channels());
   for (int i = 0; i < dest->channels(); ++i)

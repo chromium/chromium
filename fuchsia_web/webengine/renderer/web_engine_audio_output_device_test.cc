@@ -34,10 +34,9 @@ class TestRenderer : public media::AudioRendererSink::RenderCallback {
   // AudioRendererSink::Renderer interface.
   int Render(base::TimeDelta delay,
              base::TimeTicks delay_timestamp,
-             int prior_frames_skipped,
+             const media::AudioGlitchInfo& audio_glitch_info,
              media::AudioBus* dest) override {
     EXPECT_EQ(dest->channels(), kNumChannels);
-    frames_skipped_ += prior_frames_skipped;
     frames_rendered_ += dest->frames();
 
     EXPECT_GT(delay, base::TimeDelta());
@@ -52,7 +51,6 @@ class TestRenderer : public media::AudioRendererSink::RenderCallback {
   int frames_rendered() const { return frames_rendered_; }
   void reset_frames_rendered() { frames_rendered_ = 0; }
 
-  int frames_skipped() const { return frames_skipped_; }
   int num_render_errors() const { return num_render_errors_; }
 
   base::TimeTicks last_presentation_time() const {
@@ -61,7 +59,6 @@ class TestRenderer : public media::AudioRendererSink::RenderCallback {
 
  private:
   int frames_rendered_ = 0;
-  int frames_skipped_ = 0;
   int num_render_errors_ = 0;
   base::TimeTicks last_presentation_time_;
 };
@@ -161,7 +158,6 @@ TEST_F(WebEngineAudioOutputDeviceTest, StartAndPlay) {
   for (int i = 0; i < 3; ++i) {
     task_environment_.FastForwardBy(kPeriod);
     EXPECT_EQ(renderer_.frames_rendered(), kFramesPerPeriod);
-    EXPECT_EQ(renderer_.frames_skipped(), 0);
     renderer_.reset_frames_rendered();
   }
 }
@@ -175,7 +171,6 @@ TEST_F(WebEngineAudioOutputDeviceTest, Pause) {
   // Render().
   task_environment_.FastForwardBy(kPeriod);
   EXPECT_EQ(renderer_.frames_rendered(), kFramesPerPeriod);
-  EXPECT_EQ(renderer_.frames_skipped(), 0);
   renderer_.reset_frames_rendered();
 
   // Render() should not be called while paused.
@@ -187,7 +182,6 @@ TEST_F(WebEngineAudioOutputDeviceTest, Pause) {
   output_device_->Play();
   task_environment_.FastForwardBy(kPeriod);
   EXPECT_GT(renderer_.frames_rendered(), 0);
-  EXPECT_EQ(renderer_.frames_skipped(), 0);
 }
 
 TEST_F(WebEngineAudioOutputDeviceTest, Underflow) {
@@ -201,14 +195,12 @@ TEST_F(WebEngineAudioOutputDeviceTest, Underflow) {
   task_environment_.AdvanceClock(kPeriod * 2);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(renderer_.frames_rendered(), kFramesPerPeriod * 2);
-  EXPECT_EQ(renderer_.frames_skipped(), 0);
   renderer_.reset_frames_rendered();
 
   // Advance time by 100ms, causing some frames to be skipped.
   task_environment_.AdvanceClock(kPeriod * 10);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(renderer_.frames_rendered(), kFramesPerPeriod * 3);
-  EXPECT_EQ(renderer_.frames_skipped(), 0);
   renderer_.reset_frames_rendered();
 
   ValidatePresentationTime();

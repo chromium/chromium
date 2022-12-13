@@ -62,7 +62,7 @@ class AudioDeviceOwner : public media::AudioRendererSink::RenderCallback,
   // media::AudioRenderSink::RenderCallback overrides:
   int Render(base::TimeDelta delay,
              base::TimeTicks delay_timestamp,
-             int prior_frames_skipped,
+             const media::AudioGlitchInfo& glitch_info,
              media::AudioBus* dest) override;
 
   void OnRenderError() override;

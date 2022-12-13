@@ -19,6 +19,7 @@
 #include "chromeos/ash/services/libassistant/test_support/fake_platform_delegate.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/bind_to_current_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -333,7 +334,7 @@ TEST_F(AssistantAudioDeviceOwnerTest, BufferFilling) {
   audio_output_delegate.Reset();
   audio_bus->Zero();
   // On first render, it will push the data to |audio_bus|.
-  owner->Render(base::Microseconds(0), base::TimeTicks::Now(), 0,
+  owner->Render(base::Microseconds(0), base::TimeTicks::Now(), {},
                 audio_bus.get());
   audio_output_delegate.Wait();
   EXPECT_FALSE(audio_bus->AreFramesZero());
@@ -341,7 +342,7 @@ TEST_F(AssistantAudioDeviceOwnerTest, BufferFilling) {
 
   // The subsequent Render call will detect no data available and notify
   // delegate for OnEndOfStream().
-  owner->Render(base::Microseconds(0), base::TimeTicks::Now(), 0,
+  owner->Render(base::Microseconds(0), base::TimeTicks::Now(), {},
                 audio_bus.get());
   EXPECT_TRUE(audio_output_delegate.end_of_stream());
 }

@@ -59,7 +59,7 @@ class MEDIA_EXPORT AudioRendererMixer
   // AudioRendererSink::RenderCallback implementation.
   int Render(base::TimeDelta delay,
              base::TimeTicks delay_timestamp,
-             int prior_frames_skipped,
+             const AudioGlitchInfo& glitch_info,
              AudioBus* audio_bus) override;
   void OnRenderError() override;
 

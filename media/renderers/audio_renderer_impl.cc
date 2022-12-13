@@ -1166,12 +1166,12 @@ bool AudioRendererImpl::IsBeforeStartTime(const AudioBuffer& buffer) {
 
 int AudioRendererImpl::Render(base::TimeDelta delay,
                               base::TimeTicks delay_timestamp,
-                              int prior_frames_skipped,
+                              const AudioGlitchInfo& glitch_info,
                               AudioBus* audio_bus) {
   TRACE_EVENT1("media", "AudioRendererImpl::Render", "id", player_id_);
   int frames_requested = audio_bus->frames();
-  DVLOG(4) << __func__ << " delay:" << delay
-           << " prior_frames_skipped:" << prior_frames_skipped
+  DVLOG(4) << __func__ << " delay:" << delay << " glitch_info:["
+           << glitch_info.ToString() << "]"
            << " frames_requested:" << frames_requested;
 
   // Since this information is coming from the OS or potentially a fake stream,

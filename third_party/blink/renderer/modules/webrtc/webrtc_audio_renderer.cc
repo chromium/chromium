@@ -608,7 +608,7 @@ void WebRtcAudioRenderer::TranscribeAudio(
 
 int WebRtcAudioRenderer::Render(base::TimeDelta delay,
                                 base::TimeTicks delay_timestamp,
-                                int prior_frames_skipped,
+                                const media::AudioGlitchInfo& glitch_info,
                                 media::AudioBus* audio_bus) {
   DCHECK(sink_->CurrentThreadIsRenderingThread());
   DCHECK_LE(sink_params_.channels(), 8);

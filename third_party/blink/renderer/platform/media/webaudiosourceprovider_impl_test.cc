@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/fake_audio_render_callback.h"
 #include "media/base/media_util.h"
@@ -239,7 +240,7 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInput) {
 
   // Ensure volume adjustment is working.
   fake_callback_.reset();
-  fake_callback_.Render(base::TimeDelta(), base::TimeTicks::Now(), 0,
+  fake_callback_.Render(base::TimeDelta(), base::TimeTicks::Now(), {},
                         bus2.get());
   bus2->Scale(kTestVolume);
 
@@ -259,10 +260,10 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInput) {
   // configuring the fake callback to return half the data.  After these calls
   // bus1 is full of junk data, and bus2 is partially filled.
   wasp_impl_->SetVolume(1);
-  fake_callback_.Render(base::TimeDelta(), base::TimeTicks::Now(), 0,
+  fake_callback_.Render(base::TimeDelta(), base::TimeTicks::Now(), {},
                         bus1.get());
   fake_callback_.reset();
-  fake_callback_.Render(base::TimeDelta(), base::TimeTicks::Now(), 0,
+  fake_callback_.Render(base::TimeDelta(), base::TimeTicks::Now(), {},
                         bus2.get());
   bus2->ZeroFramesPartial(bus2->frames() / 2,
                           bus2->frames() - bus2->frames() / 2);

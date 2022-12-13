@@ -33,7 +33,7 @@ void TestObserver::OnPlay() {
 void TestObserver::Render() {
   if (!is_playing)
     return;
-  if (callback_->Render(base::Seconds(0), base::TimeTicks::Now(), 0,
+  if (callback_->Render(base::Seconds(0), base::TimeTicks::Now(), {},
                         bus_.get())) {
     task_runner_->PostTask(FROM_HERE, base::BindOnce(&TestObserver::Render,
                                                      base::Unretained(this)));

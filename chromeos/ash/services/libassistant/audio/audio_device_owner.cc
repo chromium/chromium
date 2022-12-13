@@ -163,7 +163,7 @@ void AudioDeviceOwner::StartDevice(
 // Runs on audio renderer thread (started internally in |output_device_|).
 int AudioDeviceOwner::Render(base::TimeDelta delay,
                              base::TimeTicks delay_timestamp,
-                             int prior_frames_skipped,
+                             const media::AudioGlitchInfo& glitch_info,
                              media::AudioBus* dest) {
   base::AutoLock lock(lock_);
 

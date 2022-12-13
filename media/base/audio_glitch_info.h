@@ -19,6 +19,9 @@ struct MEDIA_EXPORT AudioGlitchInfo {
   // Number of glitches.
   unsigned int count = 0;
 
+  // Stringifies the info for human-readable logging.
+  std::string ToString() const;
+
   AudioGlitchInfo& operator+=(const AudioGlitchInfo& other);
 
   class MEDIA_EXPORT Accumulator;

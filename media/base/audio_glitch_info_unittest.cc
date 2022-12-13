@@ -4,6 +4,7 @@
 
 #include "media/base/audio_glitch_info.h"
 
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -34,6 +35,12 @@ TEST(AudioGlitchInfo, AudioGlitchInfoAccumulator) {
   EXPECT_EQ(accumulated_glitches.count, 369u);
 
   EXPECT_EQ(accumulator.GetAndReset(), AudioGlitchInfo());
+}
+
+TEST(AudioGlitchInfo, ToString) {
+  AudioGlitchInfo info{.duration = base::Milliseconds(123), .count = 456};
+
+  EXPECT_EQ(info.ToString(), "duration (ms): 123, count: 456");
 }
 
 }  // namespace media

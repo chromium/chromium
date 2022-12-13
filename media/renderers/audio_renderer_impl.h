@@ -187,7 +187,7 @@ class MEDIA_EXPORT AudioRendererImpl
   // should the filled buffer be played.
   int Render(base::TimeDelta delay,
              base::TimeTicks delay_timestamp,
-             int prior_frames_skipped,
+             const AudioGlitchInfo& glitch_info,
              AudioBus* dest) override;
   void OnRenderError() override;
 

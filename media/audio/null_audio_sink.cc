@@ -10,6 +10,7 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_hash.h"
 #include "media/base/fake_audio_worker.h"
 

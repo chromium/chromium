@@ -60,7 +60,7 @@ void RunInterleaveBench(AudioBus* bus,
 TEST(AudioBusPerfTest, Interleave) {
   std::unique_ptr<AudioBus> bus = AudioBus::Create(2, kSampleRate * 120);
   FakeAudioRenderCallback callback(0.2, kSampleRate);
-  callback.Render(base::TimeDelta(), base::TimeTicks::Now(), 0, bus.get());
+  callback.Render(base::TimeDelta(), base::TimeTicks::Now(), {}, bus.get());
 
   // Only benchmark these two types since they're the only commonly used ones.
   RunInterleaveBench<int16_t, SignedInt16SampleTypeTraits>(bus.get(),
@@ -71,7 +71,7 @@ TEST(AudioBusPerfTest, Interleave) {
 TEST(AudioBusPerfTest, DISABLED_ToInterleavedFloat) {
   std::unique_ptr<AudioBus> bus = AudioBus::Create(2, kSampleRate * 120);
   FakeAudioRenderCallback callback(0.2, kSampleRate);
-  callback.Render(base::TimeDelta(), base::TimeTicks::Now(), 0, bus.get());
+  callback.Render(base::TimeDelta(), base::TimeTicks::Now(), {}, bus.get());
 
   RunInterleaveBench<float, Float32SampleTypeTraits>(
       bus.get(), "to_interleave_float", true);
@@ -85,7 +85,7 @@ void RunCopyBench(void (AudioBus::*f)(AudioBus*) const,
   std::unique_ptr<AudioBus> bus = AudioBus::Create(2, kSampleRate * 120);
   std::unique_ptr<AudioBus> dest = AudioBus::Create(2, kSampleRate * 120);
   FakeAudioRenderCallback callback(0.2, kSampleRate);
-  callback.Render(base::TimeDelta(), base::TimeTicks::Now(), 0, bus.get());
+  callback.Render(base::TimeDelta(), base::TimeTicks::Now(), {}, bus.get());
 
   // Warmup.
   for (int i = 0; i < kBenchmarkIterations; ++i)
