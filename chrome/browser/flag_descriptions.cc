@@ -1946,10 +1946,6 @@ const char kOmniboxFuzzyUrlSuggestionsName[] = "Omnibox Fuzzy URL Suggestions";
 const char kOmniboxFuzzyUrlSuggestionsDescription[] =
     "Enables URL suggestions for inputs that may contain typos.";
 
-const char kOmniboxHeaderPaddingUpdateName[] = "Omnibox Header Padding Update";
-const char kOmniboxHeaderPaddingUpdateDescription[] =
-    "Update Omnibox suggestion header's position.";
-
 const char kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsName[] =
     "Omnibox HQP Specificity";
 const char

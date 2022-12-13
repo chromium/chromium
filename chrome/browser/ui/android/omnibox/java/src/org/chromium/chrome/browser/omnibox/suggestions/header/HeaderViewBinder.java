@@ -10,7 +10,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.widget.TextViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -51,29 +50,21 @@ public class HeaderViewBinder {
         } else if (propertyKey == HeaderViewProperties.SHOULD_REMOVE_CHEVRON) {
             view.setShouldRemoveSuggestionHeaderChevron(
                     model.get(HeaderViewProperties.SHOULD_REMOVE_CHEVRON));
-        } else if (propertyKey == HeaderViewProperties.USE_UPDATED_HEADER_PADDING) {
-            boolean useUpdatedHeaderPadding =
-                    model.get(HeaderViewProperties.USE_UPDATED_HEADER_PADDING);
+        } else if (propertyKey == HeaderViewProperties.USE_MODERNIZED_HEADER_PADDING) {
+            boolean useModernizedHeaderPadding =
+                    model.get(HeaderViewProperties.USE_MODERNIZED_HEADER_PADDING);
             Resources res = view.getResources();
 
-            int minHeight = res.getDimensionPixelSize(useUpdatedHeaderPadding
-                            ? R.dimen.omnibox_suggestion_header_height_modern
-                            : R.dimen.omnibox_suggestion_header_height);
+            int minHeight = res.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_height);
+            int paddingStart =
+                    res.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_start);
+            int paddingTop =
+                    res.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_top);
+            int paddingBottom =
+                    res.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_bottom);
 
-            int paddingStart = res.getDimensionPixelSize(useUpdatedHeaderPadding
-                            ? R.dimen.omnibox_suggestion_header_padding_start_modern
-                            : R.dimen.omnibox_suggestion_header_padding_start);
-
-            int paddingTop = useUpdatedHeaderPadding
-                    ? res.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_top)
-                    : 0;
-
-            int paddingBottom = useUpdatedHeaderPadding
-                    ? res.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_bottom)
-                    : 0;
-
-            // Use modified start padding if the phase 2 feature is enabled.
-            if (OmniboxFeatures.shouldShowModernizeVisualUpdate(view.getContext())) {
+            // Use modified padding if the phase 2 feature is enabled.
+            if (useModernizedHeaderPadding) {
                 minHeight = res.getDimensionPixelSize(
                         R.dimen.omnibox_suggestion_header_height_modern_phase2);
                 paddingStart += res.getDimensionPixelSize(R.dimen.omnibox_suggestion_side_spacing);

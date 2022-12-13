@@ -97,7 +97,6 @@ BASE_DECLARE_FEATURE(kRichAutocompletion);
 BASE_DECLARE_FEATURE(kNtpRealboxPedals);
 BASE_DECLARE_FEATURE(kOmniboxFuzzyUrlSuggestions);
 BASE_DECLARE_FEATURE(kOmniboxDefaultBrowserPedal);
-BASE_DECLARE_FEATURE(kOmniboxHeaderPaddingUpdate);
 BASE_DECLARE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor);
 BASE_DECLARE_FEATURE(kOmniboxRemoveSuggestionHeaderChevron);
 BASE_DECLARE_FEATURE(kOmniboxMostVisitedTilesAddRecycledViewPool);

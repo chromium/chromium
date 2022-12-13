@@ -202,33 +202,13 @@ public class HeaderViewBinderUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_HEADER_PADDING_UPDATE,
-            ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
-    public void
-    headerView_updateHeaderPaddingFalse() {
-        // Update Header Padding.
-        mModel.set(HeaderViewProperties.USE_UPDATED_HEADER_PADDING, false);
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    public void headerView_useModernizedHeaderPaddingFalse() {
+        mModel.set(HeaderViewProperties.USE_MODERNIZED_HEADER_PADDING, false);
 
         int minHeight = mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_height);
         int paddingStart =
                 mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_start);
-        int paddingTop = 0;
-        int paddingBottom = 0;
-        verify(mHeaderView, times(1))
-                .setUpdateHeaderPadding(minHeight, paddingStart, paddingTop, paddingBottom);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_HEADER_PADDING_UPDATE)
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void headerView_updateHeaderPaddingTrue() {
-        // Update Header Padding.
-        mModel.set(HeaderViewProperties.USE_UPDATED_HEADER_PADDING, true);
-
-        int minHeight =
-                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_height_modern);
-        int paddingStart = mResources.getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_header_padding_start_modern);
         int paddingTop =
                 mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_top);
         int paddingBottom =
@@ -238,17 +218,14 @@ public class HeaderViewBinderUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_HEADER_PADDING_UPDATE,
-            ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
-    public void
-    headerView_updateHeaderPaddingTrueModernizeFeatureEnabled() {
-        // Update Header Padding.
-        mModel.set(HeaderViewProperties.USE_UPDATED_HEADER_PADDING, true);
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    public void headerView_useModernizedHeaderPaddingTrue() {
+        mModel.set(HeaderViewProperties.USE_MODERNIZED_HEADER_PADDING, true);
 
         int minHeight = mResources.getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_header_height_modern_phase2);
-        int paddingStart = mResources.getDimensionPixelSize(
-                                   R.dimen.omnibox_suggestion_header_padding_start_modern)
+        int paddingStart =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_start)
                 + mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_side_spacing);
         int paddingTop =
                 mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_top);

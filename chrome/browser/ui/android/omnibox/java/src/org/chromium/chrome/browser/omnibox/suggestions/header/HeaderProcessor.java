@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownItemProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -22,14 +23,15 @@ public class HeaderProcessor implements DropdownItemProcessor {
     private final int mMinimumHeight;
     private boolean mShouldRemoveSuggestionHeaderChevron;
     private boolean mAllowGroupCollapsedState;
-    private boolean mShouldRemoveSuggestionHeaderCapitalization;
-    private boolean mUseUpdatedHeaderPadding;
+    private boolean mShouldUseModernizedHeaderPadding;
+    private Context mContext;
 
     /**
      * @param context An Android context.
      */
     public HeaderProcessor(
             Context context, SuggestionHost suggestionHost, UrlBarDelegate urlDelegate) {
+        mContext = context;
         mSuggestionHost = suggestionHost;
         mUrlBarDelegate = urlDelegate;
         mMinimumHeight = context.getResources().getDimensionPixelSize(
@@ -61,7 +63,8 @@ public class HeaderProcessor implements DropdownItemProcessor {
         model.set(HeaderViewProperties.TITLE, headerText);
         model.set(HeaderViewProperties.IS_COLLAPSED, false);
         model.set(HeaderViewProperties.SHOULD_REMOVE_CHEVRON, mShouldRemoveSuggestionHeaderChevron);
-        model.set(HeaderViewProperties.USE_UPDATED_HEADER_PADDING, mUseUpdatedHeaderPadding);
+        model.set(HeaderViewProperties.USE_MODERNIZED_HEADER_PADDING,
+                mShouldUseModernizedHeaderPadding);
         if (mAllowGroupCollapsedState) {
             model.set(HeaderViewProperties.DELEGATE, new HeaderViewProperties.Delegate() {
                 @Override
@@ -98,7 +101,7 @@ public class HeaderProcessor implements DropdownItemProcessor {
                 "allow_group_collapsed_state",
                 /* default= */ true);
 
-        mUseUpdatedHeaderPadding =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_HEADER_PADDING_UPDATE);
+        mShouldUseModernizedHeaderPadding =
+                OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext);
     }
 }

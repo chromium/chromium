@@ -5261,11 +5261,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxAssistantVoiceSearchVariations,
                                     "OmniboxAssistantVoiceSearch")},
 
-    {"omnibox-header-padding-update",
-     flag_descriptions::kOmniboxHeaderPaddingUpdateName,
-     flag_descriptions::kOmniboxHeaderPaddingUpdateDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxHeaderPaddingUpdate)},
-
     {"omnibox-match-toolbar-and-status-bar-color",
      flag_descriptions::kOmniboxMatchToolbarAndStatusBarColorName,
      flag_descriptions::kOmniboxMatchToolbarAndStatusBarColorDescription,

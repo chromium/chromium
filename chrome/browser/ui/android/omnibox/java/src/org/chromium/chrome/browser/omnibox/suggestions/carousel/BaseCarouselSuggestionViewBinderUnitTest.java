@@ -155,7 +155,6 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.OMNIBOX_HEADER_PADDING_UPDATE})
     public void headerTitle_visibilityChangeAltersTopPadding() {
         mModel.set(BaseCarouselSuggestionViewProperties.SHOW_TITLE, true);
         verify(mHeaderView, times(1)).setVisibility(eq(View.VISIBLE));
@@ -174,7 +173,6 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.OMNIBOX_HEADER_PADDING_UPDATE})
     @Features.EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
     public void headerTitle_visibilityChangeAltersTopPadding_smallBottomPadding() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);

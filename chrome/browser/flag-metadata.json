@@ -5065,11 +5065,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "omnibox-header-padding-update",
-    "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "omnibox-history-quick-provider-specificity-score-count-unique-hosts",
     "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

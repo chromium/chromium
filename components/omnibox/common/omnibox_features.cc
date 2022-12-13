@@ -416,12 +416,6 @@ BASE_FEATURE(kOmniboxDefaultBrowserPedal,
              "OmniboxDefaultBrowserPedal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature used to update the left and bottom padding of the omnibox suggestion
-// header.
-BASE_FEATURE(kOmniboxHeaderPaddingUpdate,
-             "OmniboxHeaderPaddingUpdate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature used to synchronize the toolbar's and status bar's color.
 BASE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor,
              "OmniboxMatchToolbarAndStatusBarColor",

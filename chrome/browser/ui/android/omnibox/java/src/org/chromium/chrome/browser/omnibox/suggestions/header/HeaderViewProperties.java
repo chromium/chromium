@@ -31,12 +31,15 @@ public class HeaderViewProperties {
     /** The flag to state whether to remove the header chevron. */
     public static final WritableBooleanPropertyKey SHOULD_REMOVE_CHEVRON =
             new WritableBooleanPropertyKey();
-    /** The flag to state whether to use the updated padding on suggestion header. */
-    public static final WritableBooleanPropertyKey USE_UPDATED_HEADER_PADDING =
+    /**
+     * The flag to state whether to use the updated padding on suggestion header for omnibox revamp
+     * phase 2.
+     */
+    public static final WritableBooleanPropertyKey USE_MODERNIZED_HEADER_PADDING =
             new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {
-            DELEGATE, IS_COLLAPSED, TITLE, SHOULD_REMOVE_CHEVRON, USE_UPDATED_HEADER_PADDING};
+            DELEGATE, IS_COLLAPSED, TITLE, SHOULD_REMOVE_CHEVRON, USE_MODERNIZED_HEADER_PADDING};
 
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionCommonProperties.ALL_KEYS);
