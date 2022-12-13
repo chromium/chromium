@@ -302,18 +302,6 @@ struct FrameRenderDataUpdate {
   // before a user input or document scroll, since the last timing update.
   float layout_shift_delta_before_input_or_scroll;
 
-  // How many LayoutBlock instances were created.
-  uint32 all_layout_block_count_delta;
-
-  // How many LayoutNG-based LayoutBlock instances were created.
-  uint32 ng_layout_block_count_delta;
-
-  // How many times LayoutObject::UpdateLayout() is called.
-  uint32 all_layout_call_count_delta;
-
-  // How many times LayoutNG-based LayoutObject::UpdateLayout() is called.
-  uint32 ng_layout_call_count_delta;
-
   // New layout shifts with timestamps.
   array<LayoutShift> new_layout_shifts;
 };

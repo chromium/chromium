@@ -58,8 +58,6 @@ LayoutNGMixin<Base>::LayoutNGMixin(ContainerNode* node) : Base(node) {
   static_assert(
       std::is_base_of<LayoutBlock, Base>::value,
       "Base class of LayoutNGMixin must be LayoutBlock or derived class.");
-  if (node)
-    Base::GetDocument().IncLayoutBlockCounterNG();
 }
 
 template <typename Base>

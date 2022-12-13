@@ -134,17 +134,6 @@ void PageTimingMetricsSender::DidObserveLayoutShift(
   EnsureSendTimer();
 }
 
-void PageTimingMetricsSender::DidObserveLayoutNg(uint32_t all_block_count,
-                                                 uint32_t ng_block_count,
-                                                 uint32_t all_call_count,
-                                                 uint32_t ng_call_count) {
-  render_data_.all_layout_block_count_delta += all_block_count;
-  render_data_.ng_layout_block_count_delta += ng_block_count;
-  render_data_.all_layout_call_count_delta += all_call_count;
-  render_data_.ng_layout_call_count_delta += ng_call_count;
-  EnsureSendTimer();
-}
-
 void PageTimingMetricsSender::DidStartResponse(
     const url::SchemeHostPort& final_response_url,
     int resource_id,
@@ -352,10 +341,6 @@ void PageTimingMetricsSender::SendNow() {
   render_data_.new_layout_shifts.clear();
   render_data_.layout_shift_delta = 0;
   render_data_.layout_shift_delta_before_input_or_scroll = 0;
-  render_data_.all_layout_block_count_delta = 0;
-  render_data_.ng_layout_block_count_delta = 0;
-  render_data_.all_layout_call_count_delta = 0;
-  render_data_.ng_layout_call_count_delta = 0;
   // As PageTimingMetricsSender is owned by MetricsRenderFrameObserver, which is
   // instantiated for each frame, there's no need to make soft_navigation_count_
   // zero here, as its value only increments through the lifetime of the frame.

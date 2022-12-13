@@ -2607,12 +2607,6 @@ void Document::LayoutUpdated() {
     // TODO(dcheng): If we create FrameWidget before Frame then we could move
     // this to Document::Initialize().
     AttachCompositorTimeline(Timeline().CompositorTimeline());
-
-    frame->Client()->DidObserveLayoutNg(
-        layout_blocks_counter_, layout_blocks_counter_ng_,
-        layout_calls_counter_, layout_calls_counter_ng_);
-    layout_blocks_counter_ = layout_blocks_counter_ng_ = layout_calls_counter_ =
-        layout_calls_counter_ng_ = 0;
   }
 
   Markers().InvalidateRectsForAllTextMatchMarkers();

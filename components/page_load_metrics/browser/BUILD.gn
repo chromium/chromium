@@ -28,8 +28,6 @@ source_set("browser") {
     "observers/early_hints_page_load_metrics_observer.h",
     "observers/fenced_frames_page_load_metrics_observer.cc",
     "observers/fenced_frames_page_load_metrics_observer.h",
-    "observers/layout_page_load_metrics_observer.cc",
-    "observers/layout_page_load_metrics_observer.h",
     "observers/prerender_page_load_metrics_observer.cc",
     "observers/prerender_page_load_metrics_observer.h",
     "observers/shared_storage_page_load_metrics_observer.cc",

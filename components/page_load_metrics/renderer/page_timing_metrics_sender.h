@@ -56,10 +56,6 @@ class PageTimingMetricsSender {
   void DidObserveNewFeatureUsage(const blink::UseCounterFeature& feature);
   void DidObserveSoftNavigation(uint32_t count);
   void DidObserveLayoutShift(double score, bool after_input_or_scroll);
-  void DidObserveLayoutNg(uint32_t all_block_count,
-                          uint32_t ng_block_count,
-                          uint32_t all_call_count,
-                          uint32_t ng_call_count);
 
   void DidStartResponse(const url::SchemeHostPort& final_response_url,
                         int resource_id,

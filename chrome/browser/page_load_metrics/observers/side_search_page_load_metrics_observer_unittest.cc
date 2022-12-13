@@ -45,8 +45,7 @@ TEST_F(SideSearchPageLoadMetricsObserverTest, PageLoadMetricsNonBackgrounded) {
   NavigateAndCommit(GURL(kExampleUrl));
   tester()->SimulateTimingUpdate(timing);
 
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, 0, 0, 0,
-                                                              0, {});
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, {});
   tester()->SimulateRenderDataUpdate(render_data);
   render_data.layout_shift_delta = 1.5;
   render_data.layout_shift_delta_before_input_or_scroll = 0.0;
@@ -139,8 +138,7 @@ TEST_F(SideSearchPageLoadMetricsObserverTest,
   NavigateAndCommit(GURL(kExampleUrl));
   tester()->SimulateTimingUpdate(timing);
 
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, 0, 0, 0,
-                                                              0, {});
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, {});
   tester()->SimulateRenderDataUpdate(render_data);
   render_data.layout_shift_delta = 1.5;
   render_data.layout_shift_delta_before_input_or_scroll = 0.0;

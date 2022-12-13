@@ -1313,13 +1313,9 @@ void LayoutBox::UpdateAfterLayout() {
       !NGDisableSideEffectsScope::IsDisabled())
     ClearLayoutResults();
 
-  Document& document = GetDocument();
-  document.IncLayoutCallsCounter();
   GetFrame()->GetInputMethodController().DidUpdateLayout(*this);
   if (IsPositioned())
     GetFrame()->GetInputMethodController().DidLayoutSubtree(*this);
-  if (IsLayoutNGObject())
-    document.IncLayoutCallsCounterNG();
 }
 
 bool LayoutBox::ShouldUseAutoIntrinsicSize() const {

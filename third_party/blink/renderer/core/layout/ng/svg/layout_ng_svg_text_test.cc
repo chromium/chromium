@@ -3,37 +3,15 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
-#include "third_party/blink/renderer/core/loader/empty_clients.h"
 
 namespace blink {
 
-class LayoutCounts : public EmptyLocalFrameClient {
- public:
-  uint32_t AllCallCount() const { return all_call_count_; }
-
- private:
-  void DidObserveLayoutNg(uint32_t all_block_count,
-                          uint32_t ng_block_count,
-                          uint32_t all_call_count,
-                          uint32_t ng_call_count) override {
-    all_call_count_ += all_call_count;
-  }
-
-  uint32_t all_call_count_ = 0;
-};
-
 class LayoutNGSVGTextTest : public NGLayoutTest {
  public:
-  LayoutNGSVGTextTest()
-      : NGLayoutTest(MakeGarbageCollected<LayoutCounts>()),
-        svg_text_ng_(true) {}
-
-  uint32_t AllLayoutCallCount() const {
-    return static_cast<LayoutCounts*>(GetFrame().Client())->AllCallCount();
-  }
+  LayoutNGSVGTextTest() = default;
 
  private:
-  ScopedSVGTextNGForTest svg_text_ng_;
+  ScopedSVGTextNGForTest svg_text_ng_{true};
 };
 
 // DevTools element overlay uses AbsoluteQuads().
@@ -112,10 +90,11 @@ TEST_F(LayoutNGSVGTextTest, SubtreeLayout) {
   GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
   EXPECT_TRUE(frame_view->IsSubtreeLayout());
 
-  uint32_t pre_layout_count = AllLayoutCallCount();
+  ;
+  uint32_t pre_layout_count = frame_view->BlockLayoutCountForTesting();
   UpdateAllLifecyclePhasesForTest();
   // Only the <text> and its parent <svg> should be laid out again.
-  EXPECT_EQ(2u, AllLayoutCallCount() - pre_layout_count);
+  EXPECT_EQ(2u, frame_view->BlockLayoutCountForTesting() - pre_layout_count);
 }
 
 // crbug.com/1320615

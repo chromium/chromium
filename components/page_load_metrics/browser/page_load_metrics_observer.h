@@ -82,18 +82,6 @@ struct PageRenderData {
   // dependent (see comments on page_render_data_ and main_frame_render_data_
   // in PageLoadMetricsUpdateDispatcher).
   float layout_shift_score_before_input_or_scroll = 0;
-
-  // How many LayoutBlock instances were created.
-  uint64_t all_layout_block_count = 0;
-
-  // How many LayoutNG-based LayoutBlock instances were created.
-  uint64_t ng_layout_block_count = 0;
-
-  // How many times LayoutObject::UpdateLayout() is called.
-  uint64_t all_layout_call_count = 0;
-
-  // How many times LayoutNG-based LayoutObject::UpdateLayout() is called.
-  uint64_t ng_layout_call_count = 0;
 };
 
 // Information related to layout shift normalization for different strategies.

@@ -800,14 +800,6 @@ void PageLoadMetricsUpdateDispatcher::UpdatePageRenderData(
         render_data.layout_shift_delta_before_input_or_scroll;
   }
 
-  page_render_data_.all_layout_block_count +=
-      render_data.all_layout_block_count_delta;
-  page_render_data_.ng_layout_block_count +=
-      render_data.ng_layout_block_count_delta;
-  page_render_data_.all_layout_call_count +=
-      render_data.all_layout_call_count_delta;
-  page_render_data_.ng_layout_call_count +=
-      render_data.ng_layout_call_count_delta;
   client_->OnPageRenderDataChanged(render_data, is_main_frame);
 }
 
@@ -820,13 +812,6 @@ void PageLoadMetricsUpdateDispatcher::UpdateMainFrameRenderData(
   // should not check has_seen_input_or_scroll_ (but see crbug.com/1136207).
   main_frame_render_data_.layout_shift_score_before_input_or_scroll +=
       render_data.layout_shift_delta_before_input_or_scroll;
-
-  main_frame_render_data_.all_layout_block_count +=
-      render_data.all_layout_block_count_delta;
-  main_frame_render_data_.ng_layout_block_count +=
-      render_data.ng_layout_block_count_delta;
-  main_frame_render_data_.all_layout_call_count +=
-      render_data.all_layout_call_count_delta;
 }
 
 void PageLoadMetricsUpdateDispatcher::OnSubFrameRenderDataChanged(
