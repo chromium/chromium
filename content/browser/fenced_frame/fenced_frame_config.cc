@@ -18,6 +18,8 @@ GURL GenerateUrnUuid() {
               base::GUID::GenerateRandomV4().AsLowercaseString());
 }
 
+namespace {
+
 std::vector<std::pair<GURL, FencedFrameConfig>>
 GenerateURNConfigVectorForConfigs(
     const std::vector<FencedFrameConfig>& nested_configs) {
@@ -43,6 +45,20 @@ GenerateURNConfigVectorForConfigs(
   }
   return nested_urn_config_pairs;
 }
+
+template <typename Property>
+void RedactProperty(
+    const absl::optional<FencedFrameProperty<Property>>& property,
+    FencedFrameEntity entity,
+    absl::optional<blink::FencedFrame::RedactedFencedFrameProperty<Property>>&
+        out) {
+  if (property.has_value()) {
+    out = blink::FencedFrame::RedactedFencedFrameProperty(
+        property->GetValueForEntity(entity));
+  }
+}
+
+}  // namespace
 
 FencedFrameConfig::FencedFrameConfig() = default;
 
@@ -92,18 +108,17 @@ FencedFrameConfig& FencedFrameConfig::operator=(FencedFrameConfig&&) = default;
 blink::FencedFrame::RedactedFencedFrameConfig FencedFrameConfig::RedactFor(
     FencedFrameEntity entity) const {
   blink::FencedFrame::RedactedFencedFrameConfig redacted_config;
-  if (urn_.has_value())
+  if (urn_.has_value()) {
     redacted_config.urn_ = urn_;
-  if (mapped_url_.has_value()) {
-    redacted_config.mapped_url_ =
-        blink::FencedFrame::RedactedFencedFrameProperty(
-            mapped_url_->GetValueForEntity(entity));
   }
-  if (ad_auction_data_.has_value()) {
-    redacted_config.ad_auction_data_ =
-        blink::FencedFrame::RedactedFencedFrameProperty(
-            ad_auction_data_->GetValueForEntity(entity));
-  }
+
+  RedactProperty(mapped_url_, entity, redacted_config.mapped_url_);
+  RedactProperty(container_size_, entity, redacted_config.container_size_);
+  RedactProperty(content_size_, entity, redacted_config.content_size_);
+  RedactProperty(deprecated_should_freeze_initial_size_, entity,
+                 redacted_config.deprecated_should_freeze_initial_size_);
+  RedactProperty(ad_auction_data_, entity, redacted_config.ad_auction_data_);
+
   if (nested_configs_.has_value()) {
     absl::optional<std::vector<FencedFrameConfig>>
         partially_redacted_nested_configs =
@@ -120,16 +135,12 @@ blink::FencedFrame::RedactedFencedFrameConfig FencedFrameConfig::RedactFor(
       redacted_config.nested_configs_.emplace(absl::nullopt);
     }
   }
-  if (shared_storage_budget_metadata_.has_value()) {
-    redacted_config.shared_storage_budget_metadata_ =
-        blink::FencedFrame::RedactedFencedFrameProperty(
-            shared_storage_budget_metadata_->GetValueForEntity(entity));
-  }
-  if (reporting_metadata_.has_value()) {
-    redacted_config.reporting_metadata_ =
-        blink::FencedFrame::RedactedFencedFrameProperty(
-            reporting_metadata_->GetValueForEntity(entity));
-  }
+
+  RedactProperty(shared_storage_budget_metadata_, entity,
+                 redacted_config.shared_storage_budget_metadata_);
+  RedactProperty(reporting_metadata_, entity,
+                 redacted_config.reporting_metadata_);
+
   return redacted_config;
 }
 
@@ -145,6 +156,10 @@ FencedFrameProperties::FencedFrameProperties()
 FencedFrameProperties::FencedFrameProperties(const FencedFrameConfig& config)
     : urn_(config.urn_),
       mapped_url_(config.mapped_url_),
+      container_size_(config.container_size_),
+      content_size_(config.content_size_),
+      deprecated_should_freeze_initial_size_(
+          config.deprecated_should_freeze_initial_size_),
       ad_auction_data_(config.ad_auction_data_),
       on_navigate_callback_(config.on_navigate_callback_),
       nested_urn_config_pairs_(absl::nullopt),
@@ -182,18 +197,18 @@ FencedFrameProperties& FencedFrameProperties::operator=(
 blink::FencedFrame::RedactedFencedFrameProperties
 FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
   blink::FencedFrame::RedactedFencedFrameProperties redacted_properties;
-  if (urn_.has_value())
+  if (urn_.has_value()) {
     redacted_properties.urn_ = urn_;
-  if (mapped_url_.has_value()) {
-    redacted_properties.mapped_url_ =
-        blink::FencedFrame::RedactedFencedFrameProperty(
-            mapped_url_->GetValueForEntity(entity));
   }
-  if (ad_auction_data_.has_value()) {
-    redacted_properties.ad_auction_data_ =
-        blink::FencedFrame::RedactedFencedFrameProperty(
-            ad_auction_data_->GetValueForEntity(entity));
-  }
+
+  RedactProperty(mapped_url_, entity, redacted_properties.mapped_url_);
+  RedactProperty(container_size_, entity, redacted_properties.container_size_);
+  RedactProperty(content_size_, entity, redacted_properties.content_size_);
+  RedactProperty(deprecated_should_freeze_initial_size_, entity,
+                 redacted_properties.deprecated_should_freeze_initial_size_);
+  RedactProperty(ad_auction_data_, entity,
+                 redacted_properties.ad_auction_data_);
+
   if (nested_urn_config_pairs_.has_value()) {
     absl::optional<std::vector<std::pair<GURL, FencedFrameConfig>>>
         partially_redacted_nested_urn_config_pairs =
@@ -226,11 +241,10 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
           absl::nullopt);
     }
   }
-  if (reporting_metadata_.has_value()) {
-    redacted_properties.reporting_metadata_ =
-        blink::FencedFrame::RedactedFencedFrameProperty(
-            reporting_metadata_->GetValueForEntity(entity));
-  }
+
+  RedactProperty(reporting_metadata_, entity,
+                 redacted_properties.reporting_metadata_);
+
   return redacted_properties;
 }
 

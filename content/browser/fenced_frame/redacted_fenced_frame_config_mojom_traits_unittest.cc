@@ -205,6 +205,33 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
     TEST_PROPERTY(FencedFrameProperties, mapped_url_, test_url, eq_fn, eq_fn);
   }
 
+  // Test `container_size` and `content_size`.
+  {
+    gfx::Size test_size(100, 200);
+    auto eq_fn = [](const gfx::Size& a, const gfx::Size& b) { return a == b; };
+
+    TEST_PROPERTY(FencedFrameConfig, container_size_, test_size, eq_fn, eq_fn);
+    TEST_PROPERTY(FencedFrameProperties, container_size_, test_size, eq_fn,
+                  eq_fn);
+
+    TEST_PROPERTY(FencedFrameConfig, content_size_, test_size, eq_fn, eq_fn);
+    TEST_PROPERTY(FencedFrameProperties, content_size_, test_size, eq_fn,
+                  eq_fn);
+  }
+
+  // Test `deprecated_should_freeze_initial_size`.
+  {
+    auto eq_fn = [](const bool a, const bool b) { return a == b; };
+    TEST_PROPERTY(FencedFrameConfig, deprecated_should_freeze_initial_size_,
+                  true, eq_fn, eq_fn);
+    TEST_PROPERTY(FencedFrameProperties, deprecated_should_freeze_initial_size_,
+                  true, eq_fn, eq_fn);
+    TEST_PROPERTY(FencedFrameConfig, deprecated_should_freeze_initial_size_,
+                  false, eq_fn, eq_fn);
+    TEST_PROPERTY(FencedFrameProperties, deprecated_should_freeze_initial_size_,
+                  false, eq_fn, eq_fn);
+  }
+
   // Test `ad_auction_data`.
   {
     AdAuctionData test_ad_auction_data = {url::Origin::Create(test_url),

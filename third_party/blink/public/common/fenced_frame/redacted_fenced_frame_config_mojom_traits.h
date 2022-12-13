@@ -74,9 +74,6 @@ struct BLINK_COMMON_EXPORT
 template <>
 class BLINK_COMMON_EXPORT
     UnionTraits<blink::mojom::PotentiallyOpaqueURLDataView, Prop<GURL>> {
-  template <typename T>
-  using Prop = Prop<T>;
-
  public:
   static const GURL& transparent(const Prop<GURL>& mapped_url) {
     return *mapped_url.potentially_opaque_value;
@@ -90,6 +87,42 @@ class BLINK_COMMON_EXPORT
 
   static blink::mojom::PotentiallyOpaqueURLDataView::Tag GetTag(
       const Prop<GURL>& mapped_url);
+};
+
+template <>
+class BLINK_COMMON_EXPORT
+    UnionTraits<blink::mojom::PotentiallyOpaqueSizeDataView, Prop<gfx::Size>> {
+ public:
+  static const gfx::Size& transparent(const Prop<gfx::Size>& size) {
+    return *size.potentially_opaque_value;
+  }
+  static blink::FencedFrame::Opaque opaque(const Prop<gfx::Size>&) {
+    return blink::FencedFrame::Opaque::kOpaque;
+  }
+
+  static bool Read(blink::mojom::PotentiallyOpaqueSizeDataView data,
+                   Prop<gfx::Size>* out);
+
+  static blink::mojom::PotentiallyOpaqueSizeDataView::Tag GetTag(
+      const Prop<gfx::Size>& size);
+};
+
+template <>
+class BLINK_COMMON_EXPORT
+    UnionTraits<blink::mojom::PotentiallyOpaqueBoolDataView, Prop<bool>> {
+ public:
+  static const bool& transparent(const Prop<bool>& flag) {
+    return *flag.potentially_opaque_value;
+  }
+  static blink::FencedFrame::Opaque opaque(const Prop<bool>&) {
+    return blink::FencedFrame::Opaque::kOpaque;
+  }
+
+  static bool Read(blink::mojom::PotentiallyOpaqueBoolDataView data,
+                   Prop<bool>* out);
+
+  static blink::mojom::PotentiallyOpaqueBoolDataView::Tag GetTag(
+      const Prop<bool>& flag);
 };
 
 template <>
@@ -194,6 +227,19 @@ struct BLINK_COMMON_EXPORT
       const blink::FencedFrame::RedactedFencedFrameConfig& config) {
     return config.mapped_url_;
   }
+  static const absl::optional<Prop<gfx::Size>>& container_size(
+      const blink::FencedFrame::RedactedFencedFrameConfig& config) {
+    return config.container_size_;
+  }
+  static const absl::optional<Prop<gfx::Size>>& content_size(
+      const blink::FencedFrame::RedactedFencedFrameConfig& config) {
+    return config.content_size_;
+  }
+  static const absl::optional<Prop<bool>>&
+  deprecated_should_freeze_initial_size(
+      const blink::FencedFrame::RedactedFencedFrameConfig& config) {
+    return config.deprecated_should_freeze_initial_size_;
+  }
   static const absl::optional<Prop<blink::FencedFrame::AdAuctionData>>&
   ad_auction_data(const blink::FencedFrame::RedactedFencedFrameConfig& config) {
     return config.ad_auction_data_;
@@ -226,6 +272,19 @@ struct BLINK_COMMON_EXPORT
   static const absl::optional<Prop<GURL>>& mapped_url(
       const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
     return properties.mapped_url_;
+  }
+  static const absl::optional<Prop<gfx::Size>>& container_size(
+      const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
+    return properties.container_size_;
+  }
+  static const absl::optional<Prop<gfx::Size>>& content_size(
+      const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
+    return properties.content_size_;
+  }
+  static const absl::optional<Prop<bool>>&
+  deprecated_should_freeze_initial_size(
+      const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
+    return properties.deprecated_should_freeze_initial_size_;
   }
   static const absl::optional<Prop<blink::FencedFrame::AdAuctionData>>&
   ad_auction_data(

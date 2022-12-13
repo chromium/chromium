@@ -7,6 +7,7 @@
 
 module blink.mojom;
 
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
 
@@ -37,6 +38,16 @@ enum Opaque {
 
 union PotentiallyOpaqueURL {
   url.mojom.Url transparent;
+  Opaque opaque;
+};
+
+union PotentiallyOpaqueSize {
+  gfx.mojom.Size transparent;
+  Opaque opaque;
+};
+
+union PotentiallyOpaqueBool {
+  bool transparent;
   Opaque opaque;
 };
 
@@ -96,6 +107,12 @@ union PotentiallyOpaqueReportingMetadata {
 struct FencedFrameConfig {
   PotentiallyOpaqueURL? mapped_url;
 
+  PotentiallyOpaqueSize? container_size;
+
+  PotentiallyOpaqueSize? content_size;
+
+  PotentiallyOpaqueBool? deprecated_should_freeze_initial_size;
+
   PotentiallyOpaqueAdAuctionData? ad_auction_data;
 
   PotentiallyOpaqueConfigVector? nested_configs;
@@ -119,6 +136,12 @@ struct FencedFrameConfig {
 //   nested configs, etc.
 struct FencedFrameProperties {
   PotentiallyOpaqueURL? mapped_url;
+
+  PotentiallyOpaqueSize? container_size;
+
+  PotentiallyOpaqueSize? content_size;
+
+  PotentiallyOpaqueBool? deprecated_should_freeze_initial_size;
 
   PotentiallyOpaqueAdAuctionData? ad_auction_data;
 

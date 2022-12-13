@@ -15,6 +15,7 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom-forward.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -99,6 +100,18 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
   const absl::optional<RedactedFencedFrameProperty<GURL>>& mapped_url() const {
     return mapped_url_;
   }
+  const absl::optional<RedactedFencedFrameProperty<gfx::Size>>& container_size()
+      const {
+    return container_size_;
+  }
+  const absl::optional<RedactedFencedFrameProperty<gfx::Size>>& content_size()
+      const {
+    return content_size_;
+  }
+  const absl::optional<RedactedFencedFrameProperty<bool>>&
+  deprecated_should_freeze_initial_size() const {
+    return deprecated_should_freeze_initial_size_;
+  }
   const absl::optional<RedactedFencedFrameProperty<AdAuctionData>>&
   ad_auction_data() const {
     return ad_auction_data_;
@@ -129,6 +142,10 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
 
   absl::optional<GURL> urn_;
   absl::optional<RedactedFencedFrameProperty<GURL>> mapped_url_;
+  absl::optional<RedactedFencedFrameProperty<gfx::Size>> container_size_;
+  absl::optional<RedactedFencedFrameProperty<gfx::Size>> content_size_;
+  absl::optional<RedactedFencedFrameProperty<bool>>
+      deprecated_should_freeze_initial_size_;
   absl::optional<RedactedFencedFrameProperty<AdAuctionData>> ad_auction_data_;
   absl::optional<
       RedactedFencedFrameProperty<std::vector<RedactedFencedFrameConfig>>>
@@ -152,6 +169,18 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   const absl::optional<GURL>& urn() const { return urn_; }
   const absl::optional<RedactedFencedFrameProperty<GURL>>& mapped_url() const {
     return mapped_url_;
+  }
+  const absl::optional<RedactedFencedFrameProperty<gfx::Size>>& container_size()
+      const {
+    return container_size_;
+  }
+  const absl::optional<RedactedFencedFrameProperty<gfx::Size>>& content_size()
+      const {
+    return content_size_;
+  }
+  const absl::optional<RedactedFencedFrameProperty<bool>>&
+  deprecated_should_freeze_initial_size() const {
+    return deprecated_should_freeze_initial_size_;
   }
   const absl::optional<RedactedFencedFrameProperty<AdAuctionData>>&
   ad_auction_data() const {
@@ -183,6 +212,10 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
 
   absl::optional<GURL> urn_;
   absl::optional<RedactedFencedFrameProperty<GURL>> mapped_url_;
+  absl::optional<RedactedFencedFrameProperty<gfx::Size>> container_size_;
+  absl::optional<RedactedFencedFrameProperty<gfx::Size>> content_size_;
+  absl::optional<RedactedFencedFrameProperty<bool>>
+      deprecated_should_freeze_initial_size_;
   absl::optional<RedactedFencedFrameProperty<AdAuctionData>> ad_auction_data_;
   absl::optional<RedactedFencedFrameProperty<
       std::vector<std::pair<GURL, RedactedFencedFrameConfig>>>>

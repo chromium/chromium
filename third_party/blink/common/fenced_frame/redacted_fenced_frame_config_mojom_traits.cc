@@ -183,6 +183,71 @@ UnionTraits<blink::mojom::PotentiallyOpaqueURLDataView, Prop<GURL>>::GetTag(
 }
 
 // static
+bool UnionTraits<blink::mojom::PotentiallyOpaqueSizeDataView, Prop<gfx::Size>>::
+    Read(blink::mojom::PotentiallyOpaqueSizeDataView data,
+         Prop<gfx::Size>* out) {
+  switch (data.tag()) {
+    case blink::mojom::PotentiallyOpaqueSizeDataView::Tag::kTransparent: {
+      gfx::Size size;
+      if (!data.ReadTransparent(&size))
+        return false;
+      out->potentially_opaque_value.emplace(std::move(size));
+      return true;
+    }
+    case blink::mojom::PotentiallyOpaqueSizeDataView::Tag::kOpaque: {
+      blink::FencedFrame::Opaque opaque;
+      if (!data.ReadOpaque(&opaque))
+        return false;
+      return true;
+    }
+  }
+  NOTREACHED();
+  return false;
+}
+
+// static
+blink::mojom::PotentiallyOpaqueSizeDataView::Tag
+UnionTraits<blink::mojom::PotentiallyOpaqueSizeDataView,
+            Prop<gfx::Size>>::GetTag(const Prop<gfx::Size>& property) {
+  if (property.potentially_opaque_value.has_value()) {
+    return blink::mojom::PotentiallyOpaqueSizeDataView::Tag::kTransparent;
+  }
+
+  return blink::mojom::PotentiallyOpaqueSizeDataView::Tag::kOpaque;
+}
+
+// static
+bool UnionTraits<blink::mojom::PotentiallyOpaqueBoolDataView, Prop<bool>>::Read(
+    blink::mojom::PotentiallyOpaqueBoolDataView data,
+    Prop<bool>* out) {
+  switch (data.tag()) {
+    case blink::mojom::PotentiallyOpaqueBoolDataView::Tag::kTransparent: {
+      out->potentially_opaque_value.emplace(data.transparent());
+      return true;
+    }
+    case blink::mojom::PotentiallyOpaqueBoolDataView::Tag::kOpaque: {
+      blink::FencedFrame::Opaque opaque;
+      if (!data.ReadOpaque(&opaque))
+        return false;
+      return true;
+    }
+  }
+  NOTREACHED();
+  return false;
+}
+
+// static
+blink::mojom::PotentiallyOpaqueBoolDataView::Tag
+UnionTraits<blink::mojom::PotentiallyOpaqueBoolDataView, Prop<bool>>::GetTag(
+    const Prop<bool>& property) {
+  if (property.potentially_opaque_value.has_value()) {
+    return blink::mojom::PotentiallyOpaqueBoolDataView::Tag::kTransparent;
+  }
+
+  return blink::mojom::PotentiallyOpaqueBoolDataView::Tag::kOpaque;
+}
+
+// static
 bool UnionTraits<blink::mojom::PotentiallyOpaqueAdAuctionDataDataView,
                  Prop<blink::FencedFrame::AdAuctionData>>::
     Read(blink::mojom::PotentiallyOpaqueAdAuctionDataDataView data,
@@ -352,6 +417,10 @@ bool StructTraits<blink::mojom::FencedFrameConfigDataView,
     Read(blink::mojom::FencedFrameConfigDataView data,
          blink::FencedFrame::RedactedFencedFrameConfig* out_config) {
   if (!data.ReadMappedUrl(&out_config->mapped_url_) ||
+      !data.ReadContentSize(&out_config->content_size_) ||
+      !data.ReadContainerSize(&out_config->container_size_) ||
+      !data.ReadDeprecatedShouldFreezeInitialSize(
+          &out_config->deprecated_should_freeze_initial_size_) ||
       !data.ReadAdAuctionData(&out_config->ad_auction_data_) ||
       !data.ReadNestedConfigs(&out_config->nested_configs_) ||
       !data.ReadSharedStorageBudgetMetadata(
@@ -393,6 +462,10 @@ bool StructTraits<blink::mojom::FencedFramePropertiesDataView,
          blink::FencedFrame::RedactedFencedFrameProperties* out_properties) {
   blink::mojom::PotentiallyOpaqueURNConfigVectorPtr nested_urn_config_pairs;
   if (!data.ReadMappedUrl(&out_properties->mapped_url_) ||
+      !data.ReadContentSize(&out_properties->content_size_) ||
+      !data.ReadContainerSize(&out_properties->container_size_) ||
+      !data.ReadDeprecatedShouldFreezeInitialSize(
+          &out_properties->deprecated_should_freeze_initial_size_) ||
       !data.ReadAdAuctionData(&out_properties->ad_auction_data_) ||
       !data.ReadNestedUrnConfigPairs(&nested_urn_config_pairs) ||
       !data.ReadSharedStorageBudgetMetadata(

@@ -613,6 +613,14 @@ mojom("mojom_platform") {
           cpp = "::blink::FencedFrame::RedactedFencedFrameProperty<GURL>"
         },
         {
+          mojom = "blink.mojom.PotentiallyOpaqueSize"
+          cpp = "::blink::FencedFrame::RedactedFencedFrameProperty<::gfx::Size>"
+        },
+        {
+          mojom = "blink.mojom.PotentiallyOpaqueBool"
+          cpp = "::blink::FencedFrame::RedactedFencedFrameProperty<bool>"
+        },
+        {
           mojom = "blink.mojom.PotentiallyOpaqueAdAuctionData"
           cpp = "::blink::FencedFrame::RedactedFencedFrameProperty<::blink::FencedFrame::AdAuctionData>"
         },
