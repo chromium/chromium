@@ -14,13 +14,14 @@ import '../../icons.html.js';
 import '../../settings_shared.css.js';
 
 import {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AudioDevice, AudioSystemPropertiesObserverReceiver, MuteState} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../router.js';
 import {routes} from '../os_route.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {Route} from '../router.js';
 
 import {getTemplate} from './audio.html.js';
 import {CrosAudioConfigInterface, getCrosAudioConfig} from './cros_audio_config.js';
@@ -28,12 +29,7 @@ import {CrosAudioConfigInterface, getCrosAudioConfig} from './cros_audio_config.
 // `cros_audio_config.mojom-webui.js` once mojo updated to handle audio input.
 import {AudioSystemProperties, FakeCrosAudioConfig} from './fake_cros_audio_config.js';
 
-// TODO(crbug/1315757) Remove need to typecast and intersect mixin interfaces
-// once RouteObserverMixin is converted to TS
-const SettingsAudioElementBase =
-    RouteObserverMixin(I18nMixin(PolymerElement)) as {
-      new (): PolymerElement & I18nMixinInterface & RouteObserverMixinInterface,
-    };
+const SettingsAudioElementBase = RouteObserverMixin(I18nMixin(PolymerElement));
 
 class SettingsAudioElement extends SettingsAudioElementBase {
   static get is() {

@@ -4,9 +4,8 @@
 
 import '../i18n_setup.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @typedef {{
@@ -398,53 +397,4 @@ export class Router {
     this.currentRoute = this.routes_.BASIC;
     this.currentQueryParameters_ = new URLSearchParams();
   }
-}
-
-/**
- * @polymer
- * @mixinFunction
- */
-export const RouteObserverMixin = dedupingMixin(superClass => {
-  /**
-   * @polymer
-   * @mixinClass
-   */
-  class RouteObserverMixin extends superClass {
-    /** @override */
-    connectedCallback() {
-      super.connectedCallback();
-
-      routerInstance.addObserver(this);
-
-      // Emulating Polymer data bindings, the observer is called when the
-      // element starts observing the route.
-      this.currentRouteChanged(routerInstance.currentRoute, undefined);
-    }
-
-    /** @override */
-    disconnectedCallback() {
-      super.disconnectedCallback();
-
-      routerInstance.removeObserver(this);
-    }
-
-    /**
-     * @param {!Route} newRoute
-     * @param {!Route=} oldRoute
-     */
-    currentRouteChanged(newRoute, oldRoute) {
-      assertNotReached();
-    }
-  }
-
-  return /** @type {?} */ (RouteObserverMixin);
-});
-
-/** @interface */
-export class RouteObserverMixinInterface {
-  /**
-   * @param {!Route} newRoute
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(newRoute, oldRoute) {}
 }

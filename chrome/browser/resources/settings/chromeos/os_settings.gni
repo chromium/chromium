@@ -307,6 +307,7 @@ non_web_component_files = [
   "chromeos/personalization_page/personalization_hub_browser_proxy.ts",
   "chromeos/prefs_behavior.js",
   "chromeos/route_observer_behavior.js",
+  "chromeos/route_observer_mixin.ts",
   "chromeos/route_origin_behavior.js",
   "chromeos/router.js",
   "chromeos/search/combined_search_handler.ts",

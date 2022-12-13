@@ -21,13 +21,14 @@ import '../os_settings_page/os_settings_subpage.js';
 import '../../settings_shared.css.js';
 
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {routes} from '../os_route.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {Router} from '../router.js';
 
 import {getTemplate} from './device_page.html.js';
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
@@ -38,13 +39,8 @@ interface SettingsDevicePageElement {
   };
 }
 
-// TODO(crbug/1315757) Remove need to typecast and intersect mixin interfaces
-// once RouteObserverMixin is converted to TS
 const SettingsDevicePageElementBase =
-    RouteObserverMixin(I18nMixin(WebUiListenerMixin(PolymerElement))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          WebUiListenerMixinInterface & RouteObserverMixinInterface,
-    };
+    RouteObserverMixin(I18nMixin(WebUiListenerMixin(PolymerElement)));
 
 class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   static get is() {

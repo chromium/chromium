@@ -22,22 +22,23 @@ import '../../settings_shared.css.js';
 import '../../prefs/prefs.js';
 import '../../settings_vars.css.js';
 
-import {CrContainerShadowMixin, CrContainerShadowMixinInterface} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
+import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
-import {FindShortcutMixin, FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
+import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {listenOnce} from 'chrome://resources/js/util_ts.js';
 import {Debouncer, DomIf, microTask, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {SettingsPrefsElement} from '../../prefs/prefs.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {castExists} from '../assert_extras.js';
 import {setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';
 import {convertPrefToSettingMetric} from '../metrics_utils.js';
 import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.js';
 import {OsToolbarElement} from '../os_toolbar/os_toolbar.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {Route, Router} from '../router.js';
 
 import {getTemplate} from './os_settings_ui.html.js';
 
@@ -71,17 +72,12 @@ interface OsSettingsUiElement {
   };
 }
 
-// TODO(crbug/1315757) Remove need to typecast and intersect mixin interfaces
-// once RouteObserverMixin is converted to TS
 const OsSettingsUiElementBase =
     // RouteObserverMixin calls currentRouteChanged() in
     // connectedCallback(), so ensure other mixins/behaviors run their
     // connectedCallback() first.
     RouteObserverMixin(
-        FindShortcutMixin(CrContainerShadowMixin(PolymerElement))) as {
-      new (): PolymerElement & CrContainerShadowMixinInterface &
-          FindShortcutMixinInterface & RouteObserverMixinInterface,
-    };
+        FindShortcutMixin(CrContainerShadowMixin(PolymerElement)));
 
 class OsSettingsUiElement extends OsSettingsUiElementBase {
   static get is() {

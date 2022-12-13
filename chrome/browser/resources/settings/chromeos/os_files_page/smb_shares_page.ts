@@ -13,16 +13,13 @@ import '../../settings_vars.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {routes} from '../os_route.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {Route, Router} from '../router.js';
 
 import {getTemplate} from './smb_shares_page.html.js';
 
-// TODO(crbug/1315757) Remove need to typecast and intersect mixin interfaces
-// once RouteObserverMixin is converted to TS
-const SettingsSmbSharesPageElementBase = RouteObserverMixin(PolymerElement) as {
-  new (): PolymerElement & RouteObserverMixinInterface,
-};
+const SettingsSmbSharesPageElementBase = RouteObserverMixin(PolymerElement);
 
 class SettingsSmbSharesPageElement extends SettingsSmbSharesPageElementBase {
   static get is() {

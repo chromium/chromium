@@ -5,11 +5,11 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {beforeNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MinimumRoutes, Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from './router.js';
-
 import {castExists} from './assert_extras.js';
 import {ensureLazyLoaded} from './ensure_lazy_loaded.js';
 import {SettingsIdleLoadElement} from './os_settings_page/settings_idle_load.js';
+import {RouteObserverMixin, RouteObserverMixinInterface} from './route_observer_mixin.js';
+import {MinimumRoutes, Route, Router} from './router.js';
 
 /**
  * A categorization of every possible Settings URL, necessary for implementing
@@ -75,7 +75,6 @@ type Constructor<T> = new (...args: any[]) => T;
 
 export interface MainPageMixinInterface extends RouteObserverMixinInterface {
   containsRoute(route: Route|undefined): boolean;
-  currentRouteChanged(newRoute: Route, oldRoute?: Route): void;
   querySection(section: string): HTMLElement|null;
   loadAdvancedPage(): Promise<Element>;
 }
@@ -88,8 +87,7 @@ export interface MainPageMixinInterface extends RouteObserverMixinInterface {
 export const MainPageMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
     Constructor<MainPageMixinInterface> => {
-      const superclassBase = RouteObserverMixin(superClass) as T &
-          Constructor<RouteObserverMixinInterface>;
+      const superclassBase = RouteObserverMixin(superClass);
 
       class MainPageMixinInternal extends superclassBase implements
           MainPageMixinInterface {

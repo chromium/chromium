@@ -13,20 +13,16 @@ import {alphabeticalSort} from 'chrome://resources/cr_components/app_management/
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../router.js';
 import {routes} from '../../os_route.js';
+import {RouteObserverMixin} from '../../route_observer_mixin.js';
+import {Route} from '../../router.js';
 
 import {getTemplate} from './main_view.html.js';
 import {AppManagementStore, AppMap} from './store.js';
-import {AppManagementStoreMixin, AppManagementStoreMixinInterface} from './store_mixin.js';
+import {AppManagementStoreMixin} from './store_mixin.js';
 
-// TODO(crbug/1315757) Remove need to typecast and intersect mixin interfaces
-// once RouteObserverMixin is converted to TS
 const AppManagementMainViewElementBase =
-    AppManagementStoreMixin(RouteObserverMixin(PolymerElement)) as {
-      new (): PolymerElement & RouteObserverMixinInterface &
-          AppManagementStoreMixinInterface,
-    };
+    AppManagementStoreMixin(RouteObserverMixin(PolymerElement));
 
 class AppManagementMainViewElement extends AppManagementMainViewElementBase {
   static get is() {

@@ -27,22 +27,21 @@ import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 
 import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
+import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from '//resources/js/assert_ts.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {IronCollapseElement} from '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
 import {FocusConfig} from '../../focus_config.js';
 import {loadTimeData} from '../../i18n_setup.js';
-
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
-
 import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../../people_page/sync_browser_proxy.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {Route, Router} from '../router.js';
+
 import {OsSettingsPersonalizationOptionsElement} from './os_personalization_options.js';
 import {OsSettingsSyncEncryptionOptionsElement} from './os_sync_encryption_options.js';
-
 import {getTemplate} from './os_sync_page.html.js';
 
 interface SyncRoutes {
@@ -66,10 +65,7 @@ export interface OsSettingsSyncPageElement {
 }
 
 const OsSettingsSyncPageElementBase =
-    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))) as {
-      new (): PolymerElement & WebUiListenerMixinInterface &
-          I18nMixinInterface & RouteObserverMixinInterface,
-    };
+    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
 export class OsSettingsSyncPageElement extends OsSettingsSyncPageElementBase {
   static get is() {
