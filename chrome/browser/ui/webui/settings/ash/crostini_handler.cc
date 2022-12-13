@@ -821,7 +821,7 @@ void CrostiniHandler::HandleSetContainerBadgeColor(
   CHECK_EQ(2U, args.size());
 
   guest_os::GuestId container_id(args[0]);
-  SkColor badge_color(args[1].FindDoubleKey("value").value());
+  SkColor badge_color(args[1].GetDict().FindDouble("value").value());
 
   crostini::SetContainerBadgeColor(profile_, container_id, badge_color);
 }

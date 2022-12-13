@@ -414,12 +414,11 @@ void PowerHandler::SendPowerManagementSettings(bool force) {
   }
 
   base::Value::Dict dict;
-  base::Value* list =
-      dict.Set(kPossibleAcIdleBehaviorsKey, base::Value::List());
+  base::Value::List* list = dict.EnsureList(kPossibleAcIdleBehaviorsKey);
   for (auto idle_behavior : ac_idle_info.possible_behaviors)
     list->Append(static_cast<int>(idle_behavior));
 
-  list = dict.Set(kPossibleBatteryIdleBehaviorsKey, base::Value::List());
+  list = dict.EnsureList(kPossibleBatteryIdleBehaviorsKey);
   for (auto idle_behavior : battery_idle_info.possible_behaviors)
     list->Append(static_cast<int>(idle_behavior));
   dict.Set(kCurrentAcIdleBehaviorKey,

@@ -290,10 +290,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest,
       GetWebUIListenerArgumentListValue("dictation-locales-set", argument));
 
   for (auto& it : *argument) {
-    const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(it);
-    const std::string locale = *(dict->FindStringPath("value"));
-    bool works_offline = dict->FindBoolKey("worksOffline").value();
-    bool installed = dict->FindBoolKey("installed").value();
+    const base::Value::Dict& dict = it.GetDict();
+    const std::string locale = *dict.FindString("value");
+    bool works_offline = dict.FindBool("worksOffline").value();
+    bool installed = dict.FindBool("installed").value();
     if (locale == speech::kUsEnglishLocale) {
       ASSERT_TRUE(works_offline);
       ASSERT_TRUE(installed);

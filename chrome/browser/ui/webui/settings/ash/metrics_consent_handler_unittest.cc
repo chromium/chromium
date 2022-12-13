@@ -93,20 +93,20 @@ class TestMetricsConsentHandler : public MetricsConsentHandler {
   ~TestMetricsConsentHandler() override = default;
 
   void GetMetricsConsentState() {
-    base::ListValue args;
-    args.Append(base::Value("callback-id"));
-    HandleGetMetricsConsentState(args.GetList());
+    base::Value::List args;
+    args.Append("callback-id");
+    HandleGetMetricsConsentState(args);
   }
 
   void UpdateMetricsConsent(bool metrics_consent) {
-    base::ListValue args;
-    args.Append(base::Value("callback-id"));
+    base::Value::List args;
+    args.Append("callback-id");
 
     base::Value::Dict dict;
     dict.Set("consent", metrics_consent);
     args.Append(std::move(dict));
 
-    HandleUpdateMetricsConsent(args.GetList());
+    HandleUpdateMetricsConsent(args);
   }
 };
 
@@ -216,15 +216,13 @@ class MetricsConsentHandlerTest : public testing::Test {
         continue;
       }
 
-      if (!data->arg3() ||
-          data->arg3()->type() != base::Value::Type::DICTIONARY) {
+      if (!data->arg3() || !data->arg3()->is_dict()) {
         return false;
       }
 
-      const base::Value* metrics_consent_state = data->arg3();
-      *pref_name = metrics_consent_state->FindKey("prefName")->GetString();
-      *is_configurable =
-          metrics_consent_state->FindKey("isConfigurable")->GetBool();
+      const base::Value::Dict& metrics_consent_state = data->arg3()->GetDict();
+      *pref_name = *metrics_consent_state.FindString("prefName");
+      *is_configurable = *metrics_consent_state.FindBool("isConfigurable");
 
       return true;
     }

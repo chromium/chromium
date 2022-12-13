@@ -143,7 +143,7 @@ class StorageHandlerTest : public testing::Test {
     const base::Value* dictionary =
         GetWebUICallbackMessage("storage-size-stat-changed");
     EXPECT_TRUE(dictionary) << "No 'storage-size-stat-changed' callback";
-    int space_state = dictionary->FindKey("spaceState")->GetInt();
+    int space_state = *dictionary->GetDict().FindInt("spaceState");
     return space_state;
   }
 
@@ -259,16 +259,16 @@ TEST_F(StorageHandlerTest, GlobalSizeStat) {
   free_disk_space_test_api_->StartCalculation();
   task_environment_.RunUntilIdle();
 
-  const base::Value* dictionary =
+  const base::Value* dictionary_value =
       GetWebUICallbackMessage("storage-size-stat-changed");
-  ASSERT_TRUE(dictionary) << "No 'storage-size-stat-changed' callback";
+  ASSERT_TRUE(dictionary_value) << "No 'storage-size-stat-changed' callback";
+  const base::Value::Dict& dictionary = dictionary_value->GetDict();
 
   const std::string& storage_handler_available_size =
-      dictionary->FindKey("availableSize")->GetString();
+      *dictionary.FindString("availableSize");
   const std::string& storage_handler_used_size =
-      dictionary->FindKey("usedSize")->GetString();
-  double storage_handler_used_ratio =
-      dictionary->FindKey("usedRatio")->GetDouble();
+      *dictionary.FindString("usedSize");
+  double storage_handler_used_ratio = *dictionary.FindDouble("usedRatio");
 
   EXPECT_EQ(ui::FormatBytes(available_size),
             base::ASCIIToUTF16(storage_handler_available_size));
@@ -421,8 +421,8 @@ TEST_F(StorageHandlerTest, SystemSize) {
   const base::Value* callback =
       GetWebUICallbackMessage("storage-size-stat-changed");
   ASSERT_TRUE(callback) << "No 'storage-size-stat-changed' callback";
-  EXPECT_EQ("100 GB", callback->FindKey("availableSize")->GetString());
-  EXPECT_EQ("924 GB", callback->FindKey("usedSize")->GetString());
+  EXPECT_EQ("100 GB", *callback->GetDict().FindString("availableSize"));
+  EXPECT_EQ("924 GB", *callback->GetDict().FindString("usedSize"));
   // Expect no system size callback until every other item has been updated.
   ASSERT_FALSE(GetWebUICallbackMessage("storage-system-size-changed"));
 

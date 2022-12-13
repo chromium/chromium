@@ -63,12 +63,11 @@ class KeyboardHandlerTest : public testing::Test {
         continue;
       }
 
-      if (!data->arg2() ||
-          data->arg2()->type() != base::Value::Type::DICTIONARY) {
+      if (!data->arg2() || !data->arg2()->is_dict()) {
         return false;
       }
 
-      const base::Value* keyboard_params = data->arg2();
+      const base::Value::Dict& keyboard_params = data->arg2()->GetDict();
       const std::vector<std::pair<std::string, bool*>> path_to_out_param = {
           {"showCapsLock", has_caps_lock_out},
           {"showExternalMetaKey", has_external_meta_key_out},
@@ -78,7 +77,7 @@ class KeyboardHandlerTest : public testing::Test {
       };
 
       for (const auto& pair : path_to_out_param) {
-        auto* found = keyboard_params->FindKey(pair.first);
+        auto* found = keyboard_params.Find(pair.first);
         if (!found)
           return false;
 

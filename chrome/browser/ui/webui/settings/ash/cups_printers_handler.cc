@@ -653,8 +653,8 @@ void CupsPrintersHandler::OnAutoconfQueried(
 
   if (!success) {
     PRINTER_LOG(DEBUG) << "Could not query printer";
-    base::DictionaryValue reject;
-    reject.SetStringKey("message", "Querying printer failed");
+    base::Value::Dict reject;
+    reject.Set("message", "Querying printer failed");
     RejectJavascriptCallback(base::Value(callback_id),
                              base::Value(PrinterSetupResult::kFatalError));
     return;
@@ -1226,10 +1226,11 @@ void CupsPrintersHandler::OnGetPrinterPpdManufacturerAndModel(
     RejectJavascriptCallback(base::Value(callback_id), base::Value());
     return;
   }
-  base::DictionaryValue info;
-  info.SetStringKey("ppdManufacturer", manufacturer);
-  info.SetStringKey("ppdModel", model);
-  ResolveJavascriptCallback(base::Value(callback_id), info);
+  base::Value::Dict info;
+  info.Set("ppdManufacturer", manufacturer);
+  info.Set("ppdModel", model);
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(std::move(info)));
 }
 
 void CupsPrintersHandler::HandleGetEulaUrl(const base::Value::List& args) {

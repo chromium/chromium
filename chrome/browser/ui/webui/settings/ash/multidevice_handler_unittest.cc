@@ -381,9 +381,9 @@ class MultideviceHandlerTest : public testing::Test {
     ASSERT_TRUE(call_data.arg2()->GetBool());
     EXPECT_EQ(
         ContentSettingsPattern::FromURLNoWildcard(expected_url).ToString(),
-        call_data.arg3()->FindKey("origin")->GetString());
+        *call_data.arg3()->GetDict().FindString("origin"));
     EXPECT_EQ(expected_enabled,
-              call_data.arg3()->FindKey("enabled")->GetBool());
+              *call_data.arg3()->GetDict().FindBool("enabled"));
   }
 
   void CallAttemptNotificationSetup(bool has_notification_access_been_granted) {

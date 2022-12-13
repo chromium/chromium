@@ -306,25 +306,25 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   ASSERT_EQ(account_manager_accounts.size(), result.size());
 
   // Check first (device) account.
-  const base::Value& device_account = result[0];
-  EXPECT_TRUE(device_account.FindBoolKey("isDeviceAccount").value());
-  EXPECT_TRUE(device_account.FindBoolKey("isSignedIn").value());
-  EXPECT_FALSE(device_account.FindBoolKey("unmigrated").value());
+  const base::Value::Dict& device_account = result[0].GetDict();
+  EXPECT_TRUE(device_account.FindBool("isDeviceAccount").value());
+  EXPECT_TRUE(device_account.FindBool("isSignedIn").value());
+  EXPECT_FALSE(device_account.FindBool("unmigrated").value());
   EXPECT_EQ(static_cast<int>(GetDeviceAccountInfo().account_type),
-            device_account.FindIntKey("accountType"));
+            device_account.FindInt("accountType"));
   EXPECT_EQ(GetDeviceAccountInfo().email,
-            ValueOrEmpty(device_account.FindStringKey("email")));
+            ValueOrEmpty(device_account.FindString("email")));
   EXPECT_EQ(GetDeviceAccountInfo().id,
-            ValueOrEmpty(device_account.FindStringKey("id")));
+            ValueOrEmpty(device_account.FindString("id")));
   if (GetDeviceAccountInfo().user_type ==
       user_manager::UserType::USER_TYPE_CHILD) {
     std::string organization = GetDeviceAccountInfo().organization;
     base::ReplaceSubstringsAfterOffset(&organization, 0, " ", "&nbsp;");
     EXPECT_EQ(organization,
-              ValueOrEmpty(device_account.FindStringKey("organization")));
+              ValueOrEmpty(device_account.FindString("organization")));
   } else {
     EXPECT_EQ(GetDeviceAccountInfo().organization,
-              ValueOrEmpty(device_account.FindStringKey("organization")));
+              ValueOrEmpty(device_account.FindString("organization")));
   }
 }
 
@@ -354,60 +354,61 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   ASSERT_EQ(account_manager_accounts.size(), result.size());
 
   // Check first (device) account.
-  const base::Value& device_account = result[0];
-  EXPECT_TRUE(device_account.FindBoolKey("isDeviceAccount").value());
-  EXPECT_TRUE(device_account.FindBoolKey("isSignedIn").value());
-  EXPECT_FALSE(device_account.FindBoolKey("unmigrated").value());
+  const base::Value::Dict& device_account = result[0].GetDict();
+  EXPECT_TRUE(device_account.FindBool("isDeviceAccount").value());
+  EXPECT_TRUE(device_account.FindBool("isSignedIn").value());
+  EXPECT_FALSE(device_account.FindBool("unmigrated").value());
   EXPECT_EQ(static_cast<int>(GetDeviceAccountInfo().account_type),
-            device_account.FindIntKey("accountType"));
+            device_account.FindInt("accountType"));
   EXPECT_EQ(GetDeviceAccountInfo().email,
-            ValueOrEmpty(device_account.FindStringKey("email")));
+            ValueOrEmpty(device_account.FindString("email")));
   EXPECT_EQ(GetDeviceAccountInfo().id,
-            ValueOrEmpty(device_account.FindStringKey("id")));
+            ValueOrEmpty(device_account.FindString("id")));
   if (GetDeviceAccountInfo().user_type ==
       user_manager::UserType::USER_TYPE_CHILD) {
     std::string organization = GetDeviceAccountInfo().organization;
     base::ReplaceSubstringsAfterOffset(&organization, 0, " ", "&nbsp;");
     EXPECT_EQ(organization,
-              ValueOrEmpty(device_account.FindStringKey("organization")));
+              ValueOrEmpty(device_account.FindString("organization")));
   } else {
     EXPECT_EQ(GetDeviceAccountInfo().organization,
-              ValueOrEmpty(device_account.FindStringKey("organization")));
+              ValueOrEmpty(device_account.FindString("organization")));
   }
 
   // Check secondary accounts.
-  for (const base::Value& account : result) {
-    if (ValueOrEmpty(account.FindStringKey("id")) == GetDeviceAccountInfo().id)
+  for (const base::Value& account_value : result) {
+    const base::Value::Dict& account = account_value.GetDict();
+    if (ValueOrEmpty(account.FindString("id")) == GetDeviceAccountInfo().id)
       continue;
-    EXPECT_FALSE(account.FindBoolKey("isDeviceAccount").value());
+    EXPECT_FALSE(account.FindBool("isDeviceAccount").value());
 
     ::account_manager::Account expected_account =
         GetAccountByKey(account_manager_accounts,
-                        {ValueOrEmpty(account.FindStringKey("id")),
+                        {ValueOrEmpty(account.FindString("id")),
                          account_manager::AccountType::kGaia})
             .value();
     if (GetDeviceAccountInfo().user_type ==
         user_manager::UserType::USER_TYPE_CHILD) {
-      EXPECT_FALSE(account.FindBoolKey("unmigrated").value());
+      EXPECT_FALSE(account.FindBool("unmigrated").value());
     } else {
       EXPECT_EQ(HasDummyGaiaToken(expected_account.key),
-                account.FindBoolKey("unmigrated").value());
+                account.FindBool("unmigrated").value());
     }
     EXPECT_EQ(static_cast<int>(expected_account.key.account_type()),
-              account.FindIntKey("accountType"));
+              account.FindInt("accountType"));
     EXPECT_EQ(expected_account.raw_email,
-              ValueOrEmpty(account.FindStringKey("email")));
+              ValueOrEmpty(account.FindString("email")));
 
     AccountInfo expected_account_info =
         identity_manager()->FindExtendedAccountInfoByGaiaId(
             expected_account.key.id());
     EXPECT_FALSE(expected_account_info.IsEmpty());
     EXPECT_EQ(expected_account_info.full_name,
-              ValueOrEmpty(account.FindStringKey("fullName")));
+              ValueOrEmpty(account.FindString("fullName")));
     EXPECT_EQ(
         !identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
             expected_account_info.account_id),
-        account.FindBoolKey("isSignedIn").value());
+        account.FindBool("isSignedIn").value());
   }
 }
 
@@ -479,7 +480,7 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
       const base::Value::List& accounts,
       const std::string& email) {
     for (const base::Value& account : accounts) {
-      if (ValueOrEmpty(account.FindStringKey("email")) == email)
+      if (ValueOrEmpty(account.GetDict().FindString("email")) == email)
         return account.Clone();
     }
     return absl::nullopt;
@@ -536,8 +537,8 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
   ASSERT_EQ(account_manager_accounts.size(), result.size());
 
   // The value for the device account should be always `true`.
-  const base::Value& device_account = result[0];
-  EXPECT_TRUE(device_account.FindBoolKey("isAvailableInArc").value());
+  const base::Value::Dict& device_account = result[0].GetDict();
+  EXPECT_TRUE(device_account.FindBool("isAvailableInArc").value());
 
   // Check secondary accounts.
   absl::optional<const base::Value> secondary_1_dict =
@@ -548,10 +549,10 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
   ASSERT_TRUE(secondary_2_dict.has_value());
 
   absl::optional<bool> is_available_1 =
-      secondary_1_dict.value().FindBoolKey("isAvailableInArc");
+      secondary_1_dict.value().GetDict().FindBool("isAvailableInArc");
   ASSERT_TRUE(is_available_1.has_value());
   absl::optional<bool> is_available_2 =
-      secondary_2_dict.value().FindBoolKey("isAvailableInArc");
+      secondary_2_dict.value().GetDict().FindBool("isAvailableInArc");
   ASSERT_TRUE(is_available_2.has_value());
 
   // The values should match `SetIsAccountAvailableInArc` calls.
