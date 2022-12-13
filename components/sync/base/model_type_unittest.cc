@@ -116,9 +116,9 @@ TEST_F(ModelTypeTest, DefaultFieldValues) {
   }
 }
 
-TEST_F(ModelTypeTest, ModelTypeToProtocolRootTagValues) {
+TEST_F(ModelTypeTest, ModelTypeToRootTagValues) {
   for (ModelType model_type : ProtocolTypes()) {
-    std::string root_tag = ModelTypeToProtocolRootTag(model_type);
+    std::string root_tag = ModelTypeToRootTag(model_type);
     if (IsRealDataType(model_type)) {
       EXPECT_TRUE(base::StartsWith(root_tag, "google_chrome_",
                                    base::CompareCase::INSENSITIVE_ASCII));

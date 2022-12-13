@@ -379,7 +379,7 @@ GroupedUpdates GroupValidUpdates(UpdateResponseDataList updates) {
     // Special-case the root folder to avoid recording
     // |RemoteBookmarkUpdateError::kUnsupportedPermanentFolder|.
     if (update_entity.server_defined_unique_tag ==
-        syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS)) {
+        syncer::ModelTypeToRootTag(syncer::BOOKMARKS)) {
       ++num_valid_updates;
       continue;
     }
