@@ -25,10 +25,6 @@ enum class StatWithIntermediatesPermission {
   kBlockStatWithIntermediates = 0,
   kAllowStatWithIntermediates
 };
-enum class InotifyAddWatchWithIntermediatesPermission {
-  kBlockInotifyAddWatchWithIntermediates = 0,
-  kAllowInotifyAddWatchWithIntermediates
-};
 
 // BrokerFilePermission defines a path for allowlisting.
 // Pick the correct static factory method to create a permission.
@@ -50,9 +46,7 @@ class SANDBOX_EXPORT BrokerFilePermission {
         path, RecursionOption::kNonRecursive, PersistenceOption::kPermanent,
         ReadPermission::kAllowRead, WritePermission::kBlockWrite,
         CreatePermission::kBlockCreate,
-        StatWithIntermediatesPermission::kBlockStatWithIntermediates,
-        InotifyAddWatchWithIntermediatesPermission::
-            kBlockInotifyAddWatchWithIntermediates);
+        StatWithIntermediatesPermission::kBlockStatWithIntermediates);
   }
 
   static BrokerFilePermission ReadOnlyRecursive(const std::string& path) {
@@ -60,9 +54,7 @@ class SANDBOX_EXPORT BrokerFilePermission {
         path, RecursionOption::kRecursive, PersistenceOption::kPermanent,
         ReadPermission::kAllowRead, WritePermission::kBlockWrite,
         CreatePermission::kBlockCreate,
-        StatWithIntermediatesPermission::kBlockStatWithIntermediates,
-        InotifyAddWatchWithIntermediatesPermission::
-            kBlockInotifyAddWatchWithIntermediates);
+        StatWithIntermediatesPermission::kBlockStatWithIntermediates);
   }
 
   static BrokerFilePermission WriteOnly(const std::string& path) {
@@ -70,9 +62,7 @@ class SANDBOX_EXPORT BrokerFilePermission {
         path, RecursionOption::kNonRecursive, PersistenceOption::kPermanent,
         ReadPermission::kBlockRead, WritePermission::kAllowWrite,
         CreatePermission::kBlockCreate,
-        StatWithIntermediatesPermission::kBlockStatWithIntermediates,
-        InotifyAddWatchWithIntermediatesPermission::
-            kBlockInotifyAddWatchWithIntermediates);
+        StatWithIntermediatesPermission::kBlockStatWithIntermediates);
   }
 
   static BrokerFilePermission ReadWrite(const std::string& path) {
@@ -80,9 +70,7 @@ class SANDBOX_EXPORT BrokerFilePermission {
         path, RecursionOption::kNonRecursive, PersistenceOption::kPermanent,
         ReadPermission::kAllowRead, WritePermission::kAllowWrite,
         CreatePermission::kBlockCreate,
-        StatWithIntermediatesPermission::kBlockStatWithIntermediates,
-        InotifyAddWatchWithIntermediatesPermission::
-            kBlockInotifyAddWatchWithIntermediates);
+        StatWithIntermediatesPermission::kBlockStatWithIntermediates);
   }
 
   static BrokerFilePermission ReadWriteCreate(const std::string& path) {
@@ -90,9 +78,7 @@ class SANDBOX_EXPORT BrokerFilePermission {
         path, RecursionOption::kNonRecursive, PersistenceOption::kPermanent,
         ReadPermission::kAllowRead, WritePermission::kAllowWrite,
         CreatePermission::kAllowCreate,
-        StatWithIntermediatesPermission::kBlockStatWithIntermediates,
-        InotifyAddWatchWithIntermediatesPermission::
-            kBlockInotifyAddWatchWithIntermediates);
+        StatWithIntermediatesPermission::kBlockStatWithIntermediates);
   }
 
   static BrokerFilePermission ReadWriteCreateRecursive(
@@ -101,9 +87,7 @@ class SANDBOX_EXPORT BrokerFilePermission {
         path, RecursionOption::kRecursive, PersistenceOption::kPermanent,
         ReadPermission::kAllowRead, WritePermission::kAllowWrite,
         CreatePermission::kAllowCreate,
-        StatWithIntermediatesPermission::kBlockStatWithIntermediates,
-        InotifyAddWatchWithIntermediatesPermission::
-            kBlockInotifyAddWatchWithIntermediates);
+        StatWithIntermediatesPermission::kBlockStatWithIntermediates);
   }
 
   // Temporary files must always be newly created and do not confer rights to
@@ -114,9 +98,7 @@ class SANDBOX_EXPORT BrokerFilePermission {
         path, RecursionOption::kNonRecursive, PersistenceOption::kTemporaryOnly,
         ReadPermission::kAllowRead, WritePermission::kAllowWrite,
         CreatePermission::kAllowCreate,
-        StatWithIntermediatesPermission::kBlockStatWithIntermediates,
-        InotifyAddWatchWithIntermediatesPermission::
-            kBlockInotifyAddWatchWithIntermediates);
+        StatWithIntermediatesPermission::kBlockStatWithIntermediates);
   }
 
   static BrokerFilePermission ReadWriteCreateTemporaryRecursive(
@@ -125,9 +107,7 @@ class SANDBOX_EXPORT BrokerFilePermission {
         path, RecursionOption::kRecursive, PersistenceOption::kTemporaryOnly,
         ReadPermission::kAllowRead, WritePermission::kAllowWrite,
         CreatePermission::kAllowCreate,
-        StatWithIntermediatesPermission::kBlockStatWithIntermediates,
-        InotifyAddWatchWithIntermediatesPermission::
-            kBlockInotifyAddWatchWithIntermediates);
+        StatWithIntermediatesPermission::kBlockStatWithIntermediates);
   }
 
   static BrokerFilePermission StatOnlyWithIntermediateDirs(
@@ -136,20 +116,7 @@ class SANDBOX_EXPORT BrokerFilePermission {
         path, RecursionOption::kNonRecursive, PersistenceOption::kPermanent,
         ReadPermission::kBlockRead, WritePermission::kBlockWrite,
         CreatePermission::kBlockCreate,
-        StatWithIntermediatesPermission::kAllowStatWithIntermediates,
-        InotifyAddWatchWithIntermediatesPermission::
-            kBlockInotifyAddWatchWithIntermediates);
-  }
-
-  static BrokerFilePermission InotifyAddWatchWithIntermediateDirs(
-      const std::string& path) {
-    return BrokerFilePermission(
-        path, RecursionOption::kNonRecursive, PersistenceOption::kPermanent,
-        ReadPermission::kBlockRead, WritePermission::kBlockWrite,
-        CreatePermission::kBlockCreate,
-        StatWithIntermediatesPermission::kBlockStatWithIntermediates,
-        InotifyAddWatchWithIntermediatesPermission::
-            kAllowInotifyAddWatchWithIntermediates);
+        StatWithIntermediatesPermission::kAllowStatWithIntermediates);
   }
 
   // Returns true if |requested_filename| is allowed to be accessed
@@ -182,29 +149,13 @@ class SANDBOX_EXPORT BrokerFilePermission {
   // by this permission as per stat(2). Differs from CheckAccess()
   // in that if create permission is granted to a file, we permit
   // stat() on all of its leading components.
-  // If |file_to_access| is not NULL, it is set to point to either
+  // If |file_to_open| is not NULL, it is set to point to either
   // the |requested_filename| in the case of a recursive match,
   // or a pointer to the matched path in the allowlist if an absolute
   // match.
   // Async signal safe if |file_to_access| is NULL
-  bool CheckStatWithIntermediates(const char* requested_filename,
-                                  const char** file_to_access) const;
-
-  // Returns true if |requested_filename| is allowed by this permission to be
-  // added to an inotify instance's watch list by inotify_add_watch(2), with the
-  // specific |mask|. Differs from CheckAccess() in that if inotify_add_watch
-  // permission is granted to a file, we permit inotify_add_watch() on all of
-  // its leading components.
-  //
-  // If |file_to_inotify_add_watch| is not NULL, it is set to point to either
-  // the |requested_filename| in the case of a recursive match, or a pointer to
-  // the matched path in the allowlist if an absolute match.
-  //
-  // Async signal safe if |file_to_inotify_add_watch| is NULL
-  bool CheckInotifyAddWatchWithIntermediates(
-      const char* requested_filename,
-      uint32_t mask,
-      const char** file_to_inotify_add_watch) const;
+  bool CheckStat(const char* requested_filename,
+                 const char** file_to_access) const;
 
  private:
   friend class BrokerFilePermissionTester;
@@ -216,9 +167,8 @@ class SANDBOX_EXPORT BrokerFilePermission {
     kAllowWriteBitPos,
     kAllowCreateBitPos,
     kAllowStatWithIntermediatesBitPos,
-    kAllowInotifyAddWatchWithIntermediates,
 
-    kMaxValueBitPos = kAllowInotifyAddWatchWithIntermediates
+    kMaxValueBitPos = kAllowStatWithIntermediatesBitPos
   };
 
   // NOTE: Validates the permission and dies if invalid!
@@ -228,8 +178,7 @@ class SANDBOX_EXPORT BrokerFilePermission {
                        ReadPermission read_perm,
                        WritePermission write_perm,
                        CreatePermission create_perm,
-                       StatWithIntermediatesPermission stat_perm,
-                       InotifyAddWatchWithIntermediatesPermission inotify_perm);
+                       StatWithIntermediatesPermission stat_perm);
 
   // Allows construction from the raw bitset.
   BrokerFilePermission(std::string path, uint64_t flags);
@@ -253,10 +202,6 @@ class SANDBOX_EXPORT BrokerFilePermission {
     return flags_.test(kAllowStatWithIntermediatesBitPos);
   }
 
-  bool allow_inotify_add_watch_with_intermediates() const {
-    return flags_.test(kAllowInotifyAddWatchWithIntermediates);
-  }
-
   // ValidatePath checks |path| and returns true if these conditions are met
   // * Greater than 0 length
   // * Is an absolute path
@@ -272,14 +217,6 @@ class SANDBOX_EXPORT BrokerFilePermission {
   bool CheckAccessInternal(const char* requested_filename,
                            int mode,
                            const char** file_to_access) const;
-
-  // Helper routine for CheckStatWithIntermediates() and
-  // CheckInotifyAddWatchWithIntermediates() to return true if one of the
-  // following is true:
-  // 1. |requested_filename| matches a leading directory of |path_|.
-  // 2. |can_match_full_path| is true and |path_| == |requested_filename|.
-  bool CheckIntermediates(const char* requested_filename,
-                          bool can_match_full_path) const;
 
   // Used in by BrokerFilePermissionTester for tests.
   static const char* GetErrorMessageForTests();

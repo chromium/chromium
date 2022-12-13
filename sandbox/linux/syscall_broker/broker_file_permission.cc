@@ -7,7 +7,6 @@
 #include <fcntl.h>
 #include <stddef.h>
 #include <string.h>
-#include <sys/inotify.h>
 #include <unistd.h>
 
 #include <ostream>
@@ -207,9 +206,8 @@ bool BrokerFilePermission::CheckOpen(const char* requested_filename,
   return true;
 }
 
-bool BrokerFilePermission::CheckStatWithIntermediates(
-    const char* requested_filename,
-    const char** file_to_access) const {
+bool BrokerFilePermission::CheckStat(const char* requested_filename,
+                                     const char** file_to_access) const {
   if (!ValidatePath(requested_filename))
     return false;
 
@@ -221,64 +219,26 @@ bool BrokerFilePermission::CheckStatWithIntermediates(
   if (!(allow_create() || allow_stat_with_intermediates()))
     return false;
 
-  // |allow_stat_with_intermediates()| can match on the full path, and
-  // |allow_create()| only matches a leading directory.
-  if (!CheckIntermediates(
-          requested_filename,
-          /*can_match_full_path=*/allow_stat_with_intermediates()))
-    return false;
-
-  if (file_to_access)
-    *file_to_access = requested_filename;
-
-  return true;
-}
-
-bool BrokerFilePermission::CheckInotifyAddWatchWithIntermediates(
-    const char* requested_filename,
-    uint32_t mask,
-    const char** file_to_inotify_add_watch) const {
-  if (!allow_inotify_add_watch_with_intermediates())
-    return false;
-
-  if (!ValidatePath(requested_filename))
-    return false;
-
-  // Allow only this exact mask as it is used by
-  // base/files/file_path_watcher_inotify.cc.
-  if (mask != (IN_ATTRIB | IN_CREATE | IN_DELETE | IN_CLOSE_WRITE | IN_MOVE |
-               IN_ONLYDIR))
-    return false;
-
-  if (!CheckIntermediates(requested_filename,
-                          /*can_match_full_path=*/true))
-    return false;
-
-  if (file_to_inotify_add_watch)
-    *file_to_inotify_add_watch = requested_filename;
-
-  return true;
-}
-
-bool BrokerFilePermission::CheckIntermediates(const char* requested_filename,
-                                              bool can_match_full_path) const {
-  // NOTE: ValidatePath proves requested_length != 0 and |requested_filename| is
-  // absolute.
+  // NOTE: ValidatePath proved requested_length != 0;
   size_t requested_length = strlen(requested_filename);
   CHECK(requested_length);
-  CHECK(requested_filename[0] == '/');
 
   // Special case for root: only one slash, otherwise must have a second
   // slash in the right spot to avoid substring matches.
-  return (requested_length == 1 && requested_filename[0] == '/') ||
-         // If this permission can match the full path, compare directly to the
-         // requested filename.
-         (can_match_full_path && path_ == requested_filename) ||
-         // Check whether |requested_filename| matches a leading directory of
-         // |path_|.
-         (requested_length < path_.length() &&
-          memcmp(path_.c_str(), requested_filename, requested_length) == 0 &&
-          path_.c_str()[requested_length] == '/');
+  // |allow_stat_with_intermediates()| can match on the full path, and
+  // |allow_create()| only matches a leading directory.
+  if ((requested_length == 1 && requested_filename[0] == '/') ||
+      (allow_stat_with_intermediates() && path_ == requested_filename) ||
+      (requested_length < path_.length() &&
+       memcmp(path_.c_str(), requested_filename, requested_length) == 0 &&
+       path_.c_str()[requested_length] == '/')) {
+    if (file_to_access)
+      *file_to_access = requested_filename;
+
+    return true;
+  }
+
+  return false;
 }
 
 const char* BrokerFilePermission::GetErrorMessageForTests() {
@@ -296,10 +256,9 @@ void BrokerFilePermission::DieOnInvalidPermission() {
   if (temporary_only())
     CHECK(allow_create()) << GetErrorMessageForTests();
 
-  // Recursive paths must have a trailing slash, absolutes must not (except
-  // root).
-  const char last_char = path_.back();
-  if (recursive() || path_.length() == 1)
+  // Recursive paths must have a trailing slash, absolutes must not.
+  const char last_char = *(path_.rbegin());
+  if (recursive())
     CHECK(last_char == '/') << GetErrorMessageForTests();
   else
     CHECK(last_char != '/') << GetErrorMessageForTests();
@@ -317,8 +276,7 @@ BrokerFilePermission::BrokerFilePermission(
     ReadPermission read_perm,
     WritePermission write_perm,
     CreatePermission create_perm,
-    StatWithIntermediatesPermission stat_perm,
-    InotifyAddWatchWithIntermediatesPermission inotify_perm)
+    StatWithIntermediatesPermission stat_perm)
     : path_(std::move(path)) {
   flags_[kRecursiveBitPos] = recurse_opt == RecursionOption::kRecursive;
   flags_[kTemporaryOnlyBitPos] =
@@ -328,9 +286,6 @@ BrokerFilePermission::BrokerFilePermission(
   flags_[kAllowCreateBitPos] = create_perm == CreatePermission::kAllowCreate;
   flags_[kAllowStatWithIntermediatesBitPos] =
       stat_perm == StatWithIntermediatesPermission::kAllowStatWithIntermediates;
-  flags_[kAllowInotifyAddWatchWithIntermediates] =
-      inotify_perm == InotifyAddWatchWithIntermediatesPermission::
-                          kAllowInotifyAddWatchWithIntermediates;
 
   DieOnInvalidPermission();
 }

@@ -111,23 +111,7 @@ bool BrokerPermissionList::GetFileNameIfAllowedToStat(
     return false;
 
   for (size_t i = 0; i < num_of_permissions_; i++) {
-    if (permissions_array_[i].CheckStatWithIntermediates(requested_filename,
-                                                         file_to_stat))
-      return true;
-  }
-  return false;
-}
-
-bool BrokerPermissionList::GetFileNameIfAllowedToInotifyAddWatch(
-    const char* requested_filename,
-    uint32_t mask,
-    const char** file_to_inotify_add_watch) const {
-  if (!CheckCallerArgs(file_to_inotify_add_watch))
-    return false;
-
-  for (size_t i = 0; i < num_of_permissions_; i++) {
-    if (permissions_array_[i].CheckInotifyAddWatchWithIntermediates(
-            requested_filename, mask, file_to_inotify_add_watch))
+    if (permissions_array_[i].CheckStat(requested_filename, file_to_stat))
       return true;
   }
   return false;
