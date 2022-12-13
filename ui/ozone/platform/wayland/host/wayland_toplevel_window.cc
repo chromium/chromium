@@ -172,8 +172,8 @@ void WaylandToplevelWindow::Hide() {
   WaylandWindow::Hide();
 
   // Request the compositor to cease any possible ongoing snapping
-  // preview/commit.
-  CommitSnap(WaylandWindowSnapDirection::kNone);
+  // preview/commit. Use any value for `snap_ratio` since it will not be used.
+  CommitSnap(WaylandWindowSnapDirection::kNone, /*snap_ratio=*/1.f);
 
   if (IsSupportedOnAuraSurface(ZAURA_SURFACE_RELEASE_SINCE_VERSION))
     SetAuraSurface(nullptr);
@@ -758,7 +758,21 @@ void WaylandToplevelWindow::ShowSnapPreview(
 }
 
 void WaylandToplevelWindow::CommitSnap(
-    WaylandWindowSnapDirection snap_direction) {
+    WaylandWindowSnapDirection snap_direction,
+    float snap_ratio) {
+  if (IsSupportedOnAuraSurface(ZAURA_TOPLEVEL_SET_SNAP_PRIMARY_SINCE_VERSION)) {
+    switch (snap_direction) {
+      case WaylandWindowSnapDirection::kNone:
+        // TODO(sophiewen): Move unset_snap to aura toplevel.
+        zaura_surface_unset_snap(aura_surface());
+        return;
+      case WaylandWindowSnapDirection::kPrimary:
+      case WaylandWindowSnapDirection::kSecondary:
+        shell_toplevel_->CommitSnap(snap_direction, snap_ratio);
+        return;
+    }
+  }
+
   if (IsSupportedOnAuraSurface(ZAURA_SURFACE_UNSET_SNAP_SINCE_VERSION)) {
     switch (snap_direction) {
       case WaylandWindowSnapDirection::kPrimary:

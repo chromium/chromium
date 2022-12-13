@@ -135,7 +135,7 @@ class WaylandToplevelWindow : public WaylandWindow,
 #endif
   void ShowSnapPreview(WaylandWindowSnapDirection snap,
                        bool allow_haptic_feedback) override;
-  void CommitSnap(WaylandWindowSnapDirection snap) override;
+  void CommitSnap(WaylandWindowSnapDirection snap, float snap_ratio) override;
   void SetCanGoBack(bool value) override;
   void SetPip() override;
   bool SupportsPointerLock() override;

@@ -55,8 +55,10 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
 
   // Requests the underneath platform to snap the window in the given direction,
   // if not WaylandWindowSnapDirection::kNone, otherwise cancels the window
-  // snapping.
-  virtual void CommitSnap(WaylandWindowSnapDirection snap) = 0;
+  // snapping. `snap_ratio` indicates the width of the work area to snap to in
+  // landscape mode, or height in portrait mode.
+  virtual void CommitSnap(WaylandWindowSnapDirection snap,
+                          float snap_ratio) = 0;
 
   // Signals the underneath platform whether the current tab of the browser
   // window can go back. The underneath platform might react, for example,

@@ -8,6 +8,7 @@
 #include <xdg-decoration-unstable-v1-client-protocol.h>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/hit_test.h"
@@ -562,6 +563,26 @@ void XDGToplevelWrapperImpl::UnSetFloat() {
   if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
                             ZAURA_TOPLEVEL_UNSET_FLOAT_SINCE_VERSION) {
     zaura_toplevel_unset_float(aura_toplevel_.get());
+  }
+}
+
+void XDGToplevelWrapperImpl::CommitSnap(
+    WaylandWindowSnapDirection snap_direction,
+    float snap_ratio) {
+  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
+                            ZAURA_TOPLEVEL_SET_SNAP_PRIMARY_SINCE_VERSION) {
+    uint32_t value = *reinterpret_cast<uint32_t*>(&snap_ratio);
+    switch (snap_direction) {
+      case WaylandWindowSnapDirection::kPrimary:
+        zaura_toplevel_set_snap_primary(aura_toplevel_.get(), value);
+        return;
+      case WaylandWindowSnapDirection::kSecondary:
+        zaura_toplevel_set_snap_secondary(aura_toplevel_.get(), value);
+        return;
+      case WaylandWindowSnapDirection::kNone:
+        NOTREACHED() << "Toplevel does not support UnsetSnap yet";
+        return;
+    }
   }
 }
 
