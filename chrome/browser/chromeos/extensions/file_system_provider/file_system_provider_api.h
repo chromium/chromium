@@ -5,17 +5,12 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_SYSTEM_PROVIDER_FILE_SYSTEM_PROVIDER_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_SYSTEM_PROVIDER_FILE_SYSTEM_PROVIDER_API_H_
 
+#include "base/files/file.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "extensions/browser/extension_function.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
@@ -129,26 +124,16 @@ class FileSystemProviderInternal : public FileSystemProviderBase {
     crosapi::mojom::FileSystemIdPtr file_system_id;
     int64_t request_id;
     GetOperationMetadata(params, &file_system_id, &request_id);
-    auto callback =
-        base::BindOnce(&FileSystemProviderInternal::RespondWithError, this);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->file_system_provider_service_ash()
-        ->OperationFinishedWithProfile(
-            response, std::move(file_system_id), request_id, std::move(args),
-            std::move(callback),
-            Profile::FromBrowserContext(browser_context()));
-    return true;
-#else
-    if (!OperationFinishedInterfaceAvailable())
-      return false;
-    GetRemote()->OperationFinished(response, std::move(file_system_id),
-                                   request_id, std::move(args),
-                                   std::move(callback));
-    return true;
-#endif
+    return ForwardOperationResultImpl(response, std::move(file_system_id),
+                                      request_id, std::move(args));
   }
+
+ private:
+  bool ForwardOperationResultImpl(
+      crosapi::mojom::FSPOperationResponse response,
+      crosapi::mojom::FileSystemIdPtr file_system_id,
+      int request_id,
+      base::Value::List args);
 };
 
 class FileSystemProviderInternalRespondToMountRequestFunction

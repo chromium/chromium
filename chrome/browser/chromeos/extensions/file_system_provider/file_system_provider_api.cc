@@ -22,10 +22,12 @@
 #include "storage/browser/file_system/watcher_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/common/webui_url_constants.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
 namespace {
@@ -380,6 +382,32 @@ FileSystemProviderInternalRespondToMountRequestFunction::Run() {
   if (!result)
     Respond(Error(kInterfaceUnavailable));
   return RespondLater();
+}
+
+bool FileSystemProviderInternal::ForwardOperationResultImpl(
+    crosapi::mojom::FSPOperationResponse response,
+    crosapi::mojom::FileSystemIdPtr file_system_id,
+    int request_id,
+    base::Value::List args) {
+  auto callback =
+      base::BindOnce(&FileSystemProviderInternal::RespondWithError, this);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->file_system_provider_service_ash()
+      ->OperationFinishedWithProfile(
+          response, std::move(file_system_id), request_id, std::move(args),
+          std::move(callback), Profile::FromBrowserContext(browser_context()));
+  return true;
+#else
+  if (!OperationFinishedInterfaceAvailable()) {
+    return false;
+  }
+  GetRemote()->OperationFinished(response, std::move(file_system_id),
+                                 request_id, std::move(args),
+                                 std::move(callback));
+  return true;
+#endif
 }
 
 ExtensionFunction::ResponseAction
