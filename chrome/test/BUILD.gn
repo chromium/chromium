@@ -2565,6 +2565,7 @@ if (!is_android) {
       sources += [
         "../browser/chrome_browser_main_win_browsertest.cc",
         "../browser/chrome_main_process_singleton_browsertest.cc",
+        "../browser/enterprise/platform_auth/platform_auth_policy_observer_browsertest.cc",
         "../browser/enterprise/platform_auth/platform_auth_provider_manager_browsertest.cc",
         "../browser/font_prewarmer_tab_helper_browsertest.cc",
         "../browser/headless/headless_mode_browsertest_win.cc",

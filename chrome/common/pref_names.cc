@@ -2330,6 +2330,11 @@ const char kIsolatedWebAppInstallForceList[] =
     "profile.isolated_web_app.install.forcelist";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN)
+// The integer value of the CloudAPAuthEnabled policy.
+const char kCloudApAuthEnabled[] = "auth.cloud_ap_auth.enabled";
+#endif  // BUILDFLAG(IS_WIN)
+
 // Boolean that specifies whether to enable revocation checking (best effort)
 // by default.
 const char kCertRevocationCheckingEnabled[] = "ssl.rev_checking.enabled";

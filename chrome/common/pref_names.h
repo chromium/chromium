@@ -875,6 +875,10 @@ extern const char kKerberosEnabled[];
 extern const char kIsolatedWebAppInstallForceList[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN)
+extern const char kCloudApAuthEnabled[];
+#endif  // BUILDFLAG(IS_WIN)
+
 extern const char kCertRevocationCheckingEnabled[];
 extern const char kCertRevocationCheckingRequiredLocalAnchors[];
 extern const char kSSLVersionMin[];

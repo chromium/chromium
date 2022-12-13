@@ -21269,5 +21269,37 @@
         }
       }
     ]
+  },
+  "CloudAPAuthEnabled": {
+    "os": [ "win" ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "auth.cloud_ap_auth.enabled": {
+            "default_value": 0,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": { "CloudAPAuthEnabled": 0 },
+        "prefs": {
+          "auth.cloud_ap_auth.enabled": {
+            "value": 0,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": { "CloudAPAuthEnabled": 1 },
+        "prefs": {
+          "auth.cloud_ap_auth.enabled": {
+            "value": 1,
+            "location": "local_state"
+          }
+        }
+      }
+    ]
   }
 }

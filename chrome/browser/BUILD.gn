@@ -5881,6 +5881,8 @@ static_library("browser") {
       "enterprise/platform_auth/cloud_ap_utils_win.h",
       "enterprise/platform_auth/platform_auth_navigation_throttle.cc",
       "enterprise/platform_auth/platform_auth_navigation_throttle.h",
+      "enterprise/platform_auth/platform_auth_policy_observer.cc",
+      "enterprise/platform_auth/platform_auth_policy_observer.h",
       "enterprise/platform_auth/platform_auth_provider.h",
       "enterprise/platform_auth/platform_auth_provider_manager.cc",
       "enterprise/platform_auth/platform_auth_provider_manager.h",

@@ -436,6 +436,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/component_updater/sw_reporter_installer_win.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_policy_observer.h"
 #include "chrome/browser/font_prewarmer_tab_helper.h"
 #include "chrome/browser/media/cdm_pref_service_helper.h"
 #include "chrome/browser/media/media_foundation_service_monitor.h"
@@ -1304,6 +1305,10 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   screen_ai::RegisterLocalStatePrefs(registry);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+#if BUILDFLAG(IS_WIN)
+  PlatformAuthPolicyObserver::RegisterPrefs(registry);
+#endif  // BUILDFLAG(IS_WIN)
 
   // This is intentionally last.
   RegisterLocalStatePrefsForMigration(registry);

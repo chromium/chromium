@@ -32296,6 +32296,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1039" label="FloatingWorkspaceV2Enabled"/>
   <int value="1041" label="NewBaseUrlInheritanceBehaviorAllowed"/>
   <int value="1042" label="ShowCastSessionsStartedByOtherDevices"/>
+  <int value="1043" label="CloudAPAuthEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

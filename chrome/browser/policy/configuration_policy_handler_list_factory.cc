@@ -1799,6 +1799,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kVirtualKeyboardResizesLayoutByDefault,
     base::Value::Type::BOOLEAN},
 #endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN)
+  { key::kCloudAPAuthEnabled,
+    prefs::kCloudApAuthEnabled,
+    base::Value::Type::INTEGER },
+#endif  // BUILDFLAG(IS_WIN)
 };
 // clang-format on
 

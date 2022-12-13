@@ -50,6 +50,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_policy_observer.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_metrics_win.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -567,6 +568,10 @@ int ChromeBrowserMainPartsWin::PreCreateThreads() {
 void ChromeBrowserMainPartsWin::PostMainMessageLoopRun() {
   base::ImportantFileWriterCleaner::GetInstance().Stop();
 
+  // The `ProfileManager` has been destroyed, so no new platform authentication
+  // requests will be created.
+  platform_auth_policy_observer_.reset();
+
   ChromeBrowserMainParts::PostMainMessageLoopRun();
 }
 
@@ -583,6 +588,12 @@ void ChromeBrowserMainPartsWin::PreProfileInit() {
   // needs to be done before any child processes are initialized as the
   // `ModuleDatabase` is an endpoint for IPC from child processes.
   SetupModuleDatabase(&module_watcher_);
+
+  // Start up the platform auth SSO policy observer.
+  PrefService* const local_state = g_browser_process->local_state();
+  if (local_state)
+    platform_auth_policy_observer_ =
+        std::make_unique<PlatformAuthPolicyObserver>(local_state);
 }
 
 void ChromeBrowserMainPartsWin::PostProfileInit(Profile* profile,

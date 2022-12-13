@@ -24,6 +24,7 @@ source_set("test_utils") {
 
   public_deps = [
     "//chrome/browser",
+    "//chrome/browser/enterprise/platform_auth:features",
     "//net",
     "//testing/gmock",
   ]
