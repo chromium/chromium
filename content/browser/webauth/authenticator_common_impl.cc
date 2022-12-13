@@ -397,6 +397,7 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
 
   request_delegate_->ConfigureCable(
       caller_origin_, cable_request_type,
+      make_credential_options_->resident_key,
       base::span<const device::CableDiscoveryData>(), discovery_factory());
 
   make_credential_options_->allow_skipping_pin_touch = allow_skipping_pin_touch;
@@ -439,6 +440,7 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
   }
   request_delegate_->ConfigureCable(caller_origin_,
                                     device::CableRequestType::kGetAssertion,
+                                    /*resident_key_requirement=*/absl::nullopt,
                                     cable_pairings, discovery_factory());
 #if BUILDFLAG(IS_CHROMEOS)
   discovery_factory()->set_get_assertion_request_for_legacy_credential_check(

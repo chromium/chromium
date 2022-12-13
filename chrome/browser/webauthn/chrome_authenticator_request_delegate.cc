@@ -659,8 +659,12 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
 void ChromeAuthenticatorRequestDelegate::ConfigureCable(
     const url::Origin& origin,
     device::CableRequestType request_type,
+    absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
     device::FidoDiscoveryFactory* discovery_factory) {
+  DCHECK(request_type == device::CableRequestType::kGetAssertion ||
+         resident_key_requirement.has_value());
+
   phone_names_.clear();
   phone_public_keys_.clear();
 
@@ -750,6 +754,12 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
       (!cable_extension_permitted ||
        (!cable_extension_provided &&
         request_type == device::CableRequestType::kGetAssertion) ||
+       ((request_type == device::CableRequestType::kMakeCredential ||
+         request_type ==
+             device::CableRequestType::kDiscoverableMakeCredential) &&
+        resident_key_requirement.has_value() &&
+        resident_key_requirement.value() !=
+            device::ResidentKeyRequirement::kDiscouraged) ||
        base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere));
 
   absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>
