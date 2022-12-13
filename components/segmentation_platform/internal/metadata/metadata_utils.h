@@ -116,6 +116,12 @@ std::vector<proto::UMAFeature> GetAllUmaFeatures(
     const proto::SegmentationModelMetadata& model_metadata,
     bool include_outputs);
 
+// Creates prediction result for a given segment.
+proto::PredictionResult CreatePredictionResult(
+    const std::vector<float>& model_scores,
+    const proto::OutputConfig& output_config,
+    base::Time timestamp);
+
 }  // namespace metadata_utils
 }  // namespace segmentation_platform
 

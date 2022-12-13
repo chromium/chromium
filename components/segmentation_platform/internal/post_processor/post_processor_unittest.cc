@@ -1,0 +1,159 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/segmentation_platform/internal/post_processor/post_processor.h"
+
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace segmentation_platform {
+
+namespace {
+
+// Labels for BinaryClassifier.
+const char kNotShowShare[] = "Not Show Share";
+const char kShowShare[] = "Show Share";
+
+// Labels for MultiClassClassifier.
+const char kNewTabUser[] = "NewTab";
+const char kShareUser[] = "Share";
+const char kShoppingUser[] = "Shopping";
+const char kVoiceUser[] = "Voice";
+
+// Labels for BinnedClassifier.
+const char kLowUsed[] = "Low";
+const char kMediumUsed[] = "Medium";
+const char kHighUsed[] = "High";
+const char kUnderflowLabel[] = "Underflow";
+
+proto::OutputConfig GetTestOutputConfigForBinaryClassifier() {
+  proto::SegmentationModelMetadata model_metadata;
+  MetadataWriter writer(&model_metadata);
+
+  writer.AddOutputConfigForBinaryClassifier(
+      /*threshold=*/0.5, /*positive_label=*/kShowShare,
+      /*negative_label=*/kNotShowShare);
+
+  return model_metadata.output_config();
+}
+
+proto::OutputConfig GetTestOutputConfigForMultiClassClassifier(
+    int top_k_outputs) {
+  proto::SegmentationModelMetadata model_metadata;
+  MetadataWriter writer(&model_metadata);
+
+  writer.AddOutputConfigForMultiClassClassifier(
+      /*class_labels=*/{kShareUser, kNewTabUser, kVoiceUser, kShoppingUser},
+      top_k_outputs);
+  return model_metadata.output_config();
+}
+
+proto::OutputConfig GetTestOutputConfigForBinnedClassifier() {
+  proto::SegmentationModelMetadata model_metadata;
+  MetadataWriter writer(&model_metadata);
+  writer.AddOutputConfigForBinnedClassifier(
+      /*bins=*/{{0.2, kLowUsed}, {0.3, kMediumUsed}, {0.5, kHighUsed}},
+      kUnderflowLabel);
+  return model_metadata.output_config();
+}
+
+}  // namespace
+
+TEST(PostProcessorTest, BinaryClassifierScoreGreaterThanThreshold) {
+  PostProcessor post_processor;
+  std::vector<std::string> selected_label = post_processor.GetClassifierResults(
+      metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{0.6}, GetTestOutputConfigForBinaryClassifier(),
+          /*timestamp=*/base::Time::Now()));
+  EXPECT_THAT(selected_label, testing::ElementsAre(kShowShare));
+}
+
+TEST(PostProcessorTest, BinaryClassifierScoreGreaterEqualToThreshold) {
+  PostProcessor post_processor;
+  std::vector<std::string> selected_label = post_processor.GetClassifierResults(
+      metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{0.5}, GetTestOutputConfigForBinaryClassifier(),
+          /*timestamp=*/base::Time::Now()));
+  EXPECT_THAT(selected_label, testing::ElementsAre(kShowShare));
+}
+
+TEST(PostProcessorTest, BinaryClassifierScoreGreaterLessThanThreshold) {
+  PostProcessor post_processor;
+  std::vector<std::string> selected_label = post_processor.GetClassifierResults(
+      metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{0.4}, GetTestOutputConfigForBinaryClassifier(),
+          /*timestamp=*/base::Time::Now()));
+  EXPECT_THAT(selected_label, testing::ElementsAre(kNotShowShare));
+}
+
+TEST(PostProcessorTest, MultiClassClassifierWithTopKLessThanElements) {
+  PostProcessor post_processor;
+  std::vector<std::string> top_k_labels = post_processor.GetClassifierResults(
+      metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{0.5, 0.2, 0.4, 0.7},
+          GetTestOutputConfigForMultiClassClassifier(/*top_k-outputs=*/2),
+          /*timestamp=*/base::Time::Now()));
+  EXPECT_THAT(top_k_labels, testing::ElementsAre(kShoppingUser, kShareUser));
+}
+
+TEST(PostProcessorTest, MultiClassClassifierWithTopKEqualToElements) {
+  PostProcessor post_processor;
+  std::vector<std::string> top_k_labels = post_processor.GetClassifierResults(
+      metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{0.5, 0.2, 0.4, 0.7},
+          GetTestOutputConfigForMultiClassClassifier(/*top_k-outputs=*/4),
+          /*timestamp=*/base::Time::Now()));
+  EXPECT_THAT(top_k_labels, testing::ElementsAre(kShoppingUser, kShareUser,
+                                                 kVoiceUser, kNewTabUser));
+}
+
+TEST(PostProcessorTest, BinnedClassifierScoreGreaterThanHighUserThreshold) {
+  PostProcessor post_processor;
+  std::vector<std::string> winning_label = post_processor.GetClassifierResults(
+      metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{0.6}, GetTestOutputConfigForBinnedClassifier(),
+          /*timestamp=*/base::Time::Now()));
+  EXPECT_THAT(winning_label, testing::ElementsAre(kHighUsed));
+}
+
+TEST(PostProcessorTest, BinnedClassifierScoreGreaterThanMediumUserThreshold) {
+  PostProcessor post_processor;
+  std::vector<std::string> winning_label = post_processor.GetClassifierResults(
+      metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{0.4}, GetTestOutputConfigForBinnedClassifier(),
+          /*timestamp=*/base::Time::Now()));
+  EXPECT_THAT(winning_label, testing::ElementsAre(kMediumUsed));
+}
+
+TEST(PostProcessorTest, BinnedClassifierScoreGreaterThanLowUserThreshold) {
+  PostProcessor post_processor;
+  std::vector<std::string> winning_label = post_processor.GetClassifierResults(
+      metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{0.24}, GetTestOutputConfigForBinnedClassifier(),
+          /*timestamp=*/base::Time::Now()));
+  EXPECT_THAT(winning_label, testing::ElementsAre(kLowUsed));
+}
+
+TEST(PostProcessorTest, BinnedClassifierScoreEqualToLowUserThreshold) {
+  PostProcessor post_processor;
+  std::vector<std::string> winning_label = post_processor.GetClassifierResults(
+      metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{0.2}, GetTestOutputConfigForBinnedClassifier(),
+          /*timestamp=*/base::Time::Now()));
+  EXPECT_THAT(winning_label, testing::ElementsAre(kLowUsed));
+}
+
+TEST(PostProcessorTest, BinnedClassifierScoreLessThanLowUserThreshold) {
+  PostProcessor post_processor;
+  std::vector<std::string> winning_label = post_processor.GetClassifierResults(
+      metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{0.1}, GetTestOutputConfigForBinnedClassifier(),
+          /*timestamp=*/base::Time::Now()));
+  EXPECT_THAT(winning_label, testing::ElementsAre(kUnderflowLabel));
+}
+
+}  // namespace segmentation_platform

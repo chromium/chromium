@@ -12,9 +12,12 @@ package segmentation_platform.proto;
 // Defines what type of model is supplied. Results are based on which
 // classifier/regressor the model is in.
 message Predictor {
-  // A classifier to interpret model results as a boolean.
+  // A classifier to interpret model results as a boolean. The final result
+  // supplied to the client `ordered_lables` of length one, with eithier
+  // `positive_label` or `negative label`.
   message BinaryClassifier {
-    // Limit to classify result as false/true.
+    // Model score below threshold is classified as `negative_label` else
+    // `positive_label`.
     optional float threshold = 1;
     // Labels for positive and negative outputs.
     optional string positive_label = 2;
@@ -22,18 +25,23 @@ message Predictor {
   }
 
   // A classifier to interpret model results as one of multiple classes. Each
-  // output of the model corresponds to one of the classes.
+  // output of the model corresponds to one of the classes. The number of labels
+  // should be equal to the number of outputs from the model. The final result
+  // supplied to the client is list of `ordered_labels` of size `top_k_outputs`.
   message MultiClassClassifier {
     // Number of top results the client is interested in. Must be less than
     // or equal to the number of labels specified.
     optional int64 top_k_outputs = 1;
 
-    // Class labels associated with the outputs.
+    // Class labels associated with the outputs. The number of outputs from the
+    // model must be equal to the length of this list. Each label maps to the
+    // corresponding output index.
     repeated string class_labels = 2;
   }
 
   // A post-processor that converts a continuous model score into discrete
-  // ranges.
+  // ranges. The final result supplied to the client is one of the bin labels or
+  // `underflow_label`.
   message BinnedClassifier {
     // A bin represents a bucket containing entries between the current bin min
     // range to the next bin min range.
@@ -43,9 +51,15 @@ message Predictor {
       // Signify what the bin corresponds to.
       optional string label = 2;
     }
-    // BinnedClassifier contains multiple bins.
-    // The result is one of the selected bins.
+    // BinnedClassifier contains multiple bins arranged in ascending order of
+    // min_range of the bins. The result is `ordered_labels` of length 1 with
+    // selected bin's label.
     repeated Bin bins = 1;
+
+    // In case the model score is less than the `min_range` of the first label,
+    // `underflow_label` is returned. If not supplied, then empty vector is
+    // returned.
+    optional string underflow_label = 2;
   }
 
   // Describes a regression model.

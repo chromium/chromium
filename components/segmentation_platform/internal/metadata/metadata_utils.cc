@@ -17,6 +17,7 @@
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/proto/output_config.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -403,6 +404,18 @@ std::vector<proto::UMAFeature> GetAllUmaFeatures(
   }
 
   return features;
+}
+
+proto::PredictionResult CreatePredictionResult(
+    const std::vector<float>& model_scores,
+    const proto::OutputConfig& output_config,
+    base::Time timestamp) {
+  proto::PredictionResult result;
+  result.mutable_result()->Add(model_scores.begin(), model_scores.end());
+  result.mutable_output_config()->CopyFrom(output_config);
+  result.set_timestamp_us(
+      timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  return result;
 }
 
 }  // namespace metadata_utils

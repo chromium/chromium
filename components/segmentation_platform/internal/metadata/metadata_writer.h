@@ -140,6 +140,21 @@ class MetadataWriter {
       int min_signal_collection_length_days = 7,
       int signal_storage_length_days = 28);
 
+  // Adds a BinaryClassifier.
+  void AddOutputConfigForBinaryClassifier(float threshold,
+                                          const std::string& positive_label,
+                                          const std::string& negative_label);
+
+  // Adds a MultiClassClassifier.
+  void AddOutputConfigForMultiClassClassifier(
+      const std::vector<std::string>& class_labels,
+      int top_k_outputs);
+
+  // Adds a BinnedClassifier.
+  void AddOutputConfigForBinnedClassifier(
+      const std::vector<std::pair<float, std::string>>& bins,
+      std::string underflow_label);
+
  private:
   const raw_ptr<proto::SegmentationModelMetadata> metadata_;
 };

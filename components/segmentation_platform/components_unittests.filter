@@ -20,6 +20,7 @@ ModelExecutionSchedulerTest.*
 ModelExecutorTest.*
 ModelProviderFactoryImplTest.*
 OptimizationGuideSegmentationModelProviderTest.*
+PostProcessorTest.*
 PowerUserModelTest.*
 PriceTrackingActionModelTest.*
 PriceTrackingInputDelegateTest.*
