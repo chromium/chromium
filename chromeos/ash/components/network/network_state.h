@@ -321,7 +321,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   std::string guid_;
   std::string tether_guid_;  // Used to double link a Tether and Wi-Fi network.
   std::string connection_state_;
-  std::string last_connection_state_;
   std::string profile_path_;
   GURL probe_url_;
   std::vector<uint8_t> raw_ssid_;  // Unknown encoding. Not necessarily UTF-8.
