@@ -543,6 +543,11 @@ crbug.com/1372155 [ android android-sm-a135m no-passthrough ] conformance/render
 crbug.com/1372155 [ android android-sm-a135m ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 crbug.com/1372149 [ android android-sm-a235m no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
+# Flaky crash on Samsung A23
+# finder:disable-stale Nature of crash may cause stale result finder to remove these
+crbug.com/1383609 [ android android-sm-a235m ] WebglExtension_* [ RetryOnFailure ]
+# finder:enable-stale
+
 ############
 # ChromeOS #
 ############
