@@ -558,17 +558,6 @@ void WorkspaceLayoutManager::UpdateAlwaysOnTop(
     if (window == active_desk_fullscreen_window)
       continue;
 
-    // TODO(crbug.com/1200594): Remove after fix.
-    int window_id = window->GetId();
-    int window_width = window->bounds().width();
-    int window_height = window->bounds().height();
-    base::debug::Alias(&window_id);
-    base::debug::Alias(&window_width);
-    base::debug::Alias(&window_height);
-    DEBUG_ALIAS_FOR_CSTR(window_name, window->GetName().c_str(), 128);
-    DEBUG_ALIAS_FOR_CSTR(window_title,
-                         base::UTF16ToUTF8(window->GetTitle()).c_str(), 128);
-
     WindowState* window_state = WindowState::Get(window);
     if (active_desk_fullscreen_window)
       window_state->DisableZOrdering(active_desk_fullscreen_window);
