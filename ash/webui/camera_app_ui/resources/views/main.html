@@ -253,7 +253,8 @@
       <div class="centered-overlay">
         <div id="timer-tick-msg"></div>
       </div>
-      <div id="nudge" tabindex="-1" role="alert" aria-live="polite" hidden>
+      <div id="nudge" tabindex="0" role="alert" aria-label="storage low warning"
+           aria-live="polite" hidden>
         <div class="warning-icon"></div>
         <div class="warning-msg"
              i18n-text="low_storage_nudge_warning_msg"></div>
@@ -506,7 +507,8 @@
              id="low-storage-dialog-description"></div>
         <div class="low-storage-dialog-buttons">
           <button class="dialog-negative-button text-button pill
-                  system-secondary dark" tabindex="0">
+                  system-secondary dark" aria-label="open storage management"
+                  tabindex="0">
             <div class="external-link-icon"></div>
             <div i18n-text="low_storage_dialog_storage_button"></div>
           </button>
