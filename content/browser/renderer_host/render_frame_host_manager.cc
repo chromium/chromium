@@ -2319,7 +2319,6 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // `force_browsing_instance_swap` is true. All cases that result in an
   // unrelated SiteInstance should return Yes_ForceSwap or Yes_ProactiveSwap in
   // ShouldSwapBrowsingInstancesForNavigation.
-  NavigationControllerImpl& controller = GetNavigationController();
 
   // If the entry has an instance already we should usually use it, unless it is
   // no longer suitable.
@@ -2402,12 +2401,15 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     return SiteInstanceDescriptor(source_instance);
   }
 
+  DCHECK_EQ(GetNavigationController().GetBrowserContext(),
+            current_instance->GetBrowserContext());
+
   // If we haven't used our SiteInstance yet, then we can use it for this
-  // entry.  We won't commit the SiteInstance to this site until the response
-  // is received (in OnResponseStarted), unless the navigation entry was
-  // restored or it's a Web UI as described below.
-  // TODO(ahemery): In theory we should be able to go for an unused SiteInstance
-  // with the same web exposed isolation status.
+  // navigation.  We won't commit the SiteInstance to this site until the
+  // response is received (in OnResponseStarted), unless the navigation entry
+  // was restored or it's a Web UI as described below.
+  // TODO(ahemery): In theory we should be able to go for an unused
+  // SiteInstance with the same web exposed isolation status.
   if (!current_instance->HasSite() && !dest_url_info.IsIsolated() &&
       !current_instance->IsCrossOriginIsolated()) {
     // If we've already created a SiteInstance for our destination, we don't
@@ -2416,27 +2418,29 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     // want to compare against the current URL and not the SiteInstance's site.
     // In this case, there is no current URL, so comparing against the site is
     // ok.  See additional comments below.)
-    //
-    // Also, if the URL's site should use process-per-site mode and there is an
+    const SiteInfo dest_site_info =
+        current_instance->DeriveSiteInfo(dest_url_info);
+    if (current_instance->HasRelatedSiteInstance(dest_site_info)) {
+      AppendReason(reason,
+                   "DetermineSiteInstanceForURL / !current->HasSite / "
+                   "has-related-site-instance");
+      return SiteInstanceDescriptor(dest_url_info,
+                                    SiteInstanceRelation::RELATED);
+    }
+
+    // If the URL's site should use process-per-site mode and there is an
     // existing process for the site, we should use it.  We can call
     // GetRelatedSiteInstance() for this, which will eagerly set the site and
     // thus use the correct process.
-    DCHECK_EQ(controller.GetBrowserContext(),
-              current_instance->GetBrowserContext());
-
-    const SiteInfo dest_site_info =
-        current_instance->DeriveSiteInfo(dest_url_info);
     bool use_process_per_site =
         dest_site_info.ShouldUseProcessPerSite(
             current_instance->GetBrowserContext()) &&
         RenderProcessHostImpl::GetSoleProcessHostForSite(
             current_instance->GetIsolationContext(), dest_site_info);
-
-    if (current_instance->HasRelatedSiteInstance(dest_site_info) ||
-        use_process_per_site) {
+    if (use_process_per_site) {
       AppendReason(reason,
                    "DetermineSiteInstanceForURL / !current->HasSite / "
-                   "has-related-site-instance-or-using-process-per-site");
+                   "process-per-site");
       return SiteInstanceDescriptor(dest_url_info,
                                     SiteInstanceRelation::RELATED);
     }
@@ -2453,10 +2457,10 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
                                     SiteInstanceRelation::RELATED);
     }
 
-    // Normally the "site" on the SiteInstance is set lazily when the load
-    // actually commits. This is to support better process sharing in case
-    // the site redirects to some other site: we want to use the destination
-    // site in the site instance.
+    // Normally the "site" on the SiteInstance is set lazily when the response
+    // is received and SiteInstance selection is finalized. This is to
+    // support better process sharing in case the site redirects to some other
+    // site: we want to use the destination site in the site instance.
     //
     // In the case of session restore, as it loads all the pages immediately
     // we need to set the site first, otherwise after a restore none of the
@@ -2479,7 +2483,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // Use the current SiteInstance for same site navigations.
   if (is_same_site.Get(*render_frame_host_, dest_url_info)) {
     AppendReason(reason, "DetermineSiteInstanceForURL / same-site-navigation");
-    return SiteInstanceDescriptor(render_frame_host_->GetSiteInstance());
+    DCHECK_EQ(current_instance, render_frame_host_->GetSiteInstance());
+    return SiteInstanceDescriptor(current_instance);
   }
 
   // Shortcut some common cases for reusing an existing frame's SiteInstance.
@@ -2559,8 +2564,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // BrowsingInstance, unless the destination URL's web-exposed isolated state
   // cannot be hosted by it.
   if (IsSiteInstanceCompatibleWithWebExposedIsolation(
-          render_frame_host_->GetSiteInstance(),
-          dest_url_info.web_exposed_isolation_info)) {
+          current_instance, dest_url_info.web_exposed_isolation_info)) {
     AppendReason(reason,
                  "DetermineSiteInstanceForURL / fallback / coop-compatible");
     return SiteInstanceDescriptor(dest_url_info, SiteInstanceRelation::RELATED);
