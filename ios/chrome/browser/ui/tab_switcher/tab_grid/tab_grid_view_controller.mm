@@ -2691,6 +2691,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     return @[
       UIKeyCommand.cr_openNewRegularTab,
       UIKeyCommand.cr_undo,
+      UIKeyCommand.cr_close,
       // TODO(crbug.com/1385469): Move it to the menu builder once we have the
       // strings.
       UIKeyCommand.cr_select2,
@@ -2782,6 +2783,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandUndo"));
   // This function is also responsible for handling undo.
   [self closeAllButtonTapped:nil];
+}
+
+- (void)keyCommand_close {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  [self doneButtonTapped:nil];
 }
 
 @end

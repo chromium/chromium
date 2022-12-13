@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 
+#import <objc/runtime.h>
+
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
@@ -959,6 +961,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   return [sessionSectionIdentifiers containsObject:sectionIdentifierObject];
 }
 
+// Returns YES if the recent tabs is presented modally.
+- (BOOL)isPresentedModally {
+  return self.navigationController.presentingViewController;
+}
+
 #pragma mark - Consumer Protocol
 
 - (void)refreshUserState:(SessionsSyncUserState)newSessionState {
@@ -1773,6 +1780,12 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   return @[ UIKeyCommand.cr_close ];
 }
 
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+  if (sel_isEqual(action, @selector(keyCommand_close))) {
+    return [self isPresentedModally];
+  }
+  return [super canPerformAction:action withSender:sender];
+}
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
   [self.presentationDelegate showActiveRegularTabFromRecentTabs];
