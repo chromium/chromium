@@ -26,12 +26,11 @@ namespace extensions {
 
 namespace {
 
-std::unique_ptr<base::ListValue> ToListValue(
-    const std::vector<std::string>& permissions) {
-  extensions::ListBuilder builder;
+base::Value::List ToValueList(const std::vector<std::string>& permissions) {
+  base::Value::List list;
   for (const std::string& permission : permissions)
-    builder.Append(permission);
-  return builder.Build();
+    list.Append(permission);
+  return list;
 }
 
 }  // namespace
@@ -85,7 +84,7 @@ SitePermissionsHelperUnitTest::InstallExtensionWithPermissions(
   auto extension =
       extensions::ExtensionBuilder(name)
           .SetManifestVersion(3)
-          .SetManifestKey("host_permissions", ToListValue(host_permissions))
+          .SetManifestKey("host_permissions", ToValueList(host_permissions))
           .AddPermissions(permissions)
           .SetID(crx_file::id_util::GenerateId(name))
           .Build();

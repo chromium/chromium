@@ -60,8 +60,8 @@ class PermissionMessagesUnittest : public testing::Test {
 
  protected:
   void CreateAndInstallExtensionWithPermissions(
-      std::unique_ptr<base::ListValue> required_permissions,
-      std::unique_ptr<base::ListValue> optional_permissions) {
+      base::Value::List required_permissions,
+      base::Value::List optional_permissions) {
     app_ = ExtensionBuilder("Test")
                .SetManifestKey("permissions", std::move(required_permissions))
                .SetManifestKey("optional_permissions",
@@ -124,8 +124,8 @@ class PermissionMessagesUnittest : public testing::Test {
 // other (the 'history' permission has superset permissions).
 TEST_F(PermissionMessagesUnittest, HistoryHidesTabsMessage) {
   CreateAndInstallExtensionWithPermissions(
-      ListBuilder().Append("tabs").Append("history").Build(),
-      ListBuilder().Build());
+      ListBuilder().Append("tabs").Append("history").BuildList(),
+      base::Value::List());
 
   ASSERT_EQ(1U, required_permissions().size());
   EXPECT_EQ(
@@ -139,8 +139,8 @@ TEST_F(PermissionMessagesUnittest, HistoryHidesTabsMessage) {
 // permission, only the new coalesced message is displayed.
 TEST_F(PermissionMessagesUnittest, MixedPermissionMessagesCoalesceOnceGranted) {
   CreateAndInstallExtensionWithPermissions(
-      ListBuilder().Append("tabs").Build(),
-      ListBuilder().Append("history").Build());
+      ListBuilder().Append("tabs").BuildList(),
+      ListBuilder().Append("history").BuildList());
 
   ASSERT_EQ(1U, required_permissions().size());
   EXPECT_EQ(
@@ -178,8 +178,8 @@ TEST_F(PermissionMessagesUnittest, MixedPermissionMessagesCoalesceOnceGranted) {
 TEST_F(PermissionMessagesUnittest,
        AntiTest_PromptCanRequestSubsetOfAlreadyGrantedPermissions) {
   CreateAndInstallExtensionWithPermissions(
-      ListBuilder().Append("history").Build(),
-      ListBuilder().Append("tabs").Build());
+      ListBuilder().Append("history").BuildList(),
+      ListBuilder().Append("tabs").BuildList());
 
   ASSERT_EQ(1U, required_permissions().size());
   EXPECT_EQ(
@@ -219,8 +219,8 @@ TEST_F(PermissionMessagesUnittest,
 TEST_F(PermissionMessagesUnittest,
        AntiTest_PromptCanBeEmptyButCausesChangeInPermissions) {
   CreateAndInstallExtensionWithPermissions(
-      ListBuilder().Append("tabs").Build(),
-      ListBuilder().Append("sessions").Build());
+      ListBuilder().Append("tabs").BuildList(),
+      ListBuilder().Append("sessions").BuildList());
 
   ASSERT_EQ(1U, required_permissions().size());
   EXPECT_EQ(

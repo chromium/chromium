@@ -99,17 +99,19 @@ class ListBuilder {
 
   // Can only be called once, after which it's invalid to use the builder.
   base::Value::List BuildList() {
-    base::Value::List result = std::move(*list_).TakeList();
-    list_.reset();
+    base::Value::List result = std::move(list_);
+    list_ = base::Value::List();
     return result;
   }
 
   // DEPRECATED version of BuildList().
-  std::unique_ptr<base::ListValue> Build() { return std::move(list_); }
+  std::unique_ptr<base::Value> Build() {
+    return std::make_unique<base::Value>(BuildList());
+  }
 
   template <typename T>
   ListBuilder& Append(T in_value) {
-    list_->Append(std::move(in_value));
+    list_.Append(std::move(in_value));
     return *this;
   }
 
@@ -118,19 +120,19 @@ class ListBuilder {
   template <typename InputIt>
   ListBuilder& Append(InputIt first, InputIt last) {
     for (; first != last; ++first)
-      list_->Append(*first);
+      list_.Append(*first);
     return *this;
   }
 
   // See note on DictionaryBuilder::Set().
   template <typename T>
   ListBuilder& Append(std::unique_ptr<T> in_value) {
-    list_->Append(std::move(*in_value));
+    list_.Append(std::move(*in_value));
     return *this;
   }
 
  private:
-  std::unique_ptr<base::ListValue> list_;
+  base::Value::List list_;
 };
 
 }  // namespace extensions

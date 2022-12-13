@@ -34,7 +34,7 @@ std::string DictionaryBuilder::ToJSON() const {
 
 // ListBuilder
 
-ListBuilder::ListBuilder() : list_(new base::ListValue) {}
+ListBuilder::ListBuilder() = default;
 ListBuilder::~ListBuilder() = default;
 
 }  // namespace extensions
