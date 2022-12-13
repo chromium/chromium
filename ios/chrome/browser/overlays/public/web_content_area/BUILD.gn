@@ -12,6 +12,8 @@ source_set("web_content_area") {
     "http_auth_overlay.mm",
     "java_script_alert_dialog_overlay.h",
     "java_script_alert_dialog_overlay.mm",
+    "java_script_confirm_dialog_overlay.h",
+    "java_script_confirm_dialog_overlay.mm",
     "java_script_dialog_overlay.h",
     "java_script_dialog_overlay.mm",
     "java_script_dialog_overlay_utils.h",
@@ -48,6 +50,7 @@ source_set("unit_tests") {
     "app_launcher_overlay_unittest.mm",
     "http_auth_overlay_unittest.mm",
     "java_script_alert_dialog_overlay_unittest.mm",
+    "java_script_confirm_dialog_overlay_unittest.mm",
     "java_script_dialog_overlay_unittest.mm",
     "java_script_dialog_overlay_utils_unittest.mm",
   ]
