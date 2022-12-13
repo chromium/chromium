@@ -153,108 +153,106 @@ bool GetW3CSetting(const base::Value::Dict& params) {
 
 namespace {
 
-// Creates a JSON object (represented by base::DictionaryValue) that contains
+// Creates a JSON object (represented by base::Value::Dict) that contains
 // the capabilities, for returning to the client app as the result of New
 // Session command.
-std::unique_ptr<base::Value::Dict> CreateCapabilities(
-    Session* session,
-    const Capabilities& capabilities,
-    const base::DictionaryValue& desired_caps) {
-  auto caps = std::make_unique<base::Value::Dict>();
+base::Value::Dict CreateCapabilities(Session* session,
+                                     const Capabilities& capabilities,
+                                     const base::Value::Dict& desired_caps) {
+  base::Value::Dict caps;
 
   // Capabilities defined by W3C. Some of these capabilities have different
   // names in legacy mode.
-  caps->Set("browserName", base::ToLowerASCII(kBrowserShortName));
-  caps->Set(session->w3c_compliant ? "browserVersion" : "version",
-            session->chrome->GetBrowserInfo()->browser_version);
+  caps.Set("browserName", base::ToLowerASCII(kBrowserShortName));
+  caps.Set(session->w3c_compliant ? "browserVersion" : "version",
+           session->chrome->GetBrowserInfo()->browser_version);
   std::string os_name = session->chrome->GetOperatingSystemName();
   if (os_name.find("Windows") != std::string::npos)
     os_name = "Windows";
   if (session->w3c_compliant) {
-    caps->Set("platformName", base::ToLowerASCII(os_name));
+    caps.Set("platformName", base::ToLowerASCII(os_name));
   } else {
-    caps->Set("platform", os_name);
+    caps.Set("platform", os_name);
   }
-  caps->Set("pageLoadStrategy", session->chrome->page_load_strategy());
-  caps->Set("acceptInsecureCerts", capabilities.accept_insecure_certs);
+  caps.Set("pageLoadStrategy", session->chrome->page_load_strategy());
+  caps.Set("acceptInsecureCerts", capabilities.accept_insecure_certs);
 
-  const base::Value* proxy = desired_caps.FindKey("proxy");
+  const base::Value* proxy = desired_caps.Find("proxy");
   if (proxy == nullptr || proxy->is_none())
-    caps->Set("proxy", base::Value(base::Value::Type::DICTIONARY));
+    caps.Set("proxy", base::Value::Dict());
   else
-    caps->Set("proxy", proxy->Clone());
+    caps.Set("proxy", proxy->Clone());
 
   // add setWindowRect based on whether we are desktop/android/remote
   if (capabilities.IsAndroid() || capabilities.IsRemoteBrowser()) {
-    caps->Set("setWindowRect", false);
+    caps.Set("setWindowRect", false);
   } else {
-    caps->Set("setWindowRect", true);
+    caps.Set("setWindowRect", true);
   }
   if (session->script_timeout == base::TimeDelta::Max()) {
-    caps->SetByDottedPath("timeouts.script", base::Value());
+    caps.SetByDottedPath("timeouts.script", base::Value());
   } else {
-    SetSafeInt(*caps, "timeouts.script",
+    SetSafeInt(caps, "timeouts.script",
                session->script_timeout.InMilliseconds());
   }
-  SetSafeInt(*caps, "timeouts.pageLoad",
+  SetSafeInt(caps, "timeouts.pageLoad",
              session->page_load_timeout.InMilliseconds());
-  SetSafeInt(*caps, "timeouts.implicit",
+  SetSafeInt(caps, "timeouts.implicit",
              session->implicit_wait.InMilliseconds());
-  caps->Set("strictFileInteractability", session->strict_file_interactability);
-  caps->Set(session->w3c_compliant ? "unhandledPromptBehavior"
-                                   : "unexpectedAlertBehaviour",
-            session->unhandled_prompt_behavior);
+  caps.Set("strictFileInteractability", session->strict_file_interactability);
+  caps.Set(session->w3c_compliant ? "unhandledPromptBehavior"
+                                  : "unexpectedAlertBehaviour",
+           session->unhandled_prompt_behavior);
 
   // Extensions defined by the W3C.
   // See https://w3c.github.io/webauthn/#sctn-automation-webdriver-capability
-  caps->Set("webauthn:virtualAuthenticators", !capabilities.IsAndroid());
-  caps->Set("webauthn:extension:largeBlob", !capabilities.IsAndroid());
-  caps->Set("webauthn:extension:credBlob", !capabilities.IsAndroid());
+  caps.Set("webauthn:virtualAuthenticators", !capabilities.IsAndroid());
+  caps.Set("webauthn:extension:largeBlob", !capabilities.IsAndroid());
+  caps.Set("webauthn:extension:credBlob", !capabilities.IsAndroid());
 
   // Chrome-specific extensions.
   const std::string chrome_driver_version_key = base::StringPrintf(
       "%s.%sVersion", base::ToLowerASCII(kBrowserShortName).c_str(),
       base::ToLowerASCII(kChromeDriverProductShortName).c_str());
-  caps->SetByDottedPath(chrome_driver_version_key, kChromeDriverVersion);
+  caps.SetByDottedPath(chrome_driver_version_key, kChromeDriverVersion);
   const std::string debugger_address_key =
       base::StringPrintf("%s.debuggerAddress", kChromeDriverOptionsKeyPrefixed);
-  caps->SetByDottedPath(debugger_address_key, session->chrome->GetBrowserInfo()
-                                                  ->debugger_endpoint.Address()
-                                                  .ToString());
+  caps.SetByDottedPath(debugger_address_key, session->chrome->GetBrowserInfo()
+                                                 ->debugger_endpoint.Address()
+                                                 .ToString());
   ChromeDesktopImpl* desktop = nullptr;
   Status status = session->chrome->GetAsDesktop(&desktop);
   if (status.IsOk()) {
     const std::string user_data_key = base::StringPrintf(
         "%s.userDataDir", base::ToLowerASCII(kBrowserShortName).c_str());
-    caps->SetByDottedPath(
+    caps.SetByDottedPath(
         user_data_key,
         desktop->command().GetSwitchValuePath("user-data-dir").AsUTF8Unsafe());
-    caps->Set("networkConnectionEnabled",
-              desktop->IsNetworkConnectionEnabled());
+    caps.Set("networkConnectionEnabled", desktop->IsNetworkConnectionEnabled());
   }
 
   // Legacy capabilities.
   if (!session->w3c_compliant) {
-    caps->Set("javascriptEnabled", true);
-    caps->Set("takesScreenshot", true);
-    caps->Set("takesHeapSnapshot", true);
-    caps->Set("handlesAlerts", true);
-    caps->Set("databaseEnabled", false);
-    caps->Set("locationContextEnabled", true);
-    caps->Set("mobileEmulationEnabled",
-              session->chrome->IsMobileEmulationEnabled());
-    caps->Set("browserConnectionEnabled", false);
-    caps->Set("cssSelectorsEnabled", true);
-    caps->Set("webStorageEnabled", true);
-    caps->Set("rotatable", false);
-    caps->Set("acceptSslCerts", capabilities.accept_insecure_certs);
-    caps->Set("nativeEvents", true);
-    caps->Set("hasTouchScreen", session->chrome->HasTouchScreen());
+    caps.Set("javascriptEnabled", true);
+    caps.Set("takesScreenshot", true);
+    caps.Set("takesHeapSnapshot", true);
+    caps.Set("handlesAlerts", true);
+    caps.Set("databaseEnabled", false);
+    caps.Set("locationContextEnabled", true);
+    caps.Set("mobileEmulationEnabled",
+             session->chrome->IsMobileEmulationEnabled());
+    caps.Set("browserConnectionEnabled", false);
+    caps.Set("cssSelectorsEnabled", true);
+    caps.Set("webStorageEnabled", true);
+    caps.Set("rotatable", false);
+    caps.Set("acceptSslCerts", capabilities.accept_insecure_certs);
+    caps.Set("nativeEvents", true);
+    caps.Set("hasTouchScreen", session->chrome->HasTouchScreen());
   }
 
   if (session->webSocketUrl) {
-    caps->Set("webSocketUrl",
-              "ws://" + session->host + "/session/" + session->id);
+    caps.Set("webSocketUrl",
+             "ws://" + session->host + "/session/" + session->id);
   }
 
   return caps;
@@ -285,12 +283,12 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
                          Session* session,
                          const base::Value::Dict& params,
                          std::unique_ptr<base::Value>* value) {
-  const base::DictionaryValue* desired_caps;
-  base::DictionaryValue merged_caps;
+  const base::Value::Dict* desired_caps;
+  base::Value::Dict merged_caps;
 
   Capabilities capabilities;
-  Status status = internal::ConfigureSession(session, params, &desired_caps,
-                                             &merged_caps, &capabilities);
+  Status status = internal::ConfigureSession(session, params, desired_caps,
+                                             merged_caps, &capabilities);
   if (status.IsError())
     return status;
 
@@ -344,8 +342,8 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
   if (status.IsError())
     return status;
   session->detach = capabilities.detach;
-  session->capabilities =
-      CreateCapabilities(session, capabilities, *desired_caps);
+  session->capabilities = std::make_unique<base::Value::Dict>(
+      CreateCapabilities(session, capabilities, *desired_caps));
 
   status = internal::ConfigureHeadlessSession(session, capabilities);
   if (status.IsError())
@@ -413,28 +411,26 @@ namespace internal {
 
 Status ConfigureSession(Session* session,
                         const base::Value::Dict& params,
-                        const base::DictionaryValue** desired_caps,
-                        base::DictionaryValue* merged_caps,
+                        const base::Value::Dict*& desired_caps,
+                        base::Value::Dict& merged_caps,
                         Capabilities* capabilities) {
   session->driver_log =
       std::make_unique<WebDriverLog>(WebDriverLog::kDriverType, Log::kAll);
 
   session->w3c_compliant = GetW3CSetting(params);
   if (session->w3c_compliant) {
-    Status status = ProcessCapabilities(params, merged_caps->GetDict());
+    Status status = ProcessCapabilities(params, merged_caps);
     if (status.IsError())
       return status;
-    *desired_caps = merged_caps;
+    desired_caps = &merged_caps;
   } else {
-    const base::Value* caps = params.Find("desiredCapabilities");
-    if (!caps || !caps->is_dict())
+    const base::Value::Dict* caps = params.FindDict("desiredCapabilities");
+    if (!caps)
       return Status(kSessionNotCreated, "Missing or invalid capabilities");
-
-    *desired_caps = static_cast<const base::DictionaryValue*>(caps);
+    desired_caps = caps;
   }
 
-  Status status =
-      capabilities->Parse((*desired_caps)->GetDict(), session->w3c_compliant);
+  Status status = capabilities->Parse(*desired_caps, session->w3c_compliant);
   if (status.IsError())
     return status;
 

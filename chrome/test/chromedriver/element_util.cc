@@ -92,12 +92,12 @@ bool ParseFromValue(base::Value* value, WebRect* rect) {
   return true;
 }
 
-std::unique_ptr<base::DictionaryValue> CreateValueFrom(const WebRect& rect) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetIntKey("left", rect.X());
-  dict->SetIntKey("top", rect.Y());
-  dict->SetIntKey("width", rect.Width());
-  dict->SetIntKey("height", rect.Height());
+base::Value::Dict CreateValueFrom(const WebRect& rect) {
+  base::Value::Dict dict;
+  dict.Set("left", static_cast<int>(rect.X()));
+  dict.Set("top", static_cast<int>(rect.Y()));
+  dict.Set("width", static_cast<int>(rect.Width()));
+  dict.Set("height", static_cast<int>(rect.Height()));
   return dict;
 }
 
@@ -120,7 +120,7 @@ Status VerifyElementClickable(
     return status;
   base::Value::List args;
   args.Append(CreateElement(element_id));
-  args.Append(base::Value::FromUniquePtrValue(CreateValueFrom(location)));
+  args.Append(CreateValueFrom(location));
   std::unique_ptr<base::Value> result;
   status = CallAtomsJs(
       frame, web_view, webdriver::atoms::IS_ELEMENT_CLICKABLE,
@@ -162,7 +162,7 @@ Status ScrollElementRegionIntoViewHelper(
   base::Value::List args;
   args.Append(CreateElement(element_id));
   args.Append(center);
-  args.Append(base::Value::FromUniquePtrValue(CreateValueFrom(region)));
+  args.Append(CreateValueFrom(region));
   std::unique_ptr<base::Value> result;
   status = web_view->CallFunction(
       frame, webdriver::atoms::asString(webdriver::atoms::GET_LOCATION_IN_VIEW),
@@ -349,10 +349,10 @@ base::Value CreateShadowRoot(const std::string& shadow_root_id) {
   return CreateElementCommon(kShadowRootKey, shadow_root_id);
 }
 
-std::unique_ptr<base::DictionaryValue> CreateValueFrom(const WebPoint& point) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetIntKey("x", point.x);
-  dict->SetIntKey("y", point.y);
+base::Value::Dict CreateValueFrom(const WebPoint& point) {
+  base::Value::Dict dict;
+  dict.Set("x", static_cast<int>(point.x));
+  dict.Set("y", static_cast<int>(point.y));
   return dict;
 }
 

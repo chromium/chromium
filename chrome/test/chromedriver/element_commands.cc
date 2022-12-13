@@ -994,12 +994,12 @@ Status ExecuteGetElementRect(Session* session,
   if (!maybe_width.has_value())
     return Status(kUnknownError, "width is missing in element size");
 
-  base::DictionaryValue ret;
-  ret.SetDoubleKey("x", maybe_x.value());
-  ret.SetDoubleKey("y", maybe_y.value());
-  ret.SetDoubleKey("width", maybe_width.value());
-  ret.SetDoubleKey("height", maybe_height.value());
-  *value = base::Value::ToUniquePtrValue(ret.Clone());
+  base::Value::Dict ret;
+  ret.Set("x", maybe_x.value());
+  ret.Set("y", maybe_y.value());
+  ret.Set("width", maybe_width.value());
+  ret.Set("height", maybe_height.value());
+  *value = std::make_unique<base::Value>(std::move(ret));
   return Status(kOk);
 }
 
@@ -1015,7 +1015,7 @@ Status ExecuteGetElementLocationOnceScrolledIntoView(
       session, web_view, element_id, &offset, &location);
   if (status.IsError())
     return status;
-  *value = CreateValueFrom(location);
+  *value = std::make_unique<base::Value>(CreateValueFrom(location));
   return Status(kOk);
 }
 

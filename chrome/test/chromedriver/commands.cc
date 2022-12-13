@@ -39,24 +39,23 @@ void ExecuteGetStatus(const base::Value::Dict& params,
   // W3C defined data:
   // ChromeDriver doesn't have a preset limit on number of active sessions,
   // so we are always ready.
-  base::DictionaryValue info;
-  info.GetDict().Set("ready", true);
-  info.GetDict().Set("message",
-                     base::StringPrintf("%s ready for new sessions.",
-                                        kChromeDriverProductShortName));
+  base::Value::Dict info;
+  info.Set("ready", true);
+  info.Set("message", base::StringPrintf("%s ready for new sessions.",
+                                         kChromeDriverProductShortName));
 
   // ChromeDriver specific data:
-  base::DictionaryValue build;
-  build.GetDict().Set("version", kChromeDriverVersion);
-  info.SetKey("build", std::move(build));
+  base::Value::Dict build;
+  build.Set("version", kChromeDriverVersion);
+  info.Set("build", std::move(build));
 
-  base::DictionaryValue os;
-  os.GetDict().Set("name", base::SysInfo::OperatingSystemName());
-  os.GetDict().Set("version", base::SysInfo::OperatingSystemVersion());
-  os.GetDict().Set("arch", base::SysInfo::OperatingSystemArchitecture());
-  info.SetKey("os", std::move(os));
+  base::Value::Dict os;
+  os.Set("name", base::SysInfo::OperatingSystemName());
+  os.Set("version", base::SysInfo::OperatingSystemVersion());
+  os.Set("arch", base::SysInfo::OperatingSystemArchitecture());
+  info.Set("os", std::move(os));
 
-  callback.Run(Status(kOk), base::Value::ToUniquePtrValue(std::move(info)),
+  callback.Run(Status(kOk), std::make_unique<base::Value>(std::move(info)),
                std::string(), kW3CDefault);
 }
 

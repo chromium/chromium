@@ -145,21 +145,19 @@ const char* GetAsString(PointerType type) {
   }
 }
 
-std::unique_ptr<base::DictionaryValue> GenerateTouchPoint(
-    const TouchEvent& event) {
-  std::unique_ptr<base::DictionaryValue> point(new base::DictionaryValue());
-  base::Value::Dict& dict = point->GetDict();
-  dict.Set("x", event.x);
-  dict.Set("y", event.y);
-  dict.Set("radiusX", event.radiusX);
-  dict.Set("radiusY", event.radiusY);
-  dict.Set("rotationAngle", event.rotationAngle);
-  dict.Set("force", event.force);
-  dict.Set("tangentialPressure", event.tangentialPressure);
-  dict.Set("tiltX", event.tiltX);
-  dict.Set("tiltY", event.tiltY);
-  dict.Set("twist", event.twist);
-  dict.Set("id", event.id);
+base::Value::Dict GenerateTouchPoint(const TouchEvent& event) {
+  base::Value::Dict point;
+  point.Set("x", event.x);
+  point.Set("y", event.y);
+  point.Set("radiusX", event.radiusX);
+  point.Set("radiusY", event.radiusY);
+  point.Set("rotationAngle", event.rotationAngle);
+  point.Set("force", event.force);
+  point.Set("tangentialPressure", event.tangentialPressure);
+  point.Set("tiltX", event.tiltX);
+  point.Set("tiltY", event.tiltY);
+  point.Set("twist", event.twist);
+  point.Set("id", event.id);
   return point;
 }
 
@@ -222,10 +220,8 @@ Status GetFrameIdForObjectId(DevToolsClient* client,
                              std::string* frame_id) {
   DCHECK(frame_id);
   DCHECK(found_node);
-  base::DictionaryValue cmd_result;
 
   Status status{kOk};
-
   base::Value node;
   status = DescribeNode(client, object_id, 0, false, &node);
 
@@ -726,8 +722,8 @@ Status WebViewImpl::DispatchTouchEvent(const TouchEvent& event,
   base::Value::List point_list;
   Status status(kOk);
   if (type == "touchStart" || type == "touchMove") {
-    std::unique_ptr<base::DictionaryValue> point = GenerateTouchPoint(event);
-    point_list.Append(base::Value::FromUniquePtrValue(std::move(point)));
+    base::Value::Dict point = GenerateTouchPoint(event);
+    point_list.Append(std::move(point));
   }
   params.Set("touchPoints", std::move(point_list));
   if (async_dispatch_events) {
@@ -770,8 +766,7 @@ Status WebViewImpl::DispatchTouchEventWithMultiPoints(
     if (type == "touchCancel")
       continue;
 
-    point_list.Append(
-        base::Value::FromUniquePtrValue(GenerateTouchPoint(event)));
+    point_list.Append(GenerateTouchPoint(event));
     params.Set("touchPoints", std::move(point_list));
 
     if (async_dispatch_events || touch_count < events.size()) {

@@ -593,15 +593,14 @@ TEST(SessionCommandsTest, ConfigureSession_allSet) {
   base::Value::Dict* params_in = value.GetIfDict();
   ASSERT_TRUE(params_in);
 
-  const base::DictionaryValue* desired_caps_out;
-  base::DictionaryValue merged_out;
+  const base::Value::Dict* desired_caps_out = nullptr;
+  base::Value::Dict merged_out;
   Capabilities capabilities_out;
   Status status = internal::ConfigureSession(
-      &session, *params_in, &desired_caps_out, &merged_out, &capabilities_out);
+      &session, *params_in, desired_caps_out, merged_out, &capabilities_out);
   ASSERT_EQ(kOk, status.code()) << status.message();
   // Verify out parameters have been set
-  ASSERT_TRUE(desired_caps_out->is_dict());
-  ASSERT_TRUE(merged_out.is_dict());
+  ASSERT_NE(desired_caps_out, nullptr);
   ASSERT_TRUE(capabilities_out.logging_prefs["driver"]);
   // Verify session settings are correct
   ASSERT_EQ(kAccept, session.unhandled_prompt_behavior);
@@ -627,15 +626,14 @@ TEST(SessionCommandsTest, ConfigureSession_defaults) {
                           .value();
   const base::Value::Dict* params_in = value.GetIfDict();
   ASSERT_TRUE(params_in);
-  const base::DictionaryValue* desired_caps_out;
-  base::DictionaryValue merged_out;
+  const base::Value::Dict* desired_caps_out = nullptr;
+  base::Value::Dict merged_out;
   Capabilities capabilities_out;
 
   Status status = internal::ConfigureSession(
-      &session, *params_in, &desired_caps_out, &merged_out, &capabilities_out);
+      &session, *params_in, desired_caps_out, merged_out, &capabilities_out);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_TRUE(desired_caps_out->is_dict());
-  ASSERT_TRUE(merged_out.is_dict());
+  ASSERT_NE(desired_caps_out, nullptr);
   // Testing specific values could be fragile, but want to verify they are set
   ASSERT_EQ(base::Seconds(0), session.implicit_wait);
   ASSERT_EQ(base::Seconds(300), session.page_load_timeout);
@@ -663,14 +661,14 @@ TEST(SessionCommandsTest, ConfigureSession_legacyDefault) {
                           .value();
   const base::Value::Dict* params_in = value.GetIfDict();
   ASSERT_TRUE(params_in);
-  const base::DictionaryValue* desired_caps_out;
-  base::DictionaryValue merged_out;
+  const base::Value::Dict* desired_caps_out = nullptr;
+  base::Value::Dict merged_out;
   Capabilities capabilities_out;
 
   Status status = internal::ConfigureSession(
-      &session, *params_in, &desired_caps_out, &merged_out, &capabilities_out);
+      &session, *params_in, desired_caps_out, merged_out, &capabilities_out);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_TRUE(desired_caps_out->is_dict());
+  ASSERT_NE(desired_caps_out, nullptr);
   // legacy values:
   ASSERT_EQ(kIgnore, session.unhandled_prompt_behavior);
 }

@@ -175,10 +175,12 @@ namespace internal {
 Status ConfigureHeadlessSession(Session* session,
                                 const Capabilities& capabilities);
 
+// On return `desired_caps` either points at `merged_caps`, or points to some
+// field in `params`.
 Status ConfigureSession(Session* session,
                         const base::Value::Dict& params,
-                        const base::DictionaryValue** desired_caps,
-                        base::DictionaryValue* merged_caps,
+                        const base::Value::Dict*& desired_caps,
+                        base::Value::Dict& merged_caps,
                         Capabilities* capabilities);
 
 }  // namespace internal
