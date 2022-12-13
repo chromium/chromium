@@ -11,6 +11,7 @@ load("./fallback-cq.star", "fallback_cq")
 
 try_.defaults.set(
     bucket = "try",
+    cpu = cpu.X86_64,
     build_numbers = True,
     caches = [
         swarming.cache(
@@ -18,7 +19,6 @@ try_.defaults.set(
             path = "win_toolchain",
         ),
     ],
-    cpu = cpu.X86_64,
     cq_group = "cq",
     # Max. pending time for builds. CQ considers builds pending >2h as timed
     # out: http://shortn/_8PaHsdYmlq. Keep this in sync.
@@ -37,10 +37,6 @@ luci.bucket(
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_TRIGGERER,
-            users = [
-                "findit-for-me@appspot.gserviceaccount.com",
-                "tricium-prod@appspot.gserviceaccount.com",
-            ],
             groups = [
                 "project-chromium-tryjob-access",
                 # Allow Pinpoint to trigger builds for bisection
@@ -54,6 +50,10 @@ luci.bucket(
                 "swiftshader",
                 "v8",
             ] if settings.is_main else None,
+            users = [
+                "findit-for-me@appspot.gserviceaccount.com",
+                "tricium-prod@appspot.gserviceaccount.com",
+            ],
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_OWNER,
@@ -64,15 +64,6 @@ luci.bucket(
 
 luci.cq_group(
     name = "cq",
-    retry_config = cq.RETRY_ALL_FAILURES,
-    tree_status_host = "chromium-status.appspot.com" if settings.is_main else None,
-    watch = cq.refset(
-        repo = "https://chromium.googlesource.com/chromium/src",
-        # The chromium project's CQ covers all of the refs under refs/heads,
-        # which includes refs/heads/main, for projects running out of a branch
-        # the CQ only runs for that ref
-        refs = ["refs/heads/.+" if settings.is_main else settings.ref],
-    ),
     acls = [
         acl.entry(
             acl.CQ_COMMITTER,
@@ -86,6 +77,15 @@ luci.cq_group(
     additional_modes = [
         cq.run_mode(cq.MODE_QUICK_DRY_RUN, 1, "Quick-Run", 1),
     ],
+    retry_config = cq.RETRY_ALL_FAILURES,
+    tree_status_host = "chromium-status.appspot.com" if settings.is_main else None,
+    watch = cq.refset(
+        repo = "https://chromium.googlesource.com/chromium/src",
+        # The chromium project's CQ covers all of the refs under refs/heads,
+        # which includes refs/heads/main, for projects running out of a branch
+        # the CQ only runs for that ref
+        refs = ["refs/heads/.+" if settings.is_main else settings.ref],
+    ),
 )
 
 # Declare a CQ group that watches all branch heads, excluding the active
@@ -96,15 +96,6 @@ luci.cq_group(
 # proper CQ group set up for the ref).
 branches.cq_group(
     name = fallback_cq.GROUP,
-    retry_config = cq.RETRY_ALL_FAILURES,
-    watch = cq.refset(
-        repo = "https://chromium.googlesource.com/chromium/src",
-        refs = ["refs/branch-heads/.*"],
-        refs_exclude = [
-            details.ref
-            for details in ACTIVE_MILESTONES.values()
-        ],
-    ),
     acls = [
         acl.entry(
             acl.CQ_COMMITTER,
@@ -115,6 +106,15 @@ branches.cq_group(
             groups = "project-chromium-tryjob-access",
         ),
     ],
+    retry_config = cq.RETRY_ALL_FAILURES,
+    watch = cq.refset(
+        repo = "https://chromium.googlesource.com/chromium/src",
+        refs = ["refs/branch-heads/.*"],
+        refs_exclude = [
+            details.ref
+            for details in ACTIVE_MILESTONES.values()
+        ],
+    ),
 )
 
 consoles.list_view(

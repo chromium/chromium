@@ -11,11 +11,11 @@ load("//lib/consoles.star", "consoles")
 
 try_.defaults.set(
     builder_group = "tryserver.blink",
-    cores = 8,
     executable = try_.DEFAULT_EXECUTABLE,
-    execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
+    cores = 8,
     pool = try_.DEFAULT_POOL,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
 )
 
 consoles.list_view(
@@ -54,10 +54,10 @@ try_.builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
+    os = os.LINUX_DEFAULT,
+    main_list_view = "try",
     goma_backend = goma.backend.RBE_PROD,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    main_list_view = "try",
-    os = os.LINUX_DEFAULT,
     tryjob = try_.job(
         location_filters = [
             "cc/.+",
@@ -88,11 +88,11 @@ try_.builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
+    builderless = True,
+    os = os.WINDOWS_ANY,
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-    os = os.WINDOWS_ANY,
-    builderless = True,
 )
 
 try_.builder(
@@ -114,8 +114,8 @@ try_.builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = True,
     ),
-    os = os.WINDOWS_ANY,
     builderless = True,
+    os = os.WINDOWS_ANY,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )

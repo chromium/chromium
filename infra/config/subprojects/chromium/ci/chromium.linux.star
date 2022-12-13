@@ -12,18 +12,18 @@ load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
     builder_group = "chromium.linux",
-    cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
-    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    main_console_view = "main",
-    notifies = ["chromium.linux"],
+    cores = 8,
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     tree_closing = True,
+    main_console_view = "main",
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    notifies = ["chromium.linux"],
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 consoles.console_view(
@@ -54,11 +54,11 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
         short_name = "aud",
     ),
-    ssd = True,
 )
 
 ci.builder(
@@ -106,14 +106,14 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    os = os.LINUX_BIONIC,
+    # TODO(crbug.com/1173333): Make it tree-closing.
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
         short_name = "dbg",
     ),
     cq_mirrors_console_view = "mirrors",
-    os = os.LINUX_BIONIC,
-    # TODO(crbug.com/1173333): Make it tree-closing.
-    tree_closing = False,
 )
 
 ci.builder(
@@ -137,47 +137,49 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    os = os.LINUX_BIONIC,
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
         short_name = "arm64",
     ),
     cq_mirrors_console_view = "mirrors",
-    os = os.LINUX_BIONIC,
-    tree_closing = False,
 )
 
 ci.builder(
     name = "Deterministic Linux",
-    console_view_entry = consoles.console_view_entry(
-        category = "release",
-        short_name = "det",
-    ),
     executable = "recipe:swarming/deterministic_build",
-    execution_timeout = 6 * time.hour,
+    ssd = True,
+    free_space = builders.free_space.high,
     # Set tree_closing to false to disable the defaualt tree closer, which
     # filters by step name, and instead enable tree closing for any step
     # failure.
     tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "release",
+        short_name = "det",
+    ),
+    execution_timeout = 6 * time.hour,
     notifies = ["Deterministic Linux", "close-on-any-step-failure"],
     reclient_jobs = reclient.jobs.DEFAULT,
-    free_space = builders.free_space.high,
-    ssd = True,
 )
 
 ci.builder(
     name = "Deterministic Linux (dbg)",
+    executable = "recipe:swarming/deterministic_build",
+    cores = 32,
     console_view_entry = consoles.console_view_entry(
         category = "debug|builder",
         short_name = "det",
     ),
-    cores = 32,
-    executable = "recipe:swarming/deterministic_build",
     execution_timeout = 7 * time.hour,
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
     name = "Leak Detection Linux",
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         console_view = "chromium.fyi",
         category = "linux",
@@ -185,9 +187,7 @@ ci.builder(
     ),
     main_console_view = None,
     notifies = args.ignore_default([]),
-    tree_closing = False,
     reclient_jobs = reclient.jobs.DEFAULT,
-    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -289,12 +289,12 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    triggered_by = ["ci/Linux Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "tst",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Linux Builder"],
     # TODO(crbug.com/1249968): Roll this out more broadly.
     resultdb_bigquery_exports = [
         resultdb.export_text_artifacts(
@@ -324,12 +324,12 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    triggered_by = ["ci/Linux Builder (dbg)"],
     console_view_entry = consoles.console_view_entry(
         category = "debug|tester",
         short_name = "64",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Linux Builder (dbg)"],
 )
 
 ci.thin_tester(
@@ -353,12 +353,12 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    triggered_by = ["ci/Linux Builder (Wayland)"],
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "tst-wl",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Linux Builder (Wayland)"],
 )
 
 ci.builder(
@@ -454,10 +454,10 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    os = os.LINUX_FOCAL,
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "gcc",
     ),
     reclient_instance = None,
-    os = os.LINUX_FOCAL,
 )

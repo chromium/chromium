@@ -10,15 +10,15 @@ load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
     builder_group = "chromium.android.fyi",
-    cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
-    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    cores = 8,
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
-    priority = ci.DEFAULT_FYI_PRIORITY,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
-    reclient_jobs = reclient.jobs.DEFAULT,
+    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    priority = ci.DEFAULT_FYI_PRIORITY,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 consoles.console_view(
@@ -68,14 +68,14 @@ ci.builder(
 # disabled tests.
 ci.builder(
     name = "android-pie-x86-fyi-rel",
-    console_view_entry = consoles.console_view_entry(
-        category = "emulator|x86|rel",
-        short_name = "P",
-    ),
     # Set to an empty list to avoid chromium-gitiles-trigger triggering new
     # builds. Also we don't set any `schedule` since this builder is for
     # reference only and should not run any new builds.
     triggered_by = [],
+    console_view_entry = consoles.console_view_entry(
+        category = "emulator|x86|rel",
+        short_name = "P",
+    ),
 )
 
 # TODO(crbug.com/1137474): This and android-12-x64-fyi-rel
@@ -84,14 +84,14 @@ ci.builder(
 # Remove these once the bugs are closed
 ci.builder(
     name = "android-11-x86-fyi-rel",
-    console_view_entry = consoles.console_view_entry(
-        category = "emulator|x86|rel",
-        short_name = "11",
-    ),
     # Set to an empty list to avoid chromium-gitiles-trigger triggering new
     # builds. Also we don't set any `schedule` since this builder is for
     # reference only and should not run any new builds.
     triggered_by = [],
+    console_view_entry = consoles.console_view_entry(
+        category = "emulator|x86|rel",
+        short_name = "11",
+    ),
 )
 
 ci.builder(
@@ -118,6 +118,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    triggered_by = ["ci/android-12-x64-rel"],
     console_view_entry = consoles.console_view_entry(
         category = "emulator|x64|rel",
         short_name = "12",
@@ -126,7 +127,6 @@ ci.builder(
     # So they need longer timeouts
     # Matching the execution time out of the android-12-x64-rel
     execution_timeout = 4 * time.hour,
-    triggered_by = ["ci/android-12-x64-rel"],
 )
 
 ci.builder(
@@ -160,11 +160,11 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    triggered_by = ["Android x64 Builder (dbg)"],
     console_view_entry = consoles.console_view_entry(
         category = "tester|webview",
         short_name = "12",
     ),
-    triggered_by = ["Android x64 Builder (dbg)"],
 )
 
 # TODO(crbug.com/1299910): Move to non-FYI once the tester works fine.
@@ -189,16 +189,17 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    triggered_by = ["Android x64 Builder (dbg)"],
     console_view_entry = consoles.console_view_entry(
         category = "tester|phone",
         short_name = "12",
     ),
-    triggered_by = ["Android x64 Builder (dbg)"],
 )
 
 ci.builder(
     name = "android-cronet-asan-x86-rel",
     builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.COMPILE_AND_TEST,
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = ["android"],
@@ -213,7 +214,6 @@ ci.builder(
         android_config = builder_config.android_config(
             config = "x86_builder",
         ),
-        execution_mode = builder_config.execution_mode.COMPILE_AND_TEST,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|asan",

@@ -97,9 +97,9 @@ ci_builder(
         chromium_config = builder_config.chromium_config(
             config = "android",
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
-            target_arch = builder_config.target_arch.ARM,
         ),
         android_config = builder_config.android_config(
             config = "main_builder_mb",
@@ -125,8 +125,8 @@ ci_builder(
 
 ci_builder(
     name = "mac-arm-rel-swarming",
-    cpu = cpu.ARM64,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
 )
 
 ci_builder(

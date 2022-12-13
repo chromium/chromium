@@ -12,11 +12,11 @@ load("//lib/consoles.star", "consoles")
 ci.defaults.set(
     builder_group = "chromium.dawn",
     executable = ci.DEFAULT_EXECUTABLE,
-    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    reclient_jobs = reclient.jobs.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     pool = ci.gpu.POOL,
     service_account = ci.gpu.SERVICE_ACCOUNT,
+    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
     thin_tester_cores = 2,
 )
 
@@ -140,12 +140,12 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["ci/Dawn Linux x64 DEPS Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Linux|Intel",
         short_name = "x64",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Dawn Linux x64 DEPS Builder"],
 )
 
 ci.thin_tester(
@@ -168,12 +168,12 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["ci/Dawn Linux x64 DEPS Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Linux|Nvidia",
         short_name = "x64",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Dawn Linux x64 DEPS Builder"],
 )
 
 ci.gpu.linux_builder(
@@ -222,11 +222,11 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["Dawn Linux x64 Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Linux|Intel",
         short_name = "x64",
     ),
-    triggered_by = ["Dawn Linux x64 Builder"],
 )
 
 ci.thin_tester(
@@ -248,11 +248,11 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["Dawn Linux x64 Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Linux|Nvidia",
         short_name = "x64",
     ),
-    triggered_by = ["Dawn Linux x64 Builder"],
 )
 
 ci.gpu.mac_builder(
@@ -330,12 +330,12 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["ci/Dawn Mac x64 DEPS Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Mac|AMD",
         short_name = "x64",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Dawn Mac x64 DEPS Builder"],
 )
 
 ci.thin_tester(
@@ -358,12 +358,12 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["ci/Dawn Mac x64 DEPS Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Mac|Intel",
         short_name = "x64",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Dawn Mac x64 DEPS Builder"],
 )
 
 ci.thin_tester(
@@ -385,13 +385,13 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["Dawn Mac x64 Builder"],
     # Uncomment this entry when this experimental tester is actually in use.
     # console_view_entry = consoles.console_view_entry(
     #     category = "ToT|Mac|AMD",
     #     short_name = "exp",
     # ),
     list_view = "chromium.gpu.experimental",
-    triggered_by = ["Dawn Mac x64 Builder"],
 )
 
 ci.thin_tester(
@@ -413,13 +413,13 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["Dawn Mac x64 Builder"],
     # Uncomment this entry when this experimental tester is actually in use.
     # console_view_entry = consoles.console_view_entry(
     #     category = "ToT|Mac|Intel",
     #     short_name = "exp",
     # ),
     list_view = "chromium.gpu.experimental",
-    triggered_by = ["Dawn Mac x64 Builder"],
 )
 
 ci.thin_tester(
@@ -441,11 +441,11 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["Dawn Mac x64 Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Mac|AMD",
         short_name = "x64",
     ),
-    triggered_by = ["Dawn Mac x64 Builder"],
 )
 
 ci.thin_tester(
@@ -467,11 +467,11 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["Dawn Mac x64 Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Mac|Intel",
         short_name = "x64",
     ),
-    triggered_by = ["Dawn Mac x64 Builder"],
 )
 
 ci.gpu.windows_builder(
@@ -499,10 +499,10 @@ ci.gpu.windows_builder(
         category = "ToT|Windows|ASAN",
         short_name = "x64",
     ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
     # Serially executed tests + ASAN = more than the default timeout needed in
     # order to prevent build timeouts.
     execution_timeout = 6 * time.hour,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.gpu.windows_builder(
@@ -582,12 +582,12 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["ci/Dawn Win10 x64 DEPS Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows|Intel",
         short_name = "x64",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Dawn Win10 x64 DEPS Builder"],
 )
 
 ci.thin_tester(
@@ -610,12 +610,12 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["ci/Dawn Win10 x64 DEPS Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows|Nvidia",
         short_name = "x64",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Dawn Win10 x64 DEPS Builder"],
 )
 
 ci.thin_tester(
@@ -637,11 +637,11 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["Dawn Win10 x64 Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Windows|Intel",
         short_name = "ex64",
     ),
-    triggered_by = ["Dawn Win10 x64 Builder"],
 )
 
 ci.thin_tester(
@@ -663,11 +663,11 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["Dawn Win10 x64 Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Windows|Intel",
         short_name = "x64",
     ),
-    triggered_by = ["Dawn Win10 x64 Builder"],
 )
 
 ci.thin_tester(
@@ -689,11 +689,11 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["Dawn Win10 x64 Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Windows|Nvidia",
         short_name = "x64",
     ),
-    triggered_by = ["Dawn Win10 x64 Builder"],
 )
 
 ci.gpu.windows_builder(
@@ -773,12 +773,12 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["ci/Dawn Win10 x86 DEPS Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows|Intel",
         short_name = "x86",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Dawn Win10 x86 DEPS Builder"],
 )
 
 ci.thin_tester(
@@ -801,12 +801,12 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["ci/Dawn Win10 x86 DEPS Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows|Nvidia",
         short_name = "x86",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Dawn Win10 x86 DEPS Builder"],
 )
 
 ci.thin_tester(
@@ -828,11 +828,11 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["Dawn Win10 x86 Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Windows|Intel",
         short_name = "ex86",
     ),
-    triggered_by = ["Dawn Win10 x86 Builder"],
 )
 
 ci.thin_tester(
@@ -854,11 +854,11 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["Dawn Win10 x86 Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Windows|Intel",
         short_name = "x86",
     ),
-    triggered_by = ["Dawn Win10 x86 Builder"],
 )
 
 ci.thin_tester(
@@ -880,9 +880,9 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    triggered_by = ["Dawn Win10 x86 Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Windows|Nvidia",
         short_name = "x86",
     ),
-    triggered_by = ["Dawn Win10 x86 Builder"],
 )

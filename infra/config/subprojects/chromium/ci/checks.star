@@ -8,8 +8,8 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    console_view = "checks",
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+    console_view = "checks",
 )
 
 consoles.console_view(
@@ -18,16 +18,19 @@ consoles.console_view(
 
 ci.builder(
     name = "linux-presubmit",
+    executable = "recipe:presubmit",
+    builderless = True,
+    cores = 32,
+    os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         console_view = "checks",
         category = "presubmit",
         short_name = "linux",
     ),
-    cores = 32,
-    builderless = True,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    os = os.LINUX_DEFAULT,
-    executable = "recipe:presubmit",
+
+    # TODO(crbug.com/1370463): remove this.
+    omit_python2 = False,
     properties = {
         "$depot_tools/presubmit": {
             "runhooks": True,
@@ -35,7 +38,4 @@ ci.builder(
         },
         "repo_name": "chromium",
     },
-
-    # TODO(crbug.com/1370463): remove this.
-    omit_python2 = False,
 )

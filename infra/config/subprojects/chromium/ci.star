@@ -11,10 +11,10 @@ load("//project.star", "settings")
 # Bucket-wide defaults
 ci.defaults.set(
     bucket = "ci",
-    build_numbers = True,
-    cpu = cpu.X86_64,
     triggered_by = ["chromium-gitiles-trigger"],
+    cpu = cpu.X86_64,
     free_space = builders.free_space.standard,
+    build_numbers = True,
 )
 
 luci.bucket(
@@ -26,17 +26,17 @@ luci.bucket(
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_TRIGGERER,
-            users = [
-                # Allow chrome-release/branch builders on luci.chrome.official.infra
-                # to schedule builds
-                "chrome-official-brancher@chops-service-accounts.iam.gserviceaccount.com",
-            ],
             groups = [
                 "project-chromium-ci-schedulers",
                 # Allow currently-oncall sheriffs to cancel builds. Useful when
                 # a tree-closer is behind and hasn't picked up a needed revert
                 # or fix yet.
                 "mdb/chrome-active-sheriffs",
+            ],
+            users = [
+                # Allow chrome-release/branch builders on luci.chrome.official.infra
+                # to schedule builds
+                "chrome-official-brancher@chops-service-accounts.iam.gserviceaccount.com",
             ],
         ),
         acl.entry(
@@ -60,8 +60,8 @@ luci.gitiles_poller(
 [consoles.overview_console_view(
     name = name,
     repo = "https://chromium.googlesource.com/chromium/src",
-    refs = [settings.ref],
     title = title,
+    refs = [settings.ref],
     top_level_ordering = [
         "chromium",
         "chromium.win",
@@ -91,8 +91,8 @@ luci.gitiles_poller(
 
 # The main console includes some entries for builders from the chrome project
 [branches.console_view_entry(
-    builder = "chrome:ci/{}".format(name),
     console_view = "main",
+    builder = "chrome:ci/{}".format(name),
     category = "chrome",
     short_name = short_name,
 ) for name, short_name in (
@@ -120,8 +120,8 @@ consoles.console_view(
 
 # The sheriff.fuchsia console includes some entries for builders from the chrome project
 [branches.console_view_entry(
-    builder = "chrome:ci/{}".format(name),
     console_view = "sheriff.fuchsia",
+    builder = "chrome:ci/{}".format(name),
     category = category,
     short_name = short_name,
 ) for name, category, short_name in (

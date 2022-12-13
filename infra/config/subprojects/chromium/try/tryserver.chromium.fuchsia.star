@@ -12,33 +12,37 @@ load("//project.star", "settings")
 
 try_.defaults.set(
     builder_group = "tryserver.chromium.fuchsia",
-    cores = 8,
-    orchestrator_cores = 2,
-    compilator_cores = 8,
     executable = try_.DEFAULT_EXECUTABLE,
-    execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-    goma_backend = goma.backend.RBE_PROD,
-    compilator_goma_jobs = goma.jobs.J150,
+    cores = 8,
     os = os.LINUX_DEFAULT,
     pool = try_.DEFAULT_POOL,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    compilator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    compilator_cores = 8,
+    compilator_goma_jobs = goma.jobs.J150,
+    compilator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
+    goma_backend = goma.backend.RBE_PROD,
 
     # TODO(crbug.com/1362440): remove this.
     omit_python2 = False,
+    orchestrator_cores = 2,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 consoles.list_view(
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     name = "tryserver.chromium.fuchsia",
+    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
 )
 
 try_.builder(
     name = "fuchsia-arm64-cast-receiver-rel",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    mirrors = [
+        "ci/fuchsia-arm64-cast-receiver-rel",
+    ],
     main_list_view = "try",
+    goma_backend = None,
     # This is the only bot that builds //chromecast code for Fuchsia on ARM64
     # so trigger it when changes are made.
     tryjob = try_.job(
@@ -46,10 +50,6 @@ try_.builder(
             "chromecast/.+",
         ],
     ),
-    mirrors = [
-        "ci/fuchsia-arm64-cast-receiver-rel",
-    ],
-    goma_backend = None,
 )
 
 try_.builder(
@@ -61,12 +61,12 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "fuchsia-arm64-rel",
-    compilator = "fuchsia-arm64-rel-compilator",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    main_list_view = "try",
+    compilator = "fuchsia-arm64-rel-compilator",
     mirrors = [
         "ci/fuchsia-arm64-rel",
     ],
+    main_list_view = "try",
     experiments = {
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
@@ -85,9 +85,10 @@ try_.compilator_builder(
 try_.builder(
     name = "fuchsia-binary-size",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    executable = "recipe:binary_size_fuchsia_trybot",
     builderless = not settings.is_main,
     cores = 16 if settings.is_main else 8,
-    executable = "recipe:binary_size_fuchsia_trybot",
+    goma_backend = None,
     goma_jobs = goma.jobs.J150,
     properties = {
         "$build/binary_size": {
@@ -100,18 +101,10 @@ try_.builder(
         },
     },
     tryjob = try_.job(),
-    goma_backend = None,
 )
 
 try_.builder(
     name = "fuchsia-compile-x64-dbg",
-    tryjob = try_.job(
-        location_filters = [
-            "base/fuchsia/.+",
-            "fuchsia/.+",
-            "media/fuchsia/.+",
-        ],
-    ),
     mirrors = [
         "ci/fuchsia-x64-dbg",
     ],
@@ -120,6 +113,13 @@ try_.builder(
         is_compile_only = True,
     ),
     goma_backend = None,
+    tryjob = try_.job(
+        location_filters = [
+            "base/fuchsia/.+",
+            "fuchsia/.+",
+            "media/fuchsia/.+",
+        ],
+    ),
 )
 
 try_.builder(
@@ -142,18 +142,18 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "fuchsia-x64-cast-receiver-rel",
-    compilator = "fuchsia-x64-cast-receiver-rel-compilator",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    main_list_view = "try",
-    tryjob = try_.job(),
+    compilator = "fuchsia-x64-cast-receiver-rel-compilator",
     mirrors = [
         "ci/fuchsia-x64-cast-receiver-rel",
     ],
+    main_list_view = "try",
     experiments = {
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
         "weetbix.enable_weetbix_exonerations": 100,
     },
+    tryjob = try_.job(),
 )
 
 try_.compilator_builder(
@@ -175,10 +175,10 @@ try_.builder(
 try_.builder(
     name = "fuchsia-x64-rel",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    main_list_view = "try",
     mirrors = [
         "ci/fuchsia-x64-rel",
     ],
+    main_list_view = "try",
     experiments = {
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,

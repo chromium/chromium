@@ -10,20 +10,20 @@ load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
     builder_group = "chromium.clang",
+    executable = ci.DEFAULT_EXECUTABLE,
     builderless = True,
     cores = 32,
-    executable = ci.DEFAULT_EXECUTABLE,
+    os = os.LINUX_DEFAULT,
+    pool = ci.DEFAULT_POOL,
+    sheriff_rotations = sheriff_rotations.CHROMIUM_CLANG,
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     # Because these run ToT Clang, goma is not used.
     # Naturally the runtime will be ~4-8h on average, depending on config.
     # CFI builds will take even longer - around 11h.
     execution_timeout = 14 * time.hour,
-    os = os.LINUX_DEFAULT,
-    pool = ci.DEFAULT_POOL,
     properties = {
         "perf_dashboard_machine_group": "ChromiumClang",
     },
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
-    sheriff_rotations = sheriff_rotations.CHROMIUM_CLANG,
 )
 
 consoles.console_view(
@@ -42,8 +42,8 @@ consoles.console_view(
         "ToT Android": consoles.ordering(short_names = ["rel", "dbg", "x64"]),
         "ToT Mac": consoles.ordering(short_names = ["rel", "ofi", "dbg"]),
         "ToT Windows": consoles.ordering(
-            short_names = ["rel", "ofi"],
             categories = ["x64"],
+            short_names = ["rel", "ofi"],
         ),
         "ToT Windows|x64": consoles.ordering(short_names = ["rel"]),
         "CFI|Win": consoles.ordering(short_names = ["x86", "x64"]),
@@ -53,8 +53,8 @@ consoles.console_view(
 )
 
 [branches.console_view_entry(
-    builder = "chrome:ci/{}".format(name),
     console_view = "chromium.clang",
+    builder = "chrome:ci/{}".format(name),
     category = category,
     short_name = short_name,
 ) for name, category, short_name in (
@@ -96,11 +96,11 @@ def clang_tot_linux_builder(short_name, category = "ToT Linux", **kwargs):
 
 ci.builder(
     name = "CFI Linux CF",
-    goma_backend = None,
     console_view_entry = consoles.console_view_entry(
         category = "CFI|Linux",
         short_name = "CF",
     ),
+    goma_backend = None,
     notifies = ["CFI Linux"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
@@ -117,20 +117,20 @@ ci.builder(
 
 ci.builder(
     name = "CrWinAsan",
+    os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|Asan",
         short_name = "asn",
     ),
-    os = os.WINDOWS_ANY,
 )
 
 ci.builder(
     name = "CrWinAsan(dll)",
+    os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|Asan",
         short_name = "dll",
     ),
-    os = os.WINDOWS_ANY,
 )
 
 ci.builder(
@@ -269,9 +269,9 @@ clang_tot_linux_builder(
 
 clang_tot_linux_builder(
     name = "ToTLinuxCoverage",
+    executable = "recipe:chromium_clang_coverage_tot",
     category = "ToT Code Coverage",
     short_name = "linux",
-    executable = "recipe:chromium_clang_coverage_tot",
 )
 
 clang_tot_linux_builder(
@@ -296,89 +296,89 @@ clang_tot_linux_builder(
 
 ci.builder(
     name = "ToTWin",
+    os = os.WINDOWS_ANY,
+    free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows",
         short_name = "rel",
     ),
-    os = os.WINDOWS_ANY,
-    free_space = builders.free_space.high,
 )
 
 ci.builder(
     name = "ToTWin(dbg)",
     builderless = False,
+    os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows",
         short_name = "dbg",
     ),
-    os = os.WINDOWS_ANY,
 )
 
 ci.builder(
     name = "ToTWin(dll)",
+    os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows",
         short_name = "dll",
     ),
-    os = os.WINDOWS_ANY,
 )
 
 ci.builder(
     name = "ToTWin64",
+    os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|x64",
         short_name = "rel",
     ),
-    os = os.WINDOWS_ANY,
 )
 
 ci.builder(
     name = "ToTWin64(dbg)",
+    os = os.WINDOWS_ANY,
+    free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|x64",
         short_name = "dbg",
     ),
-    os = os.WINDOWS_ANY,
-    free_space = builders.free_space.high,
 )
 
 ci.builder(
     name = "ToTWin64(dll)",
+    os = os.WINDOWS_ANY,
+    free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|x64",
         short_name = "dll",
     ),
-    os = os.WINDOWS_ANY,
-    free_space = builders.free_space.high,
 )
 
 ci.builder(
     name = "ToTWinASanLibfuzzer",
     builderless = False,
+    os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|Asan",
         short_name = "fuz",
     ),
-    os = os.WINDOWS_ANY,
 )
 
 ci.builder(
     name = "ToTWindowsCoverage",
+    executable = "recipe:chromium_clang_coverage_tot",
+    os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Code Coverage",
         short_name = "win",
     ),
-    executable = "recipe:chromium_clang_coverage_tot",
-    os = os.WINDOWS_ANY,
 )
 
 ci.builder(
     name = "ToTWin64PGO",
+    os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|x64",
         short_name = "pgo",
     ),
-    os = os.WINDOWS_ANY,
 )
 
 ci.builder(
@@ -392,62 +392,62 @@ ci.builder(
 ci.builder(
     name = "ToTiOS",
     builderless = False,
-    console_view_entry = consoles.console_view_entry(
-        category = "iOS|public",
-        short_name = "sim",
-    ),
     cores = None,
     os = os.MAC_12,
     ssd = True,
     xcode = xcode.x14main,
+    console_view_entry = consoles.console_view_entry(
+        category = "iOS|public",
+        short_name = "sim",
+    ),
 )
 
 ci.builder(
     name = "ToTiOSDevice",
     builderless = False,
-    console_view_entry = consoles.console_view_entry(
-        category = "iOS|public",
-        short_name = "dev",
-    ),
     cores = None,
     os = os.MAC_12,
     ssd = True,
     xcode = xcode.x14main,
+    console_view_entry = consoles.console_view_entry(
+        category = "iOS|public",
+        short_name = "dev",
+    ),
 )
 
 clang_mac_builder(
     name = "ToTMac",
+    cores = None,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
         short_name = "rel",
     ),
-    cores = None,
 )
 
 clang_mac_builder(
     name = "ToTMac (dbg)",
+    cores = None,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
         short_name = "dbg",
     ),
-    cores = None,
 )
 
 clang_mac_builder(
     name = "ToTMacASan",
+    cores = None,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
         short_name = "asn",
     ),
-    cores = None,
 )
 
 clang_mac_builder(
     name = "ToTMacCoverage",
+    executable = "recipe:chromium_clang_coverage_tot",
+    cores = None,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Code Coverage",
         short_name = "mac",
     ),
-    executable = "recipe:chromium_clang_coverage_tot",
-    cores = None,
 )

@@ -27,14 +27,14 @@ builders.builder(
     name = "runner",
     bucket = "flaky-reproducer",
     executable = "recipe:flakiness/reproducer",
-    build_numbers = False,
-    execution_timeout = 2 * time.hour,
     os = os.LINUX_DEFAULT,
     pool = "luci.chromium.try",
-    service_account = "flaky-reproducer-builder@chops-service-accounts.iam.gserviceaccount.com",
     console_view_entry = consoles.console_view_entry(
         console_view = "chromium.flakiness",
         category = "flakiness",
         short_name = "reproducer",
     ),
+    service_account = "flaky-reproducer-builder@chops-service-accounts.iam.gserviceaccount.com",
+    build_numbers = False,
+    execution_timeout = 2 * time.hour,
 )

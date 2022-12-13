@@ -30,11 +30,11 @@ def chrome_internal_verifier(
 
         branches.cq_tryjob_verifier(
             builder = "{}:try/{}".format(settings.chrome_project, builder),
+            cancel_stale = tryjob.cancel_stale,
             cq_group = "cq",
             disable_reuse = tryjob.disable_reuse,
             experiment_percentage = tryjob.experiment_percentage,
             location_filters = location_filters,
-            cancel_stale = tryjob.cancel_stale,
             result_visibility = cq.COMMENT_LEVEL_RESTRICTED,
         )
     else:
@@ -134,8 +134,8 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
-    builder = "lacros-amd64-generic-chrome-skylab",
     branch_selector = branches.STANDARD_MILESTONE,
+    builder = "lacros-amd64-generic-chrome-skylab",
 )
 
 chrome_internal_verifier(
@@ -151,13 +151,13 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
-    builder = "linux-chrome",
     branch_selector = branches.STANDARD_MILESTONE,
+    builder = "linux-chrome",
 )
 
 chrome_internal_verifier(
-    builder = "linux-chrome-stable",
     branch_selector = branches.STANDARD_MILESTONE,
+    builder = "linux-chrome-stable",
 )
 
 chrome_internal_verifier(
@@ -176,28 +176,28 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.STANDARD_MILESTONE,
     builder = "linux-pgo",
-    branch_selector = branches.STANDARD_MILESTONE,
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     builder = "mac-chrome",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     builder = "mac-chrome-stable",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.STANDARD_MILESTONE,
     builder = "mac-arm-pgo",
-    branch_selector = branches.STANDARD_MILESTONE,
 )
 
 chrome_internal_verifier(
-    builder = "mac-pgo",
     branch_selector = branches.STANDARD_MILESTONE,
+    builder = "mac-pgo",
 )
 
 chrome_internal_verifier(
@@ -205,31 +205,31 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     builder = "win-chrome",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     builder = "win-chrome-stable",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.STANDARD_MILESTONE,
     builder = "win32-pgo",
-    branch_selector = branches.STANDARD_MILESTONE,
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     builder = "win64-chrome",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     builder = "win64-chrome-stable",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
 )
 
 chrome_internal_verifier(
-    builder = "win64-pgo",
     branch_selector = branches.STANDARD_MILESTONE,
+    builder = "win64-pgo",
 )

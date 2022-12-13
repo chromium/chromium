@@ -10,9 +10,9 @@ load("//lib/consoles.star", "consoles")
 try_.defaults.set(
     builder_group = "tryserver.chromium.packager",
     executable = "recipe:chromium_3pp",
-    execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     pool = try_.DEFAULT_POOL,
     service_account = "chromium-cipd-try-builder@chops-service-accounts.iam.gserviceaccount.com",
+    execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
 )
 
 consoles.list_view(

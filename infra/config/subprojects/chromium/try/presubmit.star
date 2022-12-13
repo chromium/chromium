@@ -12,20 +12,20 @@ load("../fallback-cq.star", "fallback_cq")
 
 try_.defaults.set(
     cores = 8,
-    execution_timeout = 15 * time.minute,
-    list_view = "presubmit",
-    main_list_view = "try",
     os = os.LINUX_DEFAULT,
     pool = try_.DEFAULT_POOL,
+    main_list_view = "try",
+    list_view = "presubmit",
+    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    execution_timeout = 15 * time.minute,
+
+    # TODO(crbug.com/1362440): remove this.
+    omit_python2 = False,
     # Default priority for buildbucket is 30, see
     # https://chromium.googlesource.com/infra/infra/+/bb68e62b4380ede486f65cd32d9ff3f1bbe288e4/appengine/cr-buildbucket/creation.py#42
     # This will improve our turnaround time for landing infra/config changes
     # when addressing outages
     priority = 25,
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 consoles.list_view(
@@ -144,8 +144,8 @@ presubmit_builder(
 
 presubmit_builder(
     name = "requires-testing-checker",
-    cq_group = fallback_cq.GROUP,
     description_html = "prevents CLs that requires testing from landing on branches with no CQ",
     executable = "recipe:requires_testing_checker",
+    cq_group = fallback_cq.GROUP,
     tryjob = try_.job(),
 )

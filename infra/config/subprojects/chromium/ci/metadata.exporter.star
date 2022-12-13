@@ -9,9 +9,9 @@ load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
     cores = 8,
-    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
+    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
 )
 
 consoles.console_view(
@@ -29,11 +29,11 @@ tool.
 
 ci.builder(
     name = "metadata-exporter",
+    description_html = description,
+    executable = "recipe:chromium_export_metadata",
     console_view_entry = consoles.console_view_entry(
         console_view = "metadata.exporter",
     ),
-    executable = "recipe:chromium_export_metadata",
-    notifies = "metadata-mapping",
     service_account = "component-mapping-updater@chops-service-accounts.iam.gserviceaccount.com",
-    description_html = description,
+    notifies = "metadata-mapping",
 )

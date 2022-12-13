@@ -10,10 +10,10 @@ load("//lib/consoles.star", "consoles")
 ci.defaults.set(
     builder_group = "chromium.packager",
     cores = 8,
-    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
     service_account = "chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com",
+    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
 )
 
 consoles.console_view(
@@ -22,12 +22,13 @@ consoles.console_view(
 
 ci.builder(
     name = "3pp-linux-amd64-packager",
+    executable = "recipe:chromium_3pp",
+    triggered_by = [],
     builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "3pp|linux",
         short_name = "amd64",
     ),
-    executable = "recipe:chromium_3pp",
     notifies = ["chromium-3pp-packager"],
     properties = {
         "$build/chromium_3pp": {
@@ -46,19 +47,19 @@ ci.builder(
     },
     # Every 6 hours starting at 5am UTC.
     schedule = "0 5/6 * * * *",
-    triggered_by = [],
 )
 
 ci.builder(
     name = "3pp-mac-amd64-packager",
-    os = os.MAC_DEFAULT,
+    executable = "recipe:chromium_3pp",
+    triggered_by = [],
     builderless = True,
+    cores = None,
+    os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "3pp|mac",
         short_name = "amd64",
     ),
-    cores = None,
-    executable = "recipe:chromium_3pp",
     notifies = ["chromium-3pp-packager"],
     properties = {
         "$build/chromium_3pp": {
@@ -68,29 +69,29 @@ ci.builder(
     },
     # TODO(crbug.com/1267449): Trigger builds routinely once works fine.
     schedule = "triggered",
-    triggered_by = [],
 )
 
 ci.builder(
     name = "android-androidx-packager",
+    executable = "recipe:android/androidx_packager",
+    triggered_by = [],
+    sheriff_rotations = sheriff_rotations.ANDROID,
     console_view_entry = consoles.console_view_entry(
         category = "android",
         short_name = "androidx",
     ),
     notifies = ["chromium-androidx-packager"],
-    executable = "recipe:android/androidx_packager",
     schedule = "0 7,14,22 * * * *",
-    sheriff_rotations = sheriff_rotations.ANDROID,
-    triggered_by = [],
 )
 
 ci.builder(
     name = "android-avd-packager",
+    executable = "recipe:android/avd_packager",
+    triggered_by = [],
     console_view_entry = consoles.console_view_entry(
         category = "android",
         short_name = "avd",
     ),
-    executable = "recipe:android/avd_packager",
     properties = {
         "$build/avd_packager": {
             "avd_configs": [
@@ -122,16 +123,16 @@ ci.builder(
     # Triggered manually through the scheduler UI
     # https://luci-scheduler.appspot.com/jobs/chromium/android-avd-packager
     schedule = "triggered",
-    triggered_by = [],
 )
 
 ci.builder(
     name = "android-sdk-packager",
+    executable = "recipe:android/sdk_packager",
+    triggered_by = [],
     console_view_entry = consoles.console_view_entry(
         category = "android",
         short_name = "sdk",
     ),
-    executable = "recipe:android/sdk_packager",
     properties = {
         # We still package part of build-tools;25.0.2 to support
         # http://bit.ly/2KNUygZ
@@ -268,18 +269,18 @@ ci.builder(
         ],
     },
     schedule = "0 7 * * *",
-    triggered_by = [],
 )
 
 ci.builder(
     name = "rts-model-packager",
+    executable = "recipe:chromium_rts/create_model",
+    triggered_by = [],
     builderless = False,
+    cores = None,
     console_view_entry = consoles.console_view_entry(
         category = "rts",
         short_name = "create-model",
     ),
-    cores = None,
-    executable = "recipe:chromium_rts/create_model",
     execution_timeout = 10 * time.hour,
     notifies = [
         luci.notifier(
@@ -289,5 +290,4 @@ ci.builder(
         ),
     ],
     schedule = "0 9 * * *",  # at 1AM or 2AM PT (depending on DST), once a day.
-    triggered_by = [],
 )

@@ -7,9 +7,9 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
+    pool = ci.DEFAULT_POOL,
     console_view = "blink.infra",
     execution_timeout = 10 * time.hour,
-    pool = ci.DEFAULT_POOL,
 )
 
 consoles.console_view(
@@ -18,15 +18,13 @@ consoles.console_view(
 
 ci.builder(
     name = "Blink Unexpected Pass Finder",
+    executable = "recipe:chromium_expectation_files/expectation_file_scripts",
+    triggered_by = [],
     builderless = True,
     cores = 16,
     console_view_entry = consoles.console_view_entry(
         short_name = "upf",
     ),
-    executable = "recipe:chromium_expectation_files/expectation_file_scripts",
-    # Run once daily at 12 AM Pacific/7 AM UTC.
-    schedule = "0 7 * * *",
-    triggered_by = [],
     service_account = "chromium-automated-expectation@chops-service-accounts.iam.gserviceaccount.com",
     properties = {
         "scripts": [
@@ -66,4 +64,6 @@ ci.builder(
             },
         ],
     },
+    # Run once daily at 12 AM Pacific/7 AM UTC.
+    schedule = "0 7 * * *",
 )
