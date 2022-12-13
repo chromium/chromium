@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_REPORTING_RESOURCES_RESOURCE_INTERFACE_H_
-#define COMPONENTS_REPORTING_RESOURCES_RESOURCE_INTERFACE_H_
+#ifndef COMPONENTS_REPORTING_RESOURCES_RESOURCE_MANAGER_H_
+#define COMPONENTS_REPORTING_RESOURCES_RESOURCE_MANAGER_H_
 
 #include <atomic>
 #include <cstdint>
@@ -19,14 +19,12 @@
 
 namespace reporting {
 
-// Interface to resources management by Storage module.
-// Must be implemented by the caller base on the platform limitations.
-// All APIs are non-blocking. The class is thread-safe.
-// TODO(b/258822636): The class is no longer interface, rename it and update the
-// comments.
-class ResourceInterface : public base::RefCountedThreadSafe<ResourceInterface> {
+// Resource management class. The class is thread-safe.
+// Each resource instance is created with its own total size; the rest of the
+// functionality is identical. All APIs are non-blocking.
+class ResourceManager : public base::RefCountedThreadSafe<ResourceManager> {
  public:
-  explicit ResourceInterface(uint64_t total_size);
+  explicit ResourceManager(uint64_t total_size);
 
   // Needs to be called before attempting to allocate specified size.
   // Returns true if requested amount can be allocated.
@@ -56,9 +54,9 @@ class ResourceInterface : public base::RefCountedThreadSafe<ResourceInterface> {
   void Test_SetTotal(uint64_t test_total);
 
  private:
-  friend class base::RefCountedThreadSafe<ResourceInterface>;
+  friend class base::RefCountedThreadSafe<ResourceManager>;
 
-  ~ResourceInterface();
+  ~ResourceManager();
 
   // Flushes as many callbacks as possible given the current resource
   // availability. Callbacks only signal that resource may be available,
@@ -110,9 +108,8 @@ class ScopedReservation {
   // reserved() returns false.
   ScopedReservation() noexcept;
   // Specified reservation, must have resource interface attached.
-  ScopedReservation(
-      uint64_t size,
-      scoped_refptr<ResourceInterface> resource_interface) noexcept;
+  ScopedReservation(uint64_t size,
+                    scoped_refptr<ResourceManager> resource_manager) noexcept;
   // New reservation on the same resource interface as |other_reservation|.
   ScopedReservation(uint64_t size,
                     const ScopedReservation& other_reservation) noexcept;
@@ -135,10 +132,10 @@ class ScopedReservation {
   void HandOver(ScopedReservation& other);
 
  private:
-  scoped_refptr<ResourceInterface> resource_interface_;
+  scoped_refptr<ResourceManager> resource_manager_;
   absl::optional<uint64_t> size_;
 };
 
 }  // namespace reporting
 
-#endif  // COMPONENTS_REPORTING_RESOURCES_RESOURCE_INTERFACE_H_
+#endif  // COMPONENTS_REPORTING_RESOURCES_RESOURCE_MANAGER_H_

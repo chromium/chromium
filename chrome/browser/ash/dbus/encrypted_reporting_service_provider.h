@@ -20,7 +20,7 @@
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/resources/resource_interface.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/storage_selector/storage_selector.h"
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
@@ -79,7 +79,7 @@ class EncryptedReportingServiceProvider
   const scoped_refptr<base::SingleThreadTaskRunner> origin_thread_runner_;
 
   // Memory resource for upload requests and responses.
-  scoped_refptr<::reporting::ResourceInterface> memory_resource_;
+  scoped_refptr<::reporting::ResourceManager> memory_resource_;
 
   // Upload Provider.
   const std::unique_ptr<::reporting::EncryptedReportingUploadProvider>

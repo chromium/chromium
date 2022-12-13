@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/reporting/resources/resource_interface.h"
+#include "components/reporting/resources/resource_manager.h"
 
 #include <cstdint>
 #include <utility>
@@ -25,7 +25,7 @@ namespace {
 class ResourceInterfaceTest : public ::testing::TestWithParam<uint64_t> {
  protected:
   void SetUp() override {
-    resource_ = base::MakeRefCounted<ResourceInterface>(GetParam());
+    resource_ = base::MakeRefCounted<ResourceManager>(GetParam());
     // Make sure parameters define reasonably large total resource size.
     ASSERT_GE(resource_->GetTotal(), 1u * 1024LLu * 1024LLu);
   }
@@ -35,7 +35,7 @@ class ResourceInterfaceTest : public ::testing::TestWithParam<uint64_t> {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  scoped_refptr<ResourceInterface> resource_;
+  scoped_refptr<ResourceManager> resource_;
 };
 
 TEST_P(ResourceInterfaceTest, NestedReservationTest) {
@@ -61,9 +61,9 @@ TEST_P(ResourceInterfaceTest, SimultaneousReservationTest) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
-            [](size_t size, scoped_refptr<ResourceInterface> resource_interface,
+            [](size_t size, scoped_refptr<ResourceManager> resource_manager,
                test::TestCallbackWaiter* waiter) {
-              EXPECT_TRUE(resource_interface->Reserve(size));
+              EXPECT_TRUE(resource_manager->Reserve(size));
               waiter->Signal();
             },
             size, resource_, &reserve_waiter));
@@ -77,9 +77,9 @@ TEST_P(ResourceInterfaceTest, SimultaneousReservationTest) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
-            [](size_t size, scoped_refptr<ResourceInterface> resource_interface,
+            [](size_t size, scoped_refptr<ResourceManager> resource_manager,
                test::TestCallbackWaiter* waiter) {
-              resource_interface->Discard(size);
+              resource_manager->Discard(size);
               waiter->Signal();
             },
             size, resource_, &discard_waiter));
@@ -96,9 +96,9 @@ TEST_P(ResourceInterfaceTest, SimultaneousScopedReservationTest) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
-            [](size_t size, scoped_refptr<ResourceInterface> resource_interface,
+            [](size_t size, scoped_refptr<ResourceManager> resource_manager,
                test::TestCallbackWaiter* waiter) {
-              { ScopedReservation(size, resource_interface); }
+              { ScopedReservation(size, resource_manager); }
               waiter->Signal();
             },
             size, resource_, &waiter));
@@ -250,10 +250,10 @@ class Actor {
  public:
   Actor(uint64_t size,
         base::OnceClosure done,
-        scoped_refptr<ResourceInterface> resource_interface)
+        scoped_refptr<ResourceManager> resource_manager)
       : size_(size),
         done_(std::move(done)),
-        resource_interface_(resource_interface) {
+        resource_manager_(resource_manager) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
     EXPECT_TRUE(done_);
     sequenced_task_runner_->PostTask(
@@ -269,14 +269,14 @@ class Actor {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Pretend that the reservation was unavailable, schedule callback when it
     // becomes available.
-    resource_interface_->RegisterCallback(
+    resource_manager_->RegisterCallback(
         size_,
         base::BindOnce(&Actor::OnResourceRelease, base::Unretained(this)));
   }
 
   void Execute() {
     auto done = std::move(done_);
-    resource_interface_->Discard(size_);
+    resource_manager_->Discard(size_);
     delete this;
     // Signal after deletion, to prevent potential test flake.
     std::move(done).Run();
@@ -284,9 +284,9 @@ class Actor {
 
   void OnResourceRelease() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);  // Same task runner!
-    if (!resource_interface_->Reserve(size_)) {
+    if (!resource_manager_->Reserve(size_)) {
       // Still not available, reschedule callback.
-      resource_interface_->RegisterCallback(
+      resource_manager_->RegisterCallback(
           size_,
           base::BindOnce(&Actor::OnResourceRelease, base::Unretained(this)));
       return;
@@ -300,7 +300,7 @@ class Actor {
  private:
   const uint64_t size_;
   base::OnceClosure done_;
-  scoped_refptr<ResourceInterface> resource_interface_;
+  scoped_refptr<ResourceManager> resource_manager_;
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_{
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT})};

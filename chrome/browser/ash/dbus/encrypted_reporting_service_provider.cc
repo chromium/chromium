@@ -21,7 +21,7 @@
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/reporting/proto/synced/interface.pb.h"
 #include "components/reporting/proto/synced/status.pb.h"
-#include "components/reporting/resources/resource_interface.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/storage_selector/storage_selector.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
@@ -60,7 +60,7 @@ EncryptedReportingServiceProvider::EncryptedReportingServiceProvider(
         upload_provider)
     : origin_thread_id_(base::PlatformThread::CurrentId()),
       origin_thread_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      memory_resource_(base::MakeRefCounted<::reporting::ResourceInterface>(
+      memory_resource_(base::MakeRefCounted<::reporting::ResourceManager>(
           kDefaultMemoryAllocation)),
       upload_provider_(std::move(upload_provider)) {
   DCHECK(upload_provider_.get());

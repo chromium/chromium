@@ -11,7 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/resources/resource_interface.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::Invoke;
@@ -28,7 +28,7 @@ TestCompressionModuleStrict::TestCompressionModuleStrict()
   ON_CALL(*this, CompressRecord)
       .WillByDefault(Invoke(
           [](std::string record,
-             scoped_refptr<ResourceInterface> resource_interface,
+             scoped_refptr<ResourceManager> resource_manager,
              base::OnceCallback<void(
                  std::string, absl::optional<CompressionInformation>)> cb) {
             // compression_info is not set.

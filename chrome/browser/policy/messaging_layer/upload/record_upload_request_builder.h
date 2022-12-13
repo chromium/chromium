@@ -8,7 +8,7 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/resources/resource_interface.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {

@@ -36,7 +36,7 @@
 #include "components/reporting/encryption/encryption_module.h"
 #include "components/reporting/encryption/verification.h"
 #include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/resources/resource_interface.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_module.h"
 #include "components/reporting/storage/storage_module_interface.h"

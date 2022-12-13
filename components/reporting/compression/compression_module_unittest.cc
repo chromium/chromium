@@ -21,7 +21,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/resources/resource_interface.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,7 +39,7 @@ constexpr char kPoorlyCompressibleTestString[] = "AAAAA11111";
 class CompressionModuleTest : public ::testing::Test {
  protected:
   CompressionModuleTest()
-      : memory_resource_(base::MakeRefCounted<ResourceInterface>(
+      : memory_resource_(base::MakeRefCounted<ResourceManager>(
             4u * 1024LLu * 1024LLu))  // 4 MiB
   {}
 
@@ -58,7 +58,7 @@ class CompressionModuleTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<ResourceInterface> memory_resource_;
+  scoped_refptr<ResourceManager> memory_resource_;
   scoped_refptr<CompressionModule> compression_module_;
 
  private:

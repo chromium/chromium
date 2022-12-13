@@ -28,7 +28,7 @@
 #include "components/reporting/compression/decompression.h"
 #include "components/reporting/encryption/test_encryption_module.h"
 #include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/resources/resource_interface.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/util/file.h"
 #include "components/reporting/util/status.h"

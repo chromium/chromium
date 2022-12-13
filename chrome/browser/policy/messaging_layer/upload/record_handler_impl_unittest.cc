@@ -25,7 +25,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/reporting/resources/resource_interface.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -73,8 +73,8 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
   void SetUp() override {
     mock_client_.SetDMToken(
         policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
-    memory_resource_ = base::MakeRefCounted<ResourceInterface>(
-        4u * 1024LLu * 1024LLu);  // 4 MiB
+    memory_resource_ =
+        base::MakeRefCounted<ResourceManager>(4u * 1024LLu * 1024LLu);  // 4 MiB
   }
 
   void TearDown() override {
@@ -90,13 +90,13 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
   policy::MockCloudPolicyClient mock_client_;
   ReportingServerConnector::TestEnvironment test_env_{&mock_client_};
 
-  scoped_refptr<ResourceInterface> memory_resource_;
+  scoped_refptr<ResourceManager> memory_resource_;
 };
 
 std::pair<ScopedReservation, std::vector<EncryptedRecord>>
 BuildTestRecordsVector(int64_t number_of_test_records,
                        int64_t generation_id,
-                       scoped_refptr<ResourceInterface> memory_resource) {
+                       scoped_refptr<ResourceManager> memory_resource) {
   ScopedReservation total_reservation;
   std::vector<EncryptedRecord> test_records;
   test_records.reserve(number_of_test_records);

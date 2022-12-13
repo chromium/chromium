@@ -4,15 +4,15 @@
 
 import("//build/config/features.gni")
 
-static_library("resource_interface") {
+static_library("resource_manager") {
   visibility = [
     "//chrome/browser/*",
     "//chrome/test/*",
     "//components/reporting/*",
   ]
   sources = [
-    "resource_interface.cc",
-    "resource_interface.h",
+    "resource_manager.cc",
+    "resource_manager.h",
   ]
 
   deps = [ "//base" ]
@@ -23,9 +23,9 @@ static_library("resource_interface") {
 # TODO(chromium:1169835) These tests can't be run on iOS until they are updated.
 source_set("unit_tests") {
   testonly = true
-  sources = [ "resource_interface_unittest.cc" ]
+  sources = [ "resource_manager_unittest.cc" ]
   deps = [
-    ":resource_interface",
+    ":resource_manager",
     "//base",
     "//base/test:test_support",
     "//components/reporting/util:test_callbacks_support",

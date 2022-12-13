@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/reporting/resources/resource_interface.h"
+#include "components/reporting/resources/resource_manager.h"
 
 #include <atomic>
 #include <utility>
@@ -20,16 +20,16 @@
 
 namespace reporting {
 
-ResourceInterface::ResourceInterface(uint64_t total_size)
+ResourceManager::ResourceManager(uint64_t total_size)
     : total_(total_size),
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT})) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-ResourceInterface::~ResourceInterface() = default;
+ResourceManager::~ResourceManager() = default;
 
-bool ResourceInterface::Reserve(uint64_t size) {
+bool ResourceManager::Reserve(uint64_t size) {
   uint64_t old_used = used_.fetch_add(size);
   if (old_used + size > total_) {
     used_.fetch_sub(size);
@@ -38,32 +38,32 @@ bool ResourceInterface::Reserve(uint64_t size) {
   return true;
 }
 
-void ResourceInterface::Discard(uint64_t size) {
+void ResourceManager::Discard(uint64_t size) {
   DCHECK_LE(size, used_.load());
   used_.fetch_sub(size);
 
   sequenced_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ResourceInterface::FlushCallbacks,
+      FROM_HERE, base::BindOnce(&ResourceManager::FlushCallbacks,
                                 base::WrapRefCounted(this)));
 }
 
-uint64_t ResourceInterface::GetTotal() const {
+uint64_t ResourceManager::GetTotal() const {
   return total_;
 }
 
-uint64_t ResourceInterface::GetUsed() const {
+uint64_t ResourceManager::GetUsed() const {
   return used_.load();
 }
 
-void ResourceInterface::Test_SetTotal(uint64_t test_total) {
+void ResourceManager::Test_SetTotal(uint64_t test_total) {
   total_ = test_total;
 }
 
-void ResourceInterface::RegisterCallback(uint64_t size, base::OnceClosure cb) {
+void ResourceManager::RegisterCallback(uint64_t size, base::OnceClosure cb) {
   sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](scoped_refptr<ResourceInterface> self, uint64_t size,
+          [](scoped_refptr<ResourceManager> self, uint64_t size,
              base::OnceClosure cb) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
             self->resource_callbacks_.emplace(size, std::move(cb));
@@ -79,7 +79,7 @@ void ResourceInterface::RegisterCallback(uint64_t size, base::OnceClosure cb) {
                              std::move(cb))));
 }
 
-void ResourceInterface::FlushCallbacks() {
+void ResourceManager::FlushCallbacks() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int64_t remained = GetTotal() - GetUsed();  // No synchronization whatsoever.
   while (remained > 0 && !resource_callbacks_.empty()) {
@@ -97,9 +97,9 @@ ScopedReservation::ScopedReservation() noexcept = default;
 
 ScopedReservation::ScopedReservation(
     uint64_t size,
-    scoped_refptr<ResourceInterface> resource_interface) noexcept
-    : resource_interface_(resource_interface) {
-  if (size == 0uL || !resource_interface->Reserve(size)) {
+    scoped_refptr<ResourceManager> resource_manager) noexcept
+    : resource_manager_(resource_manager) {
+  if (size == 0uL || !resource_manager->Reserve(size)) {
     return;
   }
   size_ = size;
@@ -108,16 +108,16 @@ ScopedReservation::ScopedReservation(
 ScopedReservation::ScopedReservation(
     uint64_t size,
     const ScopedReservation& other_reservation) noexcept
-    : resource_interface_(other_reservation.resource_interface_) {
-  if (size == 0uL || !resource_interface_.get() ||
-      !resource_interface_->Reserve(size)) {
+    : resource_manager_(other_reservation.resource_manager_) {
+  if (size == 0uL || !resource_manager_.get() ||
+      !resource_manager_->Reserve(size)) {
     return;
   }
   size_ = size;
 }
 
 ScopedReservation::ScopedReservation(ScopedReservation&& other) noexcept
-    : resource_interface_(other.resource_interface_),
+    : resource_manager_(other.resource_manager_),
       size_(std::exchange(other.size_, absl::nullopt)) {}
 
 bool ScopedReservation::reserved() const {
@@ -131,7 +131,7 @@ bool ScopedReservation::Reduce(uint64_t new_size) {
   if (new_size < 0 || size_.value() < new_size) {
     return false;
   }
-  resource_interface_->Discard(size_.value() - new_size);
+  resource_manager_->Discard(size_.value() - new_size);
   if (new_size > 0) {
     size_ = new_size;
   } else {
@@ -141,12 +141,12 @@ bool ScopedReservation::Reduce(uint64_t new_size) {
 }
 
 void ScopedReservation::HandOver(ScopedReservation& other) {
-  if (resource_interface_.get()) {
-    DCHECK_EQ(resource_interface_.get(), other.resource_interface_.get())
+  if (resource_manager_.get()) {
+    DCHECK_EQ(resource_manager_.get(), other.resource_manager_.get())
         << "Reservations are not related";
   } else {
     DCHECK(!reserved()) << "Unattached reservation may not have size";
-    resource_interface_ = other.resource_interface_;
+    resource_manager_ = other.resource_manager_;
   }
   if (!other.reserved()) {
     return;  // Nothing changes.
@@ -157,7 +157,7 @@ void ScopedReservation::HandOver(ScopedReservation& other) {
 
 ScopedReservation::~ScopedReservation() {
   if (reserved()) {
-    resource_interface_->Discard(size_.value());
+    resource_manager_->Discard(size_.value());
   }
 }
 }  // namespace reporting

@@ -6,7 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
-#include "components/reporting/resources/resource_interface.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"

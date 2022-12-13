@@ -6017,7 +6017,7 @@ test("unit_tests") {
     "//components/reporting/encryption:test_support",
     "//components/reporting/encryption:testing_primitives",
     "//components/reporting/encryption:verification",
-    "//components/reporting/resources:resource_interface",
+    "//components/reporting/resources:resource_manager",
     "//components/reporting/storage:storage_uploader_interface",
     "//components/reporting/storage:test_support",
     "//components/reporting/storage_selector:storage_selector",

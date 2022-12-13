@@ -170,8 +170,8 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
     static StatusOr<scoped_refptr<SingleFile>> Create(
         const base::FilePath& filename,
         int64_t size,
-        scoped_refptr<ResourceInterface> memory_resource,
-        scoped_refptr<ResourceInterface> disk_space_resource,
+        scoped_refptr<ResourceManager> memory_resource,
+        scoped_refptr<ResourceManager> disk_space_resource,
         scoped_refptr<RefCountedClosureList> completion_closure_list);
 
     Status Open(bool read_only);  // No-op if already opened.
@@ -213,8 +213,8 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
     // Private constructor, called by factory method only.
     SingleFile(const base::FilePath& filename,
                int64_t size,
-               scoped_refptr<ResourceInterface> memory_resource,
-               scoped_refptr<ResourceInterface> disk_space_resource,
+               scoped_refptr<ResourceManager> memory_resource,
+               scoped_refptr<ResourceManager> disk_space_resource,
                scoped_refptr<RefCountedClosureList> completion_closure_list);
 
     SEQUENCE_CHECKER(sequence_checker_);
@@ -232,8 +232,8 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
 
     std::unique_ptr<base::File> handle_;  // Set only when opened/created.
 
-    const scoped_refptr<ResourceInterface> memory_resource_;
-    const scoped_refptr<ResourceInterface> disk_space_resource_;
+    const scoped_refptr<ResourceManager> memory_resource_;
+    const scoped_refptr<ResourceManager> disk_space_resource_;
 
     // When reading the file, this is the buffer and data positions.
     // If the data is read sequentially, buffered portions are reused

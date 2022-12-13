@@ -13,7 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
 #include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/resources/resource_interface.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/snappy/src/snappy.h"
 
@@ -33,7 +33,7 @@ scoped_refptr<CompressionModule> CompressionModule::Create(
 
 void CompressionModule::CompressRecord(
     std::string record,
-    scoped_refptr<ResourceInterface> memory_resource,
+    scoped_refptr<ResourceManager> memory_resource,
     base::OnceCallback<void(std::string,
                             absl::optional<CompressionInformation>)> cb) const {
   if (!is_enabled()) {

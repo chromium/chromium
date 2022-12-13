@@ -18,7 +18,7 @@
 #include "chrome/browser/policy/messaging_layer/util/test_response_payload.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/reporting/resources/resource_interface.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -71,8 +71,8 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
-    memory_resource_ = base::MakeRefCounted<ResourceInterface>(
-        4u * 1024LLu * 1024LLu);  // 4 MiB
+    memory_resource_ =
+        base::MakeRefCounted<ResourceManager>(4u * 1024LLu * 1024LLu);  // 4 MiB
     cloud_policy_client_.SetDMToken(
         policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
     service_provider_ = std::make_unique<TestEncryptedReportingUploadProvider>(
@@ -113,7 +113,7 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
   ReportingServerConnector::TestEnvironment test_env_{&cloud_policy_client_};
   EncryptedRecord record_;
 
-  scoped_refptr<ResourceInterface> memory_resource_;
+  scoped_refptr<ResourceManager> memory_resource_;
 
   std::unique_ptr<TestEncryptedReportingUploadProvider> service_provider_;
 };

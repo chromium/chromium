@@ -13,7 +13,7 @@ static_library("storage_configuration") {
   deps = [
     "//base",
     "//components/reporting/proto:record_constants",
-    "//components/reporting/resources:resource_interface",
+    "//components/reporting/resources:resource_manager",
   ]
 }
 
@@ -28,7 +28,7 @@ static_library("storage_uploader_interface") {
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
     "//components/reporting/proto:status_proto",
-    "//components/reporting/resources:resource_interface",
+    "//components/reporting/resources:resource_manager",
     "//components/reporting/util:status",
   ]
 }
@@ -48,7 +48,7 @@ static_library("storage_queue") {
     "//components/reporting/encryption:verification",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
-    "//components/reporting/resources:resource_interface",
+    "//components/reporting/resources:resource_manager",
     "//components/reporting/util:file",
     "//components/reporting/util:refcounted_closure_list",
     "//components/reporting/util:status",
@@ -79,7 +79,7 @@ static_library("storage") {
     "//components/reporting/health:health_module",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
-    "//components/reporting/resources:resource_interface",
+    "//components/reporting/resources:resource_manager",
     "//components/reporting/util:file",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
@@ -192,7 +192,7 @@ source_set("unit_tests") {
     "//components/reporting/encryption:test_support",
     "//components/reporting/encryption:testing_primitives",
     "//components/reporting/proto:record_proto",
-    "//components/reporting/resources:resource_interface",
+    "//components/reporting/resources:resource_manager",
     "//components/reporting/util:file",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",

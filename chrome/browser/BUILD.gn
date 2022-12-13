@@ -2235,7 +2235,7 @@ static_library("browser") {
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
     "//components/reporting/proto:status_proto",
-    "//components/reporting/resources:resource_interface",
+    "//components/reporting/resources:resource_manager",
     "//components/reporting/storage:storage_configuration",
     "//components/reporting/storage:storage_module",
     "//components/reporting/storage:storage_module_interface",

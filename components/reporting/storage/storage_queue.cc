@@ -42,7 +42,7 @@
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/resources/resource_interface.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/file.h"
@@ -2089,8 +2089,8 @@ StatusOr<scoped_refptr<StorageQueue::SingleFile>>
 StorageQueue::SingleFile::Create(
     const base::FilePath& filename,
     int64_t size,
-    scoped_refptr<ResourceInterface> memory_resource,
-    scoped_refptr<ResourceInterface> disk_space_resource,
+    scoped_refptr<ResourceManager> memory_resource,
+    scoped_refptr<ResourceManager> disk_space_resource,
     scoped_refptr<RefCountedClosureList> completion_closure_list) {
   if (!disk_space_resource->Reserve(size)) {
     LOG(WARNING) << "Disk space exceeded adding file "
@@ -2109,8 +2109,8 @@ StorageQueue::SingleFile::Create(
 StorageQueue::SingleFile::SingleFile(
     const base::FilePath& filename,
     int64_t size,
-    scoped_refptr<ResourceInterface> memory_resource,
-    scoped_refptr<ResourceInterface> disk_space_resource,
+    scoped_refptr<ResourceManager> memory_resource,
+    scoped_refptr<ResourceManager> disk_space_resource,
     scoped_refptr<RefCountedClosureList> completion_closure_list)
     : completion_closure_list_(completion_closure_list),
       filename_(filename),
