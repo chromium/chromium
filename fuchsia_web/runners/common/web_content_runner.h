@@ -43,12 +43,12 @@ class WebContentRunner : public fuchsia::sys::Runner {
   // |get_web_instance_config_callback|: Returns parameters for the Runner's
   //     fuchsia.web.Context.
   WebContentRunner(
-      WebInstanceHost* web_instance_host,
+      WebInstanceHost& web_instance_host,
       GetWebInstanceConfigCallback get_web_instance_config_callback);
 
   // Creates a Runner using a Context configured with `web_instance_config`.
   // The Runner becomes non-functional if the Context terminates.
-  WebContentRunner(WebInstanceHost* web_instance_host,
+  WebContentRunner(WebInstanceHost& web_instance_host,
                    WebInstanceConfig web_instance_config);
 
   ~WebContentRunner() override;
@@ -106,7 +106,7 @@ class WebContentRunner : public fuchsia::sys::Runner {
   // Starts the web_instance and connects |context_| to it.
   void CreateWebInstanceAndContext(WebInstanceConfig web_instance_config);
 
-  WebInstanceHost* const web_instance_host_;
+  const raw_ref<WebInstanceHost> web_instance_host_;
   const GetWebInstanceConfigCallback get_web_instance_config_callback_;
 
   // If set, invoked whenever a WebComponent is created.

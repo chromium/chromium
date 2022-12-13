@@ -104,10 +104,10 @@ constexpr char kClearKeyKeySystem[] = "org.w3.clearkey";
 // process, and the calling thread must have an async_dispatcher.
 void RegisterWebInstanceProductData() {
   // LINT.IfChange(web_engine_crash_product_name)
-  constexpr char kCrashProductName[] = "FuchsiaWebEngine";
+  static constexpr char kCrashProductName[] = "FuchsiaWebEngine";
   // LINT.ThenChange(//fuchsia_web/webengine/context_provider_main.cc:web_engine_crash_product_name)
 
-  constexpr char kFeedbackAnnotationsNamespace[] = "web-engine";
+  static constexpr char kFeedbackAnnotationsNamespace[] = "web-engine";
 
   fuchsia_component_support::RegisterProductDataForCrashReporting(
       kWebInstanceComponentUrl, kCrashProductName);
@@ -122,16 +122,16 @@ void RegisterWebInstanceProductData() {
 // |value|, otherwise the switch will be set to |value|.
 void AppendToSwitch(base::StringPiece switch_name,
                     base::StringPiece value,
-                    base::CommandLine* command_line) {
-  if (!command_line->HasSwitch(switch_name)) {
-    command_line->AppendSwitchNative(switch_name, value);
+                    base::CommandLine& command_line) {
+  if (!command_line.HasSwitch(switch_name)) {
+    command_line.AppendSwitchNative(switch_name, value);
     return;
   }
 
-  std::string new_value = base::StrCat(
-      {command_line->GetSwitchValueASCII(switch_name), ",", value});
-  command_line->RemoveSwitch(switch_name);
-  command_line->AppendSwitchNative(switch_name, new_value);
+  std::string new_value =
+      base::StrCat({command_line.GetSwitchValueASCII(switch_name), ",", value});
+  command_line.RemoveSwitch(switch_name);
+  command_line.AppendSwitchNative(switch_name, new_value);
 }
 
 // File names must not contain directory separators, nor match the special
@@ -149,89 +149,89 @@ bool IsValidContentDirectoryName(base::StringPiece file_name) {
   return true;
 }
 
-bool HandleDataDirectoryParam(fuchsia::web::CreateContextParams* params,
-                              base::CommandLine* launch_args,
-                              fuchsia::sys::LaunchInfo* launch_info) {
-  if (!params->has_data_directory()) {
+bool HandleDataDirectoryParam(fuchsia::web::CreateContextParams& params,
+                              base::CommandLine& launch_args,
+                              fuchsia::sys::LaunchInfo& launch_info) {
+  if (!params.has_data_directory()) {
     // Caller requested a web instance without any peristence.
-    launch_args->AppendSwitch(switches::kIncognito);
+    launch_args.AppendSwitch(switches::kIncognito);
     return true;
   }
 
-  launch_info->flat_namespace->paths.push_back(
+  launch_info.flat_namespace->paths.push_back(
       base::kPersistedDataDirectoryPath);
-  launch_info->flat_namespace->directories.push_back(
-      std::move(*params->mutable_data_directory()));
-  if (params->has_data_quota_bytes()) {
-    launch_args->AppendSwitchNative(
+  launch_info.flat_namespace->directories.push_back(
+      std::move(*params.mutable_data_directory()));
+  if (params.has_data_quota_bytes()) {
+    launch_args.AppendSwitchNative(
         switches::kDataQuotaBytes,
-        base::NumberToString(params->data_quota_bytes()));
+        base::NumberToString(params.data_quota_bytes()));
   }
 
   return true;
 }
 
-bool HandleCdmDataDirectoryParam(fuchsia::web::CreateContextParams* params,
-                                 base::CommandLine* launch_args,
-                                 fuchsia::sys::LaunchInfo* launch_info) {
-  if (!params->has_cdm_data_directory())
+bool HandleCdmDataDirectoryParam(fuchsia::web::CreateContextParams& params,
+                                 base::CommandLine& launch_args,
+                                 fuchsia::sys::LaunchInfo& launch_info) {
+  if (!params.has_cdm_data_directory())
     return true;
 
   const char kCdmDataPath[] = "/cdm_data";
 
-  launch_args->AppendSwitchNative(switches::kCdmDataDirectory, kCdmDataPath);
-  launch_info->flat_namespace->paths.push_back(kCdmDataPath);
-  launch_info->flat_namespace->directories.push_back(
-      std::move(*params->mutable_cdm_data_directory()));
-  if (params->has_cdm_data_quota_bytes()) {
-    launch_args->AppendSwitchNative(
+  launch_args.AppendSwitchNative(switches::kCdmDataDirectory, kCdmDataPath);
+  launch_info.flat_namespace->paths.push_back(kCdmDataPath);
+  launch_info.flat_namespace->directories.push_back(
+      std::move(*params.mutable_cdm_data_directory()));
+  if (params.has_cdm_data_quota_bytes()) {
+    launch_args.AppendSwitchNative(
         switches::kCdmDataQuotaBytes,
-        base::NumberToString(params->cdm_data_quota_bytes()));
+        base::NumberToString(params.cdm_data_quota_bytes()));
   }
 
   return true;
 }
 
-bool HandleUserAgentParams(fuchsia::web::CreateContextParams* params,
-                           base::CommandLine* launch_args) {
-  if (!params->has_user_agent_product()) {
-    if (params->has_user_agent_version()) {
+bool HandleUserAgentParams(const fuchsia::web::CreateContextParams& params,
+                           base::CommandLine& launch_args) {
+  if (!params.has_user_agent_product()) {
+    if (params.has_user_agent_version()) {
       LOG(ERROR) << "Embedder version without product.";
       return false;
     }
     return true;
   }
 
-  if (!net::HttpUtil::IsToken(params->user_agent_product())) {
+  if (!net::HttpUtil::IsToken(params.user_agent_product())) {
     LOG(ERROR) << "Invalid embedder product.";
     return false;
   }
 
-  std::string product_and_version(params->user_agent_product());
-  if (params->has_user_agent_version()) {
-    if (!net::HttpUtil::IsToken(params->user_agent_version())) {
+  std::string product_and_version(params.user_agent_product());
+  if (params.has_user_agent_version()) {
+    if (!net::HttpUtil::IsToken(params.user_agent_version())) {
       LOG(ERROR) << "Invalid embedder version.";
       return false;
     }
-    base::StrAppend(&product_and_version, {"/", params->user_agent_version()});
+    base::StrAppend(&product_and_version, {"/", params.user_agent_version()});
   }
-  launch_args->AppendSwitchNative(switches::kUserAgentProductAndVersion,
-                                  std::move(product_and_version));
+  launch_args.AppendSwitchNative(switches::kUserAgentProductAndVersion,
+                                 std::move(product_and_version));
   return true;
 }
 
 void HandleUnsafelyTreatInsecureOriginsAsSecureParam(
-    fuchsia::web::CreateContextParams* params,
-    base::CommandLine* launch_args) {
-  if (!params->has_unsafely_treat_insecure_origins_as_secure())
+    const fuchsia::web::CreateContextParams& params,
+    base::CommandLine& launch_args) {
+  if (!params.has_unsafely_treat_insecure_origins_as_secure())
     return;
 
   const std::vector<std::string>& insecure_origins =
-      params->unsafely_treat_insecure_origins_as_secure();
+      params.unsafely_treat_insecure_origins_as_secure();
   for (auto origin : insecure_origins) {
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
     if (origin == switches::kAllowRunningInsecureContent) {
-      launch_args->AppendSwitch(switches::kAllowRunningInsecureContent);
+      launch_args.AppendSwitch(switches::kAllowRunningInsecureContent);
       continue;
     }
     if (origin == kDisableMixedContentAutoupgradeOrigin) {
@@ -247,31 +247,54 @@ void HandleUnsafelyTreatInsecureOriginsAsSecureParam(
   }
 }
 
-void HandleCorsExemptHeadersParam(fuchsia::web::CreateContextParams* params,
-                                  base::CommandLine* launch_args) {
-  if (!params->has_cors_exempt_headers())
+void HandleCorsExemptHeadersParam(
+    const fuchsia::web::CreateContextParams& params,
+    base::CommandLine& launch_args) {
+  if (!params.has_cors_exempt_headers())
     return;
 
   std::vector<base::StringPiece> cors_exempt_headers;
-  cors_exempt_headers.reserve(params->cors_exempt_headers().size());
-  for (const auto& header : params->cors_exempt_headers()) {
+  cors_exempt_headers.reserve(params.cors_exempt_headers().size());
+  for (const auto& header : params.cors_exempt_headers()) {
     cors_exempt_headers.push_back(BytesAsString(header));
   }
 
-  launch_args->AppendSwitchNative(switches::kCorsExemptHeaders,
-                                  base::JoinString(cors_exempt_headers, ","));
+  launch_args.AppendSwitchNative(switches::kCorsExemptHeaders,
+                                 base::JoinString(cors_exempt_headers, ","));
 }
 
-bool HandleContentDirectoriesParam(fuchsia::web::CreateContextParams* params,
-                                   base::CommandLine* launch_args,
-                                   fuchsia::sys::LaunchInfo* launch_info) {
-  DCHECK(launch_info);
-  DCHECK(launch_info->flat_namespace);
+void HandleDisableCodeGenerationParam(
+    fuchsia::web::ContextFeatureFlags features,
+    base::CommandLine& launch_args) {
+  if ((features &
+       fuchsia::web::ContextFeatureFlags::DISABLE_DYNAMIC_CODE_GENERATION) !=
+      fuchsia::web::ContextFeatureFlags::DISABLE_DYNAMIC_CODE_GENERATION) {
+    return;
+  }
 
-  if (!params->has_content_directories())
+  // These flag constants must match the values defined in Blink and V8,
+  // respectively. They are duplicated here rather than creating dependencies
+  // of `WebInstanceHost` uses on those sub-projects.
+  static constexpr char kJavaScriptFlags[] = "js-flags";
+  static constexpr char kV8JitlessFlag[] = "--jitless";
+
+  // Add the JIT-less option to the comma-separated set of V8 flags passed to
+  // Blink.
+  AppendToSwitch(kJavaScriptFlags, kV8JitlessFlag, launch_args);
+
+  // TODO(crbug.com/1290907): Disable use of VmexResource in this case, once
+  // migrated off of ambient VMEX.
+}
+
+bool HandleContentDirectoriesParam(fuchsia::web::CreateContextParams& params,
+                                   base::CommandLine& launch_args,
+                                   fuchsia::sys::LaunchInfo& launch_info) {
+  DCHECK(launch_info.flat_namespace);
+
+  if (!params.has_content_directories())
     return true;
 
-  auto* directories = params->mutable_content_directories();
+  auto* directories = params.mutable_content_directories();
   for (size_t i = 0; i < directories->size(); ++i) {
     fuchsia::web::ContentDirectoryProvider& directory = directories->at(i);
 
@@ -281,19 +304,19 @@ bool HandleContentDirectoriesParam(fuchsia::web::CreateContextParams* params,
     }
 
     const base::FilePath kContentDirectories("/content-directories");
-    launch_info->flat_namespace->paths.push_back(
+    launch_info.flat_namespace->paths.push_back(
         kContentDirectories.Append(directory.name()).value());
-    launch_info->flat_namespace->directories.push_back(
+    launch_info.flat_namespace->directories.push_back(
         std::move(*directory.mutable_directory()));
   }
 
-  launch_args->AppendSwitch(switches::kEnableContentDirectories);
+  launch_args.AppendSwitch(switches::kEnableContentDirectories);
 
   return true;
 }
 
 bool HandleKeyboardFeatureFlags(fuchsia::web::ContextFeatureFlags features,
-                                base::CommandLine* launch_args) {
+                                base::CommandLine& launch_args) {
   const bool enable_keyboard =
       (features & fuchsia::web::ContextFeatureFlags::KEYBOARD) ==
       fuchsia::web::ContextFeatureFlags::KEYBOARD;
@@ -570,7 +593,7 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
     // Vulkan requires use of SkiaRenderer, configured to a use Vulkan context.
     launch_args.AppendSwitch(switches::kUseVulkan);
     AppendToSwitch(switches::kEnableFeatures, features::kVulkan.name,
-                   &launch_args);
+                   launch_args);
     launch_args.AppendSwitchASCII(switches::kUseGL,
                                   gl::kGLImplementationANGLEName);
   } else {
@@ -632,27 +655,28 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
     }
 
     AppendToSwitch(switches::kDisableFeatures,
-                   features::kEnableSoftwareOnlyVideoCodecs.name, &launch_args);
+                   features::kEnableSoftwareOnlyVideoCodecs.name, launch_args);
   }
 
-  if (!HandleCdmDataDirectoryParam(&params, &launch_args, &launch_info)) {
+  if (!HandleCdmDataDirectoryParam(params, launch_args, launch_info)) {
     return ZX_ERR_INVALID_ARGS;
   }
-  if (!HandleDataDirectoryParam(&params, &launch_args, &launch_info)) {
+  if (!HandleDataDirectoryParam(params, launch_args, launch_info)) {
     return ZX_ERR_INVALID_ARGS;
   }
-  if (!HandleContentDirectoriesParam(&params, &launch_args, &launch_info)) {
+  if (!HandleContentDirectoriesParam(params, launch_args, launch_info)) {
     return ZX_ERR_INVALID_ARGS;
   }
-  if (!HandleUserAgentParams(&params, &launch_args)) {
+  if (!HandleUserAgentParams(params, launch_args)) {
     return ZX_ERR_INVALID_ARGS;
   }
-  if (!HandleKeyboardFeatureFlags(features, &launch_args)) {
+  if (!HandleKeyboardFeatureFlags(features, launch_args)) {
     return ZX_ERR_INVALID_ARGS;
   }
 
-  HandleUnsafelyTreatInsecureOriginsAsSecureParam(&params, &launch_args);
-  HandleCorsExemptHeadersParam(&params, &launch_args);
+  HandleUnsafelyTreatInsecureOriginsAsSecureParam(params, launch_args);
+  HandleCorsExemptHeadersParam(params, launch_args);
+  HandleDisableCodeGenerationParam(features, launch_args);
 
   // In tests the ContextProvider is configured to log to stderr, so clone the
   // handle to allow web instances to also log there.

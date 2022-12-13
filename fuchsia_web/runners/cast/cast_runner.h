@@ -32,14 +32,23 @@ class CastRunner final : public fuchsia::component::runner::ComponentRunner,
                          public chromium::cast::DataReset,
                          public PendingCastComponent::Delegate {
  public:
+  struct Options {
+    // Set to true to run components without generating output via Scenic.
+    bool headless = false;
+
+    // Set to true to run components without without web optimizations (e.g.
+    // JavaScript Just-In-Time compilation) or features (e.g. WebAssembly) that
+    // require dynamic code generation.
+    bool disable_codegen = false;
+  };
+
   static constexpr uint16_t kRemoteDebuggingPort = 9222;
 
   // Creates the Runner for Cast components.
-  // |web_instance_host|: Used to create an isolated web_instance
-  //     Component in which to host the fuchsia.web.Context.
-  // |is_headless|: True if this instance should create Contexts with the
-  //                HEADLESS feature set.
-  CastRunner(WebInstanceHost* web_instance_host, bool is_headless);
+  // `web_instance_host` is used to create a "main" instance to host Cast apps
+  // and serve `FrameHost` instances, and isolated containers for apps that
+  // need them.
+  CastRunner(WebInstanceHost& web_instance_host, Options options);
   ~CastRunner() override;
 
   CastRunner(const CastRunner&) = delete;
@@ -124,10 +133,14 @@ class CastRunner final : public fuchsia::component::runner::ComponentRunner,
   bool WasPersistedCacheErased();
 
   // Passed to WebContentRunners to use to create web_instance Components.
-  WebInstanceHost* const web_instance_host_;
+  const raw_ref<WebInstanceHost> web_instance_host_;
 
   // True if this Runner uses Context(s) with the HEADLESS feature set.
   const bool is_headless_;
+
+  // True if this Runner should create web Contexts with dynamic code generation
+  // disabled.
+  const bool disable_codegen_;
 
   // Holds the main fuchsia.web.Context used to host CastComponents.
   // Note that although |main_context_| is actually a WebContentRunner, that is
