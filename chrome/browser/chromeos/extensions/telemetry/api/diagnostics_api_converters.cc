@@ -105,6 +105,9 @@ bool ConvertMojoRoutine(MojoRoutineType in, RoutineType* out) {
     case MojoRoutineType::kSmartctlCheckWithPercentageUsed:
       *out = RoutineType::ROUTINE_TYPE_SMARTCTL_CHECK_WITH_PERCENTAGE_USED;
       return true;
+    case MojoRoutineType::kEmmcLifetime:
+      *out = RoutineType::ROUTINE_TYPE_EMMC_LIFETIME;
+      return true;
     default:
       return false;
   }

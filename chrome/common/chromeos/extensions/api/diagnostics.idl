@@ -30,7 +30,8 @@ namespace os.diagnostics {
     sensitive_sensor,
     nvme_self_test,
     fingerprint_alive,
-    smartctl_check_with_percentage_used
+    smartctl_check_with_percentage_used,
+    emmc_lifetime
   };
 
   enum RoutineStatus {
@@ -185,6 +186,8 @@ namespace os.diagnostics {
     [supportsPromises] static void runDnsResolutionRoutine(RunRoutineCallback callback);
 
     [supportsPromises] static void runDnsResolverPresentRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runEmmcLifetimeRoutine(RunRoutineCallback callback);
 
     [supportsPromises] static void runFingerprintAliveRoutine(RunRoutineCallback callback);
 

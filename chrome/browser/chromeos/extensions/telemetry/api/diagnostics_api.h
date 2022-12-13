@@ -234,6 +234,25 @@ class OsDiagnosticsRunFingerprintAliveRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunEmmcLifetimeRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runEmmcLifetimeRoutine",
+                             OS_DIAGNOSTICS_RUNEMMCLIFETIMEROUTINE)
+
+  OsDiagnosticsRunEmmcLifetimeRoutineFunction();
+  OsDiagnosticsRunEmmcLifetimeRoutineFunction(
+      const OsDiagnosticsRunEmmcLifetimeRoutineFunction&) = delete;
+  OsDiagnosticsRunEmmcLifetimeRoutineFunction& operator=(
+      const OsDiagnosticsRunEmmcLifetimeRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunEmmcLifetimeRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsRunGatewayCanBePingedRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runGatewayCanBePingedRoutine",

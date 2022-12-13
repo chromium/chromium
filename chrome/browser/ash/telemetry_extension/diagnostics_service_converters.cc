@@ -124,6 +124,8 @@ absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
         kSmartctlCheckWithPercentageUsed:
       return crosapi::mojom::DiagnosticsRoutineEnum::
           kSmartctlCheckWithPercentageUsed;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kEmmcLifetime:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kEmmcLifetime;
     default:
       return absl::nullopt;
   }

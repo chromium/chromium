@@ -311,6 +311,21 @@ TEST_F(DiagnosticsServiceAshTest, RunDnsResolverPresentRoutineSuccess) {
       result, cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolverPresent);
 }
 
+TEST_F(DiagnosticsServiceAshTest, RunEmmcLifetimeRoutineSuccess) {
+  // Configure FakeCrosHealthd.
+  SetSuccessfulRoutineResponse();
+
+  base::test::TestFuture<crosapi::mojom::DiagnosticsRunRoutineResponsePtr>
+      future;
+
+  diagnostics_service()->RunEmmcLifetimeRoutine(future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& result = future.Get();
+  ValidateResponse(result,
+                   cros_healthd::mojom::DiagnosticRoutineEnum::kEmmcLifetime);
+}
+
 TEST_F(DiagnosticsServiceAshTest, RunFingerprintAliveRoutineSuccess) {
   // Configure FakeCrosHealthd.
   SetSuccessfulRoutineResponse();

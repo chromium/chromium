@@ -242,6 +242,18 @@ void DiagnosticsServiceAsh::RunDnsResolverPresentRoutine(
       std::move(callback)));
 }
 
+void DiagnosticsServiceAsh::RunEmmcLifetimeRoutine(
+    RunEmmcLifetimeRoutineCallback callback) {
+  GetService()->RunEmmcLifetimeRoutine(base::BindOnce(
+      [](crosapi::mojom::DiagnosticsService::RunEmmcLifetimeRoutineCallback
+             callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(
+            converters::ConvertDiagnosticsPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
 void DiagnosticsServiceAsh::RunFingerprintAliveRoutine(
     RunFingerprintAliveRoutineCallback callback) {
   GetService()->RunFingerprintAliveRoutine(base::BindOnce(

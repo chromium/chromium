@@ -285,6 +285,20 @@ void OsDiagnosticsRunDnsResolverPresentRoutineFunction::RunIfAllowed() {
   GetRemoteService()->RunDnsResolverPresentRoutine(GetOnResult());
 }
 
+// OsDiagnosticsRunEmmcLifetimeRoutineFunction ---------------------------
+
+OsDiagnosticsRunEmmcLifetimeRoutineFunction::
+    OsDiagnosticsRunEmmcLifetimeRoutineFunction() = default;
+OsDiagnosticsRunEmmcLifetimeRoutineFunction::
+    ~OsDiagnosticsRunEmmcLifetimeRoutineFunction() = default;
+
+void OsDiagnosticsRunEmmcLifetimeRoutineFunction::RunIfAllowed() {
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  GetRemoteService()->RunEmmcLifetimeRoutine(std::move(cb));
+}
+
 // OsDiagnosticsRunGatewayCanBePingedRoutineFunction ---------------------------
 
 void OsDiagnosticsRunGatewayCanBePingedRoutineFunction::RunIfAllowed() {

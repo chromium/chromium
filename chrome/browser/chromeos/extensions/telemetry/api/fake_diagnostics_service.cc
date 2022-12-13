@@ -200,6 +200,17 @@ void FakeDiagnosticsService::RunDnsResolverPresentRoutine(
       base::BindOnce(std::move(callback), run_routine_response_.Clone()));
 }
 
+void FakeDiagnosticsService::RunEmmcLifetimeRoutine(
+    RunEmmcLifetimeRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_called_routine_ =
+      crosapi::mojom::DiagnosticsRoutineEnum::kEmmcLifetime;
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), run_routine_response_.Clone()));
+}
+
 void FakeDiagnosticsService::RunFloatingPointAccuracyRoutine(
     uint32_t length_seconds,
     RunFloatingPointAccuracyRoutineCallback callback) {

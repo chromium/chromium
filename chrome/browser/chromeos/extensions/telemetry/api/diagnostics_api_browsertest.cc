@@ -259,6 +259,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         );
         chrome.test.succeed();
       },
+      async function runEmmcLifetimeRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runEmmcLifetimeRoutine(),
+            'Error: API chrome.os.diagnostics.runEmmcLifetimeRoutine ' +
+            'failed. Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
       async function runFingerprintAliveRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runFingerprintAliveRoutine(),
@@ -400,6 +408,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineEnum::kFingerprintAlive,
         crosapi::mojom::DiagnosticsRoutineEnum::
             kSmartctlCheckWithPercentageUsed,
+        crosapi::mojom::DiagnosticsRoutineEnum::kEmmcLifetime,
     });
 
     SetServiceForTesting(std::move(fake_service_impl));
@@ -434,7 +443,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               "sensitive_sensor",
               "nvme_self_test",
               "fingerprint_alive",
-              "smartctl_check_with_percentage_used"
+              "smartctl_check_with_percentage_used",
+              "emmc_lifetime"
             ]
           }, response);
         chrome.test.succeed();
@@ -1151,6 +1161,45 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         const response =
           await chrome.os.diagnostics.runDnsResolverPresentRoutine();
         chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunEmmcLifetimeRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Configure FakeDiagnosticsService.
+  {
+    auto expected_response =
+        crosapi::mojom::DiagnosticsRunRoutineResponse::New();
+    expected_response->id = 0;
+    expected_response->status =
+        crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
+
+    // Set the return value for a call to RunEmmcLifetimeRoutine.
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
+
+    fake_service_impl->SetExpectedLastCalledRoutine(
+        crosapi::mojom::DiagnosticsRoutineEnum::kEmmcLifetime);
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runEmmcLifetimeRoutine() {
+        const response =
+          await chrome.os.diagnostics.runEmmcLifetimeRoutine();
+          chrome.test.assertEq({id: 0, status: "ready"}, response);
         chrome.test.succeed();
       }
     ]);

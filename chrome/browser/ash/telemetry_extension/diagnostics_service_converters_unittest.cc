@@ -77,6 +77,8 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineEnum) {
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::
                         kSmartctlCheckWithPercentageUsed),
             crosapi::DiagnosticsRoutineEnum::kSmartctlCheckWithPercentageUsed);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kEmmcLifetime),
+            crosapi::DiagnosticsRoutineEnum::kEmmcLifetime);
 
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kArcHttp),
             absl::nullopt);

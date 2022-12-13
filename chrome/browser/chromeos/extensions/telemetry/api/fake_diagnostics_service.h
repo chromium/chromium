@@ -62,6 +62,7 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
       RunDnsResolutionRoutineCallback callback) override;
   void RunDnsResolverPresentRoutine(
       RunDnsResolverPresentRoutineCallback callback) override;
+  void RunEmmcLifetimeRoutine(RunEmmcLifetimeRoutineCallback callback) override;
   void RunFloatingPointAccuracyRoutine(
       uint32_t length_seconds,
       RunFloatingPointAccuracyRoutineCallback callback) override;
