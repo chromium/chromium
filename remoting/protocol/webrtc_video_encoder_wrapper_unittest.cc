@@ -113,14 +113,7 @@ class MockVideoChannelStateObserver : public VideoChannelStateObserver {
   MockVideoChannelStateObserver() = default;
   ~MockVideoChannelStateObserver() override = default;
 
-  MOCK_METHOD(void, OnKeyFrameRequested, (), (override));
-  MOCK_METHOD(void, OnTargetBitrateChanged, (int bitrate_kbps), (override));
   MOCK_METHOD(void, OnTargetFramerateChanged, (int framerate), (override));
-  MOCK_METHOD(void,
-              OnFrameEncoded,
-              (WebrtcVideoEncoder::EncodeResult encode_result,
-               const WebrtcVideoEncoder::EncodedFrame* frame),
-              (override));
   MOCK_METHOD(void,
               OnEncodedFrameSent,
               (EncodedImageCallback::Result result,
@@ -237,14 +230,6 @@ TEST_F(WebrtcVideoEncoderWrapperTest, ReturnsVP9EncodedFrames) {
   PostQuitAndRun();
 }
 
-TEST_F(WebrtcVideoEncoderWrapperTest, NotifiesOnBitrateChanged) {
-  EXPECT_CALL(observer_, OnTargetBitrateChanged(kBitrateBps / 1000));
-
-  auto encoder = InitEncoder(GetVp9Format(), GetVp9Codec());
-
-  PostQuitAndRun();
-}
-
 TEST_F(WebrtcVideoEncoderWrapperTest, NotifiesOnFramerateChanged) {
   EXPECT_CALL(observer_, OnTargetFramerateChanged(42));
 
@@ -279,8 +264,6 @@ TEST_F(WebrtcVideoEncoderWrapperTest, NotifiesFrameEncodedAndReturned) {
   EXPECT_CALL(callback_, OnEncodedImage(_, Field(&CodecSpecificInfo::codecType,
                                                  kVideoCodecVP9)))
       .WillOnce(Return(kResultOk));
-  EXPECT_CALL(observer_,
-              OnFrameEncoded(WebrtcVideoEncoder::EncodeResult::SUCCEEDED, _));
   EXPECT_CALL(observer_,
               OnEncodedFrameSent(Field(&EncodedImageCallback::Result::error,
                                        EncodedImageCallback::Result::OK),

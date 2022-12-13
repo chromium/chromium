@@ -389,14 +389,7 @@ void WebrtcVideoEncoderWrapper::SetRates(
     const RateControlParameters& parameters) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  int bitrate_kbps = parameters.bitrate.get_sum_kbps();
-  if (bitrate_kbps_ != bitrate_kbps) {
-    bitrate_kbps_ = bitrate_kbps;
-    main_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&VideoChannelStateObserver::OnTargetBitrateChanged,
-                       video_channel_state_observer_, bitrate_kbps));
-  }
+  bitrate_kbps_ = parameters.bitrate.get_sum_kbps();
 }
 
 void WebrtcVideoEncoderWrapper::OnRttUpdate(int64_t rtt_ms) {
@@ -497,15 +490,13 @@ void WebrtcVideoEncoderWrapper::OnFrameEncoded(
     frame_stats_->encode_ended_time = base::TimeTicks::Now();
     frame_stats_->rtt_estimate = rtt_estimate_;
     frame_stats_->bandwidth_estimate_kbps = bitrate_kbps_;
+    // WebrtcFrameSchedulerConstantRate cannot estimate this delay. Set it to 0
+    // so the client can still calculate the derived stats.
+    frame_stats_->send_pending_delay = base::TimeDelta();
     frame->stats = std::move(frame_stats_);
 
     frame->rtp_timestamp = rtp_timestamp_;
   }
-
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&VideoChannelStateObserver::OnFrameEncoded,
-                                video_channel_state_observer_, encode_result,
-                                frame.get()));
 
   if (encode_result != WebrtcVideoEncoder::EncodeResult::SUCCEEDED) {
     // TODO(crbug.com/1192865): Store this error and communicate it to WebRTC

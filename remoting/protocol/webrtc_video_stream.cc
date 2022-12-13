@@ -379,14 +379,6 @@ void WebrtcVideoStream::SetMouseCursorPosition(
                      base::Unretained(core_.get()), position));
 }
 
-void WebrtcVideoStream::OnKeyFrameRequested() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-}
-
-void WebrtcVideoStream::OnTargetBitrateChanged(int bitrate_kbps) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-}
-
 void WebrtcVideoStream::OnTargetFramerateChanged(int framerate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_GT(framerate, 0);
@@ -411,19 +403,6 @@ void WebrtcVideoStream::OnTargetFramerateChanged(int framerate) {
   DCHECK(result.ok()) << "SetParameters() failed: " << result.message();
 }
 
-void WebrtcVideoStream::OnFrameEncoded(
-    WebrtcVideoEncoder::EncodeResult encode_result,
-    const WebrtcVideoEncoder::EncodedFrame* frame) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // Setting this here allows us to skip a PostTask roundtrip to the scheduler.
-  if (frame && frame->stats) {
-    // WebrtcFrameSchedulerConstantRate cannot estimate this delay. Set it to 0
-    // so the client can still calculate the derived stats.
-    frame->stats->send_pending_delay = base::TimeDelta();
-  }
-}
-
 void WebrtcVideoStream::OnEncodedFrameSent(
     webrtc::EncodedImageCallback::Result result,
     const WebrtcVideoEncoder::EncodedFrame& frame) {
@@ -435,61 +414,62 @@ void WebrtcVideoStream::OnEncodedFrameSent(
     return;
   }
 
-  // Send FrameStats message.
-  if (video_stats_dispatcher_ && video_stats_dispatcher_->is_connected()) {
-    // The down-cast is safe, because the |stats| object was originally created
-    // by this class and attached to the frame.
-    const auto* current_frame_stats =
-        static_cast<const FrameStats*>(frame.stats.get());
-    DCHECK(current_frame_stats);
-
-    HostFrameStats stats;
-    stats.bandwidth_estimate_kbps =
-        current_frame_stats->bandwidth_estimate_kbps;
-    stats.rtt_estimate = current_frame_stats->rtt_estimate;
-    stats.send_pending_delay = current_frame_stats->send_pending_delay;
-
-    stats.frame_size = frame.data->size();
-
-    if (!current_frame_stats->input_event_timestamps.is_null()) {
-      stats.capture_pending_delay =
-          current_frame_stats->capture_started_time -
-          current_frame_stats->input_event_timestamps.host_timestamp;
-      stats.latest_event_timestamp =
-          current_frame_stats->input_event_timestamps.client_timestamp;
-    }
-
-    stats.capture_delay = current_frame_stats->capture_delay;
-
-    // Total overhead time for IPC and threading when capturing frames.
-    stats.capture_overhead_delay = (current_frame_stats->capture_ended_time -
-                                    current_frame_stats->capture_started_time) -
-                                   stats.capture_delay;
-
-    stats.encode_pending_delay = current_frame_stats->encode_started_time -
-                                 current_frame_stats->capture_ended_time;
-
-    stats.encode_delay = current_frame_stats->encode_ended_time -
-                         current_frame_stats->encode_started_time;
-
-    stats.capturer_id = current_frame_stats->capturer_id;
-
-    // Convert the frame quantizer to a measure of frame quality between 0 and
-    // 100, for a simple visualization of quality over time. The quantizer from
-    // VP8/VP9 encoder lies within 0-63, with 0 representing a lossless frame.
-    // TODO(crbug.com/891571): Remove |quantizer| from the WebrtcVideoEncoder
-    // interface, and move this logic to the encoders.
-    stats.frame_quality = (63 - frame.quantizer) * 100 / 63;
-
-    stats.screen_id = current_frame_stats->screen_id;
-
-    stats.codec = VideoCodecToProtoEnum(frame.codec);
-    stats.profile = frame.profile;
-    stats.encoded_rect_width = frame.encoded_rect_width;
-    stats.encoded_rect_height = frame.encoded_rect_height;
-
-    video_stats_dispatcher_->OnVideoFrameStats(result.frame_id, stats);
+  // Exit early if we aren't able to send a FrameStats message.
+  if (!video_stats_dispatcher_ || !video_stats_dispatcher_->is_connected()) {
+    return;
   }
+
+  // The down-cast is safe, because the |stats| object was originally created by
+  // this class and attached to the frame.
+  const auto* current_frame_stats =
+      static_cast<const FrameStats*>(frame.stats.get());
+  DCHECK(current_frame_stats);
+
+  HostFrameStats stats;
+  stats.bandwidth_estimate_kbps = current_frame_stats->bandwidth_estimate_kbps;
+  stats.rtt_estimate = current_frame_stats->rtt_estimate;
+  stats.send_pending_delay = current_frame_stats->send_pending_delay;
+
+  stats.frame_size = frame.data->size();
+
+  if (!current_frame_stats->input_event_timestamps.is_null()) {
+    stats.capture_pending_delay =
+        current_frame_stats->capture_started_time -
+        current_frame_stats->input_event_timestamps.host_timestamp;
+    stats.latest_event_timestamp =
+        current_frame_stats->input_event_timestamps.client_timestamp;
+  }
+
+  stats.capture_delay = current_frame_stats->capture_delay;
+
+  // Total overhead time for IPC and threading when capturing frames.
+  stats.capture_overhead_delay = (current_frame_stats->capture_ended_time -
+                                  current_frame_stats->capture_started_time) -
+                                 stats.capture_delay;
+
+  stats.encode_pending_delay = current_frame_stats->encode_started_time -
+                               current_frame_stats->capture_ended_time;
+
+  stats.encode_delay = current_frame_stats->encode_ended_time -
+                       current_frame_stats->encode_started_time;
+
+  stats.capturer_id = current_frame_stats->capturer_id;
+
+  // Convert the frame quantizer to a measure of frame quality between 0 and
+  // 100, for a simple visualization of quality over time. The quantizer from
+  // VP8/VP9 encoder lies within 0-63, with 0 representing a lossless frame.
+  // TODO(crbug.com/891571): Remove |quantizer| from the WebrtcVideoEncoder
+  // interface, and move this logic to the encoders.
+  stats.frame_quality = (63 - frame.quantizer) * 100 / 63;
+
+  stats.screen_id = current_frame_stats->screen_id;
+
+  stats.codec = VideoCodecToProtoEnum(frame.codec);
+  stats.profile = frame.profile;
+  stats.encoded_rect_width = frame.encoded_rect_width;
+  stats.encoded_rect_height = frame.encoded_rect_height;
+
+  video_stats_dispatcher_->OnVideoFrameStats(result.frame_id, stats);
 }
 
 void WebrtcVideoStream::OnSinkAddedOrUpdated(const rtc::VideoSinkWants& wants) {

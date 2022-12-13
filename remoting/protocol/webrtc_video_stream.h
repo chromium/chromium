@@ -71,11 +71,7 @@ class WebrtcVideoStream : public VideoStream, public VideoChannelStateObserver {
   void SetMouseCursorPosition(const webrtc::DesktopVector& position) override;
 
   // VideoChannelStateObserver interface.
-  void OnKeyFrameRequested() override;
-  void OnTargetBitrateChanged(int bitrate_kbps) override;
   void OnTargetFramerateChanged(int framerate) override;
-  void OnFrameEncoded(WebrtcVideoEncoder::EncodeResult encode_result,
-                      const WebrtcVideoEncoder::EncodedFrame* frame) override;
   void OnEncodedFrameSent(
       webrtc::EncodedImageCallback::Result result,
       const WebrtcVideoEncoder::EncodedFrame& frame) override;
