@@ -290,7 +290,6 @@ public class StartupLoadingMetricsTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/1313210")
     public void testRecordingOfFirstNavigationCommitPreForeground() throws Exception {
         UmaUtils.skipRecordingNextForegroundStartTimeForTesting();
 
