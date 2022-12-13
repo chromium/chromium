@@ -95,6 +95,8 @@ void ShoppingListUiTabHelper::NavigationEntryCommitted(
 
   last_fetched_image_ = gfx::Image();
   last_fetched_image_url_ = GURL();
+  is_cluster_id_tracked_by_user_ = false;
+  cluster_id_for_page_.reset();
 
   if (!shopping_service_ || !shopping_service_->IsShoppingListEligible())
     return;
@@ -126,6 +128,8 @@ void ShoppingListUiTabHelper::BookmarkMetaInfoChanged(
     const bookmarks::BookmarkNode* node) {
   if (!commerce::IsProductBookmark(model, node))
     return;
+
+  UpdatePriceTrackingStateFromSubscriptions();
   UpdatePriceTrackingIconView();
 }
 
@@ -143,6 +147,9 @@ void ShoppingListUiTabHelper::HandleProductInfoResponse(
   if (!info.has_value() || info.value().image_url.is_empty())
     return;
 
+  cluster_id_for_page_.emplace(info->product_cluster_id);
+  UpdatePriceTrackingStateFromSubscriptions();
+
   // TODO(1360850): Delay this fetch by possibly waiting until page load has
   //                finished.
   image_fetcher_->FetchImage(
@@ -151,6 +158,20 @@ void ShoppingListUiTabHelper::HandleProductInfoResponse(
                      weak_ptr_factory_.GetWeakPtr(), info.value().image_url),
       image_fetcher::ImageFetcherParams(kTrafficAnnotation,
                                         kImageFetcherUmaClient));
+}
+
+void ShoppingListUiTabHelper::UpdatePriceTrackingStateFromSubscriptions() {
+  if (!cluster_id_for_page_.has_value())
+    return;
+
+  shopping_service_->IsClusterIdTrackedByUser(
+      cluster_id_for_page_.value(),
+      base::BindOnce(
+          [](base::WeakPtr<ShoppingListUiTabHelper> helper, bool is_tracked) {
+            helper->is_cluster_id_tracked_by_user_ = is_tracked;
+            helper->UpdatePriceTrackingIconView();
+          },
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ShoppingListUiTabHelper::HandleImageFetcherResponse(
@@ -172,6 +193,23 @@ const gfx::Image& ShoppingListUiTabHelper::GetProductImage() {
 
 const GURL& ShoppingListUiTabHelper::GetProductImageURL() {
   return last_fetched_image_url_;
+}
+
+bool ShoppingListUiTabHelper::IsPriceTracking() {
+  if (is_cluster_id_tracked_by_user_) {
+    return true;
+  }
+
+  if (!web_contents())
+    return false;
+
+  bookmarks::BookmarkModel* const bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(
+          web_contents()->GetBrowserContext());
+  const bookmarks::BookmarkNode* bookmark_node =
+      bookmark_model->GetMostRecentlyAddedUserNodeForURL(
+          web_contents()->GetLastCommittedURL());
+  return commerce::IsBookmarkPriceTracked(bookmark_model, bookmark_node);
 }
 
 void ShoppingListUiTabHelper::UpdatePriceTrackingIconView() {

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/price_tracking_utils.h"
+#include "components/commerce/core/shopping_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -141,11 +142,25 @@ void PriceTrackingView::UpdatePriceTrackingState(const GURL& url) {
   if (profile_ && is_price_track_enabled_) {
     commerce::MaybeEnableEmailNotifications(profile_->GetPrefs());
   }
-  commerce::SetPriceTrackingStateForBookmark(
-      commerce::ShoppingServiceFactory::GetForBrowserContext(profile_), model,
-      node, is_price_track_enabled_,
+
+  commerce::ShoppingService* service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile_);
+  base::OnceCallback<void(bool)> callback =
       base::BindOnce(&PriceTrackingView::OnPriceTrackingStateUpdated,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr());
+
+  if (node) {
+    commerce::SetPriceTrackingStateForBookmark(
+        service, model, node, is_price_track_enabled_, std::move(callback));
+  } else {
+    absl::optional<commerce::ProductInfo> info =
+        service->GetAvailableProductInfoForUrl(url);
+    if (info.has_value()) {
+      commerce::SetPriceTrackingStateForClusterId(
+          service, model, info->product_cluster_id, is_price_track_enabled_,
+          std::move(callback));
+    }
+  }
 }
 
 void PriceTrackingView::OnPriceTrackingStateUpdated(bool success) {

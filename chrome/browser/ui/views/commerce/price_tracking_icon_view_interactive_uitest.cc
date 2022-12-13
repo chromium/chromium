@@ -49,6 +49,7 @@
 namespace {
 const char kNonTrackableUrl[] = "http://google.com";
 const char kTrackableUrl[] = "about:blank";
+const char kNonBookmarkedUrl[] = "about:blank?bookmarked=false";
 }  // namespace
 
 class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
@@ -74,6 +75,14 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
 
     bookmarks::AddIfNotBookmarked(bookmark_model, GURL(kTrackableUrl),
                                   std::u16string());
+
+    mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
+        commerce::ShoppingServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                browser()->profile(),
+                base::BindRepeating([](content::BrowserContext* context) {
+                  return commerce::MockShoppingService::Build();
+                })));
 
     MockShoppingListUiTabHelper::CreateForWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
@@ -110,6 +119,11 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
   }
 
   void SimulateServerPriceTrackStateUpdated(bool is_price_tracked) {
+    // Ensure the tab helper has the correct value from the "server" before the
+    // meta event is triggered.
+    ON_CALL(*mock_tab_helper_, IsPriceTracking)
+        .WillByDefault(testing::Return(is_price_tracked));
+
     bookmarks::BookmarkModel* bookmark_model =
         BookmarkModelFactory::GetForBrowserContext(browser()->profile());
 
@@ -117,8 +131,21 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
                                  0, is_price_tracked);
   }
 
+  StarView* GetBookmarkStar() {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    auto* location_bar_view = browser_view->toolbar()->location_bar();
+    const ui::ElementContext context =
+        views::ElementTrackerViews::GetContextForView(location_bar_view);
+    views::View* matched_view =
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            kBookmarkStarViewElementId, context);
+
+    return matched_view ? views::AsViewClass<StarView>(matched_view) : nullptr;
+  }
+
  protected:
   base::UserActionTester user_action_tester_;
+  raw_ptr<commerce::MockShoppingService> mock_shopping_service_;
   raw_ptr<MockShoppingListUiTabHelper, DanglingUntriaged> mock_tab_helper_;
 
  private:
@@ -147,6 +174,8 @@ IN_PROC_BROWSER_TEST_F(
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   commerce::AddProductBookmark(bookmark_model, u"title", GURL(kTrackableUrl), 0,
                                true);
+  ON_CALL(*mock_tab_helper_, IsPriceTracking)
+      .WillByDefault(testing::Return(true));
 
   auto* icon_view = GetChip();
   icon_view->ForceVisibleForTesting(/*is_tracking_price=*/true);
@@ -277,6 +306,27 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
             0);
 }
 
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       TrackedProductIsDifferentBookmark) {
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+
+  const uint64_t cluster_id = 12345L;
+  commerce::AddProductBookmark(bookmark_model, u"title",
+                               GURL("https://example.com"), cluster_id, true);
+
+  ON_CALL(*mock_tab_helper_, ShouldShowPriceTrackingIconView)
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_tab_helper_, IsPriceTracking)
+      .WillByDefault(testing::Return(true));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kNonBookmarkedUrl)));
+
+  EXPECT_STREQ(GetChip()->GetVectorIcon().name,
+               omnibox::kPriceTrackingEnabledFilledIcon.name);
+  EXPECT_FALSE(GetBookmarkStar()->GetActive());
+}
+
 class PriceTrackingIconViewErrorHandelingTest
     : public PriceTrackingIconViewInteractiveTest {
  public:
@@ -309,13 +359,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewErrorHandelingTest,
             l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
 
   // Simulate the failure.
-  auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
-      commerce::ShoppingServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          browser()->profile(),
-          base::BindRepeating([](content::BrowserContext* context) {
-            return commerce::MockShoppingService::Build();
-          })));
-  mock_shopping_service->SetSubscribeCallbackValue(false);
+  mock_shopping_service_->SetSubscribeCallbackValue(false);
 
   ClickPriceTrackingIconView();
 
@@ -468,18 +512,6 @@ class PriceTrackingBubbleInteractiveTest
       const PriceTrackingBubbleInteractiveTest&) = delete;
 
   ~PriceTrackingBubbleInteractiveTest() override = default;
-
-  StarView* GetBookmarkStar() {
-    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-    auto* location_bar_view = browser_view->toolbar()->location_bar();
-    const ui::ElementContext context =
-        views::ElementTrackerViews::GetContextForView(location_bar_view);
-    views::View* matched_view =
-        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-            kBookmarkStarViewElementId, context);
-
-    return matched_view ? views::AsViewClass<StarView>(matched_view) : nullptr;
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,

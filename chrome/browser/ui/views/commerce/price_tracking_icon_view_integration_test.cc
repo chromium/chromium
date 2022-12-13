@@ -93,6 +93,11 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
   }
 
   void SimulateServerPriceTrackState(bool is_price_tracked) {
+    // Ensure the tab helper has the correct value from the "server" before the
+    // meta event is triggered.
+    ON_CALL(*GetTabHelper(), IsPriceTracking)
+        .WillByDefault(testing::Return(is_price_tracked));
+
     bookmarks::BookmarkModel* bookmark_model =
         BookmarkModelFactory::GetForBrowserContext(browser()->profile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
@@ -191,6 +196,11 @@ TEST_F(PriceTrackingIconViewIntegrationTest, IconUpdatedWhenRemoveBookmark) {
   auto* icon_view = GetChip();
   VerifyIconState(icon_view, /*is_price_tracked=*/true);
 
+  // Assume there is only a single bookmark with the product cluster ID and that
+  // removal untracked it.
+  ON_CALL(*GetTabHelper(), IsPriceTracking)
+      .WillByDefault(testing::Return(false));
+
   // Simulate removed bookmark.
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
@@ -203,6 +213,8 @@ TEST_F(PriceTrackingIconViewIntegrationTest, IconUpdatedWhenMetaDataChanged) {
   SimulateServerPriceTrackState(/*is_price_tracked=*/true);
 
   ON_CALL(*GetTabHelper(), ShouldShowPriceTrackingIconView)
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*GetTabHelper(), IsPriceTracking)
       .WillByDefault(testing::Return(true));
 
   NavigateAndCommitActiveTab(GURL(kTrackableUrl));

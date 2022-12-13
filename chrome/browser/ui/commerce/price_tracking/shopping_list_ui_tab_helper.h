@@ -55,6 +55,9 @@ class ShoppingListUiTabHelper
   // should not be kept directly, if one is needed, a copy should be made.
   const GURL& GetProductImageURL();
 
+  // Returns whether the current page has a product that is being price tracked.
+  virtual bool IsPriceTracking();
+
   // content::WebContentsObserver implementation
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& load_details) override;
@@ -89,6 +92,10 @@ class ShoppingListUiTabHelper
 
   void UpdatePriceTrackingIconView();
 
+  // Update the flag tracking the price tracking state of the product from
+  // subscriptions.
+  void UpdatePriceTrackingStateFromSubscriptions();
+
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.
   raw_ptr<ShoppingService, DanglingUntriaged> shopping_service_;
@@ -101,6 +108,12 @@ class ShoppingListUiTabHelper
   // The last image that was fetched. See |last_image_fetched_url_| for the
   // URL that was used.
   gfx::Image last_fetched_image_;
+
+  // Whether the product shown on the current page is tracked by the user.
+  bool is_cluster_id_tracked_by_user_{false};
+
+  // The cluster ID for the current page, if applicable.
+  absl::optional<uint64_t> cluster_id_for_page_;
 
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<bookmarks::BookmarkModel,
