@@ -6,17 +6,9 @@
 
 namespace plugin_vm {
 
-const char kPluginVmImageDownloadedSizeHistogram[] =
-    "PluginVm.Image.DownloadedSize";
 const char kPluginVmLaunchResultHistogram[] = "PluginVm.LaunchResult";
 const char kPluginVmSetupResultHistogram[] = "PluginVm.SetupResult";
 const char kPluginVmDlcUseResultHistogram[] = "PluginVm.DlcUseResult";
-
-void RecordPluginVmImageDownloadedSizeHistogram(uint64_t bytes_downloaded) {
-  uint64_t megabytes_downloaded = bytes_downloaded / (1024 * 1024);
-  base::UmaHistogramMemoryLargeMB(kPluginVmImageDownloadedSizeHistogram,
-                                  megabytes_downloaded);
-}
 
 void RecordPluginVmLaunchResultHistogram(PluginVmLaunchResult launch_result) {
   base::UmaHistogramEnumeration(kPluginVmLaunchResultHistogram, launch_result);

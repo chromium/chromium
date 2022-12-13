@@ -53,7 +53,6 @@ constexpr int64_t kBytesPerGigabyte = 1024 * 1024 * 1024;
 constexpr int64_t kDownloadSizeFallbackEstimate = 15LL * kBytesPerGigabyte;
 
 constexpr char kFailureReasonHistogram[] = "PluginVm.SetupFailureReason";
-constexpr char kSetupTimeHistogram[] = "PluginVm.SetupTime";
 
 constexpr char kHomeDirectory[] = "/home/chronos/user";
 
@@ -152,7 +151,6 @@ absl::optional<PluginVmInstaller::FailureReason> PluginVmInstaller::Start() {
   // goes back to kIdle.
   GetWakeLock()->RequestWakeLock();
   state_ = State::kInstalling;
-  setup_start_tick_ = base::TimeTicks::Now();
   progress_ = 0;
 
   // Perform the first step asynchronously to ensure OnError() isn't called
@@ -259,7 +257,6 @@ void PluginVmInstaller::OnDownloadCompleted(
     return;
   }
 
-  RecordPluginVmImageDownloadedSizeHistogram(info.bytes_downloaded);
   StartImport();
 }
 
@@ -850,8 +847,6 @@ void PluginVmInstaller::InstallFailed(FailureReason reason) {
 
 void PluginVmInstaller::InstallFinished() {
   LOG_FUNCTION_CALL();
-  base::UmaHistogramLongTimes(kSetupTimeHistogram,
-                              base::TimeTicks::Now() - setup_start_tick_);
   state_ = State::kIdle;
   GetWakeLock()->CancelWakeLock();
   installing_state_ = InstallingState::kInactive;

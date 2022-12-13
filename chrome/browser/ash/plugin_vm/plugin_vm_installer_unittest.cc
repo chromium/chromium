@@ -76,7 +76,6 @@ const char kHashUppercase[] =
 const char kHash2[] =
     "02f06421ae27144aacdc598aebcd345a5e2e634405e8578300173628fe1574bd";
 // File size set in test_download_service.
-const int kDownloadedPluginVmImageSizeInMb = 123456789u / (1024 * 1024);
 const int64_t kDefaultRequiredFreeDiskSpaceGB = 20LL;
 const int kRequiredFreeDiskSpaceGB = 40;
 const int64_t kBytesPerGigabyte = 1024 * 1024 * 1024;
@@ -526,8 +525,8 @@ TEST_F(PluginVmInstallerDownloadServiceTest, OnlyOneImageIsProcessedTest) {
 
   EXPECT_FALSE(installer_->IsProcessing());
 
-  histogram_tester_->ExpectUniqueSample(kPluginVmImageDownloadedSizeHistogram,
-                                        kDownloadedPluginVmImageSizeInMb, 1);
+  histogram_tester_->ExpectUniqueSample(kPluginVmSetupResultHistogram,
+                                        PluginVmSetupResult::kSuccess, 1);
 }
 
 TEST_F(PluginVmInstallerDownloadServiceTest,
@@ -547,8 +546,6 @@ TEST_F(PluginVmInstallerDownloadServiceTest,
   installer_->SetDownloadedImageForTesting(CreateZipFile());
   StartAndRunToCompletion();
 
-  histogram_tester_->ExpectUniqueSample(kPluginVmImageDownloadedSizeHistogram,
-                                        kDownloadedPluginVmImageSizeInMb, 2);
   histogram_tester_->ExpectUniqueSample(kPluginVmSetupResultHistogram,
                                         PluginVmSetupResult::kSuccess, 2);
 }
@@ -573,8 +570,6 @@ TEST_F(PluginVmInstallerDownloadServiceTest,
 
   StartAndRunToCompletion();
 
-  histogram_tester_->ExpectUniqueSample(kPluginVmImageDownloadedSizeHistogram,
-                                        kDownloadedPluginVmImageSizeInMb, 1);
   histogram_tester_->ExpectBucketCount(kPluginVmSetupResultHistogram,
                                        PluginVmSetupResult::kError, 1);
   histogram_tester_->ExpectBucketCount(kPluginVmSetupResultHistogram,
@@ -589,7 +584,6 @@ TEST_F(PluginVmInstallerDownloadServiceTest, CancelledDownloadTest) {
   installer_->Cancel();
   task_environment_.RunUntilIdle();
 
-  histogram_tester_->ExpectTotalCount(kPluginVmImageDownloadedSizeHistogram, 0);
   histogram_tester_->ExpectTotalCount(kFailureReasonHistogram, 0);
   histogram_tester_->ExpectUniqueSample(
       kPluginVmSetupResultHistogram,
@@ -604,9 +598,6 @@ TEST_F(PluginVmInstallerDownloadServiceTest, ImportNonExistingImageTest) {
 
   installer_->SetDownloadedImageForTesting(base::FilePath());
   StartAndRunToCompletion();
-
-  histogram_tester_->ExpectUniqueSample(kPluginVmImageDownloadedSizeHistogram,
-                                        kDownloadedPluginVmImageSizeInMb, 1);
 }
 
 TEST_F(PluginVmInstallerDownloadServiceTest, ImportFailedOutOfSpaceTest) {
@@ -645,7 +636,6 @@ TEST_F(PluginVmInstallerDownloadServiceTest, EmptyPluginVmImageUrlTest) {
   EXPECT_CALL(*observer_, OnError(FailureReason::INVALID_IMAGE_URL));
   StartAndRunToCompletion();
 
-  histogram_tester_->ExpectTotalCount(kPluginVmImageDownloadedSizeHistogram, 0);
   histogram_tester_->ExpectUniqueSample(kFailureReasonHistogram,
                                         FailureReason::INVALID_IMAGE_URL, 1);
 }

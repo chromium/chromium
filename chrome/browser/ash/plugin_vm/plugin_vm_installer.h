@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_license_checker.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
@@ -273,7 +272,6 @@ class PluginVmInstaller : public KeyedService,
   download::BackgroundDownloadService* download_service_ = nullptr;
   State state_ = State::kIdle;
   InstallingState installing_state_ = InstallingState::kInactive;
-  base::TimeTicks setup_start_tick_;
   std::string current_download_guid_;
   base::FilePath downloaded_image_;
   // Used to identify our running import with concierge.

@@ -9,7 +9,6 @@
 
 namespace plugin_vm {
 
-extern const char kPluginVmImageDownloadedSizeHistogram[];
 extern const char kPluginVmLaunchResultHistogram[];
 extern const char kPluginVmSetupResultHistogram[];
 extern const char kPluginVmDlcUseResultHistogram[];
@@ -66,7 +65,6 @@ enum class PluginVmDlcUseResult {
   kMaxValue = kNoImageFoundDlcError,
 };
 
-void RecordPluginVmImageDownloadedSizeHistogram(uint64_t bytes_downloaded);
 void RecordPluginVmLaunchResultHistogram(PluginVmLaunchResult launch_result);
 void RecordPluginVmSetupResultHistogram(PluginVmSetupResult setup_result);
 void RecordPluginVmDlcUseResultHistogram(PluginVmDlcUseResult dlc_use_result);

@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="PluginVm.DlcUseResult" enum="PluginVmDlcUseResult"
-    expires_after="2023-06-04">
+    expires_after="2024-01-14">
   <owner>kimjae@google.com</owner>
   <owner>timloh@google.com</owner>
   <summary>Recorded at each time PluginVM DLC is installed.</summary>
@@ -75,19 +75,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PluginVm.Image.DownloadedSize" units="MB"
-    expires_after="2023-01-14">
-  <owner>joelhockey@chromium.org</owner>
-  <owner>okalitova@chromium.org</owner>
-  <owner>timloh@chromium.org</owner>
-  <summary>
-    The size of the PluginVm image downloaded in MB. Recorded each time PluginVm
-    image is sucessfully downloaded.
-  </summary>
-</histogram>
-
 <histogram name="PluginVm.LaunchResult" enum="PluginVmLaunchResult"
-    expires_after="2023-01-14">
+    expires_after="2024-01-14">
   <owner>joelhockey@chromium.org</owner>
   <owner>okalitova@chromium.org</owner>
   <owner>timloh@chromium.org</owner>
@@ -98,14 +87,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.SetupFailureReason" enum="PluginVmSetupFailureReason"
-    expires_after="2023-01-14">
+    expires_after="2024-01-14">
   <owner>timloh@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>Recorded when the Plugin VM installer fails.</summary>
 </histogram>
 
 <histogram name="PluginVm.SetupResult" enum="PluginVmSetupResult"
-    expires_after="2023-06-04">
+    expires_after="2024-01-14">
   <owner>joelhockey@chromium.org</owner>
   <owner>okalitova@chromium.org</owner>
   <owner>timloh@chromium.org</owner>
@@ -113,18 +102,6 @@ chromium-metrics-reviews@google.com.
     Recorded at each attempt to set up PluginVm, recording the setup result. As
     of M83, errors are grouped together here and broken down in
     PluginVm.SetupFailureReason.
-  </summary>
-</histogram>
-
-<histogram name="PluginVm.SetupTime" units="ms" expires_after="2023-01-14">
-  <owner>joelhockey@chromium.org</owner>
-  <owner>okalitova@chromium.org</owner>
-  <owner>timloh@chromium.org</owner>
-  <summary>
-    Recorded at each successful attempt to set up PluginVm, recording the time
-    that user spent waiting for setup to be finished. When error occurs during
-    setup and user clicks retry button - time between pressing retry button and
-    setup being finished is recorded.
   </summary>
 </histogram>
 
