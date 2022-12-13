@@ -60,7 +60,7 @@ public class PrivacySandboxDialogConsentEEAV4
         noButton.setOnClickListener(this);
         mMoreButton = mContentView.findViewById(R.id.more_button);
         mActionButtons = mContentView.findViewById(R.id.action_buttons);
-        mScrollView = mContentView.findViewById(R.id.privacy_sandbox_dialog_scroll_view);
+        mScrollView = mContentView.findViewById(R.id.privacy_sandbox_consent_eea_scroll_view);
 
         mProgressBarContainer = mContentView.findViewById(R.id.progress_bar_container);
         mConsentViewContainer = mContentView.findViewById(R.id.privacy_sandbox_consent_eea_view);

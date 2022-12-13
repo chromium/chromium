@@ -169,7 +169,7 @@ public final class PrivacySandboxDialogTest {
 
     private ScrollView getScrollView() {
         ScrollView[] scrollViews = {null};
-        onView(withId(R.id.privacy_sandbox_dialog_scroll_view)).check(((v, e) -> {
+        onView(withId(R.id.privacy_sandbox_consent_eea_scroll_view)).check(((v, e) -> {
             scrollViews[0] = ((ScrollView) v);
         }));
         return scrollViews[0];
@@ -464,7 +464,7 @@ public final class PrivacySandboxDialogTest {
         assertEquals("Last dialog action", PromptAction.NOTICE_SHOWN,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         // Ack the notice and verify it worked correctly.
-        tryClickOn(withId(R.id.ack_button));
+        onView(withId(R.id.ack_button)).perform(click());
         assertEquals("Last dialog action", PromptAction.NOTICE_ACKNOWLEDGE,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
@@ -484,7 +484,7 @@ public final class PrivacySandboxDialogTest {
         onView(withId(R.id.privacy_sandbox_notice_eea_dropdown)).check(doesNotExist());
 
         // Click on the settings button and verify it worked correctly.
-        tryClickOn(withId(R.id.settings_button));
+        onView(withId(R.id.settings_button)).perform(click());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
         assertEquals("Last dialog action", PromptAction.NOTICE_OPEN_SETTINGS,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
