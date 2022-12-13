@@ -452,7 +452,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
                                      "https://www.example.com/handle_file");
     // Skip past the permission dialog.
     web_app::WebAppProvider::GetForTest(profile)
-        ->sync_bridge()
+        ->sync_bridge_unsafe()
         .SetAppFileHandlerApprovalState(app_id,
                                         web_app::ApiApprovalState::kAllowed);
   } else {
