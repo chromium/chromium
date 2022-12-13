@@ -258,14 +258,15 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
   bool has_mouse_already_entered_ = false;
 };
 
-FolderHeaderView::FolderHeaderView(FolderHeaderViewDelegate* delegate)
+FolderHeaderView::FolderHeaderView(FolderHeaderViewDelegate* delegate,
+                                   bool tablet_mode)
     : folder_item_(nullptr),
       folder_name_placeholder_text_(
           ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
               IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER)),
       delegate_(delegate),
       folder_name_visible_(true),
-      is_tablet_mode_(false) {
+      is_tablet_mode_(tablet_mode) {
   folder_name_view_ = AddChildView(std::make_unique<FolderNameView>(this));
   folder_name_view_->SetPlaceholderText(folder_name_placeholder_text_);
   folder_name_view_->set_controller(this);

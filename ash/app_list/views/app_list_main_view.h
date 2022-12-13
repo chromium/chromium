@@ -48,9 +48,6 @@ class ASH_EXPORT AppListMainView : public views::View,
   ContentsView* contents_view() const { return contents_view_; }
   AppListViewDelegate* view_delegate() { return delegate_; }
 
-  // Called when the search box's visibility is changed.
-  void NotifySearchBoxVisibilityChanged();
-
   // Overridden from views::View:
   const char* GetClassName() const override;
   void Layout() override;

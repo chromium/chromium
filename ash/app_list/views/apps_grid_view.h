@@ -179,9 +179,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Updates the visibility of app list items according to |app_list_state|.
   void UpdateControlVisibility(AppListViewState app_list_state);
 
-  // Returns true if a touch or click lies between two occupied tiles.
-  bool EventIsBetweenOccupiedTiles(const ui::LocatedEvent* event);
-
   // Returns the item view of the item with the provided item ID.
   // Returns nullptr if there is no such item.
   AppListItemView* GetItemViewForItem(const std::string& item_id);

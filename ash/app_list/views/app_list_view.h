@@ -160,9 +160,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   void SetDragAndDropHostOfCurrentAppList(
       ApplicationDragAndDropHost* drag_and_drop_host);
 
-  // Dismisses the UI, cleans up and sets the state to CLOSED.
-  void Dismiss();
-
   // Resets the child views before showing the AppListView.
   void ResetForShow();
 
@@ -190,9 +187,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-
-  // Called when tablet mode starts and ends.
-  void OnTabletModeChanged(bool started);
 
   // Called when the wallpaper colors change.
   void OnWallpaperColorsChanged();
@@ -279,8 +273,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
     return app_list_state_ == AppListViewState::kFullscreenAllApps ||
            app_list_state_ == AppListViewState::kFullscreenSearch;
   }
-
-  bool is_tablet_mode() const { return delegate_->IsInTabletMode(); }
 
   void set_onscreen_keyboard_shown(bool onscreen_keyboard_shown) {
     onscreen_keyboard_shown_ = onscreen_keyboard_shown;

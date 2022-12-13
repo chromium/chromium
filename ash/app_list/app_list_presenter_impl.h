@@ -140,9 +140,6 @@ class ASH_EXPORT AppListPresenterImpl
   // Returns current visibility of the Assistant page.
   bool IsShowingEmbeddedAssistantUI() const;
 
-  // Called when tablet mode starts and ends.
-  void OnTabletModeChanged(bool started);
-
  private:
   // Sets the app list view and attempts to show it.
   void SetView(AppListView* view);

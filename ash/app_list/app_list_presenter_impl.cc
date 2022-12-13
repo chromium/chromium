@@ -516,16 +516,6 @@ bool AppListPresenterImpl::IsShowingEmbeddedAssistantUI() const {
   return false;
 }
 
-void AppListPresenterImpl::OnTabletModeChanged(bool started) {
-  if (started) {
-    if (GetTargetVisibility())
-      view_->OnTabletModeChanged(true);
-  } else {
-    if (IsVisibleDeprecated())
-      view_->OnTabletModeChanged(false);
-  }
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // AppListPresenterImpl, private:
 

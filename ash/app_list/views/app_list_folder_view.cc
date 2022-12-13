@@ -647,7 +647,8 @@ class ScrollViewWithMaxHeight : public views::ScrollView {
 AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
                                      AppsGridView* root_apps_grid_view,
                                      AppListA11yAnnouncer* a11y_announcer,
-                                     AppListViewDelegate* view_delegate)
+                                     AppListViewDelegate* view_delegate,
+                                     bool tablet_mode)
     : folder_controller_(folder_controller),
       root_apps_grid_view_(root_apps_grid_view),
       a11y_announcer_(a11y_announcer),
@@ -672,7 +673,7 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   contents_container_ = AddChildView(std::make_unique<views::View>());
   contents_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 
-  CreateScrollableAppsGrid();
+  CreateScrollableAppsGrid(tablet_mode);
 
   // Create a shadow under `background_view_`.
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
@@ -683,7 +684,7 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   AppListModelProvider::Get()->AddObserver(this);
 }
 
-void AppListFolderView::CreateScrollableAppsGrid() {
+void AppListFolderView::CreateScrollableAppsGrid(bool tablet_mode) {
   // The top part of the folder contents is a scrollable apps grid.
   scroll_view_ = contents_container_->AddChildView(
       std::make_unique<ScrollViewWithMaxHeight>(this));
@@ -735,7 +736,7 @@ void AppListFolderView::CreateScrollableAppsGrid() {
                                views::MaximumFlexSizeRule::kPreferred));
 
   folder_header_view_ = contents_container_->AddChildView(
-      std::make_unique<FolderHeaderView>(this));
+      std::make_unique<FolderHeaderView>(this, tablet_mode));
   folder_header_view_->SetProperty(views::kMarginsKey,
                                    gfx::Insets::VH(kFolderHeaderPadding, 0));
 
@@ -1060,10 +1061,6 @@ void AppListFolderView::RecordAnimationSmoothness() {
     show_hide_metrics_tracker_->Stop();
     show_hide_metrics_tracker_.reset();
   }
-}
-
-void AppListFolderView::OnTabletModeChanged(bool started) {
-  folder_header_view()->set_tablet_mode(started);
 }
 
 void AppListFolderView::OnScrollEvent(ui::ScrollEvent* event) {

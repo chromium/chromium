@@ -588,10 +588,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
   }
 
   void SetAppListState(ash::AppListViewState state) {
-    if (state == ash::AppListViewState::kClosed) {
-      view_->Dismiss();
-      return;
-    }
+    ASSERT_NE(state, ash::AppListViewState::kClosed);
     view_->SetState(state);
   }
 
@@ -1637,49 +1634,6 @@ TEST_F(AppListViewTest, CloseFolderByClickingBackground) {
   EXPECT_FALSE(apps_container_view->IsInFolderView());
 }
 
-// Tests that, in clamshell mode, the current app list page resets to the
-// initial page when app list is closed and re-opened.
-TEST_F(AppListViewTest, InitialPageResetClamshellModeTest) {
-  Initialize(false /*is_tablet_mode*/);
-
-  AppListTestModel* model = delegate_->GetTestModel();
-  const int kAppListItemNum =
-      SharedAppListConfig::instance().GetMaxNumOfItemsPerPage() + 1;
-  model->PopulateApps(kAppListItemNum);
-
-  Show();
-
-  apps_grid_view()->pagination_model()->SelectPage(1, false /* animate */);
-
-  // Close and re-open the app list to ensure the current page doesn't persist.
-  view_->SetState(ash::AppListViewState::kClosed);
-  Show();
-
-  EXPECT_EQ(0, apps_grid_view()->pagination_model()->selected_page());
-}
-
-TEST_F(AppListViewTest, PagePersistanceTabletModeTest) {
-  Initialize(/*is_tablet_mode=*/true);
-
-  AppListTestModel* model = delegate_->GetTestModel();
-  const int kAppListItemNum =
-      SharedAppListConfig::instance().GetMaxNumOfItemsPerPage() + 1;
-  model->PopulateApps(kAppListItemNum);
-
-  Show();
-  EXPECT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
-
-  apps_grid_view()->pagination_model()->SelectPage(1, false /* animate */);
-
-  // Close and re-open the app list to ensure the current page persists.
-  view_->SetState(ash::AppListViewState::kClosed);
-  Show();
-  EXPECT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
-
-  // The current page should not be reset for the tablet mode app list.
-  EXPECT_EQ(1, apps_grid_view()->pagination_model()->selected_page());
-}
-
 // Tests selecting search result to show embedded Assistant UI.
 TEST_P(AppListViewFocusTest, ShowEmbeddedAssistantUI) {
   Show();
@@ -1714,24 +1668,6 @@ TEST_P(AppListViewFocusTest, ShowEmbeddedAssistantUI) {
   EXPECT_EQ(1, GetOpenFirstSearchResultCount());
   EXPECT_EQ(2, GetTotalOpenSearchResultCount());
   EXPECT_EQ(1, GetTotalOpenAssistantUICount());
-}
-
-// Tests that the correct contents is visible in the contents_view upon
-// reshowing. See b/142069648 for the details.
-TEST_F(AppListViewTest, AppsGridVisibilityOnResetForShow) {
-  Initialize(/*is_tablet_mode=*/true);
-  Show();
-
-  contents_view()->ShowEmbeddedAssistantUI(true);
-  EXPECT_FALSE(contents_view()->apps_container_view()->GetVisible());
-  EXPECT_FALSE(contents_view()->search_result_page_view()->GetVisible());
-  EXPECT_TRUE(assistant_page_view()->GetVisible());
-
-  view_->OnTabletModeChanged(false);
-  Show();
-  EXPECT_TRUE(contents_view()->apps_container_view()->GetVisible());
-  EXPECT_FALSE(contents_view()->search_result_page_view()->GetVisible());
-  EXPECT_FALSE(assistant_page_view()->GetVisible());
 }
 
 // Tests that pressing escape in embedded Assistant UI returns to fullscreen

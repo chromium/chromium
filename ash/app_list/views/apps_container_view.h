@@ -79,9 +79,6 @@ class ASH_EXPORT AppsContainerView
   // |app_list_state|.
   void UpdateControlVisibility(AppListViewState app_list_state);
 
-  // Called when tablet mode starts and ends.
-  void OnTabletModeChanged(bool started);
-
   // Minimal margin for apps grid within the apps container. Set to ensure there
   // is enough space to fit page switcher next to the apps grid.
   int GetMinHorizontalMarginForAppsGrid() const;

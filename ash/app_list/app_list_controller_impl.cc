@@ -809,8 +809,6 @@ void AppListControllerImpl::OnTabletModeStarted() {
 
   bubble_presenter_->Dismiss();
 
-  fullscreen_presenter_->OnTabletModeChanged(true);
-
   // Show the app list if the tablet mode starts.
   if (Shell::Get()->session_controller()->GetSessionState() ==
       session_manager::SessionState::ACTIVE) {
@@ -845,7 +843,6 @@ void AppListControllerImpl::OnTabletModeEnded() {
       window && RootWindowController::ForWindow(window)
                     ->GetShelfLayoutManager()
                     ->HasVisibleWindow());
-  fullscreen_presenter_->OnTabletModeChanged(false);
   UpdateFullscreenLauncherContainer();
 
   // Dismiss the app list if the tablet mode ends.

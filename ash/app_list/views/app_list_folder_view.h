@@ -55,7 +55,8 @@ class ASH_EXPORT AppListFolderView : public views::View,
   AppListFolderView(AppListFolderController* folder_controller,
                     AppsGridView* root_apps_grid_view,
                     AppListA11yAnnouncer* a11y_announcer,
-                    AppListViewDelegate* view_delegate);
+                    AppListViewDelegate* view_delegate,
+                    bool tablet_mode);
   AppListFolderView(const AppListFolderView&) = delete;
   AppListFolderView& operator=(const AppListFolderView&) = delete;
   ~AppListFolderView() override;
@@ -169,9 +170,6 @@ class ASH_EXPORT AppListFolderView : public views::View,
   // ContentsContainerAnimation.
   void RecordAnimationSmoothness();
 
-  // Called when tablet mode starts and ends.
-  void OnTabletModeChanged(bool started);
-
   // views::View:
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -202,7 +200,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
 
  private:
   // Creates a vertically scrollable apps grid view.
-  void CreateScrollableAppsGrid();
+  void CreateScrollableAppsGrid(bool tablet_mode);
 
   // Returns the compositor associated to the widget containing this view.
   // Returns nullptr if there isn't one associated with this widget.

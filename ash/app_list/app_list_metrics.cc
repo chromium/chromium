@@ -28,12 +28,8 @@ namespace ash {
 int g_continue_file_removals_in_session = 0;
 
 // The UMA histogram that logs smoothness of pagination animation.
-constexpr char kPaginationTransitionAnimationSmoothness[] =
-    "Apps.PaginationTransition.AnimationSmoothness";
 constexpr char kPaginationTransitionAnimationSmoothnessInTablet[] =
     "Apps.PaginationTransition.AnimationSmoothness.TabletMode";
-constexpr char kPaginationTransitionAnimationSmoothnessInClamshell[] =
-    "Apps.PaginationTransition.AnimationSmoothness.ClamshellMode";
 
 // The UMA histogram that logs which state search results are opened from.
 constexpr char kAppListSearchResultOpenSourceHistogram[] =
@@ -438,17 +434,9 @@ bool IsCommandIdAnAppLaunch(int command_id_number) {
   return false;
 }
 
-void ReportPaginationSmoothness(bool is_tablet_mode, int smoothness) {
-  UMA_HISTOGRAM_PERCENTAGE(kPaginationTransitionAnimationSmoothness,
+void ReportPaginationSmoothness(int smoothness) {
+  UMA_HISTOGRAM_PERCENTAGE(kPaginationTransitionAnimationSmoothnessInTablet,
                            smoothness);
-
-  if (is_tablet_mode) {
-    UMA_HISTOGRAM_PERCENTAGE(kPaginationTransitionAnimationSmoothnessInTablet,
-                             smoothness);
-  } else {
-    UMA_HISTOGRAM_PERCENTAGE(
-        kPaginationTransitionAnimationSmoothnessInClamshell, smoothness);
-  }
 }
 
 void ReportCardifiedSmoothness(bool is_entering_cardified, int smoothness) {

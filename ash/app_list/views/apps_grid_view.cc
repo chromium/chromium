@@ -1057,12 +1057,6 @@ void AppsGridView::ViewHierarchyChanged(
   }
 }
 
-bool AppsGridView::EventIsBetweenOccupiedTiles(const ui::LocatedEvent* event) {
-  gfx::Point mirrored_point(GetMirroredXInView(event->location().x()),
-                            event->location().y());
-  return IsValidIndex(GetNearestTileIndexForPoint(mirrored_point));
-}
-
 void AppsGridView::Update() {
   // Abort reorder animation before `view_model_` is cleared.
   MaybeAbortWholeGridAnimation();

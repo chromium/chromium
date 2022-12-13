@@ -303,8 +303,9 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
       std::make_unique<PageSwitcher>(apps_grid_view_->pagination_model());
   page_switcher_ = AddChildView(std::move(page_switcher));
 
-  auto app_list_folder_view = std::make_unique<AppListFolderView>(
-      this, apps_grid_view_, a11y_announcer, view_delegate);
+  auto app_list_folder_view =
+      std::make_unique<AppListFolderView>(this, apps_grid_view_, a11y_announcer,
+                                          view_delegate, /*tablet_mode=*/true);
   folder_background_view_ = AddChildView(
       std::make_unique<FolderBackgroundView>(app_list_folder_view.get()));
 
@@ -761,8 +762,10 @@ void AppsContainerView::UpdateContinueSectionVisibility() {
 
   // Only play animations if the tablet mode app list is visible. This function
   // can be called in clamshell mode when the tablet app list is cached.
-  if (!contents_view_->app_list_view()->is_tablet_mode())
+  if (contents_view_->app_list_view()->app_list_state() ==
+      AppListViewState::kClosed) {
     return;
+  }
 
   // The change in continue container height is the amount by which the apps
   // grid view will be offset.
@@ -862,11 +865,6 @@ void AppsContainerView::AnimateYPosition(AppListViewState target_view_state,
   animator.Run(default_offset, page_switcher_->layer());
 }
 
-void AppsContainerView::OnTabletModeChanged(bool started) {
-  apps_grid_view_->OnTabletModeChanged(started);
-  app_list_folder_view_->OnTabletModeChanged(started);
-}
-
 void AppsContainerView::Layout() {
   gfx::Rect rect(GetContentsBounds());
   if (rect.IsEmpty())
@@ -884,8 +882,7 @@ void AppsContainerView::Layout() {
   top_folder_inset += kFolderMargin;
 
   // Account for the hotseat which overlaps with contents bounds in tablet mode.
-  if (contents_view_->app_list_view()->is_tablet_mode())
-    bottom_folder_inset += ShelfConfig::Get()->hotseat_bottom_padding();
+  bottom_folder_inset += ShelfConfig::Get()->hotseat_bottom_padding();
 
   folder_bounding_box.Inset(gfx::Insets::TLBR(
       top_folder_inset, kFolderMargin, bottom_folder_inset, kFolderMargin));
@@ -1544,8 +1541,10 @@ void AppsContainerView::HandleFocusAfterSort() {
   // As the sort update on AppsContainerView can be called in both clamshell
   // mode and tablet mode, return early if it's currently in clamshell mode
   // because the AppsContainerView isn't visible.
-  if (!contents_view_->app_list_view()->is_tablet_mode())
+  if (contents_view_->app_list_view()->app_list_state() ==
+      AppListViewState::kClosed) {
     return;
+  }
 
   // If the sort is done and the toast is visible and not fading out, request
   // the focus on the undo button on the toast. Otherwise request the focus on

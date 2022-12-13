@@ -98,9 +98,6 @@ class ASH_EXPORT ContentsView : public views::View,
   // Called when the target state of AppListView changes.
   void OnAppListViewTargetStateChanged(AppListViewState target_state);
 
-  // Called from AppListView when the tablet mode state changes.
-  void OnTabletModeChanged(bool started);
-
   // Shows/hides the search results. Hiding the search results will cause the
   // app list to return to the page that was displayed before
   // ShowSearchResults(true) was invoked.

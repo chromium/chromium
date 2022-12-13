@@ -23,7 +23,7 @@ class ASH_EXPORT FolderHeaderView : public views::View,
                                     public views::TextfieldController,
                                     public AppListItemObserver {
  public:
-  explicit FolderHeaderView(FolderHeaderViewDelegate* delegate);
+  FolderHeaderView(FolderHeaderViewDelegate* delegate, bool tablet_mode);
 
   FolderHeaderView(const FolderHeaderView&) = delete;
   FolderHeaderView& operator=(const FolderHeaderView&) = delete;
@@ -35,7 +35,6 @@ class ASH_EXPORT FolderHeaderView : public views::View,
   bool HasTextFocus() const;
   void SetTextFocus();
   bool is_tablet_mode() const { return is_tablet_mode_; }
-  void set_tablet_mode(bool started) { is_tablet_mode_ = started; }
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -96,7 +95,7 @@ class ASH_EXPORT FolderHeaderView : public views::View,
 
   bool folder_name_visible_;
 
-  bool is_tablet_mode_;
+  const bool is_tablet_mode_;
 
   // Used to restore the folder name when the user presses the escape key.
   std::u16string previous_folder_name_;

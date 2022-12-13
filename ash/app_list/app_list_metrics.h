@@ -238,7 +238,7 @@ ASH_EXPORT void RecordLauncherWorkflowMetrics(
 
 ASH_EXPORT bool IsCommandIdAnAppLaunch(int command_id);
 
-ASH_EXPORT void ReportPaginationSmoothness(bool is_tablet_mode, int smoothness);
+ASH_EXPORT void ReportPaginationSmoothness(int smoothness);
 
 ASH_EXPORT void ReportCardifiedSmoothness(bool is_entering_cardified,
                                           int smoothness);
