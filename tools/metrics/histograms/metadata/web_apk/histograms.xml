@@ -224,19 +224,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApk.Session.TotalDuration2{WebApkDistributorType}"
-    units="ms" expires_after="2022-12-16">
-  <owner>hartmanng@chromium.org</owner>
-  <owner>
-    src/chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
-  </owner>
-  <summary>
-    The length of a WebAPK session (launch/foregrounding to backgrounding) in
-    milliseconds. {WebApkDistributorType}
-  </summary>
-  <token key="WebApkDistributorType" variants="WebApkDistributorType"/>
-</histogram>
-
 <histogram name="WebApk.ShellApkVersion2{WebApkDistributorType}" units="units"
     expires_after="2023-06-01">
   <owner>hartmanng@chromium.org</owner>

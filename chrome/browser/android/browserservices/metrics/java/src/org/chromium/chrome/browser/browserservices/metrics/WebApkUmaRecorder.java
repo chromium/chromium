@@ -192,14 +192,6 @@ public class WebApkUmaRecorder {
                 GooglePlayInstallResult.NUM_ENTRIES);
     }
 
-    /** Records the duration of a WebAPK session (from launch/foreground to background). */
-    public static void recordWebApkSessionDuration(
-            @WebApkDistributor int distributor, long duration) {
-        RecordHistogram.recordLongTimesHistogram(
-                "WebApk.Session.TotalDuration2." + getWebApkDistributorUmaSuffix(distributor),
-                duration);
-    }
-
     /** Records the current Shell APK version. */
     public static void recordShellApkVersion(
             int shellApkVersion, @WebApkDistributor int distributor) {

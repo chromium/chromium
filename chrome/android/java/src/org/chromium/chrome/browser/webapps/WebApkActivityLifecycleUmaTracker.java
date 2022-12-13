@@ -116,7 +116,6 @@ public class WebApkActivityLifecycleUmaTracker
     public void onPauseWithNative() {
         WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
         long sessionDuration = SystemClock.elapsedRealtime() - mStartTime;
-        WebApkUmaRecorder.recordWebApkSessionDuration(webApkExtras.distributor, sessionDuration);
         WebApkUkmRecorder.recordWebApkSessionDuration(webApkExtras.manifestUrl,
                 webApkExtras.distributor, webApkExtras.webApkVersionCode, sessionDuration);
     }
