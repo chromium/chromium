@@ -29,13 +29,12 @@
 #include "third_party/blink/renderer/platform/audio/audio_delay_dsp_kernel.h"
 #include "third_party/blink/renderer/platform/audio/fft_convolver.h"
 #include "third_party/blink/renderer/platform/audio/panner.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
 class HRTFDatabaseLoader;
 
-class PLATFORM_EXPORT HRTFPanner final : public Panner {
+class HRTFPanner final : public Panner {
  public:
   HRTFPanner(float sample_rate,
              unsigned render_quantum_frames,
