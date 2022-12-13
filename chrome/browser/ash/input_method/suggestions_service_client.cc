@@ -37,6 +37,12 @@ MultiWordExperimentGroup GetExperimentGroup(const std::string& finch_trial) {
     return MultiWordExperimentGroup::kGboardRelaxedB;
   if (finch_trial == "gboard_relaxed_c")
     return MultiWordExperimentGroup::kGboardRelaxedC;
+  if (finch_trial == "gboard_d")
+    return MultiWordExperimentGroup::kGboardD;
+  if (finch_trial == "gboard_e")
+    return MultiWordExperimentGroup::kGboardE;
+  if (finch_trial == "gboard_f")
+    return MultiWordExperimentGroup::kGboardF;
   return MultiWordExperimentGroup::kDefault;
 }
 
