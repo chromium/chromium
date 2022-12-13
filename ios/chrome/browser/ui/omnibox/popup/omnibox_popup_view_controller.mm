@@ -171,7 +171,7 @@ const CGFloat kHeaderPadding = 2.0f;
   }
   UITableViewStyle style = IsOmniboxActionsVisualTreatment2()
                                ? UITableViewStyleInsetGrouped
-                               : UITableViewStylePlain;
+                               : UITableViewStyleGrouped;
   self.tableView = [[SelfSizingTableView alloc] initWithFrame:CGRectZero
                                                         style:style];
   self.tableView.delegate = self;
