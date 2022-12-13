@@ -6,7 +6,6 @@
 #include "build/build_config.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_mojo.h"
-#include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace IPC {
@@ -41,8 +40,7 @@ std::unique_ptr<Channel> Channel::CreateClient(
   return ChannelMojo::Create(
       mojo::ScopedMessagePipeHandle(channel_handle.mojo_handle),
       Channel::MODE_CLIENT, listener, ipc_task_runner,
-      base::SingleThreadTaskRunner::GetCurrentDefault(),
-      mojo::internal::MessageQuotaChecker::MaybeCreate());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 #endif
 }
 
@@ -58,8 +56,7 @@ std::unique_ptr<Channel> Channel::CreateServer(
   return ChannelMojo::Create(
       mojo::ScopedMessagePipeHandle(channel_handle.mojo_handle),
       Channel::MODE_SERVER, listener, ipc_task_runner,
-      base::SingleThreadTaskRunner::GetCurrentDefault(),
-      mojo::internal::MessageQuotaChecker::MaybeCreate());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 #endif
 }
 

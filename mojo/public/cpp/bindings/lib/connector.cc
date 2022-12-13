@@ -28,7 +28,6 @@
 #include "mojo/public/c/system/quota.h"
 #include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/bindings/lib/may_auto_lock.h"
-#include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
 #include "mojo/public/cpp/bindings/sync_handle_watcher.h"
 #include "mojo/public/cpp/bindings/tracing_helpers.h"
@@ -182,13 +181,6 @@ Connector::Connector(ScopedMessagePipeHandle message_pipe,
 }
 
 Connector::~Connector() {
-  if (quota_checker_) {
-    // Clear the message pipe handle in the checker.
-    quota_checker_->SetMessagePipe(MessagePipeHandle());
-    UMA_HISTOGRAM_COUNTS_1M("Mojo.Connector.MaxUnreadMessageQuotaUsed",
-                            quota_checker_->GetMaxQuotaUsage());
-  }
-
   if (is_receiving_) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CancelWait();
@@ -351,9 +343,6 @@ bool Connector::Accept(Message* message) {
     }
   }
 
-  if (quota_checker_)
-    quota_checker_->BeforeWrite();
-
   MojoResult rv =
       WriteMessageNew(message_pipe_.get(), message->TakeMojoMessage(),
                       MOJO_WRITE_MESSAGE_FLAG_NONE);
@@ -396,14 +385,6 @@ void Connector::AllowWokenUpBySyncWatchOnSameThread() {
 
   EnsureSyncWatcherExists();
   sync_watcher_->AllowWokenUpBySyncWatchOnSameThread();
-}
-
-void Connector::SetMessageQuotaChecker(
-    scoped_refptr<internal::MessageQuotaChecker> checker) {
-  DCHECK(checker && !quota_checker_);
-
-  quota_checker_ = std::move(checker);
-  quota_checker_->SetMessagePipe(message_pipe_.get());
 }
 
 // static

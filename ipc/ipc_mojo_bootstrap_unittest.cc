@@ -118,13 +118,12 @@ class IPCMojoBootstrapTest : public testing::Test {
 
 TEST_F(IPCMojoBootstrapTest, Connect) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  Connection connection(
-      IPC::MojoBootstrap::Create(
-          helper_.StartChild("IPCMojoBootstrapTestClient"),
-          IPC::Channel::MODE_SERVER,
-          base::SingleThreadTaskRunner::GetCurrentDefault(),
-          base::SingleThreadTaskRunner::GetCurrentDefault(), nullptr),
-      kTestServerPid);
+  Connection connection(IPC::MojoBootstrap::Create(
+                            helper_.StartChild("IPCMojoBootstrapTestClient"),
+                            IPC::Channel::MODE_SERVER,
+                            base::SingleThreadTaskRunner::GetCurrentDefault(),
+                            base::SingleThreadTaskRunner::GetCurrentDefault()),
+                        kTestServerPid);
 
   mojo::PendingAssociatedReceiver<IPC::mojom::Channel> receiver;
   connection.TakeReceiver(&receiver);
@@ -149,7 +148,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
           std::move(mojo::core::test::MultiprocessTestHelper::primordial_pipe),
           IPC::Channel::MODE_CLIENT,
           base::SingleThreadTaskRunner::GetCurrentDefault(),
-          base::SingleThreadTaskRunner::GetCurrentDefault(), nullptr),
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       kTestClientPid);
 
   mojo::PendingAssociatedReceiver<IPC::mojom::Channel> receiver;
@@ -171,7 +170,7 @@ TEST_F(IPCMojoBootstrapTest, ReceiveEmptyMessage) {
           helper_.StartChild("IPCMojoBootstrapTestEmptyMessage"),
           IPC::Channel::MODE_SERVER,
           base::SingleThreadTaskRunner::GetCurrentDefault(),
-          base::SingleThreadTaskRunner::GetCurrentDefault(), nullptr),
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       kTestServerPid);
 
   mojo::PendingAssociatedReceiver<IPC::mojom::Channel> receiver;
@@ -199,7 +198,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
           std::move(mojo::core::test::MultiprocessTestHelper::primordial_pipe),
           IPC::Channel::MODE_CLIENT,
           base::SingleThreadTaskRunner::GetCurrentDefault(),
-          base::SingleThreadTaskRunner::GetCurrentDefault(), nullptr),
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       kTestClientPid);
 
   mojo::PendingAssociatedReceiver<IPC::mojom::Channel> receiver;

@@ -34,7 +34,6 @@
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_logging.h"
 #include "ipc/message_filter.h"
-#include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/constants.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
@@ -126,8 +125,7 @@ ChildProcessHostImpl::ChildProcessHostImpl(ChildProcessHostDelegate* delegate,
             kChildProcessReceiverAttachmentName),
         IPC::Channel::MODE_SERVER, this,
         base::SingleThreadTaskRunner::GetCurrentDefault(),
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
-        mojo::internal::MessageQuotaChecker::MaybeCreate());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   } else if (ipc_mode_ == IpcMode::kNormal) {
     child_process_.Bind(mojo::PendingRemote<mojom::ChildProcess>(
         mojo_invitation_->AttachMessagePipe(
@@ -223,8 +221,7 @@ void ChildProcessHostImpl::CreateChannelMojo() {
     channel_ = IPC::ChannelMojo::Create(
         std::move(bootstrap), IPC::Channel::MODE_SERVER, this,
         base::SingleThreadTaskRunner::GetCurrentDefault(),
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
-        mojo::internal::MessageQuotaChecker::MaybeCreate());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
   DCHECK(channel_);
 

@@ -14,12 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "ipc/ipc_channel.h"
 
-namespace mojo {
-namespace internal {
-class MessageQuotaChecker;
-}  // namespace internal
-}  // namespace mojo
-
 namespace IPC {
 
 // Encapsulates how a Channel is created. A ChannelFactory can be
@@ -37,8 +31,6 @@ class COMPONENT_EXPORT(IPC) ChannelFactory {
   virtual ~ChannelFactory() { }
   virtual std::unique_ptr<Channel> BuildChannel(Listener* listener) = 0;
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetIPCTaskRunner() = 0;
-  virtual scoped_refptr<mojo::internal::MessageQuotaChecker>
-  GetQuotaChecker() = 0;
 };
 
 }  // namespace IPC

@@ -30,9 +30,6 @@ class Lock;
 }
 
 namespace mojo {
-namespace internal {
-class MessageQuotaChecker;
-}
 
 class SyncHandleWatcher;
 
@@ -224,10 +221,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
 
   base::SequencedTaskRunner* task_runner() const { return task_runner_.get(); }
 
-  // Sets the quota checker.
-  void SetMessageQuotaChecker(
-      scoped_refptr<internal::MessageQuotaChecker> checker);
-
   // Allows testing environments to override the default serialization behavior
   // of newly constructed Connector instances. Must be called before any
   // Connector instances are constructed.
@@ -333,9 +326,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   size_t sync_handle_watcher_callback_count_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // The quota checker associate with this connector, if any.
-  scoped_refptr<internal::MessageQuotaChecker> quota_checker_;
 
   // Indicates whether the Connector is configured to actively read from its
   // message pipe. As long as this is true, the Connector is only safe to

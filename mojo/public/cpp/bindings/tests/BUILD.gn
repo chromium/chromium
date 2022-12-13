@@ -34,7 +34,6 @@ source_set("tests") {
     "map_unittest.cc",
     "message_queue.cc",
     "message_queue.h",
-    "message_quota_checker_unittest.cc",
     "message_unittest.cc",
     "multiplex_router_unittest.cc",
     "native_struct_unittest.cc",

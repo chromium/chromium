@@ -17,7 +17,6 @@
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_watchdog_timeout.h"
 #include "ipc/ipc_channel_mojo.h"
-#include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "url/gurl.h"
 
@@ -215,9 +214,9 @@ void GpuChannelHost::Listener::Initialize(
     mojo::PendingAssociatedReceiver<mojom::GpuChannel> receiver,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
   base::AutoLock lock(lock_);
-  channel_ = IPC::ChannelMojo::Create(
-      std::move(handle), IPC::Channel::MODE_CLIENT, this, io_task_runner,
-      io_task_runner, mojo::internal::MessageQuotaChecker::MaybeCreate());
+  channel_ =
+      IPC::ChannelMojo::Create(std::move(handle), IPC::Channel::MODE_CLIENT,
+                               this, io_task_runner, io_task_runner);
   DCHECK(channel_);
   bool result = channel_->Connect();
   DCHECK(result);

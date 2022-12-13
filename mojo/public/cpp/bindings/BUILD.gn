@@ -169,8 +169,6 @@ component("bindings") {
     "lib/interface_ptr_state.h",
     "lib/interface_serialization.h",
     "lib/message_dispatcher.cc",
-    "lib/message_quota_checker.cc",
-    "lib/message_quota_checker.h",
     "lib/multiplex_router.cc",
     "lib/multiplex_router.h",
     "lib/native_enum_data.h",
