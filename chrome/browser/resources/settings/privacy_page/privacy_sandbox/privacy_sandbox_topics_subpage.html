@@ -1,6 +1,63 @@
+<style include="cr-shared-style">
+  #currentTopicsSection {
+    align-items: center;
+    display: flex;
+    padding: 0 var(--cr-section-padding);
+  }
+
+  #currentTopicsSectionWrapper {
+    width: 100%;
+  }
+
+  #currentTopicsHeading {
+    color: var(--cr-secondary-text-color);
+    font-size: 100%;
+    font-weight: 500;
+    margin: 0;
+    padding-block-start: var(--cr-section-vertical-padding);
+  }
+
+  #currentTopicsDescription {
+    padding-block-end: var(--cr-section-vertical-padding);
+  }
+
+  .no-topics {
+    padding-block-end: 32px;
+    padding-block-start: 16px;
+    padding-inline-start: 40px;
+  }
+</style>
+
 <settings-toggle-button
     id="topicsToggle"
     pref="{{prefs.privacy_sandbox.m1.topics_enabled}}"
     label="$i18n{topicsPageToggleLabel}"
     sub-label="$i18n{topicsPageToggleSubLabel}">
 </settings-toggle-button>
+<div id="currentTopicsSection">
+  <div id="currentTopicsSectionWrapper" class="hr">
+    <h2 id="currentTopicsHeading">
+      $i18n{topicsPageCurrentTopicsHeading}
+    </h2>
+    <template is="dom-if" if="[[isTopicsEnabledAndLoaded_(
+        prefs.privacy_sandbox.m1.topics_enabled.value, isTopicsListLoaded_)]]"
+        restamp>
+        <!-- TODO(b/254413439): Add "Learn more" link. -->
+        <div id="currentTopicsDescription" class="cr-secondary-text"
+            hidden="[[isTopicsListEmpty_(topicsList_.length)]]">
+          $i18n{topicsPageCurrentTopicsDescription}
+        </div>
+        <!-- TODO(b/254412594): Add Topics list. -->
+        <div id="currentTopicsDescriptionEmpty"
+            class="no-topics cr-secondary-text"
+            hidden="[[!isTopicsListEmpty_(topicsList_.length)]]">
+          $i18n{topicsPageCurrentTopicsDescriptionEmpty}
+        </div>
+    </template>
+    <div id="currentTopicsDescriptionDisabled"
+        class="no-topics cr-secondary-text"
+        hidden="[[prefs.privacy_sandbox.m1.topics_enabled.value]]">
+      $i18n{topicsPageCurrentTopicsDescriptionDisabled}
+    </div>
+  </div>
+</div>
