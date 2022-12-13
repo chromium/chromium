@@ -36,10 +36,7 @@ LocationArbitrator::LocationArbitrator(
       main_task_runner_(main_task_runner),
       url_loader_factory_(url_loader_factory),
       api_key_(api_key),
-      position_provider_(nullptr),
-      is_permission_granted_(false),
-      position_cache_(std::move(position_cache)),
-      is_running_(false) {}
+      position_cache_(std::move(position_cache)) {}
 
 LocationArbitrator::~LocationArbitrator() {
   // Release the global wifi polling policy state.
