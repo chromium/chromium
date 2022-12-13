@@ -245,12 +245,18 @@ views::Widget* TouchSelectText(content::WebContents* contents,
 IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
                        ContextMenuOpensFromTouchSelectionMenu) {
   const GURL url = embedded_test_server()->GetURL("/pdf/text_large.pdf");
-  content::WebContents* const guest_contents = LoadPdfGetGuestContents(url);
-  ASSERT_TRUE(guest_contents);
+  extensions::MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(url);
+  ASSERT_TRUE(guest);
 
-  gfx::Point screen_pos =
-      ConvertPageCoordToScreenCoord(guest_contents, {12, 12});
-  views::Widget* widget = TouchSelectText(GetActiveWebContents(), screen_pos);
+  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
+  ASSERT_TRUE(guest_mainframe);
+  content::WaitForHitTestData(guest_mainframe);
+
+  const gfx::Point point_in_root_coords =
+      guest_mainframe->GetView()->TransformPointToRootCoordSpace(
+          ConvertPageCoordToScreenCoord(guest_mainframe, {12, 12}));
+  views::Widget* widget =
+      TouchSelectText(GetActiveWebContents(), point_in_root_coords);
   ASSERT_TRUE(widget);
   views::View* menu = widget->GetContentsView();
   ASSERT_TRUE(menu);
