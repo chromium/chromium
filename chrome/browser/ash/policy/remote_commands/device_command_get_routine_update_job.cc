@@ -121,16 +121,15 @@ bool DeviceCommandGetRoutineUpdateJob::ParseCommandPayload(
   if (!root->is_dict())
     return false;
 
-  const base::Value::Dict& dict = root->GetDict();
   // Make sure the command payload specified a valid integer for the routine ID.
-  absl::optional<int> id = dict.FindInt(kIdFieldName);
+  absl::optional<int> id = root->FindIntKey(kIdFieldName);
   if (!id.has_value())
     return false;
   routine_id_ = id.value();
 
   // Make sure the command payload specified a valid
   // DiagnosticRoutineCommandEnum.
-  absl::optional<int> command_enum = dict.FindInt(kCommandFieldName);
+  absl::optional<int> command_enum = root->FindIntKey(kCommandFieldName);
   if (!command_enum.has_value())
     return false;
   if (!PopulateMojoEnumValueIfValid(command_enum.value(), &command_)) {
@@ -140,7 +139,8 @@ bool DeviceCommandGetRoutineUpdateJob::ParseCommandPayload(
   }
 
   // Make sure the command payload specified a boolean for include_output.
-  absl::optional<bool> include_output = dict.FindBool(kIncludeOutputFieldName);
+  absl::optional<bool> include_output =
+      root->FindBoolKey(kIncludeOutputFieldName);
   if (!include_output.has_value())
     return false;
   include_output_ = include_output.value();
