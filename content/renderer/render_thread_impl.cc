@@ -1661,6 +1661,9 @@ RenderThreadImpl::GetMediaSequencedTaskRunner() {
 #if BUILDFLAG(IS_FUCHSIA)
     // Start IO thread on Fuchsia to make that thread usable for FIDL.
     base::Thread::Options options(base::MessagePumpType::IO, 0);
+    // TODO(crbug.com/1400772): Use kCompositing to address media latency on
+    // Fuchsia until alignment on new media thread types is achieved.
+    options.thread_type = base::ThreadType::kCompositing;
 #else
     base::Thread::Options options;
 #endif
