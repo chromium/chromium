@@ -159,6 +159,15 @@ class SecondDeviceAuthBroker {
   void OnChallengeBytesFetched(ChallengeBytesCallback challenge_callback,
                                std::unique_ptr<EndpointResponse> response);
 
+  // Callback for handling the response from Gaia to our request for an OAuth
+  // authorization code.
+  // If successful, the received OAuth authorization code is in turn exchanged
+  // for an LST, and `refresh_token_callback` is completed.
+  // Otherwise `refresh_token_callback` is completed with an appropriate
+  // `RefreshTokenResponse` type.
+  void OnAuthorizationCodeFetched(RefreshTokenCallback refresh_token_callback,
+                                  std::unique_ptr<EndpointResponse> response);
+
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Used for fetching results from Gaia endpoints.

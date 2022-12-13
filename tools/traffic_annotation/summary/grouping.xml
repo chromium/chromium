@@ -271,6 +271,7 @@ after discussions on the right group.
       <annotation id="nearby_webrtc_connection"/>
       <annotation id="projector_xhr_loader"/>
       <annotation id="bruschetta_installer_download"/>
+      <annotation id="quick_start_session_auth_requester"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
