@@ -4915,6 +4915,33 @@
             ]
         }
     ],
+    "GalleryAppPdfEditNotification": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledEditAndSign_20221206",
+                    "params": {
+                        "text": "Edit and Sign"
+                    },
+                    "enable_features": [
+                        "GalleryAppPdfEditNotification"
+                    ]
+                },
+                {
+                    "name": "EnabledOpenInGallery_20221206",
+                    "params": {
+                        "text": "Open in Gallery app"
+                    },
+                    "enable_features": [
+                        "GalleryAppPdfEditNotification"
+                    ]
+                }
+            ]
+        }
+    ],
     "GoogleLensDesktopTransparentImagesFix": [
         {
             "platforms": [
