@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">រក្សាទុក <ph name="NAME" /> របស់អ្នក</translation>
 <translation id="1032891413405719768">ថាមពល​ថ្មរបស់ប៊ិចនៅសល់តិច</translation>
 <translation id="1036073649888683237">ដើម្បីគ្រប់គ្រងការជូនដំណឹង សូមចូលទៅកាន់ការកំណត់</translation>
+<translation id="1036348656032585052">បិទ</translation>
 <translation id="1036672894875463507">ខ្ញុំគឺជា Google ជំនួយការរបស់អ្នក ខ្ញុំនៅទីនេះ ដើម្បីជួយអ្នកពេញមួយថ្ងៃ!
 ទាំងនេះ​គឺជាចំណុច​មួយចំនួន ដែលអ្នកអាចសាកល្បង ដើម្បីចាប់ផ្ដើម។</translation>
 <translation id="1037492556044956303">បាន​បញ្ចូល <ph name="DEVICE_NAME" /></translation>
@@ -174,6 +175,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ត្រូវបាន​ដកការដៅ</translation>
 <translation id="1836215606488044471">ជំនួយការ (កំពុង​ផ្ទុក...)</translation>
 <translation id="1838895407229022812">បានបិទពន្លឺពេលយប់។</translation>
+<translation id="1854180393107901205">បញ្ឈប់ការខាស</translation>
 <translation id="1862380676329487333">ដំឡើងកំណែ រួច​ចេញ</translation>
 <translation id="1864454756846565995">ឧបករណ៍ USB-C (រន្ធខាងក្រោយ)</translation>
 <translation id="1869497990620230175">ឯកសារ​រហ័ស</translation>
@@ -667,13 +669,13 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">បានបើក ChromeVox</translation>
 <translation id="4665114317261903604">បិទ/បើក​មុខងារ​ "កុំរំខាន"។ <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">បិទ​ការចូលប្រើប្រាស់​កាមេរ៉ា​នៅលើ​ឧបករណ៍​នេះ ដើម្បីទប់ស្កាត់​កាមេរ៉ា​ទាំងអស់​គ្រប់ពេល។</translation>
 <translation id="4666911709726371538">កម្ម​វិធី​​ច្រើន​ទៀត</translation>
 <translation id="4667099493359681081">កំពុង​ទាញយក <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">កម្មវិធីពីទូរសព្ទរបស់​អ្នក</translation>
 <translation id="4690510401873698237">ធ្នើនៅ​ខាងក្រោម</translation>
 <translation id="4696813013609194136">ដោះ​សោ​ឧបករណ៍​ដោយ​ប្រើ​កូដ​សម្រាប់​មាតា​បិតា</translation>
 <translation id="4702647871202761252">អេក្រង់​ឯកជនភាព​ត្រូវបានបិទ</translation>
+<translation id="4706121060329443414">នឹងព្យាយាម​ទាញយក​នៅពេលក្រោយ។ ការនិយាយ​នឹងត្រូវបានផ្ញើទៅ Google ដើម្បីដំណើរការ​សម្រាប់ពេលនេះ។</translation>
 <translation id="470644585772471629">ការបញ្ច្រាស​ពណ៌</translation>
 <translation id="4717575069099566988">ខ្សែ USB-C របស់អ្នកមិនអាចប្រើ USB4 បានទេ។ ប្រតិបត្តិការឧបករណ៍អាចត្រូវ​បានដាក់កំហិត។</translation>
 <translation id="4730374152663651037">ដែល​ប្រើ​ញឹកញាប់</translation>
@@ -699,7 +701,6 @@
 <translation id="485592688953820832">គ្មាន​សកម្មភាព (ផ្អាក)</translation>
 <translation id="485634149294284819">បញ្ចូលម៉ឺនុយ​ក្ដារចុច</translation>
 <translation id="4860284199500934869">ពិនិត្យមើលការតភ្ជាប់បណ្ដាញរបស់អ្នក ដើម្បីទាញយក <ph name="FILENAME" /></translation>
-<translation id="486056901304535126">នឹងព្យាយាម​ទាញយក​នៅពេលក្រោយ។ ការនិយាយ​នឹងត្រូវបានផ្ញើទៅ Google ដើម្បីដំណើរការ រហូតដល់បញ្ចប់​ការទាញយក។</translation>
 <translation id="4864369630010738180">កំពុង​ចូល...</translation>
 <translation id="4864648187878336334">តុទី 15</translation>
 <translation id="4868492592575313542">បាន​បើកដំណើរការ</translation>
@@ -1181,7 +1182,6 @@
 <translation id="7557816257942363084">បច្ចុប្បន្ន <ph name="APP_NAME" /> កំពុងប្រើ​មីក្រូហ្វូន​របស់អ្នក</translation>
 <translation id="7561982940498449837">បិទ​ម៉ឺនុយ</translation>
 <translation id="7564874036684306347">ការផ្លាស់ទីវិនដូទៅកុំព្យូទ័រ​ផ្សេងទៀតអាចបណ្តាលឱ្យមានសកម្មភាពខុសប្រក្រតី។ ការជូនដំណឹងបន្តបន្ទាប់ វិនដូ និងប្រអប់បញ្ចូលអាចត្រូវបានបំបែកពីកុំព្យូទ័រនីមួយៗ។</translation>
-<translation id="7567076708801803118">តើអ្នក​ពិតជា​ចង់​បិទ​ការចូលប្រើប្រាស់​កាមេរ៉ា​នៅលើ​ឧបករណ៍​នេះ​ឬ?</translation>
 <translation id="7569509451529460200">បានបើកប្រ៊ែល និង ChromeVox</translation>
 <translation id="7573585051776738856">បានភ្ជាប់វិនដូ​សកម្មនៅផ្នែក​ខាងស្ដាំ។</translation>
 <translation id="7579778809502851308">ការថត​អេក្រង់</translation>
@@ -1495,6 +1495,7 @@
 <translation id="954052413789300507">មិនមានទំហំផ្ទុកគ្រប់គ្រាន់សម្រាប់ <ph name="FILENAME" /> ទេ។ សូមបង្កើនទំហំផ្ទុក។</translation>
 <translation id="974545358917229949">កំពុង​បង្ហាញ​លទ្ធផល <ph name="RESULT_COUNT" /> សម្រាប់ <ph name="QUERY" /></translation>
 <translation id="98515147261107953">ផ្តេក</translation>
+<translation id="989374776391122812">ការគ្រប់គ្រង​កាមេរ៉ា និង​សំឡេង</translation>
 <translation id="990277280839877440">បានបិទវិនដូ <ph name="WINDOW_TITILE" /> ។</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">ទទួលបាន​មុខងារ និងការកែលម្អផ្នែកសុវត្ថិភាពចុងក្រោយបំផុត។ ការដំឡើងកំណែ​កើតឡើងនៅ​ផ្ទៃខាងក្រោយ។</translation>

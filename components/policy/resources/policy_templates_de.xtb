@@ -911,6 +911,11 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
       Ist sie deaktiviert oder nicht konfiguriert, kann WebDriver inkompatible Richtlinien nicht überschreiben.</translation>
 <translation id="1885782360784839335">Einblendung von Werbung auf dem gesamten Tab aktivieren</translation>
 <translation id="1888871729456797026">Das Registrierungstoken der Cloud-Richtlinie auf dem Desktop</translation>
+<translation id="1893271062894546361">Wenn diese Richtlinie aktiviert ist, steht die Benutzeroberfläche mit Elementen zur Steuerung der Medienwiedergabe für <ph name="PRODUCT_NAME" />-Sitzungen, die von anderen Geräten im lokalen Netzwerk gestartet wurden, zur Verfügung.
+
+      Ist die Richtlinie für Unternehmensnutzer nicht konfiguriert oder deaktiviert, steht die Benutzeroberfläche zur Steuerung der Medienwiedergabe für <ph name="PRODUCT_NAME" />-Sitzungen, die von anderen Geräten im lokalen Netzwerk gestartet wurden, nicht zur Verfügung.
+
+      Wenn die Richtlinie <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> deaktiviert ist, hat der Wert dieser Richtlinie keine Auswirkungen, da die gesamte <ph name="PRODUCT_NAME" />-Funktion deaktiviert ist.</translation>
 <translation id="1894790493260633497">Standardmäßig Druckmodus mit Hintergrundgrafiken aktivieren</translation>
 <translation id="1897365952389968758">Ausführung von JavaScript für alle Websites zulassen</translation>
 <translation id="1902043648529789224">Position der Ablage bestimmen</translation>
@@ -1403,6 +1408,9 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
 <translation id="2354439478396602136">App-Empfehlungen im <ph name="PRODUCT_OS_NAME" />-Launcher anzeigen</translation>
 <translation id="2355876547176311490">Nicht zulassen, dass Relayserver vom Host für den Remote-Zugriff verwendet werden können</translation>
 <translation id="2358176879566587521">Diese Richtlinie wurde entfernt. Sie ist mit dieser Version von <ph name="PRODUCT_NAME" /> nicht kompatibel. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a/answer/7643500.</translation>
+<translation id="235987002603620567">„NewBaseUrlInheritanceBehavior“ ist eine <ph name="PRODUCT_NAME" />-Funktion, die dazu führt, dass <ph name="ABOUT_BLANK_PAGE" />- und <ph name="ABOUT_SRCDOC_PAGE" />-Frames ihre grundlegenden URL-Werte fortlaufend aus Snapshots der Basis-URL des Initiators übernehmen. Weitere Informationen findest du unter https://chromestatus.com/feature/5161101671530496.
+
+Ist die Richtlinie deaktiviert, können Nutzer von <ph name="PRODUCT_NAME" />-Varianten „NewBaseUrlInheritanceBehavior“ nicht aktivieren, falls Kompatibilitätsprobleme vorliegen. Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann „NewBaseUrlInheritanceBehavior“ aktiviert werden.</translation>
 <translation id="2362469626417133796">Zeitfenster für Neustart</translation>
 <translation id="2362539163677485510">Das Registrierungstoken der Cloud-Richtlinie</translation>
 <translation id="2363928351203698966">Wenn die Richtlinie auf einen gültigen Wert festgelegt ist, nutzt <ph name="PRODUCT_NAME" /> keine SSL- oder TLS-Versionen, die niedriger als die vorgegebene Version sind. Nicht erkannte Werte werden ignoriert.
@@ -2683,6 +2691,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
       den Quirks-Server zu kontaktieren, um Konfigurationsdateien herunterzuladen.
 
       Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, kontaktiert <ph name="PRODUCT_OS_NAME" /> automatisch den Quirks-Server und lädt Konfigurationsdateien herunter, sofern welche vorhanden sind. Diese werden dann auf dem Gerät gespeichert.  Solche Dateien können beispielsweise verwendet werden, um die Anzeigequalität angeschlossener Monitore zu verbessern.</translation>
+<translation id="3515196503924273265">Ermöglicht das Aktivieren der Funktion „NewBaseUrlInheritanceBehavior“</translation>
 <translation id="351654132746710200">Wenn <ph name="LACROS_NAME" /> deaktiviert wurde, wird die Datenmigration nicht durchgeführt. Der Ordner „<ph name="LACROS_NAME" />“ wird entfernt und die Nutzer verwenden die verbleibenden Daten weiter.</translation>
 <translation id="3522257170445891912">Wenn diese Richtlinie konfiguriert ist, verläuft der Authentifizierungsvorgang bei der Anmeldung auf eine der folgenden Arten, abhängig von der festgelegten Einstellung:
 
@@ -3461,6 +3470,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 <translation id="4274691295133617461">Wenn die Richtlinie auf "3" gesetzt ist, dürfen Websites um Lesezugriff auf Dateien und Verzeichnisse im Dateisystem des Host-Betriebssystems über die File System API bitten. Ist sie auf "2" gesetzt, wird der Zugriff verweigert.
 
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>
+<translation id="4275048399551500192">Keine Mediensteuerelemente für <ph name="PRODUCT_NAME" />-Sitzungen anzeigen, die von anderen Geräten gestartet werden</translation>
 <translation id="4282243913059705499"><ph name="PRODUCT_NAME" />-Symbol immer in der Symbolleiste anzeigen</translation>
 <translation id="4285674129118156176">Nicht verknüpften Nutzern die Verwendung von ARC gestatten</translation>
 <translation id="4287344576768105337">Ist die Richtlinie konfiguriert, wird verhindert, dass Webseiten mit unzulässigen URLs geladen werden. Sie enthält eine Liste mit URL-Mustern unzulässiger URLs. Wird die Richtlinie nicht konfiguriert, werden keine URLs im Browser blockiert. Formatiere das URL-Muster, wie unter https://support.google.com/chrome/a?p=url_blocklist_filter_format angegeben. In <ph name="URL_ALLOWLIST_POLICY_NAME" /> können bis zu 1.000 Ausnahmen definiert werden.
@@ -3774,6 +3784,7 @@ Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du un
 <translation id="4611983465824842867">In unsicheren Formularen keine Warnungen anzeigen und auch nicht Autofill deaktivieren</translation>
 <translation id="4615003180013429835">Parsing-Modus für Websiteliste</translation>
 <translation id="4617338332148204752">Metatag-Überprüfung in <ph name="PRODUCT_FRAME_NAME" /> überspringen</translation>
+<translation id="461901491675418689">Funktion „NewBaseUrlInheritanceBehavior“ verfügbar</translation>
 <translation id="4624006912948309924">Wenn diese Richtlinie konfiguriert ist, werden die App-IDs festgelegt, die unter <ph name="PRODUCT_OS_NAME" /> als angepinnte Apps in der Launcherleiste angezeigt werden. Sie können nicht von Nutzern geändert werden.
 
 Chrome-Apps werden mit ihrer ID angegeben, z. B. „pjkljhegncpnkpknbcohdijeoejaedia“, Android-Apps mit ihrem Paketnamen, z. B. „com.google.android.gm“, Web-Apps mit ihrer URL aus <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, z. B. „https://google.com/maps“, und System-Web-Apps mit Ihrer Benennung, in der die Leerzeichen durch Unterstriche ersetzt sind, z. B. <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />.
@@ -4389,7 +4400,6 @@ Wenn diese Richtlinie für ein Konto auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_
 
       Wenn die Richtlinie nicht konfiguriert ist, können Nutzer das Dinosaurierspiel nicht auf registrierten <ph name="PRODUCT_OS_NAME" />-Geräten spielen, auf anderen aber schon.</translation>
 <translation id="5293285950307241933">Alle lokalen Nutzerdaten löschen</translation>
-<translation id="5293875928467750789">Wenn die Richtlinie konfiguriert ist, wird ihr Wert bei der Nutzeranmeldung als standardmäßiger prozentualer Wert für die Helligkeit der Hintergrundbeleuchtung einer Gerätetastatur verwendet.</translation>
 <translation id="529457411593078576">Nutzungsbedingungen während der ersten Ausführung für CCT aktivieren</translation>
 <translation id="5297948043665200363">Nutzer kann angemeldet bleiben, wenn sein Konto nicht mehr authentifiziert ist</translation>
 <translation id="5298949392804966105">Keine Einschränkungen für verwaltete Konten</translation>
@@ -5276,6 +5286,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6244061205361004687">Nutzern erlauben, VPN-Verbindungen manuell zu trennen oder zu ändern</translation>
 <translation id="6244210204546589761">Beim Start zu öffnende URLs</translation>
 <translation id="624595269193747921">Gibt an, ob die Suche nach dem passenden Drucker auf eine bestimmte Gruppe von Druckern beschränkt werden soll.</translation>
+<translation id="6246290059248303618">Mediensteuerelemente für <ph name="PRODUCT_NAME" />-Sitzungen anzeigen, die von anderen Geräten im lokalen Netzwerk gestartet wurden</translation>
 <translation id="6247316685259031374">Mit dieser Richtlinie kann die Sandbox für den Audioprozess konfiguriert werden.
       Wenn die Richtlinie aktiviert ist, wird der Audioprozess in einer Sandbox ausgeführt.
       Wird sie deaktiviert, erfolgt die Ausführung nicht in einer Sandbox und das WebRTC-Audioverarbeitungsmodul wird im Renderer-Prozess ausgeführt.
@@ -6231,6 +6242,7 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, gilt das Standardve
 <translation id="710003290625031750">Ausführliche Schemabeschreibung:</translation>
 <translation id="7101550508196914704">App-Verknüpfung nicht in der Lesezeichenleiste anzeigen</translation>
 <translation id="7109384070286741861">CECPQ2 deaktivieren</translation>
+<translation id="7113439794629928551">Mediensteuerelemente für <ph name="PRODUCT_NAME" />-Sitzungen anzeigen, die von anderen Geräten gestartet werden</translation>
 <translation id="7114169791477667553">Standardsuchmaschine deaktivieren</translation>
 <translation id="7121046543122812054">Diese Richtlinie ist veraltet. Du kannst stattdessen <ph name="BROWSER_SIGNIN_POLICY_NAME" /> verwenden.
 
@@ -6927,7 +6939,6 @@ werden abgelehnt.</translation>
 <translation id="7832225468415136704">Verhindern, dass das Chrome Cleanup Tool das System regelmäßig scannt, und manuelle Scans deaktivieren</translation>
 <translation id="7833148823006528332">Android-App-ID, z. B. „com.google.android.gm“ für Gmail.</translation>
 <translation id="7835218570504220753">Automatisches Klicken deaktivieren</translation>
-<translation id="7837834961221899821">Standardmäßige Helligkeit der Tastatur</translation>
 <translation id="7839180815400079700">Wenn „<ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" />“ aktiviert ist, wird durch das Konfigurieren von „<ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />“ die Tageskonfiguration für das Umschalten bei Leistungsspitzen aktiviert.
 
       Wenn die Richtlinie nicht konfiguriert ist, ist das Umschalten bei Leistungsspitzen immer deaktiviert.
@@ -7991,6 +8002,7 @@ Die Richtlinie ist eine Zuordnung von Konfigurations-IDs zu VM-Konfigurationen. 
       Ist sie deaktiviert, erfolgt die Ausführung des Netzwerkdienstprozesses nicht in einer Sandbox. Dadurch entstehen zusätzliche Sicherheitsrisiken für den Nutzer, die auf die Ausführung des Netzwerkdienstes ohne Sandbox zurückzuführen sind.
       Ist die Richtlinie nicht konfiguriert, kommt die Standardkonfiguration für die Netzwerk-Sandbox zum Einsatz. Diese kann abhängig vom <ph name="PRODUCT_NAME" />-Release, aktuell laufenden Feldtests und der Plattform variieren.
       Mit dieser Richtlinie sollen Unternehmen die Möglichkeit erhalten, die Netzwerk-Sandbox zu deaktivieren, falls sie Drittanbieter-Software einsetzen, die einen Konflikt mit der Netzwerkdienst-Sandbox verursacht.</translation>
+<translation id="8840243776706727185">Funktion „NewBaseUrlInheritanceBehavior“ deaktiviert</translation>
 <translation id="8842208363354615697">Aktivieren des Nur-HTTPS-Modus erlauben</translation>
 <translation id="885147810817138322">Nutzern Empfehlungen zu Medien anzeigen</translation>
 <translation id="8852579753940989645">Renderer-Codeintegrität aktivieren</translation>
@@ -8409,6 +8421,11 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chr
 <translation id="982497069985795632">Rechtschreibprüfung aktivieren</translation>
 <translation id="983256325512298435">Eine Liste mit Protokollen festlegen, über die eine externe App aus aufgeführten Quellen gestartet werden kann, ohne beim Nutzer nachzufragen</translation>
 <translation id="987261962216071510">Nur Browseranmeldungen durch Gäste zulassen</translation>
+<translation id="987975731398348803">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden über registrierte Geräte alle Gerätenutzer gemeldet, die sich vor Kurzem angemeldet haben.
+
+Ist die Richtlinie deaktiviert, melden die registrierten Geräte keine Nutzer.
+
+Wenn <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> aktiviert ist, wird <ph name="REPORT_DEVICE_USERS_POLICY_NAME" /> ignoriert und ist immer deaktiviert.</translation>
 <translation id="989197274317162189">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="URL_BLOCKLIST_POLICY_NAME" />“.</translation>
 <translation id="991560005425213776">Nutzer- und Dateiname an native Drucker senden</translation>
 <translation id="99202634486128833">Wenn die Richtlinie auf "CopyCaCerts" gesetzt ist, werden alle über ONC installierten CA-Zertifikate mit <ph name="WEB_TRUSTED_BIT" /> für ARC-Apps verfügbar.

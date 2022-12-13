@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">Зачувајте: <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Батеријата на пенкалото е слаба</translation>
 <translation id="1036073649888683237">За да управувате со известувањата, одете во „Поставки“</translation>
+<translation id="1036348656032585052">Исклучи</translation>
 <translation id="1036672894875463507">Јас сум вашиот „Помошник на Google“, тука сум да ви помагам во текот на денот!
 Еве неколку работи што може да ги пробате за почеток.</translation>
 <translation id="1037492556044956303">Додаден е <ph name="DEVICE_NAME" /></translation>
@@ -174,6 +175,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> веќе не е закачена</translation>
 <translation id="1836215606488044471">„Помошник“ (се вчитува…)</translation>
 <translation id="1838895407229022812">„Ноќното светло“ е исклучено.</translation>
+<translation id="1854180393107901205">Запри со емитување</translation>
 <translation id="1862380676329487333">Ажурирај и одјави се</translation>
 <translation id="1864454756846565995">USB-Ц уред (задна порта)</translation>
 <translation id="1869497990620230175">Брзи датотеки</translation>
@@ -668,13 +670,13 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox е овозможен</translation>
 <translation id="4665114317261903604">Вклучи/исклучи „Не вознемирувај“. <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Исклучете го пристапот до камерата на уредов за да се блокираат сите камери цело време.</translation>
 <translation id="4666911709726371538">Повеќе апликации</translation>
 <translation id="4667099493359681081">Се презема <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Апликации од телефонот</translation>
 <translation id="4690510401873698237">Полицата е најдолу</translation>
 <translation id="4696813013609194136">Отклучете го уредот со код на родител</translation>
 <translation id="4702647871202761252">Исклучен е екранот за приватност</translation>
+<translation id="4706121060329443414">Подоцна ќе се изврши обид за преземање. Говорот ќе биде испратен до Google за обработка засега.</translation>
 <translation id="470644585772471629">Инверзија на боите</translation>
 <translation id="4717575069099566988">Вашиот кабел USB-C не поддржува USB4. Изведбата на уредот може да биде ограничена.</translation>
 <translation id="4730374152663651037">ЧЕСТО КОРИСТЕНИ</translation>
@@ -700,7 +702,6 @@
 <translation id="485592688953820832">Нема дејство (пауза)</translation>
 <translation id="485634149294284819">Влезете во менито за тастатура</translation>
 <translation id="4860284199500934869">Проверете ја мрежната врска за да се преземе <ph name="FILENAME" /></translation>
-<translation id="486056901304535126">Подоцна ќе се изврши обид за преземање. Говорот ќе се испрати во Google за обработка додека да заврши преземањето.</translation>
 <translation id="4864369630010738180">Се најавува…</translation>
 <translation id="4864648187878336334">Работна површина 15</translation>
 <translation id="4868492592575313542">активиранo</translation>
@@ -1182,7 +1183,6 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> го користи микрофонот во моментов</translation>
 <translation id="7561982940498449837">Затвори го менито</translation>
 <translation id="7564874036684306347">Преместувањето на прозорците на друга работна површина може да доведе до неочекувано однесување. Следните известувања, прозорци и дијалози може да се поделат помеѓу работните површини.</translation>
-<translation id="7567076708801803118">Дали сакате да го исклучите пристапот до камерата на уредов?</translation>
 <translation id="7569509451529460200">Брајовото писмо и ChromeVox се овозможени</translation>
 <translation id="7573585051776738856">Активниот прозорец е приклучен на док на десната страна.</translation>
 <translation id="7579778809502851308">Снимање на екранот</translation>
@@ -1258,6 +1258,7 @@
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /> управуваат со сметката</translation>
 <translation id="793716872548410480">Притиснете <ph name="SHORTCUT_KEY_NAME" /> + V за да ја видите привремената меморија. Последните 5 ставки што сте ги копирале се зачувани во привремената меморија.</translation>
 <translation id="7942349550061667556">Црвена</translation>
+<translation id="7963992254934562106">Од <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Изберете папка…</translation>
 <translation id="7977927628060636163">Се пребаруваат мобилни мрежи…</translation>
 <translation id="7982789257301363584">Мрежа</translation>
@@ -1496,6 +1497,7 @@
 <translation id="954052413789300507">Нема доволно простор за <ph name="FILENAME" />. Ослободете простор.</translation>
 <translation id="974545358917229949">Се прикажуваат <ph name="RESULT_COUNT" /> резултати за <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Пејзаж</translation>
+<translation id="989374776391122812">Контроли за камера и звук</translation>
 <translation id="990277280839877440">Прозорецот <ph name="WINDOW_TITILE" /> е затворен.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Преземете ги најновите функции и подобрувања на безбедноста. Ажурирањата се извршуваат во заднина.</translation>

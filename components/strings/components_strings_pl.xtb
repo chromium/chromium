@@ -413,7 +413,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1958218078413065209">Twój najwyższy wynik to: <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Pomóż nam poprawić bezpieczeństwo wszystkich użytkowników w sieci, wysyłając do Google <ph name="BEGIN_WHITEPAPER_LINK" />adresy URL niektórych odwiedzanych stron, niektóre informacje o systemie oraz część zawartości stron<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Polityka prywatności<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Zakładki z <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">Chroń hasła za pomocą TouchID</translation>
 <translation id="1973335181906896915">Podczas przekształcania do postaci szeregowej wystąpił błąd</translation>
 <translation id="1974060860693918893">Zaawansowane</translation>
 <translation id="1975457531113383421">Taca wejściowa</translation>
@@ -748,7 +747,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2881276955470682203">Czy zapisać kartę?</translation>
 <translation id="2882949212241984732">Podwójne składanie do środka</translation>
 <translation id="2893773853358652045">Rolka 4</translation>
-<translation id="289834758818479772">Jeśli udostępniasz to urządzenie innym osobom, możesz włączyć funkcję TouchID, aby urządzenie potwierdzało Twoją tożsamość za każdym razem, gdy używasz zapisanego hasła</translation>
 <translation id="2900528713135656174">Utwórz wydarzenie</translation>
 <translation id="2903493209154104877">Adresy</translation>
 <translation id="290376772003165898">Język tej strony to nie <ph name="LANGUAGE" />?</translation>
@@ -1066,7 +1064,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3678529606614285348">Otwórz stronę w nowym oknie incognito (Ctrl+Shift+N)</translation>
 <translation id="3681007416295224113">Informacje o certyfikacie</translation>
 <translation id="3693327506115126094">Wybierz sposób weryfikacji tożsamości</translation>
-<translation id="3699374065820972102">Funkcja TouchID jest włączona w celu wypełniania haseł</translation>
 <translation id="3701427423622901115">Zresetowanie zostało potwierdzone.</translation>
 <translation id="3704162925118123524">Sieć, której używasz, może wymagać otwarcia strony logowania.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1181,7 +1178,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="401170183602135785">Koperta C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokument PDF zawierający {COUNT} stronę}few{Dokument PDF zawierający {COUNT} strony}many{Dokument PDF zawierający {COUNT} stron}other{Dokument PDF zawierający {COUNT} strony}}</translation>
 <translation id="4023431997072828269">Twoje dane będą widoczne dla innych, ponieważ połączenie używane do przesłania formularza nie jest bezpieczne.</translation>
-<translation id="4024923292610332139">wyłączyć używanie TouchID do wypełniania haseł</translation>
 <translation id="4025913568718019429">Przycisk zarządzania prywatnością w Google; aby otworzyć ustawienia prywatności konta Google, naciśnij Enter</translation>
 <translation id="4030383055268325496">&amp;Cofnij dodanie</translation>
 <translation id="4031179711345676612">Zezwolono na dostęp do mikrofonu</translation>
@@ -1543,7 +1539,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4900217275619098670">Rolka 9</translation>
 <translation id="4901778704868714008">Zapisz...</translation>
 <translation id="4905659621780993806">Administrator automatycznie uruchomi Twoje urządzenie ponownie <ph name="DATE" /> o <ph name="TIME" />. Zanim to się stanie, zapisz wszystkie otwarte elementy.</translation>
-<translation id="4911007278801291296">Jeśli chcesz włączyć lub wyłączyć TouchID, otwórz <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Otwór w lewym górnym rogu</translation>
 <translation id="4918221908152712722">Zainstaluj aplikację <ph name="APP_NAME" /> (nie wymaga pobrania)</translation>
 <translation id="4923459931733593730">Płatność</translation>
@@ -1725,6 +1720,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5334013548165032829">Szczegółowe dzienniki systemowe</translation>
 <translation id="5334145288572353250">Zapisać adres?</translation>
 <translation id="5335920952954443287">Bijące serce</translation>
+<translation id="5337569431717511221">Przycisk ustawiania Chrome jako przeglądarki domyślnej; naciśnij Enter, aby ustawić Chrome jako domyślną przeglądarkę w systemie</translation>
 <translation id="5340250774223869109">Aplikacja jest zablokowana</translation>
 <translation id="534295439873310000">Urządzenia z funkcją NFC</translation>
 <translation id="5344579389779391559">Ta strona może próbować obciążyć Cię płatnością</translation>
@@ -1756,7 +1752,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> chce wysyłać Ci powiadomienia</translation>
 <translation id="5428105026674456456">Hiszpański</translation>
 <translation id="5430298929874300616">Usuń zakładkę</translation>
-<translation id="5434423669266814150">włączyć TouchID na potrzeby wypełniania haseł</translation>
 <translation id="5443468954631487277">Kolejność odwrotna, strona do drukowania skierowana w górę</translation>
 <translation id="5447765697759493033">Ta strona nie zostanie przetłumaczona</translation>
 <translation id="5452270690849572955">Nie można znaleźć tej strony na <ph name="HOST_NAME" /></translation>
@@ -2420,6 +2415,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Administrator może zobaczyć:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, naciśnij Tab, a potem Enter, aby otworzyć nową kartę incognito i przeglądać prywatnie</translation>
+<translation id="7203375778433816396">Ustaw Chrome jako domyślną przeglądarkę w systemie</translation>
 <translation id="7210863904660874423">Serwer <ph name="HOST_NAME" /> nie spełnia norm bezpieczeństwa.</translation>
 <translation id="7210993021468939304">Wyświetlanie aktywności Linuksa w kontenerze oraz instalowanie i uruchamianie aplikacji Linuksa w kontenerze</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /> na temat tego problemu.</translation>
@@ -2567,6 +2563,7 @@ Dodatkowe informacje:
 <translation id="7537536606612762813">Obowiązkowa</translation>
 <translation id="7542403920425041731">Po potwierdzeniu szczegółowe dane karty zostaną udostępnione tej stronie.</translation>
 <translation id="7542995811387359312">Automatyczne wypełnianie danych karty kredytowej jest wyłączone, ponieważ ten formularz nie korzysta z bezpiecznego połączenia.</translation>
+<translation id="7546409722674205727">Rozpoczyna się <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Naprawianie błędów połączenia</translation>
 <translation id="7549584377607005141">Do poprawnego wyświetlenia tej strony internetowej wymagane są dane wpisane przez Ciebie wcześniej. Możesz wysłać je ponownie, ale spowoduje to powtórzenie wszystkich działań wykonanych poprzednio przez stronę.</translation>
 <translation id="7550637293666041147">Twoja nazwa użytkownika na urządzeniu i w Chrome</translation>
@@ -2752,6 +2749,7 @@ Dodatkowe informacje:
 <translation id="8009843239480947060">10 x 11 cali</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Ta karta i jej adres rozliczeniowy zostaną zapisane. Możesz ich używać po zalogowaniu się na konto <ph name="USER_EMAIL" />.}few{Te karty i ich adresy rozliczeniowe zostaną zapisane. Możesz ich używać po zalogowaniu się na konto <ph name="USER_EMAIL" />.}many{Te karty i ich adresy rozliczeniowe zostaną zapisane. Możesz ich używać po zalogowaniu się na konto <ph name="USER_EMAIL" />.}other{Te karty i ich adresy rozliczeniowe zostaną zapisane. Możesz ich używać po zalogowaniu się na konto <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby ustawić Chrome jako domyślną przeglądarkę w systemie, naciśnij Tab, a potem Enter</translation>
 <translation id="8025119109950072390">Osoby atakujące tę stronę mogą podstępem nakłonić Cię do zrobienia czegoś niebezpiecznego, np. zainstalowania oprogramowania lub ujawnienia danych osobowych (takich jak hasła, numery telefonów czy dane kart kredytowych).</translation>
 <translation id="8026334261755873520">Wyczyść dane przeglądania</translation>
 <translation id="8027077570865220386">Taca 15</translation>

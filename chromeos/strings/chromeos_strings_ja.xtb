@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">印刷ジョブをキャンセル</translation>
 <translation id="2163937499206714165">ダークモードをオンにする</translation>
 <translation id="2180197493692062006">エラーが発生しました。アプリをもう一度開いてください。</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">トラフィック カウンタをリセット</translation>
 <translation id="2212733584906323460">名前解決</translation>
 <translation id="2217935453350629363">現在の速度</translation>
@@ -492,6 +491,7 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">日の入り時にダークテーマへ自動的に切り替える</translation>
+<translation id="5571714952674387371">詳細の表示と編集</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">再スキャン</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -561,6 +561,7 @@
 <translation id="6189418609903030344">バッテリー容量は使用に伴って減少します</translation>
 <translation id="6191293864534840972">ネームサーバーの形式が正しくありません</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">全画面表示を終了</translation>
 <translation id="6223752125779001553">利用可能なスキャナがありません</translation>
 <translation id="6232017090690406397">バッテリー</translation>
 <translation id="6235460611964961764">データ使用量を手動でリセットする</translation>
@@ -688,12 +689,12 @@
 <translation id="741244894080940828">単位変換</translation>
 <translation id="7415801143053185905">HTTP レイテンシが非常に高くなっています</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{スキャンが完了しました。1 ページをスキャンしました}other{スキャンが完了しました。{NUMBER_OF_PAGES} ページをスキャンしました}}</translation>
 <translation id="7458970041932198923">アバターを表示、設定するには、ネットワークに接続してページを再読み込みしてください。</translation>
 <translation id="7469648432129124067">ポータルが検出されました</translation>
 <translation id="7481312909269577407">進む</translation>
 <translation id="7487067081878637334">テクノロジー</translation>
 <translation id="7490813197707563893">MAC アドレス</translation>
+<translation id="7491478667760509108">フロート表示を終了</translation>
 <translation id="7497215489070763236">サーバーの CA 証明書</translation>
 <translation id="7502658306369382406">IPv6 アドレス</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -794,6 +795,7 @@
 <translation id="8498220429738806196">トラフィック カウンタ</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="8503836310948963452">もう少しです…</translation>
+<translation id="8508640263392900755">APN の詳細</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ご利用の携帯通信会社でのネットワーク接続にこのオプションが必要な場合があります。詳しくは携帯通信会社にお問い合わせください。</translation>
 <translation id="8576249514688522074">初期化が未完了</translation>

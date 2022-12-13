@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">시크릿 탭을 모두 닫으시겠습니까?</translation>
 <translation id="1657719826150349398">탭을 아래로 이동</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개}other{탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{선택된 탭 <ph name="TABS_COUNT_ONE" />개 북마크}other{선택된 탭 <ph name="TABS_COUNT_MANY" />개 북마크}}</translation>
 <translation id="2118649612461486615">매장 정보</translation>
 <translation id="2162620598375156287">이제 <ph name="SOURCE_WEBSITE" />에서 <ph name="CURRENT_PRICE" />에 판매됨</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{탭 그룹 해제}other{탭 그룹 해제}}</translation>
 <translation id="2277224997687551299">그룹 이름 수정</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{선택한 탭 <ph name="TABS_COUNT_ONE" />개를 그룹에서 삭제합니다.}other{선택한 탭 <ph name="TABS_COUNT_MANY" />개를 그룹에서 삭제합니다.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{북마크 탭}other{북마크 탭}}</translation>
 <translation id="2479148705183875116">설정으로 이동</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개를 접습니다.}other{탭 <ph name="TABS_COUNT_MANY" />개가 포함된 탭 그룹을 접습니다.}}</translation>
 <translation id="2569352796411618312">추천: 최근 사용하지 않은 탭이 <ph name="NUMBER_OF_TABS" />개 있습니다. 탭을 닫으시겠습니까?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">탭을 위로 이동</translation>
 <translation id="8304833501377495048">탭 표시줄을 다시 표시하지 말까요?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{선택된 탭 <ph name="TABS_COUNT_ONE" />개 닫기}other{선택된 탭 <ph name="TABS_COUNT_MANY" />개 닫기}}</translation>
+<translation id="8398929769197326728">새 폴더: <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">탭 <ph name="NUMBER_OF_TABS" />개가 포함된 탭 그룹을 펼칩니다.</translation>
 <translation id="8714939927607906138">더 낮은 가격</translation>
 <translation id="8749939518995770034">탭 표시줄을 닫았습니다.</translation>

@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Басып чыгарууну токтотуу</translation>
 <translation id="2163937499206714165">Караңгы теманы күйгүзүү</translation>
 <translation id="2180197493692062006">Бир жерден ката кетти. Колдонмону кайрадан ачып көрүңүз.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Трафикти эсептегичтерди баштапкы абалга келтирүү</translation>
 <translation id="2212733584906323460">Аталышын чечмелөө</translation>
 <translation id="2217935453350629363">Учурдагы ылдамдык</translation>
@@ -561,6 +560,7 @@
 <translation id="6189418609903030344">Батарея колдонулган сайын анын сыйымдуулугу төмөндөйт</translation>
 <translation id="6191293864534840972">Бурмаланган ысым серверлери</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Толук экрандан чыгуу</translation>
 <translation id="6223752125779001553">Жеткиликтүү сканерлер жок</translation>
 <translation id="6232017090690406397">Батарея</translation>
 <translation id="6235460611964961764">Трафиктин колдонулушу жөнүндө маалыматты кол менен баштапкы абалга келтирүү</translation>
@@ -688,12 +688,12 @@
 <translation id="741244894080940828">которуу</translation>
 <translation id="7415801143053185905">HTTP күтүү убакыты өтө жогору</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скандалып бүттү. 1 бет скандалды}other{Скандалып бүттү. {NUMBER_OF_PAGES} бет скандалды}}</translation>
 <translation id="7458970041932198923">Аватарларды көрүү жана коюу үчүн тармакка туташып, баракты кайра жүктөңүз.</translation>
 <translation id="7469648432129124067">Портал аныкталды</translation>
 <translation id="7481312909269577407">Багыттоо</translation>
 <translation id="7487067081878637334">Технология</translation>
 <translation id="7490813197707563893">MAC дареги</translation>
+<translation id="7491478667760509108">Калкымадан чыгуу</translation>
 <translation id="7497215489070763236">Сервердин CA тастыктамасы</translation>
 <translation id="7502658306369382406">IPv6 дареги</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -794,6 +794,7 @@
 <translation id="8498220429738806196">Трафикти эсептегичтер</translation>
 <translation id="8503813439785031346">Колдонуучунун ысымы</translation>
 <translation id="8503836310948963452">Дагы бир нече мүнөт калды...</translation>
+<translation id="8508640263392900755">APN тууралуу маалымат</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Тармакка туташуу үчүн байланыш оператору бул параметрди талап кылышы мүмкүн. Кеңири маалымат үчүн байланыш операторуңузга кайрылыңыз</translation>
 <translation id="8576249514688522074">Аныкталбаган</translation>

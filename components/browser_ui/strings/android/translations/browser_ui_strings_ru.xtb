@@ -325,7 +325,7 @@
 <translation id="7719367874908701697">Масштабирование страницы</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7791543448312431591">Добавить</translation>
-<translation id="780301667611848630">Спасибо, не надо</translation>
+<translation id="780301667611848630">Пропустить</translation>
 <translation id="7804248752222191302">Сайт использует вашу камеру</translation>
 <translation id="7817023149356982970">Вы выйдете из аккаунта на этом сайте.</translation>
 <translation id="7835852323729233924">Воспроизведение медиаконтента</translation>
@@ -348,6 +348,7 @@
 <translation id="813082847718468539">Сведения о сайте</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8154912474061769055">Функции многих сайтов могут стать недоступными</translation>
+<translation id="8168435359814927499">Контент</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" />: разрешено</translation>
 <translation id="8200772114523450471">Возобновить</translation>
 <translation id="8206354486702514201">Этот параметр включен администратором.</translation>

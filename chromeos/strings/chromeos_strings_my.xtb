@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">ပရင့်ထုတ်ရန်ဖိုင် မထုတ်တော့ပါ</translation>
 <translation id="2163937499206714165">အမှောင်မုဒ် ဖွင့်ရန်</translation>
 <translation id="2180197493692062006">တစ်ခုခုမှားသွားသည်။ အက်ပ်ကို ပြန်ဖွင့်ကြည့်ပါ။</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">ကွန်ရက်ဒေတာ ရေတွက်စနစ်များ ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="2212733584906323460">ပုံရိပ်ပြတ်သားကိန်းကို အမည်ပေးရန်</translation>
 <translation id="2217935453350629363">လက်ရှိ မြန်နှုန်း</translation>
@@ -560,6 +559,7 @@
 <translation id="6189418609903030344">အသုံးပြုသည်နှင့်အမျှ ဘက်ထရီပမာဏ လျော့ကျသွားသည်</translation>
 <translation id="6191293864534840972">ပုံပျက်နေသော အမည်ဆာဗာများ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">ဖန်သားပြင်အပြည့်မှ ထွက်ရန်</translation>
 <translation id="6223752125779001553">စကင်ဖတ်စက်များ မရနိုင်ပါ</translation>
 <translation id="6232017090690406397">ဘက်ထရီ</translation>
 <translation id="6235460611964961764">ဒေတာသုံးစွဲမှု ကိုယ်တိုင်ပြင်ဆင်သတ်မှတ်ရန်</translation>
@@ -687,12 +687,12 @@
 <translation id="741244894080940828">ပြောင်းလဲခြင်း</translation>
 <translation id="7415801143053185905">HTTP တုံ့ပြန်ချိန် အလွန်ကြာနေသည်</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{စကင်ဖတ်၍ ပြီးပြီ။ စာမျက်နှာ 1 မျက်နှာကို စကင်ဖတ်ထားသည်}other{စကင်ဖတ်၍ ပြီးပြီ။ စာမျက်နှာ {NUMBER_OF_PAGES} မျက်နှာကို စကင်ဖတ်ထားသည်}}</translation>
 <translation id="7458970041932198923">ချန်နယ်ပုံများကို ကြည့်ရန်နှင့် သတ်မှတ်ရန် ကွန်ရက်ချိတ်ဆက်ပြီး စာမျက်နှာကို ပြန်လည်စတင်ပါ။</translation>
 <translation id="7469648432129124067">စာမျက်နှာကို တွေ့ရှိသည်</translation>
 <translation id="7481312909269577407">ရှေ့သို့</translation>
 <translation id="7487067081878637334">နည်းပညာ</translation>
 <translation id="7490813197707563893">MAC လိပ်စာ</translation>
+<translation id="7491478667760509108">လွင့်မျောမှုမှ ထွက်ရန်</translation>
 <translation id="7497215489070763236">ဆာဗာ CA အသိအမှတ်ပြုလက်မှတ်</translation>
 <translation id="7502658306369382406">IPv6 လိပ်စာ</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -793,6 +793,7 @@
 <translation id="8498220429738806196">ကွန်ရက်ဒေတာ ရေတွက်စနစ်များ</translation>
 <translation id="8503813439785031346">အသုံးပြုသူအမည်</translation>
 <translation id="8503836310948963452">နောက်ထပ် မိနစ်အနည်းငယ်သာ လိုသည်…</translation>
+<translation id="8508640263392900755">APN အသေးစိတ်</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီသည် ၎င်း၏ကွန်ရက်သို့ ချိတ်ဆက်ရန် ဤရွေးချယ်စရာကို သတ်မှတ်ထားနိုင်သည်။ အသေးစိတ်အတွက် သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>
 <translation id="8576249514688522074">စတင်မထားပါ</translation>
@@ -868,6 +869,7 @@
 <translation id="9173638680043580060">တစ်မိနစ်ပင် မကျန်တော့ပါ</translation>
 <translation id="917720651393141712">စမ်းသပ်မှု</translation>
 <translation id="9188992814426075118">ကီးဘုတ်က သင့်နောက်ခံကို အလိုအလျောက် တူညီအောင်လုပ်နိုင်သည်</translation>
+<translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Android အက်ပ်များမှ ဂိတ်ဝကို ဆက်သွယ်၍မရပါ</translation>
 <translation id="9211490828691860325">မျက်နှာပြင်နေရာအားလုံး</translation>
 <translation id="932327136139879170">ပင်မ</translation>

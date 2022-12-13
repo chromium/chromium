@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">የእርስዎን <ph name="NAME" /> ያስቀምጡ</translation>
 <translation id="1032891413405719768">የStylus ባትሪ ዝቅተኛ ነው</translation>
 <translation id="1036073649888683237">ማሳወቂያዎችን ለማቀናበር ወደ ቅንብሮች ይሂዱ</translation>
+<translation id="1036348656032585052">አጥፋ</translation>
 <translation id="1036672894875463507">ቀኑን ሙሉ እርስዎን ለማገዝ የGoogle ረዳትዎ ነኝ!
 ለመጀመር ሊሞክሩዋቸው የሚችሏቸው አንዳንድ ነገሮች እነሆ።</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ታክሏል</translation>
@@ -172,6 +173,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ተላቋል</translation>
 <translation id="1836215606488044471">ረዳት (በመጫን ላይ...)</translation>
 <translation id="1838895407229022812">የምሽት ብርሃን ጠፍቷል።</translation>
+<translation id="1854180393107901205">መውሰድ አቁም</translation>
 <translation id="1862380676329487333">አዘምን እና ዘግተህ ውጣ</translation>
 <translation id="1864454756846565995">USB-C መሣሪያ (የኋላ ወደብ)</translation>
 <translation id="1869497990620230175">ፈጣን ፋይሎች</translation>
@@ -662,13 +664,13 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ነቅቷል</translation>
 <translation id="4665114317261903604">አትረብሽ የሚለውን አብራ ወይም አጥፋ። <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">ሁሉንም ካሜራዎች ሁልጊዜ ለማገድ የካሜራውን መዳረሻ በዚህ መሣሪያ ላይ ያጥፉ።</translation>
 <translation id="4666911709726371538">ተጨማሪ መተግበሪያዎች</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" />ን በማውረድ ላይ</translation>
 <translation id="468293128311738995">መተግበሪያዎች ከስልክዎ</translation>
 <translation id="4690510401873698237">መደርደሪያ ከታች</translation>
 <translation id="4696813013609194136">በወላጅ ኮድ መሣሪያን ክፈት</translation>
 <translation id="4702647871202761252">የግላዊነት ማያ ገጽ ጠፍቷል</translation>
+<translation id="4706121060329443414">ማውረድ በኋላ ላይ ይሞከራል። ለአሁን ንግግር ለመሰናዳት ወደ Google ይላካል።</translation>
 <translation id="470644585772471629">ተቃራኒ ቀለም</translation>
 <translation id="4717575069099566988">የእርስዎ USB-C ገመድ USB4ን አይደግፍም። የመሳሪያ አፈጻጸም የተገደበ ሊሆን ይችላል።</translation>
 <translation id="4730374152663651037">በብዛት ጥቅም ላይ የዋለ</translation>
@@ -694,7 +696,6 @@
 <translation id="485592688953820832">ምንም እርምጃ የለም (ባለበት አቁም)</translation>
 <translation id="485634149294284819">የቁልፍ ሰሌዳ ምናሌን አስገባ</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" />ን ለማውረድ የአውታረ መረብ ግንኙነትዎን ያረጋግጡ</translation>
-<translation id="486056901304535126">ማውረድ በኋላ ላይ ይሞከራል። ማውረድ እስኪጠናቀቅ ድረስ ንግግር ለመሰናዳት ወደ Google ይላካል።</translation>
 <translation id="4864369630010738180">በመግባት ላይ...</translation>
 <translation id="4864648187878336334">ዴስክ 15</translation>
 <translation id="4868492592575313542">ገብሯል</translation>
@@ -1173,7 +1174,6 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> አሁን ላይ ማይክሮፎንዎን እየተጠቀመ ነው</translation>
 <translation id="7561982940498449837">ምናሌን ዝጋ</translation>
 <translation id="7564874036684306347">መስኮትን ወደ ሌላ ዴስክቶፕ መውሰድ ያልተጠበቀ ባህሪን ሊያስከትል ይችላል። ተከትለው የሚመጡ ማሳወቂያዎችን፣ መስኮቶች እና መገናኛዎች በዴስክቶፖች መካከል ሊከፈሉ ይችላሉ።</translation>
-<translation id="7567076708801803118">በዚህ መሣሪያ ላይ ያለውን የካሜራ መዳረሻ ማጥፋት ይፈልጋሉ?</translation>
 <translation id="7569509451529460200">ብሬይል እና ChromeVox ነቅተዋል</translation>
 <translation id="7573585051776738856">ገባሪ መስኮት በቀኝ በኩል ተተክሏል።</translation>
 <translation id="7579778809502851308">የማያ ገጽ ቀረጻ</translation>

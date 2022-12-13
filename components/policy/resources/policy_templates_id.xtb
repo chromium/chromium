@@ -919,6 +919,11 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
       Jika kebijakan ini disetel ke nonaktif atau tidak dikonfigurasi, WebDriver tidak akan diizinkan menggantikan kebijakan yang tidak kompatibel.</translation>
 <translation id="1885782360784839335">Mengaktifkan ditampilkannya konten promosi tab penuh</translation>
 <translation id="1888871729456797026">Token pendaftaran kebijakan cloud di desktop</translation>
+<translation id="1893271062894546361">Jika kebijakan ini disetel ke aktif, UI kontrol pemutaran media akan tersedia untuk sesi <ph name="PRODUCT_NAME" /> yang dimulai oleh perangkat lain di jaringan lokal.
+
+      Jika kebijakan ini disetel ke nonaktif, atau tidak disetel untuk pengguna versi bisnis, UI kontrol pemutaran media tidak akan tersedia untuk sesi <ph name="PRODUCT_NAME" /> yang dimulai oleh perangkat lain di jaringan lokal.
+
+      Jika kebijakan <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> disetel ke nonaktif, nilai kebijakan ini tidak akan berpengaruh karena seluruh fungsi <ph name="PRODUCT_NAME" /> dinonaktifkan.</translation>
 <translation id="1894790493260633497">Aktifkan mode pencetakan grafis latar belakang secara default</translation>
 <translation id="1897365952389968758">Izinkan semua situs menjalankan JavaScript</translation>
 <translation id="1902043648529789224">Mengontrol posisi rak</translation>
@@ -3507,6 +3512,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="4274691295133617461">Jika kebijakan disetel ke 3, situs web akan diizinkan meminta akses baca ke file, dan direktori, di sistem file pada sistem operasi host melalui File System API. Jika kebijakan disetel ke 2, akses akan ditolak.
 
       Jika tidak disetel, situs dapat meminta akses tetapi pengguna dapat mengubah setelan ini.</translation>
+<translation id="4275048399551500192">Jangan tampilkan kontrol media untuk sesi <ph name="PRODUCT_NAME" /> yang dimulai oleh perangkat lain</translation>
 <translation id="4282243913059705499">Selalu tampilkan ikon <ph name="PRODUCT_NAME" /> di toolbar</translation>
 <translation id="4285674129118156176">Mengizinkan pengguna yang tak terafiliasi menggunakan ARC</translation>
 <translation id="4287344576768105337">Menyetel kebijakan ini akan mencegah pemuatan halaman web yang berisi URL terlarang. Kebijakan ini menyediakan daftar pola URL yang menentukan URL terlarang. Jika kebijakan ini tidak disetel, tidak akan ada URL yang dilarang di browser. Format pola URL sesuai dengan format ini ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). Hingga 1.000 pengecualian dapat ditentukan di <ph name="URL_ALLOWLIST_POLICY_NAME" />.
@@ -4459,9 +4465,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika kebijakan tidak ditetapkan, pengguna tidak dapat memainkan game di <ph name="PRODUCT_OS_NAME" /> yang terdaftar, tetapi dapat memainkannya dalam kondisi lain.</translation>
 <translation id="5293285950307241933">Hapus semua data pengguna lokal</translation>
-<translation id="5293875928467750789">Jika kebijakan disetel, nilainya akan digunakan sebagai nilai default
-
-persentase kecerahan keyboard perangkat saat pengguna login.</translation>
 <translation id="529457411593078576">Menampilkan Persyaratan Layanan (ToS) saat CCT pertama kali dijalankan</translation>
 <translation id="5297948043665200363">Izinkan pengguna tetap login setelah akunnya menjadi tidak terautentikasi</translation>
 <translation id="5298949392804966105">Tidak ada batasan di akun terkelola</translation>
@@ -5360,6 +5363,7 @@ Jika kebijakan ini tidak disetel, semua domain tidak akan dapat mengakses URL fi
 <translation id="6244061205361004687">Izinkan pengguna memutuskan koneksi atau mengubah VPN secara manual</translation>
 <translation id="6244210204546589761">URL untuk membuka saat permulaan</translation>
 <translation id="624595269193747921">Apakah ingin membatasi penelusuran printer yang cocok untuk satu set printer tertentu.</translation>
+<translation id="6246290059248303618">Menampilkan kontrol media untuk sesi <ph name="PRODUCT_NAME" /> yang dimulai oleh perangkat lain di jaringan lokal</translation>
 <translation id="6247316685259031374">Kebijakan ini mengontrol proses audio dalam sandbox.
       Jika kebijakan ini diaktifkan, proses audio akan berjalan dalam sandbox.
       Jika kebijakan ini dinonaktifkan, proses audio akan berjalan di luar sandbox dan modul pemrosesan audio WebRTC akan berjalan dalam proses perender.
@@ -6335,6 +6339,7 @@ pemblokiran permintaan semacam itu akan diterapkan.</translation>
 <translation id="710003290625031750">Deskripsi skema yang diluaskan:</translation>
 <translation id="7101550508196914704">Jangan tampilkan pintasan aplikasi di kolom bookmark</translation>
 <translation id="7109384070286741861">Nonaktifkan CECPQ2</translation>
+<translation id="7113439794629928551">Tampilkan kontrol media untuk sesi <ph name="PRODUCT_NAME" /> yang dimulai oleh perangkat lain</translation>
 <translation id="7114169791477667553">Nonaktifkan penyedia penelusuran default</translation>
 <translation id="7121046543122812054">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
 
@@ -7037,7 +7042,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="7832225468415136704">Cegah Pembersih Chrome memindai sistem secara berkala dan nonaktifkan pemindaian manual</translation>
 <translation id="7833148823006528332">ID aplikasi Android, mis. "com.google.android.gm" untuk Gmail.</translation>
 <translation id="7835218570504220753">Nonaktifkan klik otomatis</translation>
-<translation id="7837834961221899821">Kecerahan keyboard default</translation>
 <translation id="7839180815400079700">Jika <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> Diaktifkan, menyetel <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> akan menyetel konfigurasi hari pengaktifan daya baterai.
 
       Jika kebijakan tidak disetel, pengaktifan daya baterai akan dinonaktifkan.
@@ -8515,6 +8519,11 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
 <translation id="982497069985795632">Aktifkan fitur pemeriksa ejaan</translation>
 <translation id="983256325512298435">Menentukan daftar protokol yang dapat meluncurkan aplikasi eksternal dari asal yang tercantum tanpa meminta izin pengguna</translation>
 <translation id="987261962216071510">Hanya izinkan login browser tamu</translation>
+<translation id="987975731398348803">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan daftar pengguna perangkat yang login baru-baru ini.
+
+Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan daftar pengguna.
+
+Jika <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> diaktifkan, <ph name="REPORT_DEVICE_USERS_POLICY_NAME" /> akan diabaikan dan akan selalu dinonaktifkan.</translation>
 <translation id="989197274317162189">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan kebijakan '<ph name="URL_BLOCKLIST_POLICY_NAME" />'.</translation>
 <translation id="991560005425213776">Kirim nama pengguna dan nama file ke printer native</translation>
 <translation id="99202634486128833">Jika kebijakan ditetapkan ke CopyCaCerts, semua sertifikat CA yang diinstal ONC dengan <ph name="WEB_TRUSTED_BIT" /> akan tersedia untuk aplikasi ARC.

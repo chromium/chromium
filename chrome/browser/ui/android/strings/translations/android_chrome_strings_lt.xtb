@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Padėkite mums kurti privatesnį žiniatinklį</translation>
 <translation id="107147699690128016">Jei pakeisite failo plėtinį, failas gali būti atidaromas naudojant kitą programą ir galimai pakenkti įrenginiui.</translation>
 <translation id="1089606299949659462">Peržiūra baigta!</translation>
-<translation id="1091604859693995976">Jei norite peržiūrėti, atnaujinkite</translation>
 <translation id="1095761715416917775">Galimybė visada pasiekti sinchronizuotus duomenis</translation>
 <translation id="1100066534610197918">Atidar. naujame grup. skirtuke</translation>
 <translation id="1103142993930332957">Norite padėti tobulinti „Chrome“?</translation>
@@ -761,6 +760,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="510275257476243843">Liko 1 val.</translation>
 <translation id="5115811374190515607">į <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Pomėgiai</translation>
+<translation id="5122378528687922675">Jei reikia pagalbos, paprašykite vieno iš tėvų (<ph name="PARENT_NAME_1" /> arba <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Inkognito skirtukas</translation>
 <translation id="5126510351761255129">Kortelės patvirtinimas</translation>
 <translation id="5132942445612118989">Sinchronizuokite slaptažodžius, istoriją ir daugiau visuose įrenginiuose</translation>
@@ -1148,6 +1148,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7177466738963138057">Tai vėliau galėsite pakeisti „Nustatymų“ skiltyje</translation>
 <translation id="7177873915659574692">Nepavyko sukurti QR kodo. URL sudaro daugiau nei <ph name="CHARACTER_LIMIT" /> simbol.</translation>
 <translation id="7177959540995930968">Daugiau apie šias funkcijas sužinosite „Chrome“ nustatymuose.</translation>
+<translation id="7180611975245234373">Atnaujinti</translation>
 <translation id="718226107353899806">Galite pridėti daugiausia tiek reakcijų: <ph name="MAX_NUM_REACTIONS" /></translation>
 <translation id="7183693674623539380">Skirtukų grupė – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Apsaugo jus naršyklėje „Chrome“ ir gali būti naudojama apsaugai kitose „Google“ programose pagerinti, kai esate prisijungę.</translation>
@@ -1331,6 +1332,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8084285576995584326">Valdykite „Google“ paskyros duomenis</translation>
 <translation id="808747664143081553">Prisijungta prie įrenginio</translation>
 <translation id="8088176524274673045">Jei norite bendrinti su netoliese esančiais žmonėmis, leiskite jiems nuskaityti šį QR kodą</translation>
+<translation id="8090732854597034573">Jei reikia pagalbos, paprašykite vieno iš tėvų</translation>
 <translation id="8100969750121413114">„Chrome“ suasmeninimas prisijungus</translation>
 <translation id="8103578431304235997">Inkognito skirtukas</translation>
 <translation id="8105613260829665809">Tęsdami sutinkate su <ph name="BEGIN_TOS_LINK" />paslaugų teikimo sąlygomis<ph name="END_TOS_LINK" />.\nKad padėtų tobulinti programą, „Chrome“ siunčia naudojimo ir strigčių duomenis sistemai „Google“. <ph name="BEGIN_UMA_LINK" />Tvarkyti<ph name="END_UMA_LINK" /></translation>
@@ -1339,6 +1341,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8109613176066109935">Jei norite pasiekti žymes visuose įrenginiuose, įjunkite sinchronizavimą</translation>
 <translation id="8110024788458304985">Padėti tobulinti „Chrome“ funkcijas ir našumą</translation>
 <translation id="8110087112193408731">Rodyti „Chrome“ veiklą Skaitmeninės gerovės programoje?</translation>
+<translation id="8118117428362942925">Jei reikia pagalbos, paprašykite vieno iš tėvų (<ph name="PARENT_NAME" />)</translation>
 <translation id="8127542551745560481">Redaguoti pagrindinį puslapį</translation>
 <translation id="8130309322784422030">Jūsų saugoma prisijungimo informacija gali būti pasenusi</translation>
 <translation id="813082847718468539">Žiūrėti svetainės informaciją</translation>

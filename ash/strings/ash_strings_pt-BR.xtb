@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">Salve seu dispositivo <ph name="NAME" /></translation>
 <translation id="1032891413405719768">A bateria da stylus está fraca</translation>
 <translation id="1036073649888683237">Para gerenciar as notificações, acesse as Configurações</translation>
+<translation id="1036348656032585052">Desativar</translation>
 <translation id="1036672894875463507">Eu sou a assistente do Google e estou aqui para ajudar no seu dia.
 Veja o que você pode fazer para começar.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> adicionado</translation>
@@ -100,6 +101,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1447641497144572814">Protetor de tela iniciado</translation>
 <translation id="1455242230282523554">Mostrar configurações de idioma</translation>
 <translation id="1460620680449458626">O som está desativado.</translation>
+<translation id="14648076227129703">Dá acesso à câmera para os apps <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e a todos os apps e sites com essa permissão</translation>
 <translation id="1467432559032391204">À esquerda</translation>
 <translation id="146902737843070955">O administrador solicitou essa mudança</translation>
 <translation id="147310119694673958"><ph name="BATTERY_PERCENTAGE" />% de bateria no smartphone</translation>
@@ -159,6 +161,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1797271123677381264">Esqueci minha senha</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> de intensidade de sinal , gerenciada pelo seu administrador</translation>
 <translation id="1812997170047690955">O que está na minha tela?</translation>
+<translation id="1816896987747843206">Dá acesso à câmera para todos os apps e sites com essa permissão</translation>
 <translation id="1823280932251546115">Bandeja de status, horário <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />,
@@ -172,6 +175,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1830308660060964064">O <ph name="ITEM_TITLE" /> foi liberado</translation>
 <translation id="1836215606488044471">Assistente (carregando…)</translation>
 <translation id="1838895407229022812">O Modo noturno está desativado.</translation>
+<translation id="1854180393107901205">Parar transmissão</translation>
 <translation id="1862380676329487333">Atualizar e sair</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (porta traseira)</translation>
 <translation id="1869497990620230175">Arquivos de acesso rápido</translation>
@@ -414,7 +418,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3294437725009624529">Visitante</translation>
 <translation id="3307642347673023554">Modo laptop ativado</translation>
 <translation id="3308453408813785101">O usuário <ph name="USER_EMAIL_ADDRESS" /> ainda poderá fazer login mais tarde.</translation>
-<translation id="3321628682574733415">Código de pai/mãe incorreto</translation>
+<translation id="3321628682574733415">Código de familiar responsável incorreto</translation>
 <translation id="3339826665088060472">Captura de tela, ferramentas para capturar e gravar a tela do dispositivo</translation>
 <translation id="3340978935015468852">configurações</translation>
 <translation id="3341303451326249809">Captura de tela feita</translation>
@@ -598,6 +602,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4316910396681052118">TODOS OS APPS</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">O atalho de teclado Ctrl + Alt + seta para cima mudou. Para usar a tecla Home, pressione <ph name="LAUNCHER_KEY_NAME" /> + seta para a esquerda.</translation>
+<translation id="4324840740119394760">Dá acesso à câmera para o app <ph name="APP_NAME" /> e todos os apps e sites com essa permissão</translation>
 <translation id="4333628967105022692">O Lacros não é compatível com o login de vários usuários.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">O Assistente está sendo carregado…</translation>
@@ -664,13 +669,13 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ativado</translation>
 <translation id="4665114317261903604">Alternar "Não perturbe". <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Desative o acesso à câmera neste dispositivo para bloquear todas as câmeras o tempo todo.</translation>
 <translation id="4666911709726371538">Mais apps</translation>
 <translation id="4667099493359681081">Fazendo o download do arquivo <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Apps do smartphone</translation>
 <translation id="4690510401873698237">Estante na parte inferior</translation>
-<translation id="4696813013609194136">Desbloquear dispositivo usando o código de pai/mãe</translation>
+<translation id="4696813013609194136">Desbloquear dispositivo usando o código de familiar responsável</translation>
 <translation id="4702647871202761252">A tela de privacidade está desativada</translation>
+<translation id="4706121060329443414">O download será feito mais tarde. Por enquanto, a fala será enviada ao Google para processamento.</translation>
 <translation id="470644585772471629">Inversão de cores</translation>
 <translation id="4717575069099566988">O cabo USB-C não oferece suporte a USB4. O desempenho do dispositivo pode ser limitado.</translation>
 <translation id="4730374152663651037">USADOS FREQUENTEMENTE</translation>
@@ -696,7 +701,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="485592688953820832">Nenhuma ação (pausar)</translation>
 <translation id="485634149294284819">Menu "Informar teclado"</translation>
 <translation id="4860284199500934869">Confira sua conexão de rede para fazer o download do arquivo <ph name="FILENAME" /></translation>
-<translation id="486056901304535126">O download será feito mais tarde. A fala será enviada ao Google para processamento até que o download seja concluído.</translation>
 <translation id="4864369630010738180">Fazendo login...</translation>
 <translation id="4864648187878336334">Espaço de trabalho 15</translation>
 <translation id="4868492592575313542">ativado</translation>
@@ -791,6 +795,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5356963482258194581">Escolha entre o tema claro ou escuro. Clique com o botão direito do mouse na área de trabalho e selecione a opção "Plano de fundo e estilo".</translation>
 <translation id="536019650977002321">O administrador não permite a captura de áudio. Entre em contato com ele para saber mais.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ir para essa guia</translation>
+<translation id="5377367976106153749">Permitir o acesso à câmera?</translation>
 <translation id="5379115545237091094">Muitas tentativas</translation>
 <translation id="5391307769715781764">Substituir o espaço de trabalho salvo?</translation>
 <translation id="5393156353051693207">Toque em qualquer lugar na tela e a mantenha pressionada para reordenar os apps</translation>
@@ -875,7 +880,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5867217927013474703">Coletando informações da rede</translation>
 <translation id="5867606971598166637">O administrador do sistema está monitorando suas telas</translation>
-<translation id="5876666360658629066">Digite o código de pai/mãe</translation>
+<translation id="5876666360658629066">Digite o código de familiar responsável</translation>
 <translation id="5881540930187678962">Configurar o recurso "Seu smartphone" mais tarde</translation>
 <translation id="5887954372087850114">A janela <ph name="WINDOW_TITLE" /> foi atribuída a <ph name="DESK_TITLE" /> e não foi atribuída a nenhum outro espaço de trabalho</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -952,7 +957,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6282694724099204652">Ative os acessos para autorizar apps e páginas da Web com a permissão de uso do microfone e da câmera neste dispositivo.</translation>
 <translation id="6283712521836204486">O "Não perturbe" está desativado.</translation>
 <translation id="6284232397434400372">Resolução alterada</translation>
-<translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> pode ser adicionado novamente com a permissão do pai/mãe.</translation>
+<translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> pode ser adicionado novamente com a permissão do familiar responsável.</translation>
 <translation id="6291221004442998378">Não está carregando</translation>
 <translation id="6315170314923504164">Voz</translation>
 <translation id="6330012934079202188">Mostrando janelas de todos os espaços de trabalho. Pressione a tecla de seta para cima para mostrar as do espaço de trabalho atual</translation>
@@ -1177,7 +1182,6 @@ Nova instalação</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> está usando seu microfone</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
 <translation id="7564874036684306347">A movimentação de janelas para outra área de trabalho pode resultar em comportamentos inesperados. Notificações posteriores, janelas e caixas de diálogo podem ser divididas entre as áreas de trabalho.</translation>
-<translation id="7567076708801803118">Você quer desativar o acesso à câmera neste dispositivo?</translation>
 <translation id="7569509451529460200">Braille e ChromeVox estão ativados</translation>
 <translation id="7573585051776738856">Janela ativa fixada à direita.</translation>
 <translation id="7579778809502851308">Captura de tela</translation>
@@ -1253,6 +1257,7 @@ Nova instalação</translation>
 <translation id="79341161159229895">Conta gerenciada por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Pressione <ph name="SHORTCUT_KEY_NAME" /> + V para ver a área de transferência. Os últimos cinco itens que você copiou ficam salvos nela.</translation>
 <translation id="7942349550061667556">Vermelho</translation>
+<translation id="7963992254934562106">Do <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Selecionar pasta…</translation>
 <translation id="7977927628060636163">Pesquisando redes móveis…</translation>
 <translation id="7982789257301363584">Rede</translation>
@@ -1331,7 +1336,7 @@ Nova instalação</translation>
 <translation id="8380784334203145311">Boa noite,</translation>
 <translation id="8382715499079447151">Proteção de visualização</translation>
 <translation id="8388750414311082622">Não é possível remover o último espaço de trabalho.</translation>
-<translation id="8394567579869570560">Seu pai/mãe bloqueou o dispositivo</translation>
+<translation id="8394567579869570560">Seu familiar responsável bloqueou o dispositivo</translation>
 <translation id="8401850874595457088">Menu "Informar idioma"</translation>
 <translation id="8412677897383510995">Mostrar configurações de tela</translation>
 <translation id="8413272770729657668">A gravação começa em 3, 2, 1</translation>
@@ -1479,7 +1484,7 @@ Nova instalação</translation>
 <translation id="9211681782751733685">Tempo restante até que a bateria esteja totalmente carregada: <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Definir plano de fundo</translation>
 <translation id="9219103736887031265">Imagens</translation>
-<translation id="921989828232331238">Seu pai/mãe bloqueou o dispositivo por hoje</translation>
+<translation id="921989828232331238">Seu familiar responsável bloqueou o dispositivo por hoje</translation>
 <translation id="9220525904950070496">Remover conta</translation>
 <translation id="923686485342484400">Pressione Control+Shift+Q duas vezes para sair.</translation>
 <translation id="92580429198593979">Você pressionou o atalho de teclado para inversão de cores. Quer ativar o recurso?</translation>
@@ -1491,6 +1496,7 @@ Nova instalação</translation>
 <translation id="954052413789300507">Não há espaço suficiente para o arquivo <ph name="FILENAME" />. Libere espaço.</translation>
 <translation id="974545358917229949">Exibindo <ph name="RESULT_COUNT" /> resultados para <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Paisagem</translation>
+<translation id="989374776391122812">Controles de câmera e áudio</translation>
 <translation id="990277280839877440">Janela <ph name="WINDOW_TITILE" /> fechada.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Instale os recursos e melhorias de segurança mais recentes. As atualizações ocorrem em segundo plano.</translation>

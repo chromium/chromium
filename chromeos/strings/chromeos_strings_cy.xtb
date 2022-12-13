@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Canslo'r dasg argraffu</translation>
 <translation id="2163937499206714165">Troi'r modd tywyll ymlaen</translation>
 <translation id="2180197493692062006">Aeth rhywbeth o'i le. Rhowch gynnig ar ailagor yr ap.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Ailosod Rhifyddion Traffig</translation>
 <translation id="2212733584906323460">Cydraniad Enw</translation>
 <translation id="2217935453350629363">Cyflymder presennol</translation>
@@ -561,6 +560,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="6189418609903030344">Mae capasiti y batri yn gostwng gyda defnydd</translation>
 <translation id="6191293864534840972">Mae enwau gweinyddion wedi'u camffurfio</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Gadael llawn</translation>
 <translation id="6223752125779001553">Nid oes unrhyw sganwyr ar gael</translation>
 <translation id="6232017090690406397">Batri</translation>
 <translation id="6235460611964961764">Ailosod defnydd data'n bwrpasol</translation>
@@ -688,11 +688,12 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="741244894080940828">trosi</translation>
 <translation id="7415801143053185905">Cuddni HTTP uchel iawn</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Mae sganio wedi'i gwblhau. Cafodd 1 dudalen ei sganio}zero{Mae sganio wedi'i gwblhau. Cafodd {NUMBER_OF_PAGES} tudalen eu sganio}two{Mae sganio wedi'i gwblhau. Cafodd {NUMBER_OF_PAGES} dudalen eu sganio}few{Mae sganio wedi'i gwblhau. Cafodd {NUMBER_OF_PAGES} tudalen eu sganio}many{Mae sganio wedi'i gwblhau. Cafodd {NUMBER_OF_PAGES} thudalen eu sganio}other{Mae sganio wedi'i gwblhau. Cafodd {NUMBER_OF_PAGES} tudalen eu sganio}}</translation>
+<translation id="7458970041932198923">Cysylltwch â rhwydwaith ac ail-lwythwch y dudalen i weld a gosod rhithffurfiau.</translation>
 <translation id="7469648432129124067">Canfuwyd porth</translation>
 <translation id="7481312909269577407">Ymlaen</translation>
 <translation id="7487067081878637334">Technoleg</translation>
 <translation id="7490813197707563893">Cyfeiriad MAC</translation>
+<translation id="7491478667760509108">Gadael y cyflwr arnofio</translation>
 <translation id="7497215489070763236">Tystysgrif CA y gweinydd</translation>
 <translation id="7502658306369382406">Cyfeiriad IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -793,6 +794,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="8498220429738806196">Rhifyddion Traffig</translation>
 <translation id="8503813439785031346">Enw defnyddiwr</translation>
 <translation id="8503836310948963452">Ychydig funudau yn rhagor...</translation>
+<translation id="8508640263392900755">Manylion APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Mae'n bosib y bydd eich cludwr yn gofyn am gysylltu â'ch rhwydwaith. Cysylltwch â'ch cludwr am fanylion.</translation>
 <translation id="8576249514688522074">Heb ei gychwyn</translation>
@@ -843,6 +845,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Sganio}=1{Sganio tudalen {NUMBER_OF_PAGES}}two{Sganio tudalen {NUMBER_OF_PAGES}}few{Sganio tudalen {NUMBER_OF_PAGES}}many{Sganio tudalen {NUMBER_OF_PAGES}}other{Sganio tudalen {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Mae gan y ddyfais <ph name="BATTERY_PERCENTAGE" />% o fatri.</translation>
+<translation id="8998289560386111590">Dim ar gael ar eich dyfais</translation>
 <translation id="9003704114456258138">Amlder</translation>
 <translation id="9025198690966128418">Defnyddio fel dyfais bersonol</translation>
 <translation id="9028832514430399253">Trowch y togl ymlaen i ddewis opsiynau arbedwr sgrîn</translation>

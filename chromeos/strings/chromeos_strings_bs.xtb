@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Otkaži zadatak štampanja</translation>
 <translation id="2163937499206714165">Uključi tamni način rada</translation>
 <translation id="2180197493692062006">Nešto nije uredu. Pokušajte ponovo otvoriti aplikaciju.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Poništi brojače saobraćaja</translation>
 <translation id="2212733584906323460">Razrješavanje naziva</translation>
 <translation id="2217935453350629363">Trenutna brzina</translation>
@@ -492,6 +491,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Automatski prebacite na tamnu temu prilikom zalaska sunca</translation>
+<translation id="5571714952674387371">Prikaz i uređivanje pojedinosti</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skeniraj ponovo</translation>
 <translation id="5583640892426849032">Tipka za brisanje</translation>
@@ -561,7 +561,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6189418609903030344">Kapacitet baterije opada s korištenjem</translation>
 <translation id="6191293864534840972">Neispravno formirani serveri naziva</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
-<translation id="6223066887782788441">Napusti prikaz na cijelom zaslonu</translation>
+<translation id="6223066887782788441">Izlaz iz prikaza preko cijelog ekrana</translation>
 <translation id="6223752125779001553">Nijedan skener nije dostupan</translation>
 <translation id="6232017090690406397">Baterija</translation>
 <translation id="6235460611964961764">Ručno poništi prijenos podataka</translation>
@@ -689,13 +689,12 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="741244894080940828">pretvaranje</translation>
 <translation id="7415801143053185905">Veoma visoka HTTP latentnost</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skeniranje je završeno. Skenirana je 1 stranica}one{Skeniranje je završeno. Skenirana je {NUMBER_OF_PAGES} stranica}few{Skeniranje je završeno. Skenirane su {NUMBER_OF_PAGES} stranice}other{Skeniranje je završeno. Skenirano je {NUMBER_OF_PAGES} stranica}}</translation>
 <translation id="7458970041932198923">Povežite se s mrežom i ponovo učitajte stranicu da pregledate i postavite avatare.</translation>
 <translation id="7469648432129124067">Otkriven je portal</translation>
 <translation id="7481312909269577407">Proslijedi</translation>
 <translation id="7487067081878637334">Tehnologija</translation>
 <translation id="7490813197707563893">MAC adresa</translation>
-<translation id="7491478667760509108">Napusti plutajući prikaz</translation>
+<translation id="7491478667760509108">Izlaz iz lebdenja</translation>
 <translation id="7497215489070763236">CA certifikat servera</translation>
 <translation id="7502658306369382406">IPv6 adresa</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -796,7 +795,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8498220429738806196">Brojači saobraćaja</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="8503836310948963452">Još samo nekoliko minuta...</translation>
-<translation id="8508640263392900755">Pojedinosti o APN-u</translation>
+<translation id="8508640263392900755">Detalji APN-a</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Mobilni operater može zahtijevati ovu opciju radi povezivanja s njegovom mrežom. Za detalje se obratite mobilnom operateru.</translation>
 <translation id="8576249514688522074">Pokretanje je prekinuto</translation>
@@ -872,6 +871,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="9173638680043580060">Preostalo je manje od minute</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Tastatura može automatski prilagoditi pozadinsku sliku</translation>
+<translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Nije moguće kontaktirati pristupnika iz Android aplikacija</translation>
 <translation id="9211490828691860325">Sve radne površine</translation>
 <translation id="932327136139879170">Dom</translation>

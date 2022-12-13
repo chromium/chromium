@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">Enregistrez "<ph name="NAME" />"</translation>
 <translation id="1032891413405719768">Le niveau de charge des piles du stylet est faible</translation>
 <translation id="1036073649888683237">Pour gérer les notifications, accédez aux paramètres</translation>
+<translation id="1036348656032585052">Désactiver</translation>
 <translation id="1036672894875463507">Je suis votre Assistant Google, à votre service tout au long de la journée.
 Pour commencer, voici des exemples de ce que vous pouvez me demander.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ajouté</translation>
@@ -100,6 +101,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1447641497144572814">L'économiseur d'écran démarre</translation>
 <translation id="1455242230282523554">Afficher les paramètres de langue</translation>
 <translation id="1460620680449458626">Le volume est désactivé.</translation>
+<translation id="14648076227129703">L'accès à l'appareil photo est accordé à <ph name="APP1_NAME" /> et <ph name="APP2_NAME" />, ainsi qu'à l'ensemble des sites Web et applis ayant l'autorisation d'y accéder</translation>
 <translation id="1467432559032391204">À gauche</translation>
 <translation id="146902737843070955">Votre administrateur a demandé cette modification</translation>
 <translation id="147310119694673958">Batterie du téléphone à <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -159,6 +161,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1797271123677381264">Mot de passe oublié</translation>
 <translation id="181103072419391116">Force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="1812997170047690955">Éléments affichés à l'écran</translation>
+<translation id="1816896987747843206">L'accès à l'appareil photo est accordé à l'ensemble des sites Web et applis ayant l'autorisation d'y accéder</translation>
 <translation id="1823280932251546115">Barre d'état, il est <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />,
@@ -172,6 +175,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> a été retiré</translation>
 <translation id="1836215606488044471">Assistant (chargement…)</translation>
 <translation id="1838895407229022812">Éclairage nocturne désactivé.</translation>
+<translation id="1854180393107901205">Arrêter la diffusion</translation>
 <translation id="1862380676329487333">Mettre à jour et se déconnecter</translation>
 <translation id="1864454756846565995">Appareil USB de type C (port situé sur l'arrière de l'appareil)</translation>
 <translation id="1869497990620230175">Fichiers rapides</translation>
@@ -532,7 +536,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="394485226368336402">Paramètres audio</translation>
 <translation id="3945319193631853098">Appuyez pour terminer la configuration</translation>
 <translation id="3945867833895287237">Connexion à un point d'accès…</translation>
-<translation id="3950820424414687140">Connexion</translation>
+<translation id="3950820424414687140">Se connecter</translation>
 <translation id="3962859241508114581">Titre précédent</translation>
 <translation id="3969043077941541451">Désactivé</translation>
 <translation id="397105322502079400">Calcul en cours…</translation>
@@ -597,6 +601,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4316910396681052118">TOUTES LES APPLICATIONS</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Le raccourci clavier Ctrl+Alt+Flèche vers le haut a été modifié. Pour utiliser la touche Accueil, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers la gauche.</translation>
+<translation id="4324840740119394760">L'accès à l'appareil photo est accordé à <ph name="APP_NAME" /> ainsi qu'à l'ensemble des sites Web et applis ayant l'autorisation d'y accéder</translation>
 <translation id="4333628967105022692">Lacros ne peut pas fonctionner lorsque plusieurs utilisateurs sont connectés.</translation>
 <translation id="4338109981321384717">Loupe</translation>
 <translation id="4351433414020964307">Chargement de l'Assistant…</translation>
@@ -663,13 +668,13 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox activé</translation>
 <translation id="4665114317261903604">Activer/Désactiver le mode Ne pas déranger. <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Désactivez l'accès à l'appareil photo sur cet appareil pour bloquer tous les appareils photo en permanence.</translation>
 <translation id="4666911709726371538">Plus d'applications</translation>
 <translation id="4667099493359681081">Téléchargement du fichier <ph name="FILENAME" /> en cours</translation>
 <translation id="468293128311738995">Applis de votre téléphone</translation>
 <translation id="4690510401873698237">Étagère en bas</translation>
 <translation id="4696813013609194136">Déverrouiller l'appareil avec le code parental</translation>
 <translation id="4702647871202761252">L'écran de confidentialité est désactivé</translation>
+<translation id="4706121060329443414">Le téléchargement sera relancé ultérieurement. Entre temps, les paroles seront envoyées à Google pour traitement.</translation>
 <translation id="470644585772471629">Inversion des couleurs</translation>
 <translation id="4717575069099566988">Votre câble USB-C n'est pas compatible USB4. Cela peut limiter les performances de l'appareil.</translation>
 <translation id="4730374152663651037">SOUVENT UTILISÉES</translation>
@@ -695,7 +700,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="485592688953820832">Aucune action (pause)</translation>
 <translation id="485634149294284819">Ouvrir le menu du clavier</translation>
 <translation id="4860284199500934869">Vérifiez votre connexion réseau pour télécharger <ph name="FILENAME" /></translation>
-<translation id="486056901304535126">Le téléchargement sera relancé plus tard. Les paroles seront envoyées à Google pour traitement une fois le téléchargement terminé.</translation>
 <translation id="4864369630010738180">Connexion...</translation>
 <translation id="4864648187878336334">Bureau 15</translation>
 <translation id="4868492592575313542">a activé</translation>
@@ -790,6 +794,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5356963482258194581">Basculez entre les thèmes sombre et clair. Effectuez un clic droit sur le bureau et sélectionnez "Fond d'écran et style".</translation>
 <translation id="536019650977002321">Votre administrateur n'autorise pas la capture audio. Contactez-le pour en savoir plus.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Accéder à cet onglet</translation>
+<translation id="5377367976106153749">Activer l'accès à l'appareil photo ?</translation>
 <translation id="5379115545237091094">Trop de tentatives</translation>
 <translation id="5391307769715781764">Remplacer le bureau enregistré ?</translation>
 <translation id="5393156353051693207">Appuyez de manière prolongée n'importe où pour réorganiser les applis</translation>
@@ -1176,7 +1181,6 @@ Nouvelle installation</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> utilise actuellement votre micro</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="7564874036684306347">Le déplacement de fenêtres vers un autre écran peut entraîner un comportement inattendu. Par exemple, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
-<translation id="7567076708801803118">Voulez-vous désactiver l'accès à l'appareil photo sur cet appareil ?</translation>
 <translation id="7569509451529460200">Braille et ChromeVox activés</translation>
 <translation id="7573585051776738856">Fenêtre active épinglée à droite.</translation>
 <translation id="7579778809502851308">Capture d'écran</translation>

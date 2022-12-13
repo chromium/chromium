@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">取消列印工作</translation>
 <translation id="2163937499206714165">開啟深色模式</translation>
 <translation id="2180197493692062006">發生錯誤，請嘗試重新開啟應用程式。</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">重設流量計數器</translation>
 <translation id="2212733584906323460">名稱解析</translation>
 <translation id="2217935453350629363">目前速度</translation>
@@ -561,6 +560,7 @@
 <translation id="6189418609903030344">電池電量會隨使用時間而減少</translation>
 <translation id="6191293864534840972">名稱伺服器格式錯誤</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">結束全螢幕模式</translation>
 <translation id="6223752125779001553">沒有可用的掃描器</translation>
 <translation id="6232017090690406397">電池</translation>
 <translation id="6235460611964961764">手動重設數據用量</translation>
@@ -688,12 +688,12 @@
 <translation id="741244894080940828">轉換</translation>
 <translation id="7415801143053185905">HTTP 延遲時間非常長</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{掃描完成，已掃描 1 個頁面}other{掃描完成，已掃描 {NUMBER_OF_PAGES} 個頁面}}</translation>
 <translation id="7458970041932198923">如要查看及設定顯示圖片，請連上網路並重新載入頁面。</translation>
 <translation id="7469648432129124067">已偵測到網路入口</translation>
 <translation id="7481312909269577407">往前</translation>
 <translation id="7487067081878637334">科技資訊</translation>
 <translation id="7490813197707563893">MAC 位址</translation>
+<translation id="7491478667760509108">結束浮動模式</translation>
 <translation id="7497215489070763236">伺服器 CA 憑證</translation>
 <translation id="7502658306369382406">IPv6 位址</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -794,6 +794,7 @@
 <translation id="8498220429738806196">流量計數器</translation>
 <translation id="8503813439785031346">使用者名稱</translation>
 <translation id="8503836310948963452">請稍待幾分鐘…</translation>
+<translation id="8508640263392900755">APN 詳細資料</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">你的電信業者可能會要求你必須選擇此選項才能連線至他們的網路。如要瞭解詳情，請洽詢你的電信業者。</translation>
 <translation id="8576249514688522074">未初始化</translation>

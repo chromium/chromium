@@ -271,6 +271,7 @@
 <translation id="1586541204584340881">встановлені розширення;</translation>
 <translation id="1588438908519853928">Звичайний</translation>
 <translation id="1592005682883173041">Доступ до локальних даних</translation>
+<translation id="1593359183944365958">270 градусів</translation>
 <translation id="1594030484168838125">Вибрати</translation>
 <translation id="1596296697375291157">Трилери, детективи та кримінальні фільми</translation>
 <translation id="1599199147673445968">Якщо це нова картка, введіть її дані <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
@@ -337,6 +338,7 @@
 <translation id="1741613555002899862">Якщо параметр DnsOverHttpsMode має значення <ph name="SECURE_DNS_MODE_SECURE" />, потрібно вказати правило, яке має бути дійсним рядком.</translation>
 <translation id="1745880797583122200">Вашим веб-переглядачем керує адміністратор</translation>
 <translation id="1746113442205726301">Вертикальне зображення</translation>
+<translation id="1746531169546376413">0 градусів</translation>
 <translation id="17513872634828108">Відкриті вкладки</translation>
 <translation id="1752021286346845558">Поштова скринька 8</translation>
 <translation id="1753068535428855445">Побачення й особисті зустрічі</translation>
@@ -411,7 +413,6 @@
 <translation id="1958218078413065209">Ваш найкращий результат – <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Допоможіть посилити безпеку в Інтернеті для всіх користувачів, надсилаючи в Google <ph name="BEGIN_WHITEPAPER_LINK" />URL-адреси та вміст деяких відвіданих сторінок, а також обмежену системну інформацію<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Політика конфіденційності<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Закладки <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">Захист паролів за допомогою Touch ID</translation>
 <translation id="1973335181906896915">Помилка серіалізації</translation>
 <translation id="1974060860693918893">Розширені</translation>
 <translation id="1975457531113383421">Вхідний лоток</translation>
@@ -746,7 +747,6 @@
 <translation id="2881276955470682203">Зберегти картку?</translation>
 <translation id="2882949212241984732">Зігнути за типом "подвійні ворота"</translation>
 <translation id="2893773853358652045">Четвертий рулон</translation>
-<translation id="289834758818479772">Якщо ви користуєтеся цим пристроєм спільно з іншими людьми, увімкніть Touch ID, щоб підтверджувати свою особу щоразу, коли ви вводите збережений пароль</translation>
 <translation id="2900528713135656174">Створити подію</translation>
 <translation id="2903493209154104877">Адреси</translation>
 <translation id="290376772003165898">Ця сторінка відображається не такою мовою: <ph name="LANGUAGE" />?</translation>
@@ -1064,7 +1064,6 @@
 <translation id="3678529606614285348">Відкрийте сторінку в анонімному вікні (Ctrl+Shift+N)</translation>
 <translation id="3681007416295224113">Інформація про сертифікат</translation>
 <translation id="3693327506115126094">Виберіть спосіб підтвердження особи</translation>
-<translation id="3699374065820972102">TouchID ввімкнено для заповнення паролів</translation>
 <translation id="3701427423622901115">Скидання підтверджено.</translation>
 <translation id="3704162925118123524">Можливо, щоб з’єднатися з цією мережею, потрібно відвідати її сторінку входу.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1179,7 +1178,6 @@
 <translation id="401170183602135785">Конверт C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Документ PDF містить {COUNT} сторінку}one{Документ PDF містить {COUNT} сторінку}few{Документ PDF містить {COUNT} сторінки}many{Документ PDF містить {COUNT} сторінок}other{Документ PDF містить {COUNT} сторінки}}</translation>
 <translation id="4023431997072828269">Вашу інформацію бачитимуть інші користувачі, оскільки форма надсилається через незахищене з'єднання.</translation>
-<translation id="4024923292610332139">вимкнути TouchID для заповнення паролів</translation>
 <translation id="4025913568718019429">Кнопка "Керувати налаштуваннями конфіденційності Google"; натисніть Enter, щоб перейти в налаштування конфіденційності облікового запису Google.</translation>
 <translation id="4030383055268325496">&amp;Відмінити додавання</translation>
 <translation id="4031179711345676612">Дозволено використовувати мікрофон</translation>
@@ -1541,7 +1539,6 @@
 <translation id="4900217275619098670">Дев’ятий рулон</translation>
 <translation id="4901778704868714008">Зберегти…</translation>
 <translation id="4905659621780993806">Адміністратор автоматично перезапустить пристрій <ph name="DATE" /> о <ph name="TIME" />. Збережіть усі відкриті файли до цього часу.</translation>
-<translation id="4911007278801291296">Щоб увімкнути або вимкнути TouchID, відкрийте <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Пробити отвір угорі ліворуч</translation>
 <translation id="4918221908152712722">Установіть додаток <ph name="APP_NAME" /> (його не потрібно завантажувати)</translation>
 <translation id="4923459931733593730">Оплата</translation>
@@ -1723,6 +1720,7 @@
 <translation id="5334013548165032829">Докладні журнали системи</translation>
 <translation id="5334145288572353250">Зберегти адресу?</translation>
 <translation id="5335920952954443287">Пульсуюче серце</translation>
+<translation id="5337569431717511221">Кнопка "Зробити Chrome веб-переглядачем за умовчанням": натисніть Enter, щоб зробити Chrome веб-переглядачем системи за умовчанням</translation>
 <translation id="5340250774223869109">Додаток заблоковано</translation>
 <translation id="534295439873310000">Пристрої NFC</translation>
 <translation id="5344579389779391559">Ця сторінка може спробувати стягнути плату</translation>
@@ -1754,7 +1752,6 @@
 <translation id="5426179911063097041">Сайт <ph name="SITE" /> хоче надсилати вам сповіщення</translation>
 <translation id="5428105026674456456">Іспанська</translation>
 <translation id="5430298929874300616">Видалити закладку</translation>
-<translation id="5434423669266814150">увімкнути Touch ID для введення паролів</translation>
 <translation id="5443468954631487277">Зворотний порядок лицевою стороною вгору</translation>
 <translation id="5447765697759493033">Цей сайт не буде перекладено</translation>
 <translation id="5452270690849572955">Сторінку хосту <ph name="HOST_NAME" /> не знайдено</translation>
@@ -1796,6 +1793,7 @@
 <translation id="5540969246441091044">Кінний спорт</translation>
 <translation id="5541086400771735334">Поштова скринька 7</translation>
 <translation id="5541546772353173584">Додайте електронну адресу</translation>
+<translation id="5543722831081909240">180 градусів</translation>
 <translation id="5545756402275714221">Статті для вас</translation>
 <translation id="5551890439174915351">100 x 200 мм</translation>
 <translation id="5552137475244467770">Chrome періодично зіставляє ваші паролі зі списками, які були опубліковані онлайн. Під час цього ваші паролі й імена користувачів шифруються, тож їх ніхто не може прочитати, навіть Google.</translation>
@@ -2184,6 +2182,7 @@
 <translation id="6591833882275308647">Пристроєм <ph name="DEVICE_TYPE" /> не керує адміністратор</translation>
 <translation id="6592952801936330159">Кнопка "Керувати налаштуваннями сайтів"; натисніть Enter, щоб керувати в налаштуваннях Chrome дозволами й даними, що зберігаються на сайтах</translation>
 <translation id="6596325263575161958">Параметри шифрування</translation>
+<translation id="6597665340361269064">90 градусів</translation>
 <translation id="6599642189720630047">Відстежувані товари</translation>
 <translation id="6611723696964473273">Новини економіки</translation>
 <translation id="6612010098632894193">Відео в Інтернеті</translation>
@@ -2416,6 +2415,7 @@
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Адміністратор може бачити:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб відкрити нову анонімну вкладку</translation>
+<translation id="7203375778433816396">Зробити Chrome веб-переглядачем системи за умовчанням</translation>
 <translation id="7210863904660874423">Хост <ph name="HOST_NAME" /> не відповідає стандартам безпеки.</translation>
 <translation id="7210993021468939304">Активність Linux у межах контейнера. Може встановлювати та запускати додатки Linux у межах контейнера</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /> про цю проблему.</translation>
@@ -2563,6 +2563,7 @@
 <translation id="7537536606612762813">Обов’язкове</translation>
 <translation id="7542403920425041731">Щойно ви підтвердите, цей сайт отримає доступ до даних вашої картки.</translation>
 <translation id="7542995811387359312">Автоматичне заповнення кредитної картки вимкнено, оскільки ця форма не використовує безпечне з'єднання.</translation>
+<translation id="7546409722674205727">Запуск додатка <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Як виправити помилки з’єднання</translation>
 <translation id="7549584377607005141">Для належного відображення цій веб-сторінці потрібні введені вами раніше дані. Можна ще раз надіслати дані, однак зробивши це, ви повторите всі дії, які ця сторінка виконувала раніше.</translation>
 <translation id="7550637293666041147">Імена користувачів для пристрою та Chrome</translation>
@@ -2748,6 +2749,7 @@
 <translation id="8009843239480947060">10 x 11 дюйм.</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Цю картку та її платіжну адресу буде збережено. Ви зможете скористатися нею, коли ввійдете в обліковий запис <ph name="USER_EMAIL" />.}one{Ці картки та їх платіжні адреси буде збережено. Ви зможете скористатися ними, коли ввійдете в обліковий запис <ph name="USER_EMAIL" />.}few{Ці картки та їх платіжні адреси буде збережено. Ви зможете скористатися ними, коли ввійдете в обліковий запис <ph name="USER_EMAIL" />.}many{Ці картки та їх платіжні адреси буде збережено. Ви зможете скористатися ними, коли ввійдете в обліковий запис <ph name="USER_EMAIL" />.}other{Ці картки та їх платіжні адреси буде збережено. Ви зможете скористатися ними, коли ввійдете в обліковий запис <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб зробити Chrome веб-переглядачем системи за умовчанням</translation>
 <translation id="8025119109950072390">Зловмисники на цьому сайті можуть обманом змусити вас виконати небезпечну дію, як-от установити програмне забезпечення або повідомити особисту інформацію (наприклад, паролі, номери телефонів або кредитних карток).</translation>
 <translation id="8026334261755873520">Очистити історію</translation>
 <translation id="8027077570865220386">Лоток 15</translation>

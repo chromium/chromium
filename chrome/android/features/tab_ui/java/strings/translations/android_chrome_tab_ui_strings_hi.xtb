@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">क्या सभी गुप्त टैब बंद करने हैं?</translation>
 <translation id="1657719826150349398">टैब को नीचे ले जाएं</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब}one{<ph name="TABS_COUNT_MANY" /> टैब}other{<ph name="TABS_COUNT_MANY" /> टैब}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{चुना गया <ph name="TABS_COUNT_ONE" /> टैब को बुकमार्क करें}one{चुना गया <ph name="TABS_COUNT_MANY" /> टैब को बुकमार्क करें}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को बुकमार्क करें}}</translation>
 <translation id="2118649612461486615">स्टोर की जानकारी</translation>
 <translation id="2162620598375156287">अब <ph name="SOURCE_WEBSITE" /> पर कीमत <ph name="CURRENT_PRICE" /> है</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{टैब को ग्रुप से अलग करें}one{टैब को ग्रुप से अलग करें}other{टैब को ग्रुप से अलग करें}}</translation>
 <translation id="2277224997687551299">ग्रुप के नाम में बदलाव करें</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{चुने गए <ph name="TABS_COUNT_ONE" /> टैब को ग्रुप से हटाएं.}one{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को ग्रुप से हटाएं.}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को ग्रुप से हटाएं.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{बुकमार्क टैब}one{बुकमार्क टैब}other{बुकमार्क टैब}}</translation>
 <translation id="2479148705183875116">सेटिंग पर जाएं</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब छोटा करें.}one{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को छोटा करें.}other{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को छोटा करें.}}</translation>
 <translation id="2569352796411618312">सुझाव: आपके <ph name="NUMBER_OF_TABS" /> टैब का हाल ही में इस्तेमाल नहीं हुआ है. क्या आप उन्हें बंद करना चाहते हैं?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">टैब ऊपर भेजें</translation>
 <translation id="8304833501377495048">क्या आप चाहते हैं कि टैब बार दोबारा न दिखाया जाए?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> चुना गया टैब बंद करें}one{<ph name="TABS_COUNT_MANY" /> चुने गए टैब बंद करें}other{<ph name="TABS_COUNT_MANY" /> चुने गए टैब बंद करें}}</translation>
+<translation id="8398929769197326728">नया फ़ोल्डर - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> टैब वाले टैब ग्रुप को बड़ा करें</translation>
 <translation id="8714939927607906138">कम कीमत</translation>
 <translation id="8749939518995770034">बंद किए गए टैब बार</translation>

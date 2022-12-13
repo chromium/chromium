@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Pakket is ongeldig. Details: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> vraagt om toegang tot een van je apparaten:</translation>
 <translation id="8885905466771744233">Er bestaat al een persoonlijke sleutel voor de opgegeven extensie. Gebruik die sleutel opnieuw of verwijder deze eerst.</translation>
+<translation id="9039223174332979184">De beheerder van dit apparaat vereist dat <ph name="EXTENSION_NAME" /> minimaal manifestversie 3 heeft.</translation>
 <translation id="907841381057066561">Geen tijdelijk zipbestand gemaakt tijdens inpakken.</translation>
 <translation id="941543339607623937">Ongeldige persoonlijke sleutel.</translation>
 </translationbundle>

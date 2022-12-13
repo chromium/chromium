@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Palīdziet mums uzlabot konfidencialitāti tīmeklī</translation>
 <translation id="107147699690128016">Ja mainīsiet faila paplašinājumu, fails var tikt atvērts citā lietojumprogrammā un potenciāli apdraudēt jūsu ierīci.</translation>
 <translation id="1089606299949659462">Pārskatīšana ir pabeigta!</translation>
-<translation id="1091604859693995976">Lai skatītu, atsvaidziniet</translation>
 <translation id="1095761715416917775">Parūpējieties, lai vienmēr varētu piekļūt sinhronizētajiem datiem</translation>
 <translation id="1100066534610197918">Atvērt jaunu cilni grupā</translation>
 <translation id="1103142993930332957">Palīdziet uzlabot Chrome</translation>
@@ -1148,6 +1147,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7177466738963138057">Vēlāk varēsiet to mainīt iestatījumos</translation>
 <translation id="7177873915659574692">Nevar izveidot kvadrātkodu. URL garums pārsniedz <ph name="CHARACTER_LIMIT" /> rakstzīmes.</translation>
 <translation id="7177959540995930968">Chrome iestatījumos varat uzzināt vairāk par šīm funkcijām.</translation>
+<translation id="7180611975245234373">Atsvaidzināt</translation>
 <translation id="718226107353899806">Varat pievienot ne vairāk kā <ph name="MAX_NUM_REACTIONS" /> reakcijas.</translation>
 <translation id="7183693674623539380">Ciļņu grupa — <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Tiek nodrošināta jūsu aizsardzība pārlūkprogrammā Chrome. Šis režīms var tikt izmantots jūsu drošības uzlabošanai citās Google lietotnēs, kad esat pierakstījies.</translation>

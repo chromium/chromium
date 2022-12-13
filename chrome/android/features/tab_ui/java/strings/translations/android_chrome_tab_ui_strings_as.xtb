@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">আটাইবোৰ ইনক’গনিট’ টেব বন্ধ কৰিবনে?</translation>
 <translation id="1657719826150349398">টেবটো তললৈ নিয়ক</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টা টেব}one{<ph name="TABS_COUNT_MANY" />টা টেব}other{<ph name="TABS_COUNT_MANY" />টা টেব}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{বাছনি কৰা <ph name="TABS_COUNT_ONE" /> টা টেব বুকমাৰ্ক কৰক}one{বাছনি কৰা <ph name="TABS_COUNT_MANY" /> টা টেব বুকমাৰ্ক কৰক}other{বাছনি কৰা <ph name="TABS_COUNT_MANY" /> টা টেব বুকমাৰ্ক কৰক}}</translation>
 <translation id="2118649612461486615">ষ্ট’ৰৰ তথ্য</translation>
 <translation id="2162620598375156287">এতিয়া <ph name="SOURCE_WEBSITE" />ত <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{টেবৰ গোট ভংগ কৰক}one{টেবৰ গোট ভংগ কৰক}other{টেবৰ গোট ভংগ কৰক}}</translation>
 <translation id="2277224997687551299">গোটৰ নাম সম্পাদনা কৰক</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{গোটৰ পৰা <ph name="TABS_COUNT_ONE" /> টা বাছনি কৰা টেব আঁতৰাওক।}one{গোটৰ পৰা <ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব আঁতৰাওক।}other{গোটৰ পৰা <ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব আঁতৰাওক।}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{টেব বুকমাৰ্ক কৰক}one{টেব বুকমাৰ্ক কৰক}other{টেব বুকমাৰ্ক কৰক}}</translation>
 <translation id="2479148705183875116">ছেটিংসমূহলৈ যাওক</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা টেব সংকোচন কৰক।}one{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত টেবৰ গোটটো সংকোচন কৰক।}other{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত টেবৰ গোটটো সংকোচন কৰক।}}</translation>
 <translation id="2569352796411618312">পৰামৰ্শ: শেহতীয়াকৈ আপোনাৰ <ph name="NUMBER_OF_TABS" /> টা টেব ব্যৱহাৰ কৰা হোৱা নাই। সেইকেইটা বন্ধ কৰিবনে?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">টেবটো ওপৰলৈ নিয়ক</translation>
 <translation id="8304833501377495048">টেবৰ ষ্ট্ৰিপটো পুনৰ নেদেখুৱায় নেকি?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা বাছনি কৰা টেব বন্ধ কৰক}one{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব বন্ধ কৰক}other{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব বন্ধ কৰক}}</translation>
+<translation id="8398929769197326728">নতুন ফ’ল্ডাৰ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> টা টেবযুক্ত টেবৰ গোটটো বিস্তাৰ কৰক।</translation>
 <translation id="8714939927607906138">কম মূল্য</translation>
 <translation id="8749939518995770034">বন্ধ কৰা টেবৰ ষ্ট্ৰিপ</translation>

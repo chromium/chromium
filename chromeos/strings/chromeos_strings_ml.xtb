@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">പ്രിന്റ് ജോലി റദ്ദാക്കുക</translation>
 <translation id="2163937499206714165">ഡാർക്ക് മോഡ് ഓണാക്കുക</translation>
 <translation id="2180197493692062006">എന്തോ കുഴപ്പമുണ്ടായി. ആപ്പ് വീണ്ടും തുറക്കാൻ ശ്രമിക്കുക.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">ട്രാഫിക് കൗണ്ടറുകൾ റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="2212733584906323460">നെയിം റെസല്യൂഷൻ</translation>
 <translation id="2217935453350629363">നിലവിലെ വേഗത</translation>
@@ -491,6 +490,7 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">സൂര്യാസ്തമയ സമയത്ത് സ്വയമേവ ഡാർക്ക് തീമിലേക്ക് മാറുക</translation>
+<translation id="5571714952674387371">വിശദാംശങ്ങൾ കാണുക, എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">വീണ്ടും സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="5583640892426849032">ബാക്ക്‌സ്പെയ്‌സ്</translation>
@@ -560,6 +560,7 @@
 <translation id="6189418609903030344">ഉപയോഗത്തിനനുസരിച്ച് ബാറ്ററി ശേഷി കുറയുന്നു</translation>
 <translation id="6191293864534840972">തകരാറുള്ള നെയിം സെർവറുകൾ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്ത് കടക്കുക</translation>
 <translation id="6223752125779001553">സ്‌കാനറുകളൊന്നും ലഭ്യമല്ല</translation>
 <translation id="6232017090690406397">ബാറ്ററി</translation>
 <translation id="6235460611964961764">ഡാറ്റാ ഉപയോഗം നേരിട്ട് റീസെറ്റ് ചെയ്യുക</translation>
@@ -687,12 +688,12 @@
 <translation id="741244894080940828">പരിവർത്തനം</translation>
 <translation id="7415801143053185905">വളരെ ഉയർന്ന HTTP പ്രതികരണ സമയം</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{സ്‌കാൻ ചെയ്യൽ പൂർത്തിയായി. 1 പേജ് സ്‌കാൻ ചെയ്‌തു}other{സ്‌കാൻ ചെയ്യൽ പൂർത്തിയായി. {NUMBER_OF_PAGES} പേജുകൾ സ്‌കാൻ ചെയ്‌തു}}</translation>
 <translation id="7458970041932198923">അവതാറുകൾ കാണാനും സജ്ജീകരിക്കാനും ഒരു നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റുചെയ്‌ത് പേജ് റീലോഡ് ചെയ്യുക.</translation>
 <translation id="7469648432129124067">പോര്‍ട്ടല്‍ തിരിച്ചറിഞ്ഞു</translation>
 <translation id="7481312909269577407">മുന്നോട്ട്</translation>
 <translation id="7487067081878637334">സാങ്കേതികവിദ്യ</translation>
 <translation id="7490813197707563893">MAC വിലാസം</translation>
+<translation id="7491478667760509108">ഫ്ലോട്ടിൽ നിന്ന് പുറത്ത് കടക്കുക</translation>
 <translation id="7497215489070763236">സെർവർ CA സർട്ടിഫിക്കറ്റ്</translation>
 <translation id="7502658306369382406">IPv6 വിലാസം</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -793,6 +794,7 @@
 <translation id="8498220429738806196">ട്രാഫിക് കൗണ്ടറുകൾ</translation>
 <translation id="8503813439785031346">ഉപയോക്തൃനാമം</translation>
 <translation id="8503836310948963452">കുറച്ച് മിനിറ്റുകൾ കൂടി മാത്രം…</translation>
+<translation id="8508640263392900755">APN വിശദാംശങ്ങൾ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">നിങ്ങളുടെ സേവനദാതാവിന് അവരുടെ നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്യാൻ ഈ ഓപ്‌ഷൻ ആവശ്യമായി വന്നേക്കാം. വിശദാംശങ്ങൾക്ക് നിങ്ങളുടെ സേവനദാതാവുമായി ബന്ധപ്പെടുക.</translation>
 <translation id="8576249514688522074">പ്രവർത്തനമാരംഭിച്ചിട്ടില്ല</translation>
@@ -868,6 +870,7 @@
 <translation id="9173638680043580060">ഒരു മിനിറ്റിലും താഴെ ശേഷിക്കുന്നു</translation>
 <translation id="917720651393141712">ടെസ്‌റ്റ്</translation>
 <translation id="9188992814426075118">നിങ്ങളുടെ കീബോർഡിന് വാൾപേപ്പറുമായി സ്വയമേവ പൊരുത്തപ്പെടാനാകും</translation>
+<translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Android ആപ്പുകളിൽ നിന്ന് ഗേറ്റ്‌വേയുമായി ബന്ധപ്പെടാനാകുന്നില്ല</translation>
 <translation id="9211490828691860325">എല്ലാ ഡെസ്കുകളും</translation>
 <translation id="932327136139879170">ഹോം</translation>

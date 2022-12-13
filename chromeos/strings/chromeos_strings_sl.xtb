@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Preklic tiskalnega opravila</translation>
 <translation id="2163937499206714165">Vklop temnega načina</translation>
 <translation id="2180197493692062006">Prišlo je do napake. Poskusite znova odpreti aplikacijo.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Ponastavi števce prometa</translation>
 <translation id="2212733584906323460">Ločljivost imena</translation>
 <translation id="2217935453350629363">Trenutna hitrost</translation>
@@ -561,6 +560,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6189418609903030344">Zmogljivost baterije z uporabo upada</translation>
 <translation id="6191293864534840972">Napačno oblikovani imenski strežniki</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Zapusti celozaslonski način</translation>
 <translation id="6223752125779001553">Na voljo ni optičnih bralnikov</translation>
 <translation id="6232017090690406397">Baterija</translation>
 <translation id="6235460611964961764">Ročno ponastavi preneseno količino podatkov.</translation>
@@ -688,12 +688,12 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="741244894080940828">pretvorba</translation>
 <translation id="7415801143053185905">Precejšnja zakasnitev HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Optično branje je dokončano. Optično prebrana je bila 1 stran.}one{Optično branje je dokončano. Optično prebrana je bila {NUMBER_OF_PAGES} stran.}two{Optično branje je dokončano. Optično prebrani sta bili {NUMBER_OF_PAGES} strani.}few{Optično branje je dokončano. Optično prebrane so bile {NUMBER_OF_PAGES} strani.}other{Optično branje je dokončano. Optično prebranih je bilo {NUMBER_OF_PAGES} strani.}}</translation>
 <translation id="7458970041932198923">Povežite se z omrežjem in znova naložite stran, če si želite ogledati in nastaviti avatarje.</translation>
 <translation id="7469648432129124067">Zaznan je portal</translation>
 <translation id="7481312909269577407">Naprej</translation>
 <translation id="7487067081878637334">Tehnologija</translation>
 <translation id="7490813197707563893">Naslov MAC</translation>
+<translation id="7491478667760509108">Zapusti plavajoči gumb</translation>
 <translation id="7497215489070763236">Strežniško overjeno potrdilo</translation>
 <translation id="7502658306369382406">Naslov IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -794,6 +794,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8498220429738806196">Števci prometa</translation>
 <translation id="8503813439785031346">Uporabniško ime</translation>
 <translation id="8503836310948963452">Samo še nekaj minut …</translation>
+<translation id="8508640263392900755">Podrobnosti o APN-ju</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operater lahko zahteva to možnost za povezovanje z njegovim omrežjem. Za podrobnejše informacije se obrnite na operaterja.</translation>
 <translation id="8576249514688522074">Neinicializirano</translation>

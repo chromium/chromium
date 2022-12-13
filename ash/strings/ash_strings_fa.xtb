@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">ذخیره کردن <ph name="NAME" /></translation>
 <translation id="1032891413405719768">شارژ باتری قلم کم است</translation>
 <translation id="1036073649888683237">برای مدیریت اعلان‌ها، به «تنظیمات» بروید</translation>
+<translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1036672894875463507">‏من «دستیار Google» هستم، آماده‌ام تا درطول روز به شما کمک کنم!
 در اینجا برخی از مواردی که می‌توانید برای شروع‌به‌کار انجام دهید آمده است.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> اضافه شد</translation>
@@ -100,6 +101,7 @@
 <translation id="1447641497144572814">محافظ صفحه‌نمایش شروع شد</translation>
 <translation id="1455242230282523554">نمایش تنظیمات زبان</translation>
 <translation id="1460620680449458626">دکمه میزان صدا صامت است.</translation>
+<translation id="14648076227129703">با این کار، دسترسی به دوربین برای <ph name="APP1_NAME" />، <ph name="APP2_NAME" />، و همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین مجاز می‌شود</translation>
 <translation id="1467432559032391204">چپ</translation>
 <translation id="146902737843070955">سرپرستتان این تغییر را درخواست کرده است</translation>
 <translation id="147310119694673958">باتری تلفن <ph name="BATTERY_PERCENTAGE" />٪</translation>
@@ -159,6 +161,7 @@
 <translation id="1797271123677381264">فراموش کردن گذرواژه</translation>
 <translation id="181103072419391116">قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>
 <translation id="1812997170047690955">چه چیزی در صفحه‌نمایش من نشان داده می‌شود؟</translation>
+<translation id="1816896987747843206">با این کار، دسترسی به دوربین برای همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین مجاز می‌شود</translation>
 <translation id="1823280932251546115">سینی وضعیت، زمان <ph name="TIME" />،
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@
 <translation id="1830308660060964064">پین <ph name="ITEM_TITLE" /> برداشته شد</translation>
 <translation id="1836215606488044471">دستیار (درحال بار کردن…)</translation>
 <translation id="1838895407229022812">«نور شب» خاموش است</translation>
+<translation id="1854180393107901205">توقف فرستادن</translation>
 <translation id="1862380676329487333">به‌روزرسانی و خروج از سیستم</translation>
 <translation id="1864454756846565995">‏دستگاه USB-C (درگاه عقب)</translation>
 <translation id="1869497990620230175">فایل‌های سریع</translation>
@@ -597,6 +601,7 @@
 <translation id="4316910396681052118">همه برنامه‌ها</translation>
 <translation id="4321179778687042513">مهار</translation>
 <translation id="4322742403972824594">میان‌بر صفحه‌کلید «مهار + دگرساز + جهت‌نمای بالا» تغییر کرده است. برای استفاده از کلید «صفحه اصلی»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + جهت‌نمای چپ» را فشار دهید.</translation>
+<translation id="4324840740119394760">با این کار، دسترسی به دوربین برای <ph name="APP_NAME" /> و همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین مجاز می‌شود</translation>
 <translation id="4333628967105022692">‏وقتی چند کاربر به سیستم وارد شده باشند، از Lacros پشتیبانی نمی‌شود.</translation>
 <translation id="4338109981321384717">ذره‌بین</translation>
 <translation id="4351433414020964307">دستیار درحال بار کردن است...</translation>
@@ -663,13 +668,13 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">‏ChromeVox فعال شد</translation>
 <translation id="4665114317261903604">روشن/خاموش کردن «مزاحم نشوید». <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">برای اینکه همه دوربین‌ها همیشه مسدود شوند، دسترسی دوربین را در این دستگاه خاموش کنید.</translation>
 <translation id="4666911709726371538">برنامه‌های بیشتر</translation>
 <translation id="4667099493359681081">درحال بارگیری <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">برنامه‌های تلفن شما</translation>
 <translation id="4690510401873698237">قفسه در پایین است</translation>
 <translation id="4696813013609194136">باز کردن قفل دستگاه با کد والدین</translation>
 <translation id="4702647871202761252">صفحه حریم خصوصی خاموش است</translation>
+<translation id="4706121060329443414">‏بارگیری بعداً انجام خواهد شد. اکنون گفتار برای پردازش به Google ارسال خواهد شد.</translation>
 <translation id="470644585772471629">وارونگی رنگ</translation>
 <translation id="4717575069099566988">‏کابل USB-C شما از USB4 پشتیبانی نمی‌کند. ممکن است عملکرد دستگاه محدود شود.</translation>
 <translation id="4730374152663651037">مکرراً استفاده‌شده</translation>
@@ -695,7 +700,6 @@
 <translation id="485592688953820832">بی‌حرکت (مکث)</translation>
 <translation id="485634149294284819">وارد شدن به منوی صفحه‌کلید</translation>
 <translation id="4860284199500934869">برای بارگیری <ph name="FILENAME" />، اتصال شبکه را بررسی کنید</translation>
-<translation id="486056901304535126">‏بارگیری بعداً انجام خواهد شد. تا وقتی بارگیری کامل شود، گفتار برای پردازش به Google ارسال خواهد شد.</translation>
 <translation id="4864369630010738180">در حال ورود به سیستم...</translation>
 <translation id="4864648187878336334">میزکار ۱۵</translation>
 <translation id="4868492592575313542">فعال شد</translation>
@@ -790,6 +794,7 @@
 <translation id="5356963482258194581">بین زمینه تیره و روشن جابه‌جا شوید. روی میز کار کلیک راست کنید و «کاغذدیواری و سبک» را انتخاب کنید.</translation>
 <translation id="536019650977002321">سرپرستتان ضبط صدا را غیرمجاز کرده است. برای اطلاعات بیشتر، با سرپرست تماس بگیرید.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> رفتن به این برگه</translation>
+<translation id="5377367976106153749">دسترسی به دوربین روشن شود؟</translation>
 <translation id="5379115545237091094">تلاش‌های ناموفق زیادی انجام شده است</translation>
 <translation id="5391307769715781764">میزکار ذخیره‌شده جایگزین شود؟</translation>
 <translation id="5393156353051693207">برای تغییر ترتیب برنامه‌ها، جایی را لمس کنید و نگه دارید</translation>
@@ -1176,7 +1181,6 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> درحال استفاده از میکروفون است</translation>
 <translation id="7561982940498449837">بستن منو</translation>
 <translation id="7564874036684306347">انتقال پنجره‌ها به میز کار دیگر می‌تواند به رفتار غیرمنتظره منجر شود. اعلان‌ها، پنجره‌ها و کادرهای گفتگوی بعدی ممکن است بین میز کارها تقسیم شوند.</translation>
-<translation id="7567076708801803118">آیا می‌خواهید دسترسی دوربین را در این دستگاه خاموش کنید؟</translation>
 <translation id="7569509451529460200">‏بریل و ChromeVox فعال هستند</translation>
 <translation id="7573585051776738856">پنجره فعال به راست متصل شد.</translation>
 <translation id="7579778809502851308">ضبط صفحه‌نمایش</translation>
@@ -1252,6 +1256,7 @@
 <translation id="79341161159229895">حساب تحت مدیریت <ph name="FIRST_PARENT_EMAIL" /> و <ph name="SECOND_PARENT_EMAIL" /> است</translation>
 <translation id="793716872548410480">‏برای مشاهده بریده‌دان، کلیدهای <ph name="SHORTCUT_KEY_NAME" /> + V را فشار دهید. ۵ مورد آخری که کپی کرده‌اید در بریده‌دان ذخیره می‌شود.</translation>
 <translation id="7942349550061667556">قرمز</translation>
+<translation id="7963992254934562106">از <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">انتخاب پوشه…</translation>
 <translation id="7977927628060636163">درحال جستجوی شبکه‌های تلفن همراه…</translation>
 <translation id="7982789257301363584">شبکه</translation>

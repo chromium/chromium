@@ -177,7 +177,7 @@
 <translation id="4645575059429386691">부모님이 관리합니다.</translation>
 <translation id="4670064810192446073">가상 현실</translation>
 <translation id="4751476147751820511">모션 또는 조도 센서</translation>
-<translation id="4779083564647765204">글꼴 크기</translation>
+<translation id="4779083564647765204">확대/축소</translation>
 <translation id="4811450222531576619">출처와 주제에 관해 자세히 알아보기</translation>
 <translation id="4836046166855586901">사용자가 현재 기기를 사용 중인지 사이트에서 알고자 할 때 확인</translation>
 <translation id="483914009762354899">이 도메인의 모든 사이트 포함</translation>
@@ -348,6 +348,7 @@
 <translation id="813082847718468539">사이트 정보 보기</translation>
 <translation id="8131740175452115882">확인</translation>
 <translation id="8154912474061769055">다수의 사이트에서 기능이 작동하지 않을 수 있음</translation>
+<translation id="8168435359814927499">콘텐츠</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> 허용됨</translation>
 <translation id="8200772114523450471">다시 시작</translation>
 <translation id="8206354486702514201">이 설정은 관리자가 강제로 설정해 놓았습니다.</translation>

@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">ਆਪਣਾ <ph name="NAME" /> ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="1032891413405719768">ਸਟਾਈਲਸ ਦੀ ਬੈਟਰੀ ਘੱਟ ਹੈ</translation>
 <translation id="1036073649888683237">ਸੂਚਨਾਵਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
+<translation id="1036348656032585052">ਬੰਦ ਕਰੋ</translation>
 <translation id="1036672894875463507">ਮੈਂ ਤੁਹਾਡੀ Google Assistant ਹਾਂ, ਸਾਰਾ ਦਿਨ ਤੁਹਾਡੀ ਮਦਦ ਲਈ ਉਪਲਬਧ!
 ਇੱਥੇ ਅਜਿਹੀਆਂ ਕੁਝ ਚੀਜ਼ਾਂ ਹਨ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਵਰਤ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
@@ -100,6 +101,7 @@
 <translation id="1447641497144572814">ਸਕ੍ਰੀਨ ਸੇਵਰ ਸ਼ੁਰੂ ਹੁੰਦਾ ਹੈ</translation>
 <translation id="1455242230282523554">ਭਾਸ਼ਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="1460620680449458626">ਅਵਾਜ਼ ਨੂੰ ਮਿਊਟ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
+<translation id="14648076227129703">ਇਸ ਨਾਲ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="1467432559032391204">ਖੱਬੇ ਪਾਸੇ</translation>
 <translation id="146902737843070955">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਇਸ ਤਬਦੀਲੀ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਹੈ</translation>
 <translation id="147310119694673958">ਫ਼ੋਨ ਬੈਟਰੀ <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -159,6 +161,7 @@
 <translation id="1797271123677381264">ਪਾਸਵਰਡ ਭੁੱਲ ਗਏ</translation>
 <translation id="181103072419391116">ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="1812997170047690955">ਮੇਰੀ ਸਕ੍ਰੀਨ 'ਤੇ ਕਿਹੜੀ ਸਮੱਗਰੀ ਮੌਜੂਦ ਹੈ?</translation>
+<translation id="1816896987747843206">ਇਸ ਨਾਲ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="1823280932251546115">ਸਥਿਤੀ ਟ੍ਰੇ, ਸਮਾਂ <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ਨੂੰ ਅਨਪਿੰਨ ਕੀਤਾ ਗਿਆ ਸੀ</translation>
 <translation id="1836215606488044471">Assistant ਨੂੰ (ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...)</translation>
 <translation id="1838895407229022812">ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ ਬੰਦ ਹੈ।</translation>
+<translation id="1854180393107901205">ਕਾਸਟ ਕਰਨਾ ਰੋਕੋ</translation>
 <translation id="1862380676329487333">ਅੱਪਡੇਟ ਕਰ ਕੇ ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
 <translation id="1864454756846565995">USB-C ਡੀਵਾਈਸ (ਪਿਛਲਾ ਪੋਰਟ)</translation>
 <translation id="1869497990620230175">ਤਤਕਾਲ ਫ਼ਾਈਲਾਂ</translation>
@@ -598,6 +602,7 @@
 <translation id="4316910396681052118">ਸਭ ਐਪਾਂ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Ctrl + Alt + ਉੱਪਰ ਤੀਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Home ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਖੱਬਾ ਤੀਰ ਦਬਾਓ।</translation>
+<translation id="4324840740119394760">ਇਸ ਨਾਲ <ph name="APP_NAME" /> ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="4333628967105022692">ਕਈ ਵਰਤੋਂਕਾਰਾਂ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਹੋਣ ਦੌਰਾਨ Lacros ਸਮਰਥਿਤ ਨਹੀਂ ਹੁੰਦਾ ਹੈ।</translation>
 <translation id="4338109981321384717">ਸੂਖਮਦਰਸ਼ੀ ਕੱਚ</translation>
 <translation id="4351433414020964307">Assistant ਨੂੰ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
@@ -664,13 +669,13 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ਯੋਗ ਬਣਾਇਆ ਗਿਆ ਹੈ</translation>
 <translation id="4665114317261903604">'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">ਹਰ ਸਮੇਂ ਸਾਰੇ ਕੈਮਰਿਆਂ ਨੂੰ ਬਲਾਕ ਕਰਨ ਲਈ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਕੈਮਰਾ ਪਹੁੰਚ ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
 <translation id="4666911709726371538">ਹੋਰ ਐਪਾਂ</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="468293128311738995">ਤੁਹਾਡੇ ਫ਼ੋਨ ਤੋਂ ਐਪਾਂ</translation>
 <translation id="4690510401873698237">ਹੇਠਲੇ 'ਤੇ ਸ਼ੈਲਫ਼</translation>
 <translation id="4696813013609194136">ਮਾਂ-ਪਿਓ ਦੇ ਕੋਡ ਨਾਲ ਡੀਵਾਈਸ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="4702647871202761252">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਬੰਦ ਹੈ</translation>
+<translation id="4706121060329443414">ਬਾਅਦ ਵਿੱਚ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਜਾਵੇਗੀ। ਫ਼ਿਲਹਾਲ ਪ੍ਰਕਿਰਿਆ ਕਰਨ ਲਈ ਬੋਲੀ Google ਨੂੰ ਭੇਜੀ ਜਾਵੇਗੀ।</translation>
 <translation id="470644585772471629">ਰੰਗ ਪਲਟਨਾ</translation>
 <translation id="4717575069099566988">ਤੁਹਾਡੀ USB-C ਕੇਬਲ USB4 ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ ਹੈ। ਡੀਵਾਈਸ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਸੀਮਤ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="4730374152663651037">ਅਕਸਰ ਵਰਤੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਐਪਾਂ</translation>
@@ -697,7 +702,6 @@
 <translation id="485634149294284819">ਕੀ-ਬੋਰਡ ਮੀਨੂ ਖੋਲ੍ਹੋ
 </translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਆਪਣੇ ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
-<translation id="486056901304535126">ਬਾਅਦ ਵਿੱਚ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਜਾਵੇਗੀ। ਡਾਊਨਲੋਡ ਪੂਰਾ ਹੋਣ ਤੱਕ ਪ੍ਰਕਿਰਿਆ ਕਰਨ ਲਈ ਬੋਲੀ Google ਨੂੰ ਭੇਜੀ ਜਾਵੇਗੀ।</translation>
 <translation id="4864369630010738180">ਸਾਈਨ ਇਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="4864648187878336334">ਡੈਸਕ 15</translation>
 <translation id="4868492592575313542">ਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਗਿਆ</translation>
@@ -792,6 +796,7 @@
 <translation id="5356963482258194581">ਗੂੜ੍ਹੇ ਅਤੇ ਹਲਕੇ ਥੀਮ ਵਿਚਕਾਰ ਸਵਿੱਚ ਕਰੋ। ਡੈਸਕਟਾਪ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰ ਕੇ 'ਵਾਲਪੇਪਰ ਅਤੇ ਸਟਾਈਲ' ਚੁਣੋ।</translation>
 <translation id="536019650977002321">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਆਡੀਓ ਨੂੰ ਕੈਪਚਰ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਦਿੰਦਾ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ਇਸ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
+<translation id="5377367976106153749">ਕੀ ਕੈਮਰਾ ਪਹੁੰਚ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5379115545237091094">ਬਹੁਤ ਸਾਰੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ</translation>
 <translation id="5391307769715781764">ਕੀ ਰੱਖਿਅਤ ਕੀਤੇ ਡੈਸਕ ਨੂੰ ਬਦਲਣਾ ਹੈ?</translation>
 <translation id="5393156353051693207">ਆਪਣੀਆਂ ਐਪਾਂ ਨੂੰ ਮੁੜ-ਕ੍ਰਮਬੱਧ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਸਪਰਸ਼ ਕਰ ਕੇ ਰੱਖੋ</translation>
@@ -1178,7 +1183,6 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> ਐਪ ਫ਼ਿਲਹਾਲ ਤੁਹਾਡਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤ ਰਹੀ ਹੈ</translation>
 <translation id="7561982940498449837">ਮੀਨੂ ਬੰਦ ਕਰੋ</translation>
 <translation id="7564874036684306347">ਵਿੰਡੋਆਂ ਨੂੰ ਕਿਸੇ ਹੋਰ ਡੈਸਕਟਾਪ 'ਤੇ ਲਿਜਾਉਣ ਨਾਲ ਅਣਕਿਆਸਿਆ ਵਰਤਾਅ ਦਿਖ ਸਕਦਾ ਹੈ। ਇਸ ਤੋਂ ਬਾਅਦ ਦੀਆਂ ਸੂਚਨਾਵਾਂ, ਵਿੰਡੋਆਂ ਅਤੇ ਡਾਇਲੌਗ ਡੈਸਕਟਾਪਾਂ ਵਿੱਚ ਵੱਖ-ਵੱਖ ਕੀਤੇ ਜਾ ਸਕਦੇ ਹਨ।</translation>
-<translation id="7567076708801803118">ਕੀ ਤੁਸੀਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਕੈਮਰਾ ਪਹੁੰਚ ਨੂੰ ਬੰਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="7569509451529460200">ਬ੍ਰੇਲ ਅਤੇ ChromeVox ਯੋਗ ਬਣਾਏ ਗਏ ਹਨ</translation>
 <translation id="7573585051776738856">ਕਿਰਿਆਸ਼ੀਲ ਵਿੰਡੋ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਡੌਕ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="7579778809502851308">ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਕਰੋ</translation>

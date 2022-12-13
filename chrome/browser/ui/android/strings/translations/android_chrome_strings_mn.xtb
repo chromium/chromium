@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Бидэнд илүү хувийн веб бүтээхэд тусална уу</translation>
 <translation id="107147699690128016">Хэрэв та файлын өргөтгөлийг өөрчилбөл файлыг өөр хэрэглээний программ дээр нээж болох бөгөөд таны төхөөрөмжид аюултай байж болзошгүй.</translation>
 <translation id="1089606299949659462">Шалгаж дууслаа!</translation>
-<translation id="1091604859693995976">Харахын тулд сэргээнэ үү</translation>
 <translation id="1095761715416917775">Та синк хийх өгөгдөлдөө үргэлж хандах боломжтой эсэхээ шалгана уу</translation>
 <translation id="1100066534610197918">Бүлэгт шинэ табад нээнэ үү</translation>
 <translation id="1103142993930332957">Chrome-г сайжруулахад туслах уу?</translation>
@@ -760,6 +759,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="510275257476243843">1 цаг үлдсэн</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> хаягт</translation>
 <translation id="5118713593561876160">Сонирхол</translation>
+<translation id="5122378528687922675">Хэрэв танд тусламж хэрэгтэй бол эцэг эхээсээ (<ph name="PARENT_NAME_1" /> эсвэл <ph name="PARENT_NAME_2" />) хүснэ үү</translation>
 <translation id="5123685120097942451">Нууцлалтай таб</translation>
 <translation id="5126510351761255129">Картаа баталгаажуулах</translation>
 <translation id="5132942445612118989">Нууц үг, түүх болон бусад зүйлээ бүх төхөөрөмждөө синк хийгээрэй</translation>
@@ -1147,6 +1147,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="7177466738963138057">Та дараа үүнийг Тохиргоо хэсэгт өөрчлөх боломжтой</translation>
 <translation id="7177873915659574692">QR код үүсгэх боломжгүй. URL <ph name="CHARACTER_LIMIT" />-с олон тэмдэгттэй байна.</translation>
 <translation id="7177959540995930968">Та эдгээр онцлогийн талаар Chrome-н тохиргоо хэсгээс нэмэлт мэдээлэл авах боломжтой.</translation>
+<translation id="7180611975245234373">Дахин сэргээх</translation>
 <translation id="718226107353899806">Та <ph name="MAX_NUM_REACTIONS" /> хүртэлх хариу үйлдэл нэмж болно.</translation>
 <translation id="7183693674623539380">Табын бүлэг - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Таныг нэвтэрсэн үед Chrome дээр таны аюулгүй байдлыг хангадаг бөгөөд Google-н бусад апп дахь таны аюулгүй байдлыг сайжруулахын тулд ашиглагдах боломжтой.</translation>
@@ -1330,6 +1331,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="8084285576995584326">Google Бүртгэлийн өгөгдлөө хянана уу</translation>
 <translation id="808747664143081553">Төхөөрөмжид холбогдсон</translation>
 <translation id="8088176524274673045">Ойролцоо байгаа хүмүүстэй хуваалцахын тулд тэдэнд энэ QR кодыг скан хийхийг зөвшөөрнө үү</translation>
+<translation id="8090732854597034573">Хэрэв танд тусламж хэрэгтэй бол эцэг эхээсээ хүснэ үү</translation>
 <translation id="8100969750121413114">Chrome-г өөрийн болгохын тулд нэвтэрнэ үү</translation>
 <translation id="8103578431304235997">Нууцлалын таб</translation>
 <translation id="8105613260829665809">Үргэлжлүүлснээр та <ph name="BEGIN_TOS_LINK" />Үйлчилгээний нөхцөлийг<ph name="END_TOS_LINK" /> зөвшөөрч байна.\nТухайн аппыг сайжруулахад туслахын тулд Chrome ашиглалт болон гэмтлийн өгөгдлийг Google-д илгээнэ. <ph name="BEGIN_UMA_LINK" />Удирдах<ph name="END_UMA_LINK" /></translation>
@@ -1338,6 +1340,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="8109613176066109935">Хавчуургаа бүх төхөөрөмждөө авахын тулд синкийг асаана уу</translation>
 <translation id="8110024788458304985">Chrome-н онцлогууд болон гүйцэтгэлийг сайжруулахад туслах</translation>
 <translation id="8110087112193408731">Chrome-н үйл ажиллагаагаа Дижитал хэрэглээнд харуулах уу?</translation>
+<translation id="8118117428362942925">Хэрэв танд тусламж хэрэгтэй бол эцэг эхээсээ (<ph name="PARENT_NAME" />) хүснэ үү</translation>
 <translation id="8127542551745560481">Нүүр хуудсыг засах</translation>
 <translation id="8130309322784422030">Таны хадгалсан нэвтрэх мэдээлэл хуучирсан байж болзошгүй</translation>
 <translation id="813082847718468539">Сайтын мэдээллийг үзэх</translation>

@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">Gem dine <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Styluspennen er ved at løbe tør for batteri</translation>
 <translation id="1036073649888683237">Gå til Indstillinger for at administrere notifikationer</translation>
+<translation id="1036348656032585052">Deaktiver</translation>
 <translation id="1036672894875463507">Jeg er din Google-assistent, og jeg er klar til at hjælpe dig i løbet af dagen.
 Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> blev tilføjet</translation>
@@ -100,6 +101,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1447641497144572814">Starter pauseskærmen</translation>
 <translation id="1455242230282523554">Vis sprogindstillinger</translation>
 <translation id="1460620680449458626">Lyden er slået fra.</translation>
+<translation id="14648076227129703">Dette giver <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og alle andre apps samt websites med kameratilladelse adgang til kameraet</translation>
 <translation id="1467432559032391204">Venstre</translation>
 <translation id="146902737843070955">Din administrator har anmodet om denne ændring</translation>
 <translation id="147310119694673958">Telefonens batteri: <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -159,6 +161,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1797271123677381264">Glemt adgangskode</translation>
 <translation id="181103072419391116">Signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
 <translation id="1812997170047690955">Hvad vises der på min skærm?</translation>
+<translation id="1816896987747843206">Dette giver alle apps og websites med kameratilladelse adgang til kameraet</translation>
 <translation id="1823280932251546115">Statusbakke, klokkeslæt <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> blev frigjort</translation>
 <translation id="1836215606488044471">Assistent (indlæser...)</translation>
 <translation id="1838895407229022812">Nattelys er slået fra.</translation>
+<translation id="1854180393107901205">Stop cast</translation>
 <translation id="1862380676329487333">Opdater, og log ud</translation>
 <translation id="1864454756846565995">USB-C-enhed (port bagpå)</translation>
 <translation id="1869497990620230175">Genvej til foretrukne filer</translation>
@@ -598,6 +602,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4316910396681052118">ALLE APPS</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Tastaturgenvejen Ctrl+Alt+pil op er blevet ændret. Hvis du vil bruge Home-tasten, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+venstrepil.</translation>
+<translation id="4324840740119394760">Dette giver <ph name="APP_NAME" /> og alle andre apps samt websites med kameratilladelse adgang til kameraet</translation>
 <translation id="4333628967105022692">Lacros understøttes ikke, når flere brugere er logget ind.</translation>
 <translation id="4338109981321384717">Lup</translation>
 <translation id="4351433414020964307">Assistenten indlæses...</translation>
@@ -664,13 +669,13 @@ Slut din enhed til en strømkilde.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox er aktiveret</translation>
 <translation id="4665114317261903604">Slå Forstyr ikke til eller fra. <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Deaktiver kameraadgangen på denne enhed for altid at blokere alle kameraer.</translation>
 <translation id="4666911709726371538">Flere apps</translation>
 <translation id="4667099493359681081">Downloader <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Apps fra din telefon</translation>
 <translation id="4690510401873698237">Hylden er i bunden</translation>
 <translation id="4696813013609194136">Lås enheden op med forældrekode</translation>
 <translation id="4702647871202761252">Privatlivsskærmen er slået fra</translation>
+<translation id="4706121060329443414">Downloaden forsøges senere. Tale sendes i mellemtiden til behandling hos Google.</translation>
 <translation id="470644585772471629">Ombytning af farver</translation>
 <translation id="4717575069099566988">Dit USB-C-kabel understøtter ikke USB4. Enhedens ydeevne kan være begrænset.</translation>
 <translation id="4730374152663651037">OFTE ANVENDT</translation>
@@ -696,7 +701,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="485592688953820832">Ingen handling (pause)</translation>
 <translation id="485634149294284819">Åbn tastaturmenuen</translation>
 <translation id="4860284199500934869">Tjek din netværksforbindelse for at downloade <ph name="FILENAME" /></translation>
-<translation id="486056901304535126">Downloaden forsøges senere. Tale sendes til behandling hos Google, indtil downloaden er fuldført.</translation>
 <translation id="4864369630010738180">Logger ind...</translation>
 <translation id="4864648187878336334">Skrivebord 15</translation>
 <translation id="4868492592575313542">aktiveret</translation>
@@ -791,6 +795,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5356963482258194581">Skift mellem Mørkt og Lyst tema. Højreklik på skrivebordet, og vælg Baggrund og stil.</translation>
 <translation id="536019650977002321">Din administrator tillader ikke lydoptagelse. Kontakt din administrator for at få flere oplysninger.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Gå til denne fane</translation>
+<translation id="5377367976106153749">Vil du aktivere kameraadgang?</translation>
 <translation id="5379115545237091094">For mange forsøg</translation>
 <translation id="5391307769715781764">Vil du erstatte det gemte skrivebord?</translation>
 <translation id="5393156353051693207">Hold fingeren nede et vilkårligt sted for at omarrangere dine apps</translation>
@@ -1177,7 +1182,6 @@ Installeret for nylig</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> anvender i øjeblikket din mikrofon</translation>
 <translation id="7561982940498449837">Luk menu</translation>
 <translation id="7564874036684306347">Hvis du flytter vinduer til et andet skrivebord, kan det resultere i uventet adfærd. Efterfølgende notifikationer, vinduer og dialogbokse kan blive delt mellem skriveborde.</translation>
-<translation id="7567076708801803118">Vil du deaktivere kameraadgangen på denne enhed?</translation>
 <translation id="7569509451529460200">Braille og ChromeVox er aktiveret</translation>
 <translation id="7573585051776738856">Det aktive vindue er fastgjort til højre.</translation>
 <translation id="7579778809502851308">Screenshot</translation>

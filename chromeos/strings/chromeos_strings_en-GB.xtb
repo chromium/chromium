@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Cancel print job</translation>
 <translation id="2163937499206714165">Turn dark mode on</translation>
 <translation id="2180197493692062006">Something went wrong. Try reopening the app.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Reset traffic counters</translation>
 <translation id="2212733584906323460">Name resolution</translation>
 <translation id="2217935453350629363">Current speed</translation>
@@ -689,7 +688,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Very high HTTP latency</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanning completed. 1 page scanned}other{Scanning completed. {NUMBER_OF_PAGES} pages scanned}}</translation>
 <translation id="7458970041932198923">Please connect to a network and reload the page to view and set avatars.</translation>
 <translation id="7469648432129124067">Portal detected</translation>
 <translation id="7481312909269577407">Forward</translation>
@@ -796,6 +794,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8498220429738806196">Traffic counters</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="8503836310948963452">Just a few more minutes…</translation>
+<translation id="8508640263392900755">APN details</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Your operator may require this option to connect to their network. Contact your operator for details.</translation>
 <translation id="8576249514688522074">Uninitialised</translation>

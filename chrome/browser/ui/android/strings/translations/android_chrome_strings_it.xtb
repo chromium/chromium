@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Aiutaci a rendere il Web più privato</translation>
 <translation id="107147699690128016">Se cambi l'estensione del file, il file potrebbe essere aperto in un'altra applicazione e costituire un pericolo per il dispositivo.</translation>
 <translation id="1089606299949659462">Revisione completata.</translation>
-<translation id="1091604859693995976">Aggiorna per visualizzare</translation>
 <translation id="1095761715416917775">Assicurati di poter accedere sempre ai dati sincronizzati</translation>
 <translation id="1100066534610197918">Apri in nuova scheda in gruppo</translation>
 <translation id="1103142993930332957">Vuoi contribuire a migliorare Chrome?</translation>
@@ -1148,6 +1147,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7177466738963138057">Puoi cambiarlo in un secondo momento nelle Impostazioni</translation>
 <translation id="7177873915659574692">Impossibile creare il codice QR. L'URL contiene più di <ph name="CHARACTER_LIMIT" /> caratteri.</translation>
 <translation id="7177959540995930968">Puoi scoprire di più su queste funzionalità nelle impostazioni di Chrome.</translation>
+<translation id="7180611975245234373">Aggiorna</translation>
 <translation id="718226107353899806">Puoi aggiungere massimo <ph name="MAX_NUM_REACTIONS" /> reazioni</translation>
 <translation id="7183693674623539380">Gruppo di schede - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Ti protegge su Chrome e potrebbe essere utilizzata per migliorare la sicurezza su altre app Google se esegui l'accesso.</translation>
@@ -1544,7 +1544,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="9209888181064652401">Impossibile effettuare chiamate</translation>
 <translation id="9212845824145208577">Non puoi scorrere più in basso di così. Prova a partire da un punto più in basso nella pagina.</translation>
 <translation id="9219103736887031265">Immagini</translation>
-<translation id="9219582468404818260">Aiutaci a migliorare il Web</translation>
+<translation id="9219582468404818260">Aiutaci a migliorare il web</translation>
 <translation id="92381315203627188">Quando un sito richiede di precaricare privatamente i link sulle sue pagine, Chrome cripta e precarica le pagine tramite i server di Google senza usare cookie. In questo modo la tua identità rimane nascosta ai siti precaricati.</translation>
 <translation id="926205370408745186">Rimuovi la tua attività di Chrome da Benessere digitale</translation>
 <translation id="927968626442779827">Usa la modalità Lite su Google Chrome</translation>

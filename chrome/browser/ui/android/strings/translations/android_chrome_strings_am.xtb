@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">ተጨማሪ የግል ድር እንድንገነባ ያግዙን</translation>
 <translation id="107147699690128016">የፋይል ቅጥያውን ከቀየሩት ፋይሉ በተለየ መተግበሪያ ሊከፈት ይችላል፣ እና መሣሪያዎን ሊጎዳ ይችላል።</translation>
 <translation id="1089606299949659462">ግምገማ ተጠናቋል!</translation>
-<translation id="1091604859693995976">ለማየት ዓድስ</translation>
 <translation id="1095761715416917775">የስምረት ውሂብዎን ሁልጊዜ መድረስ እንደሚችሉ ያረጋግጡ</translation>
 <translation id="1100066534610197918">በቡድን ውስጥ አዲስ ትር ይክፈቱ</translation>
 <translation id="1103142993930332957">Chromeን ለማሻሻል ይረዱ?</translation>
@@ -1147,6 +1146,7 @@
 <translation id="7177466738963138057">ይሄንን በኋላ ቅንብሮች ውስጥ ሊለውጡት ይችላሉ</translation>
 <translation id="7177873915659574692">የQR ኮድ መፍጠር አልተቻለም። ዩአርኤል ከ<ph name="CHARACTER_LIMIT" /> ቁምፊዎች ይበልጣል።</translation>
 <translation id="7177959540995930968">በChrome ቅንብሮች ውስጥ ስለእነዚህ ባህሪያት የበለጠ ማወቅ ይችላሉ።</translation>
+<translation id="7180611975245234373">አድስ</translation>
 <translation id="718226107353899806">እስከ <ph name="MAX_NUM_REACTIONS" /> ምላሾች ማከል ይችላሉ</translation>
 <translation id="7183693674623539380">የትር ቡድን - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">በChrome ላይ ደህንነትዎን ይጠብቃል፣ እና በመለያ በገቡባቸው ሌሎች የGoogle መተግበሪያዎች ላይ ደህንነትዎን ለማሻሻል ስራ ላይ ሊውል ይችላል።</translation>

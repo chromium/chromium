@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Pomozite nam da pružimo veću privatnost na vebu</translation>
 <translation id="107147699690128016">Ako promenite ekstenziju datoteke, ona može da se otvori u drugoj aplikaciji i da bude opasna po uređaj.</translation>
 <translation id="1089606299949659462">Pregled je završen!</translation>
-<translation id="1091604859693995976">Osveži prikaz</translation>
 <translation id="1095761715416917775">Uverite se da uvek možete da pristupate sinhronizovanim podacima</translation>
 <translation id="1100066534610197918">Otvori u novoj kartici u grupi</translation>
 <translation id="1103142993930332957">Želite li da nam pomognete da poboljšamo Chrome?</translation>
@@ -761,6 +760,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="510275257476243843">Još 1 sat</translation>
 <translation id="5115811374190515607">u <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Interesovanja</translation>
+<translation id="5122378528687922675">Ako ti treba pomoć, pitaj roditelja (<ph name="PARENT_NAME_1" /> ili <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Kartica bez arhiviranja</translation>
 <translation id="5126510351761255129">Verifikujte karticu</translation>
 <translation id="5132942445612118989">Sinhronizujte lozinke, istoriju i drugi sadržaj na svim uređajima</translation>
@@ -1148,6 +1148,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7177466738963138057">To možete da promenite kasnije u podešavanjima</translation>
 <translation id="7177873915659574692">Pravljenje QR koda nije uspelo. URL premašuje ograničenje za broj znakova (<ph name="CHARACTER_LIMIT" />).</translation>
 <translation id="7177959540995930968">Više o ovim funkcijama možete da saznate u podešavanjima Chrome-a.</translation>
+<translation id="7180611975245234373">Osveži</translation>
 <translation id="718226107353899806">Maksimalni dozvoljeni broj reakcija koje možete da dodate je <ph name="MAX_NUM_REACTIONS" /></translation>
 <translation id="7183693674623539380">Grupa kartica – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni.</translation>
@@ -1331,6 +1332,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8084285576995584326">Kontrolišite podatke Google naloga</translation>
 <translation id="808747664143081553">Povezani ste sa uređajem</translation>
 <translation id="8088176524274673045">Da biste delili sa ljudima u blizini, dajte im da skeniraju ovaj QR kôd</translation>
+<translation id="8090732854597034573">Ako ti treba pomoć, pitaj roditelja</translation>
 <translation id="8100969750121413114">Prijavite se da biste prilagodili Chrome sebi</translation>
 <translation id="8103578431304235997">Kartice bez arhiviranja</translation>
 <translation id="8105613260829665809">Ako nastavite, prihvatate <ph name="BEGIN_TOS_LINK" />uslove korišćenja usluge<ph name="END_TOS_LINK" />.\nRadi poboljšanja aplikacije Chrome Google-u šalje podatke o korišćenju i otkazivanjima. <ph name="BEGIN_UMA_LINK" />Upravljajte<ph name="END_UMA_LINK" /></translation>
@@ -1339,6 +1341,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8109613176066109935">Da bi vam obeleživači bili dostupni na svim uređajima, uključite sinhronizaciju</translation>
 <translation id="8110024788458304985">Pomozite nam da poboljšamo funkcije i učinak Chrome OS-a</translation>
 <translation id="8110087112193408731">Želite li da se Chrome aktivnosti prikazuju u Digitalnom blagostanju?</translation>
+<translation id="8118117428362942925">Ako ti treba pomoć, pitaj roditelja (<ph name="PARENT_NAME" />)</translation>
 <translation id="8127542551745560481">Izmenite početnu stranicu</translation>
 <translation id="8130309322784422030">Sačuvane informacije za prijavljivanje su možda zastarele</translation>
 <translation id="813082847718468539">Pogledajte informacije o sajtu</translation>

@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Баспа жұмысынан бас тарту</translation>
 <translation id="2163937499206714165">Қараңғы режимді қосу</translation>
 <translation id="2180197493692062006">Бірдеңе дұрыс болмады. Қолданбаны қайта ашып көріңіз.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Трафик есептегіштерін нөлдеу</translation>
 <translation id="2212733584906323460">Атаулар ажыратымдылығы</translation>
 <translation id="2217935453350629363">Қазіргі жылдамдық</translation>
@@ -560,6 +559,7 @@
 <translation id="6189418609903030344">Пайдаланған сайын, батарея сыйымдылығы азая береді.</translation>
 <translation id="6191293864534840972">Атау серверлері форматы дұрыс емес.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Толық күйден шығу</translation>
 <translation id="6223752125779001553">Сканерлер жоқ</translation>
 <translation id="6232017090690406397">Батарея</translation>
 <translation id="6235460611964961764">Дерек трафигін қолмен бастапқы күйге қайтару</translation>
@@ -687,11 +687,12 @@
 <translation id="741244894080940828">түрлендіру</translation>
 <translation id="7415801143053185905">HTTP кідірісі өте жоғары.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканерлеу аяқталды. 1 бет сканерленді.}other{Сканерлеу аяқталды. {NUMBER_OF_PAGES} бет сканерленді.}}</translation>
+<translation id="7458970041932198923">Аватарларды көру және орнату үшін желіге қосылып, бетті қайта жүктеңіз.</translation>
 <translation id="7469648432129124067">Портал анықталды.</translation>
 <translation id="7481312909269577407">Басқаға жіберу</translation>
 <translation id="7487067081878637334">Технология</translation>
 <translation id="7490813197707563893">MAC мекенжайы</translation>
+<translation id="7491478667760509108">Қалқыма күйден шығу</translation>
 <translation id="7497215489070763236">Сервер CA сертификаты</translation>
 <translation id="7502658306369382406">IPv6 мекенжайы</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -792,6 +793,7 @@
 <translation id="8498220429738806196">Трафик есептегіштері</translation>
 <translation id="8503813439785031346">Пайдаланушы аты</translation>
 <translation id="8503836310948963452">Бірнеше минут қана…</translation>
+<translation id="8508640263392900755">APN мәліметтері</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Желіге қосылу үшін оператор осы опцияны талап етуі мүмкін. Мәліметтер алу үшін операторыңызға хабарласыңыз.</translation>
 <translation id="8576249514688522074">Бастаудан бас тартылды</translation>
@@ -842,6 +844,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканерлеу}=1{{NUMBER_OF_PAGES} бетті сканерлеу}other{{NUMBER_OF_PAGES} бетті сканерлеу}}</translation>
 <translation id="8997710128084572139">Құрылғының батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="8998289560386111590">Құрылғыңызда қолжетімсіз.</translation>
 <translation id="9003704114456258138">Жиілік</translation>
 <translation id="9025198690966128418">Жеке құрылғы ретінде пайдалану</translation>
 <translation id="9028832514430399253">Скринсейвер параметрлерін таңдау үшін ауыстырғышты басыңыз</translation>

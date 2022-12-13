@@ -413,7 +413,6 @@
 <translation id="1958218078413065209">Таны хамгийн өндөр оноо <ph name="SCORE" /> байна.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />Зарим зочилдог хуудасныхаа URL, системийн хязгаарлагдмал мэдээлэл болон зарим хуудасны контент<ph name="END_WHITEPAPER_LINK" />-ыг Google-д илгээж, хүн бүрд вебийн аюулгүй байдлыг сайжруулахад тусална уу. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Нууцлалын бодлого<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Хавчуургууд</translation>
-<translation id="1971033026002113380">TouchID-н тусламжтай нууц үгнүүдээ хамгаалаарай</translation>
 <translation id="1973335181906896915">Цувралын алдаа</translation>
 <translation id="1974060860693918893">Боловсронгуй</translation>
 <translation id="1975457531113383421">Орох цаасны тавиур</translation>
@@ -748,7 +747,6 @@
 <translation id="2881276955470682203">Картыг хадгалах уу?</translation>
 <translation id="2882949212241984732">Давхар хаалган нугалаа</translation>
 <translation id="2893773853358652045">Дөрөв дэх хуйлмал</translation>
-<translation id="289834758818479772">Хэрэв та энэ төхөөрөмжийг бусадтай хуваалцдаг бол хадгалсан нууц үгээ ашиглах бүрдээ өөрийгөө мөн болохыг баталгаажуулахын тулд TouchID-г асаах боломжтой</translation>
 <translation id="2900528713135656174">Арга хэмжээ үүсгэх</translation>
 <translation id="2903493209154104877">Хаягууд</translation>
 <translation id="290376772003165898">Хуудас <ph name="LANGUAGE" /> хэл дээр биш байна уу?</translation>
@@ -1067,7 +1065,6 @@
 <translation id="3678529606614285348">Хуудсыг шинэ Нууцлалтай цонхонд нээх (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Гэрчилгээний мэдээлэл</translation>
 <translation id="3693327506115126094">Та өөрийгөө мөн болохыг хэрхэн баталгаажуулахаа сонгоно уу</translation>
-<translation id="3699374065820972102">TouchID-г нууц үг бөглөхөд асаасан байна</translation>
 <translation id="3701427423622901115">Шинэчлэлтийг хүлээн зөвшөөрсөн.</translation>
 <translation id="3704162925118123524">Таны ашиглаж буй сүлжээ таныг өөрийн нэвтрэх хуудаст хандахыг шаардах магадлалтай.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" />, <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1182,7 +1179,6 @@
 <translation id="401170183602135785">Дугтуй C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} хуудастай PDF форматтай документ}other{{COUNT} хуудастай PDF форматтай документ}}</translation>
 <translation id="4023431997072828269">Энэ маягтыг аюулгүй байдлыг хангаагүй холболт ашиглан илгээж байгаа тул таны мэдээлэл бусдад харагдана.</translation>
-<translation id="4024923292610332139">нууц үг бөглөхөд TouchID-г унтраана уу</translation>
 <translation id="4025913568718019429">Google-н нууцлалын тохиргоог удирдах товчлуур, Google Бүртгэлийнхээ нууцлалын тохиргоонд зочлохын тулд Enter дээр дарна уу</translation>
 <translation id="4030383055268325496">&amp; Нэмэх үйлдлийг буцаах</translation>
 <translation id="4031179711345676612">Микрофоныг зөвшөөрсөн</translation>
@@ -1544,7 +1540,6 @@
 <translation id="4900217275619098670">Ес дэх хуйлмал</translation>
 <translation id="4901778704868714008">Хадгалах...</translation>
 <translation id="4905659621780993806">Танай администратор төхөөрөмжийг тань <ph name="DATE" />-н <ph name="TIME" />-д автоматаар дахин эхлүүлнэ. Таны төхөөрөмж дахин эхлэхээс өмнө нээлттэй байгаа аливаа зүйлсийг хадгална уу.</translation>
-<translation id="4911007278801291296">Та TouchID-г <ph name="SETTINGS" />-д асаах эсвэл унтраах боломжтой</translation>
 <translation id="4913987521957242411">Зүүн дээд буланд нэг нүх цоолох</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" />-г суулгах (татаж авах шаардлагагүй)</translation>
 <translation id="4923459931733593730">Төлбөр</translation>
@@ -1726,6 +1721,7 @@
 <translation id="5334013548165032829">Системийн дэлгэрэнгүй лог</translation>
 <translation id="5334145288572353250">Хаягийг хадгалах уу?</translation>
 <translation id="5335920952954443287">Цохилох зүрх</translation>
+<translation id="5337569431717511221">Chrome-г өгөгдмөл хөтөч болгон тохируулах товчлуур, Chrome-г системийн өгөгдмөл хөтөч болгон тохируулахын тулд Enter дээр дарна уу</translation>
 <translation id="5340250774223869109">Аппликэйшнийг блоклосон</translation>
 <translation id="534295439873310000">NFC төхөөрөмжүүд</translation>
 <translation id="5344579389779391559">Энэ хуудас танд төлбөр ногдуулахаар оролдож болзошгүй</translation>
@@ -1757,7 +1753,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> танд мэдэгдэл илгээх хүсэлтэй байна</translation>
 <translation id="5428105026674456456">Испани</translation>
 <translation id="5430298929874300616">Хавчуургыг устга</translation>
-<translation id="5434423669266814150">нууц үг бөглөхөд TouchID-г асаана уу</translation>
 <translation id="5443468954631487277">Нүүрээр нь дээш харуулж, хуудасны урвуу дарааллаар</translation>
 <translation id="5447765697759493033">Энэ сайтыг орчуулахгүй</translation>
 <translation id="5452270690849572955">Энэ <ph name="HOST_NAME" /> хуудас олдсонгүй</translation>
@@ -2420,6 +2415,7 @@
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Таны админ дараахыг харах боломжтой:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, Нууцлалтайгаар үзэхийн тулд шинэ Нууцлалтай табыг эхлээд Tab, дараа нь Enter дээр дарж нээнэ үү</translation>
+<translation id="7203375778433816396">Chrome-г системийн өгөгдмөл хөтөч болгон тохируулах</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> нь аюулгүй байдлын стандартыг дагахгүй байна.</translation>
 <translation id="7210993021468939304">Контейнер дахь Linux-н үйл ажиллагаа болон Linux аппуудыг контейнерт суулгах болон ажиллуулах боломжтой</translation>
 <translation id="721197778055552897">Үүссэн асуудлын талаарх <ph name="BEGIN_LINK" />дэлгэрэнгүй<ph name="END_LINK" /> мэдээллийг эндээс авна уу.</translation>
@@ -2567,6 +2563,7 @@
 <translation id="7537536606612762813">Заавал</translation>
 <translation id="7542403920425041731">Таныг баталгаажуулсны дараагаар таны картын дэлгэрэнгүйг энэ сайтад хуваалцах болно.</translation>
 <translation id="7542995811387359312">Зээлийн картыг автоматиар бөглөх явц идэвхгүй байна. Учир нь энэ маягт аюулгүй холболт хэрэглэгдэггүй.</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" />-г эхлүүлж байна</translation>
 <translation id="7548892272833184391">Холболтын алдааг засах</translation>
 <translation id="7549584377607005141">Энэ веб хуудас нь зохих хэмжээнд гарахын тулд таны өмнө оруулсан мэдээллийг шаардаж байна. Та энэ өгөгдлийг дахин илгээж болно, гэхдээ үүнийг хийснээрээ та энэ хуудасны өмнө нь хийж байсан үйлдлийг давтах хэрэгтэй болно.</translation>
 <translation id="7550637293666041147">Таны төхөөрөмжийн хэрэглэгчийн нэр болон Chrome хэрэглэгчийн нэр</translation>
@@ -2752,6 +2749,7 @@
 <translation id="8009843239480947060">10 x 11 инч</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Энэ карт болон үүний тооцооны хаягийг хадгална. Та үүнийг <ph name="USER_EMAIL" />-д нэвтэрсэн үедээ ашиглах боломжтой болно.}other{Эдгээр карт болон эдгээрийн тооцооны хаягийг хадгална. Та эдгээрийг <ph name="USER_EMAIL" />-д нэвтэрсэн үедээ ашиглах боломжтой болно.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-г системийн өгөгдмөл хөтөч болгон тохируулахын тулд tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="8025119109950072390">Энэ сайтад байгаа халдагчид таныг программ хангамж суулгах, эсвэл хувийн мэдээллээ харуулах (жишээ нь: нууц үг, утасны дугаар, эсвэл кредит карт) зэрэг аюултай үйлдэл хийлгэхээр оролдож болзошгүй.</translation>
 <translation id="8026334261755873520">Хайлтын өгөгдлийг цэвэрлэх</translation>
 <translation id="8027077570865220386">Тавиур 15</translation>

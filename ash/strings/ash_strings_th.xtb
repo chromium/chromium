@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">บันทึก <ph name="NAME" /> ของคุณ</translation>
 <translation id="1032891413405719768">แบตเตอรี่สไตลัสเหลือน้อย</translation>
 <translation id="1036073649888683237">หากต้องการจัดการการแจ้งเตือน ให้ไปที่การตั้งค่า</translation>
+<translation id="1036348656032585052">ปิด</translation>
 <translation id="1036672894875463507">ฉันคือ Google Assistant ที่พร้อมช่วยเหลือคุณตลอดทั้งวัน
 คุณลองทำสิ่งต่อไปนี้ได้เพื่อเริ่มใช้งาน</translation>
 <translation id="1037492556044956303">เพิ่ม <ph name="DEVICE_NAME" /> แล้ว</translation>
@@ -174,6 +175,7 @@
 <translation id="1830308660060964064">เลิกปักหมุด <ph name="ITEM_TITLE" /> แล้ว</translation>
 <translation id="1836215606488044471">Assistant (กำลังโหลด...)</translation>
 <translation id="1838895407229022812">แสงตอนกลางคืนปิดอยู่</translation>
+<translation id="1854180393107901205">หยุดการแคสต์</translation>
 <translation id="1862380676329487333">อัปเดตและออกจากระบบ</translation>
 <translation id="1864454756846565995">อุปกรณ์ USB-C (พอร์ตด้านหลัง)</translation>
 <translation id="1869497990620230175">ไฟล์ด่วน</translation>
@@ -667,13 +669,13 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">เปิดใช้ ChromeVox แล้ว</translation>
 <translation id="4665114317261903604">เปิด/ปิด "ห้ามรบกวน" <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">ปิดการเข้าถึงกล้องในอุปกรณ์นี้เพื่อบล็อกกล้องทั้งหมดตลอดเวลา</translation>
 <translation id="4666911709726371538">แสดงแอปเพิ่มเติม</translation>
 <translation id="4667099493359681081">กำลังดาวน์โหลด <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">แอปจากโทรศัพท์ของคุณ</translation>
 <translation id="4690510401873698237">ชั้นวางอยู่ด้านล่าง</translation>
 <translation id="4696813013609194136">ปลดล็อกอุปกรณ์ด้วยรหัสของผู้ปกครอง</translation>
 <translation id="4702647871202761252">หน้าจอส่วนตัวปิดอยู่</translation>
+<translation id="4706121060329443414">ระบบจะพยายามดาวน์โหลดภายหลัง โดยจะส่งคำพูดไปประมวลผลที่ Google ก่อนในขณะนี้</translation>
 <translation id="470644585772471629">การกลับสี</translation>
 <translation id="4717575069099566988">สาย USB-C ที่ใช้ไม่รองรับ USB4 และอาจจำกัดประสิทธิภาพของอุปกรณ์</translation>
 <translation id="4730374152663651037">แอปที่ใช้บ่อย</translation>
@@ -699,7 +701,6 @@
 <translation id="485592688953820832">ไม่มีการดำเนินการ (หยุดชั่วคราว)</translation>
 <translation id="485634149294284819">ป้อนเมนูแป้นพิมพ์</translation>
 <translation id="4860284199500934869">ตรวจสอบการเชื่อมต่อเครือข่ายเพื่อดาวน์โหลด <ph name="FILENAME" /></translation>
-<translation id="486056901304535126">ระบบจะพยายามดาวน์โหลดภายหลัง โดยจะส่งคำพูดไปประมวลผลที่ Google จนกว่าจะดาวน์โหลดเสร็จ</translation>
 <translation id="4864369630010738180">กำลังลงชื่อเข้าใช้...</translation>
 <translation id="4864648187878336334">เดสก์ที่ 15</translation>
 <translation id="4868492592575313542">เปิดใช้งานอยู่</translation>
@@ -1181,7 +1182,6 @@
 <translation id="7557816257942363084">"<ph name="APP_NAME" />" กำลังใช้ไมโครโฟน</translation>
 <translation id="7561982940498449837">ปิดเมนู</translation>
 <translation id="7564874036684306347">การย้ายหน้าต่างไปยังเดสก์ท็อปอื่นอาจส่งผลให้ลักษณะการทำงานผิกปกติ การแจ้งเตือน หน้าต่าง และกล่องโต้ตอบที่ตามมาอาจแสดงแยกส่วนในเดสก์ท็อปทั้งสอง</translation>
-<translation id="7567076708801803118">คุณต้องการปิดการเข้าถึงกล้องในอุปกรณ์นี้ใช่ไหม</translation>
 <translation id="7569509451529460200">เปิดใช้เบรลล์และ ChromeVox แล้ว</translation>
 <translation id="7573585051776738856">ตรึงหน้าต่างที่ใช้งานไว้ทางด้านขวาแล้ว</translation>
 <translation id="7579778809502851308">จับภาพหน้าจอ</translation>
@@ -1495,6 +1495,7 @@
 <translation id="954052413789300507">มีพื้นที่ไม่เพียงพอสำหรับ <ph name="FILENAME" /> เพิ่มพื้นที่ว่าง</translation>
 <translation id="974545358917229949">กำลังแสดงผลการค้นหา <ph name="RESULT_COUNT" /> รายการสำหรับ "<ph name="QUERY" />"</translation>
 <translation id="98515147261107953">แนวนอน</translation>
+<translation id="989374776391122812">การควบคุมกล้องและเสียง</translation>
 <translation id="990277280839877440">ปิดหน้าต่าง <ph name="WINDOW_TITILE" /> แล้ว</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">รับฟีเจอร์และการปรับปรุงด้านความปลอดภัยล่าสุด การอัปเดตจะเกิดขึ้นในเบื้องหลัง</translation>

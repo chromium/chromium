@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Balíček je neplatný. Podrobnosti: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="8761756413268424715">Aplikace <ph name="APP_NAME" /> žádá o přístup k jednomu z vašich zařízení:</translation>
 <translation id="8885905466771744233">Pro zadané rozšíření již existuje soukromý klíč. Použijte tento klíč znovu, nebo jej nejprve smažte.</translation>
+<translation id="9039223174332979184">Administrátor tohoto počítače vyžaduje, aby rozšíření <ph name="EXTENSION_NAME" /> mělo minimální verzi manifestu 3.</translation>
 <translation id="907841381057066561">Během balení se nepodařilo vytvořit dočasný soubor ZIP.</translation>
 <translation id="941543339607623937">Neplatný soukromý klíč</translation>
 </translationbundle>

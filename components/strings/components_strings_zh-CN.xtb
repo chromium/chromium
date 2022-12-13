@@ -413,7 +413,6 @@
 <translation id="1958218078413065209">您的最高得分是 <ph name="SCORE" />。</translation>
 <translation id="1959001866257244765">向 Google 发送<ph name="BEGIN_WHITEPAPER_LINK" />您访问的部分网页的网址、有限的系统信息以及部分网页内容<ph name="END_WHITEPAPER_LINK" />，帮助我们为所有人改善网络安全环境。<ph name="BEGIN_PRIVACY_PAGE_LINK" />隐私权政策<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" />书签</translation>
-<translation id="1971033026002113380">使用触控 ID 保护密码</translation>
 <translation id="1973335181906896915">序列化错误</translation>
 <translation id="1974060860693918893">高级</translation>
 <translation id="1975457531113383421">进纸匣</translation>
@@ -748,7 +747,6 @@
 <translation id="2881276955470682203">保存卡片？</translation>
 <translation id="2882949212241984732">关门再对折</translation>
 <translation id="2893773853358652045">第 4 卷</translation>
-<translation id="289834758818479772">如果您与他人共用此设备，则可以开启触控 ID，以便在您使用已保存的密码时验证您的身份</translation>
 <translation id="2900528713135656174">创建活动</translation>
 <translation id="2903493209154104877">地址</translation>
 <translation id="290376772003165898">网页的源语言不是<ph name="LANGUAGE" />？</translation>
@@ -1062,7 +1060,6 @@
 <translation id="3678529606614285348">在新的无痕式窗口中打开网页 (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">证书信息</translation>
 <translation id="3693327506115126094">选择您要使用的身份验证方式</translation>
-<translation id="3699374065820972102">已开启触控 ID 作为填充密码时的验证机制</translation>
 <translation id="3701427423622901115">已确认要重置。</translation>
 <translation id="3704162925118123524">您正在使用的网络可能会要求您访问其登录页面。</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1177,7 +1174,6 @@
 <translation id="401170183602135785">C6 信封</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{包含 {COUNT} 页内容的 PDF 文档}other{包含 {COUNT} 页内容的 PDF 文档}}</translation>
 <translation id="4023431997072828269">由于系统正在使用不安全的连接提交此表单，他人将能看到您的信息。</translation>
-<translation id="4024923292610332139">关闭触控 ID，以使其不再作为填充密码时的验证机制。</translation>
 <translation id="4025913568718019429">“管理 Google 隐私设置”按钮，按 Enter 键即可访问您的 Google 帐号隐私设置</translation>
 <translation id="4030383055268325496">撤消添加(&amp;U)</translation>
 <translation id="4031179711345676612">已允许使用麦克风</translation>
@@ -1539,7 +1535,6 @@
 <translation id="4900217275619098670">第 9 卷</translation>
 <translation id="4901778704868714008">保存…</translation>
 <translation id="4905659621780993806">您的管理员将于 <ph name="DATE" /><ph name="TIME" /> 自动重启您的设备。请在设备重启前保存所有已打开的内容。</translation>
-<translation id="4911007278801291296">您可在“<ph name="SETTINGS" />”中开启或关闭触控 ID</translation>
 <translation id="4913987521957242411">打孔（左上角）</translation>
 <translation id="4918221908152712722">安装<ph name="APP_NAME" />（不需要下载）</translation>
 <translation id="4923459931733593730">付款</translation>
@@ -1721,6 +1716,7 @@
 <translation id="5334013548165032829">详细的系统日志</translation>
 <translation id="5334145288572353250">保存地址？</translation>
 <translation id="5335920952954443287">跳动的心</translation>
+<translation id="5337569431717511221">“将 Chrome 设为默认浏览器”按钮，按 Enter 键即可将 Chrome 设置为系统的默认浏览器</translation>
 <translation id="5340250774223869109">此应用已被禁用</translation>
 <translation id="534295439873310000">NFC 设备</translation>
 <translation id="5344579389779391559">此页面可能会向您收取费用</translation>
@@ -1752,7 +1748,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> 想向您发送通知</translation>
 <translation id="5428105026674456456">西班牙语</translation>
 <translation id="5430298929874300616">移除书签</translation>
-<translation id="5434423669266814150">开启触控 ID 以填充密码</translation>
 <translation id="5443468954631487277">逆转顺序，正面朝上</translation>
 <translation id="5447765697759493033">系统不会翻译此网站</translation>
 <translation id="5452270690849572955">找不到 <ph name="HOST_NAME" /> 的网页</translation>
@@ -2415,6 +2410,7 @@
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">您的管理员可以查看：</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可打开新的无痕式标签页进行无痕浏览</translation>
+<translation id="7203375778433816396">将 Chrome 设为系统的默认浏览器</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> 不符合相关安全标准。</translation>
 <translation id="7210993021468939304">可查看该容器内的 Linux 活动，并可在该容器内安装和运行 Linux 应用</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />此问题。</translation>
@@ -2562,6 +2558,7 @@
 <translation id="7537536606612762813">强制</translation>
 <translation id="7542403920425041731">一旦您予以确认，系统便会将您的信用卡详情共享给此网站。</translation>
 <translation id="7542995811387359312">由于该表单不使用安全连接，因此自动填写信用卡信息的功能已停用。</translation>
+<translation id="7546409722674205727">正在启动<ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">修正网络连接错误</translation>
 <translation id="7549584377607005141">此网页需要使用您之前输入的数据才能正常显示。您可以重新发送这些数据，不过，这么做会重复执行此网页之前执行过的所有操作。</translation>
 <translation id="7550637293666041147">您的设备用户名和 Chrome 用户名</translation>
@@ -2747,6 +2744,7 @@
 <translation id="8009843239480947060">10 x 11 英寸</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{这张卡及其帐单邮寄地址将被保存。登录 <ph name="USER_EMAIL" /> 后即可使用这张卡。}other{这些卡及其帐单邮寄地址将被保存。登录 <ph name="USER_EMAIL" /> 后即可使用这些卡。}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" />（<ph name="ADDITIONAL_TEXT" />）</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可将 Chrome 设为系统的默认浏览器</translation>
 <translation id="8025119109950072390">此网站上的攻击者可能会诱骗您做出一些诸如安装软件或泄露个人信息（例如：密码、电话号码或信用卡信息）之类的危险事情。</translation>
 <translation id="8026334261755873520">清除浏览数据</translation>
 <translation id="8027077570865220386">纸匣 15</translation>

@@ -909,6 +909,11 @@
       如果停用這項政策或未設定，WebDriver 將無法覆寫不相容的政策。</translation>
 <translation id="1885782360784839335">允許顯示完整分頁宣傳內容</translation>
 <translation id="1888871729456797026">電腦上的雲端政策註冊憑證</translation>
+<translation id="1893271062894546361">如果啟用這項政策，由區域網路中其他裝置啟動的 <ph name="PRODUCT_NAME" /> 工作階段將可使用媒體播放控制項使用者介面。
+
+      如果沒有為企業版使用者設定這項政策，或將這項政策停用，由區域網路中其他裝置啟動的 <ph name="PRODUCT_NAME" /> 工作階段將無法使用媒體播放控制項使用者介面。
+
+      如果停用 <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> 政策，系統將停用整個 <ph name="PRODUCT_NAME" /> 功能，這項政策的值不會有任何作用。</translation>
 <translation id="1894790493260633497">預設啟用背景圖形列印模式</translation>
 <translation id="1897365952389968758">允許所有網站執行 JavaScript</translation>
 <translation id="1902043648529789224">控管檔案櫃位置</translation>
@@ -3412,6 +3417,7 @@
 <translation id="4274691295133617461">如果將這項政策設為 3，網站即可要求透過 File System API 讀取主機作業系統中檔案系統的檔案和目錄。如果將這項政策設為 2，系統會拒絕網站存取。
 
       如果不設定，網站可要求存取檔案和目錄，但使用者可以變更這項設定。</translation>
+<translation id="4275048399551500192">不要顯示由其他裝置啟動的 <ph name="PRODUCT_NAME" /> 工作階段媒體控制項</translation>
 <translation id="4282243913059705499">一律在工具列顯示 <ph name="PRODUCT_NAME" /> 圖示</translation>
 <translation id="4285674129118156176">允許無關聯的使用者使用 ARC</translation>
 <translation id="4287344576768105337">如果設定這項政策，就可以禁止系統載入網址已遭禁止的網頁。你可以透過這項政策的網址模式清單指定要禁止的網址。如果未設定這項政策，瀏覽器就不會禁止任何網址。網址模式必須符合一定的格式，詳情請參閱 https://support.google.com/chrome/a?p=url_blocklist_filter_format。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 中最多可定義 1,000 個例外網址。
@@ -4339,7 +4345,6 @@
 
       如果未設定這項政策，使用者無法在已註冊的 <ph name="PRODUCT_OS_NAME" />上玩恐龍復活節彩蛋遊戲，但可以在其他環境下玩這個遊戲。</translation>
 <translation id="5293285950307241933">清除所有本機使用者資料</translation>
-<translation id="5293875928467750789">如果將這項政策設為指定的值，系統會在使用者登入時，使用該值做為預設的裝置鍵盤背光亮度百分比。</translation>
 <translation id="529457411593078576">在第一次執行 CCT 時啟用《服務條款》</translation>
 <translation id="5297948043665200363">允許使用者在帳戶驗證狀態失效後保持登入狀態</translation>
 <translation id="5298949392804966105">不對受管理帳戶設定限制</translation>
@@ -5208,6 +5213,7 @@
 <translation id="6244061205361004687">允許使用者手動中斷連線或修改 VPN</translation>
 <translation id="6244210204546589761">起始時開啟的網址</translation>
 <translation id="624595269193747921">是否僅限在特定一組印表機中搜尋相符的印表機。</translation>
+<translation id="6246290059248303618">顯示由區域網路中其他裝置啟動的 <ph name="PRODUCT_NAME" /> 工作階段媒體控制項</translation>
 <translation id="6247316685259031374">這項政策可控管音訊程序的沙箱機制。
       如果啟用這項政策，系統會採用沙箱機制執行音訊程序。
       如果停用這項政策，系統不會採用沙箱機制執行音訊程序，並會在轉譯器程序中執行 WebRTC 音訊處理模組。
@@ -6163,6 +6169,7 @@
 <translation id="710003290625031750">展開的架構說明：</translation>
 <translation id="7101550508196914704">不在書籤列中顯示應用程式捷徑</translation>
 <translation id="7109384070286741861">停用 CECPQ2</translation>
+<translation id="7113439794629928551">顯示由其他裝置啟動的 <ph name="PRODUCT_NAME" /> 工作階段媒體控制項</translation>
 <translation id="7114169791477667553">停用預設搜尋引擎</translation>
 <translation id="7121046543122812054">這項政策已遭淘汰，建議改用「<ph name="BROWSER_SIGNIN_POLICY_NAME" />」。
 
@@ -6854,7 +6861,6 @@
 <translation id="7832225468415136704">禁止 Chrome 清理功能定期執行系統掃描，並停用手動掃描</translation>
 <translation id="7833148823006528332">Android 應用程式的 ID，例如 Gmail 的 ID 為「com.google.android.gm」</translation>
 <translation id="7835218570504220753">停用自動點擊功能</translation>
-<translation id="7837834961221899821">預設鍵盤亮度</translation>
 <translation id="7839180815400079700">如果已啟用 <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" />，你可以透過 <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> 設定電源尖峰轉移每日配置。
 
       如果不設定這項政策，系統會停用電源尖峰轉移。
@@ -8301,6 +8307,11 @@
 <translation id="982497069985795632">啟用拼字檢查</translation>
 <translation id="983256325512298435">定義一組通訊協定清單，其中的通訊協定無須提示使用者，即可啟動已列出來源的外部應用程式</translation>
 <translation id="987261962216071510">僅允許透過瀏覽器訪客模式登入</translation>
+<translation id="987975731398348803">如果將這項政策設為啟用或不設定，已註冊的裝置會回報近期登入的裝置使用者清單。
+
+如果將這項政策設為停用，已註冊的裝置不會回報使用者清單。
+
+<ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> 啟用時，系統會忽略並一律停用 <ph name="REPORT_DEVICE_USERS_POLICY_NAME" />。</translation>
 <translation id="989197274317162189">這項政策已淘汰，因此系統不再支援，請改用「<ph name="URL_BLOCKLIST_POLICY_NAME" />」政策。</translation>
 <translation id="991560005425213776">將使用者名稱和檔案名稱傳送到原生印表機</translation>
 <translation id="99202634486128833">如果將這項政策設為 CopyCaCerts，ARC 應用程式可以使用所有已安裝 ONC 且具有 <ph name="WEB_TRUSTED_BIT" /> 的 CA 憑證。

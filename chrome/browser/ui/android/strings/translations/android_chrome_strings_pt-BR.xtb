@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Ajude-nos a criar uma Web com mais privacidade</translation>
 <translation id="107147699690128016">Se você mudar a extensão do arquivo, ele poderá ser aberto em um aplicativo diferente e colocar em risco seu dispositivo.</translation>
 <translation id="1089606299949659462">Revisão concluída</translation>
-<translation id="1091604859693995976">Atualize para mostrar o conteúdo</translation>
 <translation id="1095761715416917775">Tenha sempre acesso aos seus dados sincronizados</translation>
 <translation id="1100066534610197918">Abrir em nova guia no grupo</translation>
 <translation id="1103142993930332957">Quer ajudar a melhorar o Chrome?</translation>
@@ -341,7 +340,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="2886836735871983413">Uma lista de sites vai aparecer aqui conforme você navega na Web</translation>
 <translation id="2888126860611144412">Sobre o Google Chrome</translation>
 <translation id="2891154217021530873">Para de carregar a página</translation>
-<translation id="2893180576842394309">O histórico será usado para personalizar a Pesquisa, anúncios e outros serviços Google.</translation>
+<translation id="2893180576842394309">O histórico será usado para personalizar a Pesquisa, anúncios e outros serviços do Google.</translation>
 <translation id="2900528713135656174">Criar evento</translation>
 <translation id="2901411048554510387">Exibindo sugestões para <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Lista de dispositivos com os quais é possível compartilhar uma guia aberta no tamanho máximo.</translation>
@@ -762,6 +761,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="510275257476243843">Uma hora restante</translation>
 <translation id="5115811374190515607">para <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Interesses</translation>
+<translation id="5122378528687922675">Se precisar de ajuda, entre em contato com seu familiar responsável (<ph name="PARENT_NAME_1" /> ou <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Guia anônima</translation>
 <translation id="5126510351761255129">Verificar seu cartão</translation>
 <translation id="5132942445612118989">Sincronize suas senhas, seu histórico e muito mais em todos os dispositivos</translation>
@@ -1149,6 +1149,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7177466738963138057">Você poderá alterar isso mais tarde nas configurações</translation>
 <translation id="7177873915659574692">Não é possível criar o código QR. O URL tem mais de <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="7177959540995930968">Saiba mais sobre esses recursos nas configurações do Chrome.</translation>
+<translation id="7180611975245234373">Atualizar</translation>
 <translation id="718226107353899806">Você pode adicionar até <ph name="MAX_NUM_REACTIONS" /> reações</translation>
 <translation id="7183693674623539380">Grupo de guias: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Protege você no Chrome e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta está conectada.</translation>
@@ -1332,6 +1333,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8084285576995584326">Controlar os dados da sua Conta do Google</translation>
 <translation id="808747664143081553">Conectado ao dispositivo</translation>
 <translation id="8088176524274673045">Para compartilhar com pessoas próximas, permita que elas leiam esse código QR</translation>
+<translation id="8090732854597034573">Se precisar de ajuda, entre em contato com seu familiar responsável</translation>
 <translation id="8100969750121413114">Faça login para personalizar o Chrome</translation>
 <translation id="8103578431304235997">Guia anônima</translation>
 <translation id="8105613260829665809">Ao continuar, você concorda com os <ph name="BEGIN_TOS_LINK" />Termos de Serviço<ph name="END_TOS_LINK" />.\nPara ajudar a melhorar o app, o Chrome envia dados de uso e de falha ao Google. <ph name="BEGIN_UMA_LINK" />Gerenciar<ph name="END_UMA_LINK" /></translation>
@@ -1340,6 +1342,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8109613176066109935">Para ter seus favoritos em todos os seus dispositivos, ative a sincronização</translation>
 <translation id="8110024788458304985">Ajudar a melhorar os recursos e o desempenho do Chrome</translation>
 <translation id="8110087112193408731">Mostrar sua atividade do Chrome no Bem-estar digital?</translation>
+<translation id="8118117428362942925">Se precisar de ajuda, entre em contato com seu familiar responsável (<ph name="PARENT_NAME" />)</translation>
 <translation id="8127542551745560481">Editar página inicial</translation>
 <translation id="8130309322784422030">Suas informações de login armazenadas podem estar desatualizadas</translation>
 <translation id="813082847718468539">Ver informações do site</translation>

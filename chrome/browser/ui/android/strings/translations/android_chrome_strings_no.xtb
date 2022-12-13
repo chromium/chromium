@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Hjelp oss med å bygge et mer privat internett</translation>
 <translation id="107147699690128016">Hvis du endrer filetternavnet, kan filen bli åpnet i et annet program og muligens utgjøre en fare for enheten.</translation>
 <translation id="1089606299949659462">Gjennomgangen er fullført.</translation>
-<translation id="1091604859693995976">Last inn på nytt for å se</translation>
 <translation id="1095761715416917775">Sørg for at du alltid har tilgang til de synkroniserte dataene dine</translation>
 <translation id="1100066534610197918">Åpne i en ny fane i en gruppe</translation>
 <translation id="1103142993930332957">Vil du bidra til å gjøre Chrome bedre?</translation>
@@ -761,6 +760,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="510275257476243843">1 time igjen</translation>
 <translation id="5115811374190515607">til <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Interesser</translation>
+<translation id="5122378528687922675">Spør forelderen din (<ph name="PARENT_NAME_1" /> eller <ph name="PARENT_NAME_2" />) hvis du trenger hjelp</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
 <translation id="5126510351761255129">Bekreft kortet ditt</translation>
 <translation id="5132942445612118989">Synkroniser passordene dine, loggen din med mer på alle enheter</translation>
@@ -1148,6 +1148,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7177466738963138057">Du kan endre dette senere i Innstillinger</translation>
 <translation id="7177873915659574692">Kan ikke opprette QR-kode. Nettadressen er lengre enn <ph name="CHARACTER_LIMIT" /> tegn.</translation>
 <translation id="7177959540995930968">Du kan finne ut mer om disse funksjonene i Chrome-innstillingene.</translation>
+<translation id="7180611975245234373">Last inn på nytt</translation>
 <translation id="718226107353899806">Du kan legge til opptil <ph name="MAX_NUM_REACTIONS" /> reaksjoner</translation>
 <translation id="7183693674623539380">Fanegruppe – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Holder deg trygg i Chrome og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>
@@ -1331,6 +1332,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8084285576995584326">Kontroller Google-kontodataene dine</translation>
 <translation id="808747664143081553">Koblet til enheten</translation>
 <translation id="8088176524274673045">For å dele med personer i nærheten, la dem skanne denne QR-koden</translation>
+<translation id="8090732854597034573">Spør forelderen din hvis du trenger hjelp</translation>
 <translation id="8100969750121413114">Logg på for å tilpasse Chrome til deg</translation>
 <translation id="8103578431304235997">Inkognitofane</translation>
 <translation id="8105613260829665809">Ved å fortsette godtar du <ph name="BEGIN_TOS_LINK" />vilkårene for bruk<ph name="END_TOS_LINK" />.\nFor å bidra til å gjøre appen bedre sender Chrome bruks- og krasjrelaterte data til Google. <ph name="BEGIN_UMA_LINK" />Administrer<ph name="END_UMA_LINK" /></translation>
@@ -1339,6 +1341,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8109613176066109935">For å få bokmerkene dine på alle enhetene dine, slå på synkronisering</translation>
 <translation id="8110024788458304985">Bidra til å gjøre funksjonene og ytelsen til Chrome bedre</translation>
 <translation id="8110087112193408731">Vil du vise Chrome-aktiviteten din i Digital balanse?</translation>
+<translation id="8118117428362942925">Spør forelderen din (<ph name="PARENT_NAME" />) hvis du trenger hjelp</translation>
 <translation id="8127542551745560481">Endre startsiden</translation>
 <translation id="8130309322784422030">Den lagrede påloggingsinformasjonen din er kanskje utdatert</translation>
 <translation id="813082847718468539">Vis nettstedsinformasjon</translation>

@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Na ndihmo të krijojmë një ueb më privat</translation>
 <translation id="107147699690128016">Nëse e ndryshon prapashtesën e skedarit, skedari mund të hapet në një aplikacion tjetër dhe mund të jetë një rrezik për pajisjen tënde.</translation>
 <translation id="1089606299949659462">Shqyrtimi përfundoi!</translation>
-<translation id="1091604859693995976">Rifreskoje për ta parë</translation>
 <translation id="1095761715416917775">Sigurohu që gjithmonë të mund të qasesh në të dhënat e tua të sinkronizimit</translation>
 <translation id="1100066534610197918">Hap në skedë të re në grup</translation>
 <translation id="1103142993930332957">Do të ndihmosh për përmirësimin e Chrome?</translation>
@@ -1148,6 +1147,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7177466738963138057">Këtë mund ta ndryshosh më vonë te "Cilësimet"</translation>
 <translation id="7177873915659574692">Kodi QR nuk mund të krijohet. URL-ja është më shumë se <ph name="CHARACTER_LIMIT" /> karaktere.</translation>
 <translation id="7177959540995930968">Mund të mësosh më shumë për këto veçori te cilësimet e Chrome.</translation>
+<translation id="7180611975245234373">Rifresko</translation>
 <translation id="718226107353899806">Mund të shtosh deri në <ph name="MAX_NUM_REACTIONS" /> reagime</translation>
 <translation id="7183693674623539380">Grupi i skedave - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Të mban të sigurt në Chrome dhe mund të përdoret për të përmirësuar sigurinë tënde në aplikacionet e tjera të Google kur je i identifikuar.</translation>

@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Fermer tous les onglets de navigation privée ?</translation>
 <translation id="1657719826150349398">Déplacer l'onglet vers le bas</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Ajouter <ph name="TABS_COUNT_ONE" /> onglet sélectionné aux favoris}one{Ajouter <ph name="TABS_COUNT_MANY" /> onglet sélectionné aux favoris}other{Ajouter <ph name="TABS_COUNT_MANY" /> onglets sélectionnés aux favoris}}</translation>
 <translation id="2118649612461486615">Infos sur le magasin</translation>
 <translation id="2162620598375156287">Actuellement à <ph name="CURRENT_PRICE" /> sur <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Dégrouper l'onglet}one{Dégrouper l'onglet}other{Dégrouper les onglets}}</translation>
 <translation id="2277224997687551299">Modifier le nom du groupe</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Supprimez du groupe <ph name="TABS_COUNT_ONE" /> onglet sélectionné.}one{Supprimez du groupe <ph name="TABS_COUNT_MANY" /> onglet sélectionné.}other{Supprimez du groupe <ph name="TABS_COUNT_MANY" /> onglets sélectionnés.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Ajouter onglet aux favoris}one{Ajouter onglet aux favoris}other{Ajouter onglets aux favoris}}</translation>
 <translation id="2479148705183875116">Accéder aux paramètres</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Réduisez <ph name="TABS_COUNT_ONE" /> onglet.}one{Réduisez le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}other{Réduisez le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="2569352796411618312">Suggestion : <ph name="NUMBER_OF_TABS" /> des onglets ouverts n'ont pas été utilisés récemment. Voulez-vous les fermer ?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Déplacer l'onglet vers le haut</translation>
 <translation id="8304833501377495048">Ne plus afficher la barre d'onglets ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fermer l'onglet sélectionné (<ph name="TABS_COUNT_ONE" />)}one{Fermer l'onglet sélectionné (<ph name="TABS_COUNT_MANY" />)}other{Fermer les onglets sélectionnés (<ph name="TABS_COUNT_MANY" />)}}</translation>
+<translation id="8398929769197326728">Nouveau dossier – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Développez le groupe d'onglets qui contient <ph name="NUMBER_OF_TABS" /> onglets.</translation>
 <translation id="8714939927607906138">Prix inférieur</translation>
 <translation id="8749939518995770034">Barre d'onglets fermée</translation>

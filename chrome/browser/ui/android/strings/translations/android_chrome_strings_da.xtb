@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Hjælp os med at skabe et mere privat internet</translation>
 <translation id="107147699690128016">Hvis du ændrer filtypen, åbnes filen muligvis i en anden app og kan være skadelig for din enhed.</translation>
 <translation id="1089606299949659462">Gennemgangen er fuldført</translation>
-<translation id="1091604859693995976">Opdater for at se</translation>
 <translation id="1095761715416917775">Sørg for, at du altid kan få adgang til dine synkroniserede data</translation>
 <translation id="1100066534610197918">Åbn i en ny fane i en gruppe</translation>
 <translation id="1103142993930332957">Vil du hjælpe med at forbedre Chrome?</translation>
@@ -1148,6 +1147,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7177466738963138057">Du kan ændre dette senere i Indstillinger</translation>
 <translation id="7177873915659574692">QR-koden kan ikke oprettes. Webadressen indeholder mere end <ph name="CHARACTER_LIMIT" /> tegn.</translation>
 <translation id="7177959540995930968">Du kan få flere oplysninger om disse funktioner i Chrome-indstillingerne.</translation>
+<translation id="7180611975245234373">Opdater</translation>
 <translation id="718226107353899806">Du kan tilføje op til <ph name="MAX_NUM_REACTIONS" /> reaktioner</translation>
 <translation id="7183693674623539380">Fanegruppe – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Beskytter dig i Chrome og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind.</translation>

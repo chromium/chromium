@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">Ruaj <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Bateria e stilolapsit është e ulët</translation>
 <translation id="1036073649888683237">Për të menaxhuar njoftimet, shko te "Cilësimet"</translation>
+<translation id="1036348656032585052">Çaktivizo</translation>
 <translation id="1036672894875463507">Jam "Asistenti yt i Google" dhe jam këtu që të të ndihmoj gjatë gjithë ditës!
 Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> u shtua</translation>
@@ -100,6 +101,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1447641497144572814">Mbrojtësi i ekranit po niset</translation>
 <translation id="1455242230282523554">Shfaq cilësimet e gjuhës</translation>
 <translation id="1460620680449458626">Volumi është i çaktivizuar.</translation>
+<translation id="14648076227129703">Kjo lejon qasjen te kamera për <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dhe të gjitha aplikacionet dhe sajtet e uebit me lejen e kamerës</translation>
 <translation id="1467432559032391204">Majtas</translation>
 <translation id="146902737843070955">Ky ndryshim është kërkuar nga administratori yt</translation>
 <translation id="147310119694673958">Bateria e telefonit <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -159,6 +161,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1797271123677381264">Harrova fjalëkalimin</translation>
 <translation id="181103072419391116">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="1812997170047690955">Çfarë ka në ekranin tim?</translation>
+<translation id="1816896987747843206">Kjo lejon qasjen te kamera për të gjitha aplikacionet dhe sajtet e uebit me lejen e kamerës</translation>
 <translation id="1823280932251546115">Tabakaja e statusit, ora <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> u zhgozhdua</translation>
 <translation id="1836215606488044471">Asistenti (po ngarkohet...)</translation>
 <translation id="1838895407229022812">"Drita e natës" është joaktive.</translation>
+<translation id="1854180393107901205">Ndalo transmetimin</translation>
 <translation id="1862380676329487333">Përditëso dhe dil</translation>
 <translation id="1864454756846565995">Pajisja USB-C (porta prapa)</translation>
 <translation id="1869497990620230175">Skedarët e shpejtë</translation>
@@ -598,6 +602,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4316910396681052118">TË GJITHA APLIKACIONET</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Shkurtorja e tastierës për Ctrl + Shigjeta lart është ndryshuar. Për të përdorur tastin Home, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shigjeta majtas.</translation>
+<translation id="4324840740119394760">Kjo lejon qasjen te kamera për <ph name="APP_NAME" /> dhe të gjitha aplikacionet dhe sajtet e uebit me lejen e kamerës</translation>
 <translation id="4333628967105022692">Lacros nuk mbështetet ndërsa janë të identifikuar disa përdorues.</translation>
 <translation id="4338109981321384717">Xhami zmadhues</translation>
 <translation id="4351433414020964307">"Asistenti" po ngarkohet...</translation>
@@ -664,13 +669,13 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox është aktivizuar</translation>
 <translation id="4665114317261903604">Aktivizo/çaktivizo modalitetin "Mos shqetëso". <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Çaktivizo qasjen te kamera në këtë pajisje për të bllokuar të gjitha kamerat gjatë të gjithë kohës.</translation>
 <translation id="4666911709726371538">Aplikacione të tjera</translation>
 <translation id="4667099493359681081">Po shkarkon <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Aplikacionet nga telefoni yt</translation>
 <translation id="4690510401873698237">Rafti në fund</translation>
 <translation id="4696813013609194136">Shkyç pajisjen me kodin e prindit</translation>
 <translation id="4702647871202761252">Ekrani i privatësisë është joaktiv</translation>
+<translation id="4706121060329443414">Shkarkimi do të provohet më vonë. Ligjërimi do t'i dërgohet Google për përpunim tani.</translation>
 <translation id="470644585772471629">Anasjellja e ngjyrës</translation>
 <translation id="4717575069099566988">Kablloja USB-C nuk mbështet USB4. Cilësia e funksionimit të pajisjes mund të jetë e kufizuar.</translation>
 <translation id="4730374152663651037">TË PËRDORURA SHPESH</translation>
@@ -696,7 +701,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="485592688953820832">Asnjë veprim (vendos në pauzë)</translation>
 <translation id="485634149294284819">Hyr në menynë e tastierës</translation>
 <translation id="4860284199500934869">Kontrollo lidhjen e rrjetit për të shkarkuar <ph name="FILENAME" /></translation>
-<translation id="486056901304535126">Shkarkimi do të provohet më vonë. Ligjërimi do të dërgohet te Google për përpunim derisa shkarkimi të përfundojë.</translation>
 <translation id="4864369630010738180">Po identifikohet...</translation>
 <translation id="4864648187878336334">Tavolina e punës 15</translation>
 <translation id="4868492592575313542">aktivizuar</translation>
@@ -791,6 +795,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5356963482258194581">Ndërro mes temës së errët dhe temës së ndriçuar. Kliko me butonin djathtas në desktop dhe zgjidh "Imazhi i sfondit dhe stili".</translation>
 <translation id="536019650977002321">Administratori yt nuk e lejon regjistrimin e audios. Kontakto me administratorin për më shumë informacion.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Shko te kjo skedë</translation>
+<translation id="5377367976106153749">Të aktivizohet qasja te kamera?</translation>
 <translation id="5379115545237091094">Shumë përpjekje</translation>
 <translation id="5391307769715781764">Të zëvendësohet tavolina e ruajtur e punës?</translation>
 <translation id="5393156353051693207">Prek dhe mbaj të shtypur kudo për të rirenditur aplikacionet</translation>
@@ -1177,7 +1182,6 @@ Instalim i ri</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> po përdor aktualisht mikrofonin tënd</translation>
 <translation id="7561982940498449837">Mbyll menynë</translation>
 <translation id="7564874036684306347">Zhvendosja e dritareve te një desktop tjetër mund të shkaktojë një sjellje të papritur. Njoftimet pasuese, dritarja dhe dialogët mund të ndahen mes desktopëve.</translation>
-<translation id="7567076708801803118">Dëshiron që ta çaktivizosh qasjen te kamera në këtë pajisje?</translation>
 <translation id="7569509451529460200">Braille dhe ChromeVox janë aktivizuar</translation>
 <translation id="7573585051776738856">Dritarja aktive u pozicionua në të djathtë.</translation>
 <translation id="7579778809502851308">Regjistrimi i ekranit</translation>

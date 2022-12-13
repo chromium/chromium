@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">ຍົກເລີກວຽກພິມ</translation>
 <translation id="2163937499206714165">ເປີດໃຊ້ໂໝດມືດ</translation>
 <translation id="2180197493692062006">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງເປີດແອັບຄືນໃໝ່.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">ຣີເຊັດຕົວນັບທຣາບຟິກ</translation>
 <translation id="2212733584906323460">ການຈຳແນກຊື່</translation>
 <translation id="2217935453350629363">ຄວາມໄວປັດຈຸບັນ</translation>
@@ -492,6 +491,7 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">ສະຫຼັບໄປໃຊ້ຮູບແບບສີສັນມືດໂດຍອັດຕະໂນມັດຕອນຕາເວັນຕົກ</translation>
+<translation id="5571714952674387371">ເບິ່ງ ແລະ ແກ້ໄຂລາຍລະອຽດ</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ສະແກນຄືນໃໝ່</translation>
 <translation id="5583640892426849032">ລຶບຄືນຫຼັງ</translation>
@@ -561,6 +561,7 @@
 <translation id="6189418609903030344">ຄວາມຈຸຂອງແບັດເຕີຣີຫຼຸດລົງເມື່ອໃຊ້ໄປເລື້ອຍໆ</translation>
 <translation id="6191293864534840972">ເຊີບເວີຊື່ຜິດຮູບແບບ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">ອອກຈາກໂໝດເຕັມໜ້າຈໍ</translation>
 <translation id="6223752125779001553">ບໍ່ມີເຄື່ອງສະແກນ</translation>
 <translation id="6232017090690406397">ແບັດເຕີຣີ</translation>
 <translation id="6235460611964961764">ຣີເຊັດການນຳໃຊ້ອິນເຕີເນັດດ້ວຍຕົວເອງ</translation>
@@ -689,12 +690,12 @@
 <translation id="741244894080940828">ການປ່ຽນ</translation>
 <translation id="7415801143053185905">ການຕອບສະໜອງ HTTP ສູງຫຼາຍ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ 1 ໜ້າແລ້ວ}other{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ {NUMBER_OF_PAGES} ໜ້າແລ້ວ}}</translation>
 <translation id="7458970041932198923">ກະລຸນາເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍ ແລະ ໂຫຼດໜ້າຄືນໃໝ່ເພື່ອເບິ່ງ ແລະ ຕັ້ງຄ່າຮູບແທນຕົວ.</translation>
 <translation id="7469648432129124067">ກວດພົບໜ້າເວັບ</translation>
 <translation id="7481312909269577407">ສົ່ງຕໍ່</translation>
 <translation id="7487067081878637334">​ເທັກ​ໂນ​ໂລ​ຢີ</translation>
 <translation id="7490813197707563893">ທີ່ຢູ່ MAC</translation>
+<translation id="7491478667760509108">ອອກຈາກໂໝດລອຍ</translation>
 <translation id="7497215489070763236">ໃບຮັບຮອງ CA ຂອງເຊີບເວີ</translation>
 <translation id="7502658306369382406">ທີ່ຢູ່ IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -795,6 +796,7 @@
 <translation id="8498220429738806196">ຕົວນັບທຣາບຟິກ</translation>
 <translation id="8503813439785031346">ຊື່​ຜູ້​ໃຊ້</translation>
 <translation id="8503836310948963452">ອີກສອງສາມນາທີ...</translation>
+<translation id="8508640263392900755">ລາຍລະອຽດ APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ຜູ້ໃຫ້ບໍລິການຂອງທ່ານອາດຕ້ອງໃຊ້ຕົວເລືອກນີ້ເພື່ອເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍຂອງເຂົາເຈົ້າ. ກະລຸນາຕິດຕໍ່ຫາຜູ້ໃຫ້ບໍລິການຂອງທ່ານສຳລັບລາຍລະອຽດ.</translation>
 <translation id="8576249514688522074">ບໍ່ໄດ້ລິເລີ່ມ</translation>

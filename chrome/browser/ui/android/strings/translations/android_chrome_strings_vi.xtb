@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Giúp chúng tôi xây dựng một môi trường web riêng tư hơn</translation>
 <translation id="107147699690128016">Nếu bạn thay đổi đuôi tệp, thì tệp có thể mở trong một ứng dụng khác và tiềm ẩn nguy cơ đối với thiết bị.</translation>
 <translation id="1089606299949659462">Hoàn tất quá trình xem xét!</translation>
-<translation id="1091604859693995976">Làm mới để xem</translation>
 <translation id="1095761715416917775">Đảm bảo bạn luôn có thể truy cập vào dữ liệu đồng bộ hóa</translation>
 <translation id="1100066534610197918">Mở trong thẻ mới trong nhóm</translation>
 <translation id="1103142993930332957">Giúp cải thiện Chrome?</translation>
@@ -761,6 +760,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="510275257476243843">Còn 1 giờ</translation>
 <translation id="5115811374190515607">đến <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Sở thích</translation>
+<translation id="5122378528687922675">Nếu bạn cần trợ giúp, hãy hỏi cha mẹ (<ph name="PARENT_NAME_1" /> hoặc <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Thẻ ẩn danh</translation>
 <translation id="5126510351761255129">Xác minh thẻ của bạn</translation>
 <translation id="5132942445612118989">Đồng bộ hóa mật khẩu, lịch sử và các thông tin khác của bạn trên tất cả các thiết bị</translation>
@@ -1148,6 +1148,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7177466738963138057">Bạn có thể thay đổi cài đặt này sau trong Cài đặt</translation>
 <translation id="7177873915659574692">Không thể tạo mã QR. URL chứa nhiều hơn <ph name="CHARACTER_LIMIT" /> ký tự.</translation>
 <translation id="7177959540995930968">Bạn có thể tìm hiểu thêm về những tính năng này trong phần cài đặt trên Chrome.</translation>
+<translation id="7180611975245234373">Làm mới</translation>
 <translation id="718226107353899806">Bạn có thể thêm tối đa <ph name="MAX_NUM_REACTIONS" /> phản ứng</translation>
 <translation id="7183693674623539380">Nhóm thẻ – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Giúp bạn an toàn trên Chrome và có thể dùng để tăng cường bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập.</translation>
@@ -1331,6 +1332,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8084285576995584326">Kiểm soát dữ liệu Tài khoản Google của bạn</translation>
 <translation id="808747664143081553">Đã kết nối với thiết bị</translation>
 <translation id="8088176524274673045">Để chia sẻ với những người ở gần, hãy cho phép họ quét Mã QR này</translation>
+<translation id="8090732854597034573">Nếu bạn cần trợ giúp, hãy hỏi cha mẹ</translation>
 <translation id="8100969750121413114">Đăng nhập để tuỳ chỉnh Chrome cho phù hợp với bạn</translation>
 <translation id="8103578431304235997">Thẻ ẩn danh</translation>
 <translation id="8105613260829665809">Bằng việc tiếp tục, bạn đồng ý với <ph name="BEGIN_TOS_LINK" />Điều khoản dịch vụ<ph name="END_TOS_LINK" />.\nĐể giúp cải thiện ứng dụng, Chrome sẽ gửi cho Google dữ liệu sử dụng và dữ liệu sự cố. <ph name="BEGIN_UMA_LINK" />Quản lý<ph name="END_UMA_LINK" /></translation>
@@ -1339,6 +1341,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8109613176066109935">Để sử dụng dấu trang trên tất cả các thiết bị, hãy bật tính năng đồng bộ hóa</translation>
 <translation id="8110024788458304985">Giúp cải thiện hiệu suất và các tính năng của Chrome</translation>
 <translation id="8110087112193408731">Bạn có muốn hiển thị hoạt động của mình trên Chrome trong Digital Wellbeing không?</translation>
+<translation id="8118117428362942925">Nếu bạn cần trợ giúp, hãy hỏi cha mẹ (<ph name="PARENT_NAME" />)</translation>
 <translation id="8127542551745560481">Chỉnh sửa trang chủ</translation>
 <translation id="8130309322784422030">Thông tin đăng nhập bạn lưu lần trước có thể đã cũ</translation>
 <translation id="813082847718468539">Xem thông tin trang web</translation>

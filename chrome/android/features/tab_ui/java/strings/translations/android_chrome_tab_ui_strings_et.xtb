@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Kas sulgeda kõik inkognito vahelehed?</translation>
 <translation id="1657719826150349398">Teisalda vaheleht alla</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> vaheleht}other{<ph name="TABS_COUNT_MANY" /> vahelehte}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> valitud vahelehe järjehoidjatesse lisamine}other{<ph name="TABS_COUNT_MANY" /> valitud vahelehe järjehoidjatesse lisamine}}</translation>
 <translation id="2118649612461486615">Poe teave</translation>
 <translation id="2162620598375156287">Nüüd <ph name="CURRENT_PRICE" /> veebisaidil <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Tühista vahelehe grupeerimine}other{Tühista vahelehtede grupeerimine}}</translation>
 <translation id="2277224997687551299">Grupi nime muutmine</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Eemalda grupist <ph name="TABS_COUNT_ONE" /> valitud vaheleht.}other{Eemalda grupist <ph name="TABS_COUNT_MANY" /> valitud vahelehte.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Lisa vaheleht järjehoidjatesse}other{Lisa vahelehed järjehoidjatesse}}</translation>
 <translation id="2479148705183875116">Ava seaded</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ahenda <ph name="TABS_COUNT_ONE" /> vaheleht.}other{Ahenda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp.}}</translation>
 <translation id="2569352796411618312">Soovitus: <ph name="NUMBER_OF_TABS" /> vahelehte pole hiljuti kasutatud. Kas sulgeda need?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Teisalda vaheleht üles</translation>
 <translation id="8304833501377495048">Kas te ei soovi enam vahelehtede riba kuvada?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Sule <ph name="TABS_COUNT_ONE" /> valitud vaheleht}other{Sule <ph name="TABS_COUNT_MANY" /> valitud vahelehte}}</translation>
+<translation id="8398929769197326728">Uus kaust – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Laienda <ph name="NUMBER_OF_TABS" /> vahelehega vahelehegruppi.</translation>
 <translation id="8714939927607906138">Soodsam hind</translation>
 <translation id="8749939518995770034">Vahelehtede riba suleti</translation>

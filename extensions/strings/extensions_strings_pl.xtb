@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Pakiet jest nieprawidłowy. Szczegółowe informacje: „<ph name="ERROR_MESSAGE" />”.</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> żąda dostępu do jednego z Twoich urządzeń:</translation>
 <translation id="8885905466771744233">Klucz prywatny dla określonego rozszerzenia już istnieje. Użyj ponownie tego klucza lub najpierw go usuń.</translation>
+<translation id="9039223174332979184">Administrator tego urządzenia wymaga, aby rozszerzenie <ph name="EXTENSION_NAME" /> miało plik manifestu co najmniej w wersji 3.</translation>
 <translation id="907841381057066561">Nie można utworzyć tymczasowego pliku zip podczas pakowania.</translation>
 <translation id="941543339607623937">Nieprawidłowy klucz prywatny.</translation>
 </translationbundle>

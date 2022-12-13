@@ -271,6 +271,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1586541204584340881">Sambungan yang telah anda pasang</translation>
 <translation id="1588438908519853928">Biasa</translation>
 <translation id="1592005682883173041">Akses Data Setempat</translation>
+<translation id="1593359183944365958">270 darjah</translation>
 <translation id="1594030484168838125">Pilih</translation>
 <translation id="1596296697375291157">Filem ngeri, jenayah &amp; misteri</translation>
 <translation id="1599199147673445968">Kad baharu? <ph name="BEGIN_LINK" />Masukkan Butiran Kad<ph name="END_LINK" /></translation>
@@ -337,6 +338,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1741613555002899862">Mesti dinyatakan dan merupakan rentetan yang sah apabila DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Penyemak imbas anda diurus</translation>
 <translation id="1746113442205726301">Anjakan Y imej</translation>
+<translation id="1746531169546376413">0 darjah</translation>
 <translation id="17513872634828108">Buka tab</translation>
 <translation id="1752021286346845558">Peti mel 8</translation>
 <translation id="1753068535428855445">Dating &amp; peribadi</translation>
@@ -411,7 +413,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1958218078413065209">Markah tertinggi anda ialah <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Bantu kami meningkatkan keselamatan di web untuk semua orang dengan menghantar <ph name="BEGIN_WHITEPAPER_LINK" />URL sesetengah halaman yang anda lawati, maklumat sistem terhad dan sesetengah kandungan halaman<ph name="END_WHITEPAPER_LINK" /> kepada Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Dasar privasi<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Penanda halaman</translation>
-<translation id="1971033026002113380">Lindungi kata laluan dengan TouchID</translation>
 <translation id="1973335181906896915">Ralat penyirian</translation>
 <translation id="1974060860693918893">Lanjutan</translation>
 <translation id="1975457531113383421">Dulang Input</translation>
@@ -746,7 +747,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2881276955470682203">Simpan kad?</translation>
 <translation id="2882949212241984732">Lipatan dua pintu</translation>
 <translation id="2893773853358652045">Gulungan Keempat</translation>
-<translation id="289834758818479772">Jika anda berkongsi peranti ini dengan orang lain, anda boleh menghidupkan TouchID untuk mengesahkan orang itu ialah anda setiap kali anda menggunakan kata laluan yang disimpan</translation>
 <translation id="2900528713135656174">Buat acara</translation>
 <translation id="2903493209154104877">Alamat</translation>
 <translation id="290376772003165898">Halaman bukan dalam <ph name="LANGUAGE" />?</translation>
@@ -1065,7 +1065,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3678529606614285348">Buka halaman dalam tetingkap Inkognito baharu (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Maklumat sijil</translation>
 <translation id="3693327506115126094">Pilih cara anda akan mengesahkan itu anda</translation>
-<translation id="3699374065820972102">TouchID dihidupkan untuk mengisikan kata laluan</translation>
 <translation id="3701427423622901115">Tetap semula diakui.</translation>
 <translation id="3704162925118123524">Rangkaian yang anda gunakan mungkin memerlukan anda untuk melawat halaman log masuknya.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1180,7 +1179,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="401170183602135785">Sampul C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokumen PDF mengandungi {COUNT} halaman}other{Dokumen PDF mengandungi {COUNT} halaman}}</translation>
 <translation id="4023431997072828269">Oleh sebab borang ini diserahkan menggunakan sambungan yang tidak selamat, maklumat anda akan dapat dilihat oleh orang lain.</translation>
-<translation id="4024923292610332139">matikan TouchID untuk mengisikan kata laluan</translation>
 <translation id="4025913568718019429">Butang urus tetapan Google Privacy, tekan Enter untuk melawati tetapan privasi Google Account anda</translation>
 <translation id="4030383055268325496">&amp;Buat asal tambahkan</translation>
 <translation id="4031179711345676612">Mikrofon dibenarkan</translation>
@@ -1542,7 +1540,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4900217275619098670">Gulungan Kesembilan</translation>
 <translation id="4901778704868714008">Simpan...</translation>
 <translation id="4905659621780993806">Pentadbir anda akan memulakan semula peranti anda pada <ph name="DATE" /> jam <ph name="TIME" /> secara automatik. Simpan sebarang item terbuka sebelum peranti anda dimulakan semula.</translation>
-<translation id="4911007278801291296">Anda boleh menghidupkan atau mematikan TouchID dalam <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Tebukan atas sebelah kiri</translation>
 <translation id="4918221908152712722">Pasang <ph name="APP_NAME" /> (tidak perlu dimuat turun)</translation>
 <translation id="4923459931733593730">Pembayaran</translation>
@@ -1724,6 +1721,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5334013548165032829">Log sistem terperinci</translation>
 <translation id="5334145288572353250">Simpan Alamat?</translation>
 <translation id="5335920952954443287">Jantung Berdegup</translation>
+<translation id="5337569431717511221">Tetapkan Chrome sebagai butang penyemak imbas lalai, tekan Enter untuk menetapkan Chrome sebagai penyemak imbas lalai sistem</translation>
 <translation id="5340250774223869109">Aplikasi disekat</translation>
 <translation id="534295439873310000">Peranti NFC</translation>
 <translation id="5344579389779391559">Halaman ini mungkin cuba mengenakan bayaran kepada anda</translation>
@@ -1755,7 +1753,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5426179911063097041"><ph name="SITE" /> mahu menghantar pemberitahuan kepada anda</translation>
 <translation id="5428105026674456456">Bahasa Sepanyol</translation>
 <translation id="5430298929874300616">Alih keluar penanda halaman</translation>
-<translation id="5434423669266814150">hidupkan TouchID untuk mengisikan kata laluan</translation>
 <translation id="5443468954631487277">Susunan terbalik menghadap ke atas</translation>
 <translation id="5447765697759493033">Tapak ini tidak akan diterjemah</translation>
 <translation id="5452270690849572955">Halaman <ph name="HOST_NAME" /> ini tidak ditemui</translation>
@@ -1797,6 +1794,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5540969246441091044">Ekuestrian</translation>
 <translation id="5541086400771735334">Peti mel 7</translation>
 <translation id="5541546772353173584">Tambahkan E-mel</translation>
+<translation id="5543722831081909240">180 darjah</translation>
 <translation id="5545756402275714221">Artikel untuk Anda</translation>
 <translation id="5551890439174915351">100 x 200 mm</translation>
 <translation id="5552137475244467770">Chrome menyemak kata laluan anda secara berkala pada senarai yang telah diterbitkan dalam talian. Apabila melakukan tindakan ini, kata laluan dan nama pengguna anda akan disulitkan supaya data ini tidak dapat dibaca oleh sesiapa termasuk Google.</translation>
@@ -2185,6 +2183,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> anda tidak diurus</translation>
 <translation id="6592952801936330159">Butang urus tetapan laman, tekan Enter untuk mengurus kebenaran dan data yang disimpan merentas berbilang laman dalam tetapan Chrome</translation>
 <translation id="6596325263575161958">Pilihan penyulitan</translation>
+<translation id="6597665340361269064">90 darjah</translation>
 <translation id="6599642189720630047">Produk yang Dijejaki</translation>
 <translation id="6611723696964473273">Berita ekonomi</translation>
 <translation id="6612010098632894193">Video dalam talian</translation>
@@ -2417,6 +2416,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Pentadbir anda dapat melihat:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk membuka tab Inkognito baharu untuk semak imbas secara peribadi</translation>
+<translation id="7203375778433816396">Tetapkan Chrome sebagai penyemak imbas lalai sistem</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> tidak mematuhi piawaian keselamatan.</translation>
 <translation id="7210993021468939304">Aktiviti Linux dalam bekas dan boleh memasang serta menjalankan apl Linux dalam bekas</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /> mengenai masalah ini.</translation>
@@ -2564,6 +2564,7 @@ Butiran tambahan:
 <translation id="7537536606612762813">Wajib</translation>
 <translation id="7542403920425041731">Setelah anda mengesahkan, butiran kad anda akan dikongsi dengan tapak ini.</translation>
 <translation id="7542995811387359312">Pengisian kad kredit automatik dilumpuhkan kerana borang ini tidak menggunakan sambungan selamat.</translation>
+<translation id="7546409722674205727">Memulakan <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Betulkan ralat sambungan</translation>
 <translation id="7549584377607005141">Halaman web ini memerlukan data yang anda masukkan sebelum ini agar dapat dipaparkan dengan betul. Anda boleh menghantar data ini semula, tetapi dengan berbuat demikian anda akan mengulangi sebarang tindakan terdahulu yang telah dilakukan oleh halaman ini.</translation>
 <translation id="7550637293666041147">Nama pengguna peranti dan nama pengguna Chrome anda</translation>
@@ -2749,6 +2750,7 @@ Butiran tambahan:
 <translation id="8009843239480947060">10 x 11 in</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Kad ini dan alamat pengebilannya akan disimpan. Anda akan dapat menggunakan kad ini apabila anda log masuk ke <ph name="USER_EMAIL" />.}other{Kad ini dan alamat pengebilannya akan disimpan. Anda akan dapat menggunakan kad ini apabila anda log masuk ke <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab kemudian Enter untuk menetapkan Chrome sebagai penyemak imbas lalai sistem</translation>
 <translation id="8025119109950072390">Penyerang pada tapak ini mungkin menipu anda supaya melakukan sesuatu yang berbahaya seperti memasang perisian atau mendedahkan maklumat peribadi anda (contohnya, kata laluan, nombor telefon atau maklumat kad kredit).</translation>
 <translation id="8026334261755873520">Kosongkan data semakan imbas</translation>
 <translation id="8027077570865220386">Dulang 15</translation>

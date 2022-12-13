@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
 <translation id="2163937499206714165">Activer le mode sombre</translation>
 <translation id="2180197493692062006">Un problème est survenu. Essayer de rouvrir l'application.</translation>
-<translation id="2184005227776731758">Nom du point d'accès</translation>
 <translation id="2209788852729124853">Réinitialiser les compteurs de trafic</translation>
 <translation id="2212733584906323460">Résolution des noms</translation>
 <translation id="2217935453350629363">Vitesse actuelle</translation>
@@ -492,6 +491,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Basculer automatiquement au thème sombre au coucher du soleil</translation>
+<translation id="5571714952674387371">Afficher et modifier les détails</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Numériser de nouveau</translation>
 <translation id="5583640892426849032">Effacement arrière</translation>
@@ -561,6 +561,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6189418609903030344">La capacité des piles décline avec l'usage</translation>
 <translation id="6191293864534840972">Le format des serveurs de nom est incorrect</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Quitter le mode plein écran</translation>
 <translation id="6223752125779001553">Aucun numériseur n'a été trouvé</translation>
 <translation id="6232017090690406397">Pile</translation>
 <translation id="6235460611964961764">Réinitialiser manuellement l'utilisation de données</translation>
@@ -688,12 +689,12 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Latence HTTP très élevée</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Numérisation terminée. 1 page a été numérisée.}one{Numérisation terminée. {NUMBER_OF_PAGES} page a été numérisée.}other{Numérisation terminée. {NUMBER_OF_PAGES} pages ont été numérisées.}}</translation>
 <translation id="7458970041932198923">Veuillez vous connecter à un réseau et actualiser la page pour afficher et définir des avatars.</translation>
 <translation id="7469648432129124067">Portail détecté</translation>
 <translation id="7481312909269577407">Suivant</translation>
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">Adresse MAC</translation>
+<translation id="7491478667760509108">Quitter le mode superposé</translation>
 <translation id="7497215489070763236">Certificat de l'autorité de certification du serveur</translation>
 <translation id="7502658306369382406">Adresse IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -794,6 +795,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8498220429738806196">Compteurs de trafic</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8503836310948963452">Il ne reste que quelques minutes…</translation>
+<translation id="8508640263392900755">Détails de l'APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Votre fournisseur de services peut exiger l'activation de cette option pour vous connecter à son réseau. Communiquez avec votre fournisseur de services pour en savoir davantage.</translation>
 <translation id="8576249514688522074">Non initialisé</translation>
@@ -869,6 +871,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="9173638680043580060">Il reste moins d'une minute</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Votre clavier peut automatiquement s'agencer à votre fond d'écran</translation>
+<translation id="9193744392140377127">Nom du point d'accès*</translation>
 <translation id="9204237731135241582">Impossible de communiquer avec la passerelle à partir d'applications Android</translation>
 <translation id="9211490828691860325">Tous les bureaux</translation>
 <translation id="932327136139879170">Accueil</translation>

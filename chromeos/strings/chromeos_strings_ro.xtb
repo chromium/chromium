@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Anulează sarcina de printare</translation>
 <translation id="2163937499206714165">Activează modul întunecat</translation>
 <translation id="2180197493692062006">A apărut o eroare. Încearcă să redeschizi aplicația.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Resetează contoarele de trafic</translation>
 <translation id="2212733584906323460">Rezolvarea pentru nume</translation>
 <translation id="2217935453350629363">Viteza actuală</translation>
@@ -689,7 +688,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="741244894080940828">conversie</translation>
 <translation id="7415801143053185905">Latență foarte mare a solicitărilor HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanare finalizată. S-a scanat o pagină.}few{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} pagini.}other{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} de pagini.}}</translation>
 <translation id="7458970041932198923">Conectează-te la o rețea și reîncarcă pagina pentru a vedea și a seta avatarele.</translation>
 <translation id="7469648432129124067">S-a detectat un portal</translation>
 <translation id="7481312909269577407">Înainte</translation>
@@ -796,6 +794,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8498220429738806196">Contoare de trafic</translation>
 <translation id="8503813439785031346">Nume de utilizator</translation>
 <translation id="8503836310948963452">Mai sunt câteva minute…</translation>
+<translation id="8508640263392900755">Detalii APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operatorul poate solicita această opțiune ca să te conectezi la rețeaua respectivă. Contactează operatorul pentru detalii.</translation>
 <translation id="8576249514688522074">Neinițializată</translation>
@@ -871,6 +870,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="9173638680043580060">A rămas mai puțin de un minut</translation>
 <translation id="917720651393141712">Testează</translation>
 <translation id="9188992814426075118">Tastatura se poate potrivi automat cu imaginea de fundal</translation>
+<translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Nu se poate contacta gateway-ul din aplicații pentru Android</translation>
 <translation id="9211490828691860325">Toate desktopurile</translation>
 <translation id="932327136139879170">Pagina de pornire</translation>

@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Допоможіть нам розробити технології для кращої конфіденційності в мережі</translation>
 <translation id="107147699690128016">Якщо ви зміните розширення файлу, він може відкритися в іншому додатку або зашкодити пристрою.</translation>
 <translation id="1089606299949659462">Перевірку завершено.</translation>
-<translation id="1091604859693995976">Оновити й переглянути</translation>
 <translation id="1095761715416917775">Подбайте про те, щоб не втратити доступ до своїх синхронізованих даних</translation>
 <translation id="1100066534610197918">Відкрити нову вкладку в групі</translation>
 <translation id="1103142993930332957">Допомогти покращити Chrome?</translation>
@@ -1148,6 +1147,7 @@
 <translation id="7177466738963138057">Це можна змінити пізніше в налаштуваннях</translation>
 <translation id="7177873915659574692">Не вдається створити QR-код. URL-адреса перевищує ліміт символів (<ph name="CHARACTER_LIMIT" />).</translation>
 <translation id="7177959540995930968">Дізнатися більше про ці функції можна в налаштуваннях Chrome.</translation>
+<translation id="7180611975245234373">Оновити</translation>
 <translation id="718226107353899806">Можна додати до стількох реакцій: <ph name="MAX_NUM_REACTIONS" /></translation>
 <translation id="7183693674623539380">Група вкладок – "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="7187993566681480880">Захищає вас у Chrome і може покращувати безпеку в інших додатках Google після входу в обліковий запис.</translation>

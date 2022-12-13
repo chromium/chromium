@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">அச்சுப் பணியை ரத்துசெய்</translation>
 <translation id="2163937499206714165">டார்க் பயன்முறையை இயக்குதல்</translation>
 <translation id="2180197493692062006">ஏதோ தவறாகிவிட்டது. ஆப்ஸை மீண்டும் திறக்கவும்.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">டிராஃபிக் கவுண்ட்டர்களை மீட்டமை</translation>
 <translation id="2212733584906323460">நேம் ரெசல்யூஷன்</translation>
 <translation id="2217935453350629363">தற்போதைய வேகம்</translation>
@@ -561,6 +560,7 @@
 <translation id="6189418609903030344">உபயோகத்தால் பேட்டரியின் திறன் குறைகிறது</translation>
 <translation id="6191293864534840972">பெயர் சேவையகங்கள் தவறானவை</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">முழுத்திரையிலிருந்து வெளியேறு</translation>
 <translation id="6223752125779001553">ஸ்கேனர்கள் எதுவுமில்லை</translation>
 <translation id="6232017090690406397">பேட்டரி</translation>
 <translation id="6235460611964961764">டேட்டா உபயோகத்தை நீங்களே ரீசெட் செய்யுங்கள்</translation>
@@ -688,12 +688,12 @@
 <translation id="741244894080940828">கன்வெர்ஷன்</translation>
 <translation id="7415801143053185905">HTTP கோரிக்கைகள் மிகவும் அதிக நேரம் எடுத்துக்கொள்கின்றன</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ஸ்கேன் செய்யப்பட்டது. ஒரு பக்கம் ஸ்கேன் செய்யப்பட்டது}other{ஸ்கேன் செய்யப்பட்டது. {NUMBER_OF_PAGES} பக்கங்கள் ஸ்கேன் செய்யப்பட்டன}}</translation>
 <translation id="7458970041932198923">தோற்றப் படங்களைப் பார்க்க மற்றும் அமைக்க நெட்வொர்க்கில் இணைத்து பக்கத்தை ரெஃப்ரெஷ் செய்யவும்.</translation>
 <translation id="7469648432129124067">போர்டல் கண்டறியப்பட்டது</translation>
 <translation id="7481312909269577407">அடுத்த பக்கம்</translation>
 <translation id="7487067081878637334">தொழில்நுட்பம்</translation>
 <translation id="7490813197707563893">MAC முகவரி</translation>
+<translation id="7491478667760509108">மிதக்கும் நிலையில் இருந்து வெளியேறு</translation>
 <translation id="7497215489070763236">சேவையக CA சான்றிதழ்</translation>
 <translation id="7502658306369382406">IPv6 முகவரி</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -794,6 +794,7 @@
 <translation id="8498220429738806196">டிராஃபிக் கவுண்ட்டர்கள்</translation>
 <translation id="8503813439785031346">பயனர்பெயர்</translation>
 <translation id="8503836310948963452">இன்னும் சில நிமிடங்கள் காத்திருக்கவும்...</translation>
+<translation id="8508640263392900755">APN விவரங்கள்</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">சேவை வழங்கும் நிறுவனத்தின் நெட்வொர்க்குடன் இணைக்க இந்த விருப்பத்தை இயக்க வேண்டியிருக்கலாம். விவரங்களுக்கு சேவை வழங்கும் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="8576249514688522074">ஆரம்பிக்கப்படவில்லை</translation>
@@ -869,6 +870,7 @@
 <translation id="9173638680043580060">ஒரு நிமிடத்திற்கும் குறைவான நேரமே மீதமுள்ளது</translation>
 <translation id="917720651393141712">சோதனை செய்</translation>
 <translation id="9188992814426075118">உங்கள் வால்பேப்பருக்கு ஏற்றவாறு கீபோர்டு வண்ணம் தானாகவே மாறும்</translation>
+<translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Android ஆப்ஸில் இருந்து கேட்வேயைத் தொடர்புகொள்ள முடியவில்லை</translation>
 <translation id="9211490828691860325">அனைத்து டெஸ்குகளும்</translation>
 <translation id="932327136139879170">முகப்பு</translation>

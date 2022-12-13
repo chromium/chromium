@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Avbryt utskriftsjobben</translation>
 <translation id="2163937499206714165">Slå på mørk modus</translation>
 <translation id="2180197493692062006">Noe gikk galt. Prøv å åpne appen på nytt.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Tilbakestill trafikktellere</translation>
 <translation id="2212733584906323460">Navneoppslag</translation>
 <translation id="2217935453350629363">Nåværende hastighet</translation>
@@ -492,6 +491,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Bytt automatisk til mørkt tema ved solnedgang</translation>
+<translation id="5571714952674387371">Se og endre detaljer</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skann på nytt</translation>
 <translation id="5583640892426849032">Tilbake-tasten</translation>
@@ -561,6 +561,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6189418609903030344">Batterikapasiteten avtar med bruken</translation>
 <translation id="6191293864534840972">Navnetjenerne inneholder feil</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Avslutt fullskjerm</translation>
 <translation id="6223752125779001553">Ingen skannere er tilgjengelige</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6235460611964961764">Tilbakestill databruken manuelt</translation>
@@ -688,12 +689,12 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="741244894080940828">omregning</translation>
 <translation id="7415801143053185905">Svært høy HTTP-tidsforsinkelse</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanningen er fullført. 1 side er skannet}other{Skanningen er fullført. {NUMBER_OF_PAGES} sider er skannet}}</translation>
 <translation id="7458970041932198923">Koble til et nettverk og last inn siden på nytt for å se og angi brukerbilder.</translation>
 <translation id="7469648432129124067">Oppdaget en portal</translation>
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">MAC-adresse</translation>
+<translation id="7491478667760509108">Avslutt flytende tilstand</translation>
 <translation id="7497215489070763236">Tjenerens CA-sertifikat</translation>
 <translation id="7502658306369382406">IPv6-adresse</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -794,6 +795,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8498220429738806196">Trafikktellere</translation>
 <translation id="8503813439785031346">Brukernavn</translation>
 <translation id="8503836310948963452">Bare noen få minutter igjen …</translation>
+<translation id="8508640263392900755">APN-detaljer</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Det kan hende operatøren din krever dette alternativet for at du skal kunne koble til nettverket deres Kontakt operatøren for mer informasjon.</translation>
 <translation id="8576249514688522074">Ikke initialisert</translation>
@@ -869,6 +871,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="9173638680043580060">Mindre enn et minutt igjen</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Tastaturet kan matche bakgrunnen automatisk</translation>
+<translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Kan ikke kontakte gatewayen fra Android-apper</translation>
 <translation id="9211490828691860325">Alle skrivebord</translation>
 <translation id="932327136139879170">Gå til startsiden</translation>

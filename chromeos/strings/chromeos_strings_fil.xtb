@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Kanselahin ang pag-print</translation>
 <translation id="2163937499206714165">I-on ang dark mode</translation>
 <translation id="2180197493692062006">Nagkaproblema. Subukang buksan ulit ang app.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">I-reset ang Mga Traffic Counter</translation>
 <translation id="2212733584906323460">Name Resolution</translation>
 <translation id="2217935453350629363">Kasalukuyang bilis</translation>
@@ -492,6 +491,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Awtomatikong lumipat sa madilim na tema sa paglubog ng araw</translation>
+<translation id="5571714952674387371">Tingnan at i-edit ang mga detalye</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Mag-scan ulit</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -561,6 +561,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6189418609903030344">Nababawasan ang kapasidad ng baterya sa paggamit</translation>
 <translation id="6191293864534840972">Mali ang format ng mga name server</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Lumabas sa full</translation>
 <translation id="6223752125779001553">Walang available na scanner</translation>
 <translation id="6232017090690406397">Baterya</translation>
 <translation id="6235460611964961764">Manual na i-reset ang paggamit ng data</translation>
@@ -688,12 +689,12 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Napakataas na latency ng HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Tapos na ang pag-scan. 1 page ang na-scan}one{Tapos na ang pag-scan. {NUMBER_OF_PAGES} page ang na-scan}other{Tapos na ang pag-scan. {NUMBER_OF_PAGES} na page ang na-scan}}</translation>
 <translation id="7458970041932198923">Kumonekta sa isang network at i-reload ang page para tumingin at magtakda ng mga avatar.</translation>
 <translation id="7469648432129124067">May na-detect na portal</translation>
 <translation id="7481312909269577407">Sumulong</translation>
 <translation id="7487067081878637334">Teknolohiya</translation>
 <translation id="7490813197707563893">MAC address</translation>
+<translation id="7491478667760509108">Lumabas sa float</translation>
 <translation id="7497215489070763236">CA certificate ng server</translation>
 <translation id="7502658306369382406">IPv6 address</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -794,6 +795,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8498220429738806196">Mga Traffic Counter</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="8503836310948963452">Ilang minuto na lang...</translation>
+<translation id="8508640263392900755">Mga detalye ng APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Posibleng kailanganin ng iyong carrier ang opsyong ito para makakonekta sa network nito. Makipag-ugnayan sa iyong carrier para sa mga detalye.</translation>
 <translation id="8576249514688522074">Hindi Nasimulan</translation>
@@ -869,6 +871,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="9173638680043580060">Wala nang isang minuto ang natitira</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Awtomatikong maitutugma ng iyong keyboard ang wallpaper mo</translation>
+<translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Hindi makaugnayan ang gateway mula sa mga Android app</translation>
 <translation id="9211490828691860325">Lahat ng desk</translation>
 <translation id="932327136139879170">Home</translation>

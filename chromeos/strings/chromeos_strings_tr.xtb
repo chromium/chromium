@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Yazdırma işini iptal et</translation>
 <translation id="2163937499206714165">Koyu modu aç</translation>
 <translation id="2180197493692062006">Bir sorun oldu. Uygulamayı yeniden açmayı deneyin.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Trafik Sayaçlarını Sıfırla</translation>
 <translation id="2212733584906323460">Ad Çözümlemesi</translation>
 <translation id="2217935453350629363">Şu anki hız</translation>
@@ -561,6 +560,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6189418609903030344">Pil kapasitesi kullanıldıkça azalır</translation>
 <translation id="6191293864534840972">Alan adı sunucuları geçersiz</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Tam ekran modundan çık</translation>
 <translation id="6223752125779001553">Kullanılabilir tarayıcı yok</translation>
 <translation id="6232017090690406397">Pil</translation>
 <translation id="6235460611964961764">Veri kullanımını manuel olarak sıfırla</translation>
@@ -688,11 +688,12 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="741244894080940828">dönüştürme</translation>
 <translation id="7415801143053185905">Çok yüksek HTTP gecikmesi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Tarama işlemi tamamlandı. 1 sayfa tarandı}other{Tarama işlemi tamamlandı. {NUMBER_OF_PAGES} sayfa tarandı}}</translation>
+<translation id="7458970041932198923">Avatarları görüntülemek ve ayarlamak için lütfen bir ağa bağlanıp sayfayı yeniden yükleyin.</translation>
 <translation id="7469648432129124067">Portal algılandı</translation>
 <translation id="7481312909269577407">İleri</translation>
 <translation id="7487067081878637334">Teknoloji</translation>
 <translation id="7490813197707563893">MAC adresi</translation>
+<translation id="7491478667760509108">Kayan moddan çık</translation>
 <translation id="7497215489070763236">Sunucu CA sertifikası</translation>
 <translation id="7502658306369382406">IPv6 adresi</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -793,6 +794,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8498220429738806196">Trafik Sayaçları</translation>
 <translation id="8503813439785031346">Kullanıcı adı</translation>
 <translation id="8503836310948963452">Sadece birkaç dakika kaldı…</translation>
+<translation id="8508640263392900755">APN ayrıntıları</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operatörünüz, ağlarına bağlanmak için bu seçeneği gerektirebilir. Ayrıntılı bilgiler için operatörünüzle iletişime geçin.</translation>
 <translation id="8576249514688522074">Başlatılmamış</translation>
@@ -843,6 +845,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Tara}=1{Taranacak sayfa: {NUMBER_OF_PAGES}}other{Taranacak sayfa: {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Cihazın pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
+<translation id="8998289560386111590">Cihazınızda kullanılamıyor</translation>
 <translation id="9003704114456258138">Frekans</translation>
 <translation id="9025198690966128418">Kişisel cihaz olarak kullan</translation>
 <translation id="9028832514430399253">Ekran koruyucu seçeneklerini belirlemek için geçiş yapma düğmesini açın</translation>
@@ -867,6 +870,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="9173638680043580060">Bir dakikadan az kaldı</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Klavyeniz duvar kağıdınızla otomatik olarak eşleşebilir</translation>
+<translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Android uygulamalarından ağ geçidiyle iletişim kurulamıyor</translation>
 <translation id="9211490828691860325">Tüm masalar</translation>
 <translation id="932327136139879170">Ana Sayfa</translation>

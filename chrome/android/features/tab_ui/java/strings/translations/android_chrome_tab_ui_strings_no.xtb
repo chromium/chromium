@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Vil du lukke alle inkognitofaner?</translation>
 <translation id="1657719826150349398">Flytt fanen nedover</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fane}other{<ph name="TABS_COUNT_MANY" /> faner}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Sett <ph name="TABS_COUNT_ONE" /> valgt fane som bokmerke}other{Sett <ph name="TABS_COUNT_MANY" /> valgte faner som bokmerker}}</translation>
 <translation id="2118649612461486615">Butikkinformasjon</translation>
 <translation id="2162620598375156287">Nå <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Fjern fanen fra gruppen}other{Fjern fanene fra gruppen}}</translation>
 <translation id="2277224997687551299">Endre gruppenavnet</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Fjern <ph name="TABS_COUNT_ONE" /> valgt fane fra gruppen.}other{Fjern <ph name="TABS_COUNT_MANY" /> valgte faner fra gruppen.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Sett fanen som bokmerke}other{Sett fanene som bokmerker}}</translation>
 <translation id="2479148705183875116">Gå til Innstillinger</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Skjul <ph name="TABS_COUNT_ONE" /> fane.}other{Skjul fanegruppe med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="2569352796411618312">Forslag: <ph name="NUMBER_OF_TABS" /> av fanene dine er ikke brukt i det siste. Vil du lukke dem?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Flytt fanen oppover</translation>
 <translation id="8304833501377495048">Vil du at faneraden ikke skal vises igjen?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Lukk <ph name="TABS_COUNT_ONE" /> valgt fane}other{Lukk <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
+<translation id="8398929769197326728">Ny mappe – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Utvid fanegruppen med <ph name="NUMBER_OF_TABS" /> faner.</translation>
 <translation id="8714939927607906138">Lavere pris</translation>
 <translation id="8749939518995770034">Lukket faneraden</translation>

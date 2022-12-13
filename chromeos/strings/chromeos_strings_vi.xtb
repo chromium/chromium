@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Hủy lệnh in</translation>
 <translation id="2163937499206714165">Bật chế độ tối</translation>
 <translation id="2180197493692062006">Đã xảy ra lỗi. Hãy thử mở lại ứng dụng.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Đặt lại Bộ đếm lưu lượng truy cập</translation>
 <translation id="2212733584906323460">Độ phân giải tên</translation>
 <translation id="2217935453350629363">Tốc độ hiện tại</translation>
@@ -492,6 +491,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Tự động chuyển sang giao diện tối lúc hoàng hôn</translation>
+<translation id="5571714952674387371">Xem và chỉnh sửa chi tiết</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Quét lại</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -561,6 +561,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6189418609903030344">Dung lượng pin sụt giảm theo mức sử dụng</translation>
 <translation id="6191293864534840972">Máy chủ định danh không hợp lệ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Thoát khỏi trạng thái toàn màn hình</translation>
 <translation id="6223752125779001553">Không có máy quét nào</translation>
 <translation id="6232017090690406397">Pin</translation>
 <translation id="6235460611964961764">Đặt lại mức sử dụng dữ liệu theo cách thủ công</translation>
@@ -688,12 +689,12 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="741244894080940828">chuyển đổi</translation>
 <translation id="7415801143053185905">Yêu cầu HTTP có độ trễ rất cao</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Đã quét xong. Đã quét 1 trang}other{Đã quét xong. Đã quét {NUMBER_OF_PAGES} trang}}</translation>
 <translation id="7458970041932198923">Vui lòng kết nối mạng và tải lại trang để xem và đặt hình đại diện.</translation>
 <translation id="7469648432129124067">Đã phát hiện thấy cổng</translation>
 <translation id="7481312909269577407">Chuyển tiếp</translation>
 <translation id="7487067081878637334">Công nghệ</translation>
 <translation id="7490813197707563893">Địa chỉ MAC</translation>
+<translation id="7491478667760509108">Thoát khỏi trạng thái nổi</translation>
 <translation id="7497215489070763236">Chứng chỉ CA máy chủ</translation>
 <translation id="7502658306369382406">Địa chỉ IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -794,6 +795,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8498220429738806196">Bộ đếm lưu lượng truy cập</translation>
 <translation id="8503813439785031346">Tên người dùng</translation>
 <translation id="8503836310948963452">Còn một vài phút nữa thôi…</translation>
+<translation id="8508640263392900755">Chi tiết về APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Nhà mạng của bạn có thể yêu cầu bạn bật tùy chọn này để kết nối với mạng của họ. Hãy liên hệ với nhà mạng để biết thông tin chi tiết.</translation>
 <translation id="8576249514688522074">Chưa khởi chạy</translation>
@@ -869,6 +871,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="9173638680043580060">Còn chưa đầy 1 phút</translation>
 <translation id="917720651393141712">Kiểm tra</translation>
 <translation id="9188992814426075118">Bàn phím có thể tự động khớp với hình nền của bạn</translation>
+<translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Không thể kết nối với cổng vào từ các ứng dụng Android</translation>
 <translation id="9211490828691860325">Tất cả các không gian làm việc</translation>
 <translation id="932327136139879170">Trang chủ</translation>

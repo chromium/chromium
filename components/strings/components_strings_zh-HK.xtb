@@ -413,7 +413,6 @@
 <translation id="1958218078413065209">你嘅最高得分係 <ph name="SCORE" />。</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />將您瀏覽的部分網頁網址、有限的系統資料以及部分網頁內容<ph name="END_WHITEPAPER_LINK" />傳送給 Google，以協助改善其他使用者的網絡安全性。<ph name="BEGIN_PRIVACY_PAGE_LINK" />私隱權政策<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> 書籤</translation>
-<translation id="1971033026002113380">使用 Touch ID 保護密碼</translation>
 <translation id="1973335181906896915">序列化錯誤</translation>
 <translation id="1974060860693918893">進階選項</translation>
 <translation id="1975457531113383421">輸入紙匣</translation>
@@ -748,7 +747,6 @@
 <translation id="2881276955470682203">要儲存付款卡嗎？</translation>
 <translation id="2882949212241984732">雙摺頁</translation>
 <translation id="2893773853358652045">第四卷</translation>
-<translation id="289834758818479772">如果您與其他人分享此裝置，可以開啟 Touch ID，以便在使用已儲存的密碼時驗證身份</translation>
 <translation id="2900528713135656174">建立活動</translation>
 <translation id="2903493209154104877">地址</translation>
 <translation id="290376772003165898">網頁的來源語言不是<ph name="LANGUAGE" />嗎？</translation>
@@ -1065,7 +1063,6 @@
 <translation id="3678529606614285348">在新無痕式視窗中開啟網頁 (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">憑證資料</translation>
 <translation id="3693327506115126094">選擇身分驗證方式</translation>
-<translation id="3699374065820972102">Touch ID 已開啟，以便填入密碼</translation>
 <translation id="3701427423622901115">重設已確認。</translation>
 <translation id="3704162925118123524">目前使用的網絡可能要求您前往其登入頁面。</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1180,7 +1177,6 @@
 <translation id="401170183602135785">C6 信封</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF 文件入面有 {COUNT} 頁}other{PDF 文件入面有 {COUNT} 頁}}</translation>
 <translation id="4023431997072828269">由於此表格透過不安全的連線提交，其他人將可看到您的資料。</translation>
-<translation id="4024923292610332139">關閉 Touch ID 以填入密碼</translation>
 <translation id="4025913568718019429">管理 Google 私隱設定按鈕，㩒一下 Enter 鍵就可以去 Google 帳戶私隱設定</translation>
 <translation id="4030383055268325496">復原新增(&amp;U)</translation>
 <translation id="4031179711345676612">已允許使用麥克風</translation>
@@ -1542,7 +1538,6 @@
 <translation id="4900217275619098670">第九卷</translation>
 <translation id="4901778704868714008">儲存…</translation>
 <translation id="4905659621780993806">管理員將於 <ph name="DATE" /><ph name="TIME" /> 自動重新啟動您的裝置。請在裝置重新啟動前儲存任何開啟的項目。</translation>
-<translation id="4911007278801291296">您可在「<ph name="SETTINGS" />」中開啟或關閉 Touch ID</translation>
 <translation id="4913987521957242411">打孔 (左上方)</translation>
 <translation id="4918221908152712722">安裝「<ph name="APP_NAME" />」(無需下載)</translation>
 <translation id="4923459931733593730">付款</translation>
@@ -1724,6 +1719,7 @@
 <translation id="5334013548165032829">詳細系統記錄</translation>
 <translation id="5334145288572353250">要儲存地址嗎？</translation>
 <translation id="5335920952954443287">跳緊嘅心</translation>
+<translation id="5337569431717511221">將 Chrome 設定做預設瀏覽器按鈕，㩒 Enter 鍵就可以將 Chrome 設定做系統嘅預設瀏覽器</translation>
 <translation id="5340250774223869109">已封鎖應用程式</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
 <translation id="5344579389779391559">此網頁可能會向您收取費用</translation>
@@ -1755,7 +1751,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> 要求傳送通知給您</translation>
 <translation id="5428105026674456456">西班牙文</translation>
 <translation id="5430298929874300616">移除書籤</translation>
-<translation id="5434423669266814150">開啟 Touch ID，以便在填入密碼時驗證</translation>
 <translation id="5443468954631487277">相反順序 (正面朝上)</translation>
 <translation id="5447765697759493033">系統不會翻譯此網站</translation>
 <translation id="5452270690849572955">找不到此 <ph name="HOST_NAME" /> 網頁</translation>
@@ -2419,6 +2414,7 @@
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">您的管理員可以查看以下項目：</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以開新嘅無痕式分頁私下瀏覽</translation>
+<translation id="7203375778433816396">將 Chrome 設定為系統的預設瀏覽器</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> 沒有依循安全標準。</translation>
 <translation id="7210993021468939304">可查看容器中的 Linux 活動，並可在容器內安裝及執行 Linux 應用程式</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />這個問題。</translation>
@@ -2566,6 +2562,7 @@
 <translation id="7537536606612762813">強制</translation>
 <translation id="7542403920425041731">完成驗證後，系統會與這個網站共用您的信用卡資料。</translation>
 <translation id="7542995811387359312">由於這個表格並未採用加密連線方式，因此信用卡自動填入功能已停用。</translation>
+<translation id="7546409722674205727">正在啟動「<ph name="APP_NAME" />」</translation>
 <translation id="7548892272833184391">修正連線錯誤</translation>
 <translation id="7549584377607005141">這個網頁需要使用您先前輸入的數據才能正確顯示。您可以重新傳送這些數據，但這樣做會重複這個網頁先前已執行的動作。</translation>
 <translation id="7550637293666041147">您的裝置使用者名稱和 Chrome 使用者名稱</translation>
@@ -2751,6 +2748,7 @@
 <translation id="8009843239480947060">10 x 11 吋</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{系統將會儲存此付款卡和帳單地址。您登入 <ph name="USER_EMAIL" /> 後便可以使用這些資料。}other{系統將會儲存這些付款卡和帳單地址。您登入 <ph name="USER_EMAIL" /> 後便可以使用這些資料。}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵同 Enter 鍵就可以將 Chrome 設定做系統嘅預設瀏覽器</translation>
 <translation id="8025119109950072390">攻擊者可能會透過此網站誘使您採取一些危險的行動，例如安裝軟件或洩漏您的個人資料 (包括密碼、電話號碼或信用卡資料)。</translation>
 <translation id="8026334261755873520">清除瀏覽數據</translation>
 <translation id="8027077570865220386">紙匣 15</translation>

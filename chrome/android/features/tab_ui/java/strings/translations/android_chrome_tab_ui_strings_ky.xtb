@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Бардык жашыруун өтмөктөр жабылсынбы?</translation>
 <translation id="1657719826150349398">Өтмөктү төмөн жылдыруу</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк}other{<ph name="TABS_COUNT_MANY" /> өтмөк}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> тандалган өтмөктү кыстаруу}other{<ph name="TABS_COUNT_MANY" /> тандалган өтмөктү кыстаруу}}</translation>
 <translation id="2118649612461486615">Дүкөн жөнүндө маалымат</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> сайтында эми <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Өтмөктү топтон ажыратуу}other{Өтмөктөрдү топтон ажыратуу}}</translation>
 <translation id="2277224997687551299">Топтун аталышын өзгөртүү</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Топтогу тандалган <ph name="TABS_COUNT_ONE" /> өтмөк өчүрүлсүн.}other{Топтогу тандалган <ph name="TABS_COUNT_MANY" /> өтмөк өчүрүлсүн.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Кыстарылган өтмөк}other{Кыстарылган өтмөктөр}}</translation>
 <translation id="2479148705183875116">Жөндөөлөргө өтүү</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк жыйыштырылсын.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган өтмөктөр тобу жыйыштырылсын.}}</translation>
 <translation id="2569352796411618312">Сунуш: Өтмөктөрүңүздүн <ph name="NUMBER_OF_TABS" /> акыркы убакта колдонулган жок. Алар жабылсынбы?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Өтмөктү жогору жылдыруу</translation>
 <translation id="8304833501377495048">Өтмөк тасмасы экинчи көрсөтүлбөсүнбү?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү жабуу}other{Тандалган <ph name="TABS_COUNT_MANY" /> өтмөктү жабуу}}</translation>
+<translation id="8398929769197326728">Жаңы папка - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> өтмөктөн турган өтмөктөр тобу жайылып көрүнсүн.</translation>
 <translation id="8714939927607906138">Арзаныраак баа</translation>
 <translation id="8749939518995770034">Өтмөк тасмасы жабылды</translation>

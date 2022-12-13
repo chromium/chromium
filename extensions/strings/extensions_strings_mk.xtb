@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Пакетот е неважечки. Детали: „<ph name="ERROR_MESSAGE" />“.</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />“ бара пристап до еден од вашите уреди:</translation>
 <translation id="8885905466771744233">Веќе постои приватен клуч за одредениот додаток. Употребете го тој клуч или прво избришете го.</translation>
+<translation id="9039223174332979184">Администраторот на машинава бара <ph name="EXTENSION_NAME" /> да ја има верзијата 3 од манифестот како минимум.</translation>
 <translation id="907841381057066561">Не успеа да креира привремена зип-датотека за време на пакување.</translation>
 <translation id="941543339607623937">Неважечки приватен клуч.</translation>
 </translationbundle>

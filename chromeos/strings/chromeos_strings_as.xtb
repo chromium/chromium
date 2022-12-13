@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">প্ৰিণ্টিঙৰ কাৰ্য বাতিল কৰক</translation>
 <translation id="2163937499206714165">গাঢ় ম’ড ম’ডটো অন কৰক</translation>
 <translation id="2180197493692062006">কিবা ভুল হ’ল। এপ্‌টো পুনৰ খুলিবলৈ চেষ্টা কৰক।</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">ট্ৰেফিক কাউণ্টাৰ ৰিছেট কৰক</translation>
 <translation id="2212733584906323460">নামৰ ৰিজ’লিউশ্বন</translation>
 <translation id="2217935453350629363">বৰ্তমানৰ গতিবেগ</translation>
@@ -492,6 +491,7 @@
 <translation id="5519195206574732858">এলটিই</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">সূৰ্যাস্তৰ সময়ত স্বয়ংক্ৰিয়ভাৱে গাঢ় ৰঙৰ থীমলৈ সলনি কৰক</translation>
+<translation id="5571714952674387371">সবিশেষ চাওক আৰু সম্পাদনা কৰক</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">পুনৰ স্কেন কৰক</translation>
 <translation id="5583640892426849032">বেকস্পেচ</translation>
@@ -561,6 +561,7 @@
 <translation id="6189418609903030344">ব্যৱহাৰৰ লগে লগে বেটাৰীৰ ক্ষমতা কমি আহে</translation>
 <translation id="6191293864534840972">ড’মেইনৰ নাম থকা ছাৰ্ভাৰসমূহ বিকৃত</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ হওক</translation>
 <translation id="6223752125779001553">কোনো স্কেনাৰ নাই</translation>
 <translation id="6232017090690406397">বেটাৰী</translation>
 <translation id="6235460611964961764">ডেটাৰ ব্যৱহাৰ মেনুৱেলভাৱে ৰিছেট কৰক</translation>
@@ -688,11 +689,12 @@
 <translation id="741244894080940828">ৰূপান্তৰণ</translation>
 <translation id="7415801143053185905">HTTPৰ অতি উচ্চ বিলম্বতা</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{স্কেনিং সম্পূৰ্ণ হ’ল। ১ খন পৃষ্ঠা স্কেন কৰা হ’ল}one{স্কেনিং সম্পূৰ্ণ হ’ল। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হ’ল}other{স্কেনিং সম্পূৰ্ণ হ’ল। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হ’ল}}</translation>
+<translation id="7458970041932198923">অনুগ্ৰহ কৰি এটা নেটৱৰ্কৰ সৈতে সংযোগ কৰক আৰু অৱতাৰ চাবলৈ আৰু ছেট কৰিবলৈ পৃষ্ঠাখন পুনৰ ল’ড কৰক।</translation>
 <translation id="7469648432129124067">প’ৰ্টেল চিনাক্ত কৰা হৈছে</translation>
 <translation id="7481312909269577407">ফৰৱাৰ্ড কৰক</translation>
 <translation id="7487067081878637334">প্ৰযুক্তিবিদ্যা</translation>
 <translation id="7490813197707563893">MAC ঠিকনা</translation>
+<translation id="7491478667760509108">ওপঙা স্থিতিৰ পৰা বাহিৰ হওক</translation>
 <translation id="7497215489070763236">ছার্ভাৰ CA প্ৰমাণপত্ৰ</translation>
 <translation id="7502658306369382406">IPv6 ঠিকনা</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -793,6 +795,7 @@
 <translation id="8498220429738806196">ট্ৰেফিক কাউণ্টাৰ</translation>
 <translation id="8503813439785031346">ব্যৱহাৰকাৰীৰ নাম</translation>
 <translation id="8503836310948963452">আৰু মাত্ৰ কেইমিনিটমান বাকী…</translation>
+<translation id="8508640263392900755">এপিএনৰ সবিশেষ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">আপোনাৰ বাহকৰ নেটৱৰ্কৰ সৈতে সংযুক্ত হ’বলৈ সেইটোক এই বিকল্পটোৰ আৱশ্যক হ’ব পাৰে। সবিশেষৰ বাবে আপোনাৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="8576249514688522074">আৰম্ভ কৰা হোৱা নাই</translation>
@@ -843,6 +846,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{স্কেন কৰক}=1{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}one{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}other{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}}</translation>
 <translation id="8997710128084572139">ডিভাইচটোত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>
+<translation id="8998289560386111590">আপোনাৰ ডিভাইচত উপলব্ধ নহয়</translation>
 <translation id="9003704114456258138">ফ্ৰিকুৱেন্সী</translation>
 <translation id="9025198690966128418">এটা ব্যক্তিগত ডিভাইচ হিচাপে ব্যৱহাৰ কৰক</translation>
 <translation id="9028832514430399253">স্ক্ৰীন ছেভাৰৰ বিকল্প বাছনি কৰিবলৈ ট’গল অন কৰক</translation>

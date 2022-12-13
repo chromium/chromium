@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">सबै इन्कोग्निटो ट्याबहरू बन्द गर्ने हो?</translation>
 <translation id="1657719826150349398">ट्याब सारेर तल लैजानुहोस्</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब}other{<ph name="TABS_COUNT_MANY" /> ट्याबहरू}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब बुकमार्क गर्नुहोस्}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब बुकमार्क गर्नुहोस्}}</translation>
 <translation id="2118649612461486615">स्टोरसम्बन्धी जानकारी</translation>
 <translation id="2162620598375156287">अहिले <ph name="SOURCE_WEBSITE" /> मा <ph name="CURRENT_PRICE" /> मा उपलब्ध छ</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{समूहबाट ट्याब हटाउनुहोस्}other{समूहबाट ट्याबहरू हटाउनुहोस्}}</translation>
 <translation id="2277224997687551299">समूहको नाम परिवर्तन गर्नुहोस्</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{समूहबाट चयन गरिएको <ph name="TABS_COUNT_ONE" /> वटा ट्याब हटाउनुहोस्।}other{समूहबाट चयन गरिएका <ph name="TABS_COUNT_MANY" /> वटा ट्याब हटाउनुहोस्।}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{ट्याब बुकमार्क गर्नुहोस्}other{ट्याबहरू बुकमार्क गर्नुहोस्}}</translation>
 <translation id="2479148705183875116">सेटिङमा जानुहोस्</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब संक्षिप्त गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको ट्याब समूह संक्षिप्त गर्नुहोस्।}}</translation>
 <translation id="2569352796411618312">सुझाव: तपाईंले केही समय यता आफ्ना <ph name="NUMBER_OF_TABS" /> वटा ट्याबहरू प्रयोग गर्नुभएको छैन। तिनलाई बन्द गर्ने हो?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">ट्याब माथि सार्नुहोस्</translation>
 <translation id="8304833501377495048">ट्याब स्ट्रिप फेरि नदेखाइयोस् भन्ने चाहनुहुन्छ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> ट्याब बन्द गर्नुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> ट्याबहरू बन्द गर्नुहोस्}}</translation>
+<translation id="8398929769197326728">नयाँ फोल्डर - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> वटा ट्याब भएको ट्याब समूह विस्तृत गर्नुहोस्।</translation>
 <translation id="8714939927607906138">अझ कम मूल्य</translation>
 <translation id="8749939518995770034">ट्याब स्ट्रिप गरिएको छ</translation>

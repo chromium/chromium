@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">Salvestage oma <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Elektronpliiatsi aku hakkab tühjaks saama</translation>
 <translation id="1036073649888683237">Märguannete haldamiseks avage jaotis Seaded</translation>
+<translation id="1036348656032585052">Lülita välja</translation>
 <translation id="1036672894875463507">Olen teie Google'i assistent ja aitan teid kogu päeva jooksul!
 Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> lisati</translation>
@@ -100,6 +101,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1447641497144572814">Ekraanisäästja käivitub</translation>
 <translation id="1455242230282523554">Kuva keeleseaded</translation>
 <translation id="1460620680449458626">Helitugevus on vaigistatud.</translation>
+<translation id="14648076227129703">See lubab rakendustel <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ning kõikidel kaamerale juurdepääsemise loaga rakendustel ja veebisaitidel kaamerale juurde pääseda</translation>
 <translation id="1467432559032391204">Vasakule</translation>
 <translation id="146902737843070955">Seda muudatust taotles teie administraator</translation>
 <translation id="147310119694673958">Telefoni aku: <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -159,6 +161,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1797271123677381264">Unustasin parooli</translation>
 <translation id="181103072419391116">Signaali tugevus: <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>
 <translation id="1812997170047690955">Mis on minu ekraanil?</translation>
+<translation id="1816896987747843206">See lubab kõikidel kaamerale juurdepääsemise loaga rakendustel ja veebisaitidel kaamerale juurde pääseda</translation>
 <translation id="1823280932251546115">Olekusalv, aeg <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> vabastati</translation>
 <translation id="1836215606488044471">Assistent (laadimine …)</translation>
 <translation id="1838895407229022812">Öövalgus on väljas.</translation>
+<translation id="1854180393107901205">Peata ülekandmine</translation>
 <translation id="1862380676329487333">Värskenda ja logi välja</translation>
 <translation id="1864454756846565995">C-tüüpi USB-seade (tagumine port)</translation>
 <translation id="1869497990620230175">Kiirfailid</translation>
@@ -599,6 +603,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4316910396681052118">KÕIK RAKENDUSED</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Klaviatuuri otseteed Ctrl + Alt + ülesnool on muudetud. Koduklahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + vasaknoolt.</translation>
+<translation id="4324840740119394760">See lubab rakendusel <ph name="APP_NAME" /> ning kõikidel kaamerale juurdepääsemise loaga rakendustel ja veebisaitidel kaamerale juurde pääseda</translation>
 <translation id="4333628967105022692">Lacros ei ole toetatud, kui sisse on logitud mitu kasutajat.</translation>
 <translation id="4338109981321384717">Suurendusklaas</translation>
 <translation id="4351433414020964307">Assistenti laaditakse …</translation>
@@ -665,13 +670,13 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox on lubatud</translation>
 <translation id="4665114317261903604">Lülitab režiimi Mitte segada sisse või välja. <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Lülitage selles seadmes kaamerale juurdepääs välja, et kõiki kaameraid kogu aeg blokeerida.</translation>
 <translation id="4666911709726371538">Rohkem rakendusi</translation>
 <translation id="4667099493359681081">Faili <ph name="FILENAME" /> allalaadimine</translation>
 <translation id="468293128311738995">Rakendused teie telefonist</translation>
 <translation id="4690510401873698237">Riiul asub allpool</translation>
 <translation id="4696813013609194136">Avage seade lapsevanema koodiga</translation>
 <translation id="4702647871202761252">Privaatsuskuva on väljas</translation>
+<translation id="4706121060329443414">Hiljem üritatakse uuesti alla laadida. Kõne saadetakse praegu töötlemiseks Google'ile.</translation>
 <translation id="470644585772471629">Värvide ümberpööramine</translation>
 <translation id="4717575069099566988">Teie USB-C-kaabel ei toeta USB4. Seadme toimivus võib olla piiratud.</translation>
 <translation id="4730374152663651037">SAGELI KASUTATUD</translation>
@@ -697,7 +702,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="485592688953820832">Toiming puudub (peatamine)</translation>
 <translation id="485634149294284819">Ava klaviatuurimenüü</translation>
 <translation id="4860284199500934869">Kontrollige oma võrguühendust, et fail <ph name="FILENAME" /> alla laadida</translation>
-<translation id="486056901304535126">Hiljem üritatakse uuesti alla laadida. Kõne saadetakse Google'ile töötlemiseks, kui allalaadimine on lõpetatud.</translation>
 <translation id="4864369630010738180">Sisselogimine ...</translation>
 <translation id="4864648187878336334">Töölaud 15</translation>
 <translation id="4868492592575313542">aktiveeritud</translation>
@@ -792,6 +796,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5356963482258194581">Vahetage tumeda ja heleda teema vahel. Tehke töölaual paremklikk ning valik Taustapilt ja stiil.</translation>
 <translation id="536019650977002321">Teie administraator ei luba heli jäädvustada. Lisateabe saamiseks võtke ühendust administraatoriga.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ava see vaheleht</translation>
+<translation id="5377367976106153749">Kas lülitada juurdepääs kaamerale sisse?</translation>
 <translation id="5379115545237091094">Liiga palju katseid</translation>
 <translation id="5391307769715781764">Kas asendada salvestatud töölaud?</translation>
 <translation id="5393156353051693207">Rakenduste järjestuse muutmiseks puudutage pikalt kus tahes</translation>
@@ -1178,7 +1183,6 @@ Uus installimine</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> kasutab praegu teie mikrofoni</translation>
 <translation id="7561982940498449837">Sule menüü</translation>
 <translation id="7564874036684306347">Kui teisaldate aknad teisele töölauale, võib tagajärjeks olla ootamatu käitumine. Järgmised märguanded, aknad ja dialoogid võivad jaguneda eri töölaudade vahel.</translation>
-<translation id="7567076708801803118">Kas soovite selles seadmes kaamerale juurdepääsu välja lülitada?</translation>
 <translation id="7569509451529460200">Punktkiri ja ChromeVox on lubatud</translation>
 <translation id="7573585051776738856">Aktiivne aken dokiti paremale.</translation>
 <translation id="7579778809502851308">Ekraanikuva jäädvustamine</translation>

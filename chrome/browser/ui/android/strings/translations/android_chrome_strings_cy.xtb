@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Helpwch ni i ddatblygu gwe fwy preifat</translation>
 <translation id="107147699690128016">Os byddwch yn newid yr estyniad ffeil, gall y ffeil agor mewn apiau gwahanol ac mae'n bosib y bydd yn berygl i'ch dyfais.</translation>
 <translation id="1089606299949659462">Adolygiad wedi'i gwblhau!</translation>
-<translation id="1091604859693995976">Ail-lwythwch i'w gweld</translation>
 <translation id="1095761715416917775">Gwnewch yn siŵr eich bod bob amser yn gallu cael mynediad at eich data cysoni</translation>
 <translation id="1100066534610197918">Agor mewn tab a grŵp newydd</translation>
 <translation id="1103142993930332957">Helpwch i wella Chrome?</translation>
@@ -1148,6 +1147,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7177466738963138057">Gallwch newid hyn yn y Gosodiadau</translation>
 <translation id="7177873915659574692">Methu â chreu Cod QR. Mae'r URL yn fwy na <ph name="CHARACTER_LIMIT" /> nod.</translation>
 <translation id="7177959540995930968">Gallwch ddysgu rhagor am y nodweddion hyn yng ngosodiadau Chrome.</translation>
+<translation id="7180611975245234373">Ail-lwytho</translation>
 <translation id="718226107353899806">Gallwch ychwanegu hyd at <ph name="MAX_NUM_REACTIONS" /> ymateb</translation>
 <translation id="7183693674623539380">Grŵp tabiau - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Yn eich cadw'n ddiogel ar Chrome a gellir ei ddefnyddio i wella'ch diogelwch mewn apiau Google eraill pan fyddwch wedi'ch mewngofnodi.</translation>

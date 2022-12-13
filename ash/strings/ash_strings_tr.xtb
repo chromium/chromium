@@ -7,6 +7,7 @@
 <translation id="1024364763893396229"><ph name="NAME" /> cihazınızı kaydedin</translation>
 <translation id="1032891413405719768">Ekran kaleminin pili düşük</translation>
 <translation id="1036073649888683237">Bildirimleri yönetmek için Ayarlar'a gidin</translation>
+<translation id="1036348656032585052">Kapat</translation>
 <translation id="1036672894875463507">Ben Google Asistanınım, gün boyunca sana yardımcı olmak için buradayım.
 Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> eklendi</translation>
@@ -100,6 +101,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1447641497144572814">Ekran koruyucu başlatılıyor</translation>
 <translation id="1455242230282523554">Dil ayarlarını gösterin</translation>
 <translation id="1460620680449458626">Ses kapalı.</translation>
+<translation id="14648076227129703">Bu işlem, <ph name="APP1_NAME" /> ve <ph name="APP2_NAME" /> uygulamalarının yanı sıra kamera izni olan tüm uygulamaların ve web sitelerinin kameraya erişmesine izin verir</translation>
 <translation id="1467432559032391204">Sola</translation>
 <translation id="146902737843070955">Yöneticiniz bu değişikliği istedi</translation>
 <translation id="147310119694673958">Telefon pili %<ph name="BATTERY_PERCENTAGE" /></translation>
@@ -159,6 +161,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1797271123677381264">Şifremi unuttum</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="1812997170047690955">Ekranımda ne var?</translation>
+<translation id="1816896987747843206">Bu işlem, kamera izni olan tüm uygulamaların ve web sitelerinin kameraya erişmesine izin verir</translation>
 <translation id="1823280932251546115">Durum tepsisi, saat <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> sabitlemesi kaldırıldı</translation>
 <translation id="1836215606488044471">Asistan (yükleniyor...)</translation>
 <translation id="1838895407229022812">Gece Işığı kapalı.</translation>
+<translation id="1854180393107901205">Yayını durdur</translation>
 <translation id="1862380676329487333">Güncelle ve oturumu kapat</translation>
 <translation id="1864454756846565995">USB-C cihaz (arka bağlantı noktası)</translation>
 <translation id="1869497990620230175">Hızlı dosyalar</translation>
@@ -598,6 +602,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4316910396681052118">TÜM UYGULAMALAR</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Ctrl + Alt + Yukarı Ok klavye kısayolu değişti. Home tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + Sol Ok tuşlarına basın.</translation>
+<translation id="4324840740119394760">Bu işlem, <ph name="APP_NAME" /> ile birlikte kamera izni olan tüm uygulamaların ve web sitelerinin kameraya erişmesine izin verir</translation>
 <translation id="4333628967105022692">Lacros, birden fazla kullanıcı oturum açmış durumdayken desteklenmiyor.</translation>
 <translation id="4338109981321384717">Büyüteç</translation>
 <translation id="4351433414020964307">Asistan yükleniyor...</translation>
@@ -664,13 +669,13 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox etkinleştirildi</translation>
 <translation id="4665114317261903604">Rahatsız Etmeyin modunu aç/kapat. <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Tüm kameraları her zaman engellemek için bu cihazda kamera erişimini kapatın.</translation>
 <translation id="4666911709726371538">Diğer uygulamalar</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> indiriliyor</translation>
 <translation id="468293128311738995">Telefonunuzdaki uygulamalar</translation>
 <translation id="4690510401873698237">Raf, ekranın alt tarafında</translation>
 <translation id="4696813013609194136">Kilidi ebeveyn koduyla açın</translation>
 <translation id="4702647871202761252">Gizlilik ekranı kapalı</translation>
+<translation id="4706121060329443414">İndirme işlemi daha sonra tekrar denenecek. Konuşma şimdilik işlenmek üzere Google'a gönderilecek.</translation>
 <translation id="470644585772471629">Rengi ters çevirme</translation>
 <translation id="4717575069099566988">USB-C kablonuz USB4'ü desteklemiyor. Cihaz performansı sınırlı olabilir.</translation>
 <translation id="4730374152663651037">SIK KULLANILANLAR</translation>
@@ -696,7 +701,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="485592688953820832">İşlem yok (duraklat)</translation>
 <translation id="485634149294284819">Klavye menüsüne gir</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> dosyasını indirmek için ağ bağlantınızı kontrol edin</translation>
-<translation id="486056901304535126">İndirme işlemi daha sonra tekrar denenecek. Konuşma, indirme işlemi tamamlanana kadar işlenmek üzere Google'a gönderilecek.</translation>
 <translation id="4864369630010738180">Oturum açılıyor...</translation>
 <translation id="4864648187878336334">Masa 15</translation>
 <translation id="4868492592575313542">etkin</translation>
@@ -791,6 +795,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5356963482258194581">Koyu ve açık tema arasında geçiş yapın. Masaüstünü sağ tıklayıp Duvar kağıdı ve stil'i seçin</translation>
 <translation id="536019650977002321">Yöneticiniz ses yakalamaya izin vermiyor. Daha fazla bilgi için yöneticinizle iletişime geçin.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Bu sekmeye gidin</translation>
+<translation id="5377367976106153749">Kamera erişimi etkinleştirilsin mi?</translation>
 <translation id="5379115545237091094">Çok fazla deneme yapıldı</translation>
 <translation id="5391307769715781764">Kayıtlı masa değiştirilsin mi?</translation>
 <translation id="5393156353051693207">Uygulamalarınızı yeniden sıralamak için herhangi bir yere dokunup basılı tutun</translation>
@@ -1177,7 +1182,6 @@ Yeni yüklenmiş</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> şu anda mikrofonunuzu kullanıyor</translation>
 <translation id="7561982940498449837">Menüyü kapat</translation>
 <translation id="7564874036684306347">Pencereleri başka bir masaüstüne taşımak, beklenmeyen davranışlara neden olabilir. Pencereler taşındıktan sonra gelen bildirimler, pencereler ve iletişim kutuları masaüstleri arasında bölünebilir.</translation>
-<translation id="7567076708801803118">Bu cihazda kamera erişimini kapatmak istiyor musunuz?</translation>
 <translation id="7569509451529460200">Braille ve ChromeVox etkinleştirildi</translation>
 <translation id="7573585051776738856">Etkin pencere sağa sabitlendi.</translation>
 <translation id="7579778809502851308">Ekran görüntüsü</translation>
@@ -1253,6 +1257,7 @@ Yeni yüklenmiş</translation>
 <translation id="79341161159229895">Hesap <ph name="FIRST_PARENT_EMAIL" /> ve <ph name="SECOND_PARENT_EMAIL" /> tarafından yönetiliyor</translation>
 <translation id="793716872548410480">Panonuzu görüntülemek için <ph name="SHORTCUT_KEY_NAME" /> + V tuşlarına basın. Kopyaladığınız son 5 öğe panonuza kaydedildi.</translation>
 <translation id="7942349550061667556">Kırmızı</translation>
+<translation id="7963992254934562106"><ph name="PHONE_NAME" /> telefondan</translation>
 <translation id="7968693143708939792">Klasör seç...</translation>
 <translation id="7977927628060636163">Mobil ağlar aranıyor...</translation>
 <translation id="7982789257301363584">Ağ</translation>

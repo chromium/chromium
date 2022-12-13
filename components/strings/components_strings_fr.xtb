@@ -271,6 +271,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1586541204584340881">Les extensions que vous avez installées</translation>
 <translation id="1588438908519853928">Standard</translation>
 <translation id="1592005682883173041">Accès aux données locales</translation>
+<translation id="1593359183944365958">270 degrés</translation>
 <translation id="1594030484168838125">Sélectionner</translation>
 <translation id="1596296697375291157">Films policiers et thrillers</translation>
 <translation id="1599199147673445968">Nouvelle carte ? <ph name="BEGIN_LINK" />Saisir les informations relatives à la carte<ph name="END_LINK" /></translation>
@@ -337,6 +338,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1741613555002899862">Cette règle doit être spécifiée avec une chaîne valide lorsque la règle DnsOverHttpsMode est définie sur <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Votre navigateur est géré</translation>
 <translation id="1746113442205726301">Décalage Y de l'image</translation>
+<translation id="1746531169546376413">0 degré</translation>
 <translation id="17513872634828108">Onglets ouverts</translation>
 <translation id="1752021286346845558">Boîte aux lettres 8</translation>
 <translation id="1753068535428855445">Rencontres</translation>
@@ -411,7 +413,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1958218078413065209">Meilleur score : <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Contribuez à renforcer la sécurité sur le Web pour tous en envoyant à Google les <ph name="BEGIN_WHITEPAPER_LINK" />URL de certaines pages que vous consultez, ainsi que des informations système limitées et une partie du contenu de certaines pages<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Règles de confidentialité<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Favoris du domaine <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">Protéger les mots de passe avec Touch ID</translation>
 <translation id="1973335181906896915">Erreur de sérialisation.</translation>
 <translation id="1974060860693918893">Paramètres avancés</translation>
 <translation id="1975457531113383421">Bac d'alimentation</translation>
@@ -746,7 +747,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2881276955470682203">Enregistrer la carte ?</translation>
 <translation id="2882949212241984732">Pli en deux volets</translation>
 <translation id="2893773853358652045">4e rouleau</translation>
-<translation id="289834758818479772">Si vous partagez cet appareil, vous pouvez activer Touch ID pour confirmer votre identité chaque fois que vous utilisez un mot de passe enregistré</translation>
 <translation id="2900528713135656174">Créer un événement</translation>
 <translation id="2903493209154104877">Adresses</translation>
 <translation id="290376772003165898">La page n'est pas en <ph name="LANGUAGE" /> ?</translation>
@@ -1064,7 +1064,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3678529606614285348">Ouvrir la page dans une nouvelle fenêtre de navigation privée (Ctrl+Maj+N)</translation>
 <translation id="3681007416295224113">Informations relatives au certificat</translation>
 <translation id="3693327506115126094">Choisir comment confirmer votre identité</translation>
-<translation id="3699374065820972102">Touch ID est activé pour la saisie des mots de passe</translation>
 <translation id="3701427423622901115">Réinitialisation appliquée.</translation>
 <translation id="3704162925118123524">Pour utiliser ce réseau, il est possible que vous deviez vous rendre sur la page de connexion correspondante.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1157,7 +1156,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3949601375789751990">Votre historique de navigation s'affiche ici</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Aucun mode de paiement enregistré</translation>
-<translation id="3950820424414687140">Connexion</translation>
+<translation id="3950820424414687140">Se connecter</translation>
 <translation id="3958057596965527988">4 x 4 pouces</translation>
 <translation id="3961148744525529027">La feuille du gestionnaire de paiement est ouverte à moitié</translation>
 <translation id="3962859241508114581">Titre précédent</translation>
@@ -1179,7 +1178,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="401170183602135785">Enveloppe C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF contenant {COUNT} page}one{Document PDF contenant {COUNT} page}other{Document PDF contenant {COUNT} pages}}</translation>
 <translation id="4023431997072828269">Comme ce formulaire est envoyé via une connexion non sécurisée, vos informations seront visibles par les autres utilisateurs.</translation>
-<translation id="4024923292610332139">désactiver TouchID pour saisir les mots de passe</translation>
 <translation id="4025913568718019429">Bouton "Gérer les paramètres de confidentialité Google", appuyez sur Entrée pour accéder aux paramètres de confidentialité de votre compte Google</translation>
 <translation id="4030383055268325496">&amp;Annuler l'ajout</translation>
 <translation id="4031179711345676612">Micro autorisé</translation>
@@ -1541,7 +1539,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4900217275619098670">9e rouleau</translation>
 <translation id="4901778704868714008">Enregistrer…</translation>
 <translation id="4905659621780993806">L'administrateur redémarrera votre appareil automatiquement le <ph name="DATE" /> à <ph name="TIME" />. Enregistrez tous les éléments ouverts avant que votre appareil ne redémarre.</translation>
-<translation id="4911007278801291296">Vous pouvez activer ou désactiver Touch ID dans <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Perforation en haut à gauche</translation>
 <translation id="4918221908152712722">Installer <ph name="APP_NAME" /> (aucun téléchargement requis)</translation>
 <translation id="4923459931733593730">Paiement</translation>
@@ -1723,6 +1720,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5334013548165032829">Journaux système détaillés</translation>
 <translation id="5334145288572353250">Enregistrer l'adresse ?</translation>
 <translation id="5335920952954443287">Cœur qui bat</translation>
+<translation id="5337569431717511221">Bouton pour définir Chrome comme navigateur par défaut ; appuyez sur Entrée pour définir Chrome comme navigateur par défaut du système</translation>
 <translation id="5340250774223869109">Application bloquée</translation>
 <translation id="534295439873310000">Appareils NFC</translation>
 <translation id="5344579389779391559">L'accès à la page suivante peut engendrer des frais</translation>
@@ -1754,7 +1752,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5426179911063097041">"<ph name="SITE" />" souhaite vous envoyer des notifications</translation>
 <translation id="5428105026674456456">Espagnol</translation>
 <translation id="5430298929874300616">Supprimer le favori</translation>
-<translation id="5434423669266814150">activer Touch ID pour saisir les mots de passe</translation>
 <translation id="5443468954631487277">Ordre inverse, face vers le haut</translation>
 <translation id="5447765697759493033">Ce site ne sera pas traduit</translation>
 <translation id="5452270690849572955">Cette page du site <ph name="HOST_NAME" /> est introuvable</translation>
@@ -1796,6 +1793,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5540969246441091044">Équitation</translation>
 <translation id="5541086400771735334">Boîte aux lettres 7</translation>
 <translation id="5541546772353173584">Ajouter une adresse e-mail</translation>
+<translation id="5543722831081909240">180 degrés</translation>
 <translation id="5545756402275714221">Articles pour vous</translation>
 <translation id="5551890439174915351">100 x 200 mm</translation>
 <translation id="5552137475244467770">Chrome vérifie régulièrement que vos mots de passe ne figurent pas dans les listes qui ont été publiées en ligne. Lors de cette opération, vos mots de passe et vos noms d'utilisateur sont chiffrés afin que personne ne puisse les consulter, y compris Google.</translation>
@@ -2184,6 +2182,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6591833882275308647">Votre <ph name="DEVICE_TYPE" /> n'est pas géré</translation>
 <translation id="6592952801936330159">Bouton "Gérer les paramètres du site" : appuyez sur Entrée pour gérer les autorisations et les données stockées sur les sites dans les paramètres Chrome</translation>
 <translation id="6596325263575161958">Options de chiffrement</translation>
+<translation id="6597665340361269064">90 degrés</translation>
 <translation id="6599642189720630047">Produits suivis</translation>
 <translation id="6611723696964473273">Actualités économiques</translation>
 <translation id="6612010098632894193">Vidéo en ligne</translation>
@@ -2416,6 +2415,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Votre administrateur peut consulter les éléments suivants :</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyer sur Tabulation, puis sur Entrée pour ouvrir un nouvel onglet de navigation privée</translation>
+<translation id="7203375778433816396">Définir Chrome comme navigateur par défaut du système</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ne respecte pas les normes de sécurité.</translation>
 <translation id="7210993021468939304">Activité Linux dans le conteneur, et peut installer et exécuter des applications Linux dans le conteneur</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur ce problème.</translation>
@@ -2564,6 +2564,7 @@ Informations supplémentaires :
 <translation id="7537536606612762813">Obligatoire</translation>
 <translation id="7542403920425041731">Une fois la validation terminée, les informations relatives à votre carte seront partagées avec ce site.</translation>
 <translation id="7542995811387359312">La saisie automatique des numéros de carte de paiement est désactivée, car la connexion utilisée par ce formulaire n'est pas sécurisée.</translation>
+<translation id="7546409722674205727">Lancement de <ph name="APP_NAME" />…</translation>
 <translation id="7548892272833184391">Corriger les erreurs de connexion</translation>
 <translation id="7549584377607005141">Pour s'afficher correctement, cette page Web a besoin des données que vous avez saisies précédemment. Vous pouvez envoyer de nouveau ces données. Cependant, en procédant ainsi, vous répéterez toute action déjà effectuée sur cette page.</translation>
 <translation id="7550637293666041147">Votre nom d'utilisateur Chrome et celui lié à votre appareil</translation>
@@ -2679,7 +2680,7 @@ Informations supplémentaires :
 <translation id="7800304661137206267">La connexion est chiffrée au moyen de <ph name="CIPHER" />, avec <ph name="MAC" /> pour l'authentification des messages et <ph name="KX" /> pour la méthode d'échange de clés.</translation>
 <translation id="7802523362929240268">Ce site est légitime</translation>
 <translation id="7802989406998618639">Saisissez le code de sécurité à <ph name="NUMBER_OF_DIGITS" /> chiffres à l'<ph name="SIDE_OF_CARD" /> afin que votre banque puisse confirmer votre identité</translation>
-<translation id="780301667611848630">Non merci</translation>
+<translation id="780301667611848630">Non, merci</translation>
 <translation id="7805571567667010077">Gérée par votre organisation</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7812922009395017822">Mir</translation>
@@ -2749,6 +2750,7 @@ Informations supplémentaires :
 <translation id="8009843239480947060">10 x 11 pouces</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Cette carte et l'adresse de facturation associée seront enregistrées. Vous pourrez vous en servir lorsque vous serez connecté à <ph name="USER_EMAIL" />.}one{Cette carte et l'adresse de facturation associée seront enregistrées. Vous pourrez vous en servir lorsque vous serez connecté à <ph name="USER_EMAIL" />.}other{Ces cartes et les adresses de facturation associées seront enregistrées. Vous pourrez vous en servir lorsque vous serez connecté à <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour définir Chrome comme navigateur par défaut du système</translation>
 <translation id="8025119109950072390">Des individus malveillants à l'œuvre sur ce site pourraient vous inciter à effectuer des opérations dangereuses, telles que l'installation d'un logiciel ou la révélation d'informations personnelles (par exemple des mots de passe, des numéros de téléphone ou des numéros de carte de paiement).</translation>
 <translation id="8026334261755873520">Effacer les données de navigation</translation>
 <translation id="8027077570865220386">Bac 15</translation>

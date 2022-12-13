@@ -413,7 +413,6 @@
 <translation id="1958218078413065209">თქვენი უმაღლესი ქულაა <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">შეუწყვეთ ხელი ვების უსაფრთხოების ყველასთვის გაუმჯობესებას <ph name="BEGIN_WHITEPAPER_LINK" />თქვენ მიერ მონახულებული ზოგიერთი გვერდის URL-ების, სისტემის შეზღუდული ინფორმაციისა და გვერდების გარკვეული კონტენტის<ph name="END_WHITEPAPER_LINK" /> Google-ისთვის გაგზავნით. <ph name="BEGIN_PRIVACY_PAGE_LINK" />კონფიდენციალურობის დებულება<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> სანიშნეები</translation>
-<translation id="1971033026002113380">დაიცავით პაროლები Touch ID-ს მეშვეობით</translation>
 <translation id="1973335181906896915">სრიალიზაციის შეცდომა</translation>
 <translation id="1974060860693918893">გაფართოებული</translation>
 <translation id="1975457531113383421">მიმწოდებელი ლანგარი</translation>
@@ -748,7 +747,6 @@
 <translation id="2881276955470682203">გსურთ ბარათის შენახვა?</translation>
 <translation id="2882949212241984732">დაკეცვა ორმაგი ჭიშკრის ფორმით</translation>
 <translation id="2893773853358652045">მეოთხე რულონი</translation>
-<translation id="289834758818479772">თუ ეს მოწყობილობა სხვებთან საზიაროა, შენახული პაროლის გამოყენებისას თქვენი ვინაობის დასადასტურებლად შეგიძლიათ ჩართოთ Touch ID</translation>
 <translation id="2900528713135656174">მოვლენის შექმნა</translation>
 <translation id="2903493209154104877">მისამართები</translation>
 <translation id="290376772003165898">გვერდის ტექსტი არ არის <ph name="LANGUAGE" />?</translation>
@@ -1066,7 +1064,6 @@
 <translation id="3678529606614285348">გვერდის ახალ ინკოგნიტო ფანჯარაში გახსნა (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">სერტიფიკატის ინფორმაცია</translation>
 <translation id="3693327506115126094">აირჩიეთ თქვენი ვინაობის დადასტურების მეთოდი</translation>
-<translation id="3699374065820972102">TouchID ჩართულია პაროლების შესავსებად</translation>
 <translation id="3701427423622901115">გადაყენება გაცნობიერებულია.</translation>
 <translation id="3704162925118123524">თქვენს მიერ გამოყენებულმა ქსელმა, შესაძლოა მოგთხოვოთ მის გვერდზე შესვლა.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" />-<ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1181,7 +1178,6 @@
 <translation id="401170183602135785">კონვერტი C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF დოკუმენტი, რომელიც შეიცავს {COUNT} გვერდს}other{PDF დოკუმენტი, რომელიც შეიცავს {COUNT} გვერდს}}</translation>
 <translation id="4023431997072828269">ვინაიდან ეს ფორმა იგზავნება დაუცველი კავშირით, თქვენი ინფორმაცია ხილული იქნება სხვებისთვის.</translation>
-<translation id="4024923292610332139">Touch ID-ს გამორთვა პაროლების შესავსებად</translation>
 <translation id="4025913568718019429">Google კონფიდენციალურობის პარამეტრების მართვის ღილაკი, თქვენი Google ანგარიშის კონფიდენციალურობის პარამეტრებზე გადასასვლელად დააჭირეთ კლავიშს Enter</translation>
 <translation id="4030383055268325496">დამატების &amp;მოქმედების გაუქმება</translation>
 <translation id="4031179711345676612">მიკროფონი დაშვებულია</translation>
@@ -1543,7 +1539,6 @@
 <translation id="4900217275619098670">მეცხრე რულონი</translation>
 <translation id="4901778704868714008">შენახვა...</translation>
 <translation id="4905659621780993806">თქვენი ადმინისტრატორი ავტომატურად გადატვირთავს თქვენს მოწყობილობას <ph name="DATE" />-ის <ph name="TIME" />-ზე. მოწყობილობის გადატვირთვამდე შეინახეთ გახსნილი ერთეულები.</translation>
-<translation id="4911007278801291296">TouchID-ს ჩართვა/გამორთვა შეგიძლიათ აქ: <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">ზედა მარცხენა ნაწილის გახვრეტა</translation>
 <translation id="4918221908152712722">დააინსტალირეთ <ph name="APP_NAME" /> (ჩამოტვირთვა აუცილებელი არ არის)</translation>
 <translation id="4923459931733593730">გადახდა</translation>
@@ -1757,7 +1752,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> ითხოვს თქვენთვის შეტყობინებების გამოგზავნას</translation>
 <translation id="5428105026674456456">ესპანური</translation>
 <translation id="5430298929874300616">სანიშნის ამოშლა</translation>
-<translation id="5434423669266814150">Touch ID-ს ჩართვა პაროლების შესავსებად</translation>
 <translation id="5443468954631487277">უკუმიმდევრობა ნაბეჭდი მხარით აღმა</translation>
 <translation id="5447765697759493033">ეს გვერდი არ ითარგმნება</translation>
 <translation id="5452270690849572955"><ph name="HOST_NAME" />-ზე ეს გვერდი ვერ მოიძებნა</translation>

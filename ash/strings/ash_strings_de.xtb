@@ -7,6 +7,7 @@
 <translation id="1024364763893396229"><ph name="NAME" /> speichern</translation>
 <translation id="1032891413405719768">Die Batterie des Eingabestifts ist schwach</translation>
 <translation id="1036073649888683237">Benachrichtigungen unter Einstellungen verwalten</translation>
+<translation id="1036348656032585052">Deaktivieren</translation>
 <translation id="1036672894875463507">Ich bin dein Google Assistant und den ganzen Tag für dich da.
 Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> hinzugefügt</translation>
@@ -100,6 +101,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1447641497144572814">Bildschirmschoner startet</translation>
 <translation id="1455242230282523554">Spracheinstellungen anzeigen</translation>
 <translation id="1460620680449458626">Ton ist aus.</translation>
+<translation id="14648076227129703">Dies erlaubt den Kamerazugriff für <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> sowie alle Apps und Websites mit Kameraberechtigung</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="146902737843070955">Dein Administrator hat diese Änderung angefragt</translation>
 <translation id="147310119694673958">Smartphone-Akku <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -159,6 +161,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1797271123677381264">Passwort vergessen</translation>
 <translation id="181103072419391116">Signalstärke bei <ph name="SIGNAL_STRENGTH" />, von deinem Administrator verwaltet</translation>
 <translation id="1812997170047690955">Was wird auf meinem Bildschirm angezeigt?</translation>
+<translation id="1816896987747843206">Dies erlaubt den Kamerazugriff für alle Apps und Websites mit Kameraberechtigung</translation>
 <translation id="1823280932251546115">Statusleiste, Uhrzeit <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> wurde losgelöst</translation>
 <translation id="1836215606488044471">Assistant (wird geladen…)</translation>
 <translation id="1838895407229022812">Nachtlicht ist ausgeschaltet.</translation>
+<translation id="1854180393107901205">Übertragung beenden</translation>
 <translation id="1862380676329487333">Aktualisieren und abmelden</translation>
 <translation id="1864454756846565995">USB-C-Gerät (Port hinten)</translation>
 <translation id="1869497990620230175">Schnellzugriff auf Dateien</translation>
@@ -597,6 +601,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4316910396681052118">ALLE APPS</translation>
 <translation id="4321179778687042513">Strg</translation>
 <translation id="4322742403972824594">Die Tastenkombination Strg + Alt + Aufwärtspfeil hat sich geändert. Wenn du jetzt die Pos1-Taste benötigst, drücke <ph name="LAUNCHER_KEY_NAME" />-Taste + Linkspfeil.</translation>
+<translation id="4324840740119394760">Dies erlaubt den Kamerazugriff für <ph name="APP_NAME" /> sowie alle Apps und Websites mit Kameraberechtigung</translation>
 <translation id="4333628967105022692">Lacros wird nicht unterstützt, wenn viele Nutzer angemeldet sind.</translation>
 <translation id="4338109981321384717">Lupe</translation>
 <translation id="4351433414020964307">Assistant wird geladen…</translation>
@@ -663,13 +668,13 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox aktiviert</translation>
 <translation id="4665114317261903604">„Bitte nicht stören“ an/aus. <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Deaktiviere den Kamerazugriff auf diesem Gerät, um alle Kameras dauerhaft zu blockieren.</translation>
 <translation id="4666911709726371538">Weitere Apps</translation>
 <translation id="4667099493359681081">„<ph name="FILENAME" />“ wird heruntergeladen</translation>
 <translation id="468293128311738995">Apps von deinem Smartphone</translation>
 <translation id="4690510401873698237">Ablage unten</translation>
 <translation id="4696813013609194136">Gerät mit Elterncode entsperren</translation>
 <translation id="4702647871202761252">Der Datenschutzbildschirm ist momentan deaktiviert</translation>
+<translation id="4706121060329443414">Der Download wird später versucht. Die Sprachdateien werden vorerst zur Verarbeitung an Google gesendet.</translation>
 <translation id="470644585772471629">Farbumkehr</translation>
 <translation id="4717575069099566988">Dein USB-C-Kabel bietet keine Unterstützung für USB4. Dies kann die Geräteleistung beeinträchtigen.</translation>
 <translation id="4730374152663651037">HÄUFIG VERWENDET</translation>
@@ -695,7 +700,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="485592688953820832">Keine Aktion (Pause)</translation>
 <translation id="485634149294284819">Tastaturmenü öffnen</translation>
 <translation id="4860284199500934869">Prüfe deine Netzwerkverbindung, um „<ph name="FILENAME" />“ herunterzuladen</translation>
-<translation id="486056901304535126">Der Download wird später versucht. Sprachaufnahmen werden zur Verarbeitung an Google gesendet, bis der Download abgeschlossen ist.</translation>
 <translation id="4864369630010738180">Anmeldung erfolgt...</translation>
 <translation id="4864648187878336334">Desktop 15</translation>
 <translation id="4868492592575313542">aktiviert</translation>
@@ -790,6 +794,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5356963482258194581">Du kannst zwischen dem dunklen und hellen Design wechseln. Klicke mit der rechten Maustaste auf den Desktop und wähle „Hintergrund &amp; Stil“ aus.</translation>
 <translation id="536019650977002321">Dein Administrator erlaubt keine Audioaufnahmen. Weitere Informationen erhältst du von deinem Administrator.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Diesen Tab aufrufen</translation>
+<translation id="5377367976106153749">Kamerazugriff aktivieren?</translation>
 <translation id="5379115545237091094">Zu viele Versuche</translation>
 <translation id="5391307769715781764">Gespeicherten Desktop ersetzen?</translation>
 <translation id="5393156353051693207">Beliebige Stelle berühren und halten, um Apps neu zu sortieren</translation>
@@ -1176,7 +1181,6 @@ Neuinstallation</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> verwendet gerade dein Mikrofon</translation>
 <translation id="7561982940498449837">Menü schließen</translation>
 <translation id="7564874036684306347">Das Verschieben von Fenstern auf einen anderen Desktop kann zu unerwartetem Verhalten führen. Nachfolgende Benachrichtigungen, Fenster und Dialogfelder werden unter Umständen zwischen den Desktops aufgeteilt.</translation>
-<translation id="7567076708801803118">Möchtest du den Kamerazugriff auf diesem Gerät deaktivieren?</translation>
 <translation id="7569509451529460200">Braille und ChromeVox sind aktiviert</translation>
 <translation id="7573585051776738856">Aktives Fenster rechts fixiert.</translation>
 <translation id="7579778809502851308">Screenshot</translation>

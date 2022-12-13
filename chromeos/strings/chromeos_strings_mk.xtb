@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Откажи го налогот за печатење</translation>
 <translation id="2163937499206714165">Вклучи темен режим</translation>
 <translation id="2180197493692062006">Нешто тргна наопаку. Отворете ја апликацијата повторно.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Ресетирај бројачи на сообраќај</translation>
 <translation id="2212733584906323460">Одредување име</translation>
 <translation id="2217935453350629363">Моментална брзина</translation>
@@ -492,6 +491,7 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Автоматски префрлете се на темна тема на зајдисонце</translation>
+<translation id="5571714952674387371">Преглед и изменување детали</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Скенирај пак</translation>
 <translation id="5583640892426849032">Backspace-копче</translation>
@@ -561,6 +561,7 @@
 <translation id="6189418609903030344">Капацитетот на батеријата се намалува со користењето</translation>
 <translation id="6191293864534840972">Неправилно форматирани сервери за име</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Излези од прозорецот на цел екран</translation>
 <translation id="6223752125779001553">Нема достапни скенери</translation>
 <translation id="6232017090690406397">Батерија</translation>
 <translation id="6235460611964961764">Рачно ресетирајте го потрошениот интернет</translation>
@@ -688,12 +689,12 @@
 <translation id="741244894080940828">конверзија</translation>
 <translation id="7415801143053185905">Многу висока латенција на HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скенирањето е завршено. Скенирана е 1 страница}one{Скенирањето е завршено. Скенирана е {NUMBER_OF_PAGES} страница}other{Скенирањето е завршено. Скенирани се {NUMBER_OF_PAGES} страници}}</translation>
 <translation id="7458970041932198923">Поврзете се на мрежа и повторно вчитајте ја страницата за да ги прегледате и поставите аватарите.</translation>
 <translation id="7469648432129124067">Откриен е портал</translation>
 <translation id="7481312909269577407">Напред</translation>
 <translation id="7487067081878637334">Технологија</translation>
 <translation id="7490813197707563893">MAC-адреса</translation>
+<translation id="7491478667760509108">Излези од лебдечкиот прозорец</translation>
 <translation id="7497215489070763236">Сертификат ЦА на сервер</translation>
 <translation id="7502658306369382406">IPv6-адреса</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -870,6 +871,7 @@
 <translation id="9173638680043580060">Преостанува помалку од една минута</translation>
 <translation id="917720651393141712">Тест</translation>
 <translation id="9188992814426075118">Тастатурата може автоматски да се совпаѓа со тапетот</translation>
+<translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Не може да се стапи во контакт со портал од апликации на Android</translation>
 <translation id="9211490828691860325">Сите работни површини</translation>
 <translation id="932327136139879170">Дома</translation>

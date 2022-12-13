@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">O pacote é inválido. Detalhes "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" está solicitando acesso a um dos seus dispositivos:</translation>
 <translation id="8885905466771744233">Já existe uma chave privada para a extensão especificada. Reutilize essa chave ou exclua-a primeiro.</translation>
+<translation id="9039223174332979184">O administrador desta máquina requer que a extensão <ph name="EXTENSION_NAME" /> tenha, no mínimo, a versão 3 do manifesto.</translation>
 <translation id="907841381057066561">Falha ao criar arquivo zip temporário durante a compactação.</translation>
 <translation id="941543339607623937">Chave privada inválida.</translation>
 </translationbundle>

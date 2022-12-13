@@ -271,6 +271,7 @@
 <translation id="1586541204584340881">ਤੁਸੀਂ ਕਿਹੜੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਸਥਾਪਤ ਕੀਤੀਆਂ ਹੋਈਆਂ ਹਨ</translation>
 <translation id="1588438908519853928">ਸਧਾਰਨ</translation>
 <translation id="1592005682883173041">ਸਥਾਨਕ  ਡਾਟਾ  ਪਹੁੰਚ</translation>
+<translation id="1593359183944365958">270 ਡਿਗਰੀ</translation>
 <translation id="1594030484168838125">ਚੁਣੋ</translation>
 <translation id="1596296697375291157">ਰੋਮਾਂਚਕ, ਅਪਰਾਧਕ ਅਤੇ ਰਹੱਸਮਈ ਫ਼ਿਲਮਾਂ</translation>
 <translation id="1599199147673445968">ਕੀ ਨਵਾਂ ਕਾਰਡ ਹੈ? <ph name="BEGIN_LINK" />ਕਾਰਡ ਦੇ ਵੇਰਵੇ ਦਾਖਲ ਕਰੋ<ph name="END_LINK" /></translation>
@@ -337,6 +338,7 @@
 <translation id="1741613555002899862">DnsOverHttpsMode ਦੇ <ph name="SECURE_DNS_MODE_SECURE" /> ਹੋਣ 'ਤੇ ਨਿਰਧਾਰਤ ਹੋਣਾ ਅਤੇ ਸਤਰ ਦਾ ਵੈਧ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="1745880797583122200">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="1746113442205726301">ਚਿੱਤਰ Y ਸ਼ਿਫਟ</translation>
+<translation id="1746531169546376413">0 ਡਿਗਰੀ</translation>
 <translation id="17513872634828108">ਟੈਬਸ ਖੋਲ੍ਹੋ</translation>
 <translation id="1752021286346845558">ਮੇਲਬਾਕਸ 8</translation>
 <translation id="1753068535428855445">ਡੇਟਿੰਗ ਅਤੇ ਵਿਅਕਤੀਗਤ</translation>
@@ -411,7 +413,6 @@
 <translation id="1958218078413065209">ਤੁਹਾਡਾ ਸਭ ਤੋਂ ਵੱਧ ਸਕੋਰ <ph name="SCORE" /> ਹੈ।</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਕੁਝ ਪੰਨਿਆਂ ਦੇ URL, ਸੀਮਤ ਸਿਸਟਮ ਜਾਣਕਾਰੀ ਅਤੇ ਕੁਝ ਪੰਨਾ ਸਮੱਗਰੀ<ph name="END_WHITEPAPER_LINK" /> Google ਨੂੰ ਭੇਜ ਕੇ ਵੈੱਬ 'ਤੇ ਸੁਰੱਖਿਆ ਨੂੰ ਹਰੇਕ ਲਈ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ। <ph name="BEGIN_PRIVACY_PAGE_LINK" />ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> ਬੁੱਕਮਾਰਕਸ</translation>
-<translation id="1971033026002113380">TouchID ਨਾਲ ਪਾਸਵਰਡ ਸੁਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="1973335181906896915">ਸੀਰੀਅਲਾਈਜ਼ੇਸ਼ਨ ਗੜਬੜ</translation>
 <translation id="1974060860693918893">ਉੱਨਤ</translation>
 <translation id="1975457531113383421">ਇਨਪੁੱਟ ਟ੍ਰੇਅ</translation>
@@ -746,7 +747,6 @@
 <translation id="2881276955470682203">ਕੀ ਕਾਰਡ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="2882949212241984732">ਦੋਹਰੇ ਪੱਲੇ ਵਾਲੀ ਤਹਿ</translation>
 <translation id="2893773853358652045">ਚੌਥਾ ਰੋਲ</translation>
-<translation id="289834758818479772">ਜੇ ਤੁਸੀਂ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਹੋਰਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰਦੇ ਹੋ, ਤਾਂ ਤੁਸੀਂ TouchID ਨੂੰ ਚਾਲੂ ਕਰ ਸਕਦੇ ਹੋ, ਤਾਂ ਕਿ ਜਦੋਂ ਵੀ ਤੁਸੀਂ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ ਤਾਂ ਇਹ ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰ ਸਕੇ</translation>
 <translation id="2900528713135656174">ਵਰਤਾਰਾ ਬਣਾਓ</translation>
 <translation id="2903493209154104877">ਪਤੇ</translation>
 <translation id="290376772003165898">ਕੀ ਪੰਨਾ <ph name="LANGUAGE" /> ਵਿੱਚ ਨਹੀਂ ਹੈ?</translation>
@@ -1061,7 +1061,6 @@
 <translation id="3678529606614285348">ਕਿਸੇ ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਪੰਨਾ ਖੋਲ੍ਹੋ (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਬਾਰੇ ਜਾਣਕਾਰੀ</translation>
 <translation id="3693327506115126094">ਚੁਣੋ ਕਿ ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਿਵੇਂ ਕੀਤੀ ਜਾਵੇ</translation>
-<translation id="3699374065820972102">TouchID ਪਾਸਵਰਡ ਭਰਨ ਲਈ ਚਾਲੂ ਹੈ</translation>
 <translation id="3701427423622901115">ਰੀਸੈੱਟ ਪ੍ਰਵਾਨ ਹੋਇਆ।</translation>
 <translation id="3704162925118123524">ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਨੈੱਟਵਰਕ ਇਹ ਚਾਹ ਸਕਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸਦੇ ਲੌਗ-ਇਨ ਪੰਨੇ 'ਤੇ ਜਾਓ।</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1176,7 +1175,6 @@
 <translation id="401170183602135785">C6 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF ਦਸਤਾਵੇਜ਼ ਵਿੱਚ {COUNT} ਪੰਨਾ ਹੈ}one{PDF ਦਸਤਾਵੇਜ਼ ਵਿੱਚ {COUNT} ਪੰਨਾ ਹੈ}other{PDF ਦਸਤਾਵੇਜ਼ ਵਿੱਚ {COUNT} ਪੰਨੇ ਹਨ}}</translation>
 <translation id="4023431997072828269">ਕਿਉਂਕਿ ਇਸ ਫ਼ਾਰਮ ਨੂੰ ਅਜਿਹੇ ਕਨੈਕਸ਼ਨ ਦੀ ਵਰਤੋਂ ਨਾਲ ਸਪੁਰਦ ਕੀਤਾ ਗਿਆ ਹੈ ਜੋ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ, ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਹੋਰਾਂ ਨੂੰ ਦਿਸੇਗੀ।</translation>
-<translation id="4024923292610332139">ਪਾਸਵਰਡ ਭਰਨ ਲਈ TouchID ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="4025913568718019429">'Google ਪਰਦੇਦਾਰੀ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ' ਬਟਨ, ਆਪਣੀਆਂ Google ਖਾਤਾ ਪਰਦੇਦਾਰੀ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾਣ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="4030383055268325496">&amp;ਜੋੜਨਾ ਅਨਡੂ ਕਰੋ</translation>
 <translation id="4031179711345676612">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
@@ -1538,7 +1536,6 @@
 <translation id="4900217275619098670">ਨੌਵਾਂ ਰੋਲ</translation>
 <translation id="4901778704868714008">ਰੱਖਿਅਤ ਕਰੋ...</translation>
 <translation id="4905659621780993806">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ <ph name="DATE" /> ਨੂੰ <ph name="TIME" /> ਵਜੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੇਗਾ। ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੇ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਣ ਤੋਂ ਪਹਿਲਾਂ, ਖੁੱਲੀ ਹੋਈ ਕਿਸੇ ਵੀ ਆਈਟਮ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ।</translation>
-<translation id="4911007278801291296">ਤੁਸੀਂ <ph name="SETTINGS" /> ਵਿੱਚ ਜਾ ਕੇ TouchID ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="4913987521957242411">ਉੱਪਰ ਖੱਬੇ ਪਾਸੇ ਮੋਰੀ</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ਸਥਾਪਤ ਕਰੋ (ਕੋਈ ਡਾਊਨਲੋਡ ਲੋੜੀਂਦਾ ਨਹੀਂ ਹੈ)</translation>
 <translation id="4923459931733593730">ਭੁਗਤਾਨ ਵਿਧੀ</translation>
@@ -1720,6 +1717,7 @@
 <translation id="5334013548165032829">ਵੇਰਵੇ ਸਹਿਤ ਸਿਸਟਮ ਲੌਗ</translation>
 <translation id="5334145288572353250">ਕੀ ਪਤਾ ਰੱਖਿਅਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="5335920952954443287">ਧੜਕਦਾ ਦਿਲ</translation>
+<translation id="5337569431717511221">Chrome ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਬਟਨ ਵਜੋਂ ਸੈੱਟ ਕਰੋ, Chrome ਨੂੰ ਸਿਸਟਮ ਦੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਵਜੋਂ ਸੈੱਟ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="5340250774223869109">ਐਪਲੀਕੇਸ਼ਨ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="534295439873310000">NFC ਡੀਵਾਈਸਾਂ</translation>
 <translation id="5344579389779391559">ਸ਼ਾਇਦ ਇਸ ਪੰਨੇ 'ਤੇ ਤੁਹਾਡੇ ਤੋਂ ਖਰਚਾ ਲਿਆ ਜਾਵੇ</translation>
@@ -1751,7 +1749,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> ਤੁਹਾਨੂੰ ਸੂਚਨਾਵਾਂ ਭੇਜਣਾ ਚਾਹੁੰਦੀ ਹੈ।</translation>
 <translation id="5428105026674456456">ਸਪੇਨਿਸ਼</translation>
 <translation id="5430298929874300616">ਬੁੱਕਮਾਰਕ ਹਟਾਓ</translation>
-<translation id="5434423669266814150">ਪਾਸਵਰਡ ਭਰਨ ਲਈ TouchID ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5443468954631487277">ਉਲਟੇ ਕ੍ਰਮ ਵਿੱਚ ਪਾਸਾ ਉੱਪਰ ਕੀਤੇ ਹੋਏ</translation>
 <translation id="5447765697759493033">ਇਸ ਸਾਈਟ ਦਾ ਅਨੁਵਾਦ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="5452270690849572955">ਇਸ <ph name="HOST_NAME" /> ਪੰਨੇ ਨੂੰ ਲੱਭਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
@@ -1793,6 +1790,7 @@
 <translation id="5540969246441091044">ਘੁੜਸਵਾਰੀ</translation>
 <translation id="5541086400771735334">ਮੇਲਬਾਕਸ 7</translation>
 <translation id="5541546772353173584">ਈਮੇਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="5543722831081909240">180 ਡਿਗਰੀ</translation>
 <translation id="5545756402275714221">ਤੁਹਾਡੇ ਲਈ ਲੇਖ</translation>
 <translation id="5551890439174915351">100 x 200 ਮਿ.ਮੀ.</translation>
 <translation id="5552137475244467770">Chrome ਨਿਯਮਿਤ ਤੌਰ 'ਤੇ ਆਨਲਾਈਨ ਪ੍ਰਕਾਸ਼ਿਤ ਕੀਤੀਆਂ ਗਈਆਂ ਸੂਚੀਆਂ ਨਾਲ ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰਦਾ ਹੈ। ਅਜਿਹਾ ਕਰਨ ਵੇਲੇ, ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਅਤੇ ਵਰਤੋਂਕਾਰ ਨਾਮ ਇਨਕ੍ਰਿਪਟ ਕੀਤੇ ਜਾਂਦੇ ਹਨ, ਇਸ ਲਈ ਉਹ Google ਸਮੇਤ ਕਿਸੇ ਵੱਲੋਂ ਵੀ ਪੜ੍ਹੇ ਨਹੀਂ ਜਾ ਸਕਦੇ।</translation>
@@ -2180,6 +2178,7 @@
 <translation id="6591833882275308647">ਤੁਹਾਡਾ <ph name="DEVICE_TYPE" /> ਪ੍ਰਬੰਧਿਤ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="6592952801936330159">'ਸਾਈਟ ਸੈਟਿੰਗਾਂ' ਬਟਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ, Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਜਾਜ਼ਤਾਂ ਅਤੇ ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਵਿੱਚ ਸਟੋਰ ਕੀਤੇ ਡਾਟੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="6596325263575161958">ਐਨਕ੍ਰਿਪਸ਼ਨ ਚੋਣਾਂ</translation>
+<translation id="6597665340361269064">90 ਡਿਗਰੀ</translation>
 <translation id="6599642189720630047">ਟਰੈਕ ਕੀਤੇ ਉਤਪਾਦ</translation>
 <translation id="6611723696964473273">ਅਰਥ ਵਿਵਸਥਾ ਦੀਆਂ ਖਬਰਾਂ</translation>
 <translation id="6612010098632894193">ਆਨਲਾਈਨ ਵੀਡੀਓ</translation>
@@ -2412,6 +2411,7 @@
 <translation id="7199278868241956094">ਓਫੀਸ਼ਿਓ</translation>
 <translation id="7201591969684833065">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਹ ਦੇਖ ਸਕਦਾ ਹੈ:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾਓ, ਫਿਰ ਨਿੱਜੀ ਤੌਰ 'ਤੇ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਲਈ ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਖੋਲ੍ਹਣ ਵਾਸਤੇ Enter ਦਬਾਓ</translation>
+<translation id="7203375778433816396">Chrome ਨੂੰ ਸਿਸਟਮ ਦੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਵਜੋਂ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ਸੁਰੱਖਿਆ ਪੈਮਾਨਿਆਂ ਦੀ ਪਾਲਣਾ ਨਹੀਂ ਕਰਦਾ ਹੈ।</translation>
 <translation id="7210993021468939304">ਕੰਟੇਨਰ ਵਿੱਚ Linux ਸਰਗਰਮੀ, ਅਤੇ ਕੰਨਟੇਨਰ ਵਿੱਚ Linux ਐਪਾਂ ਨੂੰ ਸਥਾਪਤ ਕੀਤਾ ਅਤੇ ਚਲਾਇਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="721197778055552897">ਇਸ ਸਮੱਸਿਆ ਬਾਰੇ <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" />।</translation>
@@ -2559,6 +2559,7 @@
 <translation id="7537536606612762813">ਲਾਜ਼ਮੀ</translation>
 <translation id="7542403920425041731">ਤੁਹਾਡੇ ਵੱਲੋਂ ਪੁਸ਼ਟੀ ਕੀਤੇ ਜਾਣ 'ਤੇ, ਤੁਹਾਡੇ ਕਾਰਡ ਦੇ ਵੇਰਵੇ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝੇ ਕੀਤੇ ਜਾਣਗੇ।</translation>
 <translation id="7542995811387359312">ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਦੀ ਜਾਣਕਾਰੀ ਨੂੰ ਸਵੈਚਲਿਤ ਢੰਗ ਨਾਲ ਭਰਨ ਦੀ ਵਿਸ਼ੇਸ਼ਤਾ ਬੰਦ ਹੈ ਕਿਉਂਕਿ ਇਹ ਫ਼ਾਰਮ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰਦਾ ਹੈ।</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" /> ਐਪ ਸ਼ੁਰੂ ਹੋ ਰਹੀ ਹੈ</translation>
 <translation id="7548892272833184391">ਕਨੈਕਸ਼ਨ ਸੰਬੰਧੀ ਗੜਬੜੀਆਂ ਠੀਕ ਕਰੋ</translation>
 <translation id="7549584377607005141">ਇਸ ਵੈੱਬ-ਪੰਨੇ ਲਈ ਉਹ ਡਾਟਾ ਲੋੜੀਂਦਾ ਹੈ ਜੋ ਤੁਸੀਂ ਡਿਸਪਲੇ ਕਰਨ ਲਈ ਪਹਿਲਾਂ ਦਰਜ ਕੀਤਾ ਸੀ। ਤੁਸੀਂ ਇਹ ਡਾਟਾ ਦੁਬਾਰਾ ਭੇਜ ਸਕਦੇ ਹੋ, ਪਰ ਅਜਿਹਾ ਕਰਕੇ ਤੁਸੀਂ ਐਕਸ਼ਨ ਨੂੰ ਦੁਹਰਾਓਗੇ ਜੋ ਇਸ ਪੰਨੇ ਵੱਲੋਂ ਪਹਿਲਾਂ ਵੀ ਕਾਰਗੁਜ਼ਾਰੀ ਕੀਤੀ ਗਈ ਹੈ।</translation>
 <translation id="7550637293666041147">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ Chrome ਵਰਤੋਂਕਾਰ ਨਾਮ</translation>
@@ -2744,6 +2745,7 @@
 <translation id="8009843239480947060">10 x 11 ਇੰਚ</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{ਇਸ ਕਾਰਡ ਅਤੇ ਇਸਦੇ ਬਿਲਿੰਗ ਪਤੇ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ। <ph name="USER_EMAIL" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ ਤੁਸੀਂ ਇਸ ਨੂੰ ਵਰਤ ਸਕੋਗੇ।}one{ਇਸ ਕਾਰਡ ਅਤੇ ਇਸਦੇ ਬਿਲਿੰਗ ਪਤੇ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ। <ph name="USER_EMAIL" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ ਤੁਸੀਂ ਇਸ ਨੂੰ ਵਰਤ ਸਕੋਗੇ।}other{ਇਹਨਾਂ ਕਾਰਡਾਂ ਅਤੇ ਇਹਨਾਂ ਦੇ ਬਿਲਿੰਗ ਪਤਿਆਂ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ। <ph name="USER_EMAIL" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ ਤੁਸੀਂ ਇਹਨਾਂ ਨੂੰ ਵਰਤ ਸਕੋਗੇ।}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ਨੂੰ ਸਿਸਟਮ ਦੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਵਜੋਂ ਸੈੱਟ ਕਰਨ ਲਈ Tab ਦਬਾ ਕੇ ਫਿਰ Enter ਦਬਾਓ</translation>
 <translation id="8025119109950072390">ਇਸ ਸਾਈਟ 'ਤੇ ਹਮਲਾਵਾਰ ਸਾਫ਼ਟਵੇਅਰ ਸਥਾਪਤ ਕਰਕੇ ਜਾਂ ਤੁਹਾਡੀ ਨਿੱਜੀ ਜਾਣਕਾਰੀ (ਉਦਾਹਰਨ ਲਈ, ਪਾਸਵਰਡ, ਸੁਨੇਹੇ ਜਾਂ ਕ੍ਰੈਡਿਟ ਕਾਰਡ) ਦਾ ਖੁਲਾਸਾ ਕਰਨ ਵਰਗੇ ਖਤਰਨਾਕ ਕੰਮ ਕਰਕੇ ਤੁਹਾਡੇ ਨਾਲ ਚਾਲਬਾਜ਼ੀ ਕਰ ਸਕਦੇ ਹਨ।</translation>
 <translation id="8026334261755873520">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਹਟਾਓ</translation>
 <translation id="8027077570865220386">ਟ੍ਰੇਅ 15</translation>

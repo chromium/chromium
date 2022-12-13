@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">மறைநிலைப் பக்கங்கள் அனைத்தையும் மூடவா?</translation>
 <translation id="1657719826150349398">தாவலைக் கீழே நகர்த்து</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவல்}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள்}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்துள்ள <ph name="TABS_COUNT_ONE" /> பக்கத்தை புக்மார்க் செய்யும்}other{தேர்ந்தெடுத்துள்ள <ph name="TABS_COUNT_MANY" /> பக்கங்களை புக்மார்க் செய்யும்}}</translation>
 <translation id="2118649612461486615">ஸ்டோர் தகவல்</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> தளத்தில் தற்போதைய விலை: <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{பக்கத்தைப் பிரி}other{பக்கங்களைப் பிரி}}</translation>
 <translation id="2277224997687551299">குழுவின் பெயரை மாற்று</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> தாவலைக் குழுவிலிருந்து அகற்றும்.}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> தாவல்களைக் குழுவிலிருந்து அகற்றும்.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{பக்கத்தை புக்மார்க் செய்}other{பக்கங்களை புக்மார்க் செய்}}</translation>
 <translation id="2479148705183875116">அமைப்புகளுக்குச் செல்லவும்</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவலைச் சுருக்கும்.}other{<ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ள பக்கக் குழுவைச் சுருக்கும்.}}</translation>
 <translation id="2569352796411618312">பரிந்துரை: உங்களின் <ph name="NUMBER_OF_TABS" /> தாவல்கள் சமீபத்தில் பயன்படுத்தவில்லை. அவற்றை மூட வேண்டுமா?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">தாவலை மேலே நகர்த்து</translation>
 <translation id="8304833501377495048">உலாவிப்பக்கப் பட்டியை மீண்டும் காட்டவா?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> தாவலை மூடும்}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> தாவல்களை மூடும்}}</translation>
+<translation id="8398929769197326728">புதிய ஃபோல்டர் - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> பக்கங்கள் உள்ள பக்கக் குழுவை விரிவாக்கும்.</translation>
 <translation id="8714939927607906138">குறைவான விலை</translation>
 <translation id="8749939518995770034">மூடப்பட்டுள்ள உலாவிப்பக்கப் பட்டி</translation>

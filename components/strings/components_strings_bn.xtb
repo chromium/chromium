@@ -414,7 +414,6 @@
 <translation id="1958218078413065209">আপনার সর্বোচ্চ স্কোর <ph name="SCORE" />।</translation>
 <translation id="1959001866257244765">Google-এ <ph name="BEGIN_WHITEPAPER_LINK" />আপনার দেখা পৃষ্ঠাগুলির ইউআরএল, সিস্টেমের কিছু সীমিত তথ্য এবং পৃষ্ঠার কিছু কন্টেন্ট<ph name="END_WHITEPAPER_LINK" /> পাঠিয়ে ওয়েবে সকলের জন্য নিরাপত্তা উন্নত করতে সাহায্য করুন। <ph name="BEGIN_PRIVACY_PAGE_LINK" />গোপনীয়তা নীতি<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> বুকমার্ক</translation>
-<translation id="1971033026002113380">TouchID-এর মাধ্যমে পাসওয়ার্ড সুরক্ষিত করুন</translation>
 <translation id="1973335181906896915">ধারাবাহিকতাতে ত্রুটি</translation>
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1975457531113383421">ইনপুট ট্রে</translation>
@@ -749,7 +748,6 @@
 <translation id="2881276955470682203">কার্ড সেভ করবেন?</translation>
 <translation id="2882949212241984732">ডবল-গেট ফোল্ড</translation>
 <translation id="2893773853358652045">Fourth Roll</translation>
-<translation id="289834758818479772">আপনি অন্যদের সাথে এই ডিভাইসটি শেয়ার করলে, আপনি যখনই একটি সেভ করা পাসওয়ার্ড ব্যবহার করেন তখন আপনার পরিচয় যাচাই করতে TouchID চালু করতে পারেন</translation>
 <translation id="2900528713135656174">ইভেন্ট তৈরি করুন</translation>
 <translation id="2903493209154104877">ঠিকানা</translation>
 <translation id="290376772003165898">পৃষ্ঠাটি <ph name="LANGUAGE" /> ভাষায় নয়?</translation>
@@ -1067,7 +1065,6 @@
 <translation id="3678529606614285348">নতুন ছদ্মবেশী উইন্ডোতে (Ctrl-Shift-N) করে একটি পৃষ্ঠা খুলুন</translation>
 <translation id="3681007416295224113">সার্টিফিকেট তথ্য</translation>
 <translation id="3693327506115126094">আপনার পরিচয় কীভাবে যাচাই করবেন তা বেছে নিন</translation>
-<translation id="3699374065820972102">পাসওয়ার্ড পূরণ করার জন্য TouchID চালু করা আছে</translation>
 <translation id="3701427423622901115">সব এক্সপেরিমেন্ট রিসেট ভ্যালুতে সেট করা হয়েছে, Chrome রিস্টার্ট করার পর এই পরিবর্তনগুলি প্রয়োগ করা হবে।</translation>
 <translation id="3704162925118123524">আপনি যে নেটওয়ার্কটি ব্যবহার করছেন সেটির জন্য অপনাকে এটির লগ-ইন পৃষ্ঠাতে যেতে হতে পরে৷</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1182,7 +1179,6 @@
 <translation id="401170183602135785">এনভেলপ C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{পিডিএফ ডকুমেন্টে {COUNT}টি পৃষ্ঠা আছে}one{পিডিএফ ডকুমেন্টে {COUNT}টি পৃষ্ঠা আছে}other{পিডিএফ ডকুমেন্টে {COUNT}টি পৃষ্ঠা আছে}}</translation>
 <translation id="4023431997072828269">এই ফর্মটি এমন কানেকশন ব্যবহার করে জমা দেওয়া হয়েছে যা নিরাপদ নয়, তাই আপনার তথ্য অন্যান্য ব্যবহারকারীরা দেখতে পাবেন।</translation>
-<translation id="4024923292610332139">পাসওয়ার্ড পূরণের জন্য TouchID বন্ধ করুন</translation>
 <translation id="4025913568718019429">'Google-এর গোপনীয়তা সেটিংস ম্যানেজ করুন' বোতাম , আপনার Google অ্যাকাউন্টের গোপনীয়তা সেটিংসে যেতে Enter প্রেস করুন</translation>
 <translation id="4030383055268325496">&amp;যোগ করাকে পূর্বাবস্থায় ফেরান</translation>
 <translation id="4031179711345676612">মাইক্রোফোন ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
@@ -1544,7 +1540,6 @@
 <translation id="4900217275619098670">Ninth Roll</translation>
 <translation id="4901778704868714008">সেভ করুন...</translation>
 <translation id="4905659621780993806"><ph name="DATE" />-এ <ph name="TIME" />-এ অ্যাডমিনিস্ট্রেটর অটোমেটিক আপনার ডিভাইস রিস্টার্ট করবে। ডিভাইস রিস্টার্ট হওয়ার আগে খোলা আছে এমন যেকোনও আইটেম সেভ করুন।</translation>
-<translation id="4911007278801291296">আপনি <ph name="SETTINGS" />-এ TouchID চালু বা বন্ধ করতে পারবেন</translation>
 <translation id="4913987521957242411">উপরের বাঁদিকে পাঞ্চ</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ইনস্টল করুন (ডাউনলোডের প্রয়োজন নেই)</translation>
 <translation id="4923459931733593730">অর্থপ্রদান</translation>
@@ -1726,6 +1721,7 @@
 <translation id="5334013548165032829">বিস্তারিত সিস্টেম লগ</translation>
 <translation id="5334145288572353250">ঠিকানা সেভ করবেন?</translation>
 <translation id="5335920952954443287">স্পন্দিত হৃদয়</translation>
+<translation id="5337569431717511221">Chrome-কে ডিফল্ট ব্রাউজার বোতাম হিসেবে সেট করুন, Chrome-কে সিস্টেমের ডিফল্ট ব্রাউজার হিসেবে সেট করতে Enter প্রেস করুন</translation>
 <translation id="5340250774223869109">অ্যাপ্লিকেশনটি ব্লক করা আছে</translation>
 <translation id="534295439873310000">NFC ডিভাইস</translation>
 <translation id="5344579389779391559">এই পৃষ্ঠাতে আপনাকে চার্জ করা হতে পারে</translation>
@@ -1757,7 +1753,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> আপনাকে বিজ্ঞপ্তি পাঠাতে চায়</translation>
 <translation id="5428105026674456456">স্প্যানিশ</translation>
 <translation id="5430298929874300616">বুকমার্ক সরান</translation>
-<translation id="5434423669266814150">পাসওয়ার্ড পূরণ করার জন্য TouchID চালু করুন</translation>
 <translation id="5443468954631487277">রিভার্স অর্ডার, সামনের দিক উপরে</translation>
 <translation id="5447765697759493033">এই সাইটটি অনুবাদ করা হবে না</translation>
 <translation id="5452270690849572955">এই <ph name="HOST_NAME" /> পৃষ্ঠাটি পাওয়া যাচ্ছে না</translation>
@@ -2420,6 +2415,7 @@
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">আপনার অ্যাডমিনিস্ট্রেটর দেখতে পাবেন:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, গোপনে ব্রাউজিংয়ের জন্য নতুন ছদ্মবেশী ট্যাব খুলতে প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
+<translation id="7203375778433816396">Chrome-কে সিস্টেমের ডিফল্ট ব্রাউজার হিসেবে সেট করুন</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> নিরাপত্তা মান মেনে চলে না।</translation>
 <translation id="7210993021468939304">কন্টেনারের মধ্যে Linux অ্যাক্টিভিটি দেখা যাবে এবং কন্টেনারের মধ্যেই Linux অ্যাপ ইনস্টল করা ও চালানো যাবে</translation>
 <translation id="721197778055552897">এই সমস্যাটি সম্পর্কে <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" />৷</translation>
@@ -2567,6 +2563,7 @@
 <translation id="7537536606612762813">বাধ্যতামূলক</translation>
 <translation id="7542403920425041731">আপনি নিশ্চিত করলে আপনার কার্ডের বিবরণ এই সাইটের সাথে শেয়ার করা হবে।</translation>
 <translation id="7542995811387359312">স্বয়ংক্রিয় ক্রেডিট কার্ড পূরণটি অক্ষম রয়েছে কারণ এই ফর্মটি কোনও সুরক্ষিত সংযোগ ব্যবহার করে না৷</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" /> শুরু হচ্ছে</translation>
 <translation id="7548892272833184391">কানেকশনের সমস্যার সমাধান করুন</translation>
 <translation id="7549584377607005141">ঠিকঠাক ডিসপ্লে করার জন্য এই ওয়েবপৃষ্ঠার আপনার আগে দেওয়া ডেটা প্রযোজন৷ আপনি এই ডেটাটি আবার পাঠাতে পারেন, কিন্তু এমনটি করে আপনি যেকোনো পদক্ষেপের পুনরাবৃত্তি করবেন যা এই পৃষ্ঠাটি আগেই সম্পাদনা করেছে৷</translation>
 <translation id="7550637293666041147">আপনার ডিভাইসের ব্যবহারকারীর নাম এবং Chrome-এর ব্যবহারকারীর নাম</translation>
@@ -2752,6 +2749,7 @@
 <translation id="8009843239480947060">১০ x ১১ ইঞ্চি</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{এই কার্ড ও সেটির বিলিং ঠিকানা সেভ করা হবে। <ph name="USER_EMAIL" />-এ সাইন-ইন করে থাকা অবস্থায় আপনি সেটি ব্যবহার করতে পারবেন।}one{এই কার্ডগুলি ও সেগুলির বিলিং ঠিকানা সেভ করা হবে। <ph name="USER_EMAIL" />-এ সাইন-ইন করে থাকা অবস্থায় আপনি সেগুলি ব্যবহার করতে পারবেন।}other{এই কার্ডগুলি ও সেগুলির বিলিং ঠিকানা সেভ করা হবে। <ph name="USER_EMAIL" />-এ সাইন-ইন করে থাকা অবস্থায় আপনি সেগুলি ব্যবহার করতে পারবেন।}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-কে সিস্টেমের ডিফল্ট ব্রাউজার হিসেবে সেট করতে ট্যাব তারপর Enter প্রেস করুন</translation>
 <translation id="8025119109950072390">Attackers on this site may trick you into doing something dangerous like installing software or revealing your personal information (for example, passwords, phone numbers, or credit cards).</translation>
 <translation id="8026334261755873520">ব্রাউজিং ডেটা সাফ করুন</translation>
 <translation id="8027077570865220386">ট্রে ১৫</translation>

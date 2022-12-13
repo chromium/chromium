@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Tüm gizli sekmeler kapatılsın mı?</translation>
 <translation id="1657719826150349398">Sekmeyi aşağı taşı</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme}other{<ph name="TABS_COUNT_MANY" /> sekme}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Seçili <ph name="TABS_COUNT_ONE" /> sekmeye yer işareti koy}other{Seçili <ph name="TABS_COUNT_MANY" /> sekmeye yer işareti koy}}</translation>
 <translation id="2118649612461486615">Mağaza bilgileri</translation>
 <translation id="2162620598375156287">Şimdi <ph name="SOURCE_WEBSITE" /> sitesinde <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Sekme grubunu iptal et}other{Sekme grubunu iptal et}}</translation>
 <translation id="2277224997687551299">Grup adını düzenle</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekmeyi gruptan kaldır.}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekmeyi gruptan kaldır.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Sekmeye yer işareti koy}other{Sekmelere yer işareti koy}}</translation>
 <translation id="2479148705183875116">Ayarlar'a git</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeyi daralt.}other{<ph name="TABS_COUNT_MANY" /> sekmeli sekme grubunu daralt.}}</translation>
 <translation id="2569352796411618312">Öneri: <ph name="NUMBER_OF_TABS" /> sekmeyi son zamanlarda hiç kullanmadınız. Bunlar kapatılsın mı?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Sekmeyi yukarı taşı</translation>
 <translation id="8304833501377495048">Sekme şeridi tekrar gösterilmesin mi?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekmeyi kapat}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekmeyi kapat}}</translation>
+<translation id="8398929769197326728">Yeni Klasör - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> sekmeli sekme grubunu genişlet.</translation>
 <translation id="8714939927607906138">Daha düşük fiyat</translation>
 <translation id="8749939518995770034">Sekme şeridi kapalı</translation>

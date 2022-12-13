@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Uždaryti visus inkognito skirtukus?</translation>
 <translation id="1657719826150349398">Perkelti skirtuką į apačią</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skirtukas}one{<ph name="TABS_COUNT_MANY" /> skirtukas}few{<ph name="TABS_COUNT_MANY" /> skirtukai}many{<ph name="TABS_COUNT_MANY" /> skirtuko}other{<ph name="TABS_COUNT_MANY" /> skirtukų}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Pažymėti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką}one{Pažymėti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką}few{Pažymėti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus}many{Pažymėti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko}other{Pažymėti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų}}</translation>
 <translation id="2118649612461486615">Parduotuvės informacija</translation>
 <translation id="2162620598375156287">Dabar <ph name="CURRENT_PRICE" /> svetainėje <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Išgrupuoti skirtuką}one{Išgrupuoti skirtukus}few{Išgrupuoti skirtukus}many{Išgrupuoti skirtukus}other{Išgrupuoti skirtukus}}</translation>
 <translation id="2277224997687551299">Redaguoti grupės pavadinimą</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Pašalinti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką iš grupės.}one{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką iš grupės.}few{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus iš grupės.}many{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko iš grupės.}other{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų iš grupės.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Pažymėti skirtuką}one{Pažymėti skirtukus}few{Pažymėti skirtukus}many{Pažymėti skirtukus}other{Pažymėti skirtukus}}</translation>
 <translation id="2479148705183875116">Eiti į nustatymus</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Sutraukti <ph name="TABS_COUNT_ONE" /> skirtuką.}one{Sutraukti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukas.}few{Sutraukti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukai.}many{Sutraukti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtuko.}other{Sutraukti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukų.}}</translation>
 <translation id="2569352796411618312">Pasiūlymas: pastaruoju metu nebuvo naudojama <ph name="NUMBER_OF_TABS" /> skirtuk. Uždaryti juos?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Perkelti skirtuką į viršų</translation>
 <translation id="8304833501377495048">Neberodyti šios skirtuko juostelės?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Uždaryti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką}one{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką}few{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus}many{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko}other{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų}}</translation>
+<translation id="8398929769197326728">Naujas aplankas – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Išskleisti skirtukų grupę, kurioje yra tiek skirtukų: <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="8714939927607906138">Žemesnė kaina</translation>
 <translation id="8749939518995770034">Uždaryta skirtuko juostelė</translation>

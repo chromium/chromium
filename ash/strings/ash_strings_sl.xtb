@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">Shranite napravo <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Baterija pisala je skoraj izpraznjena</translation>
 <translation id="1036073649888683237">Če želite upravljati obvestila, odprite nastavitve</translation>
+<translation id="1036348656032585052">Izklop</translation>
 <translation id="1036672894875463507">Sem vaš Pomočnik Google – ves dan na razpolago, da vam priskočim na pomoč.
 Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1037492556044956303">Dodana je bila naprava <ph name="DEVICE_NAME" /></translation>
@@ -100,6 +101,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1447641497144572814">Začetek ohranjevalnika zaslona</translation>
 <translation id="1455242230282523554">Pokaži jezikovne nastavitve</translation>
 <translation id="1460620680449458626">Glasnost je utišana.</translation>
+<translation id="14648076227129703">To omogoča dostop do fotoaparata za aplikaciji <ph name="APP1_NAME" /> in <ph name="APP2_NAME" /> ter vse aplikacije in spletna mesta z dovoljenjem za kamero.</translation>
 <translation id="1467432559032391204">V levo</translation>
 <translation id="146902737843070955">To spremembo je zahteval vaš skrbnik.</translation>
 <translation id="147310119694673958">Baterija telefona <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -159,6 +161,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1797271123677381264">Pozabljeno geslo</translation>
 <translation id="181103072419391116">Moč signala je <ph name="SIGNAL_STRENGTH" />, upravlja ga vaš skrbnik</translation>
 <translation id="1812997170047690955">Kaj je na zaslonu?</translation>
+<translation id="1816896987747843206">To omogoča dostop do kamere za vse aplikacije in spletna mesta, ki imajo dovoljenje za kamero.</translation>
 <translation id="1823280932251546115">Vrstica stanja, čas <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />,
@@ -172,6 +175,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1830308660060964064">Element <ph name="ITEM_TITLE" /> je bil odpet</translation>
 <translation id="1836215606488044471">Pomočnik (nalaganje ...)</translation>
 <translation id="1838895407229022812">Nočna svetloba je izklopljena.</translation>
+<translation id="1854180393107901205">Ustavi predvajanje</translation>
 <translation id="1862380676329487333">Posodobi in odjavi</translation>
 <translation id="1864454756846565995">Naprava USB-C (vrata zadaj)</translation>
 <translation id="1869497990620230175">Hitre datoteke</translation>
@@ -598,6 +602,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4316910396681052118">VSE APLIKACIJE</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Bližnjica na tipkovnici ctrl + alt + puščica gor je spremenjena. Če želite uporabiti tipko Home, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in puščico levo.</translation>
+<translation id="4324840740119394760">To omogoča dostop do kamere za aplikacijo <ph name="APP_NAME" /> in vse aplikacije ter spletna mesta z dovoljenjem za kamero.</translation>
 <translation id="4333628967105022692">Lacros ni podprt, če je prijavljenih več uporabnikov.</translation>
 <translation id="4338109981321384717">Povečevalno steklo</translation>
 <translation id="4351433414020964307">Pomočnik se nalaga ...</translation>
@@ -664,13 +669,13 @@ Priklopite napravo v vir napajanja.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Omogočen je ChromeVox</translation>
 <translation id="4665114317261903604">Preklop načina »ne moti«. <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Izklopite dostop do kamere v tej napravi, če želite ves čas blokirati vse kamere.</translation>
 <translation id="4666911709726371538">Več aplikacij</translation>
 <translation id="4667099493359681081">Prenašanje datoteke <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Aplikacije iz telefona</translation>
 <translation id="4690510401873698237">Polica na dnu</translation>
 <translation id="4696813013609194136">Odklepanje naprave s kodo starša</translation>
 <translation id="4702647871202761252">Zaslon za zasebnost je izklopljen</translation>
+<translation id="4706121060329443414">Poskus prenosa bo izveden pozneje. Za zdaj bo govor poslan Googlu v obdelavo.</translation>
 <translation id="470644585772471629">Inverzija barv</translation>
 <translation id="4717575069099566988">Kabel USB-C ne podpira protokola USB4. Delovanje naprave bo morda omejeno.</translation>
 <translation id="4730374152663651037">POGOSTO UPORABLJENE</translation>
@@ -696,7 +701,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="485592688953820832">Brez dejanj (zaustavitev)</translation>
 <translation id="485634149294284819">Odpiranje menija za tipkovnico</translation>
 <translation id="4860284199500934869">Preverite omrežno povezavo za prenos datoteke <ph name="FILENAME" />.</translation>
-<translation id="486056901304535126">Poskus prenosa bo izveden pozneje. Govor bo poslan Googlu v obdelavo, dokler prenos ne bo dokončan.</translation>
 <translation id="4864369630010738180">Prijavljanje ...</translation>
 <translation id="4864648187878336334">Namizje 15</translation>
 <translation id="4868492592575313542">aktivirano</translation>
@@ -791,6 +795,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5356963482258194581">Preklopite med temno in svetlo temo. Z desnim gumbom kliknite namizje in izberite Zaslonsko ozadje in slog.</translation>
 <translation id="536019650977002321">Skrbnik ne dovoli zajemanja zvoka. Če želite več informacij, se obrnite na skrbnika.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Pomik na ta zavihek</translation>
+<translation id="5377367976106153749">Želite vklopiti dostop do kamere?</translation>
 <translation id="5379115545237091094">Preveč poskusov</translation>
 <translation id="5391307769715781764">Želite zamenjati shranjeno namizje?</translation>
 <translation id="5393156353051693207">Če želite preurediti aplikacije, se kjer koli dotaknite in pridržite.</translation>
@@ -1177,7 +1182,6 @@ Nova namestitev</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> trenutno uporablja vaš mikrofon.</translation>
 <translation id="7561982940498449837">Zapri meni</translation>
 <translation id="7564874036684306347">Če okna premaknete na drugo namizje, lahko pride do nepričakovanega delovanja. Nadaljnja obvestila, okna in pogovorna okna so lahko razdeljena med namizji.</translation>
-<translation id="7567076708801803118">Ali želite v tej napravi izklopiti dostop do kamere?</translation>
 <translation id="7569509451529460200">Omogočena sta braillova pisava in ChromeVox</translation>
 <translation id="7573585051776738856">Aktivno okno je zasidrano na desni.</translation>
 <translation id="7579778809502851308">Zajemanje slike</translation>

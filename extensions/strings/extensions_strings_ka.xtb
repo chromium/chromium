@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">პაკეტი არასწორია. დეტალები: „<ph name="ERROR_MESSAGE" />“-ზე.</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />“ თქვენს ერთ-ერთ მოწყობილობაზე წვდომას ითხოვს:</translation>
 <translation id="8885905466771744233">კერძო გასაღები მითითებული გაფართოებისთვის უკვე არსებობს. გამოიყენეთ ის გასაღები ან ჯერ წაშალეთ იგი.</translation>
+<translation id="9039223174332979184">ამ მოწყობილობის ადმინისტრატორი მოითხოვს, რომ <ph name="EXTENSION_NAME" />-ის აღწერის ფაილის ვერსია იყოს მინიმუმ 3.</translation>
 <translation id="907841381057066561">დროებითი zip ფაილი ვერ შეიქმნა ჩალაგების დროს.</translation>
 <translation id="941543339607623937">არასწორი პირადი გასაღები.</translation>
 </translationbundle>

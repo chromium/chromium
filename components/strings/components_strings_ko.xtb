@@ -271,6 +271,7 @@
 <translation id="1586541204584340881">내가 설치한 확장 프로그램</translation>
 <translation id="1588438908519853928">일반</translation>
 <translation id="1592005682883173041">로컬 데이터 액세스</translation>
+<translation id="1593359183944365958">270도</translation>
 <translation id="1594030484168838125">선택</translation>
 <translation id="1596296697375291157">스릴러, 범죄 및 미스터리 영화</translation>
 <translation id="1599199147673445968">새 카드인가요? <ph name="BEGIN_LINK" />카드 세부정보 입력<ph name="END_LINK" /></translation>
@@ -337,6 +338,7 @@
 <translation id="1741613555002899862">DnsOverHttpsMode가 <ph name="SECURE_DNS_MODE_SECURE" />일 때 반드시 지정되어야 하며 유효한 문자열이어야 합니다.</translation>
 <translation id="1745880797583122200">관리 대상 브라우저입니다</translation>
 <translation id="1746113442205726301">이미지 Y 시프트</translation>
+<translation id="1746531169546376413">0도</translation>
 <translation id="17513872634828108">열린 탭</translation>
 <translation id="1752021286346845558">메일박스 8</translation>
 <translation id="1753068535428855445">데이트 및 결혼 정보</translation>
@@ -411,7 +413,6 @@
 <translation id="1958218078413065209">최고 점수는 <ph name="SCORE" />점입니다.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />방문한 일부 페이지의 URL, 제한된 시스템 정보, 일부 페이지 콘텐츠<ph name="END_WHITEPAPER_LINK" />를 Google에 전송하여 모든 웹 사용자를 위해 보안을 강화하는 데 참여해 주세요. <ph name="BEGIN_PRIVACY_PAGE_LINK" />개인정보처리방침<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> 북마크</translation>
-<translation id="1971033026002113380">TouchID로 비밀번호 보호</translation>
 <translation id="1973335181906896915">일련화 오류</translation>
 <translation id="1974060860693918893">고급</translation>
 <translation id="1975457531113383421">입력 트레이</translation>
@@ -746,7 +747,6 @@
 <translation id="2881276955470682203">카드를 저장하시겠습니까?</translation>
 <translation id="2882949212241984732">더블 게이트 폴드</translation>
 <translation id="2893773853358652045">4번째 롤</translation>
-<translation id="289834758818479772">이 기기를 다른 사용자와 공유하는 경우, TouchID를 사용 설정하면 저장된 비밀번호를 사용할 때마다 본인 인증이 완료됩니다.</translation>
 <translation id="2900528713135656174">일정 만들기</translation>
 <translation id="2903493209154104877">주소</translation>
 <translation id="290376772003165898">페이지 언어가 <ph name="LANGUAGE" />가 아닌가요?</translation>
@@ -1064,7 +1064,6 @@
 <translation id="3678529606614285348">새 시크릿 창에서 페이지 열기(Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">인증서 정보</translation>
 <translation id="3693327506115126094">본인 인증 방법 선택</translation>
-<translation id="3699374065820972102">비밀번호 입력 시 TouchID 사용</translation>
 <translation id="3701427423622901115">재설정이 확인되었습니다.</translation>
 <translation id="3704162925118123524">사용 중인 네트워크에서 로그인 페이지 방문을 요청할 수 있습니다.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1179,7 +1178,6 @@
 <translation id="401170183602135785">봉투 C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT}페이지로 이루어진 PDF 문서}other{{COUNT}페이지로 이루어진 PDF 문서}}</translation>
 <translation id="4023431997072828269">안전하지 않은 연결을 통해 이 양식이 제출되므로 내 정보가 다른 사용자에게 표시됩니다.</translation>
-<translation id="4024923292610332139">비밀번호 입력 시 TouchID 사용 중지</translation>
 <translation id="4025913568718019429">Google 개인 정보 보호 설정 관리 버튼, Google 계정 개인 정보 보호 설정 페이지를 방문하려면 Enter를 누르세요</translation>
 <translation id="4030383055268325496">추가 실행 취소(&amp;U)</translation>
 <translation id="4031179711345676612">마이크 허용됨</translation>
@@ -1541,7 +1539,6 @@
 <translation id="4900217275619098670">9번째 롤</translation>
 <translation id="4901778704868714008">저장...</translation>
 <translation id="4905659621780993806">관리자가 <ph name="DATE" /> <ph name="TIME" />에 기기를 자동으로 다시 시작합니다. 기기가 다시 시작되기 전에 실행 중인 항목을 저장하세요.</translation>
-<translation id="4911007278801291296"><ph name="SETTINGS" />에서 TouchID를 사용 또는 사용 중지할 수 있습니다.</translation>
 <translation id="4913987521957242411">왼쪽 상단 펀칭</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> 설치(다운로드 필요 없음)</translation>
 <translation id="4923459931733593730">결제</translation>
@@ -1723,6 +1720,7 @@
 <translation id="5334013548165032829">세부 시스템 로그</translation>
 <translation id="5334145288572353250">주소를 저장하시겠습니까?</translation>
 <translation id="5335920952954443287">두근거리는 하트</translation>
+<translation id="5337569431717511221">Chrome을 기본 브라우저로 설정하는 버튼, Enter 키를 눌러 Chrome을 시스템 기본 브라우저로 설정</translation>
 <translation id="5340250774223869109">애플리케이션이 차단됨</translation>
 <translation id="534295439873310000">NFC 기기</translation>
 <translation id="5344579389779391559">이 페이지에서 금액을 청구할 수 있습니다.</translation>
@@ -1754,7 +1752,6 @@
 <translation id="5426179911063097041"><ph name="SITE" />에서 알림을 보내려고 합니다.</translation>
 <translation id="5428105026674456456">스페인어</translation>
 <translation id="5430298929874300616">북마크 삭제</translation>
-<translation id="5434423669266814150">비밀번호 입력 시 TouchID 사용</translation>
 <translation id="5443468954631487277">역순으로 인쇄면이 위를 향하게</translation>
 <translation id="5447765697759493033">이 사이트는 번역되지 않습니다.</translation>
 <translation id="5452270690849572955"><ph name="HOST_NAME" /> 페이지를 찾을 수 없음</translation>
@@ -1796,6 +1793,7 @@
 <translation id="5540969246441091044">승마</translation>
 <translation id="5541086400771735334">메일박스 7</translation>
 <translation id="5541546772353173584">이메일 추가</translation>
+<translation id="5543722831081909240">180도</translation>
 <translation id="5545756402275714221">추천 기사</translation>
 <translation id="5551890439174915351">100x200mm</translation>
 <translation id="5552137475244467770">Chrome에서는 온라인에 게시된 비밀번호 목록에 사용자의 비밀번호가 포함되어 있는지를 주기적으로 확인합니다. 이렇게 하면 비밀번호 및 사용자 이름이 암호화되어 Google을 포함해 누구도 읽을 수 없습니다.</translation>
@@ -2184,6 +2182,7 @@
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> 기기는 관리 대상 기기가 아닙니다.</translation>
 <translation id="6592952801936330159">사이트 설정 관리 버튼, Enter를 눌러 Chrome 설정에서 여러 사이트의 권한 및 저장된 데이터 관리</translation>
 <translation id="6596325263575161958">암호화 옵션</translation>
+<translation id="6597665340361269064">90도</translation>
 <translation id="6599642189720630047">추적 중인 제품</translation>
 <translation id="6611723696964473273">경제 뉴스</translation>
 <translation id="6612010098632894193">온라인 동영상</translation>
@@ -2416,6 +2415,7 @@
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">관리자가 볼 수 있는 항목은 다음과 같습니다.</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, 새 시크릿 탭을 열어 비공개로 탐색하려면 Tab을 누른 다음 Enter 누르기</translation>
+<translation id="7203375778433816396">Chrome을 시스템 기본 브라우저로 설정</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />에서 보안 기준을 준수하지 않습니다.</translation>
 <translation id="7210993021468939304">컨테이너 내 Linux 활동 및 컨테이너 내에서 Linux 앱 설치 및 실행 가능</translation>
 <translation id="721197778055552897">이 문제에 대해 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -2562,6 +2562,7 @@
 <translation id="7537536606612762813">필수</translation>
 <translation id="7542403920425041731">확인하면 카드 세부정보가 이 사이트와 공유됩니다.</translation>
 <translation id="7542995811387359312">양식에 보안 연결이 사용되지 않아 신용카드 자동 채우기가 사용 중지되었습니다.</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" /> 시작</translation>
 <translation id="7548892272833184391">연결 문제해결</translation>
 <translation id="7549584377607005141">이 웹페이지를 제대로 표시하려면 이전에 입력한 데이터가 필요합니다. 이 데이터를 다시 보낼 수 있지만 이 경우 해당 페이지에서 이전에 수행한 작업이 반복됩니다.</translation>
 <translation id="7550637293666041147">기기 사용자 이름 및 Chrome 사용자 이름</translation>
@@ -2747,6 +2748,7 @@
 <translation id="8009843239480947060">10x11인치</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{이 카드와 청구서 수신 주소가 저장됩니다. <ph name="USER_EMAIL" /> 계정으로 로그인하면 카드를 사용할 수 있습니다.}other{이 카드와 청구서 수신 주소가 저장됩니다. <ph name="USER_EMAIL" /> 계정으로 로그인하면 카드를 사용할 수 있습니다.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" />(<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab과 Enter를 차례로 눌러 Chrome을 시스템 기본 브라우저로 설정</translation>
 <translation id="8025119109950072390">이 사이트의 공격자가 소프트웨어를 설치하거나 개인정보(예: 비밀번호, 전화번호, 신용카드)를 공개하는 등의 위험한 행동을 하도록 사용자를 속일 수 있습니다.</translation>
 <translation id="8026334261755873520">인터넷 사용 기록 삭제</translation>
 <translation id="8027077570865220386">트레이 15</translation>

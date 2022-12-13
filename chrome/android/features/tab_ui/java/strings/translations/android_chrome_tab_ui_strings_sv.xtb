@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Vill du stänga alla inkognitoflikar?</translation>
 <translation id="1657719826150349398">Flytta fliken nedåt</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> flik}other{<ph name="TABS_COUNT_MANY" /> flikar}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Infoga bokmärke för <ph name="TABS_COUNT_ONE" /> vald flik}other{Infoga bokmärken för <ph name="TABS_COUNT_MANY" /> valda flikar}}</translation>
 <translation id="2118649612461486615">Butiksinformation</translation>
 <translation id="2162620598375156287">Nu <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Dela upp flik}other{Dela upp flikar}}</translation>
 <translation id="2277224997687551299">Redigera gruppnamn</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Ta bort <ph name="TABS_COUNT_ONE" /> markerad flik från gruppen.}other{Ta bort <ph name="TABS_COUNT_MANY" /> markerade flikar från gruppen.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Infoga bokmärke för flik}other{Infoga bokmärken för flikar}}</translation>
 <translation id="2479148705183875116">Öppna inställningarna</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Komprimera <ph name="TABS_COUNT_ONE" /> flik.}other{Komprimera flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
 <translation id="2569352796411618312">Förslag: <ph name="NUMBER_OF_TABS" /> av flikarna har inte använts på länge. Vill du stänga dem?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Flytta fliken uppåt</translation>
 <translation id="8304833501377495048">Vill du sluta visa flikhuvudet?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Stäng <ph name="TABS_COUNT_ONE" /> vald flik}other{Stäng <ph name="TABS_COUNT_MANY" /> valda flikar}}</translation>
+<translation id="8398929769197326728">Ny mapp – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Utöka flikgruppen med <ph name="NUMBER_OF_TABS" /> flikar.</translation>
 <translation id="8714939927607906138">Lägre pris</translation>
 <translation id="8749939518995770034">Flikhuvudet har stängts</translation>

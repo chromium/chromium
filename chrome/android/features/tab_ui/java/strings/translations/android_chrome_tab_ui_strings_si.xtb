@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">සියලු අප්‍රකට ටැබ වසන්නද?</translation>
 <translation id="1657719826150349398">පටිත්ත පහළට ගෙන යන්න</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්}one{පටිති <ph name="TABS_COUNT_MANY" /> ක්}other{පටිති <ph name="TABS_COUNT_MANY" /> ක්}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{තෝරන ලද <ph name="TABS_COUNT_ONE" /> පටිත්තක් පිටුසන් කරන්න}one{තෝරන ලද පටිති <ph name="TABS_COUNT_MANY" />ක් පිටුසන් කරන්න}other{තෝරන ලද පටිති <ph name="TABS_COUNT_MANY" />ක් පිටුසන් කරන්න}}</translation>
 <translation id="2118649612461486615">වෙළඳසැල් තොරතුරු</translation>
 <translation id="2162620598375156287">දැන් <ph name="SOURCE_WEBSITE" /> හි <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{පටිත්ත සමූහගත නොකරන්න}one{පටිති සමූහගත නොකරන්න}other{පටිති සමූහගත නොකරන්න}}</translation>
 <translation id="2277224997687551299">සමූහ නම සංස්කරණය කරන්න</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{සමූහයෙන් තෝරා ගත් ටැබ <ph name="TABS_COUNT_ONE" />ක් ඉවත් කරන්න.}one{සමූහයෙන් තෝරා ගත් ටැබ <ph name="TABS_COUNT_MANY" />ක් ඉවත් කරන්න.}other{සමූහයෙන් තෝරා ගත් ටැබ <ph name="TABS_COUNT_MANY" />ක් ඉවත් කරන්න.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{පටිත්ත පිටුසන් කරන්න}one{පටිති පිටුසන් කරන්න}other{පටිති පිටුසන් කරන්න}}</translation>
 <translation id="2479148705183875116">සැකසීම් වෙත යන්න</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{ටැබ <ph name="TABS_COUNT_ONE" />ක් හකුළන්න.}one{ටැබ සමූහය ටැබ <ph name="TABS_COUNT_MANY" />ක් සමග හකුළන්න.}other{ටැබ සමූහය ටැබ <ph name="TABS_COUNT_MANY" />ක් සමග හකුළන්න.}}</translation>
 <translation id="2569352796411618312">යෝජනාව: ඔබේ පටිතිවලින් <ph name="NUMBER_OF_TABS" /> ක් මෑතදී භාවිත වී නැත. ඒවා වසන්නද?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">පටිත්ත ඉහළට ගෙන යන්න</translation>
 <translation id="8304833501377495048">පටිත්ත තීරුව නැවත නොපෙන්වන්නද?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{තේරූ <ph name="TABS_COUNT_ONE" /> පටිත්ත වසන්න}one{තේරූ පටිති <ph name="TABS_COUNT_MANY" /> වසරන්න}other{තේරූ පටිති <ph name="TABS_COUNT_MANY" /> වසරන්න}}</translation>
+<translation id="8398929769197326728">නව ෆෝල්ඩරය - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">ටැබ සමූහය ටැබ <ph name="NUMBER_OF_TABS" />ක් සමග දිග හරින්න.</translation>
 <translation id="8714939927607906138">අඩු මිල</translation>
 <translation id="8749939518995770034">වැසූ පටිත්ත තීරුව</translation>

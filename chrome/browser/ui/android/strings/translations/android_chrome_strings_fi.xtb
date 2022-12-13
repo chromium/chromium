@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Auta meitä tekemään internetistä yksityisempi</translation>
 <translation id="107147699690128016">Jos vaihdat tiedostotunnisteen, tiedosto voi avautua eri sovelluksessa ja mahdollisesti vahingoittaa laitetta.</translation>
 <translation id="1089606299949659462">Tarkastus valmis</translation>
-<translation id="1091604859693995976">Näytä päivittämällä</translation>
 <translation id="1095761715416917775">Varmista, että sinulla on aina pääsy synkronoituun dataasi</translation>
 <translation id="1100066534610197918">Avaa uusi välilehti ja ryhmä</translation>
 <translation id="1103142993930332957">Haluatko auttaa kehittämään Chromea?</translation>
@@ -1148,6 +1147,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7177466738963138057">Voit muuttaa tätä myöhemmin Asetuksista.</translation>
 <translation id="7177873915659574692">QR-koodin luominen ei onnistu. URL-osoitteessa on yli <ph name="CHARACTER_LIMIT" /> merkkiä.</translation>
 <translation id="7177959540995930968">Voit lukea lisää näistä ominaisuuksista Chromen asetuksista.</translation>
+<translation id="7180611975245234373">Päivitä</translation>
 <translation id="718226107353899806">Voit lisätä jopa <ph name="MAX_NUM_REACTIONS" /> reaktiota</translation>
 <translation id="7183693674623539380">Välilehtiryhmä – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Pitää sinut turvassa Chromessa ja voi parantaa suojaustasi muissa Google-sovelluksissa, kun olet sisäänkirjautuneena.</translation>

@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Hjálpaðu okkur að skapa vef sem gætir persónuverndar betur</translation>
 <translation id="107147699690128016">Ef þú breytir skráarendingunni gæti skráin opnast í öðru forriti og hugsanlega valdið skaða á tækinu.</translation>
 <translation id="1089606299949659462">Yfirferð lokið!</translation>
-<translation id="1091604859693995976">Endurnýja til að skoða</translation>
 <translation id="1095761715416917775">Vertu viss um að hafa alltaf aðgang að samtilltu gögnunum þínum</translation>
 <translation id="1100066534610197918">Opna á nýjum flipa í hópi</translation>
 <translation id="1103142993930332957">Viltu hjálpa við að bæta Chrome?</translation>
@@ -1148,6 +1147,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7177466738963138057">Þú getur breytt þessu síðar í stillingunum</translation>
 <translation id="7177873915659574692">Ekki er hægt að búa til QR-kóða. Vefslóðin er lengri en <ph name="CHARACTER_LIMIT" /> stafir.</translation>
 <translation id="7177959540995930968">Þú getur kynnt þér þessa eiginleika betur í stillingum Chrome.</translation>
+<translation id="7180611975245234373">Endurnýja</translation>
 <translation id="718226107353899806">Þú getur bætt við allt að <ph name="MAX_NUM_REACTIONS" /> viðbrögðum</translation>
 <translation id="7183693674623539380">Flipahópur – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Tryggir öryggi þitt í Chrome og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú hefur skráð þig inn.</translation>

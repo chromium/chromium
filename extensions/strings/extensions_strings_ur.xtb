@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">پیکیج غلط ہے۔ تفصیلات: '<ph name="ERROR_MESSAGE" />'۔</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" آپ کے آلات میں سے ایک تک رسائی کی درخواست کر رہی ہے:</translation>
 <translation id="8885905466771744233">متعین ایکسٹینشن کیلئے ایک نجی کلید پہلے سے موجود ہے۔ وہ کلید دوبارہ استعمال کریں یا پہلے اسے حذف کریں۔</translation>
+<translation id="9039223174332979184">اس مشین کا منتظم 3 کے کم از کم مینی فیسٹ ورژن کے لئے <ph name="EXTENSION_NAME" /> کا تقاضہ کرتا ہے۔</translation>
 <translation id="907841381057066561">‏پیکیجنگ کے دوران عارضی zip فائل بنانے میں ناکام۔</translation>
 <translation id="941543339607623937">غلط نجی کلید۔</translation>
 </translationbundle>

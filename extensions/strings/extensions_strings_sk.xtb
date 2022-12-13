@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Package is invalid. Details: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">Aplikácia <ph name="APP_NAME" /> žiada o prístup k jednému z vašich zariadení:</translation>
 <translation id="8885905466771744233">Pre určené rozšírenie už existuje súkromný kľúč. Použite ho znova, alebo ho najprv odstráňte.</translation>
+<translation id="9039223174332979184">Správca tohto počítača vyžaduje aspoň tretiu verziu rozšírenia <ph name="EXTENSION_NAME" />.</translation>
 <translation id="907841381057066561">Vytvorenie dočasného súboru zip počas balenia zlyhalo.</translation>
 <translation id="941543339607623937">Neplatný súkromný kľúč.</translation>
 </translationbundle>

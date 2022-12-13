@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">Tallenna <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Näyttökynän akku on vähissä</translation>
 <translation id="1036073649888683237">Jos haluat muuttaa ilmoitusasetuksia, avaa Asetukset</translation>
+<translation id="1036348656032585052">Poista käytöstä</translation>
 <translation id="1036672894875463507">Olen Google Assistant. Autan sinua pitkin päivää.
 Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> lisätty</translation>
@@ -100,6 +101,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1447641497144572814">Näytönsäästäjä alkaa</translation>
 <translation id="1455242230282523554">Näytä kieliasetukset</translation>
 <translation id="1460620680449458626">Äänet on mykistetty.</translation>
+<translation id="14648076227129703"><ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ja kaikki sovellukset ja verkkosivustot, joilla on kameralupa, saavat käyttää kameraa</translation>
 <translation id="1467432559032391204">Vasemmalla</translation>
 <translation id="146902737843070955">Järjestelmänvalvoja on pyytänyt tätä muutosta</translation>
 <translation id="147310119694673958">Puhelimen akku <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -159,6 +161,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1797271123677381264">Salasana unohtui</translation>
 <translation id="181103072419391116">Signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="1812997170047690955">Mitä näytölläni näkyy?</translation>
+<translation id="1816896987747843206">Sallii kameran käytön kaikille sovelluksille ja verkkosivustoille, joilla on kameralupa</translation>
 <translation id="1823280932251546115">Tila-alue, aika <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> irrotettiin</translation>
 <translation id="1836215606488044471">Assistant (ladataan…)</translation>
 <translation id="1838895407229022812">Yövalo on pois päältä.</translation>
+<translation id="1854180393107901205">Lopeta suoratoisto</translation>
 <translation id="1862380676329487333">Päivitä ja kirjaudu ulos</translation>
 <translation id="1864454756846565995">C-tyypin USB-laite (takaportti)</translation>
 <translation id="1869497990620230175">Pikatiedostot</translation>
@@ -598,6 +602,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="4316910396681052118">KAIKKI SOVELLUKSET</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Pikanäppäinyhdistelmä Ctrl + Alt + ylänuoli on muuttunut. Jos haluat käyttää Home-näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + vasen nuoli.</translation>
+<translation id="4324840740119394760"><ph name="APP_NAME" /> ja kaikki sovellukset ja verkkosivustot, joilla on kameralupa, saavat käyttää kameraa</translation>
 <translation id="4333628967105022692">Lacrosia ei tueta, kun useita käyttäjiä on sisään kirjautuneena.</translation>
 <translation id="4338109981321384717">Suurennuslasi</translation>
 <translation id="4351433414020964307">Assistantia ladataan…</translation>
@@ -664,13 +669,13 @@ Yhdistä laite virtalähteeseen.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox käytössä</translation>
 <translation id="4665114317261903604">Älä häiritse ‑tila päälle tai pois. <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Laita kameran pääsyoikeus pois päältä tällä laitteella estääksesi kaikki kamerat aina.</translation>
 <translation id="4666911709726371538">Lisää sovelluksia</translation>
 <translation id="4667099493359681081">Ladataan: <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Puhelimesi sovellukset</translation>
 <translation id="4690510401873698237">Hylly alareunassa</translation>
 <translation id="4696813013609194136">Avaa lukitus vanhemman koodilla</translation>
 <translation id="4702647871202761252">Näytönsuoja on pois päältä</translation>
+<translation id="4706121060329443414">Lataamista yritetään myöhemmin. Puhe lähetetään toistaiseksi Googlelle käsittelyyn.</translation>
 <translation id="470644585772471629">Käänteiset värit</translation>
 <translation id="4717575069099566988">USB-C-johto ei tue USB4:ää. Laitteen toiminta voi olla rajoitettua.</translation>
 <translation id="4730374152663651037">USEIN KÄYTETYT</translation>
@@ -696,7 +701,6 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="485592688953820832">Ei toimenpiteitä (keskeytä)</translation>
 <translation id="485634149294284819">Avaa näppäimistövalikko</translation>
 <translation id="4860284199500934869">Tarkista verkkoyhteys, jotta <ph name="FILENAME" /> voidaan ladata</translation>
-<translation id="486056901304535126">Lataamista yritetään myöhemmin. Puhe lähetetään Googlelle käsittelyyn, kunnes lataus on valmis.</translation>
 <translation id="4864369630010738180">Kirjaudutaan...</translation>
 <translation id="4864648187878336334">Työpöytä 15</translation>
 <translation id="4868492592575313542">otettu käyttöön</translation>
@@ -791,6 +795,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="5356963482258194581">Vaihda tumman ja vaalean teeman välillä. Klikkaa työpöytää kakkospainikkeella ja valitse Taustakuva ja tyyli.</translation>
 <translation id="536019650977002321">Järjestelmänvalvoja ei salli äänen tallentamista. Pyydä lisätietoa järjestelmänvalvojalta.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> – Siirry tälle välilehdelle</translation>
+<translation id="5377367976106153749">Sallitaanko kameran käyttö?</translation>
 <translation id="5379115545237091094">Liian monta yritystä</translation>
 <translation id="5391307769715781764">Korvataanko tallennettu työpöytä?</translation>
 <translation id="5393156353051693207">Järjestele sovellukset uudelleen koskettamalla mitä tahansa kohtaa pitkään</translation>
@@ -1177,7 +1182,6 @@ Uusi asennus</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> käyttää tällä hetkellä mikrofonia</translation>
 <translation id="7561982940498449837">Sulje valikko</translation>
 <translation id="7564874036684306347">Ikkunan siirtämisellä toiselle työpöydälle voi olla odottamattomia seurauksia. Myöhemmät ilmoitukset, ikkunat ja valintaikkunat voidaan jakaa työpöytien välillä.</translation>
-<translation id="7567076708801803118">Haluatko poistaa pääsyoikeuden kameraan tältä laitteelta?</translation>
 <translation id="7569509451529460200">Pistekirjoitus ja ChromeVox käytössä</translation>
 <translation id="7573585051776738856">Aktiivinen ikkuna kiinnitetty oikealle</translation>
 <translation id="7579778809502851308">Kuvakaappaus</translation>
@@ -1490,6 +1494,7 @@ Uusi asennus</translation>
 <translation id="954052413789300507">Tallennustilaa ei ole tarpeeksi, jotta <ph name="FILENAME" /> voitaisiin ladata. Vapauta tilaa.</translation>
 <translation id="974545358917229949">Näytetään <ph name="RESULT_COUNT" /> tulosta haulla <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Vaakasuunta</translation>
+<translation id="989374776391122812">Kamera- ja audiosäätimet</translation>
 <translation id="990277280839877440">Ikkuna <ph name="WINDOW_TITILE" /> suljettu.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Lataa uusimmat ominaisuudet ja tietoturvaparannukset. Päivitykset tapahtuvat taustalla.</translation>

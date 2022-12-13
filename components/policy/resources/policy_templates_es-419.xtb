@@ -919,6 +919,11 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
       Si inhabilitas la política o no la configuras, WebDriver no podrá anular las políticas incompatibles.</translation>
 <translation id="1885782360784839335">Permitir que se muestre el contenido promocional en la pestaña completa</translation>
 <translation id="1888871729456797026">El token de inscripción de la política de nube en computadoras de escritorio</translation>
+<translation id="1893271062894546361">Si habilitas esta política, la IU de los controles de reproducción de contenido multimedia estará disponible en las sesiones de <ph name="PRODUCT_NAME" /> que inicien otros dispositivos en la red local.
+
+      Si no estableces esta política para los usuarios empresariales o la inhabilitas, la IU de los controles de reproducción de contenido multimedia no estará disponible en las sesiones de <ph name="PRODUCT_NAME" /> que inicien otros dispositivos en la red local.
+
+      Si inhabilitas la política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />, el valor de esta política no tendrá efecto, ya que se inhabilitará la funcionalidad completa de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1894790493260633497">Habilitar el modo de impresión de los gráficos de fondo de forma predeterminada</translation>
 <translation id="1897365952389968758">Permitir que todos los sitios ejecuten JavaScript</translation>
 <translation id="1902043648529789224">Controla la posición de la biblioteca</translation>
@@ -3500,6 +3505,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="4274691295133617461">Si estableces la política en 3, los sitios web podrán solicitar acceso de lectura a archivos y directorios en el sistema de archivos del sistema operativo del host a través de la API de File System. Si la estableces en 2, se rechazará el acceso.
 
       Si no la estableces, los sitios web podrán solicitar acceso, pero los usuarios también podrán cambiar esta configuración.</translation>
+<translation id="4275048399551500192">No mostrar los controles multimedia de las sesiones de <ph name="PRODUCT_NAME" /> que iniciaron otros dispositivos</translation>
 <translation id="4282243913059705499">Mostrar siempre el ícono <ph name="PRODUCT_NAME" /> en la barra de herramientas</translation>
 <translation id="4285674129118156176">Permitir que los usuarios no afiliados usen ARC</translation>
 <translation id="4287344576768105337">Si estableces la política, no podrán cargarse las páginas web que tengan URLs prohibidas. Proporciona una lista de patrones de URL donde se especifican URLs prohibidas. Si no estableces la política, no se prohibirá ninguna URL en el navegador. El patrón de una URL debe presentar un formato conforme a lo especificado en ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). Se pueden definir 1,000 excepciones como máximo en la política <ph name="URL_ALLOWLIST_POLICY_NAME" />.
@@ -4448,9 +4454,6 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
       Si no la estableces, los usuario no podrán jugar al juego en el <ph name="PRODUCT_OS_NAME" /> registrado, pero podrán hacerlo en otras circunstancias.</translation>
 <translation id="5293285950307241933">Borrar todos los datos locales del usuario</translation>
-<translation id="5293875928467750789">Si estableces la política con un valor, se usará ese porcentaje predeterminado
-
-para el brillo del teclado del dispositivo cuando acceda el usuario.</translation>
 <translation id="529457411593078576">Habilita las Condiciones del Servicio en la primera ejecución para CCT</translation>
 <translation id="5297948043665200363">Permitir que el usuario permanezca conectado después de que se anule la autenticación de su cuenta</translation>
 <translation id="5298949392804966105">No hay restricciones en las cuentas administradas</translation>
@@ -5348,6 +5351,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6244061205361004687">Permitir que el usuario desconecte o modifique manualmente una VPN</translation>
 <translation id="6244210204546589761">Direcciones URL que se abrirán al iniciar.</translation>
 <translation id="624595269193747921">Se debe limitar la búsqueda de la impresora a un grupo específico.</translation>
+<translation id="6246290059248303618">Mostrar los controles multimedia de las sesiones de <ph name="PRODUCT_NAME" /> que iniciaron otros dispositivos en la red local</translation>
 <translation id="6247316685259031374">Esta política controla la zona de pruebas del proceso de audio.
       Si se habilita esta política, se ejecutará el proceso de audio en la zona de pruebas.
       Si se inhabilita, se ejecutará el proceso de audio fuera de la zona de pruebas y se ejecutará el módulo de procesamiento de audio WebRTC en el proceso de renderizado.
@@ -6321,6 +6325,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="710003290625031750">Descripción del esquema expandido:</translation>
 <translation id="7101550508196914704">No mostrar accesos directos a aplicaciones en la barra de favoritos</translation>
 <translation id="7109384070286741861">Inhabilitar CECPQ2</translation>
+<translation id="7113439794629928551">Mostrar los controles multimedia de las sesiones de <ph name="PRODUCT_NAME" /> que iniciaron otros dispositivos</translation>
 <translation id="7114169791477667553">Inhabilitar el proveedor de búsqueda predeterminado</translation>
 <translation id="7121046543122812054">Esta política dejó de estar disponible. Puedes usar <ph name="BROWSER_SIGNIN_POLICY_NAME" /> en su lugar.
 
@@ -7023,7 +7028,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7832225468415136704">Impedir que Limpiar Chrome escanee el sistema de forma periódica y, luego, inhabilitar los escaneos manuales</translation>
 <translation id="7833148823006528332">Identificador de la app para Android, p. ej., "com.google.android.gm" para Gmail.</translation>
 <translation id="7835218570504220753">Inhabilitar el clic automático</translation>
-<translation id="7837834961221899821">Brillo predeterminado del teclado</translation>
 <translation id="7839180815400079700">Si habilitas <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> y estableces <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, se establecerá la configuración diurna de la carga fuera del horario de mayor consumo.
 
       Si no estableces la política, la carga fuera del horario de mayor consumo permanecerá desactivada.
@@ -8524,6 +8528,11 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
 <translation id="982497069985795632">Habilitar el corrector ortográfico</translation>
 <translation id="983256325512298435">Define una lista de protocolos que puede ejecutar una aplicación externa a partir los orígenes enumerados sin avisarle al usuario</translation>
 <translation id="987261962216071510">Solo permitir los accesos con el modo de invitado del navegador</translation>
+<translation id="987975731398348803">Si habilitas la política o no la estableces, los dispositivos inscritos informarán la lista de usuarios que accedieron recientemente.
+
+Si la inhabilitas, los dispositivos inscritos no informarán la lista de usuarios.
+
+Si habilitas <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" />, se ignorará <ph name="REPORT_DEVICE_USERS_POLICY_NAME" /> y siempre estará inhabilitada.</translation>
 <translation id="989197274317162189">Esta política dejó de estar disponible y ya no se admite. En su lugar, usa la política "<ph name="URL_BLOCKLIST_POLICY_NAME" />".</translation>
 <translation id="991560005425213776">Enviar el nombre de usuario y del archivo a las impresoras nativas</translation>
 <translation id="99202634486128833">Si estableces la política como CopyCaCerts, todos los Certificados de CA de ONC instalados con <ph name="WEB_TRUSTED_BIT" /> estarán disponibles para las apps de ARC.

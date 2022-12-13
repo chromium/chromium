@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">ಮುದ್ರಣ ಕಾರ್ಯವನ್ನು ರದ್ದುಮಾಡಿ</translation>
 <translation id="2163937499206714165">ಕತ್ತಲೆ ಮೋಡ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="2180197493692062006">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಆ್ಯಪ್ ಅನ್ನು ಪುನಃ ತೆರೆಯಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">ಟ್ರಾಫಿಕ್ ಕೌಂಟರ್‌ಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="2212733584906323460">ಹೆಸರಿನ ರೆಸಲ್ಯೂಷನ್</translation>
 <translation id="2217935453350629363">ಪ್ರಸ್ತುತ ವೇಗ</translation>
@@ -491,6 +490,7 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">ಸೂರ್ಯಾಸ್ತದ ಸಮಯದಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡಾರ್ಕ್ ಥೀಮ್‌ಗೆ ಬದಲಿಸಿ</translation>
+<translation id="5571714952674387371">ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಹಾಗೂ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ಪುನಃ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -560,6 +560,7 @@
 <translation id="6189418609903030344">ಬಳಕೆಯಿಂದಾಗಿ ಬ್ಯಾಟರಿ ಸಾಮರ್ಥ್ಯವು ಕಡಿಮೆಯಾಗುತ್ತದೆ</translation>
 <translation id="6191293864534840972">ದೋಷಪೂರಿತ ಹೆಸರಿನ ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">ಫುಲ್‌ಸ್ಕ್ರೀನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="6223752125779001553">ಯಾವುದೇ ಸ್ಕ್ಯಾನರ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="6232017090690406397">ಬ್ಯಾಟರಿ</translation>
 <translation id="6235460611964961764">ಡೇಟಾ ಬಳಕೆಯನ್ನು ಹಸ್ತಚಾಲಿತವಾಗಿ ರೀಸೆಟ್ ಮಾಡಿ</translation>
@@ -687,12 +688,12 @@
 <translation id="741244894080940828">ಪರಿವರ್ತನೆ</translation>
 <translation id="7415801143053185905">ಅತ್ಯಧಿಕ HTTP ವಿಳಂಬ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. 1 ಪುಟವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}one{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}other{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="7458970041932198923">ಅವತಾರಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಮತ್ತು ಸೆಟ್ ಮಾಡಲು ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ ಮತ್ತು ಪುಟವನ್ನು ಮರುಲೋಡ್ ಮಾಡಿ.</translation>
 <translation id="7469648432129124067">ಪೋರ್ಟಲ್ ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7481312909269577407">ಫಾರ್ವರ್ಡ್</translation>
 <translation id="7487067081878637334">ತಂತ್ರಜ್ಞಾನ</translation>
 <translation id="7490813197707563893">MAC ವಿಳಾಸ</translation>
+<translation id="7491478667760509108">ಫ್ಲೋಟ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="7497215489070763236">ಸರ್ವರ್ CA ಪ್ರಮಾಣಪತ್ರ</translation>
 <translation id="7502658306369382406">IPv6 ವಿಳಾಸ</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -793,6 +794,7 @@
 <translation id="8498220429738806196">ಟ್ರಾಫಿಕ್ ಕೌಂಟರ್‌ಗಳು</translation>
 <translation id="8503813439785031346">ಬಳಕೆದಾರರಹೆಸರು</translation>
 <translation id="8503836310948963452">ಕೇವಲ ಕೆಲವೇ ನಿಮಿಷಗಳು…</translation>
+<translation id="8508640263392900755">APN ವಿವರಗಳು</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ನಿಮ್ಮ ವಾಹಕವು ತಮ್ಮ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಈ ಆಯ್ಕೆಯ ಅಗತ್ಯವಿರಬಹುದು. ವಿವರಗಳಿಗಾಗಿ ನಿಮ್ಮ ವಾಹಕವನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="8576249514688522074">ಪ್ರಾರಂಭಿಸಲಾಗಿಲ್ಲ</translation>
@@ -868,6 +870,7 @@
 <translation id="9173638680043580060">ಒಂದು ನಿಮಿಷಕ್ಕಿಂತ ಕಡಿಮೆ ಸಮಯ ಉಳಿದಿದೆ</translation>
 <translation id="917720651393141712">ಪರೀಕ್ಷೆ</translation>
 <translation id="9188992814426075118">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ನಿಮ್ಮ ವಾಲ್‌ಪೇಪರ್‌ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಹೊಂದಾಣಿಕೆಯಾಗಬಹುದು</translation>
+<translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Android ಆ್ಯಪ್‌ಗಳ ಮೂಲಕ ಗೇಟ್‌ವೇ ಅನ್ನು ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="9211490828691860325">ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳು</translation>
 <translation id="932327136139879170">ಹೋಮ್</translation>

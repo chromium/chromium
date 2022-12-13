@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
 <translation id="2163937499206714165">Appliquer le mode sombre</translation>
 <translation id="2180197493692062006">Un problème est survenu. Essayez de rouvrir l'appli.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Réinitialiser les compteurs de trafic</translation>
 <translation id="2212733584906323460">Résolution des noms</translation>
 <translation id="2217935453350629363">Vitesse actuelle</translation>
@@ -561,6 +560,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6189418609903030344">L'autonomie de la batterie diminue au fur et à mesure de son utilisation</translation>
 <translation id="6191293864534840972">Serveurs de noms non valides</translation>
 <translation id="6213737986933151570">CDMA 1xRTT</translation>
+<translation id="6223066887782788441">Quitter "plein écran"</translation>
 <translation id="6223752125779001553">Aucun scanner disponible</translation>
 <translation id="6232017090690406397">Batterie</translation>
 <translation id="6235460611964961764">Réinitialiser manuellement la consommation des données</translation>
@@ -688,11 +688,12 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Latence HTTP très élevée</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Numérisation terminée. 1 page numérisée}one{Numérisation terminée. {NUMBER_OF_PAGES} page numérisée}other{Numérisation terminée. {NUMBER_OF_PAGES} pages numérisées}}</translation>
+<translation id="7458970041932198923">Veuillez vous connecter à un réseau et actualiser la page pour afficher et définir des avatars.</translation>
 <translation id="7469648432129124067">Portail détecté</translation>
 <translation id="7481312909269577407">Avancer</translation>
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">Adresse MAC</translation>
+<translation id="7491478667760509108">Quitter "flottant"</translation>
 <translation id="7497215489070763236">Certificat de l'autorité de certification du serveur</translation>
 <translation id="7502658306369382406">Adresse IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -722,7 +723,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7784116172884276937">Aucun serveur DNS configuré</translation>
 <translation id="779591286616261875">Envoyer un nouveau rapport</translation>
 <translation id="7799817062559422778">Mode clair</translation>
-<translation id="780301667611848630">Non merci</translation>
+<translation id="780301667611848630">Non, merci</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
 <translation id="7841134249932030522">Activer le mode sombre</translation>
@@ -793,6 +794,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8498220429738806196">Compteurs de trafic</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8503836310948963452">Plus que quelques minutes…</translation>
+<translation id="8508640263392900755">Informations sur l'APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Votre opérateur peut exiger ce réglage pour la connexion à son réseau. Contactez-le pour en savoir plus.</translation>
 <translation id="8576249514688522074">Non initialisé</translation>
@@ -843,6 +845,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8983038754672563810">3G+</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scanner}=1{Scanner la page {NUMBER_OF_PAGES}}one{Scanner la page {NUMBER_OF_PAGES}}other{Scanner les pages {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">L'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
+<translation id="8998289560386111590">Non disponible sur votre appareil</translation>
 <translation id="9003704114456258138">Fréquence</translation>
 <translation id="9025198690966128418">Utiliser en tant qu'appareil personnel</translation>
 <translation id="9028832514430399253">Activez le bouton pour sélectionner les options de l'économiseur d'écran</translation>

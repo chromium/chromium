@@ -413,7 +413,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1958218078413065209">Vaše nejvyšší skóre je <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Pomozte se zlepšováním bezpečnosti na webu tím, že do Googlu budete odesílat <ph name="BEGIN_WHITEPAPER_LINK" />adresy URL některých navštívených stránek, omezené informace o systému a část obsahu stránek<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Zásady ochrany soukromí<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Záložky domény <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">Ochrana hesel pomocí TouchID</translation>
 <translation id="1973335181906896915">Chyba serializace</translation>
 <translation id="1974060860693918893">Rozšířená nastavení</translation>
 <translation id="1975457531113383421">Vstupní zásobník</translation>
@@ -748,7 +747,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2881276955470682203">Uložit kartu?</translation>
 <translation id="2882949212241984732">Dvojité otevírací přeložení</translation>
 <translation id="2893773853358652045">Čtvrtá role</translation>
-<translation id="289834758818479772">Pokud zařízení sdílíte s dalšími lidmi, můžete zapnout Touch ID, aby se při každém použití uloženého hesla ověřovalo, zda akci provádíte vy</translation>
 <translation id="2900528713135656174">Vytvořit událost</translation>
 <translation id="2903493209154104877">Adresy</translation>
 <translation id="290376772003165898">Stránka není v jazyce <ph name="LANGUAGE" />?</translation>
@@ -1062,7 +1060,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3678529606614285348">Otevřete stránku v novém anonymním okně (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informace o certifikátu</translation>
 <translation id="3693327506115126094">Vyberte způsob ověření totožnosti</translation>
-<translation id="3699374065820972102">Pro vyplňování hesel je zapnutá funkce TouchID</translation>
 <translation id="3701427423622901115">Resetování bylo potvrzeno.</translation>
 <translation id="3704162925118123524">Síť, kterou používáte, může vyžadovat, abyste navštívili její stránku přihlášení.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1177,7 +1174,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="401170183602135785">Obálka C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokument PDF obsahující {COUNT} stránku}few{Dokument PDF obsahující {COUNT} stránky}many{Dokument PDF obsahující {COUNT} stránky}other{Dokument PDF obsahující {COUNT} stránek}}</translation>
 <translation id="4023431997072828269">Vaše informace budou viditelné ostatním, protože je tento formulář odesílán prostřednictvím nezabezpečeného připojení.</translation>
-<translation id="4024923292610332139">vypnout TouchID pro vyplňování hesel</translation>
 <translation id="4025913568718019429">Tlačítko správy nastavení soukromí na Googlu. Stisknutím klávesy Enter přejdete do nastavení soukromí účtu Google</translation>
 <translation id="4030383055268325496">&amp;Vrátit přidání zpět</translation>
 <translation id="4031179711345676612">Mikrofon je povolen</translation>
@@ -1539,7 +1535,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4900217275619098670">Devátá role</translation>
 <translation id="4901778704868714008">Uložit...</translation>
 <translation id="4905659621780993806">V <ph name="TIME" /> dne <ph name="DATE" /> administrátor zařízení automaticky restartuje. Před restartováním zařízení uložte všechny otevřené položky.</translation>
-<translation id="4911007278801291296">Funkci TouchID můžete zapnout nebo vypnout v <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Děrování vlevo nahoře</translation>
 <translation id="4918221908152712722">Nainstalujte si aplikaci <ph name="APP_NAME" /> (není potřeba nic stahovat)</translation>
 <translation id="4923459931733593730">Platba</translation>
@@ -1721,6 +1716,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5334013548165032829">Podrobné systémové protokoly</translation>
 <translation id="5334145288572353250">Uložit adresu?</translation>
 <translation id="5335920952954443287">Tlukoucí srdce</translation>
+<translation id="5337569431717511221">Tlačítko nastavení Chromu jako výchozího prohlížeče: Stisknutím klávesy Enter nastavíte Chrome jako výchozí prohlížeč v nastavení systému</translation>
 <translation id="5340250774223869109">Aplikace je blokována</translation>
 <translation id="534295439873310000">Zařízení NFC</translation>
 <translation id="5344579389779391559">Tato stránka se vám může pokusit naúčtovat poplatky</translation>
@@ -1752,7 +1748,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5426179911063097041"><ph name="SITE" /> vám chce zasílat oznámení</translation>
 <translation id="5428105026674456456">španělština</translation>
 <translation id="5430298929874300616">Odstranit záložku</translation>
-<translation id="5434423669266814150">zapnout TouchID pro vyplňování hesel</translation>
 <translation id="5443468954631487277">Obrácené pořadí lícem nahoru</translation>
 <translation id="5447765697759493033">Tento web nebude přeložen</translation>
 <translation id="5452270690849572955">Tuto stránku na webu <ph name="HOST_NAME" /> nelze najít</translation>
@@ -2415,6 +2410,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Administrátor má přístup k následujícím údajům:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter otevřete novou anonymní kartu, abyste mohli prohlížet v soukromí</translation>
+<translation id="7203375778433816396">Nastavit Chrome jako výchozí prohlížeč</translation>
 <translation id="7210863904660874423">Web <ph name="HOST_NAME" /> nevyhovuje bezpečnostním standardům.</translation>
 <translation id="7210993021468939304">Aktivita systému Linux v rámci kontejneru, může instalovat a spouštět aplikace Linux v kontejneru</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /> o tomto problému.</translation>
@@ -2561,6 +2557,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7537536606612762813">Povinná</translation>
 <translation id="7542403920425041731">Po ověření budou údaje o kartě sdíleny s tímto webem.</translation>
 <translation id="7542995811387359312">Automatické vyplňování údajů platební karty je deaktivováno, protože tento formulář nepoužívá zabezpečené připojení.</translation>
+<translation id="7546409722674205727">Spouštění aplikace <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Oprava chyb připojení</translation>
 <translation id="7549584377607005141">Tato stránka potřebuje ke správnému zobrazení data, která jste zadali dříve. Tyto údaje můžete odeslat znovu, ale zopakujete tím všechny akce, které tato stránka již předtím provedla.</translation>
 <translation id="7550637293666041147">Vaše uživatelské jméno na zařízení a v Chromu</translation>
@@ -2746,6 +2743,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8009843239480947060">10 × 11″</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Tato karta a její fakturační adresa se uloží. Budete ji moci používat, když budete přihlášeni k účtu <ph name="USER_EMAIL" />.}few{Tyto karty a jejich fakturační adresy se uloží. Budete je moci používat, když budete přihlášeni k účtu <ph name="USER_EMAIL" />.}many{Tyto karty a jejich fakturační adresy se uloží. Budete je moci používat, když budete přihlášeni k účtu <ph name="USER_EMAIL" />.}other{Tyto karty a jejich fakturační adresy se uloží. Budete je moci používat, když budete přihlášeni k účtu <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter nastavíte Chrome jako výchozí prohlížeč</translation>
 <translation id="8025119109950072390">Útočníci na tomto webu vás mohou podvodem přimět k nebezpečnému chování, jako je instalace softwaru nebo vyzrazení osobních údajů (například hesel, telefonních čísel nebo platebních karet).</translation>
 <translation id="8026334261755873520">Vymazat údaje o prohlížení</translation>
 <translation id="8027077570865220386">Přihrádka 15</translation>

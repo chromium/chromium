@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Help ons het web meer privé te maken</translation>
 <translation id="107147699690128016">Als je de bestandsextensie wijzigt, wordt het bestand mogelijk in een andere app geopend. Daardoor kan het een gevaar vormen voor je apparaat.</translation>
 <translation id="1089606299949659462">Beoordeling voltooid</translation>
-<translation id="1091604859693995976">Vernieuwen om te bekijken</translation>
 <translation id="1095761715416917775">Zorg dat je altijd toegang hebt tot je gesynchroniseerde gegevens</translation>
 <translation id="1100066534610197918">Open in nieuw tabblad in groep</translation>
 <translation id="1103142993930332957">Wil je Chrome helpen verbeteren?</translation>
@@ -761,6 +760,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="510275257476243843">1 uur resterend</translation>
 <translation id="5115811374190515607">naar <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Interesses</translation>
+<translation id="5122378528687922675">Vraag zo nodig je ouder (<ph name="PARENT_NAME_1" /> of <ph name="PARENT_NAME_2" />) om hulp</translation>
 <translation id="5123685120097942451">Incognitotabblad</translation>
 <translation id="5126510351761255129">Je kaart verifiëren</translation>
 <translation id="5132942445612118989">Je wachtwoorden, geschiedenis en meer synchroniseren op al je apparaten</translation>
@@ -1148,6 +1148,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7177466738963138057">Je kunt dit later wijzigen in Instellingen</translation>
 <translation id="7177873915659574692">Kan geen QR-code maken. De URL is langer dan <ph name="CHARACTER_LIMIT" /> tekens.</translation>
 <translation id="7177959540995930968">Bekijk meer informatie over deze functies in de Chrome-instellingen.</translation>
+<translation id="7180611975245234373">Vernieuwen</translation>
 <translation id="718226107353899806">Je kunt maximaal <ph name="MAX_NUM_REACTIONS" /> reacties toevoegen</translation>
 <translation id="7183693674623539380">Tabbladgroep: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Beschermt je op Chrome en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd.</translation>
@@ -1331,6 +1332,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8084285576995584326">De gegevens van je Google-account beheren</translation>
 <translation id="808747664143081553">Verbonden met apparaat</translation>
 <translation id="8088176524274673045">Als je wilt delen met mensen in de buurt, laat je ze deze QR-code scannen</translation>
+<translation id="8090732854597034573">Vraag zo nodig je ouder om hulp</translation>
 <translation id="8100969750121413114">Log in om Chrome te personaliseren</translation>
 <translation id="8103578431304235997">Incognitotabblad</translation>
 <translation id="8105613260829665809">Door verder te gaan, ga je akkoord met de <ph name="BEGIN_TOS_LINK" />Servicevoorwaarden<ph name="END_TOS_LINK" />.\nChrome stuurt gebruiks- en crashgegevens naar Google om de app te helpen verbeteren. <ph name="BEGIN_UMA_LINK" />Beheren<ph name="END_UMA_LINK" /></translation>
@@ -1339,6 +1341,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8109613176066109935">Zet de synchronisatie aan om op al je apparaten toegang tot je bookmarks te hebben</translation>
 <translation id="8110024788458304985">Help de functies en prestaties van Chrome te verbeteren</translation>
 <translation id="8110087112193408731">Chrome-activiteit in Digitaal welzijn bekijken?</translation>
+<translation id="8118117428362942925">Vraag zo nodig je ouder (<ph name="PARENT_NAME" />) om hulp</translation>
 <translation id="8127542551745560481">Homepage bewerken</translation>
 <translation id="8130309322784422030">Je opgeslagen inloggegevens zijn misschien verouderd</translation>
 <translation id="813082847718468539">Sitegegevens bekijken</translation>

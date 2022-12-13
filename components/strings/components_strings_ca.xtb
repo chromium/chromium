@@ -413,7 +413,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1958218078413065209">La teva puntuació més alta és <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Per ajudar a millorar la seguretat al web per a tothom, envia a Google <ph name="BEGIN_WHITEPAPER_LINK" />URL d'algunes pàgines que visites, informació limitada del sistema i part del contingut de les pàgines<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Política de privadesa<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Adreces d'interès de <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">Protegeix les contrasenyes amb TouchID</translation>
 <translation id="1973335181906896915">Error de serialització</translation>
 <translation id="1974060860693918893">Configuració avançada</translation>
 <translation id="1975457531113383421">Safata d'entrada</translation>
@@ -748,7 +747,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2881276955470682203">Vols desar la targeta?</translation>
 <translation id="2882949212241984732">Plegat en finestra doble</translation>
 <translation id="2893773853358652045">Quart corró</translation>
-<translation id="289834758818479772">Si comparteixes aquest dispositiu amb altres persones, pots activar TouchID per verificar que ets tu sempre que utilitzis una contrasenya desada</translation>
 <translation id="2900528713135656174">Crea un esdeveniment</translation>
 <translation id="2903493209154104877">Adreces</translation>
 <translation id="290376772003165898">La pàgina no està en <ph name="LANGUAGE" />?</translation>
@@ -771,7 +769,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2943895734390379394">Hora de la pujada:</translation>
 <translation id="2945026002409061480">Comunitats virtuals</translation>
 <translation id="2948083400971632585">Podeu desactivar qualsevol servidor intermediari configurat per a una connexió des de la pàgina de configuració.</translation>
-<translation id="2949183777371959169">S'ha ignorat perquè la màquina no s'ha inscrit amb Gestió de navegadors Chrome en núvol.</translation>
+<translation id="2949183777371959169">S'ha ignorat perquè la màquina no s'ha inscrit amb Gestió de navegadors Chrome al núvol.</translation>
 <translation id="2951588413176968965">La meva bústia de correu</translation>
 <translation id="2952820037279740115">Tanca totes les finestres d'incògnit</translation>
 <translation id="2952904171810469095">A2x5</translation>
@@ -1066,7 +1064,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3678529606614285348">Obre la pàgina en una finestra d'incògnit nova (Ctrl+Maj+N)</translation>
 <translation id="3681007416295224113">Informació del certificat</translation>
 <translation id="3693327506115126094">Tria un mètode per verificar la teva identitat</translation>
-<translation id="3699374065820972102">Touch ID està activat per emplenar contrasenyes</translation>
 <translation id="3701427423622901115">Restabliment acceptat.</translation>
 <translation id="3704162925118123524">És possible que la xarxa que esteu fent servir requereixi que visiteu la pàgina d'inici de sessió.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1181,7 +1178,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="401170183602135785">Sobre C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF que conté {COUNT} pàgina}other{Document PDF que conté {COUNT} pàgines}}</translation>
 <translation id="4023431997072828269">Com que el formulari s'està enviant mitjançant una connexió que no és segura, altres persones podran veure la teva informació.</translation>
-<translation id="4024923292610332139">desactivar TouchID per emplenar contrasenyes</translation>
 <translation id="4025913568718019429">Botó Gestiona la configuració de privadesa de Chrome: prem Retorn per visitar la configuració de privadesa del teu Compte de Google</translation>
 <translation id="4030383055268325496">&amp;Desfés l'addició</translation>
 <translation id="4031179711345676612">El micròfon es pot utilitzar</translation>
@@ -1543,7 +1539,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4900217275619098670">Novè corró</translation>
 <translation id="4901778704868714008">Desa...</translation>
 <translation id="4905659621780993806">L'administrador reiniciarà automàticament el dispositiu el dia <ph name="DATE" /> a les <ph name="TIME" />. Abans no es reiniciï, desa tots els elements oberts.</translation>
-<translation id="4911007278801291296">Pots activar o desactivar Touch ID a <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Encunyació a la part superior esquerra</translation>
 <translation id="4918221908152712722">Instal·la l'aplicació <ph name="APP_NAME" /> (no cal que la baixis)</translation>
 <translation id="4923459931733593730">Pagament</translation>
@@ -1614,7 +1609,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5070838744279127212">Desè corró</translation>
 <translation id="507130231501693183">Bústia de correu 4</translation>
 <translation id="5078060223219502807">La contrasenya que acabes d'utilitzar s'ha trobat en una violació de les dades. Per protegir els teus comptes, el gestor de contrasenyes recomana que la canviïs ara i que després comprovis les contrasenyes desades.</translation>
-<translation id="5086225927071063542">Informàtica distribuïda i en núvol</translation>
+<translation id="5086225927071063542">Informàtica distribuïda i al núvol</translation>
 <translation id="5087286274860437796">En aquest moment el certificat del servidor no és vàlid.</translation>
 <translation id="5087580092889165836">Afegeix una targeta</translation>
 <translation id="5088142053160410913">Missatge a l'operador</translation>
@@ -1725,6 +1720,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5334013548165032829">Registres detallats del sistema</translation>
 <translation id="5334145288572353250">Vols desar l'adreça?</translation>
 <translation id="5335920952954443287">Cor que batega</translation>
+<translation id="5337569431717511221">Botó per establir Chrome com a navegador predeterminat: prem Retorn per establir Chrome com a navegador predeterminat del sistema</translation>
 <translation id="5340250774223869109">L'aplicació està bloquejada</translation>
 <translation id="534295439873310000">Dispositius amb NFC</translation>
 <translation id="5344579389779391559">És possible que aquesta pàgina provi de fer-te algun càrrec</translation>
@@ -1756,7 +1752,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5426179911063097041"><ph name="SITE" /> et vol enviar notificacions</translation>
 <translation id="5428105026674456456">Espanyol</translation>
 <translation id="5430298929874300616">Suprimeix l'adreça d'interès</translation>
-<translation id="5434423669266814150">activar TouchID per emplenar contrasenyes</translation>
 <translation id="5443468954631487277">Ordre invers de cara amunt</translation>
 <translation id="5447765697759493033">Aquest lloc web no es traduirà</translation>
 <translation id="5452270690849572955">No s'ha trobat aquesta pàgina de <ph name="HOST_NAME" /></translation>
@@ -2420,6 +2415,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">L'administrador pot veure el següent:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Prem Tab i després Retorn per obrir una pestanya d'incògnit nova i navegar en privat.</translation>
+<translation id="7203375778433816396">Estableix Chrome com a navegador predeterminat del sistema</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> no compleix la normativa de seguretat.</translation>
 <translation id="7210993021468939304">L'activitat de Linux al contenidor; i també pot instal·lar-hi i executar-hi aplicacions de Linux</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /> sobre aquest problema.</translation>
@@ -2567,6 +2563,7 @@ Detalls addicionals:
 <translation id="7537536606612762813">Obligatòria</translation>
 <translation id="7542403920425041731">Un cop confirmada, els detalls de la targeta es compartiran amb aquest lloc web.</translation>
 <translation id="7542995811387359312">L'emplenament automàtic de targetes de crèdit està desactivat perquè el formulari no utilitza una connexió segura.</translation>
+<translation id="7546409722674205727">S'està iniciant <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Solucionar errors de connexió</translation>
 <translation id="7549584377607005141">Aquesta pàgina web necessita dades que heu introduït anteiorment per poder mostrar-la correctament. Podeu tornar a enviar les dades, però es tornarà a repetir qualsevol acció que la pàgina hagi dut a terme prèviament.</translation>
 <translation id="7550637293666041147">El nom d'usuari del dispositiu i el nom d'usuari de Chrome</translation>
@@ -2752,6 +2749,7 @@ Detalls addicionals:
 <translation id="8009843239480947060">10 x 11 polzades</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Aquesta targeta i l'adreça de facturació associada es desaran. La podràs utilitzar quan tinguis la sessió iniciada a <ph name="USER_EMAIL" />.}other{Aquestes targetes i les adreces de facturació associades es desaran. Les podràs utilitzar quan tinguis la sessió iniciada a <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Prem Tab i, després, Retorn per establir Chrome com a navegador predeterminat del sistema.</translation>
 <translation id="8025119109950072390">Els atacants d'aquest lloc et poden enganyar perquè facis alguna acció perillosa, com ara instal·lar programari o revelar informació personal (per exemple, contrasenyes, números de telèfon o targetes de crèdit).</translation>
 <translation id="8026334261755873520">Esborra les dades de navegació</translation>
 <translation id="8027077570865220386">Safata 15</translation>

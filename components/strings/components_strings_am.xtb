@@ -270,6 +270,7 @@
 <translation id="1586541204584340881">የትኛዎቹ ቅጥያዎች ናቸው እርስዎ የጫኑት</translation>
 <translation id="1588438908519853928">መደበኛ</translation>
 <translation id="1592005682883173041">አካባቢያዊ የውሂብ መድረሻ</translation>
+<translation id="1593359183944365958">270 ዲግሪ</translation>
 <translation id="1594030484168838125">ምረጥ</translation>
 <translation id="1596296697375291157">አጓጊ፣ ወንጀል እና ሚስጥራዊ ፊልሞች</translation>
 <translation id="1599199147673445968">አዲስ ካርድ? <ph name="BEGIN_LINK" />የካርድ ዝርዝሮችን ያስገቡ<ph name="END_LINK" /></translation>
@@ -336,6 +337,7 @@
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> ሲሆን መገለጽ እና የሚሰራ ሕብረቁምፊ መሆን አለበት።</translation>
 <translation id="1745880797583122200">የእርስዎ አሳሽ ይተዳደራል</translation>
 <translation id="1746113442205726301">የምስል Y ፈረቃ</translation>
+<translation id="1746531169546376413">0 ዲግሪ</translation>
 <translation id="17513872634828108">ትሮችን ክፈት</translation>
 <translation id="1752021286346845558">የመልዕክት ሳጥን 8</translation>
 <translation id="1753068535428855445">ለፍቅር መገናኘት እና ራስን ማስተዋወቅ</translation>
@@ -410,7 +412,6 @@
 <translation id="1958218078413065209">የእርስዎ ከፍተኛ ውጤት <ph name="SCORE" /> ነው።</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />የጎበኙትን የአንዳንድ ገጾች ዩአርኤልዎች፣ የተገደበ የስርዓት መረጃ እና አንዳንድ የገጽ ይዘት<ph name="END_WHITEPAPER_LINK" /> ወደ Google በመላክ ለሁሉም ሰው ድር ላይ ደህንነት እንዲሻሻል ያግዙ። <ph name="BEGIN_PRIVACY_PAGE_LINK" />የግላዊነት መመሪያ<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> እልባቶች</translation>
-<translation id="1971033026002113380">በTouchID ለይለፍ ቃላት ጥበቃ ያድርጉ</translation>
 <translation id="1973335181906896915">የመለያ ቁጥር መስጠት ላይ ስህተት</translation>
 <translation id="1974060860693918893">የላቀ</translation>
 <translation id="1975457531113383421">የግቤት መሳቢያ</translation>
@@ -745,7 +746,6 @@
 <translation id="2881276955470682203">ካርድ ይቀመጥ?</translation>
 <translation id="2882949212241984732">ድርብ-በር ማጠፍ</translation>
 <translation id="2893773853358652045">አራተኛ ጥቅልል</translation>
-<translation id="289834758818479772">ይህን መሣሪያ ከሌሎች ጋር የሚጋሩ ከሆነ የተቀመጠ የይለፍ ቃልን በተጠቀሙ ቁጥር እርስዎ መሆንዎን ለማረጋገጥ TouchIDን ማብራት ይችላሉ</translation>
 <translation id="2900528713135656174">ክስተት ፍጠር</translation>
 <translation id="2903493209154104877">አድራሻዎች</translation>
 <translation id="290376772003165898">ገጽ በ<ph name="LANGUAGE" /> አይደለም?</translation>
@@ -1062,7 +1062,6 @@
 <translation id="3678529606614285348">ገጹን ማንነት በማያሳውቅ አዲስ መስኮት ውስጥ ይክፈቱ (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">የሰርቲፊኬት መረጃ</translation>
 <translation id="3693327506115126094">እርስዎ መሆንዎን እንዴት እንደሚያረጋግጡ ይምረጡ</translation>
-<translation id="3699374065820972102">TouchID የይለፍ ቃሎችን ለመሙላት በርቷል</translation>
 <translation id="3701427423622901115">ዳግም ማስጀመር እውቅና ተሰጥቶታል።</translation>
 <translation id="3704162925118123524">እየተጠቀሙ ያሉት አውታረ መረብ በመለያ መግቢያ ገጹን እንዲጎበኙ ሊጠይቅዎት ይችላል።</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1177,7 +1176,6 @@
 <translation id="401170183602135785">ሲ6 ፖስታ</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} ገጽ የያዘ የፒዲኤፍ ሰነድ}one{{COUNT} ገጾችን የያዘ የፒዲኤፍ ሰነድ}other{{COUNT} ገጾችን የያዘ የፒዲኤፍ ሰነድ}}</translation>
 <translation id="4023431997072828269">ይህ ቅጽ ደህንነቱ በማያስተማምን ግንኙነት በመጠቀም እየገባ ያለ ስለሆነ የእርስዎ መረጃ ለሌሎች የሚታይ ይሆናል።</translation>
-<translation id="4024923292610332139">የይለፍ ቃላትን ለመሙላት TouchIDን ያጥፉ</translation>
 <translation id="4025913568718019429">የGoogle የግላዊነት ቅንብሮች አዝራርን ያስተዳድሩ፣ የGoogle መለያዎን የግላዊነት ቅንብሮች ለመጎብኘት አስገባን ይጫኑ</translation>
 <translation id="4030383055268325496">&amp;አክልን ቀልብስ</translation>
 <translation id="4031179711345676612">ማይክሮፎን ተፈቅዷል</translation>
@@ -1539,7 +1537,6 @@
 <translation id="4900217275619098670">ዘጠነኛ ጥቅልል</translation>
 <translation id="4901778704868714008">አስቀምጥ...</translation>
 <translation id="4905659621780993806">የእርስዎ አስተዳዳሪ መሣሪያዎን በ<ph name="DATE" /> <ph name="TIME" /> ላይ በራስ-ሰር ዳግም ያስነሳዋል። መሣሪያዎ ዳግም ከመነሳቱ በፊት ማናቸውንም ክፍት ንጥሎች ያስቀምጡ።</translation>
-<translation id="4911007278801291296"><ph name="SETTINGS" /> ውስጥ TouchIDን ማብራት ወይም ማጥፋት ይችላሉ</translation>
 <translation id="4913987521957242411">ከላይ በግራ ብሳ</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" />ን ይጫኑ (ምንም ማውረድ አያስፈልግም)</translation>
 <translation id="4923459931733593730">ክፍያ</translation>
@@ -1752,7 +1749,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> ማሳወቂያዎችን ለእርስዎ መላክ ይፈልጋል</translation>
 <translation id="5428105026674456456">ስፓኒሽ</translation>
 <translation id="5430298929874300616">ዕልባት አስወግድ</translation>
-<translation id="5434423669266814150">የይለፍ ቃላትን ለመሙላት TouchIDን ያብሩ</translation>
 <translation id="5443468954631487277">ተቃራኒ ቅደም-ተከተል ፊቱ ወደ ላይ</translation>
 <translation id="5447765697759493033">ይህ ጣቢያ አይተረጎምም</translation>
 <translation id="5452270690849572955">ይህ <ph name="HOST_NAME" /> ገጽ ሊገኝ አይችልም</translation>
@@ -1794,6 +1790,7 @@
 <translation id="5540969246441091044">የፈረስ ስፖርት</translation>
 <translation id="5541086400771735334">የመልዕክት ሳጥን 7</translation>
 <translation id="5541546772353173584">ኢሜይል ያክሉ</translation>
+<translation id="5543722831081909240">180 ዲግሪ</translation>
 <translation id="5545756402275714221">ለእርስዎ የሚሆኑ ጽሑፎች</translation>
 <translation id="5551890439174915351">100 x 200 ሚሜ</translation>
 <translation id="5552137475244467770">Chrome በተወሰነ ጊዜ ልዩነት በመስመር ላይ ከታተሙ ዝርዝሮች አንጻር የእርስዎን የይለፍ ቃላት ይፈትሻል። ይህን በሚያደርግበት ጊዜ፣ የእርስዎ የይለፍ ቃላት እና የተጠቃሚ ስሞች Googleን ጨምሮ በማንም ሌላ ወገን እንዳይነበቡ ይመሣጠራሉ።</translation>
@@ -2181,6 +2178,7 @@
 <translation id="6591833882275308647">የእርስዎ <ph name="DEVICE_TYPE" /> የሚተዳደር አይደለም</translation>
 <translation id="6592952801936330159">የጣቢያ ቅንብሮች አዝራሩን ያቀናብሩ፣ በChrome ቅንብሮች ውስጥ ፈቃዶችን እና በመላ ጣቢያዎች ላይ የተከማቸ ውሂብን ለማቀናበር አስገባን ይጫኑ</translation>
 <translation id="6596325263575161958">የምስጠራ አማራጮች</translation>
+<translation id="6597665340361269064">90 ዲግሪ</translation>
 <translation id="6599642189720630047">ክትትል የሚደረግባቸው ምርቶች</translation>
 <translation id="6611723696964473273">የኢኮኖሚ ዜና</translation>
 <translation id="6612010098632894193">የመስመር ላይ ቪድዮ</translation>

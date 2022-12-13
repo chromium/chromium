@@ -271,6 +271,7 @@
 <translation id="1586541204584340881">אילו תוספים התקנת.</translation>
 <translation id="1588438908519853928">רגיל</translation>
 <translation id="1592005682883173041">גישה לנתונים מקומיים</translation>
+<translation id="1593359183944365958">270 מעלות</translation>
 <translation id="1594030484168838125">בחירה</translation>
 <translation id="1596296697375291157">סרטי מתח, פשע ומסתורין</translation>
 <translation id="1599199147673445968">כרטיס חדש? <ph name="BEGIN_LINK" />להזנת פרטי הכרטיס<ph name="END_LINK" /></translation>
@@ -337,6 +338,7 @@
 <translation id="1741613555002899862">‏יש לציין מחרוזת חוקית כשהערך של DnsOverHttpsMode הוא <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">הדפדפן שלך מנוהל</translation>
 <translation id="1746113442205726301">‏הזזת תמונה על ציר Y</translation>
+<translation id="1746531169546376413">0 מעלות</translation>
 <translation id="17513872634828108">כרטיסיות פתוחות</translation>
 <translation id="1752021286346845558">תיבת דואר 8</translation>
 <translation id="1753068535428855445">שידוכים והכרויות</translation>
@@ -411,7 +413,6 @@
 <translation id="1958218078413065209">הניקוד הכי גבוה שלך הוא <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">‏כדי לעזור לנו לשפר את האבטחה באינטרנט לטובת כולם, המערכת תשלח אל Google <ph name="BEGIN_WHITEPAPER_LINK" />כתובות URL של כמה מהדפים שנכנסת אליהם, מידע מוגבל על המערכת וחלק מהתוכן של הדפים<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />מדיניות פרטיות<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">סימניות של <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">‏הגנה על סיסמאות באמצעות TouchID</translation>
 <translation id="1973335181906896915">שגיאה בעריכה בסידרה</translation>
 <translation id="1974060860693918893">מתקדם</translation>
 <translation id="1975457531113383421">מגש הזנה</translation>
@@ -746,7 +747,6 @@
 <translation id="2881276955470682203">לשמור את הכרטיס?</translation>
 <translation id="2882949212241984732">שתי כנפיים בקיפול</translation>
 <translation id="2893773853358652045">הגליל הרביעי</translation>
-<translation id="289834758818479772">‏אם המכשיר הזה משותף עם אחרים, יש לך אפשרות להפעיל את TouchID כדי לאמת את זהותך בכל שימוש בסיסמה שמורה</translation>
 <translation id="2900528713135656174">יצירת אירוע</translation>
 <translation id="2903493209154104877">כתובות</translation>
 <translation id="290376772003165898">הדף לא ב<ph name="LANGUAGE" />?</translation>
@@ -1064,7 +1064,6 @@
 <translation id="3678529606614285348">‏פתיחת הדף בחלון אנונימי חדש (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">פרטי אישור</translation>
 <translation id="3693327506115126094">עליך לבחור שיטה לאימות הזהות שלך</translation>
-<translation id="3699374065820972102">‏התכונה TouchID מופעלת לצורך מילוי סיסמאות</translation>
 <translation id="3701427423622901115">האיפוס אושר.</translation>
 <translation id="3704162925118123524">ייתכן שתוצג דרישה להיכנס לדף ההתחברות של הרשת שבה בחרת להשתמש.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> ‏- <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1179,7 +1178,6 @@
 <translation id="401170183602135785">‏מעטפה – C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{‏מסמך ה-PDF מכיל דף אחד ({COUNT})}one{‏מסמך ה-PDF מכיל דף אחד ({COUNT})}two{‏מסמך ה-PDF מכיל {COUNT} דפים}other{‏מסמך ה-PDF מכיל {COUNT} דפים}}</translation>
 <translation id="4023431997072828269">שליחת הטופס הזה מתבצעת דרך חיבור שאינו מאובטח, לכן המידע שלך יהיה גלוי לאחרים.</translation>
-<translation id="4024923292610332139">‏לכבות את TouchID כדי למלא סיסמאות</translation>
 <translation id="4025913568718019429">‏הלחצן לניהול הגדרות הפרטיות ב-Google, מקישים על Enter כדי להיכנס להגדרות הפרטיות בחשבון Google</translation>
 <translation id="4030383055268325496">&amp;ביטול הוספה</translation>
 <translation id="4031179711345676612">ניתן להשתמש במיקרופון בדף זה</translation>
@@ -1545,7 +1543,6 @@ Del</translation>
 <translation id="4900217275619098670">הגליל התשיעי</translation>
 <translation id="4901778704868714008">שמירה...</translation>
 <translation id="4905659621780993806">המכשיר יופעל מחדש באופן אוטומטי על ידי האדמין בשעה <ph name="TIME" /> בתאריך <ph name="DATE" />. יש לשמור פריטים פתוחים לפני ההפעלה מחדש של המכשיר.</translation>
-<translation id="4911007278801291296">‏אפשר להפעיל או להשבית את TouchID ב<ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">ניקוב בפינה השמאלית העליונה</translation>
 <translation id="4918221908152712722">התקנת <ph name="APP_NAME" /> (לא דרושה הורדה)</translation>
 <translation id="4923459931733593730">תשלום</translation>
@@ -1727,6 +1724,7 @@ Del</translation>
 <translation id="5334013548165032829">יומני מערכת מפורטים</translation>
 <translation id="5334145288572353250">לשמור את הכתובת?</translation>
 <translation id="5335920952954443287">לב פועם</translation>
+<translation id="5337569431717511221">‏לחצן להגדרת Chrome כדפדפן ברירת המחדל, יש ללחוץ על Enter כדי להגדיר את Chrome כדפדפן ברירת המחדל של המערכת.</translation>
 <translation id="5340250774223869109">האפליקציה חסומה</translation>
 <translation id="534295439873310000">‏מכשירי NFC</translation>
 <translation id="5344579389779391559">ייתכן שהדף הזה ינסה לדרוש ממך תשלום</translation>
@@ -1758,7 +1756,6 @@ Del</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> רוצה לשלוח לך הודעות</translation>
 <translation id="5428105026674456456">ספרדית</translation>
 <translation id="5430298929874300616">הסרת סימנייה</translation>
-<translation id="5434423669266814150">‏יש להפעיל את TouchID כדי למלא סיסמאות</translation>
 <translation id="5443468954631487277">בסדר הפוך עם הפנים כלפי מעלה</translation>
 <translation id="5447765697759493033">האתר הזה לא יתורגם</translation>
 <translation id="5452270690849572955">לא ניתן למצוא את הדף של <ph name="HOST_NAME" /></translation>
@@ -1801,6 +1798,7 @@ Del</translation>
 <translation id="5540969246441091044">רכיבת סוסים</translation>
 <translation id="5541086400771735334">תיבת דואר 7</translation>
 <translation id="5541546772353173584">הוספת כתובת אימייל</translation>
+<translation id="5543722831081909240">180 מעלות</translation>
 <translation id="5545756402275714221">מאמרים שעשויים לעניין אותך</translation>
 <translation id="5551890439174915351">‏100x200 מ"מ</translation>
 <translation id="5552137475244467770">‏מערכת Chrome בודקת מדי פעם את הסיסמאות שלך ומשווה אותן לרשימות שהתפרסמו באינטרנט. כשהפעולה הזו מבוצעת, הסיסמאות ושמות המשתמש מוצפנים, כך שאיש לא יוכל לקרוא אותם, כולל Google.</translation>
@@ -2189,6 +2187,7 @@ Del</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> זה אינו מנוהל</translation>
 <translation id="6592952801936330159">‏הלחצן 'ניהול ההגדרות לאתרים', יש להקיש על Enter כדי לנהל את ההרשאות והנתונים השמורים בכל האתרים בהגדרות Chrome</translation>
 <translation id="6596325263575161958">אפשרויות הצפנה</translation>
+<translation id="6597665340361269064">90 מעלות</translation>
 <translation id="6599642189720630047">מוצרים במעקב</translation>
 <translation id="6611723696964473273">חדשות כלכלה</translation>
 <translation id="6612010098632894193">סרטונים אונליין</translation>
@@ -2421,6 +2420,7 @@ Del</translation>
 <translation id="7199278868241956094">‏8.5x13.4 אינץ' (Oficio)</translation>
 <translation id="7201591969684833065">מנהל המערכת יכול לראות:</translation>
 <translation id="7202217080450895452">‏<ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לפתוח כרטיסייה פרטית חדשה לגלישה באופן פרטי</translation>
+<translation id="7203375778433816396">‏הגדרת Chrome כדפדפן ברירת המחדל של המערכת</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> לא פועל בהתאם לתקני האבטחה.</translation>
 <translation id="7210993021468939304">‏קיימת פעילות של Linux בתוך המאגר וניתן להתקין ולהפעיל אפליקציות של Linux בתוך המאגר</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> בנושא זה.</translation>
@@ -2568,6 +2568,7 @@ Del</translation>
 <translation id="7537536606612762813">חובה</translation>
 <translation id="7542403920425041731">ברגע שתאשר, פרטי הכרטיס שלך ישותפו עם האתר הזה.</translation>
 <translation id="7542995811387359312">מילוי אוטומטי של פרטי כרטיס אשראי מושבת כיוון שטופס זה אינו משתמש בחיבור מאובטח.</translation>
+<translation id="7546409722674205727">האפליקציה <ph name="APP_NAME" /> נפתחת</translation>
 <translation id="7548892272833184391">פתרון שגיאות חיבור</translation>
 <translation id="7549584377607005141">דף אינטרנט זה זקוק לנתונים שהזנת קודם לכן כדי שהוא יוצג כראוי. ניתן לשלוח שוב את הנתונים, אך פעולה זו תגרום לחזרה על כל פעולה שדף זה ביצע בעבר.</translation>
 <translation id="7550637293666041147">‏שם המשתמש במכשיר ושם המשתמש ב-Chrome</translation>
@@ -2753,6 +2754,7 @@ Del</translation>
 <translation id="8009843239480947060">‏10x11 אינץ'</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{הכרטיס הזה יישמר יחד עם הכתובת שלו לחיוב. יתאפשר לך להשתמש בו לאחר התחברות אל <ph name="USER_EMAIL" />.}one{הכרטיסים האלה יישמרו יחד עם הכתובות שלהם לחיוב. יתאפשר לך להשתמש בהם לאחר התחברות אל <ph name="USER_EMAIL" />.}two{הכרטיסים האלה יישמרו יחד עם הכתובות שלהם לחיוב. יתאפשר לך להשתמש בהם לאחר התחברות אל <ph name="USER_EMAIL" />.}other{הכרטיסים האלה יישמרו יחד עם הכתובות שלהם לחיוב. יתאפשר לך להשתמש בהם לאחר התחברות אל <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568">‏<ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי להגדיר את Chrome כדפדפן ברירת המחדל של המערכת</translation>
 <translation id="8025119109950072390">תוקפים באתר הזה עשויים לגרום לך, בדרכי מרמה, לבצע פעולות מסוכנות כמו התקנת תוכנה או חשיפה של מידע אישי (לדוגמה: סיסמאות, מספרי טלפון או פרטי כרטיסי אשראי).</translation>
 <translation id="8026334261755873520">ניקוי נתוני גלישה</translation>
 <translation id="8027077570865220386">מגש 15</translation>

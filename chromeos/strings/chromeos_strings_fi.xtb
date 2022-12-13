@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Peru tulostustyö</translation>
 <translation id="2163937499206714165">Ota tumma tila käyttöön</translation>
 <translation id="2180197493692062006">Jotain meni pieleen. Kokeile avata sovellus uudelleen.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Nollaa liikennelaskurit</translation>
 <translation id="2212733584906323460">Verkkotunnuksen muuntaminen</translation>
 <translation id="2217935453350629363">Nykyinen nopeus</translation>
@@ -492,6 +491,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Vaihda tummaan teemaan automaattisesti, kun aurinko laskee</translation>
+<translation id="5571714952674387371">Katso ja muokkaa tietoja</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skannaa uudelleen</translation>
 <translation id="5583640892426849032">Askelpalautin</translation>
@@ -561,6 +561,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6189418609903030344">Akun kapasiteetti pienenee käytössä</translation>
 <translation id="6191293864534840972">Nimipalvelimet väärän muotoisia</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Poistu koko näytön tilasta</translation>
 <translation id="6223752125779001553">Skannereita ei saatavilla</translation>
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6235460611964961764">Nollaa datan käyttö manuaalisesti</translation>
@@ -688,11 +689,12 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="741244894080940828">muunnos</translation>
 <translation id="7415801143053185905">Erittäin suuri HTTP-viive</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skannaus valmis. 1 sivu skannattu}other{Skannaus valmis. {NUMBER_OF_PAGES} sivua skannattu}}</translation>
+<translation id="7458970041932198923">Muodosta verkkoyhteys ja päivitä sivu nähdäksesi ja käyttääksesi avatareja.</translation>
 <translation id="7469648432129124067">Portaali havaittu</translation>
 <translation id="7481312909269577407">Seuraava</translation>
 <translation id="7487067081878637334">Tekniikka</translation>
 <translation id="7490813197707563893">MAC-osoite</translation>
+<translation id="7491478667760509108">Poistu kelluvasta tilasta</translation>
 <translation id="7497215489070763236">Palvelimen CA-varmenne</translation>
 <translation id="7502658306369382406">IPv6-osoite</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -793,6 +795,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8498220429738806196">Liikennelaskurit</translation>
 <translation id="8503813439785031346">Käyttäjätunnus</translation>
 <translation id="8503836310948963452">Vielä pari minuuttia…</translation>
+<translation id="8508640263392900755">APN-tiedot</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operaattorisi saattaa vaatia tätä asetusta operaattorin verkkoon yhdistämistä varten. Lisätietoja saat operaattoriltasi.</translation>
 <translation id="8576249514688522074">Ei ole alustettu</translation>
@@ -843,6 +846,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skannaa}=1{Skannaa sivu {NUMBER_OF_PAGES}}other{Skannaa sivu {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Laitteen akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="8998289560386111590">Ei saatavilla laitteellasi</translation>
 <translation id="9003704114456258138">Taajuus</translation>
 <translation id="9025198690966128418">Käytä henkilökohtaisena laitteena</translation>
 <translation id="9028832514430399253">Laita valitsin päälle-asentoon, niin voit valita näytönsäästäjän asetukset</translation>

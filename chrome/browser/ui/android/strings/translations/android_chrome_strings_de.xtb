@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Hilf uns, den Datenschutz im Web zu verbessern</translation>
 <translation id="107147699690128016">Eine Änderung der Dateiendung kann zum Öffnen der Datei in einer anderen Anwendung führen und Schäden an deinem Gerät verursachen.</translation>
 <translation id="1089606299949659462">Überprüfung abgeschlossen</translation>
-<translation id="1091604859693995976">Zum Ansehen aktualisieren</translation>
 <translation id="1095761715416917775">Du solltest jederzeit auf deine synchronisierten Daten zugreifen können</translation>
 <translation id="1100066534610197918">In neuem Tab in Gruppe öffnen</translation>
 <translation id="1103142993930332957">Möchtest du helfen, Chrome zu verbessern?</translation>
@@ -1148,6 +1147,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7177466738963138057">Dies kann später in den Einstellungen geändert werden</translation>
 <translation id="7177873915659574692">Der QR-Code konnte nicht erstellt werden. Die URL ist länger als <ph name="CHARACTER_LIMIT" /> Zeichen.</translation>
 <translation id="7177959540995930968">Weitere Informationen zu diesen Funktionen findest du in den Chrome-Einstellungen.</translation>
+<translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="718226107353899806">Du kannst bis zu <ph name="MAX_NUM_REACTIONS" /> Reaktionen hinzufügen</translation>
 <translation id="7183693674623539380">Tabgruppe – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Schützt dich in Chrome und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn du angemeldet bist.</translation>

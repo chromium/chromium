@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Ayúdanos a crear una Web más privada</translation>
 <translation id="107147699690128016">Si cambias la extensión del archivo, el archivo podría abrirse en una aplicación diferente y convertirse en un riesgo potencial para tu dispositivo.</translation>
 <translation id="1089606299949659462">Revisión completada</translation>
-<translation id="1091604859693995976">Actualizar para ver</translation>
 <translation id="1095761715416917775">Asegúrate de que siempre puedas acceder a tus datos sincronizados</translation>
 <translation id="1100066534610197918">Abrir en pestaña nueva en grupo</translation>
 <translation id="1103142993930332957">¿Quieres ayudar a mejorar Chrome?</translation>
@@ -1148,6 +1147,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7177466738963138057">Puedes cambiar esta opción más tarde en Configuración</translation>
 <translation id="7177873915659574692">No se puede crear el código QR. La URL contiene más de <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="7177959540995930968">Puedes obtener más información sobre estas funciones en la configuración de Chrome.</translation>
+<translation id="7180611975245234373">Actualizar</translation>
 <translation id="718226107353899806">Puedes añadir hasta <ph name="MAX_NUM_REACTIONS" /> reacciones</translation>
 <translation id="7183693674623539380">Grupo de pestañas: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras aplicaciones de Google cuando has iniciado sesión.</translation>

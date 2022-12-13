@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Internetni yanada shaxsiy qilishimizga yordam bering</translation>
 <translation id="107147699690128016">Agar fayl kengaytmasi oʻzgartirilsa, fayl boshqa ilovada ochilishi va qurilmaga zarar yetkazishi mumkin.</translation>
 <translation id="1089606299949659462">Tekshirildi!</translation>
-<translation id="1091604859693995976">Ochish uchun yangilang</translation>
 <translation id="1095761715416917775">Sinxronlangan axborotlarni doim ocha olishingizni tekshiring</translation>
 <translation id="1100066534610197918">Guruhda yangi varaqda ochish</translation>
 <translation id="1103142993930332957">Chromeni yaxshilashga yordam berasizmi?</translation>
@@ -761,6 +760,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="510275257476243843">1 soat qoldi</translation>
 <translation id="5115811374190515607">Qayerga: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Qiziqishlar</translation>
+<translation id="5122378528687922675">Ota-onangiz (<ph name="PARENT_NAME_1" /> yoki <ph name="PARENT_NAME_2" />) yordam oling</translation>
 <translation id="5123685120097942451">Inkognito varaq</translation>
 <translation id="5126510351761255129">Kartangizni tasdiqlang</translation>
 <translation id="5132942445612118989">Parollar, tarix va boshqa sozlamalaringizni barcha qurilmalaringizda sinxronlang</translation>
@@ -1148,6 +1148,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7177466738963138057">Buni keyinroq “Sozlamalar” orqali o‘zgartirishingiz mumkin</translation>
 <translation id="7177873915659574692">QR kod yaratilmadi. URL manzilda <ph name="CHARACTER_LIMIT" /> tadan ortiq belgi kiritildi.</translation>
 <translation id="7177959540995930968">Bu funksiyalar haqida batafsil axborotni Chrome sozlamalari orqali olish mumkin.</translation>
+<translation id="7180611975245234373">Yangilash</translation>
 <translation id="718226107353899806">Maksimum <ph name="MAX_NUM_REACTIONS" /> ta munosabat qoʻshishingiz mumkin.</translation>
 <translation id="7183693674623539380">Varaqlar guruhi - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Hisobingizga kirganingizda Chrome va boshqa Google ilovalaridan xavfsiz foydalanishingizni taʼminlaydi.</translation>
@@ -1331,6 +1332,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8084285576995584326">Google hisobingiz maʼlumotlarini boshqaring</translation>
 <translation id="808747664143081553">Qurilmaga ulandi</translation>
 <translation id="8088176524274673045">Yaqin-atrofdagilarga ulashish uchun ular shu QR kodni skanerlashi kerak.</translation>
+<translation id="8090732854597034573">Ota-onangizdan yordam oling</translation>
 <translation id="8100969750121413114">Chromeni oʻzingizga moslash uchun hisobga kiring</translation>
 <translation id="8103578431304235997">Inkognito sahifa</translation>
 <translation id="8105613260829665809">Davom etish bilan siz <ph name="BEGIN_TOS_LINK" />xizmat shartlariga<ph name="END_TOS_LINK" /> rozilik bildirasiz.\nIlovani yaxshilash maqsadida Chrome foydalanish statistikasi va ishdan chiqishlar axborotini Googlega yuboradi. <ph name="BEGIN_UMA_LINK" />Boshqarish<ph name="END_UMA_LINK" /></translation>
@@ -1339,6 +1341,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8109613176066109935">Boshqa qurilmalardagi xatcho‘plaringizni ko‘rish uchun sinxronizatsiyani yoqing</translation>
 <translation id="8110024788458304985">Chrome OS funksiyalari va unumdorligini yaxshilashga yordam bering</translation>
 <translation id="8110087112193408731">Raqamli muvozanat xizmatida Chrome amallari chiqsinmi?</translation>
+<translation id="8118117428362942925">Ota-onangizdan (<ph name="PARENT_NAME" />) yordam oling</translation>
 <translation id="8127542551745560481">Bosh sahifani oʻzgartirish</translation>
 <translation id="8130309322784422030">Kirishga oid saqlangan axborotingiz eskirgan</translation>
 <translation id="813082847718468539">Sayt haqidagi ma’lumotlar</translation>

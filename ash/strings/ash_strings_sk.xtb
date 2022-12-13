@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">Uložte zariadenie <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Batéria dotykového pera je takmer vybitá</translation>
 <translation id="1036073649888683237">Ak chcete spravovať upozornenia, prejdite do Nastavení</translation>
+<translation id="1036348656032585052">Vypnúť</translation>
 <translation id="1036672894875463507">Som váš Asistent Google, vždy pripravený pomôcť!
 Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1037492556044956303">Pridali ste zariadenie <ph name="DEVICE_NAME" /></translation>
@@ -100,6 +101,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1447641497144572814">Spúšťa sa šetrič obrazovky</translation>
 <translation id="1455242230282523554">Zobraziť nastavenia jazyka</translation>
 <translation id="1460620680449458626">Zvuk je vypnutý.</translation>
+<translation id="14648076227129703">Týmto povolíte prístup ku kamere aplikáciám <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> a všetkým aplikáciám a webom s povolením používať kameru</translation>
 <translation id="1467432559032391204">Doľava</translation>
 <translation id="146902737843070955">O túto zmenu požiadal váš správca</translation>
 <translation id="147310119694673958">Batéria telefónu <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -159,6 +161,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1797271123677381264">Zabudnuté heslo</translation>
 <translation id="181103072419391116">Sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>
 <translation id="1812997170047690955">Čo je na obrazovke?</translation>
+<translation id="1816896987747843206">Týmto povolíte prístup ku kamere všetkým aplikáciám a webom s povolením používať kameru</translation>
 <translation id="1823280932251546115">Stavový panel, čas <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1830308660060964064">Položka <ph name="ITEM_TITLE" /> bola odopnutá</translation>
 <translation id="1836215606488044471">Asistent (načítava sa...)</translation>
 <translation id="1838895407229022812">Nočný režim je vypnutý.</translation>
+<translation id="1854180393107901205">Zastaviť prenášanie</translation>
 <translation id="1862380676329487333">Aktualizovať a odhlásiť sa</translation>
 <translation id="1864454756846565995">Zariadenie USB-C (port vzadu)</translation>
 <translation id="1869497990620230175">Rýchle súbory</translation>
@@ -598,6 +602,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4316910396681052118">VŠETKY APLIKÁCIE</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Klávesová skratka Ctrl + Alt + šípka nahor bola zmenená. Ak chcete použiť kláves Domov, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + šípka doľava.</translation>
+<translation id="4324840740119394760">Týmto povolíte prístup ku kamere aplikácii <ph name="APP_NAME" /> a všetkým aplikáciám a webom s povolením používať kameru</translation>
 <translation id="4333628967105022692">Prehliadač Lacros nie je podporovaný, keď je prihlásených viacero používateľov.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">Asistent sa načítava...</translation>
@@ -664,13 +669,13 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Funkcia ChromeVox je povolená</translation>
 <translation id="4665114317261903604">Prepnúť režim bez vyrušení. <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Ak chcete, aby boli všetky kamery stále blokované, vypnite v tomto zariadení prístup ku kamere.</translation>
 <translation id="4666911709726371538">Ďalšie aplikácie</translation>
 <translation id="4667099493359681081">Sťahuje sa <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Aplikácie z telefónu</translation>
 <translation id="4690510401873698237">Polička dolu</translation>
 <translation id="4696813013609194136">Odomknutie zariadenia kódom rodiča</translation>
 <translation id="4702647871202761252">Obrazovka ochrany súkromia je vypnutá</translation>
+<translation id="4706121060329443414">K pokusu o stiahnutie dôjde neskôr. Reč bude odoslaná Googlu na spracovanie.</translation>
 <translation id="470644585772471629">Inverzia farieb</translation>
 <translation id="4717575069099566988">Kábel USB-C nepodporuje USB4. Výkonnosť zariadenia môže byť obmedzená.</translation>
 <translation id="4730374152663651037">ČASTO POUŽÍVANÉ</translation>
@@ -696,7 +701,6 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="485592688953820832">Žiadna akcia (pozastaviť)</translation>
 <translation id="485634149294284819">Otvoriť ponuku klávesnice</translation>
 <translation id="4860284199500934869">Ak chcete stiahnuť <ph name="FILENAME" />, skontrolujte pripojenie k sieti</translation>
-<translation id="486056901304535126">K pokusu o stiahnutie dôjde neskôr. Než sa sťahovanie dokončí, reč bude odosielaná na spracovanie Googlu.</translation>
 <translation id="4864369630010738180">Prebieha prihlasovanie...</translation>
 <translation id="4864648187878336334">15. plocha</translation>
 <translation id="4868492592575313542">aktivované</translation>
@@ -791,6 +795,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="5356963482258194581">Prepínajte medzi tmavým a svetlým motívom. Pravým tlačidlom kliknite na pracovnú plochu a vyberte Tapety a štýl.</translation>
 <translation id="536019650977002321">Správca nepovoľuje záznam zvuku. Ďalšie informácie vám poskytne správca.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Prejsť na túto kartu</translation>
+<translation id="5377367976106153749">Chcete zapnúť prístup ku kamere?</translation>
 <translation id="5379115545237091094">Príliš veľa pokusov</translation>
 <translation id="5391307769715781764">Chcete nahradiť uloženú plochu?</translation>
 <translation id="5393156353051693207">Pridržte ľubovoľné miesto a zmeňte poradie aplikácií</translation>
@@ -1177,7 +1182,6 @@ Nová inštalácia</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> momentálne používa mikrofón</translation>
 <translation id="7561982940498449837">Zavrieť ponuku</translation>
 <translation id="7564874036684306347">Presunutie okien na inú obrazovku môže spôsobiť neočakávané správanie. Nasledujúce upozornenia, okná a dialógové okná sa môžu zobraziť rozdelené na viacerých pracovných plochách.</translation>
-<translation id="7567076708801803118">Chcete v tomto zariadení vypnúť prístup ku kamere?</translation>
 <translation id="7569509451529460200">Funkcie Braille a ChromeVox sú povolené</translation>
 <translation id="7573585051776738856">Aktívne okno je ukotvené vpravo.</translation>
 <translation id="7579778809502851308">Snímanie obrazovky</translation>
@@ -1253,6 +1257,7 @@ Nová inštalácia</translation>
 <translation id="79341161159229895">Správcovia účtu: <ph name="FIRST_PARENT_EMAIL" /> a <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Schránku zobrazíte klávesmi <ph name="SHORTCUT_KEY_NAME" /> + V. Posledných päť skopírovaných položiek sa uloží do vašej schránky.</translation>
 <translation id="7942349550061667556">Červená</translation>
+<translation id="7963992254934562106">Zdroj: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Vybrať priečinok…</translation>
 <translation id="7977927628060636163">Hľadajú sa mobilné siete...</translation>
 <translation id="7982789257301363584">Sieť</translation>

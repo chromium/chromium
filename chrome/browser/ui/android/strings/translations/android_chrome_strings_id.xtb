@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Bantu kami membuat web yang lebih pribadi</translation>
 <translation id="107147699690128016">Jika ekstensi file diubah, file dapat terbuka di aplikasi lain dan berpotensi membahayakan perangkat Anda.</translation>
 <translation id="1089606299949659462">Peninjauan selesai.</translation>
-<translation id="1091604859693995976">Muat ulang untuk melihat</translation>
 <translation id="1095761715416917775">Pastikan Anda selalu dapat mengakses data tersinkronisasi</translation>
 <translation id="1100066534610197918">Buka pada tab baru di grup</translation>
 <translation id="1103142993930332957">Bantu tingkatkan kualitas Chrome?</translation>
@@ -1148,6 +1147,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7177466738963138057">Anda dapat mengubah ini nanti di Setelan</translation>
 <translation id="7177873915659574692">Tidak dapat membuat Kode QR. URL berisi lebih dari <ph name="CHARACTER_LIMIT" /> karakter.</translation>
 <translation id="7177959540995930968">Anda dapat mempelajari fitur ini lebih lanjut di setelan Chrome.</translation>
+<translation id="7180611975245234373">Perbarui</translation>
 <translation id="718226107353899806">Anda dapat menambahkan hingga <ph name="MAX_NUM_REACTIONS" /> reaksi</translation>
 <translation id="7183693674623539380">Grup tab - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Memastikan Anda tetap aman di Chrome dan dapat digunakan untuk menyempurnakan keamanan Anda di aplikasi Google lainnya saat login.</translation>

@@ -413,7 +413,6 @@
 <translation id="1958218078413065209">Най-високият ви резултат е <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Помогнете за всеобщото подобряване на сигурността в мрежата, като изпращате до Google <ph name="BEGIN_WHITEPAPER_LINK" />URL адресите на някои от страниците, които посещавате, ограничена системна информация и част от съдържанието на страниците<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Декларация за поверителност<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Отметки от <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">Защита на паролите с TouchID</translation>
 <translation id="1973335181906896915">Грешка при сериализирането</translation>
 <translation id="1974060860693918893">Разширени</translation>
 <translation id="1975457531113383421">Входна тава</translation>
@@ -748,7 +747,6 @@
 <translation id="2881276955470682203">Да се запази ли картата?</translation>
 <translation id="2882949212241984732">Сгъване на двата края навътре и прегъване в средата</translation>
 <translation id="2893773853358652045">Четвърта ролка</translation>
-<translation id="289834758818479772">Ако споделяте устройството с други хора, можете да включите TouchID, за да потвърждавате самоличността си всеки път, когато използвате запазена парола</translation>
 <translation id="2900528713135656174">Създайте събитие</translation>
 <translation id="2903493209154104877">Адреси</translation>
 <translation id="290376772003165898">Страницата не е на <ph name="LANGUAGE" />?</translation>
@@ -1066,7 +1064,6 @@
 <translation id="3678529606614285348">Отворете страницата в нов прозорец в режим „инкогнито“ (Ctrl-Shift-N).</translation>
 <translation id="3681007416295224113">Информация за сертификата</translation>
 <translation id="3693327506115126094">Изберете как да потвърдите, че сте вие</translation>
-<translation id="3699374065820972102">Функцията TouchID е включена за попълване на паролите</translation>
 <translation id="3701427423622901115">Нулирането е потвърдено.</translation>
 <translation id="3704162925118123524">Използваната от вас мрежа може да изисква да посетите страницата й за вход.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1181,7 +1178,6 @@
 <translation id="401170183602135785">Плик C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF документ, съдържащ {COUNT} страница}other{PDF документ, съдържащ {COUNT} страници}}</translation>
 <translation id="4023431997072828269">Тъй като този формуляр се изпраща посредством незащитена връзка, информацията ви ще е видима за други хора.</translation>
-<translation id="4024923292610332139">изключи TouchID за попълване на паролите</translation>
 <translation id="4025913568718019429">Бутон за управление на настройките за поверителност в Google. Натиснете Enter, за да отворите настройките за поверителност за профила си в Google.</translation>
 <translation id="4030383055268325496">&amp;Отмяна на добавянето</translation>
 <translation id="4031179711345676612">Достъпът до микрофона е разрешен</translation>
@@ -1543,7 +1539,6 @@
 <translation id="4900217275619098670">Девета ролка</translation>
 <translation id="4901778704868714008">Запазване...</translation>
 <translation id="4905659621780993806">Администраторът ще рестартира устройството ви в <ph name="TIME" /> на <ph name="DATE" />, без да е необходимо действие от ваша страна. Запазете отворените елементи, преди да бъде рестартирано.</translation>
-<translation id="4911007278801291296">Можете да включите или изключите TouchID в „<ph name="SETTINGS" />“</translation>
 <translation id="4913987521957242411">Перфориране горе вляво</translation>
 <translation id="4918221908152712722">Инсталирайте <ph name="APP_NAME" /> (не се изисква изтегляне)</translation>
 <translation id="4923459931733593730">Плащане</translation>
@@ -1725,6 +1720,7 @@
 <translation id="5334013548165032829">Подробните системни регистрационни файлове</translation>
 <translation id="5334145288572353250">Да се запази ли адресът?</translation>
 <translation id="5335920952954443287">Туптящо сърце</translation>
+<translation id="5337569431717511221">Бутон за задаване на Chrome като браузър по подразбиране. Натиснете Enter, за да направите Chrome стандартен браузър за системата</translation>
 <translation id="5340250774223869109">Приложението е блокирано</translation>
 <translation id="534295439873310000">Устройства с NFC</translation>
 <translation id="5344579389779391559">Тази страница може да опита да ви таксува пари</translation>
@@ -1756,7 +1752,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> иска да ви изпраща известия</translation>
 <translation id="5428105026674456456">испански</translation>
 <translation id="5430298929874300616">Премахване на отметката</translation>
-<translation id="5434423669266814150">включи TouchID за попълване на паролите</translation>
 <translation id="5443468954631487277">В обратен ред с отпечатаната страна нагоре</translation>
 <translation id="5447765697759493033">Този сайт няма да се превежда</translation>
 <translation id="5452270690849572955">Тази страница на <ph name="HOST_NAME" /> не може да бъде намерена</translation>
@@ -2420,6 +2415,7 @@
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Администраторът ви може да вижда:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да отворите нов раздел в режим „инкогнито“ и да сърфирате частно</translation>
+<translation id="7203375778433816396">Задаване на Chrome като браузър по подразбиране за системата</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> не се придържа към стандартите за сигурност.</translation>
 <translation id="7210993021468939304">Може да инсталира и стартира приложения за Linux в контейнера, както и да вижда активността в него</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> за този проблем.</translation>
@@ -2567,6 +2563,7 @@
 <translation id="7537536606612762813">Задължително</translation>
 <translation id="7542403920425041731">След като потвърдите картата си, данните за нея ще бъдат споделени с този сайт.</translation>
 <translation id="7542995811387359312">Автоматичното попълване на кредитната карта е деактивирано, защото този формуляр не използва защитена връзка.</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" /> се стартира</translation>
 <translation id="7548892272833184391">Отстраняване на грешки във връзката</translation>
 <translation id="7549584377607005141">За да се покаже правилно тази уеб страница, са необходими по-рано въведените от вас данни. Можете да ги изпратите отново, но така ще повторите всяко изпълнено от нея действие.</translation>
 <translation id="7550637293666041147">Потребителското име на устройството ви и в Chrome</translation>
@@ -2752,6 +2749,7 @@
 <translation id="8009843239480947060">10 x 11 инча</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Тази карта и адресът й за фактуриране ще бъдат запазени. Ще можете да я използвате, когато сте влезли в профила <ph name="USER_EMAIL" />.}other{Тези карти и адресите им за фактуриране ще бъдат запазени. Ще можете да ги използвате, когато сте влезли в профила <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да зададете Chrome като браузър по подразбиране за системата</translation>
 <translation id="8025119109950072390">Извършителите на атаки, използващи този сайт, може да ви подведат да направите нещо опасно, като например да инсталирате софтуер или да разкриете лична информация (например пароли, телефонни номера или номера на кредитни карти).</translation>
 <translation id="8026334261755873520">Изчистване на данните за сърфирането</translation>
 <translation id="8027077570865220386">Тава 15</translation>

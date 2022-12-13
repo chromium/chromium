@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">सर्व गुप्त टॅब बंद करायचे आहेत का?</translation>
 <translation id="1657719826150349398">टॅब खाली हलवा</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब}other{<ph name="TABS_COUNT_MANY" /> टॅब}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब बुकमार्क करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब बुकमार्क करा}}</translation>
 <translation id="2118649612461486615">स्टोअरची माहिती</translation>
 <translation id="2162620598375156287">आता <ph name="SOURCE_WEBSITE" /> वर <ph name="CURRENT_PRICE" /> मध्ये आहे</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{टॅब गटामधून काढून टाका}other{टॅब गटामधून काढून टाका}}</translation>
 <translation id="2277224997687551299">गटाचे नाव संपादित करा</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{गटामधून निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब काढून टाका.}other{गटामधून निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब काढून टाका.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{टॅब बुकमार्क करा}other{टॅब बुकमार्क करा}}</translation>
 <translation id="2479148705183875116">सेटिंग्ज वर जा</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब कोलॅप्स करा.}other{<ph name="TABS_COUNT_MANY" /> टॅबचा गट असलेले टॅब कोलॅप्स करा.}}</translation>
 <translation id="2569352796411618312">सूचना: तुमच्या टॅबपैकी <ph name="NUMBER_OF_TABS" /> चा काही दिवसांपासून वापर केला गेला नाही. ते बंद करायचे आहेत का?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">टॅब वर हलवा</translation>
 <translation id="8304833501377495048">टॅब स्ट्रिप पुन्हा दाखवायची नाही का?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब बंद करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब बंद करा}}</translation>
+<translation id="8398929769197326728">नवीन फोल्डर - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> टॅबसह टॅब गटाचा विस्तार करा.</translation>
 <translation id="8714939927607906138">आणखी कमी किंमत</translation>
 <translation id="8749939518995770034">बंद केलेली टॅब स्ट्रिप</translation>

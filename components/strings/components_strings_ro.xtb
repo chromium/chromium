@@ -413,7 +413,6 @@
 <translation id="1958218078413065209">Cel mai mare scor al tău este de <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Contribuie la îmbunătățirea securității pe web pentru toată lumea trimițând la Google <ph name="BEGIN_WHITEPAPER_LINK" />adresele URL ale unor pagini pe care le accesezi, informații de sistem limitate și părți din conținutul paginilor<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Politică de confidențialitate<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Marcaje <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">Protejează-ți parolele cu Touch ID</translation>
 <translation id="1973335181906896915">Eroare de serializare</translation>
 <translation id="1974060860693918893">Avansate</translation>
 <translation id="1975457531113383421">Tava de intrare</translation>
@@ -691,7 +690,7 @@
 <translation id="2692131511336778528">Științifico-fantastic și fantasy</translation>
 <translation id="2699302886720511147">Carduri acceptate</translation>
 <translation id="2701514975700770343">Cu fața în jos</translation>
-<translation id="2702801445560668637">Listă de lectură</translation>
+<translation id="2702801445560668637">Listă de lecturi</translation>
 <translation id="2704283930420550640">Valoarea nu se potrivește cu formatul.</translation>
 <translation id="2704606927547763573">Copiat</translation>
 <translation id="2705137772291741111">Copia salvată (în memoria cache) a acestui site nu a putut fi citită.</translation>
@@ -748,7 +747,6 @@
 <translation id="2881276955470682203">Salvezi cardul?</translation>
 <translation id="2882949212241984732">Îndoire tip fereastră dublă</translation>
 <translation id="2893773853358652045">A patra rolă</translation>
-<translation id="289834758818479772">Dacă folosești dispozitivul în comun cu alte persoane, poți activa Touch ID pentru a-ți confirma identitatea atunci când utilizezi o parolă salvată</translation>
 <translation id="2900528713135656174">Creează un eveniment</translation>
 <translation id="2903493209154104877">Adrese</translation>
 <translation id="290376772003165898">Pagina nu este în <ph name="LANGUAGE" />?</translation>
@@ -1066,7 +1064,6 @@
 <translation id="3678529606614285348">Deschide pagina într-o fereastră incognito nouă (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informații despre certificat</translation>
 <translation id="3693327506115126094">Alege cum să-ți confirmi identitatea</translation>
-<translation id="3699374065820972102">TouchID este activat pentru completarea parolelor</translation>
 <translation id="3701427423622901115">Resetare confirmată.</translation>
 <translation id="3704162925118123524">Rețeaua pe care o folosești poate solicita accesarea paginii de conectare.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1181,7 +1178,6 @@
 <translation id="401170183602135785">Plic C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF cu {COUNT} pagină}few{Document PDF cu {COUNT} pagini}other{Document PDF cu {COUNT} de pagini}}</translation>
 <translation id="4023431997072828269">Întrucât formularul este trimis printr-o conexiune care nu este securizată, informațiile tale vor vizibile pentru alte persoane.</translation>
-<translation id="4024923292610332139">dezactiveze Touch ID pentru completarea parolelor</translation>
 <translation id="4025913568718019429">Butonul Gestionează setările de confidențialitate Google, apasă pe Enter pentru a accesa setările de confidențialitate ale Contului Google</translation>
 <translation id="4030383055268325496">&amp;Anulați adăugarea</translation>
 <translation id="4031179711345676612">Microfonul este permis</translation>
@@ -1543,7 +1539,6 @@
 <translation id="4900217275619098670">A noua rolă</translation>
 <translation id="4901778704868714008">Salvează...</translation>
 <translation id="4905659621780993806">Administratorul îți va reporni dispozitivul automat la ora <ph name="TIME" />, pe <ph name="DATE" />. Salvează elementele deschise înainte ca dispozitivul să repornească.</translation>
-<translation id="4911007278801291296">Poți activa sau dezactiva TouchID în <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Perforare în stânga sus</translation>
 <translation id="4918221908152712722">Instalează <ph name="APP_NAME" /> (nu necesită descărcare)</translation>
 <translation id="4923459931733593730">Plată</translation>
@@ -1757,7 +1752,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> dorește să îți trimită notificări</translation>
 <translation id="5428105026674456456">Spaniolă</translation>
 <translation id="5430298929874300616">Elimină marcajul</translation>
-<translation id="5434423669266814150">activează Touch ID pentru completarea parolelor</translation>
 <translation id="5443468954631487277">În ordine inversă, cu fața în sus</translation>
 <translation id="5447765697759493033">Acest site nu va fi tradus</translation>
 <translation id="5452270690849572955">Această pagină de pe <ph name="HOST_NAME" /> nu poate fi găsită</translation>

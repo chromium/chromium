@@ -915,6 +915,11 @@ Esta política no tendrá efecto si la opción de conservar los datos de navegac
       Si la política está inhabilitada o no está configurada, WebDriver no puede anular las políticas incompatibles.</translation>
 <translation id="1885782360784839335">Permitir que se muestre contenido promocional que ocupe toda la pestaña</translation>
 <translation id="1888871729456797026">El token de registro de la política de nube en ordenadores</translation>
+<translation id="1893271062894546361">Si se habilita esta política, la UI de controles de reproducción multimedia estará disponible para las sesiones de <ph name="PRODUCT_NAME" /> iniciadas por otros dispositivos en la red local.
+
+      Si esta política no se establece para los usuarios de empresa o se inhabilita, la UI de controles de reproducción multimedia no estará disponible para las sesiones de <ph name="PRODUCT_NAME" /> iniciadas por otros dispositivos en la red local.
+
+      Si la política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> se inhabilita, el valor de esta política no tendrá efecto, ya que se inhabilitará toda la funcionalidad de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1894790493260633497">Habilitar el modo de impresión de gráficos de fondo de forma predeterminada</translation>
 <translation id="1897365952389968758">Permitir que todos los sitios ejecuten JavaScript</translation>
 <translation id="1902043648529789224">Controlar la posición de la estantería</translation>
@@ -1412,6 +1417,9 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2354439478396602136">Mostrar recomendaciones de aplicaciones en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2355876547176311490">Inhabilitar el uso de servidores de retransmisión por parte del host de acceso remoto</translation>
 <translation id="2358176879566587521">Se ha retirado esta política. No es compatible con esta versión de <ph name="PRODUCT_NAME" />. Consulta https://support.google.com/chrome/a/answer/7643500</translation>
+<translation id="235987002603620567">NewBaseUrlInheritanceBehavior es una función de <ph name="PRODUCT_NAME" /> que hace que los marcos <ph name="ABOUT_BLANK_PAGE" /> y <ph name="ABOUT_SRCDOC_PAGE" /> hereden siempre sus valores de URL base mediante instantáneas de la URL base de su iniciador. Consulta más información en https://chromestatus.com/feature/5161101671530496.
+
+Si se inhabilita esta política, los usuarios o las variaciones de <ph name="PRODUCT_NAME" /> no podrán habilitar NewBaseUrlInheritanceBehavior en caso de que se detecten problemas de compatibilidad. Si la política se habilita o no se establece, se permitirá habilitar NewBaseUrlInheritanceBehavior.</translation>
 <translation id="2362469626417133796">Periodo de reinicio</translation>
 <translation id="2362539163677485510">El token de registro de la política relativa a la nube</translation>
 <translation id="2363928351203698966">Si se le asigna un valor válido a esta política, <ph name="PRODUCT_NAME" /> no podrá usar las versiones de SSL/TLS anteriores a la versión especificada. Los valores que no se reconozcan se ignorarán.
@@ -2694,6 +2702,7 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
       ponerse en contacto con Quirks Server para descargar los archivos de configuración.
 
       Si a esta política se le asigna el valor "True" o no se le asigna ninguno, <ph name="PRODUCT_OS_NAME" /> se pondrá en contacto automáticamente con Quirks Server, descargará los archivos de configuración (si están disponibles) y los almacenará en el dispositivo.  Estos archivos pueden utilizarse, por ejemplo, para mejorar la calidad de la pantalla de los monitores conectados.</translation>
+<translation id="3515196503924273265">Permite habilitar la función NewBaseUrlInheritanceBehavior</translation>
 <translation id="351654132746710200">Después de que se inhabilite <ph name="LACROS_NAME" />, no se realizará ninguna migración de datos. Se eliminará la carpeta <ph name="LACROS_NAME" /> y los usuarios seguirán utilizando los datos restantes.</translation>
 <translation id="3522257170445891912">El flujo de autenticación de inicio de sesión puede ser de dos formas diferentes, en función del valor que se le asigne a esta política:
 
@@ -3486,6 +3495,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="4274691295133617461">Si se asigna el valor "3" a esta política, los sitios web podrán solicitar acceso de lectura a los archivos y directorios del sistema de archivos del sistema operativo del host a través de la API File System. Si se le asigna el valor "2", se denegará el acceso.
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.</translation>
+<translation id="4275048399551500192">No mostrar controles multimedia para las sesiones de <ph name="PRODUCT_NAME" /> iniciadas por otros dispositivos</translation>
 <translation id="4282243913059705499">Mostrar siempre el icono de <ph name="PRODUCT_NAME" /> en la barra de herramientas</translation>
 <translation id="4285674129118156176">Permitir que los usuarios no afiliados utilicen ARC</translation>
 <translation id="4287344576768105337">Si se establece esta política, se impedirá que páginas web con URLs prohibidas puedan cargarse. Contiene una lista de patrones de URL que especifican las URLs prohibidas. Si esta política no se establece, no se prohibirá ninguna URL en el navegador. Los patrones de URL deben tener el formato que se indica en https://support.google.com/chrome/a?p=url_blocklist_filter_format. Se pueden definir un máximo de 1000 excepciones en <ph name="URL_ALLOWLIST_POLICY_NAME" />.
@@ -3809,6 +3819,7 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
 <translation id="4611983465824842867">No mostrar advertencias o inhabilitar Autocompletar en formularios no seguros</translation>
 <translation id="4615003180013429835">Modo de análisis de la lista de sitios</translation>
 <translation id="4617338332148204752">Saltarla comprobación de etiquetas meta en <ph name="PRODUCT_FRAME_NAME" /></translation>
+<translation id="461901491675418689">Función NewBaseUrlInheritanceBehavior disponible</translation>
 <translation id="4624006912948309924">Si se establece la política, se definirá qué identificadores de aplicación mostrará <ph name="PRODUCT_OS_NAME" /> como aplicaciones fijadas en la barra del menú de aplicaciones, y los usuarios no podrán cambiar esta configuración.
 
 Especifica las aplicaciones de Chrome por su ID, como pjkljhegncpnkpknbcohdijeoejaedia; las aplicaciones Android por su nombre de paquete, como com.google.android.gm; las aplicaciones web por la URL usada en <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, como https://google.com/maps; y las aplicaciones web del sistema por su nombre escrito en minúscula y separado por guiones bajos, como <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />.
@@ -4426,9 +4437,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si no se le asigna ningún valor, los usuarios no podrán jugar al juego del dinosaurio en dispositivos <ph name="PRODUCT_OS_NAME" /> registrados, pero podrán hacerlo en otras circunstancias.</translation>
 <translation id="5293285950307241933">Borrar todos los datos de usuario locales</translation>
-<translation id="5293875928467750789">Si se asigna un valor a esta política, se usará como porcentaje
-
-predeterminado de brillo del teclado del dispositivo cuando el usuario inicie sesión.</translation>
 <translation id="529457411593078576">Habilitar los Términos del Servicio cuando CCT se ejecute por primera vez</translation>
 <translation id="5297948043665200363">Permitir que el usuario mantenga la sesión iniciada después de que su cuenta deje de estar autenticada</translation>
 <translation id="5298949392804966105">Sin restricciones en las cuentas gestionadas</translation>
@@ -5328,6 +5336,7 @@ Si no se establece la política, ningún dominio podrá acceder a URLs file:// e
 <translation id="6244061205361004687">Permitir que el usuario desconecte o modifique manualmente una VPN</translation>
 <translation id="6244210204546589761">URL que se deben abrir al inicio</translation>
 <translation id="624595269193747921">Especifica si se limitará la búsqueda de la impresora coincidente a un conjunto de impresoras concreto.</translation>
+<translation id="6246290059248303618">Mostrar controles multimedia para las sesiones de <ph name="PRODUCT_NAME" /> iniciadas por otros dispositivos en la red local</translation>
 <translation id="6247316685259031374">Esta política controla el entorno aislado de audio.
       Si la política se habilita, el proceso de audio se ejecutará en un entorno aislado.
       Si se inhabilita, el proceso de audio se ejecutará fuera del entorno aislado, y el módulo WebRTC de procesamiento de audio se ejecutará en el proceso de renderización.
@@ -6300,6 +6309,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="710003290625031750">Descripción del esquema ampliado:</translation>
 <translation id="7101550508196914704">No mostrar el acceso directo a aplicaciones en la barra de marcadores</translation>
 <translation id="7109384070286741861">Inhabilitar CECPQ2</translation>
+<translation id="7113439794629928551">Mostrar controles multimedia para las sesiones de <ph name="PRODUCT_NAME" /> iniciadas por otros dispositivos</translation>
 <translation id="7114169791477667553">Inhabilitar el proveedor de búsqueda predeterminado</translation>
 <translation id="7121046543122812054">Esta política está obsoleta. Te recomendamos que uses <ph name="BROWSER_SIGNIN_POLICY_NAME" /> en su lugar.
 
@@ -7006,7 +7016,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7832225468415136704">Impedir que Limpiador de Chrome analice periódicamente el sistema e inhabilitar los análisis manuales</translation>
 <translation id="7833148823006528332">Identificador de la aplicación Android (por ejemplo, "com.google.android.gm" para Gmail)</translation>
 <translation id="7835218570504220753">Inhabilitar el clic automático</translation>
-<translation id="7837834961221899821">Brillo predeterminado del teclado</translation>
 <translation id="7839180815400079700">Si se habilita <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> y se asigna un valor a <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, se definirá la configuración diaria del cambio de alimentación en picos.
 
       Si no se asigna ningún valor a esta política, el cambio de alimentación en picos quedará desactivado.
@@ -8069,6 +8078,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
       Si se inhabilita esta política, el proceso del servicio de red se ejecutará sin pasar por el entorno aislado. Esto dejará a los usuarios expuestos ante riesgos de seguridad adicionales relacionados con ejecutar el servicio de red sin pasar por el entorno aislado.
       Si no se define esta política, se usará la configuración predeterminada del entorno aislado de la red. Esta configuración puede variar en función de la versión de <ph name="PRODUCT_NAME" />, de las pruebas de campo que se estén ejecutando en ese momento y de la plataforma.
       El objetivo de esta política es dar a las empresas la opción de inhabilitar el entorno aislado de la red si usan software de terceros que interfiere en el entorno aislado del servicio de red.</translation>
+<translation id="8840243776706727185">Función NewBaseUrlInheritanceBehavior inhabilitada</translation>
 <translation id="8842208363354615697">Permitir que se habilite el modo solo‑HTTPS</translation>
 <translation id="885147810817138322">Mostrar recomendaciones de contenido multimedia al usuario</translation>
 <translation id="8852579753940989645">Habilitar la integridad del código del renderizador</translation>
@@ -8494,6 +8504,11 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 <translation id="982497069985795632">Habilitar corrector ortográfico</translation>
 <translation id="983256325512298435">Definir una lista de protocolos que pueden abrir una aplicación externa de orígenes autorizados sin pedir permiso al usuario</translation>
 <translation id="987261962216071510">Solo permitir que se inicie sesión en el navegador con el modo Invitado</translation>
+<translation id="987975731398348803">Si se habilita esta política o no se define, los dispositivos registrados informarán sobre la lista de usuarios de dispositivos que hayan iniciado sesión recientemente.
+
+Si se inhabilita esta política, los dispositivos registrados no informarán sobre la lista de usuarios.
+
+Si <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> está habilitada, <ph name="REPORT_DEVICE_USERS_POLICY_NAME" /> se ignorará y siempre estará inhabilitada.</translation>
 <translation id="989197274317162189">Esta política está obsoleta y no se admite. Usa la política <ph name="URL_BLOCKLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="991560005425213776">Enviar los nombres de usuario y de archivo a impresoras nativas</translation>
 <translation id="99202634486128833">Si se asigna el valor CopyCaCerts a esta política, todos los certificados AC instalados en ONC con <ph name="WEB_TRUSTED_BIT" /> estarán disponibles para las aplicaciones ARC.

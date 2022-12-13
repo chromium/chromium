@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Закрыть все вкладки инкогнито?</translation>
 <translation id="1657719826150349398">Переместить вкладку вниз</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Добавить в закладки <ph name="TABS_COUNT_ONE" /> выбранную вкладку}one{Добавить в закладки <ph name="TABS_COUNT_MANY" /> выбранную вкладку}few{Добавить в закладки <ph name="TABS_COUNT_MANY" /> выбранные вкладки}many{Добавить в закладки <ph name="TABS_COUNT_MANY" /> выбранных вкладок}other{Добавить в закладки <ph name="TABS_COUNT_MANY" /> выбранной вкладки}}</translation>
 <translation id="2118649612461486615">Сведения о магазине</translation>
 <translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> на сайте <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Удалить вкладку из группы}one{Удалить вкладки из группы}few{Удалить вкладки из группы}many{Удалить вкладки из группы}other{Удалить вкладки из группы}}</translation>
 <translation id="2277224997687551299">Изменить название группы</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Удалить <ph name="TABS_COUNT_ONE" /> выбранную вкладку из группы.}one{Удалить <ph name="TABS_COUNT_MANY" /> выбранную вкладку из группы.}few{Удалить <ph name="TABS_COUNT_MANY" /> выбранные вкладки из группы.}many{Удалить <ph name="TABS_COUNT_MANY" /> выбранных вкладок из группы.}other{Удалить <ph name="TABS_COUNT_MANY" /> выбранной вкладки из группы.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Добавить вкладку в закладки}one{Добавить вкладки в закладки}few{Добавить вкладки в закладки}many{Добавить вкладки в закладки}other{Добавить вкладки в закладки}}</translation>
 <translation id="2479148705183875116">Открыть настройки</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Свернуть <ph name="TABS_COUNT_ONE" /> вкладку.}one{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки.}few{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок.}many{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок.}other{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
 <translation id="2569352796411618312">Подсказка: вы давно не использовали некоторые вкладки (всего: <ph name="NUMBER_OF_TABS" />). Закрыть их?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Переместить вкладку вверх</translation>
 <translation id="8304833501377495048">Больше не показывать панель вкладок?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Закрыть <ph name="TABS_COUNT_ONE" /> выбранную вкладку}one{Закрыть <ph name="TABS_COUNT_MANY" /> выбранную вкладку}few{Закрыть <ph name="TABS_COUNT_MANY" /> выбранные вкладки}many{Закрыть <ph name="TABS_COUNT_MANY" /> выбранных вкладок}other{Закрыть <ph name="TABS_COUNT_MANY" /> выбранной вкладки}}</translation>
+<translation id="8398929769197326728">Новая папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Развернуть группу вкладок. Количество вкладок в ней – <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="8714939927607906138">Более низкая цена</translation>
 <translation id="8749939518995770034">Панель вкладок закрыта.</translation>

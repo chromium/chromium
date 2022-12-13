@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Vai aizvērt visas inkognito cilnes?</translation>
 <translation id="1657719826150349398">Pārvietot cilni uz leju</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> cilne}zero{<ph name="TABS_COUNT_MANY" /> cilnes}one{<ph name="TABS_COUNT_MANY" /> cilne}other{<ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Saglabāt <ph name="TABS_COUNT_ONE" /> atlasīto cilni kā grāmatzīmi}zero{Saglabāt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes kā grāmatzīmes}one{Saglabāt <ph name="TABS_COUNT_MANY" /> atlasīto cilni kā grāmatzīmi}other{Saglabāt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes kā grāmatzīmes}}</translation>
 <translation id="2118649612461486615">Veikala informācija</translation>
 <translation id="2162620598375156287">Tagad cena vietnē <ph name="SOURCE_WEBSITE" /> ir <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Atcelt cilnes grupēšanu}zero{Atcelt ciļņu grupēšanu}one{Atcelt ciļņu grupēšanu}other{Atcelt ciļņu grupēšanu}}</translation>
 <translation id="2277224997687551299">Rediģēt grupas nosaukumu</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Noņemt <ph name="TABS_COUNT_ONE" /> atlasīto cilni no grupas.}zero{Noņemt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes no grupas.}one{Noņemt <ph name="TABS_COUNT_MANY" /> atlasīto cilni no grupas.}other{Noņemt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes no grupas.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Saglabāt kā grāmatzīmi}zero{Saglabāt kā grāmatzīmes}one{Saglabāt kā grāmatzīmes}other{Saglabāt kā grāmatzīmes}}</translation>
 <translation id="2479148705183875116">Atvērt iestatījumus</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Sakļaut <ph name="TABS_COUNT_ONE" /> cilni.}zero{Sakļaut ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Sakļaut ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Sakļaut ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="2569352796411618312">Ieteikums: vairākas cilnes pēdējā laikā nav izmantotas (kopā <ph name="NUMBER_OF_TABS" />). Vai vēlaties tās aizvērt?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Pārvietot cilni uz augšu</translation>
 <translation id="8304833501377495048">Vai nerādīt ciļņu joslu atkārtoti?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Aizvērt atlasīto cilni (skaits: <ph name="TABS_COUNT_ONE" />)}zero{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}one{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}other{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}}</translation>
+<translation id="8398929769197326728">Jauna mape — <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Izvērst ciļņu grupu. Ciļņu skaits šajā grupā ir <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="8714939927607906138">Zemāka cena</translation>
 <translation id="8749939518995770034">Ciļņu josla aizvērta</translation>

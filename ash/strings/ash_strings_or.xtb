@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">ଆପଣଙ୍କ <ph name="NAME" /> ସେଭ କରନ୍ତୁ</translation>
 <translation id="1032891413405719768">ଷ୍ଟାଇଲସ୍ ବ୍ୟାଟେରୀ ବହୁତ କମ୍ ଅଛି</translation>
 <translation id="1036073649888683237">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
+<translation id="1036348656032585052">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1036672894875463507">ମୁଁ ଆପଣଙ୍କ Google Assistant, ଆପଣଙ୍କୁ ଦିନସାରା ସାହାଯ୍ୟ କରିବାକୁ ଏଠାରେ ଅଛି!
 ଆପଣ ଆରମ୍ଭ କରିବା ପାଇଁ ବ୍ୟବହାର କରିପାରୁଥିବା କିଛି ବିଷୟ ଏଠାରେ ଦିଆଯାଇଛି।</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ଯୋଗକରାଯାଇଛି</translation>
@@ -100,6 +101,7 @@
 <translation id="1447641497144572814">ସ୍କ୍ରିନ ସେଭର ଆରମ୍ଭ ହେଉଛି</translation>
 <translation id="1455242230282523554">ଭାଷାର ସେଟିଂସ୍‌ ଦେଖାନ୍ତୁ</translation>
 <translation id="1460620680449458626">ଭଲ୍ୟୁମ୍ ମ୍ୟୁଟ୍ କରାଯାଇଛି।</translation>
+<translation id="14648076227129703">ଏହା କେମେରା ଅନୁମତି ଥିବା <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ଏବଂ ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ପାଇଁ କେମେରା ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ</translation>
 <translation id="1467432559032391204">ବାମ</translation>
 <translation id="146902737843070955">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଏହି ପରିବର୍ତ୍ତନ ପାଇଁ ଅନୁରୋଧ କରିଛନ୍ତି</translation>
 <translation id="147310119694673958">ଫୋନ୍ ବ୍ୟାଟେରୀ <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -159,6 +161,7 @@
 <translation id="1797271123677381264">ପାସୱାର୍ଡ ଭୁଲି ଯାଇଛନ୍ତି</translation>
 <translation id="181103072419391116">ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="1812997170047690955">ମୋ ସ୍କ୍ରିନ୍‌ରେ କ’ଣ ଅଛି?</translation>
+<translation id="1816896987747843206">ଏହା କେମେରା ଅନୁମତି ଥିବା ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ପାଇଁ କେମେରା ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ</translation>
 <translation id="1823280932251546115">ସ୍ଥିତି ଟ୍ରେ, ସମୟ <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" />କୁ ଅନ୍‌ପିନ୍ କରାଯାଇଛି</translation>
 <translation id="1836215606488044471">ଆସିଷ୍ଟାଣ୍ଟ (ଲୋଡ୍‌ ହେଉଛି...)</translation>
 <translation id="1838895407229022812">ନାଇଟ୍ ଲାଇଟ୍ ବନ୍ଦ ଅଛି।</translation>
+<translation id="1854180393107901205">କାଷ୍ଟ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1862380676329487333">ଅପଡେଟ କରି ସାଇନ ଆଉଟ କରନ୍ତୁ</translation>
 <translation id="1864454756846565995">USB-C ଡିଭାଇସ୍ (ପଛ ପୋର୍ଟ)</translation>
 <translation id="1869497990620230175">କ୍ୱିକ ଫାଇଲଗୁଡ଼ିକ</translation>
@@ -598,6 +602,7 @@
 <translation id="4316910396681052118">ସମସ୍ତ ଆପ୍‌</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Ctrl + Alt + ଉପର ତୀର କୀବୋର୍ଡ ସର୍ଟକଟ୍ ବଦଳି ଯାଇଛି। Home କୀକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, <ph name="LAUNCHER_KEY_NAME" /> କୀ + ବାମ ତୀର କୀ ଦବାନ୍ତୁ।</translation>
+<translation id="4324840740119394760">ଏହା କେମେରା ଅନୁମତି ଥିବା <ph name="APP_NAME" />, ଏବଂ ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ପାଇଁ କେମେରା ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ</translation>
 <translation id="4333628967105022692">ଏକାଧିକ ଉପଯୋଗକର୍ତ୍ତା ସାଇନ୍ ଇନ୍ କରିଥିବା ସମୟରେ Lacros ବ୍ରାଉଜର୍ ସମର୍ଥିତ ନୁହେଁ।</translation>
 <translation id="4338109981321384717">ମାଗ୍ନିଫାଇଂ ଗ୍ଲାସ୍</translation>
 <translation id="4351433414020964307">Assistant ଲୋଡ୍‌ ହେଉଛି...</translation>
@@ -664,13 +669,13 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="4665114317261903604">'ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ' ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">ସର୍ବଦା ସମସ୍ତ କେମେରାକୁ ବ୍ଲକ କରିବା ପାଇଁ ଏହି ଡିଭାଇସରେ କେମେରା ଆକ୍ସେସକୁ ବନ୍ଦ କରନ୍ତୁ।</translation>
 <translation id="4666911709726371538">ଅଧିକ ଆପ୍</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ଡାଉନଲୋଡ ହେଉଛି</translation>
 <translation id="468293128311738995">ଆପଣଙ୍କ ଫୋନରୁ ଆପ୍ସ</translation>
 <translation id="4690510401873698237">ତଳ ପଟକୁ ସେଲ୍ଫ</translation>
 <translation id="4696813013609194136">ମାତାପିତାଙ୍କ କୋଡ୍‌ରେ ଡିଭାଇସ୍ ଅନଲକ୍ କରନ୍ତୁ</translation>
 <translation id="4702647871202761252">ଗୋପନୀୟତା ସ୍କ୍ରିନ୍ ବନ୍ଦ ଅଛି</translation>
+<translation id="4706121060329443414">ପରେ ଡାଉନଲୋଡ୍ କରିବା ପାଇଁ ଚେଷ୍ଟା କରାଯିବ। ସ୍ପିଚ୍ ବର୍ତ୍ତମାନ ପ୍ରକ୍ରିୟାନ୍ୱିତ ହେବା ପାଇଁ Googleକୁ ପଠାଯିବ।</translation>
 <translation id="470644585772471629">ରଙ୍ଗ ଇନଭର୍ସନ</translation>
 <translation id="4717575069099566988">ଆପଣଙ୍କ USB-C କେବୁଲ USB4କୁ ସମର୍ଥନ କରେ ନାହିଁ। ଡିଭାଇସ ପରଫରମାନ୍ସକୁ ସୀମିତ କରାଯାଇପାରେ।</translation>
 <translation id="4730374152663651037">ବାରମ୍ବାର ବ୍ୟବହାର ହୋଇଛି</translation>
@@ -696,7 +701,6 @@
 <translation id="485592688953820832">କୌଣସି ପଦକ୍ଷେପ ନାହିଁ (ବିରତ କରନ୍ତୁ)</translation>
 <translation id="485634149294284819">କୀବୋର୍ଡ ମେନୁରେ ଏଣ୍ଟର କରନ୍ତୁ</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" />କୁ ଡାଉନଲୋଡ କରିବା ପାଇଁ ଆପଣଙ୍କ ନେଟୱାର୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
-<translation id="486056901304535126">ଡାଉନଲୋଡ କରିବା ପାଇଁ ପରେ ଚେଷ୍ଟା କରାଯିବ। ଡାଉନଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ ନହେବା ପର୍ଯ୍ୟନ୍ତ ପ୍ରକ୍ରିୟାକରଣ ପାଇଁ Googleକୁ ସ୍ପିଚ ପଠାଯିବ।</translation>
 <translation id="4864369630010738180">ସାଇନ୍ ଇନ୍ ହେଉଛି…</translation>
 <translation id="4864648187878336334">ଡେସ୍କ 15</translation>
 <translation id="4868492592575313542">ସକ୍ରିୟ କରାଯାଇଛି</translation>
@@ -791,6 +795,7 @@
 <translation id="5356963482258194581">ଗାଢ଼ା ଏବଂ ହାଲୁକା ଥିମ ମଧ୍ୟରେ ସ୍ୱିଚ କରନ୍ତୁ। ଡେସ୍କଟପରେ ଡାହାଣ-କ୍ଲିକ କରି ୱାଲପେପର ଏବଂ ଷ୍ଟାଇଲକୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="536019650977002321">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଅଡିଓ କେପଚରକୁ ଅନୁମତି ଦିଅନ୍ତି ନାହିଁ। ଅଧିକ ସୂଚନା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ଏହି ଟାବକୁ ଯାଆନ୍ତୁ</translation>
+<translation id="5377367976106153749">କେମେରା ଆକ୍ସେସ ଚାଲୁ କରିବେ?</translation>
 <translation id="5379115545237091094">ଅତ୍ୟଧିକ ପ୍ରଚେଷ୍ଟା</translation>
 <translation id="5391307769715781764">ସେଭ ହୋଇଥିବା ଡେସ୍କକୁ ପରିବର୍ତ୍ତନ କରିବେ?</translation>
 <translation id="5393156353051693207">ଆପଣଙ୍କ ଆପଗୁଡ଼ିକୁ ପୁଣି କ୍ରମରେ ରଖିବା ପାଇଁ ଯେ କୌଣସି ସ୍ଥାନରେ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ</translation>
@@ -1176,7 +1181,6 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନ ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="7561982940498449837">ମେନୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="7564874036684306347">ୱିଣ୍ଡୋକୁ ଅନ୍ୟ ଡେକ୍ସଟପ୍‌କୁ ତ୍ୱରିତ କରିବା ଦ୍ୱାରା ଅପ୍ରତ୍ୟାଶିତ ଆଚରଣ ହୋଇପାରେ। ଏହା ପରବର୍ତ୍ତୀ ବିଜ୍ଞପ୍ତି, ୱିଣ୍ଡୋ ଏବଂ ଡାଏଲଗ୍‌ଗୁଡ଼ିକ ଡେକ୍ସଟପ୍‌ଗୁଡ଼ିକ ମଧ୍ୟରେ ଅଲଗା ହୋଇପାରେ।</translation>
-<translation id="7567076708801803118">ଆପଣ ଏହି ଡିଭାଇସରେ କେମେରା ଆକ୍ସେସକୁ ବନ୍ଦ କରିବା ପାଇଁ ଚାହାଁନ୍ତି?</translation>
 <translation id="7569509451529460200">Braille ଏବଂ ChromeVoxକୁ ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="7573585051776738856">ସକ୍ରିୟ ୱିଣ୍ଡୋକୁ ଡାହାଣପଟେ ଡକ କରାଯାଇଛି।</translation>
 <translation id="7579778809502851308">ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍</translation>

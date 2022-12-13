@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Gói không hợp lệ. Chi tiết: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" đang yêu cầu quyền truy cập vào một trong các thiết bị của bạn:</translation>
 <translation id="8885905466771744233">Khoá cá nhân cho tiện ích chỉ định đã tồn tại. Hãy sử dụng lại hoặc xóa khóa đó trước tiên.</translation>
+<translation id="9039223174332979184">Quản trị viên của máy này yêu cầu <ph name="EXTENSION_NAME" /> có phiên bản tệp kê khai tối thiểu là 3.</translation>
 <translation id="907841381057066561">Không thể tạo tệp nén tạm thời khi đóng gói.</translation>
 <translation id="941543339607623937">Khoá cá nhân không hợp lệ.</translation>
 </translationbundle>

@@ -7,6 +7,7 @@
 <translation id="1024364763893396229"><ph name="NAME" /> を保存</translation>
 <translation id="1032891413405719768">タッチペンのバッテリー残量が少なくなっています</translation>
 <translation id="1036073649888683237">通知の管理は設定アプリで行うことができす</translation>
+<translation id="1036348656032585052">オフにする</translation>
 <translation id="1036672894875463507">私は Google アシスタント、あなたの 1 日をサポートします。
 使用できるフレーズをいくつか紹介します。</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> が追加されました</translation>
@@ -100,6 +101,7 @@
 <translation id="1447641497144572814">スクリーン セーバーを開始します</translation>
 <translation id="1455242230282523554">言語設定を表示</translation>
 <translation id="1460620680449458626">音量はミュートされています。</translation>
+<translation id="14648076227129703">カメラへのアクセス権を持つ <ph name="APP1_NAME" />、<ph name="APP2_NAME" />、およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します</translation>
 <translation id="1467432559032391204">左</translation>
 <translation id="146902737843070955">管理者がこの変更をリクエストしました</translation>
 <translation id="147310119694673958">スマートフォンのバッテリー <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -159,6 +161,7 @@
 <translation id="1797271123677381264">パスワードをお忘れの場合</translation>
 <translation id="181103072419391116">信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
 <translation id="1812997170047690955">画面上のアイテムを検索します</translation>
+<translation id="1816896987747843206">カメラへのアクセス権を持つすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します</translation>
 <translation id="1823280932251546115">ステータス トレイ、時間 <ph name="TIME" />、
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> の固定を解除しました</translation>
 <translation id="1836215606488044471">アシスタント（読み込み中...）</translation>
 <translation id="1838895407229022812">夜間モードはオフです。</translation>
+<translation id="1854180393107901205">キャストを停止</translation>
 <translation id="1862380676329487333">更新してログアウト</translation>
 <translation id="1864454756846565995">USB-C デバイス（背面のポート）</translation>
 <translation id="1869497990620230175">クイック ファイル</translation>
@@ -598,6 +602,7 @@
 <translation id="4316910396681052118">すべてのアプリ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">キーボード ショートカット「Ctrl+Alt+上矢印」が変更されました。Home キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+左矢印キーを押してください。</translation>
+<translation id="4324840740119394760">カメラへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します</translation>
 <translation id="4333628967105022692">複数のユーザーがログインしている場合、Lacros はサポートされません。</translation>
 <translation id="4338109981321384717">虫メガネ</translation>
 <translation id="4351433414020964307">アシスタントを読み込んでいます...</translation>
@@ -664,13 +669,13 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox を有効にしました</translation>
 <translation id="4665114317261903604">サイレント モードを切り替えます。<ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">このデバイスでカメラへのアクセスをオフにすると、すべてのカメラが常にブロックされます。</translation>
 <translation id="4666911709726371538">表示するアプリを増やす</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> をダウンロードしています</translation>
 <translation id="468293128311738995">スマートフォンのアプリ</translation>
 <translation id="4690510401873698237">シェルフは一番下にあります</translation>
 <translation id="4696813013609194136">保護者のコードでデバイスをロック解除</translation>
 <translation id="4702647871202761252">プライバシー スクリーンはオフになっています</translation>
+<translation id="4706121060329443414">ダウンロードは後で試行されます。音声は処理のためにひとまず Google に送信されます。</translation>
 <translation id="470644585772471629">色反転</translation>
 <translation id="4717575069099566988">USB-C ケーブルは USB4 に対応していません。デバイスのパフォーマンスが制限される可能性があります。</translation>
 <translation id="4730374152663651037">よく使用するアプリ</translation>
@@ -696,7 +701,6 @@
 <translation id="485592688953820832">なし（一時停止）</translation>
 <translation id="485634149294284819">キーボード メニューを入力してください</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> をダウンロードするには、ネットワーク接続を確認してください</translation>
-<translation id="486056901304535126">ダウンロードは後で試行されます。音声はダウンロードが完了するまで処理のために Google に送信されます。</translation>
 <translation id="4864369630010738180">ログインしています...</translation>
 <translation id="4864648187878336334">デスク 15</translation>
 <translation id="4868492592575313542">有効</translation>
@@ -791,6 +795,7 @@
 <translation id="5356963482258194581">ダークモードとライトモードを切り替えます。デスクトップを右クリックして、[壁紙とスタイル] を選択します。</translation>
 <translation id="536019650977002321">管理者が音声キャプチャを許可していません。詳しくは管理者にお問い合わせください。</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> このタブに移動</translation>
+<translation id="5377367976106153749">カメラへのアクセスをオンにしますか？</translation>
 <translation id="5379115545237091094">試行回数が上限を超えました</translation>
 <translation id="5391307769715781764">保存済みのデスクを置き換えますか？</translation>
 <translation id="5393156353051693207">任意の場所を長押ししてアプリを並べ替えられます</translation>
@@ -1178,7 +1183,6 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> がマイクを使用しています</translation>
 <translation id="7561982940498449837">メニューを閉じる</translation>
 <translation id="7564874036684306347">ウィンドウを別のデスクトップに移動すると、予期しない動作が起こることがあります。以降の通知、ウィンドウ、ダイアログは、複数のデスクトップに分かれて表示される可能性があります。</translation>
-<translation id="7567076708801803118">このデバイスでカメラへのアクセスをオフにしますか？</translation>
 <translation id="7569509451529460200">Braille と ChromeVox が有効になっています</translation>
 <translation id="7573585051776738856">アクティブなウィンドウを右側に固定しました。</translation>
 <translation id="7579778809502851308">スクリーン キャプチャ</translation>
@@ -1491,6 +1495,7 @@
 <translation id="954052413789300507"><ph name="FILENAME" /> をダウンロードするのに十分な容量がありません。容量を空けてください。</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> の検索結果 <ph name="RESULT_COUNT" /> 件を表示しています</translation>
 <translation id="98515147261107953">横</translation>
+<translation id="989374776391122812">カメラとオーディオのコントロール</translation>
 <translation id="990277280839877440">「<ph name="WINDOW_TITILE" />」のウィンドウを閉じました。</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />、<ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">最新の機能を入手しセキュリティを強化しましょう。アップデートはバックグラウンドで行われます。</translation>

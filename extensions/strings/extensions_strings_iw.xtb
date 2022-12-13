@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">החבילה לא חוקית. פרטים: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">האפליקציה "<ph name="APP_NAME" />" מבקשת גישה לאחד מהמכשירים שלך:</translation>
 <translation id="8885905466771744233">מפתח פרטי לתוסף שצוין כבר קיים. יש להשתמש שוב במפתח זה או למחוק אותו תחילה.</translation>
+<translation id="9039223174332979184">לפי דרישת האדמין של המחשב הזה, המניפסט של <ph name="EXTENSION_NAME" /> צריך להיות מגרסה 3 ואילך.</translation>
 <translation id="907841381057066561">‏נכשל ביצירת קובץ zip זמני במהלך האריזה.</translation>
 <translation id="941543339607623937">מפתח פרטי לא חוקי.</translation>
 </translationbundle>

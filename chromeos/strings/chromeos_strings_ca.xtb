@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Cancel·la la tasca d'impressió</translation>
 <translation id="2163937499206714165">Activa el mode fosc</translation>
 <translation id="2180197493692062006">S'ha produït un error. Prova de tornar a obrir l'aplicació.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Restableix els comptadors de trànsit</translation>
 <translation id="2212733584906323460">Resolució del nom</translation>
 <translation id="2217935453350629363">Velocitat actual</translation>
@@ -561,6 +560,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6189418609903030344">La capacitat de la bateria es redueix amb l'ús</translation>
 <translation id="6191293864534840972">Els servidors de noms tenen un format incorrecte</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Surt del mode complet</translation>
 <translation id="6223752125779001553">No hi ha cap escàner disponible</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6235460611964961764">Restableix l'ús de dades manualment</translation>
@@ -688,12 +688,12 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="741244894080940828">conversió</translation>
 <translation id="7415801143053185905">La latència d'HTTP és molt alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{S'ha completat l'escaneig. S'ha escanejat 1 pàgina}other{S'ha completat l'escaneig. S'han escanejat {NUMBER_OF_PAGES} pàgines}}</translation>
 <translation id="7458970041932198923">Connecta't a una xarxa i torna a carregar la pàgina per veure i definir avatars.</translation>
 <translation id="7469648432129124067">S'ha detectat un portal</translation>
 <translation id="7481312909269577407">Endavant</translation>
 <translation id="7487067081878637334">Tecnologia</translation>
 <translation id="7490813197707563893">Adreça MAC</translation>
+<translation id="7491478667760509108">Surt del mode flotant</translation>
 <translation id="7497215489070763236">Certificat de CA del servidor</translation>
 <translation id="7502658306369382406">Adreça IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -794,6 +794,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8498220429738806196">Comptadors de trànsit</translation>
 <translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="8503836310948963452">Només queden uns quants minuts...</translation>
+<translation id="8508640263392900755">Detalls de l'APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">El teu operador pot requerir aquesta opció per connectar-te a la seva xarxa. Contacta-hi per obtenir-ne més informació.</translation>
 <translation id="8576249514688522074">No s'ha inicialitzat</translation>

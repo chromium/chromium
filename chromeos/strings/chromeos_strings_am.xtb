@@ -139,7 +139,6 @@
 <translation id="2161394479394250669">የኅትመት ሥራን ሰርዝ</translation>
 <translation id="2163937499206714165">የጨለማ ሁነታን አብራ</translation>
 <translation id="2180197493692062006">የሆነ ችግር ተፈጥሯል። መተግበሪያውን ዳግም ለመክፈት ይሞክሩ።</translation>
-<translation id="2184005227776731758">ኤፒኤን</translation>
 <translation id="2209788852729124853">የትራፊክ ቆጣሪዎችን ዳግም ያስጀምሩ</translation>
 <translation id="2212733584906323460">የስም ጥራት</translation>
 <translation id="2217935453350629363">የአሁኑ ፍጥነት</translation>
@@ -679,7 +678,6 @@
 <translation id="741244894080940828">ልወጣ</translation>
 <translation id="7415801143053185905">በጣም ከፍተኛ የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ቅኝት ተጠናቅቋል። 1 ገጽ ተቃኝቷል}one{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}other{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}}</translation>
 <translation id="7458970041932198923">እባክዎ ገጹን ለማየት እና አምሳያዎችን ለማዋቀር ከአውታረ መረብ ጋር ይገናኙ።</translation>
 <translation id="7469648432129124067">መግቢያ ተገኝቷል</translation>
 <translation id="7481312909269577407">ወደ ፊት</translation>
@@ -769,6 +767,7 @@
 <translation id="8372477600026034341">ተጨማሪ አስተናጋጆች</translation>
 <translation id="8395584934117017006">ይህ <ph name="DEVICE_TYPE" /> በድርጅት የሚተዳደር ነው</translation>
 <translation id="8398927464629426868">መሣሪያው በአሁኑ ጊዜ ኃይል እየሞላ ወይም እያስወገደ ያለበት ፍጥነት</translation>
+<translation id="8410244574650205435">በራስ-ሰር ተገኝቷል</translation>
 <translation id="8420955526972171689">ለሃርድዌር ችግሮች ሙከራዎችን እና መላ ፍለጋን ያሂዱ</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8431300646573772016">በChromeOS ምን አዲስ ነገር አለ</translation>

@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Ajută-ne să creăm un web mai privat</translation>
 <translation id="107147699690128016">Dacă modifici extensia de fișier, fișierul poate să se deschidă în altă aplicație și să dăuneze dispozitivului.</translation>
 <translation id="1089606299949659462">Examinare finalizată!</translation>
-<translation id="1091604859693995976">Actualizează pentru a afișa</translation>
 <translation id="1095761715416917775">Asigură-te că ai în permanență acces la datele sincronizate</translation>
 <translation id="1100066534610197918">Deschide în filă nouă în grup</translation>
 <translation id="1103142993930332957">Ajuți la îmbunătățirea Chrome?</translation>
@@ -761,6 +760,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="510275257476243843">1 oră rămasă</translation>
 <translation id="5115811374190515607">în <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Interese</translation>
+<translation id="5122378528687922675">Dacă ai nevoie de ajutor, vorbește cu un părinte (<ph name="PARENT_NAME_1" /> sau <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Filă incognito</translation>
 <translation id="5126510351761255129">Confirmă cardul</translation>
 <translation id="5132942445612118989">Sincronizează parolele, istoricul și alte date pe toate dispozitivele</translation>
@@ -1148,6 +1148,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7177466738963138057">Poți modifica ulterior această opțiune în Setări</translation>
 <translation id="7177873915659574692">Nu s-a putut crea codul QR. Adresa URL are peste <ph name="CHARACTER_LIMIT" /> caractere.</translation>
 <translation id="7177959540995930968">Poți afla mai multe despre aceste funcții în setările Chrome.</translation>
+<translation id="7180611975245234373">Actualizați</translation>
 <translation id="718226107353899806">Poți adăuga până la <ph name="MAX_NUM_REACTIONS" /> reacții</translation>
 <translation id="7183693674623539380">Grup de file – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Te protejează în Chrome și poate fi folosită pentru a spori securitatea în alte aplicații Google dacă te-ai conectat.</translation>
@@ -1331,6 +1332,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8084285576995584326">Gestionează datele din Contul Google</translation>
 <translation id="808747664143081553">S-a conectat la dispozitiv</translation>
 <translation id="8088176524274673045">Ca să le permiți accesul persoanelor din apropiere, solicită-le să scaneze acest cod QR</translation>
+<translation id="8090732854597034573">Dacă ai nevoie de ajutor, vorbește cu un părinte</translation>
 <translation id="8100969750121413114">Conectează-te la Chrome pentru a-l personaliza</translation>
 <translation id="8103578431304235997">Filă incognito</translation>
 <translation id="8105613260829665809">Dacă alegi să continui, ești de acord cu <ph name="BEGIN_TOS_LINK" />Termenii și condițiile<ph name="END_TOS_LINK" />.\nPentru a contribui la îmbunătățirea aplicației, Chrome trimite date de utilizare și despre erori la Google. <ph name="BEGIN_UMA_LINK" />Gestionează<ph name="END_UMA_LINK" /></translation>
@@ -1339,6 +1341,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8109613176066109935">Pentru a accesa marcajele pe toate dispozitivele, activează sincronizarea</translation>
 <translation id="8110024788458304985">Contribuie la îmbunătățirea funcțiilor și a performanței Chrome</translation>
 <translation id="8110087112193408731">Afișezi activitatea din Chrome în Bunăstare digitală?</translation>
+<translation id="8118117428362942925">Dacă ai nevoie de ajutor, vorbește cu un părinte (<ph name="PARENT_NAME" />)</translation>
 <translation id="8127542551745560481">Editează pagina de pornire</translation>
 <translation id="8130309322784422030">Este posibil ca informațiile de conectare stocate să fie învechite</translation>
 <translation id="813082847718468539">Afișează informațiile privind site-ul</translation>

@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Paquet incorrect. Information : « <ph name="ERROR_MESSAGE" /> ».</translation>
 <translation id="8761756413268424715">« <ph name="APP_NAME" /> » demande l’accès à l’un de vos appareils :</translation>
 <translation id="8885905466771744233">Une clé privée pour l'extension spécifiée existe déjà. Utilisez cette clé ou supprimez-la.</translation>
+<translation id="9039223174332979184">L'administrateur de cet appareil exige que <ph name="EXTENSION_NAME" /> dispose d'une version de manifeste minimale de 3.</translation>
 <translation id="907841381057066561">Échec de création du fichier ZIP temporaire lors de l'empaquetage.</translation>
 <translation id="941543339607623937">Clé privée non valide.</translation>
 </translationbundle>

@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Anuluj zadanie drukowania</translation>
 <translation id="2163937499206714165">Włącz tryb ciemny</translation>
 <translation id="2180197493692062006">Coś poszło nie tak. Spróbuj ponownie otworzyć aplikację.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Zresetuj liczniki natężenia ruchu</translation>
 <translation id="2212733584906323460">Rozwiązanie nazwy</translation>
 <translation id="2217935453350629363">Obecna szybkość</translation>
@@ -492,6 +491,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Automatycznie przełączaj na ciemny motyw o zachodzie słońca</translation>
+<translation id="5571714952674387371">Wyświetlanie i edytowanie szczegółów</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Zeskanuj ponownie</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -561,6 +561,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6189418609903030344">Pojemność baterii zmniejsza się w miarę jej zużycia</translation>
 <translation id="6191293864534840972">Nieprawidłowe serwery nazw</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Zamknij tryb pełnego ekranu</translation>
 <translation id="6223752125779001553">Brak dostępnych skanerów</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6235460611964961764">Ręcznie resetuj użycie danych</translation>
@@ -688,12 +689,12 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="741244894080940828">przeliczanie</translation>
 <translation id="7415801143053185905">Bardzo duże opóźnienie HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Gotowe. Zeskanowano 1 stronę.}few{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}many{Gotowe. Zeskanowano {NUMBER_OF_PAGES} stron.}other{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}}</translation>
 <translation id="7458970041932198923">Aby wyświetlić i ustawić awatary, połącz się z siecią i załaduj ponownie stronę.</translation>
 <translation id="7469648432129124067">Wykryto portal</translation>
 <translation id="7481312909269577407">Dalej</translation>
 <translation id="7487067081878637334">Technologia</translation>
 <translation id="7490813197707563893">Adres MAC</translation>
+<translation id="7491478667760509108">Zamknij tryb pływający</translation>
 <translation id="7497215489070763236">Certyfikat CA serwera</translation>
 <translation id="7502658306369382406">Adres IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -794,6 +795,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8498220429738806196">Liczniki natężenia ruchu</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="8503836310948963452">Jeszcze kilka minut…</translation>
+<translation id="8508640263392900755">Dane APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Tej opcji może wymagać operator do połączenia z jego siecią. Aby uzyskać szczegółowe informacje, skontaktuj się z operatorem.</translation>
 <translation id="8576249514688522074">Nie zainicjowano</translation>
@@ -869,6 +871,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="9173638680043580060">Jeszcze niecała minuta</translation>
 <translation id="917720651393141712">Przetestuj</translation>
 <translation id="9188992814426075118">Twoja klawiatura może automatycznie dopasować się do tapety</translation>
+<translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Nie udało się połączyć z bramą w aplikacjach na Androida</translation>
 <translation id="9211490828691860325">Wszystkie biurka</translation>
 <translation id="932327136139879170">Strona główna</translation>

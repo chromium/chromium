@@ -413,7 +413,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1958218078413065209">Ang iyong pinakamataas na score ay <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Tumulong na pahusayin ang seguridad sa web para sa lahat sa pamamagitan ng pagpapadala ng <ph name="BEGIN_WHITEPAPER_LINK" />mga URL ng ilang page na binibisita mo, limitadong impormasyon ng system, at ilang content ng page<ph name="END_WHITEPAPER_LINK" /> sa Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Patakaran sa privacy<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Mga Bookmark ng <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">Protektahan ang mga password gamit ang TouchID</translation>
 <translation id="1973335181906896915">Error sa serialization</translation>
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1975457531113383421">Input Tray</translation>
@@ -748,7 +747,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2881276955470682203">I-save ang card?</translation>
 <translation id="2882949212241984732">Double-gate fold</translation>
 <translation id="2893773853358652045">Ikaapat na Rolyo</translation>
-<translation id="289834758818479772">Kung ipinapagamit mo ang device na ito sa ibang tao, puwede mong i-on ang TouchID para i-verify na ikaw iyan kapag gagamit ka ng naka-save na password</translation>
 <translation id="2900528713135656174">Gumawa ng event</translation>
 <translation id="2903493209154104877">Mga Address</translation>
 <translation id="290376772003165898">Hindi nakasalin ang page sa <ph name="LANGUAGE" />?</translation>
@@ -1066,7 +1064,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3678529606614285348">Buksan ang page sa bagong Incognito window (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Impormasyon sa certificate</translation>
 <translation id="3693327506115126094">Piliin kung paano mo ive-verify na ikaw ito</translation>
-<translation id="3699374065820972102">Naka-on ang TouchID para sa paglalagay ng mga password</translation>
 <translation id="3701427423622901115">Tinanggap ang pag-reset.</translation>
 <translation id="3704162925118123524">Ang network na ginagamit mo ay maaaring humiling sa iyo na bisitahin ang page ng pag-login nito.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1181,7 +1178,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="401170183602135785">Envelope C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF na dokumentong naglalaman ng {COUNT} page}one{PDF na dokumentong naglalaman ng {COUNT} page}other{PDF na dokumentong naglalaman ng {COUNT} na page}}</translation>
 <translation id="4023431997072828269">Dahil isinusumite ang form na ito gamit ang isang koneksyong hindi secure, makikita ng iba ang iyong impormasyon.</translation>
-<translation id="4024923292610332139">I-off ang TouchID para sa paglalagay ng mga password</translation>
 <translation id="4025913568718019429">Button na Pamahalaan ang mga setting ng Privacy ng Google, pindutin ang Enter para bisitahin ang mga setting ng privacy ng iyong Google Account</translation>
 <translation id="4030383055268325496">&amp;I-undo ang pagdagdag</translation>
 <translation id="4031179711345676612">Pinapayagan ang mikropono</translation>
@@ -1543,7 +1539,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4900217275619098670">Ikasiyam na Rolyo</translation>
 <translation id="4901778704868714008">I-save...</translation>
 <translation id="4905659621780993806">Awtomatikong ire-restart ng iyong administrator ang device mo nang <ph name="TIME" /> sa <ph name="DATE" />. I-save ang anumang bukas na item bago mag-restart ang iyong device.</translation>
-<translation id="4911007278801291296">Puwede mong i-on o i-off ang TouchID sa <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Punch top left</translation>
 <translation id="4918221908152712722">I-install ang <ph name="APP_NAME" /> (hindi kinakailangang i-download)</translation>
 <translation id="4923459931733593730">Pagbabayad</translation>
@@ -1725,6 +1720,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5334013548165032829">Mga detalyadong log ng system</translation>
 <translation id="5334145288572353250">I-save ang Address?</translation>
 <translation id="5335920952954443287">Tumitibok na Puso</translation>
+<translation id="5337569431717511221">Itakda ang Chrome bilang default na button ng browser, pindutin ang Enter para itakda ang Chrome bilang default na browser ng system</translation>
 <translation id="5340250774223869109">Naka-block ang application</translation>
 <translation id="534295439873310000">Mga NFC device</translation>
 <translation id="5344579389779391559">Maaari kang singilin ng pera ng page na ito</translation>
@@ -1756,7 +1752,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5426179911063097041">Gusto ng <ph name="SITE" /> na padalhan ka ng mga notification</translation>
 <translation id="5428105026674456456">Spanish</translation>
 <translation id="5430298929874300616">Alisin ang bookmark</translation>
-<translation id="5434423669266814150">I-on ang TouchID para sa paglalagay ng mga password</translation>
 <translation id="5443468954631487277">Baligtarin ang pagkakasunod-sunod nang nakatihaya</translation>
 <translation id="5447765697759493033">Hindi isasalin ang site na ito</translation>
 <translation id="5452270690849572955">Hindi makita ang <ph name="HOST_NAME" /> page na ito</translation>
@@ -2420,6 +2415,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Makikita ng iyong administrator ang:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay Enter para magbukas ng bagong tab na Incognito para mag-browse nang pribado</translation>
+<translation id="7203375778433816396">Itakda ang Chrome bilang default na browser ng system</translation>
 <translation id="7210863904660874423">Hindi sumusunod ang <ph name="HOST_NAME" /> sa mga pamantayan sa seguridad.</translation>
 <translation id="7210993021468939304">Aktibidad ng Linux sa container, at puwedeng mag-install at magpatakbo ng mga Linux app sa container</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Dagdagan ang nalalaman<ph name="END_LINK" /> tungkol sa problemang ito.</translation>
@@ -2567,6 +2563,7 @@ Mga karagdagang detalye:
 <translation id="7537536606612762813">Kinakailangan</translation>
 <translation id="7542403920425041731">Kapag nagkumpirma ka, ibabahagi ang mga detalye ng iyong card sa site na ito.</translation>
 <translation id="7542995811387359312">Hindi pinagana ang awtomatikong pagpuno ng credit card dahil ang form na ito ay hindi gumagamit ng secure na koneksyon.</translation>
+<translation id="7546409722674205727">Magsisimula <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Ayusin ang mga error sa koneksyon</translation>
 <translation id="7549584377607005141">Kinakailangan ng webpage na ito ng data na inilagay mo dati upang maipakita nang maayos. Maipapadala mong muli ang data na ito, ngunit kapag ginawa mo iyon, mauulit ang anumang pagkilos na isinagawa dati ng pahinang ito.</translation>
 <translation id="7550637293666041147">Username ng iyong device at username sa Chrome</translation>
@@ -2752,6 +2749,7 @@ Mga karagdagang detalye:
 <translation id="8009843239480947060">10 x 11 in</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Ise-save ang card na ito at ang billing address nito. Magagamit mo ito kapag nag-sign in ka sa <ph name="USER_EMAIL" />.}one{Ise-save ang mga card na ito at ang mga billing address ng mga ito. Magagamit mo ang mga ito kapag nag-sign in ka sa <ph name="USER_EMAIL" />.}other{Ise-save ang mga card na ito at ang mga billing address ng mga ito. Magagamit mo ang mga ito kapag nag-sign in ka sa <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay Enter para itakda ang Chrome bilang default na browser ng system</translation>
 <translation id="8025119109950072390">Maaari kang linlangin ng mga attacker sa site na ito na gumawa ng mga bagay na mapanganib tulad ng pag-i-install ng software o pagbubunyag ng iyong personal na impormasyon (halimbawa, mga password, numero ng telepono o credit card).</translation>
 <translation id="8026334261755873520">I-clear ang data sa pag-browse</translation>
 <translation id="8027077570865220386">Tray 15</translation>

@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Отменить задание печати</translation>
 <translation id="2163937499206714165">Включить тёмную тему</translation>
 <translation id="2180197493692062006">Произошла ошибка. Попробуйте открыть приложение заново.</translation>
-<translation id="2184005227776731758">Точка доступа</translation>
 <translation id="2209788852729124853">Сбросить счетчики трафика</translation>
 <translation id="2212733584906323460">Разрешение имен</translation>
 <translation id="2217935453350629363">Текущая частота</translation>
@@ -689,7 +688,6 @@
 <translation id="741244894080940828">перевести в другие ед. измерения</translation>
 <translation id="7415801143053185905">очень большое время ожидания HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканирование завершено. Отсканирована 1 страница.}one{Сканирование завершено. Отсканирована {NUMBER_OF_PAGES} страница.}few{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}many{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страниц.}other{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}}</translation>
 <translation id="7458970041932198923">Чтобы просматривать и настраивать аватары, подключитесь к сети и обновите страницу.</translation>
 <translation id="7469648432129124067">Обнаружен сетевой портал.</translation>
 <translation id="7481312909269577407">Вперед</translation>
@@ -725,7 +723,7 @@
 <translation id="7784116172884276937">Нет настроенных DNS-серверов.</translation>
 <translation id="779591286616261875">Отправить новый отзыв</translation>
 <translation id="7799817062559422778">Светлая тема</translation>
-<translation id="780301667611848630">Спасибо, не надо</translation>
+<translation id="780301667611848630">Пропустить</translation>
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7841134249932030522">Использовать тёмную тему</translation>
@@ -796,6 +794,7 @@
 <translation id="8498220429738806196">Счетчики трафика</translation>
 <translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="8503836310948963452">Осталось несколько минут…</translation>
+<translation id="8508640263392900755">Сведения о точке доступа</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Возможно, вам потребуется установить этот параметр, чтобы подключиться к сети. За подробными сведениями обращайтесь к своему оператору связи.</translation>
 <translation id="8576249514688522074">Без инициализации</translation>
@@ -871,6 +870,7 @@
 <translation id="9173638680043580060">Осталось меньше минуты…</translation>
 <translation id="917720651393141712">Проверить</translation>
 <translation id="9188992814426075118">Цвет клавиатуры может автоматически подстраиваться под цвет обоев.</translation>
+<translation id="9193744392140377127">Точка доступа*</translation>
 <translation id="9204237731135241582">Не удается связаться со шлюзом в приложениях для Android.</translation>
 <translation id="9211490828691860325">Все рабочие столы</translation>
 <translation id="932327136139879170">Главная страница</translation>

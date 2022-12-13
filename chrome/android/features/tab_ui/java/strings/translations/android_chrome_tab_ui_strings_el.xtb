@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Θέλετε να κλείσετε όλες τις καρτέλες ανώνυμης περιήγησης;</translation>
 <translation id="1657719826150349398">Μετακίνηση καρτέλας κάτω</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> καρτέλα}other{<ph name="TABS_COUNT_MANY" /> καρτέλες}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Δημιουργία σελιδοδείκτη για <ph name="TABS_COUNT_ONE" /> επιλεγμένη καρτέλα}other{Δημιουργία σελιδοδείκτη για <ph name="TABS_COUNT_MANY" /> επιλεγμένες καρτέλες}}</translation>
 <translation id="2118649612461486615">Πληροφορίες καταστήματος</translation>
 <translation id="2162620598375156287">Τώρα <ph name="CURRENT_PRICE" /> στο <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Κατάργηση ομαδοπ. καρτέλας}other{Κατάργηση ομαδοπ. καρτελών}}</translation>
 <translation id="2277224997687551299">Επεξεργασία ονόματος ομάδας</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Αφαιρέστε <ph name="TABS_COUNT_ONE" /> επιλεγμένη καρτέλα από την ομάδα.}other{Αφαιρέστε <ph name="TABS_COUNT_MANY" /> επιλεγμένες καρτέλες από την ομάδα.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Δημιουργία σελιδ. καρτέλας}other{Δημιουργία σελιδ. καρτελών}}</translation>
 <translation id="2479148705183875116">Μετάβαση στις Ρυθμίσεις</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Συμπτύξτε <ph name="TABS_COUNT_ONE" /> καρτέλα.}other{Συμπτύξτε την ομάδα καρτελών με τις <ph name="TABS_COUNT_MANY" /> καρτέλες.}}</translation>
 <translation id="2569352796411618312">Πρόταση: <ph name="NUMBER_OF_TABS" /> από τις καρτέλες σας δεν έχουν χρησιμοποιηθεί πρόσφατα. Κλείσιμο αυτών των καρτελών;</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Μετακίνηση καρτέλας επάνω</translation>
 <translation id="8304833501377495048">Να μην εμφανιστεί ξανά η γραμμή καρτελών;</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Κλείσιμο <ph name="TABS_COUNT_ONE" /> επιλεγμένης καρτέλας}other{Κλείσιμο <ph name="TABS_COUNT_MANY" /> επιλεγμένων καρτελών}}</translation>
+<translation id="8398929769197326728">Νέος φάκελος - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Αναπτύξτε την ομάδα καρτελών με τις <ph name="NUMBER_OF_TABS" /> καρτέλες.</translation>
 <translation id="8714939927607906138">Χαμηλότερη τιμή</translation>
 <translation id="8749939518995770034">Η γραμμή καρτελών έκλεισε</translation>

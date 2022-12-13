@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">حفظ بيانات جهاز <ph name="NAME" /></translation>
 <translation id="1032891413405719768">بطارية قلم الشاشة منخفضة</translation>
 <translation id="1036073649888683237">لإدارة الإشعارات، يُرجى الانتقال إلى "الإعدادات".</translation>
+<translation id="1036348656032585052">إيقاف</translation>
 <translation id="1036672894875463507">‏أنا "مساعد Google" الخاص بك هنا لمساعدتك على مدار اليوم.
 إليك بعض الأمور التي يمكنك تجربتها للبدء.</translation>
 <translation id="1037492556044956303">تمت إضافة جهاز <ph name="DEVICE_NAME" /></translation>
@@ -100,6 +101,7 @@
 <translation id="1447641497144572814">تم تفعيل ميزة "شاشة الاستراحة".</translation>
 <translation id="1455242230282523554">عرض إعدادات اللغة</translation>
 <translation id="1460620680449458626">تم كتم الصوت.</translation>
+<translation id="14648076227129703">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا من "<ph name="APP1_NAME" />" و"<ph name="APP2_NAME" />" وجميع التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن.</translation>
 <translation id="1467432559032391204">اليسار</translation>
 <translation id="146902737843070955">طلب المشرف إجراء هذا التغيير.</translation>
 <translation id="147310119694673958">بطارية الهاتف: <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -160,6 +162,7 @@
 <translation id="1797271123677381264">نسيت كلمة المرور</translation>
 <translation id="181103072419391116">قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
 <translation id="1812997170047690955">ماذا يظهر على شاشتي؟</translation>
+<translation id="1816896987747843206">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا من التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن.</translation>
 <translation id="1823280932251546115">شريط الحالة، الوقت <ph name="TIME" />،
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -173,6 +176,7 @@
 <translation id="1830308660060964064">تم إلغاء تثبيت <ph name="ITEM_TITLE" /></translation>
 <translation id="1836215606488044471">المساعد (جارٍ التحميل...)</translation>
 <translation id="1838895407229022812">"الإضاءة الليلية" غير مفعّلة.</translation>
+<translation id="1854180393107901205">إيقاف البث</translation>
 <translation id="1862380676329487333">تحديث وتسجيل الخروج</translation>
 <translation id="1864454756846565995">‏جهاز USB-C (المنفذ الخلفي)</translation>
 <translation id="1869497990620230175">الوصول سريعًا إلى الملفات</translation>
@@ -600,6 +604,7 @@
 <translation id="4316910396681052118">جميع التطبيقات</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">‏تم تغيير اختصارات لوحة المفاتيح "Ctrl + Alt + السهم المتّجه للأعلى". لاستخدام مفتاح Home، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه لليسار".</translation>
+<translation id="4324840740119394760">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا من "<ph name="APP_NAME" />" وجميع التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن.</translation>
 <translation id="4333628967105022692">‏لا يمكن استخدام متصفِّح Lacros إذا سجّل العديد من المستخدمين دخولهم.</translation>
 <translation id="4338109981321384717">العدسة المكبرة</translation>
 <translation id="4351433414020964307">جارٍ تحميل المساعد...</translation>
@@ -666,13 +671,13 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">‏تم تفعيل ChromeVox</translation>
 <translation id="4665114317261903604">تبديل حالة "عدم الإزعاج" <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">يمكنك إيقاف الوصول إلى الكاميرا على هذا الجهاز لحظر جميع الكاميرات طوال الوقت.</translation>
 <translation id="4666911709726371538">المزيد من التطبيقات</translation>
 <translation id="4667099493359681081">جارٍ تنزيل <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">تطبيقات من هاتفك</translation>
 <translation id="4690510401873698237">الرف في الجزء السفلي</translation>
 <translation id="4696813013609194136">فتح قفل الجهاز باستخدام رمز الوالدين</translation>
 <translation id="4702647871202761252">تم إيقاف شاشة الخصوصية.</translation>
+<translation id="4706121060329443414">‏ستتم إعادة محاولة التنزيل لاحقًا. سيتم إرسال ملفات الكلام إلى Google لمعالجتها الآن.</translation>
 <translation id="470644585772471629">قلب الألوان</translation>
 <translation id="4717575069099566988">‏لا يتوافق الكابل المزوّد بمنفذ USB-C مع جهاز USB4. وقد يصبح أداء الجهاز محدودًا.</translation>
 <translation id="4730374152663651037">التطبيقات المستخدمة بشكل متكرر</translation>
@@ -698,7 +703,6 @@
 <translation id="485592688953820832">عدم اتخاذ أي إجراء (إيقاف مؤقَّت)</translation>
 <translation id="485634149294284819">إدخال قائمة لوحة المفاتيح</translation>
 <translation id="4860284199500934869">يُرجى التحقّق من الاتصال بالشبكة لتنزيل الملف <ph name="FILENAME" />.</translation>
-<translation id="486056901304535126">‏ستتم إعادة محاولة التنزيل لاحقًا. وسيتم إرسال ملفات التعرّف على الكلام إلى Google لمعالجتها إلى حين اكتمال عملية التنزيل.</translation>
 <translation id="4864369630010738180">جارٍ تسجيل الدخول...</translation>
 <translation id="4864648187878336334">سطح المكتب 15</translation>
 <translation id="4868492592575313542">مفعّلة</translation>
@@ -793,6 +797,7 @@
 <translation id="5356963482258194581">يمكنك التبديل بين المظهرَين الداكن والفاتح. انقر بزر الماوس الأيمن على سطح المكتب ثم اختَر "الخلفية والأسلوب".</translation>
 <translation id="536019650977002321">لا يسمح المشرف بتسجيل الصوت. يمكنك التواصل مع المشرف للحصول على مزيد من المعلومات.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> الانتقال إلى علامة التبويب هذه</translation>
+<translation id="5377367976106153749">هل تريد تفعيل إمكانية الوصول إلى الكاميرا؟</translation>
 <translation id="5379115545237091094">محاولات كثيرة جدًا</translation>
 <translation id="5391307769715781764">هل تريد استبدال سطح المكتب المحفوظ؟</translation>
 <translation id="5393156353051693207">انقر مع الاستمرار على أي مكان على الشاشة لإعادة ترتيب التطبيقات</translation>
@@ -1179,7 +1184,6 @@
 <translation id="7557816257942363084">يستخدم "<ph name="APP_NAME" />" الميكروفون حاليًا.</translation>
 <translation id="7561982940498449837">إغلاق القائمة</translation>
 <translation id="7564874036684306347">قد ينتج عن نقل النوافذ إلى سطح مكتب آخر سلوك غير متوقع. من الممكن أن يتم تقسيم مربعات الحوار والنوافذ والإشعارات المتتالية بين سطحَي المكتب.</translation>
-<translation id="7567076708801803118">هل تريد إيقاف الوصول إلى الكاميرا على هذا الجهاز؟</translation>
 <translation id="7569509451529460200">‏تم تفعيل Braille وChromeVox</translation>
 <translation id="7573585051776738856">تم إرساء النافذة النشطة على يسار الشاشة.</translation>
 <translation id="7579778809502851308">لقطة الشاشة</translation>

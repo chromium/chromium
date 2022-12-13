@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">웹의 개인 정보 보호 개선에 동참해 주세요</translation>
 <translation id="107147699690128016">파일 확장자를 변경하면 파일이 다른 애플리케이션에서 열리고 기기가 위험에 노출될 수도 있습니다.</translation>
 <translation id="1089606299949659462">검토 완료</translation>
-<translation id="1091604859693995976">새로고침하여 보기</translation>
 <translation id="1095761715416917775">언제든지 동기화 데이터에 액세스할 수 있도록 하세요</translation>
 <translation id="1100066534610197918">새 탭을 그룹에서 열기</translation>
 <translation id="1103142993930332957">Chrome을 개선하는 데 도움을 주시겠어요?</translation>
@@ -1148,6 +1147,7 @@
 <translation id="7177466738963138057">나중에 설정에서 변경 가능</translation>
 <translation id="7177873915659574692">QR 코드를 만들 수 없습니다. URL이 <ph name="CHARACTER_LIMIT" />자(영문 기준)를 초과합니다.</translation>
 <translation id="7177959540995930968">Chrome 설정에서 이러한 기능에 관해 자세히 알아볼 수 있습니다.</translation>
+<translation id="7180611975245234373">새로고침</translation>
 <translation id="718226107353899806">최대 <ph name="MAX_NUM_REACTIONS" />개의 반응을 추가할 수 있습니다.</translation>
 <translation id="7183693674623539380">탭 그룹 - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">로그인 상태일 때 Chrome에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 강화하는 데 사용될 수 있습니다.</translation>

@@ -202,7 +202,7 @@
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1432187715652018471">このページはサービス ハンドラのインストールを求めています。</translation>
 <translation id="1432581352905426595">検索エンジンを管理</translation>
-<translation id="1435940442311036198">別のデバイスのパスキーを使用</translation>
+<translation id="1435940442311036198">別のデバイスのパスキーを使用する</translation>
 <translation id="1436185428532214179">デバイスのファイルやフォルダの編集を要求できる</translation>
 <translation id="1442386063175183758">右観音折り</translation>
 <translation id="1442987760062738829">パンチ</translation>
@@ -413,7 +413,6 @@
 <translation id="1958218078413065209">ハイスコアは <ph name="SCORE" /> です。</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />アクセスしたページの URL、システム情報、およびページのコンテンツの一部<ph name="END_WHITEPAPER_LINK" />を Google に送信して、ウェブ全体のセキュリティ強化にご協力ください。<ph name="BEGIN_PRIVACY_PAGE_LINK" />プライバシー ポリシー<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> のブックマーク</translation>
-<translation id="1971033026002113380">TouchID でパスワードを保護</translation>
 <translation id="1973335181906896915">シリアル化エラーです</translation>
 <translation id="1974060860693918893">詳細設定</translation>
 <translation id="1975457531113383421">給紙トレイ</translation>
@@ -748,7 +747,6 @@
 <translation id="2881276955470682203">カードを保存しますか？</translation>
 <translation id="2882949212241984732">両観音折り</translation>
 <translation id="2893773853358652045">ロール 4</translation>
-<translation id="289834758818479772">このデバイスを他のユーザーと共有している場合、TouchID を有効にすると、保存したパスワードを使用するたびに本人確認を行うことができます</translation>
 <translation id="2900528713135656174">予定を作成</translation>
 <translation id="2903493209154104877">住所</translation>
 <translation id="290376772003165898"><ph name="LANGUAGE" />のページではない場合</translation>
@@ -1066,7 +1064,6 @@
 <translation id="3678529606614285348">ページを新しいシークレット ウィンドウで開く（Ctrl-Shift-N）</translation>
 <translation id="3681007416295224113">証明書情報</translation>
 <translation id="3693327506115126094">本人確認の方法を選択してください</translation>
-<translation id="3699374065820972102">パスワード入力で TouchID が有効になっています</translation>
 <translation id="3701427423622901115">リセットを確認しました。</translation>
 <translation id="3704162925118123524">ご利用のネットワークでは、ログインページへのアクセスが必要な可能性があります。</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1181,7 +1178,6 @@
 <translation id="401170183602135785">C6 封筒</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} ページの PDF ドキュメント}other{{COUNT} ページの PDF ドキュメント}}</translation>
 <translation id="4023431997072828269">このフォームは安全ではない接続を使用して送信されているため、情報が他人に読み取られる可能性があります。</translation>
-<translation id="4024923292610332139">パスワード入力で TouchID を無効にする</translation>
 <translation id="4025913568718019429">[Google のプライバシー設定を管理] ボタンです。Enter キーを押すと Google アカウントのプライバシー設定に移動します</translation>
 <translation id="4030383055268325496">追加の取り消し（&amp;U）</translation>
 <translation id="4031179711345676612">マイクを使用できます</translation>
@@ -1543,7 +1539,6 @@
 <translation id="4900217275619098670">ロール 9</translation>
 <translation id="4901778704868714008">保存...</translation>
 <translation id="4905659621780993806">デバイスは <ph name="DATE" /> <ph name="TIME" /> に管理者によって自動的に再起動されます。デバイスが再起動される前に、開いているすべてのアイテムを保存してください。</translation>
-<translation id="4911007278801291296"><ph name="SETTINGS" /> で TouchID のオンとオフを切り替えることができます</translation>
 <translation id="4913987521957242411">パンチ（左上）</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> をインストール（ダウンロードは不要です）</translation>
 <translation id="4923459931733593730">お支払い</translation>
@@ -1725,6 +1720,7 @@
 <translation id="5334013548165032829">詳細なシステムログ</translation>
 <translation id="5334145288572353250">住所を保存しますか？</translation>
 <translation id="5335920952954443287">揺れるハート</translation>
+<translation id="5337569431717511221">Chrome を既定のブラウザに設定するボタンです。Enter キーを押すと Chrome をシステムの既定のブラウザに設定できます</translation>
 <translation id="5340250774223869109">アプリケーションがブロックされました</translation>
 <translation id="534295439873310000">NFC デバイス</translation>
 <translation id="5344579389779391559">このページでは課金される恐れがあります</translation>
@@ -1756,7 +1752,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> が通知を送信しようとしています。</translation>
 <translation id="5428105026674456456">スペイン語</translation>
 <translation id="5430298929874300616">ブックマークを削除</translation>
-<translation id="5434423669266814150">パスワード入力で TouchID を有効にする</translation>
 <translation id="5443468954631487277">逆の順序（上向き）</translation>
 <translation id="5447765697759493033">このサイトは翻訳されません</translation>
 <translation id="5452270690849572955">この <ph name="HOST_NAME" /> ページが見つかりません</translation>
@@ -1881,7 +1876,7 @@
 <translation id="5764920692828389743">送信先: <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">配達方法と要件を確認するには、住所を選択してください</translation>
 <translation id="57689295674415555">仮想カード番号が入力されない場合</translation>
-<translation id="5772086939108830423">別のデバイスのパスキーを使用</translation>
+<translation id="5772086939108830423">別のデバイスのパスキーを使用する</translation>
 <translation id="5776313857861697733">優先度</translation>
 <translation id="5776574724412881956">仮想カードが入力されない場合は、仮想カードの詳細をクリックして、クリップボードにコピーしてください。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">テスト機能を有効にしました</translation>
@@ -2420,6 +2415,7 @@
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">管理者は、以下の情報を確認できます。</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、新しいシークレット タブを開いてシークレット モードでブラウジングします</translation>
+<translation id="7203375778433816396">Chrome をシステムの既定のブラウザとして設定します</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ではセキュリティ規格が遵守されていません。</translation>
 <translation id="7210993021468939304">コンテナ内の Linux アクティビティ、コンテナ内での Linux アプリのインストールと実行</translation>
 <translation id="721197778055552897">この問題の詳細については、<ph name="BEGIN_LINK" />こちら<ph name="END_LINK" />をご覧ください。</translation>
@@ -2567,6 +2563,7 @@
 <translation id="7537536606612762813">必須</translation>
 <translation id="7542403920425041731">確認すると、カードの情報がこのサイトに共有されます。</translation>
 <translation id="7542995811387359312">このフォームは安全な接続を使用していないため、クレジットカードの自動入力が無効になっています。</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" /> を開始しています</translation>
 <translation id="7548892272833184391">接続エラーを解決する</translation>
 <translation id="7549584377607005141">このウェブページを正しく表示するには、先ほど入力したデータが必要です。データは再送信できますが、このページで先ほど行った操作を繰り返すことになります。</translation>
 <translation id="7550637293666041147">お客様のデバイスのユーザー名と Chrome のユーザー名</translation>
@@ -2752,6 +2749,7 @@
 <translation id="8009843239480947060">10x11 インチ</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{このカードと請求先住所は保存され、<ph name="USER_EMAIL" /> にログインすると使用できます。}other{これらのカードと請求先住所は保存され、<ph name="USER_EMAIL" /> にログインすると使用できます。}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" />（<ph name="ADDITIONAL_TEXT" />）</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome をシステムの既定のブラウザとして設定できます</translation>
 <translation id="8025119109950072390">このサイトを利用すると、悪意のあるユーザーによって、ソフトウェアのインストールや個人情報（例: パスワード、電話番号、クレジット カード番号）の入力などの危険な操作を行うよう誘導される可能性があります。</translation>
 <translation id="8026334261755873520">閲覧履歴データの削除</translation>
 <translation id="8027077570865220386">トレイ 15</translation>

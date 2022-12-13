@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Zrušiť tlačovú úlohu</translation>
 <translation id="2163937499206714165">Zapnúť tmavý režim</translation>
 <translation id="2180197493692062006">Vyskytol sa problém. Skúste aplikáciu znova otvoriť.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Resetovať počítadlá návštevnosti</translation>
 <translation id="2212733584906323460">Preklad názvu</translation>
 <translation id="2217935453350629363">Aktuálna rýchlosť</translation>
@@ -561,6 +560,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6189418609903030344">Kapacita batérie používaním klesá</translation>
 <translation id="6191293864534840972">Nesprávny formát serverov DNS</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Ukončiť režim celej obrazovky</translation>
 <translation id="6223752125779001553">Nie sú k dispozícii žiadne skenery</translation>
 <translation id="6232017090690406397">Batéria</translation>
 <translation id="6235460611964961764">Manuálne resetovať spotrebu dát</translation>
@@ -688,12 +688,12 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="741244894080940828">prevod</translation>
 <translation id="7415801143053185905">Veľmi vysoká latencia protokolu HTTPS</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skenovanie je dokončené. Bola naskenovaná 1 strana.}few{Skenovanie je dokončené. Boli naskenované {NUMBER_OF_PAGES} strany.}many{Skenovanie je dokončené. {NUMBER_OF_PAGES} pages scanned}other{Skenovanie je dokončené. Bolo naskenovaných {NUMBER_OF_PAGES} strán.}}</translation>
 <translation id="7458970041932198923">Ak chcete zobraziť a nastaviť avatary, pripojte sa k sieti a znova načítajte stránku.</translation>
 <translation id="7469648432129124067">Bol rozpoznaný portál</translation>
 <translation id="7481312909269577407">Dopredu</translation>
 <translation id="7487067081878637334">Technológia</translation>
 <translation id="7490813197707563893">Adresa MAC</translation>
+<translation id="7491478667760509108">Ukončiť plávajúci režim</translation>
 <translation id="7497215489070763236">Certifikát CA servera</translation>
 <translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -794,6 +794,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8498220429738806196">Počítadlá návštevnosti</translation>
 <translation id="8503813439785031346">Meno používateľa</translation>
 <translation id="8503836310948963452">Už iba niekoľko minút…</translation>
+<translation id="8508640263392900755">Podrobnosti názvu prístupového bodu (APN)</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Váš operátor môže túto možnosť vyžadovať na pripojenie k jeho sieti. Podrobnosti vám poskytne operátor.</translation>
 <translation id="8576249514688522074">Nespustené</translation>
@@ -869,6 +870,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="9173638680043580060">Zostáva menej ako minúta</translation>
 <translation id="917720651393141712">Testovať</translation>
 <translation id="9188992814426075118">Klávesnica sa môže automaticky prispôsobiť tapete</translation>
+<translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Brána sa nedá kontaktovať v aplikáciách pre Android</translation>
 <translation id="9211490828691860325">Všetky plochy</translation>
 <translation id="932327136139879170">Domov</translation>

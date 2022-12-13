@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">ช่วยเราสร้างเว็บที่มีความเป็นส่วนตัวมากขึ้น</translation>
 <translation id="107147699690128016">หากคุณเปลี่ยนนามสกุลไฟล์ ไฟล์นั้นอาจเปิดในแอปพลิเคชันอื่นและเป็นอันตรายต่ออุปกรณ์ของคุณ</translation>
 <translation id="1089606299949659462">ตรวจสอบเรียบร้อยแล้ว</translation>
-<translation id="1091604859693995976">รีเฟรชเพื่อดู</translation>
 <translation id="1095761715416917775">ตรวจสอบว่าคุณเข้าถึงข้อมูลที่ซิงค์ไว้ได้เสมอ</translation>
 <translation id="1100066534610197918">เปิดในแท็บใหม่ในกลุ่ม</translation>
 <translation id="1103142993930332957">หากต้องการช่วยปรับปรุง Chrome</translation>
@@ -1148,6 +1147,7 @@
 <translation id="7177466738963138057">คุณสามารถเปลี่ยนค่านี้ภายหลังใน "การตั้งค่า"</translation>
 <translation id="7177873915659574692">สร้างคิวอาร์โค้ดไม่ได้ URL มีจำนวนอักขระมากกว่า <ph name="CHARACTER_LIMIT" /> ตัว</translation>
 <translation id="7177959540995930968">คุณดูข้อมูลเพิ่มเติมเกี่ยวกับฟีเจอร์เหล่านี้ได้ในการตั้งค่า Chrome</translation>
+<translation id="7180611975245234373">รีเฟรช</translation>
 <translation id="718226107353899806">คุณเพิ่มความรู้สึกได้สูงสุด <ph name="MAX_NUM_REACTIONS" /> รายการ</translation>
 <translation id="7183693674623539380">กลุ่มแท็บ - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">รักษาความปลอดภัยของคุณใน Chrome และอาจใช้เพื่อปรับปรุงความปลอดภัยในแอปอื่นๆ ของ Google เมื่อลงชื่อเข้าใช้</translation>

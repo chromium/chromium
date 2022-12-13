@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">¿Cerrar todas las pestañas de incógnito?</translation>
 <translation id="1657719826150349398">Bajar pestaña</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestaña}other{<ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Añadir <ph name="TABS_COUNT_ONE" /> pestaña seleccionada a marcadores}other{Añadir <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas a marcadores}}</translation>
 <translation id="2118649612461486615">Información de la tienda</translation>
 <translation id="2162620598375156287">Ahora, por <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Desagrupar pestaña}other{Desagrupar pestañas}}</translation>
 <translation id="2277224997687551299">Editar nombre de grupo</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Quitar <ph name="TABS_COUNT_ONE" /> pestaña seleccionada del grupo.}other{Quitar <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas del grupo.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Añadir pestaña a marcadores}other{Añadir a marcadores}}</translation>
 <translation id="2479148705183875116">Ve a Ajustes</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ocultar <ph name="TABS_COUNT_ONE" /> pestaña}other{Ocultar grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
 <translation id="2569352796411618312">Sugerencia: <ph name="NUMBER_OF_TABS" /> de las pestañas no se han usado recientemente. ¿Quieres cerrarlas?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Subir pestaña</translation>
 <translation id="8304833501377495048">¿No volver a mostrar la barra de pestañas?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Cerrar <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Cerrar <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
+<translation id="8398929769197326728">Nueva carpeta - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Desplegar grupo de pestañas con <ph name="NUMBER_OF_TABS" /> pestañas</translation>
 <translation id="8714939927607906138">Precio más bajo</translation>
 <translation id="8749939518995770034">Barra de pestañas cerrada</translation>

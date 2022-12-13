@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">儲存 <ph name="NAME" /></translation>
 <translation id="1032891413405719768">觸控筆電量偏低</translation>
 <translation id="1036073649888683237">如要管理通知，請前往「設定」應用程式</translation>
+<translation id="1036348656032585052">停用</translation>
 <translation id="1036672894875463507">我是您的「Google 助理」，可協助您處理處理日常事務！
 如要開始使用，您可先嘗試以下幾種功能。</translation>
 <translation id="1037492556044956303">已新增 <ph name="DEVICE_NAME" /></translation>
@@ -100,6 +101,7 @@
 <translation id="1447641497144572814">螢幕保護程式啟動</translation>
 <translation id="1455242230282523554">顯示語言設定</translation>
 <translation id="1460620680449458626">音量校咗靜音。</translation>
+<translation id="14648076227129703">此操作會允許 <ph name="APP1_NAME" />、<ph name="APP2_NAME" /> 以及具備相機權限的所有應用程式和網站存取相機</translation>
 <translation id="1467432559032391204">向左</translation>
 <translation id="146902737843070955">管理員已要求此變更</translation>
 <translation id="147310119694673958">手機電量 <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -159,6 +161,7 @@
 <translation id="1797271123677381264">忘記密碼</translation>
 <translation id="181103072419391116">訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
 <translation id="1812997170047690955">我嘅畫面上面有咩？</translation>
+<translation id="1816896987747843206">此操作會允許具備相機權限的所有應用程式和網站存取相機</translation>
 <translation id="1823280932251546115">狀態列，時間 <ph name="TIME" />，
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@
 <translation id="1830308660060964064">已經將<ph name="ITEM_TITLE" />取消置頂</translation>
 <translation id="1836215606488044471">小幫手 (正在載入…)</translation>
 <translation id="1838895407229022812">「夜燈模式」已關閉。</translation>
+<translation id="1854180393107901205">停止投放</translation>
 <translation id="1862380676329487333">更新並登出</translation>
 <translation id="1864454756846565995">USB-C 裝置 (後方連接埠)</translation>
 <translation id="1869497990620230175">快速檔案</translation>
@@ -598,6 +602,7 @@
 <translation id="4316910396681052118">所有應用程式</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">「Ctrl + Alt + 向上箭咀」的鍵盤快速鍵已變更。如要使用 Home 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向左箭咀。</translation>
+<translation id="4324840740119394760">此操作會允許 <ph name="APP_NAME" /> 以及具備相機權限的所有應用程式和網站存取相機</translation>
 <translation id="4333628967105022692">有多位使用者登入時不支援 Lacros 瀏覽器。</translation>
 <translation id="4338109981321384717">放大鏡</translation>
 <translation id="4351433414020964307">正在載入小幫手…</translation>
@@ -664,13 +669,13 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">已啟用 ChromeVox</translation>
 <translation id="4665114317261903604">切換「請勿騷擾」模式。<ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">請關閉此裝置上的相機存取權，以便一律封鎖所有相機。</translation>
 <translation id="4666911709726371538">更多應用程式</translation>
 <translation id="4667099493359681081">下載緊 <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">手機應用程式</translation>
 <translation id="4690510401873698237">捷徑列喺螢幕個底度</translation>
 <translation id="4696813013609194136">使用家長存取碼解鎖裝置</translation>
 <translation id="4702647871202761252">已停用私隱保護畫面</translation>
+<translation id="4706121060329443414">系統稍後將再次嘗試下載，目前會暫時將語音傳送給 Google 處理。</translation>
 <translation id="470644585772471629">色彩反轉</translation>
 <translation id="4717575069099566988">USB-C 連接線不支援 USB4。裝置效能可能受到限制。</translation>
 <translation id="4730374152663651037">常用的應用程式</translation>
@@ -696,7 +701,6 @@
 <translation id="485592688953820832">不執行任何操作 (暫停)</translation>
 <translation id="485634149294284819">輸入鍵盤選單</translation>
 <translation id="4860284199500934869">請檢查網路連線以下載「<ph name="FILENAME" />」</translation>
-<translation id="486056901304535126">系統稍後將再次嘗試下載，語音會暫時傳送給 Google 處理，直至下載完成。</translation>
 <translation id="4864369630010738180">正在登入…</translation>
 <translation id="4864648187878336334">桌面 15</translation>
 <translation id="4868492592575313542">已啟用</translation>
@@ -790,6 +794,7 @@
 <translation id="5356963482258194581">在深色和淺色主題背景之間切換。請在桌面上按一下右鍵，並選取「桌布和樣式」。</translation>
 <translation id="536019650977002321">管理員禁止擷取音訊。如需更多資訊，請聯絡管理員。</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> 前往此分頁</translation>
+<translation id="5377367976106153749">要允許存取相機嗎？</translation>
 <translation id="5379115545237091094">嘗試次數過多</translation>
 <translation id="5391307769715781764">要取代已儲存的桌面嗎？</translation>
 <translation id="5393156353051693207">輕觸並按住任何位置即可將應用程式重新排序</translation>
@@ -1175,7 +1180,6 @@
 <translation id="7557816257942363084">「<ph name="APP_NAME" />」目前正在使用您的麥克風</translation>
 <translation id="7561982940498449837">關閉選單</translation>
 <translation id="7564874036684306347">將視窗移至其他桌面可能會導致非預期的行為。後續的通知、視窗和對話框可能會在不同的桌面上分開顯示。</translation>
-<translation id="7567076708801803118">確定要關閉此裝置上的相機存取權嗎？</translation>
 <translation id="7569509451529460200">已啟用點字和 ChromeVox</translation>
 <translation id="7573585051776738856">用緊嘅視固定咗喺畫面右邊。</translation>
 <translation id="7579778809502851308">擷取螢幕畫面</translation>
@@ -1489,6 +1493,7 @@
 <translation id="954052413789300507">可用空間不足，無法下載「<ph name="FILENAME" />」。請騰出空間。</translation>
 <translation id="974545358917229949">顯示緊 <ph name="RESULT_COUNT" /> 個同「<ph name="QUERY" />」有關嘅結果</translation>
 <translation id="98515147261107953">橫向</translation>
+<translation id="989374776391122812">相機和音訊控制項</translation>
 <translation id="990277280839877440">視窗 <ph name="WINDOW_TITILE" /> 閂咗。</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />，<ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">取得最新功能和改善安全性的資訊。更新會在背景中執行。</translation>

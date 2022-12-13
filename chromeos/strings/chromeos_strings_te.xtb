@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">ప్రింట్ టాస్క్‌ను రద్దు చేయి</translation>
 <translation id="2163937499206714165">డార్క్ మోడ్‌ను ఆన్ చేయండి</translation>
 <translation id="2180197493692062006">ఏదో తప్పు జరిగింది. యాప్‌ను తిరిగి తెరవడానికి ట్రై చేయండి.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">ట్రాఫిక్ కౌంటర్‌లను రీసెట్ చేయండి</translation>
 <translation id="2212733584906323460">పేరు రిజల్యూషన్</translation>
 <translation id="2217935453350629363">ప్రస్తుత వేగం</translation>
@@ -491,6 +490,7 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">సూర్యాస్తమయానికి ఆటోమేటిక్‌గా ముదురు రంగు రూపానికి మారండి</translation>
+<translation id="5571714952674387371">వివరాలను చూడండి, ఎడిట్ చేయండి</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">మళ్లీ స్కాన్ చేయండి</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -560,6 +560,7 @@
 <translation id="6189418609903030344">వినియోగంతో బ్యాటరీ సామర్థ్యం క్షీణిస్తుంది</translation>
 <translation id="6191293864534840972">పేరు తప్పుగా ఉన్న సర్వర్లు</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">ఫుల్-స్క్రీన్ మోడ్ నుండి నిష్క్రమించండి</translation>
 <translation id="6223752125779001553">స్కానర్‌లు ఏవీ అందుబాటులో లేవు</translation>
 <translation id="6232017090690406397">బ్యాటరీ</translation>
 <translation id="6235460611964961764">డేటా వినియోగాన్ని మాన్యువల్‌గా రీసెట్ చేయండి</translation>
@@ -687,11 +688,12 @@
 <translation id="741244894080940828">మార్పిడి</translation>
 <translation id="7415801143053185905">అత్యధిక HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{స్కాన్ చేయడం పూర్తయింది. 1 పేజీ స్కాన్ చేయబడింది}other{స్కాన్ చేయడం పూర్తయింది. {NUMBER_OF_PAGES} పేజీలు స్కాన్ చేయబడ్డాయి}}</translation>
+<translation id="7458970041932198923">అవతార్‌లను చూసి, వాటిని సెట్ చేయడానికి దయచేసి నెట్‌వర్క్‌కు కనెక్ట్ చేసి, పేజీని రీలోడ్ చేయండి.</translation>
 <translation id="7469648432129124067">పోర్టల్ గుర్తించబడింది</translation>
 <translation id="7481312909269577407">ఫార్వర్డ్</translation>
 <translation id="7487067081878637334">సాంకేతికం</translation>
 <translation id="7490813197707563893">MAC అడ్రస్‌</translation>
+<translation id="7491478667760509108">ఫ్లోట్ మోడ్ నుండి నిష్క్రమించండి</translation>
 <translation id="7497215489070763236">సర్వర్ CA సర్టిఫికేట్</translation>
 <translation id="7502658306369382406">IPv6 అడ్రస్‌</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -792,6 +794,7 @@
 <translation id="8498220429738806196">ట్రాఫిక్ కౌంటర్‌లు</translation>
 <translation id="8503813439785031346">యూజర్‌పేరు</translation>
 <translation id="8503836310948963452">మరికొన్ని నిమిషాలు మాత్రమే…</translation>
+<translation id="8508640263392900755">APN వివరాలు</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">వారి నెట్‌వర్క్‌కు కనెక్ట్ అవ్వడానికి మీ క్యారియర్‌కు ఈ ఆప్షన్ అవసరం పడవచ్చు. వివరాల కోసం మీ క్యారియర్‌ను సంప్రదించండి.</translation>
 <translation id="8576249514688522074">ప్రారంభం కాలేదు</translation>
@@ -842,6 +845,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{స్కాన్ చేయండి}=1{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}other{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}}</translation>
 <translation id="8997710128084572139">పరికరంలో <ph name="BATTERY_PERCENTAGE" />% బ్యాటరీ ఉంది.</translation>
+<translation id="8998289560386111590">ఈ మోడ్ మీ పరికరంలో అందుబాటులో లేదు</translation>
 <translation id="9003704114456258138">పౌనఃపున్యం</translation>
 <translation id="9025198690966128418">వ్యక్తిగత పరికరంగా ఉపయోగించండి</translation>
 <translation id="9028832514430399253">స్క్రీన్ సేవర్ ఆప్షన్‌లను ఎంచుకోవడానికి టోగుల్‌ను ఆన్ చేయండి</translation>

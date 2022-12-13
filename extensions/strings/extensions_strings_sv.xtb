@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Paketet är ogiltigt. Information: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> begär åtkomst till en av dina enheter:</translation>
 <translation id="8885905466771744233">Det finns redan en privat nyckel för det angivna tillägget. Återanvänd den nyckeln eller ta bort den först.</translation>
+<translation id="9039223174332979184">Administratören för den här datorn kräver att <ph name="EXTENSION_NAME" /> har manifestversion tre eller senare.</translation>
 <translation id="907841381057066561">Det gick inte att skapa en tillfällig ZIP-fil under packningen.</translation>
 <translation id="941543339607623937">Ogiltig privat nyckel.</translation>
 </translationbundle>

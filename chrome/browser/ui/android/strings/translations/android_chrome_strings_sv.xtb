@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Hjälp oss att göra webben mer privat</translation>
 <translation id="107147699690128016">Om du ändrar filnamnstillägget kanske filen öppnas i ett annat program vilket kan utgöra en fara för enheten.</translation>
 <translation id="1089606299949659462">Granskningen är klar</translation>
-<translation id="1091604859693995976">Uppdatera för att visa</translation>
 <translation id="1095761715416917775">Se till att du alltid får åtkomst till din synkroniserade data</translation>
 <translation id="1100066534610197918">Öppna i en ny flik i en grupp</translation>
 <translation id="1103142993930332957">Vill du hjälpa till att förbättra Chrome?</translation>
@@ -762,6 +761,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="510275257476243843">1 timme kvar</translation>
 <translation id="5115811374190515607">i <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Intressen</translation>
+<translation id="5122378528687922675">Prata med din förälder (<ph name="PARENT_NAME_1" /> eller <ph name="PARENT_NAME_2" />) om du behöver hjälp</translation>
 <translation id="5123685120097942451">Inkognitoflik</translation>
 <translation id="5126510351761255129">Verifiera kortet</translation>
 <translation id="5132942445612118989">Synkronisera lösenord, historik med mera på alla dina enheter</translation>
@@ -1149,6 +1149,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7177466738963138057">Du kan ändra detta senare i inställningarna</translation>
 <translation id="7177873915659574692">Det gick inte att skapa QR-koden. Webbadressen är längre än <ph name="CHARACTER_LIMIT" /> tecken.</translation>
 <translation id="7177959540995930968">Du kan läsa mer om de här funktionerna i inställningarna för Chrome.</translation>
+<translation id="7180611975245234373">Uppdatera</translation>
 <translation id="718226107353899806">Du kan lägga till upp till <ph name="MAX_NUM_REACTIONS" /> reaktioner</translation>
 <translation id="7183693674623539380">Flikgrupp – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Skyddar dig i Chrome och kan användas för förbättrad säkerhet i andra Google-appar där du är inloggad.</translation>
@@ -1332,6 +1333,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8084285576995584326">Styr data i Google-kontot</translation>
 <translation id="808747664143081553">Ansluten till enheten</translation>
 <translation id="8088176524274673045">Be andra att skanna QR-koden om du vill dela med personer i närheten</translation>
+<translation id="8090732854597034573">Prata med din förälder om du behöver hjälp</translation>
 <translation id="8100969750121413114">Logga in och anpassa Chrome</translation>
 <translation id="8103578431304235997">Inkognitoflik</translation>
 <translation id="8105613260829665809">Genom att fortsätta godkänner du <ph name="BEGIN_TOS_LINK" />användarvillkoren<ph name="END_TOS_LINK" />.\nChrome skickar data om användning och krascher till Google i syfte att förbättra appen. <ph name="BEGIN_UMA_LINK" />Hantera<ph name="END_UMA_LINK" /></translation>
@@ -1340,6 +1342,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8109613176066109935">Aktivera synkronisering om du vill ha dina bokmärken tillgängliga på alla enheter</translation>
 <translation id="8110024788458304985">Hjälp oss att förbättra funktioner och prestanda i Chrome</translation>
 <translation id="8110087112193408731">Vill du att din aktivitet i Chrome ska visas i Digitalt välmående?</translation>
+<translation id="8118117428362942925">Prata med din förälder (<ph name="PARENT_NAME" />) om du behöver hjälp</translation>
 <translation id="8127542551745560481">Redigera startsida</translation>
 <translation id="8130309322784422030">Dina sparade inloggningsuppgifter kan vara inaktuella</translation>
 <translation id="813082847718468539">Visa information om webbplatsen</translation>

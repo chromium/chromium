@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">আরও ব্যক্তিগত ওয়েব তৈরিতে আমাদের সাহায্য করুন</translation>
 <translation id="107147699690128016">আপনি ফাইলের এক্সটেনশন পরিবর্তন করলে, সেটি অন্য অ্যাপ্লিকেশনে খুলতে পারে এবং আপনার ডিভাইসে সমস্যার সৃষ্টি করতে পারে।</translation>
 <translation id="1089606299949659462">রিভিউ সম্পূর্ণ হয়েছে!</translation>
-<translation id="1091604859693995976">দেখার জন্য রিফ্রেশ করুন</translation>
 <translation id="1095761715416917775">আপনি সিঙ্ক করা ডেটা সবসময় ব্যবহার করছেন কিনা দেখে নিন</translation>
 <translation id="1100066534610197918">গ্রুপে একটি নতুন ট্যাব খুলুন</translation>
 <translation id="1103142993930332957">Chrome উন্নত করতে সাহায্য করবেন?</translation>
@@ -763,6 +762,7 @@
 <translation id="510275257476243843">১ ঘণ্টা বাকি আছে</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" />-এ</translation>
 <translation id="5118713593561876160">আগ্রহগুলি</translation>
+<translation id="5122378528687922675">সাহায্যের প্রয়োজন হলে, অভিভাবককে জিজ্ঞাসা করো (<ph name="PARENT_NAME_1" /> বা <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">ছদ্মবেশী ট্যাব</translation>
 <translation id="5126510351761255129">আপনার কার্ডটি যাচাই করুন</translation>
 <translation id="5132942445612118989">সমস্ত ডিভাইসে আপনার পাসওয়ার্ড, ইতিহাস ও আরও অনেক কিছু সিঙ্ক করুন</translation>
@@ -1150,6 +1150,7 @@
 <translation id="7177466738963138057">আপনি পরে সেটিংসে এই পরিবর্তন করতে পারবেন</translation>
 <translation id="7177873915659574692">QR কোড তৈরি করা যায়নি। URL-এ <ph name="CHARACTER_LIMIT" />টির বেশি অক্ষর রয়েছে।</translation>
 <translation id="7177959540995930968">আপনি Chrome সেটিংস থেকে এই ফিচার সম্পর্কে আরও জানতে পারবেন।</translation>
+<translation id="7180611975245234373">রিফ্রেশ করুন</translation>
 <translation id="718226107353899806">আপনি সর্বাধিক <ph name="MAX_NUM_REACTIONS" />টি প্রতিক্রিয়া যোগ করতে পারবেন</translation>
 <translation id="7183693674623539380">ট্যাব গ্রুপ - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">এই সুরক্ষা আপনাকে Chrome-এ সাইন-ইন করা অবস্থাতে নিরাপদে রাখে এবং যদি অন্যান্য Google অ্যাপে আপনি সাইন-ইন করে থাকেন, সেখানেও আপনার নিরাপত্তার বিষয়টি উন্নত করতে এটিকে ব্যবহার করা যেতে পারে।</translation>
@@ -1333,6 +1334,7 @@
 <translation id="8084285576995584326">আপনার Google অ্যাকাউন্টের ডেটা নিয়ন্ত্রণ করুন</translation>
 <translation id="808747664143081553">ডিভাইসের সাথে কানেক্ট করা আছে</translation>
 <translation id="8088176524274673045">কাছাকাছি আছেন এমন ব্যক্তির সাথে শেয়ার করতে তাকে এই QR কোড স্ক্যান করতে দিন</translation>
+<translation id="8090732854597034573">সাহায্যের প্রয়োজন হলে, অভিভাবককে জিজ্ঞাসা করো</translation>
 <translation id="8100969750121413114">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="8103578431304235997">ছদ্মবেশী ট্যাব</translation>
 <translation id="8105613260829665809">চালিয়ে যাওয়ার অর্থ আপনি <ph name="BEGIN_TOS_LINK" />পরিষেবার শর্তাবলী<ph name="END_TOS_LINK" />তে সম্মতি জানাচ্ছেন।\nঅ্যাপের উন্নতি করার জন্য Chrome ক্র্যাশ ও ব্যবহারের ডেটা Google-কে পাঠায়। <ph name="BEGIN_UMA_LINK" />ম্যানেজ করুন<ph name="END_UMA_LINK" /></translation>
@@ -1341,6 +1343,7 @@
 <translation id="8109613176066109935">আপনার সমস্ত ডিভাইসে বুকমার্কগুলি পেতে সিঙ্ক বিকল্প চালু করুন</translation>
 <translation id="8110024788458304985">Chrome-এর ফিচার ও পারফর্ম্যান্স আরও উন্নত করে তুলতে সাহায্য করুন</translation>
 <translation id="8110087112193408731">ডিজিটাল ওয়েলবিং-এ আপনার Chrome অ্যাক্টিভিটি দেখতে চান?</translation>
+<translation id="8118117428362942925">সাহায্যের প্রয়োজন হলে, অভিভাবককে জিজ্ঞাসা করো (<ph name="PARENT_NAME" />)</translation>
 <translation id="8127542551745560481">হোমপেজ এডিট করুন</translation>
 <translation id="8130309322784422030">আপনার সেভ করা সাইন-ইন সংক্রান্ত তথ্য হয়ত পুরনো হয়ে গেছে</translation>
 <translation id="813082847718468539">সাইটের তথ্য দর্শন করুন</translation>

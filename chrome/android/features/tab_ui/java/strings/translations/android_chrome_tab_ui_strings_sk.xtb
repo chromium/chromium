@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Chcete zavrieť všetky karty inkognito?</translation>
 <translation id="1657719826150349398">Presunúť kartu nadol</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> tabs}other{<ph name="TABS_COUNT_MANY" /> kariet}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Uložiť <ph name="TABS_COUNT_ONE" /> vybranú kartu ako záložku}few{Uložiť <ph name="TABS_COUNT_MANY" /> vybrané karty ako záložky}many{Bookmark <ph name="TABS_COUNT_MANY" /> selected tabs}other{Uložiť <ph name="TABS_COUNT_MANY" /> vybraných kariet ako záložky}}</translation>
 <translation id="2118649612461486615">Informácie o obchode</translation>
 <translation id="2162620598375156287">Teraz <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Zrušiť zoskupenie karty}few{Zrušiť zoskupenie kariet}many{Zrušiť zoskupenie kariet}other{Zrušiť zoskupenie kariet}}</translation>
 <translation id="2277224997687551299">Upraviť názov skupiny</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Odstrániť <ph name="TABS_COUNT_ONE" /> vybranú kartu zo skupiny}few{Odstrániť <ph name="TABS_COUNT_MANY" /> vybrané karty zo skupiny}many{Remove <ph name="TABS_COUNT_MANY" /> selected tabs from group.}other{Odstrániť <ph name="TABS_COUNT_MANY" /> vybraných kariet zo skupiny}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Uložiť kartu ako záložku}few{Uložiť karty ako záložky}many{Bookmark tabs}other{Uložiť karty ako záložky}}</translation>
 <translation id="2479148705183875116">Prejsť do Nastavení</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Zbaliť <ph name="TABS_COUNT_ONE" /> kartu}few{Zbaliť skupinu s <ph name="TABS_COUNT_MANY" /> kartami}many{Collapse tab group with <ph name="TABS_COUNT_MANY" /> tabs.}other{Zbaliť skupinu s <ph name="TABS_COUNT_MANY" /> kartami}}</translation>
 <translation id="2569352796411618312">Návrh: V poslednom čase ste nepoužili viacero kariet (<ph name="NUMBER_OF_TABS" />). Chcete ich zavrieť?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Presunúť kartu nahor</translation>
 <translation id="8304833501377495048">Už nechcete zobrazovať panel kariet?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zavrieť <ph name="TABS_COUNT_ONE" /> vybranú kartu}few{Zavrieť <ph name="TABS_COUNT_MANY" /> vybrané karty}many{Close <ph name="TABS_COUNT_MANY" /> selected tabs}other{Zavrieť <ph name="TABS_COUNT_MANY" /> vybraných kariet}}</translation>
+<translation id="8398929769197326728">Nový priečinok – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Rozbaľte skupinu s <ph name="NUMBER_OF_TABS" /> kartami.</translation>
 <translation id="8714939927607906138">Nižšia cena</translation>
 <translation id="8749939518995770034">Zavretý panel kariet</translation>

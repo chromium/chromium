@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">प्रिन्ट गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="2163937499206714165">अँध्यारो मोड अन गर्नुहोस्</translation>
 <translation id="2180197493692062006">केही चिज गडबड भयो। यो एप फेरि खोली हेर्नुहोस्।</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">ट्राफिक काउन्टर रिसेट गर्नुहोस्</translation>
 <translation id="2212733584906323460">नेम रिजोल्युसन</translation>
 <translation id="2217935453350629363">हालको गति</translation>
@@ -491,6 +490,7 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">सूर्यास्तपछि स्वतः अँध्यारो थिम लागू गरियोस्</translation>
+<translation id="5571714952674387371">विवरणहरू हेर्नुहोस् र बदल्नुहोस्</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">पुनः स्क्यान गर्नुहोस्</translation>
 <translation id="5583640892426849032">ब्याकस्पेस</translation>
@@ -560,6 +560,7 @@
 <translation id="6189418609903030344">प्रयोग गर्दै जाँदा ब्याट्री टिक्ने दर घट्दै जान्छ</translation>
 <translation id="6191293864534840972">डोमेन नेम सर्भरहरूको ढाँचा मिलेको छैन</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">फुल स्क्रिनबाट बाहिरिनुहोस्</translation>
 <translation id="6223752125779001553">कुनै पनि स्क्यानर उपलब्ध छैन</translation>
 <translation id="6232017090690406397">ब्याटरी</translation>
 <translation id="6235460611964961764">डेटा प्रयोग म्यानुअल तरिकाले रिसेट गर</translation>
@@ -687,11 +688,12 @@
 <translation id="741244894080940828">रूपान्तरण</translation>
 <translation id="7415801143053185905">HTTP को विलम्बता अति धेरै छ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्क्यान गरिसकियो। एउटा पेज स्क्यान गरियो}other{स्क्यान गरिसकियो। {NUMBER_OF_PAGES} पेज स्क्यान गरिए}}</translation>
+<translation id="7458970041932198923">अवतारहरू हेर्न र सेट गर्न इन्टरनेटमा कनेक्ट गर्नुहोस् र यो पेज रिलोड गर्नुहोस्।</translation>
 <translation id="7469648432129124067">पोर्टल पत्ता लागेको छ</translation>
 <translation id="7481312909269577407">अगाडि</translation>
 <translation id="7487067081878637334">प्रविधि</translation>
 <translation id="7490813197707563893">MAC एड्रेस</translation>
+<translation id="7491478667760509108">फ्लोट विन्डोबाट बाहिरिनुहोस्</translation>
 <translation id="7497215489070763236">सर्भरको CA को सर्टिफिकेट</translation>
 <translation id="7502658306369382406">IPv6 ठेगाना</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -792,6 +794,7 @@
 <translation id="8498220429738806196">ट्राफिक काउन्टर</translation>
 <translation id="8503813439785031346">एक-पटके टेक्स्ट म्यासेज</translation>
 <translation id="8503836310948963452">थप केही मिनेट मात्र पर्खनुहोस्…</translation>
+<translation id="8508640263392900755">APN सम्बन्धी विवरण</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">तपाईंको मोबाइल सेवा प्रदायकले सो सेवा प्रदायकको नेटवर्कमा कनेक्ट गर्न सकोस् भन्नाका लागि तपाईंले यो विकल्प अन गर्नु पर्ने हुन सक्छ। यससम्बन्धी थप जानकारी प्राप्त गर्न आफ्नो मोबाइल सेवा प्रदायकलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="8576249514688522074">सुरु गरिएको छैन</translation>
@@ -842,6 +845,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{स्क्यान गर्नुहोस्}=1{{NUMBER_OF_PAGES} पृष्ठ स्क्यान गर्नुहोस्}other{{NUMBER_OF_PAGES} पृष्ठ स्क्यान गर्नुहोस्}}</translation>
 <translation id="8997710128084572139">यो डिभाइसमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
+<translation id="8998289560386111590">तपाईंको डिभाइसमा उपलब्ध छैन</translation>
 <translation id="9003704114456258138">फ्रिक्वेन्सी</translation>
 <translation id="9025198690966128418">व्यक्तिगत डिभाइसका रूपमा प्रयोग गर्नुहोस्</translation>
 <translation id="9028832514430399253">तपाईं स्क्रिन सेभरका विकल्पहरू चयन गर्न चाहनुहुन्छ भने टगल अन गर्नुहोस्</translation>
@@ -866,6 +870,7 @@
 <translation id="9173638680043580060">एक मिनेटभन्दा कम समय बाँकी छ</translation>
 <translation id="917720651393141712">परीक्षण</translation>
 <translation id="9188992814426075118">तपाईंको किबोर्डले तपाईंको वालपेपरसँग मेल खाने कलर थिम स्वतः बनाउन सक्छ</translation>
+<translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Android एपहरूबाट गेटवेमा सम्पर्क गर्न सकिएन</translation>
 <translation id="9211490828691860325">सबै डेस्कहरू</translation>
 <translation id="932327136139879170">गृहपृष्ठ</translation>

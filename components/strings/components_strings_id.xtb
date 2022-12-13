@@ -271,6 +271,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1586541204584340881">Ekstensi yang telah Anda instal</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1592005682883173041">Akses Data Lokal</translation>
+<translation id="1593359183944365958">270 derajat</translation>
 <translation id="1594030484168838125">Pilih</translation>
 <translation id="1596296697375291157">Film thriller, kriminal &amp; misteri</translation>
 <translation id="1599199147673445968">Kartu baru? <ph name="BEGIN_LINK" />Masukkan Detail Kartu<ph name="END_LINK" /></translation>
@@ -337,6 +338,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1741613555002899862">Harus ditentukan dan menjadi string yang valid saat DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Browser Anda dikelola</translation>
 <translation id="1746113442205726301">Perpindahan image Y</translation>
+<translation id="1746531169546376413">0 derajat</translation>
 <translation id="17513872634828108">Buka tab</translation>
 <translation id="1752021286346845558">Kotak surat 8</translation>
 <translation id="1753068535428855445">Kencan &amp; pribadi</translation>
@@ -411,7 +413,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1958218078413065209">Skor tertinggi Anda adalah <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Bantu sempurnakan keamanan di web untuk semua orang dengan mengirimkan <ph name="BEGIN_WHITEPAPER_LINK" />URL beberapa halaman yang Anda kunjungi, informasi sistem terbatas, dan beberapa konten halaman<ph name="END_WHITEPAPER_LINK" /> ke Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Kebijakan privasi<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Bookmark <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">Lindungi sandi dengan TouchID</translation>
 <translation id="1973335181906896915">Kesalahan serialisasi</translation>
 <translation id="1974060860693918893">Lanjutan</translation>
 <translation id="1975457531113383421">Baki Masukan</translation>
@@ -746,7 +747,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2881276955470682203">Simpan kartu?</translation>
 <translation id="2882949212241984732">Lipatan format double gate</translation>
 <translation id="2893773853358652045">Rol Keempat</translation>
-<translation id="289834758818479772">Jika Anda berbagi perangkat ini dengan orang lain, Anda dapat mengaktifkan TouchID untuk memverifikasi diri Anda setiap kali Anda menggunakan sandi tersimpan</translation>
 <translation id="2900528713135656174">Buat acara</translation>
 <translation id="2903493209154104877">Alamat</translation>
 <translation id="290376772003165898">Halaman tidak dalam bahasa <ph name="LANGUAGE" />?</translation>
@@ -1063,7 +1063,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3678529606614285348">Buka halaman dalam jendela Samaran baru (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informasi sertifikat</translation>
 <translation id="3693327506115126094">Pilih cara memverifikasi diri Anda</translation>
-<translation id="3699374065820972102">TouchID aktif untuk mengisi sandi</translation>
 <translation id="3701427423622901115">Reset dikonfirmasi.</translation>
 <translation id="3704162925118123524">Jaringan yang digunakan mungkin mewajibkan Anda mengunjungi halaman masuk jaringan.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1178,7 +1177,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="401170183602135785">Envelope C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokumen PDF berisi {COUNT} halaman}other{Dokumen PDF berisi {COUNT} halaman}}</translation>
 <translation id="4023431997072828269">Karena formulir ini dikirim menggunakan koneksi yang tidak aman, informasi Anda akan dapat dilihat oleh pengguna lain.</translation>
-<translation id="4024923292610332139">menonaktifkan TouchID untuk mengisi sandi</translation>
 <translation id="4025913568718019429">Tombol Kelola setelan Privasi Google, tekan Enter untuk membuka setelan privasi Akun Google Anda</translation>
 <translation id="4030383055268325496">&amp;Urungkan penambahan</translation>
 <translation id="4031179711345676612">Mikrofon diizinkan</translation>
@@ -1540,7 +1538,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4900217275619098670">Rol Kesembilan</translation>
 <translation id="4901778704868714008">Simpan...</translation>
 <translation id="4905659621780993806">Administrator akan memulai ulang perangkat Anda secara otomatis pada <ph name="DATE" /> pukul <ph name="TIME" />. Simpan item yang terbuka sebelum perangkat dimulai ulang.</translation>
-<translation id="4911007278801291296">Anda dapat mengaktifkan atau menonaktifkan TouchID di <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Lubang di kiri atas</translation>
 <translation id="4918221908152712722">Instal <ph name="APP_NAME" /> (tidak perlu didownload)</translation>
 <translation id="4923459931733593730">Pembayaran</translation>
@@ -1722,6 +1719,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5334013548165032829">Log sistem mendetail</translation>
 <translation id="5334145288572353250">Simpan Alamat?</translation>
 <translation id="5335920952954443287">Hati yang Berdebar</translation>
+<translation id="5337569431717511221">Tombol Setel Chrome sebagai browser default, tekan Enter untuk menyetel Chrome sebagai browser default sistem</translation>
 <translation id="5340250774223869109">Aplikasi diblokir</translation>
 <translation id="534295439873310000">Perangkat NFC</translation>
 <translation id="5344579389779391559">Halaman ini mungkin mencoba menagih Anda</translation>
@@ -1753,7 +1751,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5426179911063097041"><ph name="SITE" /> ingin mengirimkan notifikasi kepada Anda</translation>
 <translation id="5428105026674456456">Spanyol</translation>
 <translation id="5430298929874300616">Buang bookmark</translation>
-<translation id="5434423669266814150">mengaktifkan TouchID untuk mengisi sandi</translation>
 <translation id="5443468954631487277">Urutan yang berkebalikan menghadap ke atas</translation>
 <translation id="5447765697759493033">Situs ini tidak diterjemahkan</translation>
 <translation id="5452270690849572955">Halaman <ph name="HOST_NAME" /> ini tidak dapat ditemukan</translation>
@@ -1795,6 +1792,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5540969246441091044">Berkuda</translation>
 <translation id="5541086400771735334">Kotak surat 7</translation>
 <translation id="5541546772353173584">Tambahkan Email</translation>
+<translation id="5543722831081909240">180 derajat</translation>
 <translation id="5545756402275714221">Artikel untuk Anda</translation>
 <translation id="5551890439174915351">100 x 200 mm</translation>
 <translation id="5552137475244467770">Chrome memeriksa sandi Anda secara berkala berdasarkan daftar sandi yang telah diterbitkan secara online. Saat pemeriksaan dilakukan, sandi dan nama pengguna Anda dienkripsi, sehingga tidak dapat dibaca oleh siapa pun, termasuk Google.</translation>
@@ -2183,6 +2181,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> Anda tidak dikelola</translation>
 <translation id="6592952801936330159">Tombol Kelola setelan situs, tekan Enter untuk mengelola izin dan data yang disimpan di seluruh situs di setelan Chrome</translation>
 <translation id="6596325263575161958">Opsi enkripsi</translation>
+<translation id="6597665340361269064">90 derajat</translation>
 <translation id="6599642189720630047">Produk yang Dipantau</translation>
 <translation id="6611723696964473273">Berita ekonomi</translation>
 <translation id="6612010098632894193">Video online</translation>
@@ -2415,6 +2414,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Administrator dapat melihat:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuka tab Samaran baru dan menjelajah secara pribadi</translation>
+<translation id="7203375778433816396">Setel Chrome sebagai browser default sistem</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> tidak mematuhi standar keamanan.</translation>
 <translation id="7210993021468939304">Aktivitas Linux berada dalam penampung, dan dapat menginstal dan menjalankan aplikasi Linux di dalam penampung</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Selengkapnya<ph name="END_LINK" /> tentang masalah ini.</translation>
@@ -2560,6 +2560,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7537536606612762813">Wajib</translation>
 <translation id="7542403920425041731">Setelah mengonfirmasi, detail kartu Anda akan dibagikan dengan situs ini.</translation>
 <translation id="7542995811387359312">Pengisian kartu kredit otomatis dinonaktifkan karena formulir ini tidak menggunakan sambungan aman.</translation>
+<translation id="7546409722674205727">Memulai <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Memperbaiki error koneksi</translation>
 <translation id="7549584377607005141">Halaman web ini membutuhkan data yang Anda masukkan sebelumnya agar dapat ditampilkan dengan benar. Anda dapat mengirimkan data ini lagi, namun dengan begitu Anda akan mengulangi tindakan apa pun yang sebelumnya dilakukan oleh halaman ini.</translation>
 <translation id="7550637293666041147">Nama pengguna perangkat dan nama pengguna Chrome Anda</translation>
@@ -2745,6 +2746,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8009843239480947060">10 x 11 inci (25 x 27 cm)</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Kartu ini dan alamat penagihannya akan disimpan. Anda dapat menggunakannya saat login ke <ph name="USER_EMAIL" />.}other{Semua kartu ini dan alamat penagihannya akan disimpan. Anda dapat menggunakannya saat login ke <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab lalu Enter untuk menyetel Chrome sebagai browser default sistem</translation>
 <translation id="8025119109950072390">Penyerang di situs ini dapat mengelabui Anda agar melakukan hal yang berbahaya seperti memasang software atau mengungkap informasi pribadi Anda (misalnya sandi, nomor telepon, atau kartu kredit).</translation>
 <translation id="8026334261755873520">Hapus data penjelajahan</translation>
 <translation id="8027077570865220386">Baki 15</translation>

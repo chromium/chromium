@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Закрыць усе ўкладкі ў рэжыме інкогніта?</translation>
 <translation id="1657719826150349398">Перамясціць укладку ніжэй</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> укладка}one{<ph name="TABS_COUNT_MANY" /> укладка}few{<ph name="TABS_COUNT_MANY" /> укладкі}many{<ph name="TABS_COUNT_MANY" /> укладак}other{<ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Дадаць у закладкі <ph name="TABS_COUNT_ONE" /> выбраную ўкладку}one{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбраную ўкладку}few{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбраныя ўкладкі}many{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбраных укладак}other{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбранай укладкі}}</translation>
 <translation id="2118649612461486615">Звесткі пра краму</translation>
 <translation id="2162620598375156287">Цяперашняя цана на сайце <ph name="SOURCE_WEBSITE" /> – <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Выдаліць укладку з групы}one{Выдаліць укладкі з групы}few{Выдаліць укладкі з групы}many{Выдаліць укладкі з групы}other{Выдаліць укладкі з групы}}</translation>
 <translation id="2277224997687551299">Змяніць назву групы</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Выдаліць <ph name="TABS_COUNT_ONE" /> выбраную ўкладку з групы.}one{Выдаліць <ph name="TABS_COUNT_MANY" /> выбраную ўкладку з групы.}few{Выдаліць <ph name="TABS_COUNT_MANY" /> выбраныя ўкладкі з групы.}many{Выдаліць <ph name="TABS_COUNT_MANY" /> выбраных укладак з групы.}other{Выдаліць <ph name="TABS_COUNT_MANY" /> выбранай укладкі з групы.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Дадаць укладку ў закладкі}one{Дадаць укладкі ў закладкі}few{Дадаць укладкі ў закладкі}many{Дадаць укладкі ў закладкі}other{Дадаць укладкі ў закладкі}}</translation>
 <translation id="2479148705183875116">Перайсці ў Налады</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Згарнуць <ph name="TABS_COUNT_ONE" /> укладку.}one{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}few{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}many{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}other{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>
 <translation id="2569352796411618312">Прапанова: некалькі (<ph name="NUMBER_OF_TABS" />) укладак пэўны час не выкарыстоўваліся. Закрыць іх?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Перамясціць укладку ўверх</translation>
 <translation id="8304833501377495048">Больш не паказваць панэль укладак?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Закрыць <ph name="TABS_COUNT_ONE" /> выбраную ўкладку}one{Закрыць <ph name="TABS_COUNT_MANY" /> выбраную ўкладку}few{Закрыць <ph name="TABS_COUNT_MANY" /> выбраныя ўкладкі}many{Закрыць <ph name="TABS_COUNT_MANY" /> выбраных укладак}other{Закрыць <ph name="TABS_COUNT_MANY" /> выбранай укладкі}}</translation>
+<translation id="8398929769197326728">Новая папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Разгарнуць групу з наступнай колькасцю ўкладак: <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="8714939927607906138">Цана знізілася</translation>
 <translation id="8749939518995770034">Панэль укладак закрыта</translation>

@@ -271,6 +271,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1586541204584340881">Cilat shtesa ke instaluar</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1592005682883173041">Qasja te të dhënat lokale</translation>
+<translation id="1593359183944365958">270 gradë</translation>
 <translation id="1594030484168838125">Zgjidh</translation>
 <translation id="1596296697375291157">Filmat melodramë, krim dhe mister</translation>
 <translation id="1599199147673445968">Kartë e re? <ph name="BEGIN_LINK" />Fut detajet e kartës<ph name="END_LINK" /></translation>
@@ -337,6 +338,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1741613555002899862">Duhet të jetë e specifikuar dhe një varg i vlefshëm kur DnsOverHttpsMode është <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Shfletuesi yt është i menaxhuar</translation>
 <translation id="1746113442205726301">Zhvendosja e imazhit në boshtin Y</translation>
+<translation id="1746531169546376413">0 gradë</translation>
 <translation id="17513872634828108">Hap skedat</translation>
 <translation id="1752021286346845558">Kutia postare 8</translation>
 <translation id="1753068535428855445">Takime dashurie dhe personale</translation>
@@ -411,7 +413,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1958218078413065209">Rezultati yt maksimal është <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Ndihmo për përmirësimin e sigurisë në ueb për të gjithë duke dërguar <ph name="BEGIN_WHITEPAPER_LINK" />URL-të e disa faqeve që viziton, informacione të kufizuara të sistemit, si dhe disa përmbajtje të faqeve<ph name="END_WHITEPAPER_LINK" /> te Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Politika e privatësisë<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Faqeshënuesit e <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">Mbroji fjalëkalimet me TouchID</translation>
 <translation id="1973335181906896915">Gabim serializimi</translation>
 <translation id="1974060860693918893">Të përparuara</translation>
 <translation id="1975457531113383421">Tabakaja e hyrjes</translation>
@@ -746,7 +747,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2881276955470682203">Të ruhet karta?</translation>
 <translation id="2882949212241984732">Palosje me dy dritare</translation>
 <translation id="2893773853358652045">Ruli i katërt</translation>
-<translation id="289834758818479772">Nëse e ndan këtë pajisje me të tjerët, mund të aktivizosh TouchID për të verifikuar që je ti sa herë që përdor një fjalëkalim të ruajtur</translation>
 <translation id="2900528713135656174">Krijo ngjarje</translation>
 <translation id="2903493209154104877">Adresat</translation>
 <translation id="290376772003165898">Faqja nuk është në <ph name="LANGUAGE" />?</translation>
@@ -1064,7 +1064,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3678529606614285348">Hape faqen në një dritare të re "të fshehtë" (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informacioni i certifikatës</translation>
 <translation id="3693327506115126094">Zgjidh se si do të verifikosh që je ti</translation>
-<translation id="3699374065820972102">TouchID është aktiv për plotësimin e fjalëkalimeve</translation>
 <translation id="3701427423622901115">Rivendosja u pranua.</translation>
 <translation id="3704162925118123524">Rrjeti që po përdor mund të kërkojë që të vizitosh faqen e tij të lidhjes.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1179,7 +1178,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="401170183602135785">Zarf C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokumenti PDF me {COUNT} faqe}other{Dokumenti PDF me {COUNT} faqe}}</translation>
 <translation id="4023431997072828269">Për shkak se ky formular po dërgohet duke përdorur një lidhje që nuk është e sigurt, informacionet e tua do të jenë të dukshme për të tjerët.</translation>
-<translation id="4024923292610332139">të çaktivizojë TouchID për plotësimin e fjalëkalimeve</translation>
 <translation id="4025913568718019429">Butoni "Menaxho cilësimet e privatësisë të Google". Shtyp "Enter" për të vizituar cilësimet e privatësisë të "Llogarisë sate të Google"</translation>
 <translation id="4030383055268325496">&amp;Zhbëje shtimin</translation>
 <translation id="4031179711345676612">Mikrofoni lejohet</translation>
@@ -1541,7 +1539,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4900217275619098670">Ruli i nëntë</translation>
 <translation id="4901778704868714008">Ruaj...</translation>
 <translation id="4905659621780993806">Administratori yt do ta rinisë pajisjen automatikisht në orën <ph name="TIME" /> më <ph name="DATE" />. Ruaj çdo artikull të hapur përpara se pajisja të riniset.</translation>
-<translation id="4911007278801291296">Mund ta aktivizosh ose çaktivizosh TouchID te "<ph name="SETTINGS" />"</translation>
 <translation id="4913987521957242411">Shpim lart majtas</translation>
 <translation id="4918221908152712722">Instalo <ph name="APP_NAME" /> (nuk nevojitet shkarkim)</translation>
 <translation id="4923459931733593730">Pagesa</translation>
@@ -1723,6 +1720,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5334013548165032829">Evidencat e detajuara të sistemit</translation>
 <translation id="5334145288572353250">Të ruhet adresa?</translation>
 <translation id="5335920952954443287">Zemër që rreh</translation>
+<translation id="5337569431717511221">Cakto Chrome si butonin e shfletuesit të parazgjedhur; shtyp "Enter" për të caktuar Chrome si shfletuesin e parazgjedhur të sistemit</translation>
 <translation id="5340250774223869109">Aplikacioni është bllokuar</translation>
 <translation id="534295439873310000">Pajisjet me NFC</translation>
 <translation id="5344579389779391559">Kjo faqe mund të përpiqet të të tarifojë në para</translation>
@@ -1754,7 +1752,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5426179911063097041"><ph name="SITE" /> dëshiron të të dërgojë njoftime</translation>
 <translation id="5428105026674456456">Spanjisht</translation>
 <translation id="5430298929874300616">Hiqe faqeshënuesin</translation>
-<translation id="5434423669266814150">të aktivizojë TouchID për plotësimin e fjalëkalimeve</translation>
 <translation id="5443468954631487277">Renditja e kundërt e kthyer lart</translation>
 <translation id="5447765697759493033">Ky sajt nuk do të përkthehet</translation>
 <translation id="5452270690849572955">Kjo faqe e <ph name="HOST_NAME" /> nuk mund të gjendet</translation>
@@ -1796,6 +1793,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5540969246441091044">Hipizmi</translation>
 <translation id="5541086400771735334">Kutia postare 7</translation>
 <translation id="5541546772353173584">Shto email</translation>
+<translation id="5543722831081909240">180 gradë</translation>
 <translation id="5545756402275714221">Artikuj për ty</translation>
 <translation id="5551890439174915351">100 x 200 mm</translation>
 <translation id="5552137475244467770">Chrome i kontrollon periodikisht fjalëkalimet e tua për t'i krahasuar me listat që janë publikuar në linjë. Kur vepron kështu, fjalëkalimet dhe emrat e tu të përdoruesit janë të enkriptuara, në mënyrë që të mos lexohen nga askush, duke përfshirë Google.</translation>
@@ -2183,6 +2181,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6591833882275308647">Pajisja jote <ph name="DEVICE_TYPE" /> nuk është e menaxhuar</translation>
 <translation id="6592952801936330159">Butoni "Menaxho cilësimet e sajtit". Shtyp "Enter" për të menaxhuar lejet dhe të dhënat e ruajtura nëpër sajte te cilësimet e Chrome</translation>
 <translation id="6596325263575161958">Opsionet e enkriptimit</translation>
+<translation id="6597665340361269064">90 gradë</translation>
 <translation id="6599642189720630047">Produktet e monitoruara</translation>
 <translation id="6611723696964473273">Lajmet nga ekonomia</translation>
 <translation id="6612010098632894193">Videot në linjë</translation>
@@ -2415,6 +2414,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Administratori yt mund të shohë:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp tastin Tab dhe më pas tastin Enter për të hapur një dritare të re "të fshehtë" për të shfletuar në mënyrë private</translation>
+<translation id="7203375778433816396">Cakto Chrome si shfletuesin e parazgjedhur të sistemit</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> nuk i respekton standardet e sigurisë.</translation>
 <translation id="7210993021468939304">Aktiviteti i Linux brenda kontejnerit dhe mund të instalojë dhe të ekzekutojë aplikacione të Linux brenda kontejnerit</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> rreth këtij problemi.</translation>
@@ -2562,6 +2562,7 @@ Detaje shtesë:
 <translation id="7537536606612762813">E detyrueshme</translation>
 <translation id="7542403920425041731">Pasi të konfirmohet, detajet e kartës tënde do të ndahen me këtë sajt.</translation>
 <translation id="7542995811387359312">Plotësimi automatik i kartës së kreditit është çaktivizuar sepse ky formular nuk përdor një lidhje të sigurt.</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" /> po niset</translation>
 <translation id="7548892272833184391">Rregullo gabimet në lidhje</translation>
 <translation id="7549584377607005141">Që të shfaqet si duhet, kjo faqe uebi kërkon të dhëna që i ke futur më herët. Mund t'i dërgosh përsëri këto të dhëna, por duke bërë këtë, do të përsëritësh çdo veprim që ka kryer më parë kjo faqe.</translation>
 <translation id="7550637293666041147">Emri i përdoruesit të pajisjes dhe emri i përdoruesit të Chrome</translation>
@@ -2747,6 +2748,7 @@ Detaje shtesë:
 <translation id="8009843239480947060">10 x 11 inç</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Kjo kartë dhe adresa e saj e faturimit do të ruhen. Do të jesh në gjendje ta përdorësh kur të jesh identifikuar në <ph name="USER_EMAIL" />.}other{Këto karta dhe adresat e tyre të faturimit do të ruhen. Do të jesh në gjendje t'i përdorësh kur të jesh identifikuar në <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab" dhe më pas "Enter" për të caktuar Chrome si shfletuesin e parazgjedhur të sistemit</translation>
 <translation id="8025119109950072390">Sulmuesit në këtë sajt mund të të mashtrojnë që të bësh diçka të rrezikshme si të instalosh softuerë ose të zbulosh informacione personal (për shembull, fjalëkalime, numra telefoni ose karta krediti).</translation>
 <translation id="8026334261755873520">Pastro të dhënat e shfletimit</translation>
 <translation id="8027077570865220386">Tabakaja 15</translation>

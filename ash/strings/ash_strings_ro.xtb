@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">Salvează <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Bateria creionului este descărcată</translation>
 <translation id="1036073649888683237">Pentru a gestiona notificările, accesează Setările</translation>
+<translation id="1036348656032585052">Dezactivează</translation>
 <translation id="1036672894875463507">Sunt Asistentul tău Google și îți stau la dispoziție pe toată durata zilei!
 Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1037492556044956303">S-a adăugat <ph name="DEVICE_NAME" /></translation>
@@ -100,6 +101,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1447641497144572814">Screensaverul pornește</translation>
 <translation id="1455242230282523554">Arată setările pentru limbă</translation>
 <translation id="1460620680449458626">Sunetul este dezactivat.</translation>
+<translation id="14648076227129703">Astfel, accesul la cameră este permis pentru <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> și toate aplicațiile și site-urile care au permisiunea adecvată</translation>
 <translation id="1467432559032391204">Stânga</translation>
 <translation id="146902737843070955">Administratorul a solicitat această modificare</translation>
 <translation id="147310119694673958">Bateria telefonului: <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -159,6 +161,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1797271123677381264">Am uitat parola</translation>
 <translation id="181103072419391116">Puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
 <translation id="1812997170047690955">Ce este pe ecranul meu?</translation>
+<translation id="1816896987747843206">Astfel, accesul la cameră este permis pentru toate aplicațiile și site-urile care au permisiunea adecvată</translation>
 <translation id="1823280932251546115">Bara de stare, ora: <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />,
@@ -172,6 +175,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1830308660060964064">Fixarea pentru <ph name="ITEM_TITLE" /> a fost anulată</translation>
 <translation id="1836215606488044471">Asistent (se încarcă...)</translation>
 <translation id="1838895407229022812">Lumina de noapte este dezactivată.</translation>
+<translation id="1854180393107901205">Nu mai trimite</translation>
 <translation id="1862380676329487333">Actualizează și deconectează-te</translation>
 <translation id="1864454756846565995">Dispozitiv USB-C (portul din spate)</translation>
 <translation id="1869497990620230175">Fișiere rapide</translation>
@@ -598,6 +602,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4316910396681052118">TOATE APLICAȚIILE</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Comanda rapidă de la tastatură Ctrl + Alt + săgeată în sus s-a schimbat. Pentru a folosi tasta Home, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + săgeata spre stânga.</translation>
+<translation id="4324840740119394760">Astfel, accesul la cameră este permis pentru <ph name="APP_NAME" /> și toate aplicațiile și site-urile care au permisiunea adecvată</translation>
 <translation id="4333628967105022692">Lacros nu este acceptat dacă se conectează mai mulți utilizatori.</translation>
 <translation id="4338109981321384717">Lupă</translation>
 <translation id="4351433414020964307">Asistentul se încarcă...</translation>
@@ -664,13 +669,13 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox este activat</translation>
 <translation id="4665114317261903604">Comută Nu deranja. <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Dezactivează accesul la camera foto al acestui dispozitiv pentru a bloca întotdeauna toate camerele.</translation>
 <translation id="4666911709726371538">Mai multe aplicații</translation>
 <translation id="4667099493359681081">Se descarcă <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Aplicații de pe telefon</translation>
 <translation id="4690510401873698237">Raft în partea de jos</translation>
 <translation id="4696813013609194136">Deblochează dispozitivul cu codul părintelui</translation>
 <translation id="4702647871202761252">Ecranul de confidențialitate este dezactivat</translation>
+<translation id="4706121060329443414">Se va încerca descărcarea mai târziu. Momentan, fișierele de redare în scris a vorbirii vor fi trimise la Google pentru procesare.</translation>
 <translation id="470644585772471629">Inversarea culorilor</translation>
 <translation id="4717575069099566988">Cablul USB-C nu acceptă USB4. Este posibil ca performanța dispozitivului să fie limitată.</translation>
 <translation id="4730374152663651037">FOLOSITE FRECVENT</translation>
@@ -696,7 +701,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="485592688953820832">Nicio acțiune (pauză)</translation>
 <translation id="485634149294284819">Accesează meniul tastaturii</translation>
 <translation id="4860284199500934869">Verifică starea conexiunii la rețea pentru a descărca <ph name="FILENAME" /></translation>
-<translation id="486056901304535126">Se va încerca descărcarea mai târziu. Fișierele de redare în scris a vorbirii vor fi trimise la Google pentru procesare până la finalizarea descărcării.</translation>
 <translation id="4864369630010738180">Se conectează...</translation>
 <translation id="4864648187878336334">Biroul 15</translation>
 <translation id="4868492592575313542">activată</translation>
@@ -791,6 +795,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5356963482258194581">Comută între tema luminoasă și cea întunecată Dă clic dreapta pe desktop și selectează Stil și imagine de fundal.</translation>
 <translation id="536019650977002321">Administratorul nu permite înregistrarea audio. Contactează administratorul pentru mai multe informații.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Accesează fila</translation>
+<translation id="5377367976106153749">Activezi accesul la camera foto?</translation>
 <translation id="5379115545237091094">Prea multe încercări</translation>
 <translation id="5391307769715781764">Înlocuiești desktopul salvat?</translation>
 <translation id="5393156353051693207">Atinge lung oriunde ca să-ți reordonezi aplicațiile</translation>
@@ -1177,7 +1182,6 @@ Instalare nouă</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> folosește momentan microfonul</translation>
 <translation id="7561982940498449837">Închide meniul</translation>
 <translation id="7564874036684306347">Mutarea ferestrelor pe alt desktop poate duce la un comportament neașteptat. Notificările, ferestrele și casetele de dialog ulterioare ar putea fi împărțite între ecrane.</translation>
-<translation id="7567076708801803118">Dezactivezi accesul la camera foto al acestui dispozitiv?</translation>
 <translation id="7569509451529460200">Braille și ChromeVox sunt activate</translation>
 <translation id="7573585051776738856">Fereastra activă a fost fixată în dreapta.</translation>
 <translation id="7579778809502851308">Captură de ecran</translation>
@@ -1253,6 +1257,7 @@ Instalare nouă</translation>
 <translation id="79341161159229895">Cont gestionat de <ph name="FIRST_PARENT_EMAIL" /> și de <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Apasă <ph name="SHORTCUT_KEY_NAME" /> + V pentru a vedea clipboardul. Ultimele cinci elemente pe care le-ai copiat sunt salvate în clipboard.</translation>
 <translation id="7942349550061667556">Roșu</translation>
+<translation id="7963992254934562106">De la <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Selectează dosarul...</translation>
 <translation id="7977927628060636163">Se caută rețele mobile…</translation>
 <translation id="7982789257301363584">Rețea</translation>

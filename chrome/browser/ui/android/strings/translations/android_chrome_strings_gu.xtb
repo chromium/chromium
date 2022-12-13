@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">વેબને વધુ ખાનગી બનાવવામાં અમારી સહાય કરો</translation>
 <translation id="107147699690128016">જો તમે ફાઇલનું એક્સ્ટેંશન બદલશો, તો તે કોઈ અલગ ઍપ્લિકેશનમાં ખુલી શકે છે અને તમારા ડિવાઇસ માટે નુકસાનકારક હોવાનું સંભવિત હોય શકે.</translation>
 <translation id="1089606299949659462">રિવ્યૂ પૂર્ણ થયો!</translation>
-<translation id="1091604859693995976">જોવા માટે રિફ્રેશ કરો</translation>
 <translation id="1095761715416917775">ખાતરી કરો કે તમે તમારો સિંક કરેલો ડેટા ગમે ત્યારે ઍક્સેસ કરી શકો છો</translation>
 <translation id="1100066534610197918">ગ્રૂપમાં નવા ટૅબમાં ખોલો</translation>
 <translation id="1103142993930332957">Chromeને બહેતર બનાવવામાં સહાય કરશો?</translation>
@@ -1148,6 +1147,7 @@
 <translation id="7177466738963138057">તમે આને થોડા સમય પછી સેટિંગમાં જઈને બદલી શકો છો</translation>
 <translation id="7177873915659574692">QR કોડ બનાવી શકતાં નથી. URL <ph name="CHARACTER_LIMIT" />થી વધુ અક્ષરો ધરાવે છે.</translation>
 <translation id="7177959540995930968">તમે Chrome સેટિંગમાં આ સુવિધાઓ વિશે વધુ જાણી શકો છો.</translation>
+<translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="718226107353899806">તમે <ph name="MAX_NUM_REACTIONS" /> જેટલી પ્રતિક્રિયા ઉમેરી શકો છો</translation>
 <translation id="7183693674623539380">ટૅબનું ગ્રૂપ - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">તમને Chrome પર સલામત રાખે છે અને જ્યારે તમે સાઇન ઇન થયા હો, ત્યારે Googleની અન્ય ઍપમાં તમારી સુરક્ષા બહેતર બનાવવામાં ઉપયોગમાં લેવાઈ શકે છે.</translation>

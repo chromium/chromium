@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Pakket is ongeldig. Besonderhede: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" versoek tans toegang tot een van jou toestelle:</translation>
 <translation id="8885905466771744233">'n Private sleutel vir gespesifiseerde uitbreiding bestaan reeds. Hergebruik daardie sleutel of vee dit eers uit.</translation>
+<translation id="9039223174332979184">Hierdie masjien se admin vereis ’n minimum manifesweergawe van 3 vir <ph name="EXTENSION_NAME" />.</translation>
 <translation id="907841381057066561">Kon nie 'n tydelike zip-lêer skep tydens verpakking nie.</translation>
 <translation id="941543339607623937">Ongeldige private sleutel.</translation>
 </translationbundle>

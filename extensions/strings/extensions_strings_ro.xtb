@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Pachetul nu este valid. Detalii: „<ph name="ERROR_MESSAGE" />”.</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />” solicită accesul la unul dintre dispozitivele tale:</translation>
 <translation id="8885905466771744233">Există deja o cheie privată pentru extensia specificată. Reutilizeaz-o sau șterge-o mai întâi.</translation>
+<translation id="9039223174332979184">Administratorul acestui computer solicită ca versiunea minimă a manifestului <ph name="EXTENSION_NAME" /> să fie 3.</translation>
 <translation id="907841381057066561">Crearea fișierului zip temporar în timpul împachetării nu a reușit.</translation>
 <translation id="941543339607623937">Cheie privată nevalidă.</translation>
 </translationbundle>

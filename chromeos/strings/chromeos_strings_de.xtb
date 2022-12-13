@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Druckauftrag abbrechen</translation>
 <translation id="2163937499206714165">Dunklen Modus einschalten</translation>
 <translation id="2180197493692062006">Es gab ein Problem. Versuche, die App wieder zu öffnen.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Traffic-Zähler zurücksetzen</translation>
 <translation id="2212733584906323460">Namensauflösung</translation>
 <translation id="2217935453350629363">Momentane Geschwindigkeit</translation>
@@ -561,6 +560,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6189418609903030344">Die Akkukapazität sinkt mit fortschreitender Nutzung</translation>
 <translation id="6191293864534840972">Nameserver hat fehlerhaftes Format</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Status „Vollbild“ beenden</translation>
 <translation id="6223752125779001553">Keine Scanner verfügbar</translation>
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6235460611964961764">Datennutzung manuell zurücksetzen</translation>
@@ -688,12 +688,12 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="741244894080940828">Umrechnung</translation>
 <translation id="7415801143053185905">Sehr hohe HTTP-Latenz</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scan abgeschlossen. 1 Seite gescannt.}other{Scan abgeschlossen. {NUMBER_OF_PAGES} Seiten gescannt.}}</translation>
 <translation id="7458970041932198923">Stelle eine Verbindung zu einem Netzwerk her und lade die Seite neu, um Avatare anzusehen und festzulegen.</translation>
 <translation id="7469648432129124067">Portal erkannt</translation>
 <translation id="7481312909269577407">Vorwärts</translation>
 <translation id="7487067081878637334">Technik</translation>
 <translation id="7490813197707563893">MAC-Adresse</translation>
+<translation id="7491478667760509108">Status „Unverankert“ beenden</translation>
 <translation id="7497215489070763236">CA-Serverzertifikat</translation>
 <translation id="7502658306369382406">IPv6-Adresse</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -794,6 +794,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8498220429738806196">Traffic-Zähler</translation>
 <translation id="8503813439785031346">Nutzername</translation>
 <translation id="8503836310948963452">Nur noch ein paar Minuten…</translation>
+<translation id="8508640263392900755">APN-Details</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Dein Mobilfunkanbieter verlangt möglicherweise diese Option, damit du dich mit seinem Netzwerk verbinden kannst. Weitere Informationen erhältst du bei deinem Mobilfunkanbieter.</translation>
 <translation id="8576249514688522074">Noch nicht initialisiert</translation>

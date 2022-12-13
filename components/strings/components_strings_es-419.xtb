@@ -271,6 +271,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1586541204584340881">Las extensiones que instalaste</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1592005682883173041">Acceso a datos locales</translation>
+<translation id="1593359183944365958">270 grados</translation>
 <translation id="1594030484168838125">Seleccionar</translation>
 <translation id="1596296697375291157">Películas de suspenso, crimen y misterio</translation>
 <translation id="1599199147673445968">¿Tienes una tarjeta nueva? <ph name="BEGIN_LINK" />Ingresa sus detalles aquí<ph name="END_LINK" />.</translation>
@@ -337,6 +338,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1741613555002899862">Esta política debe especificarse y tener una string válida, cuando DnsOverHttpsMode es <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Tu navegador está administrado</translation>
 <translation id="1746113442205726301">Cambio del eje Y de la imagen</translation>
+<translation id="1746531169546376413">0 grados</translation>
 <translation id="17513872634828108">Pestañas abiertas</translation>
 <translation id="1752021286346845558">Buzón 8</translation>
 <translation id="1753068535428855445">Citas y anuncios personales</translation>
@@ -411,7 +413,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1958218078413065209">Tu puntuación más alta es <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Si quieres ayudar a mejorar la seguridad de la Web para todos, envía <ph name="BEGIN_WHITEPAPER_LINK" />las URL de algunas páginas que visitas, información limitada sobre el sistema y determinado contenido de páginas<ph name="END_WHITEPAPER_LINK" /> a Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Política de Privacidad<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Favoritos de <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">Protege las contraseñas con TouchID</translation>
 <translation id="1973335181906896915">Error de serialización</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1975457531113383421">Bandeja de entrada</translation>
@@ -746,7 +747,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2881276955470682203">¿Quieres guardar la tarjeta?</translation>
 <translation id="2882949212241984732">Plegado en ventana doble</translation>
 <translation id="2893773853358652045">Cuarto rollo</translation>
-<translation id="289834758818479772">Si compartes este dispositivo con otras personas, puedes activar TouchID para verificar tu identidad cada vez que uses una contraseña guardada</translation>
 <translation id="2900528713135656174">Crear evento</translation>
 <translation id="2903493209154104877">Direcciones</translation>
 <translation id="290376772003165898">¿La página no está en <ph name="LANGUAGE" />?</translation>
@@ -1065,7 +1065,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3678529606614285348">Abre la página en una nueva ventana de incógnito (Ctrl-mayúscula-N).</translation>
 <translation id="3681007416295224113">Información sobre el certificado</translation>
 <translation id="3693327506115126094">Elige cómo verificar tu identidad</translation>
-<translation id="3699374065820972102">Se activó TouchID para completar contraseñas</translation>
 <translation id="3701427423622901115">Se detectó el restablecimiento.</translation>
 <translation id="3704162925118123524">Es posible que la red que estás usando requiera que visites la página de acceso.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1180,7 +1179,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="401170183602135785">Sobre C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF con {COUNT} página}other{Documento PDF con {COUNT} páginas}}</translation>
 <translation id="4023431997072828269">Dado que se está utilizando una conexión no segura para enviar este formulario, otras personas podrán ver tu información.</translation>
-<translation id="4024923292610332139">desactivar TouchID para completar contraseñas</translation>
 <translation id="4025913568718019429">Botón Administrar la configuración de privacidad de Google, presiona Intro para visitar la configuración de privacidad de tu Cuenta de Google</translation>
 <translation id="4030383055268325496">&amp;Deshacer Agregar</translation>
 <translation id="4031179711345676612">Micrófono permitido</translation>
@@ -1542,7 +1540,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4900217275619098670">Noveno rollo</translation>
 <translation id="4901778704868714008">Guardar…</translation>
 <translation id="4905659621780993806">El administrador reiniciará el dispositivo el <ph name="DATE" /> a las <ph name="TIME" />. Guarda los elementos abiertos antes de reiniciar el dispositivo.</translation>
-<translation id="4911007278801291296">Puedes activar o desactivar TouchID en <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Perforación en la esquina superior izquierda</translation>
 <translation id="4918221908152712722">Instala <ph name="APP_NAME" /> (no es necesario que descargues la app)</translation>
 <translation id="4923459931733593730">Pago</translation>
@@ -1724,6 +1721,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5334013548165032829">Registros detallados del sistema</translation>
 <translation id="5334145288572353250">¿Deseas guardar la dirección?</translation>
 <translation id="5335920952954443287">Corazón latiendo</translation>
+<translation id="5337569431717511221">Establece Chrome como el botón de navegador predeterminado, presiona Intro para establecer Chrome como el navegador predeterminado del sistema</translation>
 <translation id="5340250774223869109">Se bloqueó la app</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
 <translation id="5344579389779391559">Es posible que esta página intente cobrarte dinero</translation>
@@ -1755,7 +1753,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5426179911063097041"><ph name="SITE" /> quiere enviarte notificaciones</translation>
 <translation id="5428105026674456456">Español</translation>
 <translation id="5430298929874300616">Eliminar marcador</translation>
-<translation id="5434423669266814150">activar TouchID para completar contraseñas</translation>
 <translation id="5443468954631487277">Orden inverso hacia arriba</translation>
 <translation id="5447765697759493033">Este sitio no se traducirá</translation>
 <translation id="5452270690849572955">No se encuentra esta página <ph name="HOST_NAME" /></translation>
@@ -1797,6 +1794,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5540969246441091044">Equitación</translation>
 <translation id="5541086400771735334">Buzón 7</translation>
 <translation id="5541546772353173584">Agregar correo electrónico</translation>
+<translation id="5543722831081909240">180 grados</translation>
 <translation id="5545756402275714221">Artículos para ti</translation>
 <translation id="5551890439174915351">100 × 200 mm</translation>
 <translation id="5552137475244467770">Chrome revisa tus contraseñas de forma periódica para comprobar si aparecen en listas que se hayan publicado en línea. Durante esta acción, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
@@ -2185,6 +2183,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6591833882275308647">Tu <ph name="DEVICE_TYPE" /> no está administrado.</translation>
 <translation id="6592952801936330159">Botón Administrar la configuración de sitios: presiona Intro para administrar en la configuración de Chrome los permisos y datos almacenados en los sitios</translation>
 <translation id="6596325263575161958">Opciones de encriptación</translation>
+<translation id="6597665340361269064">90 grados</translation>
 <translation id="6599642189720630047">Productos con seguimiento</translation>
 <translation id="6611723696964473273">Noticias sobre economía</translation>
 <translation id="6612010098632894193">Video en línea</translation>
@@ -2417,6 +2416,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Tu administrador puede ver lo siguiente:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para abrir una nueva pestaña de incógnito y así navegar de forma privada</translation>
+<translation id="7203375778433816396">Establecer Chrome como navegador predeterminado del sistema</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> no cumple con las normas de seguridad.</translation>
 <translation id="7210993021468939304">La actividad de Linux en el contenedor; también pueden instalar y ejecutar apps de Linux en el contenedor</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> acerca de este problema.</translation>
@@ -2564,6 +2564,7 @@ Detalles adicionales:
 <translation id="7537536606612762813">Obligatoria</translation>
 <translation id="7542403920425041731">Después de que se confirme, los datos de tu tarjeta se compartirán con este sitio.</translation>
 <translation id="7542995811387359312">El rellenado automático de la tarjeta de crédito se inhabilitó porque este formulario no usa una conexión segura.</translation>
+<translation id="7546409722674205727">Iniciando <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Cómo corregir errores de conexión</translation>
 <translation id="7549584377607005141">Esta página web necesita los datos ingresados anteriormente para mostrarse correctamente. Puedes volver a enviar los datos, pero ten en cuenta que se repetirán las acciones que la página haya realizado anteriormente.</translation>
 <translation id="7550637293666041147">Tu nombre de usuario de Chrome y el de tu dispositivo</translation>
@@ -2749,6 +2750,7 @@ Detalles adicionales:
 <translation id="8009843239480947060">25.4 × 27.9 cm (10 × 11 in)</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Se guardará esta tarjeta y su dirección de facturación. Podrás usarla cuando accedas a <ph name="USER_EMAIL" />.}other{Se guardarán estas tarjetas y sus direcciones de facturación. Podrás usarlas cuando accedas a <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para establecer Chrome como el navegador predeterminado del sistema</translation>
 <translation id="8025119109950072390">Es posible que los atacantes de este sitio te engañen para que hagas algo peligroso, como instalar software o divulgar información personal (p. ej., contraseñas, números de teléfono o tarjetas de crédito).</translation>
 <translation id="8026334261755873520">Borrar datos de navegación</translation>
 <translation id="8027077570865220386">Bandeja 15</translation>

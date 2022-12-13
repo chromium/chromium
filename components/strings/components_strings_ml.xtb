@@ -271,6 +271,7 @@
 <translation id="1586541204584340881">ഏതൊക്കെ വിപുലീകരണങ്ങൾ നിങ്ങൾ ഇൻസ്‌റ്റാൾ ചെയ്തിട്ടുണ്ട് എന്നത്</translation>
 <translation id="1588438908519853928">സാധാരണം</translation>
 <translation id="1592005682883173041">പ്രാദേശിക ഡാറ്റ ആക്‌സസ്</translation>
+<translation id="1593359183944365958">270 ഡിഗ്രി</translation>
 <translation id="1594030484168838125">തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1596296697375291157">ത്രില്ലർ, ക്രൈം, നിഗൂഢ സിനിമകൾ</translation>
 <translation id="1599199147673445968">പുതിയ കാർഡാണോ? <ph name="BEGIN_LINK" />കാർഡ് വിശദാംശങ്ങൾ നൽകുക<ph name="END_LINK" /></translation>
@@ -337,6 +338,7 @@
 <translation id="1741613555002899862">DnsOverHttpsMode, <ph name="SECURE_DNS_MODE_SECURE" /> ആയിരിക്കുമ്പോൾ അക്കാര്യം വ്യക്തമാക്കിയിരിക്കണം, കൂടാതെ സാധുവായ സ്ട്രിംഗ് ആയിരിക്കുകയും വേണം.</translation>
 <translation id="1745880797583122200">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യപ്പെട്ടിരിക്കുന്നു</translation>
 <translation id="1746113442205726301">ചിത്രം Y ഷിഫ്റ്റ്</translation>
+<translation id="1746531169546376413">0 ഡിഗ്രി</translation>
 <translation id="17513872634828108">ഓപ്പൺ ടാബുകൾ</translation>
 <translation id="1752021286346845558">മെയിൽബോക്സ് 8</translation>
 <translation id="1753068535428855445">ഡേറ്റിംഗും വ്യക്തിപരമായ കാര്യങ്ങളും</translation>
@@ -411,7 +413,6 @@
 <translation id="1958218078413065209">നിങ്ങളുടെ ഏറ്റവും ഉയർന്ന സ്കോർ <ph name="SCORE" /> ആണ്.</translation>
 <translation id="1959001866257244765">നിങ്ങൾ സന്ദർശിക്കുന്ന ചില പേജുകളുടെ <ph name="BEGIN_WHITEPAPER_LINK" />URL, പരിമിത സിസ്‌റ്റം വിവരങ്ങൾ, ചില പേജുകളുടെ ഉള്ളടക്കം<ph name="END_WHITEPAPER_LINK" /> എന്നിവ Google-ലേക്ക് അയച്ച് എല്ലാവർക്കുമായി വെബിലെ സുരക്ഷ മെച്ചപ്പെടുത്താൻ സഹായിക്കുക. <ph name="BEGIN_PRIVACY_PAGE_LINK" />സ്വകാര്യതാ നയം<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> ബുക്ക്‌മാർക്കുകൾ</translation>
-<translation id="1971033026002113380">TouchID ഉപയോഗിച്ച് പാസ്‌വേഡുകൾ പരിരക്ഷിക്കുക</translation>
 <translation id="1973335181906896915">സീരിയലൈസേഷൻ പിശക്</translation>
 <translation id="1974060860693918893">വിപുലമായത്</translation>
 <translation id="1975457531113383421">ഇൻപുട്ട് ട്രേ</translation>
@@ -746,7 +747,6 @@
 <translation id="2881276955470682203">കാർഡ് സംരക്ഷിക്കണോ?</translation>
 <translation id="2882949212241984732">ഡബിൾ-ഗേറ്റ് മടക്ക്</translation>
 <translation id="2893773853358652045">നാലാമത്തെ റോൾ</translation>
-<translation id="289834758818479772">നിങ്ങൾ ഈ ഉപകരണം മറ്റുള്ളവരുമായി പങ്കിടുകയാണെങ്കിൽ, സംരക്ഷിച്ച പാസ്‌വേഡ് ഉപയോഗിക്കുമ്പോഴെല്ലാം അത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കാൻ TouchID ഓണാക്കാൻ കഴിയും</translation>
 <translation id="2900528713135656174">ഇവന്റ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="2903493209154104877">വിലാസങ്ങള്‍‌</translation>
 <translation id="290376772003165898">പേജ് <ph name="LANGUAGE" /> ഭാഷയിലല്ലേ?</translation>
@@ -1063,7 +1063,6 @@
 <translation id="3678529606614285348">പുതിയ അദൃശ്യ വിൻഡോയിൽ പേജ് തുറക്കുക (കൺട്രോൾ-ഷിഫ്റ്റ്-N)</translation>
 <translation id="3681007416295224113">സര്‍‌ട്ടിഫിക്കറ്റ് വിവരങ്ങള്‍‌</translation>
 <translation id="3693327506115126094">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് എങ്ങനെ പരിശോധിച്ചുറപ്പിക്കുമെന്ന് തിരഞ്ഞെടുക്കുക</translation>
-<translation id="3699374065820972102">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കുന്നതിന് TouchID ഓണാണ്</translation>
 <translation id="3701427423622901115">റീസെറ്റ് അംഗീകരിച്ചിരിക്കുന്നു</translation>
 <translation id="3704162925118123524">നിങ്ങൾ ഉപയോഗിക്കുന്ന നെറ്റ്‌വർക്കിനായി, ഇതിന്റെ ലോഗിൻ പേജ് സന്ദർശിക്കേണ്ടിവരാം.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1178,7 +1177,6 @@
 <translation id="401170183602135785">Envelope C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} പേജുള്ള PDF ഡോക്യുമെന്റ്}other{{COUNT} പേജുകളുള്ള PDF ഡോക്യുമെന്റ്}}</translation>
 <translation id="4023431997072828269">സുരക്ഷിതമല്ലാത്ത ഒരു കണക്ഷൻ ഉപയോഗിച്ച് ഈ ഫോം സമർപ്പിക്കുന്നതിനാൽ, നിങ്ങളുടെ വിവരങ്ങൾ മറ്റുള്ളവർക്ക് കാണാനാകും.</translation>
-<translation id="4024923292610332139">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കുന്നതിന് TouchID ഓഫാക്കുക</translation>
 <translation id="4025913568718019429">Google സ്വകാര്യതാ ക്രമീകരണം മാനേജ് ചെയ്യുക ബട്ടൺ, നിങ്ങളുടെ Google അക്കൗണ്ട് സ്വകാര്യതാ ക്രമീകരണം സന്ദർശിക്കാൻ Enter അമർത്തുക</translation>
 <translation id="4030383055268325496">&amp;ചേർത്തത് പഴയപടിയാക്കുക</translation>
 <translation id="4031179711345676612">മൈക്രോഫോൺ അനുവദനീയം</translation>
@@ -1540,7 +1538,6 @@
 <translation id="4900217275619098670">ഒൻപതാമത്തെ റോൾ</translation>
 <translation id="4901778704868714008">സംരക്ഷിക്കുക...</translation>
 <translation id="4905659621780993806">നിങ്ങളുടെ അഡ്‌മിൻ നിങ്ങളുടെ ഉപകരണം <ph name="DATE" />, <ph name="TIME" />-ന് റീസ്റ്റാർട്ട് ചെയ്യും. നിങ്ങളുടെ ഉപകരണം റീസ്റ്റാർട്ട് ചെയ്യുന്നതിന് മുമ്പ് തുറന്നിരിക്കുന്ന ഇനങ്ങളെല്ലാം സംരക്ഷിക്കുക.</translation>
-<translation id="4911007278801291296">നിങ്ങൾക്ക് <ph name="SETTINGS" /> എന്നതിൽ TouchID ഓണാക്കുകയോ ഓഫാക്കുകയോ ചെയ്യാം</translation>
 <translation id="4913987521957242411">മുകളിൽ ഇടതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ഇൻസ്റ്റാൾ ചെയ്യുക (ഡൗൺലോഡ് ചെയ്യേണ്ടതില്ല)</translation>
 <translation id="4923459931733593730">പേയ്‌മെന്റ് രീതി</translation>
@@ -1722,6 +1719,7 @@
 <translation id="5334013548165032829">വിശദമായ സിസ്‌റ്റം ലോഗുകൾ</translation>
 <translation id="5334145288572353250">വിലാസം സംരക്ഷിക്കണോ?</translation>
 <translation id="5335920952954443287">തുടിക്കുന്ന ഹൃദയം</translation>
+<translation id="5337569431717511221">ഡിഫോൾട്ട് ബ്രൗസർ ബട്ടണായി Chrome ക്രമീകരിക്കുക, സിസ്റ്റത്തിന്റെ ഡിഫോൾട്ട് ബ്രൗസറായി Chrome ക്രമീകരിക്കാൻ Enter അമർത്തുക</translation>
 <translation id="5340250774223869109">ആപ്പ് ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="534295439873310000">NFC ഉപകരണങ്ങൾ</translation>
 <translation id="5344579389779391559">ഈ പേജ് നിങ്ങളില്‍ നിന്ന് പണം ഈടാക്കാനിടയുണ്ട്</translation>
@@ -1753,7 +1751,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> നിങ്ങൾക്ക് അറിയിപ്പുകൾ അയയ്‌ക്കാൻ ആഗ്രഹിക്കുന്നു</translation>
 <translation id="5428105026674456456">സ്പാനിഷ്</translation>
 <translation id="5430298929874300616">ബുക്ക്‌മാർക്ക് നീക്കംചെയ്യുക</translation>
-<translation id="5434423669266814150">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കുന്നതിന് TouchID ഓണാക്കുക</translation>
 <translation id="5443468954631487277">വിപരീത ക്രമത്തിൽ ഫേസ് അപ്പ്</translation>
 <translation id="5447765697759493033">ഈ സൈറ്റ് വിവർത്തനം ചെയ്യപ്പെടില്ല</translation>
 <translation id="5452270690849572955">ഈ <ph name="HOST_NAME" /> പേജ് കണ്ടെത്താനായില്ല</translation>
@@ -1795,6 +1792,7 @@
 <translation id="5540969246441091044">കുതിരസവാരിക്കാർ</translation>
 <translation id="5541086400771735334">മെയിൽബോക്സ് 7</translation>
 <translation id="5541546772353173584">ഇമെയില്‍‌ ചേര്‍‌ക്കുക</translation>
+<translation id="5543722831081909240">180 ഡിഗ്രി</translation>
 <translation id="5545756402275714221">നിങ്ങൾക്കുള്ള ലേഖനങ്ങൾ</translation>
 <translation id="5551890439174915351">100 x 200 മി.മീ</translation>
 <translation id="5552137475244467770">ഓൺലൈനിൽ പ്രസിദ്ധീകരിച്ച ലിസ്റ്റുകൾക്ക് അനുസൃതമായി Chrome ഇടയ്ക്കിടെ നിങ്ങളുടെ പാസ്‌വേഡുകൾ പരിശോധിക്കുന്നു. ഇത് ചെയ്യുമ്പോൾ, നിങ്ങളുടെ പാസ്‌വേഡുകളും ഉപയോക്തൃനാമങ്ങളും എൻ‌ക്രിപ്റ്റ് ചെയ്‌ത നിലയിലായിരിക്കും, അതിനാൽ അവ Google ഉൾപ്പെടെ ആർക്കും വായിക്കാൻ കഴിയില്ല.</translation>
@@ -2183,6 +2181,7 @@
 <translation id="6591833882275308647">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യപ്പെടുന്നില്ല</translation>
 <translation id="6592952801936330159">സൈറ്റ് ക്രമീകരണ ബട്ടൺ മാനേജ് ചെയ്യുക, Chrome ക്രമീകരണത്തിൽ സൈറ്റുകളിലുടനീളം സംഭരിച്ചിരിക്കുന്ന അനുമതികളും ഡാറ്റയും മാനേജ് ചെയ്യാൻ 'Enter' അമർത്തുക</translation>
 <translation id="6596325263575161958">എൻക്രിപ്‌ഷൻ ഓപ്‌ഷനുകൾ</translation>
+<translation id="6597665340361269064">90 ഡിഗ്രി</translation>
 <translation id="6599642189720630047">ട്രാക്ക് ചെയ്ത ഉൽപ്പന്നങ്ങൾ</translation>
 <translation id="6611723696964473273">സാമ്പത്തിക വാർത്തകൾ</translation>
 <translation id="6612010098632894193">ഓൺലൈൻ വീഡിയോ</translation>
@@ -2415,6 +2414,7 @@
 <translation id="7199278868241956094">ഒഫീഷ്യോ</translation>
 <translation id="7201591969684833065">നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്റർക്ക് ഇവ കാണാനാകും:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ പുതിയ അദൃശ്യ ടാബ് തുറക്കുന്നതിന് 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
+<translation id="7203375778433816396">സിസ്റ്റത്തിന്റെ ഡിഫോൾട്ട് ബ്രൗസറായി Chrome സജ്ജീകരിക്കുക</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />, സുരക്ഷാ മാനദണ്ഡങ്ങൾ പാലിക്കുന്നില്ല.</translation>
 <translation id="7210993021468939304">കണ്ടെയ്‌നറിനുള്ളിലെ Linux ആക്‌റ്റിവിറ്റി, കൂടാതെ കണ്ടെയ്‌നറിനുള്ളിൽ Linux ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്യാനും റൺ ചെയ്യാനും കഴിയും</translation>
 <translation id="721197778055552897">ഈ പ്രശ്‌നത്തെക്കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതൽ‍ മനസിലാക്കുക<ph name="END_LINK" />.</translation>
@@ -2560,6 +2560,7 @@
 <translation id="7537536606612762813">നിർബന്ധിതം</translation>
 <translation id="7542403920425041731">സ്ഥിരീകരിച്ചു കഴിഞ്ഞാൽ, നിങ്ങളുടെ കാർഡ് വിശദാംശങ്ങൾ ഈ സൈറ്റുമായി പങ്കിടും.</translation>
 <translation id="7542995811387359312">ഈ ഫോം ഒരു സുരക്ഷിത കണക്ഷന്‍ ഉപയോഗിക്കാത്തതിനാല്‍ സ്വപ്രേരിത ക്രെഡിറ്റ് കാര്‍ഡ് പൂരിപ്പിക്കല്‍ പ്രവർത്തനരഹിതമാക്കി</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" /> ആരംഭിക്കുന്നു</translation>
 <translation id="7548892272833184391">കണക്ഷൻ പിശകുകൾ പരിഹരിക്കുക</translation>
 <translation id="7549584377607005141">ശരിയായി പ്രദർശിപ്പിക്കാൻ ഈ വെബ്‌ പേജിന് നിങ്ങൾ മുമ്പ് നൽകിയ ഡാറ്റ ആവശ്യമാണ്. നിങ്ങൾക്ക് ഈ ഡാറ്റ വീണ്ടും അയയ്‌ക്കാനാകുമെങ്കിലും, അങ്ങനെ ചെയ്യുന്നത് ഈ പേജിൽ മുമ്പ് ചെയ്‌ത ഏത് പ്രവർത്തനവും നിങ്ങൾക്ക് ആവർത്തിക്കേണ്ടതായി വരും.</translation>
 <translation id="7550637293666041147">നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഉപയോക്തൃനാമവും Chrome ഉപയോക്തൃനാമവും</translation>
@@ -2745,6 +2746,7 @@
 <translation id="8009843239480947060">10 x 11 ഇഞ്ച്</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{ഈ കാർഡും അവയുടെ ബില്ലിംഗ് വിലാസവും സംരക്ഷിക്കപ്പെടും. നിങ്ങൾ <ph name="USER_EMAIL" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്‌തിരിക്കുമ്പോൾ അത് ഉപയോഗിക്കാനാകും.}other{ഈ കാർഡുകളും അവയുടെ ബില്ലിംഗ് വിലാസങ്ങളും സംരക്ഷിക്കപ്പെടും. നിങ്ങൾ <ph name="USER_EMAIL" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്‌തിരിക്കുമ്പോൾ അവ ഉപയോഗിക്കാനാകും.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, സിസ്റ്റത്തിന്റെ ഡിഫോൾട്ട് ബ്രൗസറായി Chrome സജ്ജീകരിക്കാൻ, tab അമർത്തിയ ശേഷം Enter അമർത്തുക</translation>
 <translation id="8025119109950072390">ഈ സൈറ്റിലെ ആക്രമണകാരികൾ സോഫ്‌റ്റ്‌വെയർ ഇൻസ്റ്റാൾ ചെയ്യുന്നതോ വ്യക്തിപരമായ വിവരങ്ങൾ വെളിപ്പെടുത്തുന്നതോ (ഉദാഹരണത്തിന്, പാസ്‌വേഡുകൾ, ഫോൺ നമ്പറുകൾ, ക്രെഡിറ്റ് കാർഡുകൾ എന്നീ വിവരങ്ങൾ) പോലുള്ള അപകടകരമായ കാര്യങ്ങൾ ചെയ്യിപ്പിക്കുന്ന തരത്തിൽ നിങ്ങളെ കബളിപ്പിച്ചേക്കാം.</translation>
 <translation id="8026334261755873520">ബ്രൌസിംഗ് ഡാറ്റ മായ്‌ക്കുക</translation>
 <translation id="8027077570865220386">ട്രേ 15</translation>

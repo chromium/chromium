@@ -7,6 +7,7 @@
 <translation id="1024364763893396229"><ph name="NAME" /> সেভ করুন</translation>
 <translation id="1032891413405719768">স্টাইলাসের চার্জ কমে গেছে</translation>
 <translation id="1036073649888683237">সেটিংসে গিয়ে বিজ্ঞপ্তি ম্যানেজ করুন</translation>
+<translation id="1036348656032585052">বন্ধ করুন</translation>
 <translation id="1036672894875463507">আমি আপনার Google Assistant, পুরো দিনের জন্য আপনাকে সাহায্য করতে আমি তৈরি!
 শুরু করবার জন্য আপনি এই জিনিসগুলো ব্যবহার করে দেখতে পারেন</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> যোগ করা হয়েছে</translation>
@@ -100,6 +101,7 @@
 <translation id="1447641497144572814">স্ক্রিন সেভার চালু হচ্ছে</translation>
 <translation id="1455242230282523554">ভাষার সেটিংস দেখুন</translation>
 <translation id="1460620680449458626">ভলিউম মিউট করা আছে।</translation>
+<translation id="14648076227129703">ক্যামেরা সম্পর্কিত অনুমতির মাধ্যমে এটি <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ও সব অ্যাপ এবং ওয়েবসাইটের জন্য ক্যামেরা অ্যাক্সেস করার অনুমতি দেয়</translation>
 <translation id="1467432559032391204">বামে</translation>
 <translation id="146902737843070955">আপনার অ্যাডমিনিস্ট্রেটর এই পরিবর্তন করার জন্য অনুরোধ করেছেন</translation>
 <translation id="147310119694673958">ফোনে <ph name="BATTERY_PERCENTAGE" />% চার্জ আছে</translation>
@@ -159,6 +161,7 @@
 <translation id="1797271123677381264">পাসওয়ার্ড ভুলে গেছেন</translation>
 <translation id="181103072419391116">সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="1812997170047690955">আমার স্ক্রিনে কী রয়েছে?</translation>
+<translation id="1816896987747843206">ক্যামেরা সম্পর্কিত অনুমতির মাধ্যমে এটি সব অ্যাপ ও ওয়েবসাইটের জন্য ক্যামেরা অ্যাক্সেস করার অনুমতি দেয়</translation>
 <translation id="1823280932251546115">স্ট্যাটাস ট্রে, সময় <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> আনপিন করা হয়েছে</translation>
 <translation id="1836215606488044471">সহায়ক (লোড হচ্ছে...)</translation>
 <translation id="1838895407229022812">নাইট লাইট ফিচার বন্ধ করা আছে।</translation>
+<translation id="1854180393107901205">কাস্ট করা বন্ধ করুন</translation>
 <translation id="1862380676329487333">আপডেট করে সাইন-আউট করুন</translation>
 <translation id="1864454756846565995">USB-C ডিভাইস (পিছনের পোর্ট)</translation>
 <translation id="1869497990620230175">ঝটপট অ্যাক্সেসযোগ্য ফাইল</translation>
@@ -598,6 +602,7 @@
 <translation id="4316910396681052118">সব অ্যাপ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Ctrl + Alt + Up Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Home কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Left Arrow কী প্রেস করুন।</translation>
+<translation id="4324840740119394760">ক্যামেরা সম্পর্কিত অনুমতির মাধ্যমে এটি <ph name="APP_NAME" /> ও সব অ্যাপ এবং ওয়েবসাইটের জন্য ক্যামেরা অ্যাক্সেস করার অনুমতি দেয়</translation>
 <translation id="4333628967105022692">একাধিক ব্যবহারকারী সাইন-ইন করে থাকাকালীন, Lacros কাজ করে না।</translation>
 <translation id="4338109981321384717">আতস কাচ</translation>
 <translation id="4351433414020964307">সহায়ক লোড হচ্ছে...</translation>
@@ -664,13 +669,13 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox সক্ষম করা আছে</translation>
 <translation id="4665114317261903604">'বিরক্ত করবে না' মোড টগল করুন। <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">সব ক্যামেরা সব সময় ব্লক করতে এই ডিভাইসে ক্যামেরা অ্যাক্সেস বন্ধ করুন।</translation>
 <translation id="4666911709726371538">আরও অ্যাপ</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ডাউনলোড করা হচ্ছে</translation>
 <translation id="468293128311738995">আপনার ফোন থেকে অ্যাপ</translation>
 <translation id="4690510401873698237">শেল্ফ নিচে দেখানো হচ্ছে</translation>
 <translation id="4696813013609194136">অভিভাবকীয় কোড দিয়ে ডিভাইস আনলক করুন</translation>
 <translation id="4702647871202761252">গোপনীয়তা স্ক্রিন বন্ধ করা আছে</translation>
+<translation id="4706121060329443414">পরে ডাউনলোডের চেষ্টা করা হবে। এখন প্রসেস করার জন্য Google-এর কাছে স্পিচ পাঠানো হবে।</translation>
 <translation id="470644585772471629">কালার ইনভার্সন</translation>
 <translation id="4717575069099566988">আপনার USB-C কেবল USB4-এ কাজ করে না। ডিভাইসের পারফর্ম্যান্স সীমিত হতে পারে।</translation>
 <translation id="4730374152663651037">ঘন ঘন ব্যবহার করা হয়</translation>
@@ -696,7 +701,6 @@
 <translation id="485592688953820832">কোনও অ্যাকশন নেবেন না (পজ)</translation>
 <translation id="485634149294284819">কীবোর্ড মেনু লিখুন</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> ডাউনলোড করার জন্য আপনার নেটওয়ার্ক কানেকশন চেক করুন</translation>
-<translation id="486056901304535126">পরে ডাউনলোড করার চেষ্টা করা হবে। ফাইল সম্পূর্ণভাবে ডাউনলোড হওয়া পর্যন্ত স্পিচ প্রসেসিং করতে Google-এর কাছে পাঠানো হবে।</translation>
 <translation id="4864369630010738180">প্রবেশ করা হচ্ছে...</translation>
 <translation id="4864648187878336334">ডেস্ক ১৫</translation>
 <translation id="4868492592575313542">চালু আছে</translation>
@@ -791,6 +795,7 @@
 <translation id="5356963482258194581">ডার্ক ও লাইট থিমের মধ্যে বদল করুন। ডেস্কটপে মাউসের ডানদিকের বোতামে ক্লিক করে ওয়ালপেপার ও স্টাইল বেছে নিন।</translation>
 <translation id="536019650977002321">আপনার অ্যাডমিনিস্ট্রেটর অডিও ক্যাপচারের অনুমতি দেয় না। আরও তথ্যের জন্য আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> এই ট্যাবে যান</translation>
+<translation id="5377367976106153749">ক্যামেরা সম্পর্কিত অ্যাক্সেস চালু করবেন?</translation>
 <translation id="5379115545237091094">অনেক বেশি চেষ্টা করেছেন</translation>
 <translation id="5391307769715781764">সেভ করা ডেস্ক পরিবর্তন করবেন?</translation>
 <translation id="5393156353051693207">অ্যাপ নতুন করে সাজাতে যেকোনও জায়গায় টাচ করে ধরে থাকুন</translation>
@@ -1177,7 +1182,6 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> এখন আপনার মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="7561982940498449837">মেনু বন্ধ করুন</translation>
 <translation id="7564874036684306347">কোনও উইন্ডো অন্য ডেস্কটপে সরানো হলে সেটির আচরণে অপ্রত্যাশিত পরিবর্তন হতে পারে। পরবর্তী বিজ্ঞপ্তি, উইন্ডো এবং ডায়ালগ দুটি ডেস্কটপ মিলিয়ে দেখানো হতে পারে।</translation>
-<translation id="7567076708801803118">এই ডিভাইসে কি ক্যামেরা অ্যাক্সেস বন্ধ করবেন?</translation>
 <translation id="7569509451529460200">ব্রেল এবং ChromeVox সক্ষম করেছেন</translation>
 <translation id="7573585051776738856">অ্যাক্টিভ উইন্ডোটি ডানদিকে ডক করা আছে।</translation>
 <translation id="7579778809502851308">স্ক্রিন ক্যাপচার করুন</translation>
@@ -1253,6 +1257,7 @@
 <translation id="79341161159229895">অ্যাকাউন্টটি <ph name="FIRST_PARENT_EMAIL" /> এবং <ph name="SECOND_PARENT_EMAIL" /> ম্যানেজ করছেন</translation>
 <translation id="793716872548410480">আপনার ক্লিপবোর্ড দেখতে <ph name="SHORTCUT_KEY_NAME" /> + V প্রেস করুন। আপনার কপি করা শেষ ৫টি আইটেম ক্লিপবোর্ডে সেভ করা হয়েছে।</translation>
 <translation id="7942349550061667556">লাল</translation>
+<translation id="7963992254934562106"><ph name="PHONE_NAME" /> থেকে</translation>
 <translation id="7968693143708939792">ফোল্ডার বেছে নিন...</translation>
 <translation id="7977927628060636163">মোবাইল নেটওয়ার্কগুলির জন্য সার্চ করছে...</translation>
 <translation id="7982789257301363584">নেটওয়ার্ক</translation>
@@ -1491,6 +1496,7 @@
 <translation id="954052413789300507"><ph name="FILENAME" />-এর জন্য পর্যাপ্ত স্টোরেজ নেই। স্টোরেজ খালি করুন।</translation>
 <translation id="974545358917229949"><ph name="QUERY" />-এর জন্য <ph name="RESULT_COUNT" />টি ফলাফল দেখানো হচ্ছে</translation>
 <translation id="98515147261107953">ল্যান্ডস্কেপ</translation>
+<translation id="989374776391122812">ক্যামেরা এবং অডিও নিয়ন্ত্রণ</translation>
 <translation id="990277280839877440">উইন্ডো <ph name="WINDOW_TITILE" /> বন্ধ করা আছে।</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">লেটেস্ট ফিচার এবং নিরাপত্তা সংক্রান্ত উন্নতি পান। ব্যাকগ্রাউন্ডে আপডেট চলতে থাকবে।</translation>

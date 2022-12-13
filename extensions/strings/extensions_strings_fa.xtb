@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">بسته نامعتبر است. جزئیات: "<ph name="ERROR_MESSAGE" />"</translation>
 <translation id="8761756413268424715">«<ph name="APP_NAME" />» درخواست دسترسی به یکی از دستگاه‌های شما را دارد:</translation>
 <translation id="8885905466771744233">کلید خصوصی برای برنامهٔ افزودنی مشخص شده از قبل وجود دارد. از آن کلید مجدداً استفاده کنید یا ابتدا آن را حذف کنید.</translation>
+<translation id="9039223174332979184">سرپرست این ماشین استفاده از <ph name="EXTENSION_NAME" /> با نسخه مانیفست حداقل ۳ را الزامی کرده است.</translation>
 <translation id="907841381057066561">ایجاد فایل فشرده موقت هنگام بسته بندی ناموفق بود.</translation>
 <translation id="941543339607623937">کلید خصوصی نامعتبر.</translation>
 </translationbundle>

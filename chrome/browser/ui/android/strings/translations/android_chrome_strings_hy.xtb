@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Օգնեք մեզ բարձրացնել գաղտնիության մակարդակը ցանցում</translation>
 <translation id="107147699690128016">Եթե փոխեք ընդլայնումը, ֆայլը կարող է բացվել այլ հավելվածով և վնասել ձեր սարքը:</translation>
 <translation id="1089606299949659462">Ստուգումն ավարտված է</translation>
-<translation id="1091604859693995976">Թարմացրեք դիտելու համար</translation>
 <translation id="1095761715416917775">Համոզվեք, որ ձեր համաժամացված տվյալները միշտ հասանելի են ձեզ</translation>
 <translation id="1100066534610197918">Բացել նոր խմբի նոր ներդիրում</translation>
 <translation id="1103142993930332957">Օգնեք բարելավել Chrome-ը</translation>
@@ -1148,6 +1147,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7177466738963138057">Կարող եք սա հետագայում փոխել կարգավորումներում</translation>
 <translation id="7177873915659574692">Չհաջողվեց ստեղծել QR կոդ։ URL-ը կարող է պարունակել առավելագույնը <ph name="CHARACTER_LIMIT" /> նիշ։</translation>
 <translation id="7177959540995930968">Ավելին այս գործառույթների մասին կարող եք իմանալ Chrome-ի կարգավորումներում։</translation>
+<translation id="7180611975245234373">Թարմացնել</translation>
 <translation id="718226107353899806">Դուք կարող եք ավելացնել առավելագույնը <ph name="MAX_NUM_REACTIONS" /> արձագանք</translation>
 <translation id="7183693674623539380">Ներդիրների խումբ – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Ապահովում է ձեր անվտանգությունը Chrome-ում և Google հավելվածներում, երբ մտել եք ձեր հաշիվ։</translation>

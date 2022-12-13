@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Lagundu sare pribatuagoa sortzen</translation>
 <translation id="107147699690128016">Fitxategi-luzapena aldatzen baduzu, baliteke fitxategia beste aplikazio batean irekitzea eta zure gailuan kalteak eragitea.</translation>
 <translation id="1089606299949659462">Osatu duzu berrikuspena!</translation>
-<translation id="1091604859693995976">Edukia ikusteko, freskatu jarioa</translation>
 <translation id="1095761715416917775">Izan beti sinkronizatutako datuetarako sarbidea</translation>
 <translation id="1100066534610197918">Ireki beste fitxa bat taldean</translation>
 <translation id="1103142993930332957">Chrome hobetzen lagundu nahi duzu?</translation>
@@ -1148,6 +1147,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7177466738963138057">Nahi duzunean alda dezakezu Ezarpenak atalean</translation>
 <translation id="7177873915659574692">Ezin da sortu QR kodea. URLak <ph name="CHARACTER_LIMIT" /> karaktere baino gehiago ditu.</translation>
 <translation id="7177959540995930968">Eginbide horiei buruzko informazio gehiago lortzeko, joan Chrome-ren ezarpenetara.</translation>
+<translation id="7180611975245234373">Freskatu</translation>
 <translation id="718226107353899806"><ph name="MAX_NUM_REACTIONS" /> erreakzioraino gehi ditzakezu</translation>
 <translation id="7183693674623539380">Fitxa taldea (<ph name="TITLE_OF_GROUP" />)</translation>
 <translation id="7187993566681480880">Babestuta mantentzen zaitu Chrome-n, eta segurtasuna hobetzeko erabil daiteke Google-ren beste aplikazio batzuetan saioa hasita daukazunean.</translation>

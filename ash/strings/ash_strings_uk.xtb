@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">Збережіть пристрій "<ph name="NAME" />"</translation>
 <translation id="1032891413405719768">Низький заряд акумулятора стилуса</translation>
 <translation id="1036073649888683237">Щоб керувати сповіщеннями, перейдіть у налаштування</translation>
+<translation id="1036348656032585052">Вимкнути</translation>
 <translation id="1036672894875463507">Я – Google Асистент і допомагатиму вам упродовж дня.
 Ось що ви можете спробувати.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> додано</translation>
@@ -100,6 +101,7 @@
 <translation id="1447641497144572814">Починається заставка</translation>
 <translation id="1455242230282523554">Показати налаштування мови</translation>
 <translation id="1460620680449458626">Гучність вимкнено.</translation>
+<translation id="14648076227129703">Буде надано доступ до камери для додатків <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> і всіх додатків та веб-сайтів, де потрібен відповідний дозвіл</translation>
 <translation id="1467432559032391204">Ліворуч</translation>
 <translation id="146902737843070955">Ваш адміністратор надіслав запит на цю зміну</translation>
 <translation id="147310119694673958">Заряд акумулятора телефона – <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -159,6 +161,7 @@
 <translation id="1797271123677381264">Не пам’ятаю пароль</translation>
 <translation id="181103072419391116">Рівень сигналу – <ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
 <translation id="1812997170047690955">Що на моєму екрані?</translation>
+<translation id="1816896987747843206">Буде надано доступ до камери для всіх додатків і веб-сайтів, де потрібен відповідний дозвіл</translation>
 <translation id="1823280932251546115">Панель статусу, час: <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" />: відкріплено</translation>
 <translation id="1836215606488044471">Асистент (завантаження…)</translation>
 <translation id="1838895407229022812">Нічний екран вимкнено.</translation>
+<translation id="1854180393107901205">Зупинити трансляцію</translation>
 <translation id="1862380676329487333">Оновити й вийти</translation>
 <translation id="1864454756846565995">Пристрій із портом USB типу C (на задній панелі)</translation>
 <translation id="1869497990620230175">Швидкий доступ до файлів</translation>
@@ -598,6 +602,7 @@
 <translation id="4316910396681052118">УСІ ДОДАТКИ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Комбінацію клавіш Ctrl + Alt + стрілка вгору змінено. Щоб скористатися клавішею Home, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + стрілку вліво.</translation>
+<translation id="4324840740119394760">Буде надано доступ до камери для додатка <ph name="APP_NAME" /> і всіх додатків та веб-сайтів, де потрібен відповідний дозвіл</translation>
 <translation id="4333628967105022692">Lacros не підтримується, коли вхід здійснено в декілька облікових записів.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4351433414020964307">Завантаження Асистента…</translation>
@@ -664,13 +669,13 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox увімкнено</translation>
 <translation id="4665114317261903604">Увімкнути/вимкнути режим "Не турбувати". <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Вимкніть доступ до камери на цьому пристрої, щоб інші камери були постійно заблоковані.</translation>
 <translation id="4666911709726371538">Більше додатків</translation>
 <translation id="4667099493359681081">Завантажується файл <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Додатки з вашого телефона</translation>
 <translation id="4690510401873698237">Полицю розміщено внизу</translation>
 <translation id="4696813013609194136">Введіть код доступу батьків</translation>
 <translation id="4702647871202761252">Екран конфіденційності вимкнено</translation>
+<translation id="4706121060329443414">Спроба завантаження повториться пізніше. Наразі мовлення буде надіслано на сервери Google для обробки.</translation>
 <translation id="470644585772471629">Інверсія кольорів</translation>
 <translation id="4717575069099566988">Ваш кабель USB-C не підтримує USB4. Продуктивність пристрою може бути обмежено.</translation>
 <translation id="4730374152663651037">ЧАСТО ВИКОРИСТОВУЮТЬСЯ</translation>
@@ -696,7 +701,6 @@
 <translation id="485592688953820832">Нічого не робити (призупинити)</translation>
 <translation id="485634149294284819">Меню вибору розкладки клавіатури</translation>
 <translation id="4860284199500934869">Щоб завантажити файл "<ph name="FILENAME" />", перевірте з’єднання з мережею</translation>
-<translation id="486056901304535126">Спроба завантаження повториться пізніше. Доки завантаження не завершиться, мовлення надсилатиметься на сервери Google для обробки.</translation>
 <translation id="4864369630010738180">Вхід…</translation>
 <translation id="4864648187878336334">Робочий стіл 15</translation>
 <translation id="4868492592575313542">активовано</translation>
@@ -791,6 +795,7 @@
 <translation id="5356963482258194581">Ви можете перемикатися між темною та світлою темами. Для цього натисніть правою кнопкою миші будь-де на робочому столі й виберіть "Оформлення та стиль".</translation>
 <translation id="536019650977002321">Ваш адміністратор забороняє записувати звук. Щоб дізнатися більше, зверніться до нього.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> перейти на цю вкладку</translation>
+<translation id="5377367976106153749">Увімкнути доступ до камери?</translation>
 <translation id="5379115545237091094">Забагато спроб</translation>
 <translation id="5391307769715781764">Замінити збережений робочий стіл?</translation>
 <translation id="5393156353051693207">Натисніть і втримуйте будь-яке місце, щоб змінити порядок додатків</translation>
@@ -1177,7 +1182,6 @@
 <translation id="7557816257942363084">Додаток <ph name="APP_NAME" /> використовує ваш мікрофон</translation>
 <translation id="7561982940498449837">Закрити меню</translation>
 <translation id="7564874036684306347">Переміщення вікон на інший робочий стіл може спричинити неочікувану поведінку. Нові сповіщення та вікна можуть розділятися між робочими столами.</translation>
-<translation id="7567076708801803118">Вимкнути доступ до камери на цьому пристрої?</translation>
 <translation id="7569509451529460200">Шрифт Брайля та ChromeVox увімкнено</translation>
 <translation id="7573585051776738856">Активне вікно закріплено праворуч.</translation>
 <translation id="7579778809502851308">Знімок екрана</translation>

@@ -202,7 +202,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1432187715652018471">A página quer instalar um manipulador de serviço.</translation>
 <translation id="1432581352905426595">Gerenciar mecanismos de pesquisa</translation>
-<translation id="1435940442311036198">Usar uma senha de acesso em outro dispositivo</translation>
+<translation id="1435940442311036198">Usar uma chave de acesso em outro dispositivo</translation>
 <translation id="1436185428532214179">Pode pedir para editar arquivos e pastas no dispositivo</translation>
 <translation id="1442386063175183758">Dobra janela à direita</translation>
 <translation id="1442987760062738829">Perfurar</translation>
@@ -413,7 +413,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1958218078413065209">Sua maior pontuação é de <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Ajude a melhorar a segurança na Web para todos, enviando ao Google <ph name="BEGIN_WHITEPAPER_LINK" />URLs de algumas das páginas que você acessou, informações limitadas do sistema e parte do conteúdo da página<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Política de Privacidade<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Favoritos de <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">Proteger senhas com o Touch ID</translation>
 <translation id="1973335181906896915">Erro de serialização</translation>
 <translation id="1974060860693918893">Avançado</translation>
 <translation id="1975457531113383421">Bandeja de entrada</translation>
@@ -748,7 +747,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2881276955470682203">Salvar cartão?</translation>
 <translation id="2882949212241984732">Dobra janela dupla</translation>
 <translation id="2893773853358652045">Quarto rolo</translation>
-<translation id="289834758818479772">Se você compartilha este dispositivo com outras pessoas, pode ativar o Touch ID para a verificação da sua identidade sempre que usar uma senha salva</translation>
 <translation id="2900528713135656174">Criar evento</translation>
 <translation id="2903493209154104877">Endereços</translation>
 <translation id="290376772003165898">A página não está em <ph name="LANGUAGE" />?</translation>
@@ -1066,7 +1064,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3678529606614285348">Abrir página em uma nova janela anônima (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informações do certificado</translation>
 <translation id="3693327506115126094">Escolha como confirmar sua identidade</translation>
-<translation id="3699374065820972102">O TouchID está ativado para preencher senhas</translation>
 <translation id="3701427423622901115">Redefinição confirmada.</translation>
 <translation id="3704162925118123524">A rede que você está usando pode exigir que você visite a página de login.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1181,7 +1178,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="401170183602135785">Envelope C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}one{Documento PDF com {COUNT} página}other{Documento PDF com {COUNT} páginas}}</translation>
 <translation id="4023431997072828269">Como o formulário é enviado por uma conexão que não é segura, suas informações ficarão visíveis para outras pessoas.</translation>
-<translation id="4024923292610332139">desativar o Touch ID para preencher senhas</translation>
 <translation id="4025913568718019429">Botão "Gerenciar configurações de privacidade do Google". Pressione Enter para acessar as configurações de privacidade da Conta do Google</translation>
 <translation id="4030383055268325496">&amp;Desfazer adicionar</translation>
 <translation id="4031179711345676612">Microfone permitido</translation>
@@ -1543,7 +1539,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4900217275619098670">Nono rolo</translation>
 <translation id="4901778704868714008">Salvar…</translation>
 <translation id="4905659621780993806">O administrador vai reiniciar seu dispositivo automaticamente em <ph name="DATE" />, <ph name="TIME" />. Salve os itens abertos antes que o dispositivo seja reiniciado.</translation>
-<translation id="4911007278801291296">É possível ativar ou desativar o TouchID nas <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Perfuração na parte superior esquerda</translation>
 <translation id="4918221908152712722">Instale o <ph name="APP_NAME" /> (nenhum download é necessário)</translation>
 <translation id="4923459931733593730">Pagamento</translation>
@@ -1725,6 +1720,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5334013548165032829">Registros detalhados do sistema</translation>
 <translation id="5334145288572353250">Salvar endereço?</translation>
 <translation id="5335920952954443287">Coração batendo</translation>
+<translation id="5337569431717511221">Botão "Definir o Chrome como navegador padrão": pressione Enter para usar o Chrome como o navegador padrão do sistema</translation>
 <translation id="5340250774223869109">O aplicativo foi bloqueado</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
 <translation id="5344579389779391559">Esta página pode tentar cobrar pagamento em dinheiro</translation>
@@ -1756,7 +1752,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5426179911063097041"><ph name="SITE" /> quer enviar notificações a você</translation>
 <translation id="5428105026674456456">Espanhol</translation>
 <translation id="5430298929874300616">Remover favorito</translation>
-<translation id="5434423669266814150">ativar o Touch ID para preencher senhas</translation>
 <translation id="5443468954631487277">Ordem reversa virada para cima</translation>
 <translation id="5447765697759493033">Este site não será traduzido</translation>
 <translation id="5452270690849572955">Não foi possível encontrar a página deste <ph name="HOST_NAME" /></translation>
@@ -1881,7 +1876,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5764920692828389743">Enviar para <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Para ver métodos e requisitos de entrega, selecione um endereço</translation>
 <translation id="57689295674415555">O número do cartão virtual não foi preenchido?</translation>
-<translation id="5772086939108830423">Usar uma senha de acesso em outro dispositivo</translation>
+<translation id="5772086939108830423">Usar uma chave de acesso em outro dispositivo</translation>
 <translation id="5776313857861697733">Prioridade</translation>
 <translation id="5776574724412881956">Cartão virtual não preenchido? Copie os detalhes do cartão virtual para a área de transferência clicando neles. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Experimento ativado</translation>
@@ -2420,6 +2415,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7199278868241956094">Ofício</translation>
 <translation id="7201591969684833065">O administrador pode ver:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />: pressione "Tab" e depois "Enter" para abrir uma nova guia anônima e navegar com privacidade</translation>
+<translation id="7203375778433816396">Definir o Chrome como o navegador padrão do sistema</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> não adere aos padrões de segurança.</translation>
 <translation id="7210993021468939304">A atividade do Linux no contêiner, bem como instalar e executar apps do Linux no contêiner</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre este problema.</translation>
@@ -2567,6 +2563,7 @@ Mais detalhes:
 <translation id="7537536606612762813">Obrigatória</translation>
 <translation id="7542403920425041731">Depois da confirmação, os detalhes do cartão serão compartilhados com esse site.</translation>
 <translation id="7542995811387359312">O preenchimento automático do cartão de crédito está desativado porque este formulário não usa uma conexão segura.</translation>
+<translation id="7546409722674205727">Iniciando <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Corrigir erros de conexão</translation>
 <translation id="7549584377607005141">Esta página da Web requer os dados inseridos anteriormente para ser exibida de modo correto. É possível enviá-los novamente mas, ao fazer isso, você repete qualquer ação realizada anteriormente na página.</translation>
 <translation id="7550637293666041147">O nome de usuário no dispositivo e seu nome de usuário do Chrome</translation>
@@ -2752,6 +2749,7 @@ Mais detalhes:
 <translation id="8009843239480947060">10 x 11 pol.</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Este cartão e o endereço de faturamento dele serão salvos. Você poderá usá-lo quando a conta <ph name="USER_EMAIL" /> estiver conectada.}one{Este cartão e o endereço de faturamento dele serão salvos. Você poderá usá-lo quando a conta <ph name="USER_EMAIL" /> estiver conectada.}other{Estes cartões e os endereços de faturamento deles serão salvos. Você poderá usá-los quando a conta <ph name="USER_EMAIL" /> estiver conectada.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para definir o Chrome como o navegador padrão do sistema</translation>
 <translation id="8025119109950072390">Invasores nesse site podem induzir você a fazer algo perigoso, como instalar um software ou revelar suas informações pessoais (por exemplo, senhas, números de telefone ou cartões de crédito).</translation>
 <translation id="8026334261755873520">Remover dados de navegação</translation>
 <translation id="8027077570865220386">Bandeja 15</translation>

@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Pomozte nám vybudovat web zajišťující více soukromí</translation>
 <translation id="107147699690128016">Pokud změníte příponu souboru, může se soubor otevřít v jiné aplikaci a potenciálně může být rizikem pro vaše zařízení.</translation>
 <translation id="1089606299949659462">Kontrola dokončena.</translation>
-<translation id="1091604859693995976">Obnovte stránku</translation>
 <translation id="1095761715416917775">Zajistěte, abyste k synchronizovaným datům měli vždy přístup</translation>
 <translation id="1100066534610197918">Otevřít na nové kartě ve skup.</translation>
 <translation id="1103142993930332957">Pomoci Chrome zlepšit?</translation>
@@ -761,6 +760,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="510275257476243843">Zbývá: 1 h</translation>
 <translation id="5115811374190515607">do: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Zájmy</translation>
+<translation id="5122378528687922675">Pokud potřebuješ pomoc, požádej rodiče (<ph name="PARENT_NAME_1" /> nebo <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Anonymní karta</translation>
 <translation id="5126510351761255129">Ověřte svou kartu</translation>
 <translation id="5132942445612118989">Vaše hesla, historie a další údaje na všech zařízeních</translation>
@@ -1148,6 +1148,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7177466738963138057">Svoji volbu můžete později změnit v nabídce Nastavení</translation>
 <translation id="7177873915659574692">QR kód nelze vytvořit. Adresa URL je delší než <ph name="CHARACTER_LIMIT" /> znaků.</translation>
 <translation id="7177959540995930968">Další informace o těchto funkcích najdete v nastavení Chromu.</translation>
+<translation id="7180611975245234373">Obnovit</translation>
 <translation id="718226107353899806">Můžete přidat až <ph name="MAX_NUM_REACTIONS" /> reakcí</translation>
 <translation id="7183693674623539380">Skupina karet – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Zajišťuje vám bezpečí v Chromu a může zvýšit vaši bezpečnost v jiných aplikacích Google, když jste přihlášeni.</translation>
@@ -1331,6 +1332,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8084285576995584326">Spravovat data v účtu Google</translation>
 <translation id="808747664143081553">Připojeno k zařízení</translation>
 <translation id="8088176524274673045">Pokud chcete obsah sdílet s lidmi z okolí, nechte je naskenovat tento QR kód</translation>
+<translation id="8090732854597034573">Pokud potřebuješ pomoc, požádej rodiče</translation>
 <translation id="8100969750121413114">Přihlaste se a přizpůsobte si Chrome</translation>
 <translation id="8103578431304235997">Anonymní karta</translation>
 <translation id="8105613260829665809">Pokračováním vyjadřujete souhlas se <ph name="BEGIN_TOS_LINK" />smluvními podmínkami<ph name="END_TOS_LINK" />.\nZa účelem vylepšování aplikace odesílá Chrome do Googlu údaje o využití a selháních. <ph name="BEGIN_UMA_LINK" />Spravovat<ph name="END_UMA_LINK" /></translation>
@@ -1339,6 +1341,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8109613176066109935">Chcete-li mít záložky ve všech zařízeních, zapněte synchronizaci</translation>
 <translation id="8110024788458304985">Pomozte zlepšovat funkce a výkon Chromu</translation>
 <translation id="8110087112193408731">Zobrazovat vaši aktivitu v Chromu v digitální rovnováze?</translation>
+<translation id="8118117428362942925">Pokud potřebuješ pomoc, požádej rodiče (<ph name="PARENT_NAME" />)</translation>
 <translation id="8127542551745560481">Upravit domovskou stránku</translation>
 <translation id="8130309322784422030">Uložené přihlašovací údaje mohou být zastaralé</translation>
 <translation id="813082847718468539">Zobrazit informace o stránkách</translation>

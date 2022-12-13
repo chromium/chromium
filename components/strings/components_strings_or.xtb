@@ -413,7 +413,6 @@
 <translation id="1958218078413065209">ଆପଣଙ୍କର ସର୍ବାଧିକ ସ୍କୋର୍ ହେଉଛି <ph name="SCORE" />।</translation>
 <translation id="1959001866257244765">Googleକୁ <ph name="BEGIN_WHITEPAPER_LINK" />ଆପଣ ଭିଜିଟ୍ କରୁଥିବା କିଛି ପୃଷ୍ଠାର URLଗୁଡ଼ିକ, ସୀମିତ ସିଷ୍ଟମ୍ ସୂଚନା ଏବଂ କିଛି ପୃଷ୍ଠାର ବିଷୟବସ୍ତୁ<ph name="END_WHITEPAPER_LINK" /> ପଠାଇ ସମସ୍ତଙ୍କ ପାଇଁ ୱେବରେ ସୁରକ୍ଷାକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ। <ph name="BEGIN_PRIVACY_PAGE_LINK" />ଗୋପନୀୟତା ନୀତି<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> ବୁକମାର୍କଗୁଡିକ</translation>
-<translation id="1971033026002113380">TouchID ମାଧ୍ୟମରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ କରନ୍ତୁ</translation>
 <translation id="1973335181906896915">କ୍ରମିକୀକରଣ ତ୍ରୁଟି</translation>
 <translation id="1974060860693918893">ବିକଶିତ</translation>
 <translation id="1975457531113383421">ଇନପୁଟ୍ ଟ୍ରେ</translation>
@@ -748,7 +747,6 @@
 <translation id="2881276955470682203">କାର୍ଡ ସେଭ୍ କରିବେ?</translation>
 <translation id="2882949212241984732">ଡବଲ୍-ଗେଟ୍ ଫୋଲ୍ଡ</translation>
 <translation id="2893773853358652045">ଚତୁର୍ଥ ରୋଲ୍</translation>
-<translation id="289834758818479772">ଯଦି ଆପଣ ଏହି ଡିଭାଇସକୁ ଅନ୍ୟମାନଙ୍କ ସହ ସେୟାର କରନ୍ତି, ତେବେ ଏକ ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡକୁ ଆପଣ ଯେତେବେଳେ ବ୍ୟବହାର କରନ୍ତି ସେତେବେଳେ ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଯାଞ୍ଚ କରିବା ପାଇଁ TouchIDକୁ ଚାଲୁ କରିପାରିବେ</translation>
 <translation id="2900528713135656174">ଇଭେଣ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="2903493209154104877">ଠିକଣାଗୁଡ଼ିକ</translation>
 <translation id="290376772003165898">ପୃଷ୍ଠାଟି <ph name="LANGUAGE" />ରେ ନାହିଁ?</translation>
@@ -899,7 +897,7 @@
 <translation id="3281350579597955952">{0,plural, =1{<ph name="DESTINATION_NAME" />ରେ ଏହି ଫାଇଲକୁ ଖୋଲିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}other{<ph name="DESTINATION_NAME" />ରେ ଏହି ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}}</translation>
 <translation id="3282085321714087552">ଆପଣଙ୍କ ସଂସ୍ଥା, <ph name="ENROLLMENT_DOMAIN" />, ନିମ୍ନୋକ୍ତ ୱେବସାଇଟଗୁଡ଼ିକୁ ସେଟିଂସ୍ କିମ୍ବା ନୀତିଗୁଡ଼ିକ ପରି କିଛି ସୂଚନା ପଠାଇଛି।</translation>
 <translation id="3282497668470633863">କାର୍ଡରେ ନାମକୁ ଯୋଗ କରନ୍ତୁ</translation>
-<translation id="3286372614333682499">ପୋଟ୍ରେଟ୍‌</translation>
+<translation id="3286372614333682499">ପୋଟ୍ରେଟ</translation>
 <translation id="3287510313208355388">ଅନ୍‍ଲାଇନ୍ ହେଲେ ଡାଉନ୍‍‍ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="3288238092761586174">ଆପଣଙ୍କ ପେମେଣ୍ଟ ଯାଞ୍ଚ କରିବା ପାଇଁ <ph name="URL" />କୁ ଅତିରିକ୍ତ ଷ୍ଟେପ୍ ନେବାର ଆବଶ୍ୟକତା ହୋଇପାରେ</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ନୀତି ସମ୍ଵନ୍ଧରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
@@ -1063,7 +1061,6 @@
 <translation id="3678529606614285348">ଏକ ନୂଆ ଇନ୍‌କଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ପୃଷ୍ଠା ଖୋଲନ୍ତୁ (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">ସାର୍ଟିଫିକେଟ୍ ସୂଚନା</translation>
 <translation id="3693327506115126094">ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଆପଣ କିପରି ଯାଞ୍ଚ କରିବେ ତାହା ବାଛନ୍ତୁ</translation>
-<translation id="3699374065820972102">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପୂରଣ କରିବା ପାଇଁ TouchID ଚାଲୁ ଅଛି</translation>
 <translation id="3701427423622901115">ରିସେଟ୍ ସ୍ୱୀକାର କରାଯାଇଛି।</translation>
 <translation id="3704162925118123524">ଆପଣ ବ୍ୟବହାର କରୁଥିବା ନେଟ୍‌ୱାର୍କ ପାଇଁ ହୁଏତ ଆପଣଙ୍କୁ ଏହାର ଲଗ୍ ଇନ୍ ପୃଷ୍ଠାକୁ ଯିବାର ଆବଶ୍ୟକତା ଅଛି।</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1178,7 +1175,6 @@
 <translation id="401170183602135785">ଏନଭେଲପ C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT}ଟି ପୃଷ୍ଠା ଥିବା PDF ଡକ୍ୟୁମେଣ୍ଟ}other{{COUNT}ଟି ପୃଷ୍ଠା ଥିବା PDF ଡକ୍ୟୁମେଣ୍ଟ}}</translation>
 <translation id="4023431997072828269">ଏହି ଫର୍ମଟି ଏକ ଅସୁରକ୍ଷିତ ସଂଯୋଗ ବ୍ୟବହାର କରି ଦାଖଲ କରାଯାଇଥିବା ଯୋଗୁଁ ଆପଣଙ୍କ ସୂଚନା ଅନ୍ୟମାନଙ୍କୁ ଦୃଶ୍ୟମାନ ହେବ।</translation>
-<translation id="4024923292610332139">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପୂରଣ କରିବା ପାଇଁ TouchID ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4025913568718019429">"Google ଗୋପନୀୟତା ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ" ବଟନ, ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟର ଗୋପନୀୟତା ସେଟିଂସ ଭିଜିଟ କରିବାକୁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="4030383055268325496">&amp;ପୂର୍ବବତ୍‍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4031179711345676612">ମାଇକ୍ରୋଫୋନ୍‌କୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
@@ -1541,7 +1537,6 @@
 <translation id="4900217275619098670">ନବମ ରୋଲ୍</translation>
 <translation id="4901778704868714008">ସେଭ୍ କରନ୍ତୁ...</translation>
 <translation id="4905659621780993806">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପଣଙ୍କର ଡିଭାଇସକୁ <ph name="DATE" />ରେ <ph name="TIME" /> ବେଳେ ସ୍ୱଚାଳିତ ଭାବେ ରିଷ୍ଟାର୍ଟ କରିବେ। ଆପଣଙ୍କ ଡିଭାଇସ ରିଷ୍ଟାର୍ଟ ହେବା ପୂର୍ବରୁ ଖୋଲା ଥିବା ଯେ କୌଣସି ଆଇଟମକୁ ସେଭ କରନ୍ତୁ।</translation>
-<translation id="4911007278801291296"><ph name="SETTINGS" />ରେ ଆପଣ TouchIDକୁ ଚାଲୁ କିମ୍ବା ବନ୍ଦ କରିପାରିବେ</translation>
 <translation id="4913987521957242411">ଉପର ବାମ ପଟରେ ପଞ୍ଚ୍</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ଇନ୍‍ଷ୍ଟଲ୍‌ କରନ୍ତୁ (ଡାଉନ୍‌ଲୋଡ୍‌ର ଆବଶ୍ୟକତା ନାହିଁ)</translation>
 <translation id="4923459931733593730">ପେମେଣ୍ଟ</translation>
@@ -1723,6 +1718,7 @@
 <translation id="5334013548165032829">ବିସ୍ତୃତ ବିବରଣୀ ସହ ସିଷ୍ଟମ୍ ଲଗ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="5334145288572353250">ଠିକଣା ସେଭ୍ କରିବେ?</translation>
 <translation id="5335920952954443287">ବିଟିଙ୍ଗ ହାର୍ଟ</translation>
+<translation id="5337569431717511221">Chromeକୁ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ବଟନ ଭାବେ ସେଟ କରନ୍ତୁ, Chromeକୁ ସିଷ୍ଟମର ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="5340250774223869109">ଆପ୍ଲିକେସନ୍ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="534295439873310000">NFC ଡିଭାଇସ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="5344579389779391559">ଏହି ପୃଷ୍ଠା ଆପଣଙ୍କ ଠାରୁ ଶୁଳ୍କ ନେବା ପାଇଁ ଚେଷ୍ଟା କରିପାରେ</translation>
@@ -1754,7 +1750,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> ଆପଣଙ୍କୁ ବିଜ୍ଞପ୍ତି ପଠାଇବାକୁ ଚାହୁଁଛି</translation>
 <translation id="5428105026674456456">ସ୍ପାନିଶ୍</translation>
 <translation id="5430298929874300616">ବୁକମାର୍କ୍ କାଢ଼ିଦିଅନ୍ତୁ</translation>
-<translation id="5434423669266814150">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପୂରଣ କରିବା ପାଇଁ TouchID ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="5443468954631487277">ଓଲଟା ଅର୍ଡରରେ ଫେସ୍ ଅପ୍</translation>
 <translation id="5447765697759493033">ଏହି ସାଇଟ୍‌ ଅନୁବାଦ କରାଯିବ ନାହିଁ</translation>
 <translation id="5452270690849572955">ଏହି <ph name="HOST_NAME" /> ପୃଷ୍ଠା ମିଳିଲା ନାହିଁ</translation>
@@ -2417,6 +2412,7 @@
 <translation id="7199278868241956094">ଅଫିସିଓ</translation>
 <translation id="7201591969684833065">ଏହା ଆପଣଙ୍କର ଆଡ୍‌ମିନିଷ୍ଟ୍ରେଟର୍ ଦେଖିପାରିବେ:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ବ୍ୟକ୍ତିଗତ ଭାବରେ ବ୍ରାଉଜ କରିବା ପାଇଁ ଏକ ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲିବାକୁ Tab ତାପରେ Enter ଦବାନ୍ତୁ</translation>
+<translation id="7203375778433816396">Chromeକୁ ସିଷ୍ଟମର ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରନ୍ତୁ</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ସୁରକ୍ଷା ମାନାଙ୍କର ପାଳନ କରୁନାହିଁ।</translation>
 <translation id="7210993021468939304">କଣ୍ଟେନର୍ ମଧ୍ୟରେ Linux କାର୍ଯ୍ୟକଳାପ ଏବଂ କଣ୍ଟେନର୍ ମଧ୍ୟରେ Linux ଆପ୍ସ ଇନଷ୍ଟଲ୍ କରି ଚଲାଇପାରେ</translation>
 <translation id="721197778055552897">ଏହି ଅସୁବିଧା ସମ୍ଵନ୍ଧରେ <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /> ।</translation>
@@ -2564,6 +2560,7 @@
 <translation id="7537536606612762813">ବାଧ୍ୟତାମୂଳକ</translation>
 <translation id="7542403920425041731">ଆପଣ ଥରେ ସୁନିଶ୍ଚିତ କରିବାମାତ୍ରେ, ଆପଣଙ୍କର କାର୍ଡ ବିବରଣୀ ଏହି ସାଇଟ୍‌ରେ ସେୟାର୍‌ କରାଯିବ।</translation>
 <translation id="7542995811387359312">ସ୍ଵଚାଳିତ ଭାବେ କ୍ରେଡିଟ୍ କାର୍ଡ ପୂରଣକୁ ଅକ୍ଷମ କରନ୍ତୁ କାରଣ ଏହି ଫର୍ମ ଏକ ସୁରକ୍ଷିତ ସଂଯୋଗ ବ୍ୟବହାର କରେ ନାହିଁ।</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" /> ଆରମ୍ଭ ହେଉଛି</translation>
 <translation id="7548892272833184391">ସଂଯୋଗ ସମସ୍ୟାଗୁଡ଼ିକର ସମାଧାନ କରନ୍ତୁ</translation>
 <translation id="7549584377607005141">ଏହି ୱେବ୍‍ପୃଷ୍ଠାକୁ ସଠିକ୍ ଭାବରେ ପ୍ରଦର୍ଶନ କରିବା ପାଇଁ ଆପଣଙ୍କ ଦ୍ୱାରା ପୂର୍ବରୁ ଲେଖାଯାଇଥିବା ଡାଟାର ଆବଶ୍ୟକତା ଅଛି। ଆପଣ ଏହି ଡାଟା ପୁଣି ପଠାଇପାରିବେ, କିନ୍ତୁ ଏପରି କରିବା ଦ୍ୱାରା ଆପଣ ଏହି ପୃଷ୍ଠାରେ ପୂର୍ବରୁ କରିଥିବା କୌଣସି କାର୍ଯ୍ୟକୁ ପୁଣି କରିପାରିବେ।</translation>
 <translation id="7550637293666041147">ଆପଣଙ୍କର ଡିଭାଇସ୍ ଉପଯୋଗକର୍ତ୍ତାନାମ ଏବଂ Chrome ଉପଯୋଗକର୍ତ୍ତାନାମ</translation>
@@ -2749,6 +2746,7 @@
 <translation id="8009843239480947060">10 x 11 ଇଞ୍ଚ</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{ଏହି କାର୍ଡ ଏବଂ ଏହାର ବିଲିଂ ଠିକଣା ସେଭ୍‌ କରାଯିବ। <ph name="USER_EMAIL" />ରେ ସାଇନ୍‌ ଇନ୍‌ ରହିବା ଦ୍ୱାରା ଆପଣ ଏହାକୁ ବ୍ୟବହାର କରିବାକୁ ସକ୍ଷମ ହେବେ।}other{ଏହି କାର୍ଡଗୁଡ଼ିକ ଏବଂ ସେମାନଙ୍କର ବିଲିଂ ଠିକଣାଗୁଡ଼ିକ ସେଭ୍‌ କରାଯିବ। <ph name="USER_EMAIL" />ରେ ସାଇନ୍‌ ଇନ୍‌ ରହିବା ଦ୍ୱାରା ଆପଣ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାକୁ ସକ୍ଷମ ହେବେ।}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeକୁ ସିଷ୍ଟମର ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରିବା ପାଇଁ Tab ତା'ପରେ Enter ଦବାନ୍ତୁ</translation>
 <translation id="8025119109950072390">ଏହି ସାଇଟ୍‍‍ରେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କୁ କିଛି ବିପଜ୍ଜନକ କାର୍ଯ୍ୟ ଯେପରିକି, ସଫ୍ଟୱେର୍ ଇନ୍‌ଷ୍ଟଲେସନ୍ କିମ୍ବା ଆପଣଙ୍କର ବ୍ୟକ୍ତିଗତ ସୂଚନା (ଉଦାହରଣସ୍ୱରୂପ, ପାସ୍‌ୱର୍ଡ, ଫୋନ୍ ନମ୍ବର କିମ୍ବା କ୍ରେଡିଟ୍ କାର୍ଡ) ପ୍ରକାଶ କରିବା ପାଇଁ ପ୍ରତାରିତ କରିପାରନ୍ତି।</translation>
 <translation id="8026334261755873520">ବ୍ରାଉଜିଂ ଡାଟା ଖାଲି କରନ୍ତୁ</translation>
 <translation id="8027077570865220386">ଟ୍ରେ 15</translation>

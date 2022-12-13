@@ -413,7 +413,6 @@
 <translation id="1958218078413065209">તમારો સૌથી વધુ સ્કોર <ph name="SCORE" /> છે.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />તમે મુલાકાત લો તે કેટલાક પેજના URLs, સિસ્ટમ વિશેની સીમિત માહિતી અને પેજનું કેટલુંક કન્ટેન્ટ<ph name="END_WHITEPAPER_LINK" /> Googleને મોકલીને વેબ પર દરેક જણ માટે સુરક્ષા વધુ સારી બનાવવામાં સહાય કરો. <ph name="BEGIN_PRIVACY_PAGE_LINK" />પ્રાઇવસી પૉલિસી<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> બુકમાર્ક</translation>
-<translation id="1971033026002113380">TouchID વડે પાસવર્ડની સુરક્ષા કરો</translation>
 <translation id="1973335181906896915">અનુક્રમાંકન ભૂલ</translation>
 <translation id="1974060860693918893">વિગતવાર</translation>
 <translation id="1975457531113383421">ઇનપુટ ટ્રે</translation>
@@ -748,7 +747,6 @@
 <translation id="2881276955470682203">કાર્ડ સાચવીએ?</translation>
 <translation id="2882949212241984732">ડબલ-ગેટ ફોલ્ડ</translation>
 <translation id="2893773853358652045">ચોથો રોલ</translation>
-<translation id="289834758818479772">જો તમે આ ડિવાઇસ અન્ય લોકો સાથે શેર કરો છો, તો જ્યારે પણ તમે કોઈ સાચવેલા પાસવર્ડનો ઉપયોગ કરો ત્યારે એ તમે જ છો તેની ચકાસણી કરવા માટે તમે TouchID ચાલુ કરી શકો છો</translation>
 <translation id="2900528713135656174">ઇવેન્ટ બનાવો</translation>
 <translation id="2903493209154104877">સરનામાંઓ</translation>
 <translation id="290376772003165898">પેજ <ph name="LANGUAGE" />માં નથી?</translation>
@@ -1066,7 +1064,6 @@
 <translation id="3678529606614285348">એક નવી છુપી વિંડોમાં પેજ ખોલો (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">પ્રમાણપત્ર માહિતી</translation>
 <translation id="3693327506115126094">આ તમે જ છો, તે તમે કેવી રીતે ચકાસશો, તે પસંદ કરો</translation>
-<translation id="3699374065820972102">પાસવર્ડ ભરવા માટે TouchID ચાલુ છે</translation>
 <translation id="3701427423622901115">રીસેટ કરવાનું સ્વીકાર્યું હતું.</translation>
 <translation id="3704162925118123524">તમે ઉપયોગમાં લઈ રહ્યાં છો તે નેટવર્ક માટે, તમારે તેના લૉગ ઇન પેજની મુલાકાત લેવાની જરૂર હોઈ શકે છે.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1181,7 +1178,6 @@
 <translation id="401170183602135785">એન્વલપ C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} પેજ ધરાવતો PDF દસ્તાવેજ}one{{COUNT} પેજ ધરાવતો PDF દસ્તાવેજ}other{{COUNT} પેજ ધરાવતો PDF દસ્તાવેજ}}</translation>
 <translation id="4023431997072828269">અસુરક્ષિત કનેક્શનનો ઉપયોગ કરીને આ ફોર્મ સબમિટ કરવામાં આવી રહ્યું હોવાથી, તમારી માહિતી અન્ય લોકોને દેખાઈ શકે છે.</translation>
-<translation id="4024923292610332139">પાસવર્ડ ભરવા માટે TouchID બંધ કરો</translation>
 <translation id="4025913568718019429">Google પ્રાઇવસી સેટિંગ મેનેજ કરવા માટેનું બટન, તમારા Google એકાઉન્ટના પ્રાઇવસી સેટિંગની મુલાકાત લેવા માટે Enter કી દબાવો</translation>
 <translation id="4030383055268325496">&amp;ઉમેરવું પૂર્વવત્ કરો</translation>
 <translation id="4031179711345676612">માઇક્રોફોનને મંજૂરી</translation>
@@ -1543,7 +1539,6 @@
 <translation id="4900217275619098670">નવમો રોલ</translation>
 <translation id="4901778704868714008">સાચવો...</translation>
 <translation id="4905659621780993806">તમારા ઍડમિનિસ્ટ્રેટર <ph name="DATE" />ના રોજ <ph name="TIME" /> વાગ્યે ઑટોમૅટિક રીતે તમારું ડિવાઇસ ફરી શરૂ કરશે. તમારું ડિવાઇસ ફરી શરૂ થાય તે પહેલાં ખુલી હોય એવી કોઈપણ આઇટમ સાચવો.</translation>
-<translation id="4911007278801291296">તમે <ph name="SETTINGS" />માં જઈને TouchID ચાલુ કે બંધ કરી શકો છો</translation>
 <translation id="4913987521957242411">ઉપર ડાબી બાજુએ કાણું પાડો</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" />ને ઇન્સ્ટૉલ કરો (કોઈ ડાઉનલોડ આવશ્યક નથી)</translation>
 <translation id="4923459931733593730">ચુકવણી</translation>
@@ -1725,6 +1720,7 @@
 <translation id="5334013548165032829">વિગતવાર સિસ્ટમ લૉગ</translation>
 <translation id="5334145288572353250">સરનામું સાચવીએ?</translation>
 <translation id="5335920952954443287">ધબકતું હૃદય</translation>
+<translation id="5337569431717511221">Chromeને સિસ્ટમના ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરવા માટે પહેલા 'Chromeને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો' બટન અને પછી Enter કી દબાવો</translation>
 <translation id="5340250774223869109">ઍપ્લિકેશન બ્લૉક કરેલી છે</translation>
 <translation id="534295439873310000">NFC ડિવાઇસ</translation>
 <translation id="5344579389779391559">આ પેજ કદાચ તમારી પાસેથી શુલ્ક વસૂલ કરવાનો પ્રયાસ કરી શકે છે</translation>
@@ -1756,7 +1752,6 @@
 <translation id="5426179911063097041"><ph name="SITE" />તમને નોટિફિકેશનો મોકલવા માગે છે</translation>
 <translation id="5428105026674456456">સ્પેનિશ</translation>
 <translation id="5430298929874300616">બુકમાર્ક દૂર કરો</translation>
-<translation id="5434423669266814150">પાસવર્ડ ભરવા માટે TouchID ચાલુ કરો</translation>
 <translation id="5443468954631487277">ઉલટા ક્રમમાં ઉપર તરફ</translation>
 <translation id="5447765697759493033">આ સાઇટનો અનુવાદ થશે નહીં</translation>
 <translation id="5452270690849572955">આ <ph name="HOST_NAME" /> પેજ શોધી શકાતું નથી</translation>
@@ -2420,6 +2415,7 @@
 <translation id="7199278868241956094">ઑફિસ</translation>
 <translation id="7201591969684833065">તમારા વ્યવસ્થાપક જોઈ શકે છે:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ખાનગી રીતે બ્રાઉઝ કરવા નવી છૂપી ટૅબ ખોલવા માટે Tab પછી Enter દબાવો</translation>
+<translation id="7203375778433816396">Chromeને સિસ્ટમના ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />, સુરક્ષા માનકોનું પાલન કરતું નથી.</translation>
 <translation id="7210993021468939304">કન્ટેનરની અંદર જ Linuxની પ્રવૃત્તિ અને કન્ટેનરની અંદર જ Linuxની ઍપ ઇન્સ્ટૉલ કરી શકાશે તેમજ ચલાવી શકાશે</translation>
 <translation id="721197778055552897">આ સમસ્યા વિશે <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" />.</translation>
@@ -2567,6 +2563,7 @@
 <translation id="7537536606612762813">ફરજિયાત</translation>
 <translation id="7542403920425041731">એકવાર તમે પુષ્ટિ કરી લો તે પછી, આ સાઇટ સાથે તમારા કાર્ડની વિગતો શેર કરવામાં આવશે.</translation>
 <translation id="7542995811387359312">ઑટોમૅટિક રીતે ક્રેડિટ કાર્ડ ભરવાનું બંધ કર્યું છે કારણ કે આ ફોર્મ સુરક્ષિત કનેક્શનનો ઉપયોગ કરતું નથી.</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" /> શરૂ થઈ રહી છે</translation>
 <translation id="7548892272833184391">કનેક્શન ભૂલો સુધારો</translation>
 <translation id="7549584377607005141">આ વેબપેજને તે ડેટાની જરૂર છે જે તમે પહેલાં બરાબર રીતે પ્રદર્શિત થાય તે માટે દાખલ કર્યો હતો. તમે આ ડેટા ફરીથી મોકલી શકો છો, પણ આમ કરીને તમે કોઈપણ ક્રિયા કે જે પેજ પહેલાં જ કરી ચૂક્યું છે તેનું પુનરાવર્તન કરશો.</translation>
 <translation id="7550637293666041147">તમારું ડિવાઇસ વપરાશકર્તા નામ અને Chrome વપરાશકર્તા નામ</translation>
@@ -2752,6 +2749,7 @@
 <translation id="8009843239480947060">10 x 11 ઇંચ</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{આ કાર્ડ અને તેનું બિલિંગ સરનામું સાચવવામાં આવશે. જ્યારે <ph name="USER_EMAIL" />માં સાઇન ઇન કર્યું હશે ત્યારે તમે તેનો ઉપયોગ કરી શકશો.}one{આ કાર્ડ અને તેના બિલિંગ સરનામાં સાચવવામાં આવશે. જ્યારે <ph name="USER_EMAIL" />માં સાઇન ઇન કર્યું હશે ત્યારે તમે તેમનો ઉપયોગ કરી શકશો.}other{આ કાર્ડ અને તેના બિલિંગ સરનામાં સાચવવામાં આવશે. જ્યારે <ph name="USER_EMAIL" />માં સાઇન ઇન કર્યું હશે ત્યારે તમે તેમનો ઉપયોગ કરી શકશો.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeને સિસ્ટમના ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરવા માટે, પહેલા ટૅબ અને પછી Enter કી દબાવો</translation>
 <translation id="8025119109950072390">આ સાઇટ પરના હુમલાખોરો તમારી વ્યક્તિગત માહિતી (ઉદાહરણ તરીકે, પાસવર્ડ, ફોન નંબર અથવા ક્રેડિટ કાર્ડ)ને દર્શાવવા અથવા સોફ્ટવેર ઇન્સ્ટૉલ કરવા જેવી જોખમી વસ્તુઓને કરવા માટે તમને છેતરવાનો પ્રયાસ કરી શકે છે.</translation>
 <translation id="8026334261755873520">બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
 <translation id="8027077570865220386">ટ્રે 15</translation>

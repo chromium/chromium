@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">သင့် <ph name="NAME" /> ကို သိမ်းရန်</translation>
 <translation id="1032891413405719768">စတိုင်လပ်စ် ဓာတ်ခဲ အားနည်းနေသည်</translation>
 <translation id="1036073649888683237">အကြောင်းကြားချက်များ စီမံရန် ‘ဆက်တင်များ’ သို့သွားပါ</translation>
+<translation id="1036348656032585052">ပိတ်ရန်</translation>
 <translation id="1036672894875463507">ကျွန်ုပ်က သင့်တစ်နေ့တာတွင် ကူညီပေးမည့် Google Assistant ပါ။
 စတင်ရန်အတွက် စမ်းကြည့်နိုင်သော အရာအချို့ကို ဖော်ပြထားပါသည်။</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ကို ထည့်ထားသည်</translation>
@@ -100,6 +101,7 @@
 <translation id="1447641497144572814">စကရင်နားချိန် စတင်ပြီ</translation>
 <translation id="1455242230282523554">ဘာသာစကားဆက်တင်များကို ပြရန်</translation>
 <translation id="1460620680449458626">အသံ တိတ်ထားသည်။</translation>
+<translation id="14648076227129703">၎င်းက <ph name="APP1_NAME" />၊ <ph name="APP2_NAME" />၊ ကင်မရာခွင့်ပြုချက်ပါသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို ကင်မရာသုံးခွင့်ပြုသည်</translation>
 <translation id="1467432559032391204">ဘယ်</translation>
 <translation id="146902737843070955">သင့်စီမံခန့်ခွဲသူက ဤပြောင်းလဲမှုအတွက် တောင်းဆိုထားသည်</translation>
 <translation id="147310119694673958">ဖုန်းဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -159,6 +161,7 @@
 <translation id="1797271123677381264">စကားဝှက် မေ့နေသည်</translation>
 <translation id="181103072419391116">လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားပါသည်</translation>
 <translation id="1812997170047690955">ကျွန်ုပ်၏ ဖန်သားပြင်ပေါ်တွင် မည်သည့်အရာများ ရှိပါသလဲ။</translation>
+<translation id="1816896987747843206">၎င်းက ကင်မရာခွင့်ပြုချက်ပါသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို ကင်မရာသုံးခွင့်ပြုသည်</translation>
 <translation id="1823280932251546115">အခြေအနေပြအကန့်၊ အချိန် <ph name="TIME" />၊
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ကို ပင်ဖြုတ်လိုက်သည်</translation>
 <translation id="1836215606488044471">Assistant (ဖွင့်နေပါသည်...)</translation>
 <translation id="1838895407229022812">'ညအလင်းရောင်' ပိတ်ထားသည်။</translation>
+<translation id="1854180393107901205">ကက်စ်လုပ်နေခြင်း ရပ်မည်</translation>
 <translation id="1862380676329487333">အပ်ဒိတ်လုပ်ပြီး ထွက်ရန်</translation>
 <translation id="1864454756846565995">USB-C ကိရိယာ (နောက်ဘက် ပို့တ်)</translation>
 <translation id="1869497990620230175">အမြန်ဖိုင်များ</translation>
@@ -598,6 +602,7 @@
 <translation id="4316910396681052118">အက်ပ်များ အားလုံး</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">‘Ctrl + Alt + အပေါ်ညွှန်မြား’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘ပင်မ’ ကီးသုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ‘ဘယ်ညွှန်မြား’ နှိပ်ပါ။</translation>
+<translation id="4324840740119394760">၎င်းက <ph name="APP_NAME" />၊ ကင်မရာခွင့်ပြုချက်ပါသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို ကင်မရာသုံးခွင့်ပြုသည်</translation>
 <translation id="4333628967105022692">အသုံးပြုသူအများအပြား လက်မှတ်ထိုးဝင်ထားစဉ်တွင် Lacros ကို သုံး၍မရပါ။</translation>
 <translation id="4338109981321384717">မှန်ဘီလူး</translation>
 <translation id="4351433414020964307">Assistant ကို ဖွင့်နေပါသည်...</translation>
@@ -664,13 +669,13 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ကို ဖွင့်ထားပါသည်</translation>
 <translation id="4665114317261903604">'မနှောင့်ယှက်ရ' ဖွင့်/ပိတ်ရန်။ <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">ကင်မရာအားလုံးကို အချိန်ပြည့်ပိတ်ထားရန် ဤစက်တွင် ကင်မရာသုံးခွင့်ကို ပိတ်နိုင်သည်။</translation>
 <translation id="4666911709726371538">အက်ပ်များ ပိုပြပါ</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ကို ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="468293128311738995">သင့်ဖုန်းမှအက်ပ်များ</translation>
 <translation id="4690510401873698237">စင်ကို အောက်ခြေသို့ ရွှေ့လိုက်ပါပြီ</translation>
 <translation id="4696813013609194136">စက်ပစ္စည်းကို မိဘသုံးကုဒ်ဖြင့် ဖွင့်ပါ</translation>
 <translation id="4702647871202761252">ပုဂ္ဂိုလ်ရေးလုံခြုံမှု ဖန်သားပြင်ကို ပိတ်ထားသည်</translation>
+<translation id="4706121060329443414">နောင်တွင် ဒေါင်းလုဒ်လုပ်ပါမည်။ လောလောဆယ် လုပ်ဆောင်ရန် တိုက်ရိုက်စာတန်းကို Google သို့ ပို့ပါမည်။</translation>
 <translation id="470644585772471629">အရောင် ပြောင်းပြန်ပြုလုပ်ရန်</translation>
 <translation id="4717575069099566988">သင့် USB-C ကေဘယ်သည် USB4 ကို မပံ့ပိုးပါ။ စက်၏စွမ်းဆောင်ရည်သည် အကန့်အသတ်ရှိနိုင်သည်။</translation>
 <translation id="4730374152663651037">မကြာခဏ အသုံးပြုသောအက်ပ်များ</translation>
@@ -696,7 +701,6 @@
 <translation id="485592688953820832">မည်သည့်အရာမျှ လုပ်ဆောင်ရန်မလို (ခေတ္တရပ်ရန်)</translation>
 <translation id="485634149294284819">ကီးဘုတ်မီနူးသို့ ဝင်ရန်</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> ဒေါင်းလုဒ်လုပ်ရန် သင်၏ကွန်ရက်ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
-<translation id="486056901304535126">နောက်မှ ဒေါင်းလုဒ်လုပ်ပါမည်။ စကားသံကို စီမံလုပ်ဆောင်ရန် ဒေါင်းလုဒ်လုပ်မှု မပြီးမချင်း Google သို့ ပို့ပါမည်။</translation>
 <translation id="4864369630010738180">လက်မှတ်ထိုးဝင်နေသည်...</translation>
 <translation id="4864648187878336334">မျက်နှာပြင် ၁၅</translation>
 <translation id="4868492592575313542">ဖွင့်ထားသည်</translation>
@@ -791,6 +795,7 @@
 <translation id="5356963482258194581">အမှောင်နောက်ခံနှင့် အလင်းနောက်ခံကို ပြောင်းသုံးနိုင်သည်။ ဒက်စ်တော့ပေါ်တွင် ညာဘက်ခလုတ်ကို နှိပ်၍ ‘နောက်ခံနှင့် စတိုင်’ ကို ရွေးပါ။</translation>
 <translation id="536019650977002321">သင့်စီမံခန့်ခွဲသူက အသံဖမ်းယူခြင်းကို ခွင့်မပြုပါ။ နောက်ထပ် အချက်အလက်အတွက် သင်၏စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ဤတဘ်သို့သွားရန်</translation>
+<translation id="5377367976106153749">ကင်မရာသုံးခွင့် ဖွင့်မလား။</translation>
 <translation id="5379115545237091094">စမ်းသပ်သည့်အကြိမ်ရေ အလွန်များနေပါပြီ</translation>
 <translation id="5391307769715781764">သိမ်းထားသောမျက်နှာပြင်ကို အစားထိုးမလား။</translation>
 <translation id="5393156353051693207">နှစ်သက်ရာနေရာတွင် တို့ထိ၍ ဖိထားပြီး သင့်အက်ပ်များကို ပြန်စီနိုင်သည်</translation>
@@ -1177,7 +1182,6 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> က သင့်မိုက်ခရိုဖုန်းကို လက်ရှိသုံးနေသည်</translation>
 <translation id="7561982940498449837">မီနူးကို ပိတ်ရန်</translation>
 <translation id="7564874036684306347">ဝင်းဒိုးများကို အခြားဒက်စ်တော့တစ်ခုသို့ ရွှေ့ခြင်းဖြင့် မျှော်လင့်မထားသည့် လုပ်ဆောင်ပုံများ ဖြစ်ပေါ်စေနိုင်ပါသည်။ နောက်ဆက်တွဲ အကြောင်းကြားချက်များ၊ ဝင်းဒိုးများနှင့် စကားပြောများကို ဒက်စ်တော့များအကြား ခွဲဖွင့်နိုင်ပါသည်။</translation>
-<translation id="7567076708801803118">ဤစက်တွင် ကင်မရာသုံးခွင့် ပိတ်လိုပါသလား။</translation>
 <translation id="7569509451529460200">မျက်မမြင်စာ နှင့် ChromeVox ကို ဖွင့်ထားပါသည်</translation>
 <translation id="7573585051776738856">ဖွင့်ထားသည့်ဝင်းဒိုးကို ညာဖက်တွင် နေရာချလိုက်သည်။</translation>
 <translation id="7579778809502851308">ဖန်သားပြင် ပုံဖမ်းခြင်း</translation>
@@ -1253,6 +1257,7 @@
 <translation id="79341161159229895">အကောင့်ကို <ph name="FIRST_PARENT_EMAIL" /> နှင့် <ph name="SECOND_PARENT_EMAIL" /> က စီမံပါသည်</translation>
 <translation id="793716872548410480">သင်၏ကလစ်ဘုတ်ကို ကြည့်ရန် <ph name="SHORTCUT_KEY_NAME" /> + V နှိပ်ပါ။ သင်မိတ္တူကူးထားသည့် နောက်ဆုံး ၅ ခုကို သင်၏ကလစ်ဘုတ်တွင် သိမ်းလိုက်သည်။</translation>
 <translation id="7942349550061667556">အနီရောင်</translation>
+<translation id="7963992254934562106"><ph name="PHONE_NAME" /> မှ</translation>
 <translation id="7968693143708939792">ဖိုင်တွဲရွေးရန်...</translation>
 <translation id="7977927628060636163">မိုဘိုင်းကွန်ရက်ကို ရှာဖွေနေသည်...</translation>
 <translation id="7982789257301363584">ကွန်ရက်</translation>

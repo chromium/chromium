@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">Simpan <ph name="NAME" /> anda</translation>
 <translation id="1032891413405719768">Bateri stilus lemah</translation>
 <translation id="1036073649888683237">Untuk mengurus pemberitahuan, pergi ke Tetapan</translation>
+<translation id="1036348656032585052">Matikan</translation>
 <translation id="1036672894875463507">Saya Google Assistant anda. Saya sedia membantu anda sepanjang hari anda!
 Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ditambahkan</translation>
@@ -100,6 +101,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1447641497144572814">Penyelamat skrin bermula</translation>
 <translation id="1455242230282523554">Tunjukkan tetapan bahasa</translation>
 <translation id="1460620680449458626">Kelantangan diredamkan.</translation>
+<translation id="14648076227129703">Ini membenarkan akses kamera untuk <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dan semua apl serta laman web dengan kebenaran kamera</translation>
 <translation id="1467432559032391204">Kiri</translation>
 <translation id="146902737843070955">Pentadbir anda telah meminta perubahan ini</translation>
 <translation id="147310119694673958">Bateri telefon <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -159,6 +161,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1797271123677381264">Terlupa kata laluan</translation>
 <translation id="181103072419391116">Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />, Diurus oleh Pentadbir anda</translation>
 <translation id="1812997170047690955">Apakah yang terdapat pada skrin saya?</translation>
+<translation id="1816896987747843206">Ini membenarkan akses kamera untuk semua apl dan laman web dengan kebenaran kamera</translation>
 <translation id="1823280932251546115">Dulang status, masa <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> telah dinyahsemat</translation>
 <translation id="1836215606488044471">Pembantu (memuat...)</translation>
 <translation id="1838895407229022812">Cahaya Malam dimatikan.</translation>
+<translation id="1854180393107901205">Berhenti menghantar</translation>
 <translation id="1862380676329487333">Kemas kini dan log keluar</translation>
 <translation id="1864454756846565995">Peranti USB-C (port belakang)</translation>
 <translation id="1869497990620230175">Fail pantas</translation>
@@ -599,6 +603,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4316910396681052118">SEMUA APL</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Pintasan papan kekunci Ctrl + Alt + Anak Panah ke Atas telah berubah. Untuk menggunakan kekunci Home, tekan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Anak Panah ke Kiri.</translation>
+<translation id="4324840740119394760">Ini membenarkan akses kamera untuk <ph name="APP_NAME" /> dan semua apl serta laman web dengan kebenaran kamera</translation>
 <translation id="4333628967105022692">Lacros tidak disokong semasa berbilang pengguna dilog masuk.</translation>
 <translation id="4338109981321384717">Kanta pembesar</translation>
 <translation id="4351433414020964307">Pembantu sedang dimuatkan...</translation>
@@ -665,13 +670,13 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox didayakan</translation>
 <translation id="4665114317261903604">Togol Jangan ganggu. <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Matikan akses kamera pada peranti ini untuk menyekat semua kamera pada setiap masa.</translation>
 <translation id="4666911709726371538">Lagi apl</translation>
 <translation id="4667099493359681081">Memuat turun <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Apl daripada telefon anda</translation>
 <translation id="4690510401873698237">Rak di bahagian bawah</translation>
 <translation id="4696813013609194136">Buka kunci peranti menggunakan kod ibu bapa</translation>
 <translation id="4702647871202761252">Skrin privasi dimatikan</translation>
+<translation id="4706121060329443414">Muat turun akan cuba dilakukan kemudian. Buat masa sekarang, pertuturan akan dihantar kepada Google untuk diproses.</translation>
 <translation id="470644585772471629">Penyongsangan warna</translation>
 <translation id="4717575069099566988">Kabel USB-C anda tidak menyokong USB4. Prestasi peranti mungkin terhad.</translation>
 <translation id="4730374152663651037">KERAP DIGUNAKAN</translation>
@@ -697,7 +702,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="485592688953820832">Tiada tindakan (jeda)</translation>
 <translation id="485634149294284819">Masukkan menu papan kekunci</translation>
 <translation id="4860284199500934869">Semak sambungan rangkaian anda untuk memuat turun <ph name="FILENAME" /></translation>
-<translation id="486056901304535126">Muat turun akan cuba dilakukan kemudian. Pertuturan akan dihantar kepada Google untuk diproses sehingga muat turun selesai.</translation>
 <translation id="4864369630010738180">Sedang log masuk...</translation>
 <translation id="4864648187878336334">Meja 15</translation>
 <translation id="4868492592575313542">diaktifkan</translation>
@@ -792,6 +796,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5356963482258194581">Beralih antara tema gelap dengan cerah. Klik kanan pada desktop dan pilih Kertas dinding &amp; gaya.</translation>
 <translation id="536019650977002321">Pentadbir anda tidak membenarkan rakaman audio. Hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Pergi ke tab ini</translation>
+<translation id="5377367976106153749">Hidupkan akses kamera?</translation>
 <translation id="5379115545237091094">Terlalu banyak percubaan</translation>
 <translation id="5391307769715781764">Gantikan meja yang disimpan?</translation>
 <translation id="5393156353051693207">Sentuh &amp; tahan di mana-mana untuk menyusun semula apl anda</translation>
@@ -1178,7 +1183,6 @@ Pemasangan baharu</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> sedang menggunakan Mikrofon anda pada masa ini</translation>
 <translation id="7561982940498449837">Tutup menu</translation>
 <translation id="7564874036684306347">Tindakan memindahkan tetingkap ke desktop lain boleh menyebabkan gelagat yang tidak dijangka. Pemberitahuan, tetingkap dan dialog yang seterusnya mungkin dipisahkan antara desktop.</translation>
-<translation id="7567076708801803118">Adakah anda ingin mematikan akses kamera pada peranti ini?</translation>
 <translation id="7569509451529460200">Braille dan ChromeVox didayakan</translation>
 <translation id="7573585051776738856">Tetingkap aktif didok sebelah kanan.</translation>
 <translation id="7579778809502851308">Tangkapan skrin</translation>
@@ -1492,6 +1496,7 @@ Pemasangan baharu</translation>
 <translation id="954052413789300507">Ruang tidak mencukupi untuk <ph name="FILENAME" />. Kosongkan ruang.</translation>
 <translation id="974545358917229949">Memaparkan <ph name="RESULT_COUNT" /> hasil carian untuk <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Lanskap</translation>
+<translation id="989374776391122812">Kawalan kamera dan audio</translation>
 <translation id="990277280839877440">Tetingkap <ph name="WINDOW_TITILE" /> ditutup.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Dapatkan ciri terkini dan peningkatan keselamatan. Kemaskinian berlaku di latar belakang.</translation>

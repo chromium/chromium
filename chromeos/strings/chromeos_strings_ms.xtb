@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Batalkan tugas cetak</translation>
 <translation id="2163937499206714165">Hidupkan mod gelap</translation>
 <translation id="2180197493692062006">Kesilapan telah berlaku. Cuba buka semula apl.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">Tetapkan Semula Pembilang Trafik</translation>
 <translation id="2212733584906323460">Namakan Peleraian</translation>
 <translation id="2217935453350629363">Kelajuan semasa</translation>
@@ -492,6 +491,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Tukar kepada tema gelap pada waktu matahari terbenam secara automatik</translation>
+<translation id="5571714952674387371">Lihat dan edit butiran</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Imbas semula</translation>
 <translation id="5583640892426849032">Undur ruang</translation>
@@ -561,6 +561,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6189418609903030344">Kapasiti bateri menurun seiring dengan penggunaan</translation>
 <translation id="6191293864534840972">Pelayan nama cacat</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Keluar dari keadaan skrin penuh</translation>
 <translation id="6223752125779001553">Tiada pengimbas tersedia</translation>
 <translation id="6232017090690406397">Bateri</translation>
 <translation id="6235460611964961764">Tetapkan semula penggunaan data secara manual</translation>
@@ -688,11 +689,12 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="741244894080940828">penukaran</translation>
 <translation id="7415801143053185905">Kependaman HTTP sangat tinggi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Pengimbasan selesai. 1 halaman diimbas}other{Pengimbasan selesai. {NUMBER_OF_PAGES} halaman diimbas}}</translation>
+<translation id="7458970041932198923">Sila sambung kepada rangkaian dan muatkan semula halaman itu untuk melihat dan menetapkan avatar.</translation>
 <translation id="7469648432129124067">Portal dikesan</translation>
 <translation id="7481312909269577407">Majukan</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">Alamat MAC</translation>
+<translation id="7491478667760509108">Keluar dari keadaan terapung</translation>
 <translation id="7497215489070763236">Sijil CA pelayan</translation>
 <translation id="7502658306369382406">Alamat IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -793,6 +795,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8498220429738806196">Pembilang Trafik</translation>
 <translation id="8503813439785031346">Nama pengguna</translation>
 <translation id="8503836310948963452">Hanya beberapa minit lagi…</translation>
+<translation id="8508640263392900755">Butiran APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Pembawa anda mungkin memerlukan pilihan ini untuk menyambung kepada rangkaian mereka. Hubungi pembawa anda untuk mendapatkan butiran.</translation>
 <translation id="8576249514688522074">Tidak diasalkan</translation>
@@ -843,6 +846,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Imbas}=1{Imbas halaman {NUMBER_OF_PAGES}}other{Imbas halaman {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% bateri.</translation>
+<translation id="8998289560386111590">Tidak tersedia pada peranti anda</translation>
 <translation id="9003704114456258138">Frekuensi</translation>
 <translation id="9025198690966128418">Gunakan sebagai peranti peribadi</translation>
 <translation id="9028832514430399253">Hidupkan togol untuk membuat pilihan penyelamat skrin</translation>

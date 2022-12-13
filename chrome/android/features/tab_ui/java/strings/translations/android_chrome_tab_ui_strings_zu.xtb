@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Vala wonke amathebhu we-incognito?</translation>
 <translation id="1657719826150349398">Yisa ithebhu phansi</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ithebhu}one{<ph name="TABS_COUNT_MANY" /> amathebhu}other{<ph name="TABS_COUNT_MANY" /> amathebhu}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Faka ibhukhimakhi kuthebhu engu-<ph name="TABS_COUNT_ONE" /> ekhethiwe}one{Faka ibhukhimakhi kumathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}other{Faka ibhukhimakhi kumathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}}</translation>
 <translation id="2118649612461486615">Ulwazi lwesitolo</translation>
 <translation id="2162620598375156287">Manje ngu-<ph name="CURRENT_PRICE" /> ku-<ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Hlukanisa ithebhu}one{Hlukanisa amathebhu}other{Hlukanisa amathebhu}}</translation>
 <translation id="2277224997687551299">Hlela igama leqembu</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Susa ithebhu ekhethiwe engu-<ph name="TABS_COUNT_ONE" />  kusukela eqenjini.}one{Susa amathebhu akhethiwe angu-<ph name="TABS_COUNT_MANY" /> kusukela eqenjini.}other{Susa amathebhu akhethiwe angu-<ph name="TABS_COUNT_MANY" /> kusukela eqenjini.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Faka ibhukhimakhi kuthebhu}one{Faka ibhukhimakhi kumathebhu}other{Faka ibhukhimakhi kumathebhu}}</translation>
 <translation id="2479148705183875116">Iya kumasethingi</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Goqa ithebhu engu-<ph name="TABS_COUNT_ONE" />.}one{Goqa iqembu lethebhu enamathebhu angu-<ph name="TABS_COUNT_MANY" />.}other{Goqa iqembu lethebhu enamathebhu angu-<ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="2569352796411618312">Isiphakamiso: <ph name="NUMBER_OF_TABS" /> yamathebhu akho awakasetshenziswa kamuva nje. Wavale?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Yisa ithebhu phezulu</translation>
 <translation id="8304833501377495048">Ungabonisi umugqa wamathebhu futhi?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Vala ithebhu ekhethiwe engu-<ph name="TABS_COUNT_ONE" />}one{Vala amathebhu akhethiwe angu-<ph name="TABS_COUNT_MANY" />}other{Vala amathebhu akhethiwe angu-<ph name="TABS_COUNT_MANY" />}}</translation>
+<translation id="8398929769197326728">Ifolda Entsha - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Nweba iqembu lethebhu ngamathebhu angu-<ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="8714939927607906138">Intengo ephansi</translation>
 <translation id="8749939518995770034">Umugqa wamathebhu ovaliwe</translation>

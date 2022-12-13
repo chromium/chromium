@@ -413,7 +413,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1958218078413065209">Your highest score is <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Help improve security on the web for everyone by sending <ph name="BEGIN_WHITEPAPER_LINK" />URLs of some pages that you visit, limited system information, and some page content<ph name="END_WHITEPAPER_LINK" /> to Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Privacy policy<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Bookmarks</translation>
-<translation id="1971033026002113380">Protect passwords with Touch ID</translation>
 <translation id="1973335181906896915">Serialisation error</translation>
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1975457531113383421">Input tray</translation>
@@ -748,7 +747,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2881276955470682203">Save card?</translation>
 <translation id="2882949212241984732">Double-gate fold</translation>
 <translation id="2893773853358652045">Fourth roll</translation>
-<translation id="289834758818479772">If you share this device with others, you can turn on Touch ID to verify that it's you whenever you use a saved password</translation>
 <translation id="2900528713135656174">Create event</translation>
 <translation id="2903493209154104877">Addresses</translation>
 <translation id="290376772003165898">Page is not in <ph name="LANGUAGE" />?</translation>
@@ -1066,7 +1064,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3678529606614285348">Open page in a new incognito window (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Certificate information</translation>
 <translation id="3693327506115126094">Choose how you'll verify that it's you</translation>
-<translation id="3699374065820972102">TouchID is on for filling passwords</translation>
 <translation id="3701427423622901115">Reset acknowledged.</translation>
 <translation id="3704162925118123524">The network that you are using may require you to visit its log-in page.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1181,7 +1178,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="401170183602135785">Envelope C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF document containing {COUNT} page}other{PDF document containing {COUNT} pages}}</translation>
 <translation id="4023431997072828269">Because this form is being submitted using a connection that’s not secure, your information will be visible to others.</translation>
-<translation id="4024923292610332139">turn off TouchID for filling passwords</translation>
 <translation id="4025913568718019429">Manage Google Privacy settings button, press Enter to visit your Google Account privacy settings</translation>
 <translation id="4030383055268325496">&amp;Undo add</translation>
 <translation id="4031179711345676612">Microphone allowed</translation>
@@ -1543,7 +1539,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4900217275619098670">Ninth roll</translation>
 <translation id="4901778704868714008">Save...</translation>
 <translation id="4905659621780993806">Your administrator will restart your device automatically at <ph name="TIME" /> on <ph name="DATE" />. Save any open items before your device restarts.</translation>
-<translation id="4911007278801291296">You can turn TouchID on or off in <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Punch top left</translation>
 <translation id="4918221908152712722">Install <ph name="APP_NAME" /> (no download required)</translation>
 <translation id="4923459931733593730">Payment</translation>
@@ -1757,7 +1752,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5426179911063097041"><ph name="SITE" /> wants to send you notifications</translation>
 <translation id="5428105026674456456">Spanish</translation>
 <translation id="5430298929874300616">Remove bookmark</translation>
-<translation id="5434423669266814150">turn on Touch ID for filling in passwords</translation>
 <translation id="5443468954631487277">Reverse order face up</translation>
 <translation id="5447765697759493033">This site will not be translated</translation>
 <translation id="5452270690849572955">This <ph name="HOST_NAME" /> page can’t be found</translation>

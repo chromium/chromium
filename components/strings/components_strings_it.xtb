@@ -271,6 +271,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1586541204584340881">Le estensioni che hai installato</translation>
 <translation id="1588438908519853928">Normale</translation>
 <translation id="1592005682883173041">Accesso ai dati locali</translation>
+<translation id="1593359183944365958">270 gradi</translation>
 <translation id="1594030484168838125">Scegli</translation>
 <translation id="1596296697375291157">Film gialli, polizieschi e del mistero</translation>
 <translation id="1599199147673445968">Nuova carta? <ph name="BEGIN_LINK" />Inserisci i dati della carta<ph name="END_LINK" /></translation>
@@ -337,6 +338,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1741613555002899862">Deve essere specificato e corrispondere a una stringa valida quando DnsOverHttpsMode è <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Il browser in uso è gestito</translation>
 <translation id="1746113442205726301">Spostamento Y immagine</translation>
+<translation id="1746531169546376413">0 gradi</translation>
 <translation id="17513872634828108">Schede aperte</translation>
 <translation id="1752021286346845558">Mailbox 8</translation>
 <translation id="1753068535428855445">Appuntamenti e annunci personali</translation>
@@ -411,7 +413,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1958218078413065209">Il tuo punteggio migliore è <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Contribuisci a migliorare la sicurezza sul Web per tutti inviando a Google <ph name="BEGIN_WHITEPAPER_LINK" />gli URL di alcune pagine visitate, informazioni limitate sul sistema e alcuni contenuti delle pagine<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Norme sulla privacy<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Segnalibri di <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">Proteggere le password con Touch ID</translation>
 <translation id="1973335181906896915">Errore di serializzazione</translation>
 <translation id="1974060860693918893">Avanzate</translation>
 <translation id="1975457531113383421">Cassetto di ingresso</translation>
@@ -746,7 +747,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2881276955470682203">Salvare la carta?</translation>
 <translation id="2882949212241984732">Piegatura a doppia finestra</translation>
 <translation id="2893773853358652045">Quarto rullo</translation>
-<translation id="289834758818479772">Se condividi questo dispositivo con altre persone, puoi attivare Touch ID per verificare la tua identità ogni volta che usi una password salvata</translation>
 <translation id="2900528713135656174">Crea evento</translation>
 <translation id="2903493209154104877">Indirizzi</translation>
 <translation id="290376772003165898">La pagina non è in <ph name="LANGUAGE" />?</translation>
@@ -1061,7 +1061,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3678529606614285348">Apri la pagina in un'altra finestra di navigazione in incognito (CTRL-MAIUSC-N)</translation>
 <translation id="3681007416295224113">Informazioni certificato</translation>
 <translation id="3693327506115126094">Scegli la modalità di verifica della tua identità</translation>
-<translation id="3699374065820972102">La funzionalità TouchID è attiva per inserire le password</translation>
 <translation id="3701427423622901115">Reimpostazione confermata.</translation>
 <translation id="3704162925118123524">La rete che stai utilizzando può richiedere di visitare la relativa pagina di accesso.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1176,7 +1175,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="401170183602135785">Busta C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF contenente {COUNT} pagina}other{Documento PDF contenente {COUNT} pagine}}</translation>
 <translation id="4023431997072828269">Le tue informazioni saranno visibili agli altri utenti perché il modulo verrà inviato tramite una connessione non sicura.</translation>
-<translation id="4024923292610332139">disattiva Touch ID per inserire password</translation>
 <translation id="4025913568718019429">Pulsante Gestisci le impostazioni sulla privacy di Google, premi Invio per andare alle impostazioni sulla privacy del tuo Account Google.</translation>
 <translation id="4030383055268325496">&amp;Annulla aggiunta</translation>
 <translation id="4031179711345676612">Microfono consentito</translation>
@@ -1538,7 +1536,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4900217275619098670">Nono rullo</translation>
 <translation id="4901778704868714008">Salva…</translation>
 <translation id="4905659621780993806">L'amministratore riavvierà il tuo dispositivo automaticamente alle ore <ph name="TIME" /> del giorno <ph name="DATE" />. Salva gli eventuali elementi aperti prima che il dispositivo si riavvii.</translation>
-<translation id="4911007278801291296">Puoi attivare o disattivare TouchID nelle <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Perforatura in alto a sinistra</translation>
 <translation id="4918221908152712722">Installa <ph name="APP_NAME" /> (non è richiesto alcun download)</translation>
 <translation id="4923459931733593730">Pagamento</translation>
@@ -1720,6 +1717,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5334013548165032829">Log di sistema dettagliati</translation>
 <translation id="5334145288572353250">Vuoi salvare l'indirizzo?</translation>
 <translation id="5335920952954443287">Cuore che batte</translation>
+<translation id="5337569431717511221">Pulsante Imposta Chrome come browser predefinito, premi Invio per impostare Chrome come browser predefinito del sistema</translation>
 <translation id="5340250774223869109">L'applicazione è bloccata</translation>
 <translation id="534295439873310000">Dispositivi NFC</translation>
 <translation id="5344579389779391559">Questa pagina potrebbe tentare di addebitarti dei costi</translation>
@@ -1751,7 +1749,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5426179911063097041"><ph name="SITE" /> vuole inviarti notifiche</translation>
 <translation id="5428105026674456456">Spagnolo</translation>
 <translation id="5430298929874300616">Rimuovi preferito</translation>
-<translation id="5434423669266814150">attivare Touch ID per inserire le password</translation>
 <translation id="5443468954631487277">Ordine inverso a faccia in su</translation>
 <translation id="5447765697759493033">Questo sito non verrà tradotto</translation>
 <translation id="5452270690849572955">Impossibile trovare la pagina <ph name="HOST_NAME" /></translation>
@@ -1793,6 +1790,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5540969246441091044">Sport equestri</translation>
 <translation id="5541086400771735334">Mailbox 7</translation>
 <translation id="5541546772353173584">Aggiungi email</translation>
+<translation id="5543722831081909240">180 gradi</translation>
 <translation id="5545756402275714221">Articoli per te</translation>
 <translation id="5551890439174915351">100 x 200 mm</translation>
 <translation id="5552137475244467770">Chrome confronta periodicamente le tue password con gli elenchi pubblicati online. Durante questa operazione, le tue password e i tuoi nomi utente vengono criptati, quindi non possono essere letti da nessuno, Google compresa.</translation>
@@ -2180,6 +2178,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6591833882275308647">Il tuo dispositivo <ph name="DEVICE_TYPE" /> non è gestito</translation>
 <translation id="6592952801936330159">Pulsante Gestisci impostazioni dei siti: premi Invio per gestire le autorizzazioni e i dati memorizzati sui siti nelle impostazioni di Chrome</translation>
 <translation id="6596325263575161958">Opzioni di crittografia</translation>
+<translation id="6597665340361269064">90 gradi</translation>
 <translation id="6599642189720630047">Prodotti monitorati</translation>
 <translation id="6611723696964473273">Notizie economiche</translation>
 <translation id="6612010098632894193">Video online</translation>
@@ -2412,6 +2411,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">L'amministratore è in grado di vedere:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per aprire una nuova scheda di navigazione in incognito per navigare in privato</translation>
+<translation id="7203375778433816396">Imposta Chrome come browser predefinito del sistema</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> non è conforme agli standard di sicurezza.</translation>
 <translation id="7210993021468939304">Attività Linux all'interno del container; possono installare ed eseguire app Linux all'interno del container</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /> su questo problema.</translation>
@@ -2559,6 +2559,7 @@ Ulteriori dettagli:
 <translation id="7537536606612762813">Obbligatorio</translation>
 <translation id="7542403920425041731">Dopo essere stati confermati, i dati della carta saranno condivisi con questo sito.</translation>
 <translation id="7542995811387359312">La compilazione automatica della carta di credito è disattivata perché questo modulo non utilizza una connessione sicura.</translation>
+<translation id="7546409722674205727">Avvio dell'app <ph name="APP_NAME" /> in corso…</translation>
 <translation id="7548892272833184391">Correggere gli errori di connessione</translation>
 <translation id="7549584377607005141">Questa pagina web richiede dati che hai inserito in precedenza per poter essere visualizzata correttamente. Puoi inviare di nuovo i dati, ma in questo caso ripeterai l'azione precedentemente eseguita nella pagina.</translation>
 <translation id="7550637293666041147">Nome utente del dispositivo e nome utente di Chrome</translation>
@@ -2744,6 +2745,7 @@ Ulteriori dettagli:
 <translation id="8009843239480947060">10 x 11 in</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Questa carta e il relativo indirizzo di fatturazione verranno salvati. Potrai usarla dopo aver eseguito l'accesso all'account <ph name="USER_EMAIL" />.}other{Queste carte e i relativi indirizzi di fatturazione verranno salvati. Potrai usarle dopo aver eseguito l'accesso all'account <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per impostare Chrome come browser predefinito del sistema</translation>
 <translation id="8025119109950072390">I malintenzionati su questo sito potrebbero indurti con l'inganno a effettuare operazioni pericolose, come installare software o fornire i tuoi dati personali (ad esempio password, numeri di telefono o carte di credito).</translation>
 <translation id="8026334261755873520">Cancella dati di navigazione</translation>
 <translation id="8027077570865220386">Vassoio 15</translation>

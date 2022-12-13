@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Aidake meil luua privaatsem veeb</translation>
 <translation id="107147699690128016">Kui muudate faililaiendit, võib fail avaneda mõnes teises rakenduses ja teie seadmele ohtu kujutada.</translation>
 <translation id="1089606299949659462">Ülevaatus on lõpetatud!</translation>
-<translation id="1091604859693995976">Värskendage vaatamiseks</translation>
 <translation id="1095761715416917775">Veenduge, et pääseksite alati oma sünkroonitud andmetele juurde</translation>
 <translation id="1100066534610197918">Ava rühmas uuel vahelehel</translation>
 <translation id="1103142993930332957">Kas soovite aidata Chrome'i täiustada?</translation>
@@ -1148,6 +1147,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7177466738963138057">Seda saate hiljem muuta jaotises Seaded</translation>
 <translation id="7177873915659574692">QR-koodi ei saa luua. URL on pikem kui <ph name="CHARACTER_LIMIT" /> tähemärki.</translation>
 <translation id="7177959540995930968">Nende funktsioonide kohta leiate lisateavet Chrome'i seadetest.</translation>
+<translation id="7180611975245234373">Värskenda</translation>
 <translation id="718226107353899806">Saate lisada kuni <ph name="MAX_NUM_REACTIONS" /> reaktsiooni</translation>
 <translation id="7183693674623539380">Vahelehegrupp – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Kaitseb teid Chrome'is ja seda võidakse kasutada teie turvalisuse suurendamiseks muudes Google'i rakendustes, kui olete sisse logitud.</translation>

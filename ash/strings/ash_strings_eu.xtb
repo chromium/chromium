@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">Gorde <ph name="NAME" /> gailua</translation>
 <translation id="1032891413405719768">Pila agortzen ari zaio arkatzari</translation>
 <translation id="1036073649888683237">Jakinarazpenak kudeatzeko, joan ezarpenetara</translation>
+<translation id="1036348656032585052">Desaktibatu</translation>
 <translation id="1036672894875463507">Google-ren Laguntzailea naiz eta egunean zehar gauzak egiteko laguntza eskainiko dizut.
 Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> gehitu da</translation>
@@ -100,6 +101,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1447641497144572814">Pantaila-babeslea ezartzear dago</translation>
 <translation id="1455242230282523554">Erakutsi hizkuntza-ezarpenak</translation>
 <translation id="1460620680449458626">Bolumena desaktibatuta dago.</translation>
+<translation id="14648076227129703"><ph name="APP1_NAME" /> eta <ph name="APP2_NAME" /> aplikazioek eta kamera erabiltzeko baimena daukaten beste aplikazio eta webgune guztiek kamera atzitu ahal izango dute</translation>
 <translation id="1467432559032391204">Ezkerrera</translation>
 <translation id="146902737843070955">Administratzaileak eskatu du aldaketa</translation>
 <translation id="147310119694673958">Telefonoaren bateria: % <ph name="BATTERY_PERCENTAGE" /></translation>
@@ -159,6 +161,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1797271123677381264">Pasahitza ahaztu zait</translation>
 <translation id="181103072419391116">Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua.</translation>
 <translation id="1812997170047690955">Zer dago pantailan?</translation>
+<translation id="1816896987747843206">Kamera erabiltzeko baimena daukaten aplikazio eta webgune guztiek kamera atzitu ahal izango dute</translation>
 <translation id="1823280932251546115">Egoera-erretilua. Ordua <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1830308660060964064">Kendu zaio aingura <ph name="ITEM_TITLE" /> elementuari</translation>
 <translation id="1836215606488044471">Laguntzailea (kargatzen…)</translation>
 <translation id="1838895407229022812">Gaueko argia itzalita dago.</translation>
+<translation id="1854180393107901205">Utzi igortzeari</translation>
 <translation id="1862380676329487333">Eguneratu eta amaitu saioa</translation>
 <translation id="1864454756846565995">USB-C gailua (atzealdeko ataka)</translation>
 <translation id="1869497990620230175">Fitxategi bizkorrak</translation>
@@ -599,6 +603,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4316910396681052118">APLIKAZIO GUZTIAK</translation>
 <translation id="4321179778687042513">ktrl</translation>
 <translation id="4322742403972824594">Ktrl + Alt + gora egiteko gezi-tekla lasterbidea aldatu egin da. Hasiera tekla erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + ezkerrera egiteko gezi-tekla.</translation>
+<translation id="4324840740119394760"><ph name="APP_NAME" /> aplikazioak eta kamera erabiltzeko baimena daukaten beste aplikazio eta webgune guztiek kamera atzitu ahal izango dute</translation>
 <translation id="4333628967105022692">Ezin da abiarazi Lacros saio bat baino gehiago baldin badaude hasita.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">Laguntzailea kargatzen ari da…</translation>
@@ -665,13 +670,13 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Gaitu da ChromeVox</translation>
 <translation id="4665114317261903604">Gaitu/Desgaitu ez molestatzeko modua. <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Desaktibatu gailu honetako kamera atzitzeko baimena kamera guztiak blokeatuta egon daitezen beti.</translation>
 <translation id="4666911709726371538">Aplikazio gehiago</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> deskargatzen</translation>
 <translation id="468293128311738995">Telefonoko aplikazioak</translation>
 <translation id="4690510401873698237">Apala behealdean dago</translation>
 <translation id="4696813013609194136">Desblokeatu gailua gurasoen kodearekin</translation>
 <translation id="4702647871202761252">Desaktibatuta dago pribatutasun-pantaila</translation>
+<translation id="4706121060329443414">Geroago saiatuko da deskargatzen berriro. Hizketa Google-ra bidaliko da prozesatzeko, oraingoz.</translation>
 <translation id="470644585772471629">Koloreen alderantzikatzea</translation>
 <translation id="4717575069099566988">USB-C kableak ez du onartzen USB4. Baliteke gailuaren errendimendua mugatuta egotea.</translation>
 <translation id="4730374152663651037">MAIZ ERABILTZEN DIREN APLIKAZIOAK</translation>
@@ -697,7 +702,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="485592688953820832">Ekintzarik ez (pausatuta)</translation>
 <translation id="485634149294284819">Sartu teklatuaren menuan</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> deskargatzeko, egiaztatu sarera konektatuta zaudela</translation>
-<translation id="486056901304535126">Geroago saiatuko da deskargatzen berriro. Hizketa Google-ra bidaliko da prozesatzeko, deskarga amaitu arte.</translation>
 <translation id="4864369630010738180">Saioa hasten…</translation>
 <translation id="4864648187878336334">Lan-eremua 15</translation>
 <translation id="4868492592575313542">aktibatuta</translation>
@@ -792,6 +796,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5356963482258194581">Aldatu gai ilunetik gai argira, eta alderantziz. Egin klik eskuineko botoiarekin mahaigainean eta hautatu Horma-papera eta estiloa.</translation>
 <translation id="536019650977002321">Administratzaileak ez du ematen audioa kapturatzeko baimenik. Informazio gehiago lortzeko, jarri harekin harremanetan.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Joan fitxa honetara</translation>
+<translation id="5377367976106153749">Kamera erabiltzeko baimena aktibatu nahi duzu?</translation>
 <translation id="5379115545237091094">Saiakera gehiegi egin dira</translation>
 <translation id="5391307769715781764">Gordetako lan-eremua ordeztu?</translation>
 <translation id="5393156353051693207">Aplikazioen ordena aldatzeko, eduki sakatuta edozein toki</translation>
@@ -1177,7 +1182,6 @@ Berriki instalatu da</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> mikrofonoa erabiltzen ari da une honetan</translation>
 <translation id="7561982940498449837">Itxi menua</translation>
 <translation id="7564874036684306347">Leihoak beste mahaigain batera eramaten badira, baliteke ustekabeko portaerak izatea. Aurrerantzeko jakinarazpenak, baliteke leihoak eta elkarrizketa-koadroak bi mahaigainen artean banatuta agertzea.</translation>
-<translation id="7567076708801803118">Gailu honetako kamera atzitzeko baimena desaktibatu nahi duzu?</translation>
 <translation id="7569509451529460200">Braillea eta ChromeVox gaituta daude</translation>
 <translation id="7573585051776738856">Eskuinean ainguratu da leiho aktiboa.</translation>
 <translation id="7579778809502851308">Pantaila-argazkia edo -bideoa</translation>

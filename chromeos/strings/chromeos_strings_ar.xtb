@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">إلغاء مهمة الطباعة</translation>
 <translation id="2163937499206714165">تفعيل الوضع المُعتِم</translation>
 <translation id="2180197493692062006">حدث خطأ. يُرجى إعادة فتح التطبيق.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">إعادة ضبط عدّادات حركة بيانات الشبكة</translation>
 <translation id="2212733584906323460">تحليل الأسماء</translation>
 <translation id="2217935453350629363">السرعة الحالية</translation>
@@ -561,6 +560,7 @@
 <translation id="6189418609903030344">تقلّ قدرة البطارية مع الاستخدام.</translation>
 <translation id="6191293864534840972">خوادم الأسماء غير صالحة.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">الخروج من وضع ملء الشاشة</translation>
 <translation id="6223752125779001553">لا يتوفّر ماسح ضوئي.</translation>
 <translation id="6232017090690406397">البطارية</translation>
 <translation id="6235460611964961764">إعادة ضبط استخدام البيانات يدويًا</translation>
@@ -688,11 +688,12 @@
 <translation id="741244894080940828">التحويل</translation>
 <translation id="7415801143053185905">‏وقت استجابة بروتوكول HTTP طويل جدًا.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اكتمل المسح الضوئي. تم مسح صفحة واحدة ضوئيًا.}zero{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}two{اكتمل المسح الضوئي. تم مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا.}few{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحات ضوئيًا.}many{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}other{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}}</translation>
+<translation id="7458970041932198923">يُرجى الاتصال بإحدى الشبكات وإعادة تحميل الصفحة لعرض الصور الرمزية وتحديدها.</translation>
 <translation id="7469648432129124067">تم رصد مدخل.</translation>
 <translation id="7481312909269577407">إلى الأمام</translation>
 <translation id="7487067081878637334">التقنية</translation>
 <translation id="7490813197707563893">‏عنوان MAC</translation>
+<translation id="7491478667760509108">الخروج من وضع النافذة العائمة</translation>
 <translation id="7497215489070763236">‏شهادة CA للخادم</translation>
 <translation id="7502658306369382406">‏عنوان IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -793,6 +794,7 @@
 <translation id="8498220429738806196">عدّادات حركة بيانات الشبكة</translation>
 <translation id="8503813439785031346">اسم المستخدم</translation>
 <translation id="8503836310948963452">يُرجى الانتظار بضع دقائق فقط…</translation>
+<translation id="8508640263392900755">‏تفاصيل APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">قد يتطلّب مشغّل شبكة الجوّال تفعيل هذا الخيار للاتصال بالشبكة التابعة له. يُرجى التواصل مع مشغّل شبكة الجوّال للاطّلاع على التفاصيل.</translation>
 <translation id="8576249514688522074">غير مهيأة</translation>
@@ -843,6 +845,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{مسح ضوئي}=1{مسح صفحة واحدة ({NUMBER_OF_PAGES}) ضوئيًا}two{مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا}few{مسح {NUMBER_OF_PAGES} صفحات ضوئيًا}many{مسح {NUMBER_OF_PAGES} صفحة ضوئيًا}other{مسح {NUMBER_OF_PAGES} صفحة ضوئيًا}}</translation>
 <translation id="8997710128084572139">مستوى شحن بطارية الجهاز هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
+<translation id="8998289560386111590">الوضع غير متاح على جهازك.</translation>
 <translation id="9003704114456258138">التردد</translation>
 <translation id="9025198690966128418">الاستخدام كجهاز شخصي</translation>
 <translation id="9028832514430399253">فعِّل التبديل لتحديد خيارات شاشة الاستراحة.</translation>

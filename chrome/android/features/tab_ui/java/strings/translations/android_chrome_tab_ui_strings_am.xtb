@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">ሁሉም ማንነት የማያሳውቁ ትሮች ይዘጉ?</translation>
 <translation id="1657719826150349398">ትርን ወደ ታች ያንቀሳቅሱ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትር}one{<ph name="TABS_COUNT_MANY" /> ትሮች}other{<ph name="TABS_COUNT_MANY" /> ትሮች}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{የዕልባት <ph name="TABS_COUNT_ONE" /> የተመረጠ ትር}one{የዕልባት <ph name="TABS_COUNT_MANY" /> የተመረጠ ትር}other{የዕልባት <ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮች}}</translation>
 <translation id="2118649612461486615">የመደብር መረጃ</translation>
 <translation id="2162620598375156287">አሁን <ph name="CURRENT_PRICE" /> <ph name="SOURCE_WEBSITE" /> ላይ</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ትርን ነጥል}one{ትርን ነጥል}other{ትሮችን ነጥል}}</translation>
 <translation id="2277224997687551299">የቡድን ስም ያርትዑ</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ከቡድን <ph name="TABS_COUNT_ONE" /> የተመረጠ ትርን ያስወግዱ።}one{ከቡድን <ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን ያስወግዱ።}other{ከቡድን <ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን ያስወግዱ።}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{የዕልባት ትር}one{የዕልባት ትር}other{የዕልባት ትሮች}}</translation>
 <translation id="2479148705183875116">ወደ ቅንብሮች ሂድ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትርን ሰብስብ።}one{ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር የትር ቡድንን ሰብስብ።}other{ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር የትር ቡድንን ሰብስብ።}}</translation>
 <translation id="2569352796411618312">ጥቆማ ሐሳብ፦ ከእርስዎ ትሮች <ph name="NUMBER_OF_TABS" /> ያክሉ በቅርቡ ጥቅም ላይ አልዋሉም። ይዘጉ?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">ትርን ወደ ላይ አንቀሳቅስ</translation>
 <translation id="8304833501377495048">የትር ድርድር ዳግም አይታይ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{የተመረጠ <ph name="TABS_COUNT_ONE" /> ትር ዝጋ}one{የተመረጡ <ph name="TABS_COUNT_MANY" /> ትሮችን ዝጋ}other{የተመረጡ <ph name="TABS_COUNT_MANY" /> ትሮችን ዝጋ}}</translation>
+<translation id="8398929769197326728">አዲስ አቃፊ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">ከ<ph name="NUMBER_OF_TABS" /> ትሮች ጋር የትር ቡድኖችን ይዘርጉ።</translation>
 <translation id="8714939927607906138">ዝቅተኛ ዋጋ</translation>
 <translation id="8749939518995770034">የትር ድርድር ተዘግቷል</translation>

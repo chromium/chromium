@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Cancelar tarefa de impressão</translation>
 <translation id="2163937499206714165">Ativar modo escuro</translation>
 <translation id="2180197493692062006">Algo correu mal. Experimente reabrir a app.</translation>
-<translation id="2184005227776731758">APN (nome do ponto de acesso)</translation>
 <translation id="2209788852729124853">Repor contadores de tráfego</translation>
 <translation id="2212733584906323460">Resolução de nomes</translation>
 <translation id="2217935453350629363">Velocidade atual</translation>
@@ -492,6 +491,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Mude automaticamente para o tema escuro ao pôr do sol</translation>
+<translation id="5571714952674387371">Veja e edite os detalhes</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Ler novamente</translation>
 <translation id="5583640892426849032">Retrocesso</translation>
@@ -689,7 +689,6 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="741244894080940828">conversão</translation>
 <translation id="7415801143053185905">Latência muito elevada de HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Digitalização concluída. 1 página digitalizada}other{Digitalização concluída. {NUMBER_OF_PAGES} páginas digitalizadas}}</translation>
 <translation id="7458970041932198923">Ligue-se a uma rede e atualize a página para ver e definir avatares.</translation>
 <translation id="7469648432129124067">Portal detetado</translation>
 <translation id="7481312909269577407">Avançar</translation>
@@ -796,6 +795,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8498220429738806196">Contadores de tráfego</translation>
 <translation id="8503813439785031346">Nome de utilizador</translation>
 <translation id="8503836310948963452">Só mais alguns minutos…</translation>
+<translation id="8508640263392900755">Detalhes do APN (Nome do Ponto de Acesso)</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">O operador pode exigir esta opção para estabelecer ligação à respetiva rede. Contacte o seu operador para obter mais detalhes.</translation>
 <translation id="8576249514688522074">Não iniciada</translation>
@@ -871,6 +871,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="9173638680043580060">Falta menos de um minuto</translation>
 <translation id="917720651393141712">Testar</translation>
 <translation id="9188992814426075118">O teclado pode corresponder automaticamente à sua imagem de fundo</translation>
+<translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Não é possível contactar o gateway a partir de apps Android</translation>
 <translation id="9211490828691860325">Todos os espaços de trabalho</translation>
 <translation id="932327136139879170">Página inicial</translation>

@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Aidez-nous à créer une navigation Web plus privée</translation>
 <translation id="107147699690128016">Si vous modifiez l'extension du fichier, il peut s'ouvrir dans une application différente et poser un risque pour votre appareil.</translation>
 <translation id="1089606299949659462">Vérification terminée!</translation>
-<translation id="1091604859693995976">Actualiser pour afficher</translation>
 <translation id="1095761715416917775">Assurez-vous de toujours pouvoir accéder à vos données de synchronisation</translation>
 <translation id="1100066534610197918">Dans nouvel onglet dans groupe</translation>
 <translation id="1103142993930332957">Aidez à améliorer Chrome?</translation>
@@ -761,6 +760,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="510275257476243843">Il reste 1 heure</translation>
 <translation id="5115811374190515607">à <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Centres d'intérêt</translation>
+<translation id="5122378528687922675">Si tu as besoin d'aide, demande à tes parents (<ph name="PARENT_NAME_1" /> ou <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Onglet de navigation privée</translation>
 <translation id="5126510351761255129">Vérifier votre carte</translation>
 <translation id="5132942445612118989">Synchronisez vos mots de passe, votre historique et plus encore sur tous vos appareils</translation>
@@ -1148,6 +1148,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7177466738963138057">Vous pourrez modifier cet élément plus tard dans les paramètres</translation>
 <translation id="7177873915659574692">Impossible de créer un code QR. L'URL contient plus de <ph name="CHARACTER_LIMIT" /> caractères.</translation>
 <translation id="7177959540995930968">Vous pouvez en apprendre plus sur ces fonctionnalités dans les paramètres de Chrome.</translation>
+<translation id="7180611975245234373">Actualiser</translation>
 <translation id="718226107353899806">Vous pouvez ajouter jusqu'à <ph name="MAX_NUM_REACTIONS" /> réactions</translation>
 <translation id="7183693674623539380">Groupe d'onglets – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Il vous protège dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte.</translation>
@@ -1331,6 +1332,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8084285576995584326">Gérez les données de votre compte Google</translation>
 <translation id="808747664143081553">Connecté à l'appareil</translation>
 <translation id="8088176524274673045">Pour partager avec des personnes à proximité, faites-leur numériser ce code QR</translation>
+<translation id="8090732854597034573">Si tu as besoin d'aide, demande à ton parent</translation>
 <translation id="8100969750121413114">Connectez-vous pour personnaliser Chrome</translation>
 <translation id="8103578431304235997">Onglet de navigation privée</translation>
 <translation id="8105613260829665809">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />conditions d'utilisation<ph name="END_TOS_LINK" />.\nPour contribuer à l'amélioration de l'application, Chrome envoie des données relatives à l'utilisation et au plantage à Google. <ph name="BEGIN_UMA_LINK" />Gérer<ph name="END_UMA_LINK" /></translation>
@@ -1339,6 +1341,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8109613176066109935">Pour synchroniser vos favoris sur tous vos appareils, activez la synchronisation</translation>
 <translation id="8110024788458304985">Contribuer à améliorer les fonctionnalités et les performances de Chrome</translation>
 <translation id="8110087112193408731">Afficher votre activité Chrome dans Bien-être numérique?</translation>
+<translation id="8118117428362942925">Si tu as besoin d'aide, demande à ton parent (<ph name="PARENT_NAME" />)</translation>
 <translation id="8127542551745560481">Modifier la page d'accueil</translation>
 <translation id="8130309322784422030">Vos données de connexion enregistrées peuvent être obsolètes</translation>
 <translation id="813082847718468539">Afficher l'information sur le site</translation>

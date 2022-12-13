@@ -413,7 +413,6 @@
 <translation id="1958218078413065209">Ваш највиши резултат је <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Помозите да побољшамо безбедност на вебу за све тако што ћете слати <ph name="BEGIN_WHITEPAPER_LINK" />URL-ове неких страница које посећујете, ограничене информације о систему и одређени садржај страница<ph name="END_WHITEPAPER_LINK" /> Google-у <ph name="BEGIN_PRIVACY_PAGE_LINK" />Политика приватности<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> – обележивачи</translation>
-<translation id="1971033026002113380">Заштитите лозинке помоћу TouchID-ја</translation>
 <translation id="1973335181906896915">Грешка при серијализацији</translation>
 <translation id="1974060860693918893">Напредне опције</translation>
 <translation id="1975457531113383421">Улазна фиока</translation>
@@ -748,7 +747,6 @@
 <translation id="2881276955470682203">Желите ли да сачувате картицу?</translation>
 <translation id="2882949212241984732">Двоструко пресавијање у облику прозора</translation>
 <translation id="2893773853358652045">Четврти котур</translation>
-<translation id="289834758818479772">Ако делите овај уређај са другима, можете да укључите TouchID да бисте потврдили да сте то ви када год користите сачувану лозинку</translation>
 <translation id="2900528713135656174">Направите догађај</translation>
 <translation id="2903493209154104877">Адресе</translation>
 <translation id="290376772003165898">Ова страница није на језику <ph name="LANGUAGE" />?</translation>
@@ -1066,7 +1064,6 @@
 <translation id="3678529606614285348">Отворите страницу у ноцом прозору без архивирања (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Информације о сертификату</translation>
 <translation id="3693327506115126094">Одаберите начин на који ћете потврдити да сте то ви</translation>
-<translation id="3699374065820972102">TouchID је укључен за попуњавање лозинки</translation>
 <translation id="3701427423622901115">Ресетовање је потврђено.</translation>
 <translation id="3704162925118123524">Мрежа коју користите ће можда захтевати да посетите страницу за пријављивање.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" />–<ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1181,7 +1178,6 @@
 <translation id="401170183602135785">Коверта C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF документ који садржи {COUNT} страницу}one{PDF документ који садржи {COUNT} страницу}few{PDF документ који садржи {COUNT} странице}other{PDF документ који садржи {COUNT} страница}}</translation>
 <translation id="4023431997072828269">Овај образац се шаље помоћу везе која није безбедна, па ће информације бити видљиве другима.</translation>
-<translation id="4024923292610332139">искључи TouchID за попуњавање лозинки</translation>
 <translation id="4025913568718019429">Дугме Управљајте Google подешавањима приватности, притисните Enter да бисте посетили подешавања приватности Google налога</translation>
 <translation id="4030383055268325496">&amp;Опозови додавање</translation>
 <translation id="4031179711345676612">Микрофон је дозвољен</translation>
@@ -1543,7 +1539,6 @@
 <translation id="4900217275619098670">Девети котур</translation>
 <translation id="4901778704868714008">Сачувај...</translation>
 <translation id="4905659621780993806">Администратор ће аутоматски рестартовати уређај у <ph name="TIME" />, <ph name="DATE" />. Сачувајте отворене ставке пре него што се уређај рестартује.</translation>
-<translation id="4911007278801291296">Можете да укључите или искључите TouchID у <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Бушење у горњем левом углу</translation>
 <translation id="4918221908152712722">Инсталирајте апликацију <ph name="APP_NAME" /> (не треба да је преузимате)</translation>
 <translation id="4923459931733593730">Плаћање</translation>
@@ -1757,7 +1752,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> жели да вам шаље обавештења</translation>
 <translation id="5428105026674456456">шпански</translation>
 <translation id="5430298929874300616">Уклоните обележивач</translation>
-<translation id="5434423669266814150">укључи TouchID за попуњавање лозинки</translation>
 <translation id="5443468954631487277">Обрнутим редоследом са одштампаном страном нагоре</translation>
 <translation id="5447765697759493033">Овај сајт се неће преводити</translation>
 <translation id="5452270690849572955">Није могуће пронаћи ову страницу хоста <ph name="HOST_NAME" /></translation>

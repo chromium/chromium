@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">保存您的“<ph name="NAME" />”</translation>
 <translation id="1032891413405719768">触控笔电池电量较低</translation>
 <translation id="1036073649888683237">如需管理通知，请转到“设置”</translation>
+<translation id="1036348656032585052">关闭</translation>
 <translation id="1036672894875463507">我是你的 Google 助理，可以帮你处理日常生活大小事！
 要开始体验，你不妨试一下这些功能。</translation>
 <translation id="1037492556044956303">已添加<ph name="DEVICE_NAME" /></translation>
@@ -100,6 +101,7 @@
 <translation id="1447641497144572814">屏保启动了</translation>
 <translation id="1455242230282523554">显示语言设置</translation>
 <translation id="1460620680449458626">当前处于静音状态。</translation>
+<translation id="14648076227129703">如果您开启摄像头，即意味着允许“<ph name="APP1_NAME" />”“<ph name="APP2_NAME" />”以及所有具有摄像头使用权限的应用和网站使用摄像头</translation>
 <translation id="1467432559032391204">向左</translation>
 <translation id="146902737843070955">您的管理员要求进行此项更改</translation>
 <translation id="147310119694673958">手机电量：<ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -159,6 +161,7 @@
 <translation id="1797271123677381264">忘记了密码</translation>
 <translation id="181103072419391116">信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="1812997170047690955">我屏幕上有什么内容？</translation>
+<translation id="1816896987747843206">如果您开启摄像头，即意味着允许所有具有摄像头使用权限的应用和网站使用摄像头</translation>
 <translation id="1823280932251546115">状态栏，时间为 <ph name="TIME" />，
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@
 <translation id="1830308660060964064">“<ph name="ITEM_TITLE" />”已被取消固定</translation>
 <translation id="1836215606488044471">智能助理（正在加载中…）</translation>
 <translation id="1838895407229022812">当前已关闭护眼模式。</translation>
+<translation id="1854180393107901205">停止投放</translation>
 <translation id="1862380676329487333">更新并退出</translation>
 <translation id="1864454756846565995">USB-C 设备（背面端口）</translation>
 <translation id="1869497990620230175">快捷文件</translation>
@@ -598,6 +602,7 @@
 <translation id="4316910396681052118">所有应用</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">键盘快捷键“Ctrl + Alt + 向上键”已更改。若要使用 Home 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向左键。</translation>
+<translation id="4324840740119394760">如果您开启摄像头，即意味着允许“<ph name="APP_NAME" />”以及所有具有摄像头使用权限的应用和网站使用摄像头</translation>
 <translation id="4333628967105022692">当有多个用户登录时，Lacros 不受支持。</translation>
 <translation id="4338109981321384717">放大镜</translation>
 <translation id="4351433414020964307">智能助理正在加载中…</translation>
@@ -664,13 +669,13 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">已启用 ChromeVox</translation>
 <translation id="4665114317261903604">开启/关闭“勿扰”模式。<ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">如果您这样做，系统便会始终禁止使用所有摄像头。</translation>
 <translation id="4666911709726371538">更多应用</translation>
 <translation id="4667099493359681081">正在下载 <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">您手机中的应用</translation>
 <translation id="4690510401873698237">任务栏位于屏幕底部</translation>
 <translation id="4696813013609194136">使用家长访问代码解锁设备</translation>
 <translation id="4702647871202761252">已关闭隐私保护屏</translation>
+<translation id="4706121060329443414">系统会在晚些时候尝试下载。目前，系统会将语音识别结果文件发送给 Google 进行处理。</translation>
 <translation id="470644585772471629">颜色反转</translation>
 <translation id="4717575069099566988">USB-C 数据线不支持 USB4。设备性能可能会受到限制。</translation>
 <translation id="4730374152663651037">常用应用</translation>
@@ -696,7 +701,6 @@
 <translation id="485592688953820832">不执行任何操作（暂停）</translation>
 <translation id="485634149294284819">进入键盘菜单</translation>
 <translation id="4860284199500934869">请检查您的网络连接状况以下载“<ph name="FILENAME" />”</translation>
-<translation id="486056901304535126">系统会于晚些时候再次尝试下载。系统会将语音发送给 Google 以供处理，直到下载完毕。</translation>
 <translation id="4864369630010738180">正在登录…</translation>
 <translation id="4864648187878336334">桌面 15</translation>
 <translation id="4868492592575313542">已启用</translation>
@@ -791,6 +795,7 @@
 <translation id="5356963482258194581">在深色主题和浅色主题之间切换。右键点击相应桌面，然后选择“壁纸和样式”。</translation>
 <translation id="536019650977002321">您的管理员不允许截取音频。如需了解详情，请联系您的管理员。</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> 前往此标签页</translation>
+<translation id="5377367976106153749">开启摄像头使用权限？</translation>
 <translation id="5379115545237091094">尝试次数过多</translation>
 <translation id="5391307769715781764">要替换已保存的桌面吗？</translation>
 <translation id="5393156353051693207">若要将您的应用重新排序，请轻触并按住任意位置</translation>
@@ -1174,7 +1179,6 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" />正在使用您的麦克风</translation>
 <translation id="7561982940498449837">关闭菜单</translation>
 <translation id="7564874036684306347">将窗口移至另一桌面可能会导致出现意外行为 - 后续的通知、窗口和对话框可能会被拆分到不同的桌面中。</translation>
-<translation id="7567076708801803118">要关闭此设备上的摄像头使用权限吗？</translation>
 <translation id="7569509451529460200">已启用盲文和 ChromeVox</translation>
 <translation id="7573585051776738856">将活动窗口停靠在右侧。</translation>
 <translation id="7579778809502851308">截取屏幕</translation>

@@ -911,6 +911,11 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
       Se il criterio viene disattivato o se non viene configurato, WebDriver non potrà sostituire i criteri non compatibili.</translation>
 <translation id="1885782360784839335">Attiva la visualizzazione di contenuti promozionali a scheda intera</translation>
 <translation id="1888871729456797026">Il token di registrazione della norma relativa al cloud su desktop</translation>
+<translation id="1893271062894546361">Se questo criterio viene attivato, l'UI dei controlli per la riproduzione di contenuti multimediali è disponibile per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi sulla rete locale.
+
+      Se questo criterio non viene configurato per gli utenti aziendali o se viene disattivato, l'UI dei controlli per la riproduzione di contenuti multimediali non è disponibile per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi sulla rete locale.
+
+      Se il criterio <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> viene disattivato, il valore di questo criterio non ha alcun effetto perché l'intera funzionalità <ph name="PRODUCT_NAME" /> viene disattivata.</translation>
 <translation id="1894790493260633497">Attiva la modalità di stampa delle immagini di sfondo per impostazione predefinita</translation>
 <translation id="1897365952389968758">Consenti l'esecuzione di JavaScript in tutti i siti</translation>
 <translation id="1902043648529789224">Controlla la posizione della barra delle app</translation>
@@ -1404,6 +1409,9 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2354439478396602136">Mostra consigli delle app in Avvio app di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2355876547176311490">Disattiva l'utilizzo dei relay server per l'host di accesso remoto</translation>
 <translation id="2358176879566587521">Il criterio è rimosso. Non è compatibile con questa versione di <ph name="PRODUCT_NAME" />. Leggi ulteriori informazioni all'indirizzo https://support.google.com/chrome/a/answer/7643500</translation>
+<translation id="235987002603620567">NewBaseUrlInheritanceBehavior è una funzionalità <ph name="PRODUCT_NAME" /> che fa sì che i frame <ph name="ABOUT_BLANK_PAGE" /> e <ph name="ABOUT_SRCDOC_PAGE" /> ereditino coerentemente i valori dell'URL di base tramite snapshot dell'URL di base dell'iniziatore. Per informazioni dettagliate, visita la pagina https://chromestatus.com/feature/5161101671530496.
+
+Se il criterio viene impostato su disabled, gli utenti o le varianti <ph name="PRODUCT_NAME" /> non potranno attivare NewBaseUrlInheritanceBehavior in caso di problemi di compatibilità. Se il criterio viene impostato su enabled o se non viene configurato, consente l'attivazione di NewBaseUrlInheritanceBehavior.</translation>
 <translation id="2362469626417133796">Intervallo di tempo per il riavvio</translation>
 <translation id="2362539163677485510">Il token di registrazione della norma relativa al cloud</translation>
 <translation id="2363928351203698966">Se per il criterio viene impostato un valore valido, <ph name="PRODUCT_NAME" /> non utilizzerà versioni SSL/TLS precedenti alla versione specificata. I valori non riconosciuti vengono ignorati.
@@ -2655,6 +2663,7 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
       contattare Quirks Server per scaricare i file di configurazione.
 
       Se questa norma è impostata su true o non è configurata, allora <ph name="PRODUCT_OS_NAME" /> contatterà automaticamente Quirks Server e scaricherà i file di configurazione, se disponibili, e li archivierà sul dispositivo.  Questi file potrebbero essere usati, ad esempio, per migliorare la qualità del display dei monitor collegati.</translation>
+<translation id="3515196503924273265">Consente di attivare la funzionalità NewBaseUrlInheritanceBehavior</translation>
 <translation id="351654132746710200">Dopo la disattivazione di <ph name="LACROS_NAME" />, la migrazione dei dati non viene eseguita. La cartella <ph name="LACROS_NAME" /> viene rimossa e gli utenti continuano a utilizzare i dati rimanenti.</translation>
 <translation id="3522257170445891912">Se questo criterio viene impostato, il flusso di autenticazione dell'accesso avrà uno dei seguenti metodi a seconda del valore dell'impostazione:
 
@@ -3442,6 +3451,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="4274691295133617461">Se il criterio viene impostato su 3, i siti web possono richiedere l'accesso di lettura di file e directory nel file system del sistema operativo host tramite l'API file system. Se il criterio viene impostato su 2, l'accesso viene negato.
 
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
+<translation id="4275048399551500192">Non mostrare i controlli multimediali per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi</translation>
 <translation id="4282243913059705499">Mostra sempre l'icona <ph name="PRODUCT_NAME" /> nella barra degli strumenti</translation>
 <translation id="4285674129118156176">Consenti agli utenti non affiliati di usare ARC</translation>
 <translation id="4287344576768105337">La configurazione del criterio consente di impedire il caricamento delle pagine web con URL vietati. Consente di fornire un elenco di pattern URL che specificano gli URL vietati. Se il criterio non viene configurato, nessun URL è vietato nel browser. I pattern URL devono avere il formato indicato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. È possibile definire fino a 1000 eccezioni nel criterio <ph name="URL_ALLOWLIST_POLICY_NAME" />.
@@ -3756,6 +3766,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="4611983465824842867">Non mostrare avvisi o non disattivare la compilazione automatica sui moduli non sicuri</translation>
 <translation id="4615003180013429835">Modalità di analisi degli elenchi dei siti</translation>
 <translation id="4617338332148204752">Salta il controllo dei metatag in <ph name="PRODUCT_FRAME_NAME" /></translation>
+<translation id="461901491675418689">Funzionalità NewBaseUrlInheritanceBehavior disponibile</translation>
 <translation id="4624006912948309924">La configurazione del criterio consente di correggere quali identificatori di applicazioni vengono mostrati da <ph name="PRODUCT_OS_NAME" /> come app bloccate nella barra Avvio app e gli utenti non possono modificarli.
 
 Specifica le app di Chrome tramite il relativo ID, come pjkljhegncpnkpknbcohdijeoejaedia; le app Android tramite il relativo nome del pacchetto, ad esempio com.google.android.gm; le app web tramite l'URL utilizzato in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, ad esempio https://google.com/maps e le app web di sistema tramite il nome in snake case, ad esempio <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />.
@@ -4383,7 +4394,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Se il criterio non è configurato, gli utenti non possono giocare sul dispositivo <ph name="PRODUCT_OS_NAME" /> registrato, ma possono farlo in altre circostanze.</translation>
 <translation id="5293285950307241933">Cancella tutti i dati utente locali</translation>
-<translation id="5293875928467750789">Se il criterio viene impostato, il relativo valore verrà utilizzato come percentuale di luminosità predefinita della tastiera del dispositivo quando l'utente accede.</translation>
 <translation id="529457411593078576">Attiva i TdS alla prima esecuzione di CCT</translation>
 <translation id="5297948043665200363">Consenti all'utente di mantenere l'accesso dopo che il suo account non è più autenticato</translation>
 <translation id="5298949392804966105">Nessuna limitazione per gli account gestiti</translation>
@@ -5270,6 +5280,7 @@ Se il criterio non viene configurato, tutti i domini non possono accedere agli U
 <translation id="6244061205361004687">Consenti all'utente di disconnettere o modificare manualmente una VPN</translation>
 <translation id="6244210204546589761">Pagine da aprire all'avvio</translation>
 <translation id="624595269193747921">Consente di stabilire se limitare o meno la ricerca della stampante corrispondente a un insieme specifico di stampanti.</translation>
+<translation id="6246290059248303618">Mostra i controlli multimediali per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi sulla rete locale</translation>
 <translation id="6247316685259031374">Questo criterio consente di controllare la sandbox del processo audio.
       Se questo criterio viene attivato, il processo audio verrà eseguito con limitazione tramite sandbox.
       Se il criterio viene disattivato, il processo audio verrà eseguito senza limitazione tramite sandbox e il modulo di elaborazione audio WebRTC verrà eseguito nel processo di rendering.
@@ -6231,6 +6242,7 @@ Se il criterio viene impostato su Disabled o se non viene configurato, verrà ap
 <translation id="710003290625031750">Descrizione estesa dello schema:</translation>
 <translation id="7101550508196914704">Non mostrare la scorciatoia applicazioni nella barra dei Preferiti</translation>
 <translation id="7109384070286741861">CECPQ2 viene disattivato</translation>
+<translation id="7113439794629928551">Mostra i controlli multimediali per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi</translation>
 <translation id="7114169791477667553">Disattiva il provider di ricerca predefinito</translation>
 <translation id="7121046543122812054">Questo criterio è deprecato. Potresti usare il criterio <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
 
@@ -6930,7 +6942,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7832225468415136704">Impedisci a Chrome Software Cleaner di eseguire scansioni periodiche del sistema e disattiva le scansioni manuali</translation>
 <translation id="7833148823006528332">Identificatore dell'app Android, ad esempio "com.google.android.gm" per Gmail.</translation>
 <translation id="7835218570504220753">Disattiva i clic automatici</translation>
-<translation id="7837834961221899821">Luminosità predefinita della tastiera</translation>
 <translation id="7839180815400079700">Se il criterio <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> viene impostato su Attivato, la configurazione di <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> consente di impostare la variazione giornaliera dei picchi energetici.
 
       Se il criterio non viene configurato, la variazione dei picchi energetici rimane disabilitata.
@@ -7975,6 +7986,7 @@ Questo criterio è una mappatura degli ID di configurazione alle configurazioni 
       Se questo criterio viene disattivato, il processo del servizio di rete verrà eseguito senza limitazione tramite sandbox. Gli utenti saranno esposti a rischi di sicurezza aggiuntivi correlati all'esecuzione del servizio di rete senza limitazione tramite sandbox.
       Se questo criterio non viene configurato, verrà usata la configurazione predefinita della sandbox della rete. Questa configurazione potrebbe variare in base alla release di <ph name="PRODUCT_NAME" />, alle prove sul campo attualmente in esecuzione e alla piattaforma.
       Questo criterio è pensato per offrire alle aziende la possibilità di disattivare la sandbox della rete se usano software di terze parti che interferisce con la sandbox del servizio di rete.</translation>
+<translation id="8840243776706727185">Funzionalità NewBaseUrlInheritanceBehavior disattivata</translation>
 <translation id="8842208363354615697">Consenti l'attivazione della Modalità solo HTTPS</translation>
 <translation id="885147810817138322">Mostra all'utente consigli di contenuti multimediali</translation>
 <translation id="8852579753940989645">Attiva l'integrità del codice del renderer</translation>
@@ -8390,6 +8402,11 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 <translation id="982497069985795632">Attiva il controllo ortografico</translation>
 <translation id="983256325512298435">Definisci un elenco di protocolli che possono lanciare un'applicazione esterna dalle origini elencate senza chiedere conferma all'utente</translation>
 <translation id="987261962216071510">Consenti solo gli accessi come ospite al browser</translation>
+<translation id="987975731398348803">Se il criterio viene attivato o se non viene configurato, i dispositivi registrati segnalano l'elenco di utenti dei dispositivi che hanno eseguito l'accesso di recente.
+
+Se il criterio viene disattivato, i dispositivi registrati non segnalano l'elenco di utenti.
+
+Se <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> viene attivato, <ph name="REPORT_DEVICE_USERS_POLICY_NAME" /> viene ignorato e sarà sempre disattivato.</translation>
 <translation id="989197274317162189">Questo criterio è stato deprecato e non è supportato. Utilizza il criterio <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="991560005425213776">Invia nome utente e nome file alle stampanti native</translation>
 <translation id="99202634486128833">Se il criterio è impostato su CopyCaCerts, per le app ARC sono disponibili tutti i certificati CA installati su ONC con <ph name="WEB_TRUSTED_BIT" />.

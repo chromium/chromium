@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">Guarda tu <ph name="NAME" /></translation>
 <translation id="1032891413405719768">El nivel de la batería de la pluma stylus está bajo</translation>
 <translation id="1036073649888683237">Para administrar las notificaciones, ve a Configuración.</translation>
+<translation id="1036348656032585052">Desactivar</translation>
 <translation id="1036672894875463507">Soy tu Asistente de Google. Estoy aquí para ayudarte en tu día.
 Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1037492556044956303">Se agregó <ph name="DEVICE_NAME" /></translation>
@@ -100,6 +101,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1447641497144572814">Se inicia el protector de pantalla</translation>
 <translation id="1455242230282523554">Mostrar la configuración de idioma</translation>
 <translation id="1460620680449458626">El volumen está silenciado.</translation>
+<translation id="14648076227129703">Permite el acceso a la cámara para <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> y todas las apps y sitios web con el permiso correspondiente</translation>
 <translation id="1467432559032391204">Izquierda</translation>
 <translation id="146902737843070955">Tu administrador solicitó este cambio</translation>
 <translation id="147310119694673958">Batería del teléfono: <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -159,6 +161,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1797271123677381264">Olvidé mi contraseña</translation>
 <translation id="181103072419391116">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
 <translation id="1812997170047690955">¿Qué hay en mi pantalla?</translation>
+<translation id="1816896987747843206">Permite el acceso a la cámara para todas las apps y sitios web con el permiso correspondiente</translation>
 <translation id="1823280932251546115">Bandeja de estado, hora <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1830308660060964064">Se dejó de fijar <ph name="ITEM_TITLE" /></translation>
 <translation id="1836215606488044471">Asistente (cargando…)</translation>
 <translation id="1838895407229022812">La luz nocturna está apagada.</translation>
+<translation id="1854180393107901205">Detener transmisión</translation>
 <translation id="1862380676329487333">Actualizar y salir</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (puerto trasero)</translation>
 <translation id="1869497990620230175">Archivos rápidos</translation>
@@ -599,6 +603,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4316910396681052118">TODAS LAS APPS</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Se modificó la combinación de teclas Ctrl + Alt + flecha hacia arriba. Para usar la tecla Inicio, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + flecha hacia la izquierda.</translation>
+<translation id="4324840740119394760">Permite el acceso a la cámara para <ph name="APP_NAME" /> y todas las apps y sitios web con el permiso correspondiente</translation>
 <translation id="4333628967105022692">Lacros no es compatible si acceden varios usuarios.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">El Asistente se está cargando…</translation>
@@ -665,13 +670,13 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Se habilitó ChromeVox</translation>
 <translation id="4665114317261903604">Activa o desactiva la función No interrumpir. <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Desactiva el acceso a la cámara en este dispositivo para bloquear siempre las cámaras.</translation>
 <translation id="4666911709726371538">Más apps</translation>
 <translation id="4667099493359681081">Descargando <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Apps de tu teléfono</translation>
 <translation id="4690510401873698237">Biblioteca en la parte inferior</translation>
 <translation id="4696813013609194136">Desbloquea el dispositivo con el código parental</translation>
 <translation id="4702647871202761252">La pantalla de privacidad está desactivada</translation>
+<translation id="4706121060329443414">Se intentará completar la descarga más tarde. Por ahora, se enviará la voz a Google para su procesamiento.</translation>
 <translation id="470644585772471629">Inversión de colores</translation>
 <translation id="4717575069099566988">Tu cable USB-C no admite USB4. El rendimiento del dispositivo puede verse limitado.</translation>
 <translation id="4730374152663651037">USADAS CON FRECUENCIA</translation>
@@ -697,7 +702,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="485592688953820832">No es necesaria ninguna acción (pausa)</translation>
 <translation id="485634149294284819">Ingresar al menú de teclados</translation>
 <translation id="4860284199500934869">Comprueba la conexión de red para descargar <ph name="FILENAME" /></translation>
-<translation id="486056901304535126">Se intentará completar la descarga más tarde. La enunciación se enviará a Google para su procesamiento hasta que se complete la descarga.</translation>
 <translation id="4864369630010738180">Accediendo</translation>
 <translation id="4864648187878336334">Escritorio 15</translation>
 <translation id="4868492592575313542">activada</translation>
@@ -792,6 +796,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5356963482258194581">Cambia entre los temas oscuro y claro. Haz clic con el botón derecho en el escritorio y elige Estilo y fondo de pantalla.</translation>
 <translation id="536019650977002321">Tu administrador no permite capturas de audio. Para obtener más información, comunícate con el administrador.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ir a esta pestaña</translation>
+<translation id="5377367976106153749">¿Deseas activar el acceso a la cámara?</translation>
 <translation id="5379115545237091094">Realizaste demasiados intentos</translation>
 <translation id="5391307769715781764">¿Deseas reemplazar el escritorio?</translation>
 <translation id="5393156353051693207">Mantén presionado en cualquier lugar para reorganizar las apps</translation>
@@ -1178,7 +1183,6 @@ Nueva instalación</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> está usando el micrófono</translation>
 <translation id="7561982940498449837">Cerrar menú</translation>
 <translation id="7564874036684306347">Si mueves las ventanas a otro escritorio, puede producirse un comportamiento inesperado. Es posible que las próximas notificaciones, ventanas y cuadros de diálogo se dividan entre los escritorios.</translation>
-<translation id="7567076708801803118">¿Quieres desactivar el acceso a la cámara en este dispositivo?</translation>
 <translation id="7569509451529460200">Se habilitaron el braille y ChromeVox</translation>
 <translation id="7573585051776738856">Se ancló la ventana activa en la derecha.</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>

@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Tulungan kaming bumuo ng mas pribadong web</translation>
 <translation id="107147699690128016">Kung babaguhin mo ang file extension, puwedeng bumukas ang file sa ibang application at posible itong maging mapanganib sa iyong device.</translation>
 <translation id="1089606299949659462">Tapos na ang pagsusuri!</translation>
-<translation id="1091604859693995976">I-refresh para tingnan</translation>
 <translation id="1095761715416917775">Tiyaking maa-access mo sa anumang oras ang iyong sini-sync na data</translation>
 <translation id="1100066534610197918">Buksan sa bagong tab sa grupo</translation>
 <translation id="1103142993930332957">Tumulong na pahusayin ang Chrome?</translation>
@@ -761,6 +760,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="510275257476243843">1 oras na lang ang natitira</translation>
 <translation id="5115811374190515607">sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Mga Interes</translation>
+<translation id="5122378528687922675">Kung kailangan mo ng tulong, magpatulong sa iyong magulang (<ph name="PARENT_NAME_1" /> o <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Tab na incognito</translation>
 <translation id="5126510351761255129">I-verify ang iyong card</translation>
 <translation id="5132942445612118989">I-sync ang iyong mga password, history, at higit pa sa lahat ng device</translation>
@@ -1148,6 +1148,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7177466738963138057">Maaari mo itong baguhin sa ibang pagkakataon sa Mga Setting</translation>
 <translation id="7177873915659574692">Hindi makagawa ng QR Code. Mahigit sa <ph name="CHARACTER_LIMIT" /> (na) character ang URL.</translation>
 <translation id="7177959540995930968">Puwede kang matuto pa tungkol sa mga feature na ito sa mga setting ng Chrome.</translation>
+<translation id="7180611975245234373">I-refresh</translation>
 <translation id="718226107353899806">Puwede kang magdagdag ng hanggang <ph name="MAX_NUM_REACTIONS" /> (na) reaksyon</translation>
 <translation id="7183693674623539380">Grupo ng tab - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Pinapanatili kang ligtas sa Chrome at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka.</translation>
@@ -1331,6 +1332,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8084285576995584326">Kontrolin ang data sa iyong Google Account</translation>
 <translation id="808747664143081553">Nakakonekta sa device</translation>
 <translation id="8088176524274673045">Para magbahagi sa mga taong nasa malapit, ipa-scan sa kanila ang QR Code na ito</translation>
+<translation id="8090732854597034573">Kung kailangan mo ng tulong, magpatulong sa iyong magulang</translation>
 <translation id="8100969750121413114">Mag-sign in para iangkop sa iyo ang Chrome</translation>
 <translation id="8103578431304235997">Tab na Incognito</translation>
 <translation id="8105613260829665809">Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_TOS_LINK" />Mga Tuntunin ng Serbisyo<ph name="END_TOS_LINK" />.\nPara makatulong na mapaganda ang app, nagpapadala ang Chrome ng data ng paggamit at pag-crash sa Google. <ph name="BEGIN_UMA_LINK" />Pamahalaan<ph name="END_UMA_LINK" /></translation>
@@ -1339,6 +1341,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8109613176066109935">Para makuha ang iyong mga bookmark sa lahat ng device mo, i-on ang pag-sync</translation>
 <translation id="8110024788458304985">Tumulong na pahusayin ang mga feature at performance ng Chrome</translation>
 <translation id="8110087112193408731">Ipakita sa Digital Wellness ang aktibidad mo sa Chrome?</translation>
+<translation id="8118117428362942925">Kung kailangan mo ng tulong, magpatulong sa iyong magulang (<ph name="PARENT_NAME" />)</translation>
 <translation id="8127542551745560481">I-edit ang homepage</translation>
 <translation id="8130309322784422030">Posibleng hindi updated ang iyong naka-store na impormasyon sa pag-sign in</translation>
 <translation id="813082847718468539">Tingnan ang impormasyon ng site</translation>

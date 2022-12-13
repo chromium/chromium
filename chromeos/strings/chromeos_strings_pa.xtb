@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">ਪ੍ਰਿੰਟ ਜੌਬ ਰੱਦ ਕਰੋ</translation>
 <translation id="2163937499206714165">ਗੂੜ੍ਹਾ ਮੋਡ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2180197493692062006">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਐਪ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">ਟਰੈਫ਼ਿਕ ਕਾਉਂਟਰਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="2212733584906323460">ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ ਨਾਮ ਦਿਓ</translation>
 <translation id="2217935453350629363">ਮੌਜੂਦਾ ਗਤੀ</translation>
@@ -560,6 +559,7 @@
 <translation id="6189418609903030344">ਵਰਤੋਂ ਨਾਲ ਬੈਟਰੀ ਦੀ ਸਮਰੱਥਾ ਵਿੱਚ ਕਮੀ ਆਉਂਦੀ ਹੈ</translation>
 <translation id="6191293864534840972">ਨੁਕਸਦਾਰ ਨਾਮ ਸਰਵਰ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਆਓ</translation>
 <translation id="6223752125779001553">ਕੋਈ ਸਕੈਨਰ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="6232017090690406397">ਬੈਟਰੀ</translation>
 <translation id="6235460611964961764">ਡਾਟਾ ਵਰਤੋਂ ਨੂੰ ਹੱਥੀਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
@@ -687,11 +687,12 @@
 <translation id="741244894080940828">ਰੂਪਾਂਤਰਨ</translation>
 <translation id="7415801143053185905">ਬਹੁਤ ਜ਼ਿਆਦਾ HTTP ਵਿਲੰਬਤਾ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। 1 ਪੰਨਾ ਸਕੈਨ ਕੀਤਾ ਗਿਆ}one{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। {NUMBER_OF_PAGES} ਪੰਨਾ ਸਕੈਨ ਕੀਤਾ ਗਿਆ}other{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। {NUMBER_OF_PAGES} ਪੰਨੇ ਸਕੈਨ ਕੀਤੇ ਗਏ}}</translation>
+<translation id="7458970041932198923">ਅਵਤਾਰਾਂ ਨੂੰ ਦੇਖਣ ਅਤੇ ਉਨ੍ਹਾਂ ਨੂੰ ਸੈੱਟ ਕਰਨ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਕਿਸੇ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ ਅਤੇ ਪੰਨੇ ਨੂੰ ਰੀਲੋਡ ਕਰੋ।</translation>
 <translation id="7469648432129124067">ਪੋਰਟਲ ਦਾ ਪਤਾ ਲੱਗਾ</translation>
 <translation id="7481312909269577407">ਅੱਗੇ ਭੇਜੋ</translation>
 <translation id="7487067081878637334">ਤਕਨਾਲੋਜੀ</translation>
 <translation id="7490813197707563893">MAC ਪਤਾ</translation>
+<translation id="7491478667760509108">ਫ਼ਲੋਟ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਆਓ</translation>
 <translation id="7497215489070763236">ਸਰਵਰ CA ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
 <translation id="7502658306369382406">IPv6 ਪਤਾ</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -792,6 +793,7 @@
 <translation id="8498220429738806196">ਟਰੈਫ਼ਿਕ ਕਾਉਂਟਰ</translation>
 <translation id="8503813439785031346">ਵਰਤੋਂਕਾਰ ਨਾਮ</translation>
 <translation id="8503836310948963452">ਬਸ ਕੁਝ ਮਿੰਟ ਹੋਰ…</translation>
+<translation id="8508640263392900755">APN ਸੰਬੰਧੀ ਵੇਰਵੇ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ਤੁਹਾਡੇ ਕੈਰੀਅਰ ਨੂੰ ਆਪਣੇ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਇਸ ਵਿਕਲਪ ਦੀ ਲੋੜ ਹੋ ਸਕਦੀ ਹੈ। ਵੇਰਵਿਆਂ ਲਈ ਆਪਣੇ ਕੈਰੀਅਰ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="8576249514688522074">ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
@@ -842,6 +844,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ਸਕੈਨ ਕਰੋ}=1{{NUMBER_OF_PAGES} ਪੰਨਾ ਸਕੈਨ ਕਰੋ}other{{NUMBER_OF_PAGES} ਪੰਨੇ ਸਕੈਨ ਕਰੋ}}</translation>
 <translation id="8997710128084572139">ਡੀਵਾਈਸ ਦੀ ਬੈਟਰੀ ਦਾ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
+<translation id="8998289560386111590">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="9003704114456258138">ਬਾਰੰਬਾਰਤਾ</translation>
 <translation id="9025198690966128418">ਨਿੱਜੀ ਡੀਵਾਈਸ ਵਜੋਂ ਵਰਤੋ</translation>
 <translation id="9028832514430399253">ਸਕ੍ਰੀਨ ਸੇਵਰ ਵਿਕਲਪਾਂ ਨੂੰ ਚੁਣਨ ਲਈ ਟੌਗਲ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>

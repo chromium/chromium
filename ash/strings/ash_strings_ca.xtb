@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">Desa el dispositiu <ph name="NAME" /></translation>
 <translation id="1032891413405719768">El llapis òptic té poca bateria</translation>
 <translation id="1036073649888683237">Per gestionar les notificacions, ves a Configuració</translation>
+<translation id="1036348656032585052">Desactiva</translation>
 <translation id="1036672894875463507">Soc el teu Assistent de Google i et puc ajudar al llarg del dia.
 A continuació t'indico algunes coses que pots provar per començar.</translation>
 <translation id="1037492556044956303">S'ha afegit <ph name="DEVICE_NAME" /></translation>
@@ -100,6 +101,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1447641497144572814">S'inicia l'estalvi de pantalla</translation>
 <translation id="1455242230282523554">Mostra la configuració d'idioma</translation>
 <translation id="1460620680449458626">El volum està silenciat.</translation>
+<translation id="14648076227129703">Permet l'accés a la càmera a <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> i a totes les aplicacions i llocs web amb permís per accedir a la càmera</translation>
 <translation id="1467432559032391204">Esquerra</translation>
 <translation id="146902737843070955">El teu administrador ha sol·licitat aquest canvi</translation>
 <translation id="147310119694673958">Bateria del telèfon: <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -159,6 +161,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1797271123677381264">He oblidat la contrasenya</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, xarxa gestionada per l'administrador</translation>
 <translation id="1812997170047690955">Què hi ha a la pantalla?</translation>
+<translation id="1816896987747843206">Permet l'accés a la càmera a totes les aplicacions i llocs web amb permís per accedir a la càmera</translation>
 <translation id="1823280932251546115">Safata d'estat, hora <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> s'ha deixat de fixar</translation>
 <translation id="1836215606488044471">Assistent (s'està carregant...)</translation>
 <translation id="1838895407229022812">La funció Llum nocturna està desactivada.</translation>
+<translation id="1854180393107901205">Atura l'emissió</translation>
 <translation id="1862380676329487333">Actualitza i tanca la sessió</translation>
 <translation id="1864454756846565995">Dispositiu USB-C (port posterior)</translation>
 <translation id="1869497990620230175">Fitxers ràpids</translation>
@@ -598,6 +602,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4316910396681052118">TOTES LES APLICACIONS</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">La tecla de drecera Ctrl+Alt+fletxa amunt ha canviat. Per fer servir la tecla d'inici, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa esquerra.</translation>
+<translation id="4324840740119394760">Permet l'accés a la càmera a <ph name="APP_NAME" /> i a totes les aplicacions i llocs web amb permís per accedir a la càmera</translation>
 <translation id="4333628967105022692">Lacros no s'admet quan hi ha diversos usuaris amb la sessió iniciada.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">L'Assistent s'està carregant...</translation>
@@ -664,13 +669,13 @@ Connecta el dispositiu a l'alimentació.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">S'ha activat ChromeVox</translation>
 <translation id="4665114317261903604">Activa o desactiva el mode No molestis. <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Desactiva l'accés a la càmera en aquest dispositiu per bloquejar sempre totes les càmeres.</translation>
 <translation id="4666911709726371538">Més aplicacions</translation>
 <translation id="4667099493359681081">S'està baixant <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Aplicacions del telèfon</translation>
 <translation id="4690510401873698237">El prestatge és a la part inferior</translation>
 <translation id="4696813013609194136">Desbloqueja el dispositiu amb el codi parental</translation>
 <translation id="4702647871202761252">La pantalla de privadesa està desactivada</translation>
+<translation id="4706121060329443414">La baixada s'intentarà més tard. Per ara, la parla s'enviarà a Google perquè la processi.</translation>
 <translation id="470644585772471629">Inversió de colors</translation>
 <translation id="4717575069099566988">El teu cable USB-C no admet USB4. És possible que el rendiment del dispositiu es vegi limitat.</translation>
 <translation id="4730374152663651037">UTILITZADES FREQÜENTMENT</translation>
@@ -696,7 +701,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="485592688953820832">No facis res (pausa)</translation>
 <translation id="485634149294284819">Menú per seleccionar el teclat</translation>
 <translation id="4860284199500934869">Comprova la connexió a la xarxa per baixar <ph name="FILENAME" /></translation>
-<translation id="486056901304535126">La baixada s'intentarà més tard. Fins que es completi, s'enviarà la parla a Google perquè la processi.</translation>
 <translation id="4864369630010738180">S'està iniciant la sessió...</translation>
 <translation id="4864648187878336334">Escriptori 15</translation>
 <translation id="4868492592575313542">activada</translation>
@@ -791,6 +795,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5356963482258194581">Canvia entre els temes clar i fosc. Fes clic amb el botó dret a l'escriptori i selecciona Estil i fons de pantalla.</translation>
 <translation id="536019650977002321">L'administrador no permet la captura d'àudio. Contacta-hi per obtenir més informació.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ves a aquesta pestanya</translation>
+<translation id="5377367976106153749">Vols activar l'accés a la càmera?</translation>
 <translation id="5379115545237091094">Massa intents</translation>
 <translation id="5391307769715781764">Vols substituir l'escriptori desat?</translation>
 <translation id="5393156353051693207">Mantén premut qualsevol lloc per tornar a ordenar les aplicacions</translation>
@@ -1174,7 +1179,6 @@ Instal·lació nova</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> està utilitzant el micròfon</translation>
 <translation id="7561982940498449837">Tanca el menú</translation>
 <translation id="7564874036684306347">Moure finestres a un altre escriptori pot provocar un comportament imprevist. És possible que les notificacions, les finestres i els quadres de diàleg següents quedin dividits entre escriptoris.</translation>
-<translation id="7567076708801803118">Vols desactivar l'accés a la càmera en aquest dispositiu?</translation>
 <translation id="7569509451529460200">S'ha activat el braille i ChromeVox</translation>
 <translation id="7573585051776738856">Finestra activa acoblada a la dreta.</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>

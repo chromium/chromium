@@ -271,6 +271,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1586541204584340881">Kuriuos plėtinius įdiegėte</translation>
 <translation id="1588438908519853928">Įprastas</translation>
 <translation id="1592005682883173041">Prieiga prie vietinių duomenų</translation>
+<translation id="1593359183944365958">270 laipsnių</translation>
 <translation id="1594030484168838125">Pasirinkti</translation>
 <translation id="1596296697375291157">Trileriai, kriminaliniai ir detektyviniai filmai</translation>
 <translation id="1599199147673445968">Nauja kortelė? <ph name="BEGIN_LINK" />Įveskite išsamią kortelės informaciją<ph name="END_LINK" /></translation>
@@ -337,6 +338,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1741613555002899862">Kai „DnsOverHttpsMode“ yra „<ph name="SECURE_DNS_MODE_SECURE" />“, turi būti nurodyta ir tinkama eilutė.</translation>
 <translation id="1745880797583122200">Jūsų naršyklė tvarkoma</translation>
 <translation id="1746113442205726301">Sukti vaizdą pagal Y ašį</translation>
+<translation id="1746531169546376413">0 laipsnių</translation>
 <translation id="17513872634828108">Atidaryti skirtukai</translation>
 <translation id="1752021286346845558">8 pašto dėžutė</translation>
 <translation id="1753068535428855445">Pažinčių ir asmeniniai skelbimai</translation>
@@ -411,7 +413,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1958218078413065209">Jūsų didžiausias rezultatas yra <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Padėkite gerinti visų naudotojų saugumą žiniatinklyje – atsiųskite <ph name="BEGIN_WHITEPAPER_LINK" />lankomų puslapių URL, ribotos sistemos informacijos ir puslapių turinio<ph name="END_WHITEPAPER_LINK" /> į „Google“. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Privatumo politika<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> žymės</translation>
-<translation id="1971033026002113380">Apsaugokite slaptažodžius naudodami „TouchID“</translation>
 <translation id="1973335181906896915">Serijinio rengimo klaida</translation>
 <translation id="1974060860693918893">Išplėstiniai</translation>
 <translation id="1975457531113383421">Įvesties dėklas</translation>
@@ -746,7 +747,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2881276955470682203">Išsaugoti kortelę?</translation>
 <translation id="2882949212241984732">Perlenkimas viduryje su dviem atvartais</translation>
 <translation id="2893773853358652045">Ketvirtas ritinėlis</translation>
-<translation id="289834758818479772">Jei bendrinate šį įrenginį su kitais žmonėmis, galite įjungti „TouchID“, kad patvirtintumėte savo tapatybę, kai naudojate išsaugotą slaptažodį</translation>
 <translation id="2900528713135656174">Sukurti įvykį</translation>
 <translation id="2903493209154104877">Adresai</translation>
 <translation id="290376772003165898">Puslapis parašytas ne <ph name="LANGUAGE" />?</translation>
@@ -1065,7 +1065,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3678529606614285348">Atidarykite puslapį naujame inkognito lange („Ctrl“ – „Shift“ – N)</translation>
 <translation id="3681007416295224113">Sertifikato informacija</translation>
 <translation id="3693327506115126094">Pasirinkite, kaip norite patvirtinti savo tapatybę</translation>
-<translation id="3699374065820972102">„TouchID“ įjungta slaptažodžiams užpildyti</translation>
 <translation id="3701427423622901115">Nustatymas iš naujo patvirtintas.</translation>
 <translation id="3704162925118123524">Naudojant šį tinklą gali būti prašoma apsilankyti prisijungimo puslapyje.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1180,7 +1179,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="401170183602135785">C6 vokas</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF dokumente yra {COUNT} puslapis}one{PDF dokumente yra {COUNT} puslapis}few{PDF dokumente yra {COUNT} puslapiai}many{PDF dokumente yra {COUNT} puslapio}other{PDF dokumente yra {COUNT} puslapių}}</translation>
 <translation id="4023431997072828269">Kadangi ši forma teikiama naudojant nesaugų ryšį, jūsų informacija bus matoma kitiems.</translation>
-<translation id="4024923292610332139">išjungti „TouchID“ slaptažodžiams užpildyti</translation>
 <translation id="4025913568718019429">„Google“ privatumo nustatymų tvarkymo mygtukas; paspauskite „Enter“, kad apsilankytumėte „Google“ paskyros privatumo nustatymų skiltyje.</translation>
 <translation id="4030383055268325496">&amp;Anuliuoti pridėjimą</translation>
 <translation id="4031179711345676612">Mikrofonas leidžiamas</translation>
@@ -1542,7 +1540,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4900217275619098670">Devintas ritinėlis</translation>
 <translation id="4901778704868714008">Išsaugoti...</translation>
 <translation id="4905659621780993806">Jūsų administratorius automatiškai paleis jūsų įrenginį iš naujo <ph name="TIME" />, <ph name="DATE" />. Išsaugokite visus atidarytus elementus, prieš paleidžiant įrenginį iš naujo.</translation>
-<translation id="4911007278801291296">„TouchID“ galite įjungti arba išjungti skiltyje „<ph name="SETTINGS" />“</translation>
 <translation id="4913987521957242411">Skylė viršuje kairėje</translation>
 <translation id="4918221908152712722">Įdiekite „<ph name="APP_NAME" />“ (nereikia atsisiųsti)</translation>
 <translation id="4923459931733593730">Mokėjimas</translation>
@@ -1724,6 +1721,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5334013548165032829">Išsamūs sistemos žurnalai</translation>
 <translation id="5334145288572353250">Išsaugoti adresą?</translation>
 <translation id="5335920952954443287">Plakanti širdelė</translation>
+<translation id="5337569431717511221">„Chrome“ nustatymo kaip numatytosios sistemos naršyklės mygtukas; paspauskite „Enter“, kad nustatytumėte „Chrome“ kaip numatytąją sistemos naršyklę</translation>
 <translation id="5340250774223869109">Programa užblokuota</translation>
 <translation id="534295439873310000">ALR įrenginiai</translation>
 <translation id="5344579389779391559">Šiame puslapyje gali būti bandoma jus apmokestinti</translation>
@@ -1755,7 +1753,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5426179911063097041">Svetainė <ph name="SITE" /> nori siųsti jums pranešimus</translation>
 <translation id="5428105026674456456">Ispanų</translation>
 <translation id="5430298929874300616">Pašalinti žymę</translation>
-<translation id="5434423669266814150">įjunkite „TouchID“, kad galėtumėte pildyti slaptažodžius</translation>
 <translation id="5443468954631487277">Atvirkštine tvarka, gerąja puse į viršų</translation>
 <translation id="5447765697759493033">Ši svetainė nebus verčiama</translation>
 <translation id="5452270690849572955">Nepavyksta rasti šio <ph name="HOST_NAME" /> puslapio</translation>
@@ -1797,6 +1794,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5540969246441091044">Jojimas</translation>
 <translation id="5541086400771735334">7 pašto dėžutė</translation>
 <translation id="5541546772353173584">El. pašto adreso pridėjimas</translation>
+<translation id="5543722831081909240">180 laipsnių</translation>
 <translation id="5545756402275714221">Jums skirti straipsniai</translation>
 <translation id="5551890439174915351">100 x 200 mm</translation>
 <translation id="5552137475244467770">„Chrome“ periodiškai tikrina, ar jūsų slaptažodžiai nebuvo įtraukti į internete paskelbtus sąrašus. Tai atliekant, slaptažodžiai ir naudotojų vardai užšifruojami, kad niekas negalėtų jų perskaityti, įskaitant „Google“.</translation>
@@ -2185,6 +2183,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6591833882275308647">Jūsų „<ph name="DEVICE_TYPE" />“ netvarkomas</translation>
 <translation id="6592952801936330159">Mygtukas „Tvarkyti svetainės nustatymus“; paspauskite „Enter“, jei norite tvarkyti leidimus ir svetainėse saugomus duomenis „Chrome“ nustatymuose</translation>
 <translation id="6596325263575161958">Šifravimo parinktys</translation>
+<translation id="6597665340361269064">90 laipsnių</translation>
 <translation id="6599642189720630047">Stebimi produktai</translation>
 <translation id="6611723696964473273">Ekonomikos naujienos</translation>
 <translation id="6612010098632894193">Vaizdo įrašas prisijungus</translation>
@@ -2417,6 +2416,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Administratorius gali peržiūrėti:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, kad būtų atidarytas naujas privataus naršymo inkognito skirtukas</translation>
+<translation id="7203375778433816396">Nustatyti „Chrome“ kaip numatytąją sistemos naršyklę</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> nesilaikoma saugos standartų.</translation>
 <translation id="7210993021468939304">„Linux“ veikla sudėtiniame rodinyje; ir gali įdiegti ir paleisti „Linux“ programas sudėtiniame rodinyje</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /> apie šią problemą.</translation>
@@ -2564,6 +2564,7 @@ Papildoma išsami informacija:
 <translation id="7537536606612762813">Privaloma</translation>
 <translation id="7542403920425041731">Kai patvirtinsite, išsami kortelės informacija bus bendrinama su šia svetaine.</translation>
 <translation id="7542995811387359312">Automatinis kredito kortelės informacijos pildymas neleidžiamas, nes šiai formai nenaudojamas saugus ryšys.</translation>
+<translation id="7546409722674205727">Paleidžiama „<ph name="APP_NAME" />“</translation>
 <translation id="7548892272833184391">Ryšio klaidų taisymas</translation>
 <translation id="7549584377607005141">Jei norite, kad šis tinklalapis būtų tinkamai pateikiamas, reikalingi anksčiau įvesti duomenys. Galite nusiųsti šiuos duomenis iš naujo, bet taip pakartosite visus anksčiau šiame puslapyje įvykdytus veiksmus.</translation>
 <translation id="7550637293666041147">Įrenginio naudotojo vardas ir „Chrome“ naudotojo vardas</translation>
@@ -2749,6 +2750,7 @@ Papildoma išsami informacija:
 <translation id="8009843239480947060">10 x 11 col.</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Ši kortelė ir jos atsiskaitymo adresas bus išsaugoti. Ją galėsite naudoti prisijungę prie <ph name="USER_EMAIL" />.}one{Šios kortelės ir jų atsiskaitymo adresai bus išsaugoti. Jas galėsite naudoti prisijungę prie <ph name="USER_EMAIL" />.}few{Šios kortelės ir jų atsiskaitymo adresai bus išsaugoti. Jas galėsite naudoti prisijungę prie <ph name="USER_EMAIL" />.}many{Šios kortelės ir jų atsiskaitymo adresai bus išsaugoti. Jas galėsite naudoti prisijungę prie <ph name="USER_EMAIL" />.}other{Šios kortelės ir jų atsiskaitymo adresai bus išsaugoti. Jas galėsite naudoti prisijungę prie <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada „Enter“, kad nustatytumėte „Chrome“ kaip numatytąją sistemos naršyklę</translation>
 <translation id="8025119109950072390">Šios svetainės užpuolėjai gali bandyti apgaulingai priversti atlikti pavojingus veiksmus, pvz., įdiegti programinę įrangą ar atskleisti asmens informaciją (pvz., slaptažodžius, telefonų numerius ar kredito kortelių informaciją).</translation>
 <translation id="8026334261755873520">Išvalyti naršymo duomenis</translation>
 <translation id="8027077570865220386">Penkioliktas dėklas</translation>

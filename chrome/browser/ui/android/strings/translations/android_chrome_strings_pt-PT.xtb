@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Ajude-nos a criar uma Web mais privada</translation>
 <translation id="107147699690128016">Se alterar a extensão do ficheiro, este pode ser aberto numa aplicação diferente e representar um risco para o seu dispositivo.</translation>
 <translation id="1089606299949659462">Revisão concluída!</translation>
-<translation id="1091604859693995976">Atualize a página para ver as novidades</translation>
 <translation id="1095761715416917775">Certifique-se de que pode aceder sempre aos seus dados de sincronização</translation>
 <translation id="1100066534610197918">Abrir num novo sep. no grupo</translation>
 <translation id="1103142993930332957">Quer ajudar a melhorar o Chrome?</translation>
@@ -761,6 +760,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="510275257476243843">Falta 1 hora</translation>
 <translation id="5115811374190515607">para <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Interesses</translation>
+<translation id="5122378528687922675">Se precisares de ajuda, pede à pessoa adulta responsável (<ph name="PARENT_NAME_1" /> ou <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Separador de navegação anónima</translation>
 <translation id="5126510351761255129">Valide o cartão</translation>
 <translation id="5132942445612118989">Sincronize as suas palavras-passe, o histórico e muito mais em todos os dispositivos</translation>
@@ -1148,6 +1148,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7177466738963138057">Pode alterar esta opção mais tarde nas Definições</translation>
 <translation id="7177873915659574692">Não é possível criar o código QR. O URL contém mais de <ph name="CHARACTER_LIMIT" /> carateres.</translation>
 <translation id="7177959540995930968">Pode saber mais sobre estas funcionalidades nas definições do Chrome.</translation>
+<translation id="7180611975245234373">Atualizar</translation>
 <translation id="718226107353899806">Pode adicionar até <ph name="MAX_NUM_REACTIONS" /> reações</translation>
 <translation id="7183693674623539380">Grupo de separadores – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Mantém a sua segurança no Chrome e pode ser utilizada para melhorar a sua segurança noutras apps Google quando tem sessão iniciada.</translation>
@@ -1331,6 +1332,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8084285576995584326">Controle os dados da sua Conta Google</translation>
 <translation id="808747664143081553">Ligado ao dispositivo</translation>
 <translation id="8088176524274673045">Para partilhar com pessoas nas proximidades, deixe-as ler este código QR</translation>
+<translation id="8090732854597034573">Se precisares de ajuda, pede à pessoa adulta responsável</translation>
 <translation id="8100969750121413114">Inicie sessão para personalizar o Chrome</translation>
 <translation id="8103578431304235997">Separador de navegação anónima</translation>
 <translation id="8105613260829665809">Ao continuar, aceita os <ph name="BEGIN_TOS_LINK" />Termos de Utilização<ph name="END_TOS_LINK" />.\nPara ajudar a melhorar a app, o Chrome envia dados de utilização e falhas de sistema para a Google. <ph name="BEGIN_UMA_LINK" />Faça a gestão<ph name="END_UMA_LINK" /></translation>
@@ -1339,6 +1341,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8109613176066109935">Para obter os seus marcadores em todos os dispositivos, ative a sincronização.</translation>
 <translation id="8110024788458304985">Ajudar a melhorar as funcionalidades e o desempenho do Chrome</translation>
 <translation id="8110087112193408731">Pretende apresentar a sua atividade do Chrome no Bem-estar digital?</translation>
+<translation id="8118117428362942925">Se precisares de ajuda, pede à pessoa adulta responsável (<ph name="PARENT_NAME" />)</translation>
 <translation id="8127542551745560481">Editar página inicial</translation>
 <translation id="8130309322784422030">As suas informações de início de sessão armazenadas podem estar desatualizadas</translation>
 <translation id="813082847718468539">Ver informações do Website</translation>

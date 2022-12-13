@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Փակե՞լ բոլոր ինկոգնիտո ներդիրները</translation>
 <translation id="1657719826150349398">Տեղափոխել ներդիրը ներքև</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ներդիր}one{<ph name="TABS_COUNT_MANY" /> ներդիր}other{<ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Էջանշել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը}one{Էջանշել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը}other{Էջանշել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}}</translation>
 <translation id="2118649612461486615">Տեղեկություններ խանութի մասին</translation>
 <translation id="2162620598375156287">Այժմ <ph name="CURRENT_PRICE" />՝ <ph name="SOURCE_WEBSITE" /> կայքում</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Հեռացնել ներդիրը խմբից}one{Հեռացնել ներդիրը խմբից}other{Հեռացնել ներդիրները խմբից}}</translation>
 <translation id="2277224997687551299">Փոփոխել խմբի անունը</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Հեռացնել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը խմբից։}one{Հեռացնել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը խմբից։}other{Հեռացնել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները խմբից։}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Էջանշել ներդիրը}one{Էջանշել ներդիրը}other{Էջանշել ներդիրները}}</translation>
 <translation id="2479148705183875116">Անցնել կարգավորումներ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ծալել <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}other{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}}</translation>
 <translation id="2569352796411618312">Ձեր ներդիրներից <ph name="NUMBER_OF_TABS" />-ը վաղուց չեք օգտագործել։ Փակե՞լ դրանք։</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Տեղափոխել ներդիրը վերև</translation>
 <translation id="8304833501377495048">Այլևս ցույց չտա՞լ ներդիրների հատվածը։</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Փակել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը}one{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը}other{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}}</translation>
+<translation id="8398929769197326728">Նոր պանակ – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Ծավալել <ph name="NUMBER_OF_TABS" /> ներդիրից բաղկացած խումբը։</translation>
 <translation id="8714939927607906138">Ավելի ցածր գին</translation>
 <translation id="8749939518995770034">Ներդիրների հատվածը փակված է</translation>

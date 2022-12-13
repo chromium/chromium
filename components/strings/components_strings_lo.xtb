@@ -413,7 +413,6 @@
 <translation id="1958218078413065209">ຄະແນນສູງສຸດຂອງທ່ານແມ່ນ <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">ຊ່ວຍປັບປຸງຄວາມປອດໄພຂອງເວັບໄຊສຳລັບທຸກຄົນໂດຍການສົ່ງ <ph name="BEGIN_WHITEPAPER_LINK" />URL ຂອງບາງໜ້າເວັບທີ່ທ່ານເຂົ້າເບິ່ງ, ຂໍ້ມູນລະບົບແບບຈຳກັດ ແລະ ບາງເນື້ອຫາໃນໜ້າເວັບ<ph name="END_WHITEPAPER_LINK" /> ໄປໃຫ້ Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">ບຸກມາກສ໌ ່<ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">ປົກປ້ອງລະຫັດຜ່ານດ້ວຍ TouchID</translation>
 <translation id="1973335181906896915">ຄວາມ​ຜິດ​ພາດການສ້າງລໍາດັບ</translation>
 <translation id="1974060860693918893">ຂັ້ນສູງ</translation>
 <translation id="1975457531113383421">ຖາດປ້ອນເຂົ້າ</translation>
@@ -748,7 +747,6 @@
 <translation id="2881276955470682203">ບັນທຶກບັດບໍ?</translation>
 <translation id="2882949212241984732">ພົບທົບສີ່ຕອນ</translation>
 <translation id="2893773853358652045">ມ້ວນທີສີ່</translation>
-<translation id="289834758818479772">ຫາກທ່ານແບ່ງປັນອຸປະກອນນີ້ກັບຄົນອື່ນ, ທ່ານສາມາດເປີດໃຊ້ TouchID ເພື່ອຢັ້ງຢືນວ່າແມ່ນທ່ານໃນຕອນທີ່ທ່ານໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໄດ້</translation>
 <translation id="2900528713135656174">ສ້າງເຫດການ</translation>
 <translation id="2903493209154104877">ທີ່​ຢູ່</translation>
 <translation id="290376772003165898">ໜ້າບໍ່ຢູ່ໃນ <ph name="LANGUAGE" /> ບໍ?</translation>
@@ -1066,7 +1064,6 @@
 <translation id="3678529606614285348">ເປີດໜ້າເວັບໃນໜ້າຈໍແບບບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່ (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">ຂໍ້ມູນໃບຢັ້ງຢືນ</translation>
 <translation id="3693327506115126094">ເລືອກວິທີທີ່ທ່ານຈະຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້</translation>
-<translation id="3699374065820972102">TouchID ເປີດຢູ່ເພື່ອຕື່ມລະຫັດຜ່ານ</translation>
 <translation id="3701427423622901115">ຮັບຮູ້ການຣີເຊັດແລ້ວ.</translation>
 <translation id="3704162925118123524">ເຄືອ​ຂ່າຍ​ທີ່​ທ່ານ​ກຳ​ລັງ​ໃຊ້​ອາດ​ຈະ​ຕ້ອງ​ການ​ໃຫ້​ທ່ານ​ເຂົ້າ​ເບິ່ງ​ໜ້າ​ເຂົ້າ​ລະ​ບົບ​ຂອງ​ມັນ.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1181,7 +1178,6 @@
 <translation id="401170183602135785">Envelope C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{ເອກະສານ PDF ທີ່ປະກອບມີ {COUNT} ໜ້າ}other{ເອກະສານ PDF ທີ່ປະກອບມີ {COUNT} ໜ້າ}}</translation>
 <translation id="4023431997072828269">ເພາະວ່າແບບຟອມນີ້ກຳລັງຖືກສົ່ງໂດຍໃຊ້ການເຊື່ອມຕໍ່ທີ່ບໍ່ປອດໄພ, ຄົນອື່ນຈຶ່ງສາມາດເຫັນຂໍ້ມູນຂອງທ່ານໄດ້.</translation>
-<translation id="4024923292610332139">ປິດ TouchID ສຳລັບການຕື່ມລະຫັດຜ່ານ</translation>
 <translation id="4025913568718019429">ປຸ່ມຈັດການການຕັ້ງຄ່າຄວາມເປັນສ່ວນຕົວ Google, ກົດ Enter ເພື່ອເຂົ້າເບິ່ງການຕັ້ງຄ່າຄວາມເປັນສ່ວນຕົວບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="4030383055268325496">ປ່ຽນ​ກັບ​ຄືນຄໍາສັ່ງເພີ່ມ</translation>
 <translation id="4031179711345676612">ອະນຸຍາດໄມໂຄຣໂຟນແລ້ວ</translation>
@@ -1543,7 +1539,6 @@
 <translation id="4900217275619098670">ມ້ວນທີເກົ້າ</translation>
 <translation id="4901778704868714008">ບັນທຶກ...</translation>
 <translation id="4905659621780993806">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຈະຣີສະຕາດອຸປະກອນຂອງທ່ານໂດຍອັດຕະໂນມັດເວລາ <ph name="TIME" /> ໃນ <ph name="DATE" />. ກະລຸນາບັນທຶກລາຍການທີ່ເປີດໄວ້ກ່ອນອຸປະກອນຂອງທ່ານຈະຣີສະຕາດ.</translation>
-<translation id="4911007278801291296">ທ່ານສາມາດເປີດ ຫຼື ປິດ TouchID ໄດ້ຢູ່ໃນ <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">ເຈາະຮູຢູ່ເທິງສຸດເບື້ອງຊ້າຍ</translation>
 <translation id="4918221908152712722">ຕິດຕັ້ງ <ph name="APP_NAME" /> (ບໍ່ຈໍາເປັນຕ້ອງດາວໂຫຼດ)</translation>
 <translation id="4923459931733593730">ການຈ່າຍເງິນ</translation>
@@ -1725,6 +1720,7 @@
 <translation id="5334013548165032829">ບັນທຶກລະບົບລະອຽດ</translation>
 <translation id="5334145288572353250">ບັນທຶກທີ່ຢູ່ບໍ?</translation>
 <translation id="5335920952954443287">ຫົວໃຈເຕັ້ນ</translation>
+<translation id="5337569431717511221">ປຸ່ມຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ, ກົດ Enter ເພື່ອຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງລະບົບ</translation>
 <translation id="5340250774223869109">ແອັບພລິເຄຊັນຖືກບລັອກໄວ້</translation>
 <translation id="534295439873310000">ອຸປະກອນ NFC</translation>
 <translation id="5344579389779391559">ໜ້ານີ້ອາດຈະພະຍາຍາມຮຽກເກັບເງິນນຳທ່ານ</translation>
@@ -1756,7 +1752,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> ຕ້ອງການສົ່ງການແຈ້ງເຕືອນໃຫ້ທ່ານ</translation>
 <translation id="5428105026674456456">ພາສາສະເປນ</translation>
 <translation id="5430298929874300616">ເອົາບຸກມາກຄ໌ອອກໄປ</translation>
-<translation id="5434423669266814150">ເປີດໃຊ້ TouchID ສຳລັບການຕື່ມລະຫັດຜ່ານ</translation>
 <translation id="5443468954631487277">ລຳດັບຍ້ອນກັບປີ້ນໜ້າຂຶ້ນ</translation>
 <translation id="5447765697759493033">ເວັບໄຊນີ້ຈະບໍ່ຖືກແປ</translation>
 <translation id="5452270690849572955">ບໍ່ສາມາດຊອກພົບໜ້າ <ph name="HOST_NAME" /> ນີ້ໄດ້</translation>
@@ -2420,6 +2415,7 @@
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດເຫັນ:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນ Enter ເພື່ອເປີດແຖບທີ່ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່ເພື່ອຊອກຫາແບບສ່ວນຕົວ</translation>
+<translation id="7203375778433816396">ຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງລະບົບ</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ບໍ່ປະຕິບັດຕາມມາດຕະຖານຄວາມປອດໄພ.</translation>
 <translation id="7210993021468939304">ການເຄື່ອນໄຫວ Linux ພາຍໃນກ່ອງບັນຈຸ ແລະ ສາມາດຕິດຕັ້ງ ແລະ ເປີດໃຊ້ແອັບ Linux ພາຍໃນກ່ອງບັນຈຸໄດ້</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ<ph name="END_LINK" /> ກ່ຽວ​ກັບ​ບັນ​ຫາ​ນີ້​.</translation>
@@ -2567,6 +2563,7 @@
 <translation id="7537536606612762813">ບັງ​ຄັບ</translation>
 <translation id="7542403920425041731">ເມື່ອທ່ານຢືນຢັນແລ້ວ, ລາຍລະອຽດບັດຂອງທ່ານຈະຖືກແບ່ງປັນກັບເວັບໄຊນີ້.</translation>
 <translation id="7542995811387359312">ການຕື່ມໃສ່ບັດເຄຣດິດອັດຕະໂນມັດປິດໃຊ້ງານ ເພາະວ່າແບບຟອມນີ້ບໍ່ໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພ.</translation>
+<translation id="7546409722674205727">ເລີ່ມຕົ້ນການນຳໃຊ້ <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">ແກ້ໄຂຂໍ້ຜິດພາດຂອງການເຊື່ອມຕໍ່</translation>
 <translation id="7549584377607005141">ເວັບໄຊທ໌ນີ້ຕ້ອງການຂໍ້ມູນທີ່ທ່ານປ້ອນແຕ່ຫົວທີ ເພື່ອໃຫ້ສະແດງຂຶ້ນຢ່າງຖືກຕ້ອງ. ທ່ານສາມາດສົ່ງຂໍ້ມູນນີ້ໄດ້ອີກ, ແຕ່ໂດຍການເຮັດແນວນັ້ນ ທ່ານອາດຈະເຮັດການກະທໍາໃດໜຶ່ງຊໍ້າຄືນໜ້ານີ້ທີ່ໄດ້ເຮັດຜ່ານມາແລ້ວ.</translation>
 <translation id="7550637293666041147">ຊື່ຜູ້ໃຊ້ອຸປະກອນ ແລະ ຊື່ຜູ້ໃຊ້ Chrome ຂອງທ່ານ</translation>
@@ -2752,6 +2749,7 @@
 <translation id="8009843239480947060">10 x 11 ນິ້ວ</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{ບັດນີ້ ແລະ ທີ່ຢູ່ຮຽກເກັບເງິນຂອງມັນຈະຖືກບັນທຶກໄວ້. ທ່ານຈະສາມາດໃຊ້ມັນໄດ້ໃນເວລາເຂົ້າສູ່ລະບົບ <ph name="USER_EMAIL" />.}other{ບັດເຫຼົ່ານີ້ ແລະ ທີ່ຢູ່ຮຽກເກັບເງິນຂອງພວກມັນຈະຖືກບັນທຶກໄວ້. ທ່ານຈະສາມາດໃຊ້ພວກມັນໄດ້ໃນເວລາເຂົ້າສູ່ລະບົບ <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດແຖບ ຈາກນັ້ນກົດ Enter ເພື່ອຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງລະບົບ</translation>
 <translation id="8025119109950072390">ຜູ້ໂຈມຕີໃນເວັບໄຊນີ້ອາດຈະຫຼອກໃຫ້ທ່ານເຮັດບາງຢ່າງທີ່ອັນຕະລາຍ ເຊັ່ນ ການຕິດຕັ້ງຊອບແວ ຫຼື ເປີດເຜີຍຂໍ້ມູນສ່ວນຕົວຂອງທ່ານ (ຕົວຢ່າງ: ລະຫັດຜ່ານ, ເບີໂທລະສັບ ຫຼື ບັດເຄຣດິດ).</translation>
 <translation id="8026334261755873520">ລຶບຂໍ້​ມູນການທ່ອງ​ເນັດ</translation>
 <translation id="8027077570865220386">ຖາດ 15</translation>

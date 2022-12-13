@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Otkaži zadatak štampanja</translation>
 <translation id="2163937499206714165">Uključite tamni režim</translation>
 <translation id="2180197493692062006">Došlo je do greške. Probajte da ponovo otvorite aplikaciju.</translation>
-<translation id="2184005227776731758">Naziv pristupne tačke</translation>
 <translation id="2209788852729124853">Resetuj brojače saobraćaja</translation>
 <translation id="2212733584906323460">Razrešavanje imena</translation>
 <translation id="2217935453350629363">Trenutna brzina</translation>
@@ -492,6 +491,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Automatski prelazite na tamnu temu u vreme zalaska sunca</translation>
+<translation id="5571714952674387371">Pregledajte i izmenite detalje</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skeniraj ponovo</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -689,7 +689,6 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="741244894080940828">konverziju</translation>
 <translation id="7415801143053185905">Veoma veliko HTTP kašnjenje</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skeniranje je završeno. Skenirana je 1 stranica}one{Skeniranje je završeno. Skenirana je {NUMBER_OF_PAGES} stranica}few{Skeniranje je završeno. Skenirane su {NUMBER_OF_PAGES} stranice}other{Skeniranje je završeno. Skenirano je {NUMBER_OF_PAGES} stranica}}</translation>
 <translation id="7458970041932198923">Povežite se na mrežu i ponovo učitajte stranicu da biste videli i podesili avatare.</translation>
 <translation id="7469648432129124067">Otkriven je portal</translation>
 <translation id="7481312909269577407">Prosledi</translation>
@@ -796,6 +795,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8498220429738806196">Brojači saobraćaja</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="8503836310948963452">Još samo par minuta…</translation>
+<translation id="8508640263392900755">Detalji naziva pristupne tačke</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Mobilni operater može da zatraži ovu opciju radi povezivanja na mrežu. Obratite se mobilnom operateru za detalje.</translation>
 <translation id="8576249514688522074">Nije pokrenuto</translation>
@@ -871,6 +871,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="9173638680043580060">Preostalo je manje od minuta</translation>
 <translation id="917720651393141712">Testiraj</translation>
 <translation id="9188992814426075118">Tastatura može automatski da se podudara sa pozadinom</translation>
+<translation id="9193744392140377127">Naziv pristupne tačke*</translation>
 <translation id="9204237731135241582">Kontakt sa mrežnim prolazom ne uspeva iz Android aplikacija</translation>
 <translation id="9211490828691860325">Sve radne površine</translation>
 <translation id="932327136139879170">Početna</translation>

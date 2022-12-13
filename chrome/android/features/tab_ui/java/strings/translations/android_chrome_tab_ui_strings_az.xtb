@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Bütün Anonim tablar bağlansın?</translation>
 <translation id="1657719826150349398">Tabı aşağıya daşıyın</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Seçilmiş <ph name="TABS_COUNT_ONE" /> taba əlfəcin əlavə edin}other{Seçilmiş <ph name="TABS_COUNT_MANY" /> taba əlfəcin əlavə edin}}</translation>
 <translation id="2118649612461486615">Mağaza məlumatları</translation>
 <translation id="2162620598375156287">İndi <ph name="SOURCE_WEBSITE" /> saytında <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Tabı ayırın}other{Tabları ayırın}}</translation>
 <translation id="2277224997687551299">Qrup adına düzəliş edin</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> seçilmiş tabı qrupdan silin.}other{<ph name="TABS_COUNT_MANY" /> seçilmiş tabı qrupdan silin.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Taba əlfəcin əlavə edin}other{Tablara əlfəcin əlavə edin}}</translation>
 <translation id="2479148705183875116">Ayarlara keçin</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabını yığcamlaşdırın.}other{<ph name="TABS_COUNT_MANY" /> tab olan tab qrupunu yığcamlaşdırın.}}</translation>
 <translation id="2569352796411618312">Təklif: <ph name="NUMBER_OF_TABS" /> tabel bu yaxınlarda istifadə edilməyib. Bağlansınlar?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Tabı yuxarıya daşıyın</translation>
 <translation id="8304833501377495048">Tab zolağı bir daha göstərilməsin?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Seçilmiş <ph name="TABS_COUNT_ONE" /> tabeli bağlayın}other{Seçilmiş <ph name="TABS_COUNT_MANY" /> tabeli bağlayın}}</translation>
+<translation id="8398929769197326728">Yeni Qovluq - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> tab olan tab qrupunu genişləndirin.</translation>
 <translation id="8714939927607906138">Aşağı qiymət</translation>
 <translation id="8749939518995770034">Tab zolağı bağlıdır</translation>

@@ -413,7 +413,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1958218078413065209">Dein Highscore ist <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Hilf mit, die Sicherheit im Web für alle zu verbessern, und sende die <ph name="BEGIN_WHITEPAPER_LINK" />URLs einiger von dir besuchter Seiten, eingeschränkte Systemdaten und manche Seiteninhalte<ph name="END_WHITEPAPER_LINK" /> an Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Datenschutzerklärung<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" />-Lesezeichen</translation>
-<translation id="1971033026002113380">Passwörter mit Touch ID schützen</translation>
 <translation id="1973335181906896915">Fehler bei der Serialisierung</translation>
 <translation id="1974060860693918893">Erweitert</translation>
 <translation id="1975457531113383421">Papierfach</translation>
@@ -748,7 +747,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2881276955470682203">Karte speichern?</translation>
 <translation id="2882949212241984732">Doppelte Fensterfaltung</translation>
 <translation id="2893773853358652045">Vierte Rolle</translation>
-<translation id="289834758818479772">Wenn du dieses Gerät gemeinsam mit anderen nutzt, kannst du Touch ID aktivieren, um deine Identität zu bestätigen, wenn du ein gespeichertes Passwort verwendest</translation>
 <translation id="2900528713135656174">Termin erstellen</translation>
 <translation id="2903493209154104877">Adressen</translation>
 <translation id="290376772003165898">Diese Seite ist nicht auf <ph name="LANGUAGE" />?</translation>
@@ -1064,7 +1062,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3678529606614285348">Seite in einem neuen Inkognitofenster öffnen (Strg + Umschalttaste + N)</translation>
 <translation id="3681007416295224113">Zertifikatinformationen</translation>
 <translation id="3693327506115126094">Methode zur Bestätigung deiner Identität auswählen</translation>
-<translation id="3699374065820972102">TouchID ist zum Ausfüllen von Passwörtern aktiviert</translation>
 <translation id="3701427423622901115">Zurücksetzen bestätigt.</translation>
 <translation id="3704162925118123524">Eventuell musst du die Anmeldeseite des verwendeten Netzwerks aufrufen.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1179,7 +1176,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="401170183602135785">Umschlag C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-Dokument mit {COUNT} Seite}other{PDF-Dokument mit {COUNT} Seiten}}</translation>
 <translation id="4023431997072828269">Dieses Formular wird über eine Verbindung gesendet, die nicht vollständig sicher ist. Hierdurch können deine Informationen für andere sichtbar sein.</translation>
-<translation id="4024923292610332139">Touch ID zum Ausfüllen von Passwörtern deaktivieren</translation>
 <translation id="4025913568718019429">Schaltfläche „Datenschutzeinstellungen des Google-Kontos verwalten“ – drücke die Eingabetaste, um die Datenschutzeinstellungen deines Google-Kontos aufzurufen</translation>
 <translation id="4030383055268325496">&amp;Hinzufügen rückgängig machen</translation>
 <translation id="4031179711345676612">Mikrofonnutzung zulässig</translation>
@@ -1541,7 +1537,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4900217275619098670">Neunte Rolle</translation>
 <translation id="4901778704868714008">Wird gespeichert...</translation>
 <translation id="4905659621780993806">Dein Administrator startet das Gerät automatisch am <ph name="DATE" /> um <ph name="TIME" /> neu. Speichere vor dem Neustart alle geöffneten Inhalte.</translation>
-<translation id="4911007278801291296">Du kannst TouchID in den <ph name="SETTINGS" /> aktivieren oder deaktivieren</translation>
 <translation id="4913987521957242411">Lochung oben links</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> installieren (kein Download erforderlich)</translation>
 <translation id="4923459931733593730">Zahlung</translation>
@@ -1723,6 +1718,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5334013548165032829">Detaillierte Systemprotokolle</translation>
 <translation id="5334145288572353250">Adresse speichern?</translation>
 <translation id="5335920952954443287">Schlagendes Herz</translation>
+<translation id="5337569431717511221">Schaltfläche „Google Chrome als Standardbrowser festlegen“ – Drück die Eingabetaste, um Chrome als Standardbrowser für das System festzulegen</translation>
 <translation id="5340250774223869109">Die App ist blockiert</translation>
 <translation id="534295439873310000">NFC-Geräte</translation>
 <translation id="5344579389779391559">Auf dieser Seite wird möglicherweise versucht, dir etwas in Rechnung zu stellen</translation>
@@ -1754,7 +1750,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5426179911063097041"><ph name="SITE" /> möchte dir Benachrichtigungen senden</translation>
 <translation id="5428105026674456456">Spanisch</translation>
 <translation id="5430298929874300616">Lesezeichen löschen</translation>
-<translation id="5434423669266814150">Touch ID zum Ausfüllen von Passwörtern zu aktivieren</translation>
 <translation id="5443468954631487277">Umgekehrte Reihenfolge mit der Vorderseite nach oben</translation>
 <translation id="5447765697759493033">Diese Website wird nicht übersetzt</translation>
 <translation id="5452270690849572955">Diese <ph name="HOST_NAME" />-Seite wurde nicht gefunden</translation>
@@ -2418,6 +2413,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Dein Administrator hat Zugriff auf Folgendes:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und die Eingabetaste, um einen neuen Inkognitotab zu öffnen und privat zu surfen</translation>
+<translation id="7203375778433816396">Chrome als Standardbrowser für das System festlegen</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> erfüllt die Sicherheitsstandards nicht.</translation>
 <translation id="7210993021468939304">Linux-Aktivität innerhalb des Containers, kann Linux-Anwendungen innerhalb des Containers installieren und ausführen</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /> zu diesem Problem.</translation>
@@ -2565,6 +2561,7 @@ Weitere Details:
 <translation id="7537536606612762813">Verbindlich</translation>
 <translation id="7542403920425041731">Nach erfolgter Bestätigung werden die Kartendetails an diese Website weitergegeben.</translation>
 <translation id="7542995811387359312">Die Funktion zur automatischen Ausfüllung der Kreditkartendaten ist deaktiviert, da dieses Formular keine sichere Verbindung nutzt.</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" /> wird gestartet</translation>
 <translation id="7548892272833184391">Verbindungsfehler beheben</translation>
 <translation id="7549584377607005141">Damit diese Webseite richtig angezeigt wird, werden die Daten benötigt, die du vorher eingegeben hast. Du kannst diese Daten noch einmal senden, dabei werden jedoch sämtliche Aktionen wiederholt, die vorher durch diese Seite ausgeführt wurden.</translation>
 <translation id="7550637293666041147">Deine Nutzernamen auf dem Gerät und in Chrome</translation>
@@ -2750,6 +2747,7 @@ Weitere Details:
 <translation id="8009843239480947060">10 × 11 Zoll</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Diese Karte und die entsprechende Rechnungsadresse werden gespeichert. Du kannst sie nutzen, wenn du in <ph name="USER_EMAIL" /> angemeldet bist.}other{Diese Karten und die entsprechenden Rechnungsadressen werden gespeichert. Du kannst sie nutzen, wenn du in <ph name="USER_EMAIL" /> angemeldet bist.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" /> – Drück die Tabulatortaste und dann die Eingabetaste, um Chrome als Standardbrowser für das System festzulegen</translation>
 <translation id="8025119109950072390">Unbefugte Dritte auf dieser Website versuchen unter Umständen auf betrügerische Weise, dich zur Installation von Software zu bewegen oder dir personenbezogene Daten zu entlocken, zum Beispiel Passwörter, Telefonnummern oder Kreditkartendaten.</translation>
 <translation id="8026334261755873520">Browserdaten löschen</translation>
 <translation id="8027077570865220386">Fach 15</translation>

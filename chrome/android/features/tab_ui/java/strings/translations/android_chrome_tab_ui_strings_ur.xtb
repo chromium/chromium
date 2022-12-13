@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">سبھی پوشیدگی ٹیبز بند کریں؟</translation>
 <translation id="1657719826150349398">ٹیب کو نیچے منتقل کریں</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب}other{<ph name="TABS_COUNT_MANY" /> ٹیبز}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب کو بُک مارک کریں}other{<ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیبز کو بُک مارک کریں}}</translation>
 <translation id="2118649612461486615">اسٹور کی معلومات</translation>
 <translation id="2162620598375156287">اب <ph name="CURRENT_PRICE" /><ph name="SOURCE_WEBSITE" /> پر</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ٹیب کو گروپ سے ہٹا دیں}other{ٹیبز کو گروپ سے ہٹا دیں}}</translation>
 <translation id="2277224997687551299">گروپ کے نام میں ترمیم کریں</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{گروپ سے <ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب کو ہٹائیں۔}other{گروپ سے <ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیبز کو ہٹائیں۔}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{ٹیب کو بُک مارک کریں}other{ٹیبز کو بُک مارک کریں}}</translation>
 <translation id="2479148705183875116">ترتیبات پر جائیں</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب کو سکیڑیں۔}other{ٹیب گروپ کو <ph name="TABS_COUNT_MANY" /> ٹیبز کے ساتھ سکیڑیں۔}}</translation>
 <translation id="2569352796411618312">تجویز: آپ کے ٹیبز میں سے <ph name="NUMBER_OF_TABS" /> کا استعمال حال میں نہیں ہوا ہے۔ انہیں بند کریں؟</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">ٹیب اوپر منتقل کریں</translation>
 <translation id="8304833501377495048">ٹیب اسٹرپ کو دوبارہ نہ دکھائیں؟</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب بند کریں}other{<ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیبز بند کریں}}</translation>
+<translation id="8398929769197326728">نیا فولڈر - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">ٹیب گروپ کو <ph name="NUMBER_OF_TABS" /> ٹیبز کے ساتھ پھیلائیں۔</translation>
 <translation id="8714939927607906138">کم قیمت</translation>
 <translation id="8749939518995770034">بند ٹیب اسٹرپ</translation>

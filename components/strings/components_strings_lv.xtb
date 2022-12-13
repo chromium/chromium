@@ -271,6 +271,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1586541204584340881">Kurus paplašinājumus esat instalējis</translation>
 <translation id="1588438908519853928">Parasts</translation>
 <translation id="1592005682883173041">Piekļuve lokālajiem datiem</translation>
+<translation id="1593359183944365958">Par 270 grādiem</translation>
 <translation id="1594030484168838125">Izvēlēties</translation>
 <translation id="1596296697375291157">Trilleri, noziegumu un šausmu filmas</translation>
 <translation id="1599199147673445968">Vai jums ir jauna karte? <ph name="BEGIN_LINK" />Ievadīt kartes datus<ph name="END_LINK" /></translation>
@@ -337,6 +338,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1741613555002899862">Ir jābūt norādītai politikas vērtībai un derīgai virknei, ja DnsOverHttpsMode vērtība ir <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Jūsu pārlūks tiek pārvaldīts</translation>
 <translation id="1746113442205726301">Attēla nobīde uz Y ass</translation>
+<translation id="1746531169546376413">Par 0 grādiem</translation>
 <translation id="17513872634828108">Atvērt cilnes</translation>
 <translation id="1752021286346845558">8. pastkaste</translation>
 <translation id="1753068535428855445">Randiņi un iepazīšanās sludinājumi</translation>
@@ -411,7 +413,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1958218078413065209">Jūsu vislabākais rezultāts ir <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Palīdzēt uzlabot drošību tīmeklī visiem, nosūtot Google serveriem <ph name="BEGIN_WHITEPAPER_LINK" />dažu apmeklēto lapu vietrāžus URL, ierobežotu sistēmas informāciju un daļu lapu satura<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Konfidencialitātes politika<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> grāmatzīmes</translation>
-<translation id="1971033026002113380">Paroļu aizsardzība, izmantojot Touch ID</translation>
 <translation id="1973335181906896915">Radās serializēšanas kļūda.</translation>
 <translation id="1974060860693918893">Papildu</translation>
 <translation id="1975457531113383421">Ievades paplāte</translation>
@@ -746,7 +747,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2881276955470682203">Vai saglabāt karti?</translation>
 <translation id="2882949212241984732">Dubults abpusējs locījums</translation>
 <translation id="2893773853358652045">Ceturtais rullis</translation>
-<translation id="289834758818479772">Ja šo ierīci izmanto arī citas personas, varat ieslēgt Touch ID, lai tiktu pārbaudīta jūsu identitāte ikreiz, kad izmantojat saglabātu paroli.</translation>
 <translation id="2900528713135656174">Izveidot pasākumu</translation>
 <translation id="2903493209154104877">Adreses</translation>
 <translation id="290376772003165898">Vai lapa nav šajā valodā: <ph name="LANGUAGE" />?</translation>
@@ -1063,7 +1063,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3678529606614285348">Atvērt lapu jaunā inkognito režīma logā (Ctrl+Shift+N)</translation>
 <translation id="3681007416295224113">Sertifikāta informācija</translation>
 <translation id="3693327506115126094">Identitātes apstiprināšanas veida izvēle</translation>
-<translation id="3699374065820972102">Paroļu aizpildei ir ieslēgta funkcija Touch ID.</translation>
 <translation id="3701427423622901115">Atiestatīšana apstiprināta.</translation>
 <translation id="3704162925118123524">Iespējams, izmantotajā tīklā tiks pieprasīts apmeklēt pieteikšanās lapu.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> — <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1178,7 +1177,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="401170183602135785">Aploksne C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF dokumentā ir {COUNT} lapa}zero{PDF dokumentā ir {COUNT} lapas}one{PDF dokumentā ir {COUNT} lapa}other{PDF dokumentā ir {COUNT} lapas}}</translation>
 <translation id="4023431997072828269">Tā kā šī veidlapa tiek iesniegta, izmantojot nedrošu savienojumu, jūsu informācija būs redzama citām personām.</translation>
-<translation id="4024923292610332139">izslēgt funkciju Touch ID, kas paredzēta paroļu aizpildei</translation>
 <translation id="4025913568718019429">Poga Pārvaldīt Google konfidencialitātes iestatījumus. Lai pārietu uz Google konta konfidencialitātes iestatījumiem, nospiediet taustiņu Enter.</translation>
 <translation id="4030383055268325496">&amp;Atsaukt pievienošanu</translation>
 <translation id="4031179711345676612">Mikrofona lietošana ir atļauta</translation>
@@ -1540,7 +1538,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4900217275619098670">Devītais rullis</translation>
 <translation id="4901778704868714008">Saglabāt...</translation>
 <translation id="4905659621780993806">Jūsu administrators automātiski restartēs jūsu ierīci plkst. <ph name="TIME" /> šādā datumā: <ph name="DATE" />. Saglabājiet visus atvērtos failus, pirms ierīce tiek restartēta.</translation>
-<translation id="4911007278801291296">Varat ieslēgt vai izslēgt funkciju Touch ID sadaļā <ph name="SETTINGS" />.</translation>
 <translation id="4913987521957242411">Caurums augšējā kreisajā malā</translation>
 <translation id="4918221908152712722">Instalējiet lietotni <ph name="APP_NAME" /> (nav nepieciešama lejupielāde)</translation>
 <translation id="4923459931733593730">Maksājums</translation>
@@ -1722,6 +1719,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5334013548165032829">Sistēmas žurnāli ar detalizētu informāciju</translation>
 <translation id="5334145288572353250">Vai saglabāt adresi?</translation>
 <translation id="5335920952954443287">Pukstoša sirds</translation>
+<translation id="5337569431717511221">Poga “Iestatīt Chrome kā noklusējuma pārlūku”; ja vēlaties iestatīt Chrome kā sistēmas noklusējuma pārlūku, nospiediet taustiņu Enter.</translation>
 <translation id="5340250774223869109">Lietojumprogramma ir bloķēta</translation>
 <translation id="534295439873310000">NFC ierīces</translation>
 <translation id="5344579389779391559">Šajā lapā var tikt mēģināts pieprasīt naudu</translation>
@@ -1753,7 +1751,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5426179911063097041">No vietnes <ph name="SITE" /> tiek mēģināts nosūtīt paziņojumus.</translation>
 <translation id="5428105026674456456">Spāņu valoda</translation>
 <translation id="5430298929874300616">Noņemt grāmatzīmi</translation>
-<translation id="5434423669266814150">ieslēgt Touch ID, lai aizpildītu paroles</translation>
 <translation id="5443468954631487277">Pretēja secība, virspuse uz augšu</translation>
 <translation id="5447765697759493033">Šī vietne netiks tulkota</translation>
 <translation id="5452270690849572955">Šo vietnes <ph name="HOST_NAME" /> lapu nevar atrast</translation>
@@ -1795,6 +1792,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5540969246441091044">Jāšana</translation>
 <translation id="5541086400771735334">7. pastkaste</translation>
 <translation id="5541546772353173584">E-pasta adreses pievienošana</translation>
+<translation id="5543722831081909240">Par 180 grādiem</translation>
 <translation id="5545756402275714221">Ieteiktie raksti</translation>
 <translation id="5551890439174915351">100 x 200 mm</translation>
 <translation id="5552137475244467770">Pārlūkā Chrome tiek periodiski pārbaudītas jūsu paroles, salīdzinot tās ar tiešsaistē publicētiem sarakstiem. Šo pārbaužu laikā paroles un lietotājvārdi ir šifrēti, lai neviens tos nevarētu lasīt, tostarp Google.</translation>
@@ -2183,6 +2181,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6591833882275308647">Jūsu <ph name="DEVICE_TYPE" /> ierīce netiek pārvaldīta</translation>
 <translation id="6592952801936330159">Poga ”Pārvaldīt vietnes iestatījumus”: nospiediet ievadīšanas taustiņu, lai Chrome iestatījumos pārvaldītu atļaujas un datus, kas tiek glabāti vietnēs.</translation>
 <translation id="6596325263575161958">Šifrēšanas opcijas</translation>
+<translation id="6597665340361269064">Par 90 grādiem</translation>
 <translation id="6599642189720630047">Izsekotie produkti</translation>
 <translation id="6611723696964473273">Ekonomikas ziņas</translation>
 <translation id="6612010098632894193">Tiešsaistes video</translation>
@@ -2415,6 +2414,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Administrators var redzēt:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai privātai pārlūkošanai atvērtu inkognito cilni, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
+<translation id="7203375778433816396">Iestatīt Chrome kā sistēmas noklusējuma pārlūku</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> neatbilst drošības standartiem.</translation>
 <translation id="7210993021468939304">Linux darbība konteinerā; var instalēt un palaist Linux lietotnes konteinerā</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" /> par šo problēmu.</translation>
@@ -2562,6 +2562,7 @@ Papildu informācija:
 <translation id="7537536606612762813">Obligāti</translation>
 <translation id="7542403920425041731">Pēc apstiprinājuma jūsu kartes informācija tiks kopīgota ar šo vietni.</translation>
 <translation id="7542995811387359312">Automātiska kredītkartes numura ievadīšana ir atspējota, jo šai veidlapai netiek izmantots drošs savienojums.</translation>
+<translation id="7546409722674205727">Notiek lietotnes <ph name="APP_NAME" /> palaišana</translation>
 <translation id="7548892272833184391">Savienojuma kļūdu novēršana</translation>
 <translation id="7549584377607005141">Lai tīmekļa lapu varētu attēlot pareizi, tai nepieciešami jūsu iepriekš ievadītie dati. Varat atkārtoti nosūtīt šos datus, taču tādā gadījumā tiks atkārtota ikviena darbība, ko pirms tam veica lapa.</translation>
 <translation id="7550637293666041147">Jūsu lietotājvārds ierīcē un pārlūkā Chrome</translation>
@@ -2747,6 +2748,7 @@ Papildu informācija:
 <translation id="8009843239480947060">10 x 11 collas</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Šī karte un tās norēķinu adrese tiks saglabāta. Jūs varēsiet to izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}zero{Šīs kartes un to norēķinu adreses tiks saglabātas. Jūs varēsiet tās izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}one{Šīs kartes un to norēķinu adreses tiks saglabātas. Jūs varēsiet tās izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}other{Šīs kartes un to norēķinu adreses tiks saglabātas. Jūs varēsiet tās izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />; lai iestatītu Chrome kā sistēmas noklusējuma pārlūku, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="8025119109950072390">Uzbrucēji šajā vietnē var mudināt jūs veikt bīstamas darbības, piemēram, instalēt programmatūru vai atklāt savu personas informāciju (piemēram, paroles, tālruņa numurus vai informāciju par kredītkartēm).</translation>
 <translation id="8026334261755873520">Notīrīt pārlūkošanas datus</translation>
 <translation id="8027077570865220386">15. paplāte</translation>

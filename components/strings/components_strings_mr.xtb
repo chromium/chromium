@@ -271,6 +271,7 @@
 <translation id="1586541204584340881">तुम्ही कोणती एक्स्टेंशन इंस्टॉल केली आहेत</translation>
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="1592005682883173041">स्थानिक डेटा ॲक्सेस</translation>
+<translation id="1593359183944365958">२७० अंश</translation>
 <translation id="1594030484168838125">निवडा</translation>
 <translation id="1596296697375291157">रोमांचक, गुन्हेविषयक आणि गूढ चित्रपट</translation>
 <translation id="1599199147673445968">नवीन कार्ड हवे आहे? <ph name="BEGIN_LINK" />कार्ड तपशील एंटर करा<ph name="END_LINK" /></translation>
@@ -337,6 +338,7 @@
 <translation id="1741613555002899862">DnsOverHttpsMode हे <ph name="SECURE_DNS_MODE_SECURE" /> असेल तेव्हा धोरण नमूद केलेले असणे आणि एक योग्य स्ट्रिंग असणे आवश्यक आहे.</translation>
 <translation id="1745880797583122200">तुमचा ब्राउझर व्यवस्थापित केला आहे</translation>
 <translation id="1746113442205726301">इमेज Y शिफ्ट</translation>
+<translation id="1746531169546376413">० अंश</translation>
 <translation id="17513872634828108">खुले टॅब</translation>
 <translation id="1752021286346845558">मेलबॉक्स ८</translation>
 <translation id="1753068535428855445">डेटिंग आणि वैयक्तिक गोष्टी</translation>
@@ -411,7 +413,6 @@
 <translation id="1958218078413065209">तुमचा सर्वोच्च स्कोअर <ph name="SCORE" /> आहे.</translation>
 <translation id="1959001866257244765">Google ला <ph name="BEGIN_WHITEPAPER_LINK" />तुम्ही भेट देत असलेल्या काही पेजच्या URL, मर्यादित सिस्टम माहिती आणि पेजवरील काही आशय<ph name="END_WHITEPAPER_LINK" /> पाठवून वेबवरील प्रत्येकासाठी सुरक्षिततेत सुधारणा करण्यात मदत करा. <ph name="BEGIN_PRIVACY_PAGE_LINK" />गोपनीयता धोरण<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> बुकमार्क</translation>
-<translation id="1971033026002113380">TouchID सह पासवर्ड संरक्षित करा</translation>
 <translation id="1973335181906896915">क्रमीकरण एरर</translation>
 <translation id="1974060860693918893">प्रगत</translation>
 <translation id="1975457531113383421">इनपुट ट्रे</translation>
@@ -746,7 +747,6 @@
 <translation id="2881276955470682203">कार्ड सेव्ह करायचे?</translation>
 <translation id="2882949212241984732">डबल-गेट फोल्ड</translation>
 <translation id="2893773853358652045">चौथा रोल</translation>
-<translation id="289834758818479772">तुम्ही हे डिव्‍हाइस इतरांसोबत शेअर करत असल्‍यास, तुम्‍ही सेव्ह केलेला पासवर्ड वापरताना हे तुम्‍हीच आहात याची पडताळणी करण्‍यासाठी तुम्ही TouchID सुरू करू शकता</translation>
 <translation id="2900528713135656174">इव्हेंट तयार करा</translation>
 <translation id="2903493209154104877">पत्ते</translation>
 <translation id="290376772003165898">पेज <ph name="LANGUAGE" />मध्ये नाही?</translation>
@@ -1063,7 +1063,6 @@
 <translation id="3678529606614285348">पेज एका नवीन गुप्त विंडोमध्ये उघडा (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">सर्टिफिकेट माहिती</translation>
 <translation id="3693327506115126094">हे तुम्हीच आहात याची पडताळणी कशी कराल ते निवडा</translation>
-<translation id="3699374065820972102">पासवर्ड एंटर करण्यासाठी TouchID सुरू आहे</translation>
 <translation id="3701427423622901115">रीसेट करण्याची नोंद घेतली आहे.</translation>
 <translation id="3704162925118123524">तुम्ही वापरत असलेल्या नेटवर्कला तुम्ही त्याच्या लॉग इन पेजला भेट देण्याची आवश्यकता असू शकते.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1178,7 +1177,6 @@
 <translation id="401170183602135785">एन्व्हलप सी६</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF दस्तऐवजामध्ये {COUNT} पेज आहे}other{PDF दस्तऐवजामध्ये {COUNT} पेज आहेत}}</translation>
 <translation id="4023431997072828269">हा फॉर्म सुरक्षित नसलेले कनेक्शन वापरून सबमिट केल्यामुळे, तुमची माहिती इतरांना दिसू शकते.</translation>
-<translation id="4024923292610332139">पासवर्ड एंटर करताना TouchID बंद करा</translation>
 <translation id="4025913568718019429">Google गोपनीयता सेटिंग्ज व्यवस्थापित करा बटण, तुमच्या Google खाते गोपनीयता सेटिंग्जना भेट देण्यासाठी एंटर दाबा</translation>
 <translation id="4030383055268325496">&amp;जोडा पूर्ववत करा</translation>
 <translation id="4031179711345676612">मायक्रोफोनला अनुमती आहे</translation>
@@ -1540,7 +1538,6 @@
 <translation id="4900217275619098670">नववा रोल</translation>
 <translation id="4901778704868714008">सेव्ह करा…</translation>
 <translation id="4905659621780993806">तुमचा अ‍ॅडमिनिस्ट्रेटर तुमचे डिव्हाइस <ph name="DATE" /> रोजी <ph name="TIME" /> वाजता आपोआप रीस्टार्ट करेल. तुमचे डिव्हाइस रीस्टार्ट होण्यापूर्वी कोणतेही खुले आयटम सेव्ह करा.</translation>
-<translation id="4911007278801291296">तुम्ही <ph name="SETTINGS" /> मध्ये TouchID सुरू किंवा बंद करू शकता</translation>
 <translation id="4913987521957242411">पंच टॉप लेफ्ट</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> इंस्टॉल करा (डाउनलोड करण्याची आवश्यकता नाही)</translation>
 <translation id="4923459931733593730">पेमेंट</translation>
@@ -1722,6 +1719,7 @@
 <translation id="5334013548165032829">तपशीलवार सिस्टम लॉग</translation>
 <translation id="5334145288572353250">पत्ता सेव्ह करायचा आहे का?</translation>
 <translation id="5335920952954443287">धडधडणारे हृदय</translation>
+<translation id="5337569431717511221">Chrome ला डीफॉल्ट ब्राउझर बटण म्हणून सेट करा, Chrome ला सिस्टीमचा डीफॉल्ट ब्राउझर म्हणून सेट करण्यासाठी एंटर दाबा</translation>
 <translation id="5340250774223869109">अ‍ॅप्लिकेशन ब्लॉक केले आहे</translation>
 <translation id="534295439873310000">NFC डिव्हाइस</translation>
 <translation id="5344579389779391559">या पेजवर कदाचित तुमच्याकडून शुल्क आकारले जाऊ शकते</translation>
@@ -1753,7 +1751,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> ला तुम्हाला सूचना पाठवायची आहे</translation>
 <translation id="5428105026674456456">स्पॅनिश</translation>
 <translation id="5430298929874300616">बुकमार्क काढून टाका</translation>
-<translation id="5434423669266814150">पासवर्ड भरण्यासाठी TouchID सुरू करा</translation>
 <translation id="5443468954631487277">उलट्या क्रमाने फेस अप</translation>
 <translation id="5447765697759493033">या साइटचे भाषांतर होणार नाही</translation>
 <translation id="5452270690849572955">हे <ph name="HOST_NAME" /> पृष्ठ शोधले जाऊ शकत नाही</translation>
@@ -1795,6 +1792,7 @@
 <translation id="5540969246441091044">घोडेस्वारी स्पर्धा</translation>
 <translation id="5541086400771735334">मेलबॉक्स ७</translation>
 <translation id="5541546772353173584">ईमेल जोडा</translation>
+<translation id="5543722831081909240">१८० अंश</translation>
 <translation id="5545756402275714221">तुमच्यासाठी लेख</translation>
 <translation id="5551890439174915351">१०० x २०० मिमी</translation>
 <translation id="5552137475244467770">ऑनलाइन प्रकाशित केलेल्या सूचींनुसार Chrome ठरावीक काळाने तुमचे पासवर्ड तपासते. हे करत असताना, तुमचे पासवर्ड आणि वापरकर्ता नावे एंक्रिप्ट केली जातात जेणेकरून Google च्या समावेशासह इतर कोणाकडून ती वाचली जाऊ नयेत.</translation>
@@ -2184,6 +2182,7 @@
 <translation id="6591833882275308647">तुमचे <ph name="DEVICE_TYPE" /> व्यवस्थापित केलेले नाही</translation>
 <translation id="6592952801936330159">साइट सेटिंग्ज व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये परवानग्या आणि सर्व साइटवर स्टोअर केलेला डेटा व्यवस्थापित करण्यासाठी एंटर दाबा</translation>
 <translation id="6596325263575161958">एंक्रिप्शन पर्याय</translation>
+<translation id="6597665340361269064">९० अंश</translation>
 <translation id="6599642189720630047">ट्रॅक केलेली उत्पादने</translation>
 <translation id="6611723696964473273">अर्थव्यवस्थेशी संबंधित बातम्या</translation>
 <translation id="6612010098632894193">ऑनलाइन व्हिडिओ</translation>
@@ -2416,6 +2415,7 @@
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">तुमचा अ‍ॅडमिनिस्ट्रेटर हे पाहू शकतो:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, खाजगीरीत्या ब्राउझ करण्यासाठी नवीन गुप्त टॅब उघडण्याकरिता टॅब आणि त्यानंतर एंटर दाबा</translation>
+<translation id="7203375778433816396">Chrome ला सिस्टीमचा डीफॉल्ट ब्राउझर म्हणून सेट करा</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> नी सुरक्षितता मानकांचे पालन केले नाही.</translation>
 <translation id="7210993021468939304">कंटेनरमधील Linux अ‍ॅक्टिव्हिटी आणि कंटेनरमध्ये Linux अ‍ॅप्स इंस्टॉल आणि रन करू शकते</translation>
 <translation id="721197778055552897">या समस्येबद्दल <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" />.</translation>
@@ -2563,6 +2563,7 @@
 <translation id="7537536606612762813">अनिवार्य</translation>
 <translation id="7542403920425041731">तुम्ही निश्चित केल्यावर, तुमचे कार्ड तपशील या साइटसह शेअर केले जातील.</translation>
 <translation id="7542995811387359312">स्वयंचलित क्रेडिट कार्ड भरणे अक्षम झाले आहे कारण हा फॉर्म सुरक्षित कनेक्शन वापरत नाही.</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" /> सुरू होत आहे</translation>
 <translation id="7548892272833184391">कनेक्शन एरर दुरुस्त करा</translation>
 <translation id="7549584377607005141">हे वेबपेज योग्यरितीने प्रदर्शित केले जाण्यासाठी तुम्ही पूर्वी एंटर केलेला डेटा आवश्यक आहे. तुम्ही हा डेटा पुन्हा पाठवू शकता, परंतु असे केल्याने या पेजने मागे केलेली कोणत्याही क्रियेची पुनरावृत्ती तुम्ही कराल.</translation>
 <translation id="7550637293666041147">तुमच्या डिव्हाइसचे वापरकर्ता नाव आणि Chrome चे वापरकर्ता नाव</translation>
@@ -2748,6 +2749,7 @@
 <translation id="8009843239480947060">१० x ११ इं</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{हे कार्ड आणि त्याचा बिलिंग पत्ता सेव्ह केला जाईल. <ph name="USER_EMAIL" /> मध्ये साइन इन केलेले असताना तुम्ही ते वापरू शकाल.}other{ही कार्डे आणि त्यांचे बिलिंग पत्ते सेव्ह केले जातील. <ph name="USER_EMAIL" /> मध्ये साइन इन केलेले असताना तुम्ही ती वापरू शकाल.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ला सिस्टीमचा डीफॉल्ट ब्राउझर म्हणून सेट करण्यासाठी टॅब दाबा त्यानंतर एंटर करा</translation>
 <translation id="8025119109950072390">या साइट वरील आक्रमणकर्ते सॉफ्‍टवेअर इंस्टॉल करणे किंवा तुमची वैयक्तिक माहिती (उदाहरणार्थ, पासवर्ड, फोन नंबर किंवा क्रेडिट कार्ड) उघड करणे यासारखे काहीतरी धोकादायक करण्‍यामध्‍ये तुम्हाला चलाखीने गुंतवू शकतात.</translation>
 <translation id="8026334261755873520">ब्राउझिंग डेटा साफ करा</translation>
 <translation id="8027077570865220386">ट्रे १५</translation>

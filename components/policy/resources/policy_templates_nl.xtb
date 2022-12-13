@@ -916,6 +916,11 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
       Als het beleid niet wordt toegepast of niet is ingesteld, mag WebDriver niet-geschikte beleidsregels niet overschrijven.</translation>
 <translation id="1885782360784839335">Promotiecontent op volledig tabblad tonen</translation>
 <translation id="1888871729456797026">De inschrijvingstoken van het cloudbeleid op een desktop</translation>
+<translation id="1893271062894546361">Als je dit beleid toepast, is de gebruikersinterface voor de afspeelbediening voor media beschikbaar voor <ph name="PRODUCT_NAME" />-sessies die worden gestart door andere apparaten in het lokale netwerk.
+
+      Als je dit beleid niet instelt voor zakelijke gebruikers of niet toepast, is de gebruikersinterface voor de afspeelbediening voor media niet beschikbaar voor <ph name="PRODUCT_NAME" />-sessies die worden gestart door andere apparaten in het lokale netwerk.
+
+      Als je het beleid <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> niet toepast, heeft de waarde van dit beleid geen effect, omdat de hele <ph name="PRODUCT_NAME" />-functionaliteit uitstaat.</translation>
 <translation id="1894790493260633497">Modus voor afdrukken met achtergrondbeelden standaard aanzetten</translation>
 <translation id="1897365952389968758">Alle sites toestaan JavaScript uit te voeren</translation>
 <translation id="1902043648529789224">De positie van de plank bepalen</translation>
@@ -3436,6 +3441,7 @@ Zoals wordt vermeld in ons beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />, zi
 <translation id="4274691295133617461">Als je het beleid instelt op 3, kunnen websites leestoegang vragen tot bestanden en directory's in het bestandssysteem van het besturingssysteem van de host via de File System API. Als je het beleid instelt op 2, wordt toegang geblokkeerd.
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>
+<translation id="4275048399551500192">Mediabediening niet tonen voor <ph name="PRODUCT_NAME" />-sessies die worden gestart door andere apparaten</translation>
 <translation id="4282243913059705499"><ph name="PRODUCT_NAME" />-icoon altijd tonen in de werkbalk</translation>
 <translation id="4285674129118156176">Toestaan dat niet-gelieerde gebruikers ARC gebruiken</translation>
 <translation id="4287344576768105337">Als je het beleid instelt, wordt voorkomen dat webpagina's met verboden URL's worden geladen. Het beleid biedt een lijst met URL-patronen die verboden URL's definiëren. Als je het beleid niet instelt, worden er geen URL's verboden in de browser. Gebruik een notatie voor het URL-patroon volgens deze indeling (https://support.google.com/chrome/a?p=url_blocklist_filter_format). Er kunnen maximaal 1000 uitzonderingen worden gedefinieerd in <ph name="URL_ALLOWLIST_POLICY_NAME" />.
@@ -4364,7 +4370,6 @@ Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> v
 
       Als je het beleid niet instelt, kunnen gebruikers de game niet spelen op ingeschreven <ph name="PRODUCT_OS_NAME" />, maar wel onder andere omstandigheden.</translation>
 <translation id="5293285950307241933">Alle lokale gebruikersgegevens wissen</translation>
-<translation id="5293875928467750789">Stel het beleid in op de waarde die wordt gebruikt als standaard helderheidspercentage voor het toetsenbord van het apparaat als de gebruiker inlogt.</translation>
 <translation id="529457411593078576">Servicevoorwaarden aanzetten tijdens eerste uitvoering voor CCT</translation>
 <translation id="5297948043665200363">Toestaan dat de gebruiker ingelogd blijft nadat de verificatie van het account is ingetrokken</translation>
 <translation id="5298949392804966105">Geen beperkingen voor beheerde accounts</translation>
@@ -5247,6 +5252,7 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
 <translation id="6244061205361004687">De gebruiker toestaan een VPN handmatig te ontkoppelen of aan te passen</translation>
 <translation id="6244210204546589761">URL's die worden geopend bij starten</translation>
 <translation id="624595269193747921">Of het zoeken naar de overeenkomende printer moet worden beperkt tot een specifieke reeks printers.</translation>
+<translation id="6246290059248303618">Mediabediening tonen voor <ph name="PRODUCT_NAME" />-sessies die worden gestart door andere apparaten in het lokale netwerk</translation>
 <translation id="6247316685259031374">Met dit beleid wordt het sandboxproces voor audio beheerd.
       Als dit beleid is toegepast, wordt het audioproces uitgevoerd in een sandbox.
       Als dit beleid niet is toegepast, wordt het audioproces niet uitgevoerd in een sandbox en wordt de WebRTC-audioverwerkingsmodule uitgevoerd in het proces van het weergaveprogramma.
@@ -6201,6 +6207,7 @@ Als je het beleid niet toepast of niet instelt, is het standaardgedrag van toepa
 <translation id="710003290625031750">Uitgebreide schemabeschrijving:</translation>
 <translation id="7101550508196914704">De snelkoppeling voor apps niet tonen op de bookmarkbalk</translation>
 <translation id="7109384070286741861">CECPQ2 uitzetten</translation>
+<translation id="7113439794629928551">Mediabediening tonen voor <ph name="PRODUCT_NAME" />-sessies die worden gestart door andere apparaten</translation>
 <translation id="7114169791477667553">De standaard zoekprovider uitzetten</translation>
 <translation id="7121046543122812054">Dit beleid is beëindigd. Overweeg in plaats daarvan <ph name="BROWSER_SIGNIN_POLICY_NAME" /> te gebruiken.
 
@@ -6901,7 +6908,6 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 <translation id="7832225468415136704">Chrome Cleanup niet toestaan om het systeem periodiek te scannen, en handmatige scans uitzetten</translation>
 <translation id="7833148823006528332">Android-app-ID, bijvoorbeeld 'com.google.android.gm' voor Gmail</translation>
 <translation id="7835218570504220753">Automatisch klikken uitzetten</translation>
-<translation id="7837834961221899821">Standaardhelderheid van toetsenbord</translation>
 <translation id="7839180815400079700">Als je <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> aanzet en <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> instelt, wordt de dagconfiguratie voor stroom voor piekuren ingesteld.
 
       Als je het beleid niet instelt, blijft stroom voor piekuren uit.
@@ -8373,6 +8379,11 @@ Als je het beleid instelt, kunnen gebruikers dit niet aanpassen in de browserins
 <translation id="982497069985795632">Spellingcontrole aanzetten</translation>
 <translation id="983256325512298435">Een lijst definiëren met protocollen die een externe app waarvan de herkomst in een lijst wordt vermeld, kunnen starten zonder prompt aan de gebruiker</translation>
 <translation id="987261962216071510">Alleen toestaan dat gebruikers als gast inloggen bij de browser</translation>
+<translation id="987975731398348803">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de lijst met apparaatgebruikers die onlangs zijn ingelogd.
+
+Als je het beleid niet toepast, rapporteren ingeschreven apparaten de lijst met gebruikers niet.
+
+Als <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> aanstaat, wordt <ph name="REPORT_DEVICE_USERS_POLICY_NAME" /> genegeerd en staat dit altijd uit.</translation>
 <translation id="989197274317162189">Dit beleid is beëindigd en wordt niet ondersteund. Gebruik in plaats daarvan het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="991560005425213776">Gebruikersnaam en bestandsnaam naar systeemeigen printers verzenden</translation>
 <translation id="99202634486128833">Als het beleid wordt ingesteld op CopyCaCerts, zijn alle door ONC geïnstalleerde CA-certificaten met <ph name="WEB_TRUSTED_BIT" /> beschikbaar voor ARC-apps.

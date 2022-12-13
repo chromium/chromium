@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">समस्या ठीक करने के तरीके आज़माएं</translation>
 <translation id="202500043506723828">ईआईडी</translation>
 <translation id="2047316797244836561">स्क्रीन सेवर देखने के लिए, नेटवर्क से कनेक्ट करें और पेज को फिर से लोड करें.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">ज़्यादा सेटिंग</translation>
 <translation id="2085089206770112532">डिसप्ले की रोशनी कम करने वाला बटन</translation>
 <translation id="2105810540595158374">डिवाइस एक गेम कंट्रोलर है.</translation>
@@ -392,6 +393,7 @@
 <translation id="4793756956024303490">कंप्रेस करने का एल्गोरिदम</translation>
 <translation id="4794140124556169553">सीपीयू की जांच करने से सिस्टम की परफ़ॉर्मेंस पर असर पड़ सकता है</translation>
 <translation id="4800589996161293643">Chromebook समुदाय</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> के प्रिंट का काम बंद किया गया</translation>
 <translation id="4809927044794281115">हल्के रंग वाली थीम</translation>
 <translation id="4813136279048157860">मेरी इमेज</translation>
@@ -412,6 +414,7 @@
 <translation id="4891842000192098784">स्ट्रेस</translation>
 <translation id="4897058166682006107">डिवाइस के बाएं बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="4905998861748258752">स्क्रीन सेवर के विकल्प चुनने के लिए, सुविधा को चालू करें</translation>
+<translation id="4910858703033903787">एपीएन टाइप</translation>
 <translation id="4917385247580444890">मज़बूत</translation>
 <translation id="4917889632206600977">बंद हो गया - काग़ज़ खत्म हो गया</translation>
 <translation id="491791267030419270">सुझाव, शिकायत या राय लिखने के बारे में सलाह</translation>
@@ -469,6 +472,7 @@
 <translation id="5358174242040570474">कोई गड़बड़ी हुई. कोई वॉलपेपर चुनकर कोशिश करें या ऐप्लिकेशन को फिर से खोलें.</translation>
 <translation id="5372659122375744710">यह वाई-फ़ाई नेटवर्क सुरक्षित नहीं है</translation>
 <translation id="5376354385557966694">अपने-आप हल्के रंग वाला मोड</translation>
+<translation id="5378184552853359930">आईपी टाइप</translation>
 <translation id="5389159777326897627">वॉलपेपर और स्टाइल</translation>
 <translation id="5389224261615877010">इंद्रधनुष</translation>
 <translation id="5400907029458559844">डिवाइस कनेक्ट हो रहा है.</translation>
@@ -556,6 +560,7 @@
 <translation id="6189418609903030344">इस्तेमाल के साथ, बैटरी की क्षमता में कमी आती जाती है</translation>
 <translation id="6191293864534840972">इन नाम सर्वर के फ़ॉर्मैट सही नहीं हैं</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">फ़ुलस्क्रीन मोड से बाहर निकलें</translation>
 <translation id="6223752125779001553">कोई भी स्कैनर उपलब्ध नहीं है</translation>
 <translation id="6232017090690406397">बैटरी</translation>
 <translation id="6235460611964961764">डेटा के इस्तेमाल की जानकारी को मैन्युअल तरीके से रीसेट करें</translation>
@@ -683,12 +688,12 @@
 <translation id="741244894080940828">एक यूनिट से दूसरी यूनिट में बदलना</translation>
 <translation id="7415801143053185905">एचटीटीपी अनुरोधों में इंतज़ार का समय बहुत ज़्यादा है</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्कैन करने की प्रोसेस पूरी हुई. 1 पेज स्कैन हो गया}one{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गया}other{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गए}}</translation>
 <translation id="7458970041932198923">अवतार देखने और उन्हें सेट करने के लिए, किसी नेटवर्क से कनेक्ट करें और पेज को फिर से लोड करें.</translation>
 <translation id="7469648432129124067">पोर्टल पहचाना गया</translation>
 <translation id="7481312909269577407">आगे जाएं</translation>
 <translation id="7487067081878637334">तकनीक</translation>
 <translation id="7490813197707563893">MAC पता</translation>
+<translation id="7491478667760509108">फ़्लोट मोड से बाहर निकलें</translation>
 <translation id="7497215489070763236">सर्वर CA प्रमाणपत्र</translation>
 <translation id="7502658306369382406">IPv6 पता</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -753,6 +758,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> चुनें</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">अटैच करें</translation>
 <translation id="8206859287963243715">सेलुलर</translation>
 <translation id="8208861521865154048">फ़ायदे</translation>
 <translation id="8226628635270268143">अपनी पसंदीदा फ़ोटो और एल्बम चुनें</translation>
@@ -788,6 +794,7 @@
 <translation id="8498220429738806196">ट्रैफ़िक काउंटर</translation>
 <translation id="8503813439785031346">उपयोगकर्ता नाम</translation>
 <translation id="8503836310948963452">बस कुछ मिनट और...</translation>
+<translation id="8508640263392900755">एपीएन की जानकारी</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">मोबाइल और इंटरनेट सेवा देने वाली आपकी कंपनी को, अपने नेटवर्क से कनेक्ट करने लिए इस विकल्प की ज़रूरत पड़ सकती है. ज़्यादा जानकारी के लिए, उस कंपनी से संपर्क करें जो आपको मोबाइल और इंटरनेट सेवा देती है.</translation>
 <translation id="8576249514688522074">शुरू नहीं किया गया</translation>
@@ -843,6 +850,7 @@
 <translation id="9025198690966128418">निजी डिवाइस के तौर पर इस्तेमाल करें</translation>
 <translation id="9028832514430399253">स्क्रीन सेवर के विकल्प चुनने के लिए, टॉगल करने की सुविधा चालू करें</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">डीएनएस रिज़ॉल्यूशन के इंतज़ार का समय ज़्यादा है</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ब्लूटूथ</translation>

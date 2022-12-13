@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
 <translation id="2163937499206714165">Aktivér mørkt tilstand</translation>
 <translation id="2180197493692062006">Der opstod en fejl. Prøv at åbne appen igen.</translation>
-<translation id="2184005227776731758">Adgangspunkt</translation>
 <translation id="2209788852729124853">Nulstil trafiktællere</translation>
 <translation id="2212733584906323460">Navneløsning</translation>
 <translation id="2217935453350629363">Nuværende hastighed</translation>
@@ -560,6 +559,7 @@
 <translation id="6189418609903030344">Batterikapaciteten falder løbende, når enheden er i brug</translation>
 <translation id="6191293864534840972">Ugyldige navneservere</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Afslut fuld skærm</translation>
 <translation id="6223752125779001553">Der er ingen tilgængelige scannere</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6235460611964961764">Nulstil dataforbrug manuelt</translation>
@@ -687,12 +687,12 @@
 <translation id="741244894080940828">konvertering</translation>
 <translation id="7415801143053185905">Meget stor HTTP-forsinkelse</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanningen er gennemført. 1 side blev scannet}one{Scanningen er gennemført. {NUMBER_OF_PAGES} side blev scannet}other{Scanningen er gennemført. {NUMBER_OF_PAGES} sider blev scannet}}</translation>
 <translation id="7458970041932198923">Opret forbindelse til et netværk, og genindlæs siden for at se og angive avatarer.</translation>
 <translation id="7469648432129124067">En portal blev registreret</translation>
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">MAC-adresse</translation>
+<translation id="7491478667760509108">Afslut svævetilstand</translation>
 <translation id="7497215489070763236">Serverens CA-certifikat</translation>
 <translation id="7502658306369382406">IPv6-adresse</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -793,6 +793,7 @@
 <translation id="8498220429738806196">Trafiktællere</translation>
 <translation id="8503813439785031346">Brugernavn</translation>
 <translation id="8503836310948963452">Det tager kun et par minutter mere...</translation>
+<translation id="8508640263392900755">Oplysninger om adgangspunkt</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Dit mobilselskab kræver muligvis denne tilladelse, for at du kan oprette forbindelse til mobilnetværket. Kontakt dit mobilselskab for at få flere oplysninger.</translation>
 <translation id="8576249514688522074">Ikke startet</translation>

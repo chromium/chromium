@@ -273,6 +273,7 @@
 <translation id="1586541204584340881">మీరు ఏ ఎక్స్‌టెన్షన్‌లను ఇన్ స్టాల్ చేసుకున్నారు</translation>
 <translation id="1588438908519853928">సాధారణ</translation>
 <translation id="1592005682883173041">స్థానిక డేటా యాక్సెస్</translation>
+<translation id="1593359183944365958">270 డిగ్రీలు</translation>
 <translation id="1594030484168838125">ఎంచుకోండి</translation>
 <translation id="1596296697375291157">థ్రిల్లర్, క్రైమ్ &amp; మిస్టరీ సినిమాలు</translation>
 <translation id="1599199147673445968">కొత్త కార్డా? <ph name="BEGIN_LINK" />కార్డ్ వివరాలను ఎంటర్ చేయండి<ph name="END_LINK" /></translation>
@@ -339,6 +340,7 @@
 <translation id="1741613555002899862">DnsOverHttpsMode అనేది, <ph name="SECURE_DNS_MODE_SECURE" />గా సెట్ చేసి ఉన్నప్పుడు ఖచ్చితంగా పేర్కొనాలి, చెల్లుబాటు అయ్యే స్ట్రింగ్ అయి ఉండాలి.</translation>
 <translation id="1745880797583122200">మీ బ్రౌజర్ నిర్వహించబడుతోంది</translation>
 <translation id="1746113442205726301">చిత్రాన్ని Y అక్షంలో జరపు</translation>
+<translation id="1746531169546376413">0 డిగ్రీలు</translation>
 <translation id="17513872634828108">తెరిచిన ట్యాబ్‍లు</translation>
 <translation id="1752021286346845558">మెయిల్‌బాక్స్ 8</translation>
 <translation id="1753068535428855445">డేటింగ్ &amp; వ్యక్తిగత యాడ్‌లు</translation>
@@ -413,7 +415,6 @@
 <translation id="1958218078413065209">మీ అత్యధిక స్కోర్ <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Googleకు <ph name="BEGIN_WHITEPAPER_LINK" />మీరు సందర్శించిన కొన్ని పేజీల URLలు, పరిమిత సిస్టమ్ సమాచారం, కొంత పేజీ కంటెంట్<ph name="END_WHITEPAPER_LINK" />ను పంపడం ద్వారా వెబ్‌లో ప్రతిఒక్కరికీ భద్రతను మెరుగుపరచడంలో సహాయం చేయండి. <ph name="BEGIN_PRIVACY_PAGE_LINK" />గోప్యతా పాలసీ<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> బుక్‌మార్క్‌లు</translation>
-<translation id="1971033026002113380">TouchIDతో పాస్‌వర్డ్‌లను సురక్షితం చేసుకోండి</translation>
 <translation id="1973335181906896915">శ్రేణిగా రూపొందించడంలో ఎర్రర్</translation>
 <translation id="1974060860693918893">అధునాతన సెట్టింగ్‌లు</translation>
 <translation id="1975457531113383421">ఇన్‌పుట్ ట్రే</translation>
@@ -748,7 +749,6 @@
 <translation id="2881276955470682203">కార్డ్‌ను సేవ్ చేయాలా?</translation>
 <translation id="2882949212241984732">డబుల్-గేట్ ఫోల్డ్</translation>
 <translation id="2893773853358652045">ఫోర్త్ రోల్</translation>
-<translation id="289834758818479772">మీరు ఈ పరికరాన్ని ఇతరులతో షేర్ చేసుకుంటున్నట్లయితే, TouchIDని ఆన్ చేసి, మీరు సేవ్ చేసిన పాస్‌వర్డ్‌ను ఉపయోగించినప్పుడల్లా, అది మీరేనని వెరిఫై చేయవచ్చు</translation>
 <translation id="2900528713135656174">ఈవెంట్‌ను క్రియేట్ చేయండి</translation>
 <translation id="2903493209154104877">అడ్రస్‌లు</translation>
 <translation id="290376772003165898">పేజీ <ph name="LANGUAGE" />లో లేదా?</translation>
@@ -1066,7 +1066,6 @@
 <translation id="3678529606614285348">కొత్త అజ్ఞాత విండోలో పేజీని తెరవండి (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">సర్టిఫికెట్ సమాచారం</translation>
 <translation id="3693327506115126094">ఇది మీరేనని మీరు ఎలా వెరిఫై చేయాలో ఎంచుకోండి</translation>
-<translation id="3699374065820972102">పాస్‌వర్డ్‌లను పూరించడానికి TouchID ఆన్ చేయబడింది</translation>
 <translation id="3701427423622901115">రీసెట్ ఆమోదించబడింది.</translation>
 <translation id="3704162925118123524">మీరు ఉపయోగించే నెట్‌వర్క్‌కు మీరు దాని లాగిన్ పేజీని సందర్శించడం అవసరం కావచ్చు.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1181,7 +1180,6 @@
 <translation id="401170183602135785">ఎన్వలప్ C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF డాక్యుమెంట్‌‌లో {COUNT} పేజీ ఉంది}other{PDF డాక్యుమెంట్‌‌లో {COUNT} పేజీలు ఉన్నాయి}}</translation>
 <translation id="4023431997072828269">ఈ ఫారమ్ సురక్షితంగా లేని కనెక్షన్‌ను ఉపయోగించి సమర్పించబడుతోంది, కాబట్టి మీ సమాచారం ఇతరులకు కనిపిస్తుంది.</translation>
-<translation id="4024923292610332139">పాస్‌వర్డ్‌లను పూరించడం కోసం TouchIDని ఆఫ్ చేయండి</translation>
 <translation id="4025913568718019429">'Google గోప్యతా సెట్టింగ్‌లను మేనేజ్ చేయండి' బటన్, మీ Google ఖాతాకు సంబంధించిన గోప్యతా సెట్టింగ్‌లకు వెళ్లడానికి Enterను నొక్కండి</translation>
 <translation id="4030383055268325496">&amp;జోడించడాన్ని రద్దు చేయి</translation>
 <translation id="4031179711345676612">మైక్రోఫోన్ అనుమతించబడింది</translation>
@@ -1543,7 +1541,6 @@
 <translation id="4900217275619098670">నైన్త్ రోల్</translation>
 <translation id="4901778704868714008">సేవ్ చేయండి...</translation>
 <translation id="4905659621780993806">మీ అడ్మినిస్ట్రేటర్ మీ పరికరాన్ని <ph name="DATE" />న <ph name="TIME" />కు ఆటోమేటిక్‌గా రీస్టార్ట్ చేస్తారు. మీ పరికరం రీస్టార్ట్ కావడానికి ముందే, తెరిచి ఉన్న ఐటెమ్‌లు ఏవైనా ఉంటే, వాటిని సేవ్ చేయండి.</translation>
-<translation id="4911007278801291296">మీరు <ph name="SETTINGS" />‌లో TouchIDని ఆన్ లేదా ఆఫ్ చేయవచ్చు</translation>
 <translation id="4913987521957242411">ఎడమవైపు ఎగువ భాగంలో రంధ్రాలు</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" />ను ఇన్‌స్టాల్ చేయండి (డౌన్‌లోడ్ చేయాల్సిన అవసరం లేదు)</translation>
 <translation id="4923459931733593730">చెల్లింపు</translation>
@@ -1725,6 +1722,7 @@
 <translation id="5334013548165032829">వివరణాత్మక సిస్టమ్ లాగ్‌లు</translation>
 <translation id="5334145288572353250">అడ్రస్‌ను సేవ్ చేయాలా?</translation>
 <translation id="5335920952954443287">స్పందిస్తున్న గుండె</translation>
+<translation id="5337569431717511221">Chromeను ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేసే బటన్, Chromeను సిస్టమ్ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయడానికి 'Enter'ను నొక్కండి</translation>
 <translation id="5340250774223869109">యాప్ బ్లాక్ చేయబడింది</translation>
 <translation id="534295439873310000">NFC పరికరాలు</translation>
 <translation id="5344579389779391559">ఈ పేజీ మీకు డబ్బు ఛార్జీ చేయడానికి ప్రయత్నించవచ్చు</translation>
@@ -1756,7 +1754,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> మీకు నోటిఫికేషన్‌లను పంపాలనుకుంటోంది</translation>
 <translation id="5428105026674456456">స్పానిష్</translation>
 <translation id="5430298929874300616">బుక్‌మార్క్‌ను తీసివేయండి</translation>
-<translation id="5434423669266814150">పాస్‌వర్డ్‌లను పూరించడానికి TouchIDని ఆన్ చేయండి</translation>
 <translation id="5443468954631487277">వ్యతిరేక క్రమంలో ఉన్న ఫేస్ అప్</translation>
 <translation id="5447765697759493033">ఈ సైట్ అనువదించబడదు</translation>
 <translation id="5452270690849572955">ఈ <ph name="HOST_NAME" /> పేజీ కనుగొనబడలేదు</translation>
@@ -1798,6 +1795,7 @@
 <translation id="5540969246441091044">గుర్రపు రౌతు</translation>
 <translation id="5541086400771735334">మెయిల్‌బాక్స్ 7</translation>
 <translation id="5541546772353173584">ఈమెయిల్‌ను జోడించండి</translation>
+<translation id="5543722831081909240">180 డిగ్రీలు</translation>
 <translation id="5545756402275714221">మీ కోసం కథనాలు</translation>
 <translation id="5551890439174915351">100 x 200 మి.మీ.</translation>
 <translation id="5552137475244467770">ఆన్‌లైన్‌లో పబ్లిష్ చేయబడిన లిస్ట్‌లలో మీ పాస్‌వర్డ్ ఒకవేళ ఉందా అని Chrome తరచుగా చెక్ చేస్తూ ఉంటుంది. Chrome ఈ ప్రాసెస్‌ను చేస్తున్నప్పుడు, మీ పాస్‌వర్డ్‌లు, యూజర్‌నేమ్‌లు ఎన్‌క్రిప్ట్ చేయబడతాయి. కాబట్టి, Googleతో సహా ఎవరూ వాటిని తెలుసుకోలేరు.</translation>
@@ -2186,6 +2184,7 @@
 <translation id="6591833882275308647">మీ <ph name="DEVICE_TYPE" /> నిర్వహించబడటం లేదు</translation>
 <translation id="6592952801936330159">'సైట్ సెట్టింగ్‌లను మేనేజ్ చేయి' బటన్, Chrome సెట్టింగ్‌లలో అనుమతులను, అలాగే సైట్‌ల అంతటా స్టోర్ చేయబడిన డేటాను మేనేజ్ చేయడానికి 'Enter'ను నొక్కండి</translation>
 <translation id="6596325263575161958">ఎన్‌క్రిప్షన్ ఎంపికలు</translation>
+<translation id="6597665340361269064">90 డిగ్రీలు</translation>
 <translation id="6599642189720630047">ట్రాక్ చేసిన ప్రోడక్ట్‌లు</translation>
 <translation id="6611723696964473273">ఆర్థిక రంగం వార్తలు</translation>
 <translation id="6612010098632894193">ఆన్‌లైన్ వీడియో</translation>
@@ -2418,6 +2417,7 @@
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">మీ నిర్వాహకుడు వీటిని చూడగలరు:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ప్రైవేట్‌గా బ్రౌజ్ చేసేందుకు కొత్త అజ్ఞాత ట్యాబ్‌ను తెరవడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
+<translation id="7203375778433816396">Chromeను సిస్టమ్ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> భద్రతా ప్రమాణాలకు కట్టుబడి లేదు.</translation>
 <translation id="7210993021468939304">కంటెయినర్ లోపల Linux యాక్టివిటీ, కంటెయినర్ లోపల Linux యాప్‌లను ఇన్‌స్టాల్ చేయవచ్చు</translation>
 <translation id="721197778055552897">ఈ సమస్య గురించి <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి <ph name="END_LINK" />.</translation>
@@ -2565,6 +2565,7 @@
 <translation id="7537536606612762813">తప్పనిసరి</translation>
 <translation id="7542403920425041731">మీరు నిర్ధారించిన తర్వాత, మీ కార్డ్ వివరాలు ఈ సైట్‌తో షేర్ చేయబడతాయి.</translation>
 <translation id="7542995811387359312">ఈ ఫారమ్ సురక్షిత కనెక్షన్‌ను ఉపయోగించనందున క్రెడిట్ కార్డ్ వివరాలను ఆటోమేటిక్‌గా పూర్తి చేయడం ఆపివేయబడింది.</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" /> ప్రారంభమవుతోంది</translation>
 <translation id="7548892272833184391">కనెక్షన్ ఎర్రర్‌లను పరిష్కరించండి</translation>
 <translation id="7549584377607005141">ఈ వెబ్‌పేజీ సరిగ్గా ప్రదర్శించబడటానికి మీరు మునుపు నమోదు చేసిన డేటా అవసరం. మీరు ఈ డేటాను మళ్లీ పంపవచ్చు. కానీ అలా చేయడం వ‌ల్ల‌ ఈ పేజీ మునుపు ప్రదర్శించిన ఏదైనా చర్య రిపీట్‌ కావచ్చు.</translation>
 <translation id="7550637293666041147">మీ పరికరం వినియోగదారు పేరు మరియు Chrome వినియోగదారు పేరు</translation>
@@ -2750,6 +2751,7 @@
 <translation id="8009843239480947060">10 x 11 అంగుళాలు</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{ఈ కార్డ్, దీని బిల్లింగ్ అడ్రస్‌ సేవ్ చేయబడతాయి. <ph name="USER_EMAIL" />కు సైన్ ఇన్ చేసినప్పుడు మీరు దీనిని ఉపయోగించగలరు.}other{ఈ కార్డ్‌లు, వీటి బిల్లింగ్ అడ్రస్‌లు సేవ్ చేయబడతాయి. <ph name="USER_EMAIL" />కు సైన్ ఇన్ చేసినప్పడు, మీరు వీటిని ఉపయోగించగలరు.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeను సిస్టమ్ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయడానికి tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="8025119109950072390">ఈ సైట్‌లోని దాడి చేసే వారు సాఫ్ట్‌వేర్‌ను ఇన్‌స్టాల్ చేయడం లేదా మీ వ్యక్తిగత సమాచారాన్ని (ఉదాహరణకు, పాస్‌వర్డ్‌లు, ఫోన్ నంబర్‌లు లేదా క్రెడిట్ కార్డ్‌లు) వెల్లడించడం వంటి ప్రమాదకరమైన పనులు చేసేలా మిమ్మల్ని మాయ చేయవచ్చు.</translation>
 <translation id="8026334261755873520">బ్రౌజింగ్ డేటా క్లియర్ చేయండి</translation>
 <translation id="8027077570865220386">ట్రే 15</translation>

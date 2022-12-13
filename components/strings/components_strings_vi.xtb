@@ -413,7 +413,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1958218078413065209">Điểm cao nhất của bạn là <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Giúp tăng cường khả năng bảo mật trên web cho mọi người bằng cách gửi cho Google <ph name="BEGIN_WHITEPAPER_LINK" />các URL của một số trang mà bạn truy cập, thông tin hệ thống có giới hạn và một số nội dung trang<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Chính sách quyền riêng tư<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Dấu trang của <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">Bảo vệ mật khẩu bằng TouchID</translation>
 <translation id="1973335181906896915">Lỗi nối tiếp hóa</translation>
 <translation id="1974060860693918893">Nâng cao</translation>
 <translation id="1975457531113383421">Khay nạp giấy</translation>
@@ -748,7 +747,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2881276955470682203">Lưu thẻ?</translation>
 <translation id="2882949212241984732">Gấp 2 cửa</translation>
 <translation id="2893773853358652045">Cuộn thứ tư</translation>
-<translation id="289834758818479772">Nếu dùng chung thiết bị này với người khác, bạn có thể bật TouchID để xác minh danh tính của mình mỗi khi sử dụng mật khẩu đã lưu</translation>
 <translation id="2900528713135656174">Tạo sự kiện</translation>
 <translation id="2903493209154104877">Địa chỉ</translation>
 <translation id="290376772003165898">Trang này không được viết bằng <ph name="LANGUAGE" />?</translation>
@@ -1066,7 +1064,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3678529606614285348">Mở trang trong cửa sổ Ẩn danh mới (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Thông tin chứng chỉ</translation>
 <translation id="3693327506115126094">Chọn cách xác minh danh tính của bạn</translation>
-<translation id="3699374065820972102">TouchID đã được kích hoạt để điền mật khẩu</translation>
 <translation id="3701427423622901115">Đã xác nhận thao tác đặt lại.</translation>
 <translation id="3704162925118123524">Mạng mà bạn đang sử dụng có thể yêu cầu bạn phải truy cập trang đăng nhập của mạng đó.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1181,7 +1178,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="401170183602135785">Phong bì C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Tài liệu PDF chứa {COUNT} trang}other{Tài liệu PDF chứa {COUNT} trang}}</translation>
 <translation id="4023431997072828269">Vì bạn đang gửi biểu mẫu này bằng đường kết nối không an toàn nên người khác có thể nhìn thấy thông tin của bạn.</translation>
-<translation id="4024923292610332139">tắt TouchID để điền mật khẩu</translation>
 <translation id="4025913568718019429">Nút quản lý chế độ cài đặt quyền riêng tư của Google, nhấn phím Enter để truy cập phần cài đặt quyền riêng tư của Tài khoản Google</translation>
 <translation id="4030383055268325496">&amp;Hoàn tác thêm</translation>
 <translation id="4031179711345676612">Cho phép micrô</translation>
@@ -1543,7 +1539,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4900217275619098670">Cuộn thứ chín</translation>
 <translation id="4901778704868714008">Lưu...</translation>
 <translation id="4905659621780993806">Quản trị viên của bạn sẽ tự động khởi động lại thiết bị của bạn vào lúc <ph name="TIME" /> <ph name="DATE" /> Hãy lưu mọi mục đang mở trước khi thiết bị của bạn khởi động lại.</translation>
-<translation id="4911007278801291296">Bạn có thể bật hoặc tắt TouchID trong <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Đục lỗ trên cùng bên trái</translation>
 <translation id="4918221908152712722">Cài đặt <ph name="APP_NAME" /> (không cần tải xuống)</translation>
 <translation id="4923459931733593730">Thanh toán</translation>
@@ -1725,6 +1720,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5334013548165032829">Nhật ký hệ thống chi tiết</translation>
 <translation id="5334145288572353250">Lưu địa chỉ?</translation>
 <translation id="5335920952954443287">Trái tim đập</translation>
+<translation id="5337569431717511221">Nút Đặt Chrome làm trình duyệt mặc định, nhấn Enter để đặt Chrome làm trình duyệt mặc định của hệ thống</translation>
 <translation id="5340250774223869109">Đã chặn ứng dụng</translation>
 <translation id="534295439873310000">Thiết bị dùng công nghệ NFC</translation>
 <translation id="5344579389779391559">Trang này có thể tìm cách tính phí bạn</translation>
@@ -1756,7 +1752,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5426179911063097041"><ph name="SITE" /> muốn gửi thông báo cho bạn</translation>
 <translation id="5428105026674456456">Tiếng Tây Ban Nha</translation>
 <translation id="5430298929874300616">Xóa dấu trang</translation>
-<translation id="5434423669266814150">bật TouchID để điền mật khẩu</translation>
 <translation id="5443468954631487277">Thứ tự đảo ngược hướng lên</translation>
 <translation id="5447765697759493033">Trang web này sẽ không được dịch</translation>
 <translation id="5452270690849572955">Không thể tìm thấy trang <ph name="HOST_NAME" /> này</translation>
@@ -2420,6 +2415,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Quản trị viên của bạn có thể xem:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn Tab rồi nhấn Enter để mở một thẻ ẩn danh mới nhằm duyệt web ở chế độ riêng tư</translation>
+<translation id="7203375778433816396">Đặt Chrome làm trình duyệt mặc định của hệ thống</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> không tuân thủ các tiêu chuẩn bảo mật.</translation>
 <translation id="7210993021468939304">Hoạt động của Linux trong vùng chứa, đồng thời có thể cài đặt và chạy các ứng dụng Linux trong vùng chứa</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /> về sự cố này.</translation>
@@ -2567,6 +2563,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7537536606612762813">Bắt buộc</translation>
 <translation id="7542403920425041731">Sau khi bạn xác nhận, chi tiết thẻ của bạn sẽ được chia sẻ với trang web này.</translation>
 <translation id="7542995811387359312">Tính năng tự động điền thẻ tín dụng đã bị vô hiệu hóa vì biểu mẫu này không sử dụng kết nối an toàn.</translation>
+<translation id="7546409722674205727">Đang khởi động <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Khắc phục lỗi kết nối</translation>
 <translation id="7549584377607005141">Trang web này yêu cầu dữ liệu mà bạn đã nhập trước đó để được hiển thị đúng cách. Bạn có thể gửi lại dữ liệu này nhưng làm như vậy bạn sẽ lặp lại mọi hoạt động mà trang này đã thực hiện trước đó.</translation>
 <translation id="7550637293666041147">Tên người dùng Chrome và tên người dùng thiết bị của bạn</translation>
@@ -2752,6 +2749,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8009843239480947060">10 x 11 inch</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Thẻ này và địa chỉ thanh toán của thẻ sẽ được lưu. Bạn có thể sử dụng thẻ khi đăng nhập vào <ph name="USER_EMAIL" />.}other{Các thẻ này và địa chỉ thanh toán của thẻ sẽ được lưu. Bạn có thể sử dụng các thẻ này khi đăng nhập vào <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn Tab rồi nhấn Enter để đặt Chrome làm trình duyệt mặc định của hệ thống</translation>
 <translation id="8025119109950072390">Những kẻ tấn công trên trang web này có thể đánh lừa bạn làm một việc gì đó nguy hiểm như cài đặt phần mềm hoặc tiết lộ thông tin cá nhân của bạn (ví dụ: mật khẩu, số điện thoại hoặc thẻ tín dụng).</translation>
 <translation id="8026334261755873520">Xóa dữ liệu duyệt web</translation>
 <translation id="8027077570865220386">Khay 15</translation>

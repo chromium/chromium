@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Pomóż nam zadbać o większą prywatność w sieci</translation>
 <translation id="107147699690128016">Jeśli zmienisz rozszerzenie pliku, będzie mogła go otworzyć inna aplikacja, co może nie być bezpieczne dla Twojego urządzenia.</translation>
 <translation id="1089606299949659462">Sprawdzanie zakończone</translation>
-<translation id="1091604859693995976">Odśwież, aby wyświetlić</translation>
 <translation id="1095761715416917775">Zadbaj o to, by nigdy nie stracić dostępu do synchronizowanych danych</translation>
 <translation id="1100066534610197918">Otwórz w nowej karcie w grupie</translation>
 <translation id="1103142993930332957">Pomożesz w ulepszaniu Chrome?</translation>
@@ -761,6 +760,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="510275257476243843">Pozostała godzina</translation>
 <translation id="5115811374190515607">do: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Zainteresowania</translation>
+<translation id="5122378528687922675">Jeśli potrzebujesz pomocy, poproś rodzica (<ph name="PARENT_NAME_1" /> lub <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Karta incognito</translation>
 <translation id="5126510351761255129">Zweryfikuj kartę</translation>
 <translation id="5132942445612118989">Synchronizuj swoje hasła, historię i inne dane na wszystkich swoich urządzeniach</translation>
@@ -1148,6 +1148,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7177466738963138057">Możesz zmienić to później w Ustawieniach</translation>
 <translation id="7177873915659574692">Nie udało się utworzyć kodu QR. URL ma za dużo znaków – ponad <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="7177959540995930968">Więcej informacji o tych funkcjach znajdziesz w ustawieniach Chrome.</translation>
+<translation id="7180611975245234373">Odśwież</translation>
 <translation id="718226107353899806">Nie możesz dodać więcej reakcji niż <ph name="MAX_NUM_REACTIONS" />.</translation>
 <translation id="7183693674623539380">Grupa kart – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Dba o Twoje bezpieczeństwo w Chrome i może poprawiać Twoje bezpieczeństwo w innych aplikacjach Google, gdy się w nich zalogujesz.</translation>
@@ -1331,6 +1332,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8084285576995584326">Zarządzaj danymi z konta Google</translation>
 <translation id="808747664143081553">Podłączono do urządzenia</translation>
 <translation id="8088176524274673045">Aby udostępniać pliki użytkownikom w pobliżu, pozwól im zeskanować ten kod QR</translation>
+<translation id="8090732854597034573">Jeśli potrzebujesz pomocy, poproś rodzica</translation>
 <translation id="8100969750121413114">Zaloguj się, aby przeglądarka Chrome działała tak, jak tego oczekujesz</translation>
 <translation id="8103578431304235997">Karta incognito</translation>
 <translation id="8105613260829665809">Przechodząc dalej, akceptujesz <ph name="BEGIN_TOS_LINK" />Warunki korzystania z usługi<ph name="END_TOS_LINK" />.\nAby pomóc nam ulepszać aplikację, Chrome wysyła do Google dane o użytkowaniu i awariach. <ph name="BEGIN_UMA_LINK" />Zarządzaj<ph name="END_UMA_LINK" /></translation>
@@ -1339,6 +1341,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8109613176066109935">Aby korzystać ze swoich zakładek na wszystkich urządzeniach, włącz synchronizację</translation>
 <translation id="8110024788458304985">Pomóż w ulepszaniu funkcji i działania Chrome</translation>
 <translation id="8110087112193408731">Pokazywać Twoją aktywność w Chrome w Cyfrowej równowadze?</translation>
+<translation id="8118117428362942925">Jeśli potrzebujesz pomocy, poproś rodzica (<ph name="PARENT_NAME" />)</translation>
 <translation id="8127542551745560481">Edytuj stronę główną</translation>
 <translation id="8130309322784422030">Twoje zapisane dane logowania mogą być nieaktualne</translation>
 <translation id="813082847718468539">Wyświetl informacje o witrynie</translation>

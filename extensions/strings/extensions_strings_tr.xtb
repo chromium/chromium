@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Paket geçersiz. Ayrıntılar: '<ph name="ERROR_MESSAGE" />'</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" uygulaması cihazlarınızdan birine erişim izni istiyor:</translation>
 <translation id="8885905466771744233">Belirtilen uzantıya ilişkin özel anahtar zaten var. Var olan anahtarı yeniden kullanın veya öncelikle bu anahtarı silin.</translation>
+<translation id="9039223174332979184">Bu makinenin yöneticisi, <ph name="EXTENSION_NAME" /> uzantısının manifest sürümünün en az 3 olmasını zorunlu kılıyor.</translation>
 <translation id="907841381057066561">Paketleme sırasında geçici zip dosyası oluşturulamadı.</translation>
 <translation id="941543339607623937">Geçersiz özel anahtar.</translation>
 </translationbundle>

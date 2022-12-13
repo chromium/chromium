@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">مزید نجی ویب بنانے میں ہماری مدد کریں</translation>
 <translation id="107147699690128016">اگر آپ فائل ایکسٹینشن تبدیل کرتے ہیں تو فائل مختلف ایپلیکیشن میں کھل سکتی ہے اور ممکنہ طور پر آپ کے آلہ کے لیے نقصان دہ ہو سکتی ہے۔</translation>
 <translation id="1089606299949659462">جائزہ مکمل ہو گیا!</translation>
-<translation id="1091604859693995976">دیکھنے کیلئے ریفریش کریں</translation>
 <translation id="1095761715416917775">یقینی بنائیں کہ آپ ہمیشہ اپنے مطابقت پذیر ڈیٹا تک رسائی حاصل کر سکتے ہیں</translation>
 <translation id="1100066534610197918">گروپ میں نئے ٹیب میں کھولیں</translation>
 <translation id="1103142993930332957">‏Chrome کو بہتر بنانے میں مدد کریں؟</translation>
@@ -761,6 +760,7 @@
 <translation id="510275257476243843">1 گھنٹہ باقی</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> تک</translation>
 <translation id="5118713593561876160">دلچسپیاں</translation>
+<translation id="5122378528687922675">اگر آپ کو مدد کی ضرورت ہو تو اپنے والدین (<ph name="PARENT_NAME_1" /> یا <ph name="PARENT_NAME_2" />) سے پوچھیں</translation>
 <translation id="5123685120097942451">پوشیدگی ٹیب</translation>
 <translation id="5126510351761255129">اپنے کارڈ کی توثیق کریں</translation>
 <translation id="5132942445612118989">سبھی آلات پر اپنے پاس ورڈز اور سرگزشت کی مطابقت پذیری اور مزید بہت کچھ کریں</translation>
@@ -1148,6 +1148,7 @@
 <translation id="7177466738963138057">آپ بعد میں ترتیبات میں اسے تبدیل کر سکتے ہیں</translation>
 <translation id="7177873915659574692">‏QR کوڈ تخلیق نہیں کیا جا سکتا۔ URL <ph name="CHARACTER_LIMIT" /> حروف سے زیادہ ہے۔</translation>
 <translation id="7177959540995930968">‏آپ Chrome کی ترتیبات میں ان خصوصیات کے بارے میں مزید جان سکتے ہیں۔</translation>
+<translation id="7180611975245234373">ریفریش کریں</translation>
 <translation id="718226107353899806">آپ <ph name="MAX_NUM_REACTIONS" /> تک ردعمل شامل کر سکتے ہیں</translation>
 <translation id="7183693674623539380">ٹیب گروپ - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">‏آپ کے سائن ان ہونے پر آپ کو Chrome پر محفوظ رکھتا ہے اور دیگر Google ایپس میں آپ کی سیکیورٹی کو بہتر بنانے کے لیے استعمال کیا جا سکتا ہے۔</translation>
@@ -1331,6 +1332,7 @@
 <translation id="8084285576995584326">‏اپنے Google اکاؤنٹ کے ڈیٹا کو کنٹرول کریں</translation>
 <translation id="808747664143081553">آلے سے منسلک ہو گیا</translation>
 <translation id="8088176524274673045">‏قریبی لوگوں سے اشتراک کرنے کیلئے انہیں یہ QR کوڈ اسکین کرنے دیں</translation>
+<translation id="8090732854597034573">اگر آپ کو مدد کی ضرورت ہو تو اپنے والدین سے پوچھیں</translation>
 <translation id="8100969750121413114">‏Chrome کو اپنا بنانے کے لیے سائن ان کریں</translation>
 <translation id="8103578431304235997">پوشیدگی ٹیب</translation>
 <translation id="8105613260829665809">‏جاری رکھ کر، آپ <ph name="BEGIN_TOS_LINK" />سروس کی شرائط<ph name="END_TOS_LINK" /> سے اتفاق کرتے ہیں۔\nایپ کو بہتر بنانے میں مدد کرنے کے لیے، Chrome استعمال اور ناکامی کا ڈیٹا Google کو بھیجتا ہے۔ <ph name="BEGIN_UMA_LINK" />نظم کریں<ph name="END_UMA_LINK" /></translation>
@@ -1339,6 +1341,7 @@
 <translation id="8109613176066109935">اپنے سبھی آلات پر اپنے بُک مارکس حاصل کرنے کیلئے، سِنک کو آن کریں</translation>
 <translation id="8110024788458304985">‏Chrome کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="8110087112193408731">‏ڈیجیٹل فلاح و بہبود میں آپ کی Chrome سرگرمی دکھائیں؟</translation>
+<translation id="8118117428362942925">اگر آپ کو مدد کی ضرورت ہو تو اپنے والدین (<ph name="PARENT_NAME" />) سے پوچھیں</translation>
 <translation id="8127542551745560481">ہوم صفحہ میں ترمیم کریں</translation>
 <translation id="8130309322784422030">آپ کی اسٹور کردہ سائن ان کی معلومات پرانی ہو سکتی ہے</translation>
 <translation id="813082847718468539">سائٹ کی معلومات دیکھیں</translation>

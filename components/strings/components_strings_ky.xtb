@@ -271,6 +271,7 @@
 <translation id="1586541204584340881">Кайсы кеңейтүүлөрдү орнотуп алдыңыз</translation>
 <translation id="1588438908519853928">Кадыресе</translation>
 <translation id="1592005682883173041">Жергиликтүү дайындарга мүмкүнчүлүк алуу</translation>
+<translation id="1593359183944365958">270 градус</translation>
 <translation id="1594030484168838125">Тандоо</translation>
 <translation id="1596296697375291157">Триллер, кылмыш жана сырдуу тасмалар</translation>
 <translation id="1599199147673445968">Жаңы картабы? <ph name="BEGIN_LINK" />Картанын чоо-жайын киргизиңиз<ph name="END_LINK" /></translation>
@@ -337,6 +338,7 @@
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> деп жана мааниси туура көрсөтүлүшү керек.</translation>
 <translation id="1745880797583122200">Серепчиңиз башкарылып жатат</translation>
 <translation id="1746113442205726301">Y сүрөтүн жылдыруу</translation>
+<translation id="1746531169546376413">0 градус</translation>
 <translation id="17513872634828108">Ачык өтмөктөр</translation>
 <translation id="1752021286346845558">8-электрондук каттар кутусу</translation>
 <translation id="1753068535428855445">Таанышуу жана жуп табуу</translation>
@@ -411,7 +413,6 @@
 <translation id="1958218078413065209">Эң көп алган упайыңыз: <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />Баш баккан айрым сайттарыңыздын URL'дерин, тутум тууралуу чектелген маалыматты жана барактагы айрым мазмунду<ph name="END_WHITEPAPER_LINK" /> Google'га жөнөтүү менен Интернеттеги коопсуздукту баары үчүн күчөтүүгө жардам бериңиз. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Купуялык саясаты<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Кыстармалар</translation>
-<translation id="1971033026002113380">Сырсөздөрдү TouchID функциясы менен коргоо</translation>
 <translation id="1973335181906896915">Сериялоо катасы</translation>
 <translation id="1974060860693918893">Өркүндөтүлгөн</translation>
 <translation id="1975457531113383421">Киргизүү түпкүчү</translation>
@@ -746,7 +747,6 @@
 <translation id="2881276955470682203">Карточка сакталсынбы?</translation>
 <translation id="2882949212241984732">Бүктөлгөн жерин эки жолу чаптоо</translation>
 <translation id="2893773853358652045">Төртүнчү барабан</translation>
-<translation id="289834758818479772">Эгер бул түзмөктү башкалар менен бөлүшүп колдонсоңуз, сакталган сырсөздү колдонуп жаткан сиз экениңизди ырастоо үчүн TouchID функциясын күйгүзүңүз</translation>
 <translation id="2900528713135656174">Иш-чара түзүү</translation>
 <translation id="2903493209154104877">Даректер</translation>
 <translation id="290376772003165898">Барак <ph name="LANGUAGE" /> тилинде эмес бекен?</translation>
@@ -1063,7 +1063,6 @@
 <translation id="3678529606614285348">Баракчаны жаңы жашыруун терезеде ачуу (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Тастыктама маалыматы</translation>
 <translation id="3693327506115126094">Өзүңүздү кантип ырастай турганыңызды тандаңыз</translation>
-<translation id="3699374065820972102">Сырсөздөрдү толтуруу үчүн TouchID күйгүзүлдү</translation>
 <translation id="3701427423622901115">Баштапкы абалга келтирүү аракети ырасталды.</translation>
 <translation id="3704162925118123524">Сиз колдонуп жаткан тармак, анын кирүү барагына баш багууңузду талап кылышы мүмкүн.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" />, <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1178,7 +1177,6 @@
 <translation id="401170183602135785">Конверт C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} беттен турган PDF документи}other{{COUNT} беттен турган PDF документи}}</translation>
 <translation id="4023431997072828269">Форманы тапшырууда кооптуу байланыш колдонулуп жаткандыктан, маалыматыңыз башкаларга көрүнүп турат.</translation>
-<translation id="4024923292610332139">сырсөздөрдү толтура турган TouchID'ни өчүрүү</translation>
 <translation id="4025913568718019429">Google'дагы купуялык жөндөөлөрүн башкаруу баскычы. Google аккаунтуңуздун купуялык жөндөөлөрүнө өтүү үчүн Enter баскычын басыңыз</translation>
 <translation id="4030383055268325496">Кошууну &amp;жасабоо</translation>
 <translation id="4031179711345676612">Микрофонду колдонууга уруксат берилди</translation>
@@ -1540,7 +1538,6 @@
 <translation id="4900217275619098670">Тогузунчу барабан</translation>
 <translation id="4901778704868714008">Сактоо…</translation>
 <translation id="4905659621780993806">Администраторуңуз түзмөктү <ph name="DATE" /> саат <ph name="TIME" /> автоматтык түрдө өчүрүп күйгүзөт. Түзмөк өчүрүлүп күйгүзүлгөнгө чейин ачылып турган нерселерди сактаңыз.</translation>
-<translation id="4911007278801291296">TouchID функциясын <ph name="SETTINGS" /> бөлүмүнөн күйгүзүп же өчүрө аласыз</translation>
 <translation id="4913987521957242411">Жогорку сол жагын тешүү</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> колдонмосун орнотуу (жүктөп алуунун кереги жок)</translation>
 <translation id="4923459931733593730">Төлөм</translation>
@@ -1722,6 +1719,7 @@
 <translation id="5334013548165032829">Чоо-жайы көрсөтүлгөн тутум таржымалдары</translation>
 <translation id="5334145288572353250">Дарек сакталсынбы?</translation>
 <translation id="5335920952954443287">Соккон жүрөк</translation>
+<translation id="5337569431717511221">Chrome'ду демейки серепчи катары коюу баскычы, Chrome'ду системанын демейки серепчиси катары коюу үчүн Enter баскычын басыңыз</translation>
 <translation id="5340250774223869109">Колдонмо бөгөттөлдү</translation>
 <translation id="534295439873310000">NFC түзмөктөрү</translation>
 <translation id="5344579389779391559">Бул баракта акы алынышы мүмкүн</translation>
@@ -1753,7 +1751,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> сизге билдирмелерди жөнөткөнү жатат</translation>
 <translation id="5428105026674456456">Испанча</translation>
 <translation id="5430298929874300616">Кыстарманы алып салуу</translation>
-<translation id="5434423669266814150">сырсөздөрдү толтуруу үчүн TouchID'ни күйгүзүү</translation>
 <translation id="5443468954631487277">Тескери иретте алдыңкы бетин өйдө каратып</translation>
 <translation id="5447765697759493033">Бул сайт которулбайт</translation>
 <translation id="5452270690849572955">Бул <ph name="HOST_NAME" /> барагын табуу мүмкүн эмес</translation>
@@ -1795,6 +1792,7 @@
 <translation id="5540969246441091044">Ат спорту</translation>
 <translation id="5541086400771735334">7-электрондук каттар кутусу</translation>
 <translation id="5541546772353173584">Электрондук почта дарегин кошуу</translation>
+<translation id="5543722831081909240">180 градус</translation>
 <translation id="5545756402275714221">Сизге ылайыктуу макалалар</translation>
 <translation id="5551890439174915351">100 x 200 мм.</translation>
 <translation id="5552137475244467770">Chrome Интернетке жарыяланган тизмелерден сырсөздөрүңүздү маал-маалы менен текшерип турат. Мындай учурда сырсөздөрүңүз менен колдонуучу аттарыңыз шифрленет. Аларды эч ким, анын ичинде Google да окуй албайт.</translation>
@@ -2183,6 +2181,7 @@
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> түзмөгүңүз башкарылган жок</translation>
 <translation id="6592952801936330159">Сайттын жөндөөлөрүн башкаруу баскычы, Chrome жөндөөлөрүнөн уруксаттарды жана сайттарда сакталган маалыматтарды башкаруу үчүн Enter баскычын басыңыз</translation>
 <translation id="6596325263575161958">Шифрлөө параметрлери</translation>
+<translation id="6597665340361269064">90 градус</translation>
 <translation id="6599642189720630047">Көз салынган товарлар</translation>
 <translation id="6611723696964473273">Экономикалык жаңылыктар</translation>
 <translation id="6612010098632894193">Онлайн видео</translation>
@@ -2415,6 +2414,7 @@
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Администраторуңуз төмөнкүлөрдү көрөт:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Купуя карап чыкканга жашыруун өтмөктү ачуу үчүн Tab, андан соң Enter баскычын басыңыз</translation>
+<translation id="7203375778433816396">Chrome'ду системанын демейки серепчиси катары коюу</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> сайты коопсуздук стандарттарына жооп бербейт.</translation>
 <translation id="7210993021468939304">Контейнердеги Linux аракеттери Linux колдонмолорун контейнердин алкагында орнотуп, иштете алышат</translation>
 <translation id="721197778055552897">Бул көйгөй жөнүндө <ph name="BEGIN_LINK" />Көбүрөөк билүү<ph name="END_LINK" />.</translation>
@@ -2562,6 +2562,7 @@
 <translation id="7537536606612762813">Милдеттүү</translation>
 <translation id="7542403920425041731">Текшерилгенден кийин карточкаңыздын маалыматы бул сайтка жөнөтүлөт.</translation>
 <translation id="7542995811387359312">Бул форманын туташуусу кооптуу болгондуктан, насыя картасын автоматтык түрдө толтуруу мүмкүнчүлүгү өчүрүлдү.</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" /> ачылууда</translation>
 <translation id="7548892272833184391">Интернетке туташуудагы каталарды оңдоо</translation>
 <translation id="7549584377607005141">Бул веб-баракча туура ачылышы үчүн мурун киргизилген дайындар талап кылынат. Дайындарды кайра жиберсеңиз болот, бирок анда бул баракчада буга чейин жасалган аракеттерди кайталап каласыз.</translation>
 <translation id="7550637293666041147">Түзмөктөгү колдонуучу атыңыз жана Chrome'догу колдонуучу атыңыз</translation>
@@ -2747,6 +2748,7 @@
 <translation id="8009843239480947060">10 x 11 дюйм</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Бул карта жана анын эсептешүү дареги сакталат. Аны <ph name="USER_EMAIL" /> аккаунтуна киргенде колдоно аласыз.}other{Бул карталар жана алардын эсептешүү даректери сакталат. Аларды <ph name="USER_EMAIL" /> аккаунтуна киргенде колдоно аласыз.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'ду системанын демейки серепчиси катары коюу үчүн Enter баскычын басыңыз</translation>
 <translation id="8025119109950072390">Эгер бул сайтка кирсеңиз, чабуулчу программа орнотулуп же сырсөздөр, телефон номерлери жана насыя карталарынын дайындары сыяктуу жеке маалыматыңыз уурдалышы мүмкүн.</translation>
 <translation id="8026334261755873520">Серептөө дайындарын тазалап салуу</translation>
 <translation id="8027077570865220386">15-түпкүч</translation>

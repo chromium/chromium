@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">ウェブにおけるプライバシーの強化にご協力ください</translation>
 <translation id="107147699690128016">ファイル拡張子を変更すると、ファイルが別のアプリケーションで開かれる可能性があり、場合によってはデバイスに損害が生じます。</translation>
 <translation id="1089606299949659462">確認が終わりました</translation>
-<translation id="1091604859693995976">更新して表示</translation>
 <translation id="1095761715416917775">同期データに常にアクセスできるようにしてください</translation>
 <translation id="1100066534610197918">新しいタブをグループで開く</translation>
 <translation id="1103142993930332957">Chrome の改善にご協力ください</translation>
@@ -1148,6 +1147,7 @@
 <translation id="7177466738963138057">これは後から [設定] で変更できます</translation>
 <translation id="7177873915659574692">QR コードを作成できません。URL が <ph name="CHARACTER_LIMIT" /> 文字を超えています。</translation>
 <translation id="7177959540995930968">これらの機能について詳しくは、Chrome の設定をご覧ください。</translation>
+<translation id="7180611975245234373">更新</translation>
 <translation id="718226107353899806">最大 <ph name="MAX_NUM_REACTIONS" /> 件のリアクションを追加できます</translation>
 <translation id="7183693674623539380">タブグループ - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります。</translation>

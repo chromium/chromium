@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">ನಿಮ್ಮ <ph name="NAME" /> ಅನ್ನು ಉಳಿಸಿ</translation>
 <translation id="1032891413405719768">ಸ್ಟೈಲಸ್ ಬ್ಯಾಟರಿ ಕಡಿಮೆಯಾಗಿದೆ</translation>
 <translation id="1036073649888683237">ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿರ್ವಹಿಸಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
+<translation id="1036348656032585052">ಆಫ್ ಮಾಡು</translation>
 <translation id="1036672894875463507">ನಾನು ನಿಮ್ಮ Google Assistant, ಇಡೀ ದಿನ ಸಹಾಯ ಮಾಡಲು ನಿಮ್ಮೊಂದಿಗೆ ಇರುತ್ತೇನೆ!
 ಪ್ರಾರಂಭಿಸಲು ನೀವು ಇಲ್ಲಿರುವ ಕೆಲವು ಕಾರ್ಯಗಳನ್ನು ಪ್ರಯತ್ನಿಸಬಹುದು.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ಸೇರಿಸಲಾಗಿದೆ</translation>
@@ -100,6 +101,7 @@
 <translation id="1447641497144572814">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ</translation>
 <translation id="1455242230282523554">ಭಾಷೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1460620680449458626">ವಾಲ್ಯೂಮ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
+<translation id="14648076227129703">ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಅನುಮತಿ ಹೊಂದಿರುವ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಇದು ಕ್ಯಾಮರಾಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡುತ್ತದೆ</translation>
 <translation id="1467432559032391204">ಎಡಕ್ಕೆ</translation>
 <translation id="146902737843070955">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಬದಲಾವಣೆಯನ್ನು ವಿನಂತಿಸಿದ್ದಾರೆ</translation>
 <translation id="147310119694673958">ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -159,6 +161,7 @@
 <translation id="1797271123677381264">ಪಾಸ್‌ವರ್ಡ್ ಮರೆತಿರುವಿರಿ</translation>
 <translation id="181103072419391116">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ</translation>
 <translation id="1812997170047690955">ನನ್ನ ಪರದೆಯಲ್ಲಿ ಏನಿದೆ?</translation>
+<translation id="1816896987747843206">ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಅನುಮತಿ ಹೊಂದಿರುವ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಇದು ಕ್ಯಾಮರಾಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡುತ್ತದೆ</translation>
 <translation id="1823280932251546115">ಸ್ಟೇಟಸ್ ಟ್ರೇ, ಸಮಯ <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ಅನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1836215606488044471">ಸಹಾಯಕ (ಲೋಡ್ ಆಗುತ್ತಿದೆ...)</translation>
 <translation id="1838895407229022812">ನೈಟ್ ಲೈಟ್ ಆಫ್ ಆಗಿದೆ.</translation>
+<translation id="1854180393107901205">ಬಿತ್ತರಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="1862380676329487333">ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ ಮತ್ತು ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>
 <translation id="1864454756846565995">USB-C ಸಾಧನ (ಹಿಂದಿನ ಪೋರ್ಟ್)</translation>
 <translation id="1869497990620230175">ತ್ವರಿತ ಫೈಲ್‌ಗಳು</translation>
@@ -598,6 +602,7 @@
 <translation id="4316910396681052118">ಎಲ್ಲಾ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Ctrl + Alt + ಅಪ್ ಆ್ಯರೋ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬದಲಿಸಲಾಗಿದೆ. Home ಕೀ ಬಳಸಲು, <ph name="LAUNCHER_KEY_NAME" /> ಕೀ + ಲೆಫ್ಟ್ ಆ್ಯರೋ ಒತ್ತಿ.</translation>
+<translation id="4324840740119394760">ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಅನುಮತಿ ಹೊಂದಿರುವ <ph name="APP_NAME" /> ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಇದು ಕ್ಯಾಮರಾಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡುತ್ತದೆ</translation>
 <translation id="4333628967105022692">ಅನೇಕ ಬಳಕೆದಾರರು ಸೈನ್ ಇನ್ ಆಗಿರುವಾಗ ಲ್ಯಾಕ್ರೋಸ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="4338109981321384717">ಭೂತಕನ್ನಡಿ</translation>
 <translation id="4351433414020964307">ಸಹಾಯಕವು ಲೋಡ್ ಆಗುತ್ತಿದೆ...</translation>
@@ -664,13 +669,13 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4665114317261903604">'ಅಡಚಣೆ ಮಾಡಬೇಡಿ' ಸ್ಥಿತಿಯನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">ಎಲ್ಲಾ ಸಮಯದಲ್ಲೂ ಎಲ್ಲಾ ಕ್ಯಾಮರಾಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲು ಈ ಸಾಧನದಲ್ಲಿ ಕ್ಯಾಮರಾ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ.</translation>
 <translation id="4666911709726371538">ಇನ್ನಷ್ಟು ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="468293128311738995">ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿನ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="4690510401873698237">ಪರದೆಯ ಕೆಳಭಾಗದಲ್ಲಿ ಶೆಲ್ಫ್ ಇದೆ</translation>
 <translation id="4696813013609194136">ಪೋಷಕ ಕೋಡ್ ಬಳಸಿಕೊಂಡು ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="4702647871202761252">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಆಫ್ ಆಗಿದೆ</translation>
+<translation id="4706121060329443414">ನಂತರ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಲಾಗುವುದು. ಸದ್ಯಕ್ಕೆ ಪ್ರಕ್ರಿಯೆಗಾಗಿ Google ಗೆ ಧ್ವನಿಯನ್ನು ಕಳುಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="470644585772471629">ಬಣ್ಣ ವಿಲೋಮ</translation>
 <translation id="4717575069099566988">ನಿಮ್ಮ USB-C, USB4 ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಸಾಧನದ ಕಾರ್ಯಕ್ಷಮತೆ ಸೀಮಿತವಾಗಿರಬಹುದು.</translation>
 <translation id="4730374152663651037">ಪದೇ ಪದೇ ಬಳಸಿರುವುದು</translation>
@@ -696,7 +701,6 @@
 <translation id="485592688953820832">ಯಾವುದೇ ಕ್ರಮ ಕೈಗೊಳ್ಳಬೇಡಿ (ವಿರಾಮಗೊಳಿಸಿ)</translation>
 <translation id="485634149294284819">ಕೀಬೋರ್ಡ್ ಮೆನುವನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
-<translation id="486056901304535126">ನಂತರ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಲಾಗುವುದು. ಡೌನ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಳ್ಳುವವರೆಗೆ, ಪ್ರಕ್ರಿಯೆಗಾಗಿ Google ಗೆ ಧ್ವನಿಯನ್ನು ಕಳುಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="4864369630010738180">ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4864648187878336334">ಡೆಸ್ಕ್ 15</translation>
 <translation id="4868492592575313542">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -791,6 +795,7 @@
 <translation id="5356963482258194581">ಡಾರ್ಕ್ ಮತ್ತು ಲೈಟ್ ಥೀಮ್‌ಗಳ ನಡುವೆ ಬದಲಿಸಿ. ಡೆಸ್ಕ್‌ಟಾಪ್ ಮೇಲೆ ಬಲ-ಕ್ಲಿಕ್ ಮಾಡಿ ಮತ್ತು ವಾಲ್‌ಪೇಪರ್ &amp; ಸ್ಟೈಲ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="536019650977002321">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಆಡಿಯೋ ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ಅನುಮತಿಸುವುದಿಲ್ಲ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ಈ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
+<translation id="5377367976106153749">ಕ್ಯಾಮರಾ ಆ್ಯಕ್ಸೆಸ್ ಆನ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="5379115545237091094">ಹಲವು ಬಾರಿ ಪ್ರಯತ್ನಿಸಿದ್ದೀರಿ</translation>
 <translation id="5391307769715781764">ಉಳಿಸಿದ ಡೆಸ್ಕ್ ಅನ್ನು ಬದಲಿಸಬೇಕೇ?</translation>
 <translation id="5393156353051693207">ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳನ್ನು ಮರುಕ್ರಮಗೊಳಿಸಲು ಎಲ್ಲಿಯಾದರೂ ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಹಿಡಿದುಕೊಳ್ಳಿ</translation>
@@ -1177,7 +1182,6 @@
 <translation id="7557816257942363084">ಪ್ರಸ್ತುತ <ph name="APP_NAME" /> ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="7561982940498449837">ಮೆನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="7564874036684306347">ವಿಂಡೋಗಳನ್ನು ಬೇರೊಂದು ಡೆಸ್ಕ್‌ಟಾಪ್‌ಗೆ ಸರಿಸಿದರೆ, ಅದು ಅನಿರೀಕ್ಷಿತ ವರ್ತನೆಗೆ ಕಾರಣವಾಗಬಹುದು. ಆನಂತರ ಬರುವ ಅಧಿಸೂಚನೆಗಳು, ವಿಂಡೋಗಳು ಮತ್ತು ಡೈಲಾಗ್‌ಗಳು ಡೆಸ್ಕ್‌ಟಾಪ್‌ಗಳ ನಡುವೆ ವಿಭಜನೆಯಾಗಬಹುದು.</translation>
-<translation id="7567076708801803118">ಈ ಸಾಧನದಲ್ಲಿ ಕ್ಯಾಮರಾ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಆಫ್ ಮಾಡಲು ನೀವು ಬಯಸುವಿರಾ?</translation>
 <translation id="7569509451529460200">ಬ್ರೈಲ್ ಹಾಗೂ ChromeVox ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7573585051776738856">ಸಕ್ರಿಯ ವಿಂಡೋ ಬಲಭಾಗದಲ್ಲಿ ಡಾಕ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="7579778809502851308">ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್</translation>
@@ -1253,6 +1257,7 @@
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ಮತ್ತು <ph name="SECOND_PARENT_EMAIL" /> ಮೂಲಕ ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="793716872548410480">ನಿಮ್ಮ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಅನ್ನು ವೀಕ್ಷಿಸಲು <ph name="SHORTCUT_KEY_NAME" /> + V ಅನ್ನು ಒತ್ತಿರಿ. ನೀವು ನಕಲಿಸಿದ ಕೊನೆಯ 5 ಐಟಂಗಳನ್ನು ನಿಮ್ಮ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="7942349550061667556">ಕೆಂಪು</translation>
+<translation id="7963992254934562106"><ph name="PHONE_NAME" /> ನಿಂದ</translation>
 <translation id="7968693143708939792">ಫೋಲ್ಡರ್ ಆಯ್ಕೆಮಾಡಿ...</translation>
 <translation id="7977927628060636163">ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗೆ ಹುಡುಕಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="7982789257301363584">ನೆಟ್‌ವರ್ಕ್</translation>
@@ -1491,6 +1496,7 @@
 <translation id="954052413789300507"><ph name="FILENAME" /> ಗಾಗಿ ಸಾಕಷ್ಟು ಸ್ಥಳಾವಕಾಶವಿಲ್ಲ. ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> ಕುರಿತಾದ <ph name="RESULT_COUNT" /> ಫಲಿತಾಂಶಗಳನ್ನು ಪ್ರದರ್ಶಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="98515147261107953">ಲ್ಯಾಂಡ್‌ಸ್ಕೇಪ್</translation>
+<translation id="989374776391122812">ಕ್ಯಾಮರಾ ಹಾಗೂ ಆಡಿಯೋ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" />ವಿಂಡೋವನ್ನು ಮುಚ್ಚಲಾಗಿದೆ.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">ಇತ್ತೀಚಿನ ಫೀಚರ್‌ಗಳು ಮತ್ತು ಭದ್ರತಾ ಸುಧಾರಣೆಗಳನ್ನು ಪಡೆಯಿರಿ. ಅಪ್‌ಡೇಟ್‌ಗಳು ಹಿನ್ನೆಲೆಯಲ್ಲಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತವೆ.</translation>

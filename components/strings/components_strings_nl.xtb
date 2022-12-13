@@ -413,7 +413,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1958218078413065209">Je hoogste score is <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Help de beveiliging op internet te verbeteren voor iedereen door <ph name="BEGIN_WHITEPAPER_LINK" />URL's van sommige pagina's die je bezoekt, beperkte systeemgegevens en bepaalde paginacontent<ph name="END_WHITEPAPER_LINK" /> naar Google te sturen. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Privacybeleid<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Bookmarks voor <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">Wachtwoorden beveiligen met Touch ID</translation>
 <translation id="1973335181906896915">Serialisatiefout</translation>
 <translation id="1974060860693918893">Geavanceerd</translation>
 <translation id="1975457531113383421">Invoerlade</translation>
@@ -748,7 +747,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2881276955470682203">Pas opslaan?</translation>
 <translation id="2882949212241984732">4-luik gesloten luikvouw</translation>
 <translation id="2893773853358652045">4e rol</translation>
-<translation id="289834758818479772">Als je dit apparaat met anderen deelt, kun je Touch ID aanzetten om te bevestigen dat jij het bent wanneer je een opgeslagen wachtwoord gebruikt.</translation>
 <translation id="2900528713135656174">Afspraak maken</translation>
 <translation id="2903493209154104877">Adressen</translation>
 <translation id="290376772003165898">Is deze pagina niet in het <ph name="LANGUAGE" />?</translation>
@@ -1061,7 +1059,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3678529606614285348">Pagina openen in een nieuw incognitovenster (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Certificaatgegevens</translation>
 <translation id="3693327506115126094">Kies hoe je wilt bevestigen dat jij het bent</translation>
-<translation id="3699374065820972102">TouchID staat aan om wachtwoorden in te vullen</translation>
 <translation id="3701427423622901115">Reset bevestigd.</translation>
 <translation id="3704162925118123524">Het is mogelijk dat je de inlogpagina moet bezoeken van het netwerk dat je gebruikt.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1176,7 +1173,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="401170183602135785">Envelop C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Pdf-document met {COUNT} pagina}other{Pdf-document met {COUNT} pagina's}}</translation>
 <translation id="4023431997072828269">Dit formulier wordt ingediend via een verbinding die niet beveiligd is. Hierdoor zijn je gegevens zichtbaar voor anderen.</translation>
-<translation id="4024923292610332139">TouchID uitzetten voor het invullen van wachtwoorden</translation>
 <translation id="4025913568718019429">De knop Google-privacyinstellingen beheren, druk op Enter om naar de privacyinstellingen van je Google-account te gaan</translation>
 <translation id="4030383055268325496">&amp;Toevoegen ongedaan maken</translation>
 <translation id="4031179711345676612">Microfoon toegestaan</translation>
@@ -1538,7 +1534,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4900217275619098670">9e rol</translation>
 <translation id="4901778704868714008">Opslaan…</translation>
 <translation id="4905659621780993806">Je beheerder start het apparaat op <ph name="DATE" /> om <ph name="TIME" /> automatisch opnieuw op. Sla alle geopende items op voordat je apparaat opnieuw wordt opgestart.</translation>
-<translation id="4911007278801291296">Je kunt TouchID aan- of uitzetten in <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Perforatie linksboven</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> installeren (geen download vereist)</translation>
 <translation id="4923459931733593730">Betaling</translation>
@@ -1720,6 +1715,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5334013548165032829">Gedetailleerde systeemlogboeken</translation>
 <translation id="5334145288572353250">Adres opslaan?</translation>
 <translation id="5335920952954443287">Kloppend hart</translation>
+<translation id="5337569431717511221">Knop Chrome instellen als standaardbrowser, druk op Enter om Chrome in te stellen als de standaardbrowser van het systeem</translation>
 <translation id="5340250774223869109">App is geblokkeerd</translation>
 <translation id="534295439873310000">NFC-apparaten</translation>
 <translation id="5344579389779391559">Deze pagina brengt je mogelijk kosten in rekening</translation>
@@ -1751,7 +1747,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wil meldingen sturen</translation>
 <translation id="5428105026674456456">Spaans</translation>
 <translation id="5430298929874300616">Bookmark verwijderen</translation>
-<translation id="5434423669266814150">Touch ID aan te zetten voor het invullen van wachtwoorden</translation>
 <translation id="5443468954631487277">Omgekeerde volgorde met de bedrukte zijde omhoog</translation>
 <translation id="5447765697759493033">Deze site wordt niet vertaald</translation>
 <translation id="5452270690849572955">Deze pagina op <ph name="HOST_NAME" /> kan niet worden gevonden</translation>
@@ -2414,6 +2409,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">De beheerder kan het volgende zien:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en daarna op Enter om een nieuw incognitotabblad te openen om privé te browsen.</translation>
+<translation id="7203375778433816396">Chrome instellen als standaardbrowser van het systeem</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> voldoet niet aan de beveiligingsnormen.</translation>
 <translation id="7210993021468939304">Linux-activiteit in de container, en kan Linux-apps in de container installeren en uitvoeren</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> over dit probleem.</translation>
@@ -2561,6 +2557,7 @@ Aanvullende informatie:
 <translation id="7537536606612762813">Verplicht</translation>
 <translation id="7542403920425041731">Zodra je bevestigt, worden je creditcardgegevens gedeeld met deze site.</translation>
 <translation id="7542995811387359312">Het automatisch invullen van creditcardnummers staat uit omdat dit formulier geen beveiligde verbinding gebruikt.</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" /> starten</translation>
 <translation id="7548892272833184391">Verbindingsfouten oplossen</translation>
 <translation id="7549584377607005141">Deze webpagina kan alleen correct worden weergegeven op basis van gegevens die je eerder hebt opgegeven. Je kunt deze gegevens opnieuw verzenden, maar hierdoor worden de acties herhaald die eerder op deze pagina zijn uitgevoerd.</translation>
 <translation id="7550637293666041147">De gebruikersnaam van je apparaat en je Chrome-gebruikersnaam</translation>
@@ -2746,6 +2743,7 @@ Aanvullende informatie:
 <translation id="8009843239480947060">10 x 11 inch</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Deze pas en het bijbehorende factuuradres worden opgeslagen. Je kunt deze gegevens gebruiken wanneer je bent ingelogd op <ph name="USER_EMAIL" />.}other{Deze passen en de bijbehorende factuuradressen worden opgeslagen. Je kunt deze gegevens gebruiken wanneer je bent ingelogd op <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om Chrome in te stellen als de standaardbrowser van het systeem</translation>
 <translation id="8025119109950072390">Cybercriminelen op deze site proberen je mogelijk te misleiden om iets gevaarlijks te doen, zoals software installeren of je persoonlijke informatie bekendmaken (bijvoorbeeld wachtwoorden, telefoonnummers of creditcards).</translation>
 <translation id="8026334261755873520">Browsegegevens wissen</translation>
 <translation id="8027077570865220386">Lade 15</translation>

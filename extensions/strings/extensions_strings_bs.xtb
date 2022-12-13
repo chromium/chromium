@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Paket je nevažeći. Detalji: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" zahtijeva pristup jednom od vaših uređaja:</translation>
 <translation id="8885905466771744233">Privatni ključ za navedenu ekstenziju već postoji. Ponovo iskoristite ključ ili ga prvo izbrišite.</translation>
+<translation id="9039223174332979184">Administrator ove mašine zahtijeva da verzija ekstenzije <ph name="EXTENSION_NAME" /> bude najmanje 3.</translation>
 <translation id="907841381057066561">Kreiranje privremenog zip fajla tokom pakiranja nije uspjelo.</translation>
 <translation id="941543339607623937">Nevažeći privatni ključ.</translation>
 </translationbundle>

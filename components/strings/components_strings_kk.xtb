@@ -413,7 +413,6 @@
 <translation id="1958218078413065209">Ең жоғары ұпайыңыз: <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Google-ға <ph name="BEGIN_WHITEPAPER_LINK" />кірген беттердің URL мекенжайларын, шектеулі жүйе ақпаратын және кейбір бет мазмұнын<ph name="END_WHITEPAPER_LINK" /> жіберу арқылы барлық пайдаланушы үшін интернет қауіпсіздігін жақсартуға көмектесіңіз. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Құпиялылық саясаты<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> бетбелгілері</translation>
-<translation id="1971033026002113380">Touch ID технологиясымен құпия сөздерді қорғау</translation>
 <translation id="1973335181906896915">Сериалау қатесі</translation>
 <translation id="1974060860693918893">Қосымша</translation>
 <translation id="1975457531113383421">Кіріс науасы</translation>
@@ -748,7 +747,6 @@
 <translation id="2881276955470682203">Карта сақталсын ба?</translation>
 <translation id="2882949212241984732">Қақпа тәрізді қос бүктеу</translation>
 <translation id="2893773853358652045">Төртінші орам</translation>
-<translation id="289834758818479772">Бұл құрылғыны басқалармен бірге қолдансаңыз, сақталған құпия сөзді пайдаланған кезде жеке басыңызды растау үшін Touch ID технологиясын қосып қоюыңызға болады.</translation>
 <translation id="2900528713135656174">Оқиға жасау</translation>
 <translation id="2903493209154104877">Мекенжайлар</translation>
 <translation id="290376772003165898">Бет <ph name="LANGUAGE" /> тілінде емес пе?</translation>
@@ -1065,7 +1063,6 @@
 <translation id="3678529606614285348">Бетті жаңа инкогнито терезесінде ашу (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Сертификат ақпараты</translation>
 <translation id="3693327506115126094">Сіз екеніңізді растау әдісін таңдаңыз</translation>
-<translation id="3699374065820972102">Құпия сөздерді толтыру үшін TouchID қосулы.</translation>
 <translation id="3701427423622901115">Бастапқы күйге қайтару расталды.</translation>
 <translation id="3704162925118123524">Пайдаланып жатқан желі өзінің кіру бетіне өтуіңізді талап етуі мүмкін.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1180,7 +1177,6 @@
 <translation id="401170183602135785">C6 хатқалтасы</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} беттік PDF құжаты}other{{COUNT} беттік PDF құжаты}}</translation>
 <translation id="4023431997072828269">Бұл үлгі қорғалмаған байланыс арқылы жіберілгендіктен, ақпаратыңыз басқаларға көрінетін болады.</translation>
-<translation id="4024923292610332139">құпия сөздерді толтыру үшін Touch ID технологиясын өшіру</translation>
 <translation id="4025913568718019429">"Google құпиялылық параметрлерін басқару" түймесі. Google аккаунтының құпиялылық параметрлеріне кіру үшін Enter пернесін басыңыз.</translation>
 <translation id="4030383055268325496">&amp;Қосу әрекетін кері қайтару</translation>
 <translation id="4031179711345676612">Микрофонды пайдалануға рұқсат берілген</translation>
@@ -1542,7 +1538,6 @@
 <translation id="4900217275619098670">Тоғызыншы орам</translation>
 <translation id="4901778704868714008">Сақтау...</translation>
 <translation id="4905659621780993806">Әкімші құрылғыңызды автоматты түрде қайта қосатын уақыт: <ph name="DATE" /> <ph name="TIME" />. Құрылғыны қайта қоспас бұрын, барлық ашық элементті сақтаңыз.</translation>
-<translation id="4911007278801291296">TouchID функциясын "<ph name="SETTINGS" />" бөлімінен қосуға не өшіруге болады.</translation>
 <translation id="4913987521957242411">Жоғарғы сол жақты тесу</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> қолданбасын орнатыңыз (жүктеп алудың қажеті жоқ).</translation>
 <translation id="4923459931733593730">Төлем</translation>
@@ -1724,6 +1719,7 @@
 <translation id="5334013548165032829">Жүйе журналдары туралы мәліметтер</translation>
 <translation id="5334145288572353250">Мекенжайды сақтау керек пе?</translation>
 <translation id="5335920952954443287">Соғып тұрған жүрек</translation>
+<translation id="5337569431717511221">Chrome-ды әдепкі браузер етіп орнату түймесі: Chrome-ды жүйенің әдепкі браузері етіп орнату үшін Enter пернесін басыңыз</translation>
 <translation id="5340250774223869109">Қолданба бөгелген</translation>
 <translation id="534295439873310000">NFC функциясы бар құрылғылар</translation>
 <translation id="5344579389779391559">Бетті ашсаңыз, ақы алынуы мүмкін</translation>
@@ -1755,7 +1751,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> хабарландыру жіберуге рұқсат сұрады</translation>
 <translation id="5428105026674456456">испан</translation>
 <translation id="5430298929874300616">Бетбелгіні жою</translation>
-<translation id="5434423669266814150">құпия сөздерді толтыру үшін Touch ID технологиясын қосу</translation>
 <translation id="5443468954631487277">Кері ретпен беткі жағында</translation>
 <translation id="5447765697759493033">Бұл сайт аударылмайды</translation>
 <translation id="5452270690849572955">Бұл <ph name="HOST_NAME" /> бетін табу мүмкін емес</translation>
@@ -2419,6 +2414,7 @@
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Әкімші келесілерді көреді:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Жаңа инкогнито қойындысын ашу үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
+<translation id="7203375778433816396">Chrome-ды жүйенің әдепкі браузері етіп орнату</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> қауіпсіздік стандарттарына сай емес.</translation>
 <translation id="7210993021468939304">Linux-тің контейнердегі әрекетін көреді, сондай-ақ контейнерден Linux қолданбаларын орната және іске қоса алады.</translation>
 <translation id="721197778055552897">Бұл ақау туралы <ph name="BEGIN_LINK" />толығырақ<ph name="END_LINK" />.</translation>
@@ -2566,6 +2562,7 @@
 <translation id="7537536606612762813">Міндетті</translation>
 <translation id="7542403920425041731">Картаңыздың мәліметтері расталғаннан кейін сайтқа беріледі.</translation>
 <translation id="7542995811387359312">Автоматты несие картасын толтыру өшірілді, себебі бұл нысанда қауіпсіз байланыс пайдаланылмаған.</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" /> бастап</translation>
 <translation id="7548892272833184391">Байланыс қателерін түзету</translation>
 <translation id="7549584377607005141">Бұл веб-бет дұрыс көрсетілу мақсатында бұрын енгізілген деректерді қажет етеді. Бұл деректерді қайта жібере аласыз, бірақ бұл арқылы осы бетте бұрын орындалған кез келген әрекетті қайталайсыз.</translation>
 <translation id="7550637293666041147">Құрылғыңыздың пайдаланушы аты және Chrome браузеріңіздің пайдаланушы аты</translation>
@@ -2751,6 +2748,7 @@
 <translation id="8009843239480947060">10 x 11 дюйм</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Осы карта мен оның төлем мекенжайы сақталады. Оны <ph name="USER_EMAIL" /> аккаунтына кірген кезде пайдалана аласыз.}other{Осы карталар мен олардың төлем мекенжайлары сақталады. Оларды <ph name="USER_EMAIL" /> аккаунтына кірген кезде пайдалана аласыз.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ды жүйенің әдепкі браузері етіп орнату үшін қойындыны басып, Enter пернесін басыңыз</translation>
 <translation id="8025119109950072390">Бұл сайттағы шабуылдаушылар бағдарламалық құрал орнату немесе жеке ақпаратты (мысалы, құпия сөздер, телефон нөмірлері немесе несиелік карталар) жария ету сияқты қауіпті әрекеттерді айлакерлікпен істетуі мүмкін.</translation>
 <translation id="8026334261755873520">Шолу деректерін өшіру</translation>
 <translation id="8027077570865220386">15-науа</translation>

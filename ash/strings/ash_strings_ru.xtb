@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">Сохраните <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Батарея стилуса почти разряжена</translation>
 <translation id="1036073649888683237">Чтобы управлять уведомлениями, откройте настройки</translation>
+<translation id="1036348656032585052">Отключить</translation>
 <translation id="1036672894875463507">Я ваш Google Ассистент. Я могу помогать вам в течение всего дня.
 Вот что вы можете сделать для начала.</translation>
 <translation id="1037492556044956303">Добавлено устройство <ph name="DEVICE_NAME" /></translation>
@@ -100,6 +101,7 @@
 <translation id="1447641497144572814">Запуск заставки</translation>
 <translation id="1455242230282523554">Показать языковые настройки</translation>
 <translation id="1460620680449458626">Сейчас звук выключен.</translation>
+<translation id="14648076227129703">Доступ к камере получат приложения "<ph name="APP1_NAME" />" и "<ph name="APP2_NAME" />", а также все приложения и сайты с разрешением "Камера".</translation>
 <translation id="1467432559032391204">Слева</translation>
 <translation id="146902737843070955">Запрос на это изменение поступил от администратора.</translation>
 <translation id="147310119694673958">Батарея телефона: <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -159,6 +161,7 @@
 <translation id="1797271123677381264">Не помню пароль</translation>
 <translation id="181103072419391116">Уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="1812997170047690955">Объекты на экране</translation>
+<translation id="1816896987747843206">Доступ к камере получат все приложения и сайты с разрешением "Камера".</translation>
 <translation id="1823280932251546115">Строка состояния, время <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@
 <translation id="1830308660060964064">Объект "<ph name="ITEM_TITLE" />" откреплен</translation>
 <translation id="1836215606488044471">Ассистент (загрузка…)</translation>
 <translation id="1838895407229022812">Ночная подсветка отключена</translation>
+<translation id="1854180393107901205">Прекратить трансляцию</translation>
 <translation id="1862380676329487333">Обновить и выйти</translation>
 <translation id="1864454756846565995">Устройство USB-C (порт сзади)</translation>
 <translation id="1869497990620230175">Быстрый доступ к файлам</translation>
@@ -598,6 +602,7 @@
 <translation id="4316910396681052118">ВСЕ ПРИЛОЖЕНИЯ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Функция сочетания клавиш Ctrl + Alt + Стрелка вверх изменилась. Чтобы выполнить действие клавиши Home, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка влево.</translation>
+<translation id="4324840740119394760">Доступ к камере получит приложение "<ph name="APP_NAME" />", а также все приложения и сайты с разрешением "Камера".</translation>
 <translation id="4333628967105022692">Lacros не поддерживается, если выполнен вход в несколько аккаунтов.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4351433414020964307">Загрузка Ассистента…</translation>
@@ -664,13 +669,13 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Функция ChromeVox включена</translation>
 <translation id="4665114317261903604">Включить или отключить режим "Не беспокоить". <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">Запретите доступ к камерам на этом устройстве, чтобы заблокировать все камеры.</translation>
 <translation id="4666911709726371538">Больше приложений</translation>
 <translation id="4667099493359681081">Скачивание файла <ph name="FILENAME" /></translation>
 <translation id="468293128311738995">Приложения на вашем телефоне</translation>
 <translation id="4690510401873698237">Временное хранилище размещено в нижней части экрана</translation>
 <translation id="4696813013609194136">Требуется родительский код доступа</translation>
 <translation id="4702647871202761252">Экран конфиденциальности отключен</translation>
+<translation id="4706121060329443414">Повторное скачивание запустится позже. Сейчас запись речи будет передана для обработки в Google.</translation>
 <translation id="470644585772471629">Инверсия цветов</translation>
 <translation id="4717575069099566988">Кабель USB-C не поддерживает интерфейс USB4. Производительность устройства может быть ограничена.</translation>
 <translation id="4730374152663651037">ЧАСТО ИСПОЛЬЗУЕМЫЕ</translation>
@@ -696,7 +701,6 @@
 <translation id="485592688953820832">Отсутствие действий (пауза)</translation>
 <translation id="485634149294284819">Открыть меню клавиатуры</translation>
 <translation id="4860284199500934869">Чтобы скачать файл <ph name="FILENAME" />, проверьте подключение к сети.</translation>
-<translation id="486056901304535126">Повторная попытка будет выполнена позже. Пока скачивание не завершится, записи с речью будут передаваться для обработки в Google.</translation>
 <translation id="4864369630010738180">Вход в систему...</translation>
 <translation id="4864648187878336334">Рабочий стол 15</translation>
 <translation id="4868492592575313542">включила</translation>
@@ -791,6 +795,7 @@
 <translation id="5356963482258194581">Вы можете переключаться с тёмной темы на светлую и обратно. Для этого нажмите правой кнопкой мыши на рабочий стол и выберите "Обои и стиль".</translation>
 <translation id="536019650977002321">Администратор запретил запись аудио. Обратитесь к нему за подробной информацией.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> перейти на эту вкладку</translation>
+<translation id="5377367976106153749">Разрешить доступ к камере?</translation>
 <translation id="5379115545237091094">Слишком много попыток</translation>
 <translation id="5391307769715781764">Заменить сохраненный рабочий стол?</translation>
 <translation id="5393156353051693207">Чтобы упорядочить приложения, нажмите и удерживайте в любом месте</translation>
@@ -1177,7 +1182,6 @@
 <translation id="7557816257942363084">Сейчас использует микрофон: <ph name="APP_NAME" />.</translation>
 <translation id="7561982940498449837">Закрыть меню</translation>
 <translation id="7564874036684306347">При переносе окон на другой рабочий стол иногда возникают ошибки. Уведомления и диалоговые окна могут появляться на разных рабочих столах.</translation>
-<translation id="7567076708801803118">Запретить доступ к камерам на этом устройстве?</translation>
 <translation id="7569509451529460200">Шрифт Брайля и функция ChromeVox включены</translation>
 <translation id="7573585051776738856">Активное окно прикреплено справа.</translation>
 <translation id="7579778809502851308">Запись экрана</translation>
@@ -1253,6 +1257,7 @@
 <translation id="79341161159229895">Администраторы аккаунта: <ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Чтобы посмотреть содержимое буфера обмена, нажмите клавиши <ph name="SHORTCUT_KEY_NAME" /> + V. В буфере сохраняются пять последних скопированных объектов.</translation>
 <translation id="7942349550061667556">Красный</translation>
+<translation id="7963992254934562106">С <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Выбрать папку</translation>
 <translation id="7977927628060636163">Поиск мобильных сетей...</translation>
 <translation id="7982789257301363584">Сеть</translation>

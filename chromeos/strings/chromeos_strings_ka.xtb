@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">ბეჭდვის დავალების გაუქმება</translation>
 <translation id="2163937499206714165">მუქი რეჟიმის გააქტიურება</translation>
 <translation id="2180197493692062006">რაღაც შეცდომა მოხდა. ცადეთ აპის ხელახლა გახსნა.</translation>
-<translation id="2184005227776731758">APN</translation>
 <translation id="2209788852729124853">ტრაფიკის მთვლელების გადაყენება</translation>
 <translation id="2212733584906323460">სახელის გამორკვევა</translation>
 <translation id="2217935453350629363">ამჟამინდელი სიჩქარე</translation>
@@ -492,6 +491,7 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">მუქ თემაზე ავტომატურად გადართვა მზის ჩასვლისას</translation>
+<translation id="5571714952674387371">იხილეთ და დაარედაქტირეთ დეტალები</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ხელახლა სკანირება</translation>
 <translation id="5583640892426849032">უკუშლა</translation>
@@ -689,7 +689,6 @@
 <translation id="741244894080940828">გარდაქმნა</translation>
 <translation id="7415801143053185905">HTTP რეაგირების დრო ზედმეტად დიდია</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{სკანირება დასრულდა. დასკანირდა 1 გვერდი.}other{სკანირება დასრულდა. დასკანირდა {NUMBER_OF_PAGES} გვერდი.}}</translation>
 <translation id="7458970041932198923">ავატარების სანახავად და დასაყენებლად დაუკავშირდით ქსელს და გადატვირთეთ გვერდი.</translation>
 <translation id="7469648432129124067">აღმოჩენილია პორტალი</translation>
 <translation id="7481312909269577407">გადამისამართება</translation>
@@ -796,6 +795,7 @@
 <translation id="8498220429738806196">ტრაფიკის მთვლელები</translation>
 <translation id="8503813439785031346">მომხმარებლის სახელი</translation>
 <translation id="8503836310948963452">კიდევ რამდენიმე წუთიც...</translation>
+<translation id="8508640263392900755">APN-ის დეტალები</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">შესაძლოა, ეს ვარიანტი თქვენს ოპერატორს სჭირდებოდეს, თავის ქსელთან დაკავშირების საშუალება რომ მოგცეთ. დეტალური ინფორმაციისთვის მიმართეთ ოპერატორს.</translation>
 <translation id="8576249514688522074">არაინიცირებული</translation>
@@ -871,6 +871,7 @@
 <translation id="9173638680043580060">დარჩენილია ერთ წუთზე ნაკლები</translation>
 <translation id="917720651393141712">შემოწმება</translation>
 <translation id="9188992814426075118">შესაძლებელია თქვენი კლავიატურის ავტომატურად მორგება თქვენი ფონის მიხედვით</translation>
+<translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">გეითვეისთან დაკავშირება ვერ ხერხდება Android აპების მეშვეობით</translation>
 <translation id="9211490828691860325">ყველა სამუშაო მაგიდა</translation>
 <translation id="932327136139879170">საწყისი გვერდი</translation>

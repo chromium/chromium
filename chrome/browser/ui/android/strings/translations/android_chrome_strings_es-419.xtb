@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Ayúdanos a crear una Web más privada</translation>
 <translation id="107147699690128016">Si cambias la extensión de archivo, es posible que el archivo se abra en una app diferente y dañe el dispositivo.</translation>
 <translation id="1089606299949659462">¡Se completó la revisión!</translation>
-<translation id="1091604859693995976">Actualizar para ver</translation>
 <translation id="1095761715416917775">Asegúrate de que siempre puedas acceder a tus datos sincronizados</translation>
 <translation id="1100066534610197918">Abrir pestaña nueva en grupo</translation>
 <translation id="1103142993930332957">¿Quieres ayudar a mejorar Chrome?</translation>
@@ -341,7 +340,7 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="2886836735871983413">Aparecerá una lista de sitios aquí mientras navegas en la Web</translation>
 <translation id="2888126860611144412">Acerca de Chrome</translation>
 <translation id="2891154217021530873">Detener la carga de la página</translation>
-<translation id="2893180576842394309">Es posible que Google use tu historial para personalizar la Búsqueda, los anuncios y otros servicios de Google</translation>
+<translation id="2893180576842394309">Es posible que Google use tu historial para personalizar la Búsqueda, los anuncios y otros servicios de Google.</translation>
 <translation id="2900528713135656174">Crear evento</translation>
 <translation id="2901411048554510387">Se muestran sugerencias para <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">La lista de dispositivos con los que se puede compartir una pestaña está totalmente abierta.</translation>
@@ -1148,6 +1147,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7177466738963138057">Puedes cambiar esta opción más tarde en Configuración</translation>
 <translation id="7177873915659574692">No se puede crear un código QR. La dirección URL tiene más de <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="7177959540995930968">Puedes obtener más información sobre estas funciones en la configuración de Chrome.</translation>
+<translation id="7180611975245234373">Actualizar</translation>
 <translation id="718226107353899806">Puedes agregar hasta <ph name="MAX_NUM_REACTIONS" /> reacciones</translation>
 <translation id="7183693674623539380">Grupo de pestañas: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras apps de Google cuando accedes a tu cuenta.</translation>

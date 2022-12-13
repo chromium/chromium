@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">എല്ലാ അദൃശ്യ ടാബുകളും അടയ്‌ക്കണോ?</translation>
 <translation id="1657719826150349398">ടാബ് താഴേക്ക് നീക്കുക</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ്}other{<ph name="TABS_COUNT_MANY" /> ടാബുകൾ}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ് ബുക്ക്‌മാർക്ക് ചെയ്യുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ ബുക്ക്‌മാർക്ക് ചെയ്യുക}}</translation>
 <translation id="2118649612461486615">സ്റ്റോർ വിവരങ്ങൾ</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> -ൽ ഇപ്പോൾ <ph name="CURRENT_PRICE" />-ന് ലഭ്യം</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ടാബ് അൺഗ്രൂപ്പ് ചെയ്യുക}other{ടാബുകൾ അൺഗ്രൂപ്പ് ചെയ്യുക}}</translation>
 <translation id="2277224997687551299">ഗ്രൂപ്പിന്റെ പേര് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ്, ഗ്രൂപ്പിൽ നിന്ന് നീക്കം ചെയ്യുക.}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ, ഗ്രൂപ്പിൽ നിന്ന് നീക്കം ചെയ്യുക.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{ടാബ് ബുക്ക്‌മാർക്ക് ചെയ്യുക}other{ടാബുകൾ ബുക്ക്‌മാർക്ക് ചെയ്യുക}}</translation>
 <translation id="2479148705183875116">ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ് ചുരുക്കുക.}other{<ph name="TABS_COUNT_MANY" /> ടാബുകളുള്ള ടാബ് ഗ്രൂപ്പ് ചുരുക്കുക.}}</translation>
 <translation id="2569352796411618312">നിർദ്ദേശം: നിങ്ങളുടെ ടാബുകളിൽ <ph name="NUMBER_OF_TABS" /> എണ്ണം അടുത്തിടെ ഉപയോഗിച്ചിട്ടില്ല. അവ അടയ്‌ക്കണോ?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">ടാബ് മുകളിലേക്ക് നീക്കുക</translation>
 <translation id="8304833501377495048">തുറന്ന് വച്ചിട്ടുള്ള ടാബുകൾ വീണ്ടും കാണിക്കേണ്ടതില്ലേ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ് അടയ്‌ക്കുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ അടയ്‌ക്കുക}}</translation>
+<translation id="8398929769197326728">പുതിയ ഫോൾഡർ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> ടാബുകളുള്ള ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.</translation>
 <translation id="8714939927607906138">കുറഞ്ഞ വില</translation>
 <translation id="8749939518995770034">തുറന്ന് വച്ച ടാബുകൾ അടച്ചു</translation>

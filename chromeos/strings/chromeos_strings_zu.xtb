@@ -140,7 +140,6 @@
 <translation id="2161394479394250669">Khansela umsebenzi wokuphrinta</translation>
 <translation id="2163937499206714165">Vula imodi emnyama</translation>
 <translation id="2180197493692062006">Kunento engahambanga kahle. Zama ukuvula kabusha i-app.</translation>
-<translation id="2184005227776731758">I-APN</translation>
 <translation id="2209788852729124853">Setha Kabusha Izibalo Zethrafikhi</translation>
 <translation id="2212733584906323460">Igama Lokucaca</translation>
 <translation id="2217935453350629363">Isivinini samanje</translation>
@@ -561,6 +560,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="6189418609903030344">Ubukhulu bebhethri buyehla ngokusebenza</translation>
 <translation id="6191293864534840972">Amaseva wegama angasebenzi kahle</translation>
 <translation id="6213737986933151570">I-CDMA1XRTT</translation>
+<translation id="6223066887782788441">Phuma kokugcwele</translation>
 <translation id="6223752125779001553">Awekho amaskena atholakalayo</translation>
 <translation id="6232017090690406397">Ibhethri</translation>
 <translation id="6235460611964961764">Setha kabusha ngokuzenzela ukusetshenziswa kwedatha</translation>
@@ -688,11 +688,12 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="741244894080940828">ukuguqulwa</translation>
 <translation id="7415801143053185905">Ukubambezeleka okuphakeme kakhulu kwe-HTTP</translation>
 <translation id="7427315641433634153">I-MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Ukuskena kuqedile. Ikhasi eli-1 liskeniwe}one{Ukuskena kuqedile. Amakhasi angu-{NUMBER_OF_PAGES} askeniwe}other{Ukuskena kuqedile. Amakhasi angu-{NUMBER_OF_PAGES} askeniwe}}</translation>
+<translation id="7458970041932198923">Sicela uxhume kunethiwekhi uphinde ulayishe kabusha ikhasi ukuze ubuke futhi usethe izithombe.</translation>
 <translation id="7469648432129124067">Iphothali itholakele</translation>
 <translation id="7481312909269577407">Dlulisela</translation>
 <translation id="7487067081878637334">Ubuchwepheshe</translation>
 <translation id="7490813197707563893">Ikheli le-MAC</translation>
+<translation id="7491478667760509108">Phuma kokuntantayo</translation>
 <translation id="7497215489070763236">Isitifiketi se-CA yeseva</translation>
 <translation id="7502658306369382406">Ikheli le-IPv^</translation>
 <translation id="7515998400212163428">I-Android</translation>
@@ -778,6 +779,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="8372477600026034341">Abasingathi abangeziwe</translation>
 <translation id="8395584934117017006">Le <ph name="DEVICE_TYPE" /> iphethwe yibhizinisi</translation>
 <translation id="8398927464629426868">Linganisela lapho idivayisi ishaja noma ingashaji</translation>
+<translation id="8410244574650205435">Itholwe ngokuzenzakalela</translation>
 <translation id="8420955526972171689">Sebenzisa ukuhlola nokuxazulula inkinga yezinkinga yehadiwe</translation>
 <translation id="8422748173858722634">I-IMEI</translation>
 <translation id="8431300646573772016">Yini entsha nge-ChromeOS</translation>
@@ -792,6 +794,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="8498220429738806196">Ukubalwa Kwethrafikhi</translation>
 <translation id="8503813439785031346">Igama lomsebenzisi</translation>
 <translation id="8503836310948963452">Amaninithi ambalwa nje asele…</translation>
+<translation id="8508640263392900755">Imininingwane ye-APN</translation>
 <translation id="8528615187455571738">I-Crosvm</translation>
 <translation id="8575298406870537639">Inkampani yenethiwekhi yakho idinga le nketho ukuze ixhume kunethiwekhi yayo. Xhumana nenkampani yakho yenethiwekhi mayelana nemininingwane.</translation>
 <translation id="8576249514688522074">Akuqaliswanga</translation>
@@ -842,6 +845,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="8983038754672563810">I-HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skena}=1{Skena ikhasi elingu-{NUMBER_OF_PAGES}}one{Skena ikhasi elingu-{NUMBER_OF_PAGES}}other{Skena ikhasi elingu-{NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Idivayisi inebhethri engu-<ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="8998289560386111590">Ayitholakali kudivayisi yakho</translation>
 <translation id="9003704114456258138">Imvamisa</translation>
 <translation id="9025198690966128418">Sebenzisa njengedivayisi yomuntu siqu</translation>
 <translation id="9028832514430399253">Vula ukuguqula ukuze ukhethe izinketho zesigcini sesikrini</translation>

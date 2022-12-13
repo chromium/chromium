@@ -7,6 +7,7 @@
 <translation id="1024364763893396229">ඔබගේ <ph name="NAME" /> සුරකින්න</translation>
 <translation id="1032891413405719768">පන්හිඳ බැටරිය අඩුයි</translation>
 <translation id="1036073649888683237">දැනුම්දීම් කළමනාකරණය කිරීමට, සැකසීම් වෙත යන්න</translation>
+<translation id="1036348656032585052">ක්‍රියා විරහිතය</translation>
 <translation id="1036672894875463507">ඔබේ Google සහකරු වන මම මෙහි සිටින්නේ උබේ දවස පුරා ඔබට උදවු කිරීමටයි!
 පටන් ගැනීමට ඔබට උත්සාහ කළ හැකි දේ සමහරක් මෙන්න.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> එක් කරන ලදී</translation>
@@ -100,6 +101,7 @@
 <translation id="1447641497144572814">තිර සුරැකුම ආරම්භ වේ</translation>
 <translation id="1455242230282523554">භාෂා සැකසීම් පෙන්වන්න</translation>
 <translation id="1460620680449458626">හඬ නිහඬයි.</translation>
+<translation id="14648076227129703">මෙය <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, සහ කැමරා අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා කැමරා ප්‍රවේශයට ඉඩ දෙයි</translation>
 <translation id="1467432559032391204">වම</translation>
 <translation id="146902737843070955">ඔබේ පරිපාලකයා මෙම වෙනස ඉල්ලා ඇත</translation>
 <translation id="147310119694673958">දුරකථන බැටරිය <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -159,6 +161,7 @@
 <translation id="1797271123677381264">මුරපදය අමතකයි</translation>
 <translation id="181103072419391116">සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි</translation>
 <translation id="1812997170047690955">මගේ තිරය මත ඇත්තේ මොනවා ද?</translation>
+<translation id="1816896987747843206">මෙය කැමරා අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා කැමරා ප්‍රවේශයට ඉඩ දෙයි</translation>
 <translation id="1823280932251546115">තත්ත්ව තැටිය, වේලාව <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -172,6 +175,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> නො-අමුණා ඇත</translation>
 <translation id="1836215606488044471">සහායක (පූරණය වේ...)</translation>
 <translation id="1838895407229022812">රාත්‍රී ආලෝකය අක්‍රියයි.</translation>
+<translation id="1854180393107901205">Cast කිරීම නවත්වන්න</translation>
 <translation id="1862380676329487333">යාවත්කාලීන කර වරන්න</translation>
 <translation id="1864454756846565995">USB-C උපාංගය (පසුපස තොට)</translation>
 <translation id="1869497990620230175">ඉක්මන් ගොනු</translation>
@@ -598,6 +602,7 @@
 <translation id="4316910396681052118">සියලු යෙදුම්</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Ctrl + Alt + ඉහළට ඊතලය යතුරු පුවරු කෙටි මග වෙනස් වී ඇත. Home යතුර භාවිත කිරීමට, <ph name="LAUNCHER_KEY_NAME" /> යතුර + ඉවමට ඊතලය ඔබන්න.</translation>
+<translation id="4324840740119394760">මෙය <ph name="APP_NAME" /> සහ කැමරා අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා කැමරා ප්‍රවේශයට ඉඩ දෙයි</translation>
 <translation id="4333628967105022692">බහුපරිශීලකයින් පුරා සිටින අතරතුර Lacros සහාය නොදක්වයි.</translation>
 <translation id="4338109981321384717">විශාලක කාචය</translation>
 <translation id="4351433414020964307">සහායක පූරණය වේ...</translation>
@@ -664,13 +669,13 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox සබලයි</translation>
 <translation id="4665114317261903604">බාධා නොකරන්න ටොගල් කරන්න. <ph name="STATE_TEXT" /></translation>
-<translation id="4666082839192943839">සියලු කැමරා සෑම විටම අවහිර කිරීමට මෙම උපාංගයේ කැමරා ප්‍රවේශය ක්‍රියාවිරහිත කරන්න.</translation>
 <translation id="4666911709726371538">තවත් යෙදුම්</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> බාගනිමින්</translation>
 <translation id="468293128311738995">ඔබේ දුරකථනය වෙතින් යෙදුම්</translation>
 <translation id="4690510401873698237">පහළ ඇති රාක්කය</translation>
 <translation id="4696813013609194136">මාපිය කේතය සමඟ උපාංගය අඟුලු අරින්න</translation>
 <translation id="4702647871202761252">පෞද්ගලිකත්ව තිරය අක්‍රියයි</translation>
+<translation id="4706121060329443414">බාගැනීම පසුව උත්සාහ කරනු ඇත. දැනට සැකසීම සඳහා කථනය Google වෙත යවනු ඇත.</translation>
 <translation id="470644585772471629">වර්ණ අපවර්තනය</translation>
 <translation id="4717575069099566988">ඔබගේ USB-C කේබලය USB4 සඳහා සහාය නොදක්වයි. උපාංග කාර්ය සාධනය සීමා විය හැකිය.</translation>
 <translation id="4730374152663651037">නිතරම භාවිතා කළ</translation>
@@ -696,7 +701,6 @@
 <translation id="485592688953820832">ක්‍රියා කිසිවක් නැත (විරාම ගන්වන්න)</translation>
 <translation id="485634149294284819">යතුරු පුවරු මෙනුව ඇතුළු කරන්න</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> බාගැනීමට ඔබගේ ජාල සබැඳුම පරීක්ෂා කරන්න</translation>
-<translation id="486056901304535126">බාගැනීම පසුව උත්සාහ කරනු ඇත. බාගැනීම සම්පූර්ණ වනතෙක් සැකසීම සඳහා කථනය Google වෙත යවනු ඇත.</translation>
 <translation id="4864369630010738180">පුරමින්...</translation>
 <translation id="4864648187878336334">15 වෙනි මේසය</translation>
 <translation id="4868492592575313542">ක්‍රියාත්මක කළා</translation>
@@ -791,6 +795,7 @@
 <translation id="5356963482258194581">අඳුරු සහ ළා තේමා අතර මාරු වන්න. ඩෙස්ක්ටොප් එක මත දකුණු-ක්ලික් කර වෝල්පේපරය සහ ශෛලිය තෝරන්න.</translation>
 <translation id="536019650977002321">ඔබේ පරිපාලකයා ශ්‍රව්‍ය ග්‍රහණයට ඉඩ නොදෙයි. වැඩිදුර තතු සඳහා ඔබේ පරිපාලක සම්බන්ධ කර ගන්න.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> මෙම ටැබයට යන්න</translation>
+<translation id="5377367976106153749">කැමරා ප්‍රවේශය ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="5379115545237091094">උත්සාහයන් විශාල ප්‍රමාණයකි</translation>
 <translation id="5391307769715781764">සුරැකි මේසය ප්‍රතිස්ථාපනය කරන්නද?</translation>
 <translation id="5393156353051693207">ඔබගේ යෙදුම් නැවත අනුපිළිවෙළට සැකසීමට ඕනෑම තැනක ස්පර්ශ කර අල්ලාගෙන සිටින්න</translation>
@@ -1177,7 +1182,6 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> දැනට ඔබේ මයික්‍රෆෝනය භාවිතා කරයි</translation>
 <translation id="7561982940498449837">මෙනුව වසන්න</translation>
 <translation id="7564874036684306347">කවුළු වෙනත් ඩෙස්ක්ටොප් එකකට මාරු කිරීමෙන් අනපේක්ෂිත හැසිරීමකට හේතු විය හැකිය. පසුකාලීන දැනුම්දීම්, කවුළු සහ සංවාද ඩෙස්ක්ටොප් අතර බෙදී යනු ඇත.</translation>
-<translation id="7567076708801803118">ඔබට මෙම උපාංගයෙහි කැමරා ප්‍රවේශය ක්‍රියාවිරහිත කිරීමට අවශ්‍ය ද?</translation>
 <translation id="7569509451529460200">බ්‍රේල් සහ ChromeVox සබලයි</translation>
 <translation id="7573585051776738856">සක්‍රිය කවුළුව දකුණේ ඈඳා ඇත.</translation>
 <translation id="7579778809502851308">තිර ග්‍රහණය</translation>

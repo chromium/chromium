@@ -413,7 +413,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1958218078413065209">A sua pontuação mais alta é <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Ajude a melhorar a segurança na Web para todos ao enviar <ph name="BEGIN_WHITEPAPER_LINK" />os URLs de algumas páginas que visita, informações limitadas do sistema e algum conteúdo das páginas<ph name="END_WHITEPAPER_LINK" /> para a Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Política de Privacidade<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Marcadores de <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">Proteja palavras-passe com o TouchID</translation>
 <translation id="1973335181906896915">Erro de serialização</translation>
 <translation id="1974060860693918893">Avançadas</translation>
 <translation id="1975457531113383421">Tabuleiro de entrada</translation>
@@ -748,7 +747,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2881276955470682203">Pretende guardar o cartão?</translation>
 <translation id="2882949212241984732">Dobra simétrica dupla</translation>
 <translation id="2893773853358652045">Quarto rolo</translation>
-<translation id="289834758818479772">Se partilhar este dispositivo com outras pessoas, pode ativar o TouchID para validar a sua identidade sempre que usar uma palavra-passe guardada</translation>
 <translation id="2900528713135656174">Criar evento</translation>
 <translation id="2903493209154104877">Moradas</translation>
 <translation id="290376772003165898">A página não está em <ph name="LANGUAGE" />?</translation>
@@ -1066,7 +1064,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3678529606614285348">Abrir a página numa nova janela de navegação anónima (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informações do certificado</translation>
 <translation id="3693327506115126094">Escolha como irá validar a sua identidade</translation>
-<translation id="3699374065820972102">O TouchID está ativado para preencher palavras-passe</translation>
 <translation id="3701427423622901115">Reposição confirmada.</translation>
 <translation id="3704162925118123524">A rede que está a utilizar pode exigir que visite a respetivapágina de início de sessão.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1181,7 +1178,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="401170183602135785">Envelope C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}other{Documento PDF com {COUNT} páginas}}</translation>
 <translation id="4023431997072828269">Uma vez que este formulário está a ser enviado através de uma ligação insegura, as suas informações vão ficar visíveis para outras pessoas.</translation>
-<translation id="4024923292610332139">desativar o Touch ID para preencher palavras-passe</translation>
 <translation id="4025913568718019429">Botão Gerir definições de privacidade do Google, prima Enter para visitar as definições de privacidade da sua Conta Google</translation>
 <translation id="4030383055268325496">&amp;Anular adição</translation>
 <translation id="4031179711345676612">Microfone permitido</translation>
@@ -1543,7 +1539,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4900217275619098670">Nono rolo</translation>
 <translation id="4901778704868714008">Guardar…</translation>
 <translation id="4905659621780993806">O seu administrador vai reiniciar o dispositivo à(s) <ph name="TIME" /> de <ph name="DATE" />. Guarde os itens abertos antes de o dispositivo ser reiniciado.</translation>
-<translation id="4911007278801291296">Pode ativar ou desativar o TouchID em <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Perfurar na parte superior esquerda</translation>
 <translation id="4918221908152712722">Instale a aplicação <ph name="APP_NAME" /> (não é necessária qualquer transferência).</translation>
 <translation id="4923459931733593730">Pagamento</translation>
@@ -1757,7 +1752,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5426179911063097041"><ph name="SITE" /> pretende enviar-lhe notificações.</translation>
 <translation id="5428105026674456456">Espanhol</translation>
 <translation id="5430298929874300616">Remover marcador</translation>
-<translation id="5434423669266814150">ativar o TouchID para preencher palavras-passe</translation>
 <translation id="5443468954631487277">Ordem inversa, com orientação para cima</translation>
 <translation id="5447765697759493033">Este site não será traduzido.</translation>
 <translation id="5452270690849572955">Não é possível encontrar esta página de <ph name="HOST_NAME" /></translation>

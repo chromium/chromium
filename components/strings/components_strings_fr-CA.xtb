@@ -413,7 +413,6 @@
 <translation id="1958218078413065209">Votre pointage le plus élevé est <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Aidez-nous à améliorer la sécurité pour tout le monde sur Internet en envoyant <ph name="BEGIN_WHITEPAPER_LINK" />les URL de certaines pages que vous visitez, certaines données système et certains contenus des pages en question<ph name="END_WHITEPAPER_LINK" /> à Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Politique de confidentialité<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Favoris <ph name="DOMAIN" /></translation>
-<translation id="1971033026002113380">Protégez vos mots de passe avec TouchID</translation>
 <translation id="1973335181906896915">Erreur de sérialisation.</translation>
 <translation id="1974060860693918893">Options avancées</translation>
 <translation id="1975457531113383421">Plateau d'entrée</translation>
@@ -748,7 +747,6 @@
 <translation id="2881276955470682203">Enregistrer la carte?</translation>
 <translation id="2882949212241984732">Pli portefeuille</translation>
 <translation id="2893773853358652045">Quatrième rouleau</translation>
-<translation id="289834758818479772">Si vous partagez cet appareil avec d'autres personnes, vous pouvez activer TouchID pour vérifier qu'il s'agit bien de vous lorsque vous utilisez un mot de passe enregistré</translation>
 <translation id="2900528713135656174">Créer un événement</translation>
 <translation id="2903493209154104877">Adresses</translation>
 <translation id="290376772003165898">Cette page n'est pas en <ph name="LANGUAGE" />?</translation>
@@ -1066,7 +1064,6 @@
 <translation id="3678529606614285348">Ouvrir la page dans une nouvelle fenêtre de navigation privée (Ctrl+Maj+N)</translation>
 <translation id="3681007416295224113">Information relative au certificat</translation>
 <translation id="3693327506115126094">Choisissez comment vous souhaitez confirmer qu'il s'agit bien de vous</translation>
-<translation id="3699374065820972102">TouchID est activé pour remplir les mots de passe</translation>
 <translation id="3701427423622901115">Réinitialisation acceptée.</translation>
 <translation id="3704162925118123524">Le réseau que vous utilisez peut vous demander de visiter sa page de connexion.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1181,7 +1178,6 @@
 <translation id="401170183602135785">Enveloppe C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF contenant {COUNT} page}one{Document PDF contenant {COUNT} page}other{Document PDF contenant {COUNT} pages}}</translation>
 <translation id="4023431997072828269">Comme ce formulaire est envoyé à l'aide d'une connexion qui n'est pas sécurisée, vos données pourraient être visibles par d'autres utilisateurs.</translation>
-<translation id="4024923292610332139">désactiver TouchID pour remplir les mots de passe</translation>
 <translation id="4025913568718019429">Bouton Gérer les paramètres de confidentialité de Google, appuyez sur la touche Entrée pour accéder à vos paramètres de confidentialité de Chrome</translation>
 <translation id="4030383055268325496">&amp;Annuler l'ajout</translation>
 <translation id="4031179711345676612">Le microphone est autorisé</translation>
@@ -1543,7 +1539,6 @@
 <translation id="4900217275619098670">Neuvième rouleau</translation>
 <translation id="4901778704868714008">Enregistrer…</translation>
 <translation id="4905659621780993806">Votre administrateur va automatiquement redémarrer votre appareil à <ph name="TIME" /> le <ph name="DATE" />. Enregistrez tous les éléments ouverts avant le redémarrage de votre appareil.</translation>
-<translation id="4911007278801291296">Vous pouvez activer ou désactiver TouchID dans <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Perforation en haut à gauche</translation>
 <translation id="4918221908152712722">Installer <ph name="APP_NAME" /> (aucun téléchargement nécessaire)</translation>
 <translation id="4923459931733593730">Paiement</translation>
@@ -1725,6 +1720,7 @@
 <translation id="5334013548165032829">Journaux détaillés du système</translation>
 <translation id="5334145288572353250">Enregistrer l'adresse?</translation>
 <translation id="5335920952954443287">Cœur qui bat</translation>
+<translation id="5337569431717511221">Bouton Définir Chrome comme navigateur par défaut, appuyer sur Entrée pour définir Chrome comme navigateur par défaut du système</translation>
 <translation id="5340250774223869109">L'application est bloquée</translation>
 <translation id="534295439873310000">Appareils CCP</translation>
 <translation id="5344579389779391559">L'accès à cette page peut engendrer des frais</translation>
@@ -1756,7 +1752,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> veut vous envoyer des notifications.</translation>
 <translation id="5428105026674456456">Espagnol</translation>
 <translation id="5430298929874300616">Retirer le favori</translation>
-<translation id="5434423669266814150">activez TouchID pour remplir les mots de passe</translation>
 <translation id="5443468954631487277">Ordre inversé, face vers le haut</translation>
 <translation id="5447765697759493033">Ce site ne sera pas traduit</translation>
 <translation id="5452270690849572955">Cette page <ph name="HOST_NAME" /> est introuvable</translation>
@@ -2420,6 +2415,7 @@
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Votre administrateur peut voir :</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour ouvrir un nouvel onglet de navigation privée afin de naviguer en mode privé</translation>
+<translation id="7203375778433816396">Définir Chrome comme navigateur par défaut du système</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ne respecte pas les normes en matière de sécurité.</translation>
 <translation id="7210993021468939304">Activité Linux dans le conteneur, et peut installer et exécuter des applications Linux dans le conteneur</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />En apprendre davantage<ph name="END_LINK" /> au sujet de ce problème.</translation>
@@ -2567,6 +2563,7 @@ Détails supplémentaires :
 <translation id="7537536606612762813">Obligatoire</translation>
 <translation id="7542403920425041731">Après confirmation de votre part, les détails de votre carte seront partagés avec ce site.</translation>
 <translation id="7542995811387359312">Le remplissage automatique des numéros de carte de crédit est désactivé, car la connexion utilisée par ce formulaire n'est pas sécurisée.</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" /> en cours de démarrage…</translation>
 <translation id="7548892272833184391">Corriger les erreurs de connexion</translation>
 <translation id="7549584377607005141">Pour s'afficher correctement, cette page Web a besoin des données que vous avez entrées précédemment. Vous pouvez envoyer de nouveau ces données. Cependant, en procédant ainsi, vous répéterez toute action déjà effectuée sur cette page.</translation>
 <translation id="7550637293666041147">Le nom d'utilisateur de votre appareil et de Chrome</translation>
@@ -2752,6 +2749,7 @@ Détails supplémentaires :
 <translation id="8009843239480947060">10 po x 11 po</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Cette carte et l'adresse de facturation associée seront enregistrées. Vous serez en mesure de l'utiliser lorsque vous serez connecté en tant que <ph name="USER_EMAIL" />.}one{Cette carte et l'adresse de facturation associée seront enregistrées. Vous serez en mesure de l'utiliser lorsque vous serez connecté en tant que <ph name="USER_EMAIL" />.}other{Ces cartes et les adresses de facturation associées seront enregistrées. Vous serez en mesure de les utiliser lorsque vous serez connecté en tant que <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur Entrée pour définir Chrome comme navigateur par défaut du système</translation>
 <translation id="8025119109950072390">Les cyberpirates sur ce site peuvent vous inciter à faire quelque chose de dangereux comme installer un logiciel ou révéler vos renseignements personnels (par exemple vos mots de passe, votre numéro de téléphone ou les données de votre carte de crédit).</translation>
 <translation id="8026334261755873520">Effacer les données de navigation</translation>
 <translation id="8027077570865220386">Bac 15</translation>

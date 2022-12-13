@@ -12,7 +12,6 @@
 <translation id="1062628064301375934">Bantu kami membina web yang lebih peribadi</translation>
 <translation id="107147699690128016">Jika anda menukar sambungan fail, fail itu mungkin akan dibuka dalam aplikasi lain dan berkemungkinan mendatangkan bahaya kepada peranti anda.</translation>
 <translation id="1089606299949659462">Semakan selesai!</translation>
-<translation id="1091604859693995976">Muatkan semula untuk melihat</translation>
 <translation id="1095761715416917775">Pastikan anda dapat mengakses data penyegerakan anda pada bila-bila masa</translation>
 <translation id="1100066534610197918">Buka dlm tab baru dlm kumpulan</translation>
 <translation id="1103142993930332957">Bantu kami menambah baik Chrome?</translation>
@@ -1148,6 +1147,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7177466738963138057">Anda boleh menukar perkara ini selepas ini dalam Tetapan</translation>
 <translation id="7177873915659574692">Tidak dapat membuat Kod QR. URL melebihi <ph name="CHARACTER_LIMIT" /> aksara.</translation>
 <translation id="7177959540995930968">Anda boleh mengetahui lebih lanjut tentang ciri ini dalam tetapan Chrome.</translation>
+<translation id="7180611975245234373">Muat semula</translation>
 <translation id="718226107353899806">Anda boleh menambah hingga <ph name="MAX_NUM_REACTIONS" /> reaksi</translation>
 <translation id="7183693674623539380">kumpulan tab - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Memastikan anda selamat pada Chrome dan mungkin digunakan untuk meningkatkan keselamatan anda dalam apl Google yang lain apabila anda log masuk.</translation>

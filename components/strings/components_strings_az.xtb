@@ -271,6 +271,7 @@
 <translation id="1586541204584340881">Quraşdırdığınız artırmalar</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1592005682883173041">Yerli Data Girişi</translation>
+<translation id="1593359183944365958">270 dərəcə</translation>
 <translation id="1594030484168838125">Seçin</translation>
 <translation id="1596296697375291157">Triller, cinayət və sirr filmləri</translation>
 <translation id="1599199147673445968">Yeni kart? <ph name="BEGIN_LINK" />Kart Detallarını daxil edin<ph name="END_LINK" /></translation>
@@ -337,6 +338,7 @@
 <translation id="1741613555002899862">Təyin edilməli və DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> olduqda, doğru dəyər olmalıdır.</translation>
 <translation id="1745880797583122200">Brauzer idarə edilir</translation>
 <translation id="1746113442205726301">Şəklin Y oxu üzrə yerdəyişməsi</translation>
+<translation id="1746531169546376413">0 dərəcə</translation>
 <translation id="17513872634828108">Panelləri açın</translation>
 <translation id="1752021286346845558">Poçt qutusu 8</translation>
 <translation id="1753068535428855445">Tanışlıq</translation>
@@ -411,7 +413,6 @@
 <translation id="1958218078413065209">Ən yüksək xalınız: <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />Daxil olduğunuz bəzi səhifələrin keçidlərini, məhdud sistem məlumatlarını və bəzi səhifə məzmununu<ph name="END_WHITEPAPER_LINK" /> Google'a göndərməklə vebdə hər kəs üçün təhlükəsizliyi artırmağa yardım edin. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Məxfilik siyasəti<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Əlfəcinləri</translation>
-<translation id="1971033026002113380">Parolları TouchID ilə qoruyun</translation>
 <translation id="1973335181906896915">Serializasiya xətası</translation>
 <translation id="1974060860693918893">Qabaqcıl</translation>
 <translation id="1975457531113383421">Daxiletmə Qabı</translation>
@@ -746,7 +747,6 @@
 <translation id="2881276955470682203">Kart yadda saxlansın?</translation>
 <translation id="2882949212241984732">Cüt qatlayın</translation>
 <translation id="2893773853358652045">Dördüncü Rulon</translation>
-<translation id="289834758818479772">Bu cihazı başqaları ilə paylaşsanız, yadda saxlanmış paroldan istifadə etdiyiniz zaman kimliyinizi doğrulamaq üçün TouchID'ni aktiv edə bilərsiniz</translation>
 <translation id="2900528713135656174">Tədbir yaradın</translation>
 <translation id="2903493209154104877">Ünvanlar</translation>
 <translation id="290376772003165898">Səhifə <ph name="LANGUAGE" /> dilində deyil?</translation>
@@ -1060,7 +1060,6 @@
 <translation id="3678529606614285348">Yeni Gizli pəncərədə səhifə açın (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Sertifikat məlumatı</translation>
 <translation id="3693327506115126094">Kimliyinizi necə doğrulayacağınızı seçin</translation>
-<translation id="3699374065820972102">TouchID parolları daxil etmək üçün aktivdir</translation>
 <translation id="3701427423622901115">Sıfırlanma doğrulandı.</translation>
 <translation id="3704162925118123524">İstifadə etdiyiniz şəbəkə login səhifəsinə daxil olmağınızı tələb edə bilər.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1175,7 +1174,6 @@
 <translation id="401170183602135785">Zərf C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} səhifədən ibarət PDF sənədi}other{{COUNT} səhifədən ibarət PDF sənədi}}</translation>
 <translation id="4023431997072828269">Bu forma təhlükəsiz olmayan bağlantıdan istifadə etməklə təqdim edildiyinə görə məlumatlarınız digərləri tərəfindən görüləcək.</translation>
-<translation id="4024923292610332139">parolları doldurmaq üçün TouchID'ni deaktiv edin</translation>
 <translation id="4025913568718019429">"Google Məxfilik ayarlarını idarə edin" düyməsi, Enter düyməsinə basaraq Google Hesabınızın məxfilik ayarlarını ziyarət edin</translation>
 <translation id="4030383055268325496">Əlavəni geri qaytarın</translation>
 <translation id="4031179711345676612">Mikrofona icazə verildi</translation>
@@ -1537,7 +1535,6 @@
 <translation id="4900217275619098670">Doqquzuncu Rulon</translation>
 <translation id="4901778704868714008">Yadda saxlayın...</translation>
 <translation id="4905659621780993806">Administrator cihazınızı bu vaxt avtomatik olaraq yenidən başladacaq: <ph name="TIME" />, <ph name="DATE" /> Cihazınız yenidən başlamazdan əvvəl hər hansı açıq elementləri yadda saxlayın.</translation>
-<translation id="4911007278801291296">TouchID'ni <ph name="SETTINGS" /> bölməsində aktiv və ya deaktiv edə bilərsiniz</translation>
 <translation id="4913987521957242411">Yuxarı soldan deşik açın</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> tətbiqini quraşdırın (endirmək tələb edilmir)</translation>
 <translation id="4923459931733593730">Ödəniş</translation>
@@ -1719,6 +1716,7 @@
 <translation id="5334013548165032829">Ətraflı sistem qeydləri</translation>
 <translation id="5334145288572353250">Ünvan saxlanılsın?</translation>
 <translation id="5335920952954443287">Ürək döyüntüsü</translation>
+<translation id="5337569431717511221">"Chrome'u defolt brauzer kimi ayarlayın" düyməsi, Enter düyməsinə basaraq Chrome'u sistemin defolt brauzeri kimi ayarlayın</translation>
 <translation id="5340250774223869109">Tətbiq bloklanıb</translation>
 <translation id="534295439873310000">NFC cihazları</translation>
 <translation id="5344579389779391559">Bu səhifədə Sizdən ödəniş tutula bilər</translation>
@@ -1750,7 +1748,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> Sizə bildiriş göndərmək istəyir</translation>
 <translation id="5428105026674456456">Ispan</translation>
 <translation id="5430298929874300616">Əlfəcini silin</translation>
-<translation id="5434423669266814150">parolları doldurmaq üçün TouchID'ni aktiv edin</translation>
 <translation id="5443468954631487277">Tərs sıra ilə üzü yuxarı</translation>
 <translation id="5447765697759493033">Bu sayt tərcümə edilməyəcək</translation>
 <translation id="5452270690849572955"><ph name="HOST_NAME" /> səhifəsi tapılmadı</translation>
@@ -1792,6 +1789,7 @@
 <translation id="5540969246441091044">Atçılıq</translation>
 <translation id="5541086400771735334">Poçt qutusu 7</translation>
 <translation id="5541546772353173584">E-poçt Əlavə Edin</translation>
+<translation id="5543722831081909240">180 dərəcə</translation>
 <translation id="5545756402275714221">Sizin üçün təklif edilən məqalələr</translation>
 <translation id="5551890439174915351">100 x 200 mm</translation>
 <translation id="5552137475244467770">Chrome müntəzəm olaraq onlayn yayımlanan siyahılar əsasında parollarınızı yoxlayır. Bunu edərkən, parollar və istifadəçi adları şifrələnir ki, Google daxil olmaqla, heç kim onları oxuya bilməsin.</translation>
@@ -2180,6 +2178,7 @@
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> idarə edilmir</translation>
 <translation id="6592952801936330159">"Sayt ayarlarının idarə edin" düyməsi, Chrome ayarlarında saytlarda saxlanılan icazələri və datanı idarə etmək üçün Enter düyməsinə basın</translation>
 <translation id="6596325263575161958">Şifrələmə variantları</translation>
+<translation id="6597665340361269064">90 dərəcə</translation>
 <translation id="6599642189720630047">İzlənilən Məhsullar</translation>
 <translation id="6611723696964473273">İqtisadiyyat xəbərləri</translation>
 <translation id="6612010098632894193">Onlayn video</translation>
@@ -2412,6 +2411,7 @@
 <translation id="7199278868241956094">Rəsmi</translation>
 <translation id="7201591969684833065">Administrator baxa bilər:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq yeni Anonim tab açın və gizli baxış keçirin</translation>
+<translation id="7203375778433816396">Chrome'u sistemin defolt brauzeri kimi ayarlayın</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> təhlükəsizlik standartlarına əməl etmir.</translation>
 <translation id="7210993021468939304">Konteyner nəzdində Linux fəaliyyəti. Konteyner nəzdində Linux tətbiqləri quraşdırmaq, icra etmək mümkündür</translation>
 <translation id="721197778055552897">Bu problem haqqında <ph name="BEGIN_LINK" />ətraflı məlumat alın<ph name="END_LINK" />.</translation>
@@ -2559,6 +2559,7 @@
 <translation id="7537536606612762813">Məcburi</translation>
 <translation id="7542403920425041731">Təsdiq etdikdən sonra kart detallarınız bu sayt ilə paylaşılacaq.</translation>
 <translation id="7542995811387359312">Bu forma təhlükəsiz bağlantı istifadə etmədiyinə görə avtomatik kredit kart doldurma deaktivdir.</translation>
+<translation id="7546409722674205727">Başlayır: <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Bağlantı xətalarını həll edin</translation>
 <translation id="7549584377607005141">Bu veb səhifə düzgün görüntülənmək üçün əvvəlcə daxil etdiyiniz datanı tələb edir. Bu datanı yenidən göndərə bilərsiniz, amma bununla, bu səhifənin əvvəllər etdiyi əməliyyatı təkrarlamış olacaqsınız.</translation>
 <translation id="7550637293666041147">Cihazın istifadəçi adı və Chrome istifadəçi adı</translation>
@@ -2744,6 +2745,7 @@
 <translation id="8009843239480947060">10 x 11 düym</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Bu kart və faktura ünvanı yadda saxlanacaq. <ph name="USER_EMAIL" /> hesabına daxil olduqda bundan istifadə edə bilməyəcəksiniz.}other{Bu kartlar və faktura ünvanları yadda saxlanacaq. <ph name="USER_EMAIL" /> hesabına daxil olduqda bunlardan istifadə edə bilməyəcəksiniz.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, tab düyməsi, sonra Enter düyməsinə basaraq Chrome'u sistemin defolt brauzeri kimi ayarlayın</translation>
 <translation id="8025119109950072390">Bu saytdakı hücumçular Sizi proqram təminatı endirmək və ya şəxsi məlumatları aşkarlamaq kimi təhlükəli işləri görməyə (məsələn, parollar, telefon nömrələri və ya kredit kartları) sövq edə bilər</translation>
 <translation id="8026334261755873520">Brauzinq datasını təmizləyin</translation>
 <translation id="8027077570865220386">Qab 15</translation>
