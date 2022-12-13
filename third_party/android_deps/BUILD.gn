@@ -1318,19 +1318,9 @@ if (!limit_android_deps) {
     # target for them. See crbug.com/1103399 for discussion.
     jar_excluded_patterns = [
       "com/google/protobuf/Any*",
-      "com/google/protobuf/Api*",
       "com/google/protobuf/Duration*",
-      "com/google/protobuf/Empty*",
       "com/google/protobuf/FieldMask*",
-      "com/google/protobuf/SourceContext*",
-      "com/google/protobuf/Struct\$1.class",
-      "com/google/protobuf/Struct\$Builder.class",
-      "com/google/protobuf/Struct.class",
-      "com/google/protobuf/StructOrBuilder.class",
-      "com/google/protobuf/StructProto.class",
       "com/google/protobuf/Timestamp*",
-      "com/google/protobuf/Type*",
-      "com/google/protobuf/Wrappers*",
     ]
   }
 
