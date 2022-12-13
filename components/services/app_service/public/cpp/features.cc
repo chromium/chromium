@@ -6,10 +6,6 @@
 
 namespace apps {
 
-BASE_FEATURE(kAppServiceWithoutMojom,
-             "AppServiceWithoutMojom",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kStopMojomAppService,
              "StopMojomAppService",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -25,14 +25,12 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "components/services/app_service/public/cpp/types_util.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -278,14 +276,8 @@ void AppManagementPageHandler::SetPermission(const std::string& app_id,
 void AppManagementPageHandler::SetResizeLocked(const std::string& app_id,
                                                bool locked) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(apps::kAppServiceWithoutMojom)) {
-    apps::AppServiceProxyFactory::GetForProfile(profile_)->SetResizeLocked(
-        app_id, locked);
-  } else {
-    apps::AppServiceProxyFactory::GetForProfile(profile_)->SetResizeLocked(
-        app_id, locked ? apps::mojom::OptionalBool::kTrue
-                       : apps::mojom::OptionalBool::kFalse);
-  }
+  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetResizeLocked(
+      app_id, locked);
 #else
   NOTREACHED();
 #endif
@@ -342,14 +334,8 @@ void AppManagementPageHandler::SetWindowMode(const std::string& app_id,
   if (provider->registrar_unsafe().IsIsolated(app_id)) {
     NOTREACHED();
   } else {
-    if (base::FeatureList::IsEnabled(apps::kAppServiceWithoutMojom)) {
-      apps::AppServiceProxyFactory::GetForProfile(profile_)->SetWindowMode(
-          app_id, window_mode);
-
-    } else {
-      apps::AppServiceProxyFactory::GetForProfile(profile_)->SetWindowMode(
-          app_id, apps::ConvertWindowModeToMojomWindowMode(window_mode));
-    }
+    apps::AppServiceProxyFactory::GetForProfile(profile_)->SetWindowMode(
+        app_id, window_mode);
   }
 #endif
 }

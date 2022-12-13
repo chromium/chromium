@@ -451,19 +451,10 @@ void AppServiceProxyBase::UninstallSilently(const std::string& app_id,
 }
 
 void AppServiceProxyBase::StopApp(const std::string& app_id) {
-  if (base::FeatureList::IsEnabled(kAppServiceWithoutMojom)) {
-    auto* publisher = GetPublisher(app_registry_cache_.GetAppType(app_id));
-    if (publisher) {
-      publisher->StopApp(app_id);
-    }
-    return;
+  auto* publisher = GetPublisher(app_registry_cache_.GetAppType(app_id));
+  if (publisher) {
+    publisher->StopApp(app_id);
   }
-
-  if (!app_service_.is_connected()) {
-    return;
-  }
-  auto app_type = app_registry_cache_.GetAppType(app_id);
-  app_service_->StopApp(ConvertAppTypeToMojomAppType(app_type), app_id);
 }
 
 void AppServiceProxyBase::GetMenuModel(
@@ -493,20 +484,9 @@ void AppServiceProxyBase::ExecuteContextMenuCommand(
 }
 
 void AppServiceProxyBase::OpenNativeSettings(const std::string& app_id) {
-  if (base::FeatureList::IsEnabled(kAppServiceWithoutMojom)) {
-    auto* publisher = GetPublisher(app_registry_cache_.GetAppType(app_id));
-    if (publisher) {
-      publisher->OpenNativeSettings(app_id);
-    }
-    return;
-  }
-
-  if (app_service_.is_connected()) {
-    app_registry_cache_.ForOneApp(
-        app_id, [this](const apps::AppUpdate& update) {
-          app_service_->OpenNativeSettings(
-              ConvertAppTypeToMojomAppType(update.AppType()), update.AppId());
-        });
+  auto* publisher = GetPublisher(app_registry_cache_.GetAppType(app_id));
+  if (publisher) {
+    publisher->OpenNativeSettings(app_id);
   }
 }
 
