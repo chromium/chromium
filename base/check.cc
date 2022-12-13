@@ -40,8 +40,9 @@ void DumpOnceWithoutCrashing(LogMessage* log_message) {
 
     // Note that dumping may fail if the crash handler hasn't been set yet. In
     // that case we want to try again on the next failing DCHECK.
-    if (base::debug::DumpWithoutCrashingUnthrottled())
+    if (base::debug::DumpWithoutCrashingUnthrottled()) {
       has_dumped.store(true, std::memory_order_relaxed);
+    }
   }
 }
 
@@ -57,8 +58,9 @@ class NotReachedLogMessage : public LogMessage {
  public:
   using LogMessage::LogMessage;
   ~NotReachedLogMessage() override {
-    if (severity() != logging::LOGGING_FATAL)
+    if (severity() != logging::LOGGING_FATAL) {
       NotReachedDumpOnceWithoutCrashing(this);
+    }
   }
 };
 #else
@@ -80,8 +82,9 @@ class DCheckLogMessage : public LogMessage {
  public:
   using LogMessage::LogMessage;
   ~DCheckLogMessage() override {
-    if (severity() != logging::LOGGING_FATAL)
+    if (severity() != logging::LOGGING_FATAL) {
       DCheckDumpOnceWithoutCrashing(this);
+    }
   }
 };
 
@@ -90,8 +93,9 @@ class DCheckWin32ErrorLogMessage : public Win32ErrorLogMessage {
  public:
   using Win32ErrorLogMessage::Win32ErrorLogMessage;
   ~DCheckWin32ErrorLogMessage() override {
-    if (severity() != logging::LOGGING_FATAL)
+    if (severity() != logging::LOGGING_FATAL) {
       DCheckDumpOnceWithoutCrashing(this);
+    }
   }
 };
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -99,8 +103,9 @@ class DCheckErrnoLogMessage : public ErrnoLogMessage {
  public:
   using ErrnoLogMessage::ErrnoLogMessage;
   ~DCheckErrnoLogMessage() override {
-    if (severity() != logging::LOGGING_FATAL)
+    if (severity() != logging::LOGGING_FATAL) {
       DCheckDumpOnceWithoutCrashing(this);
+    }
   }
 };
 #endif  // BUILDFLAG(IS_WIN)
