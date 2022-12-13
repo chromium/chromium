@@ -138,10 +138,10 @@ DriveFsPinManager::~DriveFsPinManager() = default;
 // TODO(b/259454320): Pass through a `base::RepeatingCallback` here to enable
 // the callsite to receive progress updates.
 void DriveFsPinManager::Start(
-    base::OnceCallback<void(PinError)> complete_callback) {
+    base::OnceCallback<void(SetupError)> complete_callback) {
   if (!enabled_) {
     LOG(ERROR) << "The pin manager is not enabled";
-    std::move(complete_callback).Run(PinError::kManagerDisabled);
+    std::move(complete_callback).Run(SetupError::kManagerDisabled);
     return;
   }
 
@@ -158,13 +158,14 @@ void DriveFsPinManager::Start(
 }
 
 void DriveFsPinManager::Stop() {
-  Complete(PinError::kErrorManagerStopped);
+  Complete(SetupError::kErrorManagerStopped);
 }
 
 void DriveFsPinManager::OnFreeDiskSpaceRetrieved(int64_t free_space) {
   if (free_space == -1) {
     LOG(ERROR) << "Error calculating free disk space";
-    std::move(complete_callback_).Run(PinError::kErrorCalculatingFreeDiskSpace);
+    std::move(complete_callback_)
+        .Run(SetupError::kErrorCalculatingFreeDiskSpace);
     return;
   }
 
@@ -186,13 +187,13 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
   if (error != drive::FILE_ERROR_OK) {
     LOG(ERROR) << "Error retrieving search results for size calculation: "
                << error;
-    Complete(PinError::kErrorRetrievingSearchResults);
+    Complete(SetupError::kErrorRetrievingSearchResults);
     return;
   }
 
   if (!items.has_value()) {
     LOG(ERROR) << "Items returned are invalid";
-    Complete(PinError::kErrorResultsReturnedInvalid);
+    Complete(SetupError::kErrorResultsReturnedInvalid);
     return;
   }
 
@@ -221,12 +222,12 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
     LOG(ERROR) << "The required size (" << size_required_
                << " bytes) exceeds the available free space (" << free_space_
                << "bytes)";
-    Complete(PinError::kErrorNotEnoughFreeSpace);
+    Complete(SetupError::kErrorNotEnoughFreeSpace);
     return;
   }
 
   if (!search_query_.is_bound()) {
-    Complete(PinError::kErrorSearchQueryNotBound);
+    Complete(SetupError::kErrorSearchQueryNotBound);
     return;
   }
 
@@ -235,7 +236,7 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DriveFsPinManager::Complete(PinError status) {
+void DriveFsPinManager::Complete(SetupError status) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   search_query_.reset();
   free_space_ = 0;
@@ -270,13 +271,13 @@ void DriveFsPinManager::OnSearchResultsForPinning(
     absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
   if (error != drive::FILE_ERROR_OK) {
     LOG(ERROR) << "Error retrieving search results to pin: " << error;
-    Complete(PinError::kErrorRetrievingSearchResultsForPinning);
+    Complete(SetupError::kErrorRetrievingSearchResultsForPinning);
     return;
   }
 
   if (!items.has_value()) {
     LOG(ERROR) << "Items returned are invalid";
-    Complete(PinError::kErrorResultsReturnedInvalidForPinning);
+    Complete(SetupError::kErrorResultsReturnedInvalidForPinning);
     return;
   }
 
@@ -284,7 +285,7 @@ void DriveFsPinManager::OnSearchResultsForPinning(
     VLOG(1) << "Finished pinning all files in "
             << timer_.Elapsed().InMilliseconds() << "ms";
     setup_complete_ = true;
-    Complete(PinError::kSuccess);
+    Complete(SetupError::kSuccess);
     return;
   }
 
@@ -300,7 +301,7 @@ void DriveFsPinManager::OnSearchResultsForPinning(
 
   if (unpinned_items == 0) {
     if (!search_query_.is_bound()) {
-      Complete(PinError::kErrorSearchQueryNotBound);
+      Complete(SetupError::kErrorSearchQueryNotBound);
       return;
     }
     VLOG(1) << "All items in current batch are already pinned";
@@ -329,7 +330,7 @@ void DriveFsPinManager::OnFilePinned(const std::string& path,
     LOG(ERROR) << "Failed pinning an item: " << status;
     VLOG(1) << "Path that failed to pin: " << path << " with error "
             << drive::FileErrorToString(status);
-    Complete(PinError::kErrorFailedToPinItem);
+    Complete(SetupError::kErrorFailedToPinItem);
     return;
   }
 
@@ -365,7 +366,7 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
 
 void DriveFsPinManager::MaybeStartSearch(size_t remaining_items) {
   if (!search_query_.is_bound()) {
-    Complete(PinError::kErrorSearchQueryNotBound);
+    Complete(SetupError::kErrorSearchQueryNotBound);
     return;
   }
 

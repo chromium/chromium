@@ -34,7 +34,7 @@ extern const base::TimeDelta kPeriodicRemovalInterval;
 
 // Errors that are returned via the completion callback that indicate either
 // which stage the failure was at or whether the initial setup was a success.
-enum class PinError {
+enum class SetupError {
   kSuccess = 0,
   kManagerDisabled = 1,
   kErrorCalculatingFreeDiskSpace = 2,
@@ -96,7 +96,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // which will ensure any new files created and switched to pinned state
   // automatically. The complete callback will be called once the initial
   // pinning has completed.
-  void Start(base::OnceCallback<void(PinError)> complete_callback);
+  void Start(base::OnceCallback<void(SetupError)> complete_callback);
 
   // Stop the syncing setup.
   void Stop();
@@ -158,7 +158,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
 
   // When the pinning has finished, this ensures appropriate cleanup happens on
   // the underlying search query mojo connection.
-  void Complete(PinError status);
+  void Complete(SetupError status);
 
   // Once the verification that the files to pin will not exceed available disk
   // space, the files to pin can be batch pinned.
@@ -200,7 +200,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   bool setup_complete_ = false;
   int64_t size_required_ = 0;
   int64_t free_space_ = 0;
-  base::OnceCallback<void(PinError)> complete_callback_;
+  base::OnceCallback<void(SetupError)> complete_callback_;
   std::unique_ptr<FreeDiskSpaceDelegate> free_disk_space_;
 
   base::FilePath profile_path_;
