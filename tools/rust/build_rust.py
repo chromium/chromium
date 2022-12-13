@@ -121,9 +121,12 @@ def Configure(llvm_libs_root):
     with open(RUST_CONFIG_TEMPLATE_PATH, 'r') as input:
         template = string.Template(input.read())
 
+    def quote_string(s: str):
+        return s.replace('\\', '\\\\').replace('"', '\\"')
+
     subs = {}
-    subs['INSTALL_DIR'] = RUST_TOOLCHAIN_OUT_DIR
-    subs['LLVM_ROOT'] = llvm_libs_root
+    subs['INSTALL_DIR'] = quote_string(str(RUST_TOOLCHAIN_OUT_DIR))
+    subs['LLVM_ROOT'] = quote_string(str(llvm_libs_root))
     subs['PACKAGE_VERSION'] = GetPackageVersionForBuild()
 
     # ...and apply substitutions, writing to config.toml in Rust tree.
