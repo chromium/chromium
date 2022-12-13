@@ -15,11 +15,11 @@ namespace net {
 class SSLPrivateKey;
 class X509Certificate;
 
-// Returns an SSLPrivateKey backed by the platform private key in |identity|
-// which must correspond to |certificate|'s public key.
-NET_EXPORT scoped_refptr<SSLPrivateKey> CreateSSLPrivateKeyForSecIdentity(
+// Returns an `SSLPrivateKey` backed by the platform private key in `key`, which
+// must correspond to `certificate`'s public key.
+NET_EXPORT scoped_refptr<SSLPrivateKey> CreateSSLPrivateKeyForSecKey(
     const X509Certificate* certificate,
-    SecIdentityRef identity);
+    SecKeyRef key);
 
 }  // namespace net
 

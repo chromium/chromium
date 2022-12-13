@@ -22,11 +22,15 @@ namespace {
 
 std::vector<std::unique_ptr<ClientCertIdentityMac>>
 ClientCertIdentityMacListFromCertificateList(const CertificateList& certs) {
-  // This doesn't quite construct a real `ClientCertIdentityMac` the
+  // This doesn't quite construct a real `ClientCertIdentityMac` because the
   // `SecIdentityRef` is null. This means `SelectClientCertsForTesting` must
   // turn off the KeyChain query. If this becomes an issue, change
-  // client_cert_store_unittest-inl.h to pass in the key data and use
-  // `ScopedTestKeychain` with `ImportCertAndKeyToKeychain`.
+  // client_cert_store_unittest-inl.h to pass in the key data.
+  //
+  // Actually constructing a `SecIdentityRef` without persisting it is not
+  // currently possible with macOS's non-deprecated APIs, but it is possible
+  // with deprecated APIs using `SecKeychainCreate` and `SecItemImport`. See git
+  // history for net/test/keychain_test_util_mac.cc.
   std::vector<std::unique_ptr<ClientCertIdentityMac>> identities;
   identities.reserve(certs.size());
   for (const auto& cert : certs) {

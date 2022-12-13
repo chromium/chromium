@@ -4,6 +4,9 @@
 
 #include "net/ssl/client_cert_identity_mac.h"
 
+#include <Security/SecIdentity.h>
+
+#include "base/mac/mac_logging.h"
 #include "net/ssl/ssl_platform_key_mac.h"
 #include "net/ssl/ssl_private_key.h"
 
@@ -19,10 +22,19 @@ ClientCertIdentityMac::~ClientCertIdentityMac() = default;
 void ClientCertIdentityMac::AcquirePrivateKey(
     base::OnceCallback<void(scoped_refptr<SSLPrivateKey>)>
         private_key_callback) {
-  // This only adds a ref to and returns the private key from identity_ so it
+  // This only adds a ref to and returns the private key from `identity_`, so it
   // doesn't need to run on a worker thread.
+  base::ScopedCFTypeRef<SecKeyRef> key;
+  OSStatus status =
+      SecIdentityCopyPrivateKey(identity_.get(), key.InitializeInto());
+  if (status != noErr) {
+    OSSTATUS_LOG(WARNING, status);
+    std::move(private_key_callback).Run(nullptr);
+    return;
+  }
+
   std::move(private_key_callback)
-      .Run(CreateSSLPrivateKeyForSecIdentity(certificate(), identity_.get()));
+      .Run(CreateSSLPrivateKeyForSecKey(certificate(), key.get()));
 }
 
 }  // namespace net

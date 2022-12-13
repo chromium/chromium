@@ -181,32 +181,18 @@ class SSLPlatformKeySecKey : public ThreadedSSLPrivateKey::Delegate {
   base::ScopedCFTypeRef<SecKeyRef> key_;
 };
 
+}  // namespace
+
 scoped_refptr<SSLPrivateKey> CreateSSLPrivateKeyForSecKey(
     const X509Certificate* certificate,
-    SecKeyRef private_key) {
+    SecKeyRef key) {
   bssl::UniquePtr<EVP_PKEY> pubkey = GetClientCertPublicKey(certificate);
   if (!pubkey)
     return nullptr;
 
   return base::MakeRefCounted<ThreadedSSLPrivateKey>(
-      std::make_unique<SSLPlatformKeySecKey>(std::move(pubkey), private_key),
+      std::make_unique<SSLPlatformKeySecKey>(std::move(pubkey), key),
       GetSSLPlatformKeyTaskRunner());
-}
-
-}  // namespace
-
-scoped_refptr<SSLPrivateKey> CreateSSLPrivateKeyForSecIdentity(
-    const X509Certificate* certificate,
-    SecIdentityRef identity) {
-  base::ScopedCFTypeRef<SecKeyRef> private_key;
-  OSStatus status =
-      SecIdentityCopyPrivateKey(identity, private_key.InitializeInto());
-  if (status != noErr) {
-    OSSTATUS_LOG(WARNING, status);
-    return nullptr;
-  }
-
-  return CreateSSLPrivateKeyForSecKey(certificate, private_key.get());
 }
 
 }  // namespace net

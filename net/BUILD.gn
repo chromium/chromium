@@ -2203,13 +2203,6 @@ static_library("test_support") {
     "url_request/url_request_test_util.h",
   ]
 
-  if (is_mac) {
-    sources += [
-      "test/keychain_test_util_mac.cc",
-      "test/keychain_test_util_mac.h",
-    ]
-  }
-
   configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [
