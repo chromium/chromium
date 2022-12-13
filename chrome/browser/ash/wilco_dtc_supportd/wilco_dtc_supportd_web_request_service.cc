@@ -203,17 +203,32 @@ void WilcoDtcSupportdWebRequestService::MaybeStartNextRequest() {
       net::DefineNetworkTrafficAnnotation("wilco_dtc_supportd", R"(
           semantics {
             sender: "WilcoDtcSupportd"
-            description: "Perform a web request."
+            description: 
+            "Wilco VM is used by Dell to run Dell SupportAssist product on ChromeOS" 
+              "for managed users only. Dell SupportAssist proactively monitors device health."
+              "Dell binaries are running inside the VM and can perform web requests through"
+              "first-party wilco_dtc_supportd daemon to communicate with a Dell server."
             trigger:
-                "wilco_dtc_supportd performs a web request to their server."
+            "If policy is enabled, globally running Wilco VM performs web requests. No user action "
+                  "required to trigger web request."
             data:
                 "wilco_dtc_supportd's proprietary data."
             destination: OTHER
           }
           policy {
             cookies_allowed: NO
-          }
+            policy_exception_justification:
+            "Controlled by DeviceWilcoDtcAllowed. "
+            "chrome_device_policy not supported by auditor yet."
+            # TODO(b/210911671): remove comments once the bug is fixed
+            #chrome_policy {
+            #DeviceWilcoDtcAllowed {
+            #    DeviceWilcoDtcAllowed: false
+            #  }
+            #} 
+            }
       )");
+
 
   // Start new web request.
   active_request_ = std::move(request_queue_.front());
