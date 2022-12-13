@@ -96,6 +96,11 @@ struct COMPONENT_EXPORT(ICON_TYPES) IconValue {
   // PNG-encoded bytes for the icon
   std::vector<uint8_t> compressed;
 
+  // Specifies whether the icon provided is a maskable icon. This field should
+  // only be true if the icon type is kCompressed, and the compressed icon data
+  // is from a maskable icon.
+  bool is_maskable_icon = false;
+
   // Specifies whether the icon provided is a placeholder. That field should
   // only be true if the corresponding `LoadIcon` call had
   // `allow_placeholder_icon` set to true, which states whether the caller will

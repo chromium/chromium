@@ -147,7 +147,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
 
   void MaybeApplyEffectsAndComplete(const gfx::ImageSkia image);
 
-  void CompleteWithCompressed(std::vector<uint8_t> data);
+  void CompleteWithCompressed(bool is_maskable_icon, std::vector<uint8_t> data);
 
   void CompleteWithUncompressed(IconValuePtr iv);
 
@@ -155,7 +155,8 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
 
   void OnReadWebAppIcon(std::map<int, SkBitmap> icon_bitmaps);
 
-  void OnReadWebAppForCompressedIconData(std::map<int, SkBitmap> icon_bitmaps);
+  void OnReadWebAppForCompressedIconData(bool is_maskable_icon,
+                                         std::map<int, SkBitmap> icon_bitmaps);
 
   void OnReadChromeAppForCompressedIconData(gfx::ImageSkia image);
 

@@ -480,7 +480,8 @@ void AppIconLoader::LoadIconFromResource(int icon_resource) {
         base::StringPiece data =
             ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
                 icon_resource);
-        CompleteWithCompressed(std::vector<uint8_t>(data.begin(), data.end()));
+        CompleteWithCompressed(/*is_maskable_icon=*/false,
+                               std::vector<uint8_t>(data.begin(), data.end()));
         return;
       }
       [[fallthrough]];
@@ -601,7 +602,8 @@ void AppIconLoader::GetWebAppCompressedIconData(
   icon_manager.ReadIcons(
       web_app_id, *icon_purpose_to_read, icon_pixel_sizes,
       base::BindOnce(&AppIconLoader::OnReadWebAppForCompressedIconData,
-                     base::WrapRefCounted(this)));
+                     base::WrapRefCounted(this),
+                     *icon_purpose_to_read == IconPurpose::MASKABLE));
 }
 
 void AppIconLoader::GetChromeAppCompressedIconData(
@@ -709,7 +711,8 @@ void AppIconLoader::MaybeApplyEffectsAndComplete(const gfx::ImageSkia image) {
   CompleteWithIconValue(std::move(iv));
 }
 
-void AppIconLoader::CompleteWithCompressed(std::vector<uint8_t> data) {
+void AppIconLoader::CompleteWithCompressed(bool is_maskable_icon,
+                                           std::vector<uint8_t> data) {
   if (data.empty()) {
     MaybeLoadFallbackOrCompleteEmpty();
     return;
@@ -717,6 +720,7 @@ void AppIconLoader::CompleteWithCompressed(std::vector<uint8_t> data) {
   auto iv = std::make_unique<IconValue>();
   iv->icon_type = IconType::kCompressed;
   iv->compressed = std::move(data);
+  iv->is_maskable_icon = is_maskable_icon;
   iv->is_placeholder_icon = is_placeholder_icon_;
   std::move(callback_).Run(std::move(iv));
 }
@@ -744,7 +748,7 @@ void AppIconLoader::CompleteWithIconValue(IconValuePtr iv) {
     // the icon might be null. Return early here if the image is null, to
     // prevent calling MakeThreadSafe, which might cause the system crash due to
     // DCHECK error on image.
-    CompleteWithCompressed(std::vector<uint8_t>());
+    CompleteWithCompressed(/*is_maskable_icon=*/false, std::vector<uint8_t>());
     return;
   }
 
@@ -754,7 +758,7 @@ void AppIconLoader::CompleteWithIconValue(IconValuePtr iv) {
       base::BindOnce(&apps::EncodeImageToPngBytes, iv->uncompressed,
                      icon_scale_for_compressed_response_),
       base::BindOnce(&AppIconLoader::CompleteWithCompressed,
-                     base::WrapRefCounted(this)));
+                     base::WrapRefCounted(this), /*is_maskable_icon=*/false));
 }
 
 // Callback for reading uncompressed web app icons.
@@ -797,6 +801,7 @@ void AppIconLoader::OnReadWebAppIcon(std::map<int, SkBitmap> icon_bitmaps) {
 }
 
 void AppIconLoader::OnReadWebAppForCompressedIconData(
+    bool is_maskable_icon,
     std::map<int, SkBitmap> icon_bitmaps) {
   if (icon_bitmaps.empty()) {
     MaybeLoadFallbackOrCompleteEmpty();
@@ -817,7 +822,7 @@ void AppIconLoader::OnReadWebAppForCompressedIconData(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&apps::EncodeImageToPngBytes, image_skia, icon_scale_),
       base::BindOnce(&AppIconLoader::CompleteWithCompressed,
-                     base::WrapRefCounted(this)));
+                     base::WrapRefCounted(this), is_maskable_icon));
 }
 
 void AppIconLoader::OnReadChromeAppForCompressedIconData(gfx::ImageSkia image) {
@@ -831,7 +836,7 @@ void AppIconLoader::OnReadChromeAppForCompressedIconData(gfx::ImageSkia image) {
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&apps::EncodeImageToPngBytes, image, icon_scale_),
       base::BindOnce(&AppIconLoader::CompleteWithCompressed,
-                     base::WrapRefCounted(this)));
+                     base::WrapRefCounted(this), /*is_maskable_icon=*/false));
 }
 
 void AppIconLoader::MaybeLoadFallbackOrCompleteEmpty() {

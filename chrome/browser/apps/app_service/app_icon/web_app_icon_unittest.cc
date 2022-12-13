@@ -794,7 +794,9 @@ TEST_F(WebAppIconFactoryTest, GetNonMaskableCompressedIconData) {
       GetWebAppCompressedIconData(app_id, ui::ResourceScaleFactor::k200Percent);
 
   VerifyCompressedIcon(src_data1, *icon1);
+  ASSERT_FALSE(icon1->is_maskable_icon);
   VerifyCompressedIcon(src_data2, *icon2);
+  ASSERT_FALSE(icon2->is_maskable_icon);
 }
 
 TEST_F(WebAppIconFactoryTest,
@@ -834,7 +836,9 @@ TEST_F(WebAppIconFactoryTest,
       GetWebAppCompressedIconData(app_id, ui::ResourceScaleFactor::k200Percent);
 
   VerifyCompressedIcon(src_data1, *icon1);
+  ASSERT_FALSE(icon1->is_maskable_icon);
   VerifyCompressedIcon(src_data2, *icon2);
+  ASSERT_FALSE(icon2->is_maskable_icon);
 }
 
 TEST_F(WebAppIconFactoryTest, GetNonMaskableNonEffectCompressedIcon) {
@@ -871,7 +875,9 @@ TEST_F(WebAppIconFactoryTest, GetNonMaskableNonEffectCompressedIcon) {
       GetWebAppCompressedIconData(app_id, ui::ResourceScaleFactor::k200Percent);
 
   VerifyCompressedIcon(src_data1, *icon1);
+  ASSERT_FALSE(icon1->is_maskable_icon);
   VerifyCompressedIcon(src_data2, *icon2);
+  ASSERT_FALSE(icon2->is_maskable_icon);
 }
 
 TEST_F(WebAppIconFactoryTest,
@@ -910,7 +916,9 @@ TEST_F(WebAppIconFactoryTest,
       GetWebAppCompressedIconData(app_id, ui::ResourceScaleFactor::k200Percent);
 
   VerifyCompressedIcon(src_data1, *icon1);
+  ASSERT_FALSE(icon1->is_maskable_icon);
   VerifyCompressedIcon(src_data2, *icon2);
+  ASSERT_FALSE(icon2->is_maskable_icon);
 }
 
 TEST_F(WebAppIconFactoryTest, GetMaskableCompressedIcon) {
@@ -951,7 +959,9 @@ TEST_F(WebAppIconFactoryTest, GetMaskableCompressedIcon) {
       GetWebAppCompressedIconData(app_id, ui::ResourceScaleFactor::k200Percent);
 
   VerifyCompressedIcon(src_data1, *icon1);
+  ASSERT_TRUE(icon1->is_maskable_icon);
   VerifyCompressedIcon(src_data2, *icon2);
+  ASSERT_TRUE(icon1->is_maskable_icon);
 }
 
 class AppServiceWebAppIconTest : public WebAppIconFactoryTest {
