@@ -230,10 +230,10 @@ void NativeWidgetNSWindowFullscreenController::HandlePendingState() {
       return;
     case State::kWindowed:
       if (pending_state_ && pending_state_->is_fullscreen) {
-        if (pending_state_->display_id != display::kInvalidDisplayId) {
-          // Handle entering fullscreen on a specified display (note that this
-          // applies to entering fullscreen on the default display, if specified
-          // explicitly).
+        if (pending_state_->display_id != display::kInvalidDisplayId &&
+            pending_state_->display_id !=
+                client_->FullscreenControllerGetDisplayId()) {
+          // Handle entering fullscreen on another specified display.
           SetStateAndCancelPostedTasks(
               State::kWindowedMovingToFullscreenTarget);
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
