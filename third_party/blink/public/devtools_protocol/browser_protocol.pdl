@@ -8548,6 +8548,7 @@ domain Page
       SameSiteCrossOriginNavigationNotOptIn
       ActivationNavigationParameterMismatch
       ActivatedInBackground
+      EmbedderHostDisallowed
 
   # Fired when a prerender attempt is completed.
   experimental event prerenderAttemptCompleted
