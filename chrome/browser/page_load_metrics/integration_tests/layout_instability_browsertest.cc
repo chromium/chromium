@@ -153,7 +153,8 @@ void LayoutInstabilityTest::CheckUKMAndUMAMetrics(double expect_score) {
             Bucket(page_load_metrics::LayoutShiftUmaValue(expect_score), 1));
 }
 
-IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, SimpleBlockMovement) {
+// TODO(crbug.com/1400401): Deflake and re-enable this test.
+IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, DISABLED_SimpleBlockMovement) {
   RunWPT("simple-block-movement.html", ShiftFrame::LayoutShiftOnlyInMainFrame,
          true /* check_UKM_UMA_metrics */);
 }
@@ -162,7 +163,8 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, Sources_Enclosure) {
   RunWPT("sources-enclosure.html");
 }
 
-IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, Sources_MaxImpact) {
+// TODO(crbug.com/1400401): Deflake and re-enable this test.
+IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, DISABLED_Sources_MaxImpact) {
   RunWPT("sources-maximpact.html");
 }
 
@@ -183,8 +185,9 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, OOPIFSubframeWeighting) {
       page_load_metrics::LayoutShiftUmaValue(0.03));
 }
 
+// TODO(crbug.com/1400401): Deflake and re-enable this test.
 IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
-                       CumulativeLayoutShift_OneSecondGap) {
+                       DISABLED_CumulativeLayoutShift_OneSecondGap) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
   waiter->AddPageLayoutShiftExpectation();
@@ -264,8 +267,9 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
       Bucket(page_load_metrics::LayoutShiftUmaValue(*record_score_two), 1));
 }
 
+// TODO(crbug.com/1400401): Deflake and re-enable this test.
 IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
-                       CumulativeLayoutShift_hadRecentInput) {
+                       DISABLED_CumulativeLayoutShift_hadRecentInput) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
   waiter->AddPageLayoutShiftExpectation();
