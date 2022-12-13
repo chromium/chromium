@@ -31,7 +31,7 @@ class ScopedOverviewHideWindows : public aura::WindowObserver {
 
   bool HasWindow(aura::Window* window) const;
   void AddWindow(aura::Window* window);
-  void RemoveWindow(aura::Window* window);
+  void RemoveWindow(aura::Window* window, bool show_window);
   void RemoveAllWindows();
 
   // aura::WindowObserver:

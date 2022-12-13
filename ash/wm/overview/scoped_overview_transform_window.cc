@@ -599,7 +599,7 @@ void ScopedOverviewTransformWindow::OnWindowPropertyChanged(
   if (current_value) {
     AddHiddenTransientWindows({window});
   } else {
-    hidden_transient_children_->RemoveWindow(window);
+    hidden_transient_children_->RemoveWindow(window, /*show_window=*/true);
   }
 }
 
