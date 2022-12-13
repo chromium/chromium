@@ -11,6 +11,9 @@ build_webui("build") {
 
   static_files = [ "customize_chrome.html" ]
 
+  extra_grdp_deps = [ "icons:build_grdp" ]
+  extra_grdp_files = [ "$target_gen_dir/icons/resources.grdp" ]
+
   # Files holding a Polymer element definition and have an equivalent .html file.
   web_component_files = [
     "app.ts",

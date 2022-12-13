@@ -20,14 +20,22 @@
     object-fit: fill;
   }
 
+  #classicChromeImageContainer {
+    align-items: center;
+    background-color: var(--customize-chrome-color-background-color);
+    display: flex;
+    justify-content: center;
+  }
+
+  #miniNewTabPage {
+    height: 130px;
+    width: 256px;
+  }
+
   #themeTitle {
     margin-bottom: 8px;
     overflow: hidden;
     white-space: nowrap;
-  }
-
-  #classicChrome {
-    background-color: var(--customize-chrome-color-background-color);
   }
 </style>
 <div id="themeSnapshot">
@@ -38,8 +46,8 @@
     <label id="themeTitle">[[theme_.backgroundImage.title]]</label>
   </template>
   <template is="dom-if" if="[[!showThemeSnapshot_]]">
-    <div class="image" id="classicChrome">
-      <!--TODO(crbug/1384227): Add classic chrome image. -->
+    <div class="image" id="classicChromeImageContainer">
+      <img id="miniNewTabPage" src="icons/mini_new_tab_page.svg"></img>
     </div>
     <label id="themeTitle">$i18n{classicChrome}</label>
   </template>
