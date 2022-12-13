@@ -1069,8 +1069,6 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_intervention_report_body.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_intrinsic_sizes.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_intrinsic_sizes.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_iterator.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_iterator.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_keyboard_event.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_keyboard_event.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_keyframe_effect.cc",

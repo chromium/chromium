@@ -174,7 +174,6 @@ blink_core_sources_dom = [
   "ignore_opens_during_unload_count_incrementer.h",
   "increment_load_event_delay_count.cc",
   "increment_load_event_delay_count.h",
-  "iterator.h",
   "layout_tree_builder.cc",
   "layout_tree_builder.h",
   "layout_tree_builder_traversal.cc",
