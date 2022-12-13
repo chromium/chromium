@@ -165,6 +165,8 @@ source_set("crosapi") {
     "migration_progress_tracker.h",
     "move_migrator.cc",
     "move_migrator.h",
+    "multi_capture_service_ash.cc",
+    "multi_capture_service_ash.h",
     "native_theme_service_ash.cc",
     "native_theme_service_ash.h",
     "network_change_ash.cc",

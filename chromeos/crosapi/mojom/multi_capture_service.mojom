@@ -1,0 +1,25 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// Interacts with the media capture API. Implemented in ash-chrome. This
+// interface is used to show multi capture related usage indicators and
+// notifications.
+// Next version: 1
+// Next method id: 2
+[Stable, Uuid="6ea59fc6-65e0-11ed-a200-7be727846002"]
+interface MultiCaptureService {
+  // Called when a new multi capture (identified by a unique label)
+  // is started. The parameters are a unique label and the host that
+  // triggered the capture.
+  MultiCaptureStarted@0(string label, string host);
+
+  // Called when an existing multi capture (identified by a unique label) is
+  // stopped. A multi capture is considered to be stopped when the capture
+  // for all used devices is stopped / finished.
+  // MultiCaptureStopped will only be called after MultiCaptureStarted was
+  // called before with the same label.
+  MultiCaptureStopped@1(string label);
+};

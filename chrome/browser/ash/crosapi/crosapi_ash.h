@@ -80,6 +80,7 @@ class LoginScreenStorageAsh;
 class LoginStateAsh;
 class MessageCenterAsh;
 class MetricsReportingAsh;
+class MultiCaptureServiceAsh;
 class NativeThemeServiceAsh;
 class NetworkChangeAsh;
 class NetworkSettingsServiceAsh;
@@ -254,6 +255,8 @@ class CrosapiAsh : public mojom::Crosapi {
           receiver) override;
   void BindMessageCenter(
       mojo::PendingReceiver<mojom::MessageCenter> receiver) override;
+  void BindMultiCaptureService(
+      mojo::PendingReceiver<mojom::MultiCaptureService> receiver) override;
   void BindMetricsReporting(
       mojo::PendingReceiver<mojom::MetricsReporting> receiver) override;
   void BindNativeThemeService(
@@ -416,6 +419,10 @@ class CrosapiAsh : public mojom::Crosapi {
 
   LoginStateAsh* login_state_ash() { return login_state_ash_.get(); }
 
+  MultiCaptureServiceAsh* multi_capture_service_ash() {
+    return multi_capture_service_ash_.get();
+  }
+
   NetworkChangeAsh* network_change_ash() { return network_change_ash_.get(); }
 
   NetworkingAttributesAsh* networking_attributes_ash() {
@@ -526,6 +533,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<LoginStateAsh> login_state_ash_;
   std::unique_ptr<MessageCenterAsh> message_center_ash_;
   std::unique_ptr<MetricsReportingAsh> metrics_reporting_ash_;
+  std::unique_ptr<MultiCaptureServiceAsh> multi_capture_service_ash_;
   std::unique_ptr<NativeThemeServiceAsh> native_theme_service_ash_;
   std::unique_ptr<NetworkChangeAsh> network_change_ash_;
   std::unique_ptr<NetworkingAttributesAsh> networking_attributes_ash_;

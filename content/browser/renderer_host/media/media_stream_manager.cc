@@ -95,6 +95,10 @@
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
 using blink::mojom::MediaDeviceType;
 
 namespace content {
@@ -866,9 +870,9 @@ class MediaStreamManager::DeviceRequest {
       state_[static_cast<int>(stream_type)] = new_state;
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     NotifyMultiCaptureStateChanged(new_state);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     MediaObserver* media_observer =
         GetContentClient()->browser()->GetMediaObserver();
@@ -1046,31 +1050,53 @@ class MediaStreamManager::DeviceRequest {
   PermissionController::SubscriptionId video_subscription_id;
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+  static void NotifyMultiCaptureStarted(const std::string& label,
+                                        const url::Origin& origin) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    auto* const service = chromeos::LacrosService::Get();
+    if (!service->IsRegistered<crosapi::mojom::MultiCaptureService>() ||
+        !service->IsAvailable<crosapi::mojom::MultiCaptureService>()) {
+      LOG(ERROR) << "chrome.MultiCaptureService is not available in Lacros.";
+      return;
+    }
+    crosapi::mojom::MultiCaptureService* const multi_capture_service =
+        service->GetRemote<crosapi::mojom::MultiCaptureService>().get();
+    multi_capture_service->MultiCaptureStarted(label, origin.host());
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+    content::GetMultiCaptureService().NotifyMultiCaptureStarted(label, origin);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+
+  static void NotifyMultiCaptureStopped(const std::string& label) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    auto* const service = chromeos::LacrosService::Get();
+    if (!service->IsRegistered<crosapi::mojom::MultiCaptureService>() ||
+        !service->IsAvailable<crosapi::mojom::MultiCaptureService>()) {
+      LOG(ERROR) << "chrome.MultiCaptureService is not available in Lacros.";
+      return;
+    }
+    crosapi::mojom::MultiCaptureService* const multi_capture_service =
+        service->GetRemote<crosapi::mojom::MultiCaptureService>().get();
+    multi_capture_service->MultiCaptureStopped(label);
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+    content::GetMultiCaptureService().NotifyMultiCaptureStopped(label);
+#endif
+  }
+
   void NotifyMultiCaptureStateChanged(MediaRequestState new_state) {
     if (!IsGetDisplayMediaSet())
       return;
     switch (new_state) {
       case MediaRequestState::MEDIA_REQUEST_STATE_OPENING:
         GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                [](const std::string& label, const url::Origin& origin) {
-                  content::GetMultiCaptureService().NotifyMultiCaptureStarted(
-                      label, origin);
-                },
-                label_, salt_and_origin.origin));
+            FROM_HERE, base::BindOnce(NotifyMultiCaptureStarted, label_,
+                                      salt_and_origin.origin));
         break;
       case MediaRequestState::MEDIA_REQUEST_STATE_CLOSING:
       case MediaRequestState::MEDIA_REQUEST_STATE_ERROR:
         GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                [](const std::string& label) {
-                  content::GetMultiCaptureService().NotifyMultiCaptureStopped(
-                      label);
-                },
-                label_));
+            FROM_HERE, base::BindOnce(NotifyMultiCaptureStopped, label_));
         break;
       case MediaRequestState::MEDIA_REQUEST_STATE_NOT_REQUESTED:
       case MediaRequestState::MEDIA_REQUEST_STATE_REQUESTED:
@@ -1081,7 +1107,8 @@ class MediaStreamManager::DeviceRequest {
         break;
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Mark true if the MediaStreamDevice of |MediaStreamType| type should be
   // stopped but can't at the moment because of ongoing transfers.
