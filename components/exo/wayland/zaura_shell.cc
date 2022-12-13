@@ -64,6 +64,8 @@ namespace {
 constexpr int kAuraShellSeatObserverPriority = 1;
 static_assert(Seat::IsValidObserverPriority(kAuraShellSeatObserverPriority),
               "kAuraShellSeatObserverPriority is not in the valid range.");
+static_assert(sizeof(uint32_t) == sizeof(float),
+              "Sizes much match for reinterpret cast to be meaningful");
 
 // A property key containing a boolean set to true if na aura surface object is
 // associated with surface object.
@@ -207,11 +209,13 @@ void aura_surface_intent_to_snap(wl_client* client,
   GetUserDataAs<AuraSurface>(resource)->IntentToSnap(snap_direction);
 }
 
-void aura_surface_set_snap_left(wl_client* client, wl_resource* resource) {
+void aura_surface_set_snap_left_deprecated(wl_client* client,
+                                           wl_resource* resource) {
   GetUserDataAs<AuraSurface>(resource)->SetSnapPrimary();
 }
 
-void aura_surface_set_snap_right(wl_client* client, wl_resource* resource) {
+void aura_surface_set_snap_right_deprecated(wl_client* client,
+                                            wl_resource* resource) {
   GetUserDataAs<AuraSurface>(resource)->SetSnapSecondary();
 }
 
@@ -307,8 +311,8 @@ const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_set_client_surface_str_id,
     aura_surface_set_server_start_resize,
     aura_surface_intent_to_snap,
-    aura_surface_set_snap_left,
-    aura_surface_set_snap_right,
+    aura_surface_set_snap_left_deprecated,
+    aura_surface_set_snap_right_deprecated,
     aura_surface_unset_snap,
     aura_surface_set_window_session_id,
     aura_surface_set_can_go_back,
@@ -431,11 +435,11 @@ void AuraSurface::IntentToSnap(uint32_t snap_direction) {
 }
 
 void AuraSurface::SetSnapPrimary() {
-  surface_->SetSnappedToPrimary();
+  surface_->SetSnapPrimary(chromeos::kDefaultSnapRatio);
 }
 
 void AuraSurface::SetSnapSecondary() {
-  surface_->SetSnappedToSecondary();
+  surface_->SetSnapSecondary(chromeos::kDefaultSnapRatio);
 }
 
 void AuraSurface::UnsetSnap() {
@@ -834,6 +838,14 @@ void AuraToplevel::SetFloat() {
 
 void AuraToplevel::UnsetFloat() {
   shell_surface_->UnsetFloat();
+}
+
+void AuraToplevel::SetSnapPrimary(float snap_ratio) {
+  shell_surface_->SetSnapPrimary(snap_ratio);
+}
+
+void AuraToplevel::SetSnapSecondary(float snap_ratio) {
+  shell_surface_->SetSnapSecondary(snap_ratio);
 }
 
 template <class T>
@@ -1272,6 +1284,20 @@ void aura_toplevel_unset_float(wl_client* client, wl_resource* resource) {
   GetUserDataAs<AuraToplevel>(resource)->UnsetFloat();
 }
 
+void aura_toplevel_set_snap_primary(wl_client* client,
+                                    wl_resource* resource,
+                                    uint32_t snap_ratio_as_uint) {
+  float snap_ratio = *reinterpret_cast<float*>(&snap_ratio_as_uint);
+  GetUserDataAs<AuraToplevel>(resource)->SetSnapPrimary(snap_ratio);
+}
+
+void aura_toplevel_set_snap_secondary(wl_client* client,
+                                      wl_resource* resource,
+                                      uint32_t snap_ratio_as_uint) {
+  float snap_ratio = *reinterpret_cast<float*>(&snap_ratio_as_uint);
+  GetUserDataAs<AuraToplevel>(resource)->SetSnapSecondary(snap_ratio);
+}
+
 void aura_toplevel_set_restore_info_with_window_id_source(
     wl_client* client,
     wl_resource* resource,
@@ -1371,6 +1397,8 @@ const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_deactivate,
     aura_toplevel_set_fullscreen_mode,
     aura_toplevel_set_scale_factor,
+    aura_toplevel_set_snap_primary,
+    aura_toplevel_set_snap_secondary,
 };
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,
@@ -1411,8 +1439,6 @@ void aura_popup_release(wl_client* client, wl_resource* resource) {
 void aura_popup_set_scale_factor(wl_client* client,
                                  wl_resource* resource,
                                  uint32_t scale_factor_as_uint) {
-  static_assert(sizeof(uint32_t) == sizeof(float),
-                "Sizes much match for reinterpret cast to be meaningful");
   float scale_factor = *reinterpret_cast<float*>(&scale_factor_as_uint);
   GetUserDataAs<AuraPopup>(resource)->SetScaleFactor(scale_factor);
 }

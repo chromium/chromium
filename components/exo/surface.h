@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "cc/base/region.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "components/exo/buffer.h"
 #include "components/exo/layer_tree_frame_sink_holder.h"
 #include "components/exo/surface_delegate.h"
@@ -233,8 +234,8 @@ class Surface final : public ui::PropertyHandler {
 
   // Called when the client was snapped to primary or secondary position, or
   // reset.
-  void SetSnappedToSecondary();
-  void SetSnappedToPrimary();
+  void SetSnapPrimary(float snap_ratio);
+  void SetSnapSecondary(float snap_ratio);
   void UnsetSnap();
 
   // Whether the current client window can go back, as per its navigation list.

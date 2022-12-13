@@ -1284,13 +1284,14 @@ void remote_surface_set_aspect_ratio(wl_client* client,
 
 void remote_surface_set_snapped_to_left(wl_client* client,
                                         wl_resource* resource) {
-  GetUserDataAs<ClientControlledShellSurface>(resource)->SetSnappedToPrimary();
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetSnapPrimary(
+      chromeos::kDefaultSnapRatio);
 }
 
 void remote_surface_set_snapped_to_right(wl_client* client,
                                          wl_resource* resource) {
-  GetUserDataAs<ClientControlledShellSurface>(resource)
-      ->SetSnappedToSecondary();
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetSnapSecondary(
+      chromeos::kDefaultSnapRatio);
 }
 
 void remote_surface_start_resize(wl_client* client,

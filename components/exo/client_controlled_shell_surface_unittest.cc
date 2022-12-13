@@ -2522,7 +2522,7 @@ TEST_F(ClientControlledShellSurfaceTest, SnappedClientBounds) {
 
   ash::WindowState::Get(window)->OnWMEvent(&event);
   EXPECT_EQ(gfx::Rect(0, 32, 400, 568), delegate->requested_bounds().back());
-  shell_surface->SetSnappedToPrimary();
+  shell_surface->SetSnapPrimary(chromeos::kDefaultSnapRatio);
   shell_surface->SetGeometry(gfx::Rect(0, 0, 400, 568));
   surface->Commit();
 
@@ -2538,7 +2538,7 @@ TEST_F(ClientControlledShellSurfaceTest, SnappedClientBounds) {
   EXPECT_EQ(gfx::Rect(0, 32, 400, 568), delegate->requested_bounds().back());
 
   // Clean up state.
-  shell_surface->SetSnappedToPrimary();
+  shell_surface->SetSnapPrimary(chromeos::kDefaultSnapRatio);
   surface->Commit();
 }
 

@@ -283,9 +283,11 @@ void ShowSnapPreview(aura::Window* window,
       /*allow_haptic_feedback=*/false);
 }
 
-void CommitSnap(aura::Window* window, chromeos::SnapDirection snap_direction) {
+void CommitSnap(aura::Window* window,
+                chromeos::SnapDirection snap_direction,
+                float snap_ratio) {
   chromeos::SnapController::Get()->CommitSnap(window, snap_direction,
-                                              chromeos::kDefaultSnapRatio);
+                                              snap_ratio);
 }
 
 }  // namespace
@@ -494,16 +496,19 @@ void ShellSurfaceBase::HideSnapPreview() {
   ShowSnapPreview(widget_->GetNativeWindow(), chromeos::SnapDirection::kNone);
 }
 
-void ShellSurfaceBase::SetSnappedToPrimary() {
-  CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kPrimary);
+void ShellSurfaceBase::SetSnapPrimary(float snap_ratio) {
+  CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kPrimary,
+             snap_ratio);
 }
 
-void ShellSurfaceBase::SetSnappedToSecondary() {
-  CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kSecondary);
+void ShellSurfaceBase::SetSnapSecondary(float snap_ratio) {
+  CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kSecondary,
+             snap_ratio);
 }
 
 void ShellSurfaceBase::UnsetSnap() {
-  CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kNone);
+  CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kNone,
+             chromeos::kDefaultSnapRatio);
 }
 
 void ShellSurfaceBase::SetCanGoBack() {

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/observer_list.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "components/exo/surface_delegate.h"
 #include "components/exo/surface_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -85,8 +86,8 @@ class SubSurface : public SurfaceDelegate,
   void ShowSnapPreviewToPrimary() override {}
   void ShowSnapPreviewToSecondary() override {}
   void HideSnapPreview() override {}
-  void SetSnappedToPrimary() override {}
-  void SetSnappedToSecondary() override {}
+  void SetSnapPrimary(float snap_ratio) override {}
+  void SetSnapSecondary(float snap_ratio) override {}
   void UnsetSnap() override {}
   void SetCanGoBack() override {}
   void UnsetCanGoBack() override {}

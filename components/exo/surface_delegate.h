@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_SURFACE_DELEGATE_H_
 #define COMPONENTS_EXO_SURFACE_DELEGATE_H_
 
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -68,8 +69,8 @@ class SurfaceDelegate {
 
   // Called when the client was snapped to primary or secondary position, and
   // reset.
-  virtual void SetSnappedToPrimary() = 0;
-  virtual void SetSnappedToSecondary() = 0;
+  virtual void SetSnapPrimary(float snap_ratio) = 0;
+  virtual void SetSnapSecondary(float snap_ratio) = 0;
   virtual void UnsetSnap() = 0;
 
   // Whether the current client window can go back, as per its navigation list.

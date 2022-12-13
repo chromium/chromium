@@ -105,8 +105,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void ShowSnapPreviewToPrimary() override {}
   void ShowSnapPreviewToSecondary() override {}
   void HideSnapPreview() override {}
-  void SetSnappedToPrimary() override {}
-  void SetSnappedToSecondary() override {}
+  void SetSnapPrimary(float snap_ratio) override {}
+  void SetSnapSecondary(float snap_ratio) override {}
   void UnsetSnap() override {}
   void SetCanGoBack() override {}
   void UnsetCanGoBack() override {}

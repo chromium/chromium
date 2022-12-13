@@ -345,10 +345,10 @@ ShellSurfaceBuilder::BuildClientControlledShellSurface() {
         shell_surface->SetFullscreen(/*fullscreen=*/true);
         break;
       case chromeos::WindowStateType::kPrimarySnapped:
-        shell_surface->SetSnappedToPrimary();
+        shell_surface->SetSnapPrimary(chromeos::kDefaultSnapRatio);
         break;
       case chromeos::WindowStateType::kSecondarySnapped:
-        shell_surface->SetSnappedToSecondary();
+        shell_surface->SetSnapSecondary(chromeos::kDefaultSnapRatio);
         break;
       case chromeos::WindowStateType::kPip:
         shell_surface->SetPip();

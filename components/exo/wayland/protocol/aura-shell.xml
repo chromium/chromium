@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="47">
+  <interface name="zaura_shell" version="48">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -361,12 +361,14 @@
 
     <request name="set_snap_left" since="16">
       <description summary="snap the surface to the left.">
+        [Deprecated] Use set_snap_primary on zaura_toplevel.
         Request that surface is snapped to the left.
       </description>
     </request>
 
     <request name="set_snap_right" since="16">
       <description summary="snap the surface to the right.">
+        [Deprecated] Use set_snap_secondary on zaura_toplevel.
         Request that surface is snapped to the right.
       </description>
     </request>
@@ -751,7 +753,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_toplevel" version="46">
+  <interface name="zaura_toplevel" version="48">
     <description summary="aura shell interface to the toplevel shell">
       An interface to the toplevel shell, which allows the
       client to access shell specific functionality.
@@ -1050,6 +1052,23 @@
         applied in the next commit.
       </description>
       <arg name="scale_factor_as_uint" type="uint"/>
+    </request>
+
+      <!-- Version 48 additions-->
+    <request name="set_snap_primary" since="48">
+      <description summary="snap the surface to the primary snap position.">
+        Request that surface is snapped to the left or top if primary layout,
+        right or bottom otherwise.
+      </description>/>
+      <arg name="snap_ratio_as_uint" type="uint"/>
+    </request>
+
+    <request name="set_snap_secondary" since="48">
+      <description summary="snap the surface to the secondary snap position.">
+        Request that surface is snapped to the right or bottom if primary
+        layout, left or top otherwise.
+      </description>
+      <arg name="snap_ratio_as_uint" type="uint"/>
     </request>
   </interface>
 

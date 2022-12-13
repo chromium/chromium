@@ -698,14 +698,14 @@ void Surface::HideSnapPreview() {
     delegate_->HideSnapPreview();
 }
 
-void Surface::SetSnappedToSecondary() {
+void Surface::SetSnapPrimary(float snap_ratio) {
   if (delegate_)
-    delegate_->SetSnappedToSecondary();
+    delegate_->SetSnapPrimary(snap_ratio);
 }
 
-void Surface::SetSnappedToPrimary() {
+void Surface::SetSnapSecondary(float snap_ratio) {
   if (delegate_)
-    delegate_->SetSnappedToPrimary();
+    delegate_->SetSnapSecondary(snap_ratio);
 }
 
 void Surface::UnsetSnap() {
@@ -1630,10 +1630,8 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
                           : SkColors::kBlack;
     viz::SolidColorDrawQuad* solid_quad =
         render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-    // TODO(crbug.com/1339335): Support AA quads coming from exo.
-    constexpr bool kForceAntiAliasingOff = true;
     solid_quad->SetNew(quad_state, quad_rect, quad_rect, color,
-                       kForceAntiAliasingOff);
+                       false /* force_anti_aliasing_off */);
   }
 
   render_pass->damage_rect.Union(gfx::ToEnclosedRect(damage_rect));

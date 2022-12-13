@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_pin_type.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -231,8 +232,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void ShowSnapPreviewToPrimary() override;
   void ShowSnapPreviewToSecondary() override;
   void HideSnapPreview() override;
-  void SetSnappedToPrimary() override;
-  void SetSnappedToSecondary() override;
+  void SetSnapPrimary(float snap_ratio) override;
+  void SetSnapSecondary(float snap_ratio) override;
   void UnsetSnap() override;
   void OnActivationRequested() override;
   void OnSetServerStartResize() override;

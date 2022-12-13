@@ -107,8 +107,8 @@ class MockSurfaceDelegate : public SurfaceDelegate {
   MOCK_METHOD(void, ShowSnapPreviewToPrimary, (), (override));
   MOCK_METHOD(void, ShowSnapPreviewToSecondary, (), (override));
   MOCK_METHOD(void, HideSnapPreview, (), (override));
-  MOCK_METHOD(void, SetSnappedToSecondary, (), (override));
-  MOCK_METHOD(void, SetSnappedToPrimary, (), (override));
+  MOCK_METHOD(void, SetSnapPrimary, (float snap_ratio), (override));
+  MOCK_METHOD(void, SetSnapSecondary, (float snap_ratio), (override));
   MOCK_METHOD(void, UnsetSnap, (), (override));
   MOCK_METHOD(void, SetCanGoBack, (), (override));
   MOCK_METHOD(void, UnsetCanGoBack, (), (override));

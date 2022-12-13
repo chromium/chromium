@@ -104,9 +104,9 @@ void ClientControlledShellSurfaceDelegate::OnBoundsChanged(
            requested_state == chromeos::WindowStateType::kSecondarySnapped);
 
     if (requested_state == chromeos::WindowStateType::kPrimarySnapped)
-      shell_surface_->SetSnappedToPrimary();
+      shell_surface_->SetSnapPrimary(chromeos::kDefaultSnapRatio);
     else
-      shell_surface_->SetSnappedToSecondary();
+      shell_surface_->SetSnapSecondary(chromeos::kDefaultSnapRatio);
   }
 
   Commit();
