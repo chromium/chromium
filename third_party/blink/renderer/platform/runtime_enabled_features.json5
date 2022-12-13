@@ -2576,6 +2576,7 @@
     // was enabled.
     {
       name: "SpeculationRules",
+      status: "stable",
       implied_by: ["SpeculationRulesPrefetchProxy", "SpeculationRulesPrefetchWithSubresources", "Prerender2", "SpeculationRulesDocumentRules", "SpeculationRulesRelativeToDocument"],
       origin_trial_feature_name: "SpeculationRules__DONOTUSE",
     },
@@ -2609,12 +2610,10 @@
       origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
       origin_trial_allows_third_party: true,
     },
-    // Origin trial to enable Speculation Rules for access to the prefetch proxy.
-    // https://crbug.com/1190167
     {
       name: "SpeculationRulesPrefetchProxy",
       origin_trial_feature_name: "SpeculationRulesPrefetch",
-      status: {"Android": "stable"},
+      status: "stable",
       base_feature: "SpeculationRulesPrefetchProxy",
       copied_from_base_feature_if: "overridden",
       implied_by: ["SpeculationRulesPrefetchFuture"],

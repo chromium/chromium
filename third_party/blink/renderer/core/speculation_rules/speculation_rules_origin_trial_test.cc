@@ -123,11 +123,11 @@ namespace {
 
 // These tests only work on platforms where the feature is not already enabled
 // by default -- at which point an origin trial token is not required.
-#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/1173646): Remove these soon.
 
 // Without the corresponding base::Feature, this trial token should not be
 // accepted.
-TEST(SpeculationRulesOriginTrialTest, RequiresBaseFeature) {
+TEST(SpeculationRulesOriginTrialTest, DISABLED_RequiresBaseFeature) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndDisableFeature(
       features::kSpeculationRulesPrefetchProxy);
@@ -138,7 +138,7 @@ TEST(SpeculationRulesOriginTrialTest, RequiresBaseFeature) {
 }
 
 // Without a valid origin trial token, this feature should not be exposed.
-TEST(SpeculationRulesOriginTrialTest, RequiresValidToken) {
+TEST(SpeculationRulesOriginTrialTest, DISABLED_RequiresValidToken) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(
       features::kSpeculationRulesPrefetchProxy);
@@ -149,7 +149,8 @@ TEST(SpeculationRulesOriginTrialTest, RequiresValidToken) {
 }
 
 // With the feature and a matching token, speculation rules should be turned on.
-TEST(SpeculationRulesOriginTrialTest, BaseFeatureAndValidTokenSuffice) {
+TEST(SpeculationRulesOriginTrialTest,
+     DISABLED_BaseFeatureAndValidTokenSuffice) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(
       features::kSpeculationRulesPrefetchProxy);
@@ -158,8 +159,6 @@ TEST(SpeculationRulesOriginTrialTest, BaseFeatureAndValidTokenSuffice) {
   EXPECT_TRUE(DocumentAcceptsRuleSet(kSpeculationRulesPrefetchToken,
                                      kSimplePrefetchProxyRuleSet));
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 class ScopedRegisterMockedURLLoads {
  public:
