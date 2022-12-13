@@ -63,6 +63,7 @@ public class ChipView extends LinearLayout {
 
     private ViewGroup mEndIconWrapper;
     private AppCompatTextView mSecondaryText;
+    private int mMaxWidth = Integer.MAX_VALUE;
 
     /** Constructor for applying a theme overlay. */
     public ChipView(Context context, @StyleRes int themeOverlay) {
@@ -386,5 +387,56 @@ public class ChipView extends LinearLayout {
      */
     public @Px int getCornerRadius() {
         return mCornerRadius;
+    }
+
+    /**
+     * TODO (crbug.com/1376691): Set a constant minimum width for the chips. The chips must always
+     * display some text.
+     * Sets the maximum width of the chip. This is achieved by resizing the
+     * primary text view. The primary text is either truncated or completely removed depending on
+     * the space available after all other chip contents are accounted for. After the primary text
+     * gets removed, the secondary text is truncated. Note: This method can cause additional
+     * measure/layout passes and could impact performance.
+     * @param maxWidth of the chip in px.
+     */
+    public void setMaxWidth(int maxWidth) {
+        mMaxWidth = maxWidth;
+    }
+
+    /**
+     * Another approach is to override the {@link LinearLayout#onLayout()} which doesn't require an
+     * additional measure pass at the end. Performance wise they are comparable.
+     */
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        // If the chip width exceeds the maximum allowed size, resize the contents to respect the
+        // width constraint.
+        if (getMeasuredWidth() > mMaxWidth) {
+            int newPrimaryTextWidth = mMaxWidth - getPaddingLeft() - getPaddingRight()
+                    - ((mStartIcon != null && mStartIcon.getVisibility() != GONE)
+                                    ? mStartIcon.getMeasuredWidth()
+                                    : 0)
+                    - ((mSecondaryText != null && mSecondaryText.getVisibility() != GONE)
+                                    ? mSecondaryText.getMeasuredWidth()
+                                    : 0);
+            // TODO (crbug.com/1376691): The primary text must be at least a few pixels wide, else
+            // only the ellipses will be visible.
+            // If there is space for displaying the {@link mPrimaryText}, adjust it's size, and add
+            // trailing ellipses. If not, check if the secondary text exists. If it does, remove the
+            // primary text, else do not width constrain the chip. The chip should ALWAYS display
+            // some text.
+            if (newPrimaryTextWidth > 0) {
+                mPrimaryText.setMaxWidth(newPrimaryTextWidth);
+                mPrimaryText.setEllipsize(TextUtils.TruncateAt.END);
+            } else if (mSecondaryText != null && mSecondaryText.getVisibility() != GONE) {
+                mPrimaryText.setVisibility(GONE);
+            } else {
+                return;
+            }
+            super.onMeasure(
+                    MeasureSpec.makeMeasureSpec(mMaxWidth, MeasureSpec.EXACTLY), heightMeasureSpec);
+        }
     }
 }

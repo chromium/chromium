@@ -22,12 +22,14 @@ import android.view.ViewGroup;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SheetOpenerBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewBinder.BarItemViewHolder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
+import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -78,6 +80,25 @@ class KeyboardAccessoryModernViewBinder {
                     showHelpBubble(item.getFeatureForIPH(), chipView, mRootViewForIPH, null);
                 }
             }
+
+            // Credit card chips never occupy the entire width of the window to allow for other
+            // cards (if they exist) to be seen. Their max width is set to 85% of the window width.
+            // The chip size is limited by truncating the card label.
+            // TODO (crbug.com/1376691): Check if it's alright to instead show a fixed portion of
+            // the following chip. This might give a more consistent user experience and allow wider
+            // windows to show more information in a chip before truncating.
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA)
+                    && ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.AUTOFILL_ENABLE_CARD_PRODUCT_NAME)
+                    && containsCreditCardInfo(item.getSuggestion())) {
+                int windowWidth =
+                        chipView.getContext().getResources().getDisplayMetrics().widthPixels;
+                chipView.setMaxWidth((int) (windowWidth * 0.85));
+            } else {
+                // For other data types, there is no limit on width.
+                chipView.setMaxWidth(Integer.MAX_VALUE);
+            }
+
             chipView.getPrimaryTextView().setText(item.getSuggestion().getLabel());
             if (item.getSuggestion().getItemTag() != null
                     && !item.getSuggestion().getItemTag().isEmpty()) {
@@ -171,5 +192,9 @@ class KeyboardAccessoryModernViewBinder {
         } else {
             assert wasBound : "Every possible property update needs to be handled!";
         }
+    }
+
+    private static boolean containsCreditCardInfo(AutofillSuggestion suggestion) {
+        return suggestion.getSuggestionId() > 0 && (suggestion.getSuggestionId() & 0xFFFF0000) != 0;
     }
 }
