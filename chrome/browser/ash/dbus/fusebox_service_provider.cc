@@ -48,79 +48,6 @@ void ReplyToProtoMethod(dbus::MethodCall* method_call,
   std::move(sender).Run(std::move(response));
 }
 
-void ReplyToClose(dbus::MethodCall* method_call,
-                  dbus::ExportedObject::ResponseSender sender,
-                  int32_t posix_error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  std::unique_ptr<dbus::Response> response =
-      dbus::Response::FromMethodCall(method_call);
-  dbus::MessageWriter writer(response.get());
-
-  writer.AppendInt32(posix_error_code);
-
-  std::move(sender).Run(std::move(response));
-}
-
-void ReplyToOpen(dbus::MethodCall* method_call,
-                 dbus::ExportedObject::ResponseSender sender,
-                 int32_t posix_error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  std::unique_ptr<dbus::Response> response =
-      dbus::Response::FromMethodCall(method_call);
-  dbus::MessageWriter writer(response.get());
-
-  writer.AppendInt32(posix_error_code);
-  // For historical reasons, append a second parameter that's no longer used.
-  writer.AppendUint64(0);
-
-  std::move(sender).Run(std::move(response));
-}
-
-void ReplyToRead(dbus::MethodCall* method_call,
-                 dbus::ExportedObject::ResponseSender sender,
-                 int32_t posix_error_code,
-                 const uint8_t* data_ptr,
-                 size_t data_len) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  std::unique_ptr<dbus::Response> response =
-      dbus::Response::FromMethodCall(method_call);
-  dbus::MessageWriter writer(response.get());
-
-  writer.AppendInt32(posix_error_code);
-  writer.AppendArrayOfBytes(data_ptr, data_len);
-
-  std::move(sender).Run(std::move(response));
-}
-
-void ReplyToStat(dbus::MethodCall* method_call,
-                 dbus::ExportedObject::ResponseSender sender,
-                 int32_t posix_error_code,
-                 const base::File::Info& info,
-                 bool read_only) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  std::unique_ptr<dbus::Response> response =
-      dbus::Response::FromMethodCall(method_call);
-  dbus::MessageWriter writer(response.get());
-
-  writer.AppendInt32(posix_error_code);
-  // For historical reasons, the D-Bus protocol uses a *signed* int32_t, even
-  // though /usr/include/x86_64-linux-gnu/bits/typesizes.h says "#define
-  // __MODE_T_TYPE __U32_TYPE" (and hence MakeModeBits returns an *unsigned*
-  // uint32_t). We use a static_cast to convert between them.
-  writer.AppendInt32(static_cast<int32_t>(
-      fusebox::Server::MakeModeBits(info.is_directory, read_only)));
-  writer.AppendInt64(info.size);
-  writer.AppendDouble(info.last_accessed.ToDoubleT());
-  writer.AppendDouble(info.last_modified.ToDoubleT());
-  writer.AppendDouble(info.creation_time.ToDoubleT());
-
-  std::move(sender).Run(std::move(response));
-}
-
 }  // namespace
 
 FuseBoxServiceProvider::FuseBoxServiceProvider() : server_(this) {}
@@ -129,25 +56,6 @@ FuseBoxServiceProvider::~FuseBoxServiceProvider() = default;
 
 void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
   exported_object_ = object;
-
-  // TODO(b/255520194): remove the deprecated Stat, Open, Read and Close
-  // methods. They have been replaced by Stat2, Open2, Read2 and Close2.
-  object->ExportMethod(fusebox::kFuseBoxServiceInterface, fusebox::kCloseMethod,
-                       base::BindRepeating(&FuseBoxServiceProvider::Close,
-                                           weak_ptr_factory_.GetWeakPtr()),
-                       base::BindOnce(&OnExportedCallback));
-  object->ExportMethod(fusebox::kFuseBoxServiceInterface, fusebox::kOpenMethod,
-                       base::BindRepeating(&FuseBoxServiceProvider::Open,
-                                           weak_ptr_factory_.GetWeakPtr()),
-                       base::BindOnce(&OnExportedCallback));
-  object->ExportMethod(fusebox::kFuseBoxServiceInterface, fusebox::kReadMethod,
-                       base::BindRepeating(&FuseBoxServiceProvider::Read,
-                                           weak_ptr_factory_.GetWeakPtr()),
-                       base::BindOnce(&OnExportedCallback));
-  object->ExportMethod(fusebox::kFuseBoxServiceInterface, fusebox::kStatMethod,
-                       base::BindRepeating(&FuseBoxServiceProvider::Stat,
-                                           weak_ptr_factory_.GetWeakPtr()),
-                       base::BindOnce(&OnExportedCallback));
 
   ExportProtoMethod(fusebox::kClose2Method, &fusebox::Server::Close2);
   ExportProtoMethod(fusebox::kCreateMethod, &fusebox::Server::Create);
@@ -186,71 +94,6 @@ void FuseBoxServiceProvider::OnUnregisterFSURLPrefix(
   dbus::MessageWriter writer(&signal);
   writer.AppendString(subdir);
   exported_object_->SendSignal(&signal);
-}
-
-void FuseBoxServiceProvider::Close(
-    dbus::MethodCall* method_call,
-    dbus::ExportedObject::ResponseSender sender) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  dbus::MessageReader reader(method_call);
-  std::string fs_url_as_string;
-  if (!reader.PopString(&fs_url_as_string)) {
-    ReplyToClose(method_call, std::move(sender), EINVAL);
-    return;
-  }
-
-  server_.Close(fs_url_as_string,
-                base::BindOnce(&ReplyToClose, method_call, std::move(sender)));
-}
-
-void FuseBoxServiceProvider::Open(dbus::MethodCall* method_call,
-                                  dbus::ExportedObject::ResponseSender sender) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  dbus::MessageReader reader(method_call);
-  std::string fs_url_as_string;
-  if (!reader.PopString(&fs_url_as_string)) {
-    ReplyToOpen(method_call, std::move(sender), EINVAL);
-    return;
-  }
-
-  server_.Open(fs_url_as_string,
-               base::BindOnce(&ReplyToOpen, method_call, std::move(sender)));
-}
-
-void FuseBoxServiceProvider::Read(dbus::MethodCall* method_call,
-                                  dbus::ExportedObject::ResponseSender sender) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  dbus::MessageReader reader(method_call);
-  std::string fs_url_as_string;
-  int64_t offset = 0;
-  int32_t length = 0;
-  if (!reader.PopString(&fs_url_as_string) || !reader.PopInt64(&offset) ||
-      !reader.PopInt32(&length)) {
-    ReplyToRead(method_call, std::move(sender), EINVAL, nullptr, 0);
-    return;
-  }
-
-  server_.Read(fs_url_as_string, offset, length,
-               base::BindOnce(&ReplyToRead, method_call, std::move(sender)));
-}
-
-void FuseBoxServiceProvider::Stat(dbus::MethodCall* method_call,
-                                  dbus::ExportedObject::ResponseSender sender) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  dbus::MessageReader reader(method_call);
-  std::string fs_url_as_string;
-  if (!reader.PopString(&fs_url_as_string)) {
-    ReplyToStat(method_call, std::move(sender), EINVAL, base::File::Info(),
-                false);
-    return;
-  }
-
-  server_.Stat(fs_url_as_string,
-               base::BindOnce(&ReplyToStat, method_call, std::move(sender)));
 }
 
 template <typename RequestProto, typename ResponseProto>

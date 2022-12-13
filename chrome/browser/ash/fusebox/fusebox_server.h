@@ -88,12 +88,6 @@ class Server {
   // POSIX filename that identifies a file or directory, but are a
   // storage::FileSystemURL (in string form).
 
-  // Close is a placeholder and is not implemented yet.
-  //
-  // TODO(crbug.com/1249754) implement MTP device writing.
-  using CloseCallback = base::OnceCallback<void(int32_t posix_error_code)>;
-  void Close(const std::string& fs_url_as_string, CloseCallback callback);
-
   // Close2 closes a virtual file opened by Open2.
   using Close2Callback = base::OnceCallback<void(
       const fusebox_staging::Close2ResponseProto& response)>;
@@ -112,25 +106,11 @@ class Server {
   void MkDir(const fusebox_staging::MkDirRequestProto& request,
              MkDirCallback callback);
 
-  // Open is a placeholder and is not implemented yet.
-  //
-  // TODO(crbug.com/1249754) implement MTP device writing.
-  using OpenCallback = base::OnceCallback<void(int32_t posix_error_code)>;
-  void Open(const std::string& fs_url_as_string, OpenCallback callback);
-
   // Open2 opens a virtual file for reading and/or writing.
   using Open2Callback = base::OnceCallback<void(
       const fusebox_staging::Open2ResponseProto& response)>;
   void Open2(const fusebox_staging::Open2RequestProto& request,
              Open2Callback callback);
-
-  // Read returns the file's byte contents at the given offset and length.
-  using ReadCallback = base::OnceCallback<
-      void(int32_t posix_error_code, const uint8_t* data_ptr, size_t data_len)>;
-  void Read(const std::string& fs_url_as_string,
-            int64_t offset,
-            int32_t length,
-            ReadCallback callback);
 
   // Read2 reads from a virtual file opened by Open2.
   using Read2Callback = base::OnceCallback<void(
@@ -158,15 +138,7 @@ class Server {
   void RmDir(const fusebox_staging::RmDirRequestProto& request,
              RmDirCallback callback);
 
-  // Stat returns the file or directory's metadata.
-  using StatCallback = base::OnceCallback<void(int32_t posix_error_code,
-                                               const base::File::Info& info,
-                                               bool read_only)>;
-  void Stat(const std::string& fs_url_as_string, StatCallback callback);
-
   // Stat2 returns the file or directory's metadata.
-  //
-  // Unlike Stat, it speaks protobufs.
   using Stat2Callback = base::OnceCallback<void(
       const fusebox_staging::Stat2ResponseProto& response)>;
   void Stat2(const fusebox_staging::Stat2RequestProto& request,

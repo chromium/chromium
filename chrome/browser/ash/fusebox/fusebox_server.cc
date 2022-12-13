@@ -292,33 +292,6 @@ void RunMkDirCallback(
           metadata_fields, std::move(outer_callback)));
 }
 
-void RunReadCallbackFailure(Server::ReadCallback callback,
-                            base::File::Error error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  std::move(callback).Run(FileErrorToErrno(error_code), nullptr, 0);
-}
-
-void RunReadCallbackTypical(
-    Server::ReadCallback callback,
-    scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
-    std::unique_ptr<storage::FileStreamReader> fs_reader,
-    scoped_refptr<net::IOBuffer> buffer,
-    int length) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (length < 0) {
-    std::move(callback).Run(NetErrorToErrno(length), nullptr, 0);
-  } else {
-    std::move(callback).Run(0, reinterpret_cast<uint8_t*>(buffer->data()),
-                            length);
-  }
-
-  auto task_runner = content::GetIOThreadTaskRunner({});
-  task_runner->DeleteSoon(FROM_HERE, fs_reader.release());
-  task_runner->ReleaseSoon(FROM_HERE, std::move(buffer));
-}
-
 void RunRead2CallbackFailure(Server::Read2Callback callback,
                              base::File::Error error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -453,54 +426,6 @@ void RunWrite2CallbackTypical(Server::Write2Callback callback, int length) {
     response_proto.set_posix_error_code(NetErrorToErrno(length));
   }
   std::move(callback).Run(response_proto);
-}
-
-void ReadOnIOThread(scoped_refptr<storage::FileSystemContext> fs_context,
-                    storage::FileSystemURL fs_url,
-                    int64_t offset,
-                    int64_t length,
-                    Server::ReadCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-
-  std::unique_ptr<storage::FileStreamReader> fs_reader =
-      fs_context->CreateFileStreamReader(fs_url, offset, length, base::Time());
-  if (!fs_reader) {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&RunReadCallbackFailure, std::move(callback),
-                                  base::File::Error::FILE_ERROR_INVALID_URL));
-    return;
-  }
-
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(length);
-
-  // Save the pointer before we std::move fs_reader into a base::OnceCallback.
-  // The std::move keeps the underlying storage::FileStreamReader alive while
-  // any network I/O is pending. Without the std::move, the underlying
-  // storage::FileStreamReader would get destroyed at the end of this function.
-  auto* saved_fs_reader = fs_reader.get();
-
-  auto pair = base::SplitOnceCallback(base::BindPostTask(
-      content::GetUIThreadTaskRunner({}),
-      base::BindOnce(&RunReadCallbackTypical, std::move(callback), fs_context,
-                     std::move(fs_reader), buffer)));
-
-  int result =
-      saved_fs_reader->Read(buffer.get(), length, std::move(pair.first));
-  if (result != net::ERR_IO_PENDING) {  // The read was synchronous.
-    std::move(pair.second).Run(result);
-  }
-}
-
-void RunStatCallback(
-    Server::StatCallback callback,
-    scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
-    bool read_only,
-    base::File::Error error_code,
-    const base::File::Info& info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  std::move(callback).Run(FileErrorToErrno(error_code), info, read_only);
 }
 
 void RunStat2Callback(
@@ -850,21 +775,6 @@ base::Value Server::GetDebugJSON() {
   return base::Value(std::move(dict));
 }
 
-void Server::Close(const std::string& fs_url_as_string,
-                   CloseCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
-  if (common.error_code != base::File::Error::FILE_OK) {
-    std::move(callback).Run(FileErrorToErrno(common.error_code));
-    return;
-  }
-
-  // Fail with an invalid operation error for now. TODO(crbug.com/1249754)
-  // implement MTP device writing.
-  std::move(callback).Run(ENOTSUP);
-}
-
 void Server::Close2(const fusebox_staging::Close2RequestProto& request_proto,
                     Close2Callback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -989,20 +899,6 @@ void Server::MkDir(const fusebox_staging::MkDirRequestProto& request_proto,
                      std::move(outer_callback)));
 }
 
-void Server::Open(const std::string& fs_url_as_string, OpenCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
-  if (common.error_code != base::File::Error::FILE_OK) {
-    std::move(callback).Run(FileErrorToErrno(common.error_code));
-    return;
-  }
-
-  // Fail with an invalid operation error for now. TODO(crbug.com/1249754)
-  // implement MTP device writing.
-  std::move(callback).Run(ENOTSUP);
-}
-
 void Server::Open2(const fusebox_staging::Open2RequestProto& request_proto,
                    Open2Callback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -1035,24 +931,6 @@ void Server::Open2(const fusebox_staging::Open2RequestProto& request_proto,
   fusebox_staging::Open2ResponseProto response_proto;
   response_proto.set_fuse_handle(fuse_handle);
   std::move(callback).Run(response_proto);
-}
-
-void Server::Read(const std::string& fs_url_as_string,
-                  int64_t offset,
-                  int32_t length,
-                  ReadCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
-  if (common.error_code != base::File::Error::FILE_OK) {
-    std::move(callback).Run(FileErrorToErrno(common.error_code), nullptr, 0);
-    return;
-  }
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ReadOnIOThread, common.fs_context, common.fs_url, offset,
-                     static_cast<int64_t>(length), std::move(callback)));
 }
 
 void Server::Read2(const fusebox_staging::Read2RequestProto& request_proto,
@@ -1179,40 +1057,6 @@ void Server::RmDir(const fusebox_staging::RmDirRequestProto& request_proto,
                      // Unretained is safe: context owns operation runner.
                      base::Unretained(common.fs_context->operation_runner()),
                      common.fs_url, std::move(outer_callback)));
-}
-
-void Server::Stat(const std::string& fs_url_as_string, StatCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
-  if (common.is_moniker_root) {
-    base::File::Info info;
-    info.is_directory = true;
-    std::move(callback).Run(0, info, false);
-    return;
-  } else if (common.error_code != base::File::Error::FILE_OK) {
-    std::move(callback).Run(FileErrorToErrno(common.error_code),
-                            base::File::Info(), false);
-    return;
-  }
-
-  constexpr auto metadata_fields =
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-      storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-      storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
-
-  auto outer_callback =
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         base::BindOnce(&RunStatCallback, std::move(callback),
-                                        common.fs_context, common.read_only));
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          base::IgnoreResult(&storage::FileSystemOperationRunner::GetMetadata),
-          // Unretained is safe: common.fs_context owns its operation_runner.
-          base::Unretained(common.fs_context->operation_runner()),
-          common.fs_url, metadata_fields, std::move(outer_callback)));
 }
 
 void Server::Stat2(const fusebox_staging::Stat2RequestProto& request_proto,
