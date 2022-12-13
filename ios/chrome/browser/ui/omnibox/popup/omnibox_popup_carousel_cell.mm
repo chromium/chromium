@@ -94,8 +94,6 @@ CAGradientLayer* CarouselGradientLayer() {
 /// Spacing between tiles to have half a tile visible on the trailing edge,
 /// indicating a scrollable view.
 @property(nonatomic, assign) CGFloat dynamicSpacing;
-/// Caches the view width to compute dynamic spacing only when it changes.
-@property(nonatomic, assign) CGFloat viewWidth;
 
 @end
 
@@ -107,7 +105,6 @@ CAGradientLayer* CarouselGradientLayer() {
   if (self) {
     _scrollView = CarouselScrollView();
     _suggestionsStackView = CarouselStackView();
-    _viewWidth = 0;
     _gradientLayer = CarouselGradientLayer();
     self.isAccessibilityElement = NO;
     self.contentView.isAccessibilityElement = NO;
@@ -127,10 +124,6 @@ CAGradientLayer* CarouselGradientLayer() {
 }
 
 - (void)layoutSubviews {
-  if (self.viewWidth != self.bounds.size.width) {
-    self.viewWidth = self.bounds.size.width;
-    [self updateDynamicSpacing];
-  }
   if (self.shouldApplyLayoutMarginsGuide) {
     [self updateGradient];
   }
@@ -138,6 +131,7 @@ CAGradientLayer* CarouselGradientLayer() {
     self.scrollView.transform = CGAffineTransformMakeRotation(M_PI);
     self.suggestionsStackView.transform = CGAffineTransformMakeRotation(M_PI);
   }
+  [self updateDynamicSpacing];
   [super layoutSubviews];
 }
 
@@ -386,6 +380,12 @@ CAGradientLayer* CarouselGradientLayer() {
 
   self.dynamicSpacing = extraSpacingPerTile + kMinStackSpacing;
   self.visibleTilesCapacity = nbFullTiles;
+
+  if (static_cast<NSInteger>(self.tileCount) > self.visibleTilesCapacity) {
+    self.suggestionsStackView.spacing = self.dynamicSpacing;
+  } else {
+    self.suggestionsStackView.spacing = kMinStackSpacing;
+  }
 }
 
 - (OmniboxPopupCarouselControl*)newCarouselControl {
