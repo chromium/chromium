@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "builder", "cpu", "defaults", "goma", "os", "xcode")
 
 luci.bucket(
@@ -49,46 +50,208 @@ defaults.triggered_by.set(["webrtc-gitiles-trigger"])
 
 builder(
     name = "WebRTC Chromium FYI Android Builder",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium_webrtc_tot",
+            apply_configs = ["android"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "dcheck",
+                "mb",
+                "android",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "base_config"),
+        build_gs_bucket = "chromium-webrtc",
+    ),
     goma_backend = goma.backend.RBE_PROD,
 )
 
 builder(
     name = "WebRTC Chromium FYI Android Builder (dbg)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium_webrtc_tot",
+            apply_configs = ["android"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "dcheck",
+                "mb",
+                "android",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "base_config"),
+        build_gs_bucket = "chromium-webrtc",
+    ),
     goma_backend = goma.backend.RBE_PROD,
 )
 
 builder(
     name = "WebRTC Chromium FYI Android Builder ARM64 (dbg)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium_webrtc_tot",
+            apply_configs = ["android"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "dcheck",
+                "mb",
+                "android",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "base_config"),
+        build_gs_bucket = "chromium-webrtc",
+    ),
     goma_backend = goma.backend.RBE_PROD,
 )
 
 builder(
     name = "WebRTC Chromium FYI Android Tests (dbg)",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium_webrtc_tot",
+            apply_configs = ["android"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "dcheck",
+                "mb",
+                "android",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "base_config"),
+        build_gs_bucket = "chromium-webrtc",
+    ),
     triggered_by = ["WebRTC Chromium FYI Android Builder (dbg)"],
 )
 
 builder(
     name = "WebRTC Chromium FYI Android Tests ARM64 (dbg)",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium_webrtc_tot",
+            apply_configs = ["android"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "dcheck",
+                "mb",
+                "android",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "base_config"),
+        build_gs_bucket = "chromium-webrtc",
+    ),
     triggered_by = ["WebRTC Chromium FYI Android Builder ARM64 (dbg)"],
 )
 
 builder(
     name = "WebRTC Chromium FYI Linux Builder",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium_webrtc_tot",
+            apply_configs = ["webrtc_test_resources"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "dcheck",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-webrtc",
+    ),
     goma_backend = goma.backend.RBE_PROD,
 )
 
 builder(
     name = "WebRTC Chromium FYI Linux Builder (dbg)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium_webrtc_tot"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "dcheck",
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-webrtc",
+    ),
     goma_backend = goma.backend.RBE_PROD,
 )
 
 builder(
     name = "WebRTC Chromium FYI Linux Tester",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(config = "chromium_webrtc_tot"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "dcheck",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-webrtc",
+    ),
     triggered_by = ["WebRTC Chromium FYI Linux Builder"],
 )
 
 builder(
     name = "WebRTC Chromium FYI Mac Builder",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium_webrtc_tot",
+            apply_configs = ["webrtc_test_resources"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "dcheck",
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-webrtc",
+    ),
     os = os.MAC_ANY,
     xcode = xcode.x14main,
     goma_backend = goma.backend.RBE_PROD,
@@ -96,12 +259,40 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI Mac Builder (dbg)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium_webrtc_tot"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "dcheck",
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-webrtc",
+    ),
     os = os.MAC_ANY,
     goma_backend = goma.backend.RBE_PROD,
 )
 
 builder(
     name = "WebRTC Chromium FYI Mac Tester",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(config = "chromium_webrtc_tot"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "dcheck",
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-webrtc",
+    ),
     triggered_by = ["WebRTC Chromium FYI Mac Builder"],
     os = os.MAC_ANY,
     xcode = xcode.x14main,
@@ -109,6 +300,22 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI Win Builder",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium_webrtc_tot",
+            apply_configs = ["webrtc_test_resources"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "dcheck",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+        ),
+        build_gs_bucket = "chromium-webrtc",
+    ),
     os = os.WINDOWS_DEFAULT,
     goma_backend = goma.backend.RBE_PROD,
     goma_enable_ats = True,
@@ -116,6 +323,19 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI Win Builder (dbg)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium_webrtc_tot"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "dcheck",
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 32,
+        ),
+        build_gs_bucket = "chromium-webrtc",
+    ),
     os = os.WINDOWS_DEFAULT,
     goma_backend = goma.backend.RBE_PROD,
     goma_enable_ats = True,
@@ -123,6 +343,20 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI Win10 Tester",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(config = "chromium_webrtc_tot"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "dcheck",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+        ),
+        build_gs_bucket = "chromium-webrtc",
+    ),
     triggered_by = ["WebRTC Chromium FYI Win Builder"],
     os = os.WINDOWS_DEFAULT,
 )
@@ -133,6 +367,20 @@ builder(
 # dimensions.
 builder(
     name = "WebRTC Chromium FYI ios-device",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "ios"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.IOS,
+        ),
+        build_gs_bucket = "chromium-webrtc",
+    ),
     os = os.MAC_ANY,
     xcode = xcode.x14main,
     goma_backend = goma.backend.RBE_PROD,
@@ -140,6 +388,20 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI ios-simulator",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "ios"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.IOS,
+        ),
+        build_gs_bucket = "chromium-webrtc",
+    ),
     os = os.MAC_ANY,
     xcode = xcode.x14main,
     goma_backend = goma.backend.RBE_PROD,
