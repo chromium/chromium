@@ -16,6 +16,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "components/viz/service/gl/gpu_service_impl.h"
 
 namespace android_webview {
 

@@ -21,6 +21,7 @@
 #include "device/vr/android/mailbox_to_surface_bridge.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/android/window_android.h"
 #include "ui/display/display.h"
 
 using base::android::JavaRef;
