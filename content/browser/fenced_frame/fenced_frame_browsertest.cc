@@ -73,8 +73,9 @@ GURL AddAndVerifyFencedFrameURL(
     FencedFrameURLMapping* fenced_frame_url_mapping,
     const GURL& https_url,
     const ReportingMetadata& reporting_metadata = ReportingMetadata()) {
-  absl::optional<GURL> urn_uuid = fenced_frame_url_mapping->AddFencedFrameURL(
-      https_url, reporting_metadata);
+  absl::optional<GURL> urn_uuid =
+      fenced_frame_url_mapping->AddFencedFrameURLForTesting(https_url,
+                                                            reporting_metadata);
   EXPECT_TRUE(urn_uuid.has_value());
   EXPECT_TRUE(urn_uuid->is_valid());
   return urn_uuid.value();

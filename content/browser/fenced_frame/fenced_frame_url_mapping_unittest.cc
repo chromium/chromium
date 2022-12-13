@@ -124,7 +124,7 @@ TEST(FencedFrameURLMappingTest, AddAndConvert) {
   FencedFrameURLMapping fenced_frame_url_mapping;
   GURL test_url("https://foo.test");
   absl::optional<GURL> urn_uuid =
-      fenced_frame_url_mapping.AddFencedFrameURL(test_url);
+      fenced_frame_url_mapping.AddFencedFrameURLForTesting(test_url);
   EXPECT_TRUE(urn_uuid.has_value());
 
   TestFencedFrameURLMappingResultObserver observer;
@@ -186,14 +186,16 @@ TEST(FencedFrameURLMappingTest, PendingMappedUUID) {
   EXPECT_EQ(absl::nullopt, observer2.nested_urn_config_pairs());
 
   SharedStorageBudgetMetadata* metadata1 =
-      fenced_frame_url_mapping.GetSharedStorageBudgetMetadata(urn_uuid1);
+      fenced_frame_url_mapping.GetSharedStorageBudgetMetadataForTesting(
+          urn_uuid1);
 
   EXPECT_TRUE(metadata1);
   EXPECT_EQ(metadata1->origin, shared_storage_origin);
   EXPECT_DOUBLE_EQ(metadata1->budget_to_charge, 2.0);
 
   SharedStorageBudgetMetadata* metadata2 =
-      fenced_frame_url_mapping.GetSharedStorageBudgetMetadata(urn_uuid2);
+      fenced_frame_url_mapping.GetSharedStorageBudgetMetadataForTesting(
+          urn_uuid2);
 
   EXPECT_TRUE(metadata2);
   EXPECT_EQ(metadata2->origin, shared_storage_origin);
@@ -479,7 +481,7 @@ TEST(FencedFrameURLMappingTest, HasCorrectFormat) {
   FencedFrameURLMapping fenced_frame_url_mapping;
   GURL test_url("https://foo.test");
   absl::optional<GURL> urn_uuid =
-      fenced_frame_url_mapping.AddFencedFrameURL(test_url);
+      fenced_frame_url_mapping.AddFencedFrameURLForTesting(test_url);
   EXPECT_TRUE(urn_uuid.has_value());
   std::string spec = urn_uuid->spec();
 
@@ -507,8 +509,9 @@ TEST(FencedFrameURLMappingTest, ReportingMetadataSuccess) {
   fenced_frame_reporting
       .metadata[blink::FencedFrame::ReportingDestination::kSeller]
                ["mouse interaction"] = seller_reporting_url;
-  absl::optional<GURL> urn_uuid = fenced_frame_url_mapping.AddFencedFrameURL(
-      test_url, fenced_frame_reporting);
+  absl::optional<GURL> urn_uuid =
+      fenced_frame_url_mapping.AddFencedFrameURLForTesting(
+          test_url, fenced_frame_reporting);
   EXPECT_TRUE(urn_uuid.has_value());
   EXPECT_TRUE(urn_uuid->is_valid());
   TestFencedFrameURLMappingResultObserver observer;
@@ -575,7 +578,7 @@ TEST(FencedFrameURLMappingTest, ExceedNumOfUrnMappingsLimitFailsAddURL) {
   // Able to add urn mapping when map is not full.
   const GURL test_url("https://test.test");
   absl::optional<GURL> urn_uuid =
-      fenced_frame_url_mapping.AddFencedFrameURL(test_url);
+      fenced_frame_url_mapping.AddFencedFrameURLForTesting(test_url);
   EXPECT_TRUE(urn_uuid.has_value());
 
   // Fill the map until its size reaches the limit.
@@ -590,7 +593,7 @@ TEST(FencedFrameURLMappingTest, ExceedNumOfUrnMappingsLimitFailsAddURL) {
   // Subsequent additions of urn mapping should fail when map is full.
   const GURL extra_url("https://extra.test");
   absl::optional<GURL> extra_urn_uuid =
-      fenced_frame_url_mapping.AddFencedFrameURL(extra_url);
+      fenced_frame_url_mapping.AddFencedFrameURLForTesting(extra_url);
   EXPECT_FALSE(extra_urn_uuid.has_value());
 }
 

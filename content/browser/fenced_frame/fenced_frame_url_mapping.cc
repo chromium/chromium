@@ -88,7 +88,7 @@ void FencedFrameURLMapping::ImportPendingAdComponents(
   }
 }
 
-absl::optional<GURL> FencedFrameURLMapping::AddFencedFrameURL(
+absl::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
     const GURL& url,
     const ReportingMetadata& reporting_metadata) {
   DCHECK(url.is_valid());
@@ -262,7 +262,8 @@ void FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
 }
 
 SharedStorageBudgetMetadata*
-FencedFrameURLMapping::GetSharedStorageBudgetMetadata(const GURL& urn_uuid) {
+FencedFrameURLMapping::GetSharedStorageBudgetMetadataForTesting(
+    const GURL& urn_uuid) {
   auto it = urn_uuid_to_url_map_.find(urn_uuid);
   DCHECK(it != urn_uuid_to_url_map_.end());
 

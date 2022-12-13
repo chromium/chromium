@@ -664,7 +664,8 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
             .fenced_frame_urls_map();
 
     SharedStorageBudgetMetadata* metadata =
-        fenced_frame_url_mapping.GetSharedStorageBudgetMetadata(GURL(urn_uuid));
+        fenced_frame_url_mapping.GetSharedStorageBudgetMetadataForTesting(
+            GURL(urn_uuid));
 
     return metadata;
   }
