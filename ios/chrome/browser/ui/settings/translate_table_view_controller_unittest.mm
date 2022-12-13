@@ -8,6 +8,7 @@
 
 #import "base/compiler_specific.h"
 #import "base/files/file_path.h"
+#import "base/mac/foundation_util.h"
 #import "base/test/task_environment.h"
 #import "base/threading/thread_task_runner_handle.h"
 #import "components/language/core/browser/language_prefs.h"
@@ -64,6 +65,12 @@ class TranslateTableViewControllerTest : public ChromeTableViewControllerTest {
     sync_preferences::PrefServiceMockFactory factory;
     factory.SetUserPrefsFile(path, base::ThreadTaskRunnerHandle::Get().get());
     return factory.Create(registry.get());
+  }
+
+  void TearDown() override {
+    [base::mac::ObjCCastStrict<TranslateTableViewController>(controller())
+        settingsWillBeDismissed];
+    ChromeTableViewControllerTest::TearDown();
   }
 
   base::test::TaskEnvironment task_environment_;

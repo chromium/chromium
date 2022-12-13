@@ -11,6 +11,8 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/mac/foundation_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/google/core/common/google_util.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
@@ -64,6 +66,9 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
   PrefBackedBoolean* _translationEnabled;
   // The item related to the switch for the translation setting.
   TableViewSwitchItem* _translationItem;
+
+  // Whether Settings have been dismissed.
+  BOOL _settingsAreDismissed;
 }
 
 @end
@@ -95,10 +100,38 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
   self.tableView.estimatedSectionFooterHeight = kSettingsCellDefaultHeight;
 }
 
+#pragma mark - SettingsControllerProtocol
+
+- (void)reportDismissalUserAction {
+  base::RecordAction(base::UserMetricsAction("MobileTranslateSettingsClose"));
+}
+
+- (void)reportBackUserAction {
+  base::RecordAction(base::UserMetricsAction("MobileTranslateSettingsBack"));
+}
+
+- (void)settingsWillBeDismissed {
+  DCHECK(!_settingsAreDismissed);
+
+  // Stop observable prefs.
+  [_translationEnabled stop];
+  _translationEnabled.observer = nil;
+  _translationEnabled = nil;
+
+  // Clear C++ ivars.
+  _translationItem = nullptr;
+  _prefs = nullptr;
+
+  _settingsAreDismissed = YES;
+}
+
 #pragma mark - SettingsRootTableViewController
 
 - (void)loadModel {
   [super loadModel];
+  if (_settingsAreDismissed)
+    return;
+
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
 
   // Translate Section
@@ -169,6 +202,9 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (_settingsAreDismissed)
+    return;
+
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
 
   if (itemType == ItemTypeResetTranslate) {

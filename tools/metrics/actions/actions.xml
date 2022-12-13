@@ -21350,6 +21350,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTranslateSettingsBack">
+  <owner>fedegermi@google.com</owner>
+  <owner>sdefresne@chromium.org</owner>
+  <description>
+    Reported when user goes back from Translate Settings UI to root Settings
+    screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileTranslateSettingsClose">
+  <owner>fedegermi@google.com</owner>
+  <owner>sdefresne@chromium.org</owner>
+  <description>
+    Reported when Translate Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
 <action name="MobileUsingMenuByHwButtonDragging">
   <obsolete>
     Deprecated as of 06/2014. We removed this feature http://crbug.com/366154 .
