@@ -921,9 +921,12 @@ ObfuscatedFileUtil::GetDirectoryForBucketAndType(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // A default bucket in a first-party context uses
   // GetDirectoryForStorageKeyAndType() to determine its file path.
-  if (bucket.storage_key.IsFirstPartyContext() && bucket.is_default) {
+  // In tests, `sandbox_delegate_->quota_manager_proxy()` may be null.
+  if ((bucket.storage_key.IsFirstPartyContext() && bucket.is_default) ||
+      !sandbox_delegate_->quota_manager_proxy()) {
     return GetDirectoryForStorageKeyAndType(bucket.storage_key, type, create);
   }
+
   // All other contexts use the provided bucket information to construct the
   // file path.
   base::FilePath path =

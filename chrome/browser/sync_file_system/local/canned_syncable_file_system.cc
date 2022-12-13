@@ -266,8 +266,7 @@ void CannedSyncableFileSystem::SetUp() {
   file_system_context_ = FileSystemContext::Create(
       io_task_runner_, file_task_runner_,
       storage::ExternalMountPoints::CreateRefCounted(),
-      std::move(storage_policy),
-      quota_manager_.get() ? quota_manager_proxy_.get() : nullptr,
+      std::move(storage_policy), quota_manager_proxy_.get(),
       std::move(additional_backends),
       std::vector<storage::URLRequestAutoMountHandler>(), data_dir_.GetPath(),
       options);
