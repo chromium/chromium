@@ -63,8 +63,6 @@ class DesktopWebAppUkmRecorder {
 namespace {
 
 using absl::optional;
-using base::DictionaryValue;
-using base::Value;
 
 bool skip_origin_check_for_testing_ = false;
 
@@ -120,19 +118,19 @@ optional<DailyInteraction> DictToRecord(const std::string& url,
   return record;
 }
 
-std::unique_ptr<DictionaryValue> RecordToDict(DailyInteraction& record) {
-  auto record_dict = std::make_unique<DictionaryValue>();
+base::Value::Dict RecordToDict(DailyInteraction& record) {
+  base::Value::Dict record_dict;
   // Note URL is not set here as it is the key for this dict in its parent.
-  record_dict->SetBoolKey(kInstalled, record.installed);
+  record_dict.Set(kInstalled, record.installed);
   if (record.install_source.has_value())
-    record_dict->SetIntKey(kInstallSource, *record.install_source);
-  record_dict->SetIntKey(kEffectiveDisplayMode, record.effective_display_mode);
-  record_dict->SetBoolKey(kPromotable, record.promotable);
-  record_dict->SetIntKey(kForegroundDurationSec,
-                         record.foreground_duration.InSeconds());
-  record_dict->SetIntKey(kBackgroundDurationSec,
-                         record.background_duration.InSeconds());
-  record_dict->SetIntKey(kNumSessions, record.num_sessions);
+    record_dict.Set(kInstallSource, *record.install_source);
+  record_dict.Set(kEffectiveDisplayMode, record.effective_display_mode);
+  record_dict.Set(kPromotable, record.promotable);
+  record_dict.Set(kForegroundDurationSec,
+                  static_cast<int>(record.foreground_duration.InSeconds()));
+  record_dict.Set(kBackgroundDurationSec,
+                  static_cast<int>(record.background_duration.InSeconds()));
+  record_dict.Set(kNumSessions, record.num_sessions);
   return record_dict;
 }
 
@@ -164,7 +162,7 @@ void EmitRecords(Profile* profile) {
 
   for (const auto iter : urls_to_features) {
     const std::string& url = iter.first;
-    const Value& val = iter.second;
+    const base::Value& val = iter.second;
     optional<DailyInteraction> record = DictToRecord(url, val.GetDict());
     if (record)
       EmitRecord(*record, profile);
@@ -192,10 +190,10 @@ void UpdateRecord(DailyInteraction& record, PrefService* prefs) {
     }
   }
 
-  std::unique_ptr<DictionaryValue> record_dict = RecordToDict(record);
+  base::Value::Dict record_dict = RecordToDict(record);
   ScopedDictPrefUpdate update(prefs, prefs::kWebAppsDailyMetrics);
 
-  update->Set(url, std::move(*record_dict));
+  update->Set(url, std::move(record_dict));
 }
 
 }  // namespace
