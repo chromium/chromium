@@ -234,6 +234,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   // Drag icon related variables.
   std::unique_ptr<WaylandSurface> icon_surface_;
+  float icon_surface_buffer_scale_ = 1.0f;
   std::unique_ptr<WaylandShmBuffer> icon_buffer_;
   raw_ptr<const SkBitmap> icon_bitmap_ = nullptr;
   gfx::Point icon_offset_;

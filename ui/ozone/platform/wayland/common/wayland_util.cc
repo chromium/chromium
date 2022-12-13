@@ -63,7 +63,8 @@ uint32_t IdentifyDirection(int hittest) {
 bool DrawBitmap(const SkBitmap& bitmap, ui::WaylandShmBuffer* out_buffer) {
   DCHECK(out_buffer);
   DCHECK(out_buffer->GetMemory());
-  DCHECK_EQ(out_buffer->size(), gfx::Size(bitmap.width(), bitmap.height()));
+  DCHECK(gfx::Rect(out_buffer->size())
+             .Contains(gfx::Rect(bitmap.width(), bitmap.height())));
 
   auto* mapped_memory = out_buffer->GetMemory();
   auto size = out_buffer->size();
