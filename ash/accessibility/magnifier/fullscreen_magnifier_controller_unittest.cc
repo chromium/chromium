@@ -1041,4 +1041,43 @@ TEST_F(FullscreenMagnifierControllerTest, CaptureMode) {
   EXPECT_NE(viewport_center, GetViewport().CenterPoint());
 }
 
+TEST_F(FullscreenMagnifierControllerTest, ContinuousFollowingReachesEdges) {
+  auto* magnifier = GetFullscreenMagnifierController();
+  magnifier->SetEnabled(true);
+  float scale = 10.0;
+  magnifier->SetScale(scale, /*animate=*/false);
+  magnifier->set_mouse_following_mode(MagnifierMouseFollowingMode::kContinuous);
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+
+  gfx::Point top_left(0, 0);
+  gfx::Point top_right(kRootWidth - 2, 0);
+  gfx::Point bottom_left(0, kRootHeight - 2);
+  gfx::Point bottom_right(kRootWidth - 2, kRootHeight - 2);
+
+  // Move until viewport upper left corner is at (0, 0).
+  // The generator moves the mouse within the scaled window,
+  // so it takes several iterations to get to the top corner.
+  while (GetViewport().ToString() != "0,0 80x60") {
+    event_generator->MoveMouseToInHost(top_left);
+  }
+  // Reset out of the corner a bit.
+  gfx::Point center(400, 300);
+  event_generator->MoveMouseToInHost(center);
+
+  // Move until viewport is all the way at the top right.
+  while (GetViewport().ToString() != "720,0 80x60") {
+    event_generator->MoveMouseToInHost(top_right);
+  }
+  event_generator->MoveMouseToInHost(center);
+
+  while (GetViewport().ToString() != "0,540 80x60") {
+    event_generator->MoveMouseToInHost(bottom_left);
+  }
+  event_generator->MoveMouseToInHost(center);
+
+  while (GetViewport().ToString() != "720,540 80x60") {
+    event_generator->MoveMouseToInHost(bottom_right);
+  }
+}
+
 }  // namespace ash

@@ -672,17 +672,42 @@ void FullscreenMagnifierController::OnMouseMove(
     // calculates where the center point of the magnified region should be,
     // such that where the cursor is located in the magnified region corresponds
     // in proportion to where the cursor is located on the screen overall.
+
+    // Screen size.
     const gfx::Size host_size_in_dip = GetHostSizeDIP();
-    const gfx::SizeF window_size_in_dip = GetWindowRectDIP(scale_).size();
+
+    // Mouse position.
     const float x = location_in_dip.x();
     const float y = location_in_dip.y();
 
-    const int center_point_in_dip_x =
-        x - x * window_size_in_dip.width() / host_size_in_dip.width() +
-        window_size_in_dip.width() / 2;
-    const int center_point_in_dip_y =
-        y - y * window_size_in_dip.height() / host_size_in_dip.height() +
-        window_size_in_dip.height() / 2;
+    // Viewport dimensions for calculation, increased by variable padding:
+    // The cursor can never reach the bottom or right of the screen, it's always
+    // at least one DIP away so that you can see it. (Note the cursor can reach
+    // the top left at (0, 0)). Calculate the viewport size, adding some scaled
+    // viewport padding as we move down and right so that the padding 0 in the
+    // top/left and greater in the bottom right to account for the cursor not
+    // being able to access the bottom corner.
+    const float height =
+        host_size_in_dip.height() / scale_ + 4 * y / host_size_in_dip.height();
+    const float width =
+        host_size_in_dip.width() / scale_ + 4 * x / host_size_in_dip.width();
+
+    // The viewport center point is the mouse center point, minus the scaled
+    // mouse center point to get to the viewport left/top edge, plus half
+    // the viewport size.
+    // In the example below, the host size is 12 units in width, the
+    // mouse point x is at 7, and the viewport width is 3 (scale is 4.0).
+    // The center_point_in_dip_x should be 6, with some integer rounding.
+    // 6 = int(7 - (7 / 4.0) + (3 / 2.0))
+    //  ____________
+    // |            | host
+    // |     ___    |
+    // |    |  *|   |  <-- mouse x = 7, viewport width = 3
+    // |    |___|   |
+    // |____________|
+    //  012345678901   <-- Indexes
+    const int center_point_in_dip_x = x - x / scale_ + width / 2.0;
+    const int center_point_in_dip_y = y - y / scale_ + height / 2.0;
     center_point_in_dip = {center_point_in_dip_x, center_point_in_dip_y};
   }
 
@@ -691,7 +716,7 @@ void FullscreenMagnifierController::OnMouseMove(
       keyboard::KeyboardUIController::Get()->IsKeyboardVisible();
 
   MoveMagnifierWindowFollowPoint(center_point_in_dip, x_margin, y_margin,
-                                 x_margin, y_margin, reduce_bottom_margin);
+                                 reduce_bottom_margin);
 }
 
 void FullscreenMagnifierController::AfterAnimationMoveCursorTo(
@@ -716,7 +741,7 @@ bool FullscreenMagnifierController::IsMagnified() const {
 }
 
 gfx::RectF FullscreenMagnifierController::GetWindowRectDIP(float scale) const {
-  const gfx::Size size_in_dip = root_window_->bounds().size();
+  const gfx::Size size_in_dip = GetHostSizeDIP();
   const float width = size_in_dip.width() / scale;
   const float height = size_in_dip.height() / scale;
 
@@ -813,50 +838,45 @@ bool FullscreenMagnifierController::ProcessGestures() {
 
 void FullscreenMagnifierController::MoveMagnifierWindowFollowPoint(
     const gfx::Point& point,
-    int x_panning_margin,
-    int y_panning_margin,
-    int x_target_margin,
-    int y_target_margin,
+    int x_margin,
+    int y_margin,
     bool reduce_bottom_margin) {
   DCHECK(root_window_);
   bool start_zoom = false;
 
+  // Current position.
   const gfx::Rect window_rect = GetViewportRect();
-  const int left = window_rect.x();
-  const int right = window_rect.right();
-
-  int x_diff = 0;
-  if (point.x() < left + x_panning_margin) {
-    // Panning left.
-    x_diff = point.x() - (left + x_target_margin);
-    start_zoom = true;
-  } else if (right - x_panning_margin < point.x()) {
-    // Panning right.
-    x_diff = point.x() - (right - x_target_margin);
-    start_zoom = true;
-  }
-  int x = left + x_diff;
-
   const int top = window_rect.y();
   const int bottom = window_rect.bottom();
 
+  int x_diff = 0;
+  if (point.x() < window_rect.x() + x_margin) {
+    // Panning left.
+    x_diff = point.x() - (window_rect.x() + x_margin);
+    start_zoom = true;
+  } else if (point.x() > window_rect.right() - x_margin) {
+    // Panning right.
+    x_diff = point.x() - (window_rect.right() - x_margin);
+    start_zoom = true;
+  }
+  int x = window_rect.x() + x_diff;
+
   // If |reduce_bottom_margin| is true, use kKeyboardBottomPanningMargin instead
-  // of |y_panning_margin|. This is to prevent the magnifier from panning when
+  // of |y_margin|. This is to prevent the magnifier from panning when
   // the user is trying to interact with the bottom of the keyboard.
-  const int bottom_panning_margin = reduce_bottom_margin
-                                        ? kKeyboardBottomPanningMargin / scale_
-                                        : y_panning_margin;
+  const int bottom_panning_margin =
+      reduce_bottom_margin ? kKeyboardBottomPanningMargin / scale_ : y_margin;
 
   int y_diff = 0;
-  if (point.y() < top + y_panning_margin) {
+  if (point.y() < top + y_margin) {
     // Panning up.
-    y_diff = point.y() - (top + y_target_margin);
+    y_diff = point.y() - (top + y_margin);
     start_zoom = true;
   } else if (bottom - bottom_panning_margin < point.y()) {
     // Panning down.
     const int bottom_target_margin =
-        reduce_bottom_margin ? std::min(bottom_panning_margin, y_target_margin)
-                             : y_target_margin;
+        reduce_bottom_margin ? std::min(bottom_panning_margin, y_margin)
+                             : y_margin;
     y_diff = point.y() - (bottom - bottom_target_margin);
     start_zoom = true;
   }

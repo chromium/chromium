@@ -224,17 +224,16 @@ class ASH_EXPORT FullscreenMagnifierController
   bool ProcessGestures();
 
   // Moves the viewport when |point| is located within
-  // |x_panning_margin| and |y_panning_margin| to the edge of the visible
+  // |x_margin| and |y_margin| to the edge of the visible
   // window region. The viewport will be moved so that the |point| will be
-  // moved to the point where it has |x_target_margin| and |y_target_margin|
-  // to the edge of the visible region. If |reduce_bottom_margin| is true,
-  // then a reduced value will be used as the |y_panning_margin| and
+  // moved to the point where it has |x_margin| and |y_margin|
+  // to the edge of the visible region if possible (less if the mouse is closer
+  // to the edge of the screen). If |reduce_bottom_margin| is true,
+  // then a reduced value will be used as the |y_margin| and
   // |y_target_margin| for the bottom edge.
   void MoveMagnifierWindowFollowPoint(const gfx::Point& point,
-                                      int x_panning_margin,
-                                      int y_panning_margin,
-                                      int x_target_margin,
-                                      int y_target_margin,
+                                      int x_margin,
+                                      int y_margin,
                                       bool reduce_bottom_margin);
 
   // Moves the viewport to center |point| in magnifier screen.
