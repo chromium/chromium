@@ -30861,6 +30861,7 @@ Called by update_document_policy_enum.py.-->
   <int value="7" label="Invalid file descriptor error"/>
   <int value="8" label="Unexpected file handle type error"/>
   <int value="9" label="Unexpected event info type error"/>
+  <int value="10" label="fanotify_init error"/>
 </enum>
 
 <enum name="EnterpriseDlpPolicyCrOSFileDatabaseError">

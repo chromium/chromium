@@ -1176,6 +1176,15 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-06-01">
   <owner>accorsi@google.com</owner>
   <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Record whether the kernel supports fanotify mark filesystem.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.FanotifyMarkFilesystemSupport" enum="Boolean"
+    expires_after="2023-06-01">
+  <owner>accorsi@google.com</owner>
+  <owner>chromeos-dlp@google.com</owner>
   <summary>Record whether the kernel supports fanotify delete events.</summary>
 </histogram>
 
