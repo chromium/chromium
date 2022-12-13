@@ -378,24 +378,24 @@ TEST_F(UnifiedMediaControlsControllerTest,
 
   EXPECT_FALSE(delegate()->IsControlsVisible());
 
-  // Don't show controls if we don't have metadata and session info.
+  // Don't show controls if we don't have session info.
   controller()->MediaSessionChanged(request_id);
   EXPECT_FALSE(delegate()->IsControlsVisible());
 
-  // Test that we need to have both media title and session info
-  // to display the controls.
+  // Test that we need to session info to display the controls.
   media_session::mojom::MediaSessionInfoPtr session_info(
       media_session::mojom::MediaSessionInfo::New());
   session_info->is_controllable = true;
   controller()->MediaSessionInfoChanged(session_info.Clone());
-  EXPECT_FALSE(delegate()->IsControlsVisible());
+  EXPECT_TRUE(delegate()->IsControlsVisible());
 
+  // Test that we should not display a non-controllable session.
   session_info->is_controllable = false;
   controller()->MediaSessionInfoChanged(session_info.Clone());
   media_session::MediaMetadata metadata;
   metadata.title = u"foo";
   controller()->MediaSessionMetadataChanged(metadata);
-  EXPECT_FALSE(delegate()->IsControlsVisible());
+  EXPECT_TRUE(IsMediaControlsInEmptyState());
 
   // Controls should show with metadata and controllable session.
   SimulateNewMediaSessionWithData(request_id);
@@ -685,6 +685,21 @@ TEST_F(UnifiedMediaControlsControllerTest, ArtistVisibility) {
   metadata.artist = u"artist";
   controller()->MediaSessionMetadataChanged(metadata);
   EXPECT_TRUE(artist_label()->GetVisible());
+}
+
+TEST_F(UnifiedMediaControlsControllerTest,
+       FallbackToSourceTitleWhenTitleIsEmpty) {
+  auto request_id = base::UnguessableToken::Create();
+  SimulateNewMediaSessionWithData(request_id);
+
+  // Simulate metadata update with empty title.
+  media_session::MediaMetadata metadata;
+  metadata.source_title = u"source title";
+  metadata.title = u"";
+  controller()->MediaSessionMetadataChanged(metadata);
+
+  // Title label should display source title instead.
+  EXPECT_EQ(title_label()->GetText(), metadata.source_title);
 }
 
 }  // namespace ash
