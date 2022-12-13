@@ -71,17 +71,4 @@ void PublisherBase::Publish(
   }
 }
 
-void PublisherBase::StopApp(const std::string& app_id) {
-  NOTIMPLEMENTED();
-}
-
-void PublisherBase::OpenNativeSettings(const std::string& app_id) {
-  NOTIMPLEMENTED();
-}
-
-void PublisherBase::SetResizeLocked(const std::string& app_id,
-                                    apps::mojom::OptionalBool locked) {
-  NOTIMPLEMENTED();
-}
-
 }  // namespace apps

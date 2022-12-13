@@ -79,34 +79,6 @@ void AppServiceMojomImpl::RegisterSubscriber(
   subscribers_.Add(std::move(subscriber));
 }
 
-void AppServiceMojomImpl::StopApp(apps::mojom::AppType app_type,
-                                  const std::string& app_id) {
-  auto iter = publishers_.find(app_type);
-  if (iter == publishers_.end()) {
-    return;
-  }
-  iter->second->StopApp(app_id);
-}
-
-void AppServiceMojomImpl::OpenNativeSettings(apps::mojom::AppType app_type,
-                                             const std::string& app_id) {
-  auto iter = publishers_.find(app_type);
-  if (iter == publishers_.end()) {
-    return;
-  }
-  iter->second->OpenNativeSettings(app_id);
-}
-
-void AppServiceMojomImpl::SetResizeLocked(apps::mojom::AppType app_type,
-                                          const std::string& app_id,
-                                          mojom::OptionalBool locked) {
-  auto iter = publishers_.find(app_type);
-  if (iter == publishers_.end()) {
-    return;
-  }
-  iter->second->SetResizeLocked(app_id, locked);
-}
-
 void AppServiceMojomImpl::OnPublisherDisconnected(
     apps::mojom::AppType app_type) {
   publishers_.erase(app_type);

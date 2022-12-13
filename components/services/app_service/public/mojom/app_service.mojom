@@ -24,50 +24,11 @@ interface AppService {
   // Called by a consumer that wishes to know about available apps to register
   // itself with the App Service.
   RegisterSubscriber(pending_remote<Subscriber> subscriber, ConnectOptions? opts);
-
-  // Stops the current running app for the given |app_id|.
-  StopApp(
-      AppType app_type,
-      string app_id);
-
-  // Opens native settings for the app with |app_id|.
-  OpenNativeSettings(
-      AppType app_type,
-      string app_id);
-
-  // Enables resize lock mode for the app identified by |app_id| with the given
-  // |app_type|.
-  SetResizeLocked(
-      AppType app_type,
-      string app_id,
-      OptionalBool locked);
 };
 
 interface Publisher {
   // App Registry methods.
   Connect(pending_remote<Subscriber> subscriber, ConnectOptions? opts);
-
-  // Stops all running instances of |app_id|.
-  StopApp(
-      string app_id);
-
-  // Opens the platform-specific settings page for the app identified by
-  // |app_id|, e.g. the Android Settings app for an ARC app, or the Chrome
-  // browser settings for a web app. Implemented if those settings exist and
-  // need to be accessible to users. Note this is not the same as the Chrome
-  // OS-wide App Management page, which should be used by default. This method
-  // should only be used in cases where settings must be accessed that are not
-  // available in App Management.
-  OpenNativeSettings(
-      string app_id);
-
-  // Enables resize lock mode for the app identified by |app_id|. When |locked|
-  // is kTrue, this means the app cannot be resized and is locked to a certain
-  // set of dimensions. Implemented if the publisher supports resize locking of
-  // apps, and otherwise should do nothing.
-  SetResizeLocked(
-      string app_id,
-      OptionalBool locked);
 };
 
 // Subscriber works as a proxy, to receive a stream of apps from publishers,

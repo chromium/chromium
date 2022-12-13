@@ -109,11 +109,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // Set whether resize lock is enabled for the app identified by |app_id|.
   void SetResizeLocked(const std::string& app_id, bool locked);
 
-  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-  // interface.
-  void SetResizeLocked(const std::string& app_id,
-                       apps::mojom::OptionalBool locked);
-
   // Sets |extension_apps_| and |web_apps_| to observe the ARC apps to set the
   // badge on the equivalent Chrome app's icon, when ARC is available.
   void SetArcIsRegistered();

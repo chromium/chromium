@@ -271,15 +271,6 @@ void AppServiceProxyAsh::SetResizeLocked(const std::string& app_id,
   }
 }
 
-void AppServiceProxyAsh::SetResizeLocked(const std::string& app_id,
-                                         apps::mojom::OptionalBool locked) {
-  if (app_service_.is_connected()) {
-    auto app_type = app_registry_cache_.GetAppType(app_id);
-    app_service_->SetResizeLocked(ConvertAppTypeToMojomAppType(app_type),
-                                  app_id, locked);
-  }
-}
-
 void AppServiceProxyAsh::SetArcIsRegistered() {
   if (arc_is_registered_) {
     return;

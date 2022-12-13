@@ -1090,20 +1090,6 @@ void ArcApps::Connect(
   subscribers_.Add(std::move(subscriber));
 }
 
-void ArcApps::SetResizeLocked(const std::string& app_id,
-                              apps::mojom::OptionalBool locked) {
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
-  if (!prefs) {
-    return;
-  }
-  if (locked == apps::mojom::OptionalBool::kUnknown) {
-    return;
-  }
-  prefs->SetResizeLockState(app_id, locked == apps::mojom::OptionalBool::kTrue
-                                        ? arc::mojom::ArcResizeLockState::ON
-                                        : arc::mojom::ArcResizeLockState::OFF);
-}
-
 void ArcApps::PauseApp(const std::string& app_id) {
   if (paused_apps_.MaybeAddApp(app_id)) {
     SetIconEffect(app_id);

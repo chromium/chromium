@@ -51,11 +51,6 @@ class PublisherBase : public apps::mojom::Publisher {
   mojo::Receiver<apps::mojom::Publisher>& receiver() { return receiver_; }
 
  private:
-  void StopApp(const std::string& app_id) override;
-  void OpenNativeSettings(const std::string& app_id) override;
-  void SetResizeLocked(const std::string& app_id,
-                       apps::mojom::OptionalBool locked) override;
-
   mojo::Receiver<apps::mojom::Publisher> receiver_{this};
 };
 

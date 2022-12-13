@@ -145,8 +145,6 @@ class ArcApps : public KeyedService,
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
                apps::mojom::ConnectOptionsPtr opts) override;
-  void SetResizeLocked(const std::string& app_id,
-                       apps::mojom::OptionalBool locked) override;
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;
   void StopApp(const std::string& app_id) override;
