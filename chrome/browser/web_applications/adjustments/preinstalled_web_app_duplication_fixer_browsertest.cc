@@ -18,6 +18,8 @@
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
+
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -39,7 +41,7 @@ namespace web_app {
 
 class PreinstalledWebAppDuplicationFixerBrowserTest
     : public extensions::ExtensionBrowserTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<test::ExternalPrefMigrationTestCases> {
  public:
   static GURL install_url() {
     return GURL("https://www.example.com/install_url");
@@ -55,17 +57,32 @@ class PreinstalledWebAppDuplicationFixerBrowserTest
   PreinstalledWebAppDuplicationFixerBrowserTest() {
     PreinstalledWebAppManager::SkipStartupForTesting();
     PreinstalledWebAppDuplicationFixer::SkipStartupForTesting();
-    bool enable_migration = GetParam();
-    if (enable_migration) {
-      feature_list_.InitWithFeatures(
-          {features::kPreinstalledWebAppDuplicationFixer,
-           features::kUseWebAppDBInsteadOfExternalPrefs},
-          {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {features::kPreinstalledWebAppDuplicationFixer},
-          {features::kUseWebAppDBInsteadOfExternalPrefs});
+    std::vector<base::test::FeatureRef> enabled_features{
+        features::kPreinstalledWebAppDuplicationFixer};
+    std::vector<base::test::FeatureRef> disabled_features;
+    switch (GetParam()) {
+      case test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref:
+        disabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
+        disabled_features.push_back(
+            features::kUseWebAppDBInsteadOfExternalPrefs);
+        break;
+      case test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB:
+        disabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
+        enabled_features.push_back(
+            features::kUseWebAppDBInsteadOfExternalPrefs);
+        break;
+      case test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref:
+        enabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
+        disabled_features.push_back(
+            features::kUseWebAppDBInsteadOfExternalPrefs);
+        break;
+      case test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB:
+        enabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
+        enabled_features.push_back(
+            features::kUseWebAppDBInsteadOfExternalPrefs);
+        break;
     }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   ~PreinstalledWebAppDuplicationFixerBrowserTest() override = default;
 
@@ -364,8 +381,14 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppDuplicationFixerBrowserTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PreinstalledWebAppDuplicationFixerBrowserTest,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PreinstalledWebAppDuplicationFixerBrowserTest,
+    ::testing::Values(
+        test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref,
+        test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB,
+        test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref,
+        test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB),
+    test::GetExternalPrefMigrationTestName);
 
 }  // namespace web_app
