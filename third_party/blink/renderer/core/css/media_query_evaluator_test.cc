@@ -56,7 +56,10 @@ MediaQueryEvaluatorTestCase g_screen_test_cases[] = {
     {"screen and (color)", true},
     {"not screen and (color)", false},
     {"screen and (device-aspect-ratio: 16/9)", false},
+    {"screen and (device-aspect-ratio: 0.5/0.5)", true},
+    {"screen and (device-aspect-ratio: 1.5)", false},
     {"screen and (device-aspect-ratio: 1/1)", true},
+    {"screen and (device-aspect-ratio: calc(1/1))", true},
     {"all and (min-color: 2)", true},
     {"all and (min-color: 32)", false},
     {"all and (min-color-index: 0)", true},
@@ -96,6 +99,10 @@ MediaQueryEvaluatorTestCase g_screen_test_cases[] = {
     {"(display-mode: @junk browser)", false},
     {"(max-device-aspect-ratio: 4294967295/1)", true},
     {"(min-device-aspect-ratio: 1/4294967296)", true},
+    {"(max-device-aspect-ratio: 0.5)", false},
+    {"(max-device-aspect-ratio: 0.6/0.5)", true},
+    {"(min-device-aspect-ratio: 1/2)", true},
+    {"(max-device-aspect-ratio: 1.5)", true},
     {nullptr, false}  // Do not remove the terminator line.
 };
 

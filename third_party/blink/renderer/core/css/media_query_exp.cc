@@ -339,9 +339,8 @@ absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
          "queries are currently the only case sensitive features";
 
   CSSPrimitiveValue* value =
-      css_parsing_utils::ConsumeInteger(range, context, 0);
-  if (!value && !FeatureExpectingPositiveInteger(media_feature) &&
-      !FeatureWithAspectRatio(media_feature)) {
+      css_parsing_utils::ConsumeInteger(range, context, 0 /* minimum_value */);
+  if (!value && !FeatureExpectingPositiveInteger(media_feature)) {
     value = css_parsing_utils::ConsumeNumber(
         range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
   }
@@ -365,17 +364,16 @@ absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
   // Now we have |value| as a number, length or resolution
   // Create value for media query expression that must have 1 or more values.
   if (FeatureWithAspectRatio(media_feature)) {
-    if (!value->IsInteger() || value->GetDoubleValue() == 0)
-      return absl::nullopt;
     if (!css_parsing_utils::ConsumeSlashIncludingWhitespace(range))
-      return absl::nullopt;
-    CSSPrimitiveValue* denominator =
-        css_parsing_utils::ConsumePositiveInteger(range, context);
+      return MediaQueryExpValue(value->GetDoubleValue(), 1);
+    CSSPrimitiveValue* denominator = css_parsing_utils::ConsumeNumber(
+        range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
     if (!denominator)
       return absl::nullopt;
-
-    return MediaQueryExpValue(ClampTo<unsigned>(value->GetDoubleValue()),
-                              ClampTo<unsigned>(denominator->GetDoubleValue()));
+    if (value->GetDoubleValue() == 0 && denominator->GetDoubleValue() == 0)
+      return MediaQueryExpValue(1, 0);
+    return MediaQueryExpValue(value->GetDoubleValue(),
+                              denominator->GetDoubleValue());
   }
 
   if (FeatureWithValidDensity(media_feature, value)) {

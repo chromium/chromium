@@ -283,8 +283,9 @@ static bool CompareAspectRatioValue(const MediaQueryExpValue& value,
                                     int height,
                                     MediaQueryOperator op) {
   if (value.IsRatio()) {
-    return CompareValue(static_cast<double>(width) * value.Denominator(),
-                        static_cast<double>(height) * value.Numerator(), op);
+    return CompareDoubleValue(static_cast<double>(width) * value.Denominator(),
+                              static_cast<double>(height) * value.Numerator(),
+                              op);
   }
   return false;
 }

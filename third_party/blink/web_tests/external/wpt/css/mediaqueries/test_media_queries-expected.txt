@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1410 tests; 1379 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1410 tests; 1395 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS query_should_be_parseable: (orientation)
 PASS query_should_be_parseable: not (orientation)
 PASS expression_should_be_known: (orientation)
@@ -1116,14 +1116,14 @@ PASS expression_should_be_known: max-aspect-ratio: 1  /1
 PASS expression_should_be_known: max-aspect-ratio: 1  / 	
 1
 PASS expression_should_be_known: max-aspect-ratio: 1/\r1
-FAIL expression_should_be_known: max-aspect-ratio: 1 assert_true: expected true got false
-FAIL expression_should_be_known: max-aspect-ratio: 0.5 assert_true: expected true got false
-FAIL expression_should_be_known: max-aspect-ratio: 1.0/1 assert_true: expected true got false
-FAIL expression_should_be_known: max-aspect-ratio: 1/1.0 assert_true: expected true got false
-FAIL expression_should_be_known: max-aspect-ratio: 1.0/1.0 assert_true: expected true got false
-FAIL expression_should_be_known: max-aspect-ratio: 0/1 assert_true: expected true got false
-FAIL expression_should_be_known: max-aspect-ratio: 1/0 assert_true: expected true got false
-FAIL expression_should_be_known: max-aspect-ratio: 0/0 assert_true: expected true got false
+PASS expression_should_be_known: max-aspect-ratio: 1
+PASS expression_should_be_known: max-aspect-ratio: 0.5
+PASS expression_should_be_known: max-aspect-ratio: 1.0/1
+PASS expression_should_be_known: max-aspect-ratio: 1/1.0
+PASS expression_should_be_known: max-aspect-ratio: 1.0/1.0
+PASS expression_should_be_known: max-aspect-ratio: 0/1
+PASS expression_should_be_known: max-aspect-ratio: 1/0
+PASS expression_should_be_known: max-aspect-ratio: 0/0
 PASS expression_should_be_parseable: max-aspect-ratio: -1/1
 PASS expression_should_be_unknown: max-aspect-ratio: -1/1
 PASS expression_should_be_parseable: max-aspect-ratio: 1/-1
@@ -1141,14 +1141,14 @@ PASS expression_should_be_known: device-aspect-ratio: 1  /1
 PASS expression_should_be_known: device-aspect-ratio: 1  / 	
 1
 PASS expression_should_be_known: device-aspect-ratio: 1/\r1
-FAIL expression_should_be_known: device-aspect-ratio: 1 assert_true: expected true got false
-FAIL expression_should_be_known: device-aspect-ratio: 0.5 assert_true: expected true got false
-FAIL expression_should_be_known: device-aspect-ratio: 1.0/1 assert_true: expected true got false
-FAIL expression_should_be_known: device-aspect-ratio: 1/1.0 assert_true: expected true got false
-FAIL expression_should_be_known: device-aspect-ratio: 1.0/1.0 assert_true: expected true got false
-FAIL expression_should_be_known: device-aspect-ratio: 0/1 assert_true: expected true got false
-FAIL expression_should_be_known: device-aspect-ratio: 1/0 assert_true: expected true got false
-FAIL expression_should_be_known: device-aspect-ratio: 0/0 assert_true: expected true got false
+PASS expression_should_be_known: device-aspect-ratio: 1
+PASS expression_should_be_known: device-aspect-ratio: 0.5
+PASS expression_should_be_known: device-aspect-ratio: 1.0/1
+PASS expression_should_be_known: device-aspect-ratio: 1/1.0
+PASS expression_should_be_known: device-aspect-ratio: 1.0/1.0
+PASS expression_should_be_known: device-aspect-ratio: 0/1
+PASS expression_should_be_known: device-aspect-ratio: 1/0
+PASS expression_should_be_known: device-aspect-ratio: 0/0
 PASS expression_should_be_parseable: device-aspect-ratio: -1/1
 PASS expression_should_be_unknown: device-aspect-ratio: -1/1
 PASS expression_should_be_parseable: device-aspect-ratio: 1/-1

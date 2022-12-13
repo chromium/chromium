@@ -54,7 +54,7 @@ class CORE_EXPORT MediaQueryExpValue {
   explicit MediaQueryExpValue(CSSValueID id) : type_(Type::kId), id_(id) {}
   MediaQueryExpValue(double value, CSSPrimitiveValue::UnitType unit)
       : type_(Type::kNumeric), numeric_({value, unit}) {}
-  MediaQueryExpValue(unsigned numerator, unsigned denominator)
+  MediaQueryExpValue(double numerator, double denominator)
       : type_(Type::kRatio), ratio_({numerator, denominator}) {}
   explicit MediaQueryExpValue(const CSSValue& value)
       : type_(Type::kCSSValue), css_value_(&value) {}
@@ -81,12 +81,12 @@ class CORE_EXPORT MediaQueryExpValue {
     return numeric_.unit;
   }
 
-  unsigned Numerator() const {
+  double Numerator() const {
     DCHECK(IsRatio());
     return ratio_.numerator;
   }
 
-  unsigned Denominator() const {
+  double Denominator() const {
     DCHECK(IsRatio());
     return ratio_.denominator;
   }
@@ -158,8 +158,8 @@ class CORE_EXPORT MediaQueryExpValue {
       CSSPrimitiveValue::UnitType unit;
     } numeric_;
     struct {
-      unsigned numerator;
-      unsigned denominator;
+      double numerator;
+      double denominator;
     } ratio_;
   };
 };
