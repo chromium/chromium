@@ -206,6 +206,7 @@ template("rust_target") {
                  "_metadata",
                  "_out_dir",
                  "_public_deps",
+                 "_rustenv",
                  "_support_use_from_cpp",
                  "_test_deps",
                  "_testonly",
