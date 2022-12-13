@@ -531,16 +531,6 @@ mojom("mojom_platform") {
     {
       types = [
         {
-          mojom = "blink.mojom.AttributionOsSource"
-          cpp = "::attribution_reporting::OsSource"
-          move_only = true
-        },
-        {
-          mojom = "blink.mojom.AttributionOsTrigger"
-          cpp = "::attribution_reporting::OsTrigger"
-          move_only = true
-        },
-        {
           mojom = "blink.mojom.AttributionDebugKey"
           cpp = "uint64_t"
         },

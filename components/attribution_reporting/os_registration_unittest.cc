@@ -6,14 +6,12 @@
 
 #include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace attribution_reporting {
 namespace {
 
-template <typename T>
-void TestParse() {
+TEST(OsRegistration, ParseOsSourceOrTriggerHeader) {
   const struct {
     const char* description;
     base::StringPiece header;
@@ -40,16 +38,6 @@ void TestParse() {
           GURL("https://d.test"),
       },
       {
-          "url_not_in_http_family",
-          R"("wss://d.test")",
-          GURL(),
-      },
-      {
-          "url_not_potentially_trustworthy",
-          R"("http://d.test")",
-          GURL(),
-      },
-      {
           "extra_params_ignored",
           R"("https://d.test"; y=1)",
           GURL("https://d.test"),
@@ -57,22 +45,10 @@ void TestParse() {
   };
 
   for (const auto& test_case : kTestCases) {
-    absl::optional<T> actual = T::Parse(test_case.header);
-
-    EXPECT_EQ(test_case.expected.is_valid(), actual.has_value())
+    EXPECT_EQ(ParseOsSourceOrTriggerHeader(test_case.header),
+              test_case.expected)
         << test_case.description;
-
-    if (test_case.expected.is_valid())
-      EXPECT_EQ(test_case.expected, actual->url()) << test_case.description;
   }
-}
-
-TEST(OsSource, Parse) {
-  TestParse<OsSource>();
-}
-
-TEST(OsTrigger, Parse) {
-  TestParse<OsTrigger>();
 }
 
 }  // namespace

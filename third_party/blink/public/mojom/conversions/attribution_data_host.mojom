@@ -8,7 +8,6 @@ import "components/aggregation_service/aggregation_service.mojom";
 import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/origin.mojom";
-import "url/mojom/url.mojom";
 
 struct AttributionDebugKey {
   uint64 value;
@@ -158,18 +157,6 @@ struct AttributionTriggerData {
 
   // Specifies the deployment option for the aggregation service.
   aggregation_service.mojom.AggregationCoordinator aggregation_coordinator;
-};
-
-struct AttributionOsSource {
-  // The URL to which the OS will make a request. Must use HTTP or HTTPS and
-  // its origin must be potentially trustworthy.
-  url.mojom.Url url;
-};
-
-struct AttributionOsTrigger {
-  // The URL to which the OS will make a request. Must use HTTP or HTTPS and
-  // its origin must be potentially trustworthy.
-  url.mojom.Url url;
 };
 
 // Indicates which registrations an AttributionDataHost permits.
