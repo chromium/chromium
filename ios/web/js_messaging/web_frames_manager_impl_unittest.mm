@@ -27,13 +27,13 @@ class FakeWebFramesManagerObserver : public WebFramesManagerImpl::Observer {
   const std::map<std::string, WebFrame*> frames() const { return frames_; }
 
   // WebFramesManagerImpl::Observer
-  void WebFrameDidBecomeAvailable(WebFramesManager* web_frames_manager,
-                                  WebFrame* web_frame) override {
+  void WebFrameBecameAvailable(WebFramesManager* web_frames_manager,
+                               WebFrame* web_frame) override {
     frames_[web_frame->GetFrameId()] = web_frame;
   }
 
-  void WebFrameWillBecomeUnavailable(WebFramesManager* web_frames_manager,
-                                     const std::string frame_id) override {
+  void WebFrameBecameUnavailable(WebFramesManager* web_frames_manager,
+                                 const std::string frame_id) override {
     frames_.erase(frame_id);
   }
 

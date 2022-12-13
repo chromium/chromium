@@ -31,18 +31,16 @@ class WebFramesManager {
 
     // Called when a frame is created or the user navigates to a new document.
     // Receivers can keep references to `web_frame` only until
-    // `WebFrameWillBecomeUnavailable` at which point the pointer will become
+    // `WebFrameBecameUnavailable` at which point the pointer will become
     // invalid.
-    virtual void WebFrameDidBecomeAvailable(
-        WebFramesManager* web_frames_manager,
-        WebFrame* web_frame) {}
+    virtual void WebFrameBecameAvailable(WebFramesManager* web_frames_manager,
+                                         WebFrame* web_frame) {}
 
     // Called when a frame is deleted or the user navigates away from
     // `web_frame` before it is removed from the WebFramesManager. Receivers of
     // this callback must clear any stored references to `web_frame`.
-    virtual void WebFrameWillBecomeUnavailable(
-        WebFramesManager* web_frames_manager,
-        const std::string frame_id) {}
+    virtual void WebFrameBecameUnavailable(WebFramesManager* web_frames_manager,
+                                           const std::string frame_id) {}
   };
 
   WebFramesManager(const WebFramesManager&) = delete;

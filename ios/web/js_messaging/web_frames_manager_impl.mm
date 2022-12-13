@@ -36,14 +36,14 @@ bool WebFramesManagerImpl::AddFrame(std::unique_ptr<WebFrame> frame) {
   web_frames_[frame_id] = std::move(frame);
 
   for (auto& observer : observers_) {
-    observer.WebFrameDidBecomeAvailable(this, added_frame);
+    observer.WebFrameBecameAvailable(this, added_frame);
   }
   return true;
 }
 
 void WebFramesManagerImpl::RemoveFrameWithId(const std::string& frame_id) {
   for (auto& observer : observers_) {
-    observer.WebFrameWillBecomeUnavailable(this, frame_id);
+    observer.WebFrameBecameUnavailable(this, frame_id);
   }
 
   DCHECK(!frame_id.empty());

@@ -50,13 +50,13 @@ void FakeWebFramesManager::AddWebFrame(std::unique_ptr<WebFrame> frame) {
   web_frames_[frame->GetFrameId()] = std::move(frame);
 
   for (auto& observer : observers_) {
-    observer.WebFrameDidBecomeAvailable(this, added_frame);
+    observer.WebFrameBecameAvailable(this, added_frame);
   }
 }
 
 void FakeWebFramesManager::RemoveWebFrame(const std::string& frame_id) {
   for (auto& observer : observers_) {
-    observer.WebFrameWillBecomeUnavailable(this, frame_id);
+    observer.WebFrameBecameUnavailable(this, frame_id);
   }
 
   // If the removed frame is a main frame, it should be the current one.
