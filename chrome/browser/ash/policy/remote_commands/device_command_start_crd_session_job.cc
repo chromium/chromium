@@ -389,18 +389,20 @@ bool DeviceCommandStartCrdSessionJob::UserTypeSupportsCrd() const {
 DeviceCommandStartCrdSessionJob::UmaSessionType
 DeviceCommandStartCrdSessionJob::GetUmaSessionType() const {
   switch (GetCurrentUserSessionType()) {
-    case UserSessionType::kAutoLaunchedKiosk:
+    case UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION:
       return UmaSessionType::kAutoLaunchedKiosk;
-    case UserSessionType::kAffiliatedUser:
+    case UserSessionType::AFFILIATED_USER_SESSION:
       return UmaSessionType::kAffiliatedUser;
-    case UserSessionType::kManagedGuestSession:
+    case UserSessionType::MANAGED_GUEST_SESSION:
       return UmaSessionType::kManagedGuestSession;
-    case UserSessionType::kManuallyLaunchedKiosk:
+    case UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION:
       return UmaSessionType::kManuallyLaunchedKiosk;
-    case UserSessionType::kNoUser:
+    case UserSessionType::NO_SESSION:
       // TODO(b/236689277): Introduce UmaSessionType::kNoLocalUser.
       return UmaSessionType::kMaxValue;
-    case UserSessionType::kOther:
+    case UserSessionType::UNAFFILIATED_USER_SESSION:
+    case UserSessionType::GUEST_SESSION:
+    case UserSessionType::USER_SESSION_TYPE_UNKNOWN:
       NOTREACHED();
       return UmaSessionType::kMaxValue;
   }
@@ -420,14 +422,19 @@ std::string DeviceCommandStartCrdSessionJob::GetRobotAccountUserName() const {
 
 bool DeviceCommandStartCrdSessionJob::ShouldShowConfirmationDialog() const {
   switch (GetCurrentUserSessionType()) {
-    case UserSessionType::kAutoLaunchedKiosk:
-    case UserSessionType::kManuallyLaunchedKiosk:
-    case UserSessionType::kNoUser:
+    case UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION:
+    case UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION:
+    case UserSessionType::NO_SESSION:
       return false;
 
-    case UserSessionType::kAffiliatedUser:
-    case UserSessionType::kManagedGuestSession:
-    case UserSessionType::kOther:
+    case UserSessionType::AFFILIATED_USER_SESSION:
+    case UserSessionType::MANAGED_GUEST_SESSION:
+    case UserSessionType::UNAFFILIATED_USER_SESSION:
+    case UserSessionType::GUEST_SESSION:
+      return true;
+
+    case UserSessionType::USER_SESSION_TYPE_UNKNOWN:
+      NOTREACHED();
       return true;
   }
 }
@@ -437,8 +444,8 @@ bool DeviceCommandStartCrdSessionJob::ShouldTerminateUponInput() const {
     return false;
 
   switch (GetCurrentUserSessionType()) {
-    case UserSessionType::kAffiliatedUser:
-    case UserSessionType::kManagedGuestSession:
+    case UserSessionType::AFFILIATED_USER_SESSION:
+    case UserSessionType::MANAGED_GUEST_SESSION:
       // We never terminate upon input for the user-session scenarios, because:
       //   1. There is no risk of the admin spying on the users, as they need to
       //       explicitly accept the connection request.
@@ -448,12 +455,17 @@ bool DeviceCommandStartCrdSessionJob::ShouldTerminateUponInput() const {
       //      user input.
       return false;
 
-    case UserSessionType::kAutoLaunchedKiosk:
-    case UserSessionType::kManuallyLaunchedKiosk:
+    case UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION:
+    case UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION:
       return !acked_user_presence_;
 
-    case UserSessionType::kNoUser:
-    case UserSessionType::kOther:
+    case UserSessionType::NO_SESSION:
+    case UserSessionType::UNAFFILIATED_USER_SESSION:
+    case UserSessionType::GUEST_SESSION:
+      return true;
+
+    case UserSessionType::USER_SESSION_TYPE_UNKNOWN:
+      NOTREACHED();
       return true;
   }
 }

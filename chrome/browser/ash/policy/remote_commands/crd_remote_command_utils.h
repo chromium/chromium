@@ -11,17 +11,13 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 
 namespace policy {
 
-enum class UserSessionType {
-  kAutoLaunchedKiosk,
-  kManuallyLaunchedKiosk,
-  kNoUser,
-  kAffiliatedUser,
-  kManagedGuestSession,
-  kOther,
-};
+// The current active session type on the device, or `NO_SESSION` if no user
+// is currently logged in.
+using ::enterprise_management::UserSessionType;
 
 // Returns the time since the last user activity on this device.
 base::TimeDelta GetDeviceIdleTime();
@@ -32,6 +28,7 @@ UserSessionType GetCurrentUserSessionType();
 // Returns if a remote admin is allowed to start a 'CRD remote support' session
 // when an user session of the given type is active.
 bool UserSessionSupportsRemoteSupport(UserSessionType user_session);
+
 // Returns if a remote admin is allowed to start a 'CRD remote access' session
 // when an user session of the given type is active.
 bool UserSessionSupportsRemoteAccess(UserSessionType user_session);

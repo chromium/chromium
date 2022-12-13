@@ -116,52 +116,57 @@ UserSessionType GetCurrentUserSessionType() {
   const auto& user_manager = CHECK_DEREF(user_manager::UserManager::Get());
 
   if (!user_manager.IsUserLoggedIn())
-    return UserSessionType::kNoUser;
+    return UserSessionType::NO_SESSION;
 
   if (user_manager.IsLoggedInAsAnyKioskApp()) {
     if (IsRunningAutoLaunchedKiosk(user_manager))
-      return UserSessionType::kAutoLaunchedKiosk;
+      return UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION;
     else
-      return UserSessionType::kManuallyLaunchedKiosk;
+      return UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION;
   }
 
   if (user_manager.IsLoggedInAsPublicAccount())
-    return UserSessionType::kManagedGuestSession;
+    return UserSessionType::MANAGED_GUEST_SESSION;
 
   if (user_manager.IsLoggedInAsGuest())
-    return UserSessionType::kOther;
+    return UserSessionType::GUEST_SESSION;
 
   if (user_manager.GetActiveUser()->IsAffiliated())
-    return UserSessionType::kAffiliatedUser;
+    return UserSessionType::AFFILIATED_USER_SESSION;
 
-  return UserSessionType::kOther;
+  return UserSessionType::UNAFFILIATED_USER_SESSION;
 }
 
 bool UserSessionSupportsRemoteAccess(UserSessionType user_session) {
   // Remote access is currently only supported while no user is logged in
   // (and the device sits at the login screen).
   switch (user_session) {
-    case UserSessionType::kNoUser:
+    case UserSessionType::NO_SESSION:
       return true;
 
-    case UserSessionType::kAutoLaunchedKiosk:
-    case UserSessionType::kManuallyLaunchedKiosk:
-    case UserSessionType::kAffiliatedUser:
-    case UserSessionType::kManagedGuestSession:
-    case UserSessionType::kOther:
+    case UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION:
+    case UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION:
+    case UserSessionType::AFFILIATED_USER_SESSION:
+    case UserSessionType::MANAGED_GUEST_SESSION:
+    case UserSessionType::UNAFFILIATED_USER_SESSION:
+    case UserSessionType::GUEST_SESSION:
+    case UserSessionType::USER_SESSION_TYPE_UNKNOWN:
       return false;
   }
 }
+
 bool UserSessionSupportsRemoteSupport(UserSessionType user_session) {
   switch (user_session) {
-    case UserSessionType::kAutoLaunchedKiosk:
-    case UserSessionType::kManuallyLaunchedKiosk:
-    case UserSessionType::kAffiliatedUser:
-    case UserSessionType::kManagedGuestSession:
+    case UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION:
+    case UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION:
+    case UserSessionType::AFFILIATED_USER_SESSION:
+    case UserSessionType::MANAGED_GUEST_SESSION:
       return true;
 
-    case UserSessionType::kNoUser:
-    case UserSessionType::kOther:
+    case UserSessionType::NO_SESSION:
+    case UserSessionType::UNAFFILIATED_USER_SESSION:
+    case UserSessionType::GUEST_SESSION:
+    case UserSessionType::USER_SESSION_TYPE_UNKNOWN:
       return false;
   }
 }
@@ -172,12 +177,14 @@ const char* UserSessionTypeToString(UserSessionType value) {
     return #type_;
 
   switch (value) {
-    CASE(kAutoLaunchedKiosk);
-    CASE(kManuallyLaunchedKiosk);
-    CASE(kNoUser);
-    CASE(kAffiliatedUser);
-    CASE(kOther);
-    CASE(kManagedGuestSession);
+    CASE(AUTO_LAUNCHED_KIOSK_SESSION);
+    CASE(MANUALLY_LAUNCHED_KIOSK_SESSION);
+    CASE(NO_SESSION);
+    CASE(AFFILIATED_USER_SESSION);
+    CASE(UNAFFILIATED_USER_SESSION);
+    CASE(MANAGED_GUEST_SESSION);
+    CASE(GUEST_SESSION);
+    CASE(USER_SESSION_TYPE_UNKNOWN);
   }
 
 #undef CASE

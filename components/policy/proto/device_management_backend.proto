@@ -8,7 +8,7 @@ option optimize_for = LITE_RUNTIME;
 
 package enterprise_management;
 
-option go_package="chromium/policy/enterprise_management_proto";
+option go_package = "chromium/policy/enterprise_management_proto";
 
 import "private_membership_rlwe.proto";
 
@@ -34,6 +34,21 @@ message LicenseType {
   }
 
   optional LicenseTypeEnum license_type = 1;
+}
+
+// The current active session type on the device, or `NO_SESSION` if no user
+// is currently logged in.
+// This enum is used in the response payload of the
+// `FETCH_CRD_AVAILABILITY_INFO` remote command.
+enum UserSessionType {
+  USER_SESSION_TYPE_UNKNOWN = 0;
+  AUTO_LAUNCHED_KIOSK_SESSION = 1;
+  MANUALLY_LAUNCHED_KIOSK_SESSION = 2;
+  AFFILIATED_USER_SESSION = 3;
+  UNAFFILIATED_USER_SESSION = 4;
+  MANAGED_GUEST_SESSION = 5;
+  GUEST_SESSION = 6;
+  NO_SESSION = 7;
 }
 
 // Data along with a cryptographic signature verifying their authenticity.
@@ -2162,7 +2177,7 @@ message PolicyValueValidationIssue {
   // Policy name of the faulty value.
   optional string policy_name = 1;
 
-  //# LINT.IfChange
+  // # LINT.IfChange
   enum ValueValidationIssueSeverity {
     // Default value for when a severity is not specified.
     VALUE_VALIDATION_ISSUE_SEVERITY_UNSPECIFIED = 0;
