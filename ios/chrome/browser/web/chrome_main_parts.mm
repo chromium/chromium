@@ -398,9 +398,6 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
                                     user_data_path,
                                     safe_browsing_metrics_collector);
 
-  // Set monitoring for some experimental flags.
-  MonitorExperimentalSettingsChanges();
-
   // Ensure the Fullscren Promos Manager is initialized.
   PromosManager* promos_manager = application_context_->GetPromosManager();
   if (promos_manager) {
