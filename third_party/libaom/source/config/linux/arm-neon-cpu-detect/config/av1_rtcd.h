@@ -304,31 +304,21 @@ int64_t av1_calc_frame_error_c(const uint8_t* const ref,
                                int p_stride);
 #define av1_calc_frame_error av1_calc_frame_error_c
 
-void av1_calc_indices_dim1_c(const int* data,
-                             const int* centroids,
+void av1_calc_indices_dim1_c(const int16_t* data,
+                             const int16_t* centroids,
                              uint8_t* indices,
                              int64_t* total_dist,
                              int n,
                              int k);
 #define av1_calc_indices_dim1 av1_calc_indices_dim1_c
 
-void av1_calc_indices_dim2_c(const int* data,
-                             const int* centroids,
+void av1_calc_indices_dim2_c(const int16_t* data,
+                             const int16_t* centroids,
                              uint8_t* indices,
                              int64_t* total_dist,
                              int n,
                              int k);
 #define av1_calc_indices_dim2 av1_calc_indices_dim2_c
-
-double av1_compute_cross_correlation_c(unsigned char* im1,
-                                       int stride1,
-                                       int x1,
-                                       int y1,
-                                       unsigned char* im2,
-                                       int stride2,
-                                       int x2,
-                                       int y2);
-#define av1_compute_cross_correlation av1_compute_cross_correlation_c
 
 void av1_convolve_2d_scale_c(const uint8_t* src,
                              int src_stride,
@@ -2276,303 +2266,402 @@ static void setup_rtcd_internal(void) {
   (void)flags;
 
   aom_quantize_b_helper = aom_quantize_b_helper_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     aom_quantize_b_helper = aom_quantize_b_helper_neon;
+  }
   av1_apply_selfguided_restoration = av1_apply_selfguided_restoration_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_apply_selfguided_restoration = av1_apply_selfguided_restoration_neon;
+  }
   av1_block_error = av1_block_error_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_block_error = av1_block_error_neon;
+  }
   av1_block_error_lp = av1_block_error_lp_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_block_error_lp = av1_block_error_lp_neon;
+  }
   av1_build_compound_diffwtd_mask_d16 = av1_build_compound_diffwtd_mask_d16_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_build_compound_diffwtd_mask_d16 =
         av1_build_compound_diffwtd_mask_d16_neon;
+  }
   av1_convolve_2d_sr = av1_convolve_2d_sr_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_convolve_2d_sr = av1_convolve_2d_sr_neon;
+  }
   av1_convolve_x_sr = av1_convolve_x_sr_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_convolve_x_sr = av1_convolve_x_sr_neon;
+  }
   av1_convolve_y_sr = av1_convolve_y_sr_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_convolve_y_sr = av1_convolve_y_sr_neon;
+  }
   av1_denoiser_filter = av1_denoiser_filter_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_denoiser_filter = av1_denoiser_filter_neon;
+  }
   av1_dist_wtd_convolve_2d = av1_dist_wtd_convolve_2d_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_dist_wtd_convolve_2d = av1_dist_wtd_convolve_2d_neon;
+  }
   av1_dist_wtd_convolve_2d_copy = av1_dist_wtd_convolve_2d_copy_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_dist_wtd_convolve_2d_copy = av1_dist_wtd_convolve_2d_copy_neon;
+  }
   av1_dist_wtd_convolve_x = av1_dist_wtd_convolve_x_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_dist_wtd_convolve_x = av1_dist_wtd_convolve_x_neon;
+  }
   av1_dist_wtd_convolve_y = av1_dist_wtd_convolve_y_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_dist_wtd_convolve_y = av1_dist_wtd_convolve_y_neon;
+  }
   av1_dr_prediction_z1 = av1_dr_prediction_z1_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_dr_prediction_z1 = av1_dr_prediction_z1_neon;
+  }
   av1_dr_prediction_z2 = av1_dr_prediction_z2_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_dr_prediction_z2 = av1_dr_prediction_z2_neon;
+  }
   av1_dr_prediction_z3 = av1_dr_prediction_z3_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_dr_prediction_z3 = av1_dr_prediction_z3_neon;
+  }
   av1_filter_intra_predictor = av1_filter_intra_predictor_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_filter_intra_predictor = av1_filter_intra_predictor_neon;
+  }
   av1_fwd_txfm2d_16x16 = av1_fwd_txfm2d_16x16_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_fwd_txfm2d_16x16 = av1_fwd_txfm2d_16x16_neon;
+  }
   av1_fwd_txfm2d_16x32 = av1_fwd_txfm2d_16x32_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_fwd_txfm2d_16x32 = av1_fwd_txfm2d_16x32_neon;
+  }
   av1_fwd_txfm2d_16x4 = av1_fwd_txfm2d_16x4_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_fwd_txfm2d_16x4 = av1_fwd_txfm2d_16x4_neon;
+  }
   av1_fwd_txfm2d_16x8 = av1_fwd_txfm2d_16x8_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_fwd_txfm2d_16x8 = av1_fwd_txfm2d_16x8_neon;
+  }
   av1_fwd_txfm2d_32x16 = av1_fwd_txfm2d_32x16_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_fwd_txfm2d_32x16 = av1_fwd_txfm2d_32x16_neon;
+  }
   av1_fwd_txfm2d_32x32 = av1_fwd_txfm2d_32x32_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_fwd_txfm2d_32x32 = av1_fwd_txfm2d_32x32_neon;
+  }
   av1_fwd_txfm2d_32x64 = av1_fwd_txfm2d_32x64_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_fwd_txfm2d_32x64 = av1_fwd_txfm2d_32x64_neon;
+  }
   av1_fwd_txfm2d_4x4 = av1_fwd_txfm2d_4x4_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_fwd_txfm2d_4x4 = av1_fwd_txfm2d_4x4_neon;
+  }
   av1_fwd_txfm2d_4x8 = av1_fwd_txfm2d_4x8_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_fwd_txfm2d_4x8 = av1_fwd_txfm2d_4x8_neon;
+  }
   av1_fwd_txfm2d_64x32 = av1_fwd_txfm2d_64x32_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_fwd_txfm2d_64x32 = av1_fwd_txfm2d_64x32_neon;
+  }
   av1_fwd_txfm2d_64x64 = av1_fwd_txfm2d_64x64_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_fwd_txfm2d_64x64 = av1_fwd_txfm2d_64x64_neon;
+  }
   av1_fwd_txfm2d_8x16 = av1_fwd_txfm2d_8x16_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_fwd_txfm2d_8x16 = av1_fwd_txfm2d_8x16_neon;
+  }
   av1_fwd_txfm2d_8x4 = av1_fwd_txfm2d_8x4_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_fwd_txfm2d_8x4 = av1_fwd_txfm2d_8x4_neon;
+  }
   av1_fwd_txfm2d_8x8 = av1_fwd_txfm2d_8x8_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_fwd_txfm2d_8x8 = av1_fwd_txfm2d_8x8_neon;
+  }
   av1_fwht4x4 = av1_fwht4x4_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_fwht4x4 = av1_fwht4x4_neon;
+  }
   av1_get_horver_correlation_full = av1_get_horver_correlation_full_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_get_horver_correlation_full = av1_get_horver_correlation_full_neon;
+  }
   av1_get_nz_map_contexts = av1_get_nz_map_contexts_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_get_nz_map_contexts = av1_get_nz_map_contexts_neon;
+  }
   av1_highbd_fwht4x4 = av1_highbd_fwht4x4_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_highbd_fwht4x4 = av1_highbd_fwht4x4_neon;
+  }
   av1_highbd_inv_txfm_add = av1_highbd_inv_txfm_add_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_highbd_inv_txfm_add = av1_highbd_inv_txfm_add_neon;
+  }
   av1_highbd_inv_txfm_add_16x32 = av1_highbd_inv_txfm_add_16x32_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_highbd_inv_txfm_add_16x32 = av1_highbd_inv_txfm_add_16x32_neon;
+  }
   av1_highbd_inv_txfm_add_16x4 = av1_highbd_inv_txfm_add_16x4_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_highbd_inv_txfm_add_16x4 = av1_highbd_inv_txfm_add_16x4_neon;
+  }
   av1_highbd_inv_txfm_add_16x8 = av1_highbd_inv_txfm_add_16x8_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_highbd_inv_txfm_add_16x8 = av1_highbd_inv_txfm_add_16x8_neon;
+  }
   av1_highbd_inv_txfm_add_32x16 = av1_highbd_inv_txfm_add_32x16_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_highbd_inv_txfm_add_32x16 = av1_highbd_inv_txfm_add_32x16_neon;
+  }
   av1_highbd_inv_txfm_add_32x32 = av1_highbd_inv_txfm_add_32x32_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_highbd_inv_txfm_add_32x32 = av1_highbd_inv_txfm_add_32x32_neon;
+  }
   av1_highbd_inv_txfm_add_32x64 = av1_highbd_inv_txfm_add_32x64_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_highbd_inv_txfm_add_32x64 = av1_highbd_inv_txfm_add_32x64_neon;
+  }
   av1_highbd_inv_txfm_add_4x16 = av1_highbd_inv_txfm_add_4x16_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_highbd_inv_txfm_add_4x16 = av1_highbd_inv_txfm_add_4x16_neon;
+  }
   av1_highbd_inv_txfm_add_4x4 = av1_highbd_inv_txfm_add_4x4_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_highbd_inv_txfm_add_4x4 = av1_highbd_inv_txfm_add_4x4_neon;
+  }
   av1_highbd_inv_txfm_add_4x8 = av1_highbd_inv_txfm_add_4x8_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_highbd_inv_txfm_add_4x8 = av1_highbd_inv_txfm_add_4x8_neon;
+  }
   av1_highbd_inv_txfm_add_64x32 = av1_highbd_inv_txfm_add_64x32_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_highbd_inv_txfm_add_64x32 = av1_highbd_inv_txfm_add_64x32_neon;
+  }
   av1_highbd_inv_txfm_add_64x64 = av1_highbd_inv_txfm_add_64x64_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_highbd_inv_txfm_add_64x64 = av1_highbd_inv_txfm_add_64x64_neon;
+  }
   av1_highbd_inv_txfm_add_8x16 = av1_highbd_inv_txfm_add_8x16_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_highbd_inv_txfm_add_8x16 = av1_highbd_inv_txfm_add_8x16_neon;
+  }
   av1_highbd_inv_txfm_add_8x4 = av1_highbd_inv_txfm_add_8x4_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_highbd_inv_txfm_add_8x4 = av1_highbd_inv_txfm_add_8x4_neon;
+  }
   av1_highbd_inv_txfm_add_8x8 = av1_highbd_inv_txfm_add_8x8_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_highbd_inv_txfm_add_8x8 = av1_highbd_inv_txfm_add_8x8_neon;
+  }
   av1_inv_txfm2d_add_16x32 = av1_inv_txfm2d_add_16x32_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_16x32 = av1_inv_txfm2d_add_16x32_neon;
+  }
   av1_inv_txfm2d_add_16x4 = av1_inv_txfm2d_add_16x4_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_16x4 = av1_inv_txfm2d_add_16x4_neon;
+  }
   av1_inv_txfm2d_add_16x64 = av1_inv_txfm2d_add_16x64_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_16x64 = av1_inv_txfm2d_add_16x64_neon;
+  }
   av1_inv_txfm2d_add_16x8 = av1_inv_txfm2d_add_16x8_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_16x8 = av1_inv_txfm2d_add_16x8_neon;
+  }
   av1_inv_txfm2d_add_32x16 = av1_inv_txfm2d_add_32x16_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_32x16 = av1_inv_txfm2d_add_32x16_neon;
+  }
   av1_inv_txfm2d_add_32x32 = av1_inv_txfm2d_add_32x32_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_32x32 = av1_inv_txfm2d_add_32x32_neon;
+  }
   av1_inv_txfm2d_add_32x64 = av1_inv_txfm2d_add_32x64_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_32x64 = av1_inv_txfm2d_add_32x64_neon;
+  }
   av1_inv_txfm2d_add_32x8 = av1_inv_txfm2d_add_32x8_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_32x8 = av1_inv_txfm2d_add_32x8_neon;
+  }
   av1_inv_txfm2d_add_4x16 = av1_inv_txfm2d_add_4x16_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_4x16 = av1_inv_txfm2d_add_4x16_neon;
+  }
   av1_inv_txfm2d_add_4x4 = av1_inv_txfm2d_add_4x4_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_4x4 = av1_inv_txfm2d_add_4x4_neon;
+  }
   av1_inv_txfm2d_add_4x8 = av1_inv_txfm2d_add_4x8_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_4x8 = av1_inv_txfm2d_add_4x8_neon;
+  }
   av1_inv_txfm2d_add_64x16 = av1_inv_txfm2d_add_64x16_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_64x16 = av1_inv_txfm2d_add_64x16_neon;
+  }
   av1_inv_txfm2d_add_64x32 = av1_inv_txfm2d_add_64x32_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_64x32 = av1_inv_txfm2d_add_64x32_neon;
+  }
   av1_inv_txfm2d_add_64x64 = av1_inv_txfm2d_add_64x64_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_64x64 = av1_inv_txfm2d_add_64x64_neon;
+  }
   av1_inv_txfm2d_add_8x16 = av1_inv_txfm2d_add_8x16_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_8x16 = av1_inv_txfm2d_add_8x16_neon;
+  }
   av1_inv_txfm2d_add_8x32 = av1_inv_txfm2d_add_8x32_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_8x32 = av1_inv_txfm2d_add_8x32_neon;
+  }
   av1_inv_txfm2d_add_8x4 = av1_inv_txfm2d_add_8x4_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_8x4 = av1_inv_txfm2d_add_8x4_neon;
+  }
   av1_inv_txfm2d_add_8x8 = av1_inv_txfm2d_add_8x8_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm2d_add_8x8 = av1_inv_txfm2d_add_8x8_neon;
+  }
   av1_inv_txfm_add = av1_inv_txfm_add_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_inv_txfm_add = av1_inv_txfm_add_neon;
+  }
   av1_lowbd_fwd_txfm = av1_lowbd_fwd_txfm_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_lowbd_fwd_txfm = av1_lowbd_fwd_txfm_neon;
+  }
   av1_nn_predict = av1_nn_predict_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_nn_predict = av1_nn_predict_neon;
+  }
   av1_quantize_fp = av1_quantize_fp_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_quantize_fp = av1_quantize_fp_neon;
+  }
   av1_quantize_fp_32x32 = av1_quantize_fp_32x32_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_quantize_fp_32x32 = av1_quantize_fp_32x32_neon;
+  }
   av1_quantize_fp_64x64 = av1_quantize_fp_64x64_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_quantize_fp_64x64 = av1_quantize_fp_64x64_neon;
+  }
   av1_quantize_lp = av1_quantize_lp_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_quantize_lp = av1_quantize_lp_neon;
+  }
   av1_resize_and_extend_frame = av1_resize_and_extend_frame_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_resize_and_extend_frame = av1_resize_and_extend_frame_neon;
+  }
   av1_round_shift_array = av1_round_shift_array_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_round_shift_array = av1_round_shift_array_neon;
+  }
   av1_selfguided_restoration = av1_selfguided_restoration_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_selfguided_restoration = av1_selfguided_restoration_neon;
+  }
   av1_txb_init_levels = av1_txb_init_levels_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_txb_init_levels = av1_txb_init_levels_neon;
+  }
   av1_warp_affine = av1_warp_affine_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_warp_affine = av1_warp_affine_neon;
+  }
   av1_wedge_sse_from_residuals = av1_wedge_sse_from_residuals_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_wedge_sse_from_residuals = av1_wedge_sse_from_residuals_neon;
+  }
   av1_wiener_convolve_add_src = av1_wiener_convolve_add_src_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     av1_wiener_convolve_add_src = av1_wiener_convolve_add_src_neon;
+  }
   cdef_copy_rect8_16bit_to_16bit = cdef_copy_rect8_16bit_to_16bit_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     cdef_copy_rect8_16bit_to_16bit = cdef_copy_rect8_16bit_to_16bit_neon;
+  }
   cdef_copy_rect8_8bit_to_16bit = cdef_copy_rect8_8bit_to_16bit_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     cdef_copy_rect8_8bit_to_16bit = cdef_copy_rect8_8bit_to_16bit_neon;
+  }
   cdef_filter_16_0 = cdef_filter_16_0_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     cdef_filter_16_0 = cdef_filter_16_0_neon;
+  }
   cdef_filter_16_1 = cdef_filter_16_1_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     cdef_filter_16_1 = cdef_filter_16_1_neon;
+  }
   cdef_filter_16_2 = cdef_filter_16_2_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     cdef_filter_16_2 = cdef_filter_16_2_neon;
+  }
   cdef_filter_16_3 = cdef_filter_16_3_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     cdef_filter_16_3 = cdef_filter_16_3_neon;
+  }
   cdef_filter_8_0 = cdef_filter_8_0_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     cdef_filter_8_0 = cdef_filter_8_0_neon;
+  }
   cdef_filter_8_1 = cdef_filter_8_1_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     cdef_filter_8_1 = cdef_filter_8_1_neon;
+  }
   cdef_filter_8_2 = cdef_filter_8_2_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     cdef_filter_8_2 = cdef_filter_8_2_neon;
+  }
   cdef_filter_8_3 = cdef_filter_8_3_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     cdef_filter_8_3 = cdef_filter_8_3_neon;
+  }
   cdef_find_dir = cdef_find_dir_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     cdef_find_dir = cdef_find_dir_neon;
+  }
   cdef_find_dir_dual = cdef_find_dir_dual_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     cdef_find_dir_dual = cdef_find_dir_dual_neon;
+  }
   cfl_get_luma_subsampling_420_lbd = cfl_get_luma_subsampling_420_lbd_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     cfl_get_luma_subsampling_420_lbd = cfl_get_luma_subsampling_420_lbd_neon;
+  }
   cfl_get_luma_subsampling_422_lbd = cfl_get_luma_subsampling_422_lbd_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     cfl_get_luma_subsampling_422_lbd = cfl_get_luma_subsampling_422_lbd_neon;
+  }
   cfl_get_luma_subsampling_444_lbd = cfl_get_luma_subsampling_444_lbd_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     cfl_get_luma_subsampling_444_lbd = cfl_get_luma_subsampling_444_lbd_neon;
+  }
   cfl_get_predict_lbd_fn = cfl_get_predict_lbd_fn_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     cfl_get_predict_lbd_fn = cfl_get_predict_lbd_fn_neon;
+  }
   cfl_get_subtract_average_fn = cfl_get_subtract_average_fn_c;
-  if (flags & HAS_NEON)
+  if (flags & HAS_NEON) {
     cfl_get_subtract_average_fn = cfl_get_subtract_average_fn_neon;
+  }
 }
 #endif
 

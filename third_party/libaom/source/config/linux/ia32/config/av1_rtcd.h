@@ -417,88 +417,55 @@ RTCD_EXTERN int64_t (*av1_calc_frame_error)(const uint8_t* const ref,
                                             int p_height,
                                             int p_stride);
 
-void av1_calc_indices_dim1_c(const int* data,
-                             const int* centroids,
+void av1_calc_indices_dim1_c(const int16_t* data,
+                             const int16_t* centroids,
                              uint8_t* indices,
                              int64_t* total_dist,
                              int n,
                              int k);
-void av1_calc_indices_dim1_sse2(const int* data,
-                                const int* centroids,
+void av1_calc_indices_dim1_sse2(const int16_t* data,
+                                const int16_t* centroids,
                                 uint8_t* indices,
                                 int64_t* total_dist,
                                 int n,
                                 int k);
-void av1_calc_indices_dim1_avx2(const int* data,
-                                const int* centroids,
+void av1_calc_indices_dim1_avx2(const int16_t* data,
+                                const int16_t* centroids,
                                 uint8_t* indices,
                                 int64_t* total_dist,
                                 int n,
                                 int k);
-RTCD_EXTERN void (*av1_calc_indices_dim1)(const int* data,
-                                          const int* centroids,
+RTCD_EXTERN void (*av1_calc_indices_dim1)(const int16_t* data,
+                                          const int16_t* centroids,
                                           uint8_t* indices,
                                           int64_t* total_dist,
                                           int n,
                                           int k);
 
-void av1_calc_indices_dim2_c(const int* data,
-                             const int* centroids,
+void av1_calc_indices_dim2_c(const int16_t* data,
+                             const int16_t* centroids,
                              uint8_t* indices,
                              int64_t* total_dist,
                              int n,
                              int k);
-void av1_calc_indices_dim2_sse2(const int* data,
-                                const int* centroids,
+void av1_calc_indices_dim2_sse2(const int16_t* data,
+                                const int16_t* centroids,
                                 uint8_t* indices,
                                 int64_t* total_dist,
                                 int n,
                                 int k);
-void av1_calc_indices_dim2_avx2(const int* data,
-                                const int* centroids,
+void av1_calc_indices_dim2_avx2(const int16_t* data,
+                                const int16_t* centroids,
                                 uint8_t* indices,
                                 int64_t* total_dist,
                                 int n,
                                 int k);
-RTCD_EXTERN void (*av1_calc_indices_dim2)(const int* data,
-                                          const int* centroids,
+RTCD_EXTERN void (*av1_calc_indices_dim2)(const int16_t* data,
+                                          const int16_t* centroids,
                                           uint8_t* indices,
                                           int64_t* total_dist,
                                           int n,
                                           int k);
-
-double av1_compute_cross_correlation_c(unsigned char* im1,
-                                       int stride1,
-                                       int x1,
-                                       int y1,
-                                       unsigned char* im2,
-                                       int stride2,
-                                       int x2,
-                                       int y2);
-double av1_compute_cross_correlation_sse4_1(unsigned char* im1,
-                                            int stride1,
-                                            int x1,
-                                            int y1,
-                                            unsigned char* im2,
-                                            int stride2,
-                                            int x2,
-                                            int y2);
-double av1_compute_cross_correlation_avx2(unsigned char* im1,
-                                          int stride1,
-                                          int x1,
-                                          int y1,
-                                          unsigned char* im2,
-                                          int stride2,
-                                          int x2,
-                                          int y2);
-RTCD_EXTERN double (*av1_compute_cross_correlation)(unsigned char* im1,
-                                                    int stride1,
-                                                    int x1,
-                                                    int y1,
-                                                    unsigned char* im2,
-                                                    int stride2,
-                                                    int x2,
-                                                    int y2);
 
 void av1_convolve_2d_scale_c(const uint8_t* src,
                              int src_stride,
@@ -2881,373 +2848,504 @@ static void setup_rtcd_internal(void) {
   (void)flags;
 
   aom_dist_wtd_comp_avg_upsampled_pred = aom_dist_wtd_comp_avg_upsampled_pred_c;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     aom_dist_wtd_comp_avg_upsampled_pred =
         aom_dist_wtd_comp_avg_upsampled_pred_ssse3;
+  }
   av1_apply_selfguided_restoration = av1_apply_selfguided_restoration_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_apply_selfguided_restoration = av1_apply_selfguided_restoration_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_apply_selfguided_restoration = av1_apply_selfguided_restoration_avx2;
+  }
   av1_block_error = av1_block_error_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_block_error = av1_block_error_avx2;
+  }
   av1_block_error_lp = av1_block_error_lp_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_block_error_lp = av1_block_error_lp_avx2;
+  }
   av1_build_compound_diffwtd_mask = av1_build_compound_diffwtd_mask_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_build_compound_diffwtd_mask = av1_build_compound_diffwtd_mask_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_build_compound_diffwtd_mask = av1_build_compound_diffwtd_mask_avx2;
+  }
   av1_build_compound_diffwtd_mask_d16 = av1_build_compound_diffwtd_mask_d16_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_build_compound_diffwtd_mask_d16 =
         av1_build_compound_diffwtd_mask_d16_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_build_compound_diffwtd_mask_d16 =
         av1_build_compound_diffwtd_mask_d16_avx2;
+  }
   av1_calc_frame_error = av1_calc_frame_error_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_calc_frame_error = av1_calc_frame_error_avx2;
+  }
   av1_calc_indices_dim1 = av1_calc_indices_dim1_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_calc_indices_dim1 = av1_calc_indices_dim1_avx2;
+  }
   av1_calc_indices_dim2 = av1_calc_indices_dim2_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_calc_indices_dim2 = av1_calc_indices_dim2_avx2;
-  av1_compute_cross_correlation = av1_compute_cross_correlation_c;
-  if (flags & HAS_SSE4_1)
-    av1_compute_cross_correlation = av1_compute_cross_correlation_sse4_1;
-  if (flags & HAS_AVX2)
-    av1_compute_cross_correlation = av1_compute_cross_correlation_avx2;
+  }
   av1_convolve_2d_scale = av1_convolve_2d_scale_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_convolve_2d_scale = av1_convolve_2d_scale_sse4_1;
+  }
   av1_convolve_2d_sr = av1_convolve_2d_sr_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_convolve_2d_sr = av1_convolve_2d_sr_avx2;
+  }
   av1_convolve_horiz_rs = av1_convolve_horiz_rs_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_convolve_horiz_rs = av1_convolve_horiz_rs_sse4_1;
+  }
   av1_convolve_x_sr = av1_convolve_x_sr_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_convolve_x_sr = av1_convolve_x_sr_avx2;
+  }
   av1_convolve_y_sr = av1_convolve_y_sr_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_convolve_y_sr = av1_convolve_y_sr_avx2;
+  }
   av1_dist_wtd_convolve_2d = av1_dist_wtd_convolve_2d_sse2;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     av1_dist_wtd_convolve_2d = av1_dist_wtd_convolve_2d_ssse3;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_dist_wtd_convolve_2d = av1_dist_wtd_convolve_2d_avx2;
+  }
   av1_dist_wtd_convolve_2d_copy = av1_dist_wtd_convolve_2d_copy_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_dist_wtd_convolve_2d_copy = av1_dist_wtd_convolve_2d_copy_avx2;
+  }
   av1_dist_wtd_convolve_x = av1_dist_wtd_convolve_x_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_dist_wtd_convolve_x = av1_dist_wtd_convolve_x_avx2;
+  }
   av1_dist_wtd_convolve_y = av1_dist_wtd_convolve_y_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_dist_wtd_convolve_y = av1_dist_wtd_convolve_y_avx2;
+  }
   av1_dr_prediction_z1 = av1_dr_prediction_z1_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_dr_prediction_z1 = av1_dr_prediction_z1_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_dr_prediction_z1 = av1_dr_prediction_z1_avx2;
+  }
   av1_dr_prediction_z2 = av1_dr_prediction_z2_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_dr_prediction_z2 = av1_dr_prediction_z2_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_dr_prediction_z2 = av1_dr_prediction_z2_avx2;
+  }
   av1_dr_prediction_z3 = av1_dr_prediction_z3_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_dr_prediction_z3 = av1_dr_prediction_z3_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_dr_prediction_z3 = av1_dr_prediction_z3_avx2;
+  }
   av1_filter_intra_edge = av1_filter_intra_edge_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_filter_intra_edge = av1_filter_intra_edge_sse4_1;
+  }
   av1_filter_intra_edge_high = av1_filter_intra_edge_high_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_filter_intra_edge_high = av1_filter_intra_edge_high_sse4_1;
+  }
   av1_filter_intra_predictor = av1_filter_intra_predictor_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_filter_intra_predictor = av1_filter_intra_predictor_sse4_1;
+  }
   av1_fwd_txfm2d_16x16 = av1_fwd_txfm2d_16x16_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_fwd_txfm2d_16x16 = av1_fwd_txfm2d_16x16_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_fwd_txfm2d_16x16 = av1_fwd_txfm2d_16x16_avx2;
+  }
   av1_fwd_txfm2d_16x32 = av1_fwd_txfm2d_16x32_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_fwd_txfm2d_16x32 = av1_fwd_txfm2d_16x32_sse4_1;
+  }
   av1_fwd_txfm2d_16x4 = av1_fwd_txfm2d_16x4_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_fwd_txfm2d_16x4 = av1_fwd_txfm2d_16x4_sse4_1;
+  }
   av1_fwd_txfm2d_16x8 = av1_fwd_txfm2d_16x8_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_fwd_txfm2d_16x8 = av1_fwd_txfm2d_16x8_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_fwd_txfm2d_16x8 = av1_fwd_txfm2d_16x8_avx2;
+  }
   av1_fwd_txfm2d_32x16 = av1_fwd_txfm2d_32x16_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_fwd_txfm2d_32x16 = av1_fwd_txfm2d_32x16_sse4_1;
+  }
   av1_fwd_txfm2d_32x32 = av1_fwd_txfm2d_32x32_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_fwd_txfm2d_32x32 = av1_fwd_txfm2d_32x32_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_fwd_txfm2d_32x32 = av1_fwd_txfm2d_32x32_avx2;
+  }
   av1_fwd_txfm2d_32x64 = av1_fwd_txfm2d_32x64_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_fwd_txfm2d_32x64 = av1_fwd_txfm2d_32x64_sse4_1;
+  }
   av1_fwd_txfm2d_4x4 = av1_fwd_txfm2d_4x4_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_fwd_txfm2d_4x4 = av1_fwd_txfm2d_4x4_sse4_1;
+  }
   av1_fwd_txfm2d_4x8 = av1_fwd_txfm2d_4x8_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_fwd_txfm2d_4x8 = av1_fwd_txfm2d_4x8_sse4_1;
+  }
   av1_fwd_txfm2d_64x32 = av1_fwd_txfm2d_64x32_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_fwd_txfm2d_64x32 = av1_fwd_txfm2d_64x32_sse4_1;
+  }
   av1_fwd_txfm2d_64x64 = av1_fwd_txfm2d_64x64_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_fwd_txfm2d_64x64 = av1_fwd_txfm2d_64x64_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_fwd_txfm2d_64x64 = av1_fwd_txfm2d_64x64_avx2;
+  }
   av1_fwd_txfm2d_8x16 = av1_fwd_txfm2d_8x16_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_fwd_txfm2d_8x16 = av1_fwd_txfm2d_8x16_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_fwd_txfm2d_8x16 = av1_fwd_txfm2d_8x16_avx2;
+  }
   av1_fwd_txfm2d_8x4 = av1_fwd_txfm2d_8x4_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_fwd_txfm2d_8x4 = av1_fwd_txfm2d_8x4_sse4_1;
+  }
   av1_fwd_txfm2d_8x8 = av1_fwd_txfm2d_8x8_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_fwd_txfm2d_8x8 = av1_fwd_txfm2d_8x8_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_fwd_txfm2d_8x8 = av1_fwd_txfm2d_8x8_avx2;
+  }
   av1_fwht4x4 = av1_fwht4x4_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_fwht4x4 = av1_fwht4x4_sse4_1;
+  }
   av1_get_crc32c_value = av1_get_crc32c_value_c;
-  if (flags & HAS_SSE4_2)
+  if (flags & HAS_SSE4_2) {
     av1_get_crc32c_value = av1_get_crc32c_value_sse4_2;
+  }
   av1_get_horver_correlation_full = av1_get_horver_correlation_full_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_get_horver_correlation_full = av1_get_horver_correlation_full_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_get_horver_correlation_full = av1_get_horver_correlation_full_avx2;
+  }
   av1_highbd_fwht4x4 = av1_highbd_fwht4x4_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_highbd_fwht4x4 = av1_highbd_fwht4x4_sse4_1;
+  }
   av1_highbd_inv_txfm_add = av1_highbd_inv_txfm_add_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_highbd_inv_txfm_add = av1_highbd_inv_txfm_add_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_highbd_inv_txfm_add = av1_highbd_inv_txfm_add_avx2;
+  }
   av1_highbd_inv_txfm_add_16x4 = av1_highbd_inv_txfm_add_16x4_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_highbd_inv_txfm_add_16x4 = av1_highbd_inv_txfm_add_16x4_sse4_1;
+  }
   av1_highbd_inv_txfm_add_4x16 = av1_highbd_inv_txfm_add_4x16_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_highbd_inv_txfm_add_4x16 = av1_highbd_inv_txfm_add_4x16_sse4_1;
+  }
   av1_highbd_inv_txfm_add_4x4 = av1_highbd_inv_txfm_add_4x4_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_highbd_inv_txfm_add_4x4 = av1_highbd_inv_txfm_add_4x4_sse4_1;
+  }
   av1_highbd_inv_txfm_add_4x8 = av1_highbd_inv_txfm_add_4x8_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_highbd_inv_txfm_add_4x8 = av1_highbd_inv_txfm_add_4x8_sse4_1;
+  }
   av1_highbd_inv_txfm_add_8x4 = av1_highbd_inv_txfm_add_8x4_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_highbd_inv_txfm_add_8x4 = av1_highbd_inv_txfm_add_8x4_sse4_1;
+  }
   av1_highbd_inv_txfm_add_8x8 = av1_highbd_inv_txfm_add_8x8_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_highbd_inv_txfm_add_8x8 = av1_highbd_inv_txfm_add_8x8_sse4_1;
+  }
   av1_highbd_iwht4x4_16_add = av1_highbd_iwht4x4_16_add_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_highbd_iwht4x4_16_add = av1_highbd_iwht4x4_16_add_sse4_1;
+  }
   av1_inv_txfm2d_add_4x4 = av1_inv_txfm2d_add_4x4_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_inv_txfm2d_add_4x4 = av1_inv_txfm2d_add_4x4_sse4_1;
+  }
   av1_inv_txfm2d_add_8x8 = av1_inv_txfm2d_add_8x8_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_inv_txfm2d_add_8x8 = av1_inv_txfm2d_add_8x8_sse4_1;
+  }
   av1_inv_txfm_add = av1_inv_txfm_add_c;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     av1_inv_txfm_add = av1_inv_txfm_add_ssse3;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_inv_txfm_add = av1_inv_txfm_add_avx2;
+  }
   av1_lowbd_fwd_txfm = av1_lowbd_fwd_txfm_sse2;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_lowbd_fwd_txfm = av1_lowbd_fwd_txfm_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_lowbd_fwd_txfm = av1_lowbd_fwd_txfm_avx2;
+  }
   av1_nn_fast_softmax_16 = av1_nn_fast_softmax_16_c;
-  if (flags & HAS_SSE3)
+  if (flags & HAS_SSE3) {
     av1_nn_fast_softmax_16 = av1_nn_fast_softmax_16_sse3;
+  }
   av1_nn_predict = av1_nn_predict_c;
-  if (flags & HAS_SSE3)
+  if (flags & HAS_SSE3) {
     av1_nn_predict = av1_nn_predict_sse3;
+  }
   av1_quantize_fp = av1_quantize_fp_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_quantize_fp = av1_quantize_fp_avx2;
+  }
   av1_quantize_fp_32x32 = av1_quantize_fp_32x32_c;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_quantize_fp_32x32 = av1_quantize_fp_32x32_avx2;
+  }
   av1_quantize_fp_64x64 = av1_quantize_fp_64x64_c;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_quantize_fp_64x64 = av1_quantize_fp_64x64_avx2;
+  }
   av1_quantize_lp = av1_quantize_lp_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_quantize_lp = av1_quantize_lp_avx2;
+  }
   av1_resize_and_extend_frame = av1_resize_and_extend_frame_c;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     av1_resize_and_extend_frame = av1_resize_and_extend_frame_ssse3;
+  }
   av1_round_shift_array = av1_round_shift_array_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_round_shift_array = av1_round_shift_array_sse4_1;
+  }
   av1_selfguided_restoration = av1_selfguided_restoration_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_selfguided_restoration = av1_selfguided_restoration_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_selfguided_restoration = av1_selfguided_restoration_avx2;
+  }
   av1_txb_init_levels = av1_txb_init_levels_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_txb_init_levels = av1_txb_init_levels_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_txb_init_levels = av1_txb_init_levels_avx2;
+  }
   av1_upsample_intra_edge = av1_upsample_intra_edge_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_upsample_intra_edge = av1_upsample_intra_edge_sse4_1;
+  }
   av1_upsample_intra_edge_high = av1_upsample_intra_edge_high_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_upsample_intra_edge_high = av1_upsample_intra_edge_high_sse4_1;
+  }
   av1_warp_affine = av1_warp_affine_c;
-  if (flags & HAS_SSE4_1)
+  if (flags & HAS_SSE4_1) {
     av1_warp_affine = av1_warp_affine_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     av1_warp_affine = av1_warp_affine_avx2;
+  }
   av1_wedge_compute_delta_squares = av1_wedge_compute_delta_squares_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_wedge_compute_delta_squares = av1_wedge_compute_delta_squares_avx2;
+  }
   av1_wedge_sign_from_residuals = av1_wedge_sign_from_residuals_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_wedge_sign_from_residuals = av1_wedge_sign_from_residuals_avx2;
+  }
   av1_wedge_sse_from_residuals = av1_wedge_sse_from_residuals_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_wedge_sse_from_residuals = av1_wedge_sse_from_residuals_avx2;
+  }
   av1_wiener_convolve_add_src = av1_wiener_convolve_add_src_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     av1_wiener_convolve_add_src = av1_wiener_convolve_add_src_avx2;
+  }
   cdef_copy_rect8_16bit_to_16bit = cdef_copy_rect8_16bit_to_16bit_sse2;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     cdef_copy_rect8_16bit_to_16bit = cdef_copy_rect8_16bit_to_16bit_ssse3;
-  if (flags & HAS_SSE4_1)
+  }
+  if (flags & HAS_SSE4_1) {
     cdef_copy_rect8_16bit_to_16bit = cdef_copy_rect8_16bit_to_16bit_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     cdef_copy_rect8_16bit_to_16bit = cdef_copy_rect8_16bit_to_16bit_avx2;
+  }
   cdef_copy_rect8_8bit_to_16bit = cdef_copy_rect8_8bit_to_16bit_sse2;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     cdef_copy_rect8_8bit_to_16bit = cdef_copy_rect8_8bit_to_16bit_ssse3;
-  if (flags & HAS_SSE4_1)
+  }
+  if (flags & HAS_SSE4_1) {
     cdef_copy_rect8_8bit_to_16bit = cdef_copy_rect8_8bit_to_16bit_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     cdef_copy_rect8_8bit_to_16bit = cdef_copy_rect8_8bit_to_16bit_avx2;
+  }
   cdef_filter_16_0 = cdef_filter_16_0_sse2;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     cdef_filter_16_0 = cdef_filter_16_0_ssse3;
-  if (flags & HAS_SSE4_1)
+  }
+  if (flags & HAS_SSE4_1) {
     cdef_filter_16_0 = cdef_filter_16_0_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     cdef_filter_16_0 = cdef_filter_16_0_avx2;
+  }
   cdef_filter_16_1 = cdef_filter_16_1_sse2;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     cdef_filter_16_1 = cdef_filter_16_1_ssse3;
-  if (flags & HAS_SSE4_1)
+  }
+  if (flags & HAS_SSE4_1) {
     cdef_filter_16_1 = cdef_filter_16_1_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     cdef_filter_16_1 = cdef_filter_16_1_avx2;
+  }
   cdef_filter_16_2 = cdef_filter_16_2_sse2;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     cdef_filter_16_2 = cdef_filter_16_2_ssse3;
-  if (flags & HAS_SSE4_1)
+  }
+  if (flags & HAS_SSE4_1) {
     cdef_filter_16_2 = cdef_filter_16_2_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     cdef_filter_16_2 = cdef_filter_16_2_avx2;
+  }
   cdef_filter_16_3 = cdef_filter_16_3_sse2;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     cdef_filter_16_3 = cdef_filter_16_3_ssse3;
-  if (flags & HAS_SSE4_1)
+  }
+  if (flags & HAS_SSE4_1) {
     cdef_filter_16_3 = cdef_filter_16_3_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     cdef_filter_16_3 = cdef_filter_16_3_avx2;
+  }
   cdef_filter_8_0 = cdef_filter_8_0_sse2;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     cdef_filter_8_0 = cdef_filter_8_0_ssse3;
-  if (flags & HAS_SSE4_1)
+  }
+  if (flags & HAS_SSE4_1) {
     cdef_filter_8_0 = cdef_filter_8_0_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     cdef_filter_8_0 = cdef_filter_8_0_avx2;
+  }
   cdef_filter_8_1 = cdef_filter_8_1_sse2;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     cdef_filter_8_1 = cdef_filter_8_1_ssse3;
-  if (flags & HAS_SSE4_1)
+  }
+  if (flags & HAS_SSE4_1) {
     cdef_filter_8_1 = cdef_filter_8_1_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     cdef_filter_8_1 = cdef_filter_8_1_avx2;
+  }
   cdef_filter_8_2 = cdef_filter_8_2_sse2;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     cdef_filter_8_2 = cdef_filter_8_2_ssse3;
-  if (flags & HAS_SSE4_1)
+  }
+  if (flags & HAS_SSE4_1) {
     cdef_filter_8_2 = cdef_filter_8_2_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     cdef_filter_8_2 = cdef_filter_8_2_avx2;
+  }
   cdef_filter_8_3 = cdef_filter_8_3_sse2;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     cdef_filter_8_3 = cdef_filter_8_3_ssse3;
-  if (flags & HAS_SSE4_1)
+  }
+  if (flags & HAS_SSE4_1) {
     cdef_filter_8_3 = cdef_filter_8_3_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     cdef_filter_8_3 = cdef_filter_8_3_avx2;
+  }
   cdef_find_dir = cdef_find_dir_sse2;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     cdef_find_dir = cdef_find_dir_ssse3;
-  if (flags & HAS_SSE4_1)
+  }
+  if (flags & HAS_SSE4_1) {
     cdef_find_dir = cdef_find_dir_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     cdef_find_dir = cdef_find_dir_avx2;
+  }
   cdef_find_dir_dual = cdef_find_dir_dual_sse2;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     cdef_find_dir_dual = cdef_find_dir_dual_ssse3;
-  if (flags & HAS_SSE4_1)
+  }
+  if (flags & HAS_SSE4_1) {
     cdef_find_dir_dual = cdef_find_dir_dual_sse4_1;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     cdef_find_dir_dual = cdef_find_dir_dual_avx2;
+  }
   cfl_get_luma_subsampling_420_lbd = cfl_get_luma_subsampling_420_lbd_c;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     cfl_get_luma_subsampling_420_lbd = cfl_get_luma_subsampling_420_lbd_ssse3;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     cfl_get_luma_subsampling_420_lbd = cfl_get_luma_subsampling_420_lbd_avx2;
+  }
   cfl_get_luma_subsampling_422_lbd = cfl_get_luma_subsampling_422_lbd_c;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     cfl_get_luma_subsampling_422_lbd = cfl_get_luma_subsampling_422_lbd_ssse3;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     cfl_get_luma_subsampling_422_lbd = cfl_get_luma_subsampling_422_lbd_avx2;
+  }
   cfl_get_luma_subsampling_444_lbd = cfl_get_luma_subsampling_444_lbd_c;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     cfl_get_luma_subsampling_444_lbd = cfl_get_luma_subsampling_444_lbd_ssse3;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     cfl_get_luma_subsampling_444_lbd = cfl_get_luma_subsampling_444_lbd_avx2;
+  }
   cfl_get_predict_lbd_fn = cfl_get_predict_lbd_fn_c;
-  if (flags & HAS_SSSE3)
+  if (flags & HAS_SSSE3) {
     cfl_get_predict_lbd_fn = cfl_get_predict_lbd_fn_ssse3;
-  if (flags & HAS_AVX2)
+  }
+  if (flags & HAS_AVX2) {
     cfl_get_predict_lbd_fn = cfl_get_predict_lbd_fn_avx2;
+  }
   cfl_get_subtract_average_fn = cfl_get_subtract_average_fn_sse2;
-  if (flags & HAS_AVX2)
+  if (flags & HAS_AVX2) {
     cfl_get_subtract_average_fn = cfl_get_subtract_average_fn_avx2;
+  }
 }
 #endif
 
