@@ -10,6 +10,7 @@ window.onmessage = (async e => {
     window.top.postMessage('FAIL: unexpected message', '*');
     return;
   }
+  const registration = await navigator.serviceWorker.register('../resources/empty-worker.js');
 
   await window.internals.observeUseCounter(document, kFeature);
   if (window.internals.isUseCounted(document, kFeature)) {
@@ -18,5 +19,7 @@ window.onmessage = (async e => {
   }
 
   window.top.postMessage('FAIL: !isUseCounted', '*');
+
+  registration.unregister();
 });
 </script>

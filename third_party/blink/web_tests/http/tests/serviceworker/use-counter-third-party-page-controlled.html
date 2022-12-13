@@ -32,18 +32,22 @@ function popup_page_loaded() {
     });
 }
 
-// This test registers a service worker and opens a cross-origin popup. The
-// popup creates an iframe same-origin with the opener page. The iframe
-// communicates whether it has observed UseCounter kThirdPartyServiceWorker.
+// This test opens a cross-origin popup and then the popup creates an iframe
+// that's same-origin with the opener page. In the iframe we create a service
+// worker and then the iframe communicates whether it has observed UseCounter
+// kThirdPartyServiceWorker. When storage partitioning is disabled, the
+// service worker will be shared between the top-level context and the iframe
+// (we could have created the service worker here, for instance). When storage
+// partitioning is enabled, though, service workers won't be shared between the
+// top-level site and the iframe. Therefore, we need to create the service
+// worker in the iframe so that a corresponding service worker is present and
+// will cause the kThirdPartyServiceWorker UseCounter to be hit.
 promise_test(async t => {
   const popup_url = get_host_info().HTTPS_REMOTE_ORIGIN +
             '/serviceworker/resources/use-counter-third-party-parent.html';
   const popup = window.open(popup_url);
   await popup_page_loaded();
 
-  const registration = await navigator.serviceWorker.register('resources/empty-worker.js');
-  t.add_cleanup(() => registration.unregister());
-  await wait_for_state(t, registration.installing, 'activated');
   return assert_subframe_has_use_counter(popup,
       'frame in the popup should have observed the use counter kThirdPartyServiceWorker');
 }, 'Test UseCounter for service worker controlled page in third party context.');
