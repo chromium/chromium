@@ -2841,13 +2841,6 @@ test("content_unittests") {
     "//third_party/mesa_headers",
   ]
 
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros:test_support",
-    ]
-  }
-
   if (is_mac) {
     data_deps += [ "//device/fido/strings:fido_test_strings" ]
   }
