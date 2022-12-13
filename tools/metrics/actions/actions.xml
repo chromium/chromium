@@ -20739,6 +20739,12 @@ should be able to be added at any place in this file.
   <description>User exited the iOS tab grid (by any means).</description>
 </action>
 
+<action name="MobileTabGridMoveToExistingTab">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <description>User moves from a Tab to an existing other Tab.</description>
+</action>
+
 <action name="MobileTabGridOpenIncognitoTab">
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>

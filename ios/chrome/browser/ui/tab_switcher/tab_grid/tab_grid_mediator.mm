@@ -474,6 +474,9 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     // is being selected, make sure that the consumer update its selected item.
     [self.consumer selectItemWithID:itemID];
     return;
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridMoveToExistingTab"));
   }
 
   // Avoid a reentrant activation. This is a fix for crbug.com/1134663, although
