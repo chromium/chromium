@@ -351,21 +351,17 @@ extensions::AppWindow* CreateAppWindow(Profile* profile,
 
 }  // namespace
 
-// Tests without creating `StartupAppLauncher` object.
-class StartupAppLauncherNoCreateTest
-    : public extensions::ExtensionServiceTestBase,
-      public KioskAppManager::Overrides {
+class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
+                               public KioskAppManager::Overrides {
  public:
-  StartupAppLauncherNoCreateTest()
+  StartupAppLauncherTest()
       : extensions::ExtensionServiceTestBase(
             std::make_unique<content::BrowserTaskEnvironment>(
                 content::BrowserTaskEnvironment::REAL_IO_THREAD)) {}
 
-  StartupAppLauncherNoCreateTest(const StartupAppLauncherNoCreateTest&) =
-      delete;
-  StartupAppLauncherNoCreateTest& operator=(
-      const StartupAppLauncherNoCreateTest&) = delete;
-  ~StartupAppLauncherNoCreateTest() override = default;
+  StartupAppLauncherTest(const StartupAppLauncherTest&) = delete;
+  StartupAppLauncherTest& operator=(const StartupAppLauncherTest&) = delete;
+  ~StartupAppLauncherTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -390,9 +386,14 @@ class StartupAppLauncherNoCreateTest
         extensions::CreateAndUseTestEventRouter(browser_context());
     app_launch_tracker_ =
         std::make_unique<AppLaunchTracker>(kTestPrimaryAppId, event_router);
+
+    startup_app_launcher_ = std::make_unique<StartupAppLauncher>(
+        profile(), kTestPrimaryAppId, /*should_skip_install=*/false,
+        &startup_launch_delegate_);
   }
 
   void TearDown() override {
+    startup_app_launcher_.reset();
     external_cache_ = nullptr;
 
     primary_app_provider_->ServiceShutdown();
@@ -437,6 +438,12 @@ class StartupAppLauncherNoCreateTest
         .AppendASCII("test_crx_file")
         .AppendASCII(app_id)
         .value();
+  }
+
+  void InitializeLauncherWithNetworkReady() {
+    startup_launch_delegate_.set_network_ready(true);
+    startup_app_launcher_->Initialize();
+    EXPECT_TRUE(startup_launch_delegate_.ExpectNoLaunchStateChanges());
   }
 
   [[nodiscard]] AssertionResult DownloadPrimaryApp(
@@ -587,6 +594,7 @@ class StartupAppLauncherNoCreateTest
  protected:
   TestAppLaunchDelegate startup_launch_delegate_;
 
+  std::unique_ptr<KioskAppLauncher> startup_app_launcher_;
   std::unique_ptr<AppLaunchTracker> app_launch_tracker_;
   std::unique_ptr<TestKioskLoaderVisitor> external_apps_loader_handler_;
 
@@ -604,50 +612,6 @@ class StartupAppLauncherNoCreateTest
   std::unique_ptr<extensions::ExternalProviderImpl> secondary_apps_provider_;
 
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-};
-
-// Tests that extension download backoff is reduced during Chrome app Kiosk
-// launch.
-TEST_F(StartupAppLauncherNoCreateTest, ExtensionDownloadBackoffReduced) {
-  ASSERT_TRUE(external_cache_);
-  EXPECT_FALSE(external_cache_->backoff_policy().has_value());
-
-  auto startup_app_launcher = std::make_unique<StartupAppLauncher>(
-      profile(), kTestPrimaryAppId, /*should_skip_install=*/false,
-      &startup_launch_delegate_);
-
-  ASSERT_TRUE(external_cache_->backoff_policy().has_value());
-  EXPECT_EQ(external_cache_->backoff_policy()->maximum_backoff_ms, 3000);
-
-  startup_app_launcher.reset();
-  EXPECT_FALSE(external_cache_->backoff_policy().has_value());
-}
-
-// Tests with `StartupAppLauncher` object created.
-class StartupAppLauncherTest : public StartupAppLauncherNoCreateTest {
- public:
-  // testing::Test:
-  void SetUp() override {
-    StartupAppLauncherNoCreateTest::SetUp();
-
-    startup_app_launcher_ = std::make_unique<StartupAppLauncher>(
-        profile(), kTestPrimaryAppId, /*should_skip_install=*/false,
-        &startup_launch_delegate_);
-  }
-
-  void TearDown() override {
-    startup_app_launcher_.reset();
-    StartupAppLauncherNoCreateTest::TearDown();
-  }
-
- protected:
-  void InitializeLauncherWithNetworkReady() {
-    startup_launch_delegate_.set_network_ready(true);
-    startup_app_launcher_->Initialize();
-    EXPECT_TRUE(startup_launch_delegate_.ExpectNoLaunchStateChanges());
-  }
-
-  std::unique_ptr<KioskAppLauncher> startup_app_launcher_;
 };
 
 TEST_F(StartupAppLauncherTest, PrimaryAppLaunchFlow) {

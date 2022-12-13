@@ -497,7 +497,7 @@ TEST_F(ExtensionDownloaderTest, TestMultipleUpdates) {
 TEST_F(ExtensionDownloaderTest, TestNoNetworkRetryAfterCacheMiss) {
   ExtensionDownloaderTestHelper helper;
 
-  helper.downloader().SetBackoffPolicy(kZeroBackoffPolicy);
+  helper.downloader().SetBackoffPolicyForTesting(&kZeroBackoffPolicy);
 
   ExtensionDownloaderTask task = CreateDownloaderTask(
       kTestExtensionId, extension_urls::GetWebstoreUpdateUrl());
@@ -524,7 +524,7 @@ TEST_F(ExtensionDownloaderTest, TestNoNetworkRetryAfterCacheMiss) {
 TEST_F(ExtensionDownloaderTest, TestManifestFetchFailureAfterCacheMiss) {
   ExtensionDownloaderTestHelper helper;
 
-  helper.downloader().SetBackoffPolicy(kZeroBackoffPolicy);
+  helper.downloader().SetBackoffPolicyForTesting(&kZeroBackoffPolicy);
 
   ExtensionDownloaderTask task = CreateDownloaderTask(
       kTestExtensionId, extension_urls::GetWebstoreUpdateUrl());
