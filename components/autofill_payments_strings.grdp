@@ -589,6 +589,9 @@
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" desc="Link text to learn more about virtual cards. Added to the end of the explanatory message of the virtual card enrollment dialog in IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_CONTENT_LABEL.">
     Learn about virtual cards
   </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_CARD_IMAGE_TOOLTIP" desc="The tooltip text shown in the virtual card enrollment bubble. This tooltip shows the network/issuer icon of the card that is being prompted to enroll.">
+    Card image
+  </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE" desc="The text shown in the virtual card option in the credit card suggestion list. It is shown as the value of the suggestion.">
     Virtual card
   </message>
