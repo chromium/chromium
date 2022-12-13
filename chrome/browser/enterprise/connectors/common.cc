@@ -101,6 +101,7 @@ RequestHandlerResult CalculateRequestHandlerResult(
 
   RequestHandlerResult result;
   result.complies = file_complies;
+  result.request_token = response.request_token();
   result.tag = tag;
   if (!file_complies) {
     if (upload_result ==

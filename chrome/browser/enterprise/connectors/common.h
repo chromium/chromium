@@ -196,6 +196,7 @@ struct RequestHandlerResult {
   bool complies;
   FinalContentAnalysisResult final_result;
   std::string tag;
+  std::string request_token;
 };
 
 // Calculates the result for the request handler based on the upload result and

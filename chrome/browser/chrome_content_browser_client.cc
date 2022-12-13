@@ -1453,8 +1453,7 @@ void HandleExpandedPaths(
              ChromeContentBrowserClient::IsClipboardPasteContentAllowedCallback
                  callback,
              const enterprise_connectors::ContentAnalysisDelegate::Data& data,
-             const enterprise_connectors::ContentAnalysisDelegate::Result&
-                 result) {
+             enterprise_connectors::ContentAnalysisDelegate::Result& result) {
             absl::optional<std::string> final_data;
             auto blocked = fsd->IndexesToBlock(result.paths_results);
             if (blocked.size() != paths.size()) {
@@ -1464,6 +1463,9 @@ void HandleExpandedPaths(
               for (size_t i = 0; i < paths.size(); ++i) {
                 if (blocked.count(i) == 0) {
                   string_paths.push_back(paths[i].AsUTF8Unsafe());
+                  DCHECK(result.paths_results[i]);
+                } else {
+                  result.paths_results[i] = false;
                 }
               }
               final_data = base::JoinString(string_paths, "\n");
@@ -1486,8 +1488,7 @@ void HandleStringData(
           [](ChromeContentBrowserClient::IsClipboardPasteContentAllowedCallback
                  callback,
              const enterprise_connectors::ContentAnalysisDelegate::Data& data,
-             const enterprise_connectors::ContentAnalysisDelegate::Result&
-                 result) {
+             enterprise_connectors::ContentAnalysisDelegate::Result& result) {
             std::move(callback).Run(
                 result.text_results[0]
                     ? absl::optional<std::string>(data.text[0])

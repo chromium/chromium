@@ -139,7 +139,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // Callback used with CreateForWebContents() that informs caller of verdict
   // of deep scans.
   using CompletionCallback =
-      base::OnceCallback<void(const Data& data, const Result& result)>;
+      base::OnceCallback<void(const Data& data, Result& result)>;
 
   // A factory function used in tests to create fake ContentAnalysisDelegate
   // instances.
@@ -209,6 +209,14 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
 
   // Showing the UI is not possible in unit tests, call this to disable it.
   static void DisableUIForTesting();
+
+  // Add a callback to allow tests to validate `AckAllRequests` will send the
+  // appropriate actions.
+  using OnAckAllRequestsCallback = base::OnceCallback<void(
+      const std::map<std::string,
+                     ContentAnalysisAcknowledgement::FinalAction>&)>;
+  static void SetOnAckAllRequestsCallbackForTesting(
+      OnAckAllRequestsCallback callback);
 
  protected:
   ContentAnalysisDelegate(content::WebContents* web_contents,
@@ -380,6 +388,9 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // up the user action represented by this ContentAnalysisDelegate.
   std::map<std::string, ContentAnalysisAcknowledgement::FinalAction>
       final_actions_;
+
+  // Results returned from files_request_handler_.
+  std::vector<RequestHandlerResult> files_request_results_;
 
   base::TimeTicks upload_start_time_;
 

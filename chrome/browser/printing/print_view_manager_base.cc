@@ -1184,8 +1184,9 @@ void PrintViewManagerBase::OnCompositedForContentAnalysis(
       base::BindOnce(
           [](base::OnceCallback<void(bool should_proceed)> callback,
              const enterprise_connectors::ContentAnalysisDelegate::Data& data,
-             const enterprise_connectors::ContentAnalysisDelegate::Result&
-                 result) { std::move(callback).Run(result.page_result); },
+             enterprise_connectors::ContentAnalysisDelegate::Result& result) {
+            std::move(callback).Run(result.page_result);
+          },
           std::move(callback)),
       safe_browsing::DeepScanAccessPoint::PRINT);
 }

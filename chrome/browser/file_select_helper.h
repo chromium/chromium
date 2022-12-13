@@ -230,7 +230,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   void ContentAnalysisCompletionCallback(
       std::vector<blink::mojom::FileChooserFileInfoPtr> list,
       const enterprise_connectors::ContentAnalysisDelegate::Data& data,
-      const enterprise_connectors::ContentAnalysisDelegate::Result& result);
+      enterprise_connectors::ContentAnalysisDelegate::Result& result);
 #endif
 
   // Finish the PerformContentAnalysisIfNeeded() handling after the

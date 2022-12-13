@@ -372,9 +372,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Unauthorized) {
   ContentAnalysisDelegate::CreateForWebContents(
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
-          [&quit_closure, &called](
-              const ContentAnalysisDelegate::Data& data,
-              const ContentAnalysisDelegate::Result& result) {
+          [&quit_closure, &called](const ContentAnalysisDelegate::Data& data,
+                                   ContentAnalysisDelegate::Result& result) {
             ASSERT_EQ(result.text_results.size(), 1u);
             ASSERT_EQ(result.paths_results.size(), 1u);
             ASSERT_TRUE(result.text_results[0]);
@@ -466,7 +465,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [&called](const ContentAnalysisDelegate::Data& data,
-                    const ContentAnalysisDelegate::Result& result) {
+                    ContentAnalysisDelegate::Result& result) {
             ASSERT_TRUE(result.text_results.empty());
             ASSERT_EQ(result.paths_results.size(), 2u);
             ASSERT_TRUE(result.paths_results[0]);
@@ -555,7 +554,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [&called](const ContentAnalysisDelegate::Data& data,
-                    const ContentAnalysisDelegate::Result& result) {
+                    ContentAnalysisDelegate::Result& result) {
             ASSERT_TRUE(result.paths_results.empty());
             ASSERT_EQ(result.text_results.size(), 2u);
             ASSERT_FALSE(result.text_results[0]);
@@ -639,7 +638,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [&called](const ContentAnalysisDelegate::Data& data,
-                    const ContentAnalysisDelegate::Result& result) {
+                    ContentAnalysisDelegate::Result& result) {
             ASSERT_TRUE(result.text_results.empty());
             ASSERT_EQ(result.paths_results.size(), 3u);
             for (bool paths_result : result.paths_results)
@@ -758,7 +757,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [this, &called](const ContentAnalysisDelegate::Data& data,
-                          const ContentAnalysisDelegate::Result& result) {
+                          ContentAnalysisDelegate::Result& result) {
             ASSERT_TRUE(result.text_results.empty());
             ASSERT_EQ(result.paths_results.size(), 1u);
             ASSERT_EQ(result.paths_results[0], expected_result());
@@ -856,7 +855,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [this, &called](const ContentAnalysisDelegate::Data& data,
-                          const ContentAnalysisDelegate::Result& result) {
+                          ContentAnalysisDelegate::Result& result) {
             ASSERT_TRUE(result.text_results.empty());
             ASSERT_EQ(result.paths_results.size(), 1u);
             ASSERT_EQ(result.paths_results[0], expected_result());
@@ -916,7 +915,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [this, &called](const ContentAnalysisDelegate::Data& data,
-                          const ContentAnalysisDelegate::Result& result) {
+                          ContentAnalysisDelegate::Result& result) {
             ASSERT_TRUE(result.paths_results.empty());
             ASSERT_TRUE(result.text_results.empty());
             ASSERT_EQ(result.page_result, expected_result());
@@ -1026,7 +1025,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [this, &called](const ContentAnalysisDelegate::Data& data,
-                          const ContentAnalysisDelegate::Result& result) {
+                          ContentAnalysisDelegate::Result& result) {
             ASSERT_TRUE(result.text_results.empty());
             ASSERT_EQ(result.paths_results.size(), 1u);
             ASSERT_EQ(result.paths_results[0], expected_result());
@@ -1152,9 +1151,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Paste) {
   ContentAnalysisDelegate::CreateForWebContents(
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
-          [&quit_closure, &called](
-              const ContentAnalysisDelegate::Data& data,
-              const ContentAnalysisDelegate::Result& result) {
+          [&quit_closure, &called](const ContentAnalysisDelegate::Data& data,
+                                   ContentAnalysisDelegate::Result& result) {
             ASSERT_EQ(result.text_results.size(), 1u);
             ASSERT_EQ(result.paths_results.size(), 0u);
             ASSERT_TRUE(result.text_results[0]);
@@ -1201,9 +1199,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Files) {
   ContentAnalysisDelegate::CreateForWebContents(
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
-          [&quit_closure, &called](
-              const ContentAnalysisDelegate::Data& data,
-              const ContentAnalysisDelegate::Result& result) {
+          [&quit_closure, &called](const ContentAnalysisDelegate::Data& data,
+                                   ContentAnalysisDelegate::Result& result) {
             ASSERT_EQ(result.text_results.size(), 0u);
             ASSERT_EQ(result.paths_results.size(), 2u);
             ASSERT_TRUE(result.paths_results[0]);

@@ -70,6 +70,12 @@ bool* UIEnabledStorage() {
   return &enabled;
 }
 
+ContentAnalysisDelegate::OnAckAllRequestsCallback* OnAckAllRequestsStorage() {
+  static base::NoDestructor<ContentAnalysisDelegate::OnAckAllRequestsCallback>
+      callback;
+  return callback.get();
+}
+
 }  // namespace
 
 StringAnalysisRequest::StringAnalysisRequest(
@@ -316,6 +322,12 @@ void ContentAnalysisDelegate::DisableUIForTesting() {
   *UIEnabledStorage() = false;
 }
 
+// static
+void ContentAnalysisDelegate::SetOnAckAllRequestsCallbackForTesting(
+    OnAckAllRequestsCallback callback) {
+  *OnAckAllRequestsStorage() = std::move(callback);
+}
+
 ContentAnalysisDelegate::ContentAnalysisDelegate(
     content::WebContents* web_contents,
     Data data,
@@ -395,6 +407,7 @@ void ContentAnalysisDelegate::FilesRequestCallback(
     }
     UpdateFinalResult(result, results[index].tag);
   }
+  files_request_results_ = std::move(results);
   files_request_complete_ = true;
 
   MaybeCompleteScanRequest();
@@ -608,12 +621,12 @@ void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
     return;
   }
 
-  AckAllRequests();
-
   // If showing the warning message, wait before running the callback. The
   // callback will be called either in BypassWarnings or Cancel.
   if (final_result_ != FinalContentAnalysisResult::WARNING)
     RunCallback();
+
+  AckAllRequests();
 
   if (!UpdateDialog() && data_uploaded_) {
     // No UI was shown.  Delete |this| to cleanup, unless UploadData isn't done
@@ -623,8 +636,22 @@ void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
 }
 
 void ContentAnalysisDelegate::RunCallback() {
-  if (!callback_.is_null())
-    std::move(callback_).Run(data_, result_);
+  if (callback_.is_null())
+    return;
+
+  std::move(callback_).Run(data_, result_);
+
+  // Since `result_` might have been tweaked by `callback_`, `final_actions_`
+  // need to be updated before Acks are sent.
+  for (size_t i = 0; i < result_.paths_results.size(); ++i) {
+    if (!result_.paths_results[i] && files_request_results_.size() > i &&
+        final_actions_.count(files_request_results_[i].request_token) &&
+        final_actions_[files_request_results_[i].request_token] ==
+            ContentAnalysisAcknowledgement::ALLOW) {
+      final_actions_[files_request_results_[i].request_token] =
+          ContentAnalysisAcknowledgement::BLOCK;
+    }
+  }
 }
 
 void ContentAnalysisDelegate::UpdateFinalResult(
@@ -637,17 +664,25 @@ void ContentAnalysisDelegate::UpdateFinalResult(
 }
 
 void ContentAnalysisDelegate::AckAllRequests() {
+  if (!OnAckAllRequestsStorage()->is_null())
+    std::move(*OnAckAllRequestsStorage()).Run(final_actions_);
+
   BinaryUploadService* upload_service = GetBinaryUploadService();
   if (!upload_service)
     return;
 
   for (const auto& token_and_action : final_actions_) {
-    auto ack = std::make_unique<safe_browsing::BinaryUploadService::Ack>(
-        data_.settings.cloud_or_local_settings);
-    ack->set_request_token(token_and_action.first);
-    ack->set_status(ContentAnalysisAcknowledgement::SUCCESS);
-    ack->set_final_action(token_and_action.second);
-    upload_service->MaybeAcknowledge(std::move(ack));
+    // Only have files that have a request token. Not having one implies that
+    // the agent never received the request for some reason (size, encryption,
+    // etc.) so it doesn't make sense to send an ack.
+    if (!token_and_action.first.empty()) {
+      auto ack = std::make_unique<safe_browsing::BinaryUploadService::Ack>(
+          data_.settings.cloud_or_local_settings);
+      ack->set_request_token(token_and_action.first);
+      ack->set_status(ContentAnalysisAcknowledgement::SUCCESS);
+      ack->set_final_action(token_and_action.second);
+      upload_service->MaybeAcknowledge(std::move(ack));
+    }
   }
 }
 

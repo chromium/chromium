@@ -373,7 +373,7 @@ void FileSelectHelper::PerformContentAnalysisIfNeeded(
 void FileSelectHelper::ContentAnalysisCompletionCallback(
     std::vector<blink::mojom::FileChooserFileInfoPtr> list,
     const enterprise_connectors::ContentAnalysisDelegate::Data& data,
-    const enterprise_connectors::ContentAnalysisDelegate::Result& result) {
+    enterprise_connectors::ContentAnalysisDelegate::Result& result) {
   if (AbortIfWebContentsDestroyed())
     return;
 
@@ -383,7 +383,8 @@ void FileSelectHelper::ContentAnalysisCompletionCallback(
   DCHECK_GE(list.size(), result.paths_results.size());
 
   // Remove any files that did not pass the deep scan. Non-native files are
-  // skipped.
+  // skipped. There is no need to update `result` since the logic here doesn't
+  // change verdicts.
   size_t i = 0;
   for (auto it = list.begin(); it != list.end();) {
     if ((*it)->is_native_file()) {

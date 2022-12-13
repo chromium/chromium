@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogBehaviorBrowserTest, Test) {
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
       base::BindOnce(
           [](bool* called, const ContentAnalysisDelegate::Data& data,
-             const ContentAnalysisDelegate::Result& result) { *called = true; },
+             ContentAnalysisDelegate::Result& result) { *called = true; },
           &called),
       safe_browsing::DeepScanAccessPoint::UPLOAD);
   run_loop.Run();
@@ -582,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCancelPendingScanBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
       base::BindOnce(
           [](bool* called, const ContentAnalysisDelegate::Data& data,
-             const ContentAnalysisDelegate::Result& result) {
+             ContentAnalysisDelegate::Result& result) {
             for (bool paths_result : result.paths_results)
               ASSERT_FALSE(paths_result);
             *called = true;
@@ -633,7 +633,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogWarningBrowserTest, Test) {
       base::BindOnce(
           [](bool* called, bool user_bypasses_warning,
              const ContentAnalysisDelegate::Data& data,
-             const ContentAnalysisDelegate::Result& result) {
+             ContentAnalysisDelegate::Result& result) {
             ASSERT_EQ(result.text_results.size(), 2u);
             ASSERT_EQ(result.text_results[0], user_bypasses_warning);
             ASSERT_EQ(result.text_results[1], user_bypasses_warning);
@@ -689,7 +689,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogAppearanceBrowserTest, Test) {
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [this, &called](const ContentAnalysisDelegate::Data& data,
-                          const ContentAnalysisDelegate::Result& result) {
+                          ContentAnalysisDelegate::Result& result) {
             for (bool paths_result : result.paths_results)
               ASSERT_EQ(paths_result, success());
             called = true;
@@ -749,7 +749,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogCustomMessageAppearanceBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [this, &called](const ContentAnalysisDelegate::Data& data,
-                          const ContentAnalysisDelegate::Result& result) {
+                          ContentAnalysisDelegate::Result& result) {
             for (bool paths_result : result.paths_results)
               ASSERT_EQ(paths_result, success());
             called = true;

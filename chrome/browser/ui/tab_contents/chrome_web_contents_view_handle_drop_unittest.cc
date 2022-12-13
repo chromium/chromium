@@ -91,20 +91,43 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
           bool scan_succeeds =
               (path.empty() && text_scan_succeeds_) ||
               (!path.empty() && !base::Contains(failing_file_scans_, path));
-          return scan_succeeds
-                     ? FakeDelegate::SuccessfulResponse(std::move(dlp_tag))
-                     : FakeDelegate::DlpResponse(
-                           enterprise_connectors::ContentAnalysisResponse::
-                               Result::SUCCESS,
-                           "block_rule",
-                           enterprise_connectors::ContentAnalysisResponse::
-                               Result::TriggeredRule::BLOCK);
+          enterprise_connectors::ContentAnalysisResponse response =
+              scan_succeeds
+                  ? FakeDelegate::SuccessfulResponse(std::move(dlp_tag))
+                  : FakeDelegate::DlpResponse(
+                        enterprise_connectors::ContentAnalysisResponse::Result::
+                            SUCCESS,
+                        "block_rule",
+                        enterprise_connectors::ContentAnalysisResponse::Result::
+                            TriggeredRule::BLOCK);
+          std::string request_token =
+              path.empty() ? "text_request_token" : path.AsUTF8Unsafe();
+          response.set_request_token(request_token);
+          if (path.empty()) {
+            expected_final_actions_[request_token] =
+                scan_succeeds ? enterprise_connectors::
+                                    ContentAnalysisAcknowledgement::ALLOW
+                              : enterprise_connectors::
+                                    ContentAnalysisAcknowledgement::BLOCK;
+          } else {
+            expected_final_actions_[request_token] =
+                failing_file_acks_.count(path)
+                    ? enterprise_connectors::ContentAnalysisAcknowledgement::
+                          BLOCK
+                    : enterprise_connectors::ContentAnalysisAcknowledgement::
+                          ALLOW;
+          }
+          return response;
         });
     enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
         base::BindRepeating(
             &enterprise_connectors::FakeContentAnalysisDelegate::Create,
             run_loop_->QuitClosure(), callback, "dm_token"));
     enterprise_connectors::ContentAnalysisDelegate::DisableUIForTesting();
+    enterprise_connectors::ContentAnalysisDelegate::
+        SetOnAckAllRequestsCallbackForTesting(base::BindOnce(
+            &ChromeWebContentsViewDelegateHandleOnPerformDrop::OnAckAllActions,
+            base::Unretained(this)));
   }
 
   // Common code for running the test cases.
@@ -113,6 +136,7 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
                bool successful_text_scan,
                std::set<base::FilePath> successful_file_paths) {
     current_requests_count_ = 0;
+    expected_final_actions_.clear();
     EnableDeepScanning(enable);
     SetTextScanSucceeds(successful_text_scan);
 
@@ -154,6 +178,18 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
     failing_file_scans_ = std::move(paths);
   }
 
+  void SetFailingFileAcks(std::set<base::FilePath> paths) {
+    failing_file_acks_ = std::move(paths);
+  }
+
+  void OnAckAllActions(
+      const std::map<
+          std::string,
+          enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction>&
+          final_actions) {
+    ASSERT_EQ(final_actions, expected_final_actions_);
+  }
+
   // Helpers to get text with sizes relative to the minimum required size of 100
   // bytes for scans to trigger.
   std::string large_text() const { return std::string(100, 'a'); }
@@ -171,6 +207,10 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
   int current_requests_count_ = 0;
   bool text_scan_succeeds_ = true;
   std::set<base::FilePath> failing_file_scans_;
+  std::set<base::FilePath> failing_file_acks_;
+  std::map<std::string,
+           enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction>
+      expected_final_actions_;
 };
 
 // When no drop data is specified, HandleOnPerformDrop() should indicate
@@ -277,12 +317,15 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformDrop, Files) {
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
           /*successful_file_paths*/ {path_1, path_2});
   SetFailingFileScans({path_1});
+  SetFailingFileAcks({path_1});
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
           /*successful_file_paths*/ {path_2});
   SetFailingFileScans({path_2});
+  SetFailingFileAcks({path_2});
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
           /*successful_file_paths*/ {path_1});
   SetFailingFileScans({path_1, path_2});
+  SetFailingFileAcks({path_1, path_2});
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
           /*successful_file_paths*/ {});
 }
@@ -325,33 +368,41 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformDrop, Directories) {
   // If any of the files in `folder_1` fail, the entire folder is removed from
   // the final DropData.
   SetFailingFileScans({path_1});
+  SetFailingFileAcks({path_1, path_2, path_3});
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
           /*successful_file_paths*/ {path_4, path_5});
   SetFailingFileScans({path_2});
+  SetFailingFileAcks({path_1, path_2, path_3});
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
           /*successful_file_paths*/ {path_4, path_5});
   SetFailingFileScans({path_3});
+  SetFailingFileAcks({path_1, path_2, path_3});
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
           /*successful_file_paths*/ {path_4, path_5});
 
   // The files in `folder_2` are individually in `data`, so one failing doesn't
   // prevent the other from being in the final result.
   SetFailingFileScans({path_4});
+  SetFailingFileAcks({path_4});
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
           /*successful_file_paths*/ {folder_1, path_5});
   SetFailingFileScans({path_5});
+  SetFailingFileAcks({path_5});
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
           /*successful_file_paths*/ {folder_1, path_4});
 
   // If any of the files in `folder_1` fail while the last 2 files also fail,
   // then there are no files at all in the final dropped data.
   SetFailingFileScans({path_1, path_4, path_5});
+  SetFailingFileAcks({path_1, path_2, path_3, path_4, path_5});
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
           /*successful_file_paths*/ {});
   SetFailingFileScans({path_2, path_4, path_5});
+  SetFailingFileAcks({path_1, path_2, path_3, path_4, path_5});
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
           /*successful_file_paths*/ {});
   SetFailingFileScans({path_3, path_4, path_5});
+  SetFailingFileAcks({path_1, path_2, path_3, path_4, path_5});
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
           /*successful_file_paths*/ {});
 }

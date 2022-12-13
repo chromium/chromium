@@ -28,7 +28,7 @@ void CompletionCallback(
     std::unique_ptr<enterprise_connectors::FilesScanData> files_scan_data,
     content::WebContentsViewDelegate::DropCompletionCallback callback,
     const enterprise_connectors::ContentAnalysisDelegate::Data& data,
-    const enterprise_connectors::ContentAnalysisDelegate::Result& result) {
+    enterprise_connectors::ContentAnalysisDelegate::Result& result) {
   // If there are no negative results, proceed with just `drop_data`.
   bool all_text_results_allowed = !base::Contains(result.text_results, false);
   bool all_file_results_allowed = !base::Contains(result.paths_results, false);
@@ -50,10 +50,26 @@ void CompletionCallback(
       files_scan_data->IndexesToBlock(result.paths_results);
 
   // If every file path should be blocked, the drop is aborted, otherwise it
-  // continues by blocking sub-elements of the list.
+  // continues by blocking sub-elements of the list. When everything is blocked,
+  // it implies that no `result.paths_results` is allowed.
   if (file_indexes_to_block.size() == drop_data.filenames.size()) {
+    for (size_t i = 0; i < data.paths.size(); ++i)
+      result.paths_results[i] = false;
+
     std::move(callback).Run(absl::nullopt);
     return;
+  }
+
+  // A specific index could be blocked due to its parent folder being
+  // blocked and not because it got a bad verdict itself, so `result` needs
+  // to be updated to reflect that.
+  DCHECK_EQ(data.paths.size(),
+            files_scan_data->expanded_paths_indexes().size());
+  for (size_t i = 0; i < data.paths.size(); ++i) {
+    int parent_index =
+        files_scan_data->expanded_paths_indexes().at(data.paths[i]);
+    if (file_indexes_to_block.count(parent_index))
+      result.paths_results[i] = false;
   }
 
   std::vector<ui::FileInfo> final_filenames;
