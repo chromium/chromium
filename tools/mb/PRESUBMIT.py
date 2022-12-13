@@ -44,28 +44,27 @@ def CheckTests(input_api, output_api):
 
 
 def _CommonChecks(input_api, output_api):
-  results = []
+  tests = []
 
   # Run Pylint over the files in the directory.
-  pylint_checks = input_api.canned_checks.GetPylint(
-      input_api,
-      output_api,
-      version='2.7',
-      # pylint complains about Checkfreeze not being defined, its probably
-      # finding a different PRESUBMIT.py. Note that this warning only appears if
-      # the number of Pylint jobs is greater than one.
-      files_to_skip=['PRESUBMIT_test.py'],
-      # Disabling this warning because this pattern - involving ToSrcRelPath -
-      # seems intrinsic to how mb_unittest.py is implemented.
-      disabled_warnings=[
-          'attribute-defined-outside-init',
-      ],
-  )
-  results.extend(input_api.RunTests(pylint_checks))
+  tests.extend(
+      input_api.canned_checks.GetPylint(
+          input_api,
+          output_api,
+          version='2.7',
+          # pylint complains about Checkfreeze not being defined, its probably
+          # finding a different PRESUBMIT.py. Note that this warning only
+          # appears if the number of Pylint jobs is greater than one.
+          files_to_skip=['PRESUBMIT_test.py'],
+          # Disabling this warning because this pattern involving ToSrcRelPath
+          # seems intrinsic to how mb_unittest.py is implemented.
+          disabled_warnings=[
+              'attribute-defined-outside-init',
+          ]))
 
   # Run the MB unittests.
-  results.extend(
-      input_api.canned_checks.RunUnitTestsInDirectory(input_api,
+  tests.extend(
+      input_api.canned_checks.GetUnitTestsInDirectory(input_api,
                                                       output_api,
                                                       '.',
                                                       [r'^.+_unittest\.py$'],
@@ -76,11 +75,14 @@ def _CommonChecks(input_api, output_api):
   # Validate the format of the mb_config.pyl file.
   cmd = [input_api.python3_executable, 'mb.py', 'validate']
   kwargs = {'cwd': input_api.PresubmitLocalPath()}
-  results.extend(input_api.RunTests([
+  tests.append(
       input_api.Command(name='mb_validate',
-                        cmd=cmd, kwargs=kwargs,
-                        message=output_api.PresubmitError)]))
+                        cmd=cmd,
+                        kwargs=kwargs,
+                        message=output_api.PresubmitError))
 
+  results = []
+  results.extend(input_api.RunTests(tests))
   results.extend(CheckFreeze(input_api, output_api))
   results.extend(CheckTests(input_api, output_api))
 

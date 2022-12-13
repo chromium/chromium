@@ -25,8 +25,8 @@ def CommonChecks(input_api, output_api):
       'PYTHONDONTWRITEBYTECODE': '1',
   })
 
-  output = []
-  output.extend(input_api.canned_checks.RunUnitTestsInDirectory(
+  tests = []
+  tests.extend(input_api.canned_checks.GetUnitTestsInDirectory(
       input_api,
       output_api,
       '.',
@@ -34,7 +34,7 @@ def CommonChecks(input_api, output_api):
       run_on_python2=False,
       run_on_python3=USE_PYTHON3,
       skip_shebang_check=True))
-  output.extend(input_api.canned_checks.RunUnitTestsInDirectory(
+  tests.extend(input_api.canned_checks.GetUnitTestsInDirectory(
       input_api,
       output_api,
       input_api.os_path.join(input_api.PresubmitLocalPath(),
@@ -44,7 +44,7 @@ def CommonChecks(input_api, output_api):
       run_on_python2=False,
       run_on_python3=USE_PYTHON3,
       skip_shebang_check=True))
-  output.extend(input_api.canned_checks.RunUnitTestsInDirectory(
+  tests.extend(input_api.canned_checks.GetUnitTestsInDirectory(
       input_api,
       output_api,
       input_api.os_path.join(input_api.PresubmitLocalPath(),
@@ -59,13 +59,13 @@ def CommonChecks(input_api, output_api):
     # These scripts don't run on Windows and should not be linted on Windows -
     # trying to do so will lead to spurious errors.
     files_to_skip += ('xvfb.py', '.*host_info.py')
-  output.extend(input_api.canned_checks.RunPylint(
+  tests.extend(input_api.canned_checks.GetPylint(
       input_api,
       output_api,
       files_to_skip=files_to_skip,
       version='2.7'))
 
-  return output
+  return input_api.RunTests(tests)
 
 
 def CheckChangeOnUpload(input_api, output_api):
