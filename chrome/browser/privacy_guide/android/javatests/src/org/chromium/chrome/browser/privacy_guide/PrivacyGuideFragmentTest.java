@@ -202,7 +202,7 @@ public class PrivacyGuideFragmentTest {
     @Test
     @SmallTest
     @Feature({"PrivacyGuide"})
-    public void testWelcomeCard_nextClickCompletionUserAction() {
+    public void testCompletionCard_nextClickCompletionUserAction() {
         launchPrivacyGuide();
         mActionTester = new UserActionTester();
         // Welcome page -> MSBB page
@@ -211,22 +211,18 @@ public class PrivacyGuideFragmentTest {
 
         // MSBB page -> Sync page
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
-        testButtons(true, false, false);
         onView(withText(R.string.next)).perform(click());
 
         // Sync page -> SB page
         ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
-        testButtons(true, true, false);
         onView(withText(R.string.next)).perform(click());
 
         // SB page -> Cookies page
         ViewUtils.waitForView(withText(R.string.privacy_guide_safe_browsing_intro));
-        testButtons(true, true, false);
         onView(withText(R.string.next)).perform(click());
 
         // Cookies page -> Complete page
         ViewUtils.waitForView(withText(R.string.privacy_guide_cookies_intro));
-        testButtons(false, true, true);
         onView(withText(R.string.privacy_guide_finish_button)).perform(click());
 
         // Complete page -> EXIT
