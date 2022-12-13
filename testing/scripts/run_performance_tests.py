@@ -345,7 +345,12 @@ def execute_gtest_perf_test(command_generator, output_paths, use_xvfb=False,
     traceback.print_exc()
     return_code = 1
   if os.path.exists(output_paths.perf_results):
-    if command_generator.executable_name in GTEST_CONVERSION_WHITELIST:
+    executable_name = command_generator.executable_name
+    if executable_name.startswith('bin/run_'):
+      # The executable is a wrapper used by Fuchsia. Remove the prefix to get
+      # the actual executable name.
+      executable_name = executable_name[8:]
+    if executable_name in GTEST_CONVERSION_WHITELIST:
       with path_util.SysPath(path_util.GetTracingDir()):
         # pylint: disable=no-name-in-module,import-outside-toplevel
         from tracing.value import gtest_json_converter
