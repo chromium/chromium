@@ -90,6 +90,12 @@ const ClientHintToDelegatedThirdPartiesHeader COMPONENT_EXPORT(NETWORK_CPP)
     ParseClientHintToDelegatedThirdPartiesHeader(const std::string& header,
                                                  MetaCHType type);
 
+// This is used by subclassed of ClientHintsControllerDelegate to track the
+// amount of time that persisting client hints takes.
+void COMPONENT_EXPORT(NETWORK_CPP)
+    LogClientHintsPersistenceMetrics(const base::TimeTicks& persistence_started,
+                                     std::size_t hints_stored);
+
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_CLIENT_HINTS_H_

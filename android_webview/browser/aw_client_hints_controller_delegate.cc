@@ -12,6 +12,7 @@
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
@@ -126,6 +127,7 @@ void AwClientHintsControllerDelegate::PersistClientHints(
   }
 
   // Assemble and store the list if no issues.
+  const auto& persistence_started = base::TimeTicks::Now();
   base::Value::List client_hints_list;
   client_hints_list.reserve(client_hints.size());
   for (const auto& entry : client_hints) {
@@ -139,6 +141,8 @@ void AwClientHintsControllerDelegate::PersistClientHints(
   ch_per_origin.Set(primary_origin.Serialize(), std::move(client_hints_list));
   pref_service_->SetDict(prefs::kClientHintsCachedPerOriginMap,
                          std::move(ch_per_origin));
+  network::LogClientHintsPersistenceMetrics(persistence_started,
+                                            client_hints.size());
 }
 
 void AwClientHintsControllerDelegate::SetAdditionalClientHints(
