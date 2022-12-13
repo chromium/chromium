@@ -107,32 +107,6 @@ TEST(TrustTokenStoreTest, DoesntReportNegativeTimeSinceLastIssuance) {
   EXPECT_EQ(my_store->TimeSinceLastIssuance(issuer), absl::nullopt);
 }
 
-TEST(TrustTokenStore, RecordsRedemptions) {
-  // A newly initialized store should not think it's
-  // recorded any redemptions.
-
-  auto my_store = TrustTokenStore::CreateForTesting(
-      std::make_unique<InMemoryTrustTokenPersister>());
-  SuitableTrustTokenOrigin issuer =
-      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com"));
-  SuitableTrustTokenOrigin toplevel =
-      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com"));
-  base::test::TaskEnvironment env(
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
-
-  EXPECT_EQ(my_store->TimeSinceLastRedemption(issuer, toplevel), absl::nullopt);
-
-  // Recording a redemption should result in the time
-  // since last redemption being correctly returned.
-
-  my_store->RecordRedemption(issuer, toplevel);
-  auto delta = base::Seconds(1);
-  env.AdvanceClock(delta);
-
-  EXPECT_THAT(my_store->TimeSinceLastRedemption(issuer, toplevel),
-              Optional(delta));
-}
-
 TEST(TrustTokenStoreTest, DoesntReportMissingOrMalformedRedemptionTimestamps) {
   auto my_persister = std::make_unique<InMemoryTrustTokenPersister>();
   auto* raw_persister = my_persister.get();

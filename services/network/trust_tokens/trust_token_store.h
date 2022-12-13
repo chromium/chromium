@@ -90,13 +90,8 @@ class TrustTokenStore {
   [[nodiscard]] virtual absl::optional<base::TimeDelta> TimeSinceLastIssuance(
       const SuitableTrustTokenOrigin& issuer);
 
-  // Updates the given (issuer, top-level) origin pair's last redemption time
-  // to now.
-  virtual void RecordRedemption(const SuitableTrustTokenOrigin& issuer,
-                                const SuitableTrustTokenOrigin& top_level);
-
   // Returns the time elapsed since the last redemption recorded by
-  // RecordRedemption for issuer |issuer| and top level |top_level|,
+  // SetRedemptionRecord for issuer |issuer| and top level |top_level|,
   // or nullopt in the following two cases:
   // 1. there was no prior redemption for the (issuer,
   // top-level origin) pair.

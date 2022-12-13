@@ -90,18 +90,6 @@ absl::optional<base::TimeDelta> TrustTokenStore::TimeSinceLastIssuance(
   return ret;
 }
 
-void TrustTokenStore::RecordRedemption(
-    const SuitableTrustTokenOrigin& issuer,
-    const SuitableTrustTokenOrigin& top_level) {
-  std::unique_ptr<TrustTokenIssuerToplevelPairConfig> config =
-      persister_->GetIssuerToplevelPairConfig(issuer, top_level);
-  if (!config)
-    config = std::make_unique<TrustTokenIssuerToplevelPairConfig>();
-  config->set_penultimate_redemption(config->last_redemption());
-  config->set_last_redemption(internal::TimeToString(base::Time::Now()));
-  persister_->SetIssuerToplevelPairConfig(issuer, top_level, std::move(config));
-}
-
 bool TrustTokenStore::IsRedemptionLimitHit(
     const SuitableTrustTokenOrigin& issuer,
     const SuitableTrustTokenOrigin& top_level) const {
