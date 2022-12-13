@@ -106,8 +106,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kNone = 0,  // Success
     kOther = 1,
     // Errors triggered by how RP calls FedCM API.
-    kTooManyRequests = 100,
-    kErrorCanceled = 101,
+    kRpFailure = 100,
     // User Failures.
     kUserFailure = 200,
     // Generic IDP Failures.

@@ -224,12 +224,9 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
     case FederatedAuthRequestResult::kSuccess: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kNone;
     }
-    case FederatedAuthRequestResult::kErrorTooManyRequests: {
-      return IdpNetworkRequestManager::MetricsEndpointErrorCode::
-          kTooManyRequests;
-    }
+    case FederatedAuthRequestResult::kErrorTooManyRequests:
     case FederatedAuthRequestResult::kErrorCanceled: {
-      return IdpNetworkRequestManager::MetricsEndpointErrorCode::kErrorCanceled;
+      return IdpNetworkRequestManager::MetricsEndpointErrorCode::kRpFailure;
     }
     case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::
