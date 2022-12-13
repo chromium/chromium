@@ -10,7 +10,6 @@
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './ambient_zero_state_svg_element.js';
 import '../../css/common.css.js';
 import '../../css/cros_button_style.css.js';
@@ -207,21 +206,26 @@ export class AmbientPreview extends WithPersonalizationStore {
    *   - if ||googlePhotosAlbumsPreviews_| is empty:
    *        - if |previewAlbums_| contains fewer than 4 albums, return one of
    *        their previews; otherwise return the first 4.
+   *
+   * If isAmbientSubpageUIChangeEnabled flag is on, max number of collage image
+   * will be 3 instead of 4.
    */
   private computeCollageImages_(): Url[] {
+    const maxLength =
+        loadTimeData.getBoolean('isAmbientSubpageUIChangeEnabled') ? 3 : 4;
     switch (this.topicSource_) {
       case TopicSource.kArtGallery:
         return (this.previewAlbums_ || []).map(album => album.url);
       case TopicSource.kGooglePhotos:
         if (isNonEmptyArray(this.googlePhotosAlbumsPreviews_)) {
-          return this.googlePhotosAlbumsPreviews_.length < 4 ?
+          return this.googlePhotosAlbumsPreviews_.length < maxLength ?
               [this.googlePhotosAlbumsPreviews_[0]] :
-              this.googlePhotosAlbumsPreviews_.slice(0, 4);
+              this.googlePhotosAlbumsPreviews_.slice(0, maxLength);
         }
         if (isNonEmptyArray(this.previewAlbums_)) {
-          return this.previewAlbums_.length < 4 ?
+          return this.previewAlbums_.length < maxLength ?
               [this.previewAlbums_[0].url] :
-              this.previewAlbums_.map(album => album.url).slice(0, 4);
+              this.previewAlbums_.map(album => album.url).slice(0, maxLength);
         }
     }
     return [];
@@ -257,6 +261,10 @@ export class AmbientPreview extends WithPersonalizationStore {
       classes.push('pre-ui-change');
     }
     return classes.join(' ');
+  }
+
+  private getThumbnailContainerClass_(): string {
+    return `thumbnail-${this.collageImages_.length} clickable`;
   }
 
   private getCollageContainerClass_(): string {

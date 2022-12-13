@@ -345,25 +345,6 @@ cr-button[aria-selected=true] {
   cursor: pointer;
 }
 
-paper-tooltip::part(tooltip) {
-  align-items: flex-end;
-  display: flex;
-  flex-direction: row;
-  height: 18px;
-  padding: 3px 8px;
-}
-
-paper-tooltip {
-  --paper-tooltip-background: var(--cros-tooltip-background-color);
-  --paper-tooltip-text-color: var(--cros-tooltip-label-color);
-}
-
-paper-tooltip span {
-  align-items: center;
-  display: flex;
-  font: var(--cros-body-2-font);
-}
-
 :host-context([dir=rtl]) iron-icon[icon='cr:chevron-right'] {
   transform: scaleX(-1);
 }

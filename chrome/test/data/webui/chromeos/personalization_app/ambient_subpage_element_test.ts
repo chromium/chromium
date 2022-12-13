@@ -115,7 +115,7 @@ suite('AmbientSubpageTest', function() {
 
     const previewItemPlaceholders =
         ambientPreview.shadowRoot!.querySelectorAll('.placeholder');
-    assertEquals(5, previewItemPlaceholders!.length);
+    assertEquals(6, previewItemPlaceholders!.length);
 
     // Should show image placeholders for the 3 theme items.
     const animationThemePlaceholder =
@@ -702,6 +702,10 @@ suite('AmbientSubpageTest', function() {
   test(
       'displays 4 image collage when there are enough photos in Google photos album',
       async () => {
+        // Disables `isAmbientSubpageUIChangeEnabled` to show the previous UI.
+        loadTimeData.overrideValues(
+            {['isAmbientSubpageUIChangeEnabled']: false});
+
         ambientSubpageElement = await displayMainSettings(
             TopicSource.kGooglePhotos, TemperatureUnit.kFahrenheit,
             /*ambientModeEnabled=*/ true);
@@ -724,6 +728,10 @@ suite('AmbientSubpageTest', function() {
   test(
       'displays 1 image collage when there are not enough photos in Google photos album',
       async () => {
+        // Disables `isAmbientSubpageUIChangeEnabled` to show the previous UI.
+        loadTimeData.overrideValues(
+            {['isAmbientSubpageUIChangeEnabled']: false});
+
         ambientSubpageElement = await displayMainSettings(
             TopicSource.kGooglePhotos, TemperatureUnit.kFahrenheit,
             /*ambientModeEnabled=*/ true);
@@ -748,6 +756,10 @@ suite('AmbientSubpageTest', function() {
   test(
       'displays preview urls from selected albums when there are zero preview photos in Google photos album',
       async () => {
+        // Disables `isAmbientSubpageUIChangeEnabled` to show the previous UI.
+        loadTimeData.overrideValues(
+            {['isAmbientSubpageUIChangeEnabled']: false});
+
         ambientSubpageElement = await displayMainSettings(
             TopicSource.kGooglePhotos, TemperatureUnit.kFahrenheit,
             /*ambientModeEnabled=*/ true);
