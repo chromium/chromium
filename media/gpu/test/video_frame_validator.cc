@@ -169,7 +169,7 @@ void VideoFrameValidator::ProcessVideoFrameTask(
       ASSERT_TRUE(video_frame_mapper_) << "Failed to create VideoFrameMapper";
     }
 
-    frame = video_frame_mapper_->Map(std::move(frame), PROT_READ | PROT_WRITE);
+    frame = video_frame_mapper_->Map(std::move(frame), PROT_READ);
     if (!frame) {
       LOG(ERROR) << "Failed to map video frame";
       return;
