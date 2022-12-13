@@ -54,10 +54,10 @@ class LanguageSettingsPrivateDelegateTest
     feature_list_.InitAndDisableFeature(spellcheck::kWinUseBrowserSpellChecker);
 #endif  // BUILDFLAG(IS_WIN)
 
-    base::ListValue language_codes;
+    base::Value::List language_codes;
     language_codes.Append("fr");
     profile()->GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
-                               language_codes);
+                               base::Value(std::move(language_codes)));
 
     SpellcheckServiceFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildSpellcheckService));

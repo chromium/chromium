@@ -63,10 +63,7 @@ namespace keys = extension_web_request_api_constants;
 namespace web_request = extensions::api::web_request;
 namespace dnr_api = extensions::api::declarative_net_request;
 
-using base::DictionaryValue;
-using base::ListValue;
 using base::Time;
-using base::Value;
 using helpers::CalculateOnAuthRequiredDelta;
 using helpers::CalculateOnBeforeRequestDelta;
 using helpers::CalculateOnBeforeSendHeadersDelta;
@@ -130,13 +127,14 @@ namespace {
 bool GenerateInfoSpec(content::BrowserContext* browser_context,
                       const std::string& values,
                       int* result) {
-  // Create a base::ListValue of strings.
-  base::ListValue list_value;
-  for (const std::string& cur :
-       base::SplitString(values, ",", base::KEEP_WHITESPACE,
-                         base::SPLIT_WANT_NONEMPTY))
-    list_value.Append(cur);
-  return ExtraInfoSpec::InitFromValue(browser_context, list_value, result);
+  // Create a base::Value::List of strings.
+  base::Value::List list;
+  for (const std::string& cur : base::SplitString(
+           values, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+    list.Append(cur);
+  }
+  return ExtraInfoSpec::InitFromValue(browser_context,
+                                      base::Value(std::move(list)), result);
 }
 
 }  // namespace

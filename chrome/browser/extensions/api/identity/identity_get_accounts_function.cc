@@ -34,7 +34,7 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
       IdentityManagerFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context()))
           ->GetAccountsWithRefreshTokens();
-  base::ListValue infos;
+  base::Value::List infos;
 
   if (accounts.empty()) {
     return RespondNow(WithArguments(std::move(infos)));

@@ -468,7 +468,7 @@ AutofillPrivateValidatePhoneNumbersFunction::Run() {
 
   api::autofill_private::ValidatePhoneParams* params = &parameters->params;
 
-  // Extract the phone numbers into a ListValue.
+  // Extract the phone numbers into a base::Value::List.
   base::Value::List phone_numbers;
   for (auto phone_number : params->phone_numbers) {
     phone_numbers.Append(phone_number);

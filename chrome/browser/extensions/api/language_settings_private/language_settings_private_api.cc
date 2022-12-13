@@ -424,14 +424,12 @@ LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction::Run() {
   std::vector<std::string> languages =
       translate_prefs->GetAlwaysTranslateLanguages();
 
-  std::unique_ptr<base::ListValue> always_translate_languages_ =
-      (std::make_unique<base::ListValue>());
+  base::Value::List always_translate_languages;
   for (const auto& entry : languages) {
-    always_translate_languages_->Append(entry);
+    always_translate_languages.Append(entry);
   }
 
-  return RespondNow(WithArguments(
-      base::Value::FromUniquePtrValue(std::move(always_translate_languages_))));
+  return RespondNow(WithArguments(std::move(always_translate_languages)));
 }
 
 LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction::
