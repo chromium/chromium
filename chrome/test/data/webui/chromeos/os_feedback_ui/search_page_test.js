@@ -13,7 +13,7 @@ import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {eventToPromise} from '../test_util.js';
+import {eventToPromise, isVisible} from '../test_util.js';
 
 export function searchPageTestSuite() {
   /** @type {?SearchPageElement} */
@@ -214,7 +214,7 @@ export function searchPageTestSuite() {
         'Whenever I try to open ANY file (MS or otherwise) I get a notice ' +
         'that says “checking to find Microsoft 365 Subscription” I have ' +
         'Office on my PC, but not on my Chromebook. How do I run Word Online ' +
-        'on a Chromebook? ';
+        'on a Chromebook?';
     textAreaElement.value = longTextNoResult;
     textAreaElement.dispatchEvent(new Event('input'));
     await flushTasks();
@@ -366,7 +366,7 @@ export function searchPageTestSuite() {
 
     const errorMsg = getElement('#emptyErrorContainer');
     // Verify that the error message is hidden in the beginning.
-    assertTrue(errorMsg.hidden);
+    assertFalse(isVisible(errorMsg));
 
     const textInput = getElement('#descriptionText');
     assertTrue(textInput.value.length === 0);
@@ -376,18 +376,30 @@ export function searchPageTestSuite() {
 
     const buttonContinue = getElement('#buttonContinue');
     buttonContinue.click();
-    // Verify that the message is not hidden now.
-    assertFalse(errorMsg.hidden);
-    assertEquals('Description is required', errorMsg.textContent.trim());
 
+    // Verify that the message is visible now.
+    assertTrue(isVisible(errorMsg));
+    assertEquals('Description is required', errorMsg.textContent.trim());
     // Verify that the textarea received focus again.
     assertEquals(getDeepActiveElement(), textInput);
+
+    // Now enter some spaces. The error message should still be visible.
+    textInput.value = '   ';
+    textInput.dispatchEvent(new Event('input'));
+
+    assertTrue(isVisible(errorMsg));
 
     // Now enter some text. The error message should be hidden again.
     textInput.value = 'hello';
     textInput.dispatchEvent(new Event('input'));
 
-    assertTrue(errorMsg.hidden);
+    assertFalse(isVisible(errorMsg));
+
+    // Verify that all whitespace input is treated as empty.
+    textInput.value = '   ';
+    buttonContinue.click();
+    assertTrue(isVisible(errorMsg));
+    assertEquals(getDeepActiveElement(), textInput);
   });
 
   /**

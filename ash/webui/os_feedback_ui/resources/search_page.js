@@ -229,10 +229,13 @@ export class SearchPageElement extends SearchPageElementBase {
   handleInputChanged_(e) {
     clearTimeout(this.searchTimerID_);
 
-    // As the user is typing, hide the error message.
-    this.hideError_();
+    const query = e.target.value.trim();
 
-    const query = e.target.value;
+    // As the user is typing, hide the error message.
+    if (query.length > 0) {
+      this.hideError_();
+    }
+
     const querySeqNo = this.getNextQuerySeqNo_();
     this.searchTimerID_ = setTimeout(() => {
       this.fetchHelpContent_(query, querySeqNo);
@@ -341,15 +344,6 @@ export class SearchPageElement extends SearchPageElementBase {
    * @return {!HTMLElement}
    * @private
    */
-  getDescriptionTextElement_() {
-    return /** @type {!HTMLElement} */ (
-        this.shadowRoot.querySelector('#descriptionText'));
-  }
-
-  /**
-   * @return {!HTMLElement}
-   * @private
-   */
   getErrorElement_() {
     return /** @type {!HTMLElement} */ (
         this.shadowRoot.querySelector('#emptyErrorContainer'));
@@ -367,7 +361,7 @@ export class SearchPageElement extends SearchPageElementBase {
     errorElement.hidden = false;
     errorElement.setAttribute('aria-hidden', false);
 
-    const descriptionTextElement = this.getDescriptionTextElement_();
+    const descriptionTextElement = this.getInputElement_();
     descriptionTextElement.classList.add('has-error');
   }
 
@@ -376,10 +370,15 @@ export class SearchPageElement extends SearchPageElementBase {
    */
   hideError_() {
     const errorElement = this.getErrorElement_();
+
+    if (errorElement.hidden) {
+      return;
+    }
+
     errorElement.hidden = true;
     errorElement.setAttribute('aria-hidden', true);
 
-    const descriptionTextElement = this.getDescriptionTextElement_();
+    const descriptionTextElement = this.getInputElement_();
     descriptionTextElement.classList.remove('has-error');
   }
 
@@ -400,7 +399,7 @@ export class SearchPageElement extends SearchPageElementBase {
   handleContinueButtonClicked_(e) {
     e.stopPropagation();
 
-    const textInput = this.getInputElement_().value;
+    const textInput = this.getInputElement_().value.trim();
     if (textInput.length === 0) {
       this.onInputInvalid_();
     } else {
