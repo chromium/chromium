@@ -316,7 +316,7 @@ void ExtensionTelemetryService::Shutdown() {
 }
 
 bool ExtensionTelemetryService::SignalDataPresent() {
-  return (extension_store_.empty());
+  return (extension_store_.size() > 0);
 }
 
 void ExtensionTelemetryService::AddSignal(
