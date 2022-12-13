@@ -125,6 +125,11 @@ OffTheRecordChromeBrowserStateImpl::CreateRequestContext(
   return io_data_->CreateMainRequestContextGetter(protocol_handlers).get();
 }
 
+base::WeakPtr<ChromeBrowserState>
+OffTheRecordChromeBrowserStateImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void OffTheRecordChromeBrowserStateImpl::ClearNetworkingHistorySince(
     base::Time time,
     base::OnceClosure completion) {

@@ -236,6 +236,10 @@ net::URLRequestContextGetter* TestChromeBrowserState::CreateRequestContext(
   return new net::TestURLRequestContextGetter(web::GetIOThreadTaskRunner({}));
 }
 
+base::WeakPtr<ChromeBrowserState> TestChromeBrowserState::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 sync_preferences::TestingPrefServiceSyncable*
 TestChromeBrowserState::GetTestingPrefService() {
   DCHECK(prefs_);

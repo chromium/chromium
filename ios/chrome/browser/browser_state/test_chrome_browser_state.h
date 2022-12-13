@@ -62,6 +62,7 @@ class TestChromeBrowserState final : public ChromeBrowserState {
                                    base::OnceClosure completion) override;
   net::URLRequestContextGetter* CreateRequestContext(
       ProtocolHandlerMap* protocol_handlers) override;
+  base::WeakPtr<ChromeBrowserState> AsWeakPtr() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override;
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
@@ -190,6 +191,8 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   // non-incognito ChromeBrowserState instance.
   std::unique_ptr<TestChromeBrowserState> otr_browser_state_;
   TestChromeBrowserState* original_browser_state_;
+
+  base::WeakPtrFactory<TestChromeBrowserState> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_TEST_CHROME_BROWSER_STATE_H_

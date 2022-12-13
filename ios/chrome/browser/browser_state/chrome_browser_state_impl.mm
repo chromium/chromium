@@ -242,6 +242,10 @@ net::URLRequestContextGetter* ChromeBrowserStateImpl::CreateRequestContext(
       .get();
 }
 
+base::WeakPtr<ChromeBrowserState> ChromeBrowserStateImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void ChromeBrowserStateImpl::ClearNetworkingHistorySince(
     base::Time time,
     base::OnceClosure completion) {

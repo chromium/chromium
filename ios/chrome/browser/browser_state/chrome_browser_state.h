@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "ios/chrome/browser/net/net_types.h"
 #include "ios/web/public/browser_state.h"
 #include "net/url_request/url_request_job_factory.h"
@@ -122,6 +123,9 @@ class ChromeBrowserState : public web::BrowserState {
   // GetRequestContext(). Should only be called once.
   virtual net::URLRequestContextGetter* CreateRequestContext(
       ProtocolHandlerMap* protocol_handlers) = 0;
+
+  // Returns a weak pointer to the current instance.
+  virtual base::WeakPtr<ChromeBrowserState> AsWeakPtr() = 0;
 
   // web::BrowserState
   net::URLRequestContextGetter* GetRequestContext() override;

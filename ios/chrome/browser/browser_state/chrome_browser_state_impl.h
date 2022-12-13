@@ -48,6 +48,7 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
                                    base::OnceClosure completion) override;
   net::URLRequestContextGetter* CreateRequestContext(
       ProtocolHandlerMap* protocol_handlers) override;
+  base::WeakPtr<ChromeBrowserState> AsWeakPtr() override;
 
   // BrowserState:
   bool IsOffTheRecord() const override;
@@ -93,6 +94,8 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   std::unique_ptr<ChromeBrowserStateImplIOData::Handle> io_data_;
 
   std::unique_ptr<PrefProxyConfigTracker> pref_proxy_config_tracker_;
+
+  base::WeakPtrFactory<ChromeBrowserStateImpl> weak_ptr_factory_{this};
 
   // STOP!!!! DO NOT ADD ANY MORE ITEMS HERE!!!!
   //
