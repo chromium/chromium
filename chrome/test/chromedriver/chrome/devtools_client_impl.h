@@ -18,6 +18,7 @@
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 #include "chrome/test/chromedriver/net/timeout.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace internal {
@@ -31,7 +32,7 @@ struct InspectorEvent {
   InspectorEvent();
   ~InspectorEvent();
   std::string method;
-  std::unique_ptr<base::DictionaryValue> params;
+  absl::optional<base::Value::Dict> params;
 };
 
 struct InspectorCommandResponse {
@@ -39,7 +40,7 @@ struct InspectorCommandResponse {
   ~InspectorCommandResponse();
   int id;
   std::string error;
-  std::unique_ptr<base::DictionaryValue> result;
+  absl::optional<base::Value::Dict> result;
 };
 
 }  // namespace internal

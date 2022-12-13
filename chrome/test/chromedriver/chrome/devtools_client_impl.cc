@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/javascript_dialog_manager.h"
 #include "chrome/test/chromedriver/chrome/log.h"
@@ -857,7 +858,7 @@ Status DevToolsClientImpl::SendCommandInternal(const std::string& method,
       if (!response.result) {
         return internal::ParseInspectorError(response.error);
       }
-      *result = std::move(*response.result);
+      *result = base::Value(std::move(*response.result));
     }
   } else {
     CHECK(!wait_for_response);
@@ -1003,7 +1004,7 @@ Status DevToolsClientImpl::ProcessEvent(const internal::InspectorEvent& event) {
     // see chromedriver/log_replay/devtools_log_reader.cc.
     VLOG(1) << "DevTools WebSocket Event: " << event.method
             << ::SessionId(session_id_) << " " << id_ << " "
-            << FormatValueForDisplay(*event.params);
+            << FormatValueForDisplay(base::Value(event.params->Clone()));
   }
 
   Status status{kOk};
@@ -1014,8 +1015,7 @@ Status DevToolsClientImpl::ProcessEvent(const internal::InspectorEvent& event) {
   // provide such a guarantee.
   // Therefore we perform this nullptr check here.
   if (event.params) {
-    status =
-        IsBidiMessage(event.method, event.params->GetDict(), &is_bidi_message);
+    status = IsBidiMessage(event.method, *event.params, &is_bidi_message);
     if (status.IsError()) {
       return status;
     }
@@ -1026,8 +1026,7 @@ Status DevToolsClientImpl::ProcessEvent(const internal::InspectorEvent& event) {
     // awaiting for the notification that the mapper was successfully launched.
     // Such event is intended for the infrastructural purposes.
     // We consume it and remember the fact that BiDiMapper is up and running.
-    if (event.params->GetDict()
-            .FindBoolByDottedPath("payload.launched")
+    if (event.params->FindBoolByDottedPath("payload.launched")
             .value_or(false)) {
       bidi_server_is_launched_ = true;
       return Status{kOk};
@@ -1081,7 +1080,7 @@ Status DevToolsClientImpl::ProcessCommandResponse(
     if (iter != response_info_map_.end())
       method = iter->second->method;
     if (response.result)
-      result = FormatValueForDisplay(*response.result);
+      result = FormatValueForDisplay(base::Value(response.result->Clone()));
     else
       result = response.error;
     // Note: ChromeDriver log-replay depends on the format of this logging.
@@ -1117,8 +1116,7 @@ Status DevToolsClientImpl::ProcessCommandResponse(
     response_info->response.id = response.id;
     response_info->response.error = response.error;
     if (response.result) {
-      response_info->response.result = base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(response.result->Clone()));
+      response_info->response.result = response.result->Clone();
     }
   }
 
@@ -1149,7 +1147,7 @@ Status DevToolsClientImpl::EnsureListenersNotifiedOfEvent() {
   while (unnotified_event_listeners_.size()) {
     DevToolsEventListener* listener = unnotified_event_listeners_.front();
     unnotified_event_listeners_.pop_front();
-    const base::Value::Dict& dict = unnotified_event_->params->GetDict();
+    const base::Value::Dict& dict = *unnotified_event_->params;
     Status status = listener->OnEvent(this, unnotified_event_->method, dict);
     if (status.IsError()) {
       unnotified_event_listeners_.clear();
@@ -1166,7 +1164,7 @@ Status DevToolsClientImpl::EnsureListenersNotifiedOfCommandResponse() {
     unnotified_cmd_response_listeners_.pop_front();
     Status status = listener->OnCommandSuccess(
         this, unnotified_cmd_response_info_->method,
-        unnotified_cmd_response_info_->response.result.get(),
+        base::OptionalToPtr(unnotified_cmd_response_info_->response.result),
         unnotified_cmd_response_info_->command_timeout);
     if (status.IsError())
       return status;
@@ -1249,11 +1247,9 @@ bool ParseInspectorMessage(const std::string& message,
 
           base::Value::Dict* cdp_params = payload_params->FindDict("cdpParams");
           if (cdp_params) {
-            event->params =
-                base::DictionaryValue::From(base::Value::ToUniquePtrValue(
-                    base::Value(std::move(*cdp_params))));
+            event->params = std::move(*cdp_params);
           } else {
-            event->params = std::make_unique<base::DictionaryValue>();
+            event->params = base::Value::Dict();
           }
           return true;
         } else {  // CDP command response
@@ -1278,14 +1274,11 @@ bool ParseInspectorMessage(const std::string& message,
           // So, if neither "error" nor "result" keys are present, just provide
           // a blank result dictionary.
           if (cdp_result) {
-            command_response->result =
-                base::DictionaryValue::From(base::Value::ToUniquePtrValue(
-                    base::Value(std::move(*cdp_result))));
+            command_response->result = std::move(*cdp_result);
           } else if (cdp_error) {
             base::JSONWriter::Write(*cdp_error, &command_response->error);
           } else {
-            command_response->result =
-                std::make_unique<base::DictionaryValue>();
+            command_response->result = base::Value::Dict();
           }
           return true;
         }
@@ -1307,10 +1300,9 @@ bool ParseInspectorMessage(const std::string& message,
     *type = kEventMessageType;
     event->method = *method;
     if (params) {
-      event->params = base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(base::Value(params->Clone())));
+      event->params = params->Clone();
     } else {
-      event->params = std::make_unique<base::DictionaryValue>();
+      event->params = base::Value::Dict();
     }
     return true;
   } else if (id_value->is_int()) {
@@ -1322,13 +1314,12 @@ bool ParseInspectorMessage(const std::string& message,
     // So, if neither "error" nor "result" keys are present, just provide
     // a blank result dictionary.
     if (base::Value::Dict* unscoped_result = message_dict->FindDict("result")) {
-      command_response->result = base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(base::Value(unscoped_result->Clone())));
+      command_response->result = std::move(*unscoped_result);
     } else if (base::Value::Dict* unscoped_error =
                    message_dict->FindDict("error")) {
       base::JSONWriter::Write(*unscoped_error, &command_response->error);
     } else {
-      command_response->result = std::make_unique<base::DictionaryValue>();
+      command_response->result = base::Value::Dict();
     }
     return true;
   }

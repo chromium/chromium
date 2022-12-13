@@ -399,12 +399,3 @@ void NavigationTracker::ClearFrameStates() {
   frame_to_state_map_.clear();
   SetCurrentFrameInvalid();
 }
-
-Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
-                                           const std::string& method,
-                                           const base::DictionaryValue* result,
-                                           const Timeout& command_timeout) {
-  const base::Value::Dict* dict = result->GetIfDict();
-  DCHECK(dict);
-  return OnCommandSuccess(client, method, dict, command_timeout);
-}

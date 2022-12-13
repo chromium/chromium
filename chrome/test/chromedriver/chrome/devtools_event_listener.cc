@@ -22,11 +22,10 @@ Status DevToolsEventListener::OnEvent(DevToolsClient* client,
   return Status(kOk);
 }
 
-Status DevToolsEventListener::OnCommandSuccess(
-    DevToolsClient* client,
-    const std::string& method,
-    const base::DictionaryValue* result,
-    const Timeout& command_timeout) {
+Status DevToolsEventListener::OnCommandSuccess(DevToolsClient* client,
+                                               const std::string& method,
+                                               const base::Value::Dict* result,
+                                               const Timeout& command_timeout) {
   return Status(kOk);
 }
 
