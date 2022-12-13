@@ -81,25 +81,12 @@ public final class WebViewPackageHelper {
     private static PackageInfo getNotYetLoadedWebViewPackageInfo(Context context) {
         String webviewPackageName;
         try {
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
-                Class<?> webViewFactoryClass = Class.forName("android.webkit.WebViewFactory");
-
-                webviewPackageName = (String) webViewFactoryClass.getMethod("getWebViewPackageName")
-                                             .invoke(null);
-            } else {
-                Class<?> webviewUpdateServiceClass =
-                        Class.forName("android.webkit.WebViewUpdateService");
-                webviewPackageName =
-                        (String) webviewUpdateServiceClass.getMethod("getCurrentWebViewPackageName")
-                                .invoke(null);
-            }
-        } catch (ClassNotFoundException e) {
-            return null;
-        } catch (IllegalAccessException e) {
-            return null;
-        } catch (InvocationTargetException e) {
-            return null;
-        } catch (NoSuchMethodException e) {
+            Class<?> webviewUpdateServiceClass =
+                    Class.forName("android.webkit.WebViewUpdateService");
+            webviewPackageName =
+                    (String) webviewUpdateServiceClass.getMethod("getCurrentWebViewPackageName")
+                            .invoke(null);
+        } catch (Exception e) {
             return null;
         }
         if (webviewPackageName == null) return null;
