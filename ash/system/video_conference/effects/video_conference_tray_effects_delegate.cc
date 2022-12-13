@@ -24,4 +24,15 @@ const VcHostedEffect* VcEffectsDelegate::GetEffect(int index) {
   return effects_[index].get();
 }
 
+std::vector<VcHostedEffect*> VcEffectsDelegate::GetEffects(VcEffectType type) {
+  std::vector<VcHostedEffect*> effects_of_type;
+
+  for (auto& effect : effects_) {
+    if (effect->type() == type)
+      effects_of_type.push_back(effect.get());
+  }
+
+  return effects_of_type;
+}
+
 }  // namespace ash

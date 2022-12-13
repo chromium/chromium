@@ -9,9 +9,6 @@
 
 namespace ash {
 
-FakeVideoConferenceTrayController::FakeVideoConferenceTrayController() =
-    default;
-
 void FakeVideoConferenceTrayController::SetCameraMuted(bool muted) {
   camera_muted_ = muted;
   OnCameraSWPrivacySwitchStateChanged(

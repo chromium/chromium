@@ -15,11 +15,13 @@ namespace ash {
 class ASH_EXPORT FakeVideoConferenceTrayController
     : public VideoConferenceTrayController {
  public:
-  FakeVideoConferenceTrayController();
+  FakeVideoConferenceTrayController() = default;
+
   FakeVideoConferenceTrayController(const FakeVideoConferenceTrayController&) =
       delete;
   FakeVideoConferenceTrayController& operator=(
       const FakeVideoConferenceTrayController&) = delete;
+
   ~FakeVideoConferenceTrayController() override = default;
 
   // VideoConferenceTrayController:

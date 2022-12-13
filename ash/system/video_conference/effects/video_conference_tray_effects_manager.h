@@ -49,6 +49,15 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
   // objects.
   EffectDataTable GetToggleEffectButtonTable();
 
+  // Returns 'true' if there are any `VcHostedEffect`
+  // objects of type `VcEffectType::kSetValue`, 'false'
+  // otherwise.
+  bool HasSetValueEffects();
+
+  // Returns a vector of `VcHostedEffect` objects of type
+  // `VcEffectType::kSetValue`, in no special order.
+  EffectDataVector GetSetValueEffects();
+
  private:
   // Returns a vector of `VcHostedEffect` objects of type
   // `VcEffectType::kToggle`, in no special order.

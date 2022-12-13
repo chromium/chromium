@@ -104,7 +104,7 @@ class ASH_EXPORT VcHostedEffect {
   void AddState(std::unique_ptr<VcEffectState> state);
 
   // Retrieves a raw pointer to the `VcEffectState` at `index`.
-  const VcEffectState* GetState(int index);
+  const VcEffectState* GetState(int index) const;
 
   VcEffectType type() const { return type_; }
   void set_id(int id) { id_ = id; }

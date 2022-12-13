@@ -22,19 +22,27 @@ namespace ash::fake_video_conference {
 class SimpleToggleEffect : public VcEffectsDelegate {
  public:
   // Simplest of all, no `icon` and no `accessible_name_id`, for unit tests.
+  explicit SimpleToggleEffect(const std::u16string& label_text);
+  // Allows setting `icon` and `accessible_name_id` if desired, for unit tests
+  // or the emulator.
   SimpleToggleEffect(const std::u16string& label_text,
-                     views::Button::PressedCallback button_callback);
-  // Allows setting `icon` if desired, and requires `accessible_name_id`, for
-  // unit tests or the emulator.
-  SimpleToggleEffect(const gfx::VectorIcon* icon,
-                     const std::u16string& label_text,
-                     int accessible_name_id,
-                     views::Button::PressedCallback button_callback);
+                     absl::optional<const gfx::VectorIcon*> icon,
+                     absl::optional<int> accessible_name_id);
 
   SimpleToggleEffect(const SimpleToggleEffect&) = delete;
   SimpleToggleEffect& operator=(const SimpleToggleEffect&) = delete;
 
   ~SimpleToggleEffect() override = default;
+
+  // VcEffectsDelegate:
+  int GetEffectState(int effect_id) override;
+  void OnEffectControlActivated(int effect_id, int value) override;
+
+  int num_activations_for_testing() { return num_activations_for_testing_; }
+
+ private:
+  // Number of times the control has been activated, used by unit tests.
+  int num_activations_for_testing_ = 0;
 };
 
 // Delegates that host a series of "fake" effects used in unit tests and the
@@ -48,10 +56,6 @@ class ASH_EXPORT CatEarsEffect : public SimpleToggleEffect {
   CatEarsEffect& operator=(const CatEarsEffect&) = delete;
 
   ~CatEarsEffect() override = default;
-
-  // VcEffectsDelegate:
-  int GetEffectState(int effect_id) override;
-  void OnEffectControlActivated(int effect_id, int value) override;
 };
 
 class ASH_EXPORT DogFurEffect : public SimpleToggleEffect {
@@ -62,10 +66,6 @@ class ASH_EXPORT DogFurEffect : public SimpleToggleEffect {
   DogFurEffect& operator=(const DogFurEffect&) = delete;
 
   ~DogFurEffect() override = default;
-
-  // VcEffectsDelegate:
-  int GetEffectState(int effect_id) override;
-  void OnEffectControlActivated(int effect_id, int value) override;
 };
 
 class ASH_EXPORT SpaceshipEffect : public SimpleToggleEffect {
@@ -76,10 +76,6 @@ class ASH_EXPORT SpaceshipEffect : public SimpleToggleEffect {
   SpaceshipEffect& operator=(const SpaceshipEffect&) = delete;
 
   ~SpaceshipEffect() override = default;
-
-  // VcEffectsDelegate:
-  int GetEffectState(int effect_id) override;
-  void OnEffectControlActivated(int effect_id, int value) override;
 };
 
 class ASH_EXPORT OfficeBunnyEffect : public SimpleToggleEffect {
@@ -90,10 +86,6 @@ class ASH_EXPORT OfficeBunnyEffect : public SimpleToggleEffect {
   OfficeBunnyEffect& operator=(const OfficeBunnyEffect&) = delete;
 
   ~OfficeBunnyEffect() override = default;
-
-  // VcEffectsDelegate:
-  int GetEffectState(int effect_id) override;
-  void OnEffectControlActivated(int effect_id, int value) override;
 };
 
 class ASH_EXPORT CalmForestEffect : public SimpleToggleEffect {
@@ -104,10 +96,6 @@ class ASH_EXPORT CalmForestEffect : public SimpleToggleEffect {
   CalmForestEffect& operator=(const CalmForestEffect&) = delete;
 
   ~CalmForestEffect() override = default;
-
-  // VcEffectsDelegate:
-  int GetEffectState(int effect_id) override;
-  void OnEffectControlActivated(int effect_id, int value) override;
 };
 
 class ASH_EXPORT StylishKitchenEffect : public SimpleToggleEffect {
@@ -118,10 +106,6 @@ class ASH_EXPORT StylishKitchenEffect : public SimpleToggleEffect {
   StylishKitchenEffect& operator=(const StylishKitchenEffect&) = delete;
 
   ~StylishKitchenEffect() override = default;
-
-  // VcEffectsDelegate:
-  int GetEffectState(int effect_id) override;
-  void OnEffectControlActivated(int effect_id, int value) override;
 };
 
 class ASH_EXPORT GreenhouseEffect : public SimpleToggleEffect {
@@ -132,10 +116,6 @@ class ASH_EXPORT GreenhouseEffect : public SimpleToggleEffect {
   GreenhouseEffect& operator=(const GreenhouseEffect&) = delete;
 
   ~GreenhouseEffect() override = default;
-
-  // VcEffectsDelegate:
-  int GetEffectState(int effect_id) override;
-  void OnEffectControlActivated(int effect_id, int value) override;
 };
 
 // Delegate that hosts a set-value effect.
@@ -146,6 +126,7 @@ class ASH_EXPORT ShaggyFurEffect : public VcEffectsDelegate {
     kBald = 0,
     kBuzzcut = 1,
     kThick = 2,
+    kMaxNumValues = 3,
   };
 
   ShaggyFurEffect();
@@ -158,6 +139,15 @@ class ASH_EXPORT ShaggyFurEffect : public VcEffectsDelegate {
   // VcEffectsDelegate:
   int GetEffectState(int effect_id) override;
   void OnEffectControlActivated(int effect_id, int value) override;
+
+  // Returns the number of times the button/state for `value` has been
+  // activated.
+  int GetNumActivationsForTesting(int value);
+
+ private:
+  // Number of times each value has been clicked, one count for each value in
+  // `FurShagginess`.
+  std::vector<int> num_activations_for_testing_;
 };
 
 }  // namespace ash::fake_video_conference

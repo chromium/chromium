@@ -42,6 +42,9 @@ class ASH_EXPORT VcEffectsDelegate {
   // Retrieves the `VcHostedEffect` at `index`.
   const VcHostedEffect* GetEffect(int index);
 
+  // Retrieves a std::vector<> of hosted effects of the passed-in `type`.
+  std::vector<VcHostedEffect*> GetEffects(VcEffectType type);
+
   // Invoked when the UI controls are being constructed, to get the actual
   // effect state. `effect_id` specifies the effect whose state is requested,
   // and can be ignored if only one effect is being hosted.

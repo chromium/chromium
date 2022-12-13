@@ -32,7 +32,7 @@ void VcHostedEffect::AddState(std::unique_ptr<VcEffectState> state) {
   states_.push_back(std::move(state));
 }
 
-const VcEffectState* VcHostedEffect::GetState(int index) {
+const VcEffectState* VcHostedEffect::GetState(int index) const {
   DCHECK(index >= 0 && index < (int)states_.size());
   return states_[index].get();
 }

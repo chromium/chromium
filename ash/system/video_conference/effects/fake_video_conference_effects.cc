@@ -14,130 +14,65 @@
 
 namespace ash::fake_video_conference {
 
-SimpleToggleEffect::SimpleToggleEffect(
-    const std::u16string& label_text,
-    views::Button::PressedCallback button_callback)
-    : SimpleToggleEffect(/*icon=*/nullptr,
-                         /*label_text=*/label_text,
-                         /*accessible_name_id=*/-1,
-                         /*button_callback=*/button_callback) {}
+SimpleToggleEffect::SimpleToggleEffect(const std::u16string& label_text)
+    : SimpleToggleEffect(/*label_text=*/label_text,
+                         /*icon=*/absl::nullopt,
+                         /*accessible_name_id=*/absl::nullopt) {}
 
 SimpleToggleEffect::SimpleToggleEffect(
-    const gfx::VectorIcon* icon,
     const std::u16string& label_text,
-    int accessible_name_id,
-    views::Button::PressedCallback button_callback) {
+    absl::optional<const gfx::VectorIcon*> icon,
+    absl::optional<int> accessible_name_id) {
   std::unique_ptr<VcHostedEffect> effect =
       std::make_unique<VcHostedEffect>(VcEffectType::kToggle);
+
+  // Use default `icon` and/or `accessible_name_id` if none was passed in.
   std::unique_ptr<VcEffectState> state = std::make_unique<VcEffectState>(
-      icon, label_text, accessible_name_id, button_callback);
+      icon.value_or(&ash::kPrivacyIndicatorsCameraIcon), label_text,
+      accessible_name_id.value_or(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA),
+      base::BindRepeating(&SimpleToggleEffect::OnEffectControlActivated,
+                          base::Unretained(this),
+                          /*effect_id=*/VcEffectState::kUnusedId,
+                          /*value=*/0));
   effect->AddState(std::move(state));
   AddEffect(std::move(effect));
 }
 
-CatEarsEffect::CatEarsEffect()
-    : SimpleToggleEffect(
-          /*label_text=*/u"Cat Ears",
-          /*button_callback=*/
-          base::BindRepeating(&CatEarsEffect::OnEffectControlActivated,
-                              base::Unretained(this),
-                              /*effect_id=*/VcEffectState::kUnusedId,
-                              /*value=*/0)) {}
-
-int CatEarsEffect::GetEffectState(int effect_id) {
+int SimpleToggleEffect::GetEffectState(int effect_id) {
   return VcHostedEffect::kOff;
 }
 
-void CatEarsEffect::OnEffectControlActivated(int effect_id, int value) {}
+void SimpleToggleEffect::OnEffectControlActivated(int effect_id, int value) {
+  ++num_activations_for_testing_;
+}
+
+CatEarsEffect::CatEarsEffect()
+    : SimpleToggleEffect(
+          /*label_text=*/u"Cat Ears") {}
 
 DogFurEffect::DogFurEffect()
     : SimpleToggleEffect(
-          /*label_text=*/u"Dog Fur",
-          /*button_callback=*/
-          base::BindRepeating(&DogFurEffect::OnEffectControlActivated,
-                              base::Unretained(this),
-                              /*effect_id=*/VcEffectState::kUnusedId,
-                              /*value=*/0)) {}
-
-int DogFurEffect::GetEffectState(int effect_id) {
-  return VcHostedEffect::kOff;
-}
-
-void DogFurEffect::OnEffectControlActivated(int effect_id, int value) {}
+          /*label_text=*/u"Dog Fur") {}
 
 SpaceshipEffect::SpaceshipEffect()
     : SimpleToggleEffect(
-          /*label_text=*/u"Spaceship",
-          /*button_callback=*/
-          base::BindRepeating(&SpaceshipEffect::OnEffectControlActivated,
-                              base::Unretained(this),
-                              /*effect_id=*/VcEffectState::kUnusedId,
-                              /*value=*/0)) {}
-
-int SpaceshipEffect::GetEffectState(int effect_id) {
-  return VcHostedEffect::kOff;
-}
-
-void SpaceshipEffect::OnEffectControlActivated(int effect_id, int value) {}
+          /*label_text=*/u"Spaceship") {}
 
 OfficeBunnyEffect::OfficeBunnyEffect()
     : SimpleToggleEffect(
-          /*label_text=*/u"Office Bunny",
-          /*button_callback=*/
-          base::BindRepeating(&OfficeBunnyEffect::OnEffectControlActivated,
-                              base::Unretained(this),
-                              /*effect_id=*/VcEffectState::kUnusedId,
-                              /*value=*/0)) {}
-
-int OfficeBunnyEffect::GetEffectState(int effect_id) {
-  return VcHostedEffect::kOff;
-}
-
-void OfficeBunnyEffect::OnEffectControlActivated(int effect_id, int value) {}
+          /*label_text=*/u"Office Bunny") {}
 
 CalmForestEffect::CalmForestEffect()
     : SimpleToggleEffect(
-          /*label_text=*/u"Calm Forest",
-          /*button_callback=*/
-          base::BindRepeating(&CalmForestEffect::OnEffectControlActivated,
-                              base::Unretained(this),
-                              /*effect_id=*/VcEffectState::kUnusedId,
-                              /*value=*/0)) {}
-
-int CalmForestEffect::GetEffectState(int effect_id) {
-  return VcHostedEffect::kOff;
-}
-
-void CalmForestEffect::OnEffectControlActivated(int effect_id, int value) {}
+          /*label_text=*/u"Calm Forest") {}
 
 StylishKitchenEffect::StylishKitchenEffect()
     : SimpleToggleEffect(
-          /*label_text=*/u"Stylish Kitchen",
-          /*button_callback=*/
-          base::BindRepeating(&StylishKitchenEffect::OnEffectControlActivated,
-                              base::Unretained(this),
-                              /*effect_id=*/VcEffectState::kUnusedId,
-                              /*value=*/0)) {}
-
-int StylishKitchenEffect::GetEffectState(int effect_id) {
-  return VcHostedEffect::kOff;
-}
-void StylishKitchenEffect::OnEffectControlActivated(int effect_id, int value) {}
+          /*label_text=*/u"Stylish Kitchen") {}
 
 GreenhouseEffect::GreenhouseEffect()
     : SimpleToggleEffect(
-          /*label_text=*/u"Greenhouse",
-          /*button_callback=*/
-          base::BindRepeating(&GreenhouseEffect::OnEffectControlActivated,
-                              base::Unretained(this),
-                              /*effect_id=*/VcEffectState::kUnusedId,
-                              /*value=*/0)) {}
-
-int GreenhouseEffect::GetEffectState(int effect_id) {
-  return VcHostedEffect::kOff;
-}
-
-void GreenhouseEffect::OnEffectControlActivated(int effect_id, int value) {}
+          /*label_text=*/u"Greenhouse") {}
 
 // Delegate that hosts a set-value effect.
 
@@ -177,7 +112,12 @@ ShaggyFurEffect::ShaggyFurEffect() {
   effect->AddState(std::move(buzzcut_state));
   effect->AddState(std::move(thick_state));
   effect->set_label_text(u"Shaggy Fur");
+  effect->set_id(100);
   AddEffect(std::move(effect));
+
+  // Initialize click counts.
+  for (int i = 0; i < static_cast<int>(FurShagginess::kMaxNumValues); ++i)
+    num_activations_for_testing_.push_back(0);
 }
 
 ShaggyFurEffect::~ShaggyFurEffect() = default;
@@ -186,6 +126,14 @@ int ShaggyFurEffect::GetEffectState(int effect_id) {
   return static_cast<int>(FurShagginess::kBuzzcut);
 }
 
-void ShaggyFurEffect::OnEffectControlActivated(int effect_id, int value) {}
+void ShaggyFurEffect::OnEffectControlActivated(int effect_id, int value) {
+  DCHECK(value >= 0 && value < static_cast<int>(FurShagginess::kMaxNumValues));
+  ++num_activations_for_testing_[value];
+}
+
+int ShaggyFurEffect::GetNumActivationsForTesting(int value) {
+  DCHECK(value >= 0 && value < static_cast<int>(FurShagginess::kMaxNumValues));
+  return num_activations_for_testing_[value];
+}
 
 }  // namespace ash::fake_video_conference

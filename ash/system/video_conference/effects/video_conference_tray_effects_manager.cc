@@ -71,16 +71,29 @@ VideoConferenceTrayEffectsManager::GetToggleEffectButtonTable() {
   return buttons;
 }
 
+bool VideoConferenceTrayEffectsManager::HasSetValueEffects() {
+  return GetSetValueEffects().size() > 0;
+}
+
+VideoConferenceTrayEffectsManager::EffectDataVector
+VideoConferenceTrayEffectsManager::GetSetValueEffects() {
+  EffectDataVector effects;
+
+  for (auto* delegate : effect_delegates_) {
+    for (auto* effect : delegate->GetEffects(VcEffectType::kSetValue))
+      effects.push_back(effect);
+  }
+
+  return effects;
+}
+
 VideoConferenceTrayEffectsManager::EffectDataVector
 VideoConferenceTrayEffectsManager::GetTotalToggleEffectButtons() {
   EffectDataVector effects;
 
   for (auto* delegate : effect_delegates_) {
-    for (int i = 0; i < delegate->GetNumEffects(); ++i) {
-      const VcHostedEffect* effect = delegate->GetEffect(i);
-      if (effect->type() == VcEffectType::kToggle)
-        effects.push_back(effect);
-    }
+    for (auto* effect : delegate->GetEffects(VcEffectType::kToggle))
+      effects.push_back(effect);
   }
 
   return effects;
