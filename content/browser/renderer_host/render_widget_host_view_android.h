@@ -384,6 +384,14 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       const base::android::JavaParamRef<jstring>& jpath,
       const base::android::JavaParamRef<jobject>& jcallback);
 
+  void SaveContentBitmapToDiskAsync(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jint width,
+      jint height,
+      const base::android::JavaParamRef<jstring>& jpath,
+      const base::android::JavaParamRef<jobject>& jcallback);
+
   ui::DelegatedFrameHostAndroid* delegated_frame_host_for_testing() {
     return delegated_frame_host_.get();
   }
@@ -434,6 +442,11 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       const cc::RenderFrameMetadata& metadata);
 
   void OnFinishGetContentBitmap(const base::android::JavaRef<jobject>& obj,
+                                const base::android::JavaRef<jobject>& callback,
+                                const std::string& path,
+                                const SkBitmap& bitmap);
+
+  void OnFinishSaveContentBitmap(const base::android::JavaRef<jobject>& obj,
                                 const base::android::JavaRef<jobject>& callback,
                                 const std::string& path,
                                 const SkBitmap& bitmap);

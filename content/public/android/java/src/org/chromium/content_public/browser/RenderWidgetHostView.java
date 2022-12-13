@@ -37,6 +37,9 @@ public interface RenderWidgetHostView {
     void writeContentBitmapToDiskAsync(
             int width, int height, String path, Callback<String> callback);
 
+    void saveContentBitmapToDiskAsync(
+            int width, int height, String path, Callback<String> callback);
+
     /**
      * Notifies that the Visual Viewport inset has changed its bottom value.
      */

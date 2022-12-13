@@ -80,6 +80,13 @@ public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
                 getNativePtr(), RenderWidgetHostViewImpl.this, width, height, path, callback);
     }
 
+    @Override
+    public void saveContentBitmapToDiskAsync(int width, int height, String path, Callback<String> callback) {
+        if (isDestroyed()) callback.onResult("RWHVA already destroyed!");
+        RenderWidgetHostViewImplJni.get().saveContentBitmapToDiskAsync(
+                getNativePtr(), RenderWidgetHostViewImpl.this, width, height, path, callback);
+    }
+
     //====================
     // Support for native.
     //====================
@@ -118,5 +125,8 @@ public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
         void writeContentBitmapToDiskAsync(long nativeRenderWidgetHostViewAndroid,
                 RenderWidgetHostViewImpl caller, int width, int height, String path,
                 Callback<String> callback);
+        void saveContentBitmapToDiskAsync(long nativeRenderWidgetHostViewAndroid,
+                                           RenderWidgetHostViewImpl caller, int width, int height, String path,
+                                           Callback<String> callback);
     }
 }

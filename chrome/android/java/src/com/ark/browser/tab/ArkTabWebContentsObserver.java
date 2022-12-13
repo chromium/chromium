@@ -298,6 +298,7 @@ public class ArkTabWebContentsObserver extends TabWebContentsUserData {
 
         @Override
         public void didFirstVisuallyNonEmptyPaint() {
+            TabSnapshotManager.getInstance().cacheTab(mTab);
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
             while (observers.hasNext()) {
                 observers.next().didFirstVisuallyNonEmptyPaint(mTab);

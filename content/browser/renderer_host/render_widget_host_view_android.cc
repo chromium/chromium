@@ -207,6 +207,55 @@ std::string CompressAndSaveBitmap(const std::string& dir,
   return screenshot_path.value();
 }
 
+std::string SaveBitmap(const std::string& path,
+                                  const SkBitmap& bitmap) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+  std::vector<unsigned char> data;
+  if (!gfx::JPEGCodec::Encode(bitmap, 85, &data)) {
+    LOG(ERROR) << "Failed to encode bitmap to JPEG";
+    return std::string();
+  }
+
+/*
+  base::FilePath screenshot_dir(dir);
+  if (!base::DirectoryExists(screenshot_dir)) {
+    if (!base::CreateDirectory(screenshot_dir)) {
+      LOG(ERROR) << "Failed to create screenshot directory";
+      return std::string();
+    }
+  }
+ */
+
+  base::FilePath screenshot_path(path);
+  unsigned int bytes_written = base::WriteFile(screenshot_path,
+        reinterpret_cast<const char*>(data.data()), data.size());
+
+
+
+
+/*
+  base::ScopedFILE out_file(base::CreateAndOpenTemporaryStreamInDir(
+      screenshot_dir, &screenshot_path));
+  if (!out_file) {
+    LOG(ERROR) << "Failed to create temporary screenshot file";
+    return std::string();
+  }
+  unsigned int bytes_written =
+      fwrite(reinterpret_cast<const char*>(data.data()), 1, data.size(),
+             out_file.get());
+  out_file.reset();  // Explicitly close before a possible Delete below.
+*/
+
+  // If there were errors, don't leave a partial file around.
+  if (bytes_written != data.size()) {
+    base::DeleteFile(screenshot_path);
+    LOG(ERROR) << "Error writing screenshot file to disk";
+    return std::string();
+  }
+  return screenshot_path.value();
+}
+
 }  // namespace
 
 RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
@@ -580,6 +629,24 @@ void RenderWidgetHostViewAndroid::OnViewportInsetBottomChanged(
     const base::android::JavaParamRef<jobject>& obj) {
   SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
                               absl::nullopt);
+}
+
+void RenderWidgetHostViewAndroid::SaveContentBitmapToDiskAsync(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    jint width,
+    jint height,
+    const base::android::JavaParamRef<jstring>& jpath,
+    const base::android::JavaParamRef<jobject>& jcallback) {
+  base::OnceCallback<void(const SkBitmap&)> result_callback = base::BindOnce(
+      &RenderWidgetHostViewAndroid::OnFinishSaveContentBitmap,
+      weak_ptr_factory_.GetWeakPtr(),
+      base::android::ScopedJavaGlobalRef<jobject>(env, obj),
+      base::android::ScopedJavaGlobalRef<jobject>(env, jcallback),
+      base::android::ConvertJavaStringToUTF8(env, jpath));
+
+  CopyFromSurface(gfx::Rect(), gfx::Size(width, height),
+                  std::move(result_callback));
 }
 
 void RenderWidgetHostViewAndroid::WriteContentBitmapToDiskAsync(
@@ -1535,6 +1602,27 @@ void RenderWidgetHostViewAndroid::OnFinishGetContentBitmap(
     base::PostTaskAndReplyWithResult(
         task_runner.get(), FROM_HERE,
         base::BindOnce(&CompressAndSaveBitmap, path, bitmap),
+        base::BindOnce(
+            &base::android::RunStringCallbackAndroid,
+            base::android::ScopedJavaGlobalRef<jobject>(env, callback.obj())));
+    return;
+  }
+  // If readback failed, call empty callback
+  base::android::RunStringCallbackAndroid(callback, std::string());
+}
+
+void RenderWidgetHostViewAndroid::OnFinishSaveContentBitmap(
+    const base::android::JavaRef<jobject>& obj,
+    const base::android::JavaRef<jobject>& callback,
+    const std::string& path,
+    const SkBitmap& bitmap) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  if (!bitmap.drawsNothing()) {
+    auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+    base::PostTaskAndReplyWithResult(
+        task_runner.get(), FROM_HERE,
+        base::BindOnce(&SaveBitmap, path, bitmap),
         base::BindOnce(
             &base::android::RunStringCallbackAndroid,
             base::android::ScopedJavaGlobalRef<jobject>(env, callback.obj())));

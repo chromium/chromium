@@ -4,8 +4,9 @@
 
 package com.ark.browser.tab;
 
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTabHelper;
 import com.ark.browser.core.utils.TaskTabHelper;
+
+import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTabHelper;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchTabHelper;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
@@ -15,7 +16,6 @@ import org.chromium.chrome.browser.media.ui.MediaSessionTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabFavicon;
-import org.chromium.chrome.browser.tab.TabGestureStateListener;
 import org.chromium.chrome.browser.tab.TabWebContentsUserData;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 
@@ -60,6 +60,6 @@ public final class ArkTabHelpers {
         TabFavicon.from(tab);
         TrustedCdn.from(tab);
         TabAssociatedApp.from(tab);
-        TabGestureStateListener.from(tab);
+        ArkTabGestureStateListener.from(tab);
     }
 }

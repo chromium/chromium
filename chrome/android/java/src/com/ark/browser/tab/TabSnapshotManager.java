@@ -198,22 +198,32 @@ public class TabSnapshotManager {
                     onFinished(null);
                     return;
                 } else {
-                    File file = new File(PathHolder.path, mPageId + ".thumbnail");
-                    renderWidgetHostView.writeContentBitmapToDiskAsync(0, 0, file.getAbsolutePath(), new Callback<String>() {
+                    File target = new File(PathHolder.path, mPageId + ".thumbnail");
+                    renderWidgetHostView.saveContentBitmapToDiskAsync(0, 0, target.getAbsolutePath(), new Callback<String>() {
                         @Override
                         public void onResult(String result) {
+                            ArkLogger.e(SnapshotTask.class, "onResult result=" + result);
                             ThreadPool.executeIO(() -> {
-                                ArkLogger.e(SnapshotTask.class, "onResult result=" + result);
-                                try (FileInputStream fis = new FileInputStream(file)) {
-                                    Bitmap bitmap = BitmapFactory.decodeStream(fis);
-                                    ThreadPool.post(() -> onFinished(bitmap));
-                                    synchronized (getInstance().mBitmapCache) {
-                                        getInstance().mBitmapCache.put(mPageId, bitmap);
+                                File file = new File(result);
+                                if (file.exists()) {
+//                                    File target = new File(PathHolder.path, mPageId + ".thumbnail");
+//                                    if (target.exists()) {
+//                                        target.delete();
+//                                    }
+//                                    boolean r = file.renameTo(target);
+//                                    ArkLogger.e(SnapshotTask.class, "onResult renameTo=" + r);
+                                    try (FileInputStream fis = new FileInputStream(file)) {
+                                        Bitmap bitmap = BitmapFactory.decodeStream(fis);
+                                        ThreadPool.post(() -> onFinished(bitmap));
+                                        synchronized (getInstance().mBitmapCache) {
+                                            getInstance().mBitmapCache.put(mPageId, bitmap);
+                                        }
+                                        return;
+                                    } catch (Exception e) {
+                                        ArkLogger.e(SnapshotTask.class, "decodeBitmap failed! ", e);
                                     }
-                                } catch (Exception e) {
-                                    ArkLogger.e(SnapshotTask.class, "decodeBitmap failed! ", e);
-                                    ThreadPool.post(() -> onFinished(null));
                                 }
+                                ThreadPool.post(() -> onFinished(null));
                             });
                         }
                     });

@@ -636,6 +636,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public void stopLoading() {
+        TabSnapshotManager.getInstance().cacheTab(this);
         if (isLoading()) {
             RewindableIterator<TabObserver> observers = getTabObservers();
             while (observers.hasNext()) {
@@ -1094,6 +1095,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * Called when a navigation completes and no other navigation is in progress.
      */
     void onLoadStopped() {
+        TabSnapshotManager.getInstance().cacheTab(this);
         // mIsLoading should only be false if this is a same-document navigation.
         boolean toDifferentDocument = mIsLoading;
         mIsLoading = false;
@@ -1126,6 +1128,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * @param url URL that was loaded.
      */
     void didFinishPageLoad(GURL url) {
+        TabSnapshotManager.getInstance().cacheTab(this);
         updateTitle();
 
         for (TabObserver observer : mObservers) observer.onPageLoadFinished(this, url);

@@ -53,6 +53,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/tab/ArkSwipeRefreshHandler.java",
   "java/src/com/ark/browser/tab/ArkTabBrowserControlsConstraintsHelper.java",
   "java/src/com/ark/browser/tab/ArkTabBuilder.java",
+  "java/src/com/ark/browser/tab/ArkTabGestureStateListener.java",
   "java/src/com/ark/browser/tab/ArkTabHelpers.java",
   "java/src/com/ark/browser/tab/ArkTabImpl.java",
   "java/src/com/ark/browser/tab/ArkTabStateBrowserControlsVisibilityDelegate.java",
