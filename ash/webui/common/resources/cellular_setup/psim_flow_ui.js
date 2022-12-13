@@ -8,7 +8,7 @@ import './final_page.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {assert, assertNotReached} from '//resources/js/assert.js';
+import {assert, assertNotReached} from '//resources/ash/common/assert.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ActivationDelegateInterface, ActivationDelegateReceiver, ActivationResult, CarrierPortalHandlerRemote, CarrierPortalStatus, CellularMetadata, CellularSetup_StartActivation_ResponseParams, CellularSetupRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
 

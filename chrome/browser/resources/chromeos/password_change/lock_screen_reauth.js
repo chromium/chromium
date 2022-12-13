@@ -17,7 +17,7 @@ import './components/buttons/oobe_text_button.js';
 import './components/oobe_icons.m.js';
 
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {$} from 'chrome://resources/ash/common/util.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

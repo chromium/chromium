@@ -8,7 +8,7 @@ import 'chrome://resources/ash/common/network/network_shared.css.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {Network, NetworkHealthService, NetworkHealthServiceRemote, NetworkHealthState, NetworkState, UInt32Value} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_health.mojom-webui.js';
 

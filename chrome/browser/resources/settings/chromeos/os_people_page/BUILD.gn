@@ -68,6 +68,7 @@ js_library("fingerprint_list") {
     "..:os_route",
     "..:route_observer_behavior",
     "..:router",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:focus_without_ink_js",
     "//ash/webui/common/resources:i18n_behavior",
@@ -75,7 +76,6 @@ js_library("fingerprint_list") {
     "//third_party/polymer/v3_0/components-chromium/iron-resizable-behavior:iron-resizable-behavior",
     "//third_party/polymer/v3_0/components-chromium/paper-ripple:paper-ripple",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -96,6 +96,7 @@ js_library("lock_screen") {
     "..:route_observer_behavior",
     "..:router",
     "../multidevice_page:multidevice_smartlock_item",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:focus_without_ink_js",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources:load_time_data.m",
@@ -103,7 +104,6 @@ js_library("lock_screen") {
     "//ash/webui/common/resources/quick_unlock:lock_screen_constants",
     "//chromeos/ash/services/auth_factor_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "../settings_controls_types.js" ]
 }
@@ -141,6 +141,7 @@ js_library("os_people_page") {
     "..:os_route",
     "..:route_observer_behavior",
     "..:router",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:focus_without_ink_js",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources:load_time_data.m",
@@ -148,7 +149,6 @@ js_library("os_people_page") {
     "//ash/webui/common/resources/cr_picture:png",
     "//ash/webui/common/resources/quick_unlock:lock_screen_constants",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
   externs_list =
       chrome_extension_public_externs + [ "../settings_controls_types.js" ]
@@ -169,10 +169,10 @@ js_library("os_sync_controls") {
     "..:metrics_recorder",
     "..:os_route",
     "..:router",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:load_time_data.m",
     "//ash/webui/common/resources:web_ui_listener_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
@@ -220,9 +220,9 @@ js_library("user_list") {
 
 js_library("users_add_user_dialog") {
   deps = [
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
   externs_list = [
     "$externs_path/users_private.js",
@@ -239,9 +239,9 @@ js_library("users_page") {
     "..:os_route",
     "..:route_observer_behavior",
     "..:router",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:focus_without_ink_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
 }
 

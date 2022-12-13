@@ -7,7 +7,7 @@
  * JavaScript users. Do not use this file in new code.
  */
 
-import {assertNotReached} from '//resources/js/assert.js';
+import {assertNotReached} from '//resources/ash/common/assert.js';
 
 /**
  * Dispatches a simple event on an event target.

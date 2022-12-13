@@ -6,7 +6,7 @@
 // ui/webui/resources/js/promise_resolver.ts, and is maintained only for
 // legacy Closure Compiler users.
 
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 
 /**
  * @fileoverview PromiseResolver is a helper class that allows creating a

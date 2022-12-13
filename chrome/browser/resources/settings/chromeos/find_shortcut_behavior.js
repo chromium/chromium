@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {KeyboardShortcutList} from 'chrome://resources/ash/common/keyboard_shortcut_list_js.js';
 import {isTextInputElement} from 'chrome://resources/ash/common/util.js';
 

@@ -383,10 +383,7 @@ ts_definitions("generate_definitions") {
   visibility = [ ":build_ts" ]
 
   if (is_chromeos_ash) {
-    extra_deps = [
-      "//ash/webui/common/resources:generate_definitions",
-      "//ui/webui/resources:generate_definitions",
-    ]
+    extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
   }
 }
 

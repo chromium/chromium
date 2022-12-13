@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {isRTL} from 'chrome://resources/ash/common/util.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

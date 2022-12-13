@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {$} from 'chrome://resources/ash/common/util.js';
 import {Oobe} from './cr_ui.js';
 import * as OobeDebugger from './debug/debug.m.js';

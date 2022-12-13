@@ -16,7 +16,7 @@ import '../../components/buttons/oobe_text_button.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {recordLockScreenProgress} from '//resources/ash/common/quick_unlock/lock_screen_constants.js';
-import {assert, assertNotReached} from '//resources/js/assert.js';
+import {assert, assertNotReached} from '//resources/ash/common/assert.js';
 import {dom, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';

@@ -29,9 +29,9 @@ js_library("chai_assert") {
 
 js_library("fake_network_config_mojom") {
   deps = [
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:promise_resolver",
     "//ash/webui/common/resources/network:onc_mojo",
-    "//ui/webui/resources/js:assert",
   ]
 }
 

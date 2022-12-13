@@ -101,9 +101,9 @@ js_library("files_metadata_entry") {
 js_unittest("files_password_dialog_unittest") {
   deps = [
     ":files_password_dialog",
+    "//ash/webui/common/resources:assert",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
-    "//ui/webui/resources/js:assert",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
@@ -126,8 +126,8 @@ js_library("files_quick_view") {
     ":files_metadata_box",
     ":files_safe_media",
     ":files_tooltip",
+    "//ash/webui/common/resources:assert",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",
@@ -137,8 +137,8 @@ js_library("files_quick_view") {
 
 js_library("files_safe_media") {
   deps = [
+    "//ash/webui/common/resources:assert",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "//ui/file_manager/file_manager/externs/quick_view.js" ]
 }
@@ -178,11 +178,11 @@ js_unittest("files_toast_unittest") {
 js_unittest("files_xf_elements_unittest") {
   deps = [
     ":xf_display_panel",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:load_time_data.m",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js:assert",
   ]
 
   externs_list = [ "$externs_path/file_manager_private.js" ]
@@ -194,7 +194,7 @@ js_library("xf_button") {
 }
 
 js_library("xf_circular_progress") {
-  deps = [ "//ui/webui/resources/js:assert" ]
+  deps = [ "//ash/webui/common/resources:assert" ]
 }
 
 js_library("xf_display_panel") {
@@ -228,7 +228,7 @@ js_library("xf_panel_item") {
   deps = [
     ":xf_button",
     ":xf_circular_progress",
+    "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js:assert",
   ]
 }

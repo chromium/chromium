@@ -11,7 +11,7 @@ import '../common_styles/oobe_dialog_host_styles.m.js';
 import './oobe_adaptive_dialog.js';
 import './oobe_content_dialog.js';
 
-import {assert} from '//resources/js/assert.js';
+import {assert} from '//resources/ash/common/assert.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeDialogHostBehavior} from '../behaviors/oobe_dialog_host_behavior.m.js';

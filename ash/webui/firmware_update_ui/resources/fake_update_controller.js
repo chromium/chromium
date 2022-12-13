@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 
 import {fakeFirmwareUpdates, fakeInstallationProgress, fakeInstallationProgressFailure} from './fake_data.js';

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
 import {FileType} from '../../common/js/file_type.js';

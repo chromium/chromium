@@ -6,7 +6,7 @@ import '../../chai.js';
 
 import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {MetricsConsentBrowserProxyImpl, Router, routes, SecureDnsMode} from 'chrome://os-settings/chromeos/os_settings.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';

@@ -16,7 +16,7 @@
  */
 
 // clang-format off
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {define as crUiDefine} from '../../../common/js/ui.js';
 import {KeyboardShortcutList} from 'chrome://resources/ash/common/keyboard_shortcut_list_js.js';
 import {dispatchPropertyChange, getPropertyDescriptor, PropertyKind} from 'chrome://resources/ash/common/cr_deprecated.js';

@@ -18,7 +18,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './bluetooth_pairing_ui.html.js';
 import {BluetoothDeviceProperties, BluetoothDiscoveryDelegateInterface, BluetoothDiscoveryDelegateReceiver, BluetoothSystemState, DevicePairingDelegateInterface, DevicePairingDelegateReceiver, DevicePairingHandlerInterface, KeyEnteredHandlerInterface, KeyEnteredHandlerPendingReceiver, KeyEnteredHandlerReceiver, PairingResult, SystemPropertiesObserverInterface, SystemPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.js';
+import {assert, assertNotReached} from '//resources/ash/common/assert.js';
 
 import {PairingAuthType} from './bluetooth_types.js';
 import {mojoString16ToString} from './bluetooth_utils.js';

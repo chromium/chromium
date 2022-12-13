@@ -211,6 +211,7 @@ ts_definitions("generate_definitions") {
   root_dir = "."
   out_dir = target_gen_dir
 
+  extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
   deps = [ "//ui/webui/resources:library" ]
 
   js_files = generate_definitions_js_files

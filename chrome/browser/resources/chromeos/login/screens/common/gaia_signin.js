@@ -21,7 +21,7 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/throbber_notice.js';
 
-import {assert} from '//resources/js/assert.js';
+import {assert} from '//resources/ash/common/assert.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AuthFlow, AuthMode, SUPPORTED_PARAMS} from '../../../../gaia_auth_host/authenticator.js';

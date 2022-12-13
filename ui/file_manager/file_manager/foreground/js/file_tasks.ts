@@ -7,7 +7,7 @@
  * This file is checked via TS, so we suppress Closure checks.
  * @suppress {checkTypes}
  */
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {executeTask, getDirectory, getFileTasks} from '../../common/js/api.js';
 import {AsyncQueue} from '../../common/js/async_util.js';

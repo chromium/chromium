@@ -44,12 +44,12 @@ js_library("languages") {
     ":languages_browser_proxy",
     ":languages_types",
     "..:prefs_behavior",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources:load_time_data.m",
     "//ash/webui/common/resources:promise_resolver",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
   externs_list = [
     "$externs_path/input_method_private.js",
@@ -171,10 +171,10 @@ js_library("input_page") {
     "..:os_route",
     "..:route_observer_behavior",
     "..:router",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:focus_without_ink_js",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources:load_time_data.m",
-    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "../settings_controls_types.js" ]
 }
@@ -223,10 +223,10 @@ js_library("os_languages_page_v2") {
     "..:os_route",
     "..:route_observer_behavior",
     "..:router",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:focus_without_ink_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
 
   externs_list = [
@@ -242,11 +242,11 @@ js_library("os_languages_section") {
     ":os_languages_page_v2",
     "..:os_route",
     "..:router",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:focus_without_ink_js",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources:load_time_data.m",
-    "//ui/webui/resources/js:assert",
   ]
 }
 

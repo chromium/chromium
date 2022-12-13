@@ -13,7 +13,7 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import './bluetooth_icons.html.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {assert} from '//resources/js/assert.js';
+import {assert} from '//resources/ash/common/assert.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 

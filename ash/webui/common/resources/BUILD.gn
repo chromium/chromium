@@ -93,6 +93,7 @@ web_component_files = [
 ]
 
 non_web_component_files = [
+  "assert.js",
   "cr.js",
   "cr.m.js",
   "cr_deprecated.js",
@@ -307,6 +308,7 @@ generate_grd("build_grdp") {
 }
 
 generate_definitions_js_files = [
+  "assert.js",
   "bluetooth/bluetooth_metrics_utils.js",
   "bluetooth/bluetooth_types.js",
   "bluetooth/bluetooth_utils.js",
@@ -456,6 +458,7 @@ group("closure_compile") {
 js_type_check("closure_compile_local") {
   is_polymer3 = true
   deps = [
+    ":assert",
     ":cr.m",
     ":cr_deprecated",
     ":event_tracker",
@@ -480,19 +483,22 @@ js_type_check("closure_compile_local") {
   ]
 }
 
+js_library("assert") {
+}
+
 js_library("cr_deprecated") {
-  deps = [ "//ui/webui/resources/js:assert" ]
+  deps = [ ":assert" ]
 }
 
 js_library("cr.m") {
 }
 
 js_library("cr_container_shadow_behavior") {
-  deps = [ "//ui/webui/resources/js:assert" ]
+  deps = [ ":assert" ]
 }
 
 js_library("cr_policy_indicator_behavior") {
-  deps = [ "//ui/webui/resources/js:assert" ]
+  deps = [ ":assert" ]
 }
 
 js_library("cr_scrollable_behavior") {
@@ -518,25 +524,25 @@ js_library("fake_method_resolver") {
 
 js_library("focus_row_js") {
   deps = [
+    ":assert",
     ":event_tracker",
     ":util",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
 js_library("focus_row_behavior") {
   deps = [
+    ":assert",
     ":focus_row_js",
     ":focus_without_ink_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
 js_library("focus_without_ink_js") {
   deps = [
+    ":assert",
     ":cr.m",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -606,7 +612,7 @@ js_library("parse_html_subset") {
 }
 
 js_library("promise_resolver") {
-  deps = [ "//ui/webui/resources/js:assert" ]
+  deps = [ ":assert" ]
 }
 
 js_library("web_ui_listener_behavior") {
@@ -618,5 +624,5 @@ js_library("webui_resource_test") {
 }
 
 js_library("util") {
-  deps = [ "//ui/webui/resources/js:assert" ]
+  deps = [ ":assert" ]
 }

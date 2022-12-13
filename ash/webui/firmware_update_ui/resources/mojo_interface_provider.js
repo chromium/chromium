@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {fakeFirmwareUpdates} from './fake_data.js';
 import {FakeUpdateController} from './fake_update_controller.js';
 import {FakeUpdateProvider} from './fake_update_provider.js';

@@ -6,7 +6,7 @@
  * @fileoverview Fake implementation of chrome.system.display for testing.
  */
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';

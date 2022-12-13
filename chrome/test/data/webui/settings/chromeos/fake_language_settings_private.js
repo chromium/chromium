@@ -7,7 +7,7 @@
  * for testing.
  */
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';

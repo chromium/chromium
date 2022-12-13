@@ -12,7 +12,7 @@ import '//resources/ash/common/cr.m.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import {WebUIListenerBehavior} from '//resources/ash/common/web_ui_listener_behavior.js';
-import {assert} from '//resources/js/assert.js';
+import {assert} from '//resources/ash/common/assert.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {HostDevice} from 'chrome://resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
 

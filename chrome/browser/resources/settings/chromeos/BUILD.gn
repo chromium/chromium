@@ -344,8 +344,8 @@ js_type_check("closure_compile_local_module") {
 
 js_library("router") {
   deps = [
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:load_time_data.m",
-    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/metrics_private.js" ]
 }
@@ -359,18 +359,18 @@ js_library("lazy_load") {
 js_library("deep_linking_behavior") {
   deps = [
     ":router",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:load_time_data.m",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_webui_js",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
 js_library("find_shortcut_behavior") {
   deps = [
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:keyboard_shortcut_list_js",
     "//ash/webui/common/resources:util",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -411,14 +411,14 @@ js_library("os_settings_routes") {
 }
 
 js_library("prefs_behavior") {
-  deps = [ "//ui/webui/resources/js:assert" ]
+  deps = [ "//ash/webui/common/resources:assert" ]
   externs_list = [ "$externs_path/settings_private.js" ]
 }
 
 js_library("route_observer_behavior") {
   deps = [
     ":router",
-    "//ui/webui/resources/js:assert",
+    "//ash/webui/common/resources:assert",
   ]
 }
 

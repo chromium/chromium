@@ -30,7 +30,7 @@ import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_pictur
 import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
 import {afterNextRender, flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

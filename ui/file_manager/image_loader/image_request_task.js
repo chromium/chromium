@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {FileType} from 'chrome://file-manager/common/js/file_type.js';
-import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
+import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 
 import {ImageCache} from './cache.js';
 import {ImageLoaderUtil} from './image_loader_util.js';

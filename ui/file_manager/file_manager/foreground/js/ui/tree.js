@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
+import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {define as crUiDefine, limitInputWidth} from '../../../common/js/ui.js';

@@ -20,6 +20,6 @@ js_library("store") {
 js_library("store_client") {
   deps = [
     ":store",
-    "//ui/webui/resources/js:assert",
+    "//ash/webui/common/resources:assert",
   ]
 }

@@ -8,7 +8,7 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../settings_shared.css.js';
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';

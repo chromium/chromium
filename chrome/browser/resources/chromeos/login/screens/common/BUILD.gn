@@ -550,8 +550,8 @@ js_library("recommend_apps") {
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_loading_dialog",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:load_time_data.m",
-    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/webview_tag.js" ]
   extra_deps = [ ":web_components" ]
@@ -608,8 +608,8 @@ js_library("sync_consent") {
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_loading_dialog",
+    "//ash/webui/common/resources:assert",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
   extra_deps = [ ":web_components" ]
 }

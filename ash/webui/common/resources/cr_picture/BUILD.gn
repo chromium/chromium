@@ -43,7 +43,7 @@ js_library("cr_picture_list") {
   deps = [
     ":cr_picture_types",
     ":png",
+    "//ash/webui/common/resources:assert",
     "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
-    "//ui/webui/resources/js:assert",
   ]
 }

@@ -35,7 +35,7 @@
  */
 
 // clang-format off
-import {assert} from '//resources/js/assert.js';
+import {assert} from '//resources/ash/common/assert.js';
 // clang-format on
 
 /** @enum {string} */

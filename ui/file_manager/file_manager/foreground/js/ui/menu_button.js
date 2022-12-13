@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {EventTracker} from 'chrome://resources/ash/common/event_tracker.js';
 import {define as crUiDefine, decorate} from '../../../common/js/ui.js';
 import {positionPopupAroundElement, AnchorType} from './position_util.js';

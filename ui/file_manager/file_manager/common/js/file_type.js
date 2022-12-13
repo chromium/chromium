@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {FileData} from '../../externs/ts/state.js';

@@ -6,7 +6,7 @@
 // #import {afterNextRender, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {$} from 'chrome://resources/ash/common/util.js';
 // #import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-// #import {assert} from 'chrome://resources/js/assert.js';
+// #import {assert} from 'chrome://resources/ash/common/assert.js';
 // clang-format on
 
 /**

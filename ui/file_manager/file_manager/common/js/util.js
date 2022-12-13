@@ -8,7 +8,7 @@
  * which allows finer-grained control over introducing dependencies.
  */
 
-import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
+import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {EntryLocation} from '../../externs/entry_location.js';

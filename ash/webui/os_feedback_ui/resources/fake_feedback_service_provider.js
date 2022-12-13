@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPostSubmitAction, FeedbackAppPreSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
 

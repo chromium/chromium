@@ -125,11 +125,11 @@ js_library("file_manager_base") {
 
 js_library("crostini") {
   deps = [
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:load_time_data.m",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:crostini",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -167,6 +167,7 @@ js_library("mock_drive_sync_handler") {
 js_library("drive_sync_handler") {
   deps = [
     ":file_operation_util",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:event_target",
     "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:async_util",
@@ -177,7 +178,6 @@ js_library("drive_sync_handler") {
     "//ui/file_manager/file_manager/externs/background:drive_sync_handler",
     "//ui/file_manager/file_manager/externs/background:progress_center",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -225,9 +225,9 @@ js_unittest("file_operation_handler_unittest") {
 
 js_library("mock_file_operation_manager") {
   deps = [
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:event_target",
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",
-    "//ui/webui/resources/js:assert",
   ]
   visibility += [
     "//ui/file_manager/file_manager/foreground/js:directory_model_unittest",
@@ -285,6 +285,7 @@ js_library("mock_volume_manager") {
     ":volume_info_list_impl",
     ":volume_manager_factory",
     ":volume_manager_impl",
+    "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
@@ -293,7 +294,6 @@ js_library("mock_volume_manager") {
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_info_list",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -321,23 +321,23 @@ js_library("runtime_loaded_test_util") {
   deps = [
     ":file_operation_util",
     ":volume_manager_factory",
+    "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:error_counter",
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs/background:file_manager_base",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
 js_library("volume_info_impl") {
   deps = [
+    "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/webui/resources/js:assert",
   ]
   visibility += [
     "//ui/file_manager/file_manager/foreground/js:navigation_list_model_unittest",
@@ -349,10 +349,10 @@ js_library("test_util_base") {
   visibility += related_apps
   deps = [
     ":runtime_loaded_test_util",
+    "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -382,6 +382,7 @@ js_library("volume_manager_impl") {
     ":entry_location_impl",
     ":volume_info_list_impl",
     ":volume_manager_util",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:cr_deprecated",
     "//ash/webui/common/resources:event_target",
     "//ui/file_manager/file_manager/common/js:async_util",
@@ -389,7 +390,6 @@ js_library("volume_manager_impl") {
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/webui/resources/js:assert",
   ]
 }
 

@@ -283,9 +283,9 @@ js_library("onboarding_select_components_page") {
     ":mojo_interface_provider",
     ":repair_component_chip",
     ":shimless_rma_types",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -295,13 +295,13 @@ js_library("onboarding_network_page") {
     ":icons",
     ":mojo_interface_provider",
     ":shimless_rma_types",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources:util",
     "//ash/webui/common/resources/network:network_config",
     "//ash/webui/common/resources/network:network_list",
     "//ash/webui/common/resources/network:onc_mojo",
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/js:assert",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
@@ -359,8 +359,8 @@ js_library("reimaging_calibration_failed_page") {
     ":icons",
     ":mojo_interface_provider",
     ":shimless_rma_types",
+    "//ash/webui/common/resources:assert",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -370,8 +370,8 @@ js_library("reimaging_calibration_setup_page") {
     ":icons",
     ":mojo_interface_provider",
     ":shimless_rma_types",
+    "//ash/webui/common/resources:assert",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -381,8 +381,8 @@ js_library("reimaging_calibration_run_page") {
     ":icons",
     ":mojo_interface_provider",
     ":shimless_rma_types",
+    "//ash/webui/common/resources:assert",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
 }
 

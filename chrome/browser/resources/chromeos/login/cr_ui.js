@@ -8,7 +8,7 @@
  * shared between all *two* screens here.
  */
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {$} from 'chrome://resources/ash/common/util.js';
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
 import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';

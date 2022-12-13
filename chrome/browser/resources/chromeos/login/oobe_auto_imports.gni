@@ -64,7 +64,6 @@ oobe_auto_imports = [
   "ash/webui/common/resources/network/network_list_types.html|NetworkList",
   "ash/webui/common/resources/network/onc_mojo.html|OncMojo",
   "ash/webui/common/resources/quick_unlock/lock_screen_constants.html|recordLockScreenProgress",
-  "ui/webui/resources/html/assert.html|assert,assertNotReached",
   "ui/webui/resources/html/cr.html|sendWithPromise,removeWebUIListener,addWebUIListener,WebUIListener",
   "ash/webui/common/resources/parse_html_subset.html|SanitizeInnerHtmlOpts,sanitizeInnerHtml",
   "ash/webui/common/resources/util.html|announceAccessibleMessage,ensureTransitionEndEvent",

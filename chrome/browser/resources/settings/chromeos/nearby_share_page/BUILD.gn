@@ -86,13 +86,13 @@ js_library("nearby_share_receive_dialog") {
     ":nearby_share_confirm_page",
     ":nearby_share_high_visibility_page",
     ":nearby_share_receive_manager",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources:load_time_data.m",
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_one_page",
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
     "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page",
-    "//ui/webui/resources/js:assert",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",

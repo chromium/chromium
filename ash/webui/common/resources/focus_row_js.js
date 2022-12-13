@@ -7,7 +7,7 @@
 // focus_row.ts.
 
 // clang-format off
-import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
+import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 import {EventTracker} from './event_tracker.js';
 import {hasKeyModifiers, isRTL} from 'chrome://resources/ash/common/util.js';
 // clang-format on

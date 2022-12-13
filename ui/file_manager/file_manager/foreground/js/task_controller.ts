@@ -7,7 +7,7 @@
  * This file is checked via TS, so we suppress Closure checks.
  * @suppress {checkTypes}
  */
-import {assertInstanceof, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertInstanceof, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 
 import {getMimeType, startIOTask} from '../../common/js/api.js';
 import {DialogType} from '../../common/js/dialog_type.js';

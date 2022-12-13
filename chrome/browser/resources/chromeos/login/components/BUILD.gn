@@ -137,10 +137,10 @@ js_library("network_select_login") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/network_select_login.js" ]
   deps = [
     "../:cr_ui",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources/network:network_select",
     "//ash/webui/common/resources/network:onc_mojo",
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/js:assert",
   ]
   extra_deps = [ ":web_components" ]
 }

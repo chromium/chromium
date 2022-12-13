@@ -6,7 +6,7 @@
  * @fileoverview Display manager for WebUI OOBE and login.
  */
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {$, ensureTransitionEndEvent} from 'chrome://resources/ash/common/util.js';
 import {loadTimeData} from './i18n_setup.js';
 import {OobeTypes} from './components/oobe_types.js';

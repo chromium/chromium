@@ -120,8 +120,8 @@ js_library("app_util") {
 
 js_library("array_data_model") {
   deps = [
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:event_target",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -150,10 +150,10 @@ js_unittest("files_app_entry_types_unittest") {
   deps = [
     ":files_app_entry_types",
     ":mock_entry",
+    "//ash/webui/common/resources:assert",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -181,10 +181,10 @@ js_library("file_type") {
   deps = [
     ":file_types_data",
     ":files_app_entry_types",
+    "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs/ts:state",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -201,6 +201,7 @@ js_library("filtered_volume_manager") {
   deps = [
     ":array_data_model",
     ":util",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:cr_deprecated",
     "//ash/webui/common/resources:event_target",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
@@ -210,7 +211,6 @@ js_library("filtered_volume_manager") {
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_info_list",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -279,8 +279,8 @@ js_unittest("recent_date_bucket_unittest") {
   deps = [
     ":mock_chrome",
     ":recent_date_bucket",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:load_time_data.m",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -308,6 +308,7 @@ js_library("url_constants") {
 js_library("util") {
   deps = [
     ":files_app_entry_types",
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:load_time_data.m",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:ui",
@@ -317,7 +318,6 @@ js_library("util") {
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/webui/resources/js:assert",
   ]
 
   externs_list = [
@@ -343,8 +343,8 @@ js_unittest("volume_manager_types_unittest") {
 
 js_library("volume_manager_types") {
   deps = [
+    "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/externs:file_manager_private",
-    "//ui/webui/resources/js:assert",
   ]
 }
 

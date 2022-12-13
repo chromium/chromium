@@ -24,7 +24,7 @@ import './network_shared.css.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {assert, assertNotReached} from '//resources/js/assert.js';
+import {assert, assertNotReached} from '//resources/ash/common/assert.js';
 import {flush, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CertificateType, ConfigProperties, CrosNetworkConfigRemote, EAPConfigProperties, GlobalPolicy, HiddenSsidMode, IPSecConfigProperties, L2TPConfigProperties, ManagedBoolean, ManagedEAPProperties, ManagedInt32, ManagedIPSecProperties, ManagedL2TPProperties, ManagedOpenVPNProperties, ManagedProperties, ManagedString, ManagedStringList, ManagedWireGuardProperties, NetworkCertificate, OpenVPNConfigProperties, SecurityType, StartConnectResult, SubjectAltName, VpnType, WireGuardConfigProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, IPConfigType, NetworkType, OncSource, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';

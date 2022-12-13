@@ -7,7 +7,7 @@
  * It includes some methods and property shared between subflows.
  */
 
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 
 import {ButtonBarState} from './cellular_types.js';
 

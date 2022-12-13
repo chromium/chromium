@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 
 /**
  * Converts a ash.scanning.mojom.ColorMode string to the corresponding enum

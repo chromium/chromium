@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from 'chrome://resources/js/assert.js';
+import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 import {decorate} from '../../../common/js/ui.js';
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';

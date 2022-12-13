@@ -7,7 +7,7 @@
 // focus_without_ink.ts.
 
 // clang-format off
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 // clang-format on
 
 

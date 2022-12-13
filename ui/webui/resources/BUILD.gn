@@ -130,9 +130,6 @@ group("preprocess") {
 
 group("closure_compile") {
   deps = [ "js:closure_compile" ]
-  if (is_chromeos_ash) {
-    deps += [ "js:closure_compile_modules" ]
-  }
 }
 
 # TypeScript targets
@@ -140,14 +137,8 @@ group("closure_compile") {
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
 # Files for which .d.ts files will be auto-generated with ts_definitions().
-if (is_chromeos_ash || is_ios) {
-  generate_definitions_js_files = []
-  if (is_chromeos_ash) {
-    generate_definitions_js_files += [ "js/assert.js" ]
-  }
-  if (is_ios) {
-    generate_definitions_js_files += [ "js/ios/web_ui.js" ]
-  }
+if (is_ios) {
+  generate_definitions_js_files = [ "js/ios/web_ui.js" ]
 }
 
 ts_library("library") {
@@ -207,7 +198,7 @@ ts_library("library") {
   ]
 
   # Auto-generated .d.ts files.
-  if (is_chromeos_ash || is_ios) {
+  if (is_ios) {
     foreach(_file, generate_definitions_js_files) {
       definitions += [ "$root_dir/" + string_replace(_file, ".js", ".d.ts") ]
     }
@@ -219,7 +210,7 @@ ts_library("library") {
     "mojo:library",
   ]
 
-  if (is_chromeos_ash || is_ios) {
+  if (is_ios) {
     extra_deps += [ ":generate_definitions" ]
   }
 }
@@ -232,7 +223,7 @@ generate_grd("build_ts_grdp") {
       filter_include(get_target_outputs(":library"), [ "*.manifest" ])
 }
 
-if (is_chromeos_ash || is_ios) {
+if (is_ios) {
   ts_definitions("generate_definitions") {
     root_dir = preprocessed_folder
     out_dir = preprocessed_folder

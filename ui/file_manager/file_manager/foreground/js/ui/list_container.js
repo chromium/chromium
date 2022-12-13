@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 import {DialogType} from '../../../common/js/dialog_type.js';

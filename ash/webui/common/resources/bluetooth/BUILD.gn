@@ -110,9 +110,9 @@ js_library("bluetooth_pairing_ui") {
     ":bluetooth_pairing_device_selection_page",
     ":bluetooth_pairing_request_code_page",
     ":cros_bluetooth_config",
+    "//ash/webui/common/resources:assert",
     "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
   ]
 }
 

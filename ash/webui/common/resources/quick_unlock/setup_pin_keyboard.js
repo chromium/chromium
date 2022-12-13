@@ -14,7 +14,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './pin_keyboard.js';
 
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LockScreenProgress} from './lock_screen_constants.js';

@@ -14,7 +14,7 @@ import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {hasActiveCellularNetwork} from '//resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior} from '//resources/ash/common/network/network_listener_behavior.js';
-import {assert, assertNotReached} from '//resources/js/assert.js';
+import {assert, assertNotReached} from '//resources/ash/common/assert.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ESimManagerRemote, ESimOperationResult, ESimProfileRemote, EuiccRemote, ProfileInstallResult} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';

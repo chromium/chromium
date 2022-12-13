@@ -14,7 +14,7 @@ import './cr_policy_network_indicator_mojo.js';
 import './network_shared.css.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {assert} from '//resources/js/assert.js';
+import {assert} from '//resources/ash/common/assert.js';
 import {flush, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ActivationStateType, SecurityType, SubjectAltName, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';

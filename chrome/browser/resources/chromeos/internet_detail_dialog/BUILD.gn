@@ -89,13 +89,13 @@ js_type_check("closure_compile") {
 
 js_library("internet_detail_dialog") {
   deps = [
+    "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/network:apn_list",
     "//ash/webui/common/resources/network:cr_policy_network_behavior_mojo",
     "//ash/webui/common/resources/network:network_listener_behavior",
     "//ash/webui/common/resources/network:onc_mojo",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
-    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }

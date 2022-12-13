@@ -166,10 +166,10 @@ if (is_chromeos_ash) {
     deps = [
       ":saml_handler",
       ":saml_password_attributes",
+      "//ash/webui/common/resources:assert",
       "//ash/webui/common/resources:cr.m",
       "//ash/webui/common/resources:event_target",
       "//ash/webui/common/resources:util",
-      "//ui/webui/resources/js:assert",
     ]
     externs_list = [
       "$externs_path/chrome_extensions.js",
@@ -183,9 +183,9 @@ if (is_chromeos_ash) {
     sources = [ "$preprocess_folder/password_change_authenticator.js" ]
     deps = [
       ":saml_handler",
+      "//ash/webui/common/resources:assert",
       "//ash/webui/common/resources:event_target",
       "//ash/webui/common/resources:util",
-      "//ui/webui/resources/js:assert",
     ]
     externs_list = [
       "$externs_path/chrome_extensions.js",

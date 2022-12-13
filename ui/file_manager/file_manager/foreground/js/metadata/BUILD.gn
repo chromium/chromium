@@ -89,12 +89,12 @@ js_library("content_metadata_provider") {
   deps = [
     ":metadata_item",
     ":metadata_provider",
+    "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:thumbnail_loader",
     "//ui/file_manager/image_loader:image_loader_client",
     "//ui/file_manager/image_loader:load_image_request",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -144,8 +144,8 @@ js_library("external_metadata_provider") {
     ":metadata_item",
     ":metadata_provider",
     ":metadata_request",
+    "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/externs:file_manager_private",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -204,7 +204,7 @@ js_library("image_parsers") {
 js_library("metadata_cache_item") {
   deps = [
     ":metadata_item",
-    "//ui/webui/resources/js:assert",
+    "//ash/webui/common/resources:assert",
   ]
 }
 
@@ -282,7 +282,7 @@ js_library("metadata_provider") {
   deps = [
     ":metadata_item",
     ":metadata_request",
-    "//ui/webui/resources/js:assert",
+    "//ash/webui/common/resources:assert",
   ]
 }
 
@@ -310,9 +310,9 @@ js_library("multi_metadata_provider") {
     ":metadata_item",
     ":metadata_provider",
     ":metadata_request",
+    "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
