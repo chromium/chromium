@@ -29,6 +29,11 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <d3d11.h>
+#include <wrl/client.h>
+#endif
+
 namespace base {
 namespace trace_event {
 class ProcessMemoryDump;
@@ -53,6 +58,7 @@ class MemoryImageRepresentation;
 class VaapiImageRepresentation;
 class RasterImageRepresentation;
 class MemoryTracker;
+class VideoDecodeImageRepresentation;
 class MemoryTypeTracker;
 class SharedImageFactory;
 class VaapiDependenciesFactory;
@@ -77,6 +83,13 @@ enum class SharedImageBackingType {
   kDCompSurface = 16,
   kDXGISwapChain = 17,
 };
+
+#if BUILDFLAG(IS_WIN)
+using VideoDecodeDevice = Microsoft::WRL::ComPtr<ID3D11Device>;
+#else
+// This parameter is only used on Windows so null is expected.
+using VideoDecodeDevice = void*;
+#endif  // BUILDFLAG(IS_WIN)
 
 // Represents the actual storage (GL texture, VkImage, GMB) for a SharedImage.
 // Should not be accessed directly, instead is accessed through a
@@ -243,6 +256,13 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   virtual std::unique_ptr<RasterImageRepresentation> ProduceRaster(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);
+  // Take void* device for resource generated from different devices. E.g  video
+  // decoder starts using its own device on a separate thread.
+  virtual std::unique_ptr<VideoDecodeImageRepresentation> ProduceVideoDecode(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      VideoDecodeDevice device);
+
 #if BUILDFLAG(IS_ANDROID)
   virtual std::unique_ptr<LegacyOverlayImageRepresentation>
   ProduceLegacyOverlay(SharedImageManager* manager, MemoryTypeTracker* tracker);

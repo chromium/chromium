@@ -56,11 +56,13 @@ class PaintedScrollbar : public FakeScrollbar {
     flags.setColor(color_);
     gfx::Rect inset_rect = rect;
     while (!inset_rect.IsEmpty()) {
-      int big = paint_scale_ + 2;
-      int small = paint_scale_;
-      inset_rect.Inset(gfx::Insets::TLBR(big, big, small, small));
+      int big_rect = paint_scale_ + 2;
+      int small_rect = paint_scale_;
+      inset_rect.Inset(
+          gfx::Insets::TLBR(big_rect, big_rect, small_rect, small_rect));
       canvas->drawRect(RectToSkRect(inset_rect), flags);
-      inset_rect.Inset(gfx::Insets::TLBR(big, big, small, small));
+      inset_rect.Inset(
+          gfx::Insets::TLBR(big_rect, big_rect, small_rect, small_rect));
     }
   }
 

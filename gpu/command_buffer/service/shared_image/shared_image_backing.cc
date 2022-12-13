@@ -197,6 +197,13 @@ std::unique_ptr<RasterImageRepresentation> SharedImageBacking::ProduceRaster(
   return nullptr;
 }
 
+std::unique_ptr<VideoDecodeImageRepresentation>
+SharedImageBacking::ProduceVideoDecode(SharedImageManager* manager,
+                                       MemoryTypeTracker* tracker,
+                                       VideoDecodeDevice device) {
+  return nullptr;
+}
+
 #if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<LegacyOverlayImageRepresentation>
 SharedImageBacking::ProduceLegacyOverlay(SharedImageManager* manager,

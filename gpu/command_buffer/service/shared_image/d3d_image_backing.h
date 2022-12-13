@@ -164,6 +164,11 @@ class GPU_GLES2_EXPORT D3DImageBacking
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
 
+  std::unique_ptr<VideoDecodeImageRepresentation> ProduceVideoDecode(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      VideoDecodeDevice device) override;
+
  private:
 #if BUILDFLAG(USE_DAWN)
   struct DawnExternalImageState {

@@ -43,6 +43,11 @@ class IUnknown;
 extern "C" typedef struct AHardwareBuffer AHardwareBuffer;
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include <d3d11.h>
+#include <wrl/client.h>
+#endif
+
 typedef unsigned int GLenum;
 class GrBackendSurfaceMutableState;
 class SkPromiseImageTexture;
@@ -789,6 +794,38 @@ class GPU_GLES2_EXPORT RasterImageRepresentation
       const absl::optional<SkColor4f>& clear_color,
       bool visible) = 0;
   virtual void EndWriteAccess(base::OnceClosure callback) = 0;
+};
+
+class GPU_GLES2_EXPORT VideoDecodeImageRepresentation
+    : public SharedImageRepresentation {
+ public:
+  class GPU_GLES2_EXPORT ScopedWriteAccess
+      : public ScopedAccessBase<VideoDecodeImageRepresentation> {
+   public:
+    ScopedWriteAccess(base::PassKey<VideoDecodeImageRepresentation> pass_key,
+                      VideoDecodeImageRepresentation* representation);
+    ~ScopedWriteAccess();
+
+#if BUILDFLAG(IS_WIN)
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11Texture() const {
+      return representation()->GetD3D11Texture();
+    }
+#endif  // BUILDFLAG(IS_WIN)
+  };
+
+  VideoDecodeImageRepresentation(SharedImageManager* manager,
+                                 SharedImageBacking* backing,
+                                 MemoryTypeTracker* tracker);
+  ~VideoDecodeImageRepresentation() override;
+
+  virtual std::unique_ptr<ScopedWriteAccess> BeginScopedWriteAccess();
+
+ protected:
+#if BUILDFLAG(IS_WIN)
+  virtual Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11Texture() const = 0;
+#endif  // BUILDFLAG(IS_WIN)
+  virtual bool BeginWriteAccess() = 0;
+  virtual void EndWriteAccess() = 0;
 };
 
 }  // namespace gpu

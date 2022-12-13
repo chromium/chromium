@@ -140,4 +140,33 @@ gl::GLImage* OverlayD3DImageRepresentation::GetGLImage() {
   return gl_image_.get();
 }
 
+D3D11VideoDecodeImageRepresentation::D3D11VideoDecodeImageRepresentation(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture)
+    : VideoDecodeImageRepresentation(manager, backing, tracker),
+      texture_(std::move(texture)) {}
+
+D3D11VideoDecodeImageRepresentation::~D3D11VideoDecodeImageRepresentation() =
+    default;
+
+bool D3D11VideoDecodeImageRepresentation::BeginWriteAccess() {
+  D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
+  if (!d3d_image_backing->BeginAccessD3D11(/*write_access=*/true))
+    return false;
+
+  return true;
+}
+
+void D3D11VideoDecodeImageRepresentation::EndWriteAccess() {
+  D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
+  d3d_image_backing->EndAccessD3D11();
+}
+
+Microsoft::WRL::ComPtr<ID3D11Texture2D>
+D3D11VideoDecodeImageRepresentation::GetD3D11Texture() const {
+  return texture_;
+}
+
 }  // namespace gpu

@@ -16,6 +16,10 @@
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <d3d11.h>
+#endif
+
 namespace gpu {
 class DXGISharedHandleManager;
 class SharedImageRepresentationFactoryRef;
@@ -86,6 +90,10 @@ class GPU_GLES2_EXPORT SharedImageManager
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
   std::unique_ptr<RasterImageRepresentation> ProduceRaster(
+      const Mailbox& mailbox,
+      MemoryTypeTracker* ref);
+  std::unique_ptr<VideoDecodeImageRepresentation> ProduceVideoDecode(
+      VideoDecodeDevice device,
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
 

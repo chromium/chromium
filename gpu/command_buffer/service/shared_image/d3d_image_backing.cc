@@ -637,6 +637,14 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
 #endif  // BUILDFLAG(USE_DAWN)
 }
 
+std::unique_ptr<VideoDecodeImageRepresentation>
+D3DImageBacking::ProduceVideoDecode(SharedImageManager* manager,
+                                    MemoryTypeTracker* tracker,
+                                    VideoDecodeDevice device) {
+  return std::make_unique<D3D11VideoDecodeImageRepresentation>(
+      manager, this, tracker, d3d11_texture_);
+}
+
 void D3DImageBacking::OnMemoryDump(
     const std::string& dump_name,
     base::trace_event::MemoryAllocatorDumpGuid client_guid,

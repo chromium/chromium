@@ -547,4 +547,30 @@ RasterImageRepresentation::BeginScopedWriteAccess(
                        surface_props, clear_color, visible));
 }
 
+VideoDecodeImageRepresentation::VideoDecodeImageRepresentation(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker)
+    : SharedImageRepresentation(manager, backing, tracker) {}
+
+VideoDecodeImageRepresentation::~VideoDecodeImageRepresentation() = default;
+
+VideoDecodeImageRepresentation::ScopedWriteAccess::ScopedWriteAccess(
+    base::PassKey<VideoDecodeImageRepresentation> /* pass_key */,
+    VideoDecodeImageRepresentation* representation)
+    : ScopedAccessBase(representation) {}
+
+VideoDecodeImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
+  representation()->EndWriteAccess();
+}
+
+std::unique_ptr<VideoDecodeImageRepresentation::ScopedWriteAccess>
+VideoDecodeImageRepresentation::BeginScopedWriteAccess() {
+  if (!BeginWriteAccess())
+    return nullptr;
+
+  return std::make_unique<ScopedWriteAccess>(
+      base::PassKey<VideoDecodeImageRepresentation>(), this);
+}
+
 }  // namespace gpu
