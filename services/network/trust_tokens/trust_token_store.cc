@@ -278,7 +278,6 @@ void TrustTokenStore::SetRedemptionRecord(
   if (!config)
     config = std::make_unique<TrustTokenIssuerToplevelPairConfig>();
   *config->mutable_redemption_record() = record;
-  *config->mutable_redemption_record() = record;
   config->set_penultimate_redemption(config->last_redemption());
   config->set_last_redemption(internal::TimeToString(base::Time::Now()));
   persister_->SetIssuerToplevelPairConfig(issuer, top_level, std::move(config));
