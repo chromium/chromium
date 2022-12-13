@@ -20,6 +20,7 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {BaseMixin} from '../base_mixin.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckNotificationsModuleInteractions} from '../metrics_browser_proxy.js';
+import {MODEL_UPDATE_DELAY_MS} from '../site_settings/constants.js';
 
 import {getTemplate} from './review_notification_permissions.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
@@ -44,14 +45,6 @@ enum Actions {
 
 const SettingsReviewNotificationPermissionsElementBase =
     WebUiListenerMixin(BaseMixin(SiteSettingsMixin(I18nMixin(PolymerElement))));
-
-/**
- * Corresponds to the animation-duration CSS parameter defined
- * in review_notification_permissions.html. Set to be slightly higher, as we
- * want to ensure that the animation is finished before updating the model for
- * the right visual effect.
- */
-const MODEL_UPDATE_DELAY_MS = 300;
 
 export class SettingsReviewNotificationPermissionsElement extends
     SettingsReviewNotificationPermissionsElementBase {

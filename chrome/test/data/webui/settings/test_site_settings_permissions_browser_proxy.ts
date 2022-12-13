@@ -18,8 +18,15 @@ export class TestSiteSettingsPermissionsBrowserProxy extends TestBrowserProxy
 
   constructor() {
     super([
+      'allowPermissionsAgainForUnusedSite',
       'getRevokedUnusedSitePermissionsList',
     ]);
+  }
+
+  allowPermissionsAgainForUnusedSite(unusedSitePermissions:
+                                         UnusedSitePermissions) {
+    this.methodCalled(
+        'allowPermissionsAgainForUnusedSite', [unusedSitePermissions]);
   }
 
   setUnusedSitePermissions(unusedSitePermissionsList: UnusedSitePermissions[]) {

@@ -168,3 +168,11 @@ export enum AllSitesDialog {
  * match for SiteExceptions.
  */
 export const SITE_EXCEPTION_WILDCARD: string = '*';
+
+/**
+ * Corresponds to the animation-duration CSS parameter defined in
+ * chrome/browser/resources/settings/site_settings_page/site_review_shared.css.
+ * Set to be slightly higher, as we want to ensure that the animation is
+ * finished before updating the model for the right visual effect.
+ */
+export const MODEL_UPDATE_DELAY_MS = 300;

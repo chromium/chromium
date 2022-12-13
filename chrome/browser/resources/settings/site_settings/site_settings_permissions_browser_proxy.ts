@@ -24,6 +24,14 @@ export interface UnusedSitePermissions {
  */
 export interface SiteSettingsPermissionsBrowserProxy {
   /**
+   * Allow permissions again for an unused site where permissions were
+   * auto-revoked. The origin will not appear again for the user to review and
+   * permissions will not be auto-revoked for this origin in the future.
+   */
+  allowPermissionsAgainForUnusedSite(unusedSitePermissions:
+                                         UnusedSitePermissions): void;
+
+  /**
    * Gets the unused origins along with the permissions they have been granted.
    */
   getRevokedUnusedSitePermissionsList(): Promise<UnusedSitePermissions[]>;
@@ -31,6 +39,11 @@ export interface SiteSettingsPermissionsBrowserProxy {
 
 export class SiteSettingsPermissionsBrowserProxyImpl implements
     SiteSettingsPermissionsBrowserProxy {
+  allowPermissionsAgainForUnusedSite(unusedSitePermissions:
+                                         UnusedSitePermissions) {
+    chrome.send('allowPermissionsAgainForUnusedSite', [unusedSitePermissions]);
+  }
+
   getRevokedUnusedSitePermissionsList() {
     return sendWithPromise('getRevokedUnusedSitePermissionsList');
   }

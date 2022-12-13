@@ -22,7 +22,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ContentSettingsTypes} from '../site_settings/constants.js';
+import {ContentSettingsTypes, MODEL_UPDATE_DELAY_MS} from '../site_settings/constants.js';
 import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
 import {SiteSettingsPermissionsBrowserProxy, SiteSettingsPermissionsBrowserProxyImpl, UnusedSitePermissions} from '../site_settings/site_settings_permissions_browser_proxy.js';
 
@@ -104,6 +104,7 @@ export class SettingsUnusedSitePermissionsElement extends
       SiteSettingsPermissionsBrowserProxyImpl.getInstance();
   private headerString_: string;
   private lastOrigin_: string;
+  private modelUpdateDelayMsForTesting_: number|null = null;
   private sites_: UnusedSitePermissionsDisplay[]|null;
   private shouldShowCompletionInfo_: boolean;
   private subtitleString_: string;
@@ -131,6 +132,14 @@ export class SettingsUnusedSitePermissionsElement extends
   private getAllowAgainAriaLabelForOrigin_(origin: string): string {
     return this.i18n(
         'safetyCheckUnusedSitePermissionsAllowAgainAriaLabel', origin);
+  }
+
+  // TODO(crbug.com/1393005): Refactor common code across this and
+  // review_notification_permissions.ts.
+  private getModelUpdateDelayMs_() {
+    return this.modelUpdateDelayMsForTesting_ === null ?
+        MODEL_UPDATE_DELAY_MS :
+        this.modelUpdateDelayMsForTesting_;
   }
 
   /**
@@ -198,7 +207,10 @@ export class SettingsUnusedSitePermissionsElement extends
     this.lastOrigin_ = item.origin;
     this.showUndoToast_();
     this.hideItem_(this.lastOrigin_);
-    // TODO(crbug.com/1345920): Trigger action in backend.
+    setTimeout(
+        this.browserProxy_.allowPermissionsAgainForUnusedSite.bind(
+            this.browserProxy_, item),
+        this.getModelUpdateDelayMs_());
   }
 
   /* Repopulate the list when unused site permission list is updated. */
@@ -256,6 +268,12 @@ export class SettingsUnusedSitePermissionsElement extends
     assert(this.lastOrigin_);
     this.toastText_ = this.i18n(
         'safetyCheckUnusedSitePermissionsToastLabel', this.lastOrigin_);
+  }
+
+  // TODO(crbug.com/1393005): Refactor common code across this and
+  // review_notification_permissions.ts.
+  setModelUpdateDelayMsForTesting(delayMs: number) {
+    this.modelUpdateDelayMsForTesting_ = delayMs;
   }
 }
 
