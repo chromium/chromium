@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/barrier_closure.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -54,11 +55,13 @@ void LaunchAppWithParams(
     Profile* profile,
     apps::AppLaunchParams params,
     const WebAppFileHandlerManager::LaunchInfos& file_launches) {
-  auto callback = GetMacShimStartupDoneCallbackForTesting()
-                      ? base::IgnoreArgs<content::WebContents*>(std::move(
-                            GetMacShimStartupDoneCallbackForTesting()))
-                      : base::DoNothing();
+  auto callback =
+      GetMacShimStartupDoneCallbackForTesting()
+          ? std::move(GetMacShimStartupDoneCallbackForTesting())  // IN-TEST
+          : base::DoNothing();
   if (!file_launches.empty()) {
+    auto barrier_callback =
+        base::BarrierClosure(file_launches.size(), std::move(callback));
     for (const auto& [url, files] : file_launches) {
       apps::AppLaunchParams params_copy(params.app_id, params.container,
                                         params.disposition,
@@ -68,11 +71,13 @@ void LaunchAppWithParams(
 
       if (GetBrowserAppLauncherForTesting()) {
         GetBrowserAppLauncherForTesting().Run(params_copy);
-        OnShimLaunchResolved();
+        barrier_callback.Run();
       } else {
         apps::AppServiceProxyFactory::GetForProfile(profile)
             ->BrowserAppLauncher()
-            ->LaunchAppWithParams(std::move(params_copy), std::move(callback));
+            ->LaunchAppWithParams(
+                std::move(params_copy),
+                base::IgnoreArgs<content::WebContents*>(barrier_callback));
       }
     }
     return;
@@ -80,11 +85,13 @@ void LaunchAppWithParams(
 
   if (GetBrowserAppLauncherForTesting()) {
     GetBrowserAppLauncherForTesting().Run(params);
-    OnShimLaunchResolved();
+    std::move(callback).Run();
   } else {
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(std::move(params), std::move(callback));
+        ->LaunchAppWithParams(
+            std::move(params),
+            base::IgnoreArgs<content::WebContents*>(std::move(callback)));
   }
 }
 
