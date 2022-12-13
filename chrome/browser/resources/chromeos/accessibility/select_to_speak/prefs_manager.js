@@ -468,7 +468,7 @@ export class PrefsManager {
     const options = /** @type {!chrome.tts.TtsOptions} */ ({});
     const data = voiceSwitchingData || {};
     const useEnhancedVoices =
-        this.enhancedNetworkVoicesEnabled_ && navigator.onLine;
+        this.enhancedNetworkVoicesEnabled() && navigator.onLine;
 
     if (useEnhancedVoices) {
       options['voiceName'] = this.enhancedVoiceName_;
