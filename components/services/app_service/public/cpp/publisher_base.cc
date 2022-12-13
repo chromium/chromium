@@ -71,14 +71,6 @@ void PublisherBase::Publish(
   }
 }
 
-void PublisherBase::PauseApp(const std::string& app_id) {
-  NOTIMPLEMENTED();
-}
-
-void PublisherBase::UnpauseApp(const std::string& app_id) {
-  NOTIMPLEMENTED();
-}
-
 void PublisherBase::StopApp(const std::string& app_id) {
   NOTIMPLEMENTED();
 }

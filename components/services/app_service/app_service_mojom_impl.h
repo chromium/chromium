@@ -49,10 +49,6 @@ class AppServiceMojomImpl : public apps::mojom::AppService {
   void RegisterSubscriber(
       mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
       apps::mojom::ConnectOptionsPtr opts) override;
-  void PauseApp(apps::mojom::AppType app_type,
-                const std::string& app_id) override;
-  void UnpauseApp(apps::mojom::AppType app_type,
-                  const std::string& app_id) override;
   void StopApp(apps::mojom::AppType app_type,
                const std::string& app_id) override;
   void OpenNativeSettings(apps::mojom::AppType app_type,

@@ -79,24 +79,6 @@ void AppServiceMojomImpl::RegisterSubscriber(
   subscribers_.Add(std::move(subscriber));
 }
 
-void AppServiceMojomImpl::PauseApp(apps::mojom::AppType app_type,
-                                   const std::string& app_id) {
-  auto iter = publishers_.find(app_type);
-  if (iter == publishers_.end()) {
-    return;
-  }
-  iter->second->PauseApp(app_id);
-}
-
-void AppServiceMojomImpl::UnpauseApp(apps::mojom::AppType app_type,
-                                     const std::string& app_id) {
-  auto iter = publishers_.find(app_type);
-  if (iter == publishers_.end()) {
-    return;
-  }
-  iter->second->UnpauseApp(app_id);
-}
-
 void AppServiceMojomImpl::StopApp(apps::mojom::AppType app_type,
                                   const std::string& app_id) {
   auto iter = publishers_.find(app_type);

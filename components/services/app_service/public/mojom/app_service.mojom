@@ -25,16 +25,6 @@ interface AppService {
   // itself with the App Service.
   RegisterSubscriber(pending_remote<Subscriber> subscriber, ConnectOptions? opts);
 
-  // Pauses an app to stop the current running app, and apply the icon effect.
-  PauseApp(
-      AppType app_type,
-      string app_id);
-
-  // Unpauses an app, and recover the icon effect for the app.
-  UnpauseApp(
-      AppType app_type,
-      string app_id);
-
   // Stops the current running app for the given |app_id|.
   StopApp(
       AppType app_type,
@@ -56,25 +46,6 @@ interface AppService {
 interface Publisher {
   // App Registry methods.
   Connect(pending_remote<Subscriber> subscriber, ConnectOptions? opts);
-
-  // Requests that the app identified by |app_id| is marked as paused. Paused
-  // apps cannot be launched. Implemented if the publisher supports the pausing
-  // of apps, and otherwise should do nothing.
-  //
-  // Publishers are expected to update the app icon when it is paused to apply
-  // the kPaused icon effect. Nothing should happen if an already paused app
-  // is paused again.
-  PauseApp(
-      string app_id);
-
-  // Requests that the app identified by |app_id| is unpaused. Implemented if
-  // the publisher supports the pausing of apps, and otherwise should do
-  // nothing.
-  //
-  // Publishers are expected to update the app icon to remove the kPaused
-  // icon effect. Nothing should happen if an unpaused app is unpaused again.
-  UnpauseApp(
-      string app_id);
 
   // Stops all running instances of |app_id|.
   StopApp(
