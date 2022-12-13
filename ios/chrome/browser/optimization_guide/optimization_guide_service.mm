@@ -130,9 +130,11 @@ OptimizationGuideService::OptimizationGuideService(
         optimization_guide::kOptimizationGuidePredictionModelDownloads);
   }
   if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
+    // TODO(crbug.com/1284363): Support the new prediction model store.
     prediction_manager_ =
         std::make_unique<optimization_guide::PredictionManager>(
-            prediction_model_and_features_store, url_loader_factory,
+            prediction_model_and_features_store,
+            /*prediction_model_store=*/nullptr, url_loader_factory,
             pref_service, off_the_record_, application_locale, models_dir,
             optimization_guide_logger_.get(),
             std::move(background_download_service_provider),

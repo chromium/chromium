@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/optimization_guide/core/prediction_model_store.h"
-#include <memory>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -59,8 +58,9 @@ class PredictionModelStoreTest : public testing::Test {
     ASSERT_TRUE(temp_models_dir_.CreateUniqueTempDir());
     local_state_prefs_ = std::make_unique<TestingPrefServiceSimple>();
     prefs::RegisterLocalStatePrefs(local_state_prefs_->registry());
-    prediction_model_store_ = std::make_unique<PredictionModelStore>(
-        local_state_prefs_.get(), temp_models_dir_.GetPath());
+    prediction_model_store_ =
+        PredictionModelStore::CreatePredictionModelStoreForTesting(
+            local_state_prefs_.get(), temp_models_dir_.GetPath());
   }
 
   void OnPredictionModelLoaded(
@@ -204,6 +204,44 @@ TEST_F(PredictionModelStoreTest, InvalidModelAdditionalFile) {
   RunUntilIdle();
 
   EXPECT_FALSE(last_loaded_prediction_model());
+}
+
+TEST_F(PredictionModelStoreTest, UpdateMetadataForExistingModel) {
+  auto model_cache_key = CreateModelCacheKey(kTestLocaleFoo);
+  auto model_detail =
+      CreateTestModelFiles(kTestOptimizationTargetFoo, model_cache_key, {});
+  prediction_model_store_->UpdateModel(
+      kTestOptimizationTargetFoo, model_cache_key, model_detail.model_info,
+      model_detail.base_model_dir, base::DoNothing());
+  RunUntilIdle();
+
+  EXPECT_TRUE(prediction_model_store_->HasModel(kTestOptimizationTargetFoo,
+                                                model_cache_key));
+  prediction_model_store_->LoadModel(
+      kTestOptimizationTargetFoo, model_cache_key,
+      base::BindOnce(&PredictionModelStoreTest::OnPredictionModelLoaded,
+                     base::Unretained(this)));
+  RunUntilIdle();
+  proto::PredictionModel* loaded_model = last_loaded_prediction_model();
+  EXPECT_TRUE(loaded_model);
+  EXPECT_EQ(kTestOptimizationTargetFoo,
+            loaded_model->model_info().optimization_target());
+  EXPECT_FALSE(loaded_model->model_info().keep_beyond_valid_duration());
+
+  proto::ModelInfo model_info;
+  model_info.set_optimization_target(kTestOptimizationTargetFoo);
+  model_info.set_version(1);
+  model_info.mutable_valid_duration()->set_seconds(
+      base::Minutes(100).InSeconds());
+  model_info.set_keep_beyond_valid_duration(true);
+  prediction_model_store_->UpdateMetadataForExistingModel(
+      kTestOptimizationTargetFoo, model_cache_key, model_info);
+  RunUntilIdle();
+  auto metadata_entry = ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
+      local_state_prefs_.get(), kTestOptimizationTargetFoo, model_cache_key);
+  EXPECT_LE(base::Minutes(99),
+            metadata_entry->GetExpiryTime() - base::Time::Now());
+  EXPECT_TRUE(metadata_entry->GetKeepBeyondValidDuration());
 }
 
 }  // namespace optimization_guide

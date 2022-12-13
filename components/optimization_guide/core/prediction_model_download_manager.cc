@@ -25,6 +25,7 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/prediction_model_download_observer.h"
+#include "components/optimization_guide/core/prediction_model_store.h"
 #include "components/services/unzip/public/cpp/unzip.h"
 #include "crypto/sha2.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -84,6 +85,15 @@ void RecordPredictionModelDownloadStatus(PredictionModelDownloadStatus status) {
       status);
 }
 
+// Writes the |model_info| to |file_path|.
+bool WriteModelInfoProtoToFile(const proto::ModelInfo& model_info,
+                               const base::FilePath& file_path) {
+  std::string model_info_str;
+  if (!model_info.SerializeToString(&model_info_str))
+    return false;
+  return base::WriteFile(file_path, model_info_str);
+}
+
 }  // namespace
 
 const char kPredictionModelOptimizationTargetCustomDataKey[] =
@@ -92,11 +102,15 @@ const char kPredictionModelOptimizationTargetCustomDataKey[] =
 PredictionModelDownloadManager::PredictionModelDownloadManager(
     download::BackgroundDownloadService* download_service,
     const base::FilePath& models_dir_path,
+    PredictionModelStore* prediction_model_store,
+    const proto::ModelCacheKey& model_cache_key,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : download_service_(download_service),
       is_available_for_downloads_(true),
       api_key_(features::GetOptimizationGuideServiceAPIKey()),
       models_dir_path_(models_dir_path),
+      prediction_model_store_(prediction_model_store),
+      model_cache_key_(model_cache_key),
       background_task_runner_(background_task_runner) {}
 
 PredictionModelDownloadManager::~PredictionModelDownloadManager() = default;
@@ -340,19 +354,26 @@ void PredictionModelDownloadManager::OnDownloadUnzipped(
         PredictionModelDownloadStatus::kFailedCrxUnzip);
     return;
   }
+  base::FilePath base_model_dir =
+      features::IsInstallWideModelStoreEnabled()
+          ? prediction_model_store_->GetBaseModelDirForModelCacheKey(
+                *optimization_target, model_cache_key_)
+          : models_dir_path_.AppendASCII(
+                base::GUID::GenerateRandomV4().AsLowercaseString());
 
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&PredictionModelDownloadManager::ProcessUnzippedContents,
-                     models_dir_path_, unzipped_dir_path),
+                     base_model_dir, unzipped_dir_path),
       base::BindOnce(&PredictionModelDownloadManager::NotifyModelReady,
-                     ui_weak_ptr_factory_.GetWeakPtr(), optimization_target));
+                     ui_weak_ptr_factory_.GetWeakPtr(), optimization_target,
+                     base_model_dir));
 }
 
 // static
 absl::optional<proto::PredictionModel>
 PredictionModelDownloadManager::ProcessUnzippedContents(
-    const base::FilePath& model_dir_path,
+    const base::FilePath& base_model_dir,
     const base::FilePath& unzipped_dir_path) {
   // Clean up temp dir when this function finishes.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -379,17 +400,15 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
     return absl::nullopt;
   }
 
-  if (model_dir_path.empty()) {
+  if (base_model_dir.empty()) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kOptGuideDirectoryDoesNotExist);
     return absl::nullopt;
   }
 
-  // Move each packaged file away from temp directory into a new directory.
-
-  base::FilePath store_dir = model_dir_path.AppendASCII(
-      base::GUID::GenerateRandomV4().AsLowercaseString());
-  if (!base::CreateDirectory(store_dir)) {
+  // Move each packaged file away from temp directory into the model
+  // base directory.
+  if (!base::CreateDirectory(base_model_dir)) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kCouldNotCreateDirectory);
     return absl::nullopt;
@@ -400,7 +419,7 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
   // Note that the base file name is used for backwards compatibility checking
   // in |OptimizationGuideStore::OnLoadModelsToBeUpdated|.
   base::FilePath store_model_path =
-      store_dir.Append(GetBaseFileNameForModels());
+      base_model_dir.Append(GetBaseFileNameForModels());
 
   proto::PredictionModel model;
   *model.mutable_model_info() = model_info;
@@ -428,7 +447,7 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
     base::FilePath temp_add_file_path =
         unzipped_dir_path.AppendASCII(additional_file_path);
     base::FilePath store_add_file_path =
-        store_dir.AppendASCII(additional_file_path);
+        base_model_dir.AppendASCII(additional_file_path);
 
     // Make sure the additional file gets moved.
     files_to_move.emplace_back(
@@ -437,6 +456,15 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
     // And put its new path in the proto.
     model.mutable_model_info()->add_additional_files()->set_file_path(
         FilePathToString(store_add_file_path));
+  }
+
+  if (features::IsInstallWideModelStoreEnabled() &&
+      !WriteModelInfoProtoToFile(
+          model.model_info(),
+          base_model_dir.Append(GetBaseFileNameForModelInfo()))) {
+    RecordPredictionModelDownloadStatus(
+        PredictionModelDownloadStatus::kFailedModelInfoSaving);
+    return absl::nullopt;
   }
 
   PredictionModelDownloadStatus status =
@@ -470,6 +498,7 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
 
 void PredictionModelDownloadManager::NotifyModelReady(
     absl::optional<proto::OptimizationTarget> optimization_target,
+    const base::FilePath& base_model_dir,
     const absl::optional<proto::PredictionModel>& model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -481,7 +510,7 @@ void PredictionModelDownloadManager::NotifyModelReady(
   }
 
   for (PredictionModelDownloadObserver& observer : observers_)
-    observer.OnModelReady(*model);
+    observer.OnModelReady(base_model_dir, *model);
 }
 
 void PredictionModelDownloadManager::NotifyModelDownloadFailed(

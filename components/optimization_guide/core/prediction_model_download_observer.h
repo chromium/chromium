@@ -14,8 +14,10 @@ namespace optimization_guide {
 // completed.
 class PredictionModelDownloadObserver : public base::CheckedObserver {
  public:
-  // Invoked when a model has been downloaded and verified.
-  virtual void OnModelReady(const proto::PredictionModel& model) = 0;
+  // Invoked when a model has been downloaded and verified. |base_model_dir| is
+  // the base dir where model files are available.
+  virtual void OnModelReady(const base::FilePath& base_model_dir,
+                            const proto::PredictionModel& model) = 0;
 
   // Invoked when a model download started.
   virtual void OnModelDownloadStarted(

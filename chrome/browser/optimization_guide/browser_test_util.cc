@@ -48,4 +48,39 @@ int RetryForHistogramUntilCountReached(
   }
 }
 
+std::unique_ptr<optimization_guide::proto::GetModelsResponse>
+BuildGetModelsResponse() {
+  std::unique_ptr<optimization_guide::proto::GetModelsResponse>
+      get_models_response =
+          std::make_unique<optimization_guide::proto::GetModelsResponse>();
+
+  optimization_guide::proto::PredictionModel* prediction_model =
+      get_models_response->add_models();
+  optimization_guide::proto::ModelInfo* model_info =
+      prediction_model->mutable_model_info();
+  model_info->set_version(2);
+  model_info->set_optimization_target(
+      optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  model_info->add_supported_model_engine_versions(
+      optimization_guide::proto::ModelEngineVersion::
+          MODEL_ENGINE_VERSION_TFLITE_2_8);
+  prediction_model->mutable_model()->set_download_url(
+      "https://example.com/model");
+
+  return get_models_response;
+}
+
+ModelFileObserver::ModelFileObserver() = default;
+
+ModelFileObserver::~ModelFileObserver() = default;
+
+void ModelFileObserver::OnModelUpdated(
+    proto::OptimizationTarget optimization_target,
+    const ModelInfo& model_info) {
+  optimization_target_ = optimization_target;
+  model_info_ = model_info;
+  if (file_received_callback_)
+    std::move(file_received_callback_).Run(optimization_target, model_info);
+}
+
 }  // namespace optimization_guide
