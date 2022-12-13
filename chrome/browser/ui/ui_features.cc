@@ -49,13 +49,6 @@ BASE_FEATURE(kChromeWhatsNewUI,
 #endif
 );
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Enables "new" badge for "Chrome What's New" in Main Chrome Menu | Help.
-BASE_FEATURE(kChromeWhatsNewInMainMenuNewBadge,
-             "ChromeWhatsNewInMainMenuNewBadge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if !defined(ANDROID)
 // Enables "Access Code Cast" UI.
 BASE_FEATURE(kAccessCodeCastUI,

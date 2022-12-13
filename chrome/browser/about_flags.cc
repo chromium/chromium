@@ -8379,14 +8379,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChromeWhatsNewUIDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kChromeWhatsNewUI)},
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {"chrome-whats-new-in-main-menu-new-badge",
-     flag_descriptions::kChromeWhatsNewInMainMenuNewBadgeName,
-     flag_descriptions::kChromeWhatsNewInMainMenuNewBadgeDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kChromeWhatsNewInMainMenuNewBadge)},
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
     {"sync-trusted-vault-passphrase-promo",
      flag_descriptions::kSyncTrustedVaultPassphrasePromoName,
      flag_descriptions::kSyncTrustedVaultPassphrasePromoDescription, kOsAll,

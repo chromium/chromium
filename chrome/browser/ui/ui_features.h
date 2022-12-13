@@ -39,10 +39,6 @@ BASE_DECLARE_FEATURE(kChromeTipsInMainMenuNewBadge);
 
 BASE_DECLARE_FEATURE(kChromeWhatsNewUI);
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-BASE_DECLARE_FEATURE(kChromeWhatsNewInMainMenuNewBadge);
-#endif
-
 #if !defined(ANDROID)
 BASE_DECLARE_FEATURE(kAccessCodeCastUI);
 #endif
