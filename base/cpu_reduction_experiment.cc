@@ -21,7 +21,7 @@ namespace {
 // utilization.
 BASE_FEATURE(kReduceCpuUtilization,
              "ReduceCpuUtilization",
-             FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 
 class CpuReductionExperimentSubSampler {
  public:
