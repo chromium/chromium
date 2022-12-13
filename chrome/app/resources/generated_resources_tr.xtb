@@ -756,7 +756,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="168991973552362966">Yakındaki bir yazıcıyı ekleyin</translation>
 <translation id="1689945336726856614">&amp;URL'yi Kopyala</translation>
 <translation id="1692115862433274081">Başka bir hesap kullan</translation>
-<translation id="1692118695553449118">Senkronizasyon açık.</translation>
+<translation id="1692118695553449118">Senkronizasyon açık</translation>
 <translation id="1692210323591458290">Koyu mor</translation>
 <translation id="1692713444215319269">Rengi ters çevirme, büyüteç ve ekran ayarları</translation>
 <translation id="1695487653372841667">Google'la hangi bilgilerin paylaşılacağını siz belirleyebilirsiniz. İstediğiniz zaman bunu Ayarlar'dan değiştirebilirsiniz.</translation>
@@ -5328,7 +5328,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5979084224081478209">Şifreleri kontrol et</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Zararlı olabilecek 1 uzantıyı tekrar açtınız}other{Zararlı olabilecek {NUM_EXTENSIONS} uzantıyı tekrar açtınız}}</translation>
 <translation id="5979353814339191480">Bu seçenek, veri planı veya mobil ağ bağlantı çubuğu olan Chromebook'lar için ya da taşınabilir hotspot ile tethering yaparken geçerlidir</translation>
-<translation id="5979421442488174909"><ph name="LANGUAGE" /> Diline Çe&amp;vir</translation>
+<translation id="5979421442488174909"><ph name="LANGUAGE" /> diline ç&amp;evir</translation>
 <translation id="5979469435153841984">Sayfalara yer işareti koymak için adres çubuğundaki yıldızı tıklayın</translation>
 <translation id="5981362776161841923">Bir uzantıya izin vermek için aşağıdaki varsayılan ayarınızı değiştirin.</translation>
 <translation id="5984222099446776634">Yakın Zamanda Ziyaret Edilenler</translation>

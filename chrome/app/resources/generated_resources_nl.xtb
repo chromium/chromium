@@ -5324,7 +5324,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5979084224081478209">Wachtwoorden controleren</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Je hebt 1 potentieel schadelijke extensie weer aangezet}other{Je hebt {NUM_EXTENSIONS} potentieel schadelijke extensies weer aangezet}}</translation>
 <translation id="5979353814339191480">Deze optie is van toepassing op Chromebooks met een dongle voor een data-abonnement of een mobiel netwerk, of bij tethering naar een draagbare hotspot</translation>
-<translation id="5979421442488174909">&amp;Vertalen in het <ph name="LANGUAGE" /></translation>
+<translation id="5979421442488174909">&amp;Vertalen naar het <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Als je een bookmark wilt instellen voor een pagina, klik je op de ster in de adresbalk</translation>
 <translation id="5981362776161841923">Als je een extensie wilt toestaan, wijzig je hieronder je standaardinstelling.</translation>
 <translation id="5984222099446776634">Recent bezocht</translation>

@@ -252,7 +252,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1223484782328004593"><ph name="APP_NAME" /> wymaga licencji</translation>
 <translation id="1223853788495130632">Administrator zaleca konkretną wartość dla tego ustawienia.</translation>
 <translation id="1225177025209879837">Przetwarzam żądanie...</translation>
-<translation id="1227660082540388410">Edycja klucza</translation>
+<translation id="1227660082540388410">Edytuj klucz</translation>
 <translation id="1227993798763400520">Nie udało się przesłać. Spróbuj ponownie.</translation>
 <translation id="1230417814058465809">Włączona jest standardowa ochrona. Jeśli zależy Ci na większym bezpieczeństwie, użyj wzmocnionej ochrony.</translation>
 <translation id="1231733316453485619">Włączyć synchronizację?</translation>
@@ -5428,7 +5428,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="608912389580139775">Aby dodać tę stronę do listy Do przeczytania, kliknij ikonę Zakładka</translation>
 <translation id="6091116443517744502">Sprawdź połączenie z internetem i spróbuj jeszcze raz</translation>
 <translation id="6091761513005122595">Udział został podłączony.</translation>
-<translation id="6093803049406781019">Usuwanie profilu</translation>
+<translation id="6093803049406781019">Usuń profil</translation>
 <translation id="6093888419484831006">Anulowanie aktualizacji...</translation>
 <translation id="6095541101974653012">Nastąpiło wylogowanie.</translation>
 <translation id="6095984072944024315">−</translation>
