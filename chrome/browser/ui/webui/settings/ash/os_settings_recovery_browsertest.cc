@@ -156,4 +156,24 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature,
   EXPECT_FALSE(cryptohome_.HasRecoveryFactor(GetAccountId()));
 }
 
+// Check that trying to change recovery with an invalidated auth session shows
+// the password prompt again.
+IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, DestroyedSession) {
+  mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
+      OpenLockScreenSettings();
+
+  // Try to change recovery setting, but with an invalid auth session. This
+  // should throw us back to the password prompt.
+  cryptohome_.DestroySessions();
+  lock_screen_settings.TryEnableRecoveryConfiguration();
+  lock_screen_settings.AssertAuthenticated(false);
+
+  // Check that it's still possible to authenticate and change recovery
+  // settings.
+  EXPECT_FALSE(cryptohome_.HasRecoveryFactor(GetAccountId()));
+  lock_screen_settings.Authenticate(kPassword);
+  lock_screen_settings.EnableRecoveryConfiguration();
+  EXPECT_TRUE(cryptohome_.HasRecoveryFactor(GetAccountId()));
+}
+
 }  // namespace ash::settings

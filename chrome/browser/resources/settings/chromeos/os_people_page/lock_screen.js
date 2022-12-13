@@ -316,6 +316,14 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     }
   }
 
+  // Dispatch an event that signal that the auth token is invalid. This will
+  // reopen the password prompt.
+  dispatchAuthTokenInvalidEvent_() {
+    const authTokenInvalid =
+        new CustomEvent('auth-token-invalid', {bubbles: true, composed: true});
+    this.dispatchEvent(authTokenInvalid);
+  }
+
   /**
    * @param {!Event} event
    * @private
@@ -331,9 +339,7 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         this.authToken.token, target.checked, (success) => {
           if (!success) {
             target.checked = !target.checked;
-            const authTokenInvalid = new CustomEvent(
-                'auth-token-invalid', {bubbles: true, composed: true});
-            this.dispatchEvent(authTokenInvalid);
+            this.dispatchAuthTokenInvalidEvent_();
           }
         });
   }
@@ -628,15 +634,22 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     }
     try {
       if (!this.authToken) {
-        console.error('Recovery changed with expired token.');
+        this.dispatchAuthTokenInvalidEvent_();
         return;
       }
 
       const {result} = await this.recoveryFactorEditor.configure(
           this.authToken.token, shouldEnable);
-      if (result !== RecoveryFactorEditor_ConfigureResult.kSuccess) {
-        console.error('RecoveryFactorEditor::Configure failed:', result);
-        return;
+      switch (result) {
+        case RecoveryFactorEditor_ConfigureResult.kSuccess:
+          break;
+        case RecoveryFactorEditor_ConfigureResult.kInvalidTokenError:
+          // This will open the password prompt.
+          this.dispatchAuthTokenInvalidEvent_();
+          return;
+        case RecoveryFactorEditor_ConfigureResult.kClientError:
+          console.error('Error configuring recovery');
+          return;
       }
     } finally {
       this.recoveryChangeInProcess_ = false;

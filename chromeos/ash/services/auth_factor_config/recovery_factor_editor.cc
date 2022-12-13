@@ -68,6 +68,13 @@ void RecoveryFactorEditor::OnRecoveryFactorConfigured(
     std::unique_ptr<UserContext> context,
     absl::optional<AuthenticationError> error) {
   if (error.has_value()) {
+    // Handle expired auth session gracefully.
+    if (error->get_cryptohome_code() ==
+        user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN) {
+      std::move(callback).Run(ConfigureResult::kInvalidTokenError);
+      return;
+    }
+
     LOG(ERROR) << "Configuring recovery factor failed, code "
                << error->get_cryptohome_code();
     std::move(callback).Run(ConfigureResult::kClientError);

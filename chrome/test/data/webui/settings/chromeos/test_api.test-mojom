@@ -39,6 +39,10 @@ interface LockScreenSettings {
   // the recovery is still disabled.
   EnableRecoveryConfiguration() => ();
 
+  // Try to toggle whether recovery is configured or not. Does not assume that
+  // the action is successful.
+  TryEnableRecoveryConfiguration() => ();
+
   // The following function expects the cryptohome recovery toggle is on.
   // Clicks on the recovery toggle, expecting the recovery dialog to show up.
   // if the param is CancelDialog:
