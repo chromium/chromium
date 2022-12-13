@@ -10,6 +10,25 @@
 #include "base/logging.h"
 #include "media/gpu/v4l2/test/av1_pix_fmt.h"
 
+namespace {
+// Returns |src| in a packed buffer.
+std::vector<char> CopyAndRemovePadding(const char* src,
+                                       size_t stride,
+                                       gfx::Size size) {
+  DCHECK_GE(stride, static_cast<size_t>(size.width()));
+  LOG_ASSERT(src);
+
+  std::vector<char> dst;
+  dst.reserve(size.GetArea());
+
+  const auto kSrcLimit = src + stride * size.height();
+  for (; src < kSrcLimit; src += stride)
+    dst.insert(dst.end(), src, src + size.width());
+
+  return dst;
+}
+
+}  // namespace
 namespace media {
 namespace v4l2_test {
 
@@ -20,9 +39,7 @@ void UnpackUVPlane(std::vector<char>& dest_u,
                    std::vector<char>& dest_v,
                    std::vector<char>& src_uv,
                    gfx::Size size) {
-  dest_u.reserve(size.GetArea() / 4);
-  dest_v.reserve(size.GetArea() / 4);
-  for (int i = 0; i < size.GetArea() / 4; i++) {
+  for (int i = 0; i < size.GetArea(); i++) {
     dest_u.push_back(src_uv[2 * i]);
     dest_v.push_back(src_uv[2 * i + 1]);
   }
@@ -186,7 +203,6 @@ void VideoDecoder::ConvertMM21ToYUV(std::vector<char>& dest_y,
                                     char* src_y,
                                     char* src_uv,
                                     gfx::Size src_size) {
-  // Detile MM21's luma plane.
   constexpr int kMM21TileWidth = 16;
   constexpr int kMM21TileHeight = 32;
 
@@ -194,19 +210,50 @@ void VideoDecoder::ConvertMM21ToYUV(std::vector<char>& dest_y,
       << "Source buffer width (" << src_size.width()
       << ") must be a multiple of " << kMM21TileWidth;
   constexpr gfx::Size kYTileSize(kMM21TileWidth, kMM21TileHeight);
-  dest_y.reserve(dest_size.GetArea());
-  DetilePlane(dest_y, dest_size, src_y, src_size, kYTileSize);
-
-  // Detile MM21's chroma plane in a temporary |detiled_uv|.
-  std::vector<char> detiled_uv;
-  const gfx::Size dest_uv_size(dest_size.width(), dest_size.height() / 2);
-  const gfx::Size src_uv_size(src_size.width(), src_size.height() / 2);
   constexpr gfx::Size kUVTileSize(kMM21TileWidth, kMM21TileHeight / 2);
-  detiled_uv.reserve(dest_size.GetArea() / 2);
-  DetilePlane(detiled_uv, dest_uv_size, src_uv, src_uv_size, kUVTileSize);
+
+  // Detile and pad MM21's luma plane in a temporary |src_y_padded|.
+  std::vector<char> src_y_padded;
+  src_y_padded.reserve(src_size.GetArea());
+  DetilePlane(src_y_padded, src_size, src_y, src_size, kYTileSize);
+  dest_y =
+      CopyAndRemovePadding(src_y_padded.data(), src_size.width(), dest_size);
+
+  // Detile and pad MM21's chroma plane in a temporary |src_uv_padded|.
+  const gfx::Size src_uv_size(base::bits::AlignUp(src_size.width(), 2),
+                              base::bits::AlignUp(src_size.height(), 2) / 2);
+  std::vector<char> src_uv_padded;
+  src_uv_padded.reserve(src_uv_size.GetArea());
+  DetilePlane(src_uv_padded, src_uv_size, src_uv, src_uv_size, kUVTileSize);
+
+  // Round up plane dimensions for odd resolution bitstreams.
+  const size_t u_plane_padded_width =
+      base::bits::AlignUp(src_size.width(), 2) / 2;
+  const size_t v_plane_padded_width =
+      base::bits::AlignUp(src_size.width(), 2) / 2;
+  const size_t u_plane_padded_height =
+      base::bits::AlignUp(src_size.height(), 2) / 2;
+  const gfx::Size u_plane_padded_size(u_plane_padded_width,
+                                      u_plane_padded_height);
+
+  std::vector<char> src_u_padded;
+  std::vector<char> src_v_padded;
+  src_u_padded.reserve(src_uv_size.GetArea() / 2);
+  src_v_padded.reserve(src_uv_size.GetArea() / 2);
 
   // Unpack NV12's UV plane into separate U and V planes.
-  UnpackUVPlane(dest_u, dest_v, detiled_uv, dest_size);
+  UnpackUVPlane(src_u_padded, src_v_padded, src_uv_padded, u_plane_padded_size);
+
+  const gfx::Size src_u_padded_size(
+      base::bits::AlignUp(dest_size.width(), 2) / 2,
+      base::bits::AlignUp(dest_size.height(), 2) / 2);
+  const gfx::Size src_v_padded_size(
+      base::bits::AlignUp(dest_size.width(), 2) / 2,
+      base::bits::AlignUp(dest_size.height(), 2) / 2);
+  dest_u = CopyAndRemovePadding(src_u_padded.data(), u_plane_padded_width,
+                                src_u_padded_size);
+  dest_v = CopyAndRemovePadding(src_v_padded.data(), v_plane_padded_width,
+                                src_v_padded_size);
 }
 
 }  // namespace v4l2_test
