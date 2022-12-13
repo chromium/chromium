@@ -124,11 +124,13 @@ class FastPairRepositoryImpl : public FastPairRepository,
   void WriteDeviceToFootprints(const std::string& hex_model_id,
                                const std::string& mac_address,
                                const std::vector<uint8_t>& account_key,
+                               absl::optional<Protocol> device_protocol,
                                DeviceMetadata* metadata,
                                bool has_retryable_error);
   void OnWriteDeviceToFootprintsComplete(
       const std::string& mac_address,
       const std::vector<uint8_t>& account_key,
+      absl::optional<Protocol> device_protocol,
       bool success);
 
   void OnCheckOptInStatus(

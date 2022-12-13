@@ -329,7 +329,8 @@ void FastPairRepositoryImpl::AssociateAccountKey(
       device->metadata_id,
       base::BindOnce(&FastPairRepositoryImpl::WriteDeviceToFootprints,
                      weak_ptr_factory_.GetWeakPtr(), device->metadata_id,
-                     device->classic_address().value(), account_key));
+                     device->classic_address().value(), account_key,
+                     device->protocol));
 }
 
 bool FastPairRepositoryImpl::AssociateAccountKeyLocally(
@@ -353,6 +354,7 @@ void FastPairRepositoryImpl::WriteDeviceToFootprints(
     const std::string& hex_model_id,
     const std::string& mac_address,
     const std::vector<uint8_t>& account_key,
+    absl::optional<Protocol> device_protocol,
     DeviceMetadata* metadata,
     bool has_retryable_error) {
   if (!metadata) {
@@ -367,12 +369,14 @@ void FastPairRepositoryImpl::WriteDeviceToFootprints(
   footprints_fetcher_->AddUserFastPairInfo(
       fast_pair_info,
       base::BindOnce(&FastPairRepositoryImpl::OnWriteDeviceToFootprintsComplete,
-                     weak_ptr_factory_.GetWeakPtr(), mac_address, account_key));
+                     weak_ptr_factory_.GetWeakPtr(), mac_address, account_key,
+                     device_protocol));
 }
 
 void FastPairRepositoryImpl::OnWriteDeviceToFootprintsComplete(
     const std::string& mac_address,
     const std::vector<uint8_t>& account_key,
+    absl::optional<Protocol> device_protocol,
     bool success) {
   if (!success) {
     QP_LOG(WARNING)
@@ -601,7 +605,7 @@ void FastPairRepositoryImpl::RetryPendingWrites() {
         base::BindOnce(
             &FastPairRepositoryImpl::OnWriteDeviceToFootprintsComplete,
             weak_ptr_factory_.GetWeakPtr(), pending_write.mac_address,
-            account_key));
+            account_key, /*device_protocol=*/absl::nullopt));
   }
 }
 
