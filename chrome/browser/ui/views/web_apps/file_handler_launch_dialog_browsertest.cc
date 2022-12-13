@@ -105,7 +105,8 @@ class FileHandlerLaunchDialogTest : public InProcessBrowserTest {
     // `test::InstallWebApp()` forces a kBrowser display mode; see
     // `WebAppInstallFinalizer::FinalizeInstall()`.
     ScopedRegistryUpdate update(
-        &WebAppProvider::GetForTest(browser()->profile())->sync_bridge());
+        &WebAppProvider::GetForTest(browser()->profile())
+             ->sync_bridge_unsafe());
     update->UpdateApp(app_id_)->SetUserDisplayMode(
         UserDisplayMode::kStandalone);
   }

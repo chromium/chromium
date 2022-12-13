@@ -1750,7 +1750,8 @@ void WebAppIntegrationTestDriver::SetOpenInTab(Site site) {
   ;
   // Will need to add feature flag based condition for web app settings page
 #if BUILDFLAG(IS_CHROMEOS)
-  auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
+  auto& sync_bridge =
+      WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
   sync_bridge.SetAppUserDisplayMode(app_id, UserDisplayMode::kBrowser, true);
   AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kBrowser).Await();
 #else
@@ -1769,7 +1770,8 @@ void WebAppIntegrationTestDriver::SetOpenInWindow(Site site) {
   ;
   // Will need to add feature flag based condition for web app settings page.
 #if BUILDFLAG(IS_CHROMEOS)
-  auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
+  auto& sync_bridge =
+      WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
   sync_bridge.SetAppUserDisplayMode(app_id, UserDisplayMode::kStandalone, true);
   AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kWindow).Await();
 #else
