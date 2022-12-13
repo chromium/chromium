@@ -101,7 +101,7 @@ namespace imageWriterPrivate {
     // |callback|: The callback which is triggered with the write is
     // successfully cancelled, passing the $(ref:ProgressInfo) of the operation at
     // the time it was cancelled.
-    static boolean cancelWrite(WriteCancelCallback callback);
+    static void cancelWrite(WriteCancelCallback callback);
 
     // Destroys the partition table of a disk, effectively erasing it.  This is
     // a fairly quick operation and so it does not have complex stages or
