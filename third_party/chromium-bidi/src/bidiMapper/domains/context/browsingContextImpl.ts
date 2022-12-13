@@ -16,11 +16,10 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import {BrowsingContext} from '../../../protocol/types';
+import {BrowsingContext, Message} from '../../../protocol/protocol';
 import {CdpClient} from '../../CdpConnection';
 import {IEventManager} from '../events/EventManager';
 import {Deferred} from '../../../utils/deferred';
-import {UnknownException} from '../../../protocol/error';
 import {LogManager} from '../log/logManager';
 import {Realm, RealmType} from '../script/realm';
 import {BrowsingContextStorage} from './browsingContextStorage';
@@ -99,7 +98,10 @@ export class BrowsingContextImpl {
     context.#targetDefers.targetUnblocked.resolve();
 
     await eventManager.registerEvent(
-      new BrowsingContext.ContextCreatedEvent(context.serializeToBidiValue()),
+      {
+        method: BrowsingContext.EventNames.ContextCreatedEvent,
+        params: context.serializeToBidiValue(),
+      },
       context.contextId
     );
   }
@@ -126,7 +128,10 @@ export class BrowsingContextImpl {
     context.#unblockAttachedTarget();
 
     await eventManager.registerEvent(
-      new BrowsingContext.ContextCreatedEvent(context.serializeToBidiValue()),
+      {
+        method: BrowsingContext.EventNames.ContextCreatedEvent,
+        params: context.serializeToBidiValue(),
+      },
       context.contextId
     );
   }
@@ -155,7 +160,10 @@ export class BrowsingContextImpl {
     }
 
     await this.#eventManager.registerEvent(
-      new BrowsingContext.ContextDestroyedEvent(this.serializeToBidiValue()),
+      {
+        method: BrowsingContext.EventNames.ContextDestroyedEvent,
+        params: this.serializeToBidiValue(),
+      },
       this.contextId
     );
     BrowsingContextStorage.removeContext(this.contextId);
@@ -311,11 +319,14 @@ export class BrowsingContextImpl {
               params
             );
             await this.#eventManager.registerEvent(
-              new BrowsingContext.DomContentLoadedEvent({
-                context: this.contextId,
-                navigation: this.#loaderId,
-                url: this.#url,
-              }),
+              {
+                method: BrowsingContext.EventNames.DomContentLoadedEvent,
+                params: {
+                  context: this.contextId,
+                  navigation: this.#loaderId,
+                  url: this.#url,
+                },
+              },
               this.contextId
             );
             break;
@@ -323,11 +334,14 @@ export class BrowsingContextImpl {
           case 'load':
             this.#targetDefers.Page.lifecycleEvent.load.resolve(params);
             await this.#eventManager.registerEvent(
-              new BrowsingContext.LoadEvent({
-                context: this.contextId,
-                navigation: this.#loaderId,
-                url: this.#url,
-              }),
+              {
+                method: BrowsingContext.EventNames.LoadEvent,
+                params: {
+                  context: this.contextId,
+                  navigation: this.#loaderId,
+                  url: this.#url,
+                },
+              },
               this.contextId
             );
             break;
@@ -440,7 +454,7 @@ export class BrowsingContextImpl {
     );
 
     if (cdpNavigateResult.errorText) {
-      throw new UnknownException(cdpNavigateResult.errorText);
+      throw new Message.UnknownException(cdpNavigateResult.errorText);
     }
 
     if (

@@ -16,10 +16,9 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import type {CommonDataTypes, Script} from '../../../protocol/types';
+import {CommonDataTypes, Script, Message} from '../../../protocol/protocol';
 import {ScriptEvaluator} from './scriptEvaluator';
 import {BrowsingContextStorage} from '../context/browsingContextStorage';
-import {NoSuchFrameException} from '../../../protocol/error';
 import {CdpClient} from '../../CdpConnection';
 
 export enum RealmType {
@@ -120,7 +119,7 @@ export class Realm {
   }): Realm {
     const maybeRealm = Realm.findRealm(filter);
     if (maybeRealm === undefined) {
-      throw new NoSuchFrameException(
+      throw new Message.NoSuchFrameException(
         `Realm ${JSON.stringify(filter)} not found`
       );
     }

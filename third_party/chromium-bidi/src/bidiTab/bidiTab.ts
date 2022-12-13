@@ -24,8 +24,16 @@ import {BidiTransport} from '../bidiMapper/bidiMapper';
 import {log, LogType} from '../utils/log';
 import {MapperTabPage} from './mapperTabPage';
 import {OutgoingBidiMessage} from '../bidiMapper/OutgoindBidiMessage';
-import type {Message} from '../protocol/types';
+import type {
+  BrowsingContext,
+  CDP,
+  Message,
+  Script,
+  Session,
+} from '../protocol/protocol';
+import * as Parser from '../protocol-parser/protocol-parser';
 import {ITransport} from '../utils/transport';
+import {BidiParser} from '../bidiMapper/CommandProcessor';
 
 const logSystem = log(LogType.system);
 const logBidi = log(LogType.bidi);
@@ -254,8 +262,45 @@ async function _createBidiServer(selfTargetId: string) {
   return await BidiServer.createAndStart(
     new WindowBidiTransport(),
     _createCdpConnection(),
-    selfTargetId
+    selfTargetId,
+    new BidiParserImpl()
   );
+}
+
+class BidiParserImpl implements BidiParser {
+  parseGetRealmsParams(params: object): Script.GetRealmsParameters {
+    return Parser.Script.parseGetRealmsParams(params);
+  }
+  parseCallFunctionParams(params: object): Script.CallFunctionParameters {
+    return Parser.Script.parseCallFunctionParams(params);
+  }
+  parseEvaluateParams(params: object): Script.EvaluateParameters {
+    return Parser.Script.parseEvaluateParams(params);
+  }
+  parseDisownParams(params: object): Script.DisownParameters {
+    return Parser.Script.parseDisownParams(params);
+  }
+  parseSendCommandParams(params: object): CDP.SendCommandParams {
+    return Parser.CDP.parseSendCommandParams(params);
+  }
+  parseGetSessionParams(params: object): CDP.GetSessionParams {
+    return Parser.CDP.parseGetSessionParams(params);
+  }
+  parseNavigateParams(params: object): BrowsingContext.NavigateParameters {
+    return Parser.BrowsingContext.parseNavigateParams(params);
+  }
+  parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters {
+    return Parser.BrowsingContext.parseGetTreeParams(params);
+  }
+  parseSubscribeParams(params: object): Session.SubscribeParameters {
+    return Parser.Session.parseSubscribeParams(params);
+  }
+  parseCreateParams(params: object): BrowsingContext.CreateParameters {
+    return Parser.BrowsingContext.parseCreateParams(params);
+  }
+  parseCloseParams(params: object): BrowsingContext.CloseParameters {
+    return Parser.BrowsingContext.parseCloseParams(params);
+  }
 }
 
 // Needed to filter out info related to BiDi target.

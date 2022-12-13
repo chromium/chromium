@@ -16,9 +16,8 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import type {CommonDataTypes, Script} from '../../../protocol/types';
+import {CommonDataTypes, Script, Message} from '../../../protocol/protocol';
 import {Realm} from './realm';
-import {InvalidArgumentException} from '../../../protocol/error';
 
 export class ScriptEvaluator {
   // As `script.evaluate` wraps call into serialization script, `lineNumber`
@@ -147,7 +146,7 @@ export class ScriptEvaluator {
           'Argument should belong to the same JavaScript world as target object',
         ].includes(e.message)
       ) {
-        throw new InvalidArgumentException('Handle was not found.');
+        throw new Message.InvalidArgumentException('Handle was not found.');
       }
       throw e;
     }

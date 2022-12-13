@@ -15,15 +15,23 @@
  * limitations under the License.
  */
 
-import {EventResponseClass} from './event';
-import {z as zod, ZodType} from 'zod';
-import {InvalidArgumentException} from './error';
-import {log, LogType} from '../utils/log';
+/**
+ * @file Provides parsing and validator for WebDriver BiDi protocol.
+ * Parser types should match the `../protocol` types.
+ */
 
-const logParser = log(LogType.commandParser);
 const MAX_INT = 9007199254740991 as const;
 
-function parseObject<T extends ZodType>(obj: unknown, schema: T): zod.infer<T> {
+import {z as zod, ZodType} from 'zod';
+import {log, LogType} from '../utils/log';
+import {EventResponse, Message} from '../protocol/protocol';
+
+const logParser = log(LogType.commandParser);
+
+export function parseObject<T extends ZodType>(
+  obj: unknown,
+  schema: T
+): zod.infer<T> {
   const parseResult = schema.safeParse(obj);
   if (parseResult.success) {
     return parseResult.data;
@@ -42,53 +50,7 @@ function parseObject<T extends ZodType>(obj: unknown, schema: T): zod.infer<T> {
     )
     .join(' ');
 
-  throw new InvalidArgumentException(errorMessage);
-}
-
-export namespace Message {
-  export type OutgoingMessage =
-    | CommandResponse
-    | EventMessage
-    | {launched: true};
-
-  export type RawCommandRequest = {
-    id: number;
-    method: string;
-    params: object;
-    channel?: string;
-  };
-
-  export type CommandRequest = {id: number} & (
-    | BrowsingContext.Command
-    | Script.Command
-    | Session.Command
-    | CDP.Command
-  );
-
-  export type CommandResponse = {
-    id: number;
-  } & CommandResponseResult;
-
-  export type CommandResponseResult =
-    | BrowsingContext.CommandResult
-    | Script.CommandResult
-    | Session.CommandResult
-    | CDP.CommandResult
-    | ErrorResult;
-
-  export type EventMessage = BrowsingContext.Event | Log.Event | CDP.Event;
-
-  export type ErrorCode =
-    | 'unknown error'
-    | 'unknown command'
-    | 'invalid argument'
-    | 'no such frame';
-
-  export type ErrorResult = {
-    readonly error: ErrorCode;
-    readonly message: string;
-    readonly stacktrace?: string;
-  };
+  throw new Message.InvalidArgumentException(errorMessage);
 }
 
 export namespace CommonDataTypes {
@@ -501,7 +463,7 @@ export namespace Script {
     'worklet',
   ]);
 
-  const GetRealmsParametersSchema = zod.object({
+  export const GetRealmsParametersSchema = zod.object({
     context: CommonDataTypes.BrowsingContextSchema.optional(),
     type: RealmTypeSchema.optional(),
   });
@@ -772,21 +734,12 @@ export namespace BrowsingContext {
   export type CloseResult = {result: {}};
 
   // events
-  export class LoadEvent extends EventResponseClass<NavigationInfo> {
-    static readonly method = 'browsingContext.load';
+  export type LoadEvent = EventResponse<EventNames.LoadEvent, NavigationInfo>;
 
-    constructor(params: BrowsingContext.NavigationInfo) {
-      super(LoadEvent.method, params);
-    }
-  }
-
-  export class DomContentLoadedEvent extends EventResponseClass<NavigationInfo> {
-    static readonly method = 'browsingContext.domContentLoaded';
-
-    constructor(params: BrowsingContext.NavigationInfo) {
-      super(DomContentLoadedEvent.method, params);
-    }
-  }
+  export type DomContentLoadedEvent = EventResponse<
+    EventNames.DomContentLoadedEvent,
+    NavigationInfo
+  >;
 
   export type NavigationInfo = {
     context: CommonDataTypes.BrowsingContext;
@@ -794,28 +747,21 @@ export namespace BrowsingContext {
     url: string;
   };
 
-  export class ContextCreatedEvent extends EventResponseClass<BrowsingContext.Info> {
-    static readonly method = 'browsingContext.contextCreated';
+  export type ContextCreatedEvent = EventResponse<
+    EventNames.ContextCreatedEvent,
+    BrowsingContext.Info
+  >;
+  export type ContextDestroyedEvent = EventResponse<
+    EventNames.ContextDestroyedEvent,
+    BrowsingContext.Info
+  >;
 
-    constructor(params: BrowsingContext.Info) {
-      super(ContextCreatedEvent.method, params);
-    }
+  export enum EventNames {
+    LoadEvent = 'browsingContext.load',
+    DomContentLoadedEvent = 'browsingContext.domContentLoaded',
+    ContextCreatedEvent = 'browsingContext.contextCreated',
+    ContextDestroyedEvent = 'browsingContext.contextDestroyed',
   }
-
-  export class ContextDestroyedEvent extends EventResponseClass<BrowsingContext.Info> {
-    static readonly method = 'browsingContext.contextDestroyed';
-
-    constructor(params: BrowsingContext.Info) {
-      super(ContextDestroyedEvent.method, params);
-    }
-  }
-
-  export const EventNames = [
-    LoadEvent.method,
-    DomContentLoadedEvent.method,
-    ContextCreatedEvent.method,
-    ContextDestroyedEvent.method,
-  ] as const;
 }
 
 // https://w3c.github.io/webdriver-bidi/#module-log
@@ -846,15 +792,14 @@ export namespace Log {
     type: 'javascript';
   };
 
-  export class LogEntryAddedEvent extends EventResponseClass<LogEntry> {
-    static readonly method = 'log.entryAdded';
+  export type LogEntryAddedEvent = EventResponse<
+    EventNames.LogEntryAddedEvent,
+    LogEntry
+  >;
 
-    constructor(params: LogEntry) {
-      super(LogEntryAddedEvent.method, params);
-    }
+  export enum EventNames {
+    LogEntryAddedEvent = 'log.entryAdded',
   }
-
-  export const EventNames = [LogEntryAddedEvent.method] as const;
 }
 
 export namespace CDP {
@@ -898,20 +843,20 @@ export namespace CDP {
 
   export type GetSessionResult = {result: {session: string}};
 
-  export class EventReceivedEvent extends EventResponseClass<EventReceivedParams> {
-    static readonly method = 'cdp.eventReceived';
-
-    constructor(params: EventReceivedParams) {
-      super(EventReceivedEvent.method, params);
-    }
-  }
+  export type EventReceivedEvent = EventResponse<
+    EventNames.EventReceivedEvent,
+    EventReceivedParams
+  >;
 
   export type EventReceivedParams = {
     cdpMethod: string;
     cdpParams: object;
     cdpSession: string;
   };
-  export const EventNames = [EventReceivedEvent.method] as const;
+
+  export enum EventNames {
+    EventReceivedEvent = 'cdp.eventReceived',
+  }
 }
 
 export namespace Session {
@@ -940,9 +885,12 @@ export namespace Session {
   };
 
   const EventNameSchema = zod.enum([
-    ...BrowsingContext.EventNames,
-    ...Log.EventNames,
-    ...CDP.EventNames,
+    BrowsingContext.EventNames.ContextCreatedEvent,
+    BrowsingContext.EventNames.ContextDestroyedEvent,
+    BrowsingContext.EventNames.DomContentLoadedEvent,
+    BrowsingContext.EventNames.LoadEvent,
+    Log.EventNames.LogEntryAddedEvent,
+    CDP.EventNames.EventReceivedEvent,
   ]);
 
   // SessionSubscribeParameters = {

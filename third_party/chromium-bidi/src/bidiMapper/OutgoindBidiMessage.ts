@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type {Message} from '../protocol/types';
+import type {Message} from '../protocol/protocol';
 
 export class OutgoingBidiMessage {
   readonly #message: Message.OutgoingMessage;

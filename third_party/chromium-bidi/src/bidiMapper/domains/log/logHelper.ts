@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type {CommonDataTypes} from '../../../protocol/types';
+import type {CommonDataTypes} from '../../../protocol/protocol';
 
 const specifiers = ['%s', '%d', '%i', '%f', '%o', '%O', '%c'];
 
@@ -42,7 +42,7 @@ export function logMessageFormatter(
       continue;
     }
     if (isFormmatSpecifier(token)) {
-      const arg = argValues.shift() as {type: string; value: any};
+      const arg = argValues.shift();
       // raise an exception when less value is provided
       if (arg === undefined) {
         throw new Error(
@@ -52,13 +52,21 @@ export function logMessageFormatter(
       if (token === '%s') {
         output += stringFromArg(arg);
       } else if (token === '%d' || token === '%i') {
-        if (['bigint', 'number', 'string'].includes(arg.type)) {
+        if (
+          arg.type === 'bigint' ||
+          arg.type === 'number' ||
+          arg.type === 'string'
+        ) {
           output += parseInt(arg.value.toString(), 10);
         } else {
           output += 'NaN';
         }
       } else if (token === '%f') {
-        if (['bigint', 'number', 'string'].includes(arg.type)) {
+        if (
+          arg.type === 'bigint' ||
+          arg.type === 'number' ||
+          arg.type === 'string'
+        ) {
           output += parseFloat(arg.value.toString());
         } else {
           output += 'NaN';
@@ -101,9 +109,12 @@ export function logMessageFormatter(
 function toJson(arg: CommonDataTypes.RemoteValue): string {
   // arg type validation
   if (
-    !['array', 'bigint', 'date', 'number', 'object', 'string'].includes(
-      arg.type
-    )
+    arg.type !== 'array' &&
+    arg.type !== 'bigint' &&
+    arg.type !== 'date' &&
+    arg.type !== 'number' &&
+    arg.type !== 'object' &&
+    arg.type !== 'string'
   ) {
     return stringFromArg(arg);
   }
@@ -139,7 +150,7 @@ function toJson(arg: CommonDataTypes.RemoteValue): string {
   throw Error('Invalid value type: ' + arg.toString());
 }
 
-function stringFromArg(arg: CommonDataTypes.RemoteValue) {
+function stringFromArg(arg: CommonDataTypes.RemoteValue): string {
   if (!arg.hasOwnProperty('value')) {
     return arg.type;
   }
@@ -149,15 +160,15 @@ function stringFromArg(arg: CommonDataTypes.RemoteValue) {
     case 'number':
     case 'boolean':
     case 'bigint':
-      return arg.value;
+      return String(arg.value);
     case 'regexp':
       return `/${arg.value.pattern}/${arg.value.flags}`;
     case 'date':
       return new Date(arg.value).toString();
     case 'object':
-      return `Object(${arg.value.length})`;
+      return `Object(${arg.value?.length})`;
     case 'array':
-      return `Array(${arg.value.length})`;
+      return `Array(${arg.value?.length})`;
     case 'map':
       return `Map(${arg.value.length})`;
     case 'set':
@@ -174,14 +185,16 @@ export function getRemoteValuesText(
   args: CommonDataTypes.RemoteValue[],
   formatText: boolean
 ): string {
-  if (args.length == 0) {
+  const arg = args[0];
+
+  if (!arg) {
     return '';
   }
 
   // if args[0] is a format specifier, format the args as output
   if (
-    args[0].type === 'string' &&
-    isFormmatSpecifier(args[0].value.toString()) &&
+    arg.type === 'string' &&
+    isFormmatSpecifier(arg.value.toString()) &&
     formatText
   ) {
     return logMessageFormatter(args);

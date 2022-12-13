@@ -17,10 +17,14 @@
 
 import {log, LogType} from '../../../utils/log';
 import {CdpClient, CdpConnection} from '../../CdpConnection';
-import type {BrowsingContext, CDP, Script} from '../../../protocol/types';
+import {
+  BrowsingContext,
+  CDP,
+  Script,
+  Message,
+} from '../../../protocol/protocol';
 import Protocol from 'devtools-protocol';
 import {IEventManager} from '../events/EventManager';
-import {InvalidArgumentException} from '../../../protocol/error';
 import {BrowsingContextImpl} from './browsingContextImpl';
 import {Realm} from '../script/realm';
 import {BrowsingContextStorage} from './browsingContextStorage';
@@ -71,7 +75,7 @@ export class BrowsingContextProcessor {
     sessionCdpClient.on('*', async (method, params) => {
       await this.#eventManager.registerEvent(
         {
-          method: 'cdp.eventReceived',
+          method: CDP.EventNames.EventReceivedEvent,
           params: {
             cdpMethod: method,
             cdpParams: params || {},
@@ -178,7 +182,7 @@ export class BrowsingContextProcessor {
         params.referenceContext
       );
       if (referenceContext.parentId !== null) {
-        throw new InvalidArgumentException(
+        throw new Message.InvalidArgumentException(
           `referenceContext should be a top-level context`
         );
       }
@@ -282,7 +286,7 @@ export class BrowsingContextProcessor {
       commandParams.context
     );
     if (context.parentId !== null) {
-      throw new InvalidArgumentException(
+      throw new Message.InvalidArgumentException(
         'Not a top-level browsing context cannot be closed.'
       );
     }

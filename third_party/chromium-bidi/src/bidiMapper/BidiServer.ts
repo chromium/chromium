@@ -18,11 +18,11 @@
 import {EventEmitter} from '../utils/EventEmitter';
 
 import {BidiTransport} from './BidiTransport';
-import type {Message} from '../protocol/types';
+import type {Message} from '../protocol/protocol';
 import {ProcessingQueue} from '../utils/processingQueue';
 import {OutgoingBidiMessage} from './OutgoindBidiMessage';
 import {EventManager} from './domains/events/EventManager';
-import {CommandProcessor} from './CommandProcessor';
+import {BidiParser, CommandProcessor} from './CommandProcessor';
 import {CdpConnection} from './CdpConnection';
 import {BrowsingContextStorage} from './domains/context/browsingContextStorage';
 
@@ -38,7 +38,8 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   private constructor(
     bidiTransport: BidiTransport,
     cdpConnection: CdpConnection,
-    selfTargetId: string
+    selfTargetId: string,
+    parser: BidiParser
   ) {
     super();
     this.#messageQueue = new ProcessingQueue<OutgoingBidiMessage>(
@@ -49,7 +50,8 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     this.#commandProcessor = new CommandProcessor(
       cdpConnection,
       new EventManager(this),
-      selfTargetId
+      selfTargetId,
+      parser
     );
     this.#commandProcessor.on(
       'response',
@@ -62,9 +64,15 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   public static async createAndStart(
     bidiTransport: BidiTransport,
     cdpConnection: CdpConnection,
-    selfTargetId: string
+    selfTargetId: string,
+    parser: BidiParser
   ): Promise<BidiServer> {
-    const server = new BidiServer(bidiTransport, cdpConnection, selfTargetId);
+    const server = new BidiServer(
+      bidiTransport,
+      cdpConnection,
+      selfTargetId,
+      parser
+    );
     const cdpClient = cdpConnection.browserClient();
 
     // Needed to get events about new targets.

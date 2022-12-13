@@ -17,34 +17,81 @@
 
 import {BrowsingContextProcessor} from './domains/context/browsingContextProcessor';
 import {
-  BrowsingContext,
-  CDP,
   Message,
-  Script,
   Session,
-} from '../protocol/types';
+  BrowsingContext,
+  Script,
+  CDP,
+} from '../protocol/protocol';
 import {CdpConnection} from './CdpConnection';
 import {OutgoingBidiMessage} from './OutgoindBidiMessage';
 import {IEventManager} from './domains/events/EventManager';
-import {
-  ErrorResponseClass,
-  UnknownCommandException,
-  UnknownException,
-} from '../protocol/error';
 import {EventEmitter} from '../utils/EventEmitter';
 
 type CommandProcessorEvents = {
   response: Promise<OutgoingBidiMessage>;
 };
 
+export interface BidiParser {
+  parseGetRealmsParams(params: object): Script.GetRealmsParameters;
+  parseCallFunctionParams(params: object): Script.CallFunctionParameters;
+  parseEvaluateParams(params: object): Script.EvaluateParameters;
+  parseDisownParams(params: object): Script.DisownParameters;
+  parseSendCommandParams(params: object): CDP.SendCommandParams;
+  parseGetSessionParams(params: object): CDP.GetSessionParams;
+  parseNavigateParams(params: object): BrowsingContext.NavigateParameters;
+  parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters;
+  parseSubscribeParams(params: object): Session.SubscribeParameters;
+  parseCreateParams(params: object): BrowsingContext.CreateParameters;
+  parseCloseParams(params: object): BrowsingContext.CloseParameters;
+}
+
+class BidiNoOpParser implements BidiParser {
+  parseGetRealmsParams(params: object): Script.GetRealmsParameters {
+    return params as Script.GetRealmsParameters;
+  }
+  parseCallFunctionParams(params: object): Script.CallFunctionParameters {
+    return params as Script.CallFunctionParameters;
+  }
+  parseEvaluateParams(params: object): Script.EvaluateParameters {
+    return params as Script.EvaluateParameters;
+  }
+  parseDisownParams(params: object): Script.DisownParameters {
+    return params as Script.DisownParameters;
+  }
+  parseSendCommandParams(params: object): CDP.SendCommandParams {
+    return params as CDP.SendCommandParams;
+  }
+  parseGetSessionParams(params: object): CDP.GetSessionParams {
+    return params as CDP.GetSessionParams;
+  }
+  parseNavigateParams(params: object): BrowsingContext.NavigateParameters {
+    return params as BrowsingContext.NavigateParameters;
+  }
+  parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters {
+    return params as BrowsingContext.GetTreeParameters;
+  }
+  parseSubscribeParams(params: object): Session.SubscribeParameters {
+    return params as Session.SubscribeParameters;
+  }
+  parseCreateParams(params: object): BrowsingContext.CreateParameters {
+    return params as BrowsingContext.CreateParameters;
+  }
+  parseCloseParams(params: object): BrowsingContext.CloseParameters {
+    return params as BrowsingContext.CloseParameters;
+  }
+}
+
 export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   #contextProcessor: BrowsingContextProcessor;
   #eventManager: IEventManager;
+  #parser: BidiParser;
 
   constructor(
     cdpConnection: CdpConnection,
     eventManager: IEventManager,
-    selfTargetId: string
+    selfTargetId: string,
+    parser: BidiParser = new BidiNoOpParser()
   ) {
     super();
     this.#eventManager = eventManager;
@@ -53,6 +100,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       selfTargetId,
       eventManager
     );
+    this.#parser = parser;
   }
 
   // noinspection JSMethodCanBeStatic,JSUnusedLocalSymbols
@@ -92,60 +140,60 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
         return await this.#process_session_status();
       case 'session.subscribe':
         return await this.#process_session_subscribe(
-          Session.parseSubscribeParams(commandData.params),
+          this.#parser.parseSubscribeParams(commandData.params),
           commandData.channel ?? null
         );
       case 'session.unsubscribe':
         return await this.#process_session_unsubscribe(
-          Session.parseSubscribeParams(commandData.params),
+          this.#parser.parseSubscribeParams(commandData.params),
           commandData.channel ?? null
         );
 
       case 'browsingContext.create':
         return await this.#contextProcessor.process_browsingContext_create(
-          BrowsingContext.parseCreateParams(commandData.params)
+          this.#parser.parseCreateParams(commandData.params)
         );
       case 'browsingContext.close':
         return await this.#contextProcessor.process_browsingContext_close(
-          BrowsingContext.parseCloseParams(commandData.params)
+          this.#parser.parseCloseParams(commandData.params)
         );
       case 'browsingContext.getTree':
         return await this.#contextProcessor.process_browsingContext_getTree(
-          BrowsingContext.parseGetTreeParams(commandData.params)
+          this.#parser.parseGetTreeParams(commandData.params)
         );
       case 'browsingContext.navigate':
         return await this.#contextProcessor.process_browsingContext_navigate(
-          BrowsingContext.parseNavigateParams(commandData.params)
+          this.#parser.parseNavigateParams(commandData.params)
         );
 
       case 'script.getRealms':
         return this.#contextProcessor.process_script_getRealms(
-          Script.parseGetRealmsParams(commandData.params)
+          this.#parser.parseGetRealmsParams(commandData.params)
         );
       case 'script.callFunction':
         return await this.#contextProcessor.process_script_callFunction(
-          Script.parseCallFunctionParams(commandData.params)
+          this.#parser.parseCallFunctionParams(commandData.params)
         );
       case 'script.evaluate':
         return await this.#contextProcessor.process_script_evaluate(
-          Script.parseEvaluateParams(commandData.params)
+          this.#parser.parseEvaluateParams(commandData.params)
         );
       case 'script.disown':
         return await this.#contextProcessor.process_script_disown(
-          Script.parseDisownParams(commandData.params)
+          this.#parser.parseDisownParams(commandData.params)
         );
 
       case 'cdp.sendCommand':
         return await this.#contextProcessor.process_cdp_sendCommand(
-          CDP.parseSendCommandParams(commandData.params)
+          this.#parser.parseSendCommandParams(commandData.params)
         );
       case 'cdp.getSession':
         return await this.#contextProcessor.process_cdp_getSession(
-          CDP.parseGetSessionParams(commandData.params)
+          this.#parser.parseGetSessionParams(commandData.params)
         );
 
       default:
-        throw new UnknownCommandException(
+        throw new Message.UnknownCommandException(
           `Unknown command '${commandData.method}'.`
         );
     }
@@ -167,8 +215,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
         OutgoingBidiMessage.createResolved(response, command.channel ?? null)
       );
     } catch (e) {
-      if (e instanceof ErrorResponseClass) {
-        const errorResponse = e as ErrorResponseClass;
+      if (e instanceof Message.ErrorResponseClass) {
+        const errorResponse = e as Message.ErrorResponseClass;
         this.emit(
           'response',
           OutgoingBidiMessage.createResolved(
@@ -182,7 +230,9 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
         this.emit(
           'response',
           OutgoingBidiMessage.createResolved(
-            new UnknownException(error.message).toErrorResponse(command.id),
+            new Message.UnknownException(error.message).toErrorResponse(
+              command.id
+            ),
             command.channel ?? null
           )
         );

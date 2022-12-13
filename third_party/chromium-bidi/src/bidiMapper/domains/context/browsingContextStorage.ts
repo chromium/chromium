@@ -16,7 +16,7 @@
  */
 
 import {BrowsingContextImpl} from './browsingContextImpl';
-import {NoSuchFrameException} from '../../../protocol/error';
+import {Message} from '../../../protocol/protocol';
 
 export class BrowsingContextStorage {
   static #contexts: Map<string, BrowsingContextImpl> = new Map();
@@ -51,7 +51,7 @@ export class BrowsingContextStorage {
   static getKnownContext(contextId: string): BrowsingContextImpl {
     const result = BrowsingContextStorage.findContext(contextId);
     if (result === undefined) {
-      throw new NoSuchFrameException(`Context ${contextId} not found`);
+      throw new Message.NoSuchFrameException(`Context ${contextId} not found`);
     }
     return result;
   }

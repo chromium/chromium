@@ -16,7 +16,7 @@
  */
 
 import {CdpClient} from '../../CdpConnection';
-import {CommonDataTypes, Log, Script} from '../../../protocol/types';
+import {CommonDataTypes, Log, Script} from '../../../protocol/protocol';
 import {getRemoteValuesText} from './logHelper';
 import {Protocol} from 'devtools-protocol';
 import {Realm} from '../script/realm';
@@ -68,7 +68,7 @@ export class LogManager {
         });
         const argsPromise: Promise<CommonDataTypes.RemoteValue[]> =
           realm === undefined
-            ? Promise.resolve(params.args)
+            ? Promise.resolve(params.args as CommonDataTypes.RemoteValue[])
             : // Properly serialize arguments if possible.
               Promise.all(
                 params.args.map(async (arg) => {
@@ -79,25 +79,25 @@ export class LogManager {
         // No need in waiting for the result, just register the event promise.
         // noinspection JSIgnoredPromiseFromCall
         this.#eventManager.registerPromiseEvent(
-          argsPromise.then(
-            (args) =>
-              new Log.LogEntryAddedEvent({
-                level: LogManager.#getLogLevel(params.type),
-                source: {
-                  realm: realm?.realmId ?? 'UNKNOWN',
-                  context: realm?.browsingContextId ?? 'UNKNOWN',
-                },
-                text: getRemoteValuesText(args, true),
-                timestamp: Math.round(params.timestamp),
-                stackTrace: LogManager.#getBidiStackTrace(params.stackTrace),
-                type: 'console',
-                // Console method is `warn`, not `warning`.
-                method: params.type === 'warning' ? 'warn' : params.type,
-                args,
-              })
-          ),
+          argsPromise.then((args) => ({
+            method: Log.EventNames.LogEntryAddedEvent,
+            params: {
+              level: LogManager.#getLogLevel(params.type),
+              source: {
+                realm: realm?.realmId ?? 'UNKNOWN',
+                context: realm?.browsingContextId ?? 'UNKNOWN',
+              },
+              text: getRemoteValuesText(args, true),
+              timestamp: Math.round(params.timestamp),
+              stackTrace: LogManager.#getBidiStackTrace(params.stackTrace),
+              type: 'console',
+              // Console method is `warn`, not `warning`.
+              method: params.type === 'warning' ? 'warn' : params.type,
+              args,
+            },
+          })),
           realm?.browsingContextId ?? 'UNKNOWN',
-          Log.LogEntryAddedEvent.method
+          Log.EventNames.LogEntryAddedEvent
         );
       }
     );
@@ -126,24 +126,24 @@ export class LogManager {
         // No need in waiting for the result, just register the event promise.
         // noinspection JSIgnoredPromiseFromCall
         this.#eventManager.registerPromiseEvent(
-          textPromise.then(
-            (text) =>
-              new Log.LogEntryAddedEvent({
-                level: 'error',
-                source: {
-                  realm: realm?.realmId ?? 'UNKNOWN',
-                  context: realm?.browsingContextId ?? 'UNKNOWN',
-                },
-                text,
-                timestamp: Math.round(params.timestamp),
-                stackTrace: LogManager.#getBidiStackTrace(
-                  params.exceptionDetails.stackTrace
-                ),
-                type: 'javascript',
-              })
-          ),
+          textPromise.then((text) => ({
+            method: Log.EventNames.LogEntryAddedEvent,
+            params: {
+              level: 'error',
+              source: {
+                realm: realm?.realmId ?? 'UNKNOWN',
+                context: realm?.browsingContextId ?? 'UNKNOWN',
+              },
+              text,
+              timestamp: Math.round(params.timestamp),
+              stackTrace: LogManager.#getBidiStackTrace(
+                params.exceptionDetails.stackTrace
+              ),
+              type: 'javascript',
+            },
+          })),
           realm?.browsingContextId ?? 'UNKNOWN',
-          Log.LogEntryAddedEvent.method
+          Log.EventNames.LogEntryAddedEvent
         );
       }
     );
