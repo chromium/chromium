@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import type {CommonDataTypes, Message} from '../../../protocol/protocol';
-import type {BidiServer} from '../../BidiServer';
-import {OutgoingBidiMessage} from '../../OutgoindBidiMessage';
-import {SubscriptionManager} from './SubscriptionManager';
-import {IdWrapper} from '../../../utils/idWrapper';
-import {Buffer} from '../../../utils/buffer';
-import {BrowsingContextStorage} from '../context/browsingContextStorage';
+import type {CommonDataTypes, Message} from '../../../protocol/protocol.js';
+import type {BidiServer} from '../../BidiServer.js';
+import {OutgoingBidiMessage} from '../../OutgoindBidiMessage.js';
+import {SubscriptionManager} from './SubscriptionManager.js';
+import {IdWrapper} from '../../../utils/idWrapper.js';
+import {Buffer} from '../../../utils/buffer.js';
+import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 
 class EventWrapper extends IdWrapper {
   readonly #contextId: CommonDataTypes.BrowsingContext | null;

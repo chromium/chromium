@@ -99,7 +99,6 @@ async def test_channel_non_empty(websocket):
     }
 
 
-
 @pytest.mark.asyncio
 async def test_channel_empty(websocket):
     await send_JSON_command(websocket, {

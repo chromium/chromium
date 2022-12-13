@@ -16,13 +16,13 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import {BrowsingContext, Message} from '../../../protocol/protocol';
-import {CdpClient} from '../../CdpConnection';
-import {IEventManager} from '../events/EventManager';
-import {Deferred} from '../../../utils/deferred';
-import {LogManager} from '../log/logManager';
-import {Realm, RealmType} from '../script/realm';
-import {BrowsingContextStorage} from './browsingContextStorage';
+import {BrowsingContext, Message} from '../../../protocol/protocol.js';
+import {CdpClient} from '../../CdpConnection.js';
+import {IEventManager} from '../events/EventManager.js';
+import {Deferred} from '../../../utils/deferred.js';
+import {LogManager} from '../log/logManager.js';
+import {Realm, RealmType} from '../script/realm.js';
+import {BrowsingContextStorage} from './browsingContextStorage.js';
 
 export class BrowsingContextImpl {
   readonly #targetDefers = {

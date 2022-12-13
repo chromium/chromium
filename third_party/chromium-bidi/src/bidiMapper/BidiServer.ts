@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import {EventEmitter} from '../utils/EventEmitter';
+import {EventEmitter} from '../utils/EventEmitter.js';
 
-import {BidiTransport} from './BidiTransport';
-import type {Message} from '../protocol/protocol';
-import {ProcessingQueue} from '../utils/processingQueue';
-import {OutgoingBidiMessage} from './OutgoindBidiMessage';
-import {EventManager} from './domains/events/EventManager';
-import {BidiParser, CommandProcessor} from './CommandProcessor';
-import {CdpConnection} from './CdpConnection';
-import {BrowsingContextStorage} from './domains/context/browsingContextStorage';
+import {BidiTransport} from './BidiTransport.js';
+import type {Message} from '../protocol/protocol.js';
+import {ProcessingQueue} from '../utils/processingQueue.js';
+import {OutgoingBidiMessage} from './OutgoindBidiMessage.js';
+import {EventManager} from './domains/events/EventManager.js';
+import {BidiParser, CommandProcessor} from './CommandProcessor.js';
+import {CdpConnection} from './CdpConnection.js';
+import {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
 
 type BidiServerEvents = {
   message: Message.RawCommandRequest;
@@ -39,7 +39,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     bidiTransport: BidiTransport,
     cdpConnection: CdpConnection,
     selfTargetId: string,
-    parser: BidiParser
+    parser?: BidiParser
   ) {
     super();
     this.#messageQueue = new ProcessingQueue<OutgoingBidiMessage>(
@@ -65,7 +65,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     bidiTransport: BidiTransport,
     cdpConnection: CdpConnection,
     selfTargetId: string,
-    parser: BidiParser
+    parser?: BidiParser
   ): Promise<BidiServer> {
     const server = new BidiServer(
       bidiTransport,

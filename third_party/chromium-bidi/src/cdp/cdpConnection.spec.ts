@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {StubTransport} from './stubTransport.spec';
+import {StubTransport} from './stubTransport.spec.js';
 
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -23,7 +23,7 @@ chai.use(chaiAsPromised);
 
 import * as sinon from 'sinon';
 
-import {CdpConnection} from './cdpConnection';
+import {CdpConnection} from './cdpConnection.js';
 
 const SOME_SESSION_ID = 'ABCD';
 const ANOTHER_SESSION_ID = 'EFGH';

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type {CommonDataTypes} from '../../../protocol/protocol';
+import type {CommonDataTypes} from '../../../protocol/protocol.js';
 
 export class SubscriptionManager {
   #subscriptionPriority = 0;

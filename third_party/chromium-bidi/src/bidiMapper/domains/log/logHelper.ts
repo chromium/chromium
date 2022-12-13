@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type {CommonDataTypes} from '../../../protocol/protocol';
+import type {CommonDataTypes} from '../../../protocol/protocol.js';
 
 const specifiers = ['%s', '%d', '%i', '%f', '%o', '%O', '%c'];
 

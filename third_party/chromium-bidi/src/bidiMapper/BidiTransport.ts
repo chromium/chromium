@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type {Message} from '../protocol/protocol';
+import type {Message} from '../protocol/protocol.js';
 
 export interface BidiTransport {
   setOnMessage: (

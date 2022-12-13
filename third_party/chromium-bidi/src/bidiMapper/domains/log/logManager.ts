@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import {CdpClient} from '../../CdpConnection';
-import {CommonDataTypes, Log, Script} from '../../../protocol/protocol';
-import {getRemoteValuesText} from './logHelper';
+import {CdpClient} from '../../CdpConnection.js';
+import {CommonDataTypes, Log, Script} from '../../../protocol/protocol.js';
+import {getRemoteValuesText} from './logHelper.js';
 import {Protocol} from 'devtools-protocol';
-import {Realm} from '../script/realm';
-import {IEventManager} from '../events/EventManager';
+import {Realm} from '../script/realm.js';
+import {IEventManager} from '../events/EventManager.js';
 
 export class LogManager {
   readonly #cdpClient: CdpClient;

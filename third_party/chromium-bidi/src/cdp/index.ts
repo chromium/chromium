@@ -15,6 +15,6 @@
  * limitations under the License.
  */
 
-export {CdpClient} from './cdpClient';
-export {CdpConnection} from './cdpConnection';
-export {WebSocketTransport} from './websocketTransport';
+export {CdpClient} from './cdpClient.js';
+export {CdpConnection} from './cdpConnection.js';
+export {WebSocketTransport} from './websocketTransport.js';

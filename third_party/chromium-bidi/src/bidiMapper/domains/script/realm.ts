@@ -16,10 +16,10 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import {CommonDataTypes, Script, Message} from '../../../protocol/protocol';
-import {ScriptEvaluator} from './scriptEvaluator';
-import {BrowsingContextStorage} from '../context/browsingContextStorage';
-import {CdpClient} from '../../CdpConnection';
+import {CommonDataTypes, Script, Message} from '../../../protocol/protocol.js';
+import {ScriptEvaluator} from './scriptEvaluator.js';
+import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import {CdpClient} from '../../CdpConnection.js';
 
 export enum RealmType {
   window = 'window',

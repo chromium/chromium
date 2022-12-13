@@ -21,6 +21,7 @@
  * TODO: eslint rule for this.
  */
 
-export {CdpConnection, CdpClient} from './CdpConnection';
-export {BidiServer} from './BidiServer';
-export {BidiTransport} from './BidiTransport';
+export {CdpConnection, CdpClient} from './CdpConnection.js';
+export {BidiServer} from './BidiServer.js';
+export {BidiTransport} from './BidiTransport.js';
+export {EventEmitter} from '../utils/EventEmitter.js';

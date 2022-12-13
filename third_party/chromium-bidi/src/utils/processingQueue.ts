@@ -1,4 +1,4 @@
-import {log, LogType} from './log';
+import {log, LogType} from './log.js';
 
 /**
  * Copyright 2022 Google LLC.

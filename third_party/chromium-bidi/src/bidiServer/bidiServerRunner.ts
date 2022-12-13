@@ -17,7 +17,7 @@
 
 import websocket from 'websocket';
 import http from 'http';
-import {ITransport} from '../utils/transport';
+import {ITransport} from '../utils/transport.js';
 
 import debug from 'debug';
 

@@ -18,10 +18,10 @@
 import argparse from 'argparse';
 import puppeteer, {PuppeteerNode} from 'puppeteer';
 
-import mapperReader from './mapperReader';
-import {MapperServer} from './mapperServer';
-import {BidiServerRunner} from './bidiServerRunner';
-import {ITransport} from '../utils/transport';
+import mapperReader from './mapperReader.js';
+import {MapperServer} from './mapperServer.js';
+import {BidiServerRunner} from './bidiServerRunner.js';
+import {ITransport} from '../utils/transport.js';
 
 function parseArguments() {
   const parser = new argparse.ArgumentParser({

@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import {CdpConnection} from './cdpConnection';
-import {StubTransport} from './stubTransport.spec';
+import {CdpConnection} from './cdpConnection.js';
+import {StubTransport} from './stubTransport.spec.js';
 
 import * as chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';

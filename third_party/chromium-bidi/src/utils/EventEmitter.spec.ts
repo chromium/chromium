@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {EventEmitter} from './EventEmitter';
+import {EventEmitter} from './EventEmitter.js';
 import sinon from 'sinon';
 import {expect} from 'chai';
 

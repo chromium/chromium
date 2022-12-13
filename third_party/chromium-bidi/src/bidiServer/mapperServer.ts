@@ -23,7 +23,7 @@ const debugLog = debug('bidiMapper:log');
 import WebSocket from 'ws';
 import Protocol from 'devtools-protocol';
 
-import {CdpClient, CdpConnection, WebSocketTransport} from '../cdp';
+import {CdpClient, CdpConnection, WebSocketTransport} from '../cdp/index.js';
 
 export class MapperServer {
   private _handlers: ((message: string) => void)[] = new Array();

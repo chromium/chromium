@@ -16,7 +16,7 @@
  */
 
 import * as chai from 'chai';
-import {Buffer} from './buffer';
+import {Buffer} from './buffer.js';
 
 import * as sinon from 'sinon';
 

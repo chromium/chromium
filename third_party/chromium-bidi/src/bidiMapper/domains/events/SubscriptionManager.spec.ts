@@ -15,7 +15,7 @@
  */
 
 import * as chai from 'chai';
-import {SubscriptionManager} from './SubscriptionManager';
+import {SubscriptionManager} from './SubscriptionManager.js';
 
 const expect = chai.expect;
 const SOME_EVENT = 'SOME_EVENT';

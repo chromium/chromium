@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import {ITransport} from '../utils/transport';
-import {CdpMessage} from './cdpMessage';
-import {CdpClient, createClient} from './cdpClient';
+import {ITransport} from '../utils/transport.js';
+import {CdpMessage} from './cdpMessage.js';
+import {CdpClient, createClient} from './cdpClient.js';
 
 interface CdpCallbacks {
   resolve: (messageObj: object) => void;

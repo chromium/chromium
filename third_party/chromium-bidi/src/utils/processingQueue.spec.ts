@@ -18,8 +18,8 @@
 import * as chai from 'chai';
 
 import * as sinon from 'sinon';
-import {ProcessingQueue} from './processingQueue';
-import {Deferred} from './deferred';
+import {ProcessingQueue} from './processingQueue.js';
+import {Deferred} from './deferred.js';
 
 const expect = chai.expect;
 

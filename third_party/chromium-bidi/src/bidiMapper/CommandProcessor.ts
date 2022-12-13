@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-import {BrowsingContextProcessor} from './domains/context/browsingContextProcessor';
+import {BrowsingContextProcessor} from './domains/context/browsingContextProcessor.js';
 import {
   Message,
   Session,
   BrowsingContext,
   Script,
   CDP,
-} from '../protocol/protocol';
-import {CdpConnection} from './CdpConnection';
-import {OutgoingBidiMessage} from './OutgoindBidiMessage';
-import {IEventManager} from './domains/events/EventManager';
-import {EventEmitter} from '../utils/EventEmitter';
+} from '../protocol/protocol.js';
+import {CdpConnection} from './CdpConnection.js';
+import {OutgoingBidiMessage} from './OutgoindBidiMessage.js';
+import {IEventManager} from './domains/events/EventManager.js';
+import {EventEmitter} from '../utils/EventEmitter.js';
 
 type CommandProcessorEvents = {
   response: Promise<OutgoingBidiMessage>;

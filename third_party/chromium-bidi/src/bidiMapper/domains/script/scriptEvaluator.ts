@@ -16,8 +16,8 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import {CommonDataTypes, Message, Script} from '../../../protocol/protocol';
-import {Realm} from './realm';
+import {CommonDataTypes, Message, Script} from '../../../protocol/protocol.js';
+import {Realm} from './realm.js';
 
 export class ScriptEvaluator {
   // As `script.evaluate` wraps call into serialization script, `lineNumber`
