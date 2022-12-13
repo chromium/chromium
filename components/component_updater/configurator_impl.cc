@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "components/component_updater/component_updater_switches.h"
@@ -30,14 +31,6 @@
 #endif
 
 namespace component_updater {
-
-namespace {
-
-// Default time constants.
-const int kDelayOneMinute = 60;
-const int kDelayOneHour = kDelayOneMinute * 60;
-
-}  // namespace
 
 ConfiguratorImpl::ConfiguratorImpl(
     const update_client::CommandLineConfigPolicy& config_policy,
@@ -57,22 +50,22 @@ ConfiguratorImpl::ConfiguratorImpl(
 
 ConfiguratorImpl::~ConfiguratorImpl() = default;
 
-double ConfiguratorImpl::InitialDelay() const {
-  if (initial_delay_)
+base::TimeDelta ConfiguratorImpl::InitialDelay() const {
+  if (!initial_delay_.is_zero())
     return initial_delay_;
-  return fast_update_ ? 10 : kDelayOneMinute;
+  return fast_update_ ? base::Seconds(10) : base::Minutes(1);
 }
 
-int ConfiguratorImpl::NextCheckDelay() const {
-  return 5 * kDelayOneHour;
+base::TimeDelta ConfiguratorImpl::NextCheckDelay() const {
+  return base::Hours(5);
 }
 
-int ConfiguratorImpl::OnDemandDelay() const {
-  return fast_update_ ? 2 : (30 * kDelayOneMinute);
+base::TimeDelta ConfiguratorImpl::OnDemandDelay() const {
+  return fast_update_ ? base::Seconds(2) : base::Minutes(30);
 }
 
-int ConfiguratorImpl::UpdateDelay() const {
-  return fast_update_ ? 10 : (15 * kDelayOneMinute);
+base::TimeDelta ConfiguratorImpl::UpdateDelay() const {
+  return fast_update_ ? base::Seconds(10) : base::Minutes(15);
 }
 
 std::vector<GURL> ConfiguratorImpl::UpdateUrl() const {

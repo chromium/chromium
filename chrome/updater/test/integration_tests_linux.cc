@@ -136,8 +136,8 @@ void EnterTestMode(const GURL& url) {
   ASSERT_TRUE(ExternalConstantsBuilder()
                   .SetUpdateURL({url.spec()})
                   .SetUseCUP(false)
-                  .SetInitialDelay(0.1)
-                  .SetServerKeepAliveSeconds(1)
+                  .SetInitialDelay(base::Milliseconds(100))
+                  .SetServerKeepAliveTime(base::Seconds(1))
                   .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
                   .SetOverinstallTimeout(TestTimeouts::action_timeout())
                   .Modify());

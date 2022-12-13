@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/component_updater_switches.h"
 #include "components/component_updater/component_updater_url_constants.h"
@@ -55,10 +56,10 @@ TEST_F(AwComponentUpdaterConfiguratorTest, TestDelays) {
   scoped_refptr<update_client::Configurator> config =
       MakeAwComponentUpdaterConfigurator(GetCommandLine(), GetPrefService());
 
-  EXPECT_EQ(config->InitialDelay(), 10);
-  EXPECT_EQ(config->NextCheckDelay(), 5 * 60 * 60);
-  EXPECT_EQ(config->OnDemandDelay(), 30 * 60);
-  EXPECT_EQ(config->UpdateDelay(), 0);
+  EXPECT_EQ(config->InitialDelay(), base::Seconds(10));
+  EXPECT_EQ(config->NextCheckDelay(), base::Hours(5));
+  EXPECT_EQ(config->OnDemandDelay(), base::Minutes(30));
+  EXPECT_EQ(config->UpdateDelay(), base::Seconds(0));
 }
 
 TEST_F(AwComponentUpdaterConfiguratorTest, TestDelaysWithFastUpdate) {
@@ -67,10 +68,10 @@ TEST_F(AwComponentUpdaterConfiguratorTest, TestDelaysWithFastUpdate) {
   scoped_refptr<update_client::Configurator> config =
       MakeAwComponentUpdaterConfigurator(cmdline, GetPrefService());
 
-  EXPECT_EQ(config->InitialDelay(), 10);
-  EXPECT_EQ(config->NextCheckDelay(), 5 * 60 * 60);
-  EXPECT_EQ(config->OnDemandDelay(), 2);
-  EXPECT_EQ(config->UpdateDelay(), 0);
+  EXPECT_EQ(config->InitialDelay(), base::Seconds(10));
+  EXPECT_EQ(config->NextCheckDelay(), base::Hours(5));
+  EXPECT_EQ(config->OnDemandDelay(), base::Seconds(2));
+  EXPECT_EQ(config->UpdateDelay(), base::Seconds(0));
 }
 
 TEST_F(AwComponentUpdaterConfiguratorTest, TestDefaultImpl) {

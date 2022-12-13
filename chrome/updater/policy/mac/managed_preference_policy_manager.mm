@@ -10,6 +10,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/mac/managed_preference_policy_manager_impl.h"
 #include "chrome/updater/policy/manager.h"
@@ -33,7 +34,7 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
 
   bool HasActiveDevicePolicies() const override;
 
-  absl::optional<int> GetLastCheckPeriodMinutes() const override;
+  absl::optional<base::TimeDelta> GetLastCheckPeriod() const override;
   absl::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
       const override;
   absl::optional<std::string> GetDownloadPreferenceGroupPolicy() const override;
@@ -73,11 +74,12 @@ std::string ManagedPreferencePolicyManager::source() const {
   return base::SysNSStringToUTF8([impl_ source]);
 }
 
-absl::optional<int> ManagedPreferencePolicyManager::GetLastCheckPeriodMinutes()
-    const {
+absl::optional<base::TimeDelta>
+ManagedPreferencePolicyManager::GetLastCheckPeriod() const {
   int minutes = [impl_ lastCheckPeriodMinutes];
-  return minutes != kPolicyNotSet ? absl::optional<int>(minutes)
-                                  : absl::nullopt;
+  return minutes != kPolicyNotSet
+             ? absl::optional<base::TimeDelta>(base::Minutes(minutes))
+             : absl::nullopt;
 }
 
 absl::optional<UpdatesSuppressedTimes>

@@ -113,7 +113,7 @@ TEST(DMPolicyManager, PolicyManagerFromEmptyProto) {
 #endif  // BUILDFLAG(IS_LINUX)
   EXPECT_EQ(policy_manager->source(), "DeviceManagement");
 
-  EXPECT_EQ(policy_manager->GetLastCheckPeriodMinutes(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetProxyMode(), absl::nullopt);
@@ -166,7 +166,7 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
 #endif  // BUILDFLAG(IS_LINUX)
   EXPECT_EQ(policy_manager->source(), "DeviceManagement");
 
-  EXPECT_EQ(policy_manager->GetLastCheckPeriodMinutes(), 111);
+  EXPECT_EQ(policy_manager->GetLastCheckPeriod(), base::Minutes(111));
 
   absl::optional<UpdatesSuppressedTimes> suppressed_times =
       policy_manager->GetUpdatesSuppressedTimes();
@@ -229,7 +229,7 @@ TEST(DMPolicyManager, PolicyManagerFromDMResponse) {
   EXPECT_EQ(policy_manager->HasActiveDevicePolicies(), base::IsManagedDevice());
   EXPECT_EQ(policy_manager->source(), "DeviceManagement");
 
-  EXPECT_EQ(policy_manager->GetLastCheckPeriodMinutes(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetProxyMode(), absl::nullopt);

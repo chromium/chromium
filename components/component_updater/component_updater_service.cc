@@ -150,8 +150,7 @@ void CrxUpdateService::Start() {
           << config_->NextCheckDelay() << " seconds. ";
 
   scheduler_->Schedule(
-      base::Seconds(config_->InitialDelay()),
-      base::Seconds(config_->NextCheckDelay()),
+      config_->InitialDelay(), config_->NextCheckDelay(),
       base::BindRepeating(
           base::IgnoreResult(&CrxUpdateService::CheckForUpdates),
           base::Unretained(this)),
@@ -342,7 +341,7 @@ bool CrxUpdateService::OnDemandUpdateWithCooldown(const std::string& id) {
   if (component_state && !component_state->last_check.is_null()) {
     base::TimeDelta delta =
         base::TimeTicks::Now() - component_state->last_check;
-    if (delta < base::Seconds(config_->OnDemandDelay()))
+    if (delta < config_->OnDemandDelay())
       return false;
   }
 

@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/policy/manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -95,7 +96,7 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
 
   std::string source() const;
 
-  PolicyStatus<int> GetLastCheckPeriodMinutes() const;
+  PolicyStatus<base::TimeDelta> GetLastCheckPeriod() const;
   PolicyStatus<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes() const;
   PolicyStatus<std::string> GetDownloadPreferenceGroupPolicy() const;
   PolicyStatus<int> GetPackageCacheSizeLimitMBytes() const;
@@ -111,6 +112,10 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   PolicyStatus<std::string> GetProxyPacUrl() const;
   PolicyStatus<std::string> GetProxyServer() const;
   PolicyStatus<std::vector<std::string>> GetForceInstallApps() const;
+
+  // DEPRECATED: Prefer |GetLastCheckPeriod|. This function should only be used
+  // in legacy interfaces where a PolicyStatus<int> is required.
+  PolicyStatus<int> DeprecatedGetLastCheckPeriodMinutes() const;
 
  protected:
   virtual ~PolicyService();

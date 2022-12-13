@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "components/component_updater/configurator_impl.h"
 #include "components/update_client/buildflags.h"
 #include "components/update_client/configurator.h"
@@ -33,7 +34,7 @@ class ActivityDataService;
 class CrxDownloaderFactory;
 class NetworkFetcherFactory;
 class ProtocolHandlerFactory;
-}
+}  // namespace update_client
 
 namespace extensions {
 
@@ -59,10 +60,10 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
   ChromeUpdateClientConfig(const ChromeUpdateClientConfig&) = delete;
   ChromeUpdateClientConfig& operator=(const ChromeUpdateClientConfig&) = delete;
 
-  double InitialDelay() const override;
-  int NextCheckDelay() const override;
-  int OnDemandDelay() const override;
-  int UpdateDelay() const override;
+  base::TimeDelta InitialDelay() const override;
+  base::TimeDelta NextCheckDelay() const override;
+  base::TimeDelta OnDemandDelay() const override;
+  base::TimeDelta UpdateDelay() const override;
   std::vector<GURL> UpdateUrl() const override;
   std::vector<GURL> PingUrl() const override;
   std::string GetProdId() const override;

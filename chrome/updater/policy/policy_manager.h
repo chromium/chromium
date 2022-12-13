@@ -30,7 +30,7 @@ class PolicyManager : public PolicyManagerInterface {
 
   bool HasActiveDevicePolicies() const override;
 
-  absl::optional<int> GetLastCheckPeriodMinutes() const override;
+  absl::optional<base::TimeDelta> GetLastCheckPeriod() const override;
   absl::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
       const override;
   absl::optional<std::string> GetDownloadPreferenceGroupPolicy() const override;

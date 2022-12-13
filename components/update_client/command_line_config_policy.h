@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_COMMAND_LINE_CONFIG_POLICY_H_
 #define COMPONENTS_UPDATE_CLIENT_COMMAND_LINE_CONFIG_POLICY_H_
 
+#include "base/time/time.h"
 class GURL;
 
 namespace update_client {
@@ -32,9 +33,8 @@ class CommandLineConfigPolicy {
   // The override URL for updates. Can be empty.
   virtual GURL UrlSourceOverride() const;
 
-  // If non-zero, time interval in seconds until the first component
-  // update check.
-  virtual double InitialDelay() const;
+  // If non-zero, time interval until the first component update check.
+  virtual base::TimeDelta InitialDelay() const;
 
   virtual ~CommandLineConfigPolicy() = default;
 };

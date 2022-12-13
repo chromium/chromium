@@ -14,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/patch/in_process_file_patcher.h"
@@ -65,20 +66,20 @@ TestConfigurator::TestConfigurator(PrefService* pref_service)
 
 TestConfigurator::~TestConfigurator() = default;
 
-double TestConfigurator::InitialDelay() const {
+base::TimeDelta TestConfigurator::InitialDelay() const {
   return initial_time_;
 }
 
-int TestConfigurator::NextCheckDelay() const {
-  return 1;
+base::TimeDelta TestConfigurator::NextCheckDelay() const {
+  return base::Seconds(1);
 }
 
-int TestConfigurator::OnDemandDelay() const {
+base::TimeDelta TestConfigurator::OnDemandDelay() const {
   return ondemand_time_;
 }
 
-int TestConfigurator::UpdateDelay() const {
-  return 1;
+base::TimeDelta TestConfigurator::UpdateDelay() const {
+  return base::Seconds(1);
 }
 
 std::vector<GURL> TestConfigurator::UpdateUrl() const {
@@ -190,12 +191,12 @@ absl::optional<base::FilePath> TestConfigurator::GetCrxCachePath() const {
 }
 #endif
 
-void TestConfigurator::SetOnDemandTime(int seconds) {
-  ondemand_time_ = seconds;
+void TestConfigurator::SetOnDemandTime(base::TimeDelta time) {
+  ondemand_time_ = time;
 }
 
-void TestConfigurator::SetInitialDelay(double seconds) {
-  initial_time_ = seconds;
+void TestConfigurator::SetInitialDelay(base::TimeDelta delay) {
+  initial_time_ = delay;
 }
 
 void TestConfigurator::SetEnabledCupSigning(bool enabled_cup_signing) {

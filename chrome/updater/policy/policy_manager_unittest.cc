@@ -27,7 +27,7 @@ TEST_F(PolicyManagerTests, NoPolicySet) {
 
   EXPECT_EQ(policy_manager->source(), "DictValuePolicy");
 
-  EXPECT_EQ(policy_manager->GetLastCheckPeriodMinutes(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), absl::nullopt);
@@ -85,7 +85,7 @@ TEST_F(PolicyManagerTests, PolicyRead) {
 
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
 
-  EXPECT_EQ(policy_manager->GetLastCheckPeriodMinutes(), 480);
+  EXPECT_EQ(policy_manager->GetLastCheckPeriod(), base::Minutes(480));
 
   absl::optional<UpdatesSuppressedTimes> suppressed_times =
       policy_manager->GetUpdatesSuppressedTimes();
@@ -163,7 +163,7 @@ TEST_F(PolicyManagerTests, WrongPolicyValueType) {
 
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
 
-  EXPECT_EQ(policy_manager->GetLastCheckPeriodMinutes(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), absl::nullopt);

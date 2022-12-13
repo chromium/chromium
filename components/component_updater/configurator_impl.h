@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/time/time.h"
 #include "components/update_client/configurator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -21,7 +22,7 @@ class Version;
 namespace update_client {
 class CommandLineConfigPolicy;
 class ProtocolHandlerFactory;
-}
+}  // namespace update_client
 
 namespace component_updater {
 
@@ -37,19 +38,18 @@ class ConfiguratorImpl {
 
   ~ConfiguratorImpl();
 
-  // Delay in seconds from calling Start() to the first update check.
-  double InitialDelay() const;
+  // Delay from calling Start() to the first update check.
+  base::TimeDelta InitialDelay() const;
 
-  // Delay in seconds to every subsequent update check. 0 means don't check.
-  int NextCheckDelay() const;
+  // Delay to every subsequent update check. 0 means don't check.
+  base::TimeDelta NextCheckDelay() const;
 
-  // Minimum delta time in seconds before an on-demand check is allowed for the
-  // same component.
-  int OnDemandDelay() const;
+  // Minimum delta time before an on-demand check is allowed for the same
+  // component.
+  base::TimeDelta OnDemandDelay() const;
 
-  // The time delay in seconds between applying updates for different
-  // components.
-  int UpdateDelay() const;
+  // The time delay between applying updates for different components.
+  base::TimeDelta UpdateDelay() const;
 
   // The URLs for the update checks. The URLs are tried in order, the first one
   // that succeeds wins.
@@ -107,7 +107,7 @@ class ConfiguratorImpl {
   const bool pings_enabled_;
   const bool require_encryption_;
   const GURL url_source_override_;
-  const double initial_delay_;
+  const base::TimeDelta initial_delay_;
 };
 
 }  // namespace component_updater

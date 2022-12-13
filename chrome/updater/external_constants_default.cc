@@ -27,10 +27,10 @@ class DefaultExternalConstants : public ExternalConstants {
 
   bool UseCUP() const override { return true; }
 
-  double InitialDelay() const override { return kInitialDelay; }
+  base::TimeDelta InitialDelay() const override { return kInitialDelay; }
 
-  int ServerKeepAliveSeconds() const override {
-    return kServerKeepAliveSeconds;
+  base::TimeDelta ServerKeepAliveTime() const override {
+    return kServerKeepAliveTime;
   }
 
   crx_file::VerifierFormat CrxVerifierFormat() const override {

@@ -634,7 +634,7 @@ void EnterTestMode(const GURL& url) {
   ASSERT_TRUE(ExternalConstantsBuilder()
                   .SetUpdateURL(std::vector<std::string>{url.spec()})
                   .SetUseCUP(false)
-                  .SetInitialDelay(0.1)
+                  .SetInitialDelay(base::Milliseconds(100))
                   .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
                   .SetOverinstallTimeout(base::Seconds(11))
                   .Modify());

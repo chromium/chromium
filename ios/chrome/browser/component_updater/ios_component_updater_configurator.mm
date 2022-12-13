@@ -43,10 +43,10 @@ class IOSConfigurator : public update_client::Configurator {
   explicit IOSConfigurator(const base::CommandLine* cmdline);
 
   // update_client::Configurator overrides.
-  double InitialDelay() const override;
-  int NextCheckDelay() const override;
-  int OnDemandDelay() const override;
-  int UpdateDelay() const override;
+  base::TimeDelta InitialDelay() const override;
+  base::TimeDelta NextCheckDelay() const override;
+  base::TimeDelta OnDemandDelay() const override;
+  base::TimeDelta UpdateDelay() const override;
   std::vector<GURL> UpdateUrl() const override;
   std::vector<GURL> PingUrl() const override;
   std::string GetProdId() const override;
@@ -92,19 +92,19 @@ IOSConfigurator::IOSConfigurator(const base::CommandLine* cmdline)
     : configurator_impl_(ComponentUpdaterCommandLineConfigPolicy(cmdline),
                          false) {}
 
-double IOSConfigurator::InitialDelay() const {
+base::TimeDelta IOSConfigurator::InitialDelay() const {
   return configurator_impl_.InitialDelay();
 }
 
-int IOSConfigurator::NextCheckDelay() const {
+base::TimeDelta IOSConfigurator::NextCheckDelay() const {
   return configurator_impl_.NextCheckDelay();
 }
 
-int IOSConfigurator::OnDemandDelay() const {
+base::TimeDelta IOSConfigurator::OnDemandDelay() const {
   return configurator_impl_.OnDemandDelay();
 }
 
-int IOSConfigurator::UpdateDelay() const {
+base::TimeDelta IOSConfigurator::UpdateDelay() const {
   return configurator_impl_.UpdateDelay();
 }
 

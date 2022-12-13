@@ -18,6 +18,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
@@ -129,10 +130,10 @@ std::string PolicyService::source() const {
   return base::JoinString(sources, ";");
 }
 
-PolicyStatus<int> PolicyService::GetLastCheckPeriodMinutes() const {
+PolicyStatus<base::TimeDelta> PolicyService::GetLastCheckPeriod() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(
-      base::BindRepeating(&PolicyManagerInterface::GetLastCheckPeriodMinutes));
+      base::BindRepeating(&PolicyManagerInterface::GetLastCheckPeriod));
 }
 
 PolicyStatus<UpdatesSuppressedTimes> PolicyService::GetUpdatesSuppressedTimes()
@@ -226,6 +227,16 @@ PolicyStatus<std::vector<std::string>> PolicyService::GetForceInstallApps()
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(
       base::BindRepeating(&PolicyManagerInterface::GetForceInstallApps));
+}
+
+PolicyStatus<int> PolicyService::DeprecatedGetLastCheckPeriodMinutes() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return QueryPolicy(
+      base::BindRepeating(&PolicyManagerInterface::GetLastCheckPeriod)
+          .Then(base::BindRepeating([](absl::optional<base::TimeDelta> period) {
+            return period ? absl::optional<int>(period->InMinutes())
+                          : absl::nullopt;
+          })));
 }
 
 template <typename T>

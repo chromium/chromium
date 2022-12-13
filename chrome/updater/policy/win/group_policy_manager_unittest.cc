@@ -9,6 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
+#include "base/time/time.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/util/win_util.h"
@@ -53,7 +54,7 @@ TEST_F(GroupPolicyManagerTests, NoPolicySet) {
 
   EXPECT_EQ(policy_manager->source(), "GroupPolicy");
 
-  EXPECT_EQ(policy_manager->GetLastCheckPeriodMinutes(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), absl::nullopt);
@@ -122,7 +123,7 @@ TEST_F(GroupPolicyManagerTests, PolicyRead) {
   EXPECT_EQ(policy_manager->HasActiveDevicePolicies(),
             base::win::IsEnrolledToDomain());
 
-  EXPECT_EQ(policy_manager->GetLastCheckPeriodMinutes(), 480);
+  EXPECT_EQ(policy_manager->GetLastCheckPeriod(), base::Minutes(480));
 
   absl::optional<UpdatesSuppressedTimes> suppressed_times =
       policy_manager->GetUpdatesSuppressedTimes();
@@ -192,7 +193,7 @@ TEST_F(GroupPolicyManagerTests, WrongPolicyValueType) {
   std::unique_ptr<PolicyManagerInterface> policy_manager =
       std::make_unique<GroupPolicyManager>();
 
-  EXPECT_EQ(policy_manager->GetLastCheckPeriodMinutes(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), absl::nullopt);

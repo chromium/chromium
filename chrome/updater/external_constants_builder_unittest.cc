@@ -56,7 +56,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingNothing) {
   EXPECT_EQ(urls[0], GURL(UPDATE_CHECK_URL));
 
   EXPECT_EQ(verifier->InitialDelay(), kInitialDelay);
-  EXPECT_EQ(verifier->ServerKeepAliveSeconds(), kServerKeepAliveSeconds);
+  EXPECT_EQ(verifier->ServerKeepAliveTime(), kServerKeepAliveTime);
   EXPECT_EQ(verifier->GroupPolicies().size(), 0U);
 }
 
@@ -68,8 +68,8 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
   ExternalConstantsBuilder builder;
   builder.SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
       .SetUseCUP(false)
-      .SetInitialDelay(123)
-      .SetServerKeepAliveSeconds(2)
+      .SetInitialDelay(base::Seconds(123))
+      .SetServerKeepAliveTime(base::Seconds(2))
       .SetGroupPolicies(group_policies);
   EXPECT_TRUE(builder.Overwrite());
 
@@ -83,8 +83,8 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
   ASSERT_EQ(urls.size(), 1ul);
   EXPECT_EQ(urls[0], GURL("https://www.example.com"));
 
-  EXPECT_EQ(verifier->InitialDelay(), 123);
-  EXPECT_EQ(verifier->ServerKeepAliveSeconds(), 2);
+  EXPECT_EQ(verifier->InitialDelay(), base::Seconds(123));
+  EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(2));
   EXPECT_EQ(verifier->GroupPolicies().size(), 2U);
 }
 
@@ -107,7 +107,7 @@ TEST_F(ExternalConstantsBuilderTests, TestPartialOverrideWithMultipleURLs) {
   EXPECT_EQ(urls[1], GURL("https://www.example.com"));
 
   EXPECT_EQ(verifier->InitialDelay(), kInitialDelay);
-  EXPECT_EQ(verifier->ServerKeepAliveSeconds(), kServerKeepAliveSeconds);
+  EXPECT_EQ(verifier->ServerKeepAliveTime(), kServerKeepAliveTime);
   EXPECT_EQ(verifier->GroupPolicies().size(), 0U);
 }
 
@@ -117,7 +117,7 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
                   .SetUpdateURL(std::vector<std::string>{
                       "https://www.google.com", "https://www.example.com"})
                   .SetUseCUP(false)
-                  .SetInitialDelay(123.4)
+                  .SetInitialDelay(base::Seconds(123.4))
                   .ClearUpdateURL()
                   .ClearUseCUP()
                   .ClearInitialDelay()
@@ -135,7 +135,7 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
   EXPECT_EQ(urls[0], GURL(UPDATE_CHECK_URL));
 
   EXPECT_EQ(verifier->InitialDelay(), kInitialDelay);
-  EXPECT_EQ(verifier->ServerKeepAliveSeconds(), kServerKeepAliveSeconds);
+  EXPECT_EQ(verifier->ServerKeepAliveTime(), kServerKeepAliveTime);
   EXPECT_EQ(verifier->GroupPolicies().size(), 0U);
 }
 
@@ -147,13 +147,13 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
       ExternalConstantsBuilder()
           .SetUpdateURL(std::vector<std::string>{"https://www.google.com"})
           .SetUseCUP(true)
-          .SetInitialDelay(123.4)
-          .SetServerKeepAliveSeconds(2)
+          .SetInitialDelay(base::Seconds(123.4))
+          .SetServerKeepAliveTime(base::Seconds(2))
           .SetGroupPolicies(group_policies)
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
           .SetUseCUP(false)
-          .SetInitialDelay(937.6)
-          .SetServerKeepAliveSeconds(3)
+          .SetInitialDelay(base::Seconds(937.6))
+          .SetServerKeepAliveTime(base::Seconds(3))
           .Overwrite());
 
   // Only the second set of values should be observed.
@@ -166,8 +166,8 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
   ASSERT_EQ(urls.size(), 1ul);
   EXPECT_EQ(urls[0], GURL("https://www.example.com"));
 
-  EXPECT_EQ(verifier->InitialDelay(), 937.6);
-  EXPECT_EQ(verifier->ServerKeepAliveSeconds(), 3);
+  EXPECT_EQ(verifier->InitialDelay(), base::Seconds(937.6));
+  EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(3));
   EXPECT_EQ(verifier->GroupPolicies().size(), 1U);
 }
 
@@ -181,8 +181,8 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_TRUE(
       builder.SetUpdateURL(std::vector<std::string>{"https://www.google.com"})
           .SetUseCUP(false)
-          .SetInitialDelay(123.4)
-          .SetServerKeepAliveSeconds(3)
+          .SetInitialDelay(base::Seconds(123.4))
+          .SetServerKeepAliveTime(base::Seconds(3))
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
           .SetGroupPolicies(group_policies)
           .Overwrite());
@@ -197,16 +197,16 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   ASSERT_EQ(urls.size(), 1ul);
   EXPECT_EQ(urls[0], GURL("https://www.example.com"));
 
-  EXPECT_EQ(verifier->InitialDelay(), 123.4);
-  EXPECT_EQ(verifier->ServerKeepAliveSeconds(), 3);
+  EXPECT_EQ(verifier->InitialDelay(), base::Seconds(123.4));
+  EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(3));
   EXPECT_EQ(verifier->GroupPolicies().size(), 2U);
 
   base::Value::Dict group_policies2;
   group_policies2.Set("b", 2);
 
   // But now we can use the builder again:
-  EXPECT_TRUE(builder.SetInitialDelay(92.3)
-                  .SetServerKeepAliveSeconds(4)
+  EXPECT_TRUE(builder.SetInitialDelay(base::Seconds(92.3))
+                  .SetServerKeepAliveTime(base::Seconds(4))
                   .ClearUpdateURL()
                   .SetGroupPolicies(group_policies2)
                   .Overwrite());
@@ -223,8 +223,8 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_EQ(urls2[0], GURL(UPDATE_CHECK_URL));  // Cleared; should be default.
 
   EXPECT_EQ(verifier2->InitialDelay(),
-            92.3);  // Updated; update should be seen.
-  EXPECT_EQ(verifier2->ServerKeepAliveSeconds(), 4);
+            base::Seconds(92.3));  // Updated; update should be seen.
+  EXPECT_EQ(verifier2->ServerKeepAliveTime(), base::Seconds(4));
   EXPECT_EQ(verifier2->GroupPolicies().size(), 1U);
 }
 
@@ -238,8 +238,8 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   EXPECT_TRUE(
       builder.SetUpdateURL(std::vector<std::string>{"https://www.google.com"})
           .SetUseCUP(false)
-          .SetInitialDelay(123.4)
-          .SetServerKeepAliveSeconds(3)
+          .SetInitialDelay(base::Seconds(123.4))
+          .SetServerKeepAliveTime(base::Seconds(3))
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
           .SetGroupPolicies(group_policies)
           .Overwrite());
@@ -254,8 +254,8 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   ASSERT_EQ(urls.size(), 1ul);
   EXPECT_EQ(urls[0], GURL("https://www.example.com"));
 
-  EXPECT_EQ(verifier->InitialDelay(), 123.4);
-  EXPECT_EQ(verifier->ServerKeepAliveSeconds(), 3);
+  EXPECT_EQ(verifier->InitialDelay(), base::Seconds(123.4));
+  EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(3));
   EXPECT_EQ(verifier->GroupPolicies().size(), 2U);
 
   // Now we use a new builder to modify just the group policies.
@@ -279,8 +279,8 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   urls = verifier2->UpdateURL();
   ASSERT_EQ(urls.size(), 1ul);
   EXPECT_EQ(urls[0], GURL("https://www.example.com"));
-  EXPECT_EQ(verifier2->InitialDelay(), 123.4);
-  EXPECT_EQ(verifier2->ServerKeepAliveSeconds(), 3);
+  EXPECT_EQ(verifier2->InitialDelay(), base::Seconds(123.4));
+  EXPECT_EQ(verifier2->ServerKeepAliveTime(), base::Seconds(3));
 }
 
 }  // namespace updater

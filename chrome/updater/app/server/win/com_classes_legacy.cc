@@ -789,11 +789,11 @@ HRESULT PolicyStatusImpl::RuntimeClassInitialize() {
 STDMETHODIMP PolicyStatusImpl::get_lastCheckPeriodMinutes(DWORD* minutes) {
   DCHECK(minutes);
 
-  PolicyStatus<int> period = policy_service_->GetLastCheckPeriodMinutes();
+  PolicyStatus<base::TimeDelta> period = policy_service_->GetLastCheckPeriod();
   if (!period)
     return E_FAIL;
 
-  *minutes = period.policy();
+  *minutes = period.policy().InMinutes();
   return S_OK;
 }
 
@@ -1051,7 +1051,7 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckPeriodMinutes(
     IPolicyStatusValue** value) {
   DCHECK(value);
   auto policy_status = PolicyStatusResult<int>::Get(base::BindRepeating(
-      &PolicyService::GetLastCheckPeriodMinutes, policy_service_));
+      &PolicyService::DeprecatedGetLastCheckPeriodMinutes, policy_service_));
   return policy_status.has_value()
              ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;

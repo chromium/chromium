@@ -41,34 +41,34 @@ AwComponentUpdaterConfigurator::AwComponentUpdaterConfigurator(
 
 AwComponentUpdaterConfigurator::~AwComponentUpdaterConfigurator() = default;
 
-double AwComponentUpdaterConfigurator::InitialDelay() const {
+base::TimeDelta AwComponentUpdaterConfigurator::InitialDelay() const {
   // Initial delay acts as a "registration window" for components, so we should
   // have a reasonable window to allow for all components to complete
   // registration. We are choosing a small window of 10 seconds here because
   // WebView has a short list of components and components registration happens
   // in an android background service so we want to start the update as soon as
   // possible.
-  // TODO(crbug.com/1181094): git rid of dependency in initial delay for
+  // TODO(crbug.com/1181094): get rid of dependency in initial delay for
   // WebView.
-  return 10;
+  return base::Seconds(10);
 }
 
-int AwComponentUpdaterConfigurator::NextCheckDelay() const {
+base::TimeDelta AwComponentUpdaterConfigurator::NextCheckDelay() const {
   return configurator_impl_.NextCheckDelay();
 }
 
-int AwComponentUpdaterConfigurator::OnDemandDelay() const {
+base::TimeDelta AwComponentUpdaterConfigurator::OnDemandDelay() const {
   return configurator_impl_.OnDemandDelay();
 }
 
-int AwComponentUpdaterConfigurator::UpdateDelay() const {
+base::TimeDelta AwComponentUpdaterConfigurator::UpdateDelay() const {
   // No need to have any delays between components updates. In WebView this
   // doesn't run in a browser and shouldn't affect user's experience.
   // Furthermore, this will be a background service that is scheduled by
   // JobScheduler, so we want to do as much work in as little time as possible.
   // However, if we ever invoked installation on-demand, we should be less
   // aggressive here.
-  return 0;
+  return base::Seconds(0);
 }
 
 std::vector<GURL> AwComponentUpdaterConfigurator::UpdateUrl() const {

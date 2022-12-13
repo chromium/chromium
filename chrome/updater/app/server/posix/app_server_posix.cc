@@ -27,17 +27,11 @@ void AppServerPosix::MarkTaskStarted() {
   VLOG(2) << "Starting task, " << tasks_running_ << " tasks running";
 }
 
-base::TimeDelta AppServerPosix::ServerKeepAlive() {
-  int seconds = external_constants()->ServerKeepAliveSeconds();
-  VLOG(2) << "ServerKeepAliveSeconds: " << seconds;
-  return base::Seconds(seconds);
-}
-
 void AppServerPosix::TaskCompleted() {
   main_task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AppServerPosix::AcknowledgeTaskCompletion, this),
-      ServerKeepAlive());
+      external_constants()->ServerKeepAliveTime());
 }
 
 void AppServerPosix::AcknowledgeTaskCompletion() {

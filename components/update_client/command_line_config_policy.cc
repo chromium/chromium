@@ -4,6 +4,7 @@
 
 #include "components/update_client/command_line_config_policy.h"
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "url/gurl.h"
 
@@ -37,8 +38,8 @@ GURL CommandLineConfigPolicy::UrlSourceOverride() const {
   return GURL();
 }
 
-double CommandLineConfigPolicy::InitialDelay() const {
-  return 0;
+base::TimeDelta CommandLineConfigPolicy::InitialDelay() const {
+  return base::Seconds(0);
 }
 
 }  // namespace update_client

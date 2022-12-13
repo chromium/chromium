@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_COMPONENT_UPDATER_COMPONENT_UPDATER_COMMAND_LINE_CONFIG_POLICY_H_
 #define COMPONENTS_COMPONENT_UPDATER_COMPONENT_UPDATER_COMMAND_LINE_CONFIG_POLICY_H_
 
+#include "base/time/time.h"
 #include "components/update_client/command_line_config_policy.h"
 #include "url/gurl.h"
 
@@ -35,7 +36,7 @@ class ComponentUpdaterCommandLineConfigPolicy final
   bool PingsEnabled() const override;
   bool TestRequest() const override;
   GURL UrlSourceOverride() const override;
-  double InitialDelay() const override;
+  base::TimeDelta InitialDelay() const override;
 
  private:
   bool background_downloads_enabled_ = false;
@@ -44,9 +45,8 @@ class ComponentUpdaterCommandLineConfigPolicy final
   bool pings_enabled_ = true;
   bool test_request_ = false;
 
-  // If non-zero, time interval in seconds until the first component
-  // update check.
-  double initial_delay_ = 0;
+  // If non-zero, time interval until the first component update check.
+  base::TimeDelta initial_delay_ = base::Seconds(0);
 
   GURL url_source_override_;
 };

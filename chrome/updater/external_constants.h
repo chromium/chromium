@@ -9,6 +9,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 
 class GURL;
@@ -37,12 +38,12 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
   // True if client update protocol signing of update checks is enabled.
   virtual bool UseCUP() const = 0;
 
-  // Number of seconds to delay the start of the automated background tasks
+  // Time to delay the start of the automated background tasks
   // such as update checks.
-  virtual double InitialDelay() const = 0;
+  virtual base::TimeDelta InitialDelay() const = 0;
 
-  // Minimum number of of seconds the server needs to stay alive.
-  virtual int ServerKeepAliveSeconds() const = 0;
+  // Minimum amount of time the server needs to stay alive.
+  virtual base::TimeDelta ServerKeepAliveTime() const = 0;
 
   // CRX format verification requirements.
   virtual crx_file::VerifierFormat CrxVerifierFormat() const = 0;

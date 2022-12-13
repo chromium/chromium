@@ -44,11 +44,11 @@ class ExternalConstantsBuilder {
   ExternalConstantsBuilder& SetUseCUP(bool use_cup);
   ExternalConstantsBuilder& ClearUseCUP();
 
-  ExternalConstantsBuilder& SetInitialDelay(double initial_delay);
+  ExternalConstantsBuilder& SetInitialDelay(base::TimeDelta initial_delay);
   ExternalConstantsBuilder& ClearInitialDelay();
 
-  ExternalConstantsBuilder& SetServerKeepAliveSeconds(
-      int server_keep_alive_seconds);
+  ExternalConstantsBuilder& SetServerKeepAliveTime(
+      base::TimeDelta server_keep_alive_seconds);
   ExternalConstantsBuilder& ClearServerKeepAliveSeconds();
 
   ExternalConstantsBuilder& SetCrxVerifierFormat(

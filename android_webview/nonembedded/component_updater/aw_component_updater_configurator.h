@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "components/component_updater/configurator_impl.h"
 #include "components/prefs/pref_service.h"
@@ -33,10 +34,10 @@ class AwComponentUpdaterConfigurator : public update_client::Configurator {
                                           PrefService* pref_service);
 
   // update_client::Configurator overrides.
-  double InitialDelay() const override;
-  int NextCheckDelay() const override;
-  int OnDemandDelay() const override;
-  int UpdateDelay() const override;
+  base::TimeDelta InitialDelay() const override;
+  base::TimeDelta NextCheckDelay() const override;
+  base::TimeDelta OnDemandDelay() const override;
+  base::TimeDelta UpdateDelay() const override;
   std::vector<GURL> UpdateUrl() const override;
   std::vector<GURL> PingUrl() const override;
   std::string GetProdId() const override;

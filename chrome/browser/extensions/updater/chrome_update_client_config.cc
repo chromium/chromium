@@ -19,6 +19,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/component_updater/component_updater_utils.h"
 #include "chrome/browser/extensions/updater/extension_update_client_command_line_config_policy.h"
@@ -151,19 +152,19 @@ ChromeUpdateClientConfig::ChromeUpdateClientConfig(
 
 ChromeUpdateClientConfig::~ChromeUpdateClientConfig() = default;
 
-double ChromeUpdateClientConfig::InitialDelay() const {
+base::TimeDelta ChromeUpdateClientConfig::InitialDelay() const {
   return impl_.InitialDelay();
 }
 
-int ChromeUpdateClientConfig::NextCheckDelay() const {
+base::TimeDelta ChromeUpdateClientConfig::NextCheckDelay() const {
   return impl_.NextCheckDelay();
 }
 
-int ChromeUpdateClientConfig::OnDemandDelay() const {
+base::TimeDelta ChromeUpdateClientConfig::OnDemandDelay() const {
   return impl_.OnDemandDelay();
 }
 
-int ChromeUpdateClientConfig::UpdateDelay() const {
+base::TimeDelta ChromeUpdateClientConfig::UpdateDelay() const {
   return impl_.UpdateDelay();
 }
 

@@ -63,7 +63,7 @@ class DefaultValuesPolicyManager : public PolicyManagerInterface {
 
   bool HasActiveDevicePolicies() const override;
 
-  absl::optional<int> GetLastCheckPeriodMinutes() const override;
+  absl::optional<base::TimeDelta> GetLastCheckPeriod() const override;
   absl::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
       const override;
   absl::optional<std::string> GetDownloadPreferenceGroupPolicy() const override;
@@ -97,9 +97,9 @@ std::string DefaultValuesPolicyManager::source() const {
   return std::string("default");
 }
 
-absl::optional<int> DefaultValuesPolicyManager::GetLastCheckPeriodMinutes()
+absl::optional<base::TimeDelta> DefaultValuesPolicyManager::GetLastCheckPeriod()
     const {
-  return kDefaultLastCheckPeriod.InMinutes();
+  return kDefaultLastCheckPeriod;
 }
 
 absl::optional<UpdatesSuppressedTimes>

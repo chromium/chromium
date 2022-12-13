@@ -94,7 +94,7 @@ bool ExternalConstantsOverrider::UseCUP() const {
   return use_cup_value->GetBool();
 }
 
-double ExternalConstantsOverrider::InitialDelay() const {
+base::TimeDelta ExternalConstantsOverrider::InitialDelay() const {
   if (!override_values_.contains(kDevOverrideKeyInitialDelay)) {
     return next_provider_->InitialDelay();
   }
@@ -104,12 +104,12 @@ double ExternalConstantsOverrider::InitialDelay() const {
   CHECK(initial_delay_value->is_double())
       << "Unexpected type of override[" << kDevOverrideKeyInitialDelay
       << "]: " << base::Value::GetTypeName(initial_delay_value->type());
-  return initial_delay_value->GetDouble();
+  return base::Seconds(initial_delay_value->GetDouble());
 }
 
-int ExternalConstantsOverrider::ServerKeepAliveSeconds() const {
+base::TimeDelta ExternalConstantsOverrider::ServerKeepAliveTime() const {
   if (!override_values_.contains(kDevOverrideKeyServerKeepAliveSeconds)) {
-    return next_provider_->ServerKeepAliveSeconds();
+    return next_provider_->ServerKeepAliveTime();
   }
 
   const base::Value* server_keep_alive_seconds_value =
@@ -118,7 +118,7 @@ int ExternalConstantsOverrider::ServerKeepAliveSeconds() const {
       << "Unexpected type of override[" << kDevOverrideKeyServerKeepAliveSeconds
       << "]: "
       << base::Value::GetTypeName(server_keep_alive_seconds_value->type());
-  return server_keep_alive_seconds_value->GetInt();
+  return base::Seconds(server_keep_alive_seconds_value->GetInt());
 }
 
 crx_file::VerifierFormat ExternalConstantsOverrider::CrxVerifierFormat() const {

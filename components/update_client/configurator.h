@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "components/update_client/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -43,19 +44,19 @@ using UpdaterStateProvider =
 // behavior of the component updater.
 class Configurator : public base::RefCountedThreadSafe<Configurator> {
  public:
-  // Delay in seconds from calling Start() to the first update check.
-  virtual double InitialDelay() const = 0;
+  // Delay from calling Start() to the first update check.
+  virtual base::TimeDelta InitialDelay() const = 0;
 
-  // Delay in seconds to every subsequent update check. 0 means don't check.
-  virtual int NextCheckDelay() const = 0;
+  // Delay to every subsequent update check. 0 means don't check.
+  virtual base::TimeDelta NextCheckDelay() const = 0;
 
-  // Minimum delta time in seconds before an on-demand check is allowed
+  // Minimum delta time before an on-demand check is allowed
   // for the same component.
-  virtual int OnDemandDelay() const = 0;
+  virtual base::TimeDelta OnDemandDelay() const = 0;
 
-  // The time delay in seconds between applying updates for different
+  // The time delay between applying updates for different
   // components.
-  virtual int UpdateDelay() const = 0;
+  virtual base::TimeDelta UpdateDelay() const = 0;
 
   // The URLs for the update checks. The URLs are tried in order, the first one
   // that succeeds wins. Since some components cannot be updated over HTTP,

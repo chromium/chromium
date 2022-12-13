@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,7 +28,7 @@ class FakePolicyManager : public PolicyManagerInterface {
   bool HasActiveDevicePolicies() const override {
     return has_active_device_policies_;
   }
-  absl::optional<int> GetLastCheckPeriodMinutes() const override {
+  absl::optional<base::TimeDelta> GetLastCheckPeriod() const override {
     return absl::nullopt;
   }
   absl::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
@@ -123,9 +124,10 @@ TEST(PolicyService, DefaultPolicyValue) {
       policy_service->GetTargetVersionPrefix("");
   EXPECT_FALSE(version_prefix);
 
-  PolicyStatus<int> last_check = policy_service->GetLastCheckPeriodMinutes();
+  PolicyStatus<base::TimeDelta> last_check =
+      policy_service->GetLastCheckPeriod();
   ASSERT_TRUE(last_check);
-  EXPECT_EQ(last_check.policy(), 270);
+  EXPECT_EQ(last_check.policy(), base::Minutes(270));
 
   PolicyStatus<int> app_installs =
       policy_service->GetPolicyForAppInstalls("test1");

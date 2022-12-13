@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/updater/external_constants.h"
 
@@ -19,7 +20,7 @@ class GURL;
 namespace base {
 class TimeDelta;
 class Value;
-}
+}  // namespace base
 
 namespace crx_file {
 enum class VerifierFormat;
@@ -43,8 +44,8 @@ class ExternalConstantsOverrider : public ExternalConstants {
   // Overrides of ExternalConstants:
   std::vector<GURL> UpdateURL() const override;
   bool UseCUP() const override;
-  double InitialDelay() const override;
-  int ServerKeepAliveSeconds() const override;
+  base::TimeDelta InitialDelay() const override;
+  base::TimeDelta ServerKeepAliveTime() const override;
   crx_file::VerifierFormat CrxVerifierFormat() const override;
   base::Value::Dict GroupPolicies() const override;
   base::TimeDelta OverinstallTimeout() const override;

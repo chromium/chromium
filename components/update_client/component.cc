@@ -646,7 +646,7 @@ base::TimeDelta Component::GetUpdateDuration() const {
   const base::TimeDelta update_cost(base::TimeTicks::Now() - update_begin_);
   DCHECK_GE(update_cost, base::TimeDelta());
   const base::TimeDelta max_update_delay =
-      base::Seconds(update_context_->config->UpdateDelay());
+      update_context_->config->UpdateDelay();
   return std::min(update_cost, max_update_delay);
 }
 

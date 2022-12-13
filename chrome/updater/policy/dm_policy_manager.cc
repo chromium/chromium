@@ -11,6 +11,7 @@
 #include "base/enterprise_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/manager.h"
@@ -73,11 +74,11 @@ std::string DMPolicyManager::source() const {
   return std::string("DeviceManagement");
 }
 
-absl::optional<int> DMPolicyManager::GetLastCheckPeriodMinutes() const {
+absl::optional<base::TimeDelta> DMPolicyManager::GetLastCheckPeriod() const {
   if (!omaha_settings_.has_auto_update_check_period_minutes())
     return absl::nullopt;
 
-  return static_cast<int>(omaha_settings_.auto_update_check_period_minutes());
+  return base::Minutes(omaha_settings_.auto_update_check_period_minutes());
 }
 
 absl::optional<UpdatesSuppressedTimes>

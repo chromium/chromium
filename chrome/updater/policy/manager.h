@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "chrome/updater/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -55,9 +56,9 @@ class PolicyManagerInterface {
   virtual bool HasActiveDevicePolicies() const = 0;
 
   // Returns the policy for how often the Updater should check for updates.
-  // Returns the time interval between update checks in minutes.
+  // Returns the time interval between update checks.
   // 0 indicates updates are disabled.
-  virtual absl::optional<int> GetLastCheckPeriodMinutes() const = 0;
+  virtual absl::optional<base::TimeDelta> GetLastCheckPeriod() const = 0;
 
   // For domain-joined machines, checks the current time against the times that
   // updates are suppressed.

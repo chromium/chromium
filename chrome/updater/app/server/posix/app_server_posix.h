@@ -32,7 +32,6 @@ class AppServerPosix : public AppServer {
   std::unique_ptr<UpdateServiceInternalStub> active_duty_internal_stub_;
 
  private:
-  base::TimeDelta ServerKeepAlive();
   void MarkTaskStarted();
   void AcknowledgeTaskCompletion();
 

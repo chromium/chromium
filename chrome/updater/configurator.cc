@@ -66,27 +66,27 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
 }
 Configurator::~Configurator() = default;
 
-double Configurator::InitialDelay() const {
+base::TimeDelta Configurator::InitialDelay() const {
   return base::RandDouble() * external_constants_->InitialDelay();
 }
 
-int Configurator::ServerKeepAliveSeconds() const {
-  return base::clamp(external_constants_->ServerKeepAliveSeconds(), 1,
-                     kServerKeepAliveSeconds);
+base::TimeDelta Configurator::ServerKeepAliveTime() const {
+  return base::clamp(external_constants_->ServerKeepAliveTime(),
+                     base::Seconds(1), kServerKeepAliveTime);
 }
 
-int Configurator::NextCheckDelay() const {
-  PolicyStatus<int> minutes = policy_service_->GetLastCheckPeriodMinutes();
-  CHECK(minutes);
-  return base::Minutes(minutes.policy()).InSeconds();
+base::TimeDelta Configurator::NextCheckDelay() const {
+  PolicyStatus<base::TimeDelta> delay = policy_service_->GetLastCheckPeriod();
+  CHECK(delay);
+  return delay.policy();
 }
 
-int Configurator::OnDemandDelay() const {
-  return 0;
+base::TimeDelta Configurator::OnDemandDelay() const {
+  return base::Seconds(0);
 }
 
-int Configurator::UpdateDelay() const {
-  return 0;
+base::TimeDelta Configurator::UpdateDelay() const {
+  return base::Seconds(0);
 }
 
 std::vector<GURL> Configurator::UpdateUrl() const {

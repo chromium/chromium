@@ -30,8 +30,8 @@ namespace {
 bool ShouldSkipCheck(scoped_refptr<Configurator> config,
                      scoped_refptr<updater::PersistedData> persisted_data) {
   // To spread out synchronized load, sometimes use a higher delay.
-  const base::TimeDelta check_delay = base::Seconds(
-      config->NextCheckDelay() * (base::RandDouble() < 0.1 ? 1.2 : 1));
+  const base::TimeDelta check_delay =
+      config->NextCheckDelay() * (base::RandDouble() < 0.1 ? 1.2 : 1);
 
   // Skip if periodic updates are disabled altogether.
   if (check_delay.is_zero()) {
@@ -96,7 +96,7 @@ void CheckForUpdatesTask::Run(base::OnceClosure callback) {
                 std::move(closure).Run();
               },
               std::move(callback))),
-      base::Seconds(config_->InitialDelay()));
+      config_->InitialDelay());
 }
 
 }  // namespace updater

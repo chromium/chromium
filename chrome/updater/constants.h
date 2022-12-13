@@ -406,8 +406,8 @@ inline constexpr int kUninstallPingReasonUserNotAnOwner = 1;
 // The file downloaded to a temporary location could not be moved.
 inline constexpr int kErrorFailedToMoveDownloadedFile = 5;
 
-inline constexpr double kInitialDelay = 60;
-inline constexpr int kServerKeepAliveSeconds = 10;
+inline constexpr base::TimeDelta kInitialDelay = base::Minutes(1);
+inline constexpr base::TimeDelta kServerKeepAliveTime = base::Seconds(10);
 
 // The maximum number of server starts before the updater uninstalls itself
 // while waiting for the first app registration.

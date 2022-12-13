@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "components/update_client/buildflags.h"
 #include "components/update_client/configurator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -55,10 +56,10 @@ class Configurator : public update_client::Configurator {
   Configurator& operator=(const Configurator&) = delete;
 
   // Overrides for update_client::Configurator.
-  double InitialDelay() const override;
-  int NextCheckDelay() const override;
-  int OnDemandDelay() const override;
-  int UpdateDelay() const override;
+  base::TimeDelta InitialDelay() const override;
+  base::TimeDelta NextCheckDelay() const override;
+  base::TimeDelta OnDemandDelay() const override;
+  base::TimeDelta UpdateDelay() const override;
   std::vector<GURL> UpdateUrl() const override;
   std::vector<GURL> PingUrl() const override;
   std::string GetProdId() const override;
@@ -88,7 +89,7 @@ class Configurator : public update_client::Configurator {
   absl::optional<base::FilePath> GetCrxCachePath() const override;
 #endif
 
-  int ServerKeepAliveSeconds() const;
+  base::TimeDelta ServerKeepAliveTime() const;
   scoped_refptr<PolicyService> GetPolicyService() const;
   crx_file::VerifierFormat GetCrxVerifierFormat() const;
 

@@ -88,8 +88,12 @@ std::string PolicyManager::source() const {
   return std::string("DictValuePolicy");
 }
 
-absl::optional<int> PolicyManager::GetLastCheckPeriodMinutes() const {
-  return policies_.FindInt(kAutoUpdateCheckPeriodOverrideMinutes);
+absl::optional<base::TimeDelta> PolicyManager::GetLastCheckPeriod() const {
+  absl::optional<int> minutes =
+      policies_.FindInt(kAutoUpdateCheckPeriodOverrideMinutes);
+  if (!minutes)
+    return absl::nullopt;
+  return base::Minutes(*minutes);
 }
 
 absl::optional<UpdatesSuppressedTimes>

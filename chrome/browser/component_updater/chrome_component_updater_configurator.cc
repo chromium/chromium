@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -57,10 +58,10 @@ class ChromeConfigurator : public update_client::Configurator {
                      PrefService* pref_service);
 
   // update_client::Configurator overrides.
-  double InitialDelay() const override;
-  int NextCheckDelay() const override;
-  int OnDemandDelay() const override;
-  int UpdateDelay() const override;
+  base::TimeDelta InitialDelay() const override;
+  base::TimeDelta NextCheckDelay() const override;
+  base::TimeDelta OnDemandDelay() const override;
+  base::TimeDelta UpdateDelay() const override;
   std::vector<GURL> UpdateUrl() const override;
   std::vector<GURL> PingUrl() const override;
   std::string GetProdId() const override;
@@ -115,19 +116,19 @@ ChromeConfigurator::ChromeConfigurator(const base::CommandLine* cmdline,
   DCHECK(pref_service_);
 }
 
-double ChromeConfigurator::InitialDelay() const {
+base::TimeDelta ChromeConfigurator::InitialDelay() const {
   return configurator_impl_.InitialDelay();
 }
 
-int ChromeConfigurator::NextCheckDelay() const {
+base::TimeDelta ChromeConfigurator::NextCheckDelay() const {
   return configurator_impl_.NextCheckDelay();
 }
 
-int ChromeConfigurator::OnDemandDelay() const {
+base::TimeDelta ChromeConfigurator::OnDemandDelay() const {
   return configurator_impl_.OnDemandDelay();
 }
 
-int ChromeConfigurator::UpdateDelay() const {
+base::TimeDelta ChromeConfigurator::UpdateDelay() const {
   return configurator_impl_.UpdateDelay();
 }
 
@@ -275,9 +276,8 @@ absl::optional<base::FilePath> ChromeConfigurator::GetCrxCachePath() const {
 }  // namespace
 
 scoped_refptr<update_client::Configurator>
-MakeChromeComponentUpdaterConfigurator(
-    const base::CommandLine* cmdline,
-    PrefService* pref_service) {
+MakeChromeComponentUpdaterConfigurator(const base::CommandLine* cmdline,
+                                       PrefService* pref_service) {
   return base::MakeRefCounted<ChromeConfigurator>(cmdline, pref_service);
 }
 

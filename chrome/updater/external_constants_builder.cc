@@ -11,6 +11,7 @@
 
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/updater/constants.h"
@@ -73,8 +74,8 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearUseCUP() {
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetInitialDelay(
-    double initial_delay) {
-  overrides_.Set(kDevOverrideKeyInitialDelay, initial_delay);
+    base::TimeDelta initial_delay) {
+  overrides_.Set(kDevOverrideKeyInitialDelay, initial_delay.InSecondsF());
   return *this;
 }
 
@@ -83,10 +84,10 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearInitialDelay() {
   return *this;
 }
 
-ExternalConstantsBuilder& ExternalConstantsBuilder::SetServerKeepAliveSeconds(
-    int server_keep_alive_seconds) {
+ExternalConstantsBuilder& ExternalConstantsBuilder::SetServerKeepAliveTime(
+    base::TimeDelta server_keep_alive_time) {
   overrides_.Set(kDevOverrideKeyServerKeepAliveSeconds,
-                 server_keep_alive_seconds);
+                 base::checked_cast<int>(server_keep_alive_time.InSeconds()));
   return *this;
 }
 
@@ -155,7 +156,7 @@ bool ExternalConstantsBuilder::Modify() {
   if (!overrides_.contains(kDevOverrideKeyInitialDelay))
     SetInitialDelay(verifier->InitialDelay());
   if (!overrides_.contains(kDevOverrideKeyServerKeepAliveSeconds))
-    SetServerKeepAliveSeconds(verifier->ServerKeepAliveSeconds());
+    SetServerKeepAliveTime(verifier->ServerKeepAliveTime());
   if (!overrides_.contains(kDevOverrideKeyCrxVerifierFormat))
     SetCrxVerifierFormat(verifier->CrxVerifierFormat());
   if (!overrides_.contains(kDevOverrideKeyGroupPolicies))

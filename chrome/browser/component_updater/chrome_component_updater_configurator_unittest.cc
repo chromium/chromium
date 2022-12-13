@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "chrome/browser/component_updater/chrome_component_updater_configurator.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/component_updater_switches.h"
@@ -64,10 +65,10 @@ TEST_F(ChromeComponentUpdaterConfiguratorTest, TestFastUpdate) {
   const auto config(
       MakeChromeComponentUpdaterConfigurator(&cmdline, pref_service()));
 
-  CHECK_EQ(10, config->InitialDelay());
-  CHECK_EQ(5 * 60 * 60, config->NextCheckDelay());
-  CHECK_EQ(2, config->OnDemandDelay());
-  CHECK_EQ(10, config->UpdateDelay());
+  CHECK_EQ(base::Seconds(10), config->InitialDelay());
+  CHECK_EQ(base::Hours(5), config->NextCheckDelay());
+  CHECK_EQ(base::Seconds(2), config->OnDemandDelay());
+  CHECK_EQ(base::Seconds(10), config->UpdateDelay());
 }
 
 TEST_F(ChromeComponentUpdaterConfiguratorTest, TestOverrideUrl) {

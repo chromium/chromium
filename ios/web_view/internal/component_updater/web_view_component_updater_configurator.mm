@@ -3,31 +3,32 @@
 // found in the LICENSE file.
 
 #import "ios/web_view/internal/component_updater/web_view_component_updater_configurator.h"
+#import "base/time/time.h"
 
-#include <stdint.h>
+#import <stdint.h>
 
-#include <memory>
-#include <string>
-#include <vector>
+#import <memory>
+#import <string>
+#import <vector>
 
-#include "base/containers/flat_map.h"
-#include "base/version.h"
-#include "components/component_updater/component_updater_command_line_config_policy.h"
-#include "components/component_updater/configurator_impl.h"
-#include "components/services/patch/in_process_file_patcher.h"
-#include "components/services/unzip/in_process_unzipper.h"
-#include "components/update_client/activity_data_service.h"
-#include "components/update_client/crx_downloader_factory.h"
-#include "components/update_client/net/network_chromium.h"
-#include "components/update_client/patch/patch_impl.h"
-#include "components/update_client/patcher.h"
-#include "components/update_client/protocol_handler.h"
-#include "components/update_client/unzip/unzip_impl.h"
-#include "components/update_client/unzipper.h"
-#include "components/update_client/update_query_params.h"
-#include "ios/web_view/internal/app/application_context.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#import "base/containers/flat_map.h"
+#import "base/version.h"
+#import "components/component_updater/component_updater_command_line_config_policy.h"
+#import "components/component_updater/configurator_impl.h"
+#import "components/services/patch/in_process_file_patcher.h"
+#import "components/services/unzip/in_process_unzipper.h"
+#import "components/update_client/activity_data_service.h"
+#import "components/update_client/crx_downloader_factory.h"
+#import "components/update_client/net/network_chromium.h"
+#import "components/update_client/patch/patch_impl.h"
+#import "components/update_client/patcher.h"
+#import "components/update_client/protocol_handler.h"
+#import "components/update_client/unzip/unzip_impl.h"
+#import "components/update_client/unzipper.h"
+#import "components/update_client/update_query_params.h"
+#import "ios/web_view/internal/app/application_context.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -45,10 +46,10 @@ class WebViewConfigurator : public update_client::Configurator {
   explicit WebViewConfigurator(const base::CommandLine* cmdline);
 
   // update_client::Configurator overrides.
-  double InitialDelay() const override;
-  int NextCheckDelay() const override;
-  int OnDemandDelay() const override;
-  int UpdateDelay() const override;
+  base::TimeDelta InitialDelay() const override;
+  base::TimeDelta NextCheckDelay() const override;
+  base::TimeDelta OnDemandDelay() const override;
+  base::TimeDelta UpdateDelay() const override;
   std::vector<GURL> UpdateUrl() const override;
   std::vector<GURL> PingUrl() const override;
   std::string GetProdId() const override;
@@ -95,19 +96,19 @@ WebViewConfigurator::WebViewConfigurator(const base::CommandLine* cmdline)
           component_updater::ComponentUpdaterCommandLineConfigPolicy(cmdline),
           /*require_encryption=*/false) {}
 
-double WebViewConfigurator::InitialDelay() const {
+base::TimeDelta WebViewConfigurator::InitialDelay() const {
   return configurator_impl_.InitialDelay();
 }
 
-int WebViewConfigurator::NextCheckDelay() const {
+base::TimeDelta WebViewConfigurator::NextCheckDelay() const {
   return configurator_impl_.NextCheckDelay();
 }
 
-int WebViewConfigurator::OnDemandDelay() const {
+base::TimeDelta WebViewConfigurator::OnDemandDelay() const {
   return configurator_impl_.OnDemandDelay();
 }
 
-int WebViewConfigurator::UpdateDelay() const {
+base::TimeDelta WebViewConfigurator::UpdateDelay() const {
   return configurator_impl_.UpdateDelay();
 }
 
