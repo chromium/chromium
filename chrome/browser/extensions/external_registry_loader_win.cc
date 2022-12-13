@@ -121,8 +121,9 @@ base::Value::Dict ExternalRegistryLoader::LoadPrefsOnBlockingThread() {
     std::wstring extension_dist_id;
     if (key.ReadValue(kRegistryExtensionInstallParam, &extension_dist_id) ==
         ERROR_SUCCESS) {
-      prefs.Set(MakePrefName(id, ExternalProviderImpl::kInstallParam),
-                base::WideToASCII(extension_dist_id));
+      prefs.SetByDottedPath(
+          MakePrefName(id, ExternalProviderImpl::kInstallParam),
+          base::WideToASCII(extension_dist_id));
     }
 
     // If there is an update URL present, copy it to prefs and ignore
@@ -130,8 +131,9 @@ base::Value::Dict ExternalRegistryLoader::LoadPrefsOnBlockingThread() {
     std::wstring extension_update_url;
     if (key.ReadValue(kRegistryExtensionUpdateUrl, &extension_update_url)
         == ERROR_SUCCESS) {
-      prefs.Set(MakePrefName(id, ExternalProviderImpl::kExternalUpdateUrl),
-                base::WideToASCII(extension_update_url));
+      prefs.SetByDottedPath(
+          MakePrefName(id, ExternalProviderImpl::kExternalUpdateUrl),
+          base::WideToASCII(extension_update_url));
       continue;
     }
 
@@ -183,11 +185,13 @@ base::Value::Dict ExternalRegistryLoader::LoadPrefsOnBlockingThread() {
       continue;
     }
 
-    prefs.Set(MakePrefName(id, ExternalProviderImpl::kExternalVersion),
-              base::WideToASCII(extension_version));
-    prefs.Set(MakePrefName(id, ExternalProviderImpl::kExternalCrx),
-              base::AsString16(extension_path_str));
-    prefs.Set(MakePrefName(id, ExternalProviderImpl::kMayBeUntrusted), true);
+    prefs.SetByDottedPath(
+        MakePrefName(id, ExternalProviderImpl::kExternalVersion),
+        base::WideToASCII(extension_version));
+    prefs.SetByDottedPath(MakePrefName(id, ExternalProviderImpl::kExternalCrx),
+                          base::AsString16(extension_path_str));
+    prefs.SetByDottedPath(
+        MakePrefName(id, ExternalProviderImpl::kMayBeUntrusted), true);
   }
 
   return prefs;
