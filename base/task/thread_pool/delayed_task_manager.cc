@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/task/common/checked_lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_features.h"
 #include "base/task/task_runner.h"
@@ -101,7 +102,7 @@ void DelayedTaskManager::AddDelayedTask(
     delayed_task_queue_.insert(DelayedTask(std::move(task),
                                            std::move(post_task_now_callback),
                                            std::move(task_runner)));
-    // Not started yet.
+    // Not started or already shutdown.
     if (service_thread_task_runner_ == nullptr)
       return;
 
@@ -125,6 +126,11 @@ void DelayedTaskManager::ProcessRipeTasks() {
 
   {
     CheckedAutoLock auto_lock(queue_lock_);
+
+    // Already shutdown.
+    if (!service_thread_task_runner_)
+      return;
+
     const TimeTicks now = tick_clock_->NowTicks();
     // A delayed task is ripe if it reached its delayed run time or if it is
     // canceled. If it is canceled, schedule its deletion on the correct
@@ -168,6 +174,31 @@ absl::optional<TimeTicks> DelayedTaskManager::NextScheduledRunTime() const {
 subtle::DelayPolicy DelayedTaskManager::TopTaskDelayPolicyForTesting() const {
   CheckedAutoLock auto_lock(queue_lock_);
   return delayed_task_queue_.top().task.delay_policy;
+}
+
+void DelayedTaskManager::Shutdown() {
+  scoped_refptr<SequencedTaskRunner> service_thread_task_runner;
+
+  {
+    CheckedAutoLock auto_lock(queue_lock_);
+    // Prevent delayed tasks from being posted or processed after this.
+    service_thread_task_runner = service_thread_task_runner_;
+  }
+
+  if (service_thread_task_runner) {
+    // Cancel our delayed task on the service thread. This cannot be done from
+    // ~DelayedTaskManager because the delayed task handle is sequence-affine.
+    service_thread_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](DelayedTaskManager* manager) {
+              DCHECK_CALLED_ON_VALID_SEQUENCE(manager->sequence_checker_);
+              manager->delayed_task_handle_.CancelTask();
+            },
+            // Unretained() is safe because the caller must flush tasks posted
+            // to the service thread before deleting `this`.
+            Unretained(this)));
+  }
 }
 
 std::pair<TimeTicks, subtle::DelayPolicy> DelayedTaskManager::

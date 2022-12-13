@@ -26,7 +26,7 @@ namespace {
 // Cache of the state of the kAlwaysAbandonScheduledTask feature. This avoids
 // the need to constantly query its enabled state through
 // FeatureList::IsEnabled().
-bool g_is_always_abandon_scheduled_task_enabled = false;
+bool g_is_always_abandon_scheduled_task_enabled = true;
 
 }  // namespace
 

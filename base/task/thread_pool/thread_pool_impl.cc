@@ -299,6 +299,10 @@ size_t ThreadPoolImpl::GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
 void ThreadPoolImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Cancels an internal service thread task. This must be done before stopping
+  // the service thread.
+  delayed_task_manager_.Shutdown();
+
   // Stop() the ServiceThread before triggering shutdown. This ensures that no
   // more delayed tasks or file descriptor watches will trigger during shutdown
   // (preventing http://crbug.com/698140). None of these asynchronous tasks
@@ -337,6 +341,9 @@ void ThreadPoolImpl::JoinForTesting() {
 #if DCHECK_IS_ON()
   DCHECK(!join_for_testing_returned_.IsSet());
 #endif
+  // Cancels an internal service thread task. This must be done before stopping
+  // the service thread.
+  delayed_task_manager_.Shutdown();
   // The service thread must be stopped before the workers are joined, otherwise
   // tasks scheduled by the DelayedTaskManager might be posted between joining
   // those workers and stopping the service thread which will cause a CHECK. See

@@ -62,6 +62,7 @@ class PooledSingleThreadTaskRunnerManagerTest : public testing::Test {
   void TearDown() override {
     if (single_thread_task_runner_manager_)
       TearDownSingleThreadTaskRunnerManager();
+    delayed_task_manager_.Shutdown();
     service_thread_.Stop();
   }
 

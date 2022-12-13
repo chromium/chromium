@@ -80,7 +80,7 @@ namespace {
 // kSweepCancelledTasks and kExplicitHighResolutionTimerWin features. This
 // avoids the need to constantly query their enabled state through
 // FeatureList::IsEnabled().
-bool g_is_remove_canceled_tasks_in_task_queue_enabled = false;
+bool g_is_remove_canceled_tasks_in_task_queue_enabled = true;
 bool g_is_sweep_cancelled_tasks_enabled =
     kSweepCancelledTasks.default_state == FEATURE_ENABLED_BY_DEFAULT;
 #if BUILDFLAG(IS_WIN)

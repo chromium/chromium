@@ -179,7 +179,7 @@ char* PrependHexAddress(char* output, const void* address) {
 // deciding when the next wake up should happen.
 // Note: An atomic is used here because some tests can initialize two different
 //       sequence managers on different threads (e.g. by using base::Thread).
-std::atomic_bool g_no_wake_ups_for_canceled_tasks{false};
+std::atomic_bool g_no_wake_ups_for_canceled_tasks{true};
 
 #if BUILDFLAG(IS_WIN)
 bool g_explicit_high_resolution_timer_win = false;

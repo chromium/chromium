@@ -79,6 +79,7 @@ class ThreadGroupImplImplTestBase : public ThreadGroup::Delegate {
         tracked_ref_factory_(this) {}
 
   void CommonTearDown() {
+    delayed_task_manager_.Shutdown();
     service_thread_.Stop();
     task_tracker_.FlushForTesting();
     if (thread_group_)

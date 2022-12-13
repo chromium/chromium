@@ -101,6 +101,7 @@ class ThreadGroupTestBase : public testing::Test, public ThreadGroup::Delegate {
   }
 
   void TearDown() override {
+    delayed_task_manager_.Shutdown();
     service_thread_.Stop();
     if (thread_group_)
       thread_group_->JoinForTesting();

@@ -33,15 +33,15 @@ BASE_FEATURE(kNoWorkerThreadReclaim,
 // static
 BASE_FEATURE(kNoWakeUpsForCanceledTasks,
              "NoWakeUpsForCanceledTasks",
-             FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRemoveCanceledTasksInTaskQueue,
              "RemoveCanceledTasksInTaskQueue2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAlwaysAbandonScheduledTask,
              "AlwaysAbandonScheduledTask",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDelayFirstWorkerWake,
              "DelayFirstWorkerWake",

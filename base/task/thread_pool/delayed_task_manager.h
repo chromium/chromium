@@ -64,6 +64,11 @@ class BASE_EXPORT DelayedTaskManager {
   // Returns the DelayPolicy for the next delayed task.
   subtle::DelayPolicy TopTaskDelayPolicyForTesting() const;
 
+  // Must be invoked before deleting the delayed task manager. The caller must
+  // flush tasks posted to the service thread by this before deleting the
+  // delayed task manager.
+  void Shutdown();
+
  private:
   struct DelayedTask {
     DelayedTask();
