@@ -5226,6 +5226,22 @@
     },
   },
   {
+    'name': 'chromium.memory.fyi',
+    'mixins': ['chromium-tester-service-account'],
+    'machines': {
+      'linux-ubsan-fyi-rel': {
+        'mixins': [
+          'isolate_profile_data',
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_linux_gtests',
+          'isolated_scripts': 'chromium_linux_rel_isolated_scripts',
+        },
+      },
+    },
+  },
+  {
     'name': 'chromium.reclient.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {

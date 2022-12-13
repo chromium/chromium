@@ -1,0 +1,11 @@
+{
+  "linux-ubsan-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_ubsan": true,
+      "use_remoteexec": true
+    }
+  }
+}

@@ -219,6 +219,18 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+# TODO(crbug.com/1394755): Remove this builder after burning down failures
+# and measuring performance to see if we can roll UBSan into ASan.
+try_.builder(
+    name = "linux-ubsan-fyi-rel",
+    branch_selector = branches.MAIN,
+    mirrors = [
+        "ci/linux-ubsan-fyi-rel",
+    ],
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
 try_.orchestrator_builder(
     name = "linux-wayland-rel-inverse-fyi",
     compilator = "linux-wayland-rel-compilator",
