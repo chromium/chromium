@@ -15,9 +15,9 @@
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_main_view.h"
-#include "ash/app_list/views/app_list_search_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/contents_view.h"
+#include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view_delegate.h"
 #include "ash/app_list/views/search_result_list_view.h"
@@ -143,9 +143,10 @@ class SearchBoxViewTest : public views::test::WidgetTest,
     view->InitializeForBubbleLauncher();
     view_ = widget_->GetContentsView()->AddChildView(std::move(view));
 
-    search_view_ = widget_->GetContentsView()->AddChildView(
-        std::make_unique<AppListSearchView>(
-            &view_delegate_, /*dialog_controller=*/nullptr, view_));
+    productivity_launcher_search_view_ =
+        widget_->GetContentsView()->AddChildView(
+            std::make_unique<ProductivityLauncherSearchView>(
+                &view_delegate_, /*dialog_controller=*/nullptr, view_));
     widget_->Show();
   }
 
@@ -216,16 +217,18 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   SearchModel::SearchResults* results() { return GetSearchModel()->results(); }
 
   SearchResultBaseView* GetFirstResultView() {
-    return search_view_->result_container_views_for_test()[kBestMatchIndex]
+    return productivity_launcher_search_view_
+        ->result_container_views_for_test()[kBestMatchIndex]
         ->GetFirstResultView();
   }
 
   ResultSelectionController* GetResultSelectionController() {
-    return search_view_->result_selection_controller_for_test();
+    return productivity_launcher_search_view_
+        ->result_selection_controller_for_test();
   }
 
   void OnSearchResultContainerResultsChanged() {
-    search_view_->OnSearchResultContainerResultsChanged();
+    productivity_launcher_search_view_->OnSearchResultContainerResultsChanged();
   }
 
   void SimulateQuery(const std::u16string& query) {
@@ -237,7 +240,8 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   // Overridden from SearchBoxViewDelegate:
   void QueryChanged(const std::u16string& trimmed_query,
                     bool initiated_by_user) override {
-    search_view_->UpdateForNewSearch(!trimmed_query.empty());
+    productivity_launcher_search_view_->UpdateForNewSearch(
+        !trimmed_query.empty());
   }
   void AssistantButtonPressed() override {}
   void CloseButtonPressed() override {}
@@ -246,7 +250,7 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   bool CanSelectSearchResults() override { return true; }
 
   AshColorProvider ash_color_provider_;
-  AppListSearchView* search_view_ = nullptr;
+  ProductivityLauncherSearchView* productivity_launcher_search_view_ = nullptr;
   TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListTestViewDelegate view_delegate_;
   views::Widget* widget_ = nullptr;

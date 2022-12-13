@@ -17,7 +17,7 @@ class Layer;
 namespace ash {
 
 class AppListViewDelegate;
-class AppListSearchView;
+class ProductivityLauncherSearchView;
 class SearchBoxView;
 class SearchResultPageDialogController;
 
@@ -44,14 +44,14 @@ class ASH_EXPORT AppListBubbleSearchPage : public views::View {
   // Aborts all layer animations.
   void AbortAllAnimations();
 
-  AppListSearchView* search_view() { return search_view_; }
+  ProductivityLauncherSearchView* search_view() { return search_view_; }
 
   // Which layer animates is an implementation detail.
   ui::Layer* GetPageAnimationLayerForTest();
 
  private:
   // Owned by view hierarchy.
-  AppListSearchView* search_view_ = nullptr;
+  ProductivityLauncherSearchView* search_view_ = nullptr;
 
   base::WeakPtrFactory<AppListBubbleSearchPage> weak_factory_{this};
 };
