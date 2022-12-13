@@ -172,8 +172,9 @@ class PLATFORM_EXPORT KURL {
   bool ProtocolIsJavaScript() const;
   bool ProtocolIsInHTTPFamily() const;
   bool IsLocalFile() const;
-  bool IsAboutBlankURL() const;   // Is exactly about:blank.
-  bool IsAboutSrcdocURL() const;  // Is exactly about:srcdoc.
+  bool IsAboutBlankURL() const;   // Is about:blank, ignoring query/ref strings.
+  bool IsAboutSrcdocURL() const;  // Is about:srcdoc, ignoring query/ref
+                                  // strings..
 
   bool SetProtocol(const String&);
   void SetHost(const String&);
