@@ -293,8 +293,23 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   std::u16string text_selection_;
 
   // The width of the largest non-|translate_view_| child view at
-  // initialization.
-  int largest_view_state_width_ = 0;
+  // initialization. The default minimum width is set to 300dp to provide a more
+  // consistent experience between different UI languages - for high density
+  // languages the width would otherwise be very narrow.
+  int largest_view_state_width_ = 300;
+
+  // The threshold for character volume of |partial_text_label_|. If the volume
+  // is larger than the threshold, use the preset maximum width allowable for
+  // the bubble. Otherwise, resize normally.
+  const size_t char_threshold_for_max_width_ = 1300;
+
+  // The max allowable width for the bubble, used when the character volume of
+  // |partial_text_label_| exceeds |char_threshold_for_max_width_|. This is
+  // necessary to accommodate the size of the label in cases of largest possible
+  // character volume. It follows that this is based off of
+  // translate::kDesktopPartialTranslateTextSelectionMaxCharacters and should be
+  // updated alongside it.
+  const int bubble_max_width_ = 550;
 
   base::OnceClosure on_closing_;
 

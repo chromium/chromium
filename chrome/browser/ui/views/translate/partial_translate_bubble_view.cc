@@ -1019,15 +1019,22 @@ void PartialTranslateBubbleView::UpdateTextForViewState(
     SetTextAlignmentForLocaleTextDirection(model_->GetSourceLanguageCode());
   }
 
-  // Resize the text label to match the width of the bubble. This will depend on
-  // either the preferred width of the tabbed pane, or
-  // |largest_view_state_width_|, which serves as a lower bound.
-  if (tab_view_top_row_->GetPreferredSize().width() <
-      largest_view_state_width_) {
-    partial_text_label_->SizeToFit(largest_view_state_width_);
+  // Use the maximum set width for the bubble for the largest text volumes to
+  // prevent sizing of the bubble that exceeds screen height.
+  if (partial_text_label_->GetText().length() > char_threshold_for_max_width_) {
+    partial_text_label_->SizeToFit(bubble_max_width_);
   } else {
-    partial_text_label_->SizeToFit(
-        tab_view_top_row_->GetPreferredSize().width());
+    // Otherwise, with no risk of overflow, resize the text label to match the
+    // width of the bubble. This will depend on either the preferred width of
+    // the tabbed pane, or |largest_view_state_width_|, which serves as a lower
+    // bound.
+    if (tab_view_top_row_->GetPreferredSize().width() <
+        largest_view_state_width_) {
+      partial_text_label_->SizeToFit(largest_view_state_width_);
+    } else {
+      partial_text_label_->SizeToFit(
+          tab_view_top_row_->GetPreferredSize().width());
+    }
   }
 
   AnnounceForAccessibility(view_state);
