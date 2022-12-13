@@ -165,6 +165,9 @@ void ReadingListModelImpl::MarkAllSeen() {
       sync_bridge_.DidAddOrUpdateEntry(entry,
                                        batch->GetSyncMetadataChangeList());
     }
+    for (ReadingListModelObserver& observer : observers_) {
+      observer.ReadingListDidUpdateEntry(this, iterator.first);
+    }
     for (auto& observer : observers_) {
       observer.ReadingListDidApplyChanges(this);
     }
@@ -445,6 +448,10 @@ void ReadingListModelImpl::SetEntryTitle(const GURL& url,
     sync_bridge_.DidAddOrUpdateEntry(entry, batch->GetSyncMetadataChangeList());
   }
   for (ReadingListModelObserver& observer : observers_) {
+    observer.ReadingListDidUpdateEntry(this, url);
+  }
+
+  for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListDidApplyChanges(this);
   }
 }
@@ -472,6 +479,10 @@ void ReadingListModelImpl::SetEstimatedReadTime(
     batch->SaveEntry(entry);
     sync_bridge_.DidAddOrUpdateEntry(entry, batch->GetSyncMetadataChangeList());
   }
+  for (ReadingListModelObserver& observer : observers_) {
+    observer.ReadingListDidUpdateEntry(this, url);
+  }
+
   for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListDidApplyChanges(this);
   }
@@ -507,6 +518,9 @@ void ReadingListModelImpl::SetEntryDistilledInfo(
     sync_bridge_.DidAddOrUpdateEntry(entry, batch->GetSyncMetadataChangeList());
   }
   for (ReadingListModelObserver& observer : observers_) {
+    observer.ReadingListDidUpdateEntry(this, url);
+  }
+  for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListDidApplyChanges(this);
   }
 }
@@ -536,6 +550,9 @@ void ReadingListModelImpl::SetEntryDistilledState(
     sync_bridge_.DidAddOrUpdateEntry(entry, batch->GetSyncMetadataChangeList());
   }
   for (ReadingListModelObserver& observer : observers_) {
+    observer.ReadingListDidUpdateEntry(this, url);
+  }
+  for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListDidApplyChanges(this);
   }
 }
@@ -561,6 +578,9 @@ void ReadingListModelImpl::SetContentSuggestionsExtra(
     batch->SaveEntry(*entry);
     sync_bridge_.DidAddOrUpdateEntry(*entry,
                                      batch->GetSyncMetadataChangeList());
+  }
+  for (ReadingListModelObserver& observer : observers_) {
+    observer.ReadingListDidUpdateEntry(this, url);
   }
   for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListDidApplyChanges(this);

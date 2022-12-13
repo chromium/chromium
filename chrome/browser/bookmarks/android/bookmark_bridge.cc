@@ -591,6 +591,8 @@ void BookmarkBridge::SetBookmarkTitle(JNIEnv* env,
 
   if (partner_bookmarks_shim_->IsPartnerBookmark(bookmark)) {
     partner_bookmarks_shim_->RenameBookmark(bookmark, title);
+  } else if (reading_list_manager_->IsReadingListBookmark(bookmark)) {
+    reading_list_manager_->SetTitle(bookmark->url(), title);
   } else {
     bookmark_model_->SetTitle(bookmark, title,
                               bookmarks::metrics::BookmarkEditSource::kUser);

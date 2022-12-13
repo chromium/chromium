@@ -58,6 +58,9 @@ size_t EmptyReadingListManager::unread_size() const {
   return 0u;
 }
 
+void EmptyReadingListManager::SetTitle(const GURL& url,
+                                       const std::u16string& title) {}
+
 void EmptyReadingListManager::SetReadStatus(const GURL& url, bool read) {}
 
 bool EmptyReadingListManager::GetReadStatus(

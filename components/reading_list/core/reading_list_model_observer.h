@@ -71,6 +71,10 @@ class ReadingListModelObserver {
   virtual void ReadingListWillUpdateEntry(const ReadingListModel* model,
                                           const GURL& url) {}
 
+  // Invoked when an entry is changed.
+  virtual void ReadingListDidUpdateEntry(const ReadingListModel* model,
+                                         const GURL& url) {}
+
   // Called after all the changes signaled by calls to the "Will" methods are
   // done. All the "Will" methods are called as necessary, then the changes
   // are applied and then this method is called.

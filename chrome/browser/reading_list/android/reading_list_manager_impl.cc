@@ -100,6 +100,15 @@ void ReadingListManagerImpl::ReadingListDidMoveEntry(
   AddOrUpdateBookmark(moved_entry);
 }
 
+void ReadingListManagerImpl::ReadingListDidUpdateEntry(
+    const ReadingListModel* model,
+    const GURL& url) {
+  DCHECK(reading_list_model_->loaded());
+  const auto* updated_entry = reading_list_model_->GetEntryByURL(url);
+  DCHECK(updated_entry);
+  AddOrUpdateBookmark(updated_entry);
+}
+
 void ReadingListManagerImpl::ReadingListDidApplyChanges(
     ReadingListModel* model) {
   // Ignores ReadingListDidApplyChanges() invocations during batch update.
@@ -208,6 +217,21 @@ size_t ReadingListManagerImpl::size() const {
 size_t ReadingListManagerImpl::unread_size() const {
   DCHECK(reading_list_model_->loaded());
   return reading_list_model_->unread_size();
+}
+
+void ReadingListManagerImpl::SetTitle(const GURL& url,
+                                      const std::u16string& title) {
+  DCHECK(reading_list_model_->loaded());
+  const auto* entry = reading_list_model_->GetEntryByURL(url);
+  if (!entry)
+    return;
+
+  std::string str_title;
+  if (!base::UTF16ToUTF8(title.c_str(), title.size(), &str_title)) {
+    LOG(ERROR) << "Failed to convert the following title to string16:" << title;
+    return;
+  }
+  reading_list_model_->SetEntryTitle(url, str_title);
 }
 
 void ReadingListManagerImpl::SetReadStatus(const GURL& url, bool read) {

@@ -36,6 +36,8 @@ class ReadingListManagerImpl : public ReadingListManager,
                                   const GURL& url) override;
   void ReadingListDidMoveEntry(const ReadingListModel* model,
                                const GURL& url) override;
+  void ReadingListDidUpdateEntry(const ReadingListModel* model,
+                                 const GURL& url) override;
   void ReadingListDidApplyChanges(ReadingListModel* model) override;
   void ReadingListModelBeganBatchUpdates(
       const ReadingListModel* model) override;
@@ -59,6 +61,7 @@ class ReadingListManagerImpl : public ReadingListManager,
   const bookmarks::BookmarkNode* GetRoot() const override;
   size_t size() const override;
   size_t unread_size() const override;
+  void SetTitle(const GURL& url, const std::u16string& title) override;
   void SetReadStatus(const GURL& url, bool read) override;
   bool GetReadStatus(const bookmarks::BookmarkNode* node) override;
   bool IsLoaded() const override;

@@ -88,6 +88,10 @@ class ReadingListManager : public KeyedService {
   // Returns the total number of unread articles.
   virtual size_t unread_size() const = 0;
 
+  // Sets the title for a reading list article. No op if such reading list
+  // article doesn't exist.
+  virtual void SetTitle(const GURL& url, const std::u16string& title) = 0;
+
   // Sets the read status for a reading list article. No op if such reading list
   // article doesn't exist.
   virtual void SetReadStatus(const GURL& url, bool read) = 0;
