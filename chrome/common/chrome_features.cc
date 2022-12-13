@@ -806,6 +806,10 @@ BASE_FEATURE(kMicrosoftOfficeWebAppExperiment,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kMigrateExternalPrefsToWebAppDB,
+             "MigrateExternalPrefsToWebAppDB",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kMoveWebApp,
              "MoveWebApp",
              base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
