@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/account_id/account_id.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -63,24 +64,24 @@ constexpr char kGetChallengeDataUrl[] =
     "https://devicesignin-pa.googleapis.com/v1/getchallengedata";
 constexpr char kStartSessionUrl[] =
     "https://devicesignin-pa.googleapis.com/v1/startsession";
-constexpr char kFakeChallengeDataResponse[] =
-    "{"
-    "\"challengeData\": {"
-    "  \"challenge\": "
-    "\"AKVcFQJJ0zreBQSrWiDJlFmeTr6K1Ik+"
-    "i58k4p5A64dYYcofARHmhUNQrh0vpYZ4zbOvyBSamG/"
-    "hyOxa7WdmZHLfEyobJ2FyifgY114deg==\""
-    "}"
-    "}";
-constexpr char kInvalidBase64ChallengeDataResponse[] =
-    "{"
-    "\"challengeData\": {"
-    "  \"challenge\": "
-    "\"Not-a-base64-character()\""
-    "}"
-    "}";
+constexpr char kFakeChallengeDataResponse[] = R"({
+      "challengeData": {
+        "challenge": "eA=="
+      }
+    })";
+constexpr char kInvalidBase64ChallengeDataResponse[] = R"({
+      "challengeData": {
+        "challenge": "Not-a-base64-character)("
+      }
+    })";
+constexpr char kOAuthRefreshTokenSuccessBody[] = R"({
+      "refresh_token": "fake-refresh-token",
+      "access_token": "fake-access-token",
+      "expires_in": 99999
+    })";
 constexpr char kFidoCredentialId[] = "fido_credential_id";
 constexpr char kCertificate[] = "fake_certificate";
+constexpr char kFakeDeviceId[] = "fake_device_id";
 
 MATCHER_P(ProtoBufContentBindingEq, expected, "") {
   return arg.content_binding() == expected;
@@ -111,6 +112,24 @@ MATCHER_P(RefreshTokenAdditionalChallengesOnSourceResponseEq, expected, "") {
                 &RefreshTokenAdditionalChallengesOnSourceResponse::
                     target_session_identifier,
                 Eq(expected.target_session_identifier))),
+      arg, result_listener);
+}
+
+MATCHER_P(RefreshTokenSuccessResponseEq, expected, "") {
+  return ExplainMatchResult(
+      AllOf(Field("email", &RefreshTokenSuccessResponse::email,
+                  Eq(expected.email)),
+            Field("refresh_token", &RefreshTokenSuccessResponse::refresh_token,
+                  Eq(expected.refresh_token))),
+      arg, result_listener);
+}
+
+MATCHER_P(RefreshTokenRejectionResponseEq, expected, "") {
+  return ExplainMatchResult(
+      AllOf(Field("email", &RefreshTokenRejectionResponse::email,
+                  Eq(expected.email)),
+            Field("reason", &RefreshTokenRejectionResponse::reason,
+                  Eq(expected.reason))),
       arg, result_listener);
 }
 
@@ -150,7 +169,8 @@ class MockAttestationFlowFacade : public attestation::MockAttestationFlow {
 class SecondDeviceAuthBrokerTest : public ::testing::Test {
  public:
   SecondDeviceAuthBrokerTest()
-      : second_device_auth_broker_(test_factory_.GetSafeWeakWrapper(),
+      : second_device_auth_broker_(kFakeDeviceId,
+                                   test_factory_.GetSafeWeakWrapper(),
                                    std::make_unique<MockAttestationFlowFacade>(
                                        &mock_attestation_flow_)) {}
 
@@ -227,6 +247,18 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
   void SimulateAuthError(const std::string& url) {
     test_factory_.AddResponse(url, /*content=*/std::string(),
                               net::HTTP_UNAUTHORIZED);
+  }
+
+  void SimulateOAuthTokenFetchSuccess() {
+    test_factory_.AddResponse(
+        GaiaUrls::GetInstance()->oauth2_token_url().spec(),
+        kOAuthRefreshTokenSuccessBody);
+  }
+
+  void SimulateOAuthTokenFetchFailure() {
+    test_factory_.AddResponse(
+        GaiaUrls::GetInstance()->oauth2_token_url().spec(), /*content=*/"{}",
+        net::HTTP_BAD_REQUEST);
   }
 
   attestation::MockAttestationFlow& mock_attestation_flow() {
@@ -446,6 +478,53 @@ TEST_F(
               VariantWith<RefreshTokenAdditionalChallengesOnTargetResponse>(
                   RefreshTokenAdditionalChallengesOnTargetResponseEq(
                       expected_response)));
+}
+
+TEST_F(SecondDeviceAuthBrokerTest, FetchRefreshTokenReturnsARefreshToken) {
+  AddFakeResponse(kStartSessionUrl, std::string(R"(
+      {
+        "session_status": "AUTHENTICATED",
+        "credential_data": {
+            "oauth_token": "fake-auth-code"
+        },
+        "email": "fake-user@example.com"
+      }
+    )"));
+  SimulateOAuthTokenFetchSuccess();
+
+  RefreshTokenSuccessResponse expected_response;
+  expected_response.email = "fake-user@example.com";
+  expected_response.refresh_token = "fake-refresh-token";
+  SecondDeviceAuthBroker::RefreshTokenResponse response =
+      FetchRefreshToken(/*fido_assertion_info=*/FidoAssertionInfo{},
+                        /*certificate=*/kCertificate);
+  EXPECT_THAT(response, VariantWith<RefreshTokenSuccessResponse>(
+                            RefreshTokenSuccessResponseEq(expected_response)));
+}
+
+TEST_F(SecondDeviceAuthBrokerTest,
+       FetchRefreshTokenReturnsAnErrorForInvalidAuthorizationCode) {
+  AddFakeResponse(kStartSessionUrl, std::string(R"(
+      {
+        "session_status": "AUTHENTICATED",
+        "credential_data": {
+            "oauth_token": "fake-auth-code"
+        },
+        "email": "fake-user@example.com"
+      }
+    )"));
+  SimulateOAuthTokenFetchFailure();
+
+  RefreshTokenRejectionResponse expected_response;
+  expected_response.email = "fake-user@example.com";
+  expected_response.reason =
+      RefreshTokenRejectionResponse::Reason::kInvalidAuthorizationCode;
+  SecondDeviceAuthBroker::RefreshTokenResponse response =
+      FetchRefreshToken(/*fido_assertion_info=*/FidoAssertionInfo{},
+                        /*certificate=*/kCertificate);
+  EXPECT_THAT(response,
+              VariantWith<RefreshTokenRejectionResponse>(
+                  RefreshTokenRejectionResponseEq(expected_response)));
 }
 
 }  //  namespace ash::quick_start

@@ -14,6 +14,7 @@
 #include "base/types/expected.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "google_apis/gaia/gaia_auth_consumer.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GoogleServiceAuthError;
@@ -26,7 +27,7 @@ namespace ash::quick_start {
 
 struct FidoAssertionInfo;
 
-class SecondDeviceAuthBroker {
+class SecondDeviceAuthBroker : public GaiaAuthConsumer {
  public:
   enum class AttestationErrorType {
     // The error was temporary / transient and the request can be tried again.
@@ -81,6 +82,9 @@ class SecondDeviceAuthBroker {
 
       // Credential ID mismatch thrown during FIDO assertion verification.
       kCredentialIdMismatch,
+
+      // OAuth authorization code to refresh token exchange request failed.
+      kInvalidAuthorizationCode,
     };
 
     Reason reason;
@@ -110,6 +114,8 @@ class SecondDeviceAuthBroker {
       const base::expected<std::string, GoogleServiceAuthError>&)>;
   using AttestationCertificateCallback = base::OnceCallback<void(
       const base::expected<std::string, AttestationErrorType>&)>;
+  using RefreshTokenOrErrorCallback = base::OnceCallback<void(
+      const base::expected<std::string, GoogleServiceAuthError>&)>;
 
   // Possible set of response types for `RefreshTokenCallback`.
   using RefreshTokenResponse =
@@ -124,11 +130,12 @@ class SecondDeviceAuthBroker {
 
   // Constructs an instance of `SecondDeviceAuthBroker`.
   SecondDeviceAuthBroker(
+      const std::string& device_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<attestation::AttestationFlow> attestation_flow);
   SecondDeviceAuthBroker(const SecondDeviceAuthBroker&) = delete;
   SecondDeviceAuthBroker& operator=(const SecondDeviceAuthBroker&) = delete;
-  ~SecondDeviceAuthBroker();
+  ~SecondDeviceAuthBroker() override;
 
   // Gets Base64 encoded nonce challenge bytes from Gaia SecondDeviceAuth
   // service.
@@ -168,6 +175,21 @@ class SecondDeviceAuthBroker {
   void OnAuthorizationCodeFetched(RefreshTokenCallback refresh_token_callback,
                                   std::unique_ptr<EndpointResponse> response);
 
+  // Exchanges an OAuth `authorization_code` for an OAuth login scoped refresh
+  // token.
+  // The callback is completed with a refresh token or an error reason.
+  void FetchRefreshTokenFromAuthorizationCode(
+      const std::string& authorization_code,
+      RefreshTokenOrErrorCallback callback);
+
+  // `GaiaAuthConsumer` overrides.
+  void OnClientOAuthSuccess(const ClientOAuthResult& result) override;
+  void OnClientOAuthFailure(const GoogleServiceAuthError& error) override;
+
+  RefreshTokenOrErrorCallback refresh_token_internal_callback_;
+
+  const std::string device_id_;
+
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Used for fetching results from Gaia endpoints.
@@ -176,6 +198,9 @@ class SecondDeviceAuthBroker {
   // Used for interacting with Google's Privacy CA, for getting a Remote
   // Attestation certificate.
   std::unique_ptr<attestation::AttestationFlow> attestation_;
+
+  // Used for fetching OAuth refresh tokens.
+  std::unique_ptr<GaiaAuthFetcher> gaia_auth_fetcher_;
 
   base::WeakPtrFactory<SecondDeviceAuthBroker> weak_ptr_factory_;
 };

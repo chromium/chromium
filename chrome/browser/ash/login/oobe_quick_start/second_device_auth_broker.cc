@@ -17,6 +17,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -72,6 +73,8 @@ constexpr char kFulfilledChallengeKey[] = "fulfilled_challenge";
 constexpr char kPlatformDataKey[] = "platform_data";
 constexpr char kSourceDeviceInfoKey[] = "source_device_info";
 constexpr char kTargetDeviceInfoKey[] = "target_device_info";
+constexpr char kCredentialDataKey[] = "credential_data";
+constexpr char kOauthTokenKey[] = "oauth_token";
 
 const int64_t kGetChallengeDataTimeoutInSeconds = 60;
 const int64_t kStartSessionTimeoutInSeconds = 60;
@@ -81,24 +84,24 @@ constexpr char kHttpContentType[] = "application/json";
 constexpr auto kRejectionReasonErrorMap = base::MakeFixedFlatMap<
     base::StringPiece,
     SecondDeviceAuthBroker::RefreshTokenRejectionResponse::Reason>({
-    {"INVALID_OAUTH_TOKEN",
+    {"invalid_oauth_token",
      SecondDeviceAuthBroker::RefreshTokenRejectionResponse::Reason::
          kInvalidOAuthToken},
-    {"ACCOUNT_NOT_SUPPORTED",
+    {"account_not_supported",
      SecondDeviceAuthBroker::RefreshTokenRejectionResponse::Reason::
          kAccountNotSupported},
-    {"LESS_SECURE_DEVICE",
+    {"less_secure_device",
      SecondDeviceAuthBroker::RefreshTokenRejectionResponse::Reason::
          kLessSecureDevice},
-    {"ALREADY_AUTHENTICATED",
+    {"already_authenticated",
      SecondDeviceAuthBroker::RefreshTokenRejectionResponse::Reason::
          kAlreadyAuthenticated},
-    {"SESSION_EXPIRED", SecondDeviceAuthBroker::RefreshTokenRejectionResponse::
+    {"session_expired", SecondDeviceAuthBroker::RefreshTokenRejectionResponse::
                             Reason::kSessionExpired},
-    {"CHALLENGE_EXPIRED",
+    {"challenge_expired",
      SecondDeviceAuthBroker::RefreshTokenRejectionResponse::Reason::
          kChallengeExpired},
-    {"CREDENTIAL_ID_MISMATCH",
+    {"credential_id_mismatch",
      SecondDeviceAuthBroker::RefreshTokenRejectionResponse::Reason::
          kCredentialIdMismatch},
 });
@@ -376,13 +379,17 @@ void RunRefreshTokenCallbackWithRejectionResponse(
     std::move(refresh_token_callback).Run(rejection_response);
     return;
   }
-  if (!kRejectionReasonErrorMap.contains(*rejection_reason)) {
+
+  std::string rejection_reason_lowercase =
+      base::ToLowerASCII(*rejection_reason);
+  if (!kRejectionReasonErrorMap.contains(rejection_reason_lowercase)) {
     LOG(ERROR) << "Could not fetch OAuth authorization code. Request rejected "
                   "with unknown reason";
     std::move(refresh_token_callback).Run(rejection_response);
     return;
   }
-  rejection_response.reason = kRejectionReasonErrorMap.at(*rejection_reason);
+  rejection_response.reason =
+      kRejectionReasonErrorMap.at(rejection_reason_lowercase);
   std::move(refresh_token_callback).Run(rejection_response);
 }
 
@@ -433,9 +440,67 @@ void RunRefreshTokenCallbackWithAdditionalChallengesOnSourceResponse(
   std::move(refresh_token_callback).Run(additional_challenges_response);
 }
 
+// Runs `refresh_token_callback` with the `result` of refresh token fetch.
+void RunRefreshTokenCallback(
+    const std::string& email,
+    SecondDeviceAuthBroker::RefreshTokenCallback refresh_token_callback,
+    const base::expected<std::string, GoogleServiceAuthError>& result) {
+  if (!result.has_value()) {
+    SecondDeviceAuthBroker::RefreshTokenRejectionResponse response;
+    response.email = email;
+    response.reason = SecondDeviceAuthBroker::RefreshTokenRejectionResponse::
+        Reason::kInvalidAuthorizationCode;
+    std::move(refresh_token_callback).Run(response);
+    return;
+  }
+
+  SecondDeviceAuthBroker::RefreshTokenSuccessResponse response;
+  response.email = email;
+  response.refresh_token = result.value();
+  std::move(refresh_token_callback).Run(response);
+}
+
+void FetchRefreshTokenAndRunCallback(
+    SecondDeviceAuthBroker::RefreshTokenCallback refresh_token_callback,
+    base::OnceCallback<
+        void(const std::string&,
+             SecondDeviceAuthBroker::RefreshTokenOrErrorCallback)>
+        refresh_token_fetcher,
+    base::Value::Dict* response) {
+  base::Value::Dict* credential_data = response->FindDict(kCredentialDataKey);
+  if (!credential_data) {
+    LOG(ERROR) << "Could not fetch OAuth refresh token. Could not find "
+                  "credential_data";
+    std::move(refresh_token_callback)
+        .Run(SecondDeviceAuthBroker::RefreshTokenParsingErrorResponse());
+    return;
+  }
+
+  std::string* auth_code = credential_data->FindString(kOauthTokenKey);
+  if (!auth_code) {
+    LOG(ERROR)
+        << "Could not fetch OAuth refresh token. Could not find oauth_token";
+    std::move(refresh_token_callback)
+        .Run(SecondDeviceAuthBroker::RefreshTokenParsingErrorResponse());
+    return;
+  }
+
+  SecondDeviceAuthBroker::RefreshTokenOrErrorCallback callback =
+      base::BindOnce(&RunRefreshTokenCallback,
+                     /*email=*/*response->FindString(kEmailKey),
+                     std::move(refresh_token_callback));
+  // Fetch refresh token with `auth_code` and respond to `callback` - which in
+  // turn will respond to `refresh_token_callback`.
+  std::move(refresh_token_fetcher).Run(*auth_code, std::move(callback));
+}
+
 void RunRefreshTokenCallbackFromParsedResponse(
     SecondDeviceAuthBroker::RefreshTokenCallback refresh_token_callback,
     std::unique_ptr<EndpointResponse> unparsed_response,
+    base::OnceCallback<
+        void(const std::string&,
+             SecondDeviceAuthBroker::RefreshTokenOrErrorCallback)>
+        refresh_token_fetcher,
     data_decoder::DataDecoder::ValueOrError response) {
   if (!response.has_value() || !response->is_dict()) {
     // When we can't even parse the response, it most probably is an error from
@@ -470,20 +535,24 @@ void RunRefreshTokenCallbackFromParsedResponse(
     return;
   }
 
-  if (*session_status == "REJECTED") {
+  if (base::ToLowerASCII(*session_status) == "rejected") {
     RunRefreshTokenCallbackWithRejectionResponse(
         std::move(refresh_token_callback), &response->GetDict());
     return;
-  } else if (*session_status == "CONTINUE_ON_TARGET") {
+  } else if (base::ToLowerASCII(*session_status) == "continue_on_target") {
     RunRefreshTokenCallbackWithAdditionalChallengesOnTargetResponse(
         std::move(refresh_token_callback), &response->GetDict());
     return;
-  } else if (*session_status == "PENDING") {
+  } else if (base::ToLowerASCII(*session_status) == "pending") {
     RunRefreshTokenCallbackWithAdditionalChallengesOnSourceResponse(
         std::move(refresh_token_callback), &response->GetDict());
     return;
+  } else if (base::ToLowerASCII(*session_status) == "authenticated") {
+    FetchRefreshTokenAndRunCallback(std::move(refresh_token_callback),
+                                    std::move(refresh_token_fetcher),
+                                    &response->GetDict());
+    return;
   }
-  // TODO(b/259021973): Handle success response.
 
   // Unknown session status.
   std::move(refresh_token_callback)
@@ -493,13 +562,18 @@ void RunRefreshTokenCallbackFromParsedResponse(
 }  // namespace
 
 SecondDeviceAuthBroker::SecondDeviceAuthBroker(
+    const std::string& device_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<attestation::AttestationFlow> attestation_flow)
-    : url_loader_factory_(std::move(url_loader_factory)),
+    : device_id_(device_id),
+      url_loader_factory_(std::move(url_loader_factory)),
       attestation_(std::move(attestation_flow)),
       weak_ptr_factory_(this) {
   DCHECK(url_loader_factory_);
   DCHECK(attestation_);
+
+  gaia_auth_fetcher_ = std::make_unique<GaiaAuthFetcher>(
+      this, gaia::GaiaSource::kChromeOS, url_loader_factory_);
 }
 
 SecondDeviceAuthBroker::~SecondDeviceAuthBroker() = default;
@@ -611,12 +685,43 @@ void SecondDeviceAuthBroker::OnAuthorizationCodeFetched(
                << response->http_status_code;
   }
 
+  base::OnceCallback<void(const std::string&, RefreshTokenOrErrorCallback)>
+      refresh_token_fetcher = base::BindOnce(
+          &SecondDeviceAuthBroker::FetchRefreshTokenFromAuthorizationCode,
+          weak_ptr_factory_.GetWeakPtr());
   // Creating a copy here because we are going to move `response` soon.
   std::string unparsed_response = response->response;
   data_decoder::DataDecoder::ParseJsonIsolated(
       unparsed_response,
       base::BindOnce(&RunRefreshTokenCallbackFromParsedResponse,
-                     std::move(refresh_token_callback), std::move(response)));
+                     std::move(refresh_token_callback), std::move(response),
+                     std::move(refresh_token_fetcher)));
+}
+
+void SecondDeviceAuthBroker::FetchRefreshTokenFromAuthorizationCode(
+    const std::string& authorization_code,
+    RefreshTokenOrErrorCallback callback) {
+  DCHECK(!refresh_token_internal_callback_)
+      << "This class can handle only one request at a time";
+  refresh_token_internal_callback_ = std::move(callback);
+  gaia_auth_fetcher_->StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
+      authorization_code, device_id_);
+}
+
+void SecondDeviceAuthBroker::OnClientOAuthSuccess(
+    const ClientOAuthResult& result) {
+  DCHECK(refresh_token_internal_callback_)
+      << "Received an unexpected callback for refresh token";
+  std::move(refresh_token_internal_callback_)
+      .Run(base::ok(result.refresh_token));
+}
+
+void SecondDeviceAuthBroker::OnClientOAuthFailure(
+    const GoogleServiceAuthError& error) {
+  DCHECK(refresh_token_internal_callback_)
+      << "Received an unexpected callback for refresh token";
+  LOG(ERROR) << "Could not fetch refresh token. Error: " << error.ToString();
+  std::move(refresh_token_internal_callback_).Run(base::unexpected(error));
 }
 
 }  //  namespace ash::quick_start
