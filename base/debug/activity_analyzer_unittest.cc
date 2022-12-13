@@ -34,16 +34,19 @@ namespace debug {
 
 namespace {
 
-class TestActivityTracker : public ThreadActivityTracker {
+class TestActivityTracker {
  public:
   TestActivityTracker(std::unique_ptr<char[]> memory, size_t mem_size)
-      : ThreadActivityTracker(memset(memory.get(), 0, mem_size), mem_size),
-        mem_segment_(std::move(memory)) {}
+      : mem_segment_(std::move(memory)),
+        tracker_(memset(mem_segment_.get(), 0, mem_size), mem_size) {}
 
-  ~TestActivityTracker() override = default;
+  ~TestActivityTracker() = default;
+
+  ThreadActivityTracker& tracker() { return tracker_; }
 
  private:
-  std::unique_ptr<char[]> mem_segment_;
+  std::unique_ptr<char[]> mem_segment_;  // Must outlive `tracker_`
+  ThreadActivityTracker tracker_;
 };
 
 }  // namespace
@@ -64,7 +67,7 @@ class ActivityAnalyzerTest : public testing::Test {
     }
   }
 
-  std::unique_ptr<ThreadActivityTracker> CreateActivityTracker() {
+  std::unique_ptr<TestActivityTracker> CreateActivityTracker() {
     std::unique_ptr<char[]> memory(new char[kStackSize]);
     return std::make_unique<TestActivityTracker>(std::move(memory), kStackSize);
   }
@@ -93,9 +96,9 @@ class ActivityAnalyzerTest : public testing::Test {
 };
 
 TEST_F(ActivityAnalyzerTest, ThreadAnalyzerConstruction) {
-  std::unique_ptr<ThreadActivityTracker> tracker = CreateActivityTracker();
+  std::unique_ptr<TestActivityTracker> tracker = CreateActivityTracker();
   {
-    ThreadActivityAnalyzer analyzer(*tracker);
+    ThreadActivityAnalyzer analyzer(tracker->tracker());
     EXPECT_TRUE(analyzer.IsValid());
     EXPECT_EQ(PlatformThread::GetName(), analyzer.GetThreadName());
   }
