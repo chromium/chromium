@@ -354,6 +354,9 @@ public final class ProductionSupportedFlagList {
                     "If enabled, images can be dragged out from Webview"),
             Flag.baseFeature(BlinkFeatures.WEB_RTC_COMBINED_NETWORK_AND_WORKER_THREAD,
                     "Combines WebRTC's worker thread and network thread onto a single thread."),
+            Flag.baseFeature(ContentSwitches.DISABLE_DOMAIN_BLOCKING_FOR3DAP_IS,
+                    "Disable the per-domain blocking for 3D APIs after GPU reset. "
+                            + "This switch is intended only for tests."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
