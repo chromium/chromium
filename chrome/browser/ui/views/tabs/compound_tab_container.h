@@ -98,6 +98,9 @@ class CompoundTabContainer : public TabContainer {
   gfx::Rect GetIdealBounds(tab_groups::TabGroupId group) const override;
 
   // views::View
+  gfx::Size GetMinimumSize() const override;
+  views::SizeBounds GetAvailableSize(const View* child) const override;
+  gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
   void PaintChildren(const views::PaintInfo& paint_info) override;
   void ChildPreferredSizeChanged(views::View* child) override;
@@ -154,8 +157,12 @@ class CompoundTabContainer : public TabContainer {
   // any running animations finish.
   int GetUnpinnedContainerIdealLeadingX() const;
 
-  int GetAvailableWidthForUnpinnedTabContainer(
-      base::RepeatingCallback<int()> available_width_callback);
+  int GetAvailableWidthForUnpinnedTabContainer() const;
+
+  // Computes the size of this compound container assuming the pinned and
+  // unpinned containers have the given sizes.
+  gfx::Size GetCombinedSizeForTabContainerSizes(gfx::Size pinned_size,
+                                                gfx::Size unpinned_size) const;
 
   // Private getter to retrieve the visible rect of the scroll container.
   absl::optional<gfx::Rect> GetVisibleContentRect();

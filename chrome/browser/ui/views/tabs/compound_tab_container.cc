@@ -8,6 +8,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -20,7 +21,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -229,18 +229,6 @@ CompoundTabContainer::CompoundTabContainer(
       hover_card_controller_(hover_card_controller),
       scroll_contents_view_(scroll_contents_view),
       bounds_animator_(this) {
-  const views::FlexSpecification tab_container_flex_spec =
-      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                               views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kPreferred);
-  pinned_tab_container_->SetProperty(views::kFlexBehaviorKey,
-                                     tab_container_flex_spec);
-  unpinned_tab_container_->SetProperty(views::kFlexBehaviorKey,
-                                       tab_container_flex_spec);
-
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal);
-
   if (!gfx::Animation::ShouldRenderRichAnimation())
     bounds_animator_.SetAnimationDuration(base::TimeDelta());
 }
@@ -249,15 +237,8 @@ CompoundTabContainer::~CompoundTabContainer() = default;
 
 void CompoundTabContainer::SetAvailableWidthCallback(
     base::RepeatingCallback<int()> available_width_callback) {
-  // The pinned container lays out independently of its available width because
-  // it doesn't have variable-width tabs. It doesn't matter what we give it here
-  // - it will call its callback but ultimately end up effectively ignoring the
-  // result deep in TabStripLayoutHelper (because all of its tabs are pinned).
-  pinned_tab_container_->SetAvailableWidthCallback(
-      base::BindRepeating([]() { return 0; }));
-  unpinned_tab_container_->SetAvailableWidthCallback(base::BindRepeating(
-      &CompoundTabContainer::GetAvailableWidthForUnpinnedTabContainer,
-      base::Unretained(this), available_width_callback));
+  // Store this ourselves, and let our child containers fall back to calling
+  // GetAvailableSize.
   available_width_callback_ = available_width_callback;
 }
 
@@ -645,9 +626,49 @@ gfx::Rect CompoundTabContainer::GetIdealBounds(
       unpinned_tab_container_->GetIdealBounds(group));
 }
 
+gfx::Size CompoundTabContainer::GetMinimumSize() const {
+  return GetCombinedSizeForTabContainerSizes(
+      pinned_tab_container_->GetMinimumSize(),
+      unpinned_tab_container_->GetMinimumSize());
+}
+
+views::SizeBounds CompoundTabContainer::GetAvailableSize(
+    const views::View* child) const {
+  if (child == base::to_address(pinned_tab_container_)) {
+    return views::SizeBounds(GetAvailableWidthForTabContainer(),
+                             views::SizeBound());
+  }
+
+  if (child == base::to_address(unpinned_tab_container_)) {
+    return views::SizeBounds(GetAvailableWidthForUnpinnedTabContainer(),
+                             views::SizeBound());
+  }
+
+  NOTREACHED();
+  return views::SizeBounds();
+}
+
+gfx::Size CompoundTabContainer::CalculatePreferredSize() const {
+  return GetCombinedSizeForTabContainerSizes(
+      pinned_tab_container_->GetPreferredSize(),
+      unpinned_tab_container_->GetPreferredSize());
+}
+
 void CompoundTabContainer::Layout() {
-  // TODO(now): What do we do if an animation is running?
-  views::View::Layout();
+  // Pinned container gets however much space it wants.
+  pinned_tab_container_->SetBoundsRect(
+      gfx::Rect(pinned_tab_container_->GetPreferredSize()));
+
+  // Unpinned container can have whatever is left over.
+  const int unpinned_container_leading_x =
+      std::max(0, pinned_tab_container_->width() - TabStyle::GetTabOverlap());
+  const int available_width = width() - unpinned_container_leading_x;
+
+  const gfx::Size pref_size = unpinned_tab_container_->GetPreferredSize();
+
+  unpinned_tab_container_->SetBounds(
+      unpinned_container_leading_x, 0,
+      std::min(available_width, pref_size.width()), pref_size.height());
 }
 
 void CompoundTabContainer::PaintChildren(const views::PaintInfo& paint_info) {
@@ -800,10 +821,6 @@ void CompoundTabContainer::TransferTabBetweenContainers(int from_model_index,
       AddChildView(from_container.TransferTabOut(from_container_index));
   tab->SetBoundsRect(ToEnclosingRect(initial_tab_bounds));
 
-  // Remove it from layout - `bounds_animator_` will be managing it.
-  static_cast<views::LayoutManagerBase*>(GetLayoutManager())
-      ->SetChildViewIgnoredByLayout(tab, true);
-
   // Let `to_container` update its layout data structures.
   to_container.AddTabToViewModel(
       tab, to_container_index,
@@ -856,15 +873,27 @@ TabContainer* CompoundTabContainer::GetTabContainerAt(
 int CompoundTabContainer::GetUnpinnedContainerIdealLeadingX() const {
   return NumPinnedTabs() > 0
              ? pinned_tab_container_->GetIdealBounds(NumPinnedTabs() - 1)
-                   .right()
+                       .right() -
+                   TabStyle::GetTabOverlap()
              : 0;
 }
 
-int CompoundTabContainer::GetAvailableWidthForUnpinnedTabContainer(
-    base::RepeatingCallback<int()> available_width_callback) {
+int CompoundTabContainer::GetAvailableWidthForUnpinnedTabContainer() const {
   // The unpinned container gets the width the pinned container doesn't want.
   return GetAvailableWidthForTabContainer() -
          GetUnpinnedContainerIdealLeadingX();
+}
+
+gfx::Size CompoundTabContainer::GetCombinedSizeForTabContainerSizes(
+    const gfx::Size pinned_size,
+    const gfx::Size unpinned_size) const {
+  gfx::Size largest_container = pinned_size;
+  largest_container.SetToMax(unpinned_size);
+
+  const int width_with_overlap =
+      pinned_size.width() + unpinned_size.width() - TabStyle::GetTabOverlap();
+  return gfx::Size(std::max(width_with_overlap, largest_container.width()),
+                   largest_container.height());
 }
 
 absl::optional<gfx::Rect> CompoundTabContainer::GetVisibleContentRect() {
