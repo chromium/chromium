@@ -6479,6 +6479,8 @@
           "--avd-config=../../tools/android/avd/proto/generic_android31.textpb",
           "--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
