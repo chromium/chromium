@@ -1213,9 +1213,7 @@ TEST_F(AttributionStorageTest,
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(6));
 }
 
-TEST_F(AttributionStorageTest, DestinationLimit_ApplyLimitAndEmitMetric) {
-  base::HistogramTester histograms;
-
+TEST_F(AttributionStorageTest, DestinationLimit_ApplyLimit) {
   delegate()->set_max_destinations_per_source_site_reporting_origin(1);
   delegate()->set_delete_expired_sources_frequency(base::Milliseconds(10));
 
@@ -1266,18 +1264,6 @@ TEST_F(AttributionStorageTest, DestinationLimit_ApplyLimitAndEmitMetric) {
   EXPECT_EQ(
       store_source("https://s.test", "https://a.r.test", "https://d3.test"),
       StorableSource::Result::kSuccess);
-
-  static constexpr char kMetric[] =
-      "Conversions.UniqueDestinationLimitForUnexpiredSourcesResult";
-
-  // kAllowedByPendingAllowedByUnexpired = 0
-  histograms.ExpectBucketCount(kMetric, 0, 2);
-
-  // kAllowedByPendingDroppedByUnexpired = 1
-  histograms.ExpectBucketCount(kMetric, 1, 1);
-
-  // kDroppedByPendingDroppedByUnexpired = 3
-  histograms.ExpectBucketCount(kMetric, 3, 1);
 }
 
 TEST_F(AttributionStorageTest,

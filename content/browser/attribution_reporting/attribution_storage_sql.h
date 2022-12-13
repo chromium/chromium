@@ -200,10 +200,6 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
                      AttributionReport::Type report_type)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  [[nodiscard]] RateLimitResult
-  HasCapacityForUniqueDestinationLimitForPendingSource(
-      const StorableSource& source) VALID_CONTEXT_REQUIRED(sequence_checker_);
-
   [[nodiscard]] absl::optional<AttributionReport::EventLevelData::Id>
   StoreEventLevelReport(StoredSource::Id source_id,
                         uint64_t trigger_data,

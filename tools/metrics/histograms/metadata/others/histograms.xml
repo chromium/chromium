@@ -4088,19 +4088,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.UniqueDestinationLimitForUnexpiredSourcesResult"
-    enum="ConversionDestinationLimitResult" expires_after="M117">
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the result of checking whether an attribution source is allowed by
-    the unique destination limit covered by unexpired sources, compared with the
-    result covered by pending sources. Recorded once for each source
-    registration if there is capacity to store sources.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.ValuesPerFilter" units="values"
     expires_after="M117">
   <owner>linnan@chromium.org</owner>

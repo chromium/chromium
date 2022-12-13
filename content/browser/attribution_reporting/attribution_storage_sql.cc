@@ -65,6 +65,8 @@
 namespace content {
 
 // Version number of the database.
+// TODO: remove the active_unattributed_sources_by_site_reporting_origin index
+// during the next DB migration.
 const int AttributionStorageSql::kCurrentVersionNumber = 39;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
@@ -483,49 +485,6 @@ base::FilePath DatabasePath(const base::FilePath& user_data_directory) {
   return user_data_directory.Append(kDatabasePath);
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class DestinationLimitResult {
-  kAllowedByPendingAllowedByUnexpired = 0,
-  kAllowedByPendingDroppedByUnexpired = 1,
-  kDroppedByPendingAllowedByUnexpired = 2,
-  kDroppedByPendingDroppedByUnexpired = 3,
-  kError = 4,
-
-  kMaxValue = kError,
-};
-
-DestinationLimitResult GetDestinationLimitResult(
-    RateLimitResult pending_sources_limit,
-    RateLimitResult unexpired_sources_limit) {
-  switch (pending_sources_limit) {
-    case RateLimitResult::kAllowed: {
-      switch (unexpired_sources_limit) {
-        case RateLimitResult::kAllowed:
-          return DestinationLimitResult::kAllowedByPendingAllowedByUnexpired;
-        case RateLimitResult::kNotAllowed:
-          return DestinationLimitResult::kAllowedByPendingDroppedByUnexpired;
-        case RateLimitResult::kError:
-          return DestinationLimitResult::kError;
-      }
-    }
-    case RateLimitResult::kNotAllowed: {
-      switch (unexpired_sources_limit) {
-        case RateLimitResult::kAllowed:
-          // Unexpired sources limit is stricter than pending sources limit.
-          NOTREACHED();
-          return DestinationLimitResult::kDroppedByPendingAllowedByUnexpired;
-        case RateLimitResult::kNotAllowed:
-          return DestinationLimitResult::kDroppedByPendingDroppedByUnexpired;
-        case RateLimitResult::kError:
-          return DestinationLimitResult::kError;
-      }
-    }
-    case RateLimitResult::kError:
-      return DestinationLimitResult::kError;
-  }
-}
-
 }  // namespace
 
 // static
@@ -604,19 +563,8 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
         delegate_->GetMaxSourcesPerOrigin());
   }
 
-  RateLimitResult unexpired_sources_destination_limit =
-      rate_limit_table_.SourceAllowedForDestinationLimit(db_.get(), source);
-  RateLimitResult pending_sources_destination_limit =
-      HasCapacityForUniqueDestinationLimitForPendingSource(source);
-
-  // For now we only record metrics on this limit to measure how it performs
-  // compared to the pending sources limit.
-  base::UmaHistogramEnumeration(
-      "Conversions.UniqueDestinationLimitForUnexpiredSourcesResult",
-      GetDestinationLimitResult(pending_sources_destination_limit,
-                                unexpired_sources_destination_limit));
-
-  switch (unexpired_sources_destination_limit) {
+  switch (
+      rate_limit_table_.SourceAllowedForDestinationLimit(db_.get(), source)) {
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
@@ -2285,8 +2233,7 @@ bool AttributionStorageSql::CreateSchema() {
   if (!db_->Execute(kImpressionOriginIndexSql))
     return false;
 
-  // Optimizes `HasCapacityForUniqueDestinationLimitForPendingSource()`, which
-  // only needs to examine active, unconverted sources.
+  // TODO: Remove this during the next DB migration.
   static constexpr char kImpressionSiteReportingOriginIndexSql[] =
       "CREATE INDEX active_unattributed_sources_by_site_reporting_origin "
       "ON sources(source_site,reporting_origin)"
@@ -2482,50 +2429,6 @@ void AttributionStorageSql::DatabaseErrorCallback(int extended_error,
   // Consider the database closed if we did not attempt to recover so we did
   // not produce further errors.
   db_init_status_ = DbStatus::kClosed;
-}
-
-RateLimitResult
-AttributionStorageSql::HasCapacityForUniqueDestinationLimitForPendingSource(
-    const StorableSource& source) {
-  const int max = delegate_->GetMaxDestinationsPerSourceSiteReportingOrigin();
-  // TODO(apaseltiner): We could just make
-  // `GetMaxDestinationsPerSourceSiteReportingOrigin()` return `size_t`, but it
-  // would be inconsistent with the other `AttributionStorageDelegate`
-  // methods.
-  DCHECK_GT(max, 0);
-
-  const std::string serialized_conversion_destination =
-      source.common_info().DestinationSite().Serialize();
-
-  // Optimized by `kImpressionSiteReportingOriginIndexSql`.
-  static constexpr char kSelectSourcesSql[] =
-      "SELECT destination_site FROM sources "
-      DCHECK_SQL_INDEXED_BY("active_unattributed_sources_by_site_reporting_origin")
-      "WHERE source_site=? AND reporting_origin=? AND expiry_time>? "
-      "AND event_level_active=1 AND num_attributions=0 AND "
-      "aggregatable_active=1 AND aggregatable_budget_consumed=0";
-  sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kSelectSourcesSql));
-  statement.BindString(0, source.common_info().SourceSite().Serialize());
-  statement.BindString(1, source.common_info().reporting_origin().Serialize());
-  statement.BindTime(2, source.common_info().source_time());
-
-  base::flat_set<std::string> destinations;
-  while (statement.Step()) {
-    std::string destination = statement.ColumnString(0);
-
-    // The destination isn't new, so it doesn't change the count.
-    if (destination == serialized_conversion_destination)
-      return RateLimitResult::kAllowed;
-
-    destinations.insert(std::move(destination));
-
-    if (destinations.size() == static_cast<size_t>(max))
-      return RateLimitResult::kNotAllowed;
-  }
-
-  return statement.Succeeded() ? RateLimitResult::kAllowed
-                               : RateLimitResult::kError;
 }
 
 bool AttributionStorageSql::DeleteSources(
