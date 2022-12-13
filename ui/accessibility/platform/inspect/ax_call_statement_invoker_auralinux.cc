@@ -198,7 +198,6 @@ AXOptionalObject AXCallStatementInvokerAuraLinux::HasState(
   AtspiStateSet* atspi_states =
       atspi_accessible_get_state_set(const_cast<AtspiAccessible*>(target));
   GArray* state_array = atspi_state_set_get_states(atspi_states);
-  auto states = std::make_unique<base::ListValue>();
 
   for (unsigned i = 0; i < state_array->len; i++) {
     AtspiStateType state_type = g_array_index(state_array, AtspiStateType, i);
@@ -324,12 +323,8 @@ AXOptionalObject AXCallStatementInvokerAuraLinux::InvokeForAXElement(
 }
 
 bool AXCallStatementInvokerAuraLinux::IsAtspiAndNotNull(Target target) const {
-  if (auto** atspi_ptr = absl::get_if<const AtspiAccessible*>(&target)) {
-    if (*atspi_ptr != nullptr) {
-      return true;
-    }
-  }
-  return false;
+  auto** atspi_ptr = absl::get_if<const AtspiAccessible*>(&target);
+  return atspi_ptr && *atspi_ptr;
 }
 
 }  // namespace ui
