@@ -27,6 +27,7 @@ class Transform;
 
 namespace ui {
 class Layer;
+class LocatedEvent;
 }  // namespace ui
 
 namespace views {
@@ -188,6 +189,12 @@ ASH_EXPORT std::string GetScreenCaptureNotificationIdForPath(
 // camera and microphone capture mode indicators according to the given values.
 void MaybeUpdateCameraPrivacyIndicator(bool camera_on);
 void MaybeUpdateMicrophonePrivacyIndicator(bool mic_on);
+
+// Returns true if the given located `event` is targeted on a window that is a
+// descendant of the given `widget`. Note that `widget` can be provided as null
+// if it no longer exists, in this case this function returns false.
+bool IsEventTargetedOnWidget(const ui::LocatedEvent& event,
+                             views::Widget* widget);
 
 }  // namespace capture_mode_util
 

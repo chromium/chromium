@@ -48,8 +48,10 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
 
   // This version of the constructor creates a header-less menu group. Note that
   // menu groups without headers is not designed for settings that are managed
-  // by policy.
-  explicit CaptureModeMenuGroup(Delegate* delegate);
+  // by policy. The `inside_border_insets` are used as paddings around the menu
+  // options and items in this group.
+  CaptureModeMenuGroup(Delegate* delegate,
+                       const gfx::Insets& inside_border_insets);
 
   // If `managed_by_policy` is true, the header of this menu group will show an
   // enterprise-managed feature icon next to the `header_label`.
@@ -128,7 +130,8 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   // Acts as a common constructor that's called by the above public
   // constructors.
   CaptureModeMenuGroup(Delegate* delegate,
-                       std::unique_ptr<CaptureModeMenuHeader> menu_header);
+                       std::unique_ptr<CaptureModeMenuHeader> menu_header,
+                       const gfx::Insets& inside_border_insets);
 
   // Returns the option whose ID is |option_id|, and nullptr if no such option
   // exists.

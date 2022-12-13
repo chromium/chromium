@@ -26,6 +26,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -144,7 +145,8 @@ class DropToStopRecordingButtonAnimation : public gfx::LinearAnimation {
 
 CaptureLabelView::CaptureLabelView(
     CaptureModeSession* capture_mode_session,
-    base::RepeatingClosure on_capture_button_container_pressed)
+    base::RepeatingClosure on_capture_button_pressed,
+    base::RepeatingClosure on_drop_down_button_pressed)
     : capture_mode_session_(capture_mode_session) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -155,7 +157,8 @@ CaptureLabelView::CaptureLabelView(
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
   capture_button_container_ = AddChildView(std::make_unique<CaptureButtonView>(
-      std::move(on_capture_button_container_pressed), base::DoNothing()));
+      std::move(on_capture_button_pressed),
+      std::move(on_drop_down_button_pressed)));
   capture_button_container_->SetPaintToLayer();
   capture_button_container_->layer()->SetFillsBoundsOpaquely(false);
   capture_button_container_->SetNotifyEnterExitOnChild(true);
@@ -177,6 +180,19 @@ CaptureLabelView::~CaptureLabelView() = default;
 
 bool CaptureLabelView::IsViewInteractable() const {
   return capture_button_container_->GetVisible();
+}
+
+bool CaptureLabelView::IsPointOnRecordingTypeDropDownButton(
+    const gfx::Point& screen_location) const {
+  auto* drop_down_button = capture_button_container_->drop_down_button();
+  return drop_down_button &&
+         drop_down_button->GetBoundsInScreen().Contains(screen_location);
+}
+
+bool CaptureLabelView::IsRecordingTypeDropDownButtonVisible() const {
+  auto* drop_down_button = capture_button_container_->drop_down_button();
+  return capture_button_container_->GetVisible() && drop_down_button &&
+         drop_down_button->GetVisible();
 }
 
 void CaptureLabelView::UpdateIconAndText() {

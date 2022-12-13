@@ -21,6 +21,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/capture_window_observer.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
+#include "ash/capture_mode/recording_type_menu_view.h"
 #include "ash/capture_mode/user_nudge_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/mouse_cursor_event_filter.h"
@@ -42,6 +43,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/aura/client/aura_constants.h"
@@ -853,6 +855,10 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown) {
   }
 
   if (!capture_mode_settings_widget_) {
+    // Close the recording type menu if any. There can be only one menu visible
+    // at any time.
+    SetRecordingTypeMenuShown(false);
+
     auto* parent = GetParentContainer(current_root_);
     capture_mode_settings_widget_ = std::make_unique<views::Widget>();
     MaybeDismissUserNudgeForever();
@@ -907,19 +913,21 @@ void CaptureModeSession::StartCountDown(
   if (!capture_label_widget_->IsVisible())
     capture_label_widget_->Show();
 
-  CaptureLabelView* label_view =
-      static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
-  label_view->StartCountDown(std::move(countdown_finished_callback));
+  DCHECK(capture_label_view_);
+  capture_label_view_->StartCountDown(std::move(countdown_finished_callback));
   UpdateCaptureLabelWidgetBounds(CaptureLabelAnimation::kCountdownStart);
 
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
-  // Fade out the capture bar, capture settings and capture toast if they exist.
+  // Fade out the capture bar, capture settings, recording type menu, and the
+  // capture toast if they exist.
   std::vector<ui::Layer*> layers_to_fade_out{
       capture_mode_bar_widget_->GetLayer()};
   if (capture_mode_settings_widget_)
     layers_to_fade_out.push_back(capture_mode_settings_widget_->GetLayer());
+  if (recording_type_menu_widget_)
+    layers_to_fade_out.push_back(recording_type_menu_widget_->GetLayer());
   if (auto* toast_layer = capture_toast_controller_.MaybeGetToastLayer())
     layers_to_fade_out.push_back(toast_layer);
 
@@ -965,9 +973,8 @@ bool CaptureModeSession::IsInCountDownAnimation() const {
   if (is_shutting_down_)
     return false;
 
-  CaptureLabelView* label_view =
-      static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
-  return label_view->IsInCountDownAnimation();
+  DCHECK(capture_label_view_);
+  return capture_label_view_->IsInCountDownAnimation();
 }
 
 void CaptureModeSession::OnCaptureFolderMayHaveChanged() {
@@ -1124,10 +1131,12 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
       event->StopPropagation();
       *should_update_opacity_ptr = true;
 
-      // We only dismiss the settings menu or clear the focus on ESC key if the
-      // count down is not in progress.
+      // We only dismiss the settings / recording type menus or clear the focus
+      // on ESC key if the count down is not in progress.
       const bool is_in_count_down = IsInCountDownAnimation();
-      if (capture_mode_settings_widget_ && !is_in_count_down)
+      if (recording_type_menu_widget_ && !is_in_count_down)
+        SetRecordingTypeMenuShown(false);
+      else if (capture_mode_settings_widget_ && !is_in_count_down)
         SetSettingsMenuShown(false);
       else if (focus_cycler_->HasFocus() && !is_in_count_down)
         focus_cycler_->ClearFocus();
@@ -1258,11 +1267,7 @@ void CaptureModeSession::OnDisplayMetricsChanged(
   DCHECK_EQ(parent->layer(), layer()->parent());
   layer()->SetBounds(parent->bounds());
 
-  // We need to update the capture bar bounds first and then settings bounds.
-  // The sequence matters here since settings bounds depend on capture bar
-  // bounds.
   RefreshBarWidgetBounds();
-  MaybeUpdateSettingsBounds();
 
   // Only need to update the camera preview's bounds if the capture source is
   // `kFullscreen`, since `ClampCaptureRegionToRootWindowSize` will take care of
@@ -1350,26 +1355,28 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
 
   // If the current mouse event is on capture label button, and capture label
   // button can handle the event, show the hand mouse cursor.
+  DCHECK(capture_label_view_);
   const bool is_event_on_capture_button =
       capture_label_widget_->GetWindowBoundsInScreen().Contains(
           location_in_screen) &&
-      static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView())
-          ->ShouldHandleEvent();
+      capture_label_view_->ShouldHandleEvent();
   if (is_event_on_capture_button) {
     cursor_setter_->UpdateCursor(ui::mojom::CursorType::kHand);
     return;
   }
 
-  // As long as the settings menu is open, a pointer cursor should be used as
-  // long as the cursor is not on top of the capture button, since clicking
-  // anywhere outside the bounds of either of them (the menu or the clickable
-  // capture button) will dismiss the menu. Also if the event is on the bar, a
-  // pointer will also be used, as long as the bar is visible.
+  // As long as the settings menu, or the recording type menu are open, a
+  // pointer cursor should be used as long as the cursor is not on top of the
+  // capture button, since clicking anywhere outside the bounds of either of
+  // them (the menus or the clickable capture button) will dismiss the menus.
+  // Also if the event is on the bar, a pointer will also be used, as long as
+  // the bar is visible.
   const bool is_event_on_capture_bar =
       capture_mode_bar_widget_->GetLayer()->GetTargetOpacity() &&
       capture_mode_bar_widget_->GetWindowBoundsInScreen().Contains(
           location_in_screen);
-  if (capture_mode_settings_widget_ || is_event_on_capture_bar) {
+  if (capture_mode_settings_widget_ || is_event_on_capture_bar ||
+      recording_type_menu_widget_) {
     cursor_setter_->UpdateCursor(ui::mojom::CursorType::kPointer);
     return;
   }
@@ -1441,6 +1448,8 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
 
   const bool is_settings_visible = capture_mode_settings_widget_ &&
                                    capture_mode_settings_widget_->IsVisible();
+  const bool is_recording_type_menu_visible =
+      recording_type_menu_widget_ && recording_type_menu_widget_->IsVisible();
   gfx::Rect capture_region = controller_->user_capture_region();
   wm::ConvertRectToScreen(current_root_, &capture_region);
 
@@ -1492,7 +1501,8 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
     }
 
     if (widget == capture_label_widget_.get() &&
-        (is_cursor_on_top_of_widget || focus_cycler_->CaptureLabelFocused())) {
+        (is_cursor_on_top_of_widget || focus_cycler_->CaptureLabelFocused() ||
+         is_recording_type_menu_visible)) {
       continue;
     }
 
@@ -1519,8 +1529,8 @@ void CaptureModeSession::OnCameraPreviewDragStarted() {
   DCHECK(!controller_->is_recording_in_progress());
 
   // If settings menu is shown at the beginning of drag, we should close it.
-  if (capture_mode_settings_widget_)
-    SetSettingsMenuShown(false);
+  SetSettingsMenuShown(false);
+  SetRecordingTypeMenuShown(false);
 
   // Hide capture UIs while dragging camera preview.
   HideAllUis();
@@ -1592,6 +1602,8 @@ std::vector<views::Widget*> CaptureModeSession::GetAvailableWidgets() {
   result.push_back(capture_mode_bar_widget_.get());
   if (capture_label_widget_)
     result.push_back(capture_label_widget_.get());
+  if (recording_type_menu_widget_)
+    result.push_back(recording_type_menu_widget_.get());
   if (capture_mode_settings_widget_)
     result.push_back(capture_mode_settings_widget_.get());
   if (dimensions_label_widget_)
@@ -1660,10 +1672,12 @@ bool CaptureModeSession::CanShowWidget(views::Widget* widget) const {
 
 void CaptureModeSession::RefreshBarWidgetBounds() {
   DCHECK(capture_mode_bar_widget_);
+  // We need to update the capture bar bounds first and then settings bounds.
+  // The sequence matters here since settings bounds depend on capture bar
+  // bounds.
   capture_mode_bar_widget_->SetBounds(
       CaptureModeBarView::GetBounds(current_root_, is_in_projector_mode_));
-  auto* parent = GetParentContainer(current_root_);
-  parent->StackChildAtTop(capture_mode_bar_widget_->GetNativeWindow());
+  MaybeUpdateSettingsBounds();
   if (user_nudge_controller_)
     user_nudge_controller_->Reposition();
   capture_toast_controller_.MaybeRepositionCaptureToast();
@@ -1692,6 +1706,11 @@ void CaptureModeSession::MaybeDismissUserNudgeForever() {
 void CaptureModeSession::DoPerformCapture() {
   MaybeDismissUserNudgeForever();
   controller_->PerformCapture();  // `this` can be deleted after this.
+}
+
+void CaptureModeSession::OnRecordingTypeDropDownButtonPressed() {
+  SetRecordingTypeMenuShown(!recording_type_menu_widget_ ||
+                            !recording_type_menu_widget_->IsVisible());
 }
 
 gfx::Rect CaptureModeSession::GetSelectedWindowBounds() const {
@@ -1723,6 +1742,8 @@ void CaptureModeSession::RefreshStackingOrder() {
     widget_in_order.emplace_back(capture_label_widget_.get());
   if (capture_mode_bar_widget_)
     widget_in_order.emplace_back(capture_mode_bar_widget_.get());
+  if (recording_type_menu_widget_)
+    widget_in_order.emplace_back(recording_type_menu_widget_.get());
   if (capture_mode_settings_widget_)
     widget_in_order.emplace_back(capture_mode_settings_widget_.get());
 
@@ -1945,9 +1966,17 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   if (ShouldCaptureLabelHandleEvent(event_target))
     return;
 
-  // Also allow events that target the settings menu (if present) to go through.
-  if (IsEventTargetedOnSettingsMenu(*event))
+  // Let the recording type menu handle its events if any.
+  if (capture_mode_util::IsEventTargetedOnWidget(
+          *event, recording_type_menu_widget_.get())) {
     return;
+  }
+
+  // Also allow events that target the settings menu (if present) to go through.
+  if (capture_mode_util::IsEventTargetedOnWidget(
+          *event, capture_mode_settings_widget_.get())) {
+    return;
+  }
 
   // Here we know that the event doesn't target the settings menu, so if it's a
   // press event, we will use it to dismiss the settings menu, unless it's on
@@ -1968,6 +1997,17 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     SetSettingsMenuShown(/*shown=*/false);
   }
 
+  // Similar to the above, we want a press event that is outside the recording
+  // type menu to close it, unless it is on on the drop down menu button if any.
+  const bool should_close_recording_type_menu =
+      is_press_event &&
+      !IsPointOnRecordingTypeDropDownButton(screen_location) &&
+      recording_type_menu_widget_;
+  if (should_close_recording_type_menu) {
+    ignore_located_events_ = true;
+    SetRecordingTypeMenuShown(false);
+  }
+
   const bool old_ignore_located_events = ignore_located_events_;
   if (ignore_located_events_) {
     if (is_release_event)
@@ -1975,13 +2015,16 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   }
 
   // Events targeting the capture bar should also go through.
-  if (IsEventTargetedOnCaptureBar(*event))
+  if (capture_mode_util::IsEventTargetedOnWidget(
+          *event, capture_mode_bar_widget_.get())) {
     return;
+  }
 
   event->SetHandled();
   event->StopPropagation();
 
-  if (should_close_settings || old_ignore_located_events) {
+  if (should_close_settings || old_ignore_located_events ||
+      should_close_recording_type_menu) {
     // Note that these ignored events have already been consumed above.
     return;
   }
@@ -2381,18 +2424,26 @@ void CaptureModeSession::UpdateCaptureLabelWidget(
     auto* parent = GetParentContainer(current_root_);
     capture_label_widget_->Init(
         CreateWidgetParams(parent, gfx::Rect(), "CaptureLabel"));
-    capture_label_widget_->SetContentsView(std::make_unique<CaptureLabelView>(
-        this, base::BindRepeating(&CaptureModeSession::DoPerformCapture,
-                                  base::Unretained(this))));
+    capture_label_view_ = capture_label_widget_->SetContentsView(
+        std::make_unique<CaptureLabelView>(
+            this,
+            base::BindRepeating(&CaptureModeSession::DoPerformCapture,
+                                base::Unretained(this)),
+            base::BindRepeating(
+                &CaptureModeSession::OnRecordingTypeDropDownButtonPressed,
+                base::Unretained(this))));
     capture_label_widget_->GetNativeWindow()->SetTitle(
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_A11Y_TITLE));
     capture_label_widget_->Show();
   }
 
-  CaptureLabelView* label_view =
-      static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
-  label_view->UpdateIconAndText();
+  // Note that the order here matters. The bounds of the recording type menu
+  // widget is always relative to the bounds of the `capture_label_widget_`.
+  // Thus, the latter must be updated before the former. Also, the menu may need
+  // to close if the `label_view` becomes not interactable.
+  capture_label_view_->UpdateIconAndText();
   UpdateCaptureLabelWidgetBounds(animation_type);
+  MaybeUpdateRecordingTypeMenu();
 
   focus_cycler_->OnCaptureLabelWidgetUpdated();
 }
@@ -2475,10 +2526,9 @@ void CaptureModeSession::UpdateCaptureLabelWidgetBounds(
 
 gfx::Rect CaptureModeSession::CalculateCaptureLabelWidgetBounds() {
   DCHECK(capture_label_widget_);
-  CaptureLabelView* label_view =
-      static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
+  DCHECK(capture_label_view_);
 
-  const gfx::Size preferred_size = label_view->GetPreferredSize();
+  const gfx::Size preferred_size = capture_label_view_->GetPreferredSize();
   const gfx::Rect capture_bar_bounds =
       capture_mode_bar_widget_->GetNativeWindow()->bounds();
 
@@ -2581,7 +2631,7 @@ gfx::Rect CaptureModeSession::CalculateCaptureLabelWidgetBounds() {
   // away from one of the edges of the selected window.
   if (source == CaptureModeSource::kRegion && !is_selecting_region_ &&
       !capture_region.IsEmpty()) {
-    if (label_view->IsInCountDownAnimation()) {
+    if (capture_label_view_->IsInCountDownAnimation()) {
       // If countdown starts, calculate the bounds based on the old capture
       // label's position, otherwise, since the countdown label bounds is
       // smaller than the label bounds and may fit into the capture region even
@@ -2610,9 +2660,8 @@ bool CaptureModeSession::ShouldCaptureLabelHandleEvent(
     return false;
   }
 
-  CaptureLabelView* label_view =
-      static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
-  return label_view->ShouldHandleEvent();
+  DCHECK(capture_label_view_);
+  return capture_label_view_->ShouldHandleEvent();
 }
 
 void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
@@ -2654,8 +2703,11 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
   UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/false, /*by_user=*/false);
 
   UpdateRootWindowDimmers();
-
   MaybeReparentCameraPreviewWidget();
+
+  // Changing the root window may require updating the stacking order on the new
+  // display.
+  RefreshStackingOrder();
 }
 
 void CaptureModeSession::UpdateRootWindowDimmers() {
@@ -2808,18 +2860,69 @@ void CaptureModeSession::MaybeUpdateCameraPreviewBounds() {
   }
 }
 
-bool CaptureModeSession::IsEventTargetedOnCaptureBar(
-    const ui::LocatedEvent& event) const {
-  DCHECK(capture_mode_bar_widget_);
-  auto* target = static_cast<aura::Window*>(event.target());
-  return capture_mode_bar_widget_->GetNativeWindow()->Contains(target);
+void CaptureModeSession::SetRecordingTypeMenuShown(bool shown) {
+  if (!shown) {
+    recording_type_menu_widget_.reset();
+    return;
+  }
+
+  if (!recording_type_menu_widget_) {
+    DCHECK(features::IsGifRecordingEnabled());
+    DCHECK(capture_label_widget_);
+    DCHECK(capture_label_widget_->IsVisible());
+
+    // Close the settings widget if any. Only one menu at a time can be visible.
+    SetSettingsMenuShown(false);
+
+    auto* parent = GetParentContainer(current_root_);
+    recording_type_menu_widget_ = std::make_unique<views::Widget>();
+    MaybeDismissUserNudgeForever();
+    capture_toast_controller_.DismissCurrentToastIfAny();
+
+    recording_type_menu_widget_->Init(CreateWidgetParams(
+        parent,
+        RecordingTypeMenuView::GetIdealScreenBounds(
+            capture_label_widget_->GetWindowBoundsInScreen()),
+        "RecordingTypeMenuWidget"));
+    recording_type_menu_widget_->SetContentsView(
+        std::make_unique<RecordingTypeMenuView>());
+
+    auto* menu_window = recording_type_menu_widget_->GetNativeWindow();
+    parent->StackChildAtTop(menu_window);
+
+    menu_window->SetTitle(l10n_util::GetStringUTF16(
+        IDS_ASH_SCREEN_CAPTURE_RECORDING_TYPE_MENU_A11Y_TITLE));
+  }
+
+  recording_type_menu_widget_->Show();
 }
 
-bool CaptureModeSession::IsEventTargetedOnSettingsMenu(
-    const ui::LocatedEvent& event) const {
-  auto* target = static_cast<aura::Window*>(event.target());
-  return capture_mode_settings_widget_ &&
-         capture_mode_settings_widget_->GetNativeWindow()->Contains(target);
+bool CaptureModeSession::IsPointOnRecordingTypeDropDownButton(
+    const gfx::Point& screen_location) const {
+  if (!capture_label_widget_ || !capture_label_widget_->IsVisible())
+    return false;
+
+  DCHECK(capture_label_view_);
+  return capture_label_view_->IsPointOnRecordingTypeDropDownButton(
+      screen_location);
+}
+
+void CaptureModeSession::MaybeUpdateRecordingTypeMenu() {
+  if (!recording_type_menu_widget_)
+    return;
+
+  // If the the drop down button becomes hidden, the recording type menu widget
+  // should also hide.
+  if (!capture_label_widget_ ||
+      !capture_label_view_->IsRecordingTypeDropDownButtonVisible()) {
+    SetRecordingTypeMenuShown(false);
+    return;
+  }
+
+  recording_type_menu_widget_->SetBounds(
+      RecordingTypeMenuView::GetIdealScreenBounds(
+          capture_label_widget_->GetWindowBoundsInScreen(),
+          recording_type_menu_widget_->GetContentsView()));
 }
 
 }  // namespace ash

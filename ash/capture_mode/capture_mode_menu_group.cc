@@ -346,8 +346,12 @@ END_METADATA
 // -----------------------------------------------------------------------------
 // CaptureModeMenuGroup:
 
-CaptureModeMenuGroup::CaptureModeMenuGroup(Delegate* delegate)
-    : CaptureModeMenuGroup(delegate, /*menu_header=*/nullptr) {}
+CaptureModeMenuGroup::CaptureModeMenuGroup(
+    Delegate* delegate,
+    const gfx::Insets& inside_border_insets)
+    : CaptureModeMenuGroup(delegate,
+                           /*menu_header=*/nullptr,
+                           inside_border_insets) {}
 
 CaptureModeMenuGroup::CaptureModeMenuGroup(Delegate* delegate,
                                            const gfx::VectorIcon& header_icon,
@@ -357,7 +361,8 @@ CaptureModeMenuGroup::CaptureModeMenuGroup(Delegate* delegate,
           delegate,
           std::make_unique<CaptureModeMenuHeader>(header_icon,
                                                   std::move(header_label),
-                                                  managed_by_policy)) {}
+                                                  managed_by_policy),
+          kMenuGroupPadding) {}
 
 CaptureModeMenuGroup::~CaptureModeMenuGroup() = default;
 
@@ -468,7 +473,8 @@ std::u16string CaptureModeMenuGroup::GetOptionLabelForTesting(
 
 CaptureModeMenuGroup::CaptureModeMenuGroup(
     Delegate* delegate,
-    std::unique_ptr<CaptureModeMenuHeader> menu_header)
+    std::unique_ptr<CaptureModeMenuHeader> menu_header,
+    const gfx::Insets& inside_border_insets)
     : delegate_(delegate),
       menu_header_(menu_header ? AddChildView(std::move(menu_header))
                                : nullptr),
@@ -477,7 +483,7 @@ CaptureModeMenuGroup::CaptureModeMenuGroup(
   options_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kMenuGroupPadding,
+      views::BoxLayout::Orientation::kVertical, inside_border_insets,
       kSpaceBetweenMenuItem));
 }
 

@@ -4,13 +4,22 @@
 
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
 
 namespace ash {
 
+CaptureModeSessionTestApi::CaptureModeSessionTestApi()
+    : session_(CaptureModeController::Get()->capture_mode_session()) {
+  DCHECK(CaptureModeController::Get()->IsActive());
+  DCHECK(session_);
+}
+
 CaptureModeSessionTestApi::CaptureModeSessionTestApi(
     CaptureModeSession* session)
-    : session_(session) {}
+    : session_(session) {
+  DCHECK(session_);
+}
 
 CaptureModeBarView* CaptureModeSessionTestApi::GetCaptureModeBarView() {
   return session_->capture_mode_bar_view_;
@@ -21,12 +30,20 @@ CaptureModeSessionTestApi::GetCaptureModeSettingsView() {
   return session_->capture_mode_settings_view_;
 }
 
+CaptureLabelView* CaptureModeSessionTestApi::GetCaptureLabelView() {
+  return session_->capture_label_view_;
+}
+
 views::Widget* CaptureModeSessionTestApi::GetCaptureModeSettingsWidget() {
   return session_->capture_mode_settings_widget_.get();
 }
 
 views::Widget* CaptureModeSessionTestApi::GetCaptureLabelWidget() {
   return session_->capture_label_widget_.get();
+}
+
+views::Widget* CaptureModeSessionTestApi::GetRecordingTypeMenuWidget() {
+  return session_->recording_type_menu_widget_.get();
 }
 
 views::Widget* CaptureModeSessionTestApi::GetDimensionsLabelWidget() {
