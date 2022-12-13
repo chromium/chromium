@@ -7,8 +7,10 @@ License File: src/LICENSE
 Security Critical: yes
 
 Description:
-Alternative to SQLite used as the backend for IndexedDB and internally by the
-FileSystem API implementation and others.
+Alternative to SQLite.
+
+Prefer using SQLite when feasible. For googlers, please refer to
+go/use-sqlite-in-chrome for more details.
 
 Currently using (not yet released) manifest reuse feature for all platforms
 except Chrome OS.
