@@ -2116,21 +2116,6 @@
             ]
         }
     ],
-    "CacheFeatureOverrideState": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CacheFeatureOverrideState"
-                    ]
-                }
-            ]
-        }
-    ],
     "CacheFontFamilyMatching": [
         {
             "platforms": [
@@ -2978,39 +2963,6 @@
                         "OptimizeDataUrls",
                         "PrefetchFontLookupTables",
                         "TimedHTMLParserBudget"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CombinedPowerExperiment": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20221128",
-                    "params": {
-                        "delay": "30s"
-                    },
-                    "enable_features": [
-                        "AlwaysAbandonScheduledTask",
-                        "CacheFeatureOverrideState",
-                        "DelayFirstParkingOfStrings",
-                        "EarlyExitOnNoopClassOrStyleChange",
-                        "MessagePumpMacDelayedWorkOptimizations",
-                        "NoWakeUpsForCanceledTasks",
-                        "ReduceCpuUtilization",
-                        "RemoveCanceledTasksInTaskQueue2",
-                        "V8DelayMemoryReducer"
                     ]
                 }
             ]
@@ -4387,21 +4339,6 @@
                     "enable_features": [
                         "DownloadBubble",
                         "DownloadBubbleV2"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EarlyExitOnNoopClassOrStyleChange": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EarlyExitOnNoopClassOrStyleChange"
                     ]
                 }
             ]
@@ -7128,22 +7065,6 @@
             ]
         }
     ],
-    "NoWakeUpsForCanceledTasks": [
-        {
-            "platforms": [
-                "android_webview",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NoWakeUpsForCanceledTasks"
-                    ]
-                }
-            ]
-        }
-    ],
     "NoWorkerThreadReclaim": [
         {
             "platforms": [
@@ -9449,21 +9370,6 @@
             ]
         }
     ],
-    "ReduceCpuUtilization": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReduceCpuUtilization"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReduceOpsTaskSplitting": [
         {
             "platforms": [
@@ -9552,23 +9458,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "RemotePageMetadata"
-                    ]
-                }
-            ]
-        }
-    ],
-    "RemoveCanceledTasksInTaskQueue2": [
-        {
-            "platforms": [
-                "android_webview",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "RemoveCanceledTasksInTaskQueue2",
-                    "enable_features": [
-                        "AlwaysAbandonScheduledTask",
-                        "RemoveCanceledTasksInTaskQueue2"
                     ]
                 }
             ]
@@ -11825,24 +11714,6 @@
                 },
                 {
                     "name": "Default"
-                }
-            ]
-        }
-    ],
-    "V8DelayMemoryReducer": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "delay": "30s"
-                    },
-                    "enable_features": [
-                        "V8DelayMemoryReducer"
-                    ]
                 }
             ]
         }
