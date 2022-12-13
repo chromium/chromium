@@ -11,12 +11,21 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.R;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /**
  * Settings fragment for privacy sandbox settings.
  */
 public class PrivacySandboxSettingsFragmentV4 extends PrivacySandboxSettingsBaseFragment {
+    public static final String TOPICS_PREF = "topics";
+    public static final String FLEDGE_PREF = "fledge";
+    public static final String AD_MEASUREMENT_PREF = "ad_measurement";
+
+    private ChromeBasePreference mTopicsPref;
+    private ChromeBasePreference mFledgePref;
+    private ChromeBasePreference mAdMeasurementPref;
+
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
@@ -25,7 +34,31 @@ public class PrivacySandboxSettingsFragmentV4 extends PrivacySandboxSettingsBase
         // Add all preferences and set the title
         getActivity().setTitle(R.string.ad_privacy_page_title);
         SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_sandbox_preferences_v4);
-
         parseAndRecordReferrer();
+
+        mTopicsPref = findPreference(TOPICS_PREF);
+        mFledgePref = findPreference(FLEDGE_PREF);
+        mAdMeasurementPref = findPreference(AD_MEASUREMENT_PREF);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        updatePrefDescription();
+    }
+
+    private void updatePrefDescription() {
+        mTopicsPref.setSummary(TopicsFragmentV4.isTopicsPrefEnabled()
+                        ? R.string.ad_privacy_page_topics_link_row_sub_label_enabled
+                        : R.string.ad_privacy_page_topics_link_row_sub_label_disabled);
+
+        mFledgePref.setSummary(FledgeFragmentV4.isFledgePrefEnabled()
+                        ? R.string.ad_privacy_page_fledge_link_row_sub_label_enabled
+                        : R.string.ad_privacy_page_fledge_link_row_sub_label_disabled);
+
+        mAdMeasurementPref.setSummary(AdMeasurementFragmentV4.isAdMeasurementPrefEnabled()
+                        ? R.string.ad_privacy_page_ad_measurement_link_row_sub_label_enabled
+                        : R.string.ad_privacy_page_ad_measurement_link_row_sub_label_disabled);
     }
 }

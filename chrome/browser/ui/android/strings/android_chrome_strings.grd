@@ -1273,17 +1273,26 @@ Private state tokens improve privacy on the web and can’t be used to find out 
       <message name="IDS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_SUB_LABEL_ENABLED" translateable="false" desc="Description for topics preference when enabled.">
         Enabled Nulla eros tortor, placerat blandit dictum a, interdum id metus
       </message>
+      <message name="IDS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_SUB_LABEL_DISABLED" translateable="false" desc="Description for topics preference when enabled.">
+        Disabled Nulla eros tortor, placerat blandit dictum a, interdum id metus
+      </message>
       <message name="IDS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_LABEL" translateable="false" desc="Title for the fledge preference.">
         Aenean erat leo
       </message>
       <message name="IDS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_SUB_LABEL_ENABLED" translateable="false" desc="Description for the fledge preference when enabled.">
         Enabled Duis scelerisque a mi eget ultricies
       </message>
+      <message name="IDS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_SUB_LABEL_DISABLED" translateable="false" desc="Description for the fledge preference when enabled.">
+        Disabled Duis scelerisque a mi eget ultricies
+      </message>
       <message name="IDS_AD_PRIVACY_PAGE_AD_MEASUREMENT_LINK_ROW_LABEL" translateable="false" desc="Title for the ad measurement preference.">
         Vestibulum augue erat
       </message>
       <message name="IDS_AD_PRIVACY_PAGE_AD_MEASUREMENT_LINK_ROW_SUB_LABEL_ENABLED" translateable="false" desc="Description for the ad measurement preference when enabled.">
         Enabled Vivamus id lacus et lacus porttitor vulputate. Sed semper egestas orci vel maximus.
+      </message>
+      <message name="IDS_AD_PRIVACY_PAGE_AD_MEASUREMENT_LINK_ROW_SUB_LABEL_DISABLED" translateable="false" desc="Description for the ad measurement preference when enabled.">
+        Disabled Vivamus id lacus et lacus porttitor vulputate. Sed semper egestas orci vel maximus.
       </message>
 
       <!-- Privacy Sandbox v4 - Topics Page -->
