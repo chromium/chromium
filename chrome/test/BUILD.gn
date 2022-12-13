@@ -3598,6 +3598,7 @@ if (!is_android) {
         "../browser/supervised_user/permission_request_creator_mock.cc",
         "../browser/supervised_user/permission_request_creator_mock.h",
         "../browser/supervised_user/supervised_user_navigation_throttle_browsertest.cc",
+        "../browser/supervised_user/supervised_user_regional_url_filter_browsertest.cc",
         "../browser/supervised_user/supervised_user_service_browsertest.cc",
         "../browser/supervised_user/supervised_user_url_filter_browsertest.cc",
       ]
@@ -3610,6 +3611,7 @@ if (!is_android) {
       }
       deps += [
         "//chrome/browser/supervised_user:test_support",
+        "//chrome/browser/supervised_user/kids_chrome_management:proto",
         "//chrome/browser/supervised_user/supervised_user_features",
       ]
     }
