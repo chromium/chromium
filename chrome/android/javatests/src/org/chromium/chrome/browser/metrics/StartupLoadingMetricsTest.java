@@ -51,7 +51,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 @DoNotBatch(reason = "These startup tests rely on having exactly one process start per test.")
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class StartupLoadingMetricsTest {
-    private static final String TAG = "StartupLoadingTest";
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private static final String TEST_PAGE_2 = "/chrome/test/data/android/test.html";
     private static final String ERROR_PAGE = "/close-socket";
@@ -298,29 +297,28 @@ public class StartupLoadingMetricsTest {
         runAndWaitForPageLoadMetricsRecorded(() -> {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            // Waits for the native initialization to finish. As part of it skips the foreground
+            // start as requested above.
             mTabbedActivityTestRule.startMainActivityFromIntent(intent, mTestPage);
         });
 
-        ActivityTabStartupMetricsTracker startupMetricsTracker =
-                mTabbedActivityTestRule.getActivity().getActivityTabStartupMetricsTracker();
-
-        // Startup metrics should not have been recorded since the browser is not in the
-        // foreground.
+        // Startup metrics should not have been recorded since the browser does not know it is in
+        // the foreground.
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FIRST_COMMIT_HISTOGRAM + TABBED_SUFFIX));
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(FIRST_VISIBLE_CONTENT_HISTOGRAM));
 
-        // The metric for the first navigation commit having occurred
-        // pre-foregrounding should also not have been recorded at this point, as there hasn't yet
-        // been a notification that the browser has come to the foreground.
+        // The metric for the first navigation commit having occurred pre-foregrounding should also
+        // not have been recorded at this point, as there hasn't yet been a notification that the
+        // browser has come to the foreground.
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, 1));
 
-        // Trigger the come-to-foreground event.
-        TestThreadUtils.runOnUiThreadBlocking(() -> UmaUtils.recordForegroundStartTimeWithNative());
+        // Trigger the come-to-foreground event. This time it should not be skipped.
+        TestThreadUtils.runOnUiThreadBlocking(UmaUtils::recordForegroundStartTimeWithNative);
 
         // Startup metrics should still not have been recorded...
         Assert.assertEquals(0,
@@ -329,8 +327,8 @@ public class StartupLoadingMetricsTest {
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(FIRST_VISIBLE_CONTENT_HISTOGRAM));
 
-        // ...but the metric for the first navigation commit having occurred
-        // pre-foregrounding *should* now have been recorded.
+        // ...but the metric for the first navigation commit having occurred pre-foregrounding
+        // *should* now have been recorded.
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, 1));
