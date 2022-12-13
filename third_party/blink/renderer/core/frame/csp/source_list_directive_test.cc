@@ -312,30 +312,35 @@ TEST_F(SourceListDirectiveTest, AllowAllInline) {
   // Script-src and style-src differently handle presence of 'strict-dynamic'.
   network::mojom::blink::CSPSourceListPtr script_src =
       ParseSourceList("script-src", "'strict-dynamic' 'unsafe-inline'");
-  EXPECT_FALSE(
-      CSPSourceListAllowAllInline(CSPDirectiveName::ScriptSrc, *script_src));
+  EXPECT_FALSE(CSPSourceListAllowAllInline(
+      CSPDirectiveName::ScriptSrc, ContentSecurityPolicy::InlineType::kScript,
+      *script_src));
 
   network::mojom::blink::CSPSourceListPtr style_src =
       ParseSourceList("style-src", "'strict-dynamic' 'unsafe-inline'");
-  EXPECT_TRUE(
-      CSPSourceListAllowAllInline(CSPDirectiveName::StyleSrc, *style_src));
+  EXPECT_TRUE(CSPSourceListAllowAllInline(
+      CSPDirectiveName::StyleSrc, ContentSecurityPolicy::InlineType::kStyle,
+      *style_src));
 
   for (const auto& test : cases) {
     script_src = ParseSourceList("script-src", test.sources);
-    EXPECT_EQ(
-        CSPSourceListAllowAllInline(CSPDirectiveName::ScriptSrc, *script_src),
-        test.expected);
+    EXPECT_EQ(CSPSourceListAllowAllInline(
+                  CSPDirectiveName::ScriptSrc,
+                  ContentSecurityPolicy::InlineType::kScript, *script_src),
+              test.expected);
 
     style_src = ParseSourceList("style-src", test.sources);
-    EXPECT_EQ(
-        CSPSourceListAllowAllInline(CSPDirectiveName::StyleSrc, *style_src),
-        test.expected);
+    EXPECT_EQ(CSPSourceListAllowAllInline(
+                  CSPDirectiveName::StyleSrc,
+                  ContentSecurityPolicy::InlineType::kStyle, *style_src),
+              test.expected);
 
     // If source list doesn't have a valid type, it must not allow all inline.
     network::mojom::blink::CSPSourceListPtr img_src =
         ParseSourceList("img-src", test.sources);
-    EXPECT_FALSE(
-        CSPSourceListAllowAllInline(CSPDirectiveName::ImgSrc, *img_src));
+    EXPECT_FALSE(CSPSourceListAllowAllInline(
+        CSPDirectiveName::ImgSrc, ContentSecurityPolicy::InlineType::kScript,
+        *img_src));
   }
 }
 

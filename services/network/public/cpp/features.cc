@@ -327,4 +327,8 @@ BASE_FEATURE(kPrefetchNoVarySearch,
              "PrefetchNoVarySearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrerender2ContentSecurityPolicyExtensions,
+             "Prerender2ContentSecurityPolicyExtensions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features

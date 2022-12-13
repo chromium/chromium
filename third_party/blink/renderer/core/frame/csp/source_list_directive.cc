@@ -133,16 +133,21 @@ bool CSPSourceListAllowsURLBasedMatching(
 
 bool CSPSourceListAllowAllInline(
     CSPDirectiveName directive_type,
+    ContentSecurityPolicy::InlineType inline_type,
     const network::mojom::blink::CSPSourceList& source_list) {
   if (!IsScriptDirective(directive_type) &&
       !IsStyleDirective(directive_type)) {
     return false;
   }
 
-  return source_list.allow_inline &&
-         !CSPSourceListIsHashOrNoncePresent(source_list) &&
-         (!IsScriptDirective(directive_type) ||
-          !source_list.allow_dynamic);
+  bool allow_inline = source_list.allow_inline;
+  if (inline_type ==
+      ContentSecurityPolicy::InlineType::kScriptSpeculationRules) {
+    allow_inline |= source_list.allow_inline_speculation_rules;
+  }
+
+  return allow_inline && !CSPSourceListIsHashOrNoncePresent(source_list) &&
+         (!IsScriptDirective(directive_type) || !source_list.allow_dynamic);
 }
 
 }  // namespace blink

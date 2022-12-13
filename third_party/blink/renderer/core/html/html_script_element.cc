@@ -298,10 +298,19 @@ bool HTMLScriptElement::AllowInlineScriptForCSP(
     const AtomicString& nonce,
     const WTF::OrdinalNumber& context_line,
     const String& script_content) {
+  // Support 'inline-speculation-rules' source.
+  // https://github.com/WICG/nav-speculation/blob/main/triggers.md#content-security-policy
+  // TODO(http://crbug.com/1382361): Standardize it officially.
+  DCHECK(loader_);
+  ContentSecurityPolicy::InlineType inline_type =
+      loader_->GetScriptType() ==
+              ScriptLoader::ScriptTypeAtPrepare::kSpeculationRules
+          ? ContentSecurityPolicy::InlineType::kScriptSpeculationRules
+          : ContentSecurityPolicy::InlineType::kScript;
   return GetExecutionContext()
       ->GetContentSecurityPolicyForCurrentWorld()
-      ->AllowInline(ContentSecurityPolicy::InlineType::kScript, this,
-                    script_content, nonce, GetDocument().Url(), context_line);
+      ->AllowInline(inline_type, this, script_content, nonce,
+                    GetDocument().Url(), context_line);
 }
 
 Document& HTMLScriptElement::GetDocument() const {

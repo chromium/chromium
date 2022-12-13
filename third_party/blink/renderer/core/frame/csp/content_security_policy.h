@@ -140,6 +140,7 @@ class CORE_EXPORT ContentSecurityPolicy final
     kNavigation,
     kScript,
     kScriptAttribute,
+    kScriptSpeculationRules,  // TODO(https://crbug.com/1382361): Standardize.
     kStyle,
     kStyleAttribute
   };

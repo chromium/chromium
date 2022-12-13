@@ -483,6 +483,7 @@ bool ContentSecurityPolicy::AllowInline(
 bool ContentSecurityPolicy::IsScriptInlineType(InlineType inline_type) {
   switch (inline_type) {
     case ContentSecurityPolicy::InlineType::kNavigation:
+    case ContentSecurityPolicy::InlineType::kScriptSpeculationRules:
     case ContentSecurityPolicy::InlineType::kScriptAttribute:
     case ContentSecurityPolicy::InlineType::kScript:
       return true;

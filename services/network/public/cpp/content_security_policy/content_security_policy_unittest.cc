@@ -8,8 +8,10 @@
 #include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1581,6 +1583,37 @@ TEST(ContentSecurityPolicy, ParseHash) {
       EXPECT_TRUE(hashes.empty()) << test.hash << " should be an invalid hash";
     }
   }
+}
+
+TEST(ContentSecurityPolicy, ParseInlineSpeculationRules) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kPrerender2ContentSecurityPolicyExtensions);
+  std::vector<mojom::ContentSecurityPolicyPtr> ok_policies =
+      ParseCSP("script-src 'inline-speculation-rules'");
+  ASSERT_EQ(1u, ok_policies.size());
+  ASSERT_EQ(1u, ok_policies[0]->directives.size());
+  ASSERT_TRUE(
+      ok_policies[0]->directives.contains(mojom::CSPDirectiveName::ScriptSrc));
+  EXPECT_TRUE(ok_policies[0]
+                  ->directives[mojom::CSPDirectiveName::ScriptSrc]
+                  ->allow_inline_speculation_rules);
+  EXPECT_EQ(0u, ok_policies[0]->parsing_errors.size());
+
+  std::vector<mojom::ContentSecurityPolicyPtr> ng_policies =
+      ParseCSP("img-src 'inline-speculation-rules'");
+  ASSERT_EQ(1u, ng_policies.size());
+  ASSERT_EQ(1u, ng_policies[0]->directives.size());
+  ASSERT_TRUE(
+      ng_policies[0]->directives.contains(mojom::CSPDirectiveName::ImgSrc));
+  EXPECT_FALSE(ng_policies[0]
+                   ->directives[mojom::CSPDirectiveName::ImgSrc]
+                   ->allow_inline_speculation_rules);
+  ASSERT_EQ(1u, ng_policies[0]->parsing_errors.size());
+  EXPECT_EQ(
+      "The Content-Security-Policy directive 'img-src' contains "
+      "''inline-speculation-rules'' as a source expression that is permitted "
+      "only for 'script-src' directive. It will be ignored.",
+      ng_policies[0]->parsing_errors[0]);
 }
 
 TEST(ContentSecurityPolicy, IsValidRequiredCSPAttr) {
