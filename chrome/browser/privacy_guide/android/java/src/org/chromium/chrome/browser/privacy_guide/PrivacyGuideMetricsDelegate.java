@@ -22,6 +22,10 @@ class PrivacyGuideMetricsDelegate {
      * Initial state of History Sync when {@link SyncFragment} is created.
      */
     private boolean mInitialHistorySyncState;
+    /**
+     * Initial state of the Safe Browsing when {@link SafeBrowsingFragment} is created.
+     */
+    private @SafeBrowsingState int mInitialSafeBrowsingState;
 
     /**
      * A method to record metrics on the next click of {@link MSBBFragment}
@@ -76,9 +80,39 @@ class PrivacyGuideMetricsDelegate {
     }
 
     /**
+     * A method to record metrics on the next click of {@link SafeBrowsingFragment}
+     */
+    private void recordMetricsOnNextForSafeBrowsingCard() {
+        @SafeBrowsingState
+        int currentValue = PrivacyGuideUtils.getSafeBrowsingState();
+
+        boolean isStartStateEnhance =
+                mInitialSafeBrowsingState == SafeBrowsingState.ENHANCED_PROTECTION;
+        boolean isEndStateEnhance = currentValue == SafeBrowsingState.ENHANCED_PROTECTION;
+
+        int stateChange;
+
+        if (isStartStateEnhance && isEndStateEnhance) {
+            stateChange = PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_ENHANCED;
+        } else if (isStartStateEnhance && !isEndStateEnhance) {
+            stateChange = PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD;
+        } else if (!isStartStateEnhance && isEndStateEnhance) {
+            stateChange = PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_ENHANCED;
+        } else {
+            stateChange = PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_STANDARD;
+        }
+
+        // Record histogram comparing |mInitialSafeBrowsingState| and |currentValue|
+        RecordHistogram.recordEnumeratedHistogram("Settings.PrivacyGuide.SettingsStates",
+                stateChange, PrivacyGuideSettingsStates.MAX_VALUE);
+        // Record user action for clicking the next button on the Safe Browsing card
+        RecordUserAction.record("Settings.PrivacyGuide.NextClickSafeBrowsing");
+    }
+
+    /**
      * A method to set the initial state of a card {@link PrivacyGuideFragment.FragmentType} in
      * Privacy Guide.
-     * TODO(crbug.com/1238896): Support for other fragment types (SYNC, SAFE_BROWSING, COOKIES)
+     * TODO(crbug.com/1238896): Support for other fragment types (COOKIES)
      *
      * @param fragmentType A privacy guide {@link PrivacyGuideFragment.FragmentType}.
      */
@@ -92,13 +126,17 @@ class PrivacyGuideMetricsDelegate {
                 mInitialHistorySyncState = PrivacyGuideUtils.isHistorySyncEnabled();
                 break;
             }
+            case PrivacyGuideFragment.FragmentType.SAFE_BROWSING: {
+                mInitialSafeBrowsingState = PrivacyGuideUtils.getSafeBrowsingState();
+                break;
+            }
         }
     }
 
     /**
      * A method to record metrics on the next click of a card {@link
      * PrivacyGuideFragment.FragmentType} in Privacy Guide.
-     * TODO(crbug.com/1238896): Support for other fragment types (SYNC, SAFE_BROWSING, COOKIES)
+     * TODO(crbug.com/1238896): Support for other fragment types (COOKIES)
      *
      * @param fragmentType A privacy guide {@link PrivacyGuideFragment.FragmentType}.
      */
@@ -110,6 +148,10 @@ class PrivacyGuideMetricsDelegate {
             }
             case PrivacyGuideFragment.FragmentType.SYNC: {
                 recordMetricsOnNextForSyncCard();
+                break;
+            }
+            case PrivacyGuideFragment.FragmentType.SAFE_BROWSING: {
+                recordMetricsOnNextForSafeBrowsingCard();
                 break;
             }
         }

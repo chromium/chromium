@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.privacy_guide;
 
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -25,5 +27,8 @@ class PrivacyGuideUtils {
     public static boolean isHistorySyncEnabled() {
         Set<Integer> syncTypes = SyncService.get().getSelectedTypes();
         return syncTypes.contains(UserSelectableType.HISTORY);
+    }
+    public static @SafeBrowsingState int getSafeBrowsingState() {
+        return SafeBrowsingBridge.getSafeBrowsingState();
     }
 }

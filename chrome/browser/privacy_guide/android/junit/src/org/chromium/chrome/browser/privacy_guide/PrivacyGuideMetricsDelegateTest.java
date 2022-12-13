@@ -23,6 +23,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJni;
@@ -52,6 +54,8 @@ public class PrivacyGuideMetricsDelegateTest {
     private SyncService mSyncService;
     @Mock
     private Set<Integer> mSyncTypes;
+    @Mock
+    private SafeBrowsingBridge.Natives mSafeBrowsingNativeMock;
 
     private final PrivacyGuideMetricsDelegate mPrivacyGuideMetricsDelegate =
             new PrivacyGuideMetricsDelegate();
@@ -63,11 +67,17 @@ public class PrivacyGuideMetricsDelegateTest {
         mocker.mock(UnifiedConsentServiceBridgeJni.TEST_HOOKS, mNativeMock);
         SyncService.overrideForTests(mSyncService);
         when(mSyncService.getSelectedTypes()).thenReturn(mSyncTypes);
+        mocker.mock(SafeBrowsingBridgeJni.TEST_HOOKS, mSafeBrowsingNativeMock);
     }
 
     private void mockMSBBState(boolean initialMSBBState, boolean finalMSBBState) {
         when(mNativeMock.isUrlKeyedAnonymizedDataCollectionEnabled(mProfile))
                 .thenReturn(initialMSBBState, finalMSBBState);
+    }
+    private void mockSafeBrowsingState(@SafeBrowsingState int initialSafeBrowsingState,
+            @SafeBrowsingState int finalSafeBrowsingState) {
+        when(mSafeBrowsingNativeMock.getSafeBrowsingState())
+                .thenReturn(initialSafeBrowsingState, finalSafeBrowsingState);
     }
 
     private void mockHistorySyncState(
@@ -200,6 +210,72 @@ public class PrivacyGuideMetricsDelegateTest {
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SYNC);
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.NextClickHistorySync"));
+    }
+
+    @Test
+    @SmallTest
+    public void testSafeBrowsing_enhanceToEnhanceSettingsStatesHistogram() {
+        mockSafeBrowsingState(
+                SafeBrowsingState.ENHANCED_PROTECTION, SafeBrowsingState.ENHANCED_PROTECTION);
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_ENHANCED));
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SAFE_BROWSING);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_ENHANCED));
+    }
+
+    @Test
+    @SmallTest
+    public void testSafeBrowsing_enhanceToStandardSettingsStatesHistogram() {
+        mockSafeBrowsingState(
+                SafeBrowsingState.ENHANCED_PROTECTION, SafeBrowsingState.STANDARD_PROTECTION);
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD));
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SAFE_BROWSING);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD));
+    }
+
+    @Test
+    @SmallTest
+    public void testSafeBrowsing_standardToEnhanceSettingsStatesHistogram() {
+        mockSafeBrowsingState(
+                SafeBrowsingState.ENHANCED_PROTECTION, SafeBrowsingState.STANDARD_PROTECTION);
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD));
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SAFE_BROWSING);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD));
+    }
+
+    @Test
+    @SmallTest
+    public void testSafeBrowsing_standardToStandardSettingsStatesHistogram() {
+        mockSafeBrowsingState(
+                SafeBrowsingState.STANDARD_PROTECTION, SafeBrowsingState.STANDARD_PROTECTION);
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_STANDARD));
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SAFE_BROWSING);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_STANDARD));
+    }
+
+    @Test
+    @SmallTest
+    public void testSafeBrowsing_nextClickUserAction() {
+        mockSafeBrowsingState(
+                SafeBrowsingState.STANDARD_PROTECTION, SafeBrowsingState.STANDARD_PROTECTION);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SAFE_BROWSING);
+        assertTrue(
+                mActionTester.getActions().contains("Settings.PrivacyGuide.NextClickSafeBrowsing"));
     }
 
     @Test
