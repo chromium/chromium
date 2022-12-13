@@ -233,25 +233,6 @@ TEST(IPCMessageUtilsTest, StrongAlias) {
   EXPECT_EQ(input, output);
 }
 
-TEST(IPCMessageUtilsTest, LegacyDictValueConversion) {
-  base::DictionaryValue dict_value;
-  dict_value.GetDict().Set("path1", 42);
-  dict_value.GetDict().Set("path2", 84);
-  base::ListValue subvalue;
-  subvalue.Append(1234);
-  subvalue.Append(5678);
-  dict_value.SetKey("path3", std::move(subvalue));
-
-  IPC::Message message;
-  ParamTraits<base::DictionaryValue>::Write(&message, dict_value);
-
-  base::PickleIterator iter(message);
-  base::DictionaryValue read_value;
-  ASSERT_TRUE(
-      ParamTraits<base::DictionaryValue>::Read(&message, &iter, &read_value));
-  EXPECT_EQ(dict_value, read_value);
-}
-
 TEST(IPCMessageUtilsTest, DictValueConversion) {
   base::Value::Dict dict_value;
   dict_value.Set("path1", 42);

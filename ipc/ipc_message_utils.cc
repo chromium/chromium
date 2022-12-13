@@ -515,24 +515,6 @@ void ParamTraits<std::vector<bool> >::Log(const param_type& p, std::string* l) {
   }
 }
 
-void ParamTraits<base::DictionaryValue>::Write(base::Pickle* m,
-                                               const param_type& p) {
-  WriteDictValue(p.GetDict(), 0, m);
-}
-
-bool ParamTraits<base::DictionaryValue>::Read(const base::Pickle* m,
-                                              base::PickleIterator* iter,
-                                              param_type* r) {
-  return ReadDictValue(m, iter, 0, &(r->GetDict()));
-}
-
-void ParamTraits<base::DictionaryValue>::Log(const param_type& p,
-                                             std::string* l) {
-  std::string json;
-  base::JSONWriter::Write(p, &json);
-  l->append(json);
-}
-
 void ParamTraits<base::Value::Dict>::Write(base::Pickle* m,
                                            const param_type& p) {
   WriteDictValue(p, 0, m);
