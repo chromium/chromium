@@ -111,6 +111,10 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   bool GetImageCentered() const;
   void SetImageCentered(bool image_centered);
 
+  // Sets the corner radius of the focus ring around the button.
+  float GetFocusRingCornerRadius() const;
+  void SetFocusRingCornerRadius(float radius);
+
   // Creates the default border for this button. This can be overridden by
   // subclasses.
   virtual std::unique_ptr<LabelButtonBorder> CreateDefaultBorder() const;
@@ -266,6 +270,9 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   // text direction) while |this| is laid out as ALIGN_LEFT (alignment matches
   // UI direction).
   gfx::HorizontalAlignment horizontal_alignment_ = gfx::ALIGN_LEFT;
+
+  // Corner radius of the focus ring.
+  float focus_ring_corner_radius_ = FocusableBorder::kCornerRadiusDp;
 
   base::CallbackListSubscription paint_as_active_subscription_;
 

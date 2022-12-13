@@ -106,13 +106,10 @@ void MdTextButton::SetCornerRadius(float radius) {
   if (corner_radius_ == radius)
     return;
   corner_radius_ = radius;
-  InkDrop::Get(this)->SetSmallCornerRadius(corner_radius_);
-  InkDrop::Get(this)->SetLargeCornerRadius(corner_radius_);
-  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                corner_radius_);
+  LabelButton::SetFocusRingCornerRadius(corner_radius_);
   // UpdateColors also updates the background border radius.
   UpdateColors();
-  OnPropertyChanged(&corner_radius_, kPropertyEffectsPaint);
+  OnPropertyChanged(&corner_radius_, kPropertyEffectsNone);
 }
 
 float MdTextButton::GetCornerRadius() const {
