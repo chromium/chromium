@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 /* @filedescription Minimal utils and assertion support for places in the code
- * that are still not updated to JS modules. Do not use in new code. Use
- * assert_ts and util_ts instead. */
+ * that are still not updated to JS modules. Do not use in new code; use the JS
+ * modules (and more extensive) util.js, assert.js (for JS code), and
+ * assert_ts.ts (for TS code) instead. */
 
 /**
  * Note: This method is deprecated. Use the equivalent method in assert_ts.ts

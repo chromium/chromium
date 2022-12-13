@@ -381,12 +381,10 @@ ts_definitions("generate_definitions") {
   out_dir = "$target_gen_dir/tsc"
   js_files = generate_definitions_js_files
   visibility = [ ":build_ts" ]
+  extra_deps = [ "//ui/webui/resources:generate_definitions" ]
 
   if (is_chromeos_ash) {
-    extra_deps = [
-      "//ash/webui/common/resources:generate_definitions",
-      "//ui/webui/resources:generate_definitions",
-    ]
+    extra_deps += [ "//ash/webui/common/resources:generate_definitions" ]
   }
 }
 

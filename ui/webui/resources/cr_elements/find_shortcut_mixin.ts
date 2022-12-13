@@ -4,7 +4,7 @@
 
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assert, assertNotReached} from '../js/assert_ts.js';
+import {assert, assertNotReached} from '../js/assert.js';
 import {KeyboardShortcutList} from '../js/keyboard_shortcut_list.js';
 import {isMac} from '../js/platform.js';
 
@@ -108,12 +108,8 @@ export const FindShortcutMixin = dedupingMixin(
           listeners.push(this);
         }
 
-        private handleFindShortcutInternal_() {
-          assertNotReached('Must override handleFindShortcut()');
-        }
-
         handleFindShortcut(_modalContextOpen: boolean) {
-          this.handleFindShortcutInternal_();
+          assertNotReached();
           return false;
         }
 
@@ -124,12 +120,8 @@ export const FindShortcutMixin = dedupingMixin(
           listeners.splice(index, 1);
         }
 
-        private searchInputHasFocusInternal_() {
-          assertNotReached('Must override searchInputHasFocus()');
-        }
-
         searchInputHasFocus() {
-          this.searchInputHasFocusInternal_();
+          assertNotReached();
           return false;
         }
       }

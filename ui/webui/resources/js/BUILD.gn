@@ -80,12 +80,14 @@ preprocess_if_expr("preprocess_src") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-  in_files = [ "load_time_data_deprecated.js" ]
+  in_files = [
+    "assert.js",
+    "load_time_data_deprecated.js",
+  ]
 
   if (is_chromeos_ash) {
     # Used by ChromeOS UIs.
     in_files += [
-      "assert.js",
       "cr.m.js",
       "load_time_data.m.js",
     ]
@@ -128,20 +130,24 @@ if (is_chromeos_ash) {
   }
 }
 
-# Targets for type-checking JS Modules on ChromeOS Ash only.
-if (is_chromeos_ash) {
-  js_type_check("closure_compile_modules") {
-    is_polymer3 = true
-    deps = [
-      ":assert",
+# Targets for type-checking JS Modules
+
+js_type_check("closure_compile_modules") {
+  is_polymer3 = true
+  deps = [ ":assert" ]
+
+  if (is_chromeos_ash) {
+    deps += [
       ":cr.m",
       ":load_time_data.m",
     ]
   }
+}
 
-  js_library("assert") {
-  }
+js_library("assert") {
+}
 
+if (is_chromeos_ash) {
   js_library("cr.m") {
   }
 
