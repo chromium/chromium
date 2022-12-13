@@ -99,8 +99,7 @@ SkColor DrawingDisplayItem::BackgroundColor(float& area) const {
   if (!record_)
     return SK_ColorTRANSPARENT;
 
-  for (cc::PaintOpBuffer::Iterator it(record_.get()); it; ++it) {
-    const cc::PaintOp& op = *it;
+  for (const cc::PaintOp& op : *record_) {
     if (!op.IsPaintOpWithFlags())
       continue;
     const auto& flags = static_cast<const cc::PaintOpWithFlags&>(op).flags;
@@ -156,11 +155,10 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
   gfx::Rect opaque_rect;
   wtf_size_t op_count = 0;
   gfx::Rect clip_rect = VisualRect();
-  for (cc::PaintOpBuffer::Iterator it(record); it; ++it) {
+  for (const cc::PaintOp& op : *record) {
     if (++op_count > kOpCountLimit)
       break;
 
-    const cc::PaintOp& op = *it;
     // Deal with the common pattern of clipped bleed avoiding images like:
     // Save, ClipRect, Draw..., Restore.
     if (op.GetType() == cc::PaintOpType::Save)

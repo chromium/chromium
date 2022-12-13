@@ -40,7 +40,7 @@ void IterateTextContent(const PaintOpBuffer& buffer,
                         const gfx::Rect& rect) {
   if (!buffer.has_draw_text_ops())
     return;
-  for (const PaintOp& op : PaintOpBuffer::Iterator(&buffer)) {
+  for (const PaintOp& op : buffer) {
     if (op.GetType() == PaintOpType::DrawTextBlob) {
       yield(static_cast<const DrawTextBlobOp&>(op), rect);
     } else if (op.GetType() == PaintOpType::DrawRecord) {
@@ -253,7 +253,7 @@ void DisplayItemList::AddToValue(base::trace_event::TracedValue* state,
 
     PlaybackParams params(nullptr, SkM44());
     std::map<size_t, gfx::Rect> visual_rects = rtree_.GetAllBoundsForTracing();
-    for (const PaintOp& op : PaintOpBuffer::Iterator(&paint_op_buffer_)) {
+    for (const PaintOp& op : paint_op_buffer_) {
       state->BeginDictionary();
       state->SetString("name", PaintOpTypeToString(op.GetType()));
 
@@ -376,7 +376,7 @@ DirectlyCompositedImageResultForPaintOpBuffer(const PaintOpBuffer& op_buffer) {
 
   bool transpose_image_size = false;
   absl::optional<DisplayItemList::DirectlyCompositedImageResult> result;
-  for (const PaintOp& op : PaintOpBuffer::Iterator(&op_buffer)) {
+  for (const PaintOp& op : op_buffer) {
     switch (op.GetType()) {
       case PaintOpType::Save:
       case PaintOpType::Restore:

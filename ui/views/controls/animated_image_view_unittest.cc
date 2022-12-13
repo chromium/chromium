@@ -30,7 +30,7 @@ using ::testing::NotNull;
 template <typename T>
 const T* FindPaintOp(const cc::PaintOpBuffer& paint_op_buffer,
                      cc::PaintOpType paint_op_type) {
-  for (const cc::PaintOp& op : cc::PaintOpBuffer::Iterator(&paint_op_buffer)) {
+  for (const cc::PaintOp& op : paint_op_buffer) {
     if (op.GetType() == paint_op_type)
       return static_cast<const T*>(&op);
 

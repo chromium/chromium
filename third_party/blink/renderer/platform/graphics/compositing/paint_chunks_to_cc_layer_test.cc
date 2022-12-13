@@ -42,7 +42,7 @@ void PrintTo(const Vector<cc::PaintOpType>& ops, std::ostream* os) {
 
 void PrintTo(const cc::PaintRecord& record, std::ostream* os) {
   Vector<cc::PaintOpType> ops;
-  for (const cc::PaintOp& op : cc::PaintOpBuffer::Iterator(&record))
+  for (const cc::PaintOp& op : record)
     ops.push_back(op.GetType());
   PrintTo(ops, os);
 }

@@ -33,7 +33,7 @@ class DiscardableImageGenerator {
  public:
   DiscardableImageGenerator(int width,
                             int height,
-                            const PaintOpBuffer* buffer) {
+                            const PaintOpBuffer& buffer) {
     SkNoDrawCanvas canvas(width, height);
     GatherDiscardableImages(buffer, nullptr, &canvas);
   }
@@ -91,10 +91,10 @@ class DiscardableImageGenerator {
   // |top_level_op_rect| is set to the rect for that op. If provided, the
   // |top_level_op_rect| will be used as the rect for tracking the position of
   // this image in the top-level buffer.
-  void GatherDiscardableImages(const PaintOpBuffer* buffer,
+  void GatherDiscardableImages(const PaintOpBuffer& buffer,
                                const gfx::Rect* top_level_op_rect,
                                SkNoDrawCanvas* canvas) {
-    if (!buffer->HasDiscardableImages())
+    if (!buffer.HasDiscardableImages())
       return;
 
     // Prevent PaintOpBuffers from having side effects back into the canvas.
@@ -103,7 +103,7 @@ class DiscardableImageGenerator {
     PlaybackParams params(nullptr, canvas->getLocalToDevice());
     // TODO(khushalsagar): Optimize out save/restore blocks if there are no
     // images in the draw ops between them.
-    for (const PaintOp& op : PaintOpBuffer::Iterator(buffer)) {
+    for (const PaintOp& op : buffer) {
       // We need to play non-draw ops on the SkCanvas since they can affect the
       // transform/clip state.
       if (!op.IsDrawOp())
@@ -187,9 +187,8 @@ class DiscardableImageGenerator {
                    frame_data.quality);
         }
       } else if (op_type == PaintOpType::DrawRecord) {
-        GatherDiscardableImages(
-            static_cast<const DrawRecordOp&>(op).record.get(),
-            top_level_op_rect, canvas);
+        GatherDiscardableImages(*static_cast<const DrawRecordOp&>(op).record,
+                                top_level_op_rect, canvas);
       }
     }
   }
@@ -238,7 +237,7 @@ class DiscardableImageGenerator {
       canvas.setMatrix(SkMatrix::RectToRect(shader->tile(), scaled_tile_rect));
       base::AutoReset<bool> auto_reset(&only_gather_animated_images_, true);
       size_t prev_image_set_size = image_set_.size();
-      GatherDiscardableImages(shader->paint_record().get(), &op_rect, &canvas);
+      GatherDiscardableImages(*shader->paint_record(), &op_rect, &canvas);
 
       // We only track animated images for PaintShaders. If we added any entry
       // to the |image_set_|, this shader any has animated images.
@@ -368,7 +367,7 @@ void DiscardableImageMap::Generate(const PaintOpBuffer* paint_op_buffer,
     return;
 
   DiscardableImageGenerator generator(bounds.right(), bounds.bottom(),
-                                      paint_op_buffer);
+                                      *paint_op_buffer);
   image_id_to_rects_ = generator.TakeImageIdToRectsMap();
   animated_images_metadata_ = generator.TakeAnimatedImagesMetadata();
   paint_worklet_inputs_ = generator.TakePaintWorkletInputs();
