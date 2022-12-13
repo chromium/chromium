@@ -14,6 +14,7 @@
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_menu_group.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_settings_view.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
@@ -21,6 +22,7 @@
 #include "ash/capture_mode/capture_window_observer.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
 #include "ash/capture_mode/user_nudge_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -28,10 +30,12 @@
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/color_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_dimmer.h"
@@ -63,11 +67,13 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -359,6 +365,13 @@ bool IsWidgetOverlappedWithCameraPreview(views::Widget* widget) {
          camera_preview_widget->GetLayer()->GetTargetOpacity() > 0.f &&
          camera_preview_widget->GetWindowBoundsInScreen().Intersects(
              widget->GetWindowBoundsInScreen());
+}
+
+// Returns the color provider for the native theme.
+ui::ColorProvider* GetColorProvider() {
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  return ui::ColorProviderManager::Get().GetColorProviderFor(
+      native_theme->GetColorProviderKey(nullptr));
 }
 
 }  // namespace
@@ -1752,8 +1765,7 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
   const float dsf = canvas->UndoDeviceScaleFactor();
   region = gfx::ScaleToEnclosingRect(region, dsf);
 
-  const auto* color_provider =
-      capture_mode_util::GetColorProviderForNativeTheme();
+  const auto* color_provider = GetColorProvider();
 
   if (!adjustable_region) {
     canvas->FillRect(region, SK_ColorTRANSPARENT, SkBlendMode::kClear);
