@@ -21,8 +21,6 @@ MODULES_EXPORT extern const int kDefaultScreenCastHeight;
 MODULES_EXPORT extern const double kMaxScreenCastFrameRate;
 MODULES_EXPORT extern const double kDefaultScreenCastFrameRate;
 
-MODULES_EXPORT double MinScreenCastFrameRate();
-
 // This function performs source, source-settings and track-settings selection
 // for content video capture based on the given |constraints|.
 VideoCaptureSettings MODULES_EXPORT
