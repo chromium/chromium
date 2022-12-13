@@ -17,7 +17,7 @@ UNKNOWN focusable has_input_focus
 ++++++TEXT_FIELD focusable label='Placeholder4b' actions='{DEFAULT, SET_VALUE}'
 ++++++++UNKNOWN hidden
 ++++++++UNKNOWN
-++++++TEXT_FIELD focusable label='Placeholder5' actions='{DEFAULT, SET_VALUE}' secondary_label='Title5'
+++++++TEXT_FIELD focusable label='Title5' actions='{DEFAULT, SET_VALUE}'
 ++++++++UNKNOWN hidden
 ++++++++UNKNOWN
 ++++++TEXT_FIELD focusable label='LabelledBy6' actions='{DEFAULT, SET_VALUE}' secondary_label='DescribedBy6'

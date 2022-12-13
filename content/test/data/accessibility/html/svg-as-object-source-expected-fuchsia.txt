@@ -1,7 +1,7 @@
 UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
-++++++UNKNOWN focusable label='object without space'
+++++++UNKNOWN label='object without space'
 ++++++++UNKNOWN focusable
 ++++++++++UNKNOWN
 ++++++++++++BUTTON label='face'
@@ -9,7 +9,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++BUTTON label='right-eye'
 ++++++++++++BUTTON label='nose'
 ++++++++++++BUTTON label='smile'
-++++++UNKNOWN focusable label='object with space'
+++++++UNKNOWN label='object with space'
 ++++++++UNKNOWN focusable
 ++++++++++UNKNOWN
 ++++++++++++BUTTON label='face'

@@ -1,7 +1,7 @@
 UNKNOWN focusable has_input_focus label='done'
 ++UNKNOWN hidden
 ++++UNKNOWN
-++++++UNKNOWN focusable
+++++++UNKNOWN
 ++++++++UNKNOWN focusable
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN hidden
