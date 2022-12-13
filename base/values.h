@@ -229,6 +229,10 @@ class BASE_EXPORT GSL_OWNER Value {
   };
 
   // Adaptors for converting from the old way to the new way and vice versa.
+  // Note: `DictionaryValue` and `ListValue` have been deprecated.
+  // `AsDictionaryValue()` and `AsListValue()` perform a `static_cast` to these
+  // types (as opposed to the preferred `GetDict()` and `GetList()` APIs - which
+  // use a variant lookup `absl::get<>()`).
   static Value FromUniquePtrValue(std::unique_ptr<Value> val);
   static std::unique_ptr<Value> ToUniquePtrValue(Value val);
   static const DictionaryValue& AsDictionaryValue(const Value& val);
