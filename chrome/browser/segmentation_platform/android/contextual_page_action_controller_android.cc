@@ -13,6 +13,7 @@
 #include "components/segmentation_platform/public/android/segmentation_platform_conversion_bridge.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/input_context.h"
+#include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "url/android/gurl_android.h"
 
@@ -34,7 +35,11 @@ static void JNI_ContextualPageActionController_ComputeContextualPageAction(
     jboolean j_can_track_price,
     const JavaParamRef<jobject>& j_callback) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
-  DCHECK(profile);
+  if (!profile) {
+    RunGetSelectedSegmentCallback(
+        j_callback, segmentation_platform::SegmentSelectionResult());
+    return;
+  }
   auto url = url::GURLAndroid::ToNativeGURL(env, j_url);
 
   scoped_refptr<segmentation_platform::InputContext> input_context =
@@ -45,7 +50,11 @@ static void JNI_ContextualPageActionController_ComputeContextualPageAction(
   segmentation_platform::SegmentationPlatformService*
       segmentation_platform_service = segmentation_platform::
           SegmentationPlatformServiceFactory::GetForProfile(profile);
-  DCHECK(segmentation_platform_service);
+  if (!segmentation_platform_service) {
+    RunGetSelectedSegmentCallback(
+        j_callback, segmentation_platform::SegmentSelectionResult());
+    return;
+  }
   segmentation_platform_service->GetSelectedSegmentOnDemand(
       segmentation_platform::kContextualPageActionsKey, input_context,
       base::BindOnce(&RunGetSelectedSegmentCallback,
