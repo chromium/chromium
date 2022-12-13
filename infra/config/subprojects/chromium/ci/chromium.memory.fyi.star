@@ -48,6 +48,7 @@ ci.builder(
         short_name = "fyi",
     ),
     builderless = 1,
+    execution_timeout = 4 * time.hour,
     schedule = "with 12h interval",
     reclient_jobs = reclient.jobs.DEFAULT,
 )
