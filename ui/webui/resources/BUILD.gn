@@ -232,6 +232,7 @@ ts_library("library") {
   extra_deps += [
     ":generate_definitions",
     ":preprocess",
+    "mojo:library",
   ]
 
   if (is_chromeos_ash) {
