@@ -24,10 +24,26 @@ consoles.list_view(
 )
 
 try_.builder(
+    name = "linux-rel-cft",
+    mirrors = [
+        "ci/linux-rel-cft",
+    ],
+    os = os.LINUX_DEFAULT,
+)
+
+try_.builder(
     name = "mac-rel-cft",
     mirrors = [
         "ci/mac-rel-cft",
     ],
-    cores = None,
     os = os.MAC_DEFAULT,
+    cores = None,
+)
+
+try_.builder(
+    name = "win-rel-cft",
+    mirrors = [
+        "ci/win-rel-cft",
+    ],
+    os = os.WINDOWS_DEFAULT,
 )

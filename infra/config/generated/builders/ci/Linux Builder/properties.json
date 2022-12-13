@@ -102,10 +102,6 @@
           "group": "tryserver.chromium.linux"
         },
         {
-          "builder": "linux-rel-cft",
-          "group": "tryserver.chromium.linux"
-        },
-        {
           "builder": "linux-rel-inverse-fyi",
           "group": "tryserver.chromium.linux"
         },

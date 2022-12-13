@@ -23,27 +23,51 @@ ci.defaults.set(
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
+def builder_spec(*, target_platform, build_config):
+    return builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            target_bits = 64,
+            target_platform = target_platform,
+            build_config = build_config,
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+    )
+
 consoles.console_view(
     name = "chromium.cft",
 )
 
 ci.builder(
     name = "mac-rel-cft",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
+    builder_spec = builder_spec(
+        target_platform = builder_config.target_platform.MAC,
+        build_config = builder_config.build_config.RELEASE,
     ),
+    console_view_entry = consoles.console_view_entry(),
     cores = None,
     os = os.MAC_DEFAULT,
+)
+
+ci.builder(
+    name = "linux-rel-cft",
+    builder_spec = builder_spec(
+        target_platform = builder_config.target_platform.LINUX,
+        build_config = builder_config.build_config.RELEASE,
+    ),
     console_view_entry = consoles.console_view_entry(),
+    os = os.LINUX_DEFAULT,
+)
+
+ci.builder(
+    name = "win-rel-cft",
+    builder_spec = builder_spec(
+        target_platform = builder_config.target_platform.WIN,
+        build_config = builder_config.build_config.RELEASE,
+    ),
+    console_view_entry = consoles.console_view_entry(),
+    os = os.WINDOWS_DEFAULT,
 )

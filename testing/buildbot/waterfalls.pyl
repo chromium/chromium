@@ -1258,13 +1258,30 @@
   },
   {
     # CfT == Chrome for Testing
+    # The -cft builders are the Chrome for Testing builders. They
+    # are intended to mirror the main builders as much as possible.
     'name': 'chromium.cft',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      # mac-rel-cft is the CfT mirror of mac-rel. It is intended to
-      # exactly match mac-rel except that we don't build the installers
-      # and don't need any of the installer tests. test_suite_exceptions.pyl
-      # contains the exceptions for the installer tests.
+      # Mirrors Linux Builder and Linux Tests.
+      'linux-rel-cft': {
+        'mixins': [
+          'isolate_profile_data',
+          'linux-bionic',
+        ],
+        'additional_compile_targets': [
+          'all'
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_linux_gtests',
+          'isolated_scripts': 'chromium_linux_rel_isolated_scripts',
+          'scripts': 'chromium_linux_scripts',
+        }
+      },
+
+      # Mirrors Mac Builder and Mac 12 Tests, except that we don't run
+      # 'mac_signing_tests' (it is removed in test_suite_exceptions.pyl),
+      # which doesn't exist in the CfT config.
       'mac-rel-cft': {
         'mixins': [
           'mac_12_x64',
@@ -1281,6 +1298,23 @@
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests_no_nacl',
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
+        },
+      },
+
+      # Mirrors Win x64 Builder and Win10 Tests x64.
+      'win-rel-cft': {
+        'mixins': [
+          'x86-64',
+          'win10',
+          'isolate_profile_data',
+        ],
+        'additional_compile_targets': [
+          'pdf_fuzzers'
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_win10_gtests',
+          'isolated_scripts': 'chromium_win_rel_isolated_scripts',
+          'scripts': 'chromium_win_scripts',
         },
       },
     },

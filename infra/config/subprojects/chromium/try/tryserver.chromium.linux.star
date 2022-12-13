@@ -800,8 +800,3 @@ try_.builder(
         experiment_percentage = 5,
     ),
 )
-
-try_.builder(
-    name = "linux-rel-cft",
-    mirrors = builder_config.copy_from("linux-rel"),
-)
