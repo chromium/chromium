@@ -60,6 +60,12 @@ void RedirectedAudioConnection::Connect() {
   MixerConnection::Connect();
 }
 
+void RedirectedAudioConnection::ConnectForTest(
+    std::unique_ptr<MixerSocket> connected_socket_for_test) {
+  DCHECK(connected_socket_for_test);
+  OnConnected(std::move(connected_socket_for_test));
+}
+
 void RedirectedAudioConnection::OnConnected(
     std::unique_ptr<MixerSocket> socket) {
   sample_rate_ = 0;

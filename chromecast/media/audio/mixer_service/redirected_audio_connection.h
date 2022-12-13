@@ -92,6 +92,7 @@ class RedirectedAudioConnection : public MixerConnection,
   // Initiates connection to the mixer service. Delegate methods can be called
   // at any point after Connect() is called, until this is destroyed.
   void Connect();
+  void ConnectForTest(std::unique_ptr<MixerSocket> connected_socket_for_test);
 
  private:
   // MixerConnection implementation:

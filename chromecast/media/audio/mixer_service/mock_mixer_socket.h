@@ -19,7 +19,7 @@ namespace mixer_service {
 class MockMixerSocket : public MixerSocket {
  public:
   MockMixerSocket();
-  ~MockMixerSocket();
+  ~MockMixerSocket() override;
 
   MOCK_METHOD(void,
               SetLocalCounterpart,

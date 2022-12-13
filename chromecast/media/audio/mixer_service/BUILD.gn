@@ -164,3 +164,22 @@ cast_source_set("test_support") {
     "//testing/gtest",
   ]
 }
+
+cast_source_set("unittests") {
+  testonly = true
+
+  sources = [
+    "redirected_audio_connection_unittest.cc",
+  ]
+
+  deps = [
+    ":common",
+    ":redirected_audio_connection",
+    ":test_support",
+    "//base/test:test_support",
+    "//chromecast/net:test_support",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -85,6 +85,7 @@ test("cast_media_unittests") {
     "//chromecast/media/audio:test_support",
     "//chromecast/media/audio:unittests",
     "//chromecast/media/audio/capture_service:unittests",
+    "//chromecast/media/audio/mixer_service:unittests",
     "//chromecast/media/base:monotonic_clock",
     "//chromecast/media/base:slew_volume",
     "//chromecast/media/cma:test_support",
