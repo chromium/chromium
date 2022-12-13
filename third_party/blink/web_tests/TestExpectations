@@ -243,6 +243,9 @@ crbug.com/1302831 [ Win10.20h2 ] external/wpt/html/browsers/browsing-the-web/bac
 
 crbug.com/1343590 virtual/prefetch/external/wpt/speculation-rules/prefetch/redirect-url.https.html [ Failure ]
 
+# Test might be flaky on Mac12-arm64 as the test server causes network errors probably becauuse of lack of resources on the bot.
+crbug.com/1382361 [ Mac12-arm64 ] external/wpt/speculation-rules/prerender/csp-script-src-self.html [ Failure Pass ]
+
 # These tests should be revisited after the eagerness api for speculation rules is implemented.
 crbug.com/1374023 virtual/prefetch/external/wpt/speculation-rules/prefetch/document-rules.https.html* [ Failure ]
 crbug.com/1374023 virtual/prefetch/external/wpt/speculation-rules/prefetch/document-rules.https.html?include=invalidPredicate [ Pass ]
