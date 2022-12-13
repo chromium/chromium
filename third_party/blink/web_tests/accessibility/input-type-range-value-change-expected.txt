@@ -17,6 +17,7 @@ PASS range3.intValue is 15
 PASS range3.intValue is 20
 PASS range3.intValue is 15
 PASS range3.intValue is 20
+PASS eventsTriggered became 12
 PASS successfullyParsed is true
 
 TEST COMPLETE

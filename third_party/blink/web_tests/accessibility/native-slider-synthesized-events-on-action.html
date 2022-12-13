@@ -11,9 +11,10 @@
 </head>
 <body>
   <input id="slider" type="range" value="0" step="1"/>
+  <input id="slider-rtl" class="rtl" type="range" value="0" step="1"/>
 
 <script>
-  function checkEvent(event, expected_key) {
+  function checkEvent(event, target, expected_key) {
     if (expected_key == "ArrowUp") {
       assert_equals(event.code, "ArrowUp", "event.code on " + event.type);
       assert_equals(event.key, "ArrowUp", "event.key on " + event.type);
@@ -38,104 +39,94 @@
 
     assert_true(event.isTrusted, "event.isTrusted on " + event.type);
     assert_equals(event.charCode, 0, "event.charCode on " + event.type);
-    assert_equals(event.target, slider, "event.target on " + event.type);
-    assert_equals(event.srcElement, slider, "event.srcElement on " + event.type);
+    assert_equals(event.target, target, "event.target on " + event.type);
+    assert_equals(event.srcElement, target, "event.srcElement on " + event.type);
     assert_true(event.bubbles, "event.bubbles on " + event.type);
     assert_false(event.defaultPrevented, "event.defaultPrevented on " + event.type);
   }
-
-  var slider = document.getElementById("slider");
-  var axSlider = accessibilityController.accessibleElementById("slider");
 
   test(function(t) {
     assert_true(internals.runtimeFlags.synthesizedKeyboardEventsForAccessibilityActionsEnabled);
   }, "Make sure that keyboard event synthesis is enabled");
 
-  // Tests for left-to-right slider
+  // Test left-to-right slider
 
-  promise_test(function(t) {
-    return new Promise(resolve => {
-      slider.addEventListener("keydown", resolve);
-      axSlider.increment();
-    }).then(event => {
-      checkEvent(event, "ArrowRight");
+  async_test(function(t) {
+    var slider = document.getElementById("slider");
+    var axSlider = accessibilityController.accessibleElementById("slider");
+
+    // Listener for keydown event after increment action.
+    slider.addEventListener("keydown", t.step_func((event) => {
+      checkEvent(event, slider, "ArrowRight");
+    }), { once: true });
+
+    // Listener for keyup event after increment action.
+    // It sets up a new set of listeners and runs the decrement action.
+    slider.addEventListener("keyup", t.step_func((event) => {
+      checkEvent(event, slider, "ArrowRight");
       assert_equals(slider.value, "1", "slider value after increase");
-    });
-  }, "check that sending an increment event to a native slider generates a right arrow keydown event");
 
-  promise_test(function(t) {
-    return new Promise(resolve => {
-      slider.addEventListener("keyup", resolve);
-      axSlider.increment();
-    }).then(event => {
-      checkEvent(event, "ArrowRight");
-      assert_equals(slider.value, "2", "slider value after increase");
-    });
-  }, "check that sending an increment event to a native slider generates a right arrow keyup event");
+      // Listener for keydown event after decrement action.
+      slider.addEventListener("keydown", t.step_func((event) => {
+        checkEvent(event, slider, "ArrowLeft");
+      }), { once: true });
 
-  promise_test(function(t) {
-    return new Promise(resolve => {
-      slider.addEventListener("keydown", resolve);
-      axSlider.decrement();
-    }).then(event => {
-      checkEvent(event, "ArrowLeft");
-      assert_equals(slider.value, "1", "slider value after decrease");
-    });
-  }, "check that sending a decrement event to a native slider generates a left arrow keydown event");
+      // Listener for keyup event after decrement action.
+      slider.addEventListener("keyup", t.step_func_done((event) => {
+        checkEvent(event, slider, "ArrowLeft");
+        assert_equals(slider.value, "0", "slider value after decrease");
+      }), { once: true });
 
-  promise_test(function(t) {
-    return new Promise(resolve => {
-      slider.addEventListener("keyup", resolve);
-      axSlider.decrement();
-    }).then(event => {
-      checkEvent(event, "ArrowLeft");
-      assert_equals(slider.value, "0", "slider value after decrease");
-    });
-  }, "check that sending a decrement event to a native slider generates a left arrow keyup event");
+      window.setTimeout(() => {
+        axSlider.decrement();
+      }, 0);
+    }), { once: true });
 
-  // Tests for right-to-left slider
+    window.setTimeout(
+        t.unreached_func("didn't get all key events within 1000ms"), 1000);
 
-  promise_test(function(t) {
-    slider.classList.toggle("rtl");
+    axSlider.increment();
+  }, "Check that running increment and decrement actions on a native slider generates the corresponding keydown and keyup events");
 
-    return new Promise(resolve => {
-      slider.addEventListener("keydown", resolve);
-      axSlider.increment();
-    }).then(event => {
-      checkEvent(event, "ArrowLeft");
+  // Test right-to-left slider
+
+  async_test(function(t) {
+    var slider = document.getElementById("slider-rtl");
+    var axSlider = accessibilityController.accessibleElementById("slider-rtl");
+
+    // Listener for keydown event after increment action.
+    slider.addEventListener("keydown", t.step_func((event) => {
+      checkEvent(event, slider, "ArrowLeft");
+    }), { once: true });
+
+    // Listener for keyup event after increment action.
+    // It sets up a new set of listeners and runs the decrement action.
+    slider.addEventListener("keyup", t.step_func((event) => {
+      checkEvent(event, slider, "ArrowLeft");
       assert_equals(slider.value, "1", "slider value after increase");
-    });
-  }, "check that sending an increment event to a RTL native slider generates a left arrow keydown event");
 
-  promise_test(function(t) {
-    return new Promise(resolve => {
-      slider.addEventListener("keyup", resolve);
-      axSlider.increment();
-    }).then(event => {
-      checkEvent(event, "ArrowLeft");
-      assert_equals(slider.value, "2", "slider value after increase");
-    });
-  }, "check that sending an increment event to a RTL native slider generates a left arrow keyup event");
+      // Listener for keydown event after decrement action.
+      slider.addEventListener("keydown", t.step_func((event) => {
+        checkEvent(event, slider, "ArrowRight");
+      }), { once: true });
 
-  promise_test(function(t) {
-    return new Promise(resolve => {
-      slider.addEventListener("keydown", resolve);
-      axSlider.decrement();
-    }).then(event => {
-      checkEvent(event, "ArrowRight");
-      assert_equals(slider.value, "1", "slider value after decrease");
-    });
-  }, "check that sending a decrement event to a RTL native slider generates a right arrow keydown event");
+      // Listener for keyup event after decrement action.
+      slider.addEventListener("keyup", t.step_func_done((event) => {
+        checkEvent(event, slider, "ArrowRight");
+        assert_equals(slider.value, "0", "slider value after decrease");
+        t.done();
+      }), { once: true });
 
-  promise_test(function(t) {
-    return new Promise(resolve => {
-      slider.addEventListener("keyup", resolve);
-      axSlider.decrement();
-    }).then(event => {
-      checkEvent(event, "ArrowRight");
-      assert_equals(slider.value, "0", "slider value after decrease");
-    });
-  }, "check that sending a decrement event to a RTL native slider generates a right arrow keyup event");
+      window.setTimeout(() => {
+        axSlider.decrement();
+      }, 0);
+    }), { once: true });
+
+    window.setTimeout(
+        t.unreached_func("didn't get all key events within 1000ms"), 1000);
+
+    axSlider.increment();
+  }, "Check that running increment and decrement actions on a RTL native slider generates the corresponding keydown and keyup events");
 </script>
 </body>
 </html>

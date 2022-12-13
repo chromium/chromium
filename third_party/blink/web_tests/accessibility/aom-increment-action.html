@@ -30,11 +30,16 @@ async_test(function(t) {
     target.accessibleNode.onaccessibleincrement = function() {
       gotAccessibleEvent = true;
     };
+
+    // Finish the test after the synthesized keyup event, which is triggered
+    // 100ms later, to prevent leaks.
+    target.addEventListener("keyup",
+        t.step_func_done((event) => {}), { once: true });
+
     axTarget.increment();
 
     assert_true(gotAccessibleEvent);
     assert_equals(target.value, "4");
-    t.done();
   });
 }, "AccessibleNode.onaccessibleincrement");
 </script>
