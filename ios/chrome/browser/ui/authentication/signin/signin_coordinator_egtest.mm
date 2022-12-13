@@ -93,9 +93,9 @@ void SetParentalControlsCapabilityForIdentity(FakeSystemIdentity* identity) {
   // through the fake identity service.
   [SigninEarlGrey addFakeIdentity:identity];
 
-  NSDictionary* capabilities = @{
-    @(kIsSubjectToParentalControlsCapabilityName) : [NSNumber
-        numberWithInt:(int)ios::ChromeIdentityCapabilityResult::kTrue],
+  ios::CapabilitiesDict* capabilities = @{
+    @(kIsSubjectToParentalControlsCapabilityName) :
+        @(static_cast<int>(ios::ChromeIdentityCapabilityResult::kTrue))
   };
   [SigninEarlGrey setCapabilities:capabilities forIdentity:identity];
 }

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/public/provider/chrome/browser/signin/capabilities_dict.h"
 #import "url/gurl.h"
 
 @class FakeSystemIdentity;
@@ -26,7 +27,7 @@ enum class ConsentLevel;
 
 // Maps `capabilities` to the `fakeIdentity`.
 // Must be called after `addFakeIdentity`.
-+ (void)setCapabilities:(NSDictionary*)capabilities
++ (void)setCapabilities:(ios::CapabilitiesDict*)capabilities
             forIdentity:(FakeSystemIdentity*)fakeIdentity;
 
 // Removes `fakeIdentity` from the fake chrome identity service asynchronously

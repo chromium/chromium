@@ -47,7 +47,7 @@ void VerifySigninPromoSufficientlyVisible() {
              @"Sign-in promo not visible");
 }
 
-NSDictionary<NSString*, NSNumber*>* GetCapabilitiesDictionary(
+ios::CapabilitiesDict* GetCapabilitiesDictionary(
     ios::ChromeIdentityCapabilityResult result) {
   int intResult = static_cast<int>(result);
   return @{

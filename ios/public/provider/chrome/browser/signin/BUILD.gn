@@ -11,6 +11,7 @@ source_set("signin") {
     "chrome_identity_service.mm",
   ]
   deps = [
+    ":capabilities_types",
     "//base",
     "//components/signin/internal/identity_manager",
     "//components/sync/driver",
@@ -56,6 +57,7 @@ source_set("test_support") {
     "fake_chrome_identity_service.mm",
   ]
   deps = [
+    ":capabilities_types",
     ":constants",
     ":signin",
     "//base",
@@ -71,6 +73,12 @@ source_set("test_support") {
     "//ui/base:test_support",
   ]
   public_deps = [ "//testing/gmock" ]
+}
+
+source_set("capabilities_types") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "capabilities_dict.h" ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("constants") {
@@ -90,6 +98,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "chrome_identity_service_unittest.mm" ]
   deps = [
+    ":capabilities_types",
     ":signin",
     "//base",
     "//base/test:test_support",

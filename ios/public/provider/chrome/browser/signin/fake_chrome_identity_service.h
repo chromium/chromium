@@ -5,11 +5,12 @@
 #ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_FAKE_CHROME_IDENTITY_SERVICE_H_
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_FAKE_CHROME_IDENTITY_SERVICE_H_
 
-#include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "ios/public/provider/chrome/browser/signin/capabilities_dict.h"
+#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 #import <Foundation/Foundation.h>
 
-#include "testing/gmock/include/gmock/gmock.h"
+#import "testing/gmock/include/gmock/gmock.h"
 
 @class FakeChromeIdentityInteractionManager;
 
@@ -79,7 +80,8 @@ class FakeChromeIdentityService : public ChromeIdentityService {
   // Adds a mapping from the `identity` to the capability name -> capability
   // result value used when calling FetchCapabilities.
   // Assumes the `identity` has been added to the available identities.
-  void SetCapabilities(id<SystemIdentity> identity, NSDictionary* capabilities);
+  void SetCapabilities(id<SystemIdentity> identity,
+                       CapabilitiesDict* capabilities);
 
   // Waits until all asynchronous callbacks have been completed by the service.
   // Returns true on successful completion.
@@ -96,7 +98,7 @@ class FakeChromeIdentityService : public ChromeIdentityService {
 
  private:
   NSMutableArray<id<SystemIdentity>>* identities_;
-  NSMutableDictionary<NSString*, NSDictionary*>* capabilitiesByIdentity_;
+  NSMutableDictionary<NSString*, CapabilitiesDict*>* capabilities_by_identity_;
 
   // If true, call to GetAccessToken() fakes a MDM error.
   bool _fakeMDMError;

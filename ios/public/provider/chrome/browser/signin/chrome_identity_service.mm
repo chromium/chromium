@@ -237,7 +237,7 @@ void ChromeIdentityService::FetchCapability(id<SystemIdentity> identity,
   const base::TimeTicks fetch_start = base::TimeTicks::Now();
   FetchCapabilities(
       identity, @[ capability_name ],
-      ^(NSDictionary<NSString*, NSNumber*>* capabilities, NSError* error) {
+      ^(CapabilitiesDict* capabilities, NSError* error) {
         base::UmaHistogramTimes(
             "Signin.AccountCapabilities.GetFromSystemLibraryDuration",
             base::TimeTicks::Now() - fetch_start);

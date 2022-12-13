@@ -7,7 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/compiler_specific.h"
+#import "base/compiler_specific.h"
+#import "ios/public/provider/chrome/browser/signin/capabilities_dict.h"
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
 
 @protocol GREYMatcher;
@@ -29,7 +30,8 @@ enum class ConsentLevel;
 
 // Maps `capabilities` to the `fakeIdentity`. Check fails if the
 // `fakeIdentity` has not been added to the fake identity service.
-- (void)setCapabilities:(NSDictionary*)capabilities forIdentity:fakeIdentity;
+- (void)setCapabilities:(ios::CapabilitiesDict*)capabilities
+            forIdentity:fakeIdentity;
 
 // Removes `fakeIdentity` from the fake identity service asynchronously to
 // simulate identity removal from the device.

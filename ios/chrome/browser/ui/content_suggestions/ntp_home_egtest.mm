@@ -1206,9 +1206,9 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:identity];
 
-  NSDictionary* capabilities = @{
-    @(kIsSubjectToParentalControlsCapabilityName) : [NSNumber
-        numberWithInt:(int)ios::ChromeIdentityCapabilityResult::kTrue],
+  ios::CapabilitiesDict* capabilities = @{
+    @(kIsSubjectToParentalControlsCapabilityName) :
+        @(static_cast<int>(ios::ChromeIdentityCapabilityResult::kTrue))
   };
   [SigninEarlGrey setCapabilities:capabilities forIdentity:identity];
 

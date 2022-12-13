@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/observer_list.h"
+#import "ios/public/provider/chrome/browser/signin/capabilities_dict.h"
 
 @class ChromeIdentityInteractionManager;
 @protocol SystemIdentity;
@@ -67,7 +68,7 @@ typedef void (^CapabilitiesCallback)(
 // Callback for fetching the set of supported capabilities and their
 // corresponding states as defined in ChromeIdentityCapabilityResult.
 typedef void (^ChromeIdentityCapabilitiesFetchCompletionBlock)(
-    NSDictionary* capabilities,
+    CapabilitiesDict* capabilities,
     NSError* error);
 
 // Opaque type representing the MDM (Mobile Device Management) status of the
