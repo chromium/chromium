@@ -3831,18 +3831,20 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Navigate back to a.com.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ASSERT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
+  ExpectRestored(FROM_HERE);
 
   // Navigate forward to b.com again with no error.
   ASSERT_TRUE(HistoryGoForward(web_contents()));
 
-  // We would normally confirm that the blocking reasons are correct, however,
-  // when performing a history navigations back to an error document, a new
-  // entry is created and the reasons in the old entry are not recorded.
-  //
   // Check that we indeed got a new history entry.
   ASSERT_NE(
       history_entry_id,
       web_contents()->GetController().GetLastCommittedEntry()->GetUniqueID());
+  // The reasons from the old entry should be copied to the new entry.
+  ExpectNotRestored(
+      {NotRestoredReason::kHTTPStatusNotOK, NotRestoredReason::kNoResponseHead,
+       NotRestoredReason::kErrorDocument},
+      {}, {}, {}, {}, FROM_HERE);
 }
 
 class BackForwardCacheBrowserTestWithFencedFrames

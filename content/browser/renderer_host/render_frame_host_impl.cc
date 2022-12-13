@@ -1170,6 +1170,18 @@ bool CoopSuppressOpener(const RenderFrameHostImpl* opener) {
   }
 }
 
+// Helper function to get navgation entry if |request| is a history navigation
+// that didn't get served from back/forward cache.
+NavigationEntryImpl* GetNavigationEntryIfNonBackForwardCacheHistoryNavigation(
+    NavigationRequest* request) {
+  if (!request->IsServedFromBackForwardCache() &&
+      BackForwardCacheMetrics::IsCrossDocumentMainFrameHistoryNavigation(
+          request)) {
+    return static_cast<NavigationEntryImpl*>(request->GetNavigationEntry());
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
@@ -4408,6 +4420,27 @@ RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle
 RenderFrameHostImpl::RegisterBackForwardCacheDisablingNonStickyFeature(
     BackForwardCacheDisablingFeature feature) {
   return BackForwardCacheDisablingFeatureHandle(this, feature);
+}
+
+void RenderFrameHostImpl::UpdateBackForwardCacheNotRestoredReasons(
+    NavigationRequest* navigation_request) {
+  if (NavigationEntryImpl* entry =
+          GetNavigationEntryIfNonBackForwardCacheHistoryNavigation(
+              navigation_request)) {
+    if (!entry->back_forward_cache_metrics()) {
+      // Create a metrics if there is none.
+      FrameNavigationEntry* frame_navigation_entry =
+          entry->GetFrameEntry(navigation_request->frame_tree_node());
+      scoped_refptr<BackForwardCacheMetrics> metrics =
+          base::WrapRefCounted(new BackForwardCacheMetrics(
+              frame_navigation_entry->document_sequence_number()));
+      entry->set_back_forward_cache_metrics(std::move(metrics));
+    }
+    // Update NotRestoredReasons to include additional reasons only
+    // known at commit time, before reporting to the renderer.
+    entry->back_forward_cache_metrics()->UpdateNotRestoredReasonsForNavigation(
+        navigation_request);
+  }
 }
 
 bool RenderFrameHostImpl::IsFrozen() {
@@ -12085,30 +12118,29 @@ void RenderFrameHostImpl::SendCommitNavigation(
   }
 
   blink::mojom::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons;
+  UpdateBackForwardCacheNotRestoredReasons(navigation_request);
   // Only populate the web-exposed NotRestoredReasons when needed by the
   // NotRestoredReasons API, i.e. for cross-document main frame history
-  // navigations that are not served by back/forward cache.
+  // navigations that are not served by back/forward cache where back/forward
+  // cache flag and NotRestoredReasons flag are enabled.
   if (IsBackForwardCacheEnabled() &&
-      !navigation_request->IsServedFromBackForwardCache() &&
-      BackForwardCacheMetrics::IsCrossDocumentMainFrameHistoryNavigation(
-          navigation_request)) {
-    if (NavigationEntryImpl* entry = static_cast<NavigationEntryImpl*>(
-            navigation_request->GetNavigationEntry())) {
-      if (auto* metrics = entry->back_forward_cache_metrics()) {
-        // Update NotRestoredReasons to include additional reasons only known at
-        // commit time, before reporting to the renderer.
-        metrics->UpdateNotRestoredReasonsForNavigation(navigation_request,
-                                                       /*before_commit=*/true);
-        if (base::FeatureList::IsEnabled(
-                blink::features::kBackForwardCacheSendNotRestoredReasons)) {
-          // Only populate the web-exposed NotRestoredReasons when needed by the
-          // NotRestoredReasons API, i.e. for cross-document main frame history
-          // navigations that are not served by back/forward cache.
-          not_restored_reasons = metrics->GetWebExposedNotRestoredReasons();
-        }
-      }
+      base::FeatureList::IsEnabled(
+          blink::features::kBackForwardCacheSendNotRestoredReasons)) {
+    if (NavigationEntryImpl* entry =
+            GetNavigationEntryIfNonBackForwardCacheHistoryNavigation(
+                navigation_request)) {
+      auto* metrics = entry->back_forward_cache_metrics();
+      // There must be a metrics object since if there's none
+      // |UpdateBackForwardCacheNotRestoredReasons| should have created one.
+      DCHECK(metrics);
+      // Only populate the web-exposed NotRestoredReasons when needed by the
+      // NotRestoredReasons API, i.e. for cross-document main frame history
+      // navigations that are not served by back/forward cache.
+      // TODO(yuzus): Do not set this when navigation gets redirected.
+      not_restored_reasons = metrics->GetWebExposedNotRestoredReasons();
     }
   }
+
   // Save the last sent NotRestoredReasons value for testing, so that we can
   // verify them in tests.
   not_restored_reasons_for_testing_ = not_restored_reasons.Clone();
@@ -12151,6 +12183,7 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
   DCHECK_NE(GURL(), common_params->url);
   DCHECK_NE(net::OK, error_code);
   IncreaseCommitNavigationCounter();
+  UpdateBackForwardCacheNotRestoredReasons(navigation_request);
   navigation_client->CommitFailedNavigation(
       std::move(common_params), std::move(commit_params),
       has_stale_copy_in_cache, error_code, extended_error_code,

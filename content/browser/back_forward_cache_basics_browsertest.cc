@@ -1681,6 +1681,41 @@ IN_PROC_BROWSER_TEST_F(CacheSizeOneBackForwardCacheBrowserTest,
   EXPECT_EQ(rfh_c->GetVisibilityState(), PageVisibilityState::kVisible);
 }
 
+// Server redirect happens when doing history navigation, causing a SiteInstance
+// swap and a new navigation entry. Ensure that the reasons from the old entry
+// are copied to the new one and reported.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ServerRedirect) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // Navigate to a.com. This time the redirect does not happen.
+  ASSERT_TRUE(NavigateToURL(web_contents(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  EXPECT_EQ(url_a, rfh_a->GetLastCommittedURL());
+  // Replace the history URL to server-redirect.
+  std::string replace_state =
+      "window.history.replaceState(null, '', '/server-redirect?" +
+      url_b.spec() + "');";
+  EXPECT_TRUE(ExecJs(rfh_a.get(), replace_state));
+
+  // Navigate to c.com.
+  EXPECT_TRUE(NavigateToURL(shell(), url_c));
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+  EvictByJavaScript(rfh_a.get());
+
+  // Navigate back, going back to b.com instead of a.com because of server
+  // redirect.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  RenderFrameHostImplWrapper rfh_a_redirect(current_frame_host());
+  EXPECT_EQ(url_b, rfh_a_redirect->GetLastCommittedURL());
+  // Make sure that the eviction reason is recorded.
+  ExpectNotRestored({NotRestoredReason::kJavaScriptExecution}, {}, {}, {}, {},
+                    FROM_HERE);
+}
+
 class BackForwardCacheBrowsingContextStateBrowserTest
     : public BackForwardCacheBrowserTest,
       public ::testing::WithParamInterface<bool> {

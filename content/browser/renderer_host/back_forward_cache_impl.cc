@@ -1475,17 +1475,13 @@ BackForwardCacheCanStoreTreeResult::BackForwardCacheCanStoreTreeResult(
       url_(url) {}
 
 BackForwardCacheCanStoreTreeResult::BackForwardCacheCanStoreTreeResult(
-    BackForwardCacheCanStoreDocumentResult& result_for_this_document,
     bool is_same_origin,
-    const std::string& id,
-    const std::string& name,
-    const std::string& src,
     const GURL& url)
-    : document_result_(std::move(result_for_this_document)),
+    : document_result_(BackForwardCacheCanStoreDocumentResult()),
       is_same_origin_(is_same_origin),
-      id_(id),
-      name_(name),
-      src_(src),
+      id_(""),
+      name_(""),
+      src_(""),
       url_(url) {}
 
 BackForwardCacheCanStoreTreeResult::~BackForwardCacheCanStoreTreeResult() =
@@ -1517,31 +1513,24 @@ void BackForwardCacheCanStoreTreeResult::FlattenTreeHelper(
 }
 
 std::unique_ptr<BackForwardCacheCanStoreTreeResult>
+BackForwardCacheCanStoreTreeResult::CreateEmptyTreeForNavigation(
+    NavigationRequest* navigation) {
+  DCHECK(!navigation->GetRenderFrameHost()->IsNestedWithinFencedFrame());
+  DCHECK(BackForwardCacheMetrics::IsCrossDocumentMainFrameHistoryNavigation(
+      navigation));
+  std::unique_ptr<BackForwardCacheCanStoreTreeResult> empty_tree(
+      new BackForwardCacheCanStoreTreeResult(
+          /*is_same_origin=*/true, navigation->GetURL()));
+  return empty_tree;
+}
+
+std::unique_ptr<BackForwardCacheCanStoreTreeResult>
 BackForwardCacheCanStoreTreeResult::CreateEmptyTree(RenderFrameHostImpl* rfh) {
   BackForwardCacheCanStoreDocumentResult empty_result;
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> empty_tree(
       new BackForwardCacheCanStoreTreeResult(rfh, rfh->GetLastCommittedOrigin(),
                                              rfh->GetLastCommittedURL(),
                                              empty_result));
-  return empty_tree;
-}
-
-std::unique_ptr<BackForwardCacheCanStoreTreeResult>
-BackForwardCacheCanStoreTreeResult::CreateEmptyTreeBeforeCommit(
-    NavigationRequest* navigation) {
-  // This method should only be called when a RenderFrameHostImpl is in the
-  // process of committing a navigation.
-  DCHECK_GE(navigation->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
-  RenderFrameHostImpl* frame = navigation->GetRenderFrameHost();
-  DCHECK(frame);
-  // Non-null `frame` indicates a non-`nullopt` `origin`.
-  absl::optional<url::Origin> origin = navigation->GetOriginToCommit();
-  DCHECK(origin.has_value());
-
-  BackForwardCacheCanStoreDocumentResult empty_result;
-  std::unique_ptr<BackForwardCacheCanStoreTreeResult> empty_tree(
-      new BackForwardCacheCanStoreTreeResult(
-          frame, origin.value(), navigation->GetURL(), empty_result));
   return empty_tree;
 }
 

@@ -177,6 +177,8 @@ class BackForwardCacheMetrics
       bool is_main_frame_navigation,
       int64_t committing_document_sequence_number);
 
+  explicit BackForwardCacheMetrics(int64_t document_sequence_number);
+
   BackForwardCacheMetrics(const BackForwardCacheMetrics&) = delete;
   BackForwardCacheMetrics& operator=(const BackForwardCacheMetrics&) = delete;
 
@@ -238,13 +240,12 @@ class BackForwardCacheMetrics
   blink::mojom::BackForwardCacheNotRestoredReasonsPtr
   GetWebExposedNotRestoredReasons();
 
-  // Record additional reason why navigation was not served from bfcache which
-  // are known only at the commit time, such as BrowsingInstanceNotSwapped,
-  // SessionRestored, Unknown etc. |before_commit| indicates whether this is
-  // called before commit or after commit and will be used for recording the
-  // right values for URL and origin.
-  void UpdateNotRestoredReasonsForNavigation(NavigationRequest* navigation,
-                                             bool before_commit);
+  // Records additional reasons why a history navigation was not served from
+  // BFCache. The reasons are recorded only after the history navigation started
+  // because it's about the history navigation (e.g. kSessionRestored) or
+  // reasons that might not have been recorded yet (e.g.
+  // kBrowsingInstanceNotSwapped).
+  void UpdateNotRestoredReasonsForNavigation(NavigationRequest* navigation);
 
   // Exported for testing.
   // The DisabledReason's source and id combined to give a unique uint64.
@@ -272,8 +273,6 @@ class BackForwardCacheMetrics
 
  private:
   friend class base::RefCounted<BackForwardCacheMetrics>;
-
-  explicit BackForwardCacheMetrics(int64_t document_sequence_number);
 
   ~BackForwardCacheMetrics();
 

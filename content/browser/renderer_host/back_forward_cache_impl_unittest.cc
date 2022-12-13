@@ -31,11 +31,8 @@ class BackForwardCacheImplTest : public RenderViewHostImplTestHarness {
 
  private:
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> CreateSameOriginTree() {
-    BackForwardCacheCanStoreDocumentResult result;
     std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree(
-        new BackForwardCacheCanStoreTreeResult(result, /*is_same_origin=*/true,
-                                               /*id=*/"a", /*name=*/"a",
-                                               /*src=*/"a",
+        new BackForwardCacheCanStoreTreeResult(/*is_same_origin=*/true,
                                                GURL("https://a.com/test")));
     return tree;
   }
@@ -43,9 +40,7 @@ class BackForwardCacheImplTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> CreateCrossOriginTree() {
     BackForwardCacheCanStoreDocumentResult result;
     std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree(
-        new BackForwardCacheCanStoreTreeResult(result, /*is_same_origin=*/false,
-                                               /*id=*/"b", /*name=*/"b",
-                                               /*src=*/"b",
+        new BackForwardCacheCanStoreTreeResult(/*is_same_origin=*/false,
                                                GURL("https://b.com/test")));
     return tree;
   }
