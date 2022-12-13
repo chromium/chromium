@@ -34,7 +34,6 @@ void TestStartupRuleExists(const BackgroundTracingConfigImpl& config,
     EXPECT_EQ(BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_STARTUP,
               rule->category_preset());
     EXPECT_EQ(30, rule->GetTraceDelay());
-    EXPECT_FALSE(rule->stop_tracing_on_repeated_reactive());
   } else {
     EXPECT_FALSE(rule);
   }

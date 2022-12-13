@@ -35,9 +35,6 @@ const char kConfigCategoryKey[] = "category";
 const char kConfigRuleTriggerNameKey[] = "trigger_name";
 const char kConfigRuleTriggerDelay[] = "trigger_delay";
 const char kConfigRuleTriggerChance[] = "trigger_chance";
-const char kConfigRuleStopTracingOnRepeatedReactive[] =
-    "stop_tracing_on_repeated_reactive";
-const char kConfigRuleArgsKey[] = "args";
 const char kConfigRuleIdKey[] = "rule_id";
 const char kConfigIsCrashKey[] = "is_crash";
 
@@ -101,10 +98,6 @@ base::Value::Dict BackgroundTracingRule::ToDict() const {
   if (trigger_delay_ != -1)
     dict.Set(kConfigRuleTriggerDelay, trigger_delay_);
 
-  if (stop_tracing_on_repeated_reactive_) {
-    dict.Set(kConfigRuleStopTracingOnRepeatedReactive,
-             stop_tracing_on_repeated_reactive_);
-  }
   if (rule_id_ != GetDefaultRuleId()) {
     dict.Set(kConfigRuleIdKey, rule_id_);
   }
@@ -131,10 +124,6 @@ void BackgroundTracingRule::Setup(const base::Value::Dict& dict) {
   }
   if (auto trigger_delay = dict.FindInt(kConfigRuleTriggerDelay)) {
     trigger_delay_ = *trigger_delay;
-  }
-  if (auto stop_tracing_on_repeated_reactive =
-          dict.FindBool(kConfigRuleStopTracingOnRepeatedReactive)) {
-    stop_tracing_on_repeated_reactive_ = *stop_tracing_on_repeated_reactive;
   }
   if (const std::string* rule_id = dict.FindString(kConfigRuleIdKey)) {
     rule_id_ = *rule_id;
@@ -250,9 +239,6 @@ class HistogramRule : public BackgroundTracingRule,
         new HistogramRule(*histogram_name, *histogram_lower_value,
                           histogram_upper_value, repeat));
 
-    const base::Value::Dict* args_dict = dict.FindDict(kConfigRuleArgsKey);
-    if (args_dict)
-      rule->SetArgs(base::Value(args_dict->Clone()));
     return rule;
   }
 
@@ -296,7 +282,7 @@ class HistogramRule : public BackgroundTracingRule,
     rule->set_histogram_max_trigger(histogram_upper_value_);
   }
 
-  void OnHistogramTrigger(const std::string& histogram_name) const override {
+  void OnHistogramTrigger(const std::string& histogram_name) const {
     if (histogram_name != histogram_name_)
       return;
 

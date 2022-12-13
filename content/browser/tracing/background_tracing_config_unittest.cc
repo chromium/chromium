@@ -409,7 +409,6 @@ TEST_F(BackgroundTracingConfigTest, ReactiveConfigFromValidString) {
   config = ReadFromJSONString(
       "{\"mode\":\"REACTIVE_TRACING_MODE\",\"configs\": [{\"rule\": "
       "\"TRACE_AT_RANDOM_INTERVALS\","
-      "\"stop_tracing_on_repeated_reactive\": true,"
       "\"category\": \"BENCHMARK_STARTUP\","
       "\"timeout_min\":10, \"timeout_max\":20}]}");
   EXPECT_TRUE(config);
@@ -417,7 +416,7 @@ TEST_F(BackgroundTracingConfigTest, ReactiveConfigFromValidString) {
   EXPECT_EQ(config->rules().size(), 1u);
   EXPECT_EQ(RuleToString(config->rules()[0]),
             "{\"category\":\"BENCHMARK_STARTUP\",\"rule\":\"TRACE_AT_RANDOM_"
-            "INTERVALS\",\"stop_tracing_on_repeated_reactive\":true,"
+            "INTERVALS\","
             "\"timeout_max\":20,\"timeout_min\":10}");
 
   config = ReadFromJSONString(
@@ -425,14 +424,13 @@ TEST_F(BackgroundTracingConfigTest, ReactiveConfigFromValidString) {
       "\"custom_categories\": \"benchmark,toplevel\","
       "\"configs\": [{\"rule\": "
       "\"TRACE_AT_RANDOM_INTERVALS\","
-      "\"stop_tracing_on_repeated_reactive\": true, "
       "\"timeout_max\":20,\"timeout_min\":10}]}");
   EXPECT_TRUE(config);
   EXPECT_EQ(config->tracing_mode(), BackgroundTracingConfig::REACTIVE);
   EXPECT_EQ(config->rules().size(), 1u);
   EXPECT_EQ(ConfigToString(config.get()),
             "{\"configs\":[{\"category\":\"CUSTOM\",\"rule\":\"TRACE_AT_RANDOM_"
-            "INTERVALS\",\"stop_tracing_on_repeated_reactive\":true,\"timeout_"
+            "INTERVALS\",\"timeout_"
             "max\":20,\"timeout_min\":10}],\"custom_categories\":\"benchmark,"
             "toplevel\",\"mode\":\"REACTIVE_TRACING_MODE\"}");
 }
