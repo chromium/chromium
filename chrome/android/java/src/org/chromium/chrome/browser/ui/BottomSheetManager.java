@@ -289,7 +289,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
                 return startSurface != null;
             }
         } else {
-            if (startSurface == null) return tab == null;
+            if (startSurface == null || startSurfaceState == null) return tab == null;
             if (startSurfaceState == StartSurfaceState.SHOWING_HOMEPAGE
                     || startSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
                 return false;
@@ -322,6 +322,8 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     }
 
     private void addLayoutStateObserver(LayoutStateProvider layoutStateProvider) {
+        if (!mIsStartSurfaceRefactorEnabled) return;
+
         mLayoutStateObserver = new LayoutStateObserver() {
             private @LayoutType int mLayoutType;
             @Override
@@ -335,6 +337,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
                 }
             }
         };
+        layoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
     @Override

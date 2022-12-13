@@ -662,9 +662,9 @@ public class StartSurfaceTest {
         assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
 
         StartSurfaceTestUtils.pressHomePageButton(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
 
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         StartSurfaceTestUtils.clickTabSwitcherButton(cta);
         StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
         assertTrue(bottomSheetTestSupport.hasSuppressionTokens());
