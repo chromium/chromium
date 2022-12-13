@@ -4,6 +4,7 @@
 
 #include "chrome/test/base/web_ui_test_data_source.h"
 
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/data/grit/webui_generated_test_resources.h"
 #include "chrome/test/data/grit/webui_generated_test_resources_map.h"
@@ -17,7 +18,7 @@ content::WebUIDataSource* CreateWebUITestDataSource() {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIWebUITestHost);
 
-  source->DisableTrustedTypesCSP();
+  webui::EnableTrustedTypesCSP(source);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://* 'self';");

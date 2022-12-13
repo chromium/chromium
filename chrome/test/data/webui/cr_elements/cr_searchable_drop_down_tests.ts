@@ -5,6 +5,7 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
 
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {CrSearchableDropDownElement} from 'chrome://resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
 import {keyDownOn, move} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -80,7 +81,7 @@ suite('cr-searchable-drop-down', function() {
   }
 
   setup(function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <p id="outside">Nothing to see here</p>
       <cr-searchable-drop-down label="test drop down">
       </cr-searchable-drop-down>
