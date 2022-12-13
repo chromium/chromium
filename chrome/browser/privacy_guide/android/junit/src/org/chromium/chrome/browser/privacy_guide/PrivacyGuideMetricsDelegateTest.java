@@ -60,10 +60,9 @@ public class PrivacyGuideMetricsDelegateTest {
                 .thenReturn(initialMSBBState, finalMSBBState);
     }
 
-    private void triggerMSBBMetricsOnNext() {
-        mPrivacyGuideMetricsDelegate.setInitialStateForCard(PrivacyGuideFragment.FragmentType.MSBB);
-        mPrivacyGuideMetricsDelegate.recordMetricsOnNextForCard(
-                PrivacyGuideFragment.FragmentType.MSBB);
+    private void triggerMetricsOnNext(@PrivacyGuideFragment.FragmentType int fragmentType) {
+        mPrivacyGuideMetricsDelegate.setInitialStateForCard(fragmentType);
+        mPrivacyGuideMetricsDelegate.recordMetricsOnNextForCard(fragmentType);
     }
 
     @Test
@@ -73,7 +72,7 @@ public class PrivacyGuideMetricsDelegateTest {
         assertEquals(0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_OFF));
-        triggerMSBBMetricsOnNext();
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.MSBB);
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_OFF));
@@ -86,7 +85,7 @@ public class PrivacyGuideMetricsDelegateTest {
         assertEquals(0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_ON));
-        triggerMSBBMetricsOnNext();
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.MSBB);
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_ON));
@@ -99,7 +98,7 @@ public class PrivacyGuideMetricsDelegateTest {
         assertEquals(0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_OFF));
-        triggerMSBBMetricsOnNext();
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.MSBB);
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_OFF));
@@ -112,7 +111,7 @@ public class PrivacyGuideMetricsDelegateTest {
         assertEquals(0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_ON));
-        triggerMSBBMetricsOnNext();
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.MSBB);
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_ON));
@@ -122,7 +121,7 @@ public class PrivacyGuideMetricsDelegateTest {
     @SmallTest
     public void testMSBB_nextClickUserAction() {
         mockMSBBState(false, false);
-        triggerMSBBMetricsOnNext();
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.MSBB);
         assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.NextClickMSBB"));
     }
 
