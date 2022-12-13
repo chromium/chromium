@@ -257,12 +257,6 @@ void WebApps::OpenNativeSettings(const std::string& app_id) {
   publisher_helper().OpenNativeSettings(app_id);
 }
 
-void WebApps::SetWindowMode(const std::string& app_id,
-                            apps::mojom::WindowMode window_mode) {
-  publisher_helper().SetWindowMode(
-      app_id, apps::ConvertMojomWindowModeToWindowMode(window_mode));
-}
-
 void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
   if (!is_ready_) {
     return;

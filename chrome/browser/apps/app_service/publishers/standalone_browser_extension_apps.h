@@ -118,8 +118,6 @@ class StandaloneBrowserExtensionApps : public KeyedService,
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
                apps::mojom::ConnectOptionsPtr opts) override;
   void StopApp(const std::string& app_id) override;
-  void SetWindowMode(const std::string& app_id,
-                     apps::mojom::WindowMode window_mode) override;
   void OpenNativeSettings(const std::string& app_id) override;
 
   // crosapi::mojom::AppPublisher overrides.

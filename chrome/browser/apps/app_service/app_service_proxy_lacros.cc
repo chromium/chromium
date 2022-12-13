@@ -426,11 +426,6 @@ void AppServiceProxyLacros::SetWindowMode(const std::string& app_id,
   NOTIMPLEMENTED();
 }
 
-void AppServiceProxyLacros::SetWindowMode(const std::string& app_id,
-                                          apps::mojom::WindowMode window_mode) {
-  NOTIMPLEMENTED();
-}
-
 web_app::LacrosWebAppsController*
 AppServiceProxyLacros::LacrosWebAppsControllerForTesting() {
   return lacros_web_apps_controller_.get();

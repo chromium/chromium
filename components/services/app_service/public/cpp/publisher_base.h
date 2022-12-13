@@ -57,8 +57,6 @@ class PublisherBase : public apps::mojom::Publisher {
   void OpenNativeSettings(const std::string& app_id) override;
   void SetResizeLocked(const std::string& app_id,
                        apps::mojom::OptionalBool locked) override;
-  void SetWindowMode(const std::string& app_id,
-                     apps::mojom::WindowMode window_mode) override;
 
   mojo::Receiver<apps::mojom::Publisher> receiver_{this};
 };

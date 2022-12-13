@@ -338,12 +338,6 @@ void StandaloneBrowserExtensionApps::StopApp(const std::string& app_id) {
   controller_->StopApp(app_id);
 }
 
-void StandaloneBrowserExtensionApps::SetWindowMode(
-    const std::string& app_id,
-    apps::mojom::WindowMode window_mode) {
-  SetWindowMode(app_id, ConvertMojomWindowModeToWindowMode(window_mode));
-}
-
 void StandaloneBrowserExtensionApps::OpenNativeSettings(
     const std::string& app_id) {
   // It is possible that Lacros is briefly unavailable, for example if it shuts

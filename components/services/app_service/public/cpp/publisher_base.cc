@@ -92,9 +92,4 @@ void PublisherBase::SetResizeLocked(const std::string& app_id,
   NOTIMPLEMENTED();
 }
 
-void PublisherBase::SetWindowMode(const std::string& app_id,
-                                  apps::mojom::WindowMode window_mode) {
-  NOTIMPLEMENTED();
-}
-
 }  // namespace apps

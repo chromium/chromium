@@ -277,10 +277,6 @@ class AppServiceProxyBase : public KeyedService,
   // `window_mode` represents how the app will be open in (e.g. in a
   // standalone window or in a browser tab).
   void SetWindowMode(const std::string& app_id, WindowMode window_mode);
-  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-  // interface.
-  void SetWindowMode(const std::string& app_id,
-                     apps::mojom::WindowMode window_mode);
 
   // Called by an app publisher to inform the proxy of a change in app state.
   virtual void OnApps(std::vector<AppPtr> deltas,

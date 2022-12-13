@@ -60,9 +60,6 @@ class AppServiceMojomImpl : public apps::mojom::AppService {
   void SetResizeLocked(apps::mojom::AppType app_type,
                        const std::string& app_id,
                        apps::mojom::OptionalBool locked) override;
-  void SetWindowMode(apps::mojom::AppType app_type,
-                     const std::string& app_id,
-                     apps::mojom::WindowMode window_mode) override;
 
  private:
   void OnPublisherDisconnected(apps::mojom::AppType app_type);

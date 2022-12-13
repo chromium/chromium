@@ -141,8 +141,6 @@ class WebApps : public apps::PublisherBase,
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
                apps::mojom::ConnectOptionsPtr opts) override;
   void OpenNativeSettings(const std::string& app_id) override;
-  void SetWindowMode(const std::string& app_id,
-                     apps::mojom::WindowMode window_mode) override;
 
   // WebAppPublisherHelper::Delegate overrides.
   void PublishWebApps(std::vector<apps::AppPtr> apps) override;

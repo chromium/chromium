@@ -318,11 +318,6 @@ void WebAppsCrosapi::OpenNativeSettings(const std::string& app_id) {
   controller_->OpenNativeSettings(app_id);
 }
 
-void WebAppsCrosapi::SetWindowMode(const std::string& app_id,
-                                   apps::mojom::WindowMode window_mode) {
-  SetWindowMode(app_id, ConvertMojomWindowModeToWindowMode(window_mode));
-}
-
 void WebAppsCrosapi::ExecuteContextMenuCommand(const std::string& app_id,
                                                int command_id,
                                                const std::string& shortcut_id,

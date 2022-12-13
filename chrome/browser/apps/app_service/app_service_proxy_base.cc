@@ -666,15 +666,6 @@ void AppServiceProxyBase::SetWindowMode(const std::string& app_id,
   }
 }
 
-void AppServiceProxyBase::SetWindowMode(const std::string& app_id,
-                                        apps::mojom::WindowMode window_mode) {
-  if (app_service_.is_connected()) {
-    app_service_->SetWindowMode(
-        ConvertAppTypeToMojomAppType(app_registry_cache_.GetAppType(app_id)),
-        app_id, window_mode);
-  }
-}
-
 void AppServiceProxyBase::OnApps(std::vector<AppPtr> deltas,
                                  AppType app_type,
                                  bool should_notify_initialized) {

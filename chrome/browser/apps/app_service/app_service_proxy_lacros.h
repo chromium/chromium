@@ -231,10 +231,6 @@ class AppServiceProxyLacros : public KeyedService,
   void RemoveSupportedLinksPreference(const std::string& app_id);
 
   void SetWindowMode(const std::string& app_id, WindowMode window_mode);
-  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-  // interface.
-  void SetWindowMode(const std::string& app_id,
-                     apps::mojom::WindowMode window_mode);
 
   web_app::LacrosWebAppsController* LacrosWebAppsControllerForTesting();
 

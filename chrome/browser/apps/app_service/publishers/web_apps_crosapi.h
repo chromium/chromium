@@ -128,8 +128,6 @@ class WebAppsCrosapi : public KeyedService,
   void UnpauseApp(const std::string& app_id) override;
   void StopApp(const std::string& app_id) override;
   void OpenNativeSettings(const std::string& app_id) override;
-  void SetWindowMode(const std::string& app_id,
-                     apps::mojom::WindowMode window_mode) override;
   void ExecuteContextMenuCommand(const std::string& app_id,
                                  int command_id,
                                  const std::string& shortcut_id,
