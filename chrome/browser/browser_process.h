@@ -42,6 +42,7 @@ class SystemNetworkContextManager;
 class WebRtcLogUploader;
 
 #if !BUILDFLAG(IS_ANDROID)
+class HidSystemTrayIcon;
 class IntranetRedirectDetector;
 #endif
 
@@ -264,6 +265,10 @@ class BrowserProcess {
   // Returns the object which keeps track of Human Interface Device (HID)
   // permissions configured through the policy engine.
   virtual HidPolicyAllowedDevices* hid_policy_allowed_devices() = 0;
+
+  // Returns the object which maintains Human Interface Device (HID) system tray
+  // icon.
+  virtual HidSystemTrayIcon* hid_system_tray_icon() = 0;
 #endif
 
   virtual BuildState* GetBuildState() = 0;

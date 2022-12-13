@@ -995,6 +995,15 @@ Permissions you've already given to websites and apps may apply to this account.
         Chromium is using your camera.
       </message>
 
+      <if expr="not is_android">
+        <!-- WebHID system tray icon -->
+        <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_TOOLTIP" desc="Tooltip for the WebHID system tray icon when one or more HID devices are being accessed.">
+            {NUM_DEVICES, plural,
+            =1 {Chromium is connected to a HID device}
+            other {Chromium is connected to HID devices}}
+        </message>
+      </if>
+
       <!-- ProcessSingleton -->
       <if expr="is_posix">
         <message name="IDS_PROFILE_IN_USE_POSIX" desc="Message shown when the browser cannot start because the profile is in use on a different host.">

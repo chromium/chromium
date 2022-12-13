@@ -63,6 +63,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
+#include "chrome/browser/hid/hid_system_tray_icon.h"
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #endif
@@ -455,6 +456,10 @@ HidPolicyAllowedDevices* TestingBrowserProcess::hid_policy_allowed_devices() {
   }
   return hid_policy_allowed_devices_.get();
 }
+
+HidSystemTrayIcon* TestingBrowserProcess::hid_system_tray_icon() {
+  return hid_system_tray_icon_.get();
+}
 #endif
 
 BuildState* TestingBrowserProcess::GetBuildState() {
@@ -540,6 +545,13 @@ void TestingBrowserProcess::SetRulesetService(
 void TestingBrowserProcess::SetShuttingDown(bool is_shutting_down) {
   is_shutting_down_ = is_shutting_down;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void TestingBrowserProcess::SetHidSystemTrayIcon(
+    std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon) {
+  hid_system_tray_icon_ = std::move(hid_system_tray_icon);
+}
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 

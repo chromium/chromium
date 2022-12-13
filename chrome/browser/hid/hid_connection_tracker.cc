@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/hid/hid_system_tray_icon.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -67,12 +68,30 @@ HidConnectionTracker::~HidConnectionTracker() {
 
 void HidConnectionTracker::IncrementConnectionCount() {
   ++connection_count_;
-  // TODO(crbug.com/1360981): Hook up HidSystemTrayIcon.
+  auto* hid_system_tray_icon = g_browser_process->hid_system_tray_icon();
+  if (!hid_system_tray_icon) {
+    return;
+  }
+
+  if (connection_count_ == 1) {
+    hid_system_tray_icon->AddProfile(profile_);
+  } else {
+    hid_system_tray_icon->NotifyConnectionCountUpdated(profile_);
+  }
 }
 
 void HidConnectionTracker::DecrementConnectionCount() {
   --connection_count_;
-  // TODO(crbug.com/1360981): Hook up HidSystemTrayIcon.
+  auto* hid_system_tray_icon = g_browser_process->hid_system_tray_icon();
+  if (!hid_system_tray_icon) {
+    return;
+  }
+
+  if (connection_count_ == 0) {
+    hid_system_tray_icon->RemoveProfile(profile_);
+  } else {
+    hid_system_tray_icon->NotifyConnectionCountUpdated(profile_);
+  }
 }
 
 void HidConnectionTracker::NotifyDeviceConnected(const url::Origin& origin) {
@@ -123,6 +142,8 @@ void HidConnectionTracker::ShowSiteSettings(const url::Origin& origin) {
 void HidConnectionTracker::CleanUp() {
   if (connection_count_ > 0) {
     connection_count_ = 0;
-    // TODO(crbug.com/1360981): Hook up HidSystemTrayIcon.
+    auto* hid_system_tray_icon = g_browser_process->hid_system_tray_icon();
+    if (hid_system_tray_icon)
+      hid_system_tray_icon->RemoveProfile(profile_);
   }
 }
