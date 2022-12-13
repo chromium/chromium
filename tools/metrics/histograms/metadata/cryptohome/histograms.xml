@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DeletedUserProfiles" units="profiles"
-    expires_after="2023-04-09">
+    expires_after="2023-06-11">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -415,7 +415,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.FreeDiskSpaceTotalFreedInMb" units="MiB"
-    expires_after="2023-04-09">
+    expires_after="2023-06-11">
   <owner>vsavu@google.com</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>sarthakkukreti@chromium.org</owner>
@@ -443,7 +443,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.GCache.FreedDiskSpaceInMb" units="MB"
-    expires_after="2023-04-09">
+    expires_after="2023-06-11">
   <owner>dlunev@chromium.org</owner>
   <owner>sarthakkukreti@chromium.org</owner>
   <summary>
@@ -804,7 +804,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToGenerateEccAuthValue" units="ms"
-    expires_after="2023-04-09">
+    expires_after="2023-06-11">
   <owner>yich@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>

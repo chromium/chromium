@@ -936,7 +936,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.CardUploadEnabled" enum="AutofillCardUploadEnabled"
-    expires_after="2023-04-09">
+    expires_after="2023-06-11">
   <owner>jsaul@google.com</owner>
   <owner>aneeshali@google.com</owner>
   <summary>
@@ -3764,7 +3764,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.StoredProfileWithoutCountryCount" units="units"
-    expires_after="2023-04-09">
+    expires_after="2023-06-11">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>

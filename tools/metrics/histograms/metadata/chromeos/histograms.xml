@@ -174,7 +174,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Apps.IntentPickerDestinationPlatform"
-    enum="ArcIntentHandlerDestinationPlatform" expires_after="2023-04-12">
+    enum="ArcIntentHandlerDestinationPlatform" expires_after="2023-06-11">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -1254,7 +1254,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Intents.LinkCapturingEvent2"
-    enum="LinkCapturingEvent" expires_after="2023-06-04">
+    enum="LinkCapturingEvent" expires_after="2023-06-11">
   <owner>vpao@google.com</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -1452,7 +1452,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.Mojo.PackStateResponse"
-    enum="LanguagePackMojoPackState" expires_after="2023-01-30">
+    enum="LanguagePackMojoPackState" expires_after="2023-06-11">
   <owner>mlcui@google.com</owner>
   <owner>cros-borders-eng@google.com</owner>
   <summary>

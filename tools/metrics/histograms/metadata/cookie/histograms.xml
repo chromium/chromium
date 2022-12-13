@@ -530,7 +530,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.IsPartitionedValid" enum="BooleanValid"
-    expires_after="2023-04-09">
+    expires_after="2023-06-11">
   <owner>dylancutler@google.com</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
