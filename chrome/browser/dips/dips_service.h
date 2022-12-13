@@ -13,8 +13,6 @@
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom-forward.h"
 
 class Profile;
 
@@ -28,10 +26,6 @@ class CookieSettings;
 
 namespace signin {
 class PersistentRepeatingTimer;
-}
-
-namespace site_engagement {
-class SiteEngagementService;
 }
 
 class DIPSService : public KeyedService {
@@ -52,18 +46,15 @@ class DIPSService : public KeyedService {
                     network::mojom::ClearDataFilterPtr filter,
                     const DIPSEventRemovalType type);
 
-  void HandleRedirect(const DIPSRedirectInfo& redirect,
-                      const DIPSRedirectChainInfo& chain);
+  void HandleRedirectChain(std::vector<DIPSRedirectInfoPtr> redirects,
+                           DIPSRedirectChainInfoPtr chain);
 
   // This allows unit-testing the metrics emitted by HandleRedirect() without
   // instantiating DIPSService.
-  static void HandleRedirectForTesting(
-      const DIPSRedirectInfo& redirect,
-      const DIPSRedirectChainInfo& chain,
-      blink::mojom::EngagementLevel engagement_level,
-      DIPSCookieMode cookie_mode,
-      RecordBounceCallback callback) {
-    HandleRedirect(redirect, chain, engagement_level, cookie_mode, callback);
+  static void HandleRedirectForTesting(const DIPSRedirectInfo& redirect,
+                                       const DIPSRedirectChainInfo& chain,
+                                       RecordBounceCallback callback) {
+    HandleRedirect(redirect, chain, callback);
   }
 
  private:
@@ -74,11 +65,13 @@ class DIPSService : public KeyedService {
       Profile* profile);
   void Shutdown() override;
 
+  void GotState(std::vector<DIPSRedirectInfoPtr> redirects,
+                DIPSRedirectChainInfoPtr chain,
+                size_t index,
+                const DIPSState url_state);
   void RecordBounce(bool stateful, const GURL& url, base::Time time);
   static void HandleRedirect(const DIPSRedirectInfo& redirect,
                              const DIPSRedirectChainInfo& chain,
-                             blink::mojom::EngagementLevel engagement_level,
-                             DIPSCookieMode cookie_mode,
                              RecordBounceCallback callback);
 
   scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner();
@@ -86,7 +79,6 @@ class DIPSService : public KeyedService {
   void InitializeStorage(base::Time time, std::vector<std::string> sites);
 
   raw_ptr<content::BrowserContext> browser_context_;
-  raw_ptr<site_engagement::SiteEngagementService> site_engagement_service_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   // The persisted timer controlling how often incidental state is cleared.
   // This timer is null if the DIPS feature isn't enabled with a valid TimeDelta

@@ -22,7 +22,6 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom-shared.h"
 #include "third_party/metrics_proto/ukm/source.pb.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -32,7 +31,6 @@
 #endif
 
 using base::Bucket;
-using blink::mojom::EngagementLevel;
 using content::NavigationHandle;
 using content::WebContents;
 using testing::ElementsAre;
@@ -104,6 +102,14 @@ void AppendRedirect(std::vector<std::string>* redirects,
       FormatURL(chain.initial_url).c_str(), FormatURL(redirect.url).c_str(),
       CookieAccessTypeToString(redirect.access_type).data(),
       FormatURL(chain.final_url).c_str()));
+}
+
+void AppendRedirects(std::vector<std::string>* vec,
+                     std::vector<DIPSRedirectInfoPtr> redirects,
+                     DIPSRedirectChainInfoPtr chain) {
+  for (const auto& redirect : redirects) {
+    AppendRedirect(vec, *redirect, *chain);
+  }
 }
 
 }  // namespace
@@ -210,8 +216,8 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
   }
 
   void StartAppendingRedirectsTo(std::vector<std::string>* redirects) {
-    web_contents_observer_->SetRedirectHandlerForTesting(
-        base::BindRepeating(&AppendRedirect, redirects));
+    web_contents_observer_->SetRedirectChainHandlerForTesting(
+        base::BindRepeating(&AppendRedirects, redirects));
   }
 
   void CreateImageAndWaitForCookieAccess(const GURL& image_url) {

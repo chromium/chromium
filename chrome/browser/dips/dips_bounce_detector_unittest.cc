@@ -20,11 +20,9 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom-shared.h"
 
 using base::Bucket;
 using base::PassKey;
-using blink::mojom::EngagementLevel;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::Gt;
@@ -62,16 +60,20 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
   // DIPSBounceDetectorDelegate overrides:
   const GURL& GetLastCommittedURL() const override { return committed_url_; }
   ukm::SourceId GetPageUkmSourceId() const override { return source_id_; }
-  void HandleRedirect(const DIPSRedirectInfo& redirect,
-                      const DIPSRedirectChainInfo& chain) override {
-    DCHECK(redirect.access_type != CookieAccessType::kUnknown);
-    AppendRedirect(&redirects_, redirect, chain);
 
-    DIPSService::HandleRedirectForTesting(
-        redirect, chain, GetEngagementLevel(redirect.url),
-        DIPSCookieMode::kStandard,
-        base::BindRepeating(&TestBounceDetectorDelegate::RecordBounce,
-                            base::Unretained(this)));
+  void HandleRedirectChain(std::vector<DIPSRedirectInfoPtr> redirects,
+                           DIPSRedirectChainInfoPtr chain) override {
+    chain->cookie_mode = DIPSCookieMode::kStandard;
+    for (auto& redirect : redirects) {
+      redirect->has_interaction = GetSiteHasInteraction(redirect->url);
+      DCHECK(redirect->access_type != CookieAccessType::kUnknown);
+      AppendRedirect(&redirects_, *redirect, *chain);
+
+      DIPSService::HandleRedirectForTesting(
+          *redirect, *chain,
+          base::BindRepeating(&TestBounceDetectorDelegate::RecordBounce,
+                              base::Unretained(this)));
+    }
   }
 
   void RecordEvent(DIPSRecordedEvent event,
@@ -83,8 +85,12 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
     return url_by_source_id_[source_id];
   }
 
-  void SetSiteEngagementLevel(const GURL& url, EngagementLevel level) {
-    level_by_site[GetSiteForDIPS(url)] = level;
+  bool GetSiteHasInteraction(const GURL& url) {
+    return site_has_interaction_[GetSiteForDIPS(url)];
+  }
+
+  void SetSiteHasInteraction(const GURL& url) {
+    site_has_interaction_[GetSiteForDIPS(url)] = true;
   }
 
   void SetCommittedURL(PassKey<FakeNavigation>, const GURL& url) {
@@ -100,14 +106,6 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
   const std::vector<std::string>& redirects() const { return redirects_; }
 
  private:
-  EngagementLevel GetEngagementLevel(const GURL& url) const {
-    auto iter = level_by_site.find(GetSiteForDIPS(url));
-    if (iter == level_by_site.end()) {
-      return EngagementLevel::NONE;
-    }
-    return iter->second;
-  }
-
   void RecordBounce(bool stateful, const GURL& url, base::Time time) {
     recorded_bounces_.insert(std::make_tuple(url, time, stateful));
   }
@@ -115,7 +113,7 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
   GURL committed_url_;
   ukm::SourceId source_id_;
   std::map<ukm::SourceId, std::string> url_by_source_id_;
-  std::map<std::string, EngagementLevel> level_by_site;
+  std::map<std::string, bool> site_has_interaction_;
   std::vector<std::string> redirects_;
   std::set<std::tuple<GURL, base::Time, bool>> recorded_bounces_;
 };
@@ -216,8 +214,8 @@ class DIPSBounceDetectorTest : public ::testing::Test {
     return delegate_.URLForSourceId(source_id);
   }
 
-  void SetSiteEngagementLevel(const std::string& url, EngagementLevel level) {
-    return delegate_.SetSiteEngagementLevel(GURL(url), level);
+  void SetSiteHasInteraction(const std::string& url) {
+    return delegate_.SetSiteHasInteraction(GURL(url));
   }
 
   std::set<std::tuple<GURL, base::Time, bool>> GetRecordedBounces() {
@@ -417,7 +415,7 @@ const std::vector<std::string>& GetAllRedirectMetrics() {
 TEST_F(DIPSBounceDetectorTest, Histograms_UMA) {
   base::HistogramTester histograms;
 
-  SetSiteEngagementLevel("http://b.test", EngagementLevel::LOW);
+  SetSiteHasInteraction("http://b.test");
 
   NavigateTo("http://a.test", kWithUserGesture);
   NavigateTo("http://b.test", kWithUserGesture);
@@ -459,8 +457,7 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UKM) {
   base::test::SingleThreadTaskEnvironment task_environment;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  SetSiteEngagementLevel("http://b.test", EngagementLevel::MEDIUM);
-  SetSiteEngagementLevel("http://c.test", EngagementLevel::LOW);
+  SetSiteHasInteraction("http://c.test");
 
   NavigateTo("http://a.test", kWithUserGesture);
   NavigateTo("http://b.test", kWithUserGesture);
@@ -488,7 +485,7 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UKM) {
                   Pair("RedirectAndInitialSiteSame", false),
                   Pair("RedirectChainIndex", 0), Pair("RedirectChainLength", 2),
                   Pair("RedirectType", (int)DIPSRedirectType::kClient),
-                  Pair("SiteEngagementLevel", (int)EngagementLevel::MEDIUM)));
+                  Pair("SiteEngagementLevel", 0)));
 
   EXPECT_THAT(URLForRedirectSourceId(&ukm_recorder, ukm_entries[1].source_id),
               Eq("c.test/"));
@@ -502,5 +499,5 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UKM) {
                   Pair("RedirectAndInitialSiteSame", false),
                   Pair("RedirectChainIndex", 1), Pair("RedirectChainLength", 2),
                   Pair("RedirectType", (int)DIPSRedirectType::kServer),
-                  Pair("SiteEngagementLevel", (int)EngagementLevel::LOW)));
+                  Pair("SiteEngagementLevel", 1)));
 }

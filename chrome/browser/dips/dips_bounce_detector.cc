@@ -13,6 +13,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
+#include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
-using blink::mojom::EngagementLevel;
 using content::NavigationHandle;
 
 ServerBounceDetectionState::ServerBounceDetectionState() = default;
@@ -92,16 +92,11 @@ DIPSBounceDetector::DIPSBounceDetector(DIPSBounceDetectorDelegate* delegate,
       // DIPSRedirectContext which is owned by `this`, and the delegate must
       // outlive `this`.
       redirect_context_(
-          base::BindRepeating(&DIPSBounceDetectorDelegate::HandleRedirect,
+          base::BindRepeating(&DIPSBounceDetectorDelegate::HandleRedirectChain,
                               base::Unretained(delegate)),
           /*initial_url=*/GURL::EmptyGURL()) {}
 
 DIPSBounceDetector::~DIPSBounceDetector() = default;
-
-void DIPSBounceDetector::SetRedirectHandlerForTesting(
-    DIPSRedirectHandler handler) {
-  redirect_context_.SetRedirectHandlerForTesting(handler);  // IN-TEST
-}
 
 DIPSBounceDetectorDelegate::~DIPSBounceDetectorDelegate() = default;
 
@@ -112,7 +107,7 @@ ukm::SourceId DIPSNavigationHandle::GetRedirectSourceId(int index) const {
       base::PassKey<DIPSNavigationHandle>(), GetRedirectChain()[index]);
 }
 
-DIPSRedirectContext::DIPSRedirectContext(DIPSRedirectHandler handler,
+DIPSRedirectContext::DIPSRedirectContext(DIPSRedirectChainHandler handler,
                                          const GURL& initial_url)
     : handler_(handler), initial_url_(initial_url) {}
 
@@ -163,12 +158,10 @@ void DIPSRedirectContext::EndChain(GURL url) {
     // so |redirects_.size()| may not tell us the correct chain length. Instead,
     // use the index of the last item in the chain (since it was generated based
     // on the committed chain length).
-    DIPSRedirectChainInfo chain(initial_url_, url,
-                                redirects_.back()->index + 1);
-    for (const auto& redirect : redirects_) {
-      handler_.Run(*redirect, chain);
-    }
-    redirects_.clear();
+    auto chain = std::make_unique<DIPSRedirectChainInfo>(
+        initial_url_, url, redirects_.back()->index + 1);
+    handler_.Run(std::move(redirects_), std::move(chain));
+    // note: redirects_ is now guaranteed to be empty
   }
 
   initial_url_ = std::move(url);
@@ -201,10 +194,10 @@ ukm::SourceId DIPSWebContentsObserver::GetPageUkmSourceId() const {
   return web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 }
 
-void DIPSWebContentsObserver::HandleRedirect(
-    const DIPSRedirectInfo& redirect,
-    const DIPSRedirectChainInfo& chain) {
-  dips_service_->HandleRedirect(redirect, chain);
+void DIPSWebContentsObserver::HandleRedirectChain(
+    std::vector<DIPSRedirectInfoPtr> redirects,
+    DIPSRedirectChainInfoPtr chain) {
+  dips_service_->HandleRedirectChain(std::move(redirects), std::move(chain));
 }
 
 // A thin wrapper around NavigationHandle to implement DIPSNavigationHandle.

@@ -58,7 +58,8 @@ using DIPSNavigationStart = absl::variant<GURL, DIPSRedirectInfoPtr>;
 // calls to EndChain().
 class DIPSRedirectContext {
  public:
-  DIPSRedirectContext(DIPSRedirectHandler handler, const GURL& initial_url);
+  DIPSRedirectContext(DIPSRedirectChainHandler handler,
+                      const GURL& initial_url);
   ~DIPSRedirectContext();
 
   // If committed=true, appends the client and server redirects to the current
@@ -68,13 +69,14 @@ class DIPSRedirectContext {
               DIPSNavigationStart navigation_start,
               std::vector<DIPSRedirectInfoPtr>&& server_redirects,
               GURL final_url);
-  // Terminates the current redirect chain and calls the DIPSRedirectHandler for
-  // each entry. Starts a new chain for later calls to Append() to add to.
+  // Terminates the current redirect chain and calls the
+  // DIPSRedirectChainHandler with it. Starts a new chain for later calls to
+  // Append() to add to.
   void EndChain(GURL url);
 
   size_t size() const { return redirects_.size(); }
 
-  void SetRedirectHandlerForTesting(DIPSRedirectHandler handler) {
+  void SetRedirectChainHandlerForTesting(DIPSRedirectChainHandler handler) {
     handler_ = handler;
   }
 
@@ -83,7 +85,7 @@ class DIPSRedirectContext {
   void Append(DIPSNavigationStart navigation_start,
               std::vector<DIPSRedirectInfoPtr>&& server_redirects);
 
-  DIPSRedirectHandler handler_;
+  DIPSRedirectChainHandler handler_;
   GURL initial_url_;
   std::vector<DIPSRedirectInfoPtr> redirects_;
 };
@@ -95,8 +97,8 @@ class DIPSBounceDetectorDelegate {
   virtual ~DIPSBounceDetectorDelegate();
   virtual const GURL& GetLastCommittedURL() const = 0;
   virtual ukm::SourceId GetPageUkmSourceId() const = 0;
-  virtual void HandleRedirect(const DIPSRedirectInfo&,
-                              const DIPSRedirectChainInfo&) = 0;
+  virtual void HandleRedirectChain(std::vector<DIPSRedirectInfoPtr> redirects,
+                                   DIPSRedirectChainInfoPtr chain) = 0;
   virtual void RecordEvent(DIPSRecordedEvent event,
                            const GURL& url,
                            const base::Time& time) = 0;
@@ -173,7 +175,9 @@ class DIPSBounceDetector {
 
   // Use the passed handler instead of
   // DIPSBounceDetectorDelegate::HandleRedirect().
-  void SetRedirectHandlerForTesting(DIPSRedirectHandler handler);
+  void SetRedirectChainHandlerForTesting(DIPSRedirectChainHandler handler) {
+    redirect_context_.SetRedirectChainHandlerForTesting(handler);
+  }
 
  private:
   raw_ptr<const base::TickClock> tick_clock_;
@@ -193,8 +197,8 @@ class DIPSWebContentsObserver
 
   ~DIPSWebContentsObserver() override;
 
-  void SetRedirectHandlerForTesting(DIPSRedirectHandler handler) {
-    detector_.SetRedirectHandlerForTesting(handler);
+  void SetRedirectChainHandlerForTesting(DIPSRedirectChainHandler handler) {
+    detector_.SetRedirectChainHandlerForTesting(handler);
   }
 
   void SetClockForTesting(base::Clock* clock) {
@@ -209,8 +213,8 @@ class DIPSWebContentsObserver
   // DIPSBounceDetectorDelegate overrides:
   const GURL& GetLastCommittedURL() const override;
   ukm::SourceId GetPageUkmSourceId() const override;
-  void HandleRedirect(const DIPSRedirectInfo& redirect,
-                      const DIPSRedirectChainInfo& chain) override;
+  void HandleRedirectChain(std::vector<DIPSRedirectInfoPtr> redirects,
+                           DIPSRedirectChainInfoPtr chain) override;
   void RecordEvent(DIPSRecordedEvent event,
                    const GURL& url,
                    const base::Time& time) override;

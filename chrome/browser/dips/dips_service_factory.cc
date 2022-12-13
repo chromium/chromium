@@ -6,7 +6,6 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/dips/dips_service.h"
-#include "chrome/browser/engagement/site_engagement_service_factory.h"
 
 // static
 DIPSService* DIPSServiceFactory::GetForBrowserContext(
@@ -22,9 +21,7 @@ DIPSServiceFactory* DIPSServiceFactory::GetInstance() {
 DIPSServiceFactory::DIPSServiceFactory()
     : ProfileKeyedServiceFactory(
           "DIPSService",
-          ProfileSelections::BuildForRegularAndIncognito()) {
-  DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
-}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 DIPSServiceFactory::~DIPSServiceFactory() = default;
 

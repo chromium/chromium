@@ -18,6 +18,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/dips/dips_features.h"
+#include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,8 +29,6 @@
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-
-using blink::mojom::EngagementLevel;
 
 namespace {
 
@@ -58,28 +57,23 @@ std::vector<std::string> GetEngagedSitesInBackground(
 }
 
 RedirectCategory ClassifyRedirect(CookieAccessType access,
-                                  EngagementLevel engagement) {
+                                  bool has_interaction) {
   switch (access) {
     case CookieAccessType::kUnknown:
-      return engagement > EngagementLevel::NONE
-                 ? RedirectCategory::kUnknownCookies_HasEngagement
-                 : RedirectCategory::kUnknownCookies_NoEngagement;
+      return has_interaction ? RedirectCategory::kUnknownCookies_HasEngagement
+                             : RedirectCategory::kUnknownCookies_NoEngagement;
     case CookieAccessType::kNone:
-      return engagement > EngagementLevel::NONE
-                 ? RedirectCategory::kNoCookies_HasEngagement
-                 : RedirectCategory::kNoCookies_NoEngagement;
+      return has_interaction ? RedirectCategory::kNoCookies_HasEngagement
+                             : RedirectCategory::kNoCookies_NoEngagement;
     case CookieAccessType::kRead:
-      return engagement > EngagementLevel::NONE
-                 ? RedirectCategory::kReadCookies_HasEngagement
-                 : RedirectCategory::kReadCookies_NoEngagement;
+      return has_interaction ? RedirectCategory::kReadCookies_HasEngagement
+                             : RedirectCategory::kReadCookies_NoEngagement;
     case CookieAccessType::kWrite:
-      return engagement > EngagementLevel::NONE
-                 ? RedirectCategory::kWriteCookies_HasEngagement
-                 : RedirectCategory::kWriteCookies_NoEngagement;
+      return has_interaction ? RedirectCategory::kWriteCookies_HasEngagement
+                             : RedirectCategory::kWriteCookies_NoEngagement;
     case CookieAccessType::kReadWrite:
-      return engagement > EngagementLevel::NONE
-                 ? RedirectCategory::kReadWriteCookies_HasEngagement
-                 : RedirectCategory::kReadWriteCookies_NoEngagement;
+      return has_interaction ? RedirectCategory::kReadWriteCookies_HasEngagement
+                             : RedirectCategory::kReadWriteCookies_NoEngagement;
   }
 }
 
@@ -96,8 +90,6 @@ inline void UmaHistogramBounceCategory(RedirectCategory category,
 
 DIPSService::DIPSService(content::BrowserContext* context)
     : browser_context_(context),
-      site_engagement_service_(
-          site_engagement::SiteEngagementService::Get(context)),
       cookie_settings_(CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(context))),
       repeating_timer_(CreateTimer(Profile::FromBrowserContext(context))) {
@@ -182,13 +174,43 @@ void DIPSService::InitializeStorage(base::Time time,
   storage_.AsyncCall(&DIPSStorage::Prepopulate).WithArgs(time, sites);
 }
 
-void DIPSService::HandleRedirect(const DIPSRedirectInfo& redirect,
-                                 const DIPSRedirectChainInfo& chain) {
+void DIPSService::HandleRedirectChain(
+    std::vector<DIPSRedirectInfoPtr> redirects,
+    DIPSRedirectChainInfoPtr chain) {
+  chain->cookie_mode = GetCookieMode();
+  // Copy the URL out before |redirects| is moved, to avoid use-after-move.
+  GURL url = redirects[0]->url;
+  storage_.AsyncCall(&DIPSStorage::Read)
+      .WithArgs(url)
+      .Then(base::BindOnce(&DIPSService::GotState, weak_factory_.GetWeakPtr(),
+                           std::move(redirects), std::move(chain), 0));
+}
+
+void DIPSService::GotState(std::vector<DIPSRedirectInfoPtr> redirects,
+                           DIPSRedirectChainInfoPtr chain,
+                           size_t index,
+                           const DIPSState url_state) {
+  DCHECK_LT(index, redirects.size());
+
+  DIPSRedirectInfo* redirect = redirects[index].get();
+  // If there's any user interaction recorded in the DIPS DB, that's engagement.
+  redirect->has_interaction =
+      url_state.user_interaction_times().last.has_value();
   HandleRedirect(
-      redirect, chain,
-      site_engagement_service_->GetEngagementLevel(redirect.url),
-      GetCookieMode(),
+      *redirect, *chain,
       base::BindRepeating(&DIPSService::RecordBounce, base::Unretained(this)));
+
+  if (index + 1 >= redirects.size()) {
+    // All redirects handled.
+    return;
+  }
+
+  // Copy the URL out before `redirects` is moved, to avoid use-after-move.
+  GURL url = redirects[index + 1]->url;
+  storage_.AsyncCall(&DIPSStorage::Read)
+      .WithArgs(url)
+      .Then(base::BindOnce(&DIPSService::GotState, weak_factory_.GetWeakPtr(),
+                           std::move(redirects), std::move(chain), index + 1));
 }
 
 void DIPSService::RecordBounce(bool stateful,
@@ -203,8 +225,6 @@ void DIPSService::RecordBounce(bool stateful,
 /*static*/
 void DIPSService::HandleRedirect(const DIPSRedirectInfo& redirect,
                                  const DIPSRedirectChainInfo& chain,
-                                 EngagementLevel engagement_level,
-                                 DIPSCookieMode cookie_mode,
                                  RecordBounceCallback record_bounce) {
   const std::string site = GetSiteForDIPS(redirect.url);
   bool initial_site_same = (site == chain.initial_site);
@@ -214,7 +234,7 @@ void DIPSService::HandleRedirect(const DIPSRedirectInfo& redirect,
 
   if (base::FeatureList::IsEnabled(kDipsUkm)) {
     ukm::builders::DIPS_Redirect(redirect.source_id)
-        .SetSiteEngagementLevel(static_cast<int64_t>(engagement_level))
+        .SetSiteEngagementLevel(redirect.has_interaction.value() ? 1 : 0)
         .SetRedirectType(static_cast<int64_t>(redirect.redirect_type))
         .SetCookieAccessType(static_cast<int64_t>(redirect.access_type))
         .SetRedirectAndInitialSiteSame(initial_site_same)
@@ -241,6 +261,7 @@ void DIPSService::HandleRedirect(const DIPSRedirectInfo& redirect,
   }
 
   RedirectCategory category =
-      ClassifyRedirect(redirect.access_type, engagement_level);
-  UmaHistogramBounceCategory(category, cookie_mode, redirect.redirect_type);
+      ClassifyRedirect(redirect.access_type, redirect.has_interaction.value());
+  UmaHistogramBounceCategory(category, chain.cookie_mode.value(),
+                             redirect.redirect_type);
 }
