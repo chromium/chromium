@@ -13,108 +13,109 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 
 import {getESimProfile} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {ESimOperationResult, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @type {number} */
+import {getTemplate} from './esim_rename_dialog.html.js';
+
 const MAX_INPUT_LENGTH = 20;
 
-/** @type {number} */
 const MIN_INPUT_LENGTH = 1;
 
-/** @type {RegExp} */
 const EMOJI_REGEX_EXP =
     /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/gi;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const EsimRenameDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+interface EsimRenameDialogElement {
+  $: {
+    profileRenameDialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
+const EsimRenameDialogElementBase = I18nMixin(PolymerElement);
+
 class EsimRenameDialogElement extends EsimRenameDialogElementBase {
   static get is() {
-    return 'esim-rename-dialog';
+    return 'esim-rename-dialog' as const;
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /** Used to reference the MAX_INPUT_LENGTH constant in HTML. */
-      MAX_INPUT_LENGTH: {
+      maxInputLength: {
         type: Number,
         value: MAX_INPUT_LENGTH,
+        readonly: true,
       },
 
-      /** @type {?OncMojo.NetworkStateProperties} */
       networkState: {
         type: Object,
         value: null,
       },
 
-      /** @type {boolean} */
       showCellularDisconnectWarning: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {string} */
+      errorMessage_: {
+        type: String,
+        value: '',
+      },
+
       esimProfileName_: {
         type: String,
         value: '',
         observer: 'onEsimProfileNameChanged_',
       },
 
-      /** @private {string} */
-      errorMessage_: {
-        type: String,
-        value: '',
-      },
-
-      /** @private {boolean} */
-      isRenameInProgress_: {
+      isInputInvalid_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
-      isInputInvalid_: {
+      isRenameInProgress_: {
         type: Boolean,
         value: false,
       },
     };
   }
 
+  maxInputLength: number;
+  networkState: OncMojo.NetworkStateProperties|null;
+  showCellularDisconnectWarning: boolean;
+  private errorMessage_: string;
+  private esimProfileName_: string;
+  private esimProfileRemote_: ESimProfileRemote|null;
+  private isInputInvalid_: boolean;
+  private isRenameInProgress_: boolean;
+
   constructor() {
     super();
 
-    /** @private {?ESimProfileRemote} */
     this.esimProfileRemote_ = null;
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.init_();
   }
 
-  /** @private */
-  async init_() {
+  private async init_(): Promise<void> {
     if (!(this.networkState &&
           this.networkState.type === NetworkType.kCellular)) {
       return;
     }
     this.esimProfileRemote_ =
-        await getESimProfile(this.networkState.typeState.cellular.iccid);
+        await getESimProfile(this.networkState.typeState.cellular!.iccid);
     // Fail gracefully if init is incomplete, see crbug/1194729.
     if (!this.esimProfileRemote_) {
       this.errorMessage_ = this.i18n('eSimRenameProfileDialogError');
@@ -122,24 +123,16 @@ class EsimRenameDialogElement extends EsimRenameDialogElementBase {
     this.esimProfileName_ = this.networkState.name;
 
     if (!this.errorMessage_) {
-      this.shadowRoot.querySelector('#eSimprofileName').focus();
+      this.shadowRoot!.querySelector<CrInputElement>(
+                          '#eSimprofileName')!.focus();
     }
-  }
-
-  /**
-   * Converts a mojoBase.mojom.String16 to a JavaScript String.
-   * @param {?mojoBase.mojom.String16} str
-   * @return {string}
-   */
-  convertString16ToJSString_(str) {
-    return str.data.map(ch => String.fromCodePoint(ch)).join('');
   }
 
   /**
    * @param {Event} event
    * @private
    */
-  async onRenameDialogDoneTap_(event) {
+  private async onRenameDialogDoneTap_(): Promise<void> {
     if (this.errorMessage_) {
       this.$.profileRenameDialog.close();
       return;
@@ -150,18 +143,15 @@ class EsimRenameDialogElement extends EsimRenameDialogElementBase {
     // The C++ layer uses std::u16string, which use 16 bit characters. JS
     // strings support either 8 or 16 bit characters, and must be converted
     // to an array of 16 bit character codes that match std::u16string.
-    const name = {data: Array.from(this.esimProfileName_, c => c.charCodeAt())};
+    const name = {
+      data: Array.from(this.esimProfileName_, c => c.charCodeAt(0)),
+    };
 
-    this.esimProfileRemote_.setProfileNickname(name).then(response => {
-      this.handleSetProfileNicknameResponse_(response.result);
-    });
+    const response = await this.esimProfileRemote_!.setProfileNickname(name);
+    this.handleSetProfileNicknameResponse_(response.result);
   }
 
-  /**
-   * @param {ESimOperationResult} result
-   * @private
-   */
-  handleSetProfileNicknameResponse_(result) {
+  private handleSetProfileNicknameResponse_(result: ESimOperationResult): void {
     this.isRenameInProgress_ = false;
     if (result === ESimOperationResult.kFailure) {
       const showErrorToastEvent = new CustomEvent('show-error-toast', {
@@ -174,11 +164,7 @@ class EsimRenameDialogElement extends EsimRenameDialogElementBase {
     this.$.profileRenameDialog.close();
   }
 
-  /**
-   * @param {Event} event
-   * @private
-   */
-  onCancelTap_(event) {
+  private onCancelTap_(): void {
     this.$.profileRenameDialog.close();
   }
 
@@ -186,11 +172,8 @@ class EsimRenameDialogElement extends EsimRenameDialogElementBase {
    * Observer for esimProfileName_ that sanitizes its value by removing any
    * Emojis and truncating it to MAX_INPUT_LENGTH. This method will be
    * recursively called until esimProfileName_ is fully sanitized.
-   * @param {string} newValue
-   * @param {string} oldValue
-   * @private
    */
-  onEsimProfileNameChanged_(newValue, oldValue) {
+  private onEsimProfileNameChanged_(_newValue: string, oldValue: string): void {
     if (oldValue) {
       const sanitizedOldValue = oldValue.replace(EMOJI_REGEX_EXP, '');
       // If sanitizedOldValue.length > MAX_INPUT_LENGTH, the user attempted to
@@ -209,23 +192,15 @@ class EsimRenameDialogElement extends EsimRenameDialogElementBase {
     this.esimProfileName_ = sanitizedProfileName.substring(0, MAX_INPUT_LENGTH);
   }
 
-  /**
-   * @param {boolean} isInputInvalid
-   * @return {string}
-   * @private
-   */
-  getInputInfoClass_(isInputInvalid) {
+  private getInputInfoClass_(isInputInvalid: boolean): string {
     return isInputInvalid ? 'error' : '';
   }
 
   /**
    * Returns a formatted string containing the current number of characters
    * entered in the input compared to the maximum number of characters allowed.
-   * @param {string} esimProfileName
-   * @return {string}
-   * @private
    */
-  getInputCountString_(esimProfileName) {
+  private getInputCountString_(esimProfileName: string): string {
     // minimumIntegerDigits is 2 because we want to show a leading zero if
     // length is less than 10.
     return this.i18n(
@@ -235,26 +210,22 @@ class EsimRenameDialogElement extends EsimRenameDialogElementBase {
         MAX_INPUT_LENGTH.toLocaleString());
   }
 
-  /**
-   * @param {boolean} isRenameInProgress
-   * @param {string} esimProfileName
-   * @return {boolean}
-   * @private
-   */
-  isDoneButtonDisabled_(isRenameInProgress, esimProfileName) {
+  private isDoneButtonDisabled_(
+      isRenameInProgress: boolean, esimProfileName: string): boolean {
     if (isRenameInProgress) {
       return true;
     }
     return esimProfileName.length < MIN_INPUT_LENGTH;
   }
 
-  /**
-   * @param {string} esimProfileName
-   * @return {string}
-   * @private
-   */
-  getDoneBtnA11yLabel_(esimProfileName) {
+  private getDoneBtnA11yLabel_(esimProfileName: string): string {
     return this.i18n('eSimRenameProfileDoneBtnA11yLabel', esimProfileName);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [EsimRenameDialogElement.is]: EsimRenameDialogElement;
   }
 }
 

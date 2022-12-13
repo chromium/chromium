@@ -12,9 +12,6 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":apn_subpage",
-    ":esim_install_error_dialog",
-    ":esim_remove_profile_dialog",
-    ":esim_rename_dialog",
     ":hotspot_subpage",
     ":hotspot_summary_item",
     ":internet_config",
@@ -169,8 +166,6 @@ js_library("internet_known_networks_page") {
 
 js_library("internet_page") {
   deps = [
-    ":esim_remove_profile_dialog",
-    ":esim_rename_dialog",
     ":internet_config",
     ":internet_detail_page",
     ":internet_known_networks_page",
@@ -318,47 +313,6 @@ js_library("tether_connection_dialog") {
   ]
 }
 
-js_library("esim_install_error_dialog") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources/cellular_setup:esim_manager_utils",
-    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
-  ]
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
-  ]
-}
-
-js_library("esim_rename_dialog") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources/cellular_setup:esim_manager_utils",
-    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
-  ]
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
-  ]
-}
-
-js_library("esim_remove_profile_dialog") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources/cellular_setup:esim_manager_utils",
-    "//ash/webui/common/resources/network:onc_mojo",
-    "//chrome/browser/resources/settings/chromeos:os_route",
-    "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
-    "//chrome/browser/resources/settings/chromeos:router",
-    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
-  ]
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
-  ]
-}
-
 js_library("settings_traffic_counters") {
   deps = [
     ":internet_shared_css",
@@ -377,9 +331,6 @@ js_library("settings_traffic_counters") {
 html_to_js("web_components") {
   js_files = [
     "apn_subpage.js",
-    "esim_install_error_dialog.js",
-    "esim_remove_profile_dialog.js",
-    "esim_rename_dialog.js",
     "hotspot_subpage.js",
     "hotspot_summary_item.js",
     "internet_config.js",

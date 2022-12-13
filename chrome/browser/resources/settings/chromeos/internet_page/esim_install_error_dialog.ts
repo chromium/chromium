@@ -11,26 +11,28 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {ESimOperationResult, ESimProfileRemote, ProfileInstallResult} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const EsimInstallErrorDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+import {getTemplate} from './esim_install_error_dialog.html.js';
 
-/** @polymer */
+interface EsimInstallErrorDialogElement {
+  $: {
+    installErrorDialog: CrDialogElement,
+  };
+}
+
+const EsimInstallErrorDialogElementBase = I18nMixin(PolymerElement);
+
 class EsimInstallErrorDialogElement extends EsimInstallErrorDialogElementBase {
   static get is() {
-    return 'esim-install-error-dialog';
+    return 'esim-install-error-dialog' as const;
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -38,50 +40,46 @@ class EsimInstallErrorDialogElement extends EsimInstallErrorDialogElementBase {
       /**
        * The error code returned when profile install attempt was made in
        * networks list.
-       * @type {?ProfileInstallResult}
        */
       errorCode: {
         type: Object,
         value: null,
       },
 
-      /** @type {?ESimProfileRemote} */
       profile: {
         type: Object,
         value: null,
       },
 
-      /** @private {string} */
       confirmationCode_: {
         type: String,
         value: '',
         observer: 'onConfirmationCodeChanged_',
       },
 
-      /** @private {boolean} */
-      isInstallInProgress_: {
+      isConfirmationCodeInvalid_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
-      isConfirmationCodeInvalid_: {
+      isInstallInProgress_: {
         type: Boolean,
         value: false,
       },
     };
   }
 
-  /** @private */
-  onConfirmationCodeChanged_() {
+  errorCode: ProfileInstallResult|null;
+  profile: ESimProfileRemote|null;
+  private confirmationCode_: string;
+  private isConfirmationCodeInvalid_: boolean;
+  private isInstallInProgress_: boolean;
+
+  private onConfirmationCodeChanged_(): void {
     this.isConfirmationCodeInvalid_ = false;
   }
 
-  /**
-   * @param {Event} event
-   * @private
-   */
-  onDoneClicked_(event) {
+  private onDoneClicked_(): void {
     if (!this.isConfirmationCodeError_()) {
       this.$.installErrorDialog.close();
       return;
@@ -89,7 +87,7 @@ class EsimInstallErrorDialogElement extends EsimInstallErrorDialogElementBase {
     this.isInstallInProgress_ = true;
     this.isConfirmationCodeInvalid_ = false;
 
-    this.profile.installProfile(this.confirmationCode_).then((response) => {
+    this.profile!.installProfile(this.confirmationCode_).then((response) => {
       this.isInstallInProgress_ = false;
       if (response.result === ESimOperationResult.kSuccess) {
         this.$.installErrorDialog.close();
@@ -101,30 +99,23 @@ class EsimInstallErrorDialogElement extends EsimInstallErrorDialogElementBase {
     });
   }
 
-  /**
-   * @param {Event} event
-   * @private
-   */
-  onCancelClicked_(event) {
+  private onCancelClicked_(): void {
     this.$.installErrorDialog.close();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  /** @private */
-  isConfirmationCodeError_() {
+  private isConfirmationCodeError_(): boolean {
     return this.errorCode === ProfileInstallResult.kErrorNeedsConfirmationCode;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isDoneButtonDisabled_() {
+  private isDoneButtonDisabled_(): boolean {
     return this.isConfirmationCodeError_() &&
         (!this.confirmationCode_ || this.isInstallInProgress_);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [EsimInstallErrorDialogElement.is]: EsimInstallErrorDialogElement;
   }
 }
 
