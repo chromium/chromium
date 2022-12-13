@@ -447,7 +447,6 @@ void AccessCodeCastIntegrationBrowserTest::MockOnChannelOpenedCall(
     CastDeviceCountMetrics::SinkSource sink_source,
     ChannelOpenedCallback callback,
     cast_channel::CastSocketOpenParams open_params) {
-  std::move(callback).Run(open_channel_response_);
   if (!open_channel_response_)
     return;
 
@@ -465,6 +464,11 @@ void AccessCodeCastIntegrationBrowserTest::MockOnChannelOpenedCall(
       base::BindOnce(&MockCastMediaSinkServiceImpl::AddSinkForTest,
                      base::Unretained(mock_cast_media_sink_service_impl()),
                      cast_sink));
+
+  // The open channel callback needs to run after the AddSinkForTest is posted
+  // to ensure that no race conditions occur and we mimic an actual access code
+  // casting situation.
+  std::move(callback).Run(open_channel_response_);
 
   // A delay is added to the QRM notification since this
   // simulates the non-instant time it takes for a sink to be added
