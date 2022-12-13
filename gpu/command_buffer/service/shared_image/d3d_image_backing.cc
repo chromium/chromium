@@ -88,6 +88,28 @@ viz::SharedImageFormat PlaneFormat(DXGI_FORMAT dxgi_format, size_t plane) {
   return viz::SharedImageFormat::SinglePlane(format);
 }
 
+WGPUTextureFormat DXGIToWGPUFormat(DXGI_FORMAT dxgi_format) {
+  switch (dxgi_format) {
+    case DXGI_FORMAT_R8G8B8A8_UNORM:
+      return WGPUTextureFormat_RGBA8Unorm;
+    case DXGI_FORMAT_B8G8R8A8_UNORM:
+      return WGPUTextureFormat_BGRA8Unorm;
+    case DXGI_FORMAT_R8_UNORM:
+      return WGPUTextureFormat_R8Unorm;
+    case DXGI_FORMAT_R8G8_UNORM:
+      return WGPUTextureFormat_RG8Unorm;
+    case DXGI_FORMAT_R16G16B16A16_FLOAT:
+      return WGPUTextureFormat_RGBA16Float;
+    case DXGI_FORMAT_R10G10B10A2_UNORM:
+      return WGPUTextureFormat_RGB10A2Unorm;
+    case DXGI_FORMAT_NV12:
+      return WGPUTextureFormat_R8BG8Biplanar420Unorm;
+    default:
+      NOTREACHED();
+      return WGPUTextureFormat_Undefined;
+  }
+}
+
 gfx::Size PlaneSize(DXGI_FORMAT dxgi_format,
                     const gfx::Size& size,
                     size_t plane) {
@@ -546,10 +568,14 @@ WGPUTextureUsageFlags D3DImageBacking::GetAllowedDawnUsages(
       WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment;
   switch (wgpu_format) {
     case WGPUTextureFormat_BGRA8Unorm:
+    case WGPUTextureFormat_R8Unorm:
+    case WGPUTextureFormat_RG8Unorm:
       return kBasicUsage;
     case WGPUTextureFormat_RGBA8Unorm:
     case WGPUTextureFormat_RGBA16Float:
       return kBasicUsage | WGPUTextureUsage_StorageBinding;
+    case WGPUTextureFormat_R8BG8Biplanar420Unorm:
+      return WGPUTextureUsage_TextureBinding;
     default:
       return WGPUTextureUsage_None;
   }
@@ -569,21 +595,31 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
         device);
   }
 #endif
-  const WGPUTextureFormat wgpu_format = ToWGPUFormat(format());
+  D3D11_TEXTURE2D_DESC desc;
+  d3d11_texture_->GetDesc(&desc);
+  const WGPUTextureFormat wgpu_format = DXGIToWGPUFormat(desc.Format);
   if (wgpu_format == WGPUTextureFormat_Undefined) {
-    LOG(ERROR) << "Unsupported viz format found: " << format().ToString();
-    return nullptr;
-  }
-  const WGPUTextureUsageFlags usage = GetAllowedDawnUsages(wgpu_format);
-  if (usage == WGPUTextureUsage_None) {
-    LOG(ERROR) << "WGPUTextureUsage is unknown for viz format: "
-               << format().ToString();
+    LOG(ERROR) << "Unsupported DXGI_FORMAT found: " << desc.Format;
     return nullptr;
   }
 
+  WGPUTextureUsageFlags allowed_usage = GetAllowedDawnUsages(wgpu_format);
+  if (allowed_usage == WGPUTextureUsage_None) {
+    LOG(ERROR) << "Allowed WGPUTextureUsage is unknown for WGPUTextureFormat: "
+               << wgpu_format;
+    return nullptr;
+  }
+
+  // We need to have an internal usage of CopySrc in order to use
+  // CopyTextureToTextureInternal if texture format allows these usage.
+  WGPUTextureUsageFlags internal_usage =
+      (WGPUTextureUsage_CopySrc | WGPUTextureUsage_RenderAttachment |
+       WGPUTextureUsage_TextureBinding) &
+      allowed_usage;
+
   WGPUTextureDescriptor texture_descriptor = {};
   texture_descriptor.format = wgpu_format;
-  texture_descriptor.usage = static_cast<uint32_t>(usage);
+  texture_descriptor.usage = allowed_usage;
   texture_descriptor.dimension = WGPUTextureDimension_2D;
   texture_descriptor.size = {static_cast<uint32_t>(size().width()),
                              static_cast<uint32_t>(size().height()), 1};
@@ -594,12 +630,11 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
   texture_descriptor.viewFormats = view_formats.data();
 
   // We need to have internal usages of CopySrc for copies,
-  // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser.
+  // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser
+  // if texture format allows these usages.
   WGPUDawnTextureInternalUsageDescriptor internalDesc = {};
   internalDesc.chain.sType = WGPUSType_DawnTextureInternalUsageDescriptor;
-  internalDesc.internalUsage = WGPUTextureUsage_CopySrc |
-                               WGPUTextureUsage_RenderAttachment |
-                               WGPUTextureUsage_TextureBinding;
+  internalDesc.internalUsage = internal_usage;
   texture_descriptor.nextInChain =
       reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
 
