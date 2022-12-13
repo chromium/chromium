@@ -51,6 +51,7 @@
 #include "chromeos/crosapi/mojom/field_trial.mojom.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
+#include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
 #include "chromeos/crosapi/mojom/force_installed_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/fullscreen_controller.mojom.h"
 #include "chromeos/crosapi/mojom/geolocation.mojom.h"
@@ -338,6 +339,10 @@ LacrosService::LacrosService()
       crosapi::mojom::FieldTrialService,
       &crosapi::mojom::Crosapi::BindFieldTrialService,
       Crosapi::MethodMinVersions::kBindFieldTrialServiceMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::FirewallHoleService,
+      &crosapi::mojom::Crosapi::BindFirewallHoleService,
+      Crosapi::MethodMinVersions::kBindFirewallHoleServiceMinVersion>();
   ConstructRemote<
       crosapi::mojom::ForceInstalledTracker,
       &crosapi::mojom::Crosapi::BindForceInstalledTracker,

@@ -8,20 +8,45 @@
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/firewall_hole_proxy.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace ash {
 class FirewallHole;
 }  // namespace ash
 
-class ChromeFirewallHoleProxy : public content::FirewallHoleProxy {
+class ChromeFirewallHoleProxyAsh : public content::FirewallHoleProxy {
  public:
-  explicit ChromeFirewallHoleProxy(
+  ~ChromeFirewallHoleProxyAsh() override;
+
+  static std::unique_ptr<ChromeFirewallHoleProxyAsh> Create(
       std::unique_ptr<ash::FirewallHole> firewall_hole);
-  ~ChromeFirewallHoleProxy() override;
 
  private:
+  explicit ChromeFirewallHoleProxyAsh(
+      std::unique_ptr<ash::FirewallHole> firewall_hole);
   std::unique_ptr<ash::FirewallHole> firewall_hole_;
 };
+
+#else
+
+class ChromeFirewallHoleProxyLacros : public content::FirewallHoleProxy {
+ public:
+  ~ChromeFirewallHoleProxyLacros() override;
+
+  static std::unique_ptr<ChromeFirewallHoleProxyLacros> Create(
+      mojo::PendingRemote<crosapi::mojom::FirewallHole> firewall_hole);
+
+ private:
+  explicit ChromeFirewallHoleProxyLacros(
+      mojo::PendingRemote<crosapi::mojom::FirewallHole> firewall_hole);
+  mojo::Remote<crosapi::mojom::FirewallHole> firewall_hole_;
+};
+
 #endif
 
 class ChromeFirewallHoleProxyFactory

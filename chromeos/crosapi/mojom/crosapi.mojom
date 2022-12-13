@@ -42,6 +42,7 @@ import "chromeos/crosapi/mojom/feedback.mojom";
 import "chromeos/crosapi/mojom/field_trial.mojom";
 import "chromeos/crosapi/mojom/file_manager.mojom";
 import "chromeos/crosapi/mojom/file_system_provider.mojom";
+import "chromeos/crosapi/mojom/firewall_hole.mojom";
 import "chromeos/crosapi/mojom/force_installed_tracker.mojom";
 import "chromeos/crosapi/mojom/fullscreen_controller.mojom";
 import "chromeos/crosapi/mojom/geolocation.mojom";
@@ -132,8 +133,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 101
-// Next method id: 105
+// Next version: 102
+// Next method id: 106
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -315,6 +316,11 @@ interface Crosapi {
   // to get and set system properties. Implemented in Ash.
   [MinVersion=72] BindExtensionInfoPrivate@75(
       pending_receiver<ExtensionInfoPrivate> receiver);
+
+  // FirewallHoleService is a service that allows users to open ports in the
+  // ChromeOS system firewall from Lacros. Implemented in Ash.
+  [MinVersion=101] BindFirewallHoleService@105(
+      pending_receiver<FirewallHoleService> receiver);
 
   // NetworkingPrivate is a service that allows users to modify
   // network settings in Lacros. Implemented in Ash.

@@ -123,6 +123,8 @@ source_set("crosapi") {
     "file_system_provider_service_ash.h",
     "files_app_launcher.cc",
     "files_app_launcher.h",
+    "firewall_hole_ash.cc",
+    "firewall_hole_ash.h",
     "force_installed_tracker_ash.cc",
     "force_installed_tracker_ash.h",
     "fullscreen_controller_ash.cc",

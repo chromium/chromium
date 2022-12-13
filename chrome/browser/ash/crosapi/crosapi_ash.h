@@ -15,6 +15,7 @@
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/emoji_picker.mojom-forward.h"
+#include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "media/gpu/buildflags.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -65,6 +66,7 @@ class FeedbackAsh;
 class FieldTrialServiceAsh;
 class FileManagerAsh;
 class FileSystemProviderServiceAsh;
+class FirewallHoleServiceAsh;
 class ForceInstalledTrackerAsh;
 class FullscreenControllerAsh;
 class GeolocationServiceAsh;
@@ -211,6 +213,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindFileSystemProviderService(
       mojo::PendingReceiver<mojom::FileSystemProviderService> receiver)
       override;
+  void BindFirewallHoleService(
+      mojo::PendingReceiver<mojom::FirewallHoleService> receiver) override;
   void BindForceInstalledTracker(
       mojo::PendingReceiver<mojom::ForceInstalledTracker> receiver) override;
   void BindFullscreenController(
@@ -518,6 +522,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<FileManagerAsh> file_manager_ash_;
   std::unique_ptr<FileSystemProviderServiceAsh>
       file_system_provider_service_ash_;
+  std::unique_ptr<FirewallHoleServiceAsh> firewall_hole_service_ash_;
   std::unique_ptr<ForceInstalledTrackerAsh> force_installed_tracker_ash_;
   std::unique_ptr<FullscreenControllerAsh> fullscreen_controller_ash_;
   std::unique_ptr<GeolocationServiceAsh> geolocation_service_ash_;

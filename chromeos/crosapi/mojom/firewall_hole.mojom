@@ -1,0 +1,29 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// Represents the firewall hole owned by the browser process. Consumer closes
+// the firewall hole by destroying the remote endpoint.
+[Stable, Uuid="87a1c872-dc14-47a6-a9e5-e51c0cb6d3c0"]
+interface FirewallHole {};
+
+// FirewallHoleService opens ports in the ChromeOS system firewall. The service
+// is hosted by Ash-Chrome.
+[Stable, Uuid="50025df1-fcfa-443e-925e-569f2cec0a19"]
+interface FirewallHoleService {
+  // Opens a TCP port on the system firewall for the given |interface_name|
+  // (or all interfaces if |interface_name| is ""). On success returns a remote
+  // that controls the firewall hole; on failure passes a null remote.
+  // This hole is closed when the consumer resets the |firewall_hole| remote.
+  OpenTCPFirewallHole@0(string interface_name, uint16 port)
+      => (pending_remote<FirewallHole>? firewall_hole);
+
+  // Opens a UDP port on the system firewall for the given |interface_name|
+  // (or all interfaces if |interface_name| is ""). On success returns a remote
+  // that controls the firewall hole; on failure passes a null remote.
+  // This hole is closed when the consumer resets the |firewall_hole| remote.
+  OpenUDPFirewallHole@1(string interface_name, uint16 port)
+      => (pending_remote<FirewallHole>? firewall_hole);
+};
