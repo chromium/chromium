@@ -100,6 +100,32 @@ static LazyInstance<DefaultLocaleBreakIteratorCache<UBRK_SENTENCE>>::Leaky
 static LazyInstance<DefaultLocaleBreakIteratorCache<UBRK_LINE>>::Leaky
     line_break_cache = LAZY_INSTANCE_INITIALIZER;
 
+// Helper function so that 'iter` argument need not outlive the temporary
+// from which it is created.
+void CloseICUIterator(UBreakIterator* iter,
+                      BreakIterator::BreakType break_type) {
+  switch (break_type) {
+    // Free the iter if it is RULE_BASED
+    case BreakIterator::RULE_BASED:
+      ubrk_close(iter);
+      break;
+      // Otherwise, return the iter to the cache it leased from.`
+    case BreakIterator::BREAK_CHARACTER:
+      char_break_cache.Pointer()->Return(iter);
+      break;
+    case BreakIterator::BREAK_WORD:
+      word_break_cache.Pointer()->Return(iter);
+      break;
+    case BreakIterator::BREAK_SENTENCE:
+      sentence_break_cache.Pointer()->Return(iter);
+      break;
+    case BreakIterator::BREAK_LINE:
+    case BreakIterator::BREAK_NEWLINE:
+      line_break_cache.Pointer()->Return(iter);
+      break;
+  }
+}
+
 }  // namespace
 
 BreakIterator::BreakIterator(StringPiece16 str, BreakType break_type)
@@ -110,27 +136,8 @@ BreakIterator::BreakIterator(StringPiece16 str, const std::u16string& rules)
 
 BreakIterator::~BreakIterator() {
   if (iter_) {
-    UBreakIterator* iter = static_cast<UBreakIterator*>(iter_);
-    switch (break_type_) {
-      // Free the iter if it is RULE_BASED
-      case RULE_BASED:
-        ubrk_close(iter);
-        break;
-      // Otherwise, return the iter to the cache it leased from.`
-      case BREAK_CHARACTER:
-        char_break_cache.Pointer()->Return(iter);
-        break;
-      case BREAK_WORD:
-        word_break_cache.Pointer()->Return(iter);
-        break;
-      case BREAK_SENTENCE:
-        sentence_break_cache.Pointer()->Return(iter);
-        break;
-      case BREAK_LINE:
-      case BREAK_NEWLINE:
-        line_break_cache.Pointer()->Return(iter);
-        break;
-    }
+    CloseICUIterator(static_cast<UBreakIterator*>(iter_.ExtractAsDangling()),
+                     break_type_);
   }
 }
 
