@@ -225,8 +225,9 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, IgnoreInvalidManifestData) {
   EXPECT_EQ(registrar().GetAppStartUrl(app_id), url);
 }
 
+// TODO(crbug.com/1400778): Un-flake and re-enable this test.
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
-                       CreateShortcutAgainOverwriteUserDisplayMode) {
+                       DISABLED_CreateShortcutAgainOverwriteUserDisplayMode) {
   base::UserActionTester user_action_tester;
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
 
