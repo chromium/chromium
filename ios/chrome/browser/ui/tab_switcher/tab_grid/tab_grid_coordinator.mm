@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
+#import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
@@ -65,6 +66,7 @@
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -623,6 +625,8 @@
       HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
   baseViewController.reauthAgent = reauthAgent;
   baseViewController.tabPresentationDelegate = self;
+  baseViewController.layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
   baseViewController.delegate = self;
   _baseViewController = baseViewController;
 
@@ -1153,7 +1157,7 @@
 #pragma mark - SnackbarCoordinatorDelegate
 
 - (CGFloat)bottomOffsetForCurrentlyPresentedView {
-  NamedGuide* bottomToolbarGuide = nil;
+  UILayoutGuide* bottomToolbarGuide = nil;
   if ([self.bvcContainer currentBVC]) {
     // Use the BVC bottom bar as the offset as it is currently presented.
     bottomToolbarGuide =
@@ -1161,16 +1165,12 @@
                              view:self.bvcContainer.currentBVC.view];
   } else {
     // The tab grid is being show so use tab grid bottom bar.
-    bottomToolbarGuide =
-        [NamedGuide guideWithName:kTabGridBottomToolbarGuide
-                             view:self.baseViewController.view];
+    bottomToolbarGuide = [LayoutGuideCenterForBrowser(self.browser)
+        makeLayoutGuideNamed:kTabGridBottomToolbarGuide];
+    [self.baseViewController.view addLayoutGuide:bottomToolbarGuide];
   }
 
-  if (!bottomToolbarGuide) {
-    return 0.0;
-  }
-
-  return bottomToolbarGuide.constrainedView.frame.size.height;
+  return CGRectGetHeight(bottomToolbarGuide.layoutFrame);
 }
 
 @end

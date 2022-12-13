@@ -58,6 +58,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/main:default_browser_scene_agent",
+    "//ios/chrome/browser/ui/main:layout_guide_util",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/menu:context_menu_delegate",
     "//ios/chrome/browser/ui/recent_tabs",

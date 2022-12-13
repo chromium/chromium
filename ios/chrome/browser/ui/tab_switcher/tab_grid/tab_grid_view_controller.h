@@ -23,6 +23,7 @@
 class GURL;
 @protocol IncognitoReauthCommands;
 @protocol IncognitoReauthConsumer;
+@class LayoutGuideCenter;
 @protocol PopupMenuCommands;
 @protocol RecentTabsConsumer;
 @class RecentTabsTableViewController;
@@ -163,6 +164,9 @@ enum class TabGridPageConfiguration {
     regularTabsContextMenuProvider;
 @property(nonatomic, weak) id<GridContextMenuProvider>
     incognitoTabsContextMenuProvider;
+
+// The layout guide center to use to refer to the bottom toolbar.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 // Init with tab grid view configuration, which decides which sub view
 // controller should be added.
