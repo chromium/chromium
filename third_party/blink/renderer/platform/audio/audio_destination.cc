@@ -120,6 +120,13 @@ AudioDestination::AudioDestination(
   SendLogMessage(String::Format("%s => (device sample rate=%.0f Hz)", __func__,
                                 web_audio_device_->SampleRate()));
 
+  TRACE_EVENT1("webaudio", "AudioDestination::AudioDestination",
+               "sink information",
+               audio_utilities::GetSinkInfoForTracing(
+                   sink_descriptor, latency_hint,
+                   web_audio_device_->SampleRate(), number_of_output_channels,
+                   callback_buffer_size_));
+
   metric_reporter_.Initialize(
       callback_buffer_size_, web_audio_device_->SampleRate());
 

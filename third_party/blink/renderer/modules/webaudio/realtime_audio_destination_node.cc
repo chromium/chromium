@@ -65,6 +65,8 @@ RealtimeAudioDestinationNode* RealtimeAudioDestinationNode::Create(
 void RealtimeAudioDestinationNode::SetSinkDescriptor(
     const WebAudioSinkDescriptor& sink_descriptor,
     media::OutputDeviceStatusCB callback) {
+  DCHECK(IsMainThread());
+
   static_cast<RealtimeAudioDestinationHandler&>(Handler())
       .SetSinkDescriptor(sink_descriptor, std::move(callback));
 }

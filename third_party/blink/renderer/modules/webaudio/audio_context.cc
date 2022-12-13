@@ -564,6 +564,7 @@ ScriptPromise AudioContext::setSinkId(
     const V8UnionAudioSinkOptionsOrString* v8_sink_id,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
+  TRACE_EVENT0("webaudio", "AudioContext::setSinkId");
 
   // setSinkId invoked from a detached document should throw kInvalidStateError
   // DOMException.
@@ -1019,6 +1020,10 @@ void AudioContext::DevicesEnumerated(
   Vector<WebMediaDeviceInfo> output_devices =
       enumeration[static_cast<wtf_size_t>(
           mojom::blink::MediaDeviceType::MEDIA_AUDIO_OUTPUT)];
+
+  TRACE_EVENT1(
+      "webaudio", "AudioContext::DevicesEnumerated", "DeviceEnumeration",
+      audio_utilities::GetDeviceEnumerationForTracing(output_devices));
 
   OnDevicesChanged(mojom::blink::MediaDeviceType::MEDIA_AUDIO_OUTPUT,
                    output_devices);

@@ -24,8 +24,12 @@
  */
 
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
+
+#include <sstream>
+
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/fdlibm/ieee754.h"
 
 namespace blink::audio_utilities {
@@ -130,6 +134,72 @@ bool IsPowerOfTwo(size_t x) {
   // rightmost 1-bit in the word x.  If x is a power of two, then the
   // result is, of course, 0.
   return x > 0 && ((x & (x - 1)) == 0);
+}
+
+const std::string GetSinkIdForTracing(
+    blink::WebAudioSinkDescriptor sink_descriptor) {
+  std::string sink_id;
+  if (sink_descriptor.Type() == blink::WebAudioSinkDescriptor::kAudible) {
+    sink_id = sink_descriptor.SinkId() == "" ?
+        "DEFAULT SINK" : sink_descriptor.SinkId().Utf8();
+  } else {
+    sink_id = "SILENT SINK";
+  }
+  return sink_id;
+}
+
+const std::string GetSinkInfoForTracing(
+    blink::WebAudioSinkDescriptor sink_descriptor,
+    blink::WebAudioLatencyHint latency_hint,
+    int channel_count,
+    float sample_rate,
+    int callback_buffer_size) {
+  std::ostringstream s;
+
+  s << "sink info: " << GetSinkIdForTracing(sink_descriptor);
+
+  std::string latency_info;
+  switch (latency_hint.Category()) {
+    case WebAudioLatencyHint::kCategoryInteractive:
+      latency_info = "interactive";
+      break;
+    case WebAudioLatencyHint::kCategoryBalanced:
+      latency_info = "balanced";
+      break;
+    case WebAudioLatencyHint::kCategoryPlayback:
+      latency_info = "playback";
+      break;
+    case WebAudioLatencyHint::kCategoryExact:
+      latency_info = "exact";
+      break;
+    case WebAudioLatencyHint::kLastValue:
+      latency_info = "invalid";
+      break;
+  }
+  s << ", latency hint: " << latency_info;
+
+  if (latency_hint.Category() == WebAudioLatencyHint::kCategoryExact) {
+    s << " (" << latency_hint.Seconds() << "s)";
+  }
+
+  s << ", channel count: " << channel_count
+    << ", sample rate: " << sample_rate
+    << ", callback buffer size: " << callback_buffer_size;
+
+  return s.str();
+}
+
+const std::string GetDeviceEnumerationForTracing(
+    const Vector<WebMediaDeviceInfo>& device_infos) {
+  std::ostringstream s;
+
+  for (auto device_info : device_infos) {
+    s << "{ label: " << device_info.label
+      << ", device_id: " << device_info.device_id
+      << ", group_id: " << device_info.group_id << " }";
+  }
+
+  return s.str().empty() ? "EMPTY" : s.str();
 }
 
 }  // namespace blink::audio_utilities

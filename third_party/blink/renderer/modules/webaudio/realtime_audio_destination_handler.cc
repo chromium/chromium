@@ -299,6 +299,8 @@ int RealtimeAudioDestinationHandler::GetFramesPerBuffer() const {
 }
 
 void RealtimeAudioDestinationHandler::CreatePlatformDestination() {
+  DCHECK(IsMainThread());
+
   if (base::FeatureList::IsEnabled(features::kWebAudioSinkSelection)) {
     platform_destination_ = AudioDestination::Create(
         *this, sink_descriptor_, ChannelCount(), latency_hint_, sample_rate_,
@@ -310,9 +312,23 @@ void RealtimeAudioDestinationHandler::CreatePlatformDestination() {
         *this, sink_descriptor, ChannelCount(), latency_hint_, sample_rate_,
         Context()->GetDeferredTaskHandler().RenderQuantumFrames());
   }
+
+  // TODO(crbug.com/991981): Can't query `GetCallbackBufferSize()` here because
+  // creating the destination is not a synchronous process. When anything
+  // touches the destination information between this call and
+  // `StartPlatformDestination()` can lead to a crash.
+  TRACE_EVENT0("webaudio",
+               "RealtimeAudioDestinationHandler::CreatePlatformDestination");
 }
 
 void RealtimeAudioDestinationHandler::StartPlatformDestination() {
+  TRACE_EVENT1("webaudio",
+               "RealtimeAudioDestinationHandler::StartPlatformDestination",
+               "sink information (when starting a new destination)",
+               audio_utilities::GetSinkInfoForTracing(
+                  sink_descriptor_, latency_hint_,
+                  sample_rate_.has_value() ? sample_rate_.value() : -1,
+                  MaxChannelCount(), GetCallbackBufferSize()));
   DCHECK(IsMainThread());
 
   if (platform_destination_->IsPlaying()) {
@@ -351,6 +367,12 @@ void RealtimeAudioDestinationHandler::StopPlatformDestination() {
 void RealtimeAudioDestinationHandler::SetSinkDescriptor(
     const WebAudioSinkDescriptor& sink_descriptor,
     media::OutputDeviceStatusCB callback) {
+  TRACE_EVENT1("webaudio", "RealtimeAudioDestinationHandler::SetSinkDescriptor",
+               "sink information (when descriptor change requested)",
+               audio_utilities::GetSinkInfoForTracing(
+                  sink_descriptor, latency_hint_,
+                  sample_rate_.has_value() ? sample_rate_.value() : -1,
+                  MaxChannelCount(), GetCallbackBufferSize()));
   DCHECK(IsMainThread());
 
   // Stop the current sink and create a new with the provided sink descriptor.

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_node.h"
+#include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 
 namespace blink {
 
@@ -40,9 +41,15 @@ SetSinkIdResolver::SetSinkIdResolver(
     sink_descriptor_ =
         WebAudioSinkDescriptor(sink_id.GetAsString(), frame_token);
   }
+
+  TRACE_EVENT1("webaudio", "SetSinkIdResolver::SetSinkIdResolver",
+               "sink_id (after setting sink_descriptor_)",
+               audio_utilities::GetSinkIdForTracing(sink_descriptor_));
 }
 
 void SetSinkIdResolver::Start() {
+  TRACE_EVENT1("webaudio", "SetSinkIdResolver::Start", "sink_id",
+               audio_utilities::GetSinkIdForTracing(sink_descriptor_));
   DCHECK(IsMainThread());
 
   ExecutionContext* context = GetExecutionContext();
@@ -93,6 +100,8 @@ void SetSinkIdResolver::Start() {
 }
 
 void SetSinkIdResolver::OnSetSinkIdComplete(media::OutputDeviceStatus status) {
+  TRACE_EVENT1("webaudio", "SetSinkIdResolver::OnSetSinkIdComplete", "sink_id",
+               audio_utilities::GetSinkIdForTracing(sink_descriptor_));
   DCHECK(IsMainThread());
 
   auto* excecution_context = GetExecutionContext();
