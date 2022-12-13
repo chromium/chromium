@@ -603,11 +603,11 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
 
   // Populate the output mailbox and callback.
   {
+    bool is_overlay_candidate = !!color_buffer_for_mailbox->gpu_memory_buffer;
     *out_resource = viz::TransferableResource::MakeGpu(
         color_buffer_for_mailbox->mailbox, GL_LINEAR, texture_target_,
         color_buffer_for_mailbox->produce_sync_token, size_,
-        color_buffer_for_mailbox->format,
-        color_buffer_for_mailbox->is_overlay_candidate);
+        color_buffer_for_mailbox->format, is_overlay_candidate);
     out_resource->color_space = color_buffer_for_mailbox->color_space;
     // This holds a ref on the DrawingBuffer that will keep it alive until the
     // mailbox is released (and while the release callback is running).
@@ -835,7 +835,6 @@ DrawingBuffer::ColorBuffer::ColorBuffer(
     const gfx::ColorSpace& color_space,
     viz::ResourceFormat format,
     GLuint texture_id,
-    bool is_overlay_candidate,
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     gpu::Mailbox mailbox)
     : owning_thread_ref(base::PlatformThread::CurrentRef()),
@@ -844,7 +843,6 @@ DrawingBuffer::ColorBuffer::ColorBuffer(
       color_space(color_space),
       format(format),
       texture_id(texture_id),
-      is_overlay_candidate(is_overlay_candidate),
       gpu_memory_buffer(std::move(gpu_memory_buffer)),
       mailbox(mailbox) {}
 
@@ -1830,11 +1828,14 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   state_restorer_->SetTextureBindingDirty();
 
   gpu::SharedImageInterface* sii = ContextProvider()->SharedImageInterface();
-  bool is_overlay_candidate = false;
+  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager =
+      Platform::Current()->GetGpuMemoryBufferManager();
+
   gpu::Mailbox back_buffer_mailbox;
   // Set only when using swap chains.
   gpu::Mailbox front_buffer_mailbox;
   GLuint texture_id = 0;
+  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2 |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
                    gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
@@ -1844,10 +1845,13 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
                                ? kTopLeft_GrSurfaceOrigin
                                : kBottomLeft_GrSurfaceOrigin;
 
-  viz::ResourceFormat format =
-      use_half_float_storage_
-          ? viz::RGBA_F16
-          : (have_alpha_channel_ ? viz::RGBA_8888 : viz::RGBX_8888);
+  viz::ResourceFormat format;
+  if (have_alpha_channel_) {
+    format = use_half_float_storage_ ? viz::RGBA_F16 : viz::RGBA_8888;
+  } else {
+    DCHECK(!use_half_float_storage_);
+    format = viz::RGBX_8888;
+  }
   if (UsingSwapChain()) {
     gpu::SharedImageInterface::SwapChainMailboxes mailboxes =
         sii->CreateSwapChain(format, size, color_space_, origin,
@@ -1855,26 +1859,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
                              usage | gpu::SHARED_IMAGE_USAGE_SCANOUT);
     back_buffer_mailbox = mailboxes.back_buffer;
     front_buffer_mailbox = mailboxes.front_buffer;
-  }
-
-  // Allocate a GpuMemoryBuffer-backed SharedImage.
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
-  if (ShouldUseChromiumImage() && back_buffer_mailbox.IsZero()) {
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager =
-        Platform::Current()->GetGpuMemoryBufferManager();
-
-    // TODO(crbug.com/911176): We should not allocate a GpuMemoryBuffer here.
-    // Multiple attempts to remove this path have been reverted, so this path
-    // is to be removed by incrementally expanding the situations where
-    // `use_gpu_memory_buffers` is false until the whole block can be removed.
-    bool use_gpu_memory_buffers = true;
-#if !BUILDFLAG(IS_CHROMEOS)
-    use_gpu_memory_buffers = false;
-#endif
-    if (use_half_float_storage_)
-      use_gpu_memory_buffers = false;
-
-    if (use_gpu_memory_buffers) {
+  } else {
+    if (ShouldUseChromiumImage()) {
       gfx::BufferFormat buffer_format;
       if (have_alpha_channel_) {
         buffer_format = use_half_float_storage_ ? gfx::BufferFormat::RGBA_F16
@@ -1888,6 +1874,10 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
           buffer_format = gfx::BufferFormat::BGRX_8888;
         }
       }
+      // TODO(crbug.com/911176): When RGB emulation is not needed, we should use
+      // the non-GMB CreateSharedImage with gpu::SHARED_IMAGE_USAGE_SCANOUT in
+      // order to allocate the GMB service-side and avoid a synchronous
+      // round-trip to the browser process here.
       gfx::BufferUsage buffer_usage = gfx::BufferUsage::SCANOUT;
       uint32_t additional_usage_flags = gpu::SHARED_IMAGE_USAGE_SCANOUT;
       if (low_latency_enabled()) {
@@ -1908,43 +1898,22 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         }
       }
     }
-  }
 
-  if (back_buffer_mailbox.IsZero()) {
-    if (ShouldUseChromiumImage()) {
-      // Only allocate using SCANOUT if GpuMemoryBuffers of the equivalent
-      // gfx::BufferFormat are supported.
-#if BUILDFLAG(IS_MAC)
-      const viz::ResourceFormat scanout_format =
-          use_half_float_storage_
-              ? viz::RGBA_F16
-              : (have_alpha_channel_ ? viz::BGRA_8888 : viz::BGRX_8888);
-#else
-      const viz::ResourceFormat scanout_format = format;
-#endif
-      if (gpu::IsImageFromGpuMemoryBufferFormatSupported(
-              viz::BufferFormat(scanout_format),
-              ContextProvider()->GetCapabilities())) {
-        format = scanout_format;
-        is_overlay_candidate = true;
-        usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-        if (low_latency_enabled()) {
-          usage |= gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-        }
-      }
+    // Create a normal SharedImage if GpuMemoryBuffer is not needed or the
+    // allocation above failed.
+    if (!gpu_memory_buffer) {
+      // We want to set the correct SkAlphaType on the new shared image but in
+      // the case of ShouldUseChromiumImage() we instead keep this buffer
+      // premultiplied, draw to |premultiplied_alpha_false_mailbox_|, and
+      // convert during copy.
+      SkAlphaType alpha_type = kPremul_SkAlphaType;
+      if (!ShouldUseChromiumImage() && !premultiplied_alpha_)
+        alpha_type = kUnpremul_SkAlphaType;
+
+      back_buffer_mailbox =
+          sii->CreateSharedImage(format, size, color_space_, origin, alpha_type,
+                                 usage, gpu::kNullSurfaceHandle);
     }
-
-    // We want to set the correct SkAlphaType on the new shared image but in
-    // the case of ShouldUseChromiumImage() we instead keep this buffer
-    // premultiplied, draw to |premultiplied_alpha_false_mailbox_|, and
-    // convert during copy.
-    SkAlphaType alpha_type = kPremul_SkAlphaType;
-    if (!ShouldUseChromiumImage() && !premultiplied_alpha_)
-      alpha_type = kUnpremul_SkAlphaType;
-
-    back_buffer_mailbox =
-        sii->CreateSharedImage(format, size, color_space_, origin, alpha_type,
-                               usage, gpu::kNullSurfaceHandle);
   }
 
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
@@ -1956,7 +1925,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         front_buffer_mailbox.name);
     front_color_buffer_ = base::MakeRefCounted<ColorBuffer>(
         weak_factory_.GetWeakPtr(), size, color_space_, format, texture_id,
-        /*is_overlay_candidate=*/false, nullptr, front_buffer_mailbox);
+        nullptr, front_buffer_mailbox);
   }
   // Import the backbuffer of swap chain or allocated SharedImage into GL.
   texture_id =
@@ -1985,7 +1954,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
 
   return base::MakeRefCounted<ColorBuffer>(
       weak_factory_.GetWeakPtr(), size, color_space_, format, texture_id,
-      is_overlay_candidate, std::move(gpu_memory_buffer), back_buffer_mailbox);
+      std::move(gpu_memory_buffer), back_buffer_mailbox);
 }
 
 void DrawingBuffer::AttachColorBufferToReadFramebuffer() {
