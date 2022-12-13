@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include <stdbool.h>
-
 #include <va/va.h>
 #include <va/va_backend.h>
+
+#include <set>
 
 VAStatus FakeTerminate(VADriverContextP ctx) {
   return VA_STATUS_SUCCESS;
@@ -148,16 +149,16 @@ VAStatus FakeQueryConfigProfiles(VADriverContextP ctx,
                                  VAProfile* profile_list,
                                  int* num_profiles) {
   int i = 0;
-  // TODO(crbug.com/1080871): consider extracting the profiles from
-  // kCapabilities; would need to remove duplicates.
-  profile_list[i++] = VAProfileJPEGBaseline;
-  profile_list[i++] = VAProfileH264ConstrainedBaseline;
-  profile_list[i++] = VAProfileH264Main;
-  profile_list[i++] = VAProfileH264High;
-  profile_list[i++] = VAProfileNone;  // For video processing (e.g. cropping).
-  profile_list[i++] = VAProfileVP8Version0_3;
-  profile_list[i++] = VAProfileVP9Profile0;
-  profile_list[i++] = VAProfileVP9Profile2;
+
+  std::set<VAProfile> unique_profiles;
+  for (auto& capability : kCapabilities)
+    unique_profiles.insert(capability.profile);
+
+  for (auto profile : unique_profiles) {
+    profile_list[i] = profile;
+    i++;
+  }
+
   *num_profiles = i;
 
   return VA_STATUS_SUCCESS;
@@ -202,9 +203,11 @@ VAStatus FakeGetConfigAttributes(VADriverContextP ctx,
   // its |value|.
   bool profile_found = false;
   for (const auto& capability : kCapabilities) {
-    profile_found = capability.profile == profile;
-    if (!(profile_found && capability.entry_point == entrypoint))
+    profile_found = capability.profile == profile || profile_found;
+    if (!(capability.profile == profile &&
+          capability.entry_point == entrypoint)) {
       continue;
+    }
 
     // Clear the |attrib_list|: sometimes it's not initialized.
     for (int attrib = 0; attrib < num_attribs; attrib++)
@@ -231,23 +234,43 @@ VAStatus FakeCreateConfig(VADriverContextP ctx,
                           int num_attribs,
                           VAConfigID* config_id) {
   *config_id = VA_INVALID_ID;
+  bool profile_found = false;
   for (size_t i = 0; i < kCapabilitiesSize; ++i) {
+    profile_found = kCapabilities[i].profile == profile || profile_found;
     if (!(kCapabilities[i].profile == profile &&
           kCapabilities[i].entry_point == entrypoint)) {
       continue;
     }
-    // TODO(crbug.com/1080871): make sure that all entries in |attrib_list| are
-    // also supported by kCapabilities[i].attrib_list.
+    // Checks that the attrib_list is supported by the profile. Assumes the
+    // attributes can be in any order.
+    for (int k = 0; k < num_attribs; k++) {
+      bool attrib_supported = false;
+      for (int j = 0; j < kCapabilities[i].num_attribs; j++) {
+        if (kCapabilities[i].attrib_list[j].type != attrib_list[k].type)
+          continue;
+        // Note that it's not enough to AND the value in |kCapabilities| against
+        // the value provided by the application. We also need to allow for
+        // equality. The reason is that there are some attributes that allow a
+        // value of 0 (e.g., VA_ENC_PACKED_HEADER_NONE for
+        // VAConfigAttribEncPackedHeaders).
+        attrib_supported =
+            (kCapabilities[i].attrib_list[j].value & attrib_list[k].value) ||
+            (kCapabilities[i].attrib_list[j].value == attrib_list[k].value);
+        if (attrib_supported)
+          break;
+      }
+      if (!attrib_supported) {
+        return VA_STATUS_ERROR_ATTR_NOT_SUPPORTED;
+      }
+    }
 
     // |config_id| is also the index in kCapabilities, to simplify things.
     *config_id = i;
     return VA_STATUS_SUCCESS;
   }
 
-  // TODO(crbug.com/1080871): return here VA_STATUS_ERROR_UNSUPPORTED_PROFILE /
-  // VA_STATUS_ERROR_ATTR_NOT_SUPPORTED / VA_STATUS_ERROR_UNSUPPORTED_ENTRYPOINT
-  // depending on what has happened in the previous for loop.
-  return VA_STATUS_ERROR_ALLOCATION_FAILED;
+  return profile_found ? VA_STATUS_ERROR_UNSUPPORTED_ENTRYPOINT
+                       : VA_STATUS_ERROR_UNSUPPORTED_PROFILE;
 }
 
 /**

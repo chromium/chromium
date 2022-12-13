@@ -4,4 +4,6 @@
 
 shared_library("fake_drv_video") {
   sources = [ "fake_drv_video.cc" ]
+
+  deps = [ "//base" ]
 }
