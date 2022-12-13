@@ -190,6 +190,9 @@ void AddStrings(PdfViewerContext context, base::Value::Dict* dict) {
 }
 
 void AddAdditionalData(bool enable_annotations, base::Value::Dict* dict) {
+  // NOTE: This function should not include any data used for $i18n{}
+  // replacements. The i18n string resources should be added using AddStrings()
+  // above instead.
   bool printing_enabled = true;
   bool annotations_enabled = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
