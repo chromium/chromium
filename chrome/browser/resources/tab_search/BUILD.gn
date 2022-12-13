@@ -45,13 +45,13 @@ build_webui("build") {
   css_files = [ "tab_group_shared_vars.css" ]
 
   mojo_files_deps = [
-    "//chrome/browser/ui/webui/tab_search:mojo_bindings_js__generator",
-    "//chrome/browser/ui/webui/tabs:mojo_bindings_js__generator",
+    "//chrome/browser/ui/webui/tab_search:mojo_bindings_ts__generator",
+    "//chrome/browser/ui/webui/tabs:mojo_bindings_ts__generator",
     "//components/tab_groups/public/mojom:mojo_bindings_js__generator",
   ]
   mojo_files = [
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_search/tab_search.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs/tabs.mojom-webui.js",
+    "$root_gen_dir/chrome/browser/ui/webui/tab_search/tab_search.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/tabs/tabs.mojom-webui.ts",
     "$root_gen_dir/mojom-webui/components/tab_groups/public/mojom/tab_group_types.mojom-webui.js",
   ]
 
