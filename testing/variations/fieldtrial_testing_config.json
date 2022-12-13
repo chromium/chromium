@@ -2530,6 +2530,21 @@
             ]
         }
     ],
+    "ChromeOSRobustAudioDeviceSelectLogic": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20221019",
+                    "enable_features": [
+                        "RobustAudioDeviceSelectLogic"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSSharingHub": [
         {
             "platforms": [
