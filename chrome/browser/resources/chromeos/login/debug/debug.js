@@ -1530,6 +1530,27 @@ cr.define('cr.ui.login.debug', function() {
       kind: ScreenKind.NORMAL,
     },
     {
+      id: 'choobe',
+      kind: ScreenKind.NORMAL,
+      handledSteps: 'overview',
+      states: [
+        {
+          id: 'overview',
+          data: {
+            screens: [
+              {
+                title: 'choobeThemeSelectionTileTitle',
+                icon: 'oobe-32:stars',
+                selected: false,
+                screenID: 'screenID',
+              },
+            ],
+          },
+        },
+      ],
+    },
+
+    {
       id: 'marketing-opt-in',
       kind: ScreenKind.NORMAL,
       handledSteps: 'overview',

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
@@ -20,8 +21,8 @@ constexpr char kDebugButton[] = "invokeDebuggerButton";
 constexpr char kDebugOverlay[] = "debuggerOverlay";
 constexpr char kScreensPanel[] = "DebuggerPanelScreens";
 
-constexpr int kOobeScreensCount = 46;
-constexpr int kLoginScreensCount = 44;
+constexpr int kOobeScreensCount = 47;
+constexpr int kLoginScreensCount = 45;
 constexpr int kOsInstallScreensCount = 2;
 
 std::string ElementsInPanel(const std::string& panel) {
@@ -32,7 +33,9 @@ std::string ElementsInPanel(const std::string& panel) {
 
 class DebugOverlayTest : public OobeBaseTest {
  public:
-  DebugOverlayTest() = default;
+  DebugOverlayTest() {
+    feature_list_.InitAndEnableFeature(features::kOobeChoobe);
+  }
 
   ~DebugOverlayTest() override = default;
 
@@ -40,6 +43,8 @@ class DebugOverlayTest : public OobeBaseTest {
     command_line->AppendSwitch(switches::kShowOobeDevOverlay);
     OobeBaseTest::SetUpCommandLine(command_line);
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class DebugOverlayOnLoginTest : public DebugOverlayTest {
