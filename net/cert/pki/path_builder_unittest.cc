@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/base_paths.h"
-#include "base/callback_forward.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
