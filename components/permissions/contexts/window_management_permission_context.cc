@@ -28,7 +28,7 @@ ContentSetting WindowManagementPermissionContext::GetPermissionStatusInternal(
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
   // TODO(crbug.com/897300): Add window-placement support on Android.
-  NOTIMPLEMENTED_LOG_ONCE() << "window-placement permission is not supported";
+  NOTIMPLEMENTED_LOG_ONCE();
   return CONTENT_SETTING_BLOCK;
 }
 #endif  // IS_ANDROID

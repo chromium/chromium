@@ -322,7 +322,8 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
 #else   // !IS_CHROMEOS_LACROS && !IS_ANDROID
       // TODO(crbug.com/1320453): Document Picture-in-Picture is turned off in
       // lacros.
-      NOTIMPLEMENTED_LOG_ONCE() << "TYPE_PICTURE_IN_PICTURE";
+      // For TYPE_PICTURE_IN_PICTURE
+      NOTIMPLEMENTED_LOG_ONCE();
       return {nullptr, -1};
 #endif  // !IS_CHROMEOS_LACROS && !IS_ANDROID
     case WindowOpenDisposition::NEW_POPUP: {

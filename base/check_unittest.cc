@@ -470,8 +470,7 @@ TEST(CheckTest, NotImplemented) {
 }
 
 void NiLogOnce() {
-  // Note: The stream param is not logged.
-  NOTIMPLEMENTED_LOG_ONCE() << "foo";
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 TEST(CheckTest, NotImplementedLogOnce) {

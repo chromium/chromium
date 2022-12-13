@@ -577,7 +577,8 @@ PasswordAutofillManager::GetDriver() {
 int32_t PasswordAutofillManager::GetWebContentsPopupControllerAxId() const {
   // TODO: Needs to be implemented when we step up accessibility features in the
   // future.
-  NOTIMPLEMENTED_LOG_ONCE() << "See http://crbug.com/991253";
+  // See http://crbug.com/991253
+  NOTIMPLEMENTED_LOG_ONCE();
   return 0;
 }
 

@@ -729,8 +729,7 @@ void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
   } else {
     // TODO(https://crbug.com/1113900): Implement AuraShell support for
     // non-browser windows and replace this if-else clause by a DCHECK.
-    NOTIMPLEMENTED_LOG_ONCE()
-        << "Implement AuraShell support for non-browser windows.";
+    NOTIMPLEMENTED_LOG_ONCE();
   }
 }
 #endif
@@ -754,8 +753,8 @@ void WaylandToplevelWindow::ShowSnapPreview(
     return;
   }
 
-  NOTIMPLEMENTED_LOG_ONCE()
-      << "Window snapping isn't available for non-lacros builds.";
+  // Window snapping isn't available for non-lacros builds.
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WaylandToplevelWindow::CommitSnap(
@@ -773,9 +772,8 @@ void WaylandToplevelWindow::CommitSnap(
         return;
     }
   }
-
-  NOTIMPLEMENTED_LOG_ONCE()
-      << "Window snapping isn't available for non-lacros builds.";
+  // Window snapping isn't available for non-lacros builds.
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WaylandToplevelWindow::SetCanGoBack(bool value) {

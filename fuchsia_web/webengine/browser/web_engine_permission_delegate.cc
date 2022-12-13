@@ -124,7 +124,7 @@ WebEnginePermissionDelegate::SubscribePermissionStatusChange(
     base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {
   // TODO(crbug.com/1063094): Implement permission status subscription. It's
   // used in blink to emit PermissionStatus.onchange notifications.
-  NOTIMPLEMENTED_LOG_ONCE() << ": " << static_cast<int>(permission);
+  NOTIMPLEMENTED_LOG_ONCE();
   return SubscriptionId();
 }
 

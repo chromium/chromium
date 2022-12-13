@@ -530,12 +530,12 @@ void WaylandConnection::Global(void* data,
     if (connection->wayland_output_manager_)
       connection->wayland_output_manager_->InitializeAllXdgOutputs();
   } else if (strcmp(interface, "org_kde_plasma_shell") == 0) {
-    NOTIMPLEMENTED_LOG_ONCE()
-        << interface << " is recognized but not yet supported";
+    // Recognized but not yet supported.
+    NOTIMPLEMENTED_LOG_ONCE();
     ReportShellUMA(UMALinuxWaylandShell::kOrgKdePlasmaShell);
   } else if (strcmp(interface, "zwlr_layer_shell_v1") == 0) {
-    NOTIMPLEMENTED_LOG_ONCE()
-        << interface << " is recognized but not yet supported";
+    // Recognized but not yet supported.
+    NOTIMPLEMENTED_LOG_ONCE();
     ReportShellUMA(UMALinuxWaylandShell::kZwlrLayerShellV1);
   } else if (!connection->zcr_stylus_v2_ &&
              strcmp(interface, "zcr_stylus_v2") == 0) {
