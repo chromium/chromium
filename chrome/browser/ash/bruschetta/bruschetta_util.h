@@ -15,6 +15,8 @@ namespace bruschetta {
 extern const char kBruschettaVmName[];
 extern const char kBruschettaDisplayName[];
 
+extern const char kBiosPath[];
+
 enum class BruschettaResult {
   kUnknown,
   kSuccess,
@@ -36,6 +38,10 @@ absl::optional<const base::Value::Dict*> GetRunnableConfig(
     const std::string& config_id);
 
 base::FilePath BruschettaChromeOSBaseDirectory();
+
+absl::optional<const base::Value::Dict*> GetInstallableConfig(
+    const Profile* profile,
+    const std::string& config_id);
 
 }  // namespace bruschetta
 

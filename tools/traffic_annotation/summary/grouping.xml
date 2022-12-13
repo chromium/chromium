@@ -270,6 +270,7 @@ after discussions on the right group.
       <annotation id="password_sync_token_fetcher"/>
       <annotation id="nearby_webrtc_connection"/>
       <annotation id="projector_xhr_loader"/>
+      <annotation id="bruschetta_installer_download"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

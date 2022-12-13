@@ -24,9 +24,10 @@ enum DownloadClient {
   MOUNTAIN_INTERNAL = 7;
   PLUGIN_VM_IMAGE = 8;
   OPTIMIZATION_GUIDE_PREDICTION_MODELS = 9;
+  BRUSCHETTA = 10;
 
   // New clients should be added above here.
-  BOUNDARY = 10;
+  BOUNDARY = 11;
 }
 
 // Custom key value pair provided by the client and will be sent back to client

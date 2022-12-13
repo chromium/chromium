@@ -30,6 +30,8 @@ absl::optional<const base::Value::Dict*> GetConfigWithEnabledLevel(
 const char kBruschettaVmName[] = "bru";
 const char kBruschettaDisplayName[] = "Bruschetta";
 
+const char kBiosPath[] = "Downloads/bios";
+
 const char* BruschettaResultString(const BruschettaResult res) {
 #define ENTRY(name)            \
   case BruschettaResult::name: \
@@ -64,6 +66,13 @@ absl::optional<const base::Value::Dict*> GetRunnableConfig(
 
 base::FilePath BruschettaChromeOSBaseDirectory() {
   return base::FilePath("/mnt/shared");
+}
+
+absl::optional<const base::Value::Dict*> GetInstallableConfig(
+    const Profile* profile,
+    const std::string& config_id) {
+  return GetConfigWithEnabledLevel(profile, config_id,
+                                   prefs::PolicyEnabledState::INSTALL_ALLOWED);
 }
 
 }  // namespace bruschetta

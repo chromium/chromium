@@ -30,6 +30,7 @@ chromium-metrics-reviews@google.com.
 <variants name="DownloadClient">
   <variant name="__Test__"/>
   <variant name="BackgroundFetch"/>
+  <variant name="Bruschetta"/>
   <variant name="Debugging"/>
   <variant name="MountainInternal"/>
   <variant name="OfflinePage"/>

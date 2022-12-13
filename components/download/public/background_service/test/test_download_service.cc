@@ -46,9 +46,6 @@ class TestServiceConfig : public ServiceConfig {
 TestDownloadService::TestDownloadService()
     : service_config_(std::make_unique<TestServiceConfig>()),
       logger_(std::make_unique<EmptyLogger>()),
-      is_ready_(false),
-      fail_at_start_(false),
-      file_size_(123456789u),
       client_(nullptr) {}
 
 TestDownloadService::~TestDownloadService() = default;
@@ -97,6 +94,14 @@ void TestDownloadService::CancelDownload(const std::string& guid) {
   for (auto iter = downloads_.begin(); iter != downloads_.end(); ++iter) {
     if (iter->value().guid == guid) {
       downloads_.erase(iter);
+
+      CompletionInfo completion_info(base::FilePath(), 0u);
+
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&TestDownloadService::OnDownloadFailed,
+                         base::Unretained(this), guid, completion_info,
+                         Client::FailureReason::CANCELLED));
       return;
     }
   }
@@ -137,6 +142,10 @@ void TestDownloadService::SetHash256(const std::string& hash256) {
   hash256_ = hash256;
 }
 
+void TestDownloadService::SetFilePath(base::FilePath path) {
+  path_ = std::move(path);
+}
+
 void TestDownloadService::ProcessDownload() {
   DCHECK(!fail_at_start_);
   if (!is_ready_ || downloads_.empty())
@@ -150,7 +159,7 @@ void TestDownloadService::ProcessDownload() {
     OnDownloadFailed(params.guid, completion_info,
                      Client::FailureReason::ABORTED);
   } else {
-    CompletionInfo completion_info(base::FilePath(), file_size_,
+    CompletionInfo completion_info(path_, file_size_,
                                    {params.request_params.url}, nullptr);
     completion_info.hash256 = hash256_;
     OnDownloadSucceeded(params.guid, completion_info);

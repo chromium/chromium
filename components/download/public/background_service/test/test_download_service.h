@@ -56,6 +56,8 @@ class TestDownloadService : public BackgroundDownloadService {
 
   void SetHash256(const std::string& hash256);
 
+  void SetFilePath(base::FilePath path);
+
   void set_client(Client* client) { client_ = client; }
 
  private:
@@ -74,13 +76,14 @@ class TestDownloadService : public BackgroundDownloadService {
   std::unique_ptr<ServiceConfig> service_config_;
   std::unique_ptr<Logger> logger_;
 
-  bool is_ready_;
+  bool is_ready_ = false;
   std::string hash256_;
   std::string failed_download_id_;
-  bool fail_at_start_;
-  uint64_t file_size_;
+  bool fail_at_start_ = false;
+  uint64_t file_size_ = 123456789u;
+  base::FilePath path_;
 
-  raw_ptr<Client> client_;
+  raw_ptr<Client> client_ = nullptr;
 
   std::list<absl::optional<DownloadParams>> downloads_;
 };
