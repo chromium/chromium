@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/public/provider/chrome/browser/keyboard/keyboard_api.h"
 #import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -63,8 +64,7 @@
   // `topFrontWindow` is used in order to present above the keyboard. This way
   // the popover will be dismissed on keyboard interaction and it won't be
   // covered when the keyboard is near the top of the screen.
-  UIWindow* topFrontWindow =
-      [[[UIApplication sharedApplication] windows] lastObject];
+  UIWindow* topFrontWindow = ios::provider::GetKeyboardWindow();
   [topFrontWindow.rootViewController presentViewController:self.viewController
                                                   animated:YES
                                                 completion:nil];
