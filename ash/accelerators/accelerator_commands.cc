@@ -1438,15 +1438,14 @@ void VolumeDown() {
   if (audio_handler->IsOutputMuted()) {
     audio_handler->SetOutputVolumePercent(0);
   } else {
-    if (features::IsAudioPeripheralVolumeGranularityEnabled())
-      audio_handler->DecreaseOutputVolumeByOneStep(kStepPercentage);
-    else
-      audio_handler->AdjustOutputVolumeByPercent(-kStepPercentage);
-
     if (audio_handler->IsOutputVolumeBelowDefaultMuteLevel())
       audio_handler->SetOutputMute(true);
     else
       AcceleratorController::PlayVolumeAdjustmentSound();
+    if (features::IsAudioPeripheralVolumeGranularityEnabled())
+      audio_handler->DecreaseOutputVolumeByOneStep(kStepPercentage);
+    else
+      audio_handler->AdjustOutputVolumeByPercent(-kStepPercentage);
   }
 }
 

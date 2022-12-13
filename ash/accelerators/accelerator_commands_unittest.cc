@@ -9,6 +9,9 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/dbus/audio/audio_node.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -136,6 +139,47 @@ TEST_F(AcceleratorCommandsTest, CycleMixedMirrorModeSwapPrimaryDisplay) {
   ShiftPrimaryDisplay();
   primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   EXPECT_EQ(id_list[2], primary_id);
+}
+
+class AcceleratorCommandsAudioTest : public AcceleratorCommandsTest {
+ public:
+  void SetUpAudioNode() {
+    auto* client = FakeCrasAudioClient::Get();
+    client->SetAudioNodesForTesting({NewAudioNode(false, "INTERNAL_SPEAKER")});
+  }
+
+ protected:
+  AudioNode NewAudioNode(bool is_input, const std::string& type) {
+    ++node_count_;
+    const std::string name =
+        base::StringPrintf("%s-%" PRIu64, type.c_str(), node_count_);
+    return AudioNode(is_input, node_count_, true, node_count_, node_count_,
+                     name, type, name, false, 0, 2, 0, 0);
+  }
+
+  unsigned long node_count_ = 0;
+};
+
+TEST_F(AcceleratorCommandsAudioTest, VolumeSetToZeroAndThenMute) {
+  SetUpAudioNode();
+  auto* audio_handler = CrasAudioHandler::Get();
+  // Make sure that volume is 0 and enter mute state.
+  audio_handler->SetOutputVolumePercent(0);
+  audio_handler->SetOutputMute(true);
+  EXPECT_TRUE(audio_handler->IsOutputMuted());
+  EXPECT_EQ(audio_handler->GetOutputVolumePercent(), 0);
+  // Unmute and increase volume one step.
+  PressAndReleaseKey(ui::VKEY_VOLUME_UP, ui::EF_NONE);
+  EXPECT_FALSE(audio_handler->IsOutputMuted());
+  EXPECT_GE(audio_handler->GetOutputVolumePercent(), 0);
+  // Volume down, should decrease to zero and no mute.
+  PressAndReleaseKey(ui::VKEY_VOLUME_DOWN, ui::EF_NONE);
+  EXPECT_EQ(audio_handler->GetOutputVolumePercent(), 0);
+  EXPECT_FALSE(audio_handler->IsOutputMuted());
+  // Volume down again, should decrease to zero and mute.
+  PressAndReleaseKey(ui::VKEY_VOLUME_DOWN, ui::EF_NONE);
+  EXPECT_EQ(audio_handler->GetOutputVolumePercent(), 0);
+  EXPECT_TRUE(audio_handler->IsOutputMuted());
 }
 
 }  // namespace accelerators

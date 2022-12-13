@@ -733,6 +733,7 @@ void CrasAudioHandler::AdjustOutputVolumeByPercent(int adjust_by_percent) {
 
 void CrasAudioHandler::IncreaseOutputVolumeByOneStep(int one_step_percent) {
   // Set all active devices to the same volume.
+  int new_output_volume = 0;
   for (const auto& item : audio_devices_) {
     const AudioDevice& device = item.second;
     if (!device.is_input && device.active) {
@@ -751,19 +752,20 @@ void CrasAudioHandler::IncreaseOutputVolumeByOneStep(int one_step_percent) {
           volume_level = 1;
         }
         // increase one level and convert to volume
-        output_volume_ = std::min(
+        new_output_volume = std::min(
             100, static_cast<int>(std::floor(((double)(volume_level + 1)) /
                                              number_of_volume_steps * 100)));
       } else {
-        output_volume_ = std::min(100, output_volume_ + one_step_percent);
+        new_output_volume = std::min(100, output_volume_ + one_step_percent);
       }
-      SetOutputNodeVolumePercent(device.id, output_volume_);
+      SetOutputNodeVolumePercent(device.id, new_output_volume);
     }
   }
 }
 
 void CrasAudioHandler::DecreaseOutputVolumeByOneStep(int one_step_percent) {
   // Set all active devices to the same volume.
+  int new_output_volume = 0;
   for (const auto& item : audio_devices_) {
     const AudioDevice& device = item.second;
     if (!device.is_input && device.active) {
@@ -779,13 +781,13 @@ void CrasAudioHandler::DecreaseOutputVolumeByOneStep(int one_step_percent) {
             (double)output_volume_ * (double)number_of_volume_steps * 0.01);
 
         // decrease one level and convert to volume
-        output_volume_ = std::max(
+        new_output_volume = std::max(
             0, static_cast<int>(std::floor(((double)(volume_level - 1)) /
                                            number_of_volume_steps * 100)));
       } else {
-        output_volume_ = std::max(0, output_volume_ - one_step_percent);
+        new_output_volume = std::max(0, output_volume_ - one_step_percent);
       }
-      SetOutputNodeVolumePercent(device.id, output_volume_);
+      SetOutputNodeVolumePercent(device.id, new_output_volume);
     }
   }
 }
