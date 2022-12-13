@@ -39,6 +39,7 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:layout_gravity="center"
         app:maxWidthLandscape="@dimen/privacy_sandbox_dialog_max_width"
         app:maxWidthPortrait="@dimen/privacy_sandbox_dialog_max_width">
 

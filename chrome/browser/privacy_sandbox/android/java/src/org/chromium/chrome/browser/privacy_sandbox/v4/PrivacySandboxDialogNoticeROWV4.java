@@ -91,7 +91,6 @@ public class PrivacySandboxDialogNoticeROWV4
         } else if (id == R.id.settings_button) {
             PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_OPEN_SETTINGS);
             dismiss();
-            // TODO(b/254408752): Update the referrer.
             PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
                     getContext(), mSettingsLauncher, PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE);
         } else if (id == R.id.more_button) {
