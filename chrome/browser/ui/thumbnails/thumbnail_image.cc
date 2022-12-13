@@ -137,11 +137,6 @@ void ThumbnailImage::AssignJPEGData(base::Token thumbnail_id,
   data_ = base::MakeRefCounted<base::RefCountedData<std::vector<uint8_t>>>(
       std::move(data));
 
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Tab.Preview.TimeToNotifyObserversAfterCaptureReceived",
-      base::TimeTicks::Now() - assign_sk_bitmap_time, base::Microseconds(100),
-      base::Milliseconds(100), 50);
-
   // We select a TRACE_EVENT_* macro based on |frame_id|'s presence.
   // Since these are scoped traces, the macro invocation must be in the
   // enclosing scope of these operations. Extract them into a common

@@ -468,6 +468,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tab.Preview.TimeToNotifyObserversAfterCaptureReceived"
     units="microseconds" expires_after="2022-11-27">
+  <obsolete>
+    Removed 12/2022. Not actively used because reported values are 0 most of the
+    time. It would be more useful to report number of discards per day.
+  </obsolete>
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -482,6 +486,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tab.Preview.TimeToStoreAfterFrameReceived"
     units="microseconds" expires_after="2022-11-27">
+  <obsolete>
+    Removed 12/2022. Not actively used because reported values are 0 most of the
+    time. It would be more useful to report number of discards per day.
+  </obsolete>
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -505,6 +513,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tab.Preview.VideoCaptureDuration" units="ms"
     expires_after="2022-11-27">
+  <obsolete>
+    Removed 12/2022. Not actively used because reported values are 0 most of the
+    time. It would be more useful to report number of discards per day.
+  </obsolete>
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>

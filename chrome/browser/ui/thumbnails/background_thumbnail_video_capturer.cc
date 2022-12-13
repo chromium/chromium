@@ -84,8 +84,6 @@ void BackgroundThumbnailVideoCapturer::Stop() {
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("ui", "Tab.Preview.VideoCapture",
                                   TRACE_ID_LOCAL(cur_capture_num_));
-  UMA_HISTOGRAM_MEDIUM_TIMES("Tab.Preview.VideoCaptureDuration",
-                             base::TimeTicks::Now() - start_time_);
   start_time_ = base::TimeTicks();
   cur_capture_num_ = 0;
 }
@@ -191,11 +189,6 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
                            gfx::RectToSkIRect(effective_content_rect))) {
     return;
   }
-
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Tab.Preview.TimeToStoreAfterFrameReceived",
-      base::TimeTicks::Now() - time_of_call, base::Microseconds(10),
-      base::Milliseconds(10), 50);
 
   got_frame_callback_.Run(cropped_frame, frame_id);
 }
