@@ -24,9 +24,8 @@ ChromeVoxPanelTestBase = class extends ChromeVoxNextE2ETest {
   getPanelWindow() {
     let panelWindow = null;
     while (!panelWindow) {
-      panelWindow = chrome.extension.getViews().find(function(view) {
-        return view.location.href.indexOf('chromevox/panel/panel.html') > 0;
-      });
+      panelWindow = chrome.extension.getViews().find(
+          view => view.location.href.indexOf('chromevox/panel/panel.html') > 0);
     }
     return panelWindow;
   }
