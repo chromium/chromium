@@ -1086,8 +1086,7 @@ void PasswordManager::OnLoginSuccessful() {
           submitted_manager->GetInsecureCredentials(),
           submitted_manager->GetSubmittedForm()->username_value) &&
       !IsSingleUsernameSubmission(*submitted_manager->GetSubmittedForm())) {
-    leak_delegate_.StartLeakCheck(submitted_manager->GetPendingCredentials(),
-                                  submitted_form->IsLikelySignupForm());
+    leak_delegate_.StartLeakCheck(submitted_manager->GetPendingCredentials());
   }
 
   auto submission_event =

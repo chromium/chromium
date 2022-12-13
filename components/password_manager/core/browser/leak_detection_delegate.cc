@@ -45,11 +45,7 @@ LeakDetectionDelegate::LeakDetectionDelegate(PasswordManagerClient* client)
 
 LeakDetectionDelegate::~LeakDetectionDelegate() = default;
 
-// TODO(crbug.com/1386065): Delete `submitted_form_was_likely_signup_form` param
-// as part of APC deprecation.
-void LeakDetectionDelegate::StartLeakCheck(
-    const PasswordForm& credentials,
-    bool submitted_form_was_likely_signup_form) {
+void LeakDetectionDelegate::StartLeakCheck(const PasswordForm& credentials) {
   if (client_->IsIncognito())
     return;
 
@@ -60,8 +56,6 @@ void LeakDetectionDelegate::StartLeakCheck(
     return;
 
   DCHECK(!credentials.password_value.empty());
-
-  is_likely_signup_form_ = submitted_form_was_likely_signup_form;
 
   leak_check_ = leak_factory_->TryCreateLeakCheck(
       this, client_->GetIdentityManager(), client_->GetURLLoaderFactory(),
