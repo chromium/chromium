@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_PLANE_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_PLANE_SET_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_xr_plane_set.h"
 #include "third_party/blink/renderer/modules/xr/xr_plane.h"
 #include "third_party/blink/renderer/modules/xr/xr_setlike.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -12,7 +13,8 @@
 
 namespace blink {
 
-class XRPlaneSet : public ScriptWrappable, public XRSetlike<XRPlane> {
+class XRPlaneSet : public ScriptWrappable,
+                   public XRSetlike<XRPlaneSet, XRPlane> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

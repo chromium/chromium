@@ -289,17 +289,16 @@ void FontFaceSet::LoadFontPromiseResolver::Trace(Visitor* visitor) const {
   LoadFontCallback::Trace(visitor);
 }
 
-bool FontFaceSet::IterationSource::Next(ScriptState*,
-                                        Member<FontFace>& key,
-                                        Member<FontFace>& value,
-                                        ExceptionState&) {
+bool FontFaceSet::IterationSource::FetchNextItem(ScriptState*,
+                                                 FontFace*& value,
+                                                 ExceptionState&) {
   if (font_faces_.size() <= index_)
     return false;
-  key = value = font_faces_[index_++];
+  value = font_faces_[index_++];
   return true;
 }
 
-FontFaceSetIterable::IterationSource* FontFaceSet::StartIteration(
+FontFaceSetIterable::IterationSource* FontFaceSet::CreateIterationSource(
     ScriptState*,
     ExceptionState&) {
   // Setlike should iterate each item in insertion order, and items should
@@ -316,7 +315,7 @@ FontFaceSetIterable::IterationSource* FontFaceSet::StartIteration(
     for (const auto& font_face : non_css_connected_faces_)
       font_faces.push_back(font_face);
   }
-  return MakeGarbageCollected<IterationSource>(font_faces);
+  return MakeGarbageCollected<IterationSource>(std::move(font_faces));
 }
 
 }  // namespace blink

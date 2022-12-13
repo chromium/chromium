@@ -6,13 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_SUPPORTED_FEATURES_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_gpu_supported_features.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
 class GPUSupportedFeatures : public ScriptWrappable,
-                             public SetlikeIterable<String, IDLString> {
+                             public ValueSyncIterable<GPUSupportedFeatures> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -34,14 +35,13 @@ class GPUSupportedFeatures : public ScriptWrappable,
   HashSet<String> features_;
 
   class IterationSource final
-      : public SetlikeIterable<String, IDLString>::IterationSource {
+      : public ValueSyncIterable<GPUSupportedFeatures>::IterationSource {
    public:
     explicit IterationSource(const HashSet<String>& features);
 
-    bool Next(ScriptState* script_state,
-              String& key,
-              String& value,
-              ExceptionState& exception_state) override;
+    bool FetchNextItem(ScriptState* script_state,
+                       String& value,
+                       ExceptionState& exception_state) override;
 
    private:
     HashSet<String> features_;
@@ -49,8 +49,8 @@ class GPUSupportedFeatures : public ScriptWrappable,
   };
 
   // Starts iteration over the Setlike.
-  // Needed for SetlikeIterable to work properly.
-  GPUSupportedFeatures::IterationSource* StartIteration(
+  // Needed for ValueSyncIterable to work properly.
+  GPUSupportedFeatures::IterationSource* CreateIterationSource(
       ScriptState* script_state,
       ExceptionState& exception_state) override {
     return MakeGarbageCollected<GPUSupportedFeatures::IterationSource>(

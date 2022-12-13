@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_font_face_set.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
@@ -25,7 +26,7 @@ namespace blink {
 class Font;
 class FontFaceCache;
 
-using FontFaceSetIterable = SetlikeIterable<Member<FontFace>, FontFace>;
+using FontFaceSetIterable = ValueSyncIterable<FontFaceSet>;
 
 class CORE_EXPORT FontFaceSet : public EventTargetWithInlineData,
                                 public ExecutionContextClient,
@@ -104,12 +105,11 @@ class CORE_EXPORT FontFaceSet : public EventTargetWithInlineData,
 
   class IterationSource final : public FontFaceSetIterable::IterationSource {
    public:
-    explicit IterationSource(const HeapVector<Member<FontFace>>& font_faces)
-        : index_(0), font_faces_(font_faces) {}
-    bool Next(ScriptState*,
-              Member<FontFace>&,
-              Member<FontFace>&,
-              ExceptionState&) override;
+    explicit IterationSource(HeapVector<Member<FontFace>>&& font_faces)
+        : index_(0), font_faces_(std::move(font_faces)) {}
+    bool FetchNextItem(ScriptState* script_state,
+                       FontFace*& value,
+                       ExceptionState& exception_state) override;
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(font_faces_);
@@ -148,7 +148,7 @@ class CORE_EXPORT FontFaceSet : public EventTargetWithInlineData,
   };
 
  private:
-  FontFaceSetIterable::IterationSource* StartIteration(
+  FontFaceSetIterable::IterationSource* CreateIterationSource(
       ScriptState*,
       ExceptionState&) override;
 

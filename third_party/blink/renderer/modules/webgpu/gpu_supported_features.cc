@@ -39,16 +39,15 @@ GPUSupportedFeatures::IterationSource::IterationSource(
   iter_ = features_.begin();
 }
 
-bool GPUSupportedFeatures::IterationSource::Next(
+bool GPUSupportedFeatures::IterationSource::FetchNextItem(
     ScriptState* script_state,
-    String& key,
     String& value,
     ExceptionState& exception_state) {
   if (iter_ == features_.end()) {
     return false;
   }
 
-  key = value = *iter_;
+  value = *iter_;
   ++iter_;
 
   return true;

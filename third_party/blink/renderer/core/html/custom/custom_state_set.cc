@@ -20,15 +20,12 @@ class CustomStateIterationSource : public CustomStateSet::IterationSource {
     CustomStateSet::IterationSource::Trace(visitor);
   }
 
-  bool Next(ScriptState*,
-            String& out_key,
-            String& out_value,
-            ExceptionState&) override {
+  bool FetchNextItem(ScriptState*,
+                     String& out_value,
+                     ExceptionState&) override {
     if (index_ >= states_->list_.size())
       return false;
-    String value = states_->list_[index_++];
-    out_key = value;
-    out_value = value;
+    out_value = states_->list_[index_++];
     return true;
   }
 
@@ -115,7 +112,7 @@ bool CustomStateSet::Has(const String& value) const {
   return list_.Contains(value);
 }
 
-CustomStateSet::IterationSource* CustomStateSet::StartIteration(
+CustomStateSet::IterationSource* CustomStateSet::CreateIterationSource(
     ScriptState*,
     ExceptionState&) {
   auto* iterator = MakeGarbageCollected<CustomStateIterationSource>(*this);
