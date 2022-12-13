@@ -484,17 +484,21 @@ void PrintViewManagerBase::OnComposePdfDone(
 
   bool success = OnComposePdfDoneImpl(page_size, content_area, physical_offsets,
                                       status, std::move(region));
-  std::move(callback).Run(success);
+  OnDidPrintDocument(std::move(callback), success);
+}
 
+void PrintViewManagerBase::OnDidPrintDocument(DidPrintDocumentCallback callback,
+                                              bool succeeded) {
+  std::move(callback).Run(succeeded);
   for (auto& observer : observers_)
-    observer.OnCompositeCompletion();
+    observer.OnDidPrintDocument();
 }
 
 void PrintViewManagerBase::DidPrintDocument(
     mojom::DidPrintDocumentParamsPtr params,
     DidPrintDocumentCallback callback) {
   if (!PrintJobHasDocument(params->document_cookie)) {
-    std::move(callback).Run(false);
+    OnDidPrintDocument(std::move(callback), /*succeeded=*/false);
     return;
   }
 
@@ -502,7 +506,7 @@ void PrintViewManagerBase::DidPrintDocument(
   if (!content.metafile_data_region.IsValid()) {
     NOTREACHED() << "invalid memory handle";
     web_contents()->Stop();
-    std::move(callback).Run(false);
+    OnDidPrintDocument(std::move(callback), /*succeeded=*/false);
     return;
   }
 
@@ -521,13 +525,13 @@ void PrintViewManagerBase::DidPrintDocument(
   if (!data) {
     NOTREACHED() << "couldn't map";
     web_contents()->Stop();
-    std::move(callback).Run(false);
+    OnDidPrintDocument(std::move(callback), /*succeeded=*/false);
     return;
   }
 
   PrintDocument(data, params->page_size, params->content_area,
                 params->physical_offsets);
-  std::move(callback).Run(true);
+  OnDidPrintDocument(std::move(callback), /*succeeded=*/true);
 }
 
 void PrintViewManagerBase::GetDefaultPrintSettings(

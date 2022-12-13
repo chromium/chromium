@@ -2491,8 +2491,8 @@ class SystemAccessProcessPrintBrowserTestBase
   }
 
   // PrintViewManagerBase::Observer:
-  void OnCompositeCompletion() override {
-    ++did_composite_completion_count_;
+  void OnDidPrintDocument() override {
+    ++did_print_document_count_;
     CheckForQuit();
   }
 
@@ -2643,9 +2643,7 @@ class SystemAccessProcessPrintBrowserTestBase
   int print_job_destruction_count() const {
     return print_job_destruction_count_;
   }
-  int did_composite_completion_count() const {
-    return did_composite_completion_count_;
-  }
+  int did_print_document_count() const { return did_print_document_count_; }
 
  private:
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -2769,7 +2767,7 @@ class SystemAccessProcessPrintBrowserTestBase
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
   raw_ptr<PrintJob, DanglingUntriaged> print_job_ = nullptr;
   bool reset_errors_after_check_ = true;
-  int did_composite_completion_count_ = 0;
+  int did_print_document_count_ = 0;
   mojom::ResultCode use_default_settings_result_ = mojom::ResultCode::kFailed;
 #if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
   mojom::ResultCode ask_user_for_settings_result_ = mojom::ResultCode::kFailed;
@@ -3382,7 +3380,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 #endif
   EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(error_dialog_shown_count(), 0u);
-  EXPECT_EQ(did_composite_completion_count(), 1);
+  EXPECT_EQ(did_print_document_count(), 1);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
@@ -3421,7 +3419,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
   EXPECT_TRUE(did_use_default_settings());
   EXPECT_TRUE(did_get_settings_with_ui());
   EXPECT_EQ(error_dialog_shown_count(), 0u);
-  EXPECT_EQ(did_composite_completion_count(), 0);
+  EXPECT_EQ(did_print_document_count(), 0);
   EXPECT_EQ(print_job_destruction_count(), 0);
 
   // `PrintBackendService` should never be used when printing in-browser.
@@ -3454,8 +3452,9 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     //     this notice directly.  This does cause an error dialog to be shown.
     // 4.  Wait for the one print job to be destroyed, to ensure printing
     //     finished cleanly before completing the test.
-    // 5.  The print compositor will have started to generate the document.
-    //     Wait until that is known to have completed, to ensure printing
+    // 5.  The renderer will have initiated printing of document, which could
+    //     invoke the print compositor.  Wait until all processing for
+    //     DidPrintDocument is known to have completed, to ensure printing
     //     finished cleanly before completing the test.
     SetNumExpectedMessages(/*num=*/5);
   } else {
@@ -3468,8 +3467,9 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     //     after the print job has been destroyed.
     // 6.  Wait for the one print job to be destroyed, to ensure printing
     //     finished cleanly before completing the test.
-    // 7.  The print compositor will have started to generate the document.
-    //     Wait until that is known to have completed, to ensure printing
+    // 7.  The renderer will have initiated printing of document, which could
+    //     invoke the print compositor.  Wait until all processing for
+    //     DidPrintDocument is known to have completed, to ensure printing
     //     finished cleanly before completing the test.
     SetNumExpectedMessages(/*num=*/7);
   }
@@ -3481,7 +3481,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kFailed);
   EXPECT_EQ(error_dialog_shown_count(), 1u);
   EXPECT_EQ(cancel_count(), 1);
-  EXPECT_EQ(did_composite_completion_count(), 1);
+  EXPECT_EQ(did_print_document_count(), 1);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
@@ -3525,7 +3525,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   EXPECT_EQ(use_default_settings_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(ask_user_for_settings_result(), mojom::ResultCode::kCanceled);
   EXPECT_EQ(error_dialog_shown_count(), 0u);
-  EXPECT_EQ(did_composite_completion_count(), 0);
+  EXPECT_EQ(did_print_document_count(), 0);
   EXPECT_EQ(print_job_construction_count(), 0);
 }
 
@@ -3589,7 +3589,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 
   EXPECT_EQ(use_default_settings_result(), mojom::ResultCode::kFailed);
   EXPECT_EQ(error_dialog_shown_count(), 1u);
-  EXPECT_EQ(did_composite_completion_count(), 0);
+  EXPECT_EQ(did_print_document_count(), 0);
   EXPECT_EQ(print_job_construction_count(), 0);
 }
 #endif  // BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)

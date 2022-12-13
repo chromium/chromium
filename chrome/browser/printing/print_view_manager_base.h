@@ -56,7 +56,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
     // This method is never called unless `ENABLE_PRINT_PREVIEW`.
     virtual void OnPrintPreview(const content::RenderFrameHost* rfh) {}
 
-    virtual void OnCompositeCompletion() {}
+    virtual void OnDidPrintDocument() {}
   };
 
   PrintViewManagerBase(const PrintViewManagerBase&) = delete;
@@ -233,6 +233,10 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
                         DidPrintDocumentCallback callback,
                         mojom::PrintCompositor::Status status,
                         base::ReadOnlySharedMemoryRegion region);
+
+  // Helper for mojom::PrintManagerHost handling.
+  void OnDidPrintDocument(PrintManager::DidPrintDocumentCallback callback,
+                          bool succeeded);
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   // Helpers for PrintForPrintPreview();
