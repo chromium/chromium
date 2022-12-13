@@ -244,6 +244,7 @@
 //third_party/catapult/telemetry/telemetry/internal/platform/fuchsia_platform_backend.py
 //third_party/catapult/telemetry/telemetry/internal/platform/gpu_device.py
 //third_party/catapult/telemetry/telemetry/internal/platform/gpu_info.py
+//third_party/catapult/telemetry/telemetry/internal/platform/linux_based_device.py
 //third_party/catapult/telemetry/telemetry/internal/platform/linux_based_platform_backend.py
 //third_party/catapult/telemetry/telemetry/internal/platform/network_controller_backend.py
 //third_party/catapult/telemetry/telemetry/internal/platform/platform_backend.py
