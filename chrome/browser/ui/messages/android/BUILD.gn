@@ -5,8 +5,7 @@ import("//build/config/android/rules.gni")
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable-v23/snackbar_background_tablet.xml",
-    "java/res/drawable-v31/snackbar_background_tablet.xml",
+    "java/res/drawable/snackbar_background_tablet.xml",
     "java/res/layout/snackbar.xml",
     "java/res/values-night/dimens.xml",
     "java/res/values/dimens.xml",
