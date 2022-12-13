@@ -25,7 +25,7 @@
 namespace ash {
 namespace {
 
-void SetMicrosphoneNotificationVisible(const bool visible) {
+void SetMicrophoneNotificationVisible(const bool visible) {
   PrivacyHubNotificationController* const privacy_hub_notification_controller =
       Shell::Get()->system_notification_controller()->privacy_hub();
   if (visible) {
@@ -57,7 +57,8 @@ void MicrophoneMuteNotificationController::OnInputMuteChanged(
   mic_muted_by_mute_switch_ =
       CrasAudioHandler::Get()->input_muted_by_microphone_mute_switch();
 
-  SetMicrosphoneNotificationVisible(input_stream_count_ && mic_mute_on_);
+  if (input_stream_count_)
+    SetMicrophoneNotificationVisible(mic_mute_on_);
 }
 
 void MicrophoneMuteNotificationController::
@@ -67,7 +68,8 @@ void MicrophoneMuteNotificationController::
 
   mic_muted_by_mute_switch_ = muted;
 
-  SetMicrosphoneNotificationVisible(input_stream_count_ && mic_mute_on_);
+  if (input_stream_count_)
+    SetMicrophoneNotificationVisible(mic_mute_on_);
 }
 
 void MicrophoneMuteNotificationController::
@@ -78,9 +80,9 @@ void MicrophoneMuteNotificationController::
   input_stream_count_ = input_stream_count;
 
   if (!stream_count_decreased) {
-    SetMicrosphoneNotificationVisible(input_stream_count_ && mic_mute_on_);
+    SetMicrophoneNotificationVisible(input_stream_count_ && mic_mute_on_);
   } else if (!input_stream_count_) {
-    SetMicrosphoneNotificationVisible(false);
+    SetMicrophoneNotificationVisible(false);
   }
 }
 

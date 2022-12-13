@@ -111,15 +111,30 @@ void CameraPrivacySwitchController::OnPreferenceChanged(
   DCHECK_EQ(pref_name, prefs::kUserCameraAllowed);
   const CameraSWPrivacySwitchSetting pref_val = GetUserSwitchPreference();
   switch_api_->SetCameraSWPrivacySwitch(pref_val);
-  ClearSWSwitchNotifications();
-  if (active_applications_using_camera_count_ > 0 &&
-      pref_val == CameraSWPrivacySwitchSetting::kDisabled) {
-    // Show notification in case we switch off the camera when the camera is
-    // used by an app.
+
+  if (message_center::MessageCenter* const message_center =
+          message_center::MessageCenter::Get()) {
+    message_center->RemoveNotification(
+        kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId,
+        /*by_user=*/false);
+  }
+
+  if (active_applications_using_camera_count_ == 0)
+    return;
+
+  if (pref_val == CameraSWPrivacySwitchSetting::kDisabled) {
+    camera_used_while_deactivated_ = true;
     Shell::Get()
         ->system_notification_controller()
         ->privacy_hub()
         ->ShowSensorDisabledNotification(
+            PrivacyHubNotificationController::Sensor::kCamera);
+  } else {
+    camera_used_while_deactivated_ = false;
+    Shell::Get()
+        ->system_notification_controller()
+        ->privacy_hub()
+        ->RemoveSensorDisabledNotification(
             PrivacyHubNotificationController::Sensor::kCamera);
   }
 }
@@ -265,8 +280,6 @@ void CameraPrivacySwitchController::ShowNotification(
           },
           action_enables_camera, kNotificationId));
 
-  message_center::MessageCenter::Get()->RemoveNotification(kNotificationId,
-                                                           /*by_user=*/false);
   message_center::MessageCenter::Get()->AddNotification(
       ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
@@ -279,22 +292,6 @@ void CameraPrivacySwitchController::ShowNotification(
               catalog),
           notification_data, std::move(delegate), vector_icons::kSettingsIcon,
           message_center::SystemNotificationWarningLevel::NORMAL));
-}
-
-void CameraPrivacySwitchController::ClearSWSwitchNotifications() {
-  message_center::MessageCenter* const message_center =
-      message_center::MessageCenter::Get();
-  if (!message_center) {
-    return;
-  }
-  Shell::Get()
-      ->system_notification_controller()
-      ->privacy_hub()
-      ->RemoveSensorDisabledNotification(
-          PrivacyHubNotificationController::Sensor::kCamera);
-  message_center->RemoveNotification(
-      kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId,
-      /*by_user=*/false);
 }
 
 void CameraPrivacySwitchController::ActiveApplicationsChanged(
@@ -310,6 +307,7 @@ void CameraPrivacySwitchController::ActiveApplicationsChanged(
   // the camera is disabled by the software switch.
   if (application_added &&
       GetUserSwitchPreference() == CameraSWPrivacySwitchSetting::kDisabled) {
+    camera_used_while_deactivated_ = true;
     Shell::Get()
         ->system_notification_controller()
         ->privacy_hub()
@@ -319,7 +317,9 @@ void CameraPrivacySwitchController::ActiveApplicationsChanged(
 
   // Remove existing software switch notification when no application is using
   // the camera anymore.
-  if (active_applications_using_camera_count_ == 0) {
+  if (active_applications_using_camera_count_ == 0 &&
+      camera_used_while_deactivated_) {
+    camera_used_while_deactivated_ = false;
     Shell::Get()
         ->system_notification_controller()
         ->privacy_hub()
