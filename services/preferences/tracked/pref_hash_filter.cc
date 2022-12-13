@@ -298,8 +298,9 @@ void PrefHashFilter::FlushToExternalStore(
   for (const auto item : *changed_paths_and_macs) {
     const std::string& changed_path = item.first;
 
-    if (const base::Value::Dict* split_values = item.second.GetIfDict()) {
-      for (const auto inner_item : *split_values) {
+    if (item.second.is_dict()) {
+      const base::Value::Dict& split_values = item.second.GetDict();
+      for (const auto inner_item : split_values) {
         const std::string* mac = inner_item.second.GetIfString();
         bool is_string = !!mac;
         DCHECK(is_string);

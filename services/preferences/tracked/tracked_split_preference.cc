@@ -37,11 +37,12 @@ TrackedPreferenceType TrackedSplitPreference::GetType() const {
 void TrackedSplitPreference::OnNewValue(
     const base::Value* value,
     PrefHashStoreTransaction* transaction) const {
-  const base::DictionaryValue* dict_value = NULL;
-  if (value && !value->GetAsDictionary(&dict_value)) {
+  if (value && !value->is_dict()) {
     NOTREACHED();
     return;
   }
+  const base::DictionaryValue* dict_value =
+      value ? &base::Value::AsDictionaryValue(*value) : nullptr;
   transaction->StoreSplitHash(pref_path_, dict_value);
 }
 

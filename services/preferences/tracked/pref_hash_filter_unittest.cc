@@ -402,7 +402,7 @@ class MockHashStoreContents : public HashStoreContents {
   void SetSuperMac(const std::string& super_mac) override;
 
  private:
-  MockHashStoreContents(MockHashStoreContents* origin_mock);
+  explicit MockHashStoreContents(MockHashStoreContents* origin_mock);
 
   // Records calls to this mock's SetMac/SetSplitMac methods.
   void RecordSetMac(const std::string& path, const std::string& mac) {
@@ -447,8 +447,7 @@ std::string MockHashStoreContents::GetStoredSplitMac(
     const std::string& split_path) const {
   const base::Value* out_value = dictionary_.FindKey(path);
   if (out_value) {
-    const base::DictionaryValue* value_as_dict;
-    EXPECT_TRUE(out_value->GetAsDictionary(&value_as_dict));
+    EXPECT_TRUE(out_value->is_dict());
 
     out_value = dictionary_.FindKey(split_path);
     if (out_value) {
