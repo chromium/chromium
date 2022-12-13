@@ -163,11 +163,11 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // depending on visual assistance systems.
   bool should_make_spoken_feedback_for_popup_updates = true;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Flag if the notification is pinned. If true, the notification is pinned
   // and the user can't remove it.
   bool pinned = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Vibration pattern to play when displaying the notification. There must be
   // an odd number of entries in this pattern when it's set: numbers of
@@ -442,15 +442,15 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   }
 
   bool pinned() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return optional_fields_.pinned;
 #else
     return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void set_pinned(bool pinned) { optional_fields_.pinned = pinned; }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Gets a text for spoken feedback.
   const std::u16string& accessible_name() const {

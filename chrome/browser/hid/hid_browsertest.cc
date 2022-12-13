@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/values_test_util.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
@@ -40,6 +41,12 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/hid/hid_pinned_notification.h"
+#else
+#include "chrome/browser/hid/hid_status_icon.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -92,6 +99,8 @@ device::mojom::HidDeviceInfoPtr CreateTestDeviceWithInputAndOutputReports() {
   return device;
 }
 
+}  // namespace
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Base Test fixture with kEnableWebHidOnExtensionServiceWorker default
 // disabled.
@@ -128,6 +137,12 @@ class WebHidExtensionBrowserTest : public extensions::ExtensionBrowserTest {
 
     display_service_for_profile_notification_ =
         std::make_unique<NotificationDisplayServiceTester>(profile());
+
+#if BUILDFLAG(IS_CHROMEOS)
+    display_service_for_system_notification_ =
+        std::make_unique<NotificationDisplayServiceTester>(
+            /*profile=*/nullptr);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void TearDownOnMainThread() override {
@@ -207,10 +222,38 @@ class WebHidExtensionBrowserTest : public extensions::ExtensionBrowserTest {
     EXPECT_EQ(web_contents->GetURL(), expected_link_destination);
   }
 
+  void SimulateClickOnSystemTrayIconButton(Browser* browser) {
+#if BUILDFLAG(IS_CHROMEOS)
+    auto expected_pinned_notification_id =
+        HidPinnedNotification::GetNotificationId(browser->profile());
+    auto maybe_indicator_notification =
+        display_service_for_system_notification_->GetNotification(
+            expected_pinned_notification_id);
+    ASSERT_TRUE(maybe_indicator_notification);
+    EXPECT_TRUE(maybe_indicator_notification->pinned());
+    display_service_for_system_notification_->SimulateClick(
+        NotificationHandler::Type::TRANSIENT, expected_pinned_notification_id,
+        /*action_index=*/0, /*reply=*/absl::nullopt);
+#else
+    // On non-ChromeOS platforms, as they use status icon and there isn't good
+    // test infra to simulate click on the status icon button, so simulate the
+    // click event by invoking ExecuteCommand of HidConnectionTracker directly.
+    auto* hid_status_icon =
+        static_cast<HidStatusIcon*>(g_browser_process->hid_system_tray_icon());
+    hid_status_icon->ExecuteCommand(IDC_MANAGE_HID_DEVICES_FIRST, 0);
+#endif
+    auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
+    EXPECT_EQ(web_contents->GetURL(), "chrome://settings/content/hidDevices");
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NotificationDisplayServiceTester>
       display_service_for_profile_notification_;
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<NotificationDisplayServiceTester>
+      display_service_for_system_notification_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   device::FakeHidManager hid_manager_;
@@ -344,7 +387,6 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest,
   )";
   const auto* extension = LoadExtensionAndRunTest(kBackgroundJs);
   SimulateClickOnDeviceOpenedNotification(browser(), extension);
+  SimulateClickOnSystemTrayIconButton(browser());
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-}  // namespace

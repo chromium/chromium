@@ -4488,7 +4488,12 @@ static_library("browser") {
       "//chrome/browser/web_applications/adjustments",
       "//chrome/browser/web_applications/app_service",
     ]
-
+    if (!is_android && !is_chromeos) {
+      sources += [
+        "hid/hid_status_icon.cc",
+        "hid/hid_status_icon.h",
+      ]
+    }
     if (!is_chromeos) {
       sources += [
         "apps/app_service/app_service_proxy_desktop.cc",
@@ -5762,6 +5767,8 @@ static_library("browser") {
       "download/notification/download_item_notification.h",
       "download/notification/download_notification_manager.cc",
       "download/notification/download_notification_manager.h",
+      "hid/hid_pinned_notification.cc",
+      "hid/hid_pinned_notification.h",
       "media/platform_verification_chromeos.cc",
       "media/platform_verification_chromeos.h",
       "memory/oom_kills_monitor.cc",

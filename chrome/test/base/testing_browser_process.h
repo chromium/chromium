@@ -169,6 +169,7 @@ class TestingBrowserProcess : public BrowserProcess {
   void SetShuttingDown(bool is_shutting_down);
   void ShutdownBrowserPolicyConnector();
   TestingBrowserProcessPlatformPart* GetTestPlatformPart();
+  void SetStatusTray(std::unique_ptr<StatusTray> status_tray);
 #if !BUILDFLAG(IS_ANDROID)
   void SetHidSystemTrayIcon(
       std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon);
@@ -241,6 +242,8 @@ class TestingBrowserProcess : public BrowserProcess {
   std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon_;
   BuildState build_state_;
 #endif
+
+  std::unique_ptr<StatusTray> status_tray_;
 };
 
 // RAII (resource acquisition is initialization) for TestingBrowserProcess.

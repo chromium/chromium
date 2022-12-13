@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process_platform_part.h"
 #include "components/network_time/network_time_tracker.h"
@@ -63,10 +64,14 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
-#include "chrome/browser/hid/hid_system_tray_icon.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/hid/hid_pinned_notification.h"
+#else
+#include "chrome/browser/hid/hid_status_icon.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -149,7 +154,12 @@ void TestingBrowserProcess::Init() {
 
 #if !BUILDFLAG(IS_ANDROID)
   KeepAliveRegistry::GetInstance()->SetIsShuttingDown(false);
-#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  hid_system_tray_icon_ = std::make_unique<HidPinnedNotification>();
+#else
+  hid_system_tray_icon_ = std::make_unique<HidStatusIcon>();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void TestingBrowserProcess::FlushLocalStateAndReply(base::OnceClosure reply) {
@@ -278,7 +288,7 @@ void TestingBrowserProcess::set_background_mode_manager_for_test(
 #endif
 
 StatusTray* TestingBrowserProcess::status_tray() {
-  return nullptr;
+  return status_tray_.get();
 }
 
 safe_browsing::SafeBrowsingService*
@@ -544,6 +554,11 @@ void TestingBrowserProcess::SetRulesetService(
 
 void TestingBrowserProcess::SetShuttingDown(bool is_shutting_down) {
   is_shutting_down_ = is_shutting_down;
+}
+
+void TestingBrowserProcess::SetStatusTray(
+    std::unique_ptr<StatusTray> status_tray) {
+  status_tray_ = std::move(status_tray);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
