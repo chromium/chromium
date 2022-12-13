@@ -51,6 +51,14 @@ void BreadcrumbManager::AddEvent(const std::string& event) {
   }
 }
 
+void BreadcrumbManager::SetPreviousSessionEvents(
+    const std::vector<std::string>& events) {
+  breadcrumbs_.insert(breadcrumbs_.begin(), events.begin(), events.end());
+  for (auto& observer : observers_) {
+    observer.PreviousSessionEventsAdded();
+  }
+}
+
 BreadcrumbManager::BreadcrumbManager() = default;
 BreadcrumbManager::~BreadcrumbManager() = default;
 

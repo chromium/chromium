@@ -41,6 +41,11 @@ class BreadcrumbManager {
   // BreadcrumbPersistentStorageManager as a delimiter.
   void AddEvent(const std::string& event);
 
+  // Adds breadcrumb events associated with the previous application session.
+  // Note: this behaves the same as `AddEvent()`, but takes multiple events and
+  // adds them to the start of the breadcrumbs log.
+  void SetPreviousSessionEvents(const std::vector<std::string>& events);
+
   // Adds and removes observers.
   void AddObserver(BreadcrumbManagerObserver* observer);
   void RemoveObserver(BreadcrumbManagerObserver* observer);

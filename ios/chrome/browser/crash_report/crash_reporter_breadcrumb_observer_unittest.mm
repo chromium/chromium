@@ -84,12 +84,6 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
 
   void TearDown() override {
     [[mock_breakpad_controller_ stub] stop];
-
-    // Clear the CrashReporterBreadcrumbObserver singleton state to
-    // avoid polluting other tests.
-    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
-        .ResetForTesting();
-
     crash_helper::SetEnabled(false);
     PlatformTest::TearDown();
   }

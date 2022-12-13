@@ -98,8 +98,6 @@ class UnitTestTestSuite::UnitTestEventListener
     ResetNetworkServiceForTesting();
 
     breadcrumbs::BreadcrumbManager::GetInstance().ResetForTesting();
-    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
-        .ResetForTesting();
   }
 
  private:

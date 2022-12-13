@@ -125,8 +125,6 @@ class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {
 
   void OnTestEnd(const testing::TestInfo& test_info) override {
     breadcrumbs::BreadcrumbManager::GetInstance().ResetForTesting();
-    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
-        .ResetForTesting();
 #if BUILDFLAG(IS_IOS)
     ios_initializer_.reset();
 #endif

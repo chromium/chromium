@@ -16,7 +16,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
-#import "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 #import "components/upload_list/crash_upload_list.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
@@ -235,8 +234,8 @@ void ClearStateForWebStateList(WebStateList* web_state_list) {
 }
 
 void SetPreviousSessionEvents(const std::vector<std::string>& events) {
-  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
-      .SetPreviousSessionEvents(events);
+  breadcrumbs::BreadcrumbManager::GetInstance().SetPreviousSessionEvents(
+      events);
 }
 
 }  // namespace breakpad

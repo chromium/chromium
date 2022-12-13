@@ -1213,7 +1213,7 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
     // Get stored persistent breadcrumbs from last run to set on crash reports.
     GetBreadcrumbPersistentStorageManager()->GetStoredEvents(
         base::BindOnce([](std::vector<std::string> events) {
-          breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+          breadcrumbs::BreadcrumbManager::GetInstance()
               .SetPreviousSessionEvents(events);
         }));
   } else {

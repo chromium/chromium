@@ -55,11 +55,6 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
   }
 
   void TearDown() override {
-    // Clear the CrashReporterBreadcrumbObserver singleton state to
-    // avoid polluting other tests.
-    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
-        .ResetForTesting();
-
     // TODO(crbug.com/1269414) This should call
     // crash_reporter::ResetCrashKeysForTesting() once
     // ChromeUserManagerImpl::UpdateNumberOfUsers allows the static

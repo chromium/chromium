@@ -37,12 +37,6 @@ class CrashHelperTest : public PlatformTest {
   void TearDown() override {
     crash_reporter::SetCrashpadRunning(false);
     crash_helper::SetEnabled(false);
-
-    // Clear the CrashReporterBreadcrumbObserver singleton state to
-    // avoid polluting other tests.
-    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
-        .ResetForTesting();
-
     PlatformTest::TearDown();
   }
 
@@ -77,8 +71,8 @@ TEST_F(CrashHelperTest, CrashReportUserApplicationStateAllKeys) {
 
   // Set a max-length breadcrumbs string.
   std::string breadcrumbs(breadcrumbs::kMaxDataLength, 'A');
-  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
-      .SetPreviousSessionEvents({breadcrumbs});
+  breadcrumbs::BreadcrumbManager::GetInstance().SetPreviousSessionEvents(
+      {breadcrumbs});
 }
 
 TEST_F(CrashHelperTest, IsUploadingEnabled) {

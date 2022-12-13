@@ -26,14 +26,6 @@ class CrashReporterBreadcrumbObserver : public BreadcrumbManagerObserver {
   // Creates a singleton instance that observes the BreadcrumbManager.
   static CrashReporterBreadcrumbObserver& GetInstance();
 
-  // Sets breadcrumb events associated with the previous application session.
-  // Note: this behaves the same as EventAdded(), but takes multiple events and
-  // adds them to the start of the breadcrumbs log.
-  void SetPreviousSessionEvents(const std::vector<std::string>& events);
-
-  // Removes all events.
-  void ResetForTesting();
-
  private:
   friend base::NoDestructor<CrashReporterBreadcrumbObserver>;
 
@@ -42,14 +34,10 @@ class CrashReporterBreadcrumbObserver : public BreadcrumbManagerObserver {
 
   // BreadcrumbObserver:
   void EventAdded(const std::string& event) override;
+  void PreviousSessionEventsAdded() override;
 
   // Updates the breadcrumbs stored in the crash log.
   void UpdateBreadcrumbEventsCrashKey();
-
-  // The full list of received breadcrumbs that will be sent to the crash
-  // report. Older events are at the front. A maximum size is enforced for
-  // privacy purposes, so old events may be removed when new events are added.
-  base::circular_deque<std::string> breadcrumbs_;
 };
 
 }  // namespace breadcrumbs

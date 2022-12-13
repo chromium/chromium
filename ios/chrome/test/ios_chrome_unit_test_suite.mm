@@ -63,8 +63,6 @@ class IOSChromeUnitTestSuiteInitializer
     chrome_browser_provider_.reset();
 
     breadcrumbs::BreadcrumbManager::GetInstance().ResetForTesting();
-    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
-        .ResetForTesting();
   }
 
  private:

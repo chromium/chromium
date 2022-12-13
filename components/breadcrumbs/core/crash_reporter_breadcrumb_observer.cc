@@ -32,31 +32,22 @@ CrashReporterBreadcrumbObserver::GetInstance() {
   return *instance;
 }
 
-void CrashReporterBreadcrumbObserver::SetPreviousSessionEvents(
-    const std::vector<std::string>& events) {
-  breadcrumbs_.insert(breadcrumbs_.begin(), events.begin(), events.end());
+void CrashReporterBreadcrumbObserver::PreviousSessionEventsAdded() {
   UpdateBreadcrumbEventsCrashKey();
 }
 
-void CrashReporterBreadcrumbObserver::ResetForTesting() {
-  breadcrumbs_.clear();
-}
-
 void CrashReporterBreadcrumbObserver::EventAdded(const std::string& event) {
-  breadcrumbs_.push_back(event);
   UpdateBreadcrumbEventsCrashKey();
 }
 
 void CrashReporterBreadcrumbObserver::UpdateBreadcrumbEventsCrashKey() {
-  // Remove the oldest events to remain below the maximum number of breadcrumbs.
-  while (breadcrumbs_.size() > kMaxBreadcrumbs)
-    breadcrumbs_.pop_front();
+  const auto& breadcrumbs = BreadcrumbManager::GetInstance().GetEvents();
 
   // Get the length of all breadcrumbs combined and preallocate the space needed
   // for the combined string. This saves repeated allocations in the next loop.
   const size_t event_separator_length = strlen(kEventSeparator);
   const size_t breadcrumbs_string_length = std::accumulate(
-      breadcrumbs_.begin(), breadcrumbs_.end(), 0,
+      breadcrumbs.begin(), breadcrumbs.end(), 0,
       [event_separator_length](const size_t sum,
                                const std::string& breadcrumb) {
         return sum + breadcrumb.length() + event_separator_length;
@@ -66,14 +57,14 @@ void CrashReporterBreadcrumbObserver::UpdateBreadcrumbEventsCrashKey() {
 
   // Concatenate breadcrumbs backwards, putting new breadcrumbs at the front, so
   // that the most relevant (i.e., newest) breadcrumbs are at the top in Crash.
-  for (const std::string& breadcrumb : base::Reversed(breadcrumbs_)) {
+  for (const std::string& breadcrumb : base::Reversed(breadcrumbs)) {
     breadcrumbs_string += breadcrumb;
     breadcrumbs_string += kEventSeparator;
   }
   DCHECK(breadcrumbs_string.length() == breadcrumbs_string_length);
 
   // Enforce a maximum length to ensure the string fits in the crash report;
-  // this is unlikely to be needed due to the limit of |kMaxBreadcrumbs| events.
+  // this is unlikely to be needed due to the limit of `kMaxBreadcrumbs` events.
   if (breadcrumbs_string.length() > kMaxDataLength)
     breadcrumbs_string.resize(kMaxDataLength);
 
