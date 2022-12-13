@@ -370,7 +370,7 @@
   case msg_class::ID: {                                                    \
     IPC_TASK_ANNOTATOR_CONTEXT(msg_class)                                  \
     if (!msg_class::DispatchWithParamDelayReply(&ipc_message__, obj,       \
-                                                param__, \ & member_func)) \
+                                                param__, &member_func))    \
       ipc_message__.set_dispatch_error();                                  \
   } break;
 
