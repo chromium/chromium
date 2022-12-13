@@ -2206,13 +2206,20 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SingleClientBookmarksSyncTestWithEnforcedBookmarksCountLimit,
     ShouldReportErrorIfInitialUpdatesCrossMaxCountLimit) {
-  // Create a bookmark on the server under BookmarkBar with a truncated title.
+  // Create two bookmarks on the server under BookmarkBar with a truncated
+  // title.
+  fake_server::EntityBuilderFactory entity_builder_factory;
   const std::string kTitle1 = "title1";
   const std::string kUrl1 = "http://www.url1.com";
-  fake_server::EntityBuilderFactory entity_builder_factory;
-  fake_server::BookmarkEntityBuilder bookmark_builder =
-      entity_builder_factory.NewBookmarkEntityBuilder(kTitle1);
-  fake_server_->InjectEntity(bookmark_builder.BuildBookmark(GURL(kUrl1)));
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder(kTitle1).BuildBookmark(
+          GURL(kUrl1)));
+
+  const std::string kTitle2 = "title2";
+  const std::string kUrl2 = "http://www.url2.com";
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder(kTitle2).BuildBookmark(
+          GURL(kUrl2)));
 
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   // Set a limit of 4 bookmarks. This should result in an error when we get an

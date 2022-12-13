@@ -566,10 +566,15 @@ void BookmarkModelTypeProcessor::OnInitialUpdateReceived(
 
   TRACE_EVENT0("sync", "BookmarkModelTypeProcessor::OnInitialUpdateReceived");
 
+  // |updates| can contain an additional root folder. The server may or may not
+  // deliver a root node - it is not guaranteed, but this works as an
+  // approximated safeguard.
+  const size_t max_initial_updates_count = max_bookmarks_till_sync_enabled_ + 1;
+
   // Report error if count of remote updates is more than the limit.
   // Note that we are not having this check for incremental updates as it is
   // very unlikely that there will be many updates downloaded.
-  if (updates.size() > max_bookmarks_till_sync_enabled_ &&
+  if (updates.size() > max_initial_updates_count &&
       base::FeatureList::IsEnabled(syncer::kSyncEnforceBookmarksCountLimit)) {
     last_initial_merge_remote_updates_exceeded_limit_ = true;
     error_handler_.Run(

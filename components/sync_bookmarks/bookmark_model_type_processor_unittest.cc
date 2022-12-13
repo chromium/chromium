@@ -1239,6 +1239,13 @@ TEST_F(BookmarkModelTypeProcessorTest,
   syncer::UpdateResponseDataList updates =
       CreateUpdateResponseDataListForPermanentNodes();
 
+  // Entry for the root folder. The server may or may not send a root node, but
+  // the current implementation still handles it.
+  updates.push_back(CreateUpdateResponseData(
+      {kBookmarksRootId, std::string(), std::string(), std::string(),
+       syncer::ModelTypeToRootTag(syncer::BOOKMARKS)},
+      kRandomPosition, /*response_version=*/0));
+
   // Add update for another node under the bookmarks bar.
   const std::string kNodeId = "node_id";
   const std::string kTitle = "title";
@@ -1266,7 +1273,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,
-       ShouldSaveRemoteUpdatesCountDuringInitialMerge) {
+       ShouldSaveRemoteUpdatesCountExceedingLimitResultDuringInitialMerge) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
@@ -1281,6 +1288,13 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   syncer::UpdateResponseDataList updates =
       CreateUpdateResponseDataListForPermanentNodes();
+
+  // Entry for the root folder. The server may or may not send a root node, but
+  // the current implementation still handles it.
+  updates.push_back(CreateUpdateResponseData(
+      {kBookmarksRootId, std::string(), std::string(), std::string(),
+       syncer::ModelTypeToRootTag(syncer::BOOKMARKS)},
+      kRandomPosition, /*response_version=*/0));
 
   // Add update for another node under the bookmarks bar.
   const std::string kNodeId = "node_id";
@@ -1332,6 +1346,13 @@ TEST_F(BookmarkModelTypeProcessorTest,
   syncer::UpdateResponseDataList updates =
       CreateUpdateResponseDataListForPermanentNodes();
 
+  // Entry for the root folder. The server may or may not send a root node, but
+  // the current implementation still handles it.
+  updates.push_back(CreateUpdateResponseData(
+      {kBookmarksRootId, std::string(), std::string(), std::string(),
+       syncer::ModelTypeToRootTag(syncer::BOOKMARKS)},
+      kRandomPosition, /*response_version=*/0));
+
   // Add update for another node under the bookmarks bar.
   const std::string kNodeId = "node_id";
   const std::string kTitle = "title";
@@ -1359,7 +1380,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
       model_metadata.last_initial_merge_remote_updates_exceeded_limit());
 
   ResetModelTypeProcessor();
-  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
   // Expect failure.
   error_reported = false;
   processor()->ModelReadyToSync(metadata_str, schedule_save_closure()->Get(),
@@ -1379,7 +1399,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,
-       ShouldPersistRemoteBookmarksCountAcrossBrowserRestarts) {
+       ShouldPersistRemoteBookmarksCountExceedingLimitAcrossBrowserRestarts) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
@@ -1398,19 +1418,14 @@ TEST_F(BookmarkModelTypeProcessorTest,
       syncer::UniquePosition::InitialPosition(
           syncer::UniquePosition::RandomSuffix());
 
-  syncer::UpdateResponseDataList updates;
-  // Add update for the permanent folders.
-  updates.push_back(
-      CreateUpdateResponseData({kBookmarkBarId, std::string(), std::string(),
-                                kBookmarksRootId, kBookmarkBarTag},
-                               kRandomPosition, /*response_version=*/0));
-  updates.push_back(
-      CreateUpdateResponseData({kOtherBookmarksId, std::string(), std::string(),
-                                kBookmarksRootId, kOtherBookmarksTag},
-                               kRandomPosition, /*response_version=*/0));
+  syncer::UpdateResponseDataList updates =
+      CreateUpdateResponseDataListForPermanentNodes();
+
+  // Entry for the root folder. The server may or may not send a root node, but
+  // the current implementation still handles it.
   updates.push_back(CreateUpdateResponseData(
-      {kMobileBookmarksId, std::string(), std::string(), kBookmarksRootId,
-       kMobileBookmarksTag},
+      {kBookmarksRootId, std::string(), std::string(), std::string(),
+       syncer::ModelTypeToRootTag(syncer::BOOKMARKS)},
       kRandomPosition, /*response_version=*/0));
 
   // Add update for another node under the bookmarks bar.
@@ -1442,7 +1457,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   // Simulate browser restart.
   ResetModelTypeProcessor();
-  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
   // Expect failure.
   error_reported = false;
   processor()->ModelReadyToSync(metadata_str, schedule_save_closure()->Get(),
@@ -1462,7 +1476,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   // Simulate browser restart again.
   ResetModelTypeProcessor();
-  processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
   // Expect failure.
   error_reported = false;
   processor()->ModelReadyToSync(metadata_str, schedule_save_closure()->Get(),
