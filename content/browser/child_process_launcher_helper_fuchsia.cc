@@ -53,9 +53,9 @@ const char* ProcessNameFromSandboxType(sandbox::mojom::Sandbox sandbox_type) {
 
 }  // namespace
 
-void ChildProcessLauncherHelper::SetProcessPriorityOnLauncherThread(
+void ChildProcessLauncherHelper::SetProcessBackgroundedOnLauncherThread(
     base::Process process,
-    const ChildProcessLauncherPriority& priority) {
+    bool is_background) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
   // TODO(https://crbug.com/926583): Fuchsia does not currently support this.
 }

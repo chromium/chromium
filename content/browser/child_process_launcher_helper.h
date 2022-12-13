@@ -65,8 +65,8 @@ namespace content {
 class ChildProcessLauncher;
 class SandboxedProcessLauncherDelegate;
 struct ChildProcessLauncherFileData;
-struct ChildProcessLauncherPriority;
 struct ChildProcessTerminationInfo;
+struct RenderProcessPriority;
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 class PosixFileDescriptorInfo;
@@ -199,10 +199,6 @@ class ChildProcessLauncherHelper
   static void ForceNormalProcessTerminationAsync(
       ChildProcessLauncherHelper::Process process);
 
-  void SetProcessPriorityOnLauncherThread(
-      base::Process process,
-      const ChildProcessLauncherPriority& priority);
-
 #if BUILDFLAG(IS_ANDROID)
   void OnChildProcessStarted(JNIEnv* env, jint handle);
 
@@ -210,7 +206,14 @@ class ChildProcessLauncherHelper
 
   // Dumps the stack of the child process without crashing it.
   void DumpProcessStack(const base::Process& process);
-#endif  // BUILDFLAG(IS_ANDROID)
+
+  void SetRenderProcessPriorityOnLauncherThread(
+      base::Process process,
+      const RenderProcessPriority& priority);
+#else   // !BUILDFLAG(IS_ANDROID)
+  void SetProcessBackgroundedOnLauncherThread(base::Process process,
+                                              bool is_background);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   std::string GetProcessType();
 

@@ -77,18 +77,18 @@ static_assert(static_cast<int>(LAUNCH_RESULT_START) >
               "LaunchResultCode must not overlap with sandbox::ResultCode");
 #endif
 
-struct ChildProcessLauncherPriority {
-  ChildProcessLauncherPriority(bool visible,
-                               bool has_media_stream,
-                               bool has_foreground_service_worker,
-                               unsigned int frame_depth,
-                               bool intersects_viewport,
-                               bool boost_for_pending_views
+struct RenderProcessPriority {
+  RenderProcessPriority(bool visible,
+                        bool has_media_stream,
+                        bool has_foreground_service_worker,
+                        unsigned int frame_depth,
+                        bool intersects_viewport,
+                        bool boost_for_pending_views
 #if BUILDFLAG(IS_ANDROID)
-                               ,
-                               ChildProcessImportance importance
+                        ,
+                        ChildProcessImportance importance
 #endif
-                               )
+                        )
       : visible(visible),
         has_media_stream(has_media_stream),
         has_foreground_service_worker(has_foreground_service_worker),
@@ -105,8 +105,8 @@ struct ChildProcessLauncherPriority {
   // Returns true if the child process is backgrounded.
   bool is_background() const;
 
-  bool operator==(const ChildProcessLauncherPriority& other) const;
-  bool operator!=(const ChildProcessLauncherPriority& other) const {
+  bool operator==(const RenderProcessPriority& other) const;
+  bool operator!=(const RenderProcessPriority& other) const {
     return !(*this == other);
   }
 
@@ -133,14 +133,14 @@ struct ChildProcessLauncherPriority {
 
   // |frame_depth| is the depth of the shallowest frame this process is
   // responsible for which has |visible| visibility. It only makes sense to
-  // compare this property for two ChildProcessLauncherPriority instances with
-  // matching |visible| properties.
+  // compare this property for two RenderProcessPriority instances with matching
+  // |visible| properties.
   unsigned int frame_depth;
 
   // |intersects_viewport| is true if this process is responsible for a frame
   // which intersects a viewport which has |visible| visibility. It only makes
-  // sense to compare this property for two ChildProcessLauncherPriority
-  // instances with matching |visible| properties.
+  // sense to compare this property for two RenderProcessPriority instances
+  // with matching |visible| properties.
   bool intersects_viewport;
 
   // |boost_for_pending_views| is true if this process is responsible for a
@@ -248,9 +248,15 @@ class CONTENT_EXPORT ChildProcessLauncher {
   // more discussion of Linux implementation details.
   ChildProcessTerminationInfo GetChildTerminationInfo(bool known_dead);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Changes whether the render process runs in the background or not.  Only
+  // call this after the process has started.
+  void SetRenderProcessPriority(const RenderProcessPriority& priority);
+#else
   // Changes whether the process runs in the background or not.  Only call
   // this after the process has started.
-  void SetProcessPriority(const ChildProcessLauncherPriority& priority);
+  void SetProcessBackgrounded(bool is_background);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Terminates the process associated with this ChildProcessLauncher.
   // Returns true if the process was stopped, false if the process had not been

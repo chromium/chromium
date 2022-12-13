@@ -1065,7 +1065,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Clients that contribute priority to this process.
   base::flat_set<RenderProcessHostPriorityClient*> priority_clients_;
 
-  ChildProcessLauncherPriority priority_;
+  RenderProcessPriority priority_;
 
   // If this is set then the built-in process priority calculation system is
   // ignored, and an externally computed process priority is used. Set to true

@@ -4936,7 +4936,7 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
     has_recorded_media_stream_frame_depth_metric_ = true;
   }
 
-  ChildProcessLauncherPriority priority(
+  RenderProcessPriority priority(
       visible_clients_ > 0 || base::CommandLine::ForCurrentProcess()->HasSwitch(
                                   switches::kDisableRendererBackgrounding),
       media_stream_count_ > 0, foreground_service_worker_count_ > 0,
@@ -4953,7 +4953,7 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
   // logic into this class, or rip out the existing logic entirely.
   if (priority_override_.has_value()) {
     bool foregrounded = priority_override_.value();
-    priority = ChildProcessLauncherPriority(
+    priority = RenderProcessPriority(
         foregrounded, /* is_visible */
         foregrounded, /* has_media_stream */
         foregrounded, /* has_foreground_service_worker */
@@ -4988,7 +4988,11 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
   if (!run_renderer_in_process()) {
     DCHECK(child_process_launcher_.get());
     DCHECK(!child_process_launcher_->IsStarting());
-    child_process_launcher_->SetProcessPriority(priority_);
+#if BUILDFLAG(IS_ANDROID)
+    child_process_launcher_->SetRenderProcessPriority(priority_);
+#else
+    child_process_launcher_->SetProcessBackgrounded(priority_.is_background());
+#endif
   }
 
   // Notify the child process of the change in state.

@@ -61,7 +61,7 @@ base::TimeDelta GetCPUUsage(base::ProcessHandle process_handle) {
 
 using internal::ChildProcessLauncherHelper;
 
-void ChildProcessLauncherPriority::WriteIntoTrace(
+void RenderProcessPriority::WriteIntoTrace(
     perfetto::TracedProto<TraceProto> proto) const {
   proto->set_is_backgrounded(is_background());
   proto->set_has_pending_views(boost_for_pending_views);
@@ -136,16 +136,28 @@ ChildProcessLauncher::~ChildProcessLauncher() {
   }
 }
 
-void ChildProcessLauncher::SetProcessPriority(
-    const ChildProcessLauncherPriority& priority) {
+#if BUILDFLAG(IS_ANDROID)
+void ChildProcessLauncher::SetRenderProcessPriority(
+    const RenderProcessPriority& priority) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::Process to_pass = process_.process.Duplicate();
   GetProcessLauncherTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &ChildProcessLauncherHelper::SetProcessPriorityOnLauncherThread,
+          &ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread,
           helper_, std::move(to_pass), priority));
 }
+#else   // !BUILDFLAG(IS_ANDROID)
+void ChildProcessLauncher::SetProcessBackgrounded(bool is_background) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  base::Process to_pass = process_.process.Duplicate();
+  GetProcessLauncherTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &ChildProcessLauncherHelper::SetProcessBackgroundedOnLauncherThread,
+          helper_, std::move(to_pass), is_background));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ChildProcessLauncher::Notify(ChildProcessLauncherHelper::Process process,
 #if BUILDFLAG(IS_WIN)
@@ -258,13 +270,13 @@ ChildProcessLauncher::Client* ChildProcessLauncher::ReplaceClientForTest(
   return ret;
 }
 
-bool ChildProcessLauncherPriority::is_background() const {
+bool RenderProcessPriority::is_background() const {
   return !visible && !has_media_stream && !boost_for_pending_views &&
          !has_foreground_service_worker;
 }
 
-bool ChildProcessLauncherPriority::operator==(
-    const ChildProcessLauncherPriority& other) const {
+bool RenderProcessPriority::operator==(
+    const RenderProcessPriority& other) const {
   return visible == other.visible &&
          has_media_stream == other.has_media_stream &&
          has_foreground_service_worker == other.has_foreground_service_worker &&
