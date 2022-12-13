@@ -1021,49 +1021,46 @@ class _IRBuilder(object):
         """Constructs a set of iterator operations."""
         return {
             Identifier('forEach'):
-            self._create_operation(
-                Identifier('forEach'),
-                arguments=self._create_arguments([
-                    (Identifier('callback'),
-                     Identifier('ForEachIteratorCallback')),
-                    (Identifier('thisArg'), 'any', 'null'),
-                ]),
-                extended_attributes={
-                    'CallWith': ('ScriptState', 'ThisValue'),
-                    'RaisesException': None,
-                    'ImplementedAs': 'forEachForBinding',
-                },
-                node=node),
+            self._create_operation(Identifier('forEach'),
+                                   arguments=self._create_arguments([
+                                       (Identifier('callback'),
+                                        Identifier('ForEachIteratorCallback')),
+                                       (Identifier('thisArg'), 'any', 'null'),
+                                   ]),
+                                   extended_attributes={
+                                       'CallWith':
+                                       ('ScriptState', 'ThisValue'),
+                                       'RaisesException': None,
+                                       'ImplementedAs': 'forEachForBinding',
+                                   },
+                                   node=node),
             Identifier('entries'):
-            self._create_operation(
-                Identifier('entries'),
-                return_type=Identifier('Iterator'),
-                extended_attributes={
-                    'CallWith': 'ScriptState',
-                    'RaisesException': None,
-                    'ImplementedAs': 'entriesForBinding',
-                },
-                node=node),
+            self._create_operation(Identifier('entries'),
+                                   return_type=Identifier('SyncIteratorType'),
+                                   extended_attributes={
+                                       'CallWith': 'ScriptState',
+                                       'RaisesException': None,
+                                       'ImplementedAs': 'entriesForBinding',
+                                   },
+                                   node=node),
             Identifier('keys'):
-            self._create_operation(
-                Identifier('keys'),
-                return_type=Identifier('Iterator'),
-                extended_attributes={
-                    'CallWith': 'ScriptState',
-                    'RaisesException': None,
-                    'ImplementedAs': 'keysForBinding',
-                },
-                node=node),
+            self._create_operation(Identifier('keys'),
+                                   return_type=Identifier('SyncIteratorType'),
+                                   extended_attributes={
+                                       'CallWith': 'ScriptState',
+                                       'RaisesException': None,
+                                       'ImplementedAs': 'keysForBinding',
+                                   },
+                                   node=node),
             Identifier('values'):
-            self._create_operation(
-                Identifier('values'),
-                return_type=Identifier('Iterator'),
-                extended_attributes={
-                    'CallWith': 'ScriptState',
-                    'RaisesException': None,
-                    'ImplementedAs': 'valuesForBinding',
-                },
-                node=node),
+            self._create_operation(Identifier('values'),
+                                   return_type=Identifier('SyncIteratorType'),
+                                   extended_attributes={
+                                       'CallWith': 'ScriptState',
+                                       'RaisesException': None,
+                                       'ImplementedAs': 'valuesForBinding',
+                                   },
+                                   node=node),
         }
 
     def _create_literal_constant(self, token):

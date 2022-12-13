@@ -1676,6 +1676,13 @@ def make_v8_set_return_value(cg_context):
         return T("bindings::V8SetReturnValue(${info}, ${return_value}, "
                  "${isolate}, ${blink_receiver});")
 
+    if return_type.is_typedef and return_type.identifier == "SyncIteratorType":
+        # Sync iterator objects (default iterator objects, map iterator objects,
+        # and set iterator objects) are implemented as ScriptWrappable
+        # instances.
+        return T("bindings::V8SetReturnValue(${info}, ${return_value}, "
+                 "${blink_receiver});")
+
     # [CheckSecurity=ReturnValue]
     #
     # The returned object must be wrapped in its own realm instead of the
