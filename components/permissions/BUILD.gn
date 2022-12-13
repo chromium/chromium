@@ -269,12 +269,12 @@ source_set("unit_tests") {
     "permission_request_manager_unittest.cc",
     "permission_request_queue_unittest.cc",
     "permission_uma_util_unittest.cc",
-    "unused_site_permissions_service_unittest.cc",
   ]
   if (!is_android) {
     sources += [
       "bluetooth_chooser_controller_unittest.cc",
       "bluetooth_scanning_prompt_controller_unittest.cc",
+      "unused_site_permissions_service_unittest.cc",
     ]
   }
   if (is_android) {

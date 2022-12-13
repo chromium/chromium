@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/permissions/unused_site_permissions_service.h"
+
 #include "base/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -13,6 +14,7 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -22,7 +24,11 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
+#include "url/gurl.h"
 #include "url/origin.h"
+
+constexpr char kRevokedKey[] = "revoked";
+constexpr base::TimeDelta kRevocationThreshold = base::Days(60);
 
 namespace permissions {
 namespace {
@@ -43,18 +49,63 @@ UnusedSitePermissionsService::UnusedPermissionMap GetUnusedPermissionsMap(
     ContentSettingsForOneType settings;
     hcsm->GetSettingsForOneType(type, &settings);
     for (const auto& setting : settings) {
-      // Skip wildcard pattern that are not host specific. These shouldn't
-      // track visit timestamps as they would match any URL.
-      if (setting.primary_pattern.GetHost().empty())
+      // Skip wildcard patterns that don't belong to a single origin. These
+      // shouldn't track visit timestamps.
+      if (!setting.primary_pattern.MatchesSingleOrigin())
         continue;
       if (setting.metadata.last_visited != base::Time() &&
           setting.metadata.last_visited < threshold) {
-        auto& list = recently_unused[setting.primary_pattern.GetHost()];
-        list.push_back({type, std::move(setting)});
+        GURL url = GURL(setting.primary_pattern.ToString());
+        // Converting URL to a origin is normally an anti-pattern but here it is
+        // ok since the URL belongs to a single origin. Therefore, it has a
+        // fully defined URL+scheme+port which makes converting URL to origin
+        // successful.
+        url::Origin origin = url::Origin::Create(url);
+        recently_unused[origin.Serialize()].push_back(
+            {type, std::move(setting)});
       }
     }
   }
   return recently_unused;
+}
+
+void StorePermissionInRevokedPermissionSetting(
+    const std::list<UnusedSitePermissionsService::ContentSettingEntry>&
+        recently_revoked_permissions,
+    scoped_refptr<HostContentSettingsMap> hcsm) {
+  DCHECK(!recently_revoked_permissions.empty());
+  const ContentSettingsPattern& primary_pattern =
+      recently_revoked_permissions.front().source.primary_pattern;
+  const ContentSettingsPattern& secondary_pattern =
+      recently_revoked_permissions.front().source.secondary_pattern;
+
+  GURL url = GURL(primary_pattern.ToString());
+  // The url should be valid as it is checked that the pattern represents a
+  // single origin.
+  DCHECK(url.is_valid());
+  // Get the current value of the setting to append the recently revoked
+  // permissions.
+  base::Value cur_value(hcsm->GetWebsiteSetting(
+      url, url, ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, nullptr));
+
+  base::Value::Dict dict = cur_value.is_dict() ? std::move(cur_value.GetDict())
+                                               : base::Value::Dict();
+  base::Value::List permission_type_list =
+      dict.FindList(kRevokedKey) ? std::move(*dict.FindList(kRevokedKey))
+                                 : base::Value::List();
+
+  for (const auto& permission : recently_revoked_permissions) {
+    permission_type_list.Append(static_cast<int32_t>(permission.type));
+  }
+
+  dict.Set(kRevokedKey, base::Value::List(std::move(permission_type_list)));
+
+  // Set website setting for the list of recently revoked permissions and
+  // previously revoked permissions, if exists.
+  hcsm->SetWebsiteSettingCustomScope(
+      primary_pattern, secondary_pattern,
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      base::Value(std::move(dict)));
 }
 
 }  // namespace
@@ -104,13 +155,6 @@ void UnusedSitePermissionsService::StartRepeatedUpdates() {
           base::Unretained(this), base::NullCallback()));
 }
 
-void UnusedSitePermissionsService::UpdateUnusedPermissionsForTesting() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::RunLoop loop;
-  UpdateUnusedPermissionsAsync(loop.QuitClosure());
-  loop.Run();
-}
-
 void UnusedSitePermissionsService::UpdateUnusedPermissionsAsync(
     base::RepeatingClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -125,13 +169,13 @@ void UnusedSitePermissionsService::UpdateUnusedPermissionsAsync(
 // Called by TabHelper when a URL was visited.
 void UnusedSitePermissionsService::OnPageVisited(const url::Origin& origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // Check if this host has unused permissions.
-  auto host_entry = recently_unused_permissions_.find(origin.host());
-  if (host_entry == recently_unused_permissions_.end())
+  // Check if this origin has unused permissions.
+  auto origin_entry = recently_unused_permissions_.find(origin.Serialize());
+  if (origin_entry == recently_unused_permissions_.end())
     return;
 
-  // See which permissions of the host actually match the URL and update them.
-  auto& site_permissions = host_entry->second;
+  // See which permissions of the origin actually match the URL and update them.
+  auto& site_permissions = origin_entry->second;
   for (auto it = site_permissions.begin(); it != site_permissions.end();) {
     if (it->source.primary_pattern.Matches(origin.GetURL())) {
       hcsm_->UpdateLastVisitedTime(it->source.primary_pattern,
@@ -141,9 +185,9 @@ void UnusedSitePermissionsService::OnPageVisited(const url::Origin& origin) {
       it++;
     }
   }
-  // Remove host entry if all permissions were updated.
+  // Remove origin entry if all permissions were updated.
   if (site_permissions.empty()) {
-    recently_unused_permissions_.erase(host_entry);
+    recently_unused_permissions_.erase(origin_entry);
   }
 }
 
@@ -152,8 +196,64 @@ void UnusedSitePermissionsService::OnUnusedPermissionsMapRetrieved(
     UnusedPermissionMap map) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   recently_unused_permissions_ = map;
+  RevokeUnusedPermissions();
   if (callback)
     std::move(callback).Run();
+}
+
+void UnusedSitePermissionsService::RevokeUnusedPermissions() {
+  base::Time threshold = clock_->Now() - kRevocationThreshold;
+
+  for (auto itr = recently_unused_permissions_.begin();
+       itr != recently_unused_permissions_.end();) {
+    std::list<ContentSettingEntry>& unused_site_permissions = itr->second;
+
+    std::list<ContentSettingEntry> revoked_permissions;
+    for (auto permission_itr = unused_site_permissions.begin();
+         permission_itr != unused_site_permissions.end();) {
+      const ContentSettingEntry& entry = *permission_itr;
+      // Reset the permission to default if the site is visited before
+      // threshold.
+      DCHECK(entry.source.metadata.last_visited != base::Time());
+      if (entry.source.metadata.last_visited < threshold) {
+        revoked_permissions.push_back(entry);
+        hcsm_->SetContentSettingCustomScope(
+            entry.source.primary_pattern, entry.source.secondary_pattern,
+            entry.type, ContentSetting::CONTENT_SETTING_DEFAULT);
+        unused_site_permissions.erase(permission_itr++);
+      } else {
+        permission_itr++;
+      }
+    }
+
+    // Store revoked permissions on HCSM.
+    if (!revoked_permissions.empty()) {
+      StorePermissionInRevokedPermissionSetting(revoked_permissions, hcsm_);
+    }
+
+    // Handle clean up of recently_unused_permissions_ map after revocation.
+    if (unused_site_permissions.empty()) {
+      // Since all unused permissions are revoked, the map should be cleared.
+      recently_unused_permissions_.erase(itr++);
+    } else {
+      // Since there are some permissions that are not revoked, the tracked
+      // unused permissions should be set to those permissions.
+      // Note that, currently all permissions belong to a single domain will
+      // revoked all together, since triggering permission prompt requires a
+      // page visit. So the timestamp of all granted permissions of the origin
+      // will be updated. However, this logic will prevent edge cases like
+      // permission prompt stays open long time, also will provide support for
+      // revoking permissions separately in the future.
+      itr++;
+    }
+  }
+}
+
+void UnusedSitePermissionsService::UpdateUnusedPermissionsForTesting() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  base::RunLoop loop;
+  UpdateUnusedPermissionsAsync(loop.QuitClosure());
+  loop.Run();
 }
 
 std::vector<UnusedSitePermissionsService::ContentSettingEntry>

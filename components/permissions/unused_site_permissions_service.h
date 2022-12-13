@@ -97,6 +97,10 @@ class UnusedSitePermissionsService
   void OnUnusedPermissionsMapRetrieved(base::OnceClosure callback,
                                        UnusedPermissionMap map);
 
+  // Revokes permissions that belong to sites that were last visited over 60
+  // days ago.
+  void RevokeUnusedPermissions();
+
   // Set of permissions that haven't been used for at least a week.
   UnusedPermissionMap recently_unused_permissions_;
   // Repeating timer that updates the recently_unused_permissions_ map.

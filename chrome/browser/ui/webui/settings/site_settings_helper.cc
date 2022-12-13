@@ -175,6 +175,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     // PPAPI_BROKER has been deprecated. The content setting is not used or
     // called from UI, so we don't need a representation JS string.
     {ContentSettingsType::DEPRECATED_PPAPI_BROKER, nullptr},
+    {ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==

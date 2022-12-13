@@ -111,6 +111,7 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::PRIVATE_NETWORK_CHOOSER_DATA, 90},
     {ContentSettingsType::FEDERATED_IDENTITY_IDENTITY_PROVIDER_SIGNIN_STATUS,
      91},
+    {ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, 92},
 };
 
 void FilterRulesForType(ContentSettingsForOneType& settings,
