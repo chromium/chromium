@@ -1861,6 +1861,32 @@ TEST_F(CookieMonsterTest, SetCookieableSchemes) {
               {CookieInclusionStatus::EXCLUDE_NONCOOKIEABLE_SCHEME}));
 }
 
+TEST_F(CookieMonsterTest, SetCookieableSchemes_StoreInitialized) {
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+  // Initializes the cookie store.
+  this->GetCookies(cm.get(), https_www_foo_.url(),
+                   CookiePartitionKeyCollection());
+
+  std::vector<std::string> schemes;
+  schemes.push_back("foo");
+  ResultSavingCookieCallback<bool> cookie_scheme_callback;
+  cm->SetCookieableSchemes(schemes, cookie_scheme_callback.MakeCallback());
+  cookie_scheme_callback.WaitUntilDone();
+  EXPECT_FALSE(cookie_scheme_callback.result());
+
+  base::Time now = base::Time::Now();
+  absl::optional<base::Time> server_time = absl::nullopt;
+  GURL foo_url("foo://host/path");
+  EXPECT_TRUE(
+      SetCanonicalCookieReturnAccessResult(
+          cm.get(),
+          CanonicalCookie::Create(foo_url, "y=1", now, server_time,
+                                  absl::nullopt /* cookie_partition_key */),
+          foo_url, false /*modify_httponly*/)
+          .status.HasExactlyExclusionReasonsForTesting(
+              {CookieInclusionStatus::EXCLUDE_NONCOOKIEABLE_SCHEME}));
+}
+
 TEST_F(CookieMonsterTest, GetAllCookiesForURL) {
   auto cm = std::make_unique<CookieMonster>(nullptr, kLastAccessThreshold,
                                             net::NetLog::Get());
