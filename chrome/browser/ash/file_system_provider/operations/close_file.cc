@@ -13,11 +13,11 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-CloseFile::CloseFile(extensions::EventRouter* event_router,
+CloseFile::CloseFile(EventDispatcher* dispatcher,
                      const ProvidedFileSystemInfo& file_system_info,
                      int open_request_id,
                      storage::AsyncFileUtil::StatusCallback callback)
-    : Operation(event_router, file_system_info),
+    : Operation(dispatcher, file_system_info),
       open_request_id_(open_request_id),
       callback_(std::move(callback)) {}
 

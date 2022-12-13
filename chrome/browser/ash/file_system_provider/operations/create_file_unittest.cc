@@ -57,11 +57,8 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, Execute) {
   util::StatusCallbackLog callback_log;
 
   CreateFile create_file(
-      nullptr, file_system_info_, base::FilePath(kFilePath),
+      &dispatcher, file_system_info_, base::FilePath(kFilePath),
       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  create_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(create_file.Execute(kRequestId));
 
@@ -89,11 +86,8 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, Execute_NoListener) {
   util::StatusCallbackLog callback_log;
 
   CreateFile create_file(
-      nullptr, file_system_info_, base::FilePath(kFilePath),
+      &dispatcher, file_system_info_, base::FilePath(kFilePath),
       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  create_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(create_file.Execute(kRequestId));
 }
@@ -108,11 +102,8 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, Execute_ReadOnly) {
       true /* watchable */, extensions::SOURCE_FILE, IconSet());
 
   CreateFile create_file(
-      nullptr, read_only_file_system_info, base::FilePath(kFilePath),
+      &dispatcher, read_only_file_system_info, base::FilePath(kFilePath),
       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  create_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(create_file.Execute(kRequestId));
 }
@@ -122,11 +113,8 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, OnSuccess) {
   util::StatusCallbackLog callback_log;
 
   CreateFile create_file(
-      nullptr, file_system_info_, base::FilePath(kFilePath),
+      &dispatcher, file_system_info_, base::FilePath(kFilePath),
       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  create_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(create_file.Execute(kRequestId));
 
@@ -141,11 +129,8 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, OnError) {
   util::StatusCallbackLog callback_log;
 
   CreateFile create_file(
-      nullptr, file_system_info_, base::FilePath(kFilePath),
+      &dispatcher, file_system_info_, base::FilePath(kFilePath),
       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  create_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(create_file.Execute(kRequestId));
 

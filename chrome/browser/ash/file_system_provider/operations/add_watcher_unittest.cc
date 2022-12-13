@@ -56,12 +56,9 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, Execute) {
   util::StatusCallbackLog callback_log;
 
   AddWatcher add_watcher(
-      nullptr, file_system_info_, base::FilePath(kEntryPath),
+      &dispatcher, file_system_info_, base::FilePath(kEntryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  add_watcher.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(add_watcher.Execute(kRequestId));
 
@@ -90,12 +87,9 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, Execute_NoListener) {
   util::StatusCallbackLog callback_log;
 
   AddWatcher add_watcher(
-      nullptr, file_system_info_, base::FilePath(kEntryPath),
+      &dispatcher, file_system_info_, base::FilePath(kEntryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  add_watcher.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(add_watcher.Execute(kRequestId));
 }
@@ -105,12 +99,9 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, OnSuccess) {
   util::StatusCallbackLog callback_log;
 
   AddWatcher add_watcher(
-      nullptr, file_system_info_, base::FilePath(kEntryPath),
+      &dispatcher, file_system_info_, base::FilePath(kEntryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  add_watcher.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(add_watcher.Execute(kRequestId));
 
@@ -125,12 +116,9 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, OnError) {
   util::StatusCallbackLog callback_log;
 
   AddWatcher add_watcher(
-      nullptr, file_system_info_, base::FilePath(kEntryPath),
+      &dispatcher, file_system_info_, base::FilePath(kEntryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  add_watcher.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(add_watcher.Execute(kRequestId));
 

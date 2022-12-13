@@ -63,11 +63,8 @@ TEST_F(FileSystemProviderOperationsExecuteActionTest, Execute) {
   util::StatusCallbackLog callback_log;
 
   ExecuteAction execute_action(
-      nullptr, file_system_info_, entry_paths_, kActionId,
+      &dispatcher, file_system_info_, entry_paths_, kActionId,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  execute_action.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(execute_action.Execute(kRequestId));
 
@@ -98,11 +95,8 @@ TEST_F(FileSystemProviderOperationsExecuteActionTest, Execute_NoListener) {
   util::StatusCallbackLog callback_log;
 
   ExecuteAction execute_action(
-      nullptr, file_system_info_, entry_paths_, kActionId,
+      &dispatcher, file_system_info_, entry_paths_, kActionId,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  execute_action.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(execute_action.Execute(kRequestId));
 }
@@ -112,11 +106,8 @@ TEST_F(FileSystemProviderOperationsExecuteActionTest, OnSuccess) {
   util::StatusCallbackLog callback_log;
 
   ExecuteAction execute_action(
-      nullptr, file_system_info_, entry_paths_, kActionId,
+      &dispatcher, file_system_info_, entry_paths_, kActionId,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  execute_action.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(execute_action.Execute(kRequestId));
 
@@ -131,11 +122,8 @@ TEST_F(FileSystemProviderOperationsExecuteActionTest, OnError) {
   util::StatusCallbackLog callback_log;
 
   ExecuteAction execute_action(
-      nullptr, file_system_info_, entry_paths_, kActionId,
+      &dispatcher, file_system_info_, entry_paths_, kActionId,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  execute_action.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(execute_action.Execute(kRequestId));
 

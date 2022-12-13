@@ -54,11 +54,8 @@ TEST_F(FileSystemProviderOperationsAbortTest, Execute) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  Abort abort(nullptr, file_system_info_, kOperationRequestId,
+  Abort abort(&dispatcher, file_system_info_, kOperationRequestId,
               base::BindOnce(&util::LogStatusCallback, &callback_log));
-  abort.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(abort.Execute(kRequestId));
 
@@ -83,11 +80,8 @@ TEST_F(FileSystemProviderOperationsAbortTest, Execute_NoListener) {
   util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  Abort abort(nullptr, file_system_info_, kOperationRequestId,
+  Abort abort(&dispatcher, file_system_info_, kOperationRequestId,
               base::BindOnce(&util::LogStatusCallback, &callback_log));
-  abort.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(abort.Execute(kRequestId));
 }
@@ -96,11 +90,8 @@ TEST_F(FileSystemProviderOperationsAbortTest, OnSuccess) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  Abort abort(nullptr, file_system_info_, kOperationRequestId,
+  Abort abort(&dispatcher, file_system_info_, kOperationRequestId,
               base::BindOnce(&util::LogStatusCallback, &callback_log));
-  abort.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(abort.Execute(kRequestId));
 
@@ -114,11 +105,8 @@ TEST_F(FileSystemProviderOperationsAbortTest, OnError) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  Abort abort(nullptr, file_system_info_, kOperationRequestId,
+  Abort abort(&dispatcher, file_system_info_, kOperationRequestId,
               base::BindOnce(&util::LogStatusCallback, &callback_log));
-  abort.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(abort.Execute(kRequestId));
 

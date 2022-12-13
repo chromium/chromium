@@ -18,10 +18,6 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace extensions {
-class EventRouter;
-}  // namespace extensions
-
 namespace ash {
 namespace file_system_provider {
 namespace operations {
@@ -31,7 +27,7 @@ namespace operations {
 // files.
 class AddWatcher : public Operation {
  public:
-  AddWatcher(extensions::EventRouter* event_router,
+  AddWatcher(EventDispatcher* dispatcher,
              const ProvidedFileSystemInfo& file_system_info,
              const base::FilePath& entry_path,
              bool recursive,

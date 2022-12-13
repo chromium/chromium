@@ -58,12 +58,9 @@ TEST_F(FileSystemProviderOperationsMoveEntryTest, Execute) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  MoveEntry move_entry(nullptr, file_system_info_, base::FilePath(kSourcePath),
-                       base::FilePath(kTargetPath),
+  MoveEntry move_entry(&dispatcher, file_system_info_,
+                       base::FilePath(kSourcePath), base::FilePath(kTargetPath),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
-  move_entry.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(move_entry.Execute(kRequestId));
 
@@ -90,12 +87,9 @@ TEST_F(FileSystemProviderOperationsMoveEntryTest, Execute_NoListener) {
   util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  MoveEntry move_entry(nullptr, file_system_info_, base::FilePath(kSourcePath),
-                       base::FilePath(kTargetPath),
+  MoveEntry move_entry(&dispatcher, file_system_info_,
+                       base::FilePath(kSourcePath), base::FilePath(kTargetPath),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
-  move_entry.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(move_entry.Execute(kRequestId));
 }
@@ -109,12 +103,9 @@ TEST_F(FileSystemProviderOperationsMoveEntryTest, Execute_ReadOnly) {
       base::FilePath() /* mount_path */, false /* configurable */,
       true /* watchable */, extensions::SOURCE_FILE, IconSet());
 
-  MoveEntry move_entry(nullptr, read_only_file_system_info,
+  MoveEntry move_entry(&dispatcher, read_only_file_system_info,
                        base::FilePath(kSourcePath), base::FilePath(kTargetPath),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
-  move_entry.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(move_entry.Execute(kRequestId));
 }
@@ -123,12 +114,9 @@ TEST_F(FileSystemProviderOperationsMoveEntryTest, OnSuccess) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  MoveEntry move_entry(nullptr, file_system_info_, base::FilePath(kSourcePath),
-                       base::FilePath(kTargetPath),
+  MoveEntry move_entry(&dispatcher, file_system_info_,
+                       base::FilePath(kSourcePath), base::FilePath(kTargetPath),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
-  move_entry.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(move_entry.Execute(kRequestId));
 
@@ -142,12 +130,9 @@ TEST_F(FileSystemProviderOperationsMoveEntryTest, OnError) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  MoveEntry move_entry(nullptr, file_system_info_, base::FilePath(kSourcePath),
-                       base::FilePath(kTargetPath),
+  MoveEntry move_entry(&dispatcher, file_system_info_,
+                       base::FilePath(kSourcePath), base::FilePath(kTargetPath),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
-  move_entry.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(move_entry.Execute(kRequestId));
 

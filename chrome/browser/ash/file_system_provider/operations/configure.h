@@ -11,10 +11,6 @@
 #include "chrome/browser/ash/file_system_provider/operations/operation.h"
 #include "storage/browser/file_system/async_file_util.h"
 
-namespace extensions {
-class EventRouter;
-}  // namespace extensions
-
 namespace ash {
 namespace file_system_provider {
 
@@ -26,7 +22,7 @@ namespace operations {
 // extension's configure request. Created per request.
 class Configure : public Operation {
  public:
-  Configure(extensions::EventRouter* event_router,
+  Configure(EventDispatcher* dispatcher,
             const ProvidedFileSystemInfo& file_system_info,
             storage::AsyncFileUtil::StatusCallback callback);
 

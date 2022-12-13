@@ -13,12 +13,12 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-Truncate::Truncate(extensions::EventRouter* event_router,
+Truncate::Truncate(EventDispatcher* dispatcher,
                    const ProvidedFileSystemInfo& file_system_info,
                    const base::FilePath& file_path,
                    int64_t length,
                    storage::AsyncFileUtil::StatusCallback callback)
-    : Operation(event_router, file_system_info),
+    : Operation(dispatcher, file_system_info),
       file_path_(file_path),
       length_(length),
       callback_(std::move(callback)) {}

@@ -18,10 +18,6 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace extensions {
-class EventRouter;
-}  // namespace extensions
-
 namespace ash {
 namespace file_system_provider {
 namespace operations {
@@ -30,7 +26,7 @@ namespace operations {
 // operation will fail. Created per request.
 class OpenFile : public Operation {
  public:
-  OpenFile(extensions::EventRouter* event_router,
+  OpenFile(EventDispatcher* dispatcher,
            const ProvidedFileSystemInfo& file_system_info,
            const base::FilePath& file_path,
            OpenFileMode mode,

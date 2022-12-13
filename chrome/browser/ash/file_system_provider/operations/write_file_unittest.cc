@@ -61,12 +61,9 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, Execute) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  WriteFile write_file(nullptr, file_system_info_, kFileHandle,
+  WriteFile write_file(&dispatcher, file_system_info_, kFileHandle,
                        io_buffer_.get(), kOffset, io_buffer_->size(),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
-  write_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(write_file.Execute(kRequestId));
 
@@ -96,12 +93,9 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, Execute_NoListener) {
   util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  WriteFile write_file(nullptr, file_system_info_, kFileHandle,
+  WriteFile write_file(&dispatcher, file_system_info_, kFileHandle,
                        io_buffer_.get(), kOffset, io_buffer_->size(),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
-  write_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(write_file.Execute(kRequestId));
 }
@@ -115,12 +109,9 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, Execute_ReadOnly) {
       base::FilePath() /* mount_path */, false /* configurable */,
       true /* watchable */, extensions::SOURCE_FILE, IconSet());
 
-  WriteFile write_file(nullptr, read_only_file_system_info, kFileHandle,
+  WriteFile write_file(&dispatcher, read_only_file_system_info, kFileHandle,
                        io_buffer_.get(), kOffset, io_buffer_->size(),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
-  write_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(write_file.Execute(kRequestId));
 }
@@ -129,12 +120,9 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, OnSuccess) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  WriteFile write_file(nullptr, file_system_info_, kFileHandle,
+  WriteFile write_file(&dispatcher, file_system_info_, kFileHandle,
                        io_buffer_.get(), kOffset, io_buffer_->size(),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
-  write_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(write_file.Execute(kRequestId));
 
@@ -148,12 +136,9 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, OnError) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  WriteFile write_file(nullptr, file_system_info_, kFileHandle,
+  WriteFile write_file(&dispatcher, file_system_info_, kFileHandle,
                        io_buffer_.get(), kOffset, io_buffer_->size(),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
-  write_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(write_file.Execute(kRequestId));
 

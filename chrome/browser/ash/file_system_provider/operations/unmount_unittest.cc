@@ -52,11 +52,8 @@ TEST_F(FileSystemProviderOperationsUnmountTest, Execute) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  Unmount unmount(nullptr, file_system_info_,
+  Unmount unmount(&dispatcher, file_system_info_,
                   base::BindOnce(&util::LogStatusCallback, &callback_log));
-  unmount.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(unmount.Execute(kRequestId));
 
@@ -81,11 +78,8 @@ TEST_F(FileSystemProviderOperationsUnmountTest, Execute_NoListener) {
   util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  Unmount unmount(nullptr, file_system_info_,
+  Unmount unmount(&dispatcher, file_system_info_,
                   base::BindOnce(&util::LogStatusCallback, &callback_log));
-  unmount.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(unmount.Execute(kRequestId));
 }
@@ -97,11 +91,8 @@ TEST_F(FileSystemProviderOperationsUnmountTest, OnSuccess) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  Unmount unmount(nullptr, file_system_info_,
+  Unmount unmount(&dispatcher, file_system_info_,
                   base::BindOnce(&util::LogStatusCallback, &callback_log));
-  unmount.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(unmount.Execute(kRequestId));
 
@@ -116,11 +107,8 @@ TEST_F(FileSystemProviderOperationsUnmountTest, OnError) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  Unmount unmount(nullptr, file_system_info_,
+  Unmount unmount(&dispatcher, file_system_info_,
                   base::BindOnce(&util::LogStatusCallback, &callback_log));
-  unmount.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(unmount.Execute(kRequestId));
 

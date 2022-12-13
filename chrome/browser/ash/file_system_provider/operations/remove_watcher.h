@@ -18,10 +18,6 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace extensions {
-class EventRouter;
-}  // namespace extensions
-
 namespace ash {
 namespace file_system_provider {
 namespace operations {
@@ -29,7 +25,7 @@ namespace operations {
 // Removes a watcher at |entry_path| with the |recursive| mode.
 class RemoveWatcher : public Operation {
  public:
-  RemoveWatcher(extensions::EventRouter* event_router,
+  RemoveWatcher(EventDispatcher* dispatcher,
                 const ProvidedFileSystemInfo& file_system_info,
                 const base::FilePath& entry_path,
                 bool recursive,

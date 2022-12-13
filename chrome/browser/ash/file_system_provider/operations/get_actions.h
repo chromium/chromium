@@ -19,10 +19,6 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace extensions {
-class EventRouter;
-}  // namespace extensions
-
 namespace ash {
 namespace file_system_provider {
 namespace operations {
@@ -31,7 +27,7 @@ namespace operations {
 // actions request. Created per request.
 class GetActions : public Operation {
  public:
-  GetActions(extensions::EventRouter* event_router,
+  GetActions(EventDispatcher* dispatcher,
              const ProvidedFileSystemInfo& file_system_info,
              const std::vector<base::FilePath>& entry_paths,
              ProvidedFileSystemInterface::GetActionsCallback callback);

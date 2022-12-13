@@ -37,11 +37,11 @@ Actions ConvertRequestValueToActions(std::unique_ptr<RequestValue> value) {
 
 }  // namespace
 
-GetActions::GetActions(extensions::EventRouter* event_router,
+GetActions::GetActions(EventDispatcher* dispatcher,
                        const ProvidedFileSystemInfo& file_system_info,
                        const std::vector<base::FilePath>& entry_paths,
                        ProvidedFileSystemInterface::GetActionsCallback callback)
-    : Operation(event_router, file_system_info),
+    : Operation(dispatcher, file_system_info),
       entry_paths_(entry_paths),
       callback_(std::move(callback)) {}
 

@@ -17,10 +17,6 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace extensions {
-class EventRouter;
-}  // namespace extensions
-
 namespace ash {
 namespace file_system_provider {
 namespace operations {
@@ -29,7 +25,7 @@ namespace operations {
 // all contents of it (recursively) will be deleted too. Created per request.
 class DeleteEntry : public Operation {
  public:
-  DeleteEntry(extensions::EventRouter* event_router,
+  DeleteEntry(EventDispatcher* dispatcher,
               const ProvidedFileSystemInfo& file_system_info,
               const base::FilePath& entry_path,
               bool recursive,

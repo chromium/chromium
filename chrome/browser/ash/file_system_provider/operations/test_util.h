@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file.h"
+#include "chrome/browser/ash/file_system_provider/event_dispatcher.h"
 
 namespace extensions {
 struct Event;
@@ -21,17 +22,19 @@ namespace util {
 
 // Fake event dispatcher implementation with extra logging capability. Acts as
 // a providing extension end-point.
-class LoggingDispatchEventImpl {
+class LoggingDispatchEventImpl : public EventDispatcher {
  public:
   explicit LoggingDispatchEventImpl(bool dispatch_reply);
 
   LoggingDispatchEventImpl(const LoggingDispatchEventImpl&) = delete;
   LoggingDispatchEventImpl& operator=(const LoggingDispatchEventImpl&) = delete;
 
-  virtual ~LoggingDispatchEventImpl();
+  ~LoggingDispatchEventImpl() override;
 
   // Handles sending an event to a providing extension.
-  bool OnDispatchEventImpl(std::unique_ptr<extensions::Event> event);
+  bool DispatchEvent(int request_id,
+                     absl::optional<std::string> file_system_id,
+                     std::unique_ptr<extensions::Event> event) override;
 
   // Returns events sent to providing extensions.
   std::vector<std::unique_ptr<extensions::Event>>& events() { return events_; }

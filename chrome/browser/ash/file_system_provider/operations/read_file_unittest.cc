@@ -102,13 +102,10 @@ TEST_F(FileSystemProviderOperationsReadFileTest, Execute) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   CallbackLogger callback_logger;
 
-  ReadFile read_file(nullptr, file_system_info_, kFileHandle, io_buffer_.get(),
-                     kOffset, kLength,
+  ReadFile read_file(&dispatcher, file_system_info_, kFileHandle,
+                     io_buffer_.get(), kOffset, kLength,
                      base::BindRepeating(&CallbackLogger::OnReadFile,
                                          base::Unretained(&callback_logger)));
-  read_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(read_file.Execute(kRequestId));
 
@@ -136,13 +133,10 @@ TEST_F(FileSystemProviderOperationsReadFileTest, Execute_NoListener) {
   util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
   CallbackLogger callback_logger;
 
-  ReadFile read_file(nullptr, file_system_info_, kFileHandle, io_buffer_.get(),
-                     kOffset, kLength,
+  ReadFile read_file(&dispatcher, file_system_info_, kFileHandle,
+                     io_buffer_.get(), kOffset, kLength,
                      base::BindRepeating(&CallbackLogger::OnReadFile,
                                          base::Unretained(&callback_logger)));
-  read_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(read_file.Execute(kRequestId));
 }
@@ -154,13 +148,10 @@ TEST_F(FileSystemProviderOperationsReadFileTest, OnSuccess) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   CallbackLogger callback_logger;
 
-  ReadFile read_file(nullptr, file_system_info_, kFileHandle, io_buffer_.get(),
-                     kOffset, kLength,
+  ReadFile read_file(&dispatcher, file_system_info_, kFileHandle,
+                     io_buffer_.get(), kOffset, kLength,
                      base::BindRepeating(&CallbackLogger::OnReadFile,
                                          base::Unretained(&callback_logger)));
-  read_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(read_file.Execute(kRequestId));
 
@@ -195,13 +186,10 @@ TEST_F(FileSystemProviderOperationsReadFileTest, OnError) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   CallbackLogger callback_logger;
 
-  ReadFile read_file(nullptr, file_system_info_, kFileHandle, io_buffer_.get(),
-                     kOffset, kLength,
+  ReadFile read_file(&dispatcher, file_system_info_, kFileHandle,
+                     io_buffer_.get(), kOffset, kLength,
                      base::BindRepeating(&CallbackLogger::OnReadFile,
                                          base::Unretained(&callback_logger)));
-  read_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(read_file.Execute(kRequestId));
 

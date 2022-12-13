@@ -18,10 +18,6 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace extensions {
-class EventRouter;
-}  // namespace extensions
-
 namespace ash {
 namespace file_system_provider {
 namespace operations {
@@ -29,7 +25,7 @@ namespace operations {
 // Copies an entry (recursively if a directory). Created per request.
 class MoveEntry : public Operation {
  public:
-  MoveEntry(extensions::EventRouter* event_router,
+  MoveEntry(EventDispatcher* dispatcher,
             const ProvidedFileSystemInfo& file_system_info,
             const base::FilePath& source_path,
             const base::FilePath& target_path,

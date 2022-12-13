@@ -46,14 +46,14 @@ int CopyRequestValueToBuffer(std::unique_ptr<RequestValue> value,
 }  // namespace
 
 ReadFile::ReadFile(
-    extensions::EventRouter* event_router,
+    EventDispatcher* dispatcher,
     const ProvidedFileSystemInfo& file_system_info,
     int file_handle,
     scoped_refptr<net::IOBuffer> buffer,
     int64_t offset,
     int length,
     ProvidedFileSystemInterface::ReadChunkReceivedCallback callback)
-    : Operation(event_router, file_system_info),
+    : Operation(dispatcher, file_system_info),
       file_handle_(file_handle),
       buffer_(buffer),
       offset_(offset),

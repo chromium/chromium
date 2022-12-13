@@ -11,11 +11,10 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-Configure::Configure(extensions::EventRouter* event_router,
+Configure::Configure(EventDispatcher* dispatcher,
                      const ProvidedFileSystemInfo& file_system_info,
                      storage::AsyncFileUtil::StatusCallback callback)
-    : Operation(event_router, file_system_info),
-      callback_(std::move(callback)) {}
+    : Operation(dispatcher, file_system_info), callback_(std::move(callback)) {}
 
 Configure::~Configure() {
 }

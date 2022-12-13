@@ -13,6 +13,7 @@
 #include "base/files/file.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/ash/file_system_provider/event_dispatcher_impl.h"
 #include "chrome/browser/ash/file_system_provider/notification_manager.h"
 #include "chrome/browser/ash/file_system_provider/operation_request_manager.h"
 #include "chrome/browser/ash/file_system_provider/operations/abort.h"
@@ -142,6 +143,10 @@ ProvidedFileSystem::ProvidedFileSystem(
           profile,
           file_system_info.provider_id().GetExtensionId(),
           notification_manager_.get())),
+      event_dispatcher_(std::make_unique<EventDispatcherImpl>(
+          file_system_info_.provider_id().GetExtensionId(),
+          event_router_,
+          request_manager_.get())),
       watcher_queue_(1) {
   DCHECK_EQ(ProviderId::EXTENSION, file_system_info.provider_id().GetType());
 }
@@ -156,6 +161,9 @@ ProvidedFileSystem::~ProvidedFileSystem() {
 void ProvidedFileSystem::SetEventRouterForTesting(
     extensions::EventRouter* event_router) {
   event_router_ = event_router;
+  event_dispatcher_ = std::make_unique<EventDispatcherImpl>(
+      file_system_info_.provider_id().GetExtensionId(), event_router_,
+      request_manager_.get());
 }
 
 void ProvidedFileSystem::SetNotificationManagerForTesting(
@@ -170,9 +178,9 @@ AbortCallback ProvidedFileSystem::RequestUnmount(
     storage::AsyncFileUtil::StatusCallback callback) {
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
-      REQUEST_UNMOUNT,
-      std::make_unique<operations::Unmount>(event_router_, file_system_info_,
-                                            std::move(split_callback.first)));
+      REQUEST_UNMOUNT, std::make_unique<operations::Unmount>(
+                           event_dispatcher_.get(), file_system_info_,
+                           std::move(split_callback.first)));
   if (!request_id) {
     std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
@@ -191,8 +199,8 @@ AbortCallback ProvidedFileSystem::GetMetadata(const base::FilePath& entry_path,
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
       GET_METADATA, std::make_unique<operations::GetMetadata>(
-                        event_router_, file_system_info_, entry_path, fields,
-                        std::move(split_callback.first)));
+                        event_dispatcher_.get(), file_system_info_, entry_path,
+                        fields, std::move(split_callback.first)));
   if (!request_id) {
     std::move(split_callback.second)
         .Run(base::WrapUnique<EntryMetadata>(nullptr),
@@ -213,7 +221,7 @@ AbortCallback ProvidedFileSystem::GetActions(
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
       GET_ACTIONS, std::make_unique<operations::GetActions>(
-                       event_router_, file_system_info_, entry_paths,
+                       event_dispatcher_.get(), file_system_info_, entry_paths,
                        std::move(split_callback.first)));
   if (!request_id) {
     // If the provider doesn't listen for GetActions requests, treat it as
@@ -232,9 +240,10 @@ AbortCallback ProvidedFileSystem::ExecuteAction(
     storage::AsyncFileUtil::StatusCallback callback) {
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
-      EXECUTE_ACTION, std::make_unique<operations::ExecuteAction>(
-                          event_router_, file_system_info_, entry_paths,
-                          action_id, std::move(split_callback.first)));
+      EXECUTE_ACTION,
+      std::make_unique<operations::ExecuteAction>(
+          event_dispatcher_.get(), file_system_info_, entry_paths, action_id,
+          std::move(split_callback.first)));
   if (!request_id) {
     std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
@@ -248,9 +257,9 @@ AbortCallback ProvidedFileSystem::ReadDirectory(
     const base::FilePath& directory_path,
     storage::AsyncFileUtil::ReadDirectoryCallback callback) {
   const int request_id = request_manager_->CreateRequest(
-      READ_DIRECTORY,
-      std::make_unique<operations::ReadDirectory>(
-          event_router_, file_system_info_, directory_path, callback));
+      READ_DIRECTORY, std::make_unique<operations::ReadDirectory>(
+                          event_dispatcher_.get(), file_system_info_,
+                          directory_path, callback));
   if (!request_id) {
     callback.Run(base::File::FILE_ERROR_SECURITY,
                  storage::AsyncFileUtil::EntryList(),
@@ -271,8 +280,8 @@ AbortCallback ProvidedFileSystem::ReadFile(int file_handle,
       "file_system_provider", "ProvidedFileSystem::ReadFile", "length", length);
   const int request_id = request_manager_->CreateRequest(
       READ_FILE, std::make_unique<operations::ReadFile>(
-                     event_router_, file_system_info_, file_handle, buffer,
-                     offset, length, callback));
+                     event_dispatcher_.get(), file_system_info_, file_handle,
+                     buffer, offset, length, callback));
   if (!request_id) {
     callback.Run(0 /* chunk_length */,
                  false /* has_more */,
@@ -292,11 +301,12 @@ AbortCallback ProvidedFileSystem::OpenFile(const base::FilePath& file_path,
   // signals an error (by returning request_id == 0).
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
-      OPEN_FILE, std::make_unique<operations::OpenFile>(
-                     event_router_, file_system_info_, file_path, mode,
-                     base::BindOnce(&ProvidedFileSystem::OnOpenFileCompleted,
-                                    weak_ptr_factory_.GetWeakPtr(), file_path,
-                                    mode, std::move(split_callback.first))));
+      OPEN_FILE,
+      std::make_unique<operations::OpenFile>(
+          event_dispatcher_.get(), file_system_info_, file_path, mode,
+          base::BindOnce(&ProvidedFileSystem::OnOpenFileCompleted,
+                         weak_ptr_factory_.GetWeakPtr(), file_path, mode,
+                         std::move(split_callback.first))));
   if (!request_id) {
     std::move(split_callback.second)
         .Run(0 /* file_handle */, base::File::FILE_ERROR_SECURITY);
@@ -314,7 +324,7 @@ AbortCallback ProvidedFileSystem::CloseFile(
   const int request_id = request_manager_->CreateRequest(
       CLOSE_FILE,
       std::make_unique<operations::CloseFile>(
-          event_router_, file_system_info_, file_handle,
+          event_dispatcher_.get(), file_system_info_, file_handle,
           base::BindOnce(&ProvidedFileSystem::OnCloseFileCompleted,
                          weak_ptr_factory_.GetWeakPtr(), file_handle,
                          std::move(split_callback.first))));
@@ -333,9 +343,10 @@ AbortCallback ProvidedFileSystem::CreateDirectory(
     storage::AsyncFileUtil::StatusCallback callback) {
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
-      CREATE_DIRECTORY, std::make_unique<operations::CreateDirectory>(
-                            event_router_, file_system_info_, directory_path,
-                            recursive, std::move(split_callback.first)));
+      CREATE_DIRECTORY,
+      std::make_unique<operations::CreateDirectory>(
+          event_dispatcher_.get(), file_system_info_, directory_path, recursive,
+          std::move(split_callback.first)));
   if (!request_id) {
     std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
@@ -352,8 +363,8 @@ AbortCallback ProvidedFileSystem::DeleteEntry(
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
       DELETE_ENTRY, std::make_unique<operations::DeleteEntry>(
-                        event_router_, file_system_info_, entry_path, recursive,
-                        std::move(split_callback.first)));
+                        event_dispatcher_.get(), file_system_info_, entry_path,
+                        recursive, std::move(split_callback.first)));
   if (!request_id) {
     std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
@@ -369,7 +380,7 @@ AbortCallback ProvidedFileSystem::CreateFile(
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
       CREATE_FILE, std::make_unique<operations::CreateFile>(
-                       event_router_, file_system_info_, file_path,
+                       event_dispatcher_.get(), file_system_info_, file_path,
                        std::move(split_callback.first)));
   if (!request_id) {
     std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
@@ -387,7 +398,7 @@ AbortCallback ProvidedFileSystem::CopyEntry(
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
       COPY_ENTRY, std::make_unique<operations::CopyEntry>(
-                      event_router_, file_system_info_, source_path,
+                      event_dispatcher_.get(), file_system_info_, source_path,
                       target_path, std::move(split_callback.first)));
   if (!request_id) {
     std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
@@ -411,7 +422,7 @@ AbortCallback ProvidedFileSystem::WriteFile(
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
       WRITE_FILE, std::make_unique<operations::WriteFile>(
-                      event_router_, file_system_info_, file_handle,
+                      event_dispatcher_.get(), file_system_info_, file_handle,
                       base::WrapRefCounted(buffer), offset, length,
                       std::move(split_callback.first)));
   if (!request_id) {
@@ -430,7 +441,7 @@ AbortCallback ProvidedFileSystem::MoveEntry(
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
       MOVE_ENTRY, std::make_unique<operations::MoveEntry>(
-                      event_router_, file_system_info_, source_path,
+                      event_dispatcher_.get(), file_system_info_, source_path,
                       target_path, std::move(split_callback.first)));
   if (!request_id) {
     std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
@@ -448,8 +459,8 @@ AbortCallback ProvidedFileSystem::Truncate(
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
       TRUNCATE, std::make_unique<operations::Truncate>(
-                    event_router_, file_system_info_, file_path, length,
-                    std::move(split_callback.first)));
+                    event_dispatcher_.get(), file_system_info_, file_path,
+                    length, std::move(split_callback.first)));
   if (!request_id) {
     std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
@@ -536,20 +547,21 @@ void ProvidedFileSystem::Configure(
     storage::AsyncFileUtil::StatusCallback callback) {
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
-      CONFIGURE,
-      std::make_unique<operations::Configure>(event_router_, file_system_info_,
-                                              std::move(split_callback.first)));
+      CONFIGURE, std::make_unique<operations::Configure>(
+                     event_dispatcher_.get(), file_system_info_,
+                     std::move(split_callback.first)));
   if (!request_id)
     std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
 }
 
 void ProvidedFileSystem::Abort(int operation_request_id) {
   if (!request_manager_->CreateRequest(
-          ABORT, std::make_unique<operations::Abort>(
-                     event_router_, file_system_info_, operation_request_id,
-                     base::BindOnce(&ProvidedFileSystem::OnAbortCompleted,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    operation_request_id)))) {
+          ABORT,
+          std::make_unique<operations::Abort>(
+              event_dispatcher_.get(), file_system_info_, operation_request_id,
+              base::BindOnce(&ProvidedFileSystem::OnAbortCompleted,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             operation_request_id)))) {
     // If the aborting event is not handled, then the operation should simply
     // be not aborted. Instead we'll wait until it completes.
     LOG(ERROR) << "Failed to create an abort request.";
@@ -604,7 +616,8 @@ AbortCallback ProvidedFileSystem::AddWatcherInQueue(
   const int request_id = request_manager_->CreateRequest(
       ADD_WATCHER,
       std::make_unique<operations::AddWatcher>(
-          event_router_, file_system_info_, args.entry_path, args.recursive,
+          event_dispatcher_.get(), file_system_info_, args.entry_path,
+          args.recursive,
           base::BindOnce(&ProvidedFileSystem::OnAddWatcherInQueueCompleted,
                          weak_ptr_factory_.GetWeakPtr(), args.token,
                          args.entry_path, args.recursive, subscriber,
@@ -648,7 +661,7 @@ AbortCallback ProvidedFileSystem::RemoveWatcherInQueue(
   request_manager_->CreateRequest(
       REMOVE_WATCHER,
       std::make_unique<operations::RemoveWatcher>(
-          event_router_, file_system_info_, entry_path, recursive,
+          event_dispatcher_.get(), file_system_info_, entry_path, recursive,
           base::BindOnce(&ProvidedFileSystem::OnRemoveWatcherInQueueCompleted,
                          weak_ptr_factory_.GetWeakPtr(), token, origin, key,
                          std::move(callback), true /* extension_response */)));

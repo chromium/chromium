@@ -14,10 +14,6 @@
 #include "chrome/browser/ash/file_system_provider/request_value.h"
 #include "storage/browser/file_system/async_file_util.h"
 
-namespace extensions {
-class EventRouter;
-}  // namespace extensions
-
 namespace ash {
 namespace file_system_provider {
 namespace operations {
@@ -27,7 +23,7 @@ namespace operations {
 // not download the file locally. Created per request.
 class CloseFile : public Operation {
  public:
-  CloseFile(extensions::EventRouter* event_router,
+  CloseFile(EventDispatcher* dispatcher,
             const ProvidedFileSystemInfo& file_system_info,
             int open_request_id,
             storage::AsyncFileUtil::StatusCallback callback);

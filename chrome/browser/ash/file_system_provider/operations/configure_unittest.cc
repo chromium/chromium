@@ -52,11 +52,8 @@ TEST_F(FileSystemProviderOperationsConfigureTest, Execute) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  Configure configure(nullptr, file_system_info_,
+  Configure configure(&dispatcher, file_system_info_,
                       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  configure.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(configure.Execute(kRequestId));
 
@@ -81,11 +78,8 @@ TEST_F(FileSystemProviderOperationsConfigureTest, Execute_NoListener) {
   util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  Configure configure(nullptr, file_system_info_,
+  Configure configure(&dispatcher, file_system_info_,
                       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  configure.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(configure.Execute(kRequestId));
 }
@@ -94,11 +88,8 @@ TEST_F(FileSystemProviderOperationsConfigureTest, OnSuccess) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  Configure configure(nullptr, file_system_info_,
+  Configure configure(&dispatcher, file_system_info_,
                       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  configure.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(configure.Execute(kRequestId));
 
@@ -113,11 +104,8 @@ TEST_F(FileSystemProviderOperationsConfigureTest, OnError) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  Configure configure(nullptr, file_system_info_,
+  Configure configure(&dispatcher, file_system_info_,
                       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  configure.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(configure.Execute(kRequestId));
 

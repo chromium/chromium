@@ -56,12 +56,9 @@ TEST_F(FileSystemProviderOperationsRemoveWatcherTest, Execute) {
   util::StatusCallbackLog callback_log;
 
   RemoveWatcher remove_watcher(
-      nullptr, file_system_info_, base::FilePath(kEntryPath),
+      &dispatcher, file_system_info_, base::FilePath(kEntryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  remove_watcher.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(remove_watcher.Execute(kRequestId));
 
@@ -90,12 +87,9 @@ TEST_F(FileSystemProviderOperationsRemoveWatcherTest, Execute_NoListener) {
   util::StatusCallbackLog callback_log;
 
   RemoveWatcher remove_watcher(
-      nullptr, file_system_info_, base::FilePath(kEntryPath),
+      &dispatcher, file_system_info_, base::FilePath(kEntryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  remove_watcher.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(remove_watcher.Execute(kRequestId));
 }
@@ -105,12 +99,9 @@ TEST_F(FileSystemProviderOperationsRemoveWatcherTest, OnSuccess) {
   util::StatusCallbackLog callback_log;
 
   RemoveWatcher remove_watcher(
-      nullptr, file_system_info_, base::FilePath(kEntryPath),
+      &dispatcher, file_system_info_, base::FilePath(kEntryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  remove_watcher.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(remove_watcher.Execute(kRequestId));
 
@@ -125,12 +116,9 @@ TEST_F(FileSystemProviderOperationsRemoveWatcherTest, OnError) {
   util::StatusCallbackLog callback_log;
 
   RemoveWatcher remove_watcher(
-      nullptr, file_system_info_, base::FilePath(kEntryPath),
+      &dispatcher, file_system_info_, base::FilePath(kEntryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
-  remove_watcher.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(remove_watcher.Execute(kRequestId));
 

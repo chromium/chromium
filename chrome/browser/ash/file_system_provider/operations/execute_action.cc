@@ -14,12 +14,12 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-ExecuteAction::ExecuteAction(extensions::EventRouter* event_router,
+ExecuteAction::ExecuteAction(EventDispatcher* dispatcher,
                              const ProvidedFileSystemInfo& file_system_info,
                              const std::vector<base::FilePath>& entry_paths,
                              const std::string& action_id,
                              storage::AsyncFileUtil::StatusCallback callback)
-    : Operation(event_router, file_system_info),
+    : Operation(dispatcher, file_system_info),
       entry_paths_(entry_paths),
       action_id_(action_id),
       callback_(std::move(callback)) {}

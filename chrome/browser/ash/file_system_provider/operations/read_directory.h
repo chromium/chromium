@@ -17,10 +17,6 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace extensions {
-class EventRouter;
-}  // namespace extensions
-
 namespace ash {
 namespace file_system_provider {
 namespace operations {
@@ -29,7 +25,7 @@ namespace operations {
 // read directory request. Created per request.
 class ReadDirectory : public Operation {
  public:
-  ReadDirectory(extensions::EventRouter* event_router,
+  ReadDirectory(EventDispatcher* dispatcher,
                 const ProvidedFileSystemInfo& file_system_info,
                 const base::FilePath& directory_path,
                 storage::AsyncFileUtil::ReadDirectoryCallback callback);

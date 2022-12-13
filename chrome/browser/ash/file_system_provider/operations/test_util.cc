@@ -17,10 +17,11 @@ LoggingDispatchEventImpl::LoggingDispatchEventImpl(bool dispatch_reply)
     : dispatch_reply_(dispatch_reply) {
 }
 
-LoggingDispatchEventImpl::~LoggingDispatchEventImpl() {
-}
+LoggingDispatchEventImpl::~LoggingDispatchEventImpl() = default;
 
-bool LoggingDispatchEventImpl::OnDispatchEventImpl(
+bool LoggingDispatchEventImpl::DispatchEvent(
+    int request_id,
+    absl::optional<std::string> file_system_id,
     std::unique_ptr<extensions::Event> event) {
   events_.push_back(std::move(event));
   return dispatch_reply_;

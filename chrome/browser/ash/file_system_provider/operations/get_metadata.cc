@@ -142,12 +142,12 @@ bool ValidateName(const std::string& name, bool root_entry) {
 }
 
 GetMetadata::GetMetadata(
-    extensions::EventRouter* event_router,
+    EventDispatcher* dispatcher,
     const ProvidedFileSystemInfo& file_system_info,
     const base::FilePath& entry_path,
     ProvidedFileSystemInterface::MetadataFieldMask fields,
     ProvidedFileSystemInterface::GetMetadataCallback callback)
-    : Operation(event_router, file_system_info),
+    : Operation(dispatcher, file_system_info),
       entry_path_(entry_path),
       fields_(fields),
       callback_(std::move(callback)) {

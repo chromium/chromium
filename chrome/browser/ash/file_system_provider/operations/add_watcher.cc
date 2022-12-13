@@ -13,12 +13,12 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-AddWatcher::AddWatcher(extensions::EventRouter* event_router,
+AddWatcher::AddWatcher(EventDispatcher* dispatcher,
                        const ProvidedFileSystemInfo& file_system_info,
                        const base::FilePath& entry_path,
                        bool recursive,
                        storage::AsyncFileUtil::StatusCallback callback)
-    : Operation(event_router, file_system_info),
+    : Operation(dispatcher, file_system_info),
       entry_path_(entry_path),
       recursive_(recursive),
       callback_(std::move(callback)) {}

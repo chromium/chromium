@@ -13,12 +13,12 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-OpenFile::OpenFile(extensions::EventRouter* event_router,
+OpenFile::OpenFile(EventDispatcher* dispatcher,
                    const ProvidedFileSystemInfo& file_system_info,
                    const base::FilePath& file_path,
                    OpenFileMode mode,
                    ProvidedFileSystemInterface::OpenFileCallback callback)
-    : Operation(event_router, file_system_info),
+    : Operation(dispatcher, file_system_info),
       file_path_(file_path),
       mode_(mode),
       callback_(std::move(callback)) {}

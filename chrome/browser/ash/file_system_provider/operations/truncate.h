@@ -20,10 +20,6 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace extensions {
-class EventRouter;
-}  // namespace extensions
-
 namespace ash {
 namespace file_system_provider {
 namespace operations {
@@ -32,7 +28,7 @@ namespace operations {
 // the FILE_ERROR_EXISTS error. Created per request.
 class Truncate : public Operation {
  public:
-  Truncate(extensions::EventRouter* event_router,
+  Truncate(EventDispatcher* dispatcher,
            const ProvidedFileSystemInfo& file_system_info,
            const base::FilePath& file_path,
            int64_t length,

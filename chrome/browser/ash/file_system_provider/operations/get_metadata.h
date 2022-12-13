@@ -19,10 +19,6 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace extensions {
-class EventRouter;
-}  // namespace extensions
-
 namespace ash {
 namespace file_system_provider {
 namespace operations {
@@ -41,7 +37,7 @@ bool ValidateName(const std::string& name, bool root_entry);
 // metadata request. Created per request.
 class GetMetadata : public Operation {
  public:
-  GetMetadata(extensions::EventRouter* event_router,
+  GetMetadata(EventDispatcher* dispatcher,
               const ProvidedFileSystemInfo& file_system_info,
               const base::FilePath& entry_path,
               ProvidedFileSystemInterface::MetadataFieldMask fields,

@@ -16,22 +16,18 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "storage/browser/file_system/async_file_util.h"
 
-namespace extensions {
-struct Event;
-class EventRouter;
-}  // namespace extensions
-
 namespace ash {
 namespace file_system_provider {
+
+class ProvidedFileSystemInfo;
+class EventDispatcher;
+
 namespace operations {
 
 // Base class for operation bridges between fileapi and providing extensions.
 class Operation : public RequestManager::HandlerInterface {
  public:
-  using DispatchEventImplCallback =
-      base::RepeatingCallback<bool(std::unique_ptr<extensions::Event> event)>;
-
-  Operation(extensions::EventRouter* event_router,
+  Operation(EventDispatcher* dispatcher,
             const ProvidedFileSystemInfo& file_system_info);
 
   Operation(const Operation&) = delete;
@@ -48,10 +44,6 @@ class Operation : public RequestManager::HandlerInterface {
                std::unique_ptr<RequestValue> result,
                base::File::Error error) override = 0;
 
-  // Sets custom dispatchign event implementation for tests.
-  void SetDispatchEventImplForTesting(
-      const DispatchEventImplCallback& callback);
-
  protected:
   // Sends an event to the providing extension. Returns false, if the providing
   // extension does not handle the |event_name| event.
@@ -63,14 +55,7 @@ class Operation : public RequestManager::HandlerInterface {
   ProvidedFileSystemInfo file_system_info_;
 
  private:
-  using DispatchEventInternalCallback =
-      base::RepeatingCallback<bool(ProviderId provider_id,
-                                   const std::string& file_system_id,
-                                   int request_id,
-                                   extensions::events::HistogramValue,
-                                   const std::string&,
-                                   base::Value::List)>;
-  DispatchEventInternalCallback dispatch_event_impl_;
+  raw_ptr<EventDispatcher> event_dispatcher_;
 };
 
 }  // namespace operations

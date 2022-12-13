@@ -42,6 +42,7 @@ namespace ash {
 namespace file_system_provider {
 
 class NotificationManagerInterface;
+class EventDispatcher;
 
 // Automatically calls the |update_callback| after all of the callbacks created
 // with |CreateCallback| are called.
@@ -249,6 +250,7 @@ class ProvidedFileSystem : public ProvidedFileSystemInterface {
   ProvidedFileSystemInfo file_system_info_;
   std::unique_ptr<NotificationManagerInterface> notification_manager_;
   std::unique_ptr<OperationRequestManager> request_manager_;
+  std::unique_ptr<EventDispatcher> event_dispatcher_;
   Watchers watchers_;
   Queue watcher_queue_;
   OpenedFiles opened_files_;

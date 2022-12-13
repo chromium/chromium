@@ -54,11 +54,8 @@ TEST_F(FileSystemProviderOperationsCloseFileTest, Execute) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  CloseFile close_file(nullptr, file_system_info_, kOpenRequestId,
+  CloseFile close_file(&dispatcher, file_system_info_, kOpenRequestId,
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
-  close_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(close_file.Execute(kRequestId));
 
@@ -84,11 +81,8 @@ TEST_F(FileSystemProviderOperationsCloseFileTest, Execute_NoListener) {
   util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  CloseFile close_file(nullptr, file_system_info_, kOpenRequestId,
+  CloseFile close_file(&dispatcher, file_system_info_, kOpenRequestId,
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
-  close_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(close_file.Execute(kRequestId));
 }
@@ -97,11 +91,8 @@ TEST_F(FileSystemProviderOperationsCloseFileTest, OnSuccess) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  CloseFile close_file(nullptr, file_system_info_, kOpenRequestId,
+  CloseFile close_file(&dispatcher, file_system_info_, kOpenRequestId,
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
-  close_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(close_file.Execute(kRequestId));
 
@@ -115,11 +106,8 @@ TEST_F(FileSystemProviderOperationsCloseFileTest, OnError) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  CloseFile close_file(nullptr, file_system_info_, kOpenRequestId,
+  CloseFile close_file(&dispatcher, file_system_info_, kOpenRequestId,
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
-  close_file.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(close_file.Execute(kRequestId));
 

@@ -117,12 +117,9 @@ TEST_F(FileSystemProviderOperationsGetActionsTest, Execute) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   CallbackLogger callback_logger;
 
-  GetActions get_actions(nullptr, file_system_info_, entry_paths_,
+  GetActions get_actions(&dispatcher, file_system_info_, entry_paths_,
                          base::BindOnce(&CallbackLogger::OnGetActions,
                                         base::Unretained(&callback_logger)));
-  get_actions.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(get_actions.Execute(kRequestId));
 
@@ -151,12 +148,9 @@ TEST_F(FileSystemProviderOperationsGetActionsTest, Execute_NoListener) {
   util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
   CallbackLogger callback_logger;
 
-  GetActions get_actions(nullptr, file_system_info_, entry_paths_,
+  GetActions get_actions(&dispatcher, file_system_info_, entry_paths_,
                          base::BindOnce(&CallbackLogger::OnGetActions,
                                         base::Unretained(&callback_logger)));
-  get_actions.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(get_actions.Execute(kRequestId));
 }
@@ -165,12 +159,9 @@ TEST_F(FileSystemProviderOperationsGetActionsTest, OnSuccess) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   CallbackLogger callback_logger;
 
-  GetActions get_actions(nullptr, file_system_info_, entry_paths_,
+  GetActions get_actions(&dispatcher, file_system_info_, entry_paths_,
                          base::BindOnce(&CallbackLogger::OnGetActions,
                                         base::Unretained(&callback_logger)));
-  get_actions.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(get_actions.Execute(kRequestId));
 
@@ -224,12 +215,9 @@ TEST_F(FileSystemProviderOperationsGetActionsTest, OnError) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   CallbackLogger callback_logger;
 
-  GetActions get_actions(nullptr, file_system_info_, entry_paths_,
+  GetActions get_actions(&dispatcher, file_system_info_, entry_paths_,
                          base::BindOnce(&CallbackLogger::OnGetActions,
                                         base::Unretained(&callback_logger)));
-  get_actions.SetDispatchEventImplForTesting(
-      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(get_actions.Execute(kRequestId));
 

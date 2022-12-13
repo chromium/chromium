@@ -14,12 +14,12 @@ namespace file_system_provider {
 namespace operations {
 
 CreateDirectory::CreateDirectory(
-    extensions::EventRouter* event_router,
+    EventDispatcher* dispatcher,
     const ProvidedFileSystemInfo& file_system_info,
     const base::FilePath& directory_path,
     bool recursive,
     storage::AsyncFileUtil::StatusCallback callback)
-    : Operation(event_router, file_system_info),
+    : Operation(dispatcher, file_system_info),
       directory_path_(directory_path),
       recursive_(recursive),
       callback_(std::move(callback)) {}

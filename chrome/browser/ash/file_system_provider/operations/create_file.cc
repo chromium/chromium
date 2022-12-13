@@ -13,11 +13,11 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-CreateFile::CreateFile(extensions::EventRouter* event_router,
+CreateFile::CreateFile(EventDispatcher* dispatcher,
                        const ProvidedFileSystemInfo& file_system_info,
                        const base::FilePath& file_path,
                        storage::AsyncFileUtil::StatusCallback callback)
-    : Operation(event_router, file_system_info),
+    : Operation(dispatcher, file_system_info),
       file_path_(file_path),
       callback_(std::move(callback)) {}
 
