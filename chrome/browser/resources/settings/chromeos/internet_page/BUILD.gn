@@ -26,7 +26,6 @@ js_type_check("closure_compile_module") {
     ":network_proxy_section",
     ":network_summary",
     ":network_summary_item",
-    ":tether_connection_dialog",
   ]
 }
 
@@ -102,7 +101,6 @@ js_library("internet_detail_page") {
     ":internet_page_browser_proxy",
     ":internet_shared_css",
     ":network_proxy_section",
-    ":tether_connection_dialog",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources:web_ui_listener_behavior",
     "//ash/webui/common/resources/network:cr_policy_network_behavior_mojo",
@@ -294,23 +292,6 @@ js_library("network_summary_item") {
       [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
 }
 
-js_library("tether_connection_dialog") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources/network:network_icon",
-    "//ash/webui/common/resources/network:onc_mojo",
-    "//chrome/browser/resources/settings/chromeos:os_route",
-    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
-    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-  ]
-}
-
 html_to_js("web_components") {
   js_files = [
     "apn_subpage.js",
@@ -327,6 +308,5 @@ html_to_js("web_components") {
     "network_proxy_section.js",
     "network_summary_item.js",
     "network_summary.js",
-    "tether_connection_dialog.js",
   ]
 }
