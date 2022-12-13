@@ -100,7 +100,7 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
   void TearDownOnMainThread() override {
     Profile* const profile = browser()->profile();
     web_app::WebAppRegistrar& registrar =
-        web_app::WebAppProvider::GetForTest(profile)->registrar();
+        web_app::WebAppProvider::GetForTest(profile)->registrar_unsafe();
     for (const auto& app_id : registrar.GetAppIds()) {
       web_app::AppReadinessWaiter app_readiness_waiter(
           profile, app_id, apps::Readiness::kUninstalledByUser);
