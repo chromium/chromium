@@ -53,12 +53,9 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable-v23/search_resumption_module_background_bottom.xml",
-    "java/res/drawable-v23/search_resumption_module_background_middle.xml",
-    "java/res/drawable-v23/search_resumption_module_background_top.xml",
-    "java/res/drawable-v31/search_resumption_module_background_bottom.xml",
-    "java/res/drawable-v31/search_resumption_module_background_middle.xml",
-    "java/res/drawable-v31/search_resumption_module_background_top.xml",
+    "java/res/drawable/search_resumption_module_background_bottom.xml",
+    "java/res/drawable/search_resumption_module_background_middle.xml",
+    "java/res/drawable/search_resumption_module_background_top.xml",
     "java/res/layout/search_resumption_module_layout.xml",
     "java/res/layout/search_resumption_module_tile_layout.xml",
     "java/res/values/dimens.xml",
