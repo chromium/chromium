@@ -4,6 +4,8 @@
 
 #include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 
+#include "components/named_mojo_ipc_server/endpoint_options.h"
+
 namespace named_mojo_ipc_server {
 namespace {
 // The amount of time to wait before retrying |TryStart| if it failed.
@@ -11,9 +13,9 @@ static constexpr base::TimeDelta kRetryStartDelay = base::Seconds(3);
 }  // namespace
 
 NamedMojoServerEndpointConnector::NamedMojoServerEndpointConnector(
-    const mojo::NamedPlatformChannel::ServerName& server_name,
+    const EndpointOptions& options,
     base::SequenceBound<Delegate> delegate)
-    : server_name_(server_name), delegate_(std::move(delegate)) {
+    : options_(options), delegate_(std::move(delegate)) {
   DCHECK(delegate_);
 }
 

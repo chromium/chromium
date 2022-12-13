@@ -20,6 +20,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
+#include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
@@ -33,7 +34,7 @@ class NamedMojoServerEndpointConnectorMac final
     : public NamedMojoServerEndpointConnector {
  public:
   explicit NamedMojoServerEndpointConnectorMac(
-      const mojo::NamedPlatformChannel::ServerName& server_name,
+      const EndpointOptions& options,
       base::SequenceBound<Delegate> delegate);
   NamedMojoServerEndpointConnectorMac(
       const NamedMojoServerEndpointConnectorMac&) = delete;
@@ -56,9 +57,9 @@ class NamedMojoServerEndpointConnectorMac final
 };
 
 NamedMojoServerEndpointConnectorMac::NamedMojoServerEndpointConnectorMac(
-    const mojo::NamedPlatformChannel::ServerName& server_name,
+    const EndpointOptions& options,
     base::SequenceBound<NamedMojoServerEndpointConnector::Delegate> delegate)
-    : NamedMojoServerEndpointConnector(server_name, std::move(delegate)) {}
+    : NamedMojoServerEndpointConnector(options, std::move(delegate)) {}
 
 NamedMojoServerEndpointConnectorMac::~NamedMojoServerEndpointConnectorMac() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -113,7 +114,7 @@ bool NamedMojoServerEndpointConnectorMac::TryStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   mojo::PlatformChannelServerEndpoint server_endpoint =
-      mojo::NamedPlatformChannel({server_name_}).TakeServerEndpoint();
+      mojo::NamedPlatformChannel({options_.server_name}).TakeServerEndpoint();
   if (!server_endpoint.is_valid() ||
       !server_endpoint.platform_handle().is_valid_mach_receive()) {
     return false;
@@ -121,7 +122,7 @@ bool NamedMojoServerEndpointConnectorMac::TryStart() {
 
   server_endpoint_ = std::move(server_endpoint);
   dispatch_source_ = std::make_unique<base::DispatchSourceMach>(
-      server_name_.c_str(), port(), ^{
+      options_.server_name.c_str(), port(), ^{
         HandleRequest();
       });
   dispatch_source_->Resume();
@@ -135,10 +136,10 @@ bool NamedMojoServerEndpointConnectorMac::TryStart() {
 base::SequenceBound<NamedMojoServerEndpointConnector>
 NamedMojoServerEndpointConnector::Create(
     scoped_refptr<base::SequencedTaskRunner> io_sequence,
-    const mojo::NamedPlatformChannel::ServerName& server_name,
+    const EndpointOptions& options,
     base::SequenceBound<Delegate> delegate) {
   return base::SequenceBound<NamedMojoServerEndpointConnectorMac>(
-      io_sequence, server_name, std::move(delegate));
+      io_sequence, options, std::move(delegate));
 }
 
 }  // namespace named_mojo_ipc_server

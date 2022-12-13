@@ -22,13 +22,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
+#include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "components/named_mojo_ipc_server/ipc_server.h"
 #include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
-#include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -41,11 +41,6 @@ namespace named_mojo_ipc_server {
 // see MojoIpcServer.
 class NamedMojoIpcServerBase : public IpcServer {
  public:
-  // DEPRECATED: New callers should not use an isolated connection. Pass a
-  // valid message pipe ID instead.
-  static constexpr absl::optional<uint64_t> kUseIsolatedConnection =
-      absl::nullopt;
-
   // Internal use only.
   struct PendingConnection;
 
@@ -62,8 +57,7 @@ class NamedMojoIpcServerBase : public IpcServer {
 
  protected:
   NamedMojoIpcServerBase(
-      const mojo::NamedPlatformChannel::ServerName& server_name,
-      absl::optional<uint64_t> message_pipe_id,
+      const EndpointOptions& options,
       base::RepeatingCallback<void*(std::unique_ptr<ConnectionInfo>)>
           impl_provider);
   ~NamedMojoIpcServerBase() override;
@@ -96,8 +90,7 @@ class NamedMojoIpcServerBase : public IpcServer {
       base::flat_map<mojo::ReceiverId,
                      std::unique_ptr<mojo::IsolatedConnection>>;
 
-  mojo::NamedPlatformChannel::ServerName server_name_;
-  absl::optional<uint64_t> message_pipe_id_;
+  EndpointOptions options_;
   base::RepeatingCallback<void*(std::unique_ptr<ConnectionInfo>)>
       impl_provider_;
 
@@ -125,22 +118,15 @@ class NamedMojoIpcServerBase : public IpcServer {
 template <typename Interface>
 class NamedMojoIpcServer final : public NamedMojoIpcServerBase {
  public:
-  // server_name: The server name to start the NamedPlatformChannel.
-  // message_pipe_id: The message pipe ID. If provided, the client must call
-  //     ExtractMessagePipe() with the same ID. If not provided (or
-  //     kUseIsolatedConnection is used), the client must connect using an
-  //     isolated connection. Note that using an isolated connection is
-  //     DEPRECATED and new callers should always pass a valid message pipe ID.
+  // options: Options to start the server endpoint.
   // impl_provider: A function that returns a pointer to an implementation,
   //     or nullptr if the connecting endpoint should be rejected.
   NamedMojoIpcServer(
-      const mojo::NamedPlatformChannel::ServerName& server_name,
-      absl::optional<uint64_t> message_pipe_id,
+      const EndpointOptions& options,
       base::RepeatingCallback<Interface*(std::unique_ptr<ConnectionInfo>)>
           impl_provider)
       : NamedMojoIpcServerBase(
-            server_name,
-            message_pipe_id,
+            options,
             impl_provider.Then(base::BindRepeating([](Interface* impl) {
               // Opacify the type for the base class, which takes no template
               // parameters.

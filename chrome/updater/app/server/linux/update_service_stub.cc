@@ -20,6 +20,7 @@
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_version.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
+#include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -104,8 +105,9 @@ UpdateServiceStub::UpdateServiceStub(scoped_refptr<updater::UpdateService> impl,
                                      base::RepeatingClosure task_start_listener,
                                      base::RepeatingClosure task_end_listener)
     : server_(
-          GetActiveDutySocketPath(scope).MaybeAsASCII(),
-          named_mojo_ipc_server::NamedMojoIpcServerBase::kUseIsolatedConnection,
+          {.server_name = GetActiveDutySocketPath(scope).MaybeAsASCII(),
+           .message_pipe_id =
+               named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection},
           base::BindRepeating(base::BindRepeating(
               [](mojom::UpdateService* interface,
                  std::unique_ptr<

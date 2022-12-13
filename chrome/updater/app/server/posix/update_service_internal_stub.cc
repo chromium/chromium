@@ -27,8 +27,9 @@ UpdateServiceInternalStub::UpdateServiceInternalStub(
     base::RepeatingClosure task_start_listener,
     base::RepeatingClosure task_end_listener)
     : server_(
-          GetUpdateServiceInternalServerName(scope),
-          named_mojo_ipc_server::NamedMojoIpcServerBase::kUseIsolatedConnection,
+          {.server_name = GetUpdateServiceInternalServerName(scope),
+           .message_pipe_id =
+               named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection},
           base::BindRepeating(
               [](mojom::UpdateServiceInternal* interface,
                  std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> info) {

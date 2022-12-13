@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback_forward.h"
-#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
-
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "components/named_mojo_ipc_server/endpoint_options.h"
+#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -19,7 +18,7 @@ namespace named_mojo_ipc_server {
 base::SequenceBound<NamedMojoServerEndpointConnector>
 NamedMojoServerEndpointConnector::Create(
     scoped_refptr<base::SequencedTaskRunner> io_sequence,
-    const mojo::NamedPlatformChannel::ServerName& server_name,
+    const EndpointOptions& options,
     base::SequenceBound<Delegate> delegate) {
   return base::SequenceBound<NamedMojoServerEndpointConnector>();
 }

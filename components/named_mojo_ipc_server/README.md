@@ -26,8 +26,12 @@ class MyInterfaceImpl: public mojom::MyInterface {
     server_.Close(server_.current_receiver());
   }
 
-  NamedMojoIpcServer<mojom::MyInterface> server_{"my_server_name",
-      kMessagePipeId, this,
+  NamedMojoIpcServer<mojom::MyInterface> server_{
+      {
+        .server_name = "my_server_name",
+        .message_pipe_id = kMessagePipeId,
+        // Other options when necessary...
+      }, this,
       base::BindRepeating([](mojom::MyInterface* impl, base::ProcessId caller) {
         // Verify the calling process, returning nullptr if unverified.
         return impl; // impl must outlive NamedMojoIpcServer.

@@ -14,7 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "build/buildflag.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 
@@ -66,13 +66,12 @@ class NamedMojoServerEndpointConnector {
   // bound to |io_sequence| and post replies to current sequence.
   static base::SequenceBound<NamedMojoServerEndpointConnector> Create(
       scoped_refptr<base::SequencedTaskRunner> io_sequence,
-      const mojo::NamedPlatformChannel::ServerName& server_name,
+      const EndpointOptions& options,
       base::SequenceBound<Delegate> delegate);
 
  protected:
-  NamedMojoServerEndpointConnector(
-      const mojo::NamedPlatformChannel::ServerName& server_name,
-      base::SequenceBound<Delegate> delegate);
+  NamedMojoServerEndpointConnector(const EndpointOptions& options,
+                                   base::SequenceBound<Delegate> delegate);
 
   // If this method returns false, it will be called again with a delay; a
   // subclass is free is always return true and handle reconnect itself.
@@ -80,7 +79,7 @@ class NamedMojoServerEndpointConnector {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const mojo::NamedPlatformChannel::ServerName server_name_;
+  const EndpointOptions options_;
   base::SequenceBound<Delegate> delegate_;
 
   base::WeakPtrFactory<NamedMojoServerEndpointConnector> weak_ptr_factory_{

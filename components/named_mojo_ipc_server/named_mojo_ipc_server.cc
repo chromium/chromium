@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -22,6 +23,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
+#include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
@@ -67,13 +69,11 @@ class NamedMojoIpcServerBase::DelegateProxy final
 };
 
 NamedMojoIpcServerBase::NamedMojoIpcServerBase(
-    const mojo::NamedPlatformChannel::ServerName& server_name,
-    absl::optional<uint64_t> message_pipe_id,
+    const EndpointOptions& options,
     base::RepeatingCallback<void*(std::unique_ptr<ConnectionInfo>)>
         impl_provider)
-    : server_name_(server_name),
-      message_pipe_id_(message_pipe_id),
-      impl_provider_(impl_provider) {
+    : options_(options), impl_provider_(impl_provider) {
+  CHECK(!options.server_name.empty());
   io_sequence_ =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 }
@@ -90,7 +90,7 @@ void NamedMojoIpcServerBase::StartServer() {
   }
 
   endpoint_connector_ = NamedMojoServerEndpointConnector::Create(
-      io_sequence_, server_name_,
+      io_sequence_, options_,
       base::SequenceBound<DelegateProxy>(
           base::SequencedTaskRunner::GetCurrentDefault(),
           weak_factory_.GetWeakPtr()));
@@ -136,7 +136,7 @@ void NamedMojoIpcServerBase::OnClientConnected(
     return;
   }
 
-  if (!message_pipe_id_.has_value()) {
+  if (!options_.message_pipe_id.has_value()) {
     // Create isolated connection.
     auto connection = std::make_unique<mojo::IsolatedConnection>();
     mojo::ScopedMessagePipeHandle message_pipe =
@@ -150,7 +150,7 @@ void NamedMojoIpcServerBase::OnClientConnected(
   // Create non-isolated connection.
   mojo::OutgoingInvitation invitation;
   mojo::ScopedMessagePipeHandle message_pipe =
-      invitation.AttachMessagePipe(*message_pipe_id_);
+      invitation.AttachMessagePipe(*options_.message_pipe_id);
 #if BUILDFLAG(IS_WIN)
   // Open process with minimum permissions since the client process might have
   // restricted its access with DACL.

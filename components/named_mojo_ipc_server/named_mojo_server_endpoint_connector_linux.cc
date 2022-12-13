@@ -17,6 +17,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
+#include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
@@ -28,7 +29,7 @@ class NamedMojoServerEndpointConnectorLinux final
     : public NamedMojoServerEndpointConnector {
  public:
   explicit NamedMojoServerEndpointConnectorLinux(
-      const mojo::NamedPlatformChannel::ServerName& server_name,
+      const EndpointOptions& options,
       base::SequenceBound<Delegate> delegate);
   NamedMojoServerEndpointConnectorLinux(
       const NamedMojoServerEndpointConnectorLinux&) = delete;
@@ -54,9 +55,9 @@ class NamedMojoServerEndpointConnectorLinux final
 };
 
 NamedMojoServerEndpointConnectorLinux::NamedMojoServerEndpointConnectorLinux(
-    const mojo::NamedPlatformChannel::ServerName& server_name,
+    const EndpointOptions& options,
     base::SequenceBound<Delegate> delegate)
-    : NamedMojoServerEndpointConnector(server_name, std::move(delegate)) {}
+    : NamedMojoServerEndpointConnector(options, std::move(delegate)) {}
 
 NamedMojoServerEndpointConnectorLinux::
     ~NamedMojoServerEndpointConnectorLinux() {
@@ -103,7 +104,7 @@ bool NamedMojoServerEndpointConnectorLinux::TryStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   mojo::PlatformChannelServerEndpoint server_endpoint =
-      mojo::NamedPlatformChannel({server_name_}).TakeServerEndpoint();
+      mojo::NamedPlatformChannel({options_.server_name}).TakeServerEndpoint();
   if (!server_endpoint.is_valid()) {
     return false;
   }
@@ -123,10 +124,10 @@ bool NamedMojoServerEndpointConnectorLinux::TryStart() {
 base::SequenceBound<NamedMojoServerEndpointConnector>
 NamedMojoServerEndpointConnector::Create(
     scoped_refptr<base::SequencedTaskRunner> io_sequence,
-    const mojo::NamedPlatformChannel::ServerName& server_name,
+    const EndpointOptions& options,
     base::SequenceBound<Delegate> delegate) {
   return base::SequenceBound<NamedMojoServerEndpointConnectorLinux>(
-      io_sequence, server_name, std::move(delegate));
+      io_sequence, options, std::move(delegate));
 }
 
 }  // namespace named_mojo_ipc_server

@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
+#include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/constants.h"
@@ -35,6 +36,9 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
+#include "base/strings/stringprintf.h"
+#include "base/win/win_util.h"
 #endif
 
 using remoting::protocol::ConnectionToClient;
@@ -127,23 +131,36 @@ void ChromotingHost::StartChromotingHostServices() {
   DCHECK(!ipc_server_);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  named_mojo_ipc_server::EndpointOptions options;
+  options.server_name = GetChromotingHostServicesServerName();
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1378803): Make Windows hosts work with non-isolated
   // connections.
-  auto message_pipe_id =
-      named_mojo_ipc_server::NamedMojoIpcServerBase::kUseIsolatedConnection;
+  options.message_pipe_id =
+      named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection;
+
+  // Create a named pipe owned by the current user (the LocalService account
+  // (SID: S-1-5-19) when running in the network process) which is available
+  // to all authenticated users.
+  // presubmit: allow wstring
+  std::wstring user_sid;
+  if (!base::win::GetUserSidString(&user_sid)) {
+    LOG(ERROR) << "Failed to get user SID string.";
+    return;
+  }
+  options.security_descriptor = base::StringPrintf(
+      L"O:%lsG:%lsD:(A;;GA;;;AU)", user_sid.c_str(), user_sid.c_str());
 #else
-  auto message_pipe_id = kChromotingHostServicesMessagePipeId;
+  options.message_pipe_id = kChromotingHostServicesMessagePipeId;
 #endif
   ipc_server_ = std::make_unique<
       named_mojo_ipc_server::NamedMojoIpcServer<mojom::ChromotingHostServices>>(
-      GetChromotingHostServicesServerName(), message_pipe_id,
-      base::BindRepeating(&IsTrustedMojoEndpoint)
-          .Then(base::BindRepeating(
-              [](mojom::ChromotingHostServices* impl, bool trusted) {
-                return trusted ? impl : nullptr;
-              },
-              base::Unretained(this))));
+      options, base::BindRepeating(&IsTrustedMojoEndpoint)
+                   .Then(base::BindRepeating(
+                       [](mojom::ChromotingHostServices* impl, bool trusted) {
+                         return trusted ? impl : nullptr;
+                       },
+                       base::Unretained(this))));
   ipc_server_->StartServer();
   HOST_LOG << "ChromotingHostServices IPC server has been started.";
 #else
