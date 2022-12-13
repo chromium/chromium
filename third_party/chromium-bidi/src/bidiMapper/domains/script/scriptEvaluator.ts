@@ -16,7 +16,7 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import {CommonDataTypes, Script, Message} from '../../../protocol/protocol';
+import {CommonDataTypes, Message, Script} from '../../../protocol/protocol';
 import {Realm} from './realm';
 
 export class ScriptEvaluator {
@@ -160,10 +160,12 @@ export class ScriptEvaluator {
           resultOwnership,
           realm
         ),
+        type: 'exception',
         realm: realm.realmId,
       };
     }
     return {
+      type: 'success',
       result: await ScriptEvaluator.#cdpToBidiValue(
         cdpCallFunctionResult,
         realm,
@@ -293,11 +295,13 @@ export class ScriptEvaluator {
           resultOwnership,
           realm
         ),
+        type: 'exception',
         realm: realm.realmId,
       };
     }
 
     return {
+      type: 'success',
       result: await ScriptEvaluator.#cdpToBidiValue(
         cdpEvaluateResult,
         realm,

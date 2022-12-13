@@ -37,6 +37,7 @@ async def test_script_evaluateThrowingPrimitive_exceptionReturned(
 
     recursive_compare(
         {
+            "type": "exception",
             "realm": any_string,
             "exceptionDetails": {
                 "text": "1",
@@ -97,6 +98,7 @@ async def test_script_evaluateThrowingError_exceptionReturned(
 
     recursive_compare(
         {
+            "type": "exception",
             "realm": any_string,
             "exceptionDetails": {
                 "text": "Error: foo",
@@ -157,6 +159,7 @@ async def test_script_evaluateDontWaitPromise_promiseReturned(
     # Compare ignoring `handle`.
     recursive_compare(
         {
+            "type": "success",
             "realm": any_string,
             "result": {
                 "type": "promise",
@@ -207,6 +210,7 @@ async def test_script_evaluateWaitPromise_resultReturned(
     # Compare ignoring `handle`.
     recursive_compare(
         {
+            "type": "success",
             "realm": any_string,
             "result": {
                 "type": "string",
@@ -246,6 +250,7 @@ async def test_script_evaluateChangingObject_resultObjectDidNotChange(
     # Verify the object wasn't changed.
     recursive_compare(
         {
+            "type": "success",
             "realm": any_string,
             "result": {
                 "type": "object",
@@ -277,6 +282,7 @@ async def test_script_evaluateInteractsWithDom_resultReceived(
 
     recursive_compare(
         {
+            "type": "success",
             "realm": any_string,
             "result": {
                 "type": "string",
@@ -312,6 +318,7 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
 
     recursive_compare(
         {
+            "type": "success",
             "realm": any_string,
             "result": {
                 "type":
@@ -385,6 +392,7 @@ async def test_script_callFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
 
     recursive_compare(
         {
+            "type": "success",
             "realm": any_string,
             "result": {
                 "type": "promise",
@@ -429,6 +437,7 @@ async def test_script_callFunctionWithRemoteValueArgument_resultReturn(
 
     recursive_compare(
         {
+            "type": "success",
             "realm": any_string,
             "result": {
                 "type": "string",
@@ -459,6 +468,7 @@ async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromise_resultRe
 
     recursive_compare(
         {
+            "type": "success",
             "realm": any_string,
             "result": {
                 "type": "string",
@@ -489,6 +499,7 @@ async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromiseFalse_pro
 
     recursive_compare(
         {
+            "type": "success",
             "realm": any_string,
             "result": {
                 "type": "promise",
@@ -519,6 +530,7 @@ async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromise_result
 
     recursive_compare(
         {
+            "type": "success",
             "realm": any_string,
             "result": {
                 "type": "string",
@@ -549,6 +561,7 @@ async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromiseFalse_p
 
     recursive_compare(
         {
+            "type": "success",
             "realm": any_string,
             "result": {
                 "type": "promise",
@@ -579,6 +592,7 @@ async def test_script_callFunctionWithArrowFunctionAndThisParameter_thisIsIgnore
 
     recursive_compare(
         {
+            "type": "success",
             "realm": any_string,
             "result": {
                 "type": "string",
@@ -610,6 +624,7 @@ async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed
 
     recursive_compare(
         {
+            "type": "success",
             "realm": any_string,
             "result": {
                 "type": "string",
@@ -641,6 +656,7 @@ async def _ignore_test_script_callFunctionWithClassicFunctionAndThisParameter_th
 
     recursive_compare(
         {
+            "type": "success",
             "realm": any_string,
             "result": {
                 "type": "number",
@@ -692,6 +708,7 @@ async def test_script_callFunctionWithNode_resultReceived(
 
     recursive_compare(
         {
+            "type": "success",
             "realm": any_string,
             "result": {
                 "type": "string",
@@ -717,6 +734,7 @@ async def test_script_evaluate_windowOpen_windowOpened(websocket, context_id):
 
     recursive_compare(
         {
+            "type": "success",
             "realm": any_string,
             "result": {
                 "type": "window",
@@ -752,6 +770,7 @@ async def test_scriptEvaluate_realm(websocket, context_id):
 
     recursive_compare(
         {
+            "type": "success",
             "result": {
                 "type": "string",
                 "value": "bar"
@@ -777,6 +796,7 @@ async def test_scriptEvaluate_realm(websocket, context_id):
 
     recursive_compare(
         {
+            "type": "success",
             "result": {
                 "type": "string",
                 "value": "bar"
@@ -800,7 +820,12 @@ async def test_scriptEvaluate_realm(websocket, context_id):
         })
 
     # Assert result contains realm.
-    recursive_compare({"exceptionDetails": any_value, "realm": realm}, result)
+    recursive_compare(
+        {
+            "type": "exception",
+            "exceptionDetails": any_value,
+            "realm": realm
+        }, result)
 
 
 @pytest.mark.asyncio
@@ -823,6 +848,7 @@ async def test_scriptCallFunction_realm(websocket, context_id):
 
     recursive_compare(
         {
+            "type": "success",
             "result": {
                 "type": "string",
                 "value": "bar"
@@ -849,6 +875,7 @@ async def test_scriptCallFunction_realm(websocket, context_id):
 
     recursive_compare(
         {
+            "type": "success",
             "result": {
                 "type": "string",
                 "value": "bar"
@@ -872,7 +899,12 @@ async def test_scriptCallFunction_realm(websocket, context_id):
         })
 
     # Assert result contains realm.
-    recursive_compare({"exceptionDetails": any_value, "realm": realm}, result)
+    recursive_compare(
+        {
+            "type": "exception",
+            "exceptionDetails": any_value,
+            "realm": realm
+        }, result)
 
 
 @pytest.mark.asyncio
@@ -909,7 +941,7 @@ async def test_scriptGetRealms(websocket, context_id):
             }
         })
 
-    recursive_compare({"result": any_value, "realm": any_string}, result)
+    assert result["type"] == "success"
 
     sandbox_realm = result["realm"]
 
@@ -953,6 +985,7 @@ async def test_disown_releasesObject(websocket, default_realm, sandbox_realm):
         })
     recursive_compare(
         {
+            "type": "success",
             "result": {
                 "type": "object",
                 "value": any_value,
@@ -981,6 +1014,7 @@ async def test_disown_releasesObject(websocket, default_realm, sandbox_realm):
 
     recursive_compare(
         {
+            "type": "success",
             "result": {
                 "type": "object",
                 "value": any_value
@@ -1021,6 +1055,7 @@ async def test_disown_releasesObject(websocket, default_realm, sandbox_realm):
 
     recursive_compare(
         {
+            "type": "success",
             "result": {
                 "type": "object",
                 "value": any_value

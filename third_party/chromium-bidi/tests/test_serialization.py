@@ -530,6 +530,7 @@ async def test_deserialization_nestedObjectInObject(websocket, context_id):
 
     recursive_compare(
         {
+            "type": "success",
             "result": {
                 "type": "object",
                 "value": [["nested_object", {
@@ -577,6 +578,7 @@ async def test_deserialization_nestedObjectInArray(websocket, context_id):
 
     recursive_compare(
         {
+            "type": "success",
             "result": {
                 "type": "array",
                 "value": [{
@@ -636,6 +638,7 @@ async def test_deserialization_handleAndValue(websocket, context_id):
     # Assert the `type` and `value` were ignored.
     recursive_compare(
         {
+            "type": "success",
             "result": {
                 "type": "object",
                 "value": [["a", {

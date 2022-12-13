@@ -386,12 +386,14 @@ export namespace Script {
 
   export type ScriptResult = ScriptResultSuccess | ScriptResultException;
   export type ScriptResultSuccess = {
+    type: 'success';
     result: CommonDataTypes.RemoteValue;
     realm: string;
   };
 
   export type ScriptResultException = {
     exceptionDetails: ExceptionDetails;
+    type: 'exception';
     realm: string;
   };
 

@@ -441,8 +441,9 @@ async def test_runtimeException_emitted(websocket, context_id):
         {
             "id": command_id,
             "result": {
-                'realm': any_string,
-                'result': any_value
+                "type": "success",
+                "realm": any_string,
+                "result": any_value
             }
         }, resp)
 
