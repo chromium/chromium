@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_carousel_cell.h"
 
 #import "base/check.h"
+#import "base/i18n/rtl.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/carousel_item.h"
@@ -26,7 +27,8 @@ const NSUInteger kCarouselCapacity = 10;
 const CGFloat kStackMargin = 8.0f;
 /// Minimum spacing between items in the StackView.
 const CGFloat kMinStackSpacing = 8.0f;
-/// Width of the gradient applied at the end of the carousel.
+/// Width of the gradient applied on the leading and trailing edge of the
+/// carousel.
 const CGFloat kGradientWidth = 20.0f;
 
 /// Horizontal UIScrollView used in OmniboxPopupCarouselCell.
@@ -61,9 +63,13 @@ CAGradientLayer* CarouselGradientLayer() {
       colorWithAlphaComponent:1.0];
   UIColor* transparentColor = [[UIColor
       colorNamed:kGroupedSecondaryBackgroundColor] colorWithAlphaComponent:0.0];
-  maskLayer.colors = @[ (id)opaqueColor.CGColor, (id)transparentColor.CGColor ];
+  maskLayer.colors = @[
+    (id)transparentColor.CGColor, (id)opaqueColor.CGColor,
+    (id)opaqueColor.CGColor, (id)transparentColor.CGColor
+  ];
+  // locations are computed with `kGradientWidth` in `updateGradient`.
   maskLayer.anchorPoint = CGPointZero;
-  // startPoint is computed with `kGradientWidth` in `updateGradient`.
+  maskLayer.startPoint = CGPointMake(0, 0.5);
   maskLayer.endPoint = CGPointMake(1, 0.5);
   return maskLayer;
 }
@@ -127,6 +133,10 @@ CAGradientLayer* CarouselGradientLayer() {
   }
   if (self.shouldApplyLayoutMarginsGuide) {
     [self updateGradient];
+  }
+  if (base::i18n::IsRTL()) {
+    self.scrollView.transform = CGAffineTransformMakeRotation(M_PI);
+    self.suggestionsStackView.transform = CGAffineTransformMakeRotation(M_PI);
   }
   [super layoutSubviews];
 }
@@ -309,10 +319,17 @@ CAGradientLayer* CarouselGradientLayer() {
   NSArray<OmniboxPopupCarouselControl*>* allTiles =
       self.suggestionsStackView.arrangedSubviews;
 
-  if (keyboardAction == OmniboxKeyboardActionRightArrow) {
+  OmniboxKeyboardAction nextTileAction = base::i18n::IsRTL()
+                                             ? OmniboxKeyboardActionLeftArrow
+                                             : OmniboxKeyboardActionRightArrow;
+  OmniboxKeyboardAction previousTileAction =
+      base::i18n::IsRTL() ? OmniboxKeyboardActionRightArrow
+                          : OmniboxKeyboardActionLeftArrow;
+
+  if (keyboardAction == nextTileAction) {
     nextHighlightedIndex =
         MIN(prevHighlightedIndex + 1, (NSInteger)allTiles.count - 1);
-  } else if (keyboardAction == OmniboxKeyboardActionLeftArrow) {
+  } else if (keyboardAction == previousTileAction) {
     nextHighlightedIndex = MAX(prevHighlightedIndex - 1, 0);
   } else {
     NOTREACHED();
@@ -390,9 +407,13 @@ CAGradientLayer* CarouselGradientLayer() {
       CGRectGetWidth(self.contentView.layoutMarginsGuide.layoutFrame);
   CGRect gradientFrame = CGRectMake(self.contentView.layoutMargins.left, 0,
                                     contentWidth, CGRectGetHeight(self.bounds));
-  CGFloat gradientStart = 1.0 - kGradientWidth / contentWidth;
+  CGFloat gradientWidth = kGradientWidth / contentWidth;
   self.gradientLayer.frame = gradientFrame;
-  self.gradientLayer.startPoint = CGPointMake(gradientStart, 0.5);
+  NSNumber* endOfFirstGradient = [NSNumber numberWithFloat:gradientWidth];
+  NSNumber* startOfSecondGradient =
+      [NSNumber numberWithFloat:1.0 - gradientWidth];
+  self.gradientLayer.locations =
+      @[ @0.0, endOfFirstGradient, startOfSecondGradient, @1.0 ];
 }
 
 @end
