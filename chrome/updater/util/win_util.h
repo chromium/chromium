@@ -341,14 +341,11 @@ bool StopGoogleUpdateProcesses(UpdaterScope scope);
 // Quotes `input` if necessary so that it will be interpreted as a single
 // command-line parameter according to the rules for ::CommandLineToArgvW.
 //
-// As per the documentation "::CommandLineToArgvW has a special interpretation
-// of backslash characters when they are followed by a quotation mark
-// character". `QuoteForCommandLineToArgvW` follows this interpretation. See
-// the documentation at
-// https://learn.microsoft.com/en-us/search/?terms=CommandLineToArgvW
-// for more details.
+// Follows the encoding and quoting rules of `CommandLineToArgvW`/C++ `main`.
+// https://learn.microsoft.com/en-us/search/?terms=CommandLineToArgvW and
+// http://msdn.microsoft.com/en-us/library/17w5ykft.aspx.
 //
-// See examples in the `WinUtil.QuoteForCommandLineToArgvW` unit test.
+// See examples in the `WinUtil.QuoteForCommandLineToArgvW*` unit tests.
 std::wstring QuoteForCommandLineToArgvW(const std::wstring& input);
 
 }  // namespace updater

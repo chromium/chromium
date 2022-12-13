@@ -975,43 +975,44 @@ base::FilePath GetExecutableRelativePath() {
   return base::FilePath::FromASCII(kExecutableName);
 }
 
+// TODO(crbug.com/1369674): Merge with `base::CommandLine`.
 std::wstring QuoteForCommandLineToArgvW(const std::wstring& input) {
   if (input.empty())
     return L"\"\"";
 
+  constexpr wchar_t kCharactersThatMayNeedEncoding[] = L" \t\\\"";
+  if (input.find_first_of(kCharactersThatMayNeedEncoding) == std::wstring::npos)
+    return input;
+
+  constexpr wchar_t kWhitespaceCharacters[] = L" \t";
+  const bool input_needs_quoting =
+      input.find_first_of(kWhitespaceCharacters) != std::wstring::npos;
+
   std::wstring output;
-  const bool contains_whitespace =
-      input.find_first_of(L" \t") != std::wstring::npos;
-  if (contains_whitespace)
+  if (input_needs_quoting)
     output.push_back(L'"');
 
-  size_t slash_count = 0;
-  for (auto i = input.begin(); i != input.end(); ++i) {
-    if (*i == L'"') {
+  for (size_t i = 0; i < input.size(); ++i) {
+    if (input[i] == L'\\') {
+      size_t end = i + 1;
+      while (end < input.size() && input[end] == L'\\')
+        ++end;
+
       // Before a quote, output 2n backslashes.
-      while (slash_count > 0) {
-        output.append(L"\\\\");
-        --slash_count;
-      }
+      output.append(std::wstring(
+          (end - i) * (1 + ((end == input.size() && input_needs_quoting) ||
+                            input[end] == L'"')),
+          L'\\'));
+
+      i = end - 1;
+    } else if (input[i] == L'"') {
       output.append(L"\\\"");
-    } else if (*i != L'\\' || i + 1 == input.end()) {
-      // At the end of the string, or before a regular character, output queued
-      // slashes.
-      while (slash_count > 0) {
-        output.push_back(L'\\');
-        --slash_count;
-      }
-      // If this is a slash, it's also the last character. Otherwise, it is just
-      // a regular non-quote/non-slash character.
-      output.push_back(*i);
-    } else if (*i == L'\\') {
-      // This is a slash, possibly followed by a quote, not the last character.
-      // Queue it up and output it later.
-      ++slash_count;
+    } else {
+      output.push_back(input[i]);
     }
   }
 
-  if (contains_whitespace)
+  if (input_needs_quoting)
     output.push_back(L'"');
 
   return output;

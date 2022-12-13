@@ -349,6 +349,25 @@ TEST(WinUtil, StopGoogleUpdateProcesses) {
 
 TEST(WinUtil, QuoteForCommandLineToArgvW) {
   const struct {
+    const wchar_t* input_arg;
+    const wchar_t* expected_output_arg;
+  } test_cases[] = {
+      {L"", L"\"\""},
+      {L"abc = xyz", L"\"abc = xyz\""},
+      {L"C:\\AppData\\Local\\setup.exe", L"C:\\AppData\\Local\\setup.exe"},
+      {L"C:\\Program Files\\setup.exe", L"\"C:\\Program Files\\setup.exe\""},
+      {L"\"C:\\Program Files\\setup.exe\"",
+       L"\"\\\"C:\\Program Files\\setup.exe\\\"\""},
+  };
+
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(QuoteForCommandLineToArgvW(test_case.input_arg),
+              test_case.expected_output_arg);
+  }
+}
+
+TEST(WinUtil, QuoteForCommandLineToArgvW_After_CommandLineToArgvW) {
+  const struct {
     std::vector<std::wstring> input_args;
     const wchar_t* expected_output;
   } test_cases[] = {
@@ -360,6 +379,7 @@ TEST(WinUtil, QuoteForCommandLineToArgvW) {
       {{L"abc\" = \"1", L"xyz=2"}, L"\"abc = 1\" xyz=2"},
       {{L"\"abc = 1\""}, L"\"abc = 1\""},
       {{L"abc\" = \"1"}, L"\"abc = 1\""},
+      {{L"\\\\", L"\\\\\\\""}, L"\\\\ \\\\\\\""},
   };
 
   for (const auto& test_case : test_cases) {
@@ -379,10 +399,8 @@ TEST(WinUtil, QuoteForCommandLineToArgvW) {
         recreated_command_line.push_back(L' ');
     }
 
-    EXPECT_EQ(recreated_command_line, test_case.expected_output)
-        << "recreated_command_line '" << recreated_command_line
-        << "' did not match test_case.expected_output '"
-        << test_case.expected_output;
+    EXPECT_EQ(recreated_command_line, test_case.expected_output);
   }
 }
+
 }  // namespace updater
