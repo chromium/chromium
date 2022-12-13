@@ -4,6 +4,7 @@
 
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
 
+#include <string>
 #include <vector>
 
 #include "ash/accelerators/accelerator_layout_table.h"
@@ -26,6 +27,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 
@@ -60,19 +62,31 @@ constexpr auto kSixPackKeyToSystemKeyMap =
         {ui::KeyboardCode::VKEY_INSERT, ui::KeyboardCode::VKEY_BACK},
     });
 
-mojom::AcceleratorInfoPtr CreateAcceleratorInfo(
-    const ui::Accelerator& accelerator,
-    bool locked,
-    mojom::AcceleratorType type,
-    mojom::AcceleratorState state) {
-  mojom::AcceleratorInfoPtr info_mojom = mojom::AcceleratorInfo::New();
-  info_mojom->accelerator = accelerator;
-  info_mojom->key_display = KeycodeToKeyString(accelerator.key_code());
-  info_mojom->locked = locked;
-  info_mojom->type = type;
-  info_mojom->state = state;
-
-  return info_mojom;
+// This map is for KeyboardCodes that don't return a key_display from
+// `KeycodeToKeyString`. The string values here were arbitrarily chosen
+// based on the VKEY enum name.
+// TODO(cambickel): In the future, consolidate this lookup table to be in the
+// same location as the layout table.
+const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
+  static auto key_display_map =
+      base::NoDestructor(base::flat_map<ui::KeyboardCode, std::u16string>({
+          {ui::KeyboardCode::VKEY_MICROPHONE_MUTE_TOGGLE,
+           u"MicrophoneMuteToggle"},
+          {ui::KeyboardCode::VKEY_KBD_BACKLIGHT_TOGGLE,
+           u"KeyboardBacklightToggle"},
+          {ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_UP, u"KeyboardBrightnessUp"},
+          {ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_DOWN,
+           u"KeyboardBrightnessDown"},
+          {ui::KeyboardCode::VKEY_SLEEP, u"Sleep"},
+          {ui::KeyboardCode::VKEY_NEW, u"NewTab"},
+          {ui::KeyboardCode::VKEY_PRIVACY_SCREEN_TOGGLE,
+           u"PrivacyScreenToggle"},
+          {ui::KeyboardCode::VKEY_ALL_APPLICATIONS, u"OpenLauncher"},
+          {ui::KeyboardCode::VKEY_DICTATE, u"ToggleDictation"},
+          {ui::KeyboardCode::VKEY_WLAN, u"ToggleWifi"},
+          {ui::KeyboardCode::VKEY_EMOJI_PICKER, u"EmojiPicker"},
+      }));
+  return *key_display_map;
 }
 
 std::u16string LookupAcceleratorDescription(mojom::AcceleratorSource source,
@@ -265,6 +279,22 @@ void AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated() {
 }
 
 mojom::AcceleratorInfoPtr
+AcceleratorConfigurationProvider::CreateAcceleratorInfo(
+    const ui::Accelerator& accelerator,
+    bool locked,
+    mojom::AcceleratorType type,
+    mojom::AcceleratorState state) const {
+  mojom::AcceleratorInfoPtr info_mojom = mojom::AcceleratorInfo::New();
+  info_mojom->accelerator = accelerator;
+  info_mojom->key_display = GetKeyDisplay(accelerator.key_code());
+  info_mojom->locked = locked;
+  info_mojom->type = type;
+  info_mojom->state = state;
+
+  return info_mojom;
+}
+
+mojom::AcceleratorInfoPtr
 AcceleratorConfigurationProvider::CreateBaseAcceleratorInfo(
     ui::Accelerator accelerator) const {
   // TODO(longbowei): Some accelerators should not be locked when customization
@@ -379,6 +409,23 @@ AcceleratorConfigurationProvider::CreateConfigurationMap() {
     accelerator_config.emplace(source, std::move(accelerators_mojom));
   }
   return accelerator_config;
+}
+
+std::u16string GetKeyDisplay(ui::KeyboardCode key_code) {
+  // TODO(cambickel): All key_displays should be lowercase
+  const std::u16string key_display = KeycodeToKeyString(key_code);
+  if (key_display.empty()) {
+    // If key_display is empty and there's an entry for this key_code in our
+    // map, return that entry's value.
+    auto it = GetKeyDisplayMap().find(key_code);
+    if (it != GetKeyDisplayMap().end()) {
+      return it->second;
+    }
+  } else if (key_display == u" ") {
+    // If key_display is a space character, instead return the string "Space".
+    return l10n_util::GetStringUTF16(IDS_KSV_KEY_SPACE);
+  }
+  return key_display;
 }
 
 }  // namespace shortcut_ui

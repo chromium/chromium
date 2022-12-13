@@ -77,6 +77,13 @@ class AcceleratorConfigurationProvider
 
   void NotifyAcceleratorsUpdated();
 
+  // Create accelerator info using accelerator and extra properties.
+  mojom::AcceleratorInfoPtr CreateAcceleratorInfo(
+      const ui::Accelerator& accelerator,
+      bool locked,
+      mojom::AcceleratorType type,
+      mojom::AcceleratorState state) const;
+
   // Create base accelerator info using accelerator.
   mojom::AcceleratorInfoPtr CreateBaseAcceleratorInfo(
       ui::Accelerator accelerator) const;
@@ -120,6 +127,8 @@ class AcceleratorConfigurationProvider
   base::WeakPtrFactory<AcceleratorConfigurationProvider> weak_ptr_factory_{
       this};
 };
+
+std::u16string GetKeyDisplay(ui::KeyboardCode key_code);
 
 }  // namespace shortcut_ui
 }  // namespace ash

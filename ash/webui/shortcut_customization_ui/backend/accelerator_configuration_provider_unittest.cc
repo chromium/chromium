@@ -34,6 +34,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 
@@ -568,6 +569,15 @@ TEST_F(AcceleratorConfigurationProviderTest, InputMethodChanged) {
   input_method_manager_->NotifyInputMethodChanged();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, observer.num_times_notified());
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, TestGetKeyDisplay) {
+  EXPECT_EQ(u"c", GetKeyDisplay(ui::VKEY_C));
+  EXPECT_EQ(u"Tab", GetKeyDisplay(ui::VKEY_TAB));
+  EXPECT_EQ(u"MicrophoneMuteToggle",
+            GetKeyDisplay(ui::VKEY_MICROPHONE_MUTE_TOGGLE));
+  EXPECT_EQ(u"ToggleWifi", GetKeyDisplay(ui::VKEY_WLAN));
+  EXPECT_EQ(u"Space", GetKeyDisplay(ui::VKEY_SPACE));
 }
 
 }  // namespace shortcut_ui
