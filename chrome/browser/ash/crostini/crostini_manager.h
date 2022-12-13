@@ -452,6 +452,9 @@ class CrostiniManager : public KeyedService,
   bool FetchCreateOptions(const guest_os::GuestId& container_id,
                           RestartOptions* restart_options);
 
+  // Returns true if the container is currently pending creation.
+  bool IsPendingCreation(const guest_os::GuestId& container_id);
+
   // Sets an CreateOptions as booted, so it becomes a historical record and has
   // no effect on future starts.
   void SetCreateOptionsUsed(const guest_os::GuestId& container_id);

@@ -1372,6 +1372,35 @@ TEST_F(CrostiniManagerRestartTest, CancelOnContainerSetup) {
   ExpectRestarterUmaCount(1);
 }
 
+TEST_F(CrostiniManagerRestartTest,
+       SuccessfulCreateCancelContainerCreatedKeepsPrefs) {
+  TestFuture<CrostiniResult> restart_future;
+  restart_id_ = crostini_manager()->RestartCrostini(
+      container_id(), restart_future.GetCallback());
+  EXPECT_EQ(restart_future.Get(), CrostiniResult::SUCCESS);
+  EXPECT_GE(
+      guest_os::GetContainers(profile_.get(), guest_os::VmType::TERMINA).size(),
+      1uL);
+
+  TestFuture<CrostiniResult> stop_future;
+  crostini_manager()->StopLxdContainer(container_id(),
+                                       stop_future.GetCallback());
+  EXPECT_EQ(stop_future.Get(), CrostiniResult::SUCCESS);
+
+  TestFuture<CrostiniResult> failed_restart_future;
+  cancel_on_container_setup_ = true;
+  fake_cicerone_client_->set_lxd_container_created_signal_status(
+      vm_tools::cicerone::LxdContainerCreatedSignal::UNKNOWN);
+  restart_id_ = crostini_manager()->RestartCrostini(
+      container_id(), failed_restart_future.GetCallback());
+  EXPECT_EQ(failed_restart_future.Get(), CrostiniResult::UNKNOWN_ERROR);
+
+  // Expect container wasn't removed from prefs.
+  EXPECT_GE(
+      guest_os::GetContainers(profile_.get(), guest_os::VmType::TERMINA).size(),
+      1uL);
+}
+
 TEST_F(CrostiniManagerRestartTest, TimeoutDuringContainerSetup) {
   fake_cicerone_client_->set_send_set_up_lxd_container_user_response_delay(
       base::TimeDelta::Max());
