@@ -153,7 +153,7 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
         return true;
       if (next_state == kInStyleRecalc)
         return true;
-      if (next_state == kCompositingInputsClean)
+      if (next_state == kInCompositingInputsUpdate)
         return true;
       if (next_state == kInPrePaint)
         return true;
