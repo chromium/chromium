@@ -251,7 +251,7 @@ base::Value::Dict TestRulesetInfo::GetManifestValue() const {
   return ruleset.ToValue();
 }
 
-std::unique_ptr<base::DictionaryValue> CreateManifest(
+base::Value::Dict CreateManifest(
     const std::vector<TestRulesetInfo>& ruleset_info,
     const std::vector<std::string>& hosts,
     unsigned flags,
@@ -288,7 +288,7 @@ std::unique_ptr<base::DictionaryValue> CreateManifest(
         dnr_api::ManifestKeys::kDeclarativeNetRequest,
         DictionaryBuilder()
             .Set(dnr_api::DNRInfo::kRuleResources, ToValue(ruleset_info))
-            .Build());
+            .BuildDict());
   }
 
   return manifest_builder.Set(keys::kName, extension_name)
@@ -297,9 +297,9 @@ std::unique_ptr<base::DictionaryValue> CreateManifest(
       .Set(keys::kManifestVersion, 2)
       .Set("background", DictionaryBuilder()
                              .Set("scripts", ToValue(background_scripts))
-                             .Build())
-      .Set(keys::kBrowserAction, DictionaryBuilder().Build())
-      .Build();
+                             .BuildDict())
+      .Set(keys::kBrowserAction, DictionaryBuilder().BuildDict())
+      .BuildDict();
 }
 
 base::Value ToListValue(const std::vector<std::string>& vec) {
@@ -331,7 +331,7 @@ void WriteManifestAndRulesets(const base::FilePath& extension_dir,
 
   // Persist manifest file.
   JSONFileValueSerializer(extension_dir.Append(kManifestFilename))
-      .Serialize(*CreateManifest(ruleset_info, hosts, flags, extension_name));
+      .Serialize(CreateManifest(ruleset_info, hosts, flags, extension_name));
 }
 
 void WriteManifestAndRuleset(const base::FilePath& extension_dir,

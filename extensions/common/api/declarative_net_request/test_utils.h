@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_COMMON_API_DECLARATIVE_NET_REQUEST_TEST_UTILS_H_
 #define EXTENSIONS_COMMON_API_DECLARATIVE_NET_REQUEST_TEST_UTILS_H_
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -220,7 +219,7 @@ struct TestRulesetInfo {
 // kDeclarativeNetRequestKey manifest key. |hosts| specifies the host
 // permissions to grant. |flags| is a bitmask of ConfigFlag to configure the
 // extension. |ruleset_info| specifies the static rulesets for the extension.
-std::unique_ptr<base::DictionaryValue> CreateManifest(
+base::Value::Dict CreateManifest(
     const std::vector<TestRulesetInfo>& ruleset_info,
     const std::vector<std::string>& hosts = {},
     unsigned flags = ConfigFlag::kConfig_None,
