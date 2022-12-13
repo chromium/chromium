@@ -754,34 +754,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.BWE.MidCallProbing.Initiated" units="kbps"
-    expires_after="2020-02-16">
-  <owner>philipel@chromium.org</owner>
-  <summary>
-    The bitrate that will be probed, triggered by an update to the max
-    configured bitrate.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.BWE.MidCallProbing.ProbedKbps" units="kbps"
-    expires_after="2020-03-01">
-  <owner>philipel@chromium.org</owner>
-  <summary>
-    The resulting bitrate probed, triggered by an update to the max configured
-    bitrate.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.BWE.MidCallProbing.Success" units="kbps"
-    expires_after="2020-02-16">
-  <owner>philipel@chromium.org</owner>
-  <summary>
-    A successful probing attempt for a given bitrate, triggered by an update to
-    the max configured bitrate. NOTE! This is not the resulting bitrate from a
-    probing attempt, see WebRTC.BWE.MidCallProbing.ProbedKbps.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.BWE.Probing.ProbeClusterSizeInBytes" units="bytes"
     expires_after="2022-01-23">
   <owner>jonasolsson@chromium.org</owner>
