@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -66,6 +67,27 @@ using ::testing::WithParamInterface;
 // Use a real domain to avoid policy loading problems.
 constexpr char kTestUserName[] = "owner@gmail.com";
 constexpr char kTestUserGaiaId[] = "9876543210";
+
+// Dictation notification titles and descriptions. '*'s are used as placeholders
+// for languages, which are substituted in at a later time.
+std::u16string kDictationAllDlcsDownloadedTitle = u"* speech files downloaded";
+std::u16string kDictationAllDlcsDownloadedDesc =
+    u"Speech is now processed locally and Dictation works offline";
+std::u16string kDictationNoDlcsDownloadedTitle =
+    u"Couldn't download * speech files";
+std::u16string kDictationNoDlcsDownloadedDesc =
+    u"Download will be attempted later. Speech will be sent to Google for "
+    u"processing for now.";
+std::u16string kDicationOnlyPumpkinDownloadedTitle =
+    u"* speech files partially downloaded";
+std::u16string kDicationOnlyPumpkinDownloadedDesc =
+    u"Download will be attempted later. Speech will be sent to Google for "
+    u"processing for now.";
+std::u16string kDictationOnlySodaDownloadedTitle =
+    u"* speech files partially downloaded";
+std::u16string kDictationOnlySodaDownloadedDesc =
+    u"Speech is processed locally and dictation works offline, but some voice "
+    u"commands won’t work.";
 
 constexpr int kTestAutoclickDelayMs = 2000;
 
@@ -315,29 +337,58 @@ absl::optional<bool> GetDictationOfflineNudgePref(const std::string& locale) {
   return offline_nudges.FindBool(locale);
 }
 
-void AssertSodaNotificationShownForDictation(
-    const std::u16string& display_language,
-    bool success) {
-  const std::u16string kTitle =
-      success ? display_language + u" speech files downloaded"
-              : u"Couldn't download " + display_language + u" speech files";
-  const std::u16string kDescription =
-      success ? u"Speech is now processed locally and Dictation works offline"
-              : u"Download will be attempted later. Speech will be sent to "
-                u"Google for processing until download is completed.";
-  message_center::SystemNotificationWarningLevel warning =
-      success
-          ? message_center::SystemNotificationWarningLevel::NORMAL
-          : message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
+void AssertDictationNotificationShown(const std::u16string& display_language,
+                                      const std::u16string& title,
+                                      const std::u16string& description,
+                                      bool is_critical) {
+  // Replace the '*' placeholder in `title` with `display_name`.
+  std::u16string new_title = title;
+  ASSERT_TRUE(
+      base::ReplaceChars(new_title, u"*", display_language, &new_title));
 
   message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
   ASSERT_EQ(1u, notifications.size());
-  ASSERT_EQ(kTitle, (*notifications.begin())->title());
-  ASSERT_EQ(kDescription, (*notifications.begin())->message());
+  ASSERT_EQ(new_title, (*notifications.begin())->title());
+  ASSERT_EQ(description, (*notifications.begin())->message());
   ASSERT_EQ(u"Dictation", (*notifications.begin())->display_source());
+
+  message_center::SystemNotificationWarningLevel warning =
+      is_critical
+          ? message_center::SystemNotificationWarningLevel::CRITICAL_WARNING
+          : message_center::SystemNotificationWarningLevel::NORMAL;
   ASSERT_EQ(warning,
             (*notifications.begin())->system_notification_warning_level());
+}
+
+void AssertDictationAllDlcsNotifcation(const std::u16string& display_language) {
+  AssertDictationNotificationShown(display_language,
+                                   kDictationAllDlcsDownloadedTitle,
+                                   kDictationAllDlcsDownloadedDesc,
+                                   /*is_critical=*/false);
+}
+
+void AssertDictationNoDlcsNotifcation(const std::u16string& display_language) {
+  AssertDictationNotificationShown(display_language,
+                                   kDictationNoDlcsDownloadedTitle,
+                                   kDictationNoDlcsDownloadedDesc,
+                                   /*is_critical=*/true);
+}
+
+void AssertDictationOnlySodaNotifcation(
+    const std::u16string& display_language) {
+  AssertDictationNotificationShown(display_language,
+                                   kDictationOnlySodaDownloadedTitle,
+                                   kDictationOnlySodaDownloadedDesc,
+                                   /*is_critical=*/true);
+}
+
+void AssertDictationOnlyPumpkinNotifcation(
+    const std::u16string& display_language) {
+  AssertDictationNotificationShown(display_language,
+                                   kDicationOnlyPumpkinDownloadedTitle,
+                                   kDicationOnlyPumpkinDownloadedDesc,
+                                   /*is_critical=*/true);
 }
 
 void AssertMessageCenterEmpty() {
@@ -860,19 +911,22 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TtsDlcTypeToPath) {
       TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSSVSE));
 }
 
-class AccessibilityManagerSodaTest : public AccessibilityManagerTest {
- protected:
-  AccessibilityManagerSodaTest()
+class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
+ public:
+  AccessibilityManagerDlcTest()
       : disable_animations_(
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
-  ~AccessibilityManagerSodaTest() override = default;
-  AccessibilityManagerSodaTest(const AccessibilityManagerSodaTest&) = delete;
-  AccessibilityManagerSodaTest& operator=(const AccessibilityManagerSodaTest&) =
+  ~AccessibilityManagerDlcTest() override = default;
+  AccessibilityManagerDlcTest(const AccessibilityManagerDlcTest&) = delete;
+  AccessibilityManagerDlcTest& operator=(const AccessibilityManagerDlcTest&) =
       delete;
 
+ protected:
   void SetUpOnMainThread() override {
     UninstallSodaForTesting();
     EnsureSodaObservation();
+    ClearMessageCenter();
+    AssertMessageCenterEmpty();
     AccessibilityManagerTest::SetUpOnMainThread();
   }
 
@@ -888,6 +942,20 @@ class AccessibilityManagerSodaTest : public AccessibilityManagerTest {
       AccessibilityManager::Get()->soda_observation_.Observe(soda_installer());
   }
 
+  void InstallPumpkinAndWait() {
+    base::RunLoop loop;
+    AccessibilityManager::Get()->InstallPumpkinForDictation(base::DoNothing());
+    loop.RunUntilIdle();
+  }
+
+  void OnPumpkinError() {
+    AccessibilityManager* manager = AccessibilityManager::Get();
+    // We require `install_pumpkin_callback_` to be set before `OnPumpkinError`
+    // can be called.
+    manager->install_pumpkin_callback_ = base::DoNothing();
+    AccessibilityManager::Get()->OnPumpkinError("Error");
+  }
+
   speech::SodaInstaller* soda_installer() {
     return speech::SodaInstaller::GetInstance();
   }
@@ -901,11 +969,12 @@ class AccessibilityManagerSodaTest : public AccessibilityManagerTest {
 
  private:
   ui::ScopedAnimationDurationScaleMode disable_animations_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that SODA download is initiated when Dictation is enabled.
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
-                       DownloadWhenDictationEnabled) {
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
+                       SodaDownloadWhenDictationEnabled) {
   ClearDictationOfflineNudgePref("en-US");
   EXPECT_FALSE(IsSodaDownloading());
   EXPECT_FALSE(ShouldShowNetworkDictationDialog("en-US"));
@@ -921,7 +990,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   EXPECT_FALSE(GetDictationOfflineNudgePref("en-US"));
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
                        SodaDownloadNotTriggeredByUserShowsNudge) {
   SetDictationEnabled(true);
   // Reset to initial state: no SODA, no locale. Then trigger the dictation
@@ -942,7 +1011,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   AssertMessageCenterEmpty();
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
                        SodaErrorNotTriggeredByUserTriesToShowNudge) {
   SetDictationEnabled(true);
   // Reset to initial state: no SODA, no locale. Then trigger the dictation
@@ -963,7 +1032,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   AssertMessageCenterEmpty();
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
                        OneNudgeForSodaMultipleDownload) {
   ClearDictationOfflineNudgePref("en-US");
   EnableDictationTriggeredByUser(/*soda_uninstalled_first=*/true);
@@ -985,7 +1054,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   EXPECT_TRUE(GetDictationOfflineNudgePref("en-US").value());
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
                        SodaInstalledBeforeDictationEnabled) {
   soda_installer()->NotifySodaInstalledForTesting();
   soda_installer()->NotifySodaInstalledForTesting(en_us());
@@ -999,7 +1068,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   EXPECT_TRUE(GetDictationOfflineNudgePref("en-US").value());
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
                        SodaDownloadTriggeredByLocaleChange) {
   EXPECT_FALSE(IsSodaDownloading());
 
@@ -1021,15 +1090,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   // The nudge was never shown because this was a user-initiated change.
   EXPECT_FALSE(GetDictationOfflineNudgePref("en-US"));
   // The notification was shown.
-  AssertSodaNotificationShownForDictation(u"English (United States)",
-                                          /*success=*/true);
+  AssertDictationOnlySodaNotifcation(en_us_display_name());
 }
 
 // Ensures that we show the SODA succeeded notification for Dictation if the
 // SODA binary downloads, followed by the language pack matching the dictation
 // language.
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
-                       SucceededNotificationCase1) {
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
+                       SodaSucceededNotificationCase1) {
   // For this test, pretend that the Dictation locale is fr-FR.
   g_browser_process->SetApplicationLocale("fr-FR");
   SetDictationEnabled(true);
@@ -1037,58 +1105,53 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   soda_installer()->NotifySodaInstalledForTesting(en_us());
   AssertMessageCenterEmpty();
   soda_installer()->NotifySodaInstalledForTesting(fr_fr());
-  AssertSodaNotificationShownForDictation(u"français (France)",
-                                          /*success=*/true);
+  AssertDictationOnlySodaNotifcation(u"français (France)");
 }
 
 // Similar to above. Ensures that we show the SODA succeeded notification for
 // Dictation if the language pack downloads, followed by the SODA binary.
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
-                       SucceededNotificationCase2) {
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
+                       SodaSucceededNotificationCase2) {
   SetDictationEnabled(true);
   soda_installer()->NotifySodaInstalledForTesting(en_us());
   AssertMessageCenterEmpty();
   soda_installer()->NotifySodaInstalledForTesting();
-  AssertSodaNotificationShownForDictation(en_us_display_name(),
-                                          /*success=*/true);
+  AssertDictationOnlySodaNotifcation(en_us_display_name());
 }
 
 // Ensures that we show the SODA failed notification for Dictation if the SODA
 // binary fails.
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
                        SodaFailedNotificationBinaryError) {
   SetDictationEnabled(true);
   soda_installer()->NotifySodaErrorForTesting();
-  AssertSodaNotificationShownForDictation(en_us_display_name(),
-                                          /*success=*/false);
+  AssertDictationNoDlcsNotifcation(en_us_display_name());
 }
 
 // Similar to above. Ensures that we show the SODA failed notification for
 // Dictation if the language pack fails.
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
                        SodaFailedNotificationLanguageError) {
   SetDictationEnabled(true);
   soda_installer()->NotifySodaErrorForTesting(en_us());
-  AssertSodaNotificationShownForDictation(en_us_display_name(),
-                                          /*success=*/false);
+  AssertDictationNoDlcsNotifcation(en_us_display_name());
 }
 
 // Ensures that the SODA failed notification for Dictation is given if
 // the language pack downloads, but the SODA binary fails.
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
-                       LanguageInstalledBinaryFails) {
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
+                       SodaLanguageInstalledBinaryFails) {
   SetDictationEnabled(true);
   soda_installer()->NotifySodaInstalledForTesting(en_us());
   AssertMessageCenterEmpty();
   soda_installer()->NotifySodaErrorForTesting();
-  AssertSodaNotificationShownForDictation(en_us_display_name(),
-                                          /*success=*/false);
+  AssertDictationNoDlcsNotifcation(en_us_display_name());
 }
 
 // Similar to above. Ensures that we show the SODA failed notification if the
 // SODA binary downloads, but the language pack fails.
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
-                       BinaryInstalledLanguageFails) {
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
+                       SodaBinaryInstalledLanguageFails) {
   // For this test, pretend that the Dictation locale is fr-FR.
   g_browser_process->SetApplicationLocale("fr-FR");
   SetDictationEnabled(true);
@@ -1096,18 +1159,16 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   soda_installer()->NotifySodaInstalledForTesting(en_us());
   AssertMessageCenterEmpty();
   soda_installer()->NotifySodaErrorForTesting(fr_fr());
-  AssertSodaNotificationShownForDictation(u"français (France)",
-                                          /*success=*/false);
+  AssertDictationNoDlcsNotifcation(u"français (France)");
 }
 
 // Ensures that SODA failed notification is shown just once if both the SODA
 // binary fails and the language pack fails.
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
                        SodaFailedNotificationNotShownTwice) {
   SetDictationEnabled(true);
   soda_installer()->NotifySodaErrorForTesting(en_us());
-  AssertSodaNotificationShownForDictation(en_us_display_name(),
-                                          /*success=*/false);
+  AssertDictationNoDlcsNotifcation(en_us_display_name());
   ClearMessageCenter();
 
   // No second message is shown on additional failures.
@@ -1119,12 +1180,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
 
 // Ensures that SODA failed notification could be shown each time Dictation
 // is toggled on.
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
                        SodaFailedNotificationShownOncePerDownload) {
   SetDictationEnabled(true);
   soda_installer()->NotifySodaErrorForTesting(en_us());
-  AssertSodaNotificationShownForDictation(en_us_display_name(),
-                                          /*success=*/false);
+  AssertDictationNoDlcsNotifcation(en_us_display_name());
   SetDictationEnabled(false);
 
   // Reset SODA state so that it tries the download again.
@@ -1134,13 +1194,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   // A fresh attempt at Dictation means another chance to show an error message.
   SetDictationEnabled(true);
   soda_installer()->NotifySodaErrorForTesting(en_us());
-  AssertSodaNotificationShownForDictation(en_us_display_name(),
-                                          /*success=*/false);
+  AssertDictationNoDlcsNotifcation(en_us_display_name());
 }
 
 // Tests that the SODA download notification for Dictation is NOT given if
 // Dictation wasn't triggered by the user.
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest, NotTriggeredByUser) {
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest, SodaNotTriggeredByUser) {
   EnableDictationTriggeredByUser(/*soda_uninstalled_first=*/false);
   soda_installer()->NotifySodaInstalledForTesting();
   soda_installer()->NotifySodaInstalledForTesting(en_us());
@@ -1149,7 +1208,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest, NotTriggeredByUser) {
 
 // Tests that the SODA download notification for Dictation is NOT given if
 // the installed language doesn't match the Dictation locale.
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest, WrongLanguage) {
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest, SodaWrongLanguage) {
   // For this test, pretend that the Dictation locale is fr-FR.
   g_browser_process->SetApplicationLocale("fr-FR");
   SetDictationEnabled(true);
@@ -1159,8 +1218,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest, WrongLanguage) {
   AssertMessageCenterEmpty();
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
-                       NotificationShownOnDictationLocaleChange) {
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
+                       SodaNotificationShownOnDictationLocaleChange) {
   // it-IT is not supported by SODA.
   SetDictationLocale("it-IT");
   EnableDictationTriggeredByUser(/*soda_uninstalled_first=*/false);
@@ -1173,8 +1232,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   soda_installer()->NotifySodaInstalledForTesting(en_us());
 
   // The notification should have been shown.
-  AssertSodaNotificationShownForDictation(en_us_display_name(),
-                                          /*success=*/true);
+  AssertDictationOnlySodaNotifcation(en_us_display_name());
 }
 
 // Tests the behavior of AccessibilityManager and when it calls the
@@ -1182,7 +1240,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
 // The method is used to update the Dictation button tray when SODA download
 // state changes.
 IN_PROC_BROWSER_TEST_F(
-    AccessibilityManagerSodaTest,
+    AccessibilityManagerDlcTest,
     UpdateDictationButtonOnSpeechRecognitionDownloadChanged) {
   SetDictationLocale("en-US");
   SetDictationEnabled(true);
@@ -1206,6 +1264,51 @@ IN_PROC_BROWSER_TEST_F(
   soda_installer()->NotifySodaInstalledForTesting();
   soda_installer()->NotifySodaInstalledForTesting(en_us());
   EXPECT_EQ(100, test_api->GetDictationSodaDownloadProgress());
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest, SodaSuccessPumpkinSuccess) {
+  SetDictationLocale("en-US");
+  SetDictationEnabled(true);
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
+  AssertMessageCenterEmpty();
+  soda_installer()->NotifySodaInstalledForTesting();
+  AssertDictationOnlySodaNotifcation(en_us_display_name());
+
+  InstallPumpkinAndWait();
+  AssertDictationAllDlcsNotifcation(en_us_display_name());
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest, SodaSuccessPumpkinFail) {
+  SetDictationLocale("en-US");
+  SetDictationEnabled(true);
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
+  AssertMessageCenterEmpty();
+  soda_installer()->NotifySodaInstalledForTesting();
+  AssertDictationOnlySodaNotifcation(en_us_display_name());
+
+  OnPumpkinError();
+  AssertDictationOnlySodaNotifcation(en_us_display_name());
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest, SodaFailPumpkinSuccess) {
+  // Calling `InstallPumpkinAndWait()` will run the message loop and cause SODA
+  // to be installed. Avoid this scenario for the purposes of this test.
+  soda_installer()->NeverDownloadSodaForTesting();
+  SetDictationLocale("en-US");
+  SetDictationEnabled(true);
+  soda_installer()->NotifySodaErrorForTesting(en_us());
+  AssertDictationNoDlcsNotifcation(en_us_display_name());
+  InstallPumpkinAndWait();
+  AssertDictationOnlyPumpkinNotifcation(en_us_display_name());
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest, SodaFailPumpkinFail) {
+  SetDictationLocale("en-US");
+  SetDictationEnabled(true);
+  soda_installer()->NotifySodaErrorForTesting(en_us());
+  AssertDictationNoDlcsNotifcation(en_us_display_name());
+  OnPumpkinError();
+  AssertDictationNoDlcsNotifcation(en_us_display_name());
 }
 
 enum DictationDialogTestVariant {

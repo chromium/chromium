@@ -67,16 +67,20 @@ enum class A11yNotificationType {
   kSpokenFeedbackEnabled,
   // Shown when braille display is connected while spoken feedback is enabled.
   kBrailleDisplayConnected,
+  // Shown when all Dictation-related DLCs have downloaded successfully.
+  kDictationAllDlcsDownloaded,
+  // Shown when all Dictation-related DLCs failed to download.
+  kDictationNoDlcsDownloaded,
+  // Shown when the Pumpkin DLC (but no other DLCs) have downloaded.
+  kDicationOnlyPumpkinDownloaded,
+  // Shown when the SODA DLC (but no other DLCs) have downloaded.
+  kDictationOnlySodaDownloaded,
   // Shown when braille display is connected while spoken feedback is not
   // enabled yet. Note: in this case braille display connected would enable
   // spoken feedback.
   kSpokenFeedbackBrailleEnabled,
   // Shown when Switch Access is enabled.
   kSwitchAccessEnabled,
-  // Shown when speech recognition files download successfully.
-  kSpeechRecognitionFilesDownloaded,
-  // Shown when speech recognition files download fails.
-  kSpeechRecognitionFilesFailed,
 };
 
 // The controller for accessibility features in ash. Features can be enabled
@@ -423,8 +427,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void EnableChromeVoxVolumeSlideGesture() override;
   void UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
       int download_progress) override;
-  void ShowSpeechRecognitionDownloadNotificationForDictation(
-      bool succeeded,
+  void ShowNotificationForDictation(
+      DictationNotificationType type,
       const std::u16string& display_language) override;
   void UpdateDictationBubble(
       bool visible,

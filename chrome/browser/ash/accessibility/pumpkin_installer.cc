@@ -57,6 +57,7 @@ void PumpkinInstaller::MaybeInstallHelper(
       OnError(kPumpkinInstallingError);
       return;
     case dlcservice::DlcState_State_INSTALLED:
+      is_pumpkin_installed_ = true;
       CHECK(!on_installed_.is_null());
       std::move(on_installed_).Run(true);
       return;
@@ -77,6 +78,7 @@ void PumpkinInstaller::MaybeInstallHelper(
 void PumpkinInstaller::OnInstalled(
     const DlcserviceClient::InstallResult& install_result) {
   pending_dlc_request_ = false;
+  is_pumpkin_installed_ = true;
   base::UmaHistogramBoolean(kInstallationMetricName,
                             install_result.error == dlcservice::kErrorNone);
   if (install_result.error != dlcservice::kErrorNone) {
@@ -93,6 +95,7 @@ void PumpkinInstaller::OnProgress(double progress) {
 }
 
 void PumpkinInstaller::OnError(const std::string& error) {
+  is_pumpkin_installed_ = false;
   CHECK(!on_error_.is_null());
   std::move(on_error_).Run(error);
 }

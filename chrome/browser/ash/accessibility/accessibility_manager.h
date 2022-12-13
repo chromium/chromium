@@ -521,13 +521,18 @@ class AccessibilityManager
   bool ShouldShowSodaSucceededNotificationForDictation();
   bool ShouldShowSodaFailedNotificationForDictation(
       speech::LanguageCode language_code);
-  void ShowSodaDownloadNotificationForDictation(bool succeeded);
+
+  // Updates the Dictation notification according to DLC states. Assumes that
+  // it's only called when a Dictation-related DLC has downloaded (or failed to
+  // download).
+  void UpdateDictationNotification();
 
   void ShowDictationLanguageUpgradedNudge(const std::string& locale);
   speech::LanguageCode GetDictationLanguageCode();
 
   void CreateChromeVoxPanel();
 
+  // Pumpkin-related methods.
   void OnPumpkinInstalled(bool success);
   void OnPumpkinError(const std::string& error);
   void OnPumpkinDataCreated(
@@ -644,7 +649,7 @@ class AccessibilityManager
   friend class DictationTest;
   friend class SwitchAccessTest;
   friend class AccessibilityManagerTest;
-  friend class AccessibilityManagerSodaTest;
+  friend class AccessibilityManagerDlcTest;
   friend class AccessibilityManagerDictationDialogTest;
   friend class AccessibilityManagerNoOnDeviceSpeechRecognitionTest;
 };

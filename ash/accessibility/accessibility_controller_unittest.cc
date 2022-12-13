@@ -1141,21 +1141,23 @@ TEST_F(AccessibilityControllerTest, SelectToSpeakStateChanges) {
 
 TEST_F(AccessibilityControllerTest,
        SpeechRecognitionDownloadSucceededNotification) {
-  const std::u16string kSucceededTitle = u"English speech files downloaded";
+  const std::u16string kSucceededTitle =
+      u"English speech files partially downloaded";
   const std::u16string kSucceededDescription =
-      u"Speech is now processed locally and Dictation works offline";
+      u"Speech is processed locally and dictation works offline, but some "
+      u"voice commands won’t work.";
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
 
-  controller->ShowSpeechRecognitionDownloadNotificationForDictation(true,
-                                                                    u"English");
+  controller->ShowNotificationForDictation(
+      DictationNotificationType::kOnlySodaDownloaded, u"English");
   message_center::NotificationList::Notifications notifications =
       MessageCenter::Get()->GetVisibleNotifications();
   ASSERT_EQ(1u, notifications.size());
   EXPECT_EQ(kSucceededTitle, (*notifications.begin())->title());
   EXPECT_EQ(kSucceededDescription, (*notifications.begin())->message());
   EXPECT_EQ(u"Dictation", (*notifications.begin())->display_source());
-  EXPECT_EQ(message_center::SystemNotificationWarningLevel::NORMAL,
+  EXPECT_EQ(message_center::SystemNotificationWarningLevel::CRITICAL_WARNING,
             (*notifications.begin())->system_notification_warning_level());
 }
 
@@ -1164,12 +1166,12 @@ TEST_F(AccessibilityControllerTest,
   const std::u16string kFailedTitle = u"Couldn't download English speech files";
   const std::u16string kFailedDescription =
       u"Download will be attempted later. Speech will be sent to Google for "
-      u"processing until download is completed.";
+      u"processing for now.";
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
 
-  controller->ShowSpeechRecognitionDownloadNotificationForDictation(false,
-                                                                    u"English");
+  controller->ShowNotificationForDictation(
+      DictationNotificationType::kNoDlcsDownloaded, u"English");
   message_center::NotificationList::Notifications notifications =
       MessageCenter::Get()->GetVisibleNotifications();
   ASSERT_EQ(1u, notifications.size());

@@ -224,6 +224,14 @@ enum class DictationBubbleHintType {
   kCopy,
 };
 
+// The types of notifications that can be shown by Dictation.
+enum class DictationNotificationType {
+  kAllDlcsDownloaded,
+  kNoDlcsDownloaded,
+  kOnlySodaDownloaded,
+  kOnlyPumpkinDownloaded,
+};
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_ACCESSIBILITY_CONTROLLER_ENUMS_H_

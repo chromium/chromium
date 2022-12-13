@@ -25,6 +25,7 @@ enum class AccessibilityPanelState;
 enum class DictationToggleSource;
 enum class DictationBubbleHintType;
 enum class DictationBubbleIconType;
+enum class DictationNotificationType;
 class SelectToSpeakEventHandlerDelegate;
 enum class SelectToSpeakState;
 
@@ -182,8 +183,8 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   // Shows a notification card in the message center informing the user that
   // speech recognition files have either downloaded successfully or failed.
   // Specific to the Dictation feature.
-  virtual void ShowSpeechRecognitionDownloadNotificationForDictation(
-      bool succeeded,
+  virtual void ShowNotificationForDictation(
+      DictationNotificationType type,
       const std::u16string& display_language) = 0;
 
   // Updates the Dictation UI bubble. `text` is optional to allow clients to

@@ -173,7 +173,11 @@ enum class NotificationCatalogName {
   kArcVmDataMigration = 158,
   kWebHid = 159,
   kDoNotDisturb = 160,
-  kMaxValue = kDoNotDisturb,
+  kDictationAllDlcsDownloaded = 161,
+  kDictationNoDlcsDownloaded = 162,
+  kDicationOnlyPumpkinDownloaded = 163,
+  kDictationOnlySodaDownloaded = 164,
+  kMaxValue = kDictationOnlySodaDownloaded
 };
 
 // A living catalog that registers system nudges.

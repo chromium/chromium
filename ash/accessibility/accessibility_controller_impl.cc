@@ -310,8 +310,10 @@ const gfx::VectorIcon& GetNotificationIcon(A11yNotificationType type) {
       return kNotificationAccessibilityBrailleIcon;
     case A11yNotificationType::kSwitchAccessEnabled:
       return kSwitchAccessIcon;
-    case A11yNotificationType::kSpeechRecognitionFilesDownloaded:
-    case A11yNotificationType::kSpeechRecognitionFilesFailed:
+    case A11yNotificationType::kDictationAllDlcsDownloaded:
+    case A11yNotificationType::kDictationNoDlcsDownloaded:
+    case A11yNotificationType::kDicationOnlyPumpkinDownloaded:
+    case A11yNotificationType::kDictationOnlySodaDownloaded:
       return kDictationMenuIcon;
     default:
       return kNotificationChromevoxIcon;
@@ -341,33 +343,59 @@ void ShowAccessibilityNotification(
     text = l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BRAILLE_DISPLAY_CONNECTED);
     catalog_name = NotificationCatalogName::kBrailleDisplayConnected;
+  } else if (type == A11yNotificationType::kDictationAllDlcsDownloaded) {
+    display_source =
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION);
+    title = l10n_util::GetStringFUTF16(
+        IDS_ASH_A11Y_DICTATION_NOTIFICATION_ALL_DLCS_DOWNLOADED_TITLE,
+        replacements, nullptr);
+    text = l10n_util::GetStringUTF16(
+        IDS_ASH_A11Y_DICTATION_NOTIFICATION_ALL_DLCS_DOWNLOADED_DESC);
+    catalog_name = NotificationCatalogName::kDictationAllDlcsDownloaded;
+    pinned = false;
+  } else if (type == A11yNotificationType::kDictationNoDlcsDownloaded) {
+    display_source =
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION);
+    title = l10n_util::GetStringFUTF16(
+        IDS_ASH_A11Y_DICTATION_NOTIFICATION_NO_DLCS_DOWNLOADED_TITLE,
+        replacements, nullptr);
+    text = l10n_util::GetStringUTF16(
+        IDS_ASH_A11Y_DICTATION_NOTIFICATION_NO_DLCS_DOWNLOADED_DESC);
+    catalog_name = NotificationCatalogName::kDictationNoDlcsDownloaded;
+    pinned = false;
+    // Use CRITICAL_WARNING to force the notification color to red.
+    warning = message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
+  } else if (type == A11yNotificationType::kDicationOnlyPumpkinDownloaded) {
+    display_source =
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION);
+
+    title = l10n_util::GetStringFUTF16(
+        IDS_ASH_A11Y_DICTATION_NOTIFICATION_ONLY_PUMPKIN_DOWNLOADED_TITLE,
+        replacements, nullptr);
+    text = l10n_util::GetStringUTF16(
+        IDS_ASH_A11Y_DICTATION_NOTIFICATION_ONLY_PUMPKIN_DOWNLOADED_DESC);
+
+    catalog_name = NotificationCatalogName::kDicationOnlyPumpkinDownloaded;
+    pinned = false;
+    // Use CRITICAL_WARNING to force the notification color to red.
+    warning = message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
+  } else if (type == A11yNotificationType::kDictationOnlySodaDownloaded) {
+    display_source =
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION);
+    title = l10n_util::GetStringFUTF16(
+        IDS_ASH_A11Y_DICTATION_NOTIFICATION_ONLY_SODA_DOWNLOADED_TITLE,
+        replacements, nullptr);
+    text = l10n_util::GetStringUTF16(
+        IDS_ASH_A11Y_DICTATION_NOTIFICATION_ONLY_SODA_DOWNLOADED_DESC);
+    catalog_name = NotificationCatalogName::kDictationOnlySodaDownloaded;
+    pinned = false;
+    // Use CRITICAL_WARNING to force the notification color to red.
+    warning = message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
   } else if (type == A11yNotificationType::kSwitchAccessEnabled) {
     title = l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_SWITCH_ACCESS_ENABLED_TITLE);
     text = l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SWITCH_ACCESS_ENABLED);
     catalog_name = NotificationCatalogName::kSwitchAccessEnabled;
-  } else if (type == A11yNotificationType::kSpeechRecognitionFilesDownloaded) {
-    display_source =
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION);
-    title = l10n_util::GetStringFUTF16(
-        IDS_ASH_A11Y_DICTATION_NOTIFICATION_SODA_DOWNLOAD_SUCCEEDED_TITLE,
-        replacements, nullptr);
-    text = l10n_util::GetStringUTF16(
-        IDS_ASH_A11Y_DICTATION_NOTIFICATION_SODA_DOWNLOAD_SUCCEEDED_DESC);
-    pinned = false;
-    catalog_name = NotificationCatalogName::kSpeechRecognitionFilesDownloaded;
-  } else if (type == A11yNotificationType::kSpeechRecognitionFilesFailed) {
-    display_source =
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION);
-    title = l10n_util::GetStringFUTF16(
-        IDS_ASH_A11Y_DICTATION_NOTIFICATION_SODA_DOWNLOAD_FAILED_TITLE,
-        replacements, nullptr);
-    text = l10n_util::GetStringUTF16(
-        IDS_ASH_A11Y_DICTATION_NOTIFICATION_SODA_DOWNLOAD_FAILED_DESC);
-    // Use CRITICAL_WARNING to force the notification color to red.
-    warning = message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
-    pinned = false;
-    catalog_name = NotificationCatalogName::kSpeechRecognitionFilesFailed;
   } else {
     bool is_tablet = Shell::Get()->tablet_mode_controller()->InTabletMode();
 
@@ -382,6 +410,7 @@ void ShowAccessibilityNotification(
                        ? NotificationCatalogName::kSpokenFeedbackBrailleEnabled
                        : NotificationCatalogName::kSpokenFeedbackEnabled;
   }
+
   message_center::RichNotificationData options;
   options.should_make_spoken_feedback_for_popup_updates = false;
   std::unique_ptr<message_center::Notification> notification =
@@ -2412,15 +2441,27 @@ void AccessibilityControllerImpl::
       ->UpdateOnSpeechRecognitionDownloadChanged(download_progress);
 }
 
-void AccessibilityControllerImpl::
-    ShowSpeechRecognitionDownloadNotificationForDictation(
-        bool succeeded,
-        const std::u16string& display_language) {
-  A11yNotificationType type =
-      succeeded ? A11yNotificationType::kSpeechRecognitionFilesDownloaded
-                : A11yNotificationType::kSpeechRecognitionFilesFailed;
+void AccessibilityControllerImpl::ShowNotificationForDictation(
+    DictationNotificationType type,
+    const std::u16string& display_language) {
+  A11yNotificationType notification_type;
+  switch (type) {
+    case DictationNotificationType::kAllDlcsDownloaded:
+      notification_type = A11yNotificationType::kDictationAllDlcsDownloaded;
+      break;
+    case DictationNotificationType::kNoDlcsDownloaded:
+      notification_type = A11yNotificationType::kDictationNoDlcsDownloaded;
+      break;
+    case DictationNotificationType::kOnlySodaDownloaded:
+      notification_type = A11yNotificationType::kDictationOnlySodaDownloaded;
+      break;
+    case DictationNotificationType::kOnlyPumpkinDownloaded:
+      notification_type = A11yNotificationType::kDicationOnlyPumpkinDownloaded;
+      break;
+  }
+
   ShowAccessibilityNotification(A11yNotificationWrapper(
-      type, std::vector<std::u16string>{display_language}));
+      notification_type, std::vector<std::u16string>{display_language}));
 }
 
 AccessibilityControllerImpl::A11yNotificationWrapper::

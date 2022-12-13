@@ -494,6 +494,8 @@ AccessibilityManager::AccessibilityManager() {
       &AccessibilityManager::PlayVolumeAdjustSound, base::Unretained(this)));
 
   CrasAudioHandler::Get()->AddAudioObserver(this);
+
+  pumpkin_installer_ = std::make_unique<PumpkinInstaller>();
 }
 
 AccessibilityManager::~AccessibilityManager() {
@@ -2318,7 +2320,7 @@ void AccessibilityManager::OnSodaInstalled(speech::LanguageCode language_code) {
     return;
 
   if (ShouldShowSodaSucceededNotificationForDictation())
-    ShowSodaDownloadNotificationForDictation(true);
+    UpdateDictationNotification();
   OnSodaInstallUpdated(100);
 }
 
@@ -2333,7 +2335,7 @@ void AccessibilityManager::OnSodaInstallError(
   // Show the failed message if either the Dictation locale failed or the SODA
   // binary failed (encoded by LanguageCode::kNone).
   if (ShouldShowSodaFailedNotificationForDictation(language_code))
-    ShowSodaDownloadNotificationForDictation(false);
+    UpdateDictationNotification();
   OnSodaInstallUpdated(0);
 }
 
@@ -2380,11 +2382,7 @@ bool AccessibilityManager::ShouldShowSodaFailedNotificationForDictation(
          language_code == GetDictationLanguageCode();
 }
 
-void AccessibilityManager::ShowSodaDownloadNotificationForDictation(
-    bool succeeded) {
-  if (!::features::IsDictationOfflineAvailable())
-    return;
-
+void AccessibilityManager::UpdateDictationNotification() {
   const std::string locale =
       profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
   // Get the display name of |locale| in the application locale.
@@ -2392,11 +2390,35 @@ void AccessibilityManager::ShowSodaDownloadNotificationForDictation(
       /*locale=*/locale,
       /*display_locale=*/g_browser_process->GetApplicationLocale(),
       /*is_ui=*/true);
-  AccessibilityController::Get()
-      ->ShowSpeechRecognitionDownloadNotificationForDictation(succeeded,
-                                                              display_name);
 
-  if (!succeeded)
+  bool soda_installed = false;
+  if (::features::IsDictationOfflineAvailable()) {
+    // Only access SodaInstaller if offline Dictation is available.
+    soda_installed = speech::SodaInstaller::GetInstance()->IsSodaInstalled(
+        GetDictationLanguageCode());
+  }
+  bool pumpkin_installed = pumpkin_installer_->IsPumpkinInstalled();
+
+  // There are four possible states for the Dictation notification:
+  // 1. Pumpkin installed, SODA installed
+  // 2. Pumpkin installed, SODA not installed
+  // 3. Pumpkin not installed, SODA installed
+  // 4. Pumpkin not installed, SODA not installed
+  DictationNotificationType type;
+  if (pumpkin_installed && soda_installed) {
+    type = DictationNotificationType::kAllDlcsDownloaded;
+  } else if (pumpkin_installed && !soda_installed) {
+    type = DictationNotificationType::kOnlyPumpkinDownloaded;
+  } else if (!pumpkin_installed && soda_installed) {
+    type = DictationNotificationType::kOnlySodaDownloaded;
+  } else {
+    type = DictationNotificationType::kNoDlcsDownloaded;
+  }
+
+  AccessibilityController::Get()->ShowNotificationForDictation(type,
+                                                               display_name);
+
+  if (type == DictationNotificationType::kNoDlcsDownloaded)
     soda_failed_notification_shown_ = true;
 }
 
@@ -2414,9 +2436,6 @@ void AccessibilityManager::InstallPumpkinForDictation(
     std::move(callback).Run(nullptr);
     return;
   }
-
-  if (!pumpkin_installer_)
-    pumpkin_installer_ = std::make_unique<PumpkinInstaller>();
 
   // Save `callback` and run it after the installation succeeds or fails.
   install_pumpkin_callback_ = std::move(callback);
@@ -2445,6 +2464,8 @@ void AccessibilityManager::OnPumpkinInstalled(bool success) {
       base::BindOnce(&CreatePumpkinData, base_pumpkin_path),
       base::BindOnce(&AccessibilityManager::OnPumpkinDataCreated,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  UpdateDictationNotification();
 }
 
 void AccessibilityManager::OnPumpkinDataCreated(
@@ -2457,7 +2478,8 @@ void AccessibilityManager::OnPumpkinError(const std::string& error) {
   DCHECK(!install_pumpkin_callback_.is_null());
   std::move(install_pumpkin_callback_).Run(nullptr);
   is_pumpkin_installed_for_testing_ = false;
-  // TODO(akihiroota): Consider showing the error message to the user.
+
+  UpdateDictationNotification();
 }
 
 void AccessibilityManager::GetDlcContents(DlcType dlc,

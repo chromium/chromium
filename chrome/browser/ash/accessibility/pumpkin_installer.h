@@ -33,6 +33,8 @@ class PumpkinInstaller {
                     ProgressCallback on_progress,
                     ErrorCallback on_error);
 
+  bool IsPumpkinInstalled() const { return is_pumpkin_installed_; }
+
  private:
   // A helper function that is run once we've grabbed the state of the Pumpkin
   // DLC from the DLC service.
@@ -52,6 +54,7 @@ class PumpkinInstaller {
   // Requests to DlcserviceClient are async. This is true if we've made a
   // request and are still waiting for a response.
   bool pending_dlc_request_ = false;
+  bool is_pumpkin_installed_ = false;
 
   base::WeakPtrFactory<PumpkinInstaller> weak_ptr_factory_{this};
 };
