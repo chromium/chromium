@@ -20,9 +20,15 @@ message ShortcutState {
   repeated ShortcutIconData icon_data_any = 3;
 }
 
+message WebAppProtocolHandler {
+  optional string protocol = 1;
+  optional string url = 2;
+}
+
 // Represents all the common OS Integration states to be stored in the web_app
 // DB that matches the values in the OS.
 message WebAppOsIntegrationState {
   optional ShortcutState shortcut_states = 1;
+  repeated WebAppProtocolHandler manifest_protocol_handlers_states = 2;
   // Add data states for other OS integration hooks here.
 }

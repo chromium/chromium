@@ -16,8 +16,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-class Profile;
-
 namespace web_app {
 
 class WebAppIconManager;
@@ -25,8 +23,7 @@ class WebAppRegistrar;
 
 class ShortcutHandlingSubManager : public OsIntegrationSubManager {
  public:
-  ShortcutHandlingSubManager(Profile* profile,
-                             WebAppIconManager& icon_manager,
+  ShortcutHandlingSubManager(WebAppIconManager& icon_manager,
                              WebAppRegistrar& registrar);
   ~ShortcutHandlingSubManager() override;
   void Start() override;
@@ -45,7 +42,6 @@ class ShortcutHandlingSubManager : public OsIntegrationSubManager {
                              base::OnceClosure configure_done,
                              base::flat_map<SquareSizePx, base::Time> time_map);
 
-  const raw_ptr<Profile> profile_;
   const raw_ref<WebAppIconManager> icon_manager_;
   const raw_ref<WebAppRegistrar> registrar_;
 

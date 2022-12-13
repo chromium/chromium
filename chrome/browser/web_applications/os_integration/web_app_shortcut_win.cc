@@ -422,6 +422,15 @@ void GetShortcutLocationsAndDeleteShortcuts(
     return;
   }
 
+  // Calling UnpinShortcuts in unit-tests currently crashes the test, so skip it
+  // for now using the shortcut override mechanism.
+  if (web_app::GetShortcutOverrideForTesting()) {
+    DeleteShortcuts(all_shortcuts, std::move(result_callback));
+    return;
+  }
+
+  // TODO(crbug.com/1400425): Figure out how to make this call not crash &
+  // incorporate unpin / pin methods in unit-tests.
   shell_integration::win::UnpinShortcuts(
       all_shortcuts, base::BindOnce(&DeleteShortcuts, all_shortcuts,
                                     std::move(result_callback)));
@@ -565,8 +574,15 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
   std::vector<base::FilePath> shortcut_paths =
       GetShortcutPaths(creation_locations);
 
-  bool pin_to_taskbar =
-      creation_locations.in_quick_launch_bar && CanPinShortcutToTaskbar();
+  bool pin_to_taskbar = false;
+  // PinShortcutToTaskbar in unit-tests are not preferred as unpinning causes
+  // crashes, so use the shortcut override for testing to not pin to taskbar.
+  // TODO(crbug.com/1400425): Figure out how to make this call not crash &
+  // incorporate unpin / pin methods in unit-tests.
+  if (!shortcut_override) {
+    pin_to_taskbar =
+        creation_locations.in_quick_launch_bar && CanPinShortcutToTaskbar();
+  }
 
   // Create/update the shortcut in the web app path for the "Pin To Taskbar"
   // option in Win7 and Win10 versions that support pinning. We use the web app

@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 
 namespace web_app {
 
@@ -84,6 +86,19 @@ void UpdateProtocolHandlerApprovalCommand::StartWithLock(
   // updated.
   lock_->registrar().NotifyWebAppProtocolSettingsChanged();
 
+  os_integration_manager.Synchronize(
+      app_id_,
+      base::BindOnce(&UpdateProtocolHandlerApprovalCommand::
+                         OnProtocolHandlersSynchronizeComplete,
+                     weak_factory_.GetWeakPtr(), original_protocol_handlers,
+                     std::ref(os_integration_manager)));
+}
+
+void UpdateProtocolHandlerApprovalCommand::
+    OnProtocolHandlersSynchronizeComplete(
+        const std::vector<custom_handlers::ProtocolHandler>&
+            original_protocol_handlers,
+        OsIntegrationManager& os_integration_manager) {
   // OS protocol registration does not need to be updated.
   if (original_protocol_handlers ==
       os_integration_manager.GetAppProtocolHandlers(app_id_)) {

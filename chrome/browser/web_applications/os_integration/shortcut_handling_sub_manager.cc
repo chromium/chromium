@@ -10,7 +10,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -23,10 +22,9 @@
 namespace web_app {
 
 ShortcutHandlingSubManager::ShortcutHandlingSubManager(
-    Profile* profile,
     WebAppIconManager& icon_manager,
     WebAppRegistrar& registrar)
-    : profile_(profile), icon_manager_(icon_manager), registrar_(registrar) {}
+    : icon_manager_(icon_manager), registrar_(registrar) {}
 
 ShortcutHandlingSubManager::~ShortcutHandlingSubManager() = default;
 

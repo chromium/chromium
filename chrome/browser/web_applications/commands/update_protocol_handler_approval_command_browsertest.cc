@@ -4,14 +4,17 @@
 
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,7 +30,8 @@ namespace {
 const char16_t kAppName[] = u"Test App";
 
 class UpdateProtocolHandlerApprovalCommandTest
-    : public WebAppControllerBrowserTest {
+    : public WebAppControllerBrowserTest,
+      public ::testing::WithParamInterface<OsIntegrationSubManagersState> {
  public:
   const GURL kTestAppUrl = GURL("https://example.com");
 
@@ -42,6 +46,18 @@ class UpdateProtocolHandlerApprovalCommandTest
           ShortcutOverrideForTesting::OverrideForTesting(base::GetHomeDir());
     }
     WebAppControllerBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetUp() override {
+    WebAppControllerBrowserTest::SetUp();
+    if (EnableOsIntegrationSubManager()) {
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          features::kOsIntegrationSubManagers, {{"stage", "write_config"}});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{features::kOsIntegrationSubManagers});
+    }
   }
 
   void TearDownOnMainThread() override {
@@ -103,12 +119,17 @@ class UpdateProtocolHandlerApprovalCommandTest
 #endif
   }
 
+  bool EnableOsIntegrationSubManager() {
+    return GetParam() == OsIntegrationSubManagersState::kEnabled;
+  }
+
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
       shortcut_override_;
 };
 
-IN_PROC_BROWSER_TEST_F(UpdateProtocolHandlerApprovalCommandTest, Install) {
+IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest, Install) {
   apps::ProtocolHandlerInfo protocol_handler;
   const std::string handler_url =
       std::string(kTestAppUrl.spec()) + "/testing=%s";
@@ -136,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(UpdateProtocolHandlerApprovalCommandTest, Install) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(UpdateProtocolHandlerApprovalCommandTest,
+IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
                        ProtocolHandlersRegisteredAndAllowed) {
   apps::ProtocolHandlerInfo protocol_handler;
   const std::string handler_url =
@@ -172,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(UpdateProtocolHandlerApprovalCommandTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(UpdateProtocolHandlerApprovalCommandTest,
+IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
                        ProtocolHandlersDisallowed) {
   apps::ProtocolHandlerInfo protocol_handler;
   const std::string handler_url =
@@ -208,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(UpdateProtocolHandlerApprovalCommandTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(UpdateProtocolHandlerApprovalCommandTest,
+IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
                        ProtocolHandlersAllowedThenDisallowed) {
   apps::ProtocolHandlerInfo protocol_handler;
   const std::string handler_url =
@@ -252,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(UpdateProtocolHandlerApprovalCommandTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(UpdateProtocolHandlerApprovalCommandTest,
+IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
                        ProtocolHandlersDisallowedThenAllowed) {
   apps::ProtocolHandlerInfo protocol_handler;
   const std::string handler_url =
@@ -297,6 +318,12 @@ IN_PROC_BROWSER_TEST_F(UpdateProtocolHandlerApprovalCommandTest,
             std::make_tuple(app_id, std::vector({protocol_handler.protocol}))));
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    UpdateProtocolHandlerApprovalCommandTest,
+    ::testing::Values(OsIntegrationSubManagersState::kEnabled,
+                      OsIntegrationSubManagersState::kDisabled));
 
 }  // namespace
 }  // namespace web_app
