@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.MultiPageScan.PageScanResult"
-    enum="ScanJobFailureReason" expires_after="2023-03-19">
+    enum="ScanJobFailureReason" expires_after="2023-06-11">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>

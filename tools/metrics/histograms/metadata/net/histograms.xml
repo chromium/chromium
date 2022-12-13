@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.BlockfileWriteInUserBuffer" enum="Boolean"
-    expires_after="2023-04-09">
+    expires_after="2023-06-11">
   <owner>jam@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>
@@ -177,7 +177,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.RestrictedPrefetchReuse"
-    enum="RestrictedPrefetchReused" expires_after="2023-04-09">
+    enum="RestrictedPrefetchReused" expires_after="2023-06-11">
   <owner>nrosenthal@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -397,7 +397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.MacKeychainCerts.IntermediateCount"
-    units="certificates" expires_after="2023-04-09">
+    units="certificates" expires_after="2023-06-11">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
@@ -409,7 +409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.MacKeychainCerts.TotalCount"
-    units="certificates" expires_after="2023-04-09">
+    units="certificates" expires_after="2023-06-11">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
@@ -421,7 +421,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.MacKeychainCerts.TrustCount"
-    units="certificates" expires_after="2023-04-09">
+    units="certificates" expires_after="2023-06-11">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
@@ -433,7 +433,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.MacTrustDomainCacheInitTime" units="ms"
-    expires_after="2023-04-09">
+    expires_after="2023-06-11">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
@@ -466,7 +466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.MacTrustImplCacheInitTime" units="ms"
-    expires_after="2023-04-09">
+    expires_after="2023-06-11">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
@@ -491,7 +491,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.PathBuilderIterationCount" units="units"
-    expires_after="2023-04-09">
+    expires_after="2023-06-11">
   <owner>mattm@chromium.org</owner>
   <owner>rsleevi@chromium.org</owner>
   <summary>
@@ -532,7 +532,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier_TrialComparisonResult"
-    enum="CertVerifierTrialComparisonResult" expires_after="2023-03-19">
+    enum="CertVerifierTrialComparisonResult" expires_after="2023-06-11">
   <owner>mattm@chromium.org</owner>
   <owner>rsleevi@chromium.org</owner>
   <summary>
@@ -1660,7 +1660,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ErrorPageCounts.WebAppAlternativeErrorPage"
-    enum="NetErrorCodes" expires_after="2023-04-09">
+    enum="NetErrorCodes" expires_after="2023-06-11">
   <owner>ericwilligers@chromium.org</owner>
   <owner>alexbn@chromium.org</owner>
   <summary>

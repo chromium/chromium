@@ -220,7 +220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DiskCleanupProgress"
-    enum="CryptohomeDiskCleanupProgress" expires_after="2023-04-09">
+    enum="CryptohomeDiskCleanupProgress" expires_after="2023-06-11">
   <owner>vsavu@google.com</owner>
   <owner>dlunev@chromium.org</owner>
   <owner>sarthakkukreti@chromium.org</owner>
@@ -233,7 +233,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DiskCleanupResult"
-    enum="CryptohomeDiskCleanupResult" expires_after="2023-04-09">
+    enum="CryptohomeDiskCleanupResult" expires_after="2023-06-11">
   <owner>vsavu@google.com</owner>
   <owner>dlunev@chromium.org</owner>
   <summary>Records the result of triggering disk cleanup.</summary>
@@ -573,7 +573,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.LoginDiskCleanupResult"
-    enum="CryptohomeDiskCleanupResult" expires_after="2023-04-09">
+    enum="CryptohomeDiskCleanupResult" expires_after="2023-06-11">
   <owner>vsavu@google.com</owner>
   <owner>sarthakkukreti@chromium.org</owner>
   <summary>
@@ -679,7 +679,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.OOPMountOperationResult"
-    enum="CryptohomeOOPMountOperationResult" expires_after="2023-04-01">
+    enum="CryptohomeOOPMountOperationResult" expires_after="2023-06-11">
   <owner>betuls@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -848,7 +848,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToMountGuestEx" units="ms"
-    expires_after="2023-04-01">
+    expires_after="2023-06-11">
   <owner>betuls@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -893,7 +893,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToUSSPersist" units="ms"
-    expires_after="2023-04-01">
+    expires_after="2023-06-11">
   <owner>thomascedeno@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
