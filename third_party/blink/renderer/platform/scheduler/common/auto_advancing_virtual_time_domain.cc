@@ -26,29 +26,11 @@ AutoAdvancingVirtualTimeDomain::AutoAdvancingVirtualTimeDomain(
       initial_time_ticks_(initial_time_ticks),
       initial_time_(initial_time),
       previous_time_(initial_time) {
-  DCHECK_EQ(AutoAdvancingVirtualTimeDomain::g_time_domain_, nullptr);
-  AutoAdvancingVirtualTimeDomain::g_time_domain_ = this;
-
-  // GetVirtualTime / GetVirtualTimeTicks access |g_time_domain_|. Ensure that
-  // the write of |g_time_domain_| above propagates before the overrides to
-  // GetVirtualTime / GetVirtualTimeTicks are put in place below, by
-  // preventing reordering via a release fence.
-  std::atomic_thread_fence(std::memory_order_release);
-
-  time_overrides_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
-      &AutoAdvancingVirtualTimeDomain::GetVirtualTime,
-      &AutoAdvancingVirtualTimeDomain::GetVirtualTimeTicks, nullptr);
-
   helper_->AddTaskObserver(this);
 }
 
 AutoAdvancingVirtualTimeDomain::~AutoAdvancingVirtualTimeDomain() {
   helper_->RemoveTaskObserver(this);
-
-  time_overrides_.reset();
-
-  DCHECK_EQ(AutoAdvancingVirtualTimeDomain::g_time_domain_, this);
-  AutoAdvancingVirtualTimeDomain::g_time_domain_ = nullptr;
 }
 
 base::TimeTicks AutoAdvancingVirtualTimeDomain::NowTicks() const {
@@ -116,6 +98,11 @@ bool AutoAdvancingVirtualTimeDomain::MaybeAdvanceVirtualTime(
   return true;
 }
 
+void AutoAdvancingVirtualTimeDomain::SetTimeSourceOverride(
+    std::unique_ptr<ScopedTimeSourceOverride> time_source_override) {
+  time_source_override_ = std::move(time_source_override);
+}
+
 const char* AutoAdvancingVirtualTimeDomain::GetName() const {
   return "AutoAdvancingVirtualTimeDomain";
 }
@@ -141,31 +128,6 @@ void AutoAdvancingVirtualTimeDomain::DidProcessTask(
 base::Time AutoAdvancingVirtualTimeDomain::Date() const {
   base::TimeDelta offset = NowTicks() - initial_time_ticks_;
   return initial_time_ + offset;
-}
-
-AutoAdvancingVirtualTimeDomain* AutoAdvancingVirtualTimeDomain::g_time_domain_ =
-    nullptr;
-
-// static
-base::TimeTicks AutoAdvancingVirtualTimeDomain::GetVirtualTimeTicks() {
-  // ScopedTimeClockOverrides sets the override to GetVirtualTimeTicks() as a
-  // relaxed atomic operation. To ensure that the read of |g_time_domain_| is
-  // not reordered with the read of the override, place an acquire fence before
-  // loading |g_time_domain_|.
-  std::atomic_thread_fence(std::memory_order_acquire);
-  DCHECK(AutoAdvancingVirtualTimeDomain::g_time_domain_);
-  return AutoAdvancingVirtualTimeDomain::g_time_domain_->NowTicks();
-}
-
-// static
-base::Time AutoAdvancingVirtualTimeDomain::GetVirtualTime() {
-  // ScopedTimeClockOverrides sets the override to GetVirtualTimeTicks() as a
-  // relaxed atomic operation. To ensure that the read of |g_time_domain_| is
-  // not reordered with the read of the override, place an acquire fence before
-  // loading |g_time_domain_|.
-  std::atomic_thread_fence(std::memory_order_acquire);
-  DCHECK(AutoAdvancingVirtualTimeDomain::g_time_domain_);
-  return AutoAdvancingVirtualTimeDomain::g_time_domain_->Date();
 }
 
 }  // namespace scheduler

@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/scheduler/common/scoped_time_source_override.h"
 
 namespace blink {
 namespace scheduler {
@@ -32,7 +33,8 @@ class SchedulerHelper;
 // |-----------------------------> time
 class PLATFORM_EXPORT AutoAdvancingVirtualTimeDomain
     : public base::sequence_manager::TimeDomain,
-      public base::TaskObserver {
+      public base::TaskObserver,
+      public ScopedTimeSourceOverride::TimeSource {
  public:
   AutoAdvancingVirtualTimeDomain(base::Time initial_time,
                                  base::TimeTicks initial_time_ticks,
@@ -60,6 +62,9 @@ class PLATFORM_EXPORT AutoAdvancingVirtualTimeDomain
   // the current virtual time.  Returns true if time was advanced.
   bool MaybeAdvanceVirtualTime(base::TimeTicks new_virtual_time);
 
+  void SetTimeSourceOverride(
+      std::unique_ptr<ScopedTimeSourceOverride> time_source_override);
+
   // base::PendingTask implementation:
   void WillProcessTask(const base::PendingTask& pending_task,
                        bool was_blocked_or_low_priority) override;
@@ -81,12 +86,7 @@ class PLATFORM_EXPORT AutoAdvancingVirtualTimeDomain
 
  private:
   // Can be called on any thread.
-  base::Time Date() const;
-
-  // For base time overriding.
-  static base::TimeTicks GetVirtualTimeTicks();
-  static base::Time GetVirtualTime();
-  static AutoAdvancingVirtualTimeDomain* g_time_domain_;
+  base::Time Date() const override;
 
   // The number of tasks that have been run since the last time VirtualTime
   // advanced. Used to detect excessive starvation of delayed tasks.
@@ -113,8 +113,7 @@ class PLATFORM_EXPORT AutoAdvancingVirtualTimeDomain
   const base::TimeTicks initial_time_ticks_;
   const base::Time initial_time_;
   base::Time previous_time_;
-
-  std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_overrides_;
+  std::unique_ptr<ScopedTimeSourceOverride> time_source_override_;
 };
 
 }  // namespace scheduler

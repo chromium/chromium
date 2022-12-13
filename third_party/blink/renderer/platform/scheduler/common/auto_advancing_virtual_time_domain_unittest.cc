@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/scheduler/common/scoped_time_source_override.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_helper.h"
 
 namespace blink {
@@ -45,6 +46,10 @@ class AutoAdvancingVirtualTimeDomainTest : public testing::Test {
     auto_advancing_time_domain_ =
         std::make_unique<AutoAdvancingVirtualTimeDomain>(
             initial_time_, initial_time_ticks_, scheduler_helper_.get());
+    auto_advancing_time_domain_->SetTimeSourceOverride(
+        ScopedTimeSourceOverride::CreateForCurrentThread(
+            *auto_advancing_time_domain_));
+
     scheduler_helper_->SetTimeDomain(auto_advancing_time_domain_.get());
   }
 
