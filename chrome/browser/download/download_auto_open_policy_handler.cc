@@ -54,7 +54,7 @@ void DownloadAutoOpenPolicyHandler::ApplyPolicySettings(
     return;
   DCHECK(policy_value->is_list());
 
-  base::ListValue pref_values;
+  base::Value::List pref_values;
   for (const auto& entry : policy_value->GetList()) {
     const std::string extension = entry.GetString();
     // If it's empty or malformed, then skip the entry.
@@ -65,5 +65,5 @@ void DownloadAutoOpenPolicyHandler::ApplyPolicySettings(
     pref_values.Append(extension);
   }
   prefs_value_map->SetValue(prefs::kDownloadExtensionsToOpenByPolicy,
-                            std::move(pref_values));
+                            base::Value(std::move(pref_values)));
 }

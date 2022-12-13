@@ -1315,15 +1315,13 @@ ExtensionFunction::ResponseAction DownloadsEraseFunction::Run() {
   RunDownloadQuery(params->query, manager, incognito_manager, &error, &results);
   if (!error.empty())
     return RespondNow(Error(std::move(error)));
-  std::unique_ptr<base::ListValue> json_results(new base::ListValue());
-  for (DownloadManager::DownloadVector::const_iterator it = results.begin();
-       it != results.end(); ++it) {
-    json_results->Append(static_cast<int>((*it)->GetId()));
-    (*it)->Remove();
+  base::Value::List json_results;
+  for (auto* result : results) {
+    json_results.Append(static_cast<int>(result->GetId()));
+    result->Remove();
   }
   RecordApiFunctions(DOWNLOADS_FUNCTION_ERASE);
-  return RespondNow(
-      WithArguments(base::Value::FromUniquePtrValue(std::move(json_results))));
+  return RespondNow(WithArguments(std::move(json_results)));
 }
 
 DownloadsRemoveFileFunction::DownloadsRemoveFileFunction() {}
