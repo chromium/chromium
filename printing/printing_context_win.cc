@@ -347,8 +347,9 @@ mojom::ResultCode PrintingContextWin::NewDocument(
   }
 
   // No message loop running in unit tests.
-  DCHECK(!base::CurrentThread::Get() ||
-         !base::CurrentThread::Get()->NestableTasksAllowed());
+  DCHECK(
+      !base::CurrentThread::Get() ||
+      !base::CurrentThread::Get()->ApplicationTasksAllowedInNativeNestedLoop());
 
   // Begin a print job by calling the StartDoc function.
   // NOTE: StartDoc() starts a message loop. That causes a lot of problems with

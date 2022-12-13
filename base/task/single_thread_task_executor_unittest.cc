@@ -1302,9 +1302,11 @@ TEST_P(SingleThreadTaskExecutorTypedTest, MAYBE_RecursivePostsDoNotFloodPipe) {
   run_loop.Run();
 }
 
-TEST_P(SingleThreadTaskExecutorTypedTest, NestableTasksAllowedAtTopLevel) {
+TEST_P(SingleThreadTaskExecutorTypedTest,
+       ApplicationTasksAllowedInNativeNestedLoopAtTopLevel) {
   SingleThreadTaskExecutor executor(GetParam());
-  EXPECT_TRUE(CurrentThread::Get()->NestableTasksAllowed());
+  EXPECT_TRUE(
+      CurrentThread::Get()->ApplicationTasksAllowedInNativeNestedLoop());
 }
 
 // Nestable tasks shouldn't be allowed to run reentrantly by default (regression
@@ -1316,7 +1318,8 @@ TEST_P(SingleThreadTaskExecutorTypedTest, NestableTasksDisallowedByDefault) {
       FROM_HERE,
       BindOnce(
           [](RunLoop* run_loop) {
-            EXPECT_FALSE(CurrentThread::Get()->NestableTasksAllowed());
+            EXPECT_FALSE(CurrentThread::Get()
+                             ->ApplicationTasksAllowedInNativeNestedLoop());
             run_loop->Quit();
           },
           Unretained(&run_loop)));
@@ -1345,7 +1348,8 @@ TEST_P(SingleThreadTaskExecutorTypedTest,
                       // nestable tasks are by default disallowed from this
                       // layer.
                       EXPECT_FALSE(
-                          CurrentThread::Get()->NestableTasksAllowed());
+                          CurrentThread::Get()
+                              ->ApplicationTasksAllowedInNativeNestedLoop());
                       nested_run_loop->Quit();
                     },
                     Unretained(&nested_run_loop)));
@@ -1358,7 +1362,7 @@ TEST_P(SingleThreadTaskExecutorTypedTest,
 }
 
 TEST_P(SingleThreadTaskExecutorTypedTest,
-       NestableTasksAllowedExplicitlyInScope) {
+       ApplicationTasksAllowedInNativeNestedLoopExplicitlyInScope) {
   SingleThreadTaskExecutor executor(GetParam());
   RunLoop run_loop;
   executor.task_runner()->PostTask(
@@ -1368,9 +1372,11 @@ TEST_P(SingleThreadTaskExecutorTypedTest,
             {
               CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop
                   allow_nestable_tasks;
-              EXPECT_TRUE(CurrentThread::Get()->NestableTasksAllowed());
+              EXPECT_TRUE(CurrentThread::Get()
+                              ->ApplicationTasksAllowedInNativeNestedLoop());
             }
-            EXPECT_FALSE(CurrentThread::Get()->NestableTasksAllowed());
+            EXPECT_FALSE(CurrentThread::Get()
+                             ->ApplicationTasksAllowedInNativeNestedLoop());
             run_loop->Quit();
           },
           Unretained(&run_loop)));

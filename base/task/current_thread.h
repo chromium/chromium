@@ -163,9 +163,9 @@ class BASE_EXPORT CurrentThread {
   };
 
   // Returns true if nestable tasks are allowed on the current thread at this
-  // time (i.e. if a nested loop would start from the callee's point in the
-  // stack, would it be allowed to run application tasks).
-  bool NestableTasksAllowed() const;
+  // time (i.e. if a native nested loop would start from the callee's point in
+  // the stack, would it be allowed to run application tasks).
+  bool ApplicationTasksAllowedInNativeNestedLoop() const;
 
   // Returns true if this instance is bound to the current thread.
   bool IsBoundToCurrentThread() const;

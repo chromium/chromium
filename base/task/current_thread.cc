@@ -107,7 +107,7 @@ CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop::
   TRACE_EVENT_END0("base", "ScopedNestableTaskAllower");
 }
 
-bool CurrentThread::NestableTasksAllowed() const {
+bool CurrentThread::ApplicationTasksAllowedInNativeNestedLoop() const {
   return current_->IsTaskExecutionAllowed();
 }
 
