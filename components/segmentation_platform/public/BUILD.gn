@@ -23,6 +23,8 @@ source_set("public") {
     "local_state_helper.h",
     "model_provider.cc",
     "model_provider.h",
+    "result.cc",
+    "result.h",
     "segment_selection_result.cc",
     "segment_selection_result.h",
     "segmentation_platform_service.cc",
@@ -87,5 +89,9 @@ if (is_android) {
     visibility = [ ":*" ]
 
     sources = [ "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java" ]
+  }
+
+  java_cpp_enum("execution_status_enums_java") {
+    sources = [ "result.h" ]
   }
 }
