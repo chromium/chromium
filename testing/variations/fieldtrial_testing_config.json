@@ -8990,6 +8990,21 @@
             ]
         }
     ],
+    "PrivacyIndicators": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrivacyIndicators"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacySandboxV3": [
         {
             "platforms": [
