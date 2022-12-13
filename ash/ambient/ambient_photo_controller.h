@@ -137,7 +137,9 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
   // AmbientViewDelegateObserver:
   void OnMarkerHit(AmbientPhotoConfig::Marker marker) override;
 
-  // Clear cache when Settings changes.
+  // Clear cache when Settings changes. Only the primary photo cache is cleared.
+  // The backup cache is left untouched because those photos are currently not
+  // settings-specific and only meant to be used as a fail-safe.
   void ClearCache();
 
  private:

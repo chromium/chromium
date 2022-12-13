@@ -59,29 +59,23 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
   void DownloadPhoto(
       const std::string& url,
       base::OnceCallback<void(std::string&&)> callback) override {
-    // Reply with a unique string each time to avoid check to skip loading
-    // duplicate images.
-    std::string data = std::string(
-        download_data_ ? *download_data_
-                       : base::StringPrintf("test_image_%i", download_count_));
-    download_count_++;
     // Pretend to respond asynchronously.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(data)),
+        FROM_HERE, base::BindOnce(std::move(callback), GetDownloadData()),
         photo_download_delay_);
   }
 
   void DownloadPhotoToFile(const std::string& url,
                            int cache_index,
                            base::OnceCallback<void(bool)> callback) override {
-    if (!download_data_) {
+    std::string download_data = GetDownloadData();
+    if (download_data.empty()) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), /*success=*/false));
       return;
     }
-
     ::ambient::PhotoCacheEntry cache_entry;
-    cache_entry.mutable_primary_photo()->set_image(*download_data_);
+    cache_entry.mutable_primary_photo()->set_image(std::move(download_data));
 
     files_.insert(
         std::pair<int, ::ambient::PhotoCacheEntry>(cache_index, cache_entry));
@@ -153,6 +147,14 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
   }
 
  private:
+  std::string GetDownloadData() {
+    // Reply with a unique string each time to avoid check to skip loading
+    // duplicate images.
+    return download_data_
+               ? *download_data_
+               : base::StringPrintf("test_image_%i", download_count_++);
+  }
+
   int download_count_ = 0;
 
   // If not null, will return this data when downloading.

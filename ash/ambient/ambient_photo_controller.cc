@@ -195,9 +195,7 @@ void AmbientPhotoController::FetchWeather() {
 
 void AmbientPhotoController::ClearCache() {
   DCHECK(photo_cache_);
-  DCHECK(backup_photo_cache_);
   photo_cache_->Clear();
-  backup_photo_cache_->Clear();
 }
 
 void AmbientPhotoController::ScheduleFetchBackupImages() {

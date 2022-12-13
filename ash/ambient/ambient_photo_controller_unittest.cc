@@ -579,7 +579,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldResetTimerWhenBackupImagesFail) {
       photo_controller()->backup_photo_refresh_timer_for_testing().IsRunning());
 
   // Simulate an error in DownloadToFile.
-  ClearDownloadPhotoData();
+  SetBackupDownloadPhotoData("");
   task_environment()->FastForwardBy(kBackupPhotoRefreshDelay);
 
   EXPECT_TRUE(GetBackupCachedFiles().empty());
@@ -619,6 +619,31 @@ TEST_F(AmbientPhotoControllerTest,
     EXPECT_TRUE(i.second.related_photo().image().empty());
     EXPECT_TRUE(i.second.related_photo().details().empty());
   }
+}
+
+TEST_F(AmbientPhotoControllerTest, UsesBackupCacheAfterPrimaryCacheCleared) {
+  ScheduleFetchBackupImages();
+
+  photo_controller()->StartScreenUpdate(
+      std::make_unique<AmbientTopicQueueTestDelegate>());
+  task_environment()->RunUntilIdle();
+
+  photo_controller()->StopScreenUpdate();
+
+  // At this point, both the primary and backup cache should be filled with
+  // photos from the last "screen update". ClearCache() should only clear the
+  // primary cache, leaving photos in the backup cache to use.
+  ASSERT_FALSE(GetBackupCachedFiles().empty());
+  photo_controller()->ClearCache();
+  // Simulate an IMAX failure to leave the photo controller no choice but to
+  // resort to the backup cache.
+  backend_controller()->SetFetchScreenUpdateInfoResponseSize(0);
+
+  photo_controller()->StartScreenUpdate(
+      std::make_unique<AmbientTopicQueueTestDelegate>());
+  // Running until OnImagesReady() ensures the backup photos were loaded and
+  // ambient UI can successfully start.
+  RunUntilImagesReady();
 }
 
 TEST_F(AmbientPhotoControllerTest, ShouldNotLoadDuplicateImages) {
