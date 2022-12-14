@@ -485,12 +485,6 @@ EGLImageBacking::GenEGLImageSibling(base::span<const uint8_t> pixel_data) {
   return base::MakeRefCounted<TextureHolder>(std::move(texture));
 }
 
-void EGLImageBacking::SetEndReadFence(
-    scoped_refptr<gl::SharedGLFenceEGL> shared_egl_fence) {
-  AutoLock auto_lock(this);
-  read_fences_[gl::g_current_gl_context] = std::move(shared_egl_fence);
-}
-
 void EGLImageBacking::MarkForDestruction() {
   AutoLock auto_lock(this);
   DCHECK(!have_context() || created_on_context_ == gl::g_current_gl_context);

@@ -90,8 +90,6 @@ class EGLImageBacking : public ClearTrackingSharedImageBacking {
   scoped_refptr<TextureHolder> GenEGLImageSibling(
       base::span<const uint8_t> pixel_data);
 
-  void SetEndReadFence(scoped_refptr<gl::SharedGLFenceEGL> shared_egl_fence);
-
   const GLCommonImageBackingFactory::FormatInfo format_info_;
   scoped_refptr<TextureHolder> source_texture_holder_;
   raw_ptr<gl::GLApi> created_on_context_;
