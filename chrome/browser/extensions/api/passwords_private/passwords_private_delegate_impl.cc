@@ -21,7 +21,6 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/password_manager/password_manager_util_chromeos.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -71,6 +70,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_utils_chromeos.h"
+#include "chrome/browser/password_manager/password_manager_util_chromeos.h"
 #endif
 
 namespace {
