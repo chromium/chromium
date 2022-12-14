@@ -60,7 +60,7 @@ class SpeechWebContentsObserver : public content::WebContentsObserver {
  public:
   explicit SpeechWebContentsObserver(WebContents* web_contents)
       : WebContentsObserver(web_contents),
-        render_view_host_changed_(false),
+        render_frame_host_changed_(false),
         web_contents_destroyed_(false) {}
 
   SpeechWebContentsObserver(const SpeechWebContentsObserver&) = delete;
@@ -70,23 +70,23 @@ class SpeechWebContentsObserver : public content::WebContentsObserver {
   ~SpeechWebContentsObserver() override {}
 
   // content::WebContentsObserver overrides.
-  void RenderViewHostChanged(content::RenderViewHost* old_host,
-                             content::RenderViewHost* new_host) override {
-    render_view_host_changed_ = true;
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) override {
+    render_frame_host_changed_ = true;
   }
   void WebContentsDestroyed() override { web_contents_destroyed_ = true; }
 
   bool web_contents_destroyed() { return web_contents_destroyed_; }
-  bool render_view_host_changed() { return render_view_host_changed_; }
+  bool render_frame_host_changed() { return render_frame_host_changed_; }
 
  private:
-  bool render_view_host_changed_;
+  bool render_frame_host_changed_;
   bool web_contents_destroyed_;
 };
 
 // Tests that ChromeSpeechRecognitionManagerDelegate works properly
-// when a WebContents goes away (WCO::WebContentsDestroyed) or the RVH
-// changes within a WebContents (WCO::RenderViewHostChanged).
+// when a WebContents goes away (WCO::WebContentsDestroyed) or the RFH
+// changes within a WebContents (WCO::RenderFrameHostChanged).
 IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest, BasicTearDown) {
   ASSERT_TRUE(embedded_test_server()->Start());
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
@@ -128,11 +128,11 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest, BasicTearDown) {
     EXPECT_EQ(kExpectedTranscript, output);
   }
 
-  // Navigating to an https page will force RVH change within
-  // |web_contents|, results in WCO::RenderViewHostChanged().
+  // Navigating to an https page will force RFH change within
+  // |web_contents|, results in WCO::RenderFrameHostChanged().
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url));
 
-  EXPECT_TRUE(speech_contents_observer.render_view_host_changed());
+  EXPECT_TRUE(speech_contents_observer.render_frame_host_changed());
 
   {
     content::TitleWatcher title_watcher(web_contents, success_title);
