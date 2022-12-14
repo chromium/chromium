@@ -24,7 +24,6 @@ enum class InstallResultCode;
 
 namespace web_app {
 
-class FullSystemLock;
 class WebAppRegistrar;
 class WebAppInstallFinalizer;
 class WebAppCommandScheduler;
@@ -190,12 +189,6 @@ class ExternallyManagedAppManager {
     std::map<GURL, InstallResult> install_results;
     std::map<GURL, bool> uninstall_results;
   };
-
-  void SynchronizeInstalledAppsOnLockAcquired(
-      std::vector<ExternalInstallOptions> desired_apps_install_options,
-      ExternalInstallSource install_source,
-      SynchronizeCallback callback,
-      FullSystemLock& lock);
 
   void InstallForSynchronizeCallback(
       ExternalInstallSource source,

@@ -368,19 +368,9 @@ void SystemWebAppManager::Start() {
   // or `SetSystemAppsForTesting()` has been called.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType) &&
       skip_app_installation_in_test_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &SystemWebAppManager::OnAppsSynchronized,
-            weak_ptr_factory_.GetWeakPtr(), should_force_install_apps,
-            install_start_time,
-            /*install_results=*/
-            std::map<GURL,
-                     web_app::ExternallyManagedAppManager::InstallResult>(),
-            /*uninstall_results=*/std::map<GURL, bool>()));
-
-    return;
+    install_options_list.clear();
   }
+
   provider_->externally_managed_app_manager().SynchronizeInstalledApps(
       std::move(install_options_list),
       web_app::ExternalInstallSource::kSystemInstalled,

@@ -12,12 +12,9 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
-#include "chrome/browser/web_applications/locks/full_system_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -161,19 +158,6 @@ void ExternallyManagedAppManagerImpl::PostMaybeStartNext() {
 void ExternallyManagedAppManagerImpl::MaybeStartNext() {
   if (current_install_ || is_in_shutdown_)
     return;
-  command_scheduler()->ScheduleCallbackWithLock<FullSystemLock>(
-      "ExternallyManagedAppManagerImpl::MaybeStartNext",
-      std::make_unique<FullSystemLockDescription>(),
-      base::BindOnce(
-          &ExternallyManagedAppManagerImpl::MaybeStartNextOnLockAcquired,
-          weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ExternallyManagedAppManagerImpl::MaybeStartNextOnLockAcquired(
-    FullSystemLock& lock) {
-  if (current_install_ || is_in_shutdown_) {
-    return;
-  }
 
   while (!pending_installs_.empty()) {
     std::unique_ptr<TaskAndCallback> front =
@@ -189,7 +173,7 @@ void ExternallyManagedAppManagerImpl::MaybeStartNextOnLockAcquired(
     }
 
     absl::optional<AppId> app_id =
-        lock.registrar().LookupExternalAppId(install_options.install_url);
+        registrar()->LookupExternalAppId(install_options.install_url);
 
     // If the URL is not in web_app registrar,
     // then no external source has installed it.
@@ -198,10 +182,10 @@ void ExternallyManagedAppManagerImpl::MaybeStartNextOnLockAcquired(
       return;
     }
 
-    if (lock.registrar().IsInstalled(app_id.value())) {
+    if (registrar()->IsInstalled(app_id.value())) {
       if (install_options.wait_for_windows_closed &&
-          lock.ui_manager().GetNumWindowsForApp(app_id.value()) != 0) {
-        lock.ui_manager().NotifyOnAllAppWindowsClosed(
+          ui_manager()->GetNumWindowsForApp(app_id.value()) != 0) {
+        ui_manager()->NotifyOnAllAppWindowsClosed(
             app_id.value(),
             base::BindOnce(&ExternallyManagedAppManagerImpl::Install,
                            weak_ptr_factory_.GetWeakPtr(), install_options,
@@ -212,9 +196,9 @@ void ExternallyManagedAppManagerImpl::MaybeStartNextOnLockAcquired(
       // If the app is already installed, only reinstall it if the app is a
       // placeholder app and the client asked for it to be reinstalled.
       if (install_options.reinstall_placeholder &&
-          lock.registrar().IsPlaceholderApp(
-              app_id.value(), ConvertExternalInstallSourceToSource(
-                                  install_options.install_source))) {
+          registrar()->IsPlaceholderApp(app_id.value(),
+                                        ConvertExternalInstallSourceToSource(
+                                            install_options.install_source))) {
         StartInstallationTask(std::move(front));
         return;
       }
@@ -227,7 +211,7 @@ void ExternallyManagedAppManagerImpl::MaybeStartNextOnLockAcquired(
         return;
       } else {
         // Add install source before returning the result.
-        ScopedRegistryUpdate update(&lock.sync_bridge());
+        ScopedRegistryUpdate update(sync_bridge());
         WebApp* app_to_update = update->UpdateApp(app_id.value());
         app_to_update->AddSource(ConvertExternalInstallSourceToSource(
             install_options.install_source));
