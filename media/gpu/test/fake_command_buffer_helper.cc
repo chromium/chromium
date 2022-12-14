@@ -61,6 +61,17 @@ void FakeCommandBufferHelper::ReleaseSyncToken(gpu::SyncToken sync_token) {
   waits_.erase(sync_token);
 }
 
+void FakeCommandBufferHelper::WaitForSyncToken(gpu::SyncToken sync_token,
+                                               base::OnceClosure done_cb) {
+  DVLOG(2) << __func__;
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(!waits_.count(sync_token));
+  if (has_stub_) {
+    waits_.emplace(sync_token, std::move(done_cb));
+  }
+}
+
+#if !BUILDFLAG(IS_ANDROID)
 gl::GLContext* FakeCommandBufferHelper::GetGLContext() {
   DVLOG(4) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
@@ -161,15 +172,6 @@ gpu::Mailbox FakeCommandBufferHelper::CreateMailbox(GLuint service_id) {
   return gpu::Mailbox::Generate();
 }
 
-void FakeCommandBufferHelper::WaitForSyncToken(gpu::SyncToken sync_token,
-                                               base::OnceClosure done_cb) {
-  DVLOG(2) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!waits_.count(sync_token));
-  if (has_stub_)
-    waits_.emplace(sync_token, std::move(done_cb));
-}
-
 void FakeCommandBufferHelper::SetWillDestroyStubCB(
     WillDestroyStubCB will_destroy_stub_cb) {
   DCHECK(!will_destroy_stub_cb_);
@@ -183,5 +185,6 @@ bool FakeCommandBufferHelper::IsPassthrough() const {
 bool FakeCommandBufferHelper::SupportsTextureRectangle() const {
   return false;
 }
+#endif
 
 }  // namespace media

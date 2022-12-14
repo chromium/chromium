@@ -21,11 +21,14 @@
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
-#include "media/gpu/gles2_decoder_helper.h"
 #include "ui/gl/gl_context.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "media/gpu/gles2_decoder_helper.h"
 #endif
 
 namespace media {
@@ -56,12 +59,40 @@ class CommandBufferHelperImpl
 #endif  // BUILDFLAG(IS_MAC)
         ,
         stub_->channel()->task_runner());
+#if !BUILDFLAG(IS_ANDROID)
     decoder_helper_ = GLES2DecoderHelper::Create(stub_->decoder_context());
+#endif
   }
 
   CommandBufferHelperImpl(const CommandBufferHelperImpl&) = delete;
   CommandBufferHelperImpl& operator=(const CommandBufferHelperImpl&) = delete;
 
+  void WaitForSyncToken(gpu::SyncToken sync_token,
+                        base::OnceClosure done_cb) override {
+    DVLOG(2) << __func__;
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+    if (!stub_) {
+      return;
+    }
+
+    // TODO(sandersd): Do we need to keep a ref to |this| while there are
+    // pending waits? If we destruct while they are pending, they will never
+    // run.
+    stub_->channel()->scheduler()->ScheduleTask(
+        gpu::Scheduler::Task(wait_sequence_id_, std::move(done_cb),
+                             std::vector<gpu::SyncToken>({sync_token})));
+  }
+
+  // Const variant of GetSharedImageStub() for internal callers.
+  gpu::SharedImageStub* shared_image_stub() const {
+    if (!stub_) {
+      return nullptr;
+    }
+    return stub_->channel()->shared_image_stub();
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
   gl::GLContext* GetGLContext() override {
     DVLOG(2) << __func__;
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -74,13 +105,6 @@ class CommandBufferHelperImpl
 
   gpu::SharedImageStub* GetSharedImageStub() override {
     return shared_image_stub();
-  }
-
-  // Const variant of above method for internal callers.
-  gpu::SharedImageStub* shared_image_stub() const {
-    if (!stub_)
-      return nullptr;
-    return stub_->channel()->shared_image_stub();
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -193,22 +217,6 @@ class CommandBufferHelperImpl
     return decoder_helper_->CreateMailbox(textures_[service_id].get());
   }
 
-  void WaitForSyncToken(gpu::SyncToken sync_token,
-                        base::OnceClosure done_cb) override {
-    DVLOG(2) << __func__;
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-    if (!stub_)
-      return;
-
-    // TODO(sandersd): Do we need to keep a ref to |this| while there are
-    // pending waits? If we destruct while they are pending, they will never
-    // run.
-    stub_->channel()->scheduler()->ScheduleTask(
-        gpu::Scheduler::Task(wait_sequence_id_, std::move(done_cb),
-                             std::vector<gpu::SyncToken>({sync_token})));
-  }
-
   void SetWillDestroyStubCB(WillDestroyStubCB will_destroy_stub_cb) override {
     DCHECK(!will_destroy_stub_cb_);
     will_destroy_stub_cb_ = std::move(will_destroy_stub_cb);
@@ -230,6 +238,7 @@ class CommandBufferHelperImpl
         ->feature_flags()
         .arb_texture_rectangle;
   }
+#endif
 
  private:
   // Helper class to forward memory tracking calls to shared image stub.
@@ -303,7 +312,9 @@ class CommandBufferHelperImpl
     DVLOG(3) << __func__;
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+#if !BUILDFLAG(IS_ANDROID)
     decoder_helper_ = nullptr;
+#endif
 
     // If the last reference to |this| is in a |done_cb|, destroying the wait
     // sequence can delete |this|. Clearing |stub_| first prevents DestroyStub()
@@ -319,8 +330,10 @@ class CommandBufferHelperImpl
   // Wait tasks are scheduled on our own sequence so that we can't inadvertently
   // block the command buffer.
   gpu::SequenceId wait_sequence_id_;
+#if !BUILDFLAG(IS_ANDROID)
   // TODO(sandersd): Merge GLES2DecoderHelper implementation into this class.
   std::unique_ptr<GLES2DecoderHelper> decoder_helper_;
+#endif
   std::map<GLuint, std::unique_ptr<gpu::gles2::AbstractTexture>> textures_;
 
   WillDestroyStubCB will_destroy_stub_cb_;

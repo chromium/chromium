@@ -401,9 +401,16 @@ source_set("command_buffer_helper") {
   sources = [
     "command_buffer_helper.cc",
     "command_buffer_helper.h",
-    "gles2_decoder_helper.cc",
-    "gles2_decoder_helper.h",
   ]
+
+  if (!is_android) {
+    # This code is used only by the legacy VDA implementation, which is not
+    # supported on Android.
+    sources += [
+      "gles2_decoder_helper.cc",
+      "gles2_decoder_helper.h",
+    ]
+  }
 
   public_deps = [
     "//base",
