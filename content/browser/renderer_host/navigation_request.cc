@@ -1548,6 +1548,8 @@ NavigationRequest::NavigationRequest(
   CHECK(!rfh_restored_from_back_forward_cache.WasInvalidated());
   ScopedCrashKeys crash_keys(*this);
 
+  ComputeDownloadPolicy();
+
   // There should be no navigations to about:newtab, about:version or other
   // similar URLs (see https://crbug.com/1145717):
   //
@@ -8342,6 +8344,39 @@ NavigationRequest::GetJavaNavigationHandle() {
 void NavigationRequest::SetViewTransitionState(
     blink::ViewTransitionState view_transition_state) {
   commit_params_->view_transition_state = std::move(view_transition_state);
+}
+
+// The NavigationDownloadPolicy is currently computed by the renderer process.
+// The problem: not every navigation are initiated from the renderer. Most
+// fields from the bitfield can be computed from the browser process. This
+// function is a partial attempt at doing it.
+void NavigationRequest::ComputeDownloadPolicy() {
+  blink::NavigationDownloadPolicy& download_policy =
+      common_params_->download_policy;
+
+  // [ViewSource]
+  if (GetNavigationEntry() && GetNavigationEntry()->IsViewSourceMode()) {
+    download_policy.SetDisallowed(blink::NavigationDownloadType::kViewSource);
+  }
+
+  // [Sandbox]
+  if (base::FeatureList::IsEnabled(
+          features::kBrowserSideDownloadPolicySandbox) &&
+      (commit_params_->frame_policy.sandbox_flags &
+       network::mojom::WebSandboxFlags::kDownloads) ==
+          network::mojom::WebSandboxFlags::kDownloads) {
+    download_policy.SetDisallowed(blink::NavigationDownloadType::kSandbox);
+  }
+
+  // TODO(arthursonzogni): Check if the following fields from the
+  // NavigationDownloadPolicy could be computed here from the browser process
+  // instead:
+  //
+  // [NoGesture]
+  // [OpenerCrossOrigin]
+  // [AdFrameNoGesture]
+  // [AdFrame]
+  // [Interstitial]
 }
 
 }  // namespace content

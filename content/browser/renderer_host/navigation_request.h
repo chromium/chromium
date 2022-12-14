@@ -1632,6 +1632,14 @@ class CONTENT_EXPORT NavigationRequest
   // header validation logic for isolated apps.
   void MaybeInjectIsolatedAppHeaders();
 
+  // The NavigationDownloadPolicy is currently fully computed by the renderer
+  // process. It is left empty for browser side initiated navigation. This is a
+  // problem. This function is an incomplete attempt to start computing it from
+  // the browser process instead.
+  // TODO(https://crbug.com/1395742): Complete the implementation the browser
+  // side implementation.
+  void ComputeDownloadPolicy();
+
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;
 
