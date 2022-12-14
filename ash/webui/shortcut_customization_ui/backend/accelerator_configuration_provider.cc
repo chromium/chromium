@@ -346,7 +346,7 @@ AcceleratorConfigurationProvider::CreateDefaultAcceleratorInfo(
 
 mojom::AcceleratorInfoPtr
 AcceleratorConfigurationProvider::CreateBaseAcceleratorInfo(
-    ui::Accelerator accelerator) const {
+    const ui::Accelerator& accelerator) const {
   // TODO(longbowei): Some accelerators should not be locked when customization
   // is allowed.
   return CreateDefaultAcceleratorInfo(accelerator, /*locked=*/true,
@@ -356,7 +356,7 @@ AcceleratorConfigurationProvider::CreateBaseAcceleratorInfo(
 
 mojom::AcceleratorInfoPtr
 AcceleratorConfigurationProvider::CreateRemappedTopRowAcceleratorInfo(
-    ui::Accelerator accelerator) const {
+    const ui::Accelerator& accelerator) const {
   // Avoid remapping if [Search] is part of original accelerator.
   if (IsModifierSet(accelerator, ui::EF_COMMAND_DOWN) ||
       !TopRowKeysAreFunctionKeys() ||
@@ -374,7 +374,7 @@ AcceleratorConfigurationProvider::CreateRemappedTopRowAcceleratorInfo(
 
 mojom::AcceleratorInfoPtr
 AcceleratorConfigurationProvider::CreateRemappedSixPackAcceleratorInfo(
-    ui::Accelerator accelerator) const {
+    const ui::Accelerator& accelerator) const {
   // For all six-pack-keys, avoid remapping if [Search] is part of
   // original accelerator.
   if (IsModifierSet(accelerator, ui::EF_COMMAND_DOWN) ||
@@ -407,7 +407,7 @@ AcceleratorConfigurationProvider::CreateRemappedSixPackAcceleratorInfo(
 
 std::vector<mojom::AcceleratorInfoPtr>
 AcceleratorConfigurationProvider::CreateAcceleratorInfoVariants(
-    ui::Accelerator accelerator) const {
+    const ui::Accelerator& accelerator) const {
   std::vector<mojom::AcceleratorInfoPtr> alias_infos;
 
   if (IsTopRowKey(accelerator.key_code())) {

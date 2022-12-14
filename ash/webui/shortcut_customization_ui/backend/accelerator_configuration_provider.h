@@ -97,15 +97,15 @@ class AcceleratorConfigurationProvider
 
   // Create base accelerator info using accelerator.
   mojom::AcceleratorInfoPtr CreateBaseAcceleratorInfo(
-      ui::Accelerator accelerator) const;
+      const ui::Accelerator& accelerator) const;
 
   // Create alias accelerator info for top row key if applicable.
   mojom::AcceleratorInfoPtr CreateRemappedTopRowAcceleratorInfo(
-      ui::Accelerator accelerator) const;
+      const ui::Accelerator& accelerator) const;
 
   // Create alias accelerator info for six pack key if applicable.
   mojom::AcceleratorInfoPtr CreateRemappedSixPackAcceleratorInfo(
-      ui::Accelerator accelerator) const;
+      const ui::Accelerator& accelerator) const;
 
   // Create alias accelerator infos when the accelerator contains a top row key
   // or six pack key. For |top_row_key|, replace the base accelerator with
@@ -114,7 +114,7 @@ class AcceleratorConfigurationProvider
   // vector here since it may display two accelerator infos for six pack
   // remapping case.
   std::vector<mojom::AcceleratorInfoPtr> CreateAcceleratorInfoVariants(
-      ui::Accelerator accelerator) const;
+      const ui::Accelerator& accelerator) const;
 
   std::vector<mojom::AcceleratorLayoutInfoPtr> layout_infos_;
 
