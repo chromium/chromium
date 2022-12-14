@@ -5,8 +5,8 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 import {mojoString16ToString} from './mojo_utils.js';
-import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo} from './shortcut_types.js';
-import {areAcceleratorsEqual, getAcceleratorId} from './shortcut_utils.js';
+import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, DefaultAcceleratorInfo, LayoutInfo, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, TextAcceleratorInfo} from './shortcut_types.js';
+import {areAcceleratorsEqual, getAccelerator, getAcceleratorId, isDefaultAcceleratorInfo, isTextAcceleratorInfo} from './shortcut_utils.js';
 
 /** The name of an {@link Accelerator}, e.g. "Snap Window Left". */
 type AcceleratorName = string;
@@ -16,7 +16,7 @@ type AcceleratorName = string;
  * See getKeyForLookup() in this file for the implementation details.
  */
 type AcceleratorLookupKey = string;
-type AcceleratorLookupMap = Map<AcceleratorId, AcceleratorInfo[]>;
+type AcceleratorLookupMap = Map<AcceleratorId, DefaultAcceleratorInfo[]>;
 type AcceleratorLayoutLookupMap =
     Map<AcceleratorCategory, Map<AcceleratorSubcategory, LayoutInfo[]>>;
 type AcceleratorNameLookupMap = Map<AcceleratorId, AcceleratorName>;
@@ -72,7 +72,7 @@ export class AcceleratorLookupManager {
   }
 
   getAcceleratorInfos(source: number|string, action: number|string):
-      AcceleratorInfo[] {
+      DefaultAcceleratorInfo[] {
     const uuid: AcceleratorId = getAcceleratorId(source, action);
     const acceleratorInfos = this.acceleratorLookup_.get(uuid);
     assert(acceleratorInfos);
@@ -127,22 +127,46 @@ export class AcceleratorLookupManager {
         }
         accelInfos.forEach((info: MojoAcceleratorInfo) => {
           // Convert from Mojo types to the app types.
-          const sanitizedAccelerator: Accelerator = {
-            keyCode: info.accelerator.keyCode,
-            modifiers: info.accelerator.modifiers,
-          };
-          const sanitizedAccelInfo: AcceleratorInfo = {
-            accelerator: sanitizedAccelerator,
-            keyDisplay: mojoString16ToString(info.keyDisplay),
-            locked: info.locked,
-            state: info.state,
-            type: info.type,
-          };
-
+          let sanitizedAccelInfo: DefaultAcceleratorInfo|TextAcceleratorInfo;
+          if (isTextAcceleratorInfo(info)) {
+            sanitizedAccelInfo = {
+              layoutProperties: {
+                textAccelerator: {
+                  textAccelerator: [],
+                },
+              },
+              locked: info.locked,
+              state: info.state,
+              type: info.type,
+            };
+          } else {
+            assert(isDefaultAcceleratorInfo(info));
+            const sanitizedAccelerator: Accelerator = {
+              keyCode:
+                  info.layoutProperties.defaultAccelerator.accelerator.keyCode,
+              modifiers: info.layoutProperties.defaultAccelerator.accelerator
+                             .modifiers,
+            };
+            sanitizedAccelInfo = {
+              layoutProperties: {
+                defaultAccelerator: {
+                  accelerator: sanitizedAccelerator,
+                  keyDisplay: mojoString16ToString(
+                      info.layoutProperties.defaultAccelerator.keyDisplay),
+                },
+              },
+              locked: info.locked,
+              state: info.state,
+              type: info.type,
+            };
+            this.reverseAcceleratorLookup_.set(
+                this.getKeyForLookup(
+                    info.layoutProperties.defaultAccelerator.accelerator),
+                id);
+          }
           this.getAcceleratorInfos(source, actionId)
-              .push(Object.assign({}, sanitizedAccelInfo));
-          this.reverseAcceleratorLookup_.set(
-              this.getKeyForLookup(info.accelerator), id);
+              .push(Object.assign(
+                  {}, sanitizedAccelInfo as DefaultAcceleratorInfo));
         });
       }
     }
@@ -188,7 +212,7 @@ export class AcceleratorLookupManager {
 
   replaceAccelerator(
       source: AcceleratorSource, action: number, oldAccelerator: Accelerator,
-      newAccelInfo: AcceleratorInfo) {
+      newAccelInfo: DefaultAcceleratorInfo) {
     const foundIdx =
         this.getAcceleratorInfoIndex_(source, action, oldAccelerator);
 
@@ -198,14 +222,14 @@ export class AcceleratorLookupManager {
       assertNotReached();
     }
 
-    if (areAcceleratorsEqual(oldAccelerator, newAccelInfo.accelerator)) {
+    if (areAcceleratorsEqual(oldAccelerator, getAccelerator(newAccelInfo))) {
       // Attempted to replace with the same accelerator.
       return;
     }
 
     // Check to see if there is a pre-existing accelerator to remove or disable
     // first.
-    this.maybeRemoveOrDisableAccelerator_(newAccelInfo.accelerator);
+    this.maybeRemoveOrDisableAccelerator_(getAccelerator(newAccelInfo));
 
     const accelInfos = this.getAcceleratorInfos(source, action);
     const currentAccelerator = accelInfos[foundIdx];
@@ -213,7 +237,7 @@ export class AcceleratorLookupManager {
     // Handle the edge case in which the user is attempting to replace an
     // existing accelerator with a disabled default accelerator.
     if (this.maybeReenableDefaultAccelerator(
-            accelInfos, newAccelInfo.accelerator)) {
+            accelInfos, getAccelerator(newAccelInfo))) {
       // User replaced a non-default accelerator with a default accelerator.
       // Remove the non-default accelerator.
       accelInfos.splice(foundIdx, 1);
@@ -233,16 +257,16 @@ export class AcceleratorLookupManager {
 
     // Update the reverse look up maps.
     this.reverseAcceleratorLookup_.set(
-        this.getKeyForLookup(newAccelInfo.accelerator),
+        this.getKeyForLookup(getAccelerator(newAccelInfo)),
         getAcceleratorId(source, action));
     this.reverseAcceleratorLookup_.delete(this.getKeyForLookup(oldAccelerator));
   }
 
   addAccelerator(
       source: AcceleratorSource, action: number,
-      newAccelInfo: AcceleratorInfo) {
+      newAccelInfo: DefaultAcceleratorInfo) {
     // Check to see if there is a pre-existing accelerator to remove first.
-    this.maybeRemoveOrDisableAccelerator_(newAccelInfo.accelerator);
+    this.maybeRemoveOrDisableAccelerator_(getAccelerator(newAccelInfo));
 
     // Get the matching accelerator and add the new accelerator to its
     // container.
@@ -251,7 +275,7 @@ export class AcceleratorLookupManager {
     // Handle edge case in which the user attempts to add a disabled default
     // accelerator.
     const addedDefault = this.maybeReenableDefaultAccelerator(
-        accelInfos, newAccelInfo.accelerator);
+        accelInfos, getAccelerator(newAccelInfo));
 
     if (!addedDefault) {
       // No matching default accelerator, add the new accelerator directly.
@@ -260,7 +284,7 @@ export class AcceleratorLookupManager {
 
     // Update the reverse look up maps.
     this.reverseAcceleratorLookup_.set(
-        this.getKeyForLookup(newAccelInfo.accelerator),
+        this.getKeyForLookup(getAccelerator(newAccelInfo)),
         getAcceleratorId(source, action));
   }
 
@@ -297,11 +321,11 @@ export class AcceleratorLookupManager {
    * and has been re-enabled.
    */
   maybeReenableDefaultAccelerator(
-      accelInfos: AcceleratorInfo[], accelerator: Accelerator): boolean {
+      accelInfos: DefaultAcceleratorInfo[], accelerator: Accelerator): boolean {
     // Check if `accelerator` matches a default accelerator.
     const defaultIdx = accelInfos.findIndex(accelInfo => {
       return accelInfo.type === AcceleratorType.kDefault &&
-          areAcceleratorsEqual(accelInfo.accelerator, accelerator);
+          areAcceleratorsEqual(getAccelerator(accelInfo), accelerator);
     });
 
     if (defaultIdx === -1) {
@@ -369,7 +393,7 @@ export class AcceleratorLookupManager {
       accelerator: Accelerator): number {
     const accelInfos = this.getAcceleratorInfos(source, action);
     for (let i = 0; i < accelInfos.length; ++i) {
-      if (areAcceleratorsEqual(accelerator, accelInfos[i].accelerator)) {
+      if (areAcceleratorsEqual(accelerator, getAccelerator(accelInfos[i]))) {
         return i;
       }
     }

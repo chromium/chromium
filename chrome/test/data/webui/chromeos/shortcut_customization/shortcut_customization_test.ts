@@ -284,10 +284,12 @@ suite('shortcutCustomizationAppTest', function() {
     // Assert that the accelerator was updated with the new shortcut (Alt + ']')
     const acceleratorInfo =
         (accelViewElement as AcceleratorViewElement).acceleratorInfo;
-    const actualAccelerator = acceleratorInfo.accelerator;
+    const actualAccelerator =
+        acceleratorInfo.layoutProperties.defaultAccelerator.accelerator;
     assertEquals(Modifier.ALT, actualAccelerator!.modifiers);
     assertEquals(221, actualAccelerator.keyCode);
-    assertEquals(']', acceleratorInfo.keyDisplay);
+    assertEquals(
+        ']', acceleratorInfo.layoutProperties.defaultAccelerator.keyDisplay);
   });
 
   test('AddAccelerator', async () => {
@@ -363,10 +365,12 @@ suite('shortcutCustomizationAppTest', function() {
     const acceleratorInfo = (newAccel!.shadowRoot!.querySelector(
                                  '#acceleratorItem') as AcceleratorViewElement)
                                 .acceleratorInfo;
-    const actualAccelerator = acceleratorInfo.accelerator;
+    const actualAccelerator =
+        acceleratorInfo.layoutProperties.defaultAccelerator.accelerator;
     assertEquals(Modifier.ALT, actualAccelerator.modifiers);
     assertEquals(221, actualAccelerator.keyCode);
-    assertEquals(']', acceleratorInfo.keyDisplay);
+    assertEquals(
+        ']', acceleratorInfo.layoutProperties.defaultAccelerator.keyDisplay);
   });
 
   test('RemoveAccelerator', async () => {

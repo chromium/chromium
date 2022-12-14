@@ -80,9 +80,24 @@ export type MojoAccelerator = AcceleratorTypes.Accelerator;
  * to replace the types of `accelerator` and `keyDisplay` with more accurate
  * types.
  */
-export type AcceleratorInfo =
-    Omit<AcceleratorInfoTypes.AcceleratorInfo, 'accelerator'|'keyDisplay'>&
-    {accelerator: Accelerator, keyDisplay: string};
+
+
+
+export type DefaultAcceleratorInfo =
+    Omit<AcceleratorInfoTypes.AcceleratorInfo, 'layoutProperties'>&{
+      layoutProperties:
+          {defaultAccelerator: {accelerator: Accelerator, keyDisplay: string}},
+    };
+
+export type TextAcceleratorInfo =
+    Omit<AcceleratorInfoTypes.AcceleratorInfo, 'layoutProperties'>&{
+      layoutProperties: {
+        textAccelerator:
+            {textAccelerator: AcceleratorInfoTypes.TextAcceleratorPart[]},
+      },
+    };
+
+export type AcceleratorInfo = TextAcceleratorInfo|DefaultAcceleratorInfo;
 
 /**
  * Type alias for the Mojo version of AcceleratorInfo.

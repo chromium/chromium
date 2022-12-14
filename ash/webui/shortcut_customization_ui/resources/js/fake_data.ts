@@ -19,12 +19,17 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
       locked: true,
-      keyDisplay: stringToMojoString16('['),
-      accelerator: {
-        modifiers: Modifier.ALT,
-        keyCode: 219,
-        keyState: 0,
-        timeStamp: fakeTimestamp,
+      layoutProperties: {
+        defaultAccelerator: {
+          keyDisplay: stringToMojoString16('['),
+          accelerator: {
+            modifiers: Modifier.ALT,
+            keyCode: 219,
+            keyState: 0,
+            timeStamp: fakeTimestamp,
+          },
+        },
+        textAccelerator: undefined,
       },
     }],
     // Snap Window Right
@@ -32,25 +37,37 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
       locked: false,
-      keyDisplay: stringToMojoString16(']'),
-      accelerator: {
-        modifiers: Modifier.ALT,
-        keyCode: 221,
-        keyState: 0,
-        timeStamp: fakeTimestamp,
+      layoutProperties: {
+        defaultAccelerator: {
+          keyDisplay: stringToMojoString16(']'),
+          accelerator: {
+            modifiers: Modifier.ALT,
+            keyCode: 221,
+            keyState: 0,
+            timeStamp: fakeTimestamp,
+          },
+        },
+        textAccelerator: undefined,
       },
+
     }],
     // New Desk
     [2]: [{
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
       locked: false,
-      keyDisplay: stringToMojoString16('+'),
-      accelerator: {
-        modifiers: Modifier.COMMAND | Modifier.SHIFT,
-        keyCode: 187,
-        keyState: 0,
-        timeStamp: fakeTimestamp,
+      layoutProperties: {
+        defaultAccelerator: {
+          keyDisplay: stringToMojoString16('+'),
+          accelerator: {
+            modifiers: Modifier.COMMAND | Modifier.SHIFT,
+            keyCode: 187,
+            keyState: 0,
+            timeStamp: fakeTimestamp,
+          },
+        },
+        textAccelerator: undefined,
+
       },
     }],
     // Remove Desk
@@ -58,12 +75,18 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
       locked: false,
-      keyDisplay: stringToMojoString16('-'),
-      accelerator: {
-        modifiers: Modifier.COMMAND | Modifier.SHIFT,
-        keyCode: 189,
-        keyState: 0,
-        timeStamp: fakeTimestamp,
+      layoutProperties: {
+        defaultAccelerator: {
+          keyDisplay: stringToMojoString16('-'),
+          accelerator: {
+            modifiers: Modifier.COMMAND | Modifier.SHIFT,
+            keyCode: 189,
+            keyState: 0,
+            timeStamp: fakeTimestamp,
+          },
+        },
+        textAccelerator: undefined,
+
       },
     }],
   },
@@ -73,12 +96,18 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
       locked: true,
-      keyDisplay: stringToMojoString16('t'),
-      accelerator: {
-        modifiers: Modifier.CONTROL,
-        keyCode: 84,
-        keyState: 0,
-        timeStamp: fakeTimestamp,
+      layoutProperties: {
+        defaultAccelerator: {
+          keyDisplay: stringToMojoString16('t'),
+          accelerator: {
+            modifiers: Modifier.CONTROL,
+            keyCode: 84,
+            keyState: 0,
+            timeStamp: fakeTimestamp,
+          },
+        },
+        textAccelerator: undefined,
+
       },
     }],
   },
@@ -135,12 +164,17 @@ const createFakeMojoAccelInfo = (keyDisplay: string): MojoAcceleratorInfo => {
     type: AcceleratorType.kDefault,
     state: AcceleratorState.kEnabled,
     locked: true,
-    keyDisplay: stringToMojoString16(keyDisplay),
-    accelerator: {
-      modifiers: 0,
-      keyCode: 0,
-      keyState: 0,
-      timeStamp: fakeTimestamp,
+    layoutProperties: {
+      defaultAccelerator: {
+        keyDisplay: stringToMojoString16(keyDisplay),
+        accelerator: {
+          modifiers: 0,
+          keyCode: 0,
+          keyState: 0,
+          timeStamp: fakeTimestamp,
+        },
+      },
+      textAccelerator: undefined,
     },
   };
 };

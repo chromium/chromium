@@ -7,20 +7,24 @@
 
 #include <cstdint>
 #include <functional>
+#include <map>
+#include <string>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_piece_forward.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 
-namespace {
-
 // non-ash accelerator action Id. Contains browser action ids and ambient action
 // ids.
-enum class NonConfigurableActions {
+enum NonConfigurableActions {
   // Browser action ids:
   kBrowserCloseTab,
   kBrowserCloseWindow,
@@ -63,9 +67,8 @@ enum class NonConfigurableActions {
   kBrowserFocusLocation,
   kBrowserFocusToolbar,
   kBrowserFocusInactivePopupForAccessibility,
+  kBrowserSelectTabByIndex,
 };
-
-}  // namespace
 
 // Contains details for UI styling of an accelerator.
 struct ASH_EXPORT AcceleratorLayoutDetails {
@@ -179,6 +182,44 @@ ASH_EXPORT constexpr auto kBrowserActionToStringIdMap = base::MakeFixedFlatMap<
      IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY},
 });
 
+// Represents a replacement for part of a non-configurable accelerator.
+// Contains the text to display as well as its type (Modifier, Key, Plain Text)
+// which is needed to determine how to display the text in the shortcut
+// customization app.
+class ASH_EXPORT TextAcceleratorPart : public mojom::TextAcceleratorPart {
+ public:
+  explicit TextAcceleratorPart(ui::EventFlags modifier);
+  explicit TextAcceleratorPart(ui::KeyboardCode key_code);
+  TextAcceleratorPart(const TextAcceleratorPart&);
+  TextAcceleratorPart& operator=(const TextAcceleratorPart&);
+  ~TextAcceleratorPart();
+};
+
+// Contains info related to an ambient accelerator. The |message_id| and list
+// of |text_accelerator_parts| are used by AcceleratorConfigurationProvider to
+// construct arbitrary text with styled keys and modifiers interspersed.
+struct ASH_EXPORT AcceleratorTextDetails {
+  AcceleratorTextDetails(int message_id,
+                         std::vector<TextAcceleratorPart> parts);
+  AcceleratorTextDetails(const AcceleratorTextDetails&);
+  ~AcceleratorTextDetails();
+  int message_id;
+  std::vector<TextAcceleratorPart> text_accelerator_parts;
+};
+
+using NonConfigurableActionsTextDetailsMap =
+    std::map<NonConfigurableActions, AcceleratorTextDetails>;
+
+// A map between ambient action id and accelerator description ID.
+// Adding a new ambient accelerator must add a new entry to this map.
+ASH_EXPORT constexpr auto kAmbientActionToStringIdMap =
+    base::MakeFixedFlatMap<NonConfigurableActions, int>({
+        {NonConfigurableActions::kBrowserSelectTabByIndex,
+         IDS_TEXT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE},
+    });
+
+const ASH_EXPORT NonConfigurableActionsTextDetailsMap& GetTextDetailsMap();
+
 // A fixed array of accelerator layouts used for categorization and styling of
 // accelerator actions. The ordering of the array is important and is used
 // 1:1 for displaying shortcuts in the shortcut customization app.
@@ -261,6 +302,11 @@ ASH_EXPORT constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
      mojom::AcceleratorSubcategory::kGeneral,
      /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
      mojom::AcceleratorSource::kAsh},
+    {NonConfigurableActions::kBrowserSelectTabByIndex,
+     mojom::AcceleratorCategory::kTabsAndWindows,
+     mojom::AcceleratorSubcategory::kGeneral,
+     /*locked=*/true, mojom::AcceleratorLayoutStyle::kText,
+     mojom::AcceleratorSource::kAmbient},
 
     // Page and Web Browser.
     {FOCUS_PREVIOUS_PANE, mojom::AcceleratorCategory::kPageAndWebBrowser,

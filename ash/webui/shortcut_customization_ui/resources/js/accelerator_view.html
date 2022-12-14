@@ -20,32 +20,45 @@
     <template is="dom-repeat" items=[[modifiers_]]>
       <input-key key=[[item]] key-state="modifier-selected"></input-key>
     </template>
-    <input-key key="[[acceleratorInfo.keyDisplay]]"
+    <input-key
+        key="[[acceleratorInfo.layoutProperties.defaultAccelerator.keyDisplay]]"
         key-state="alpha-numeric-selected">
     </input-key>
   </template>
   <template is="dom-if" if="[[showEditView_(viewState)]]">
     <div id="editContainer" class="flex-row">
       <input-key id="ctrlKey" key="ctrl"
-          key-state="[[getCtrlState_(pendingAcceleratorInfo_.accelerator.*)]]">
+          key-state="[[getCtrlState_(
+            pendingAcceleratorInfo_.layoutProperties.defaultAccelerator.accelerator.*
+            )]]">
       </input-key>
       <input-key id="altKey" key="alt"
-          key-state="[[getAltState_(pendingAcceleratorInfo_.*)]]">
+          key-state="[[getAltState_(
+            pendingAcceleratorInfo_.layoutProperties.defaultAccelerator.*
+            )]]">
       </input-key>
       <input-key id="shiftKey" key="shift"
-          key-state="[[getShiftState_(pendingAcceleratorInfo_.*)]]">
+          key-state="[[getShiftState_(
+            pendingAcceleratorInfo_.layoutProperties.defaultAccelerator.*
+            )]]">
       </input-key>
       <input-key id="searchKey" key="search"
-          key-state="[[getSearchState_(pendingAcceleratorInfo_.*)]]"
+          key-state="[[getSearchState_(
+            pendingAcceleratorInfo_.layoutProperties.defaultAccelerator.*
+            )]]"
       >
       </input-key>
       <!-- TODO(jimmyxgong): Conditionally add this separator based off of the
            shortcut's layout info. -->
       <div id="acceleratorSeparator"> + </div>
       <input-key id="pendingKey"
-          key="[[getPendingKey_(pendingAcceleratorInfo_.*)]]"
+          key="[[getPendingKey_(
+            pendingAcceleratorInfo_.layoutProperties.defaultAccelerator.*
+            )]]"
           key-state=
-              "[[getPendingKeyState_(pendingAcceleratorInfo_.*)]]">
+              "[[getPendingKeyState_(
+                pendingAcceleratorInfo_.layoutProperties.defaultAccelerator.*
+                )]]">
       </input-key>
     </div>
   </template>

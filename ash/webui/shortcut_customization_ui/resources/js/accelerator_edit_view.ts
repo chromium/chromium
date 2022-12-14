@@ -15,7 +15,8 @@ import {getTemplate} from './accelerator_edit_view.html.js';
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {ViewState} from './accelerator_view.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
-import {Accelerator, AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorType, ShortcutProviderInterface} from './shortcut_types.js';
+import {Accelerator, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, AcceleratorType, DefaultAcceleratorInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import {getAccelerator} from './shortcut_utils.js';
 
 export type RequestUpdateAcceleratorEvent =
     CustomEvent<{action: number, source: AcceleratorSource}>;
@@ -31,12 +32,16 @@ const accelerator: Accelerator = {
   keyCode: 0,
 };
 
-const defaultAcceleratorInfoState: AcceleratorInfo = {
-  accelerator,
-  keyDisplay: '',
+const defaultAcceleratorInfoState: DefaultAcceleratorInfo = {
   locked: false,
   state: AcceleratorState.kEnabled,
   type: AcceleratorType.kDefault,
+  layoutProperties: {
+    defaultAccelerator: {
+      accelerator,
+      keyDisplay: '',
+    },
+  },
 };
 
 /**
@@ -97,7 +102,7 @@ export class AcceleratorEditViewElement extends PolymerElement {
     };
   }
 
-  acceleratorInfo: AcceleratorInfo;
+  acceleratorInfo: DefaultAcceleratorInfo;
   isEditView: boolean;
   viewState: number;
   hasError: boolean;
@@ -130,11 +135,11 @@ export class AcceleratorEditViewElement extends PolymerElement {
   protected onDeleteButtonClicked_() {
     this.shortcutProvider_
         .removeAccelerator(
-            this.source, this.action, this.acceleratorInfo.accelerator)
+            this.source, this.action, getAccelerator(this.acceleratorInfo))
         .then((result: AcceleratorConfigResult) => {
           if (result === AcceleratorConfigResult.SUCCESS) {
             this.lookupManager_.removeAccelerator(
-                this.source, this.action, this.acceleratorInfo.accelerator);
+                this.source, this.action, getAccelerator(this.acceleratorInfo));
 
             this.dispatchEvent(new CustomEvent('request-update-accelerator', {
               bubbles: true,

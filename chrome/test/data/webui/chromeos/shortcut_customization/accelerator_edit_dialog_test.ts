@@ -4,7 +4,6 @@
 
 import 'chrome://shortcut-customization/js/accelerator_edit_dialog.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
-import 'chrome://shortcut-customization/js/accelerator_edit_dialog.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';

@@ -17,6 +17,8 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/notreached.h"
+#include "base/strings/string_split.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -89,22 +91,30 @@ const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
   return *key_display_map;
 }
 
+mojom::DefaultAcceleratorPropertiesPtr CreateDefaultAcceleratorProps(
+    const ui::Accelerator& accelerator) {
+  return mojom::DefaultAcceleratorProperties::New(
+      accelerator, KeycodeToKeyString(accelerator.key_code()));
+}
+
 std::u16string LookupAcceleratorDescription(mojom::AcceleratorSource source,
                                             AcceleratorActionId action_id) {
   switch (source) {
     case mojom::AcceleratorSource::kAsh:
       return l10n_util::GetStringUTF16(
           kAcceleratorActionToStringIdMap.at(action_id));
-    case mojom::AcceleratorSource::kEventRewriter:
+    case mojom::AcceleratorSource::kAmbient:
+      return l10n_util::GetStringUTF16(
+          kAmbientActionToStringIdMap.at(action_id));
     // TODO(longbowei): Add strings for Browser shortcuts.
     case mojom::AcceleratorSource::kBrowser:
-    // TODO(michaelcheco): Add strings for Ambient shortcuts.
-    case mojom::AcceleratorSource::kAmbient:
+    case mojom::AcceleratorSource::kEventRewriter:
     case mojom::AcceleratorSource::kAndroid:
       NOTREACHED();
       return std::u16string();
   }
 }
+
 mojom::AcceleratorLayoutInfoPtr LayoutInfoToMojom(
     AcceleratorLayoutDetails layout_details) {
   mojom::AcceleratorLayoutInfoPtr layout_info =
@@ -175,6 +185,7 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider()
           weak_ptr_factory_.GetWeakPtr()));
 
   UpdateKeyboards();
+  InitializeNonConfigurableAccelerators(GetTextDetailsMap());
 
   // Create LayoutInfos from kAcceleratorLayouts. LayoutInfos are static
   // data that provides additional details for the app for styling.
@@ -264,6 +275,12 @@ void AcceleratorConfigurationProvider::UpdateKeyboards() {
   NotifyAcceleratorsUpdated();
 }
 
+void AcceleratorConfigurationProvider::InitializeNonConfigurableAccelerators(
+    NonConfigurableActionsTextDetailsMap mapping) {
+  non_configurable_actions_mapping_ = std::move(mapping);
+  NotifyAcceleratorsUpdated();
+}
+
 void AcceleratorConfigurationProvider::OnAcceleratorsUpdated(
     mojom::AcceleratorSource source,
     const ActionIdToAcceleratorsMap& mapping) {
@@ -278,18 +295,51 @@ void AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated() {
   }
 }
 
+mojom::TextAcceleratorPropertiesPtr
+AcceleratorConfigurationProvider::CreateTextAcceleratorParts() {
+  // TODO(michaelcheco): Use AcceleratorTextDetails to create
+  // text_parts dynamically.
+  std::vector<mojom::TextAcceleratorPartPtr> text_parts;
+  text_parts.push_back(mojom::TextAcceleratorPart::New(
+      u"ctrl", mojom::TextAcceleratorPartType::kModifier));
+  text_parts.push_back(mojom::TextAcceleratorPart::New(
+      u" + ", mojom::TextAcceleratorPartType::kPlainText));
+  text_parts.push_back(mojom::TextAcceleratorPart::New(
+      u"1 ", mojom::TextAcceleratorPartType::kKey));
+  text_parts.push_back(mojom::TextAcceleratorPart::New(
+      u"through", mojom::TextAcceleratorPartType::kPlainText));
+  text_parts.push_back(mojom::TextAcceleratorPart::New(
+      u"8", mojom::TextAcceleratorPartType::kKey));
+
+  return mojom::TextAcceleratorProperties::New(std::move(text_parts));
+}
+
 mojom::AcceleratorInfoPtr
-AcceleratorConfigurationProvider::CreateAcceleratorInfo(
+AcceleratorConfigurationProvider::CreateTextAcceleratorInfo(
+    const AcceleratorTextDetails& details) {
+  mojom::AcceleratorInfoPtr info_mojom = mojom::AcceleratorInfo::New();
+  info_mojom->locked = true;
+  info_mojom->type = mojom::AcceleratorType::kDefault;
+  info_mojom->state = mojom::AcceleratorState::kEnabled;
+  info_mojom->layout_properties =
+      mojom::LayoutStyleProperties::NewTextAccelerator(
+          CreateTextAcceleratorParts());
+  return info_mojom;
+}
+
+mojom::AcceleratorInfoPtr
+AcceleratorConfigurationProvider::CreateDefaultAcceleratorInfo(
     const ui::Accelerator& accelerator,
     bool locked,
     mojom::AcceleratorType type,
     mojom::AcceleratorState state) const {
   mojom::AcceleratorInfoPtr info_mojom = mojom::AcceleratorInfo::New();
-  info_mojom->accelerator = accelerator;
-  info_mojom->key_display = GetKeyDisplay(accelerator.key_code());
   info_mojom->locked = locked;
   info_mojom->type = type;
   info_mojom->state = state;
+  info_mojom->layout_properties =
+      mojom::LayoutStyleProperties::NewDefaultAccelerator(
+          CreateDefaultAcceleratorProps(accelerator));
 
   return info_mojom;
 }
@@ -299,9 +349,9 @@ AcceleratorConfigurationProvider::CreateBaseAcceleratorInfo(
     ui::Accelerator accelerator) const {
   // TODO(longbowei): Some accelerators should not be locked when customization
   // is allowed.
-  return CreateAcceleratorInfo(accelerator, /*locked=*/true,
-                               GetAcceleratorType(accelerator),
-                               mojom::AcceleratorState::kEnabled);
+  return CreateDefaultAcceleratorInfo(accelerator, /*locked=*/true,
+                                      GetAcceleratorType(accelerator),
+                                      mojom::AcceleratorState::kEnabled);
 }
 
 mojom::AcceleratorInfoPtr
@@ -407,6 +457,21 @@ AcceleratorConfigurationProvider::CreateConfigurationMap() {
       accelerators_mojom.emplace(action_id, std::move(infos_mojom));
     }
     accelerator_config.emplace(source, std::move(accelerators_mojom));
+  }
+
+  // Add non-configuarable accelerators.
+  for (const auto& [ambient_action_id, accelerator_text_details] :
+       non_configurable_actions_mapping_) {
+    ActionIdToAcceleratorsInfoMap non_configurable_accelerators;
+    // For text based layout accelerators, we always expect this to be a vector
+    // with a single element.
+    std::vector<mojom::AcceleratorInfoPtr> text_accelerators_info;
+    text_accelerators_info.push_back(
+        CreateTextAcceleratorInfo(accelerator_text_details));
+    non_configurable_accelerators.emplace(ambient_action_id,
+                                          std::move(text_accelerators_info));
+    accelerator_config.emplace(mojom::AcceleratorSource::kAmbient,
+                               std::move(non_configurable_accelerators));
   }
   return accelerator_config;
 }

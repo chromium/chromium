@@ -3615,6 +3615,12 @@ Connect your device to power.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY" translateable="false" desc="Label for accelerator action - Move focus to popups and dialogs.">
         Move focus to popups and dialogs
       </message>
+      <message name="IDS_TEXT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE" translateable="false" desc="Label for accelerator action - Go to tabs 1 through 8.">
+        Go to tabs 1 through 8
+      </message>
+      <message name="IDS_TEXT_ACCELERATOR_GO_TO_TAB_IN_RANGE" translateable="false" desc="Action for accelerator action - Go to tabs 1 through 8.">
+        <ph name="MODIFIER">$1<ex>ctrl</ex></ph> + <ph name="KEY_ONE">$2<ex>1</ex></ph> through <ph name="KEY_TWO">$3<ex>8</ex></ph>
+      </message>
 
       <!-- Tray scale strings -->
       <message name="IDS_ASH_STATUS_TRAY_SCALE" desc="The label used in scale setting detailed page of ash tray popup.">
