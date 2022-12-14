@@ -43,7 +43,7 @@
 .vpython   text eol=lf
 codereview.settings   text eol=lf
 DEPS   text eol=lf
-ENG_REVIEW_OWNERS   text eol=lf
+ATL_OWNERS   text eol=lf
 LICENSE text eol=lf
 LICENSE.* text eol=lf
 MAJOR_BRANCH_DATE   text eol=lf

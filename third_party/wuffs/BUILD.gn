@@ -25,7 +25,7 @@
 #
 # In summary, non-trivial changes to how Chromium uses third_party/wuffs (i.e.
 # this BUILD.gn file), both adding new build targets or changing existing build
-# targets' configuration or visibility, require consulting ENG_REVIEW_OWNERS,
+# targets' configuration or visibility, require consulting ATL_OWNERS,
 # as per the "adding_to_third_party.md" link above.
 
 import("//third_party/wuffs/config.gni")

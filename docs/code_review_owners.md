@@ -40,8 +40,7 @@ One-off CLs do not need to go through Large Scale Changes. If the CLs make
 only mechanical changes associated with changes in //base/ APIs, //build/ APIs,
 //content/ APIs, //url/ APIs or //third_party/blink/public/APIs, the API owners can set `Owners-Override`.
 
-For other one-off CLs, [Chrome Eng Review members](https://chromium.googlesource.com/chromium/src/+/HEAD/ENG_REVIEW_OWNERS)
-can set `Owners-Override`.
+For other one-off CLs, [Chrome ATLs](../ATL_OWNERS) can set `Owners-Override`.
 
 ### How does Rubber Stamper bot work?
 

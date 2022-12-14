@@ -120,7 +120,7 @@ the following process:
       be escalated to the owners of the parent directory (or directories)
       as necessary to provide enough of votes.
     * If there are objections, then the decision should be escalated to
-      the [../CHROME_ENG_REVIEW](//CHROME_ENG_REVIEW) for resolution.
+      the [../ATL_OWNERS](../ATL_OWNERS) for resolution.
 
 Note: For the purpose of not slowing down code review, Chromium removes
 inactive owners (e.g., those who made no contributions for multiple quarters)
@@ -152,20 +152,20 @@ A `*` indicates that all committers are owners:
 
 The text `set noparent` will stop owner propagation from parent directories.
 This should be rarely used. If you want to use `set noparent` except for IPC
-related files, please first reach out to chrome-eng-review@google.com.
+related files, please first reach out to chrome-atls@google.com.
 
 You have to use `set noparent` together with a reference to a file that lists
 the owners for the given use case. Approved use cases are listed in
 `//build/OWNERS.setnoparent`. Owners listed in those files are expected to
-execute special governance functions such as eng review or ipc security review.
+execute special governance functions such as ATL reviews or ipc security review.
 Every set of owners should implement their own means of auditing membership. The
 minimum expectation is that membership in those files is reevaluated on
 project, or affiliation changes.
 
-In this example, only the eng reviewers are owners:
+In this example, only the ATLs are owners:
 ```
 set noparent
-file://ENG_REVIEW_OWNERS
+file://ATL_OWNERS
 ```
 
 The `per-file` directive allows owners to be added that apply only to files
@@ -196,7 +196,7 @@ Setting the `Owners-Override +1` label will bypass OWNERS enforcement. Active
 [sheriffs](sheriffs.md), Release Program Managers,
 [Large Scale Changes](#large-scale-changes),
 [Global Approvers](#global-approvals) reviewers,
-[Chrome Eng Review members](https://chromium.googlesource.com/chromium/src/+/HEAD/ENG_REVIEW_OWNERS)
+[Chrome ATLs](../ATL_OWNERS)
 have this capability. The power to use Owners-Override should be restricted
 as follows:
 
@@ -209,10 +209,10 @@ as follows:
     mechanical CLs associated with their API changes. For example,
     //base/OWNERS can set Owners-Override on mechanical CLs associated with
     //base/ API changes.
-  * Chrome Eng Review members can set Owners-Override on any changes to help
-    with cases that cannot be handled by the above groups and expedite CLs
-    when LSC is too heavyweight.. However, please use one of the above groups
-    before asking Chrome Eng Review members.
+  * Chrome ATLs can set Owners-Override on any changes to help with cases that
+    cannot be handled by the above groups and expedite CLs when LSC is too
+    heavyweight. However, please use one of the above groups before asking
+    Chrome ATLs.
 
 When you need Owners-Override on sheriffing CLs, please reach out to the
 Active Sheriffs and Release Program Managers first. If none of them is
@@ -233,7 +233,7 @@ rubberstamp +1s from affected directories' owners. This should only be used for
 mechanical updates to the affected directories.
 
 If you are making one-off CLs that touch many directories and cannot be
-handled by the global approvers, you can ask one of Chrome Eng Review members.
+handled by the global approvers, you can ask one of Chrome ATLs.
 
 ### Large Scale Changes
 You can use the [Large Scale Changes](process/lsc/large_scale_changes.md)

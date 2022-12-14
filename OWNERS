@@ -1,9 +1,9 @@
 # OWNERS_STATUS = build/OWNERS.status
 
-# Eng reviewer. Please reach out before adding new top-level directories.
+# Chrome ATLs. Please reach out before adding new top-level directories.
 # Note: this list is not for rubber-stamping mechanical changes that span the
 # code base. Please reach out to owners of top-level directories instead.
-file://ENG_REVIEW_OWNERS
+file://ATL_OWNERS
 
 per-file .clang-format=thakis@chromium.org
 per-file .clang-tidy=file://styleguide/c++/OWNERS

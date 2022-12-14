@@ -47,7 +47,7 @@ needed, except to configure and guide the tools (e.g. via `third_party.toml`).
 
 At this time adding new 3rd party crates requires a review by:
 
-- `//build/rust/OWNERS`- i.e. a Chrome Eng Review is not needed while broader
+- `//build/rust/OWNERS`- i.e. a Chrome ATL review is not needed while broader
   Rust usage is not allowed / while Rust usage remains an experiment.
 - security@chromium.org (or chrome-security@google.com, Google-only)
     - Earlier examples of audits/documents/emails that are good role models

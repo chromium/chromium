@@ -38,7 +38,7 @@ def RunGeneratingTests():
 
 
 def main():
-  if not os.path.exists("ENG_REVIEW_OWNERS"):
+  if not os.path.exists("ATL_OWNERS"):
     sys.stderr.write(
         "Please run run_all_tests.py from the root dir of Chromium")
     return -1

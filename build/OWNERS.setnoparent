@@ -2,7 +2,7 @@
 # docs/code_reviews.md#owners-file-details for more details.
 
 # Overall project governance.
-file://ENG_REVIEW_OWNERS
+file://ATL_OWNERS
 
 # Third-party dependency review, see //docs/adding_to_third_party.md
 file://third_party/OWNERS

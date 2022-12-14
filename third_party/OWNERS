@@ -11,8 +11,8 @@
 # you're making changes and there isn't a more obvious person, the owner is
 # probably you!
 
-# Eng reviewer
-file://ENG_REVIEW_OWNERS
+# ATL reviewer
+file://ATL_OWNERS
 
 # Automatic round-robin assignment of reviewer for third-party licenses.
 # No one receives email to this list, just use it as a reviewer.

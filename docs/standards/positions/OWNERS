@@ -5,5 +5,5 @@ jyasskin@chromium.org
 
 # Override the OWNERS: * from the parent directory.
 set noparent
-file://ENG_REVIEW_OWNERS
+file://ATL_OWNERS
 file://third_party/blink/API_OWNERS
