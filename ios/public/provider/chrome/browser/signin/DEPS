@@ -21,4 +21,7 @@ specific_include_rules = {
   "chrome_identity_service_unittest\.mm": [
     "+ios/chrome/browser/signin/fake_system_identity.h",
   ],
+  "account_capabilities_fetcher_ios_unittest\.mm": [
+    "+ios/chrome/browser/signin/fake_system_identity.h",
+  ],
 }

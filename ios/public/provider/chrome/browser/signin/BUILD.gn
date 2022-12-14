@@ -122,14 +122,19 @@ source_set("constants") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "chrome_identity_service_unittest.mm" ]
+  sources = [
+    "account_capabilities_fetcher_ios_unittest.mm",
+    "chrome_identity_service_unittest.mm",
+  ]
   deps = [
     ":capabilities_types",
+    ":fetcher",
     ":signin",
     "//base",
     "//base/test:test_support",
     "//components/signin/internal/identity_manager",
     "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/public/provider/chrome/browser/signin:capabilities_types",
     "//testing/gmock",
     "//testing/gtest",
   ]
