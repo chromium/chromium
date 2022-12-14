@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 
 #include "base/i18n/base_i18n_export.h"
@@ -63,8 +64,18 @@
 //     }
 //   }
 
+// ICU iterator type. It is forward declared to avoid including transitively the
+// full ICU headers toward every dependent files.
+struct UBreakIterator;
+
 namespace base {
 namespace i18n {
+
+struct UBreakIteratorDeleter {
+  void operator()(UBreakIterator*);
+};
+using UBreakIteratorPtr =
+    std::unique_ptr<UBreakIterator, UBreakIteratorDeleter>;
 
 class BASE_I18N_EXPORT BreakIterator {
  public:
@@ -175,11 +186,7 @@ class BASE_I18N_EXPORT BreakIterator {
   size_t pos() const { return pos_; }
 
  private:
-  // ICU iterator, avoiding ICU ubrk.h dependence.
-  // This is actually an ICU UBreakiterator* type, which turns out to be
-  // a typedef for a void* in the ICU headers. Using void* directly prevents
-  // callers from needing access to the ICU public headers directory.
-  raw_ptr<void> iter_ = nullptr;
+  UBreakIteratorPtr iter_;
 
   // The string we're iterating over. Can be changed with SetText(...)
   StringPiece16 string_;
