@@ -2206,8 +2206,7 @@ FencedFrameURLMapping& NavigationRequest::GetFencedFrameURLMap() {
   // `inner_frame_tree` is true for navigations inside the main frame of a
   // nested fenced frame's `FrameTree`, and false otherwise. This is only the
   // case for the MPArch implementation of fenced frames.
-  bool is_inner_frame_tree =
-      frame_tree_node_->frame_tree().type() == FrameTree::Type::kFencedFrame;
+  bool is_inner_frame_tree = frame_tree_node_->IsInFencedFrameTree();
   FrameTreeNode* node_to_use =
       is_inner_frame_tree
           ? frame_tree_node_->render_manager()->GetOuterDelegateNode()
