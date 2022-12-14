@@ -128,8 +128,10 @@ class MockDropHandler : public WmDropHandler {
   void OnDragDrop(std::unique_ptr<OSExchangeData> data,
                   int modifiers) override {
     MockOnDragDrop();
-    on_drop_closure_.Run();
-    on_drop_closure_.Reset();
+    if (on_drop_closure_) {
+      on_drop_closure_.Run();
+      on_drop_closure_.Reset();
+    }
   }
 
   int OnDragMotion(const gfx::PointF& point,
@@ -501,9 +503,21 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDragPixelSurface) {
   SendMotionEvent(top_left);
 }
 
+// Emulating an incoming DnD session, ensures that data drag controller
+// fetches all the data for the mime-types offered by the source client.
 TEST_P(WaylandDataDragControllerTest, DropSeveralMimeTypes) {
-  EXPECT_CALL(*drop_handler_, MockOnDragEnter()).Times(1);
   const uint32_t surface_id = window_->root_surface()->get_surface_id();
+
+  // As data for each offered mime-type is asynchronously read (eg: using
+  // wl_display.sync callbacks, etc), a nested run loop is used to ensure
+  // it is reliably done. Furthermore, WmDropHandler::OnDragEnter() is expected
+  // to be called only once the data is fully fetched, so it's used here as
+  // condition to quit the loop and verify the expectations, otherwise some
+  // flakiness may be observed, see https://crbug.com/1395127.
+  base::RunLoop loop;
+  EXPECT_CALL(*drop_handler_, MockOnDragEnter()).WillOnce([&loop]() {
+    loop.Quit();
+  });
   PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
     auto* data_offer =
         server->data_device_manager()->data_device()->CreateAndSendDataOffer();
@@ -522,15 +536,13 @@ TEST_P(WaylandDataDragControllerTest, DropSeveralMimeTypes) {
         1002, surface->resource(), wl_fixed_from_int(entered_point.x()),
         wl_fixed_from_int(entered_point.y()), data_offer);
   });
+  loop.Run();
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
 
   EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(1);
-  base::RunLoop loop;
-  drop_handler_->SetOnDropClosure(loop.QuitClosure());
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     server->data_device_manager()->data_device()->OnDrop();
   });
-
-  loop.Run();
   Mock::VerifyAndClearExpectations(drop_handler_.get());
 
   ASSERT_NE(drop_handler_->dropped_data(), nullptr);
