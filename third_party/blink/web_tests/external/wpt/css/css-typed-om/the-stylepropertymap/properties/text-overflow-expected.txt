@@ -1,9 +1,12 @@
 This is a testharness.js-based test.
-PASS Can set 'text-overflow' to CSS-wide keywords
-PASS Can set 'text-overflow' to var() references
-PASS Can set 'text-overflow' to the 'clip' keyword
-PASS Can set 'text-overflow' to the 'ellipsis' keyword
-FAIL Can set 'text-overflow' to the 'fade' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Can set 'text-overflow' to CSS-wide keywords: initial
+PASS Can set 'text-overflow' to CSS-wide keywords: inherit
+PASS Can set 'text-overflow' to CSS-wide keywords: unset
+PASS Can set 'text-overflow' to CSS-wide keywords: revert
+PASS Can set 'text-overflow' to var() references:  var(--A)
+PASS Can set 'text-overflow' to the 'clip' keyword: clip
+PASS Can set 'text-overflow' to the 'ellipsis' keyword: ellipsis
+FAIL Can set 'text-overflow' to the 'fade' keyword: fade Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
 PASS Setting 'text-overflow' to a length throws TypeError
 PASS Setting 'text-overflow' to a percent throws TypeError
 PASS Setting 'text-overflow' to a time throws TypeError

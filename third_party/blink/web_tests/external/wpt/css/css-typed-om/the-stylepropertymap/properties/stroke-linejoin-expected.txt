@@ -1,12 +1,15 @@
 This is a testharness.js-based test.
-PASS Can set 'stroke-linejoin' to CSS-wide keywords
-PASS Can set 'stroke-linejoin' to var() references
-FAIL Can set 'stroke-linejoin' to the 'crop' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'stroke-linejoin' to the 'arcs' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-PASS Can set 'stroke-linejoin' to the 'miter' keyword
-PASS Can set 'stroke-linejoin' to the 'bevel' keyword
-PASS Can set 'stroke-linejoin' to the 'round' keyword
-FAIL Can set 'stroke-linejoin' to the 'stupid' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Can set 'stroke-linejoin' to CSS-wide keywords: initial
+PASS Can set 'stroke-linejoin' to CSS-wide keywords: inherit
+PASS Can set 'stroke-linejoin' to CSS-wide keywords: unset
+PASS Can set 'stroke-linejoin' to CSS-wide keywords: revert
+PASS Can set 'stroke-linejoin' to var() references:  var(--A)
+FAIL Can set 'stroke-linejoin' to the 'crop' keyword: crop Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'stroke-linejoin' to the 'arcs' keyword: arcs Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Can set 'stroke-linejoin' to the 'miter' keyword: miter
+PASS Can set 'stroke-linejoin' to the 'bevel' keyword: bevel
+PASS Can set 'stroke-linejoin' to the 'round' keyword: round
+FAIL Can set 'stroke-linejoin' to the 'stupid' keyword: stupid Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
 PASS Setting 'stroke-linejoin' to a length throws TypeError
 PASS Setting 'stroke-linejoin' to a percent throws TypeError
 PASS Setting 'stroke-linejoin' to a time throws TypeError

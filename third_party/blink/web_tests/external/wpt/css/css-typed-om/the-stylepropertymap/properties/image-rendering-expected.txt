@@ -1,11 +1,14 @@
 This is a testharness.js-based test.
-PASS Can set 'image-rendering' to CSS-wide keywords
-PASS Can set 'image-rendering' to var() references
-PASS Can set 'image-rendering' to the 'auto' keyword
-FAIL Can set 'image-rendering' to the 'smooth' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'image-rendering' to the 'high-quality' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'image-rendering' to the 'crisp-edges' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-PASS Can set 'image-rendering' to the 'pixelated' keyword
+PASS Can set 'image-rendering' to CSS-wide keywords: initial
+PASS Can set 'image-rendering' to CSS-wide keywords: inherit
+PASS Can set 'image-rendering' to CSS-wide keywords: unset
+PASS Can set 'image-rendering' to CSS-wide keywords: revert
+PASS Can set 'image-rendering' to var() references:  var(--A)
+PASS Can set 'image-rendering' to the 'auto' keyword: auto
+FAIL Can set 'image-rendering' to the 'smooth' keyword: smooth Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'image-rendering' to the 'high-quality' keyword: high-quality Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'image-rendering' to the 'crisp-edges' keyword: crisp-edges Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Can set 'image-rendering' to the 'pixelated' keyword: pixelated
 PASS Setting 'image-rendering' to a length throws TypeError
 PASS Setting 'image-rendering' to a percent throws TypeError
 PASS Setting 'image-rendering' to a time throws TypeError

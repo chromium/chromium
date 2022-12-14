@@ -1,9 +1,12 @@
 This is a testharness.js-based test.
-PASS Can set 'font-palette' to CSS-wide keywords
-PASS Can set 'font-palette' to var() references
-PASS Can set 'font-palette' to the 'normal' keyword
-PASS Can set 'font-palette' to the 'light' keyword
-PASS Can set 'font-palette' to the 'dark' keyword
+PASS Can set 'font-palette' to CSS-wide keywords: initial
+PASS Can set 'font-palette' to CSS-wide keywords: inherit
+PASS Can set 'font-palette' to CSS-wide keywords: unset
+PASS Can set 'font-palette' to CSS-wide keywords: revert
+PASS Can set 'font-palette' to var() references:  var(--A)
+PASS Can set 'font-palette' to the 'normal' keyword: normal
+PASS Can set 'font-palette' to the 'light' keyword: light
+PASS Can set 'font-palette' to the 'dark' keyword: dark
 PASS Setting 'font-palette' to a length throws TypeError
 PASS Setting 'font-palette' to a percent throws TypeError
 PASS Setting 'font-palette' to a time throws TypeError

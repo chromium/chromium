@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1214 tests; 1007 PASS, 207 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1214 tests; 1011 PASS, 203 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["hilitecolor","#00FFFF"]] "foo[]bar": execCommand("hilitecolor", false, "#00FFFF") return value
 PASS [["hilitecolor","#00FFFF"]] "foo[]bar" checks for modifications to non-editable content
 PASS [["hilitecolor","#00FFFF"]] "foo[]bar" compare innerHTML
@@ -1025,7 +1025,7 @@ FAIL [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<span style=backgroun
 PASS [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</font>": execCommand("stylewithcss", false, "true") return value
 PASS [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</font>": execCommand("hilitecolor", false, "#00FFFF") return value
 PASS [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</font>" checks for modifications to non-editable content
-FAIL [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"background-color:rgb(0, 255, 255)\"><font size=\"6\">foo</font></span>" but got "<font size=\"6\" style=\"background-color:rgb(0, 255, 255)\">foo</font>"
+PASS [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</font>" compare innerHTML
 PASS [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</font>" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</font>" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</font>" queryCommandValue("stylewithcss") before
@@ -1041,7 +1041,7 @@ FAIL [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</fo
 PASS [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</font>": execCommand("stylewithcss", false, "false") return value
 PASS [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</font>": execCommand("hilitecolor", false, "#00FFFF") return value
 PASS [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</font>" checks for modifications to non-editable content
-FAIL [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"background-color:rgb(0, 255, 255)\"><font size=\"6\">foo</font></span>" but got "<font size=\"6\" style=\"background-color:rgb(0, 255, 255)\">foo</font>"
+PASS [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</font>" compare innerHTML
 PASS [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</font>" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</font>" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</font>" queryCommandValue("stylewithcss") before
@@ -1057,7 +1057,7 @@ FAIL [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<font size=6>[foo]</f
 PASS [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<span style=font-size:xx-large>[foo]</span>": execCommand("stylewithcss", false, "true") return value
 PASS [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<span style=font-size:xx-large>[foo]</span>": execCommand("hilitecolor", false, "#00FFFF") return value
 PASS [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<span style=font-size:xx-large>[foo]</span>" checks for modifications to non-editable content
-FAIL [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<span style=font-size:xx-large>[foo]</span>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"background-color:rgb(0, 255, 255)\"><span style=\"font-size:xx-large\">foo</span></span>" but got "<span style=\"font-size:xx-large; background-color:rgb(0, 255, 255)\">foo</span>"
+PASS [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<span style=font-size:xx-large>[foo]</span>" compare innerHTML
 PASS [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<span style=font-size:xx-large>[foo]</span>" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<span style=font-size:xx-large>[foo]</span>" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<span style=font-size:xx-large>[foo]</span>" queryCommandValue("stylewithcss") before
@@ -1073,7 +1073,7 @@ FAIL [["stylewithcss","true"],["hilitecolor","#00FFFF"]] "<span style=font-size:
 PASS [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<span style=font-size:xx-large>[foo]</span>": execCommand("stylewithcss", false, "false") return value
 PASS [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<span style=font-size:xx-large>[foo]</span>": execCommand("hilitecolor", false, "#00FFFF") return value
 PASS [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<span style=font-size:xx-large>[foo]</span>" checks for modifications to non-editable content
-FAIL [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<span style=font-size:xx-large>[foo]</span>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"background-color:rgb(0, 255, 255)\"><span style=\"font-size:xx-large\">foo</span></span>" but got "<span style=\"font-size:xx-large; background-color:rgb(0, 255, 255)\">foo</span>"
+PASS [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<span style=font-size:xx-large>[foo]</span>" compare innerHTML
 PASS [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<span style=font-size:xx-large>[foo]</span>" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<span style=font-size:xx-large>[foo]</span>" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","false"],["hilitecolor","#00FFFF"]] "<span style=font-size:xx-large>[foo]</span>" queryCommandValue("stylewithcss") before

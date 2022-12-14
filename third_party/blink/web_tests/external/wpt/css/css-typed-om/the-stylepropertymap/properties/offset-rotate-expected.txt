@@ -1,9 +1,15 @@
 This is a testharness.js-based test.
-PASS Can set 'offset-rotate' to CSS-wide keywords
-PASS Can set 'offset-rotate' to var() references
-FAIL Can set 'offset-rotate' to the 'auto' keyword assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'offset-rotate' to the 'reverse' keyword assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-PASS Can set 'offset-rotate' to an angle
+PASS Can set 'offset-rotate' to CSS-wide keywords: initial
+PASS Can set 'offset-rotate' to CSS-wide keywords: inherit
+PASS Can set 'offset-rotate' to CSS-wide keywords: unset
+PASS Can set 'offset-rotate' to CSS-wide keywords: revert
+PASS Can set 'offset-rotate' to var() references:  var(--A)
+FAIL Can set 'offset-rotate' to the 'auto' keyword: auto assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+FAIL Can set 'offset-rotate' to the 'reverse' keyword: reverse assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+PASS Can set 'offset-rotate' to an angle: 0deg
+PASS Can set 'offset-rotate' to an angle: 3.14rad
+PASS Can set 'offset-rotate' to an angle: -3.14deg
+PASS Can set 'offset-rotate' to an angle: calc(0rad + 0deg)
 PASS Setting 'offset-rotate' to a length throws TypeError
 PASS Setting 'offset-rotate' to a percent throws TypeError
 PASS Setting 'offset-rotate' to a time throws TypeError

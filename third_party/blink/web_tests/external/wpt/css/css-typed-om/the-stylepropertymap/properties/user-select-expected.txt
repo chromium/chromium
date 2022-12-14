@@ -1,11 +1,14 @@
 This is a testharness.js-based test.
-PASS Can set 'user-select' to CSS-wide keywords
-PASS Can set 'user-select' to var() references
-PASS Can set 'user-select' to the 'auto' keyword
-PASS Can set 'user-select' to the 'text' keyword
-PASS Can set 'user-select' to the 'none' keyword
-FAIL Can set 'user-select' to the 'contain' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-PASS Can set 'user-select' to the 'all' keyword
+PASS Can set 'user-select' to CSS-wide keywords: initial
+PASS Can set 'user-select' to CSS-wide keywords: inherit
+PASS Can set 'user-select' to CSS-wide keywords: unset
+PASS Can set 'user-select' to CSS-wide keywords: revert
+PASS Can set 'user-select' to var() references:  var(--A)
+PASS Can set 'user-select' to the 'auto' keyword: auto
+PASS Can set 'user-select' to the 'text' keyword: text
+PASS Can set 'user-select' to the 'none' keyword: none
+FAIL Can set 'user-select' to the 'contain' keyword: contain Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Can set 'user-select' to the 'all' keyword: all
 PASS Setting 'user-select' to a length throws TypeError
 PASS Setting 'user-select' to a percent throws TypeError
 PASS Setting 'user-select' to a time throws TypeError

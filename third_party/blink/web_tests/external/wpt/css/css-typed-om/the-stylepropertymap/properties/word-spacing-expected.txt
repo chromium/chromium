@@ -1,9 +1,18 @@
 This is a testharness.js-based test.
-PASS Can set 'word-spacing' to CSS-wide keywords
-PASS Can set 'word-spacing' to var() references
-FAIL Can set 'word-spacing' to the 'normal' keyword assert_equals: expected "CSSKeywordValue" but got "CSSUnitValue"
-PASS Can set 'word-spacing' to a length
-FAIL Can set 'word-spacing' to a percent Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Can set 'word-spacing' to CSS-wide keywords: initial
+PASS Can set 'word-spacing' to CSS-wide keywords: inherit
+PASS Can set 'word-spacing' to CSS-wide keywords: unset
+PASS Can set 'word-spacing' to CSS-wide keywords: revert
+PASS Can set 'word-spacing' to var() references:  var(--A)
+FAIL Can set 'word-spacing' to the 'normal' keyword: normal assert_equals: expected "CSSKeywordValue" but got "CSSUnitValue"
+PASS Can set 'word-spacing' to a length: 0px
+PASS Can set 'word-spacing' to a length: -3.14em
+PASS Can set 'word-spacing' to a length: 3.14cm
+PASS Can set 'word-spacing' to a length: calc(0px + 0em)
+FAIL Can set 'word-spacing' to a percent: 0% Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'word-spacing' to a percent: -3.14% Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'word-spacing' to a percent: 3.14% Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'word-spacing' to a percent: calc(0% + 0%) Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
 PASS Setting 'word-spacing' to a time throws TypeError
 PASS Setting 'word-spacing' to an angle throws TypeError
 PASS Setting 'word-spacing' to a flexible length throws TypeError

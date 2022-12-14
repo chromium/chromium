@@ -1,9 +1,15 @@
 This is a testharness.js-based test.
-PASS Can set 'text-size-adjust' to CSS-wide keywords
-PASS Can set 'text-size-adjust' to var() references
-FAIL Can set 'text-size-adjust' to the 'none' keyword assert_equals: expected "CSSKeywordValue" but got "CSSUnitValue"
-PASS Can set 'text-size-adjust' to the 'auto' keyword
-FAIL Can set 'text-size-adjust' to a percent assert_equals: expected "CSSUnitValue" but got "CSSKeywordValue"
+PASS Can set 'text-size-adjust' to CSS-wide keywords: initial
+PASS Can set 'text-size-adjust' to CSS-wide keywords: inherit
+PASS Can set 'text-size-adjust' to CSS-wide keywords: unset
+PASS Can set 'text-size-adjust' to CSS-wide keywords: revert
+PASS Can set 'text-size-adjust' to var() references:  var(--A)
+FAIL Can set 'text-size-adjust' to the 'none' keyword: none assert_equals: expected "CSSKeywordValue" but got "CSSUnitValue"
+PASS Can set 'text-size-adjust' to the 'auto' keyword: auto
+PASS Can set 'text-size-adjust' to a percent: 0%
+FAIL Can set 'text-size-adjust' to a percent: -3.14% assert_equals: expected "CSSUnitValue" but got "CSSKeywordValue"
+PASS Can set 'text-size-adjust' to a percent: 3.14%
+PASS Can set 'text-size-adjust' to a percent: calc(0% + 0%)
 PASS Setting 'text-size-adjust' to a length throws TypeError
 PASS Setting 'text-size-adjust' to a time throws TypeError
 PASS Setting 'text-size-adjust' to an angle throws TypeError

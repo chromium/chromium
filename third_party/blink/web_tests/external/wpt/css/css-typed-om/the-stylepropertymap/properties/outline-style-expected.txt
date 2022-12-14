@@ -1,16 +1,19 @@
 This is a testharness.js-based test.
-PASS Can set 'outline-style' to CSS-wide keywords
-PASS Can set 'outline-style' to var() references
-FAIL Can set 'outline-style' to the 'auto' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-PASS Can set 'outline-style' to the 'none' keyword
-PASS Can set 'outline-style' to the 'dotted' keyword
-PASS Can set 'outline-style' to the 'dashed' keyword
-PASS Can set 'outline-style' to the 'solid' keyword
-PASS Can set 'outline-style' to the 'double' keyword
-PASS Can set 'outline-style' to the 'groove' keyword
-PASS Can set 'outline-style' to the 'ridge' keyword
-PASS Can set 'outline-style' to the 'inset' keyword
-PASS Can set 'outline-style' to the 'outset' keyword
+PASS Can set 'outline-style' to CSS-wide keywords: initial
+PASS Can set 'outline-style' to CSS-wide keywords: inherit
+PASS Can set 'outline-style' to CSS-wide keywords: unset
+PASS Can set 'outline-style' to CSS-wide keywords: revert
+PASS Can set 'outline-style' to var() references:  var(--A)
+FAIL Can set 'outline-style' to the 'auto' keyword: auto Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Can set 'outline-style' to the 'none' keyword: none
+PASS Can set 'outline-style' to the 'dotted' keyword: dotted
+PASS Can set 'outline-style' to the 'dashed' keyword: dashed
+PASS Can set 'outline-style' to the 'solid' keyword: solid
+PASS Can set 'outline-style' to the 'double' keyword: double
+PASS Can set 'outline-style' to the 'groove' keyword: groove
+PASS Can set 'outline-style' to the 'ridge' keyword: ridge
+PASS Can set 'outline-style' to the 'inset' keyword: inset
+PASS Can set 'outline-style' to the 'outset' keyword: outset
 PASS Setting 'outline-style' to a length throws TypeError
 PASS Setting 'outline-style' to a percent throws TypeError
 PASS Setting 'outline-style' to a time throws TypeError

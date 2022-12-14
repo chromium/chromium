@@ -1,9 +1,12 @@
 This is a testharness.js-based test.
-PASS Can set 'overflow-wrap' to CSS-wide keywords
-PASS Can set 'overflow-wrap' to var() references
-PASS Can set 'overflow-wrap' to the 'normal' keyword
-PASS Can set 'overflow-wrap' to the 'break-word' keyword
-FAIL Can set 'overflow-wrap' to the 'break-spaces' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Can set 'overflow-wrap' to CSS-wide keywords: initial
+PASS Can set 'overflow-wrap' to CSS-wide keywords: inherit
+PASS Can set 'overflow-wrap' to CSS-wide keywords: unset
+PASS Can set 'overflow-wrap' to CSS-wide keywords: revert
+PASS Can set 'overflow-wrap' to var() references:  var(--A)
+PASS Can set 'overflow-wrap' to the 'normal' keyword: normal
+PASS Can set 'overflow-wrap' to the 'break-word' keyword: break-word
+FAIL Can set 'overflow-wrap' to the 'break-spaces' keyword: break-spaces Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
 PASS Setting 'overflow-wrap' to a length throws TypeError
 PASS Setting 'overflow-wrap' to a percent throws TypeError
 PASS Setting 'overflow-wrap' to a time throws TypeError

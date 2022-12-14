@@ -3016,6 +3016,10 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/storage-founda
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Win11 ] external/wpt/credential-management/fedcm-iframe.https.html [ Timeout ]
+crbug.com/626703 [ Win11 ] external/wpt/fetch/metadata/generated/element-meta-refresh.optional.sub.html [ Timeout ]
+crbug.com/626703 [ Win11 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Win11 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=FollowRedirect [ Timeout ]
 crbug.com/626703 external/wpt/css/css-contain/container-queries/nested-query-containers.html [ Crash Failure Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/content-security-policy/embedded-enforcement/subsumption_algorithm-general.html [ Timeout ]

@@ -1,9 +1,12 @@
 This is a testharness.js-based test.
-PASS Can set 'transform-box' to CSS-wide keywords
-PASS Can set 'transform-box' to var() references
-FAIL Can set 'transform-box' to the 'border-box' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-PASS Can set 'transform-box' to the 'fill-box' keyword
-PASS Can set 'transform-box' to the 'view-box' keyword
+PASS Can set 'transform-box' to CSS-wide keywords: initial
+PASS Can set 'transform-box' to CSS-wide keywords: inherit
+PASS Can set 'transform-box' to CSS-wide keywords: unset
+PASS Can set 'transform-box' to CSS-wide keywords: revert
+PASS Can set 'transform-box' to var() references:  var(--A)
+FAIL Can set 'transform-box' to the 'border-box' keyword: border-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Can set 'transform-box' to the 'fill-box' keyword: fill-box
+PASS Can set 'transform-box' to the 'view-box' keyword: view-box
 PASS Setting 'transform-box' to a length throws TypeError
 PASS Setting 'transform-box' to a percent throws TypeError
 PASS Setting 'transform-box' to a time throws TypeError

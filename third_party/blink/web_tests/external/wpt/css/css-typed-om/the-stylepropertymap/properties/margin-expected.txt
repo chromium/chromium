@@ -1,51 +1,90 @@
 This is a testharness.js-based test.
-Found 56 tests; 54 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS Can set 'margin-top' to CSS-wide keywords
-PASS Can set 'margin-top' to var() references
-PASS Can set 'margin-top' to the 'auto' keyword
-PASS Can set 'margin-top' to a percent
-PASS Can set 'margin-top' to a length
+Found 95 tests; 90 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Can set 'margin-top' to CSS-wide keywords: initial
+PASS Can set 'margin-top' to CSS-wide keywords: inherit
+PASS Can set 'margin-top' to CSS-wide keywords: unset
+PASS Can set 'margin-top' to CSS-wide keywords: revert
+PASS Can set 'margin-top' to var() references:  var(--A)
+PASS Can set 'margin-top' to the 'auto' keyword: auto
+PASS Can set 'margin-top' to a percent: 0%
+PASS Can set 'margin-top' to a percent: -3.14%
+PASS Can set 'margin-top' to a percent: 3.14%
+PASS Can set 'margin-top' to a percent: calc(0% + 0%)
+PASS Can set 'margin-top' to a length: 0px
+PASS Can set 'margin-top' to a length: -3.14em
+PASS Can set 'margin-top' to a length: 3.14cm
+PASS Can set 'margin-top' to a length: calc(0px + 0em)
 PASS Setting 'margin-top' to a time throws TypeError
 PASS Setting 'margin-top' to an angle throws TypeError
 PASS Setting 'margin-top' to a flexible length throws TypeError
 PASS Setting 'margin-top' to a number throws TypeError
 PASS Setting 'margin-top' to a URL throws TypeError
 PASS Setting 'margin-top' to a transform throws TypeError
-PASS Can set 'margin-left' to CSS-wide keywords
-PASS Can set 'margin-left' to var() references
-PASS Can set 'margin-left' to the 'auto' keyword
-PASS Can set 'margin-left' to a percent
-PASS Can set 'margin-left' to a length
+PASS Can set 'margin-left' to CSS-wide keywords: initial
+PASS Can set 'margin-left' to CSS-wide keywords: inherit
+PASS Can set 'margin-left' to CSS-wide keywords: unset
+PASS Can set 'margin-left' to CSS-wide keywords: revert
+PASS Can set 'margin-left' to var() references:  var(--A)
+PASS Can set 'margin-left' to the 'auto' keyword: auto
+PASS Can set 'margin-left' to a percent: 0%
+PASS Can set 'margin-left' to a percent: -3.14%
+PASS Can set 'margin-left' to a percent: 3.14%
+PASS Can set 'margin-left' to a percent: calc(0% + 0%)
+PASS Can set 'margin-left' to a length: 0px
+PASS Can set 'margin-left' to a length: -3.14em
+PASS Can set 'margin-left' to a length: 3.14cm
+PASS Can set 'margin-left' to a length: calc(0px + 0em)
 PASS Setting 'margin-left' to a time throws TypeError
 PASS Setting 'margin-left' to an angle throws TypeError
 PASS Setting 'margin-left' to a flexible length throws TypeError
 PASS Setting 'margin-left' to a number throws TypeError
 PASS Setting 'margin-left' to a URL throws TypeError
 PASS Setting 'margin-left' to a transform throws TypeError
-PASS Can set 'margin-right' to CSS-wide keywords
-PASS Can set 'margin-right' to var() references
-PASS Can set 'margin-right' to the 'auto' keyword
-PASS Can set 'margin-right' to a percent
-PASS Can set 'margin-right' to a length
+PASS Can set 'margin-right' to CSS-wide keywords: initial
+PASS Can set 'margin-right' to CSS-wide keywords: inherit
+PASS Can set 'margin-right' to CSS-wide keywords: unset
+PASS Can set 'margin-right' to CSS-wide keywords: revert
+PASS Can set 'margin-right' to var() references:  var(--A)
+PASS Can set 'margin-right' to the 'auto' keyword: auto
+PASS Can set 'margin-right' to a percent: 0%
+PASS Can set 'margin-right' to a percent: -3.14%
+PASS Can set 'margin-right' to a percent: 3.14%
+PASS Can set 'margin-right' to a percent: calc(0% + 0%)
+PASS Can set 'margin-right' to a length: 0px
+PASS Can set 'margin-right' to a length: -3.14em
+PASS Can set 'margin-right' to a length: 3.14cm
+PASS Can set 'margin-right' to a length: calc(0px + 0em)
 PASS Setting 'margin-right' to a time throws TypeError
 PASS Setting 'margin-right' to an angle throws TypeError
 PASS Setting 'margin-right' to a flexible length throws TypeError
 PASS Setting 'margin-right' to a number throws TypeError
 PASS Setting 'margin-right' to a URL throws TypeError
 PASS Setting 'margin-right' to a transform throws TypeError
-PASS Can set 'margin-bottom' to CSS-wide keywords
-PASS Can set 'margin-bottom' to var() references
-PASS Can set 'margin-bottom' to the 'auto' keyword
-PASS Can set 'margin-bottom' to a percent
-PASS Can set 'margin-bottom' to a length
+PASS Can set 'margin-bottom' to CSS-wide keywords: initial
+PASS Can set 'margin-bottom' to CSS-wide keywords: inherit
+PASS Can set 'margin-bottom' to CSS-wide keywords: unset
+PASS Can set 'margin-bottom' to CSS-wide keywords: revert
+PASS Can set 'margin-bottom' to var() references:  var(--A)
+PASS Can set 'margin-bottom' to the 'auto' keyword: auto
+PASS Can set 'margin-bottom' to a percent: 0%
+PASS Can set 'margin-bottom' to a percent: -3.14%
+PASS Can set 'margin-bottom' to a percent: 3.14%
+PASS Can set 'margin-bottom' to a percent: calc(0% + 0%)
+PASS Can set 'margin-bottom' to a length: 0px
+PASS Can set 'margin-bottom' to a length: -3.14em
+PASS Can set 'margin-bottom' to a length: 3.14cm
+PASS Can set 'margin-bottom' to a length: calc(0px + 0em)
 PASS Setting 'margin-bottom' to a time throws TypeError
 PASS Setting 'margin-bottom' to an angle throws TypeError
 PASS Setting 'margin-bottom' to a flexible length throws TypeError
 PASS Setting 'margin-bottom' to a number throws TypeError
 PASS Setting 'margin-bottom' to a URL throws TypeError
 PASS Setting 'margin-bottom' to a transform throws TypeError
-FAIL Can set 'margin' to CSS-wide keywords assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'margin' to var() references assert_equals: expected "CSSUnparsedValue" but got "CSSStyleValue"
+FAIL Can set 'margin' to CSS-wide keywords: initial assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+FAIL Can set 'margin' to CSS-wide keywords: inherit assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+FAIL Can set 'margin' to CSS-wide keywords: unset assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+FAIL Can set 'margin' to CSS-wide keywords: revert assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+FAIL Can set 'margin' to var() references:  var(--A) assert_equals: expected "CSSUnparsedValue" but got "CSSStyleValue"
 PASS Setting 'margin' to a length throws TypeError
 PASS Setting 'margin' to a percent throws TypeError
 PASS Setting 'margin' to a time throws TypeError

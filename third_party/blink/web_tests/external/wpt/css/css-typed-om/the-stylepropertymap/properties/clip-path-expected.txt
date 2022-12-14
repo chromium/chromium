@@ -1,15 +1,17 @@
 This is a testharness.js-based test.
-PASS Can set 'clip-path' to CSS-wide keywords
-PASS Can set 'clip-path' to var() references
-PASS Can set 'clip-path' to the 'none' keyword
-FAIL Can set 'clip-path' to the 'fill-box' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'clip-path' to the 'stroke-box' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'clip-path' to the 'view-box' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'clip-path' to the 'margin-box' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'clip-path' to the 'border-box' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'clip-path' to the 'padding-box' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'clip-path' to the 'content-box' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-PASS Can set 'clip-path' to a URL
+PASS Can set 'clip-path' to CSS-wide keywords: initial
+PASS Can set 'clip-path' to CSS-wide keywords: inherit
+PASS Can set 'clip-path' to CSS-wide keywords: unset
+PASS Can set 'clip-path' to CSS-wide keywords: revert
+PASS Can set 'clip-path' to var() references:  var(--A)
+PASS Can set 'clip-path' to the 'none' keyword: none
+FAIL Can set 'clip-path' to the 'fill-box' keyword: fill-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'clip-path' to the 'stroke-box' keyword: stroke-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'clip-path' to the 'view-box' keyword: view-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'clip-path' to the 'margin-box' keyword: margin-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'clip-path' to the 'border-box' keyword: border-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'clip-path' to the 'padding-box' keyword: padding-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'clip-path' to the 'content-box' keyword: content-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
 PASS Setting 'clip-path' to a length throws TypeError
 PASS Setting 'clip-path' to a percent throws TypeError
 PASS Setting 'clip-path' to a time throws TypeError

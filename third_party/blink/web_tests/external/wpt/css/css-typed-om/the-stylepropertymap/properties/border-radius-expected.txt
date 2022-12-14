@@ -1,38 +1,75 @@
 This is a testharness.js-based test.
-PASS Can set 'border-top-left-radius' to CSS-wide keywords
-PASS Can set 'border-top-left-radius' to var() references
-FAIL Can set 'border-top-left-radius' to a length assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
-FAIL Can set 'border-top-left-radius' to a percent assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+Found 80 tests; 48 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Can set 'border-top-left-radius' to CSS-wide keywords: initial
+PASS Can set 'border-top-left-radius' to CSS-wide keywords: inherit
+PASS Can set 'border-top-left-radius' to CSS-wide keywords: unset
+PASS Can set 'border-top-left-radius' to CSS-wide keywords: revert
+PASS Can set 'border-top-left-radius' to var() references:  var(--A)
+FAIL Can set 'border-top-left-radius' to a length: 0px assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-top-left-radius' to a length: -3.14em assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-top-left-radius' to a length: 3.14cm assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-top-left-radius' to a length: calc(0px + 0em) assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-top-left-radius' to a percent: 0% assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-top-left-radius' to a percent: -3.14% assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-top-left-radius' to a percent: 3.14% assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-top-left-radius' to a percent: calc(0% + 0%) assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
 PASS Setting 'border-top-left-radius' to a time throws TypeError
 PASS Setting 'border-top-left-radius' to an angle throws TypeError
 PASS Setting 'border-top-left-radius' to a flexible length throws TypeError
 PASS Setting 'border-top-left-radius' to a number throws TypeError
 PASS Setting 'border-top-left-radius' to a URL throws TypeError
 PASS Setting 'border-top-left-radius' to a transform throws TypeError
-PASS Can set 'border-top-right-radius' to CSS-wide keywords
-PASS Can set 'border-top-right-radius' to var() references
-FAIL Can set 'border-top-right-radius' to a length assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
-FAIL Can set 'border-top-right-radius' to a percent assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+PASS Can set 'border-top-right-radius' to CSS-wide keywords: initial
+PASS Can set 'border-top-right-radius' to CSS-wide keywords: inherit
+PASS Can set 'border-top-right-radius' to CSS-wide keywords: unset
+PASS Can set 'border-top-right-radius' to CSS-wide keywords: revert
+PASS Can set 'border-top-right-radius' to var() references:  var(--A)
+FAIL Can set 'border-top-right-radius' to a length: 0px assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-top-right-radius' to a length: -3.14em assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-top-right-radius' to a length: 3.14cm assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-top-right-radius' to a length: calc(0px + 0em) assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-top-right-radius' to a percent: 0% assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-top-right-radius' to a percent: -3.14% assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-top-right-radius' to a percent: 3.14% assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-top-right-radius' to a percent: calc(0% + 0%) assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
 PASS Setting 'border-top-right-radius' to a time throws TypeError
 PASS Setting 'border-top-right-radius' to an angle throws TypeError
 PASS Setting 'border-top-right-radius' to a flexible length throws TypeError
 PASS Setting 'border-top-right-radius' to a number throws TypeError
 PASS Setting 'border-top-right-radius' to a URL throws TypeError
 PASS Setting 'border-top-right-radius' to a transform throws TypeError
-PASS Can set 'border-bottom-left-radius' to CSS-wide keywords
-PASS Can set 'border-bottom-left-radius' to var() references
-FAIL Can set 'border-bottom-left-radius' to a length assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
-FAIL Can set 'border-bottom-left-radius' to a percent assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+PASS Can set 'border-bottom-left-radius' to CSS-wide keywords: initial
+PASS Can set 'border-bottom-left-radius' to CSS-wide keywords: inherit
+PASS Can set 'border-bottom-left-radius' to CSS-wide keywords: unset
+PASS Can set 'border-bottom-left-radius' to CSS-wide keywords: revert
+PASS Can set 'border-bottom-left-radius' to var() references:  var(--A)
+FAIL Can set 'border-bottom-left-radius' to a length: 0px assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-bottom-left-radius' to a length: -3.14em assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-bottom-left-radius' to a length: 3.14cm assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-bottom-left-radius' to a length: calc(0px + 0em) assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-bottom-left-radius' to a percent: 0% assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-bottom-left-radius' to a percent: -3.14% assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-bottom-left-radius' to a percent: 3.14% assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-bottom-left-radius' to a percent: calc(0% + 0%) assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
 PASS Setting 'border-bottom-left-radius' to a time throws TypeError
 PASS Setting 'border-bottom-left-radius' to an angle throws TypeError
 PASS Setting 'border-bottom-left-radius' to a flexible length throws TypeError
 PASS Setting 'border-bottom-left-radius' to a number throws TypeError
 PASS Setting 'border-bottom-left-radius' to a URL throws TypeError
 PASS Setting 'border-bottom-left-radius' to a transform throws TypeError
-PASS Can set 'border-bottom-right-radius' to CSS-wide keywords
-PASS Can set 'border-bottom-right-radius' to var() references
-FAIL Can set 'border-bottom-right-radius' to a length assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
-FAIL Can set 'border-bottom-right-radius' to a percent assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+PASS Can set 'border-bottom-right-radius' to CSS-wide keywords: initial
+PASS Can set 'border-bottom-right-radius' to CSS-wide keywords: inherit
+PASS Can set 'border-bottom-right-radius' to CSS-wide keywords: unset
+PASS Can set 'border-bottom-right-radius' to CSS-wide keywords: revert
+PASS Can set 'border-bottom-right-radius' to var() references:  var(--A)
+FAIL Can set 'border-bottom-right-radius' to a length: 0px assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-bottom-right-radius' to a length: -3.14em assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-bottom-right-radius' to a length: 3.14cm assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-bottom-right-radius' to a length: calc(0px + 0em) assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-bottom-right-radius' to a percent: 0% assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-bottom-right-radius' to a percent: -3.14% assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-bottom-right-radius' to a percent: 3.14% assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
+FAIL Can set 'border-bottom-right-radius' to a percent: calc(0% + 0%) assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSUnitValue]"
 PASS Setting 'border-bottom-right-radius' to a time throws TypeError
 PASS Setting 'border-bottom-right-radius' to an angle throws TypeError
 PASS Setting 'border-bottom-right-radius' to a flexible length throws TypeError

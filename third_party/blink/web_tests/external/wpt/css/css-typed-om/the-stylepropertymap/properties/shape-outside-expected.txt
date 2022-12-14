@@ -1,11 +1,14 @@
 This is a testharness.js-based test.
-PASS Can set 'shape-outside' to CSS-wide keywords
-PASS Can set 'shape-outside' to var() references
-PASS Can set 'shape-outside' to the 'none' keyword
-FAIL Can set 'shape-outside' to the 'margin-box' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'shape-outside' to the 'border-box' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'shape-outside' to the 'padding-box' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'shape-outside' to the 'content-box' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Can set 'shape-outside' to CSS-wide keywords: initial
+PASS Can set 'shape-outside' to CSS-wide keywords: inherit
+PASS Can set 'shape-outside' to CSS-wide keywords: unset
+PASS Can set 'shape-outside' to CSS-wide keywords: revert
+PASS Can set 'shape-outside' to var() references:  var(--A)
+PASS Can set 'shape-outside' to the 'none' keyword: none
+FAIL Can set 'shape-outside' to the 'margin-box' keyword: margin-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'shape-outside' to the 'border-box' keyword: border-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'shape-outside' to the 'padding-box' keyword: padding-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'shape-outside' to the 'content-box' keyword: content-box Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
 PASS Can set 'shape-outside' to an image
 PASS Setting 'shape-outside' to a length throws TypeError
 PASS Setting 'shape-outside' to a percent throws TypeError

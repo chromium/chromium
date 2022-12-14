@@ -1,8 +1,14 @@
 This is a testharness.js-based test.
-PASS Can set 'letter-spacing' to CSS-wide keywords
-PASS Can set 'letter-spacing' to var() references
-PASS Can set 'letter-spacing' to the 'normal' keyword
-FAIL Can set 'letter-spacing' to a length assert_equals: expected "CSSUnitValue" but got "CSSKeywordValue"
+PASS Can set 'letter-spacing' to CSS-wide keywords: initial
+PASS Can set 'letter-spacing' to CSS-wide keywords: inherit
+PASS Can set 'letter-spacing' to CSS-wide keywords: unset
+PASS Can set 'letter-spacing' to CSS-wide keywords: revert
+PASS Can set 'letter-spacing' to var() references:  var(--A)
+PASS Can set 'letter-spacing' to the 'normal' keyword: normal
+FAIL Can set 'letter-spacing' to a length: 0px assert_equals: expected "CSSUnitValue" but got "CSSKeywordValue"
+PASS Can set 'letter-spacing' to a length: -3.14em
+PASS Can set 'letter-spacing' to a length: 3.14cm
+FAIL Can set 'letter-spacing' to a length: calc(0px + 0em) assert_class_string: relative lengths must compute to a CSSUnitValue expected "[object CSSUnitValue]" but got "[object CSSKeywordValue]"
 PASS Setting 'letter-spacing' to a percent throws TypeError
 PASS Setting 'letter-spacing' to a time throws TypeError
 PASS Setting 'letter-spacing' to an angle throws TypeError

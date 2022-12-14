@@ -1,9 +1,12 @@
 This is a testharness.js-based test.
-PASS Can set 'font-style' to CSS-wide keywords
-PASS Can set 'font-style' to var() references
-PASS Can set 'font-style' to the 'normal' keyword
-PASS Can set 'font-style' to the 'italic' keyword
-FAIL Can set 'font-style' to the 'oblique' keyword assert_equals: expected "oblique" but got "italic"
+PASS Can set 'font-style' to CSS-wide keywords: initial
+PASS Can set 'font-style' to CSS-wide keywords: inherit
+PASS Can set 'font-style' to CSS-wide keywords: unset
+PASS Can set 'font-style' to CSS-wide keywords: revert
+PASS Can set 'font-style' to var() references:  var(--A)
+PASS Can set 'font-style' to the 'normal' keyword: normal
+PASS Can set 'font-style' to the 'italic' keyword: italic
+FAIL Can set 'font-style' to the 'oblique' keyword: oblique assert_equals: expected "oblique" but got "italic"
 PASS Setting 'font-style' to a length throws TypeError
 PASS Setting 'font-style' to a percent throws TypeError
 PASS Setting 'font-style' to a time throws TypeError

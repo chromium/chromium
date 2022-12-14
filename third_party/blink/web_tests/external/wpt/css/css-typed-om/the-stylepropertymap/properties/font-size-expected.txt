@@ -1,57 +1,84 @@
 This is a testharness.js-based test.
-Found 58 tests; 31 PASS, 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS Can set 'font-size' to CSS-wide keywords
-PASS Can set 'font-size' to var() references
-PASS Can set 'font-size' to the 'xx-small' keyword
-PASS Can set 'font-size' to the 'x-small' keyword
-PASS Can set 'font-size' to the 'small' keyword
-PASS Can set 'font-size' to the 'medium' keyword
-PASS Can set 'font-size' to the 'large' keyword
-PASS Can set 'font-size' to the 'x-large' keyword
-PASS Can set 'font-size' to the 'xx-large' keyword
-PASS Can set 'font-size' to the 'larger' keyword
-PASS Can set 'font-size' to the 'smaller' keyword
-PASS Can set 'font-size' to a length
-PASS Can set 'font-size' to a percent
+Found 85 tests; 40 PASS, 45 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Can set 'font-size' to CSS-wide keywords: initial
+PASS Can set 'font-size' to CSS-wide keywords: inherit
+PASS Can set 'font-size' to CSS-wide keywords: unset
+PASS Can set 'font-size' to CSS-wide keywords: revert
+PASS Can set 'font-size' to var() references:  var(--A)
+PASS Can set 'font-size' to the 'xx-small' keyword: xx-small
+PASS Can set 'font-size' to the 'x-small' keyword: x-small
+PASS Can set 'font-size' to the 'small' keyword: small
+PASS Can set 'font-size' to the 'medium' keyword: medium
+PASS Can set 'font-size' to the 'large' keyword: large
+PASS Can set 'font-size' to the 'x-large' keyword: x-large
+PASS Can set 'font-size' to the 'xx-large' keyword: xx-large
+PASS Can set 'font-size' to the 'larger' keyword: larger
+PASS Can set 'font-size' to the 'smaller' keyword: smaller
+PASS Can set 'font-size' to a length: 0px
+PASS Can set 'font-size' to a length: -3.14em
+PASS Can set 'font-size' to a length: 3.14cm
+PASS Can set 'font-size' to a length: calc(0px + 0em)
+PASS Can set 'font-size' to a percent: 0%
+PASS Can set 'font-size' to a percent: -3.14%
+PASS Can set 'font-size' to a percent: 3.14%
+PASS Can set 'font-size' to a percent: calc(0% + 0%)
 PASS Setting 'font-size' to a time throws TypeError
 PASS Setting 'font-size' to an angle throws TypeError
 PASS Setting 'font-size' to a flexible length throws TypeError
 PASS Setting 'font-size' to a number throws TypeError
 PASS Setting 'font-size' to a URL throws TypeError
 PASS Setting 'font-size' to a transform throws TypeError
-FAIL Can set 'font-min-size' to CSS-wide keywords Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
-FAIL Can set 'font-min-size' to var() references Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
-FAIL Can set 'font-min-size' to the 'xx-small' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
-FAIL Can set 'font-min-size' to the 'x-small' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
-FAIL Can set 'font-min-size' to the 'small' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
-FAIL Can set 'font-min-size' to the 'medium' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
-FAIL Can set 'font-min-size' to the 'large' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
-FAIL Can set 'font-min-size' to the 'x-large' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
-FAIL Can set 'font-min-size' to the 'xx-large' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
-FAIL Can set 'font-min-size' to the 'larger' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
-FAIL Can set 'font-min-size' to the 'smaller' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
-FAIL Can set 'font-min-size' to a length Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
-FAIL Can set 'font-min-size' to a percent Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to CSS-wide keywords: initial Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to CSS-wide keywords: inherit Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to CSS-wide keywords: unset Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to CSS-wide keywords: revert Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to var() references:  var(--A) Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to the 'xx-small' keyword: xx-small Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to the 'x-small' keyword: x-small Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to the 'small' keyword: small Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to the 'medium' keyword: medium Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to the 'large' keyword: large Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to the 'x-large' keyword: x-large Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to the 'xx-large' keyword: xx-large Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to the 'larger' keyword: larger Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to the 'smaller' keyword: smaller Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to a length: 0px Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to a length: -3.14em Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to a length: 3.14cm Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to a length: calc(0px + 0em) Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to a percent: 0% Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to a percent: -3.14% Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to a percent: 3.14% Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
+FAIL Can set 'font-min-size' to a percent: calc(0% + 0%) Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-min-size
 PASS Setting 'font-min-size' to a time throws TypeError
 PASS Setting 'font-min-size' to an angle throws TypeError
 PASS Setting 'font-min-size' to a flexible length throws TypeError
 PASS Setting 'font-min-size' to a number throws TypeError
 PASS Setting 'font-min-size' to a URL throws TypeError
 PASS Setting 'font-min-size' to a transform throws TypeError
-FAIL Can set 'font-max-size' to CSS-wide keywords Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
-FAIL Can set 'font-max-size' to var() references Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
-FAIL Can set 'font-max-size' to the 'infinity' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
-FAIL Can set 'font-max-size' to the 'xx-small' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
-FAIL Can set 'font-max-size' to the 'x-small' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
-FAIL Can set 'font-max-size' to the 'small' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
-FAIL Can set 'font-max-size' to the 'medium' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
-FAIL Can set 'font-max-size' to the 'large' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
-FAIL Can set 'font-max-size' to the 'x-large' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
-FAIL Can set 'font-max-size' to the 'xx-large' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
-FAIL Can set 'font-max-size' to the 'larger' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
-FAIL Can set 'font-max-size' to the 'smaller' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
-FAIL Can set 'font-max-size' to a length Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
-FAIL Can set 'font-max-size' to a percent Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to CSS-wide keywords: initial Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to CSS-wide keywords: inherit Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to CSS-wide keywords: unset Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to CSS-wide keywords: revert Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to var() references:  var(--A) Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to the 'infinity' keyword: infinity Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to the 'xx-small' keyword: xx-small Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to the 'x-small' keyword: x-small Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to the 'small' keyword: small Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to the 'medium' keyword: medium Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to the 'large' keyword: large Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to the 'x-large' keyword: x-large Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to the 'xx-large' keyword: xx-large Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to the 'larger' keyword: larger Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to the 'smaller' keyword: smaller Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to a length: 0px Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to a length: -3.14em Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to a length: 3.14cm Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to a length: calc(0px + 0em) Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to a percent: 0% Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to a percent: -3.14% Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to a percent: 3.14% Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
+FAIL Can set 'font-max-size' to a percent: calc(0% + 0%) Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-max-size
 PASS Setting 'font-max-size' to a time throws TypeError
 PASS Setting 'font-max-size' to an angle throws TypeError
 PASS Setting 'font-max-size' to a flexible length throws TypeError

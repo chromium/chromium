@@ -1,11 +1,14 @@
 This is a testharness.js-based test.
-PASS Can set 'writing-mode' to CSS-wide keywords
-PASS Can set 'writing-mode' to var() references
-PASS Can set 'writing-mode' to the 'horizontal-tb' keyword
-PASS Can set 'writing-mode' to the 'vertical-rl' keyword
-PASS Can set 'writing-mode' to the 'vertical-lr' keyword
-FAIL Can set 'writing-mode' to the 'sideways-rl' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'writing-mode' to the 'sideways-lr' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Can set 'writing-mode' to CSS-wide keywords: initial
+PASS Can set 'writing-mode' to CSS-wide keywords: inherit
+PASS Can set 'writing-mode' to CSS-wide keywords: unset
+PASS Can set 'writing-mode' to CSS-wide keywords: revert
+PASS Can set 'writing-mode' to var() references:  var(--A)
+PASS Can set 'writing-mode' to the 'horizontal-tb' keyword: horizontal-tb
+PASS Can set 'writing-mode' to the 'vertical-rl' keyword: vertical-rl
+PASS Can set 'writing-mode' to the 'vertical-lr' keyword: vertical-lr
+FAIL Can set 'writing-mode' to the 'sideways-rl' keyword: sideways-rl Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'writing-mode' to the 'sideways-lr' keyword: sideways-lr Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
 PASS Setting 'writing-mode' to a length throws TypeError
 PASS Setting 'writing-mode' to a percent throws TypeError
 PASS Setting 'writing-mode' to a time throws TypeError

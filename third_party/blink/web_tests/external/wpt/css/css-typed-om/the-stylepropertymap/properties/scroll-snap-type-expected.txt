@@ -1,12 +1,15 @@
 This is a testharness.js-based test.
-PASS Can set 'scroll-snap-type' to CSS-wide keywords
-PASS Can set 'scroll-snap-type' to var() references
-PASS Can set 'scroll-snap-type' to the 'none' keyword
-PASS Can set 'scroll-snap-type' to the 'x' keyword
-PASS Can set 'scroll-snap-type' to the 'y' keyword
-PASS Can set 'scroll-snap-type' to the 'block' keyword
-PASS Can set 'scroll-snap-type' to the 'inline' keyword
-PASS Can set 'scroll-snap-type' to the 'both' keyword
+PASS Can set 'scroll-snap-type' to CSS-wide keywords: initial
+PASS Can set 'scroll-snap-type' to CSS-wide keywords: inherit
+PASS Can set 'scroll-snap-type' to CSS-wide keywords: unset
+PASS Can set 'scroll-snap-type' to CSS-wide keywords: revert
+PASS Can set 'scroll-snap-type' to var() references:  var(--A)
+PASS Can set 'scroll-snap-type' to the 'none' keyword: none
+PASS Can set 'scroll-snap-type' to the 'x' keyword: x
+PASS Can set 'scroll-snap-type' to the 'y' keyword: y
+PASS Can set 'scroll-snap-type' to the 'block' keyword: block
+PASS Can set 'scroll-snap-type' to the 'inline' keyword: inline
+PASS Can set 'scroll-snap-type' to the 'both' keyword: both
 PASS Setting 'scroll-snap-type' to a length throws TypeError
 PASS Setting 'scroll-snap-type' to a percent throws TypeError
 PASS Setting 'scroll-snap-type' to a time throws TypeError

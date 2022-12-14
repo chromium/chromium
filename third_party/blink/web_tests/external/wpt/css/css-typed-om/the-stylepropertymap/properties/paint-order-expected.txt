@@ -1,10 +1,13 @@
 This is a testharness.js-based test.
-PASS Can set 'paint-order' to CSS-wide keywords
-PASS Can set 'paint-order' to var() references
-PASS Can set 'paint-order' to the 'normal' keyword
-FAIL Can set 'paint-order' to the 'fill' keyword assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'paint-order' to the 'stroke' keyword assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'paint-order' to the 'markers' keyword assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+PASS Can set 'paint-order' to CSS-wide keywords: initial
+PASS Can set 'paint-order' to CSS-wide keywords: inherit
+PASS Can set 'paint-order' to CSS-wide keywords: unset
+PASS Can set 'paint-order' to CSS-wide keywords: revert
+PASS Can set 'paint-order' to var() references:  var(--A)
+PASS Can set 'paint-order' to the 'normal' keyword: normal
+FAIL Can set 'paint-order' to the 'fill' keyword: fill assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+FAIL Can set 'paint-order' to the 'stroke' keyword: stroke assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+FAIL Can set 'paint-order' to the 'markers' keyword: markers assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
 PASS Setting 'paint-order' to a length throws TypeError
 PASS Setting 'paint-order' to a percent throws TypeError
 PASS Setting 'paint-order' to a time throws TypeError

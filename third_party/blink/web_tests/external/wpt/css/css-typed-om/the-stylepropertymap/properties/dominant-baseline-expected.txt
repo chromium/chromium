@@ -1,15 +1,18 @@
 This is a testharness.js-based test.
-PASS Can set 'dominant-baseline' to CSS-wide keywords
-PASS Can set 'dominant-baseline' to var() references
-PASS Can set 'dominant-baseline' to the 'auto' keyword
-FAIL Can set 'dominant-baseline' to the 'text-bottom' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-PASS Can set 'dominant-baseline' to the 'alphabetic' keyword
-PASS Can set 'dominant-baseline' to the 'ideographic' keyword
-PASS Can set 'dominant-baseline' to the 'middle' keyword
-PASS Can set 'dominant-baseline' to the 'central' keyword
-PASS Can set 'dominant-baseline' to the 'mathematical' keyword
-PASS Can set 'dominant-baseline' to the 'hanging' keyword
-FAIL Can set 'dominant-baseline' to the 'text-top' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Can set 'dominant-baseline' to CSS-wide keywords: initial
+PASS Can set 'dominant-baseline' to CSS-wide keywords: inherit
+PASS Can set 'dominant-baseline' to CSS-wide keywords: unset
+PASS Can set 'dominant-baseline' to CSS-wide keywords: revert
+PASS Can set 'dominant-baseline' to var() references:  var(--A)
+PASS Can set 'dominant-baseline' to the 'auto' keyword: auto
+FAIL Can set 'dominant-baseline' to the 'text-bottom' keyword: text-bottom Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Can set 'dominant-baseline' to the 'alphabetic' keyword: alphabetic
+PASS Can set 'dominant-baseline' to the 'ideographic' keyword: ideographic
+PASS Can set 'dominant-baseline' to the 'middle' keyword: middle
+PASS Can set 'dominant-baseline' to the 'central' keyword: central
+PASS Can set 'dominant-baseline' to the 'mathematical' keyword: mathematical
+PASS Can set 'dominant-baseline' to the 'hanging' keyword: hanging
+FAIL Can set 'dominant-baseline' to the 'text-top' keyword: text-top Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
 PASS Setting 'dominant-baseline' to a length throws TypeError
 PASS Setting 'dominant-baseline' to a percent throws TypeError
 PASS Setting 'dominant-baseline' to a time throws TypeError

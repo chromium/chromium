@@ -743,7 +743,7 @@ FAIL [["stylewithcss","false"],["strikethrough",""]] "<p style=\"text-decoration
 PASS [["stylewithcss","true"],["strikethrough",""]] "foo<span class=\"underline\">[bar]</span>baz": execCommand("stylewithcss", false, "true") return value
 PASS [["stylewithcss","true"],["strikethrough",""]] "foo<span class=\"underline\">[bar]</span>baz": execCommand("strikethrough", false, "") return value
 PASS [["stylewithcss","true"],["strikethrough",""]] "foo<span class=\"underline\">[bar]</span>baz" checks for modifications to non-editable content
-FAIL [["stylewithcss","true"],["strikethrough",""]] "foo<span class=\"underline\">[bar]</span>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span style=\"text-decoration:line-through\"><span class=\"underline\">bar</span></span>baz" but got "foo<span class=\"underline\" style=\"text-decoration-line:line-through\">bar</span>baz"
+FAIL [["stylewithcss","true"],["strikethrough",""]] "foo<span class=\"underline\">[bar]</span>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span class=\"underline\" style=\"text-decoration:line-through\">bar</span>baz" but got "foo<span class=\"underline\" style=\"text-decoration-line:line-through\">bar</span>baz"
 PASS [["stylewithcss","true"],["strikethrough",""]] "foo<span class=\"underline\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","true"],["strikethrough",""]] "foo<span class=\"underline\">[bar]</span>baz" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","true"],["strikethrough",""]] "foo<span class=\"underline\">[bar]</span>baz" queryCommandValue("stylewithcss") before
