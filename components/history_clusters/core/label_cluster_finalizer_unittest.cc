@@ -81,7 +81,6 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
     FinalizeCluster(cluster);
     EXPECT_EQ(cluster.raw_label, absl::nullopt);
     EXPECT_EQ(cluster.label, absl::nullopt);
-    EXPECT_EQ(cluster.label_source, LabelSource::kUnknown);
   }
 
   {
@@ -98,7 +97,6 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
     FinalizeCluster(cluster);
     EXPECT_EQ(cluster.raw_label, u"chosenlabel");
     EXPECT_EQ(cluster.label, u"chosenlabel");
-    EXPECT_EQ(cluster.label_source, LabelSource::kContentDerivedEntity);
   }
 
   {
@@ -113,7 +111,6 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
     FinalizeCluster(cluster);
     EXPECT_EQ(cluster.raw_label, u"baz.com");
     EXPECT_EQ(cluster.label, u"baz.com and more");
-    EXPECT_EQ(cluster.label_source, LabelSource::kHostname);
   }
 
   {
@@ -128,7 +125,6 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
     FinalizeCluster(cluster);
     EXPECT_EQ(cluster.raw_label, u"chosenlabel");
     EXPECT_EQ(cluster.label, u"chosenlabel");
-    EXPECT_EQ(cluster.label_source, LabelSource::kContentDerivedEntity);
   }
 }
 
