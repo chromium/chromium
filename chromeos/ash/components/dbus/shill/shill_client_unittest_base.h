@@ -13,7 +13,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
-#include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_helper.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_observer.h"
@@ -28,6 +27,10 @@ using ::testing::MakeMatcher;
 using ::testing::Matcher;
 using ::testing::MatcherInterface;
 using ::testing::MatchResultListener;
+
+namespace base {
+class Value;
+}
 
 namespace dbus {
 
@@ -155,18 +158,9 @@ class ShillClientUnittestBase : public testing::Test {
   static void ExpectValueResult(const base::Value* expected_result,
                                 absl::optional<base::Value> result);
 
-  // Checks the result and expects the call status to be SUCCESS.
-  static void ExpectDictValueResult(const base::Value::Dict* expected_result,
-                                    absl::optional<base::Value::Dict> result);
-
   // Expects the |expected_result| to match the |result|.
   static void ExpectValueResultWithoutStatus(const base::Value* expected_result,
                                              base::Value result);
-
-  // Expects the |expected_result| to match the |result|.
-  static void ExpectDictValueResultWithoutStatus(
-      const base::Value::Dict* expected_result,
-      base::Value::Dict result);
 
   // A message loop to emulate asynchronous behavior.
   base::test::SingleThreadTaskEnvironment task_environment_;
