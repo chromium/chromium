@@ -7,7 +7,7 @@
  * Settings subpage for managing APNs.
  */
 
-import './internet_shared_css.js';
+import './internet_shared.css.js';
 import 'chrome://resources/ash/common/network/apn_list.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';

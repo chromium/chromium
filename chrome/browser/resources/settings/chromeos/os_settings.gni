@@ -204,6 +204,7 @@ foreach(f, html_files) {
 
 # Files that are passed as input to css_to_wrapper().
 css_files = [
+  "chromeos/internet_page/internet_shared.css",
   "chromeos/os_apps_page/app_management_page/app_management_cros_shared_style.css",
   "chromeos/os_apps_page/app_management_page/app_management_cros_shared_vars.css",
   "chromeos/os_languages_page/shared_style.css",
@@ -353,7 +354,6 @@ generated_web_component_files = [
   "chromeos/internet_page/internet_detail_page.js",
   "chromeos/internet_page/internet_known_networks_page.js",
   "chromeos/internet_page/internet_page.js",
-  "chromeos/internet_page/internet_shared_css.js",
   "chromeos/internet_page/internet_subpage.js",
   "chromeos/internet_page/network_always_on_vpn.js",
   "chromeos/internet_page/network_proxy_section.js",

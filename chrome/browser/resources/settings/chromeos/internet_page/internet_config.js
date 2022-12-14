@@ -10,11 +10,11 @@ import 'chrome://resources/ash/common/network/network_config.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import './internet_shared_css.js';
+import './internet_shared.css.js';
 
-import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {HTMLEscape} from 'chrome://resources/ash/common/util.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

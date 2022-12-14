@@ -20,7 +20,6 @@ js_type_check("closure_compile_module") {
     ":internet_known_networks_page",
     ":internet_page",
     ":internet_page_browser_proxy",
-    ":internet_shared_css",
     ":internet_subpage",
     ":network_always_on_vpn",
     ":network_proxy_section",
@@ -60,7 +59,6 @@ js_library("hotspot_summary_item") {
 
 js_library("internet_config") {
   deps = [
-    ":internet_shared_css",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources:util",
     "//ash/webui/common/resources/network:network_config",
@@ -99,7 +97,6 @@ js_library("internet_detail_menu") {
 js_library("internet_detail_page") {
   deps = [
     ":internet_page_browser_proxy",
-    ":internet_shared_css",
     ":network_proxy_section",
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:i18n_behavior",
@@ -140,7 +137,6 @@ js_library("internet_detail_page") {
 
 js_library("internet_known_networks_page") {
   deps = [
-    ":internet_shared_css",
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/network:cr_policy_network_behavior_mojo",
@@ -195,9 +191,6 @@ js_library("internet_page") {
 js_library("internet_page_browser_proxy") {
 }
 
-js_library("internet_shared_css") {
-}
-
 js_library("internet_subpage") {
   deps = [
     ":internet_page_browser_proxy",
@@ -233,7 +226,6 @@ js_library("hotspot_subpage") {
 
 js_library("network_always_on_vpn") {
   deps = [
-    ":internet_shared_css",
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/network:onc_mojo",
@@ -243,7 +235,6 @@ js_library("network_always_on_vpn") {
 
 js_library("network_proxy_section") {
   deps = [
-    ":internet_shared_css",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/network:cr_policy_network_behavior_mojo",
     "//ash/webui/common/resources/network:cr_policy_network_indicator_mojo",
@@ -302,7 +293,6 @@ html_to_js("web_components") {
     "internet_detail_page.js",
     "internet_known_networks_page.js",
     "internet_page.js",
-    "internet_shared_css.js",
     "internet_subpage.js",
     "network_always_on_vpn.js",
     "network_proxy_section.js",
