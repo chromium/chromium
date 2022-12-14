@@ -37,7 +37,7 @@ const InstallConstants kInstallModes[] = {
             L"",  // Empty app_guid since no integration with Google Update.
         .base_app_name =
             L"Google Chrome for Testing",    // A distinct base_app_name.
-        .base_app_id = L"ChromeforTesting",  // A distinct base_app_id.
+        .base_app_id = L"ChromeForTesting",  // A distinct base_app_id.
         .prog_id_prefix = L"CfTHTML",        // ProgID prefix.
         .prog_id_description =
             L"Chrome for Testing HTML Document",  // ProgID description.

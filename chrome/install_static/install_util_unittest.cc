@@ -309,6 +309,9 @@ class InstallStaticUtilTest
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     static constexpr wchar_t kPolicyKey[] =
         L"Software\\Policies\\Google\\Chrome";
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+    static constexpr wchar_t kPolicyKey[] =
+        L"Software\\Policies\\Google\\Chrome for Testing";
 #else
     static constexpr wchar_t kPolicyKey[] = L"Software\\Policies\\Chromium";
 #endif
@@ -355,6 +358,12 @@ TEST_P(InstallStaticUtilTest, GetChromeInstallSubDirectory) {
       L"Google\\Chrome Dev",
       L"Google\\Chrome SxS",
   };
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+  // The directory strings for the brand's install modes; parallel to
+  // kInstallModes.
+  static constexpr const wchar_t* kInstallDirs[] = {
+      L"Google\\Chrome for Testing",
+  };
 #else
   // The directory strings for the brand's install modes; parallel to
   // kInstallModes.
@@ -377,6 +386,12 @@ TEST_P(InstallStaticUtilTest, GetRegistryPath) {
       L"Software\\Google\\Chrome Beta",
       L"Software\\Google\\Chrome Dev",
       L"Software\\Google\\Chrome SxS",
+  };
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+  // The registry path strings for the brand's install modes; parallel to
+  // kInstallModes.
+  static constexpr const wchar_t* kRegistryPaths[] = {
+      L"Software\\Google\\Chrome for Testing",
   };
 #else
   // The registry path strings for the brand's install modes; parallel to
@@ -403,6 +418,13 @@ TEST_P(InstallStaticUtilTest, GetUninstallRegistryPath) {
       L"Google Chrome Dev",
       L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"  // (cont'd)
       L"Google Chrome SxS",
+  };
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+  // The registry path strings for the brand's install modes; parallel to
+  // kInstallModes.
+  static constexpr const wchar_t* kUninstallRegistryPaths[] = {
+      L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Google Chrome "
+      L"for Testing",
   };
 #else
   // The registry path strings for the brand's install modes; parallel to
@@ -447,6 +469,11 @@ TEST_P(InstallStaticUtilTest, GetBaseAppId) {
       L"ChromeDev",
       L"ChromeCanary",
   };
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+  // The base app ids for the brand's install modes; parallel to kInstallModes.
+  static constexpr const wchar_t* kBaseAppIds[] = {
+      L"ChromeForTesting",
+  };
 #else
   // The base app ids for the brand's install modes; parallel to kInstallModes.
   static constexpr const wchar_t* kBaseAppIds[] = {
@@ -489,6 +516,21 @@ TEST_P(InstallStaticUtilTest, GetToastActivatorClsid) {
       L"{B89B137F-96AA-4AE2-98C4-6373EAA1EA4D}",  // Google Chrome Beta.
       L"{F01C03EB-D431-4C83-8D7A-902771E732FA}",  // Google Chrome Dev.
       L"{FA372A6E-149F-4E95-832D-8F698D40AD7F}",  // Google Chrome SxS (Canary).
+  };
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+  // The toast activator CLSIDs for the brand's install modes; parallel to
+  // kInstallModes.
+  static constexpr CLSID kToastActivatorClsids[] = {
+      {0x77ED8F9B,
+       0xE27A,
+       0x499F,
+       {0x8E, 0x2F, 0xD7, 0xC0, 0x41, 0x57, 0xCF, 0x64}}  // Google Chrome for
+                                                          // Testing.
+  };
+
+  // The string representation of the CLSIDs above.
+  static constexpr const wchar_t* kToastActivatorClsidsString[] = {
+      L"{77ED8F9B-E27A-499F-8E2F-D7C04157CF64}"  // Google Chrome for Testing.
   };
 #else
   // The toast activator CLSIDs for the brand's install modes; parallel to
@@ -545,6 +587,20 @@ TEST_P(InstallStaticUtilTest, GetElevatorClsid) {
       L"{DD2646BA-3707-4BF8-B9A7-038691A68FC2}",  // Google Chrome Beta.
       L"{DA7FDCA5-2CAA-4637-AA17-0740584DE7DA}",  // Google Chrome Dev.
       L"{704C2872-2049-435E-A469-0A534313C42B}",  // Google Chrome SxS (Canary).
+  };
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+  // The Elevator CLSIDs, one for each of the kInstallModes.
+  static constexpr CLSID kElevatorClsids[] = {
+      {0x724349BF,
+       0xE1CF,
+       0x4481,
+       {0xA6, 0x4D, 0x8C, 0xD1, 0x01, 0x83, 0xCA, 0x03}},  // Google Chrome for
+                                                           // Testing
+  };
+
+  // The string representation of the CLSIDs above.
+  static constexpr const wchar_t* kElevatorClsidsString[] = {
+      L"{724349BF-E1CF-4481-A64D-8CD10183CA03}",  // Google Chrome for Testing
   };
 #else
   // The Elevator CLSIDs, one for each of the kInstallModes.
@@ -609,6 +665,22 @@ TEST_P(InstallStaticUtilTest, GetElevatorIid) {
       L"{A2721D66-376E-4D2F-9F0F-9070E9A42B5F}",  // Google Chrome Beta.
       L"{BB2AA26B-343A-4072-8B6F-80557B8CE571}",  // Google Chrome Dev.
       L"{4F7CE041-28E9-484F-9DD0-61A8CACEFEE4}",  // Google Chrome Canary.
+  };
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+  // The Elevator IIDs, one for each of the kInstallModes.
+  static constexpr IID kElevatorIids[] = {
+      {0x3DC48E97,
+       0x47D0,
+       0x476F,
+       {0x8F, 0x89, 0x07, 0x92, 0xFC, 0x61, 0x15,
+        0x67}},  // IElevator IID and TypeLib
+                 // {3DC48E97-47D0-476F-8F89-0792FC611567} for Google Chrome for
+                 // Testing
+  };
+
+  // The string representation of the IIDs above.
+  static constexpr const wchar_t* kElevatorIidsString[] = {
+      L"{3DC48E97-47D0-476F-8F89-0792FC611567}",  // Google Chrome for Testing
   };
 #else
   // The Elevator IIDs, one for each of the kInstallModes.
@@ -711,6 +783,11 @@ TEST_P(InstallStaticUtilTest, GetSandboxSidPrefix) {
       L"924012152-",  // Google Chrome Dev.
       L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
       L"924012150-",  // Google Chrome SxS (Canary).
+  };
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+  static constexpr const wchar_t* kSandBoxSids[] = {
+      L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
+      L"924012153-",  // Google Chrome for Testing
   };
 #else
   static constexpr const wchar_t* kSandBoxSids[] = {
