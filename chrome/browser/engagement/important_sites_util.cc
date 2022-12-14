@@ -103,28 +103,26 @@ enum CrossedReason {
   CROSSED_REASON_BOUNDARY
 };
 
-void RecordIgnore(base::Value& dict) {
-  DCHECK(dict.is_dict());
-  int times_ignored = dict.FindIntKey(kNumTimesIgnoredName).value_or(0);
-  dict.SetIntKey(kNumTimesIgnoredName, ++times_ignored);
-  dict.SetDoubleKey(kTimeLastIgnored, base::Time::Now().ToDoubleT());
+void RecordIgnore(base::Value::Dict& dict) {
+  int times_ignored = dict.FindInt(kNumTimesIgnoredName).value_or(0);
+  dict.Set(kNumTimesIgnoredName, ++times_ignored);
+  dict.Set(kTimeLastIgnored, base::Time::Now().ToDoubleT());
 }
 
 // If we should suppress the item with the given dictionary ignored record.
-bool ShouldSuppressItem(base::Value* dict) {
-  absl::optional<double> last_ignored_time =
-      dict->FindDoubleKey(kTimeLastIgnored);
+bool ShouldSuppressItem(base::Value::Dict& dict) {
+  absl::optional<double> last_ignored_time = dict.FindDouble(kTimeLastIgnored);
   if (last_ignored_time) {
     base::TimeDelta diff =
         base::Time::Now() - base::Time::FromDoubleT(*last_ignored_time);
     if (diff >= base::Days(kSuppressionExpirationTimeDays)) {
-      dict->SetIntKey(kNumTimesIgnoredName, 0);
-      dict->RemoveKey(kTimeLastIgnored);
+      dict.Set(kNumTimesIgnoredName, 0);
+      dict.Remove(kTimeLastIgnored);
       return false;
     }
   }
 
-  absl::optional<int> times_ignored = dict->FindIntKey(kNumTimesIgnoredName);
+  absl::optional<int> times_ignored = dict.FindInt(kNumTimesIgnoredName);
   return times_ignored && *times_ignored >= kTimesIgnoredForSuppression;
 }
 
@@ -231,8 +229,9 @@ std::unordered_set<std::string> GetSuppressedImportantDomains(
     if (!site.setting_value.is_dict())
       continue;
 
-    if (ShouldSuppressItem(&site.setting_value))
+    if (ShouldSuppressItem(site.setting_value.GetDict())) {
       ignoring_domains.insert(origin.host());
+    }
   }
   return ignoring_domains;
 }
@@ -415,7 +414,7 @@ std::string ImportantSitesUtil::GetRegisterableDomainOrIPFromHost(
 
 bool ImportantSitesUtil::IsDialogDisabled(Profile* profile) {
   PrefService* service = profile->GetPrefs();
-  DictionaryPrefUpdate update(service, prefs::kImportantSitesDialogHistory);
+  ScopedDictPrefUpdate update(service, prefs::kImportantSitesDialogHistory);
 
   return ShouldSuppressItem(update.Get());
 }
@@ -545,7 +544,7 @@ void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
       if (!dict.is_dict())
         dict = base::Value(base::Value::Type::DICTIONARY);
 
-      RecordIgnore(dict);
+      RecordIgnore(dict.GetDict());
 
       map->SetWebsiteSettingDefaultScope(
           origin, origin, ContentSettingsType::IMPORTANT_SITE_INFO,
@@ -554,8 +553,8 @@ void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
   } else {
     // Record that the user did not interact with the dialog.
     PrefService* service = profile->GetPrefs();
-    DictionaryPrefUpdate update(service, prefs::kImportantSitesDialogHistory);
-    RecordIgnore(*update.Get());
+    ScopedDictPrefUpdate update(service, prefs::kImportantSitesDialogHistory);
+    RecordIgnore(update.Get());
   }
 
   // We clear our ignore counter for sites that the user chose.
