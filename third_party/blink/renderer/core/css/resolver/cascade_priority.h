@@ -67,9 +67,9 @@ class CORE_EXPORT CascadePriority {
   static constexpr uint64_t kLayerOrderOffset = 36;        // of low_bits_
   static constexpr uint64_t kPositionOffset = 4;           // of low_bits_
 
-  static constexpr uint32_t kOriginImportanceMask =
+  static constexpr uint64_t kOriginImportanceMask =
       0xF << kOriginImportanceOffset;                 // of high_bits_
-  static constexpr uint32_t kTreeOrderMask = 0xFFFF;  // of high_bits_
+  static constexpr uint64_t kTreeOrderMask = 0xFFFF;  // of high_bits_
   static constexpr uint64_t kLayerOrderMask =
       static_cast<uint64_t>(0xFFFF) << kLayerOrderOffset;  // of low_bits_
   static constexpr uint64_t kPositionMask = static_cast<uint64_t>(0xFFFFFFFF)
@@ -120,20 +120,31 @@ class CORE_EXPORT CascadePriority {
   uint8_t GetGeneration() const { return low_bits_ & kGenerationMask; }
   bool IsInlineStyle() const { return (low_bits_ >> kIsInlineStyleOffset) & 1; }
 
-  // Returns a CascadePriority that ignores the importance and all sorting
-  // criteria below layer order, which allows us to compare if two
-  // CascadePriorities belong to the same cascade layer.
-  CascadePriority ForLayerComparison() const {
-    uint64_t important_xor =
-        (((~static_cast<uint64_t>(high_bits_) >> kImportantBit) & 1) - 1);
-    uint32_t high_important_xor =
-        important_xor & (kOriginImportanceMask | kTreeOrderMask);
-    uint32_t high_bits_without_importance = high_bits_ ^ high_important_xor;
-    uint64_t low_important_xor = important_xor & kLayerOrderMask;
-    uint64_t low_bits_without_importance_position_and_generation =
-        (low_bits_ ^ low_important_xor) & ~(kGenerationMask | kPositionMask);
-    return CascadePriority(low_bits_without_importance_position_and_generation,
-                           high_bits_without_importance);
+  // Returns a value that compares like CascadePriority, except that it
+  // ignores the importance and all sorting criteria below layer order,
+  // which allows us to compare if two CascadePriorities belong
+  // to the same cascade layer.
+  uint64_t ForLayerComparison() const {
+    // Our value to compare is essentially 96 bits. Get the uppermost 64 bits
+    // (we don't care about generation and position).
+    uint64_t bits =
+        (low_bits_ >> 32) | (static_cast<uint64_t>(high_bits_) << 32);
+
+    // NOTE: This branch will get converted into a conditional move by the
+    // compiler.
+    if (bits & (1ull << (kImportantBit + 32))) {
+      // Remove importance, which means; we need to clear the importance bit.
+      // But if set, it has previously flipped some other interesting bits
+      // (origin/importance, tree order and layer order), so we need to flip
+      // them back before returning. (We do not flip the kTransition bit
+      // in the encoded origin, nor the comes-from-inline-style bit.)
+      bits ^= kOriginImportanceMask << 32;
+      bits ^= kTreeOrderMask << 32;
+      bits ^= kLayerOrderMask >> 32;
+    }
+
+    bits >>= kLayerOrderOffset - 32;  // Remove everything below layer_order.
+    return bits;
   }
 
   bool operator>=(const CascadePriority& o) const {
@@ -165,7 +176,7 @@ class CORE_EXPORT CascadePriority {
   uint64_t low_bits_;
 
   //  Bit  0-15: tree_order (encoded)
-  //  Bit 16-23: origin/importance (encoded)
+  //  Bit 16-20: origin/importance (encoded; bit 19 is importance)
   uint32_t high_bits_;
 };
 

@@ -69,12 +69,11 @@ CascadePriority& CascadeMap::Top(CascadePriorityList& list) {
   return list.Top(backing_vector_);
 }
 
-const CascadePriority* CascadeMap::FindRevertLayer(
-    const CSSPropertyName& name,
-    CascadePriority revert_from) const {
-  auto find_revert_layer =
-      [this](const CascadeMap::CascadePriorityList& list,
-             CascadePriority revert_from) -> const CascadePriority* {
+const CascadePriority* CascadeMap::FindRevertLayer(const CSSPropertyName& name,
+                                                   uint64_t revert_from) const {
+  auto find_revert_layer = [this](
+                               const CascadeMap::CascadePriorityList& list,
+                               uint64_t revert_from) -> const CascadePriority* {
     for (auto iter = list.Begin(backing_vector_);
          iter != list.End(backing_vector_); ++iter) {
       if (iter->ForLayerComparison() < revert_from)

@@ -50,9 +50,10 @@ class CORE_EXPORT CascadeMap {
         backing_vector_);
   }
   // Similar to Find(name, origin), but returns the CascadePriority from cascade
-  // layers below the given priority.
+  // layers below the given priority. The uint64_t is presumed to come from
+  // CascadePriority::ForLayerComparison().
   const CascadePriority* FindRevertLayer(const CSSPropertyName&,
-                                         CascadePriority) const;
+                                         uint64_t) const;
   // Similar to Find(), if you already have the right CascadePriorityList.
   CascadePriority& Top(CascadePriorityList&);
   // Adds an entry to the map if the incoming priority is greater than or equal
