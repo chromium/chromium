@@ -71,7 +71,7 @@ found in the LICENSE file.
         android:visibility="gone"
         android:contentDescription="@null"
         android:background="?actionBarItemBackground"
-        android:layout_width="@dimen/message_banner_button_width"
+        android:layout_width="@dimen/min_touch_target_size"
         android:layout_height="@dimen/min_touch_target_size" />
 
     <ImageView
