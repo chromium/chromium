@@ -19,6 +19,7 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/web_applications/commands/externally_managed_install_command.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
+#include "chrome/browser/web_applications/locks/full_system_lock.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -50,17 +51,15 @@ namespace web_app {
 ExternallyManagedAppInstallTask::ExternallyManagedAppInstallTask(
     Profile* profile,
     WebAppUrlLoader* url_loader,
-    WebAppRegistrar* registrar,
     WebAppUiManager* ui_manager,
     WebAppInstallFinalizer* install_finalizer,
     WebAppCommandScheduler* command_scheduler,
     ExternalInstallOptions install_options)
     : profile_(profile),
       url_loader_(url_loader),
-      registrar_(registrar),
+      ui_manager_(ui_manager),
       install_finalizer_(install_finalizer),
       command_scheduler_(command_scheduler),
-      ui_manager_(ui_manager),
       externally_installed_app_prefs_(profile_->GetPrefs()),
       install_options_(std::move(install_options)) {}
 
@@ -123,12 +122,23 @@ void ExternallyManagedAppInstallTask::OnUrlLoaded(
     // placeholder won't necessarily replace the placeholder app, because the
     // new app might be installed with a new AppId. To avoid this, always
     // uninstall the placeholder app.
-    UninstallPlaceholderApp(web_contents, std::move(retry_on_failure));
+    GetPlaceholderAppId(
+        install_options_.install_url,
+        ConvertExternalInstallSourceToSource(install_options_.install_source),
+        base::BindOnce(
+            &ExternallyManagedAppInstallTask::UninstallPlaceholderApp,
+            weak_ptr_factory_.GetWeakPtr(), web_contents,
+            std::move(retry_on_failure)));
     return;
   }
 
   if (install_options_.install_placeholder) {
-    InstallPlaceholder(web_contents, std::move(retry_on_failure));
+    GetPlaceholderAppId(
+        install_options_.install_url,
+        ConvertExternalInstallSourceToSource(install_options_.install_source),
+        base::BindOnce(&ExternallyManagedAppInstallTask::InstallPlaceholder,
+                       weak_ptr_factory_.GetWeakPtr(), web_contents,
+                       std::move(retry_on_failure)));
     return;
   }
 
@@ -189,11 +199,8 @@ void ExternallyManagedAppInstallTask::InstallFromInfo(
 
 void ExternallyManagedAppInstallTask::UninstallPlaceholderApp(
     content::WebContents* web_contents,
-    ResultCallback result_callback) {
-  absl::optional<AppId> app_id = registrar_->LookupPlaceholderAppId(
-      install_options_.install_url,
-      ConvertExternalInstallSourceToSource(install_options_.install_source));
-
+    ResultCallback result_callback,
+    absl::optional<AppId> app_id) {
   // If there is no app in the DB that is a placeholder app or if the app exists
   // but is not a placeholder, then no need to uninstall anything.
   // These checks are handled by the WebAppRegistrar itself.
@@ -246,12 +253,9 @@ void ExternallyManagedAppInstallTask::ContinueWebAppInstall(
 
 void ExternallyManagedAppInstallTask::InstallPlaceholder(
     content::WebContents* web_contents,
-    ResultCallback callback) {
+    ResultCallback callback,
+    absl::optional<AppId> app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  absl::optional<AppId> app_id = registrar_->LookupPlaceholderAppId(
-      install_options_.install_url,
-      ConvertExternalInstallSourceToSource(install_options_.install_source));
 
   if (app_id.has_value() && !install_options_.force_reinstall) {
     // No need to install a placeholder app again.
@@ -422,6 +426,25 @@ void ExternallyManagedAppInstallTask::TryAppInfoFactoryOnFailure(
     return;
   }
   std::move(result_callback).Run(std::move(result));
+}
+
+void ExternallyManagedAppInstallTask::GetPlaceholderAppId(
+    const GURL& install_url,
+    WebAppManagement::Type source_type,
+    base::OnceCallback<void(absl::optional<AppId>)> callback) {
+  command_scheduler_->ScheduleCallbackWithLock<FullSystemLock>(
+      "ExternallyManagedAppInstallTask::GetPlaceholderAppId",
+      std::make_unique<FullSystemLockDescription>(),
+      base::BindOnce(
+          [](const GURL& install_url, WebAppManagement::Type source_type,
+             base::OnceCallback<void(absl::optional<AppId>)> callback,
+             FullSystemLock& lock) {
+            absl::optional<AppId> app_id =
+                lock.registrar().LookupPlaceholderAppId(install_url,
+                                                        source_type);
+            std::move(callback).Run(app_id);
+          },
+          install_url, source_type, std::move(callback)));
 }
 
 }  // namespace web_app
