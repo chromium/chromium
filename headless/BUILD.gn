@@ -311,7 +311,6 @@ source_set("headless_shared_sources") {
     "public/headless_browser.cc",
     "public/headless_browser.h",
     "public/headless_export.h",
-    "public/internal/headless_devtools_client_impl.h",
     "public/internal/message_dispatcher.h",
     "public/internal/value_conversions.h",
     "public/util/error_reporter.cc",
@@ -386,7 +385,6 @@ component("headless_non_renderer") {
     "lib/browser/headless_devtools.h",
     "lib/browser/headless_devtools_agent_host_client.cc",
     "lib/browser/headless_devtools_agent_host_client.h",
-    "lib/browser/headless_devtools_client_impl.cc",
     "lib/browser/headless_devtools_manager_delegate.cc",
     "lib/browser/headless_devtools_manager_delegate.h",
     "lib/browser/headless_permission_manager.cc",
@@ -715,7 +713,6 @@ group("headless_tests") {
 
   deps = [
     ":headless_browsertests",
-    ":headless_example",
     ":headless_unittests",
   ]
 }
@@ -1061,23 +1058,4 @@ process_version("version_header") {
     lastchange_file,
   ]
   output = "$target_gen_dir/public/version.h"
-}
-
-executable("headless_example") {
-  sources = [ "app/headless_example.cc" ]
-  defines = []
-
-  deps = [
-    ":headless_shell_lib",
-    "//content",
-    "//sandbox",
-    "//skia",  # we need this to override font render hinting in headless build
-    "//ui/gfx/geometry",
-  ]
-
-  if (is_win) {
-    deps += [ "//content/public/app" ]
-  }
-
-  configs += [ ":headless_defines_config" ]
 }
