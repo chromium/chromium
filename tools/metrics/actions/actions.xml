@@ -20955,6 +20955,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabNewTab">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User opens a new Tab. This includes an opening from the Toolbar, the
+    Overflow Menu and the Tab Grid (incognito + regular).
+  </description>
+</action>
+
 <action name="MobileTabReturnedToCurrentTab">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
@@ -29730,6 +29739,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromNTPFeedBottomSigninPromo">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>Please enter the description of the metric.</description>
+</action>
+
+<action name="Signin_Impression_FromNTPFeedCardMenuSigninPromo">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>Please enter the description of the metric.</description>
+</action>
+
 <action name="Signin_Impression_FromNTPFeedTopPromo">
   <owner>mrefaat@google.com</owner>
   <owner>sczs@chromium.org</owner>
@@ -30356,6 +30375,16 @@ should be able to be added at any place in this file.
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS.
   </description>
+</action>
+
+<action name="Signin_Signin_FromNTPFeedBottomSigninPromo">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>Please enter the description of the metric.</description>
+</action>
+
+<action name="Signin_Signin_FromNTPFeedCardMenuSigninPromo">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>Please enter the description of the metric.</description>
 </action>
 
 <action name="Signin_Signin_FromNTPFeedTopPromo">

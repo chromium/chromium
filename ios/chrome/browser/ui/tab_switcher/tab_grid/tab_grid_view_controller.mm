@@ -2515,6 +2515,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)newTabButtonTapped:(id)sender {
+  base::RecordAction(base::UserMetricsAction("MobileTabNewTab"));
   [self openNewTabInPage:self.currentPage focusOmnibox:NO];
   // Record metrics for button taps
   switch (self.currentPage) {
@@ -2535,6 +2536,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)plusSignButtonTapped:(id)sender {
   switch (self.currentPage) {
     case TabGridPageIncognitoTabs:
+      base::RecordAction(base::UserMetricsAction("MobileTabNewTab"));
       [self.incognitoTabsDelegate addNewItem];
       if (self.currentState == ViewRevealState::Peeked) {
         base::RecordAction(
@@ -2545,6 +2547,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       }
       break;
     case TabGridPageRegularTabs:
+      base::RecordAction(base::UserMetricsAction("MobileTabNewTab"));
       [self.regularTabsDelegate addNewItem];
       if (self.currentState == ViewRevealState::Peeked) {
         base::RecordAction(

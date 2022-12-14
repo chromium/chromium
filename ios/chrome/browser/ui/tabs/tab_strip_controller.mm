@@ -708,11 +708,13 @@ const CGFloat kSymbolSize = 18;
 }
 
 - (void)recordUserMetrics:(id)sender {
-  if (sender == _buttonNewTab)
+  if (sender == _buttonNewTab) {
     base::RecordAction(UserMetricsAction("MobileTabStripNewTab"));
-  else
+    base::RecordAction(UserMetricsAction("MobileTabNewTab"));
+  } else {
     LOG(WARNING) << "Trying to record metrics for unknown sender "
                  << base::SysNSStringToUTF8([sender description]);
+  }
 }
 
 - (void)sendNewTabCommand {

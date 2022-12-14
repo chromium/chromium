@@ -417,6 +417,7 @@ const base::TimeDelta kToobarSlideInAnimationDuration = base::Milliseconds(500);
     base::RecordAction(base::UserMetricsAction("MobileToolbarShareMenu"));
   } else if (sender == self.view.openNewTabButton) {
     base::RecordAction(base::UserMetricsAction("MobileToolbarNewTabShortcut"));
+    base::RecordAction(base::UserMetricsAction("MobileTabNewTab"));
   } else {
     NOTREACHED();
   }

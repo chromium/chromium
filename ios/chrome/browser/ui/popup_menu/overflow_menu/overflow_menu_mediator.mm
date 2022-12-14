@@ -1530,6 +1530,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 // Dismisses the menu and opens a new tab.
 - (void)openTab {
   RecordAction(UserMetricsAction("MobileMenuNewTab"));
+  RecordAction(UserMetricsAction("MobileTabNewTab"));
+
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
   [self.dispatcher openURLInNewTab:[OpenNewTabCommand commandWithIncognito:NO]];
 }

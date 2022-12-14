@@ -63,6 +63,8 @@ using base::UserMetricsAction;
       break;
     case PopupMenuActionOpenNewTab:
       RecordAction(UserMetricsAction("MobileMenuNewTab"));
+      RecordAction(UserMetricsAction("MobileTabNewTab"));
+
       [self.dispatcher
           openURLInNewTab:[OpenNewTabCommand commandWithIncognito:NO
                                                       originPoint:origin]];
