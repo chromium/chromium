@@ -33,6 +33,30 @@ crosapi::mojom::DeskModelPtr ToDeskModel(const ash::Desk* desk) {
   return desk_model;
 }
 
+crosapi::mojom::SavedDeskType ToSavedDeskType(
+    const ash::DeskTemplateType type) {
+  switch (type) {
+    case ash::DeskTemplateType::kTemplate:
+      return crosapi::mojom::SavedDeskType::kTemplate;
+    case ash::DeskTemplateType::kSaveAndRecall:
+      return crosapi::mojom::SavedDeskType::kSaveAndRecall;
+    // Desk API does not save/restore Floating Workspace.
+    case ash::DeskTemplateType::kFloatingWorkspace:
+    case ash::DeskTemplateType::kUnknown:
+      return crosapi::mojom::SavedDeskType::kUnknown;
+  }
+}
+
+crosapi::mojom::SavedDeskModelPtr ToSavedDeskModel(
+    const ash::DeskTemplate* saved_desk) {
+  auto saved_desk_model = crosapi::mojom::SavedDeskModel::New();
+  saved_desk_model->saved_desk_uuid = saved_desk->uuid().AsLowercaseString();
+  saved_desk_model->saved_desk_name =
+      base::UTF16ToUTF8(saved_desk->template_name());
+  saved_desk_model->saved_desk_type = ToSavedDeskType(saved_desk->type());
+  return saved_desk_model;
+}
+
 crosapi::mojom::DeskCrosApiError ToCrosApiError(
     const DesksClient::DeskActionError result) {
   switch (result) {
@@ -238,6 +262,46 @@ void DeskAsh::SetAllDesksProperty(int32_t app_restore_window_id,
   }
   std::move(callback).Run(crosapi::mojom::SetAllDesksPropertyResult::NewError(
       mojom::DeskCrosApiError::kResourceNotFoundError));
+}
+
+void DeskAsh::GetSavedDesks(GetSavedDesksCallback callback) {
+  DesksClient::Get()->GetDeskTemplates(base::BindOnce(
+      [](GetSavedDesksCallback callback,
+         absl::optional<DesksClient::DeskActionError> error,
+         const std::vector<const ash::DeskTemplate*>& desk_templates) {
+        if (error) {
+          std::move(callback).Run(crosapi::mojom::GetSavedDesksResult::NewError(
+              ToCrosApiError(error.value())));
+          return;
+        }
+        std::vector<crosapi::mojom::SavedDeskModelPtr> saved_desks;
+        for (auto* desk_template : desk_templates) {
+          crosapi::mojom::SavedDeskModelPtr saved_desk =
+              ToSavedDeskModel(desk_template);
+          saved_desks.push_back(std::move(saved_desk));
+        }
+        std::move(callback).Run(
+            crosapi::mojom::GetSavedDesksResult::NewSavedDesks(
+                std::move(saved_desks)));
+      },
+      std::move(callback)));
+}
+
+void DeskAsh::GetActiveDesk(GetActiveDeskCallback callback) {
+  auto desk_id = DesksClient::Get()->GetActiveDesk();
+  std::move(callback).Run(
+      crosapi::mojom::GetActiveDeskResult::NewDeskId(desk_id));
+}
+
+void DeskAsh::SwitchDesk(const base::GUID& desk_id,
+                         SwitchDeskCallback callback) {
+  auto error = DesksClient::Get()->SwitchDesk(desk_id);
+  if (error) {
+    std::move(callback).Run(crosapi::mojom::SwitchDeskResult::NewError(
+        ToCrosApiError(error.value())));
+    return;
+  }
+  std::move(callback).Run(crosapi::mojom::SwitchDeskResult::NewSucceeded(true));
 }
 
 // Performs a depth-first search for a window with given App Restore Window Id.

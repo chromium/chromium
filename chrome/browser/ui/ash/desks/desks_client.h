@@ -49,22 +49,23 @@ class DesksClient : public ash::SessionObserver {
   static DesksClient* Get();
 
   enum class DeskActionError {
-    // Storage error.
-    kStorageError,
-    // Therer is no active profile.
-    kNoCurrentUserError,
-    // Either the profile is not valid or there is not an active proflile.
-    kBadProfileError,
-    // The resource cannot be found.
-    kResourceNotFoundError,
-    // The identifier is not valid.
-    kInvalidIdError,
-    // The desks are currently being modified.
-    kDesksBeingModifiedError,
-    // The desk count requirement not met.
-    kDesksCountCheckFailedError,
     // Unknown error.
-    kUnknownError,
+    kUnknownError = 0,
+    // Storage error.
+    kStorageError = 1,
+    // Therer is no active profile.
+    kNoCurrentUserError = 2,
+    // Either the profile is not valid or there is not an active profile.
+    kBadProfileError = 3,
+    // The resource cannot be found.
+    kResourceNotFoundError = 4,
+    // The identifier is not valid.
+    kInvalidIdError = 5,
+    // The desks are currently being modified.
+    kDesksBeingModifiedError = 6,
+    // The desk count requirement not met.
+    kDesksCountCheckFailedError = 7,
+    kMaxValue = kDesksCountCheckFailedError,
   };
 
   // ash::SessionObserver:

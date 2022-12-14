@@ -35,6 +35,29 @@ api::wm_desks_private::SavedDesk GetSavedDeskFromCrosApiDesk(
   return target;
 }
 
+api::wm_desks_private::SavedDeskType ToSavedDeskType(
+    const crosapi::mojom::SavedDeskType type) {
+  switch (type) {
+    case crosapi::mojom::SavedDeskType::kTemplate:
+      return api::wm_desks_private::SavedDeskType::SAVED_DESK_TYPE_KTEMPLATE;
+    case crosapi::mojom::SavedDeskType::kSaveAndRecall:
+      return api::wm_desks_private::SavedDeskType::
+          SAVED_DESK_TYPE_KSAVEANDRECALL;
+    case crosapi::mojom::SavedDeskType::kUnknown:
+      return api::wm_desks_private::SavedDeskType::SAVED_DESK_TYPE_KUNKNOWN;
+  }
+}
+
+api::wm_desks_private::SavedDesk GetSavedDeskFromCrosApiSavedDesk(
+    const crosapi::mojom::SavedDeskModelPtr& cros_api_saved_desk) {
+  api::wm_desks_private::SavedDesk target;
+  target.saved_desk_name = cros_api_saved_desk->saved_desk_name;
+  target.saved_desk_uuid = cros_api_saved_desk->saved_desk_uuid;
+  target.saved_desk_type =
+      ToSavedDeskType(cros_api_saved_desk->saved_desk_type);
+  return target;
+}
+
 std::string GetStringError(crosapi::mojom::DeskCrosApiError result) {
   switch (result) {
     case crosapi::mojom::DeskCrosApiError::kStorageError:
@@ -78,10 +101,10 @@ void WMDesksPrivateFeatureLacros::GetDeskTemplateJson(
                            if (result->is_error()) {
                              std::move(callback).Run(
                                  GetStringError(result->get_error()), {});
-                           } else {
-                             std::move(callback).Run(
-                                 {}, std::move(result->get_template_json()));
+                             return;
                            }
+                           std::move(callback).Run(
+                               {}, std::move(result->get_template_json()));
                          },
                          std::move(callback)));
 }
@@ -100,9 +123,9 @@ void WMDesksPrivateFeatureLacros::LaunchDesk(std::string desk_name,
                        if (result->is_error()) {
                          std::move(callback).Run(
                              GetStringError(result->get_error()), {});
-                       } else {
-                         std::move(callback).Run({}, result->get_desk_id());
+                         return;
                        }
+                       std::move(callback).Run({}, result->get_desk_id());
                      },
                      std::move(callback)));
 }
@@ -122,9 +145,9 @@ void WMDesksPrivateFeatureLacros::RemoveDesk(const base::GUID& desk_uuid,
              crosapi::mojom::RemoveDeskResultPtr result) {
             if (result->is_error()) {
               std::move(callback).Run(GetStringError(result->get_error()));
-            } else {
-              std::move(callback).Run({});
+              return;
             }
+            std::move(callback).Run({});
           },
           std::move(callback)));
 }
@@ -144,9 +167,9 @@ void WMDesksPrivateFeatureLacros::SetAllDeskProperty(
              crosapi::mojom::SetAllDesksPropertyResultPtr result) {
             if (result->is_error()) {
               std::move(callback).Run(GetStringError(result->get_error()));
-            } else {
-              std::move(callback).Run({});
+              return;
             }
+            std::move(callback).Run({});
           },
           std::move(callback)));
 }
@@ -162,12 +185,12 @@ void WMDesksPrivateFeatureLacros::GetAllDesks(GetAllDesksCallback callback) {
          crosapi::mojom::GetAllDesksResultPtr result) {
         if (result->is_error()) {
           std::move(callback).Run(GetStringError(result->get_error()), {});
-        } else {
-          std::vector<api::wm_desks_private::Desk> api_desks;
-          for (const auto& desk : result->get_desks())
-            api_desks.push_back(GetDeskFromCrosApiDesk(std::move(desk)));
-          std::move(callback).Run({}, std::move(api_desks));
+          return;
         }
+        std::vector<api::wm_desks_private::Desk> api_desks;
+        for (const auto& desk : result->get_desks())
+          api_desks.push_back(GetDeskFromCrosApiDesk(std::move(desk)));
+        std::move(callback).Run({}, std::move(api_desks));
       },
       std::move(callback)));
 }
@@ -184,11 +207,11 @@ void WMDesksPrivateFeatureLacros::SaveActiveDesk(
          crosapi::mojom::SaveActiveDeskResultPtr result) {
         if (result->is_error()) {
           std::move(callback).Run(GetStringError(result->get_error()), {});
-        } else {
-          api::wm_desks_private::SavedDesk saved_desk =
-              GetSavedDeskFromCrosApiDesk(std::move(result->get_saved_desk()));
-          std::move(callback).Run({}, std::move(saved_desk));
+          return;
         }
+        api::wm_desks_private::SavedDesk saved_desk =
+            GetSavedDeskFromCrosApiDesk(std::move(result->get_saved_desk()));
+        std::move(callback).Run({}, std::move(saved_desk));
       },
       std::move(callback)));
 }
@@ -208,9 +231,9 @@ void WMDesksPrivateFeatureLacros::DeleteSavedDesk(
              crosapi::mojom::DeleteSavedDeskResultPtr result) {
             if (result->is_error()) {
               std::move(callback).Run(GetStringError(result->get_error()));
-            } else {
-              std::move(callback).Run({});
+              return;
             }
+            std::move(callback).Run({});
           },
           std::move(callback)));
 }
@@ -230,26 +253,83 @@ void WMDesksPrivateFeatureLacros::RecallSavedDesk(
                        if (result->is_error()) {
                          std::move(callback).Run(
                              GetStringError(result->get_error()), {});
-                       } else {
-                         std::move(callback).Run({}, result->get_desk_id());
+                         return;
                        }
+                       std::move(callback).Run({}, result->get_desk_id());
                      },
                      std::move(callback)));
 }
 
 void WMDesksPrivateFeatureLacros::GetSavedDesks(
     GetSavedDesksCallback callback) {
-  // TODO(aprilzhou): To be implemented in next CL;
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service->IsAvailable<crosapi::mojom::Desk>() ||
+      service->GetInterfaceVersion(crosapi::mojom::Desk::Uuid_) <
+          static_cast<int>(crosapi::mojom::Desk::MethodMinVersions::
+                               kGetSavedDesksMinVersion)) {
+    std::move(callback).Run(kCROS_API_UNAVAILABLE, {});
+    return;
+  }
+  service->GetRemote<crosapi::mojom::Desk>()->GetSavedDesks(base::BindOnce(
+      [](GetSavedDesksCallback callback,
+         crosapi::mojom::GetSavedDesksResultPtr result) {
+        if (result->is_error()) {
+          std::move(callback).Run(GetStringError(result->get_error()), {});
+          return;
+        }
+        std::vector<api::wm_desks_private::SavedDesk> saved_desks;
+        for (const auto& saved_desk : result->get_saved_desks())
+          saved_desks.push_back(
+              GetSavedDeskFromCrosApiSavedDesk(std::move(saved_desk)));
+        std::move(callback).Run({}, std::move(saved_desks));
+      },
+      std::move(callback)));
 }
 
 void WMDesksPrivateFeatureLacros::GetActiveDesk(
     GetActiveDeskCallback callback) {
-  // TODO(aprilzhou):To be implemented in next CL.
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service->IsAvailable<crosapi::mojom::Desk>() ||
+      service->GetInterfaceVersion(crosapi::mojom::Desk::Uuid_) <
+          static_cast<int>(crosapi::mojom::Desk::MethodMinVersions::
+                               kGetActiveDeskMinVersion)) {
+    std::move(callback).Run(kCROS_API_UNAVAILABLE, {});
+    return;
+  }
+  service->GetRemote<crosapi::mojom::Desk>()->GetActiveDesk(base::BindOnce(
+      [](GetActiveDeskCallback callback,
+         crosapi::mojom::GetActiveDeskResultPtr result) {
+        if (result->is_error()) {
+          std::move(callback).Run(GetStringError(result->get_error()), {});
+          return;
+        }
+        std::move(callback).Run({}, result->get_desk_id());
+      },
+      std::move(callback)));
 }
 
 void WMDesksPrivateFeatureLacros::SwitchDesk(const base::GUID& desk_uuid,
                                              SwitchDeskCallback callback) {
-  // TODO(aprilzhou):To be implemented in next CL.
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service->IsAvailable<crosapi::mojom::Desk>() ||
+      service->GetInterfaceVersion(crosapi::mojom::Desk::Uuid_) <
+          static_cast<int>(
+              crosapi::mojom::Desk::MethodMinVersions::kSwitchDeskMinVersion)) {
+    std::move(callback).Run(kCROS_API_UNAVAILABLE);
+    return;
+  }
+  service->GetRemote<crosapi::mojom::Desk>()->SwitchDesk(
+      desk_uuid,
+      base::BindOnce(
+          [](SwitchDeskCallback callback,
+             crosapi::mojom::SwitchDeskResultPtr result) {
+            if (result->is_error()) {
+              std::move(callback).Run(GetStringError(result->get_error()));
+              return;
+            }
+            std::move(callback).Run({});
+          },
+          std::move(callback)));
 }
 
 }  // namespace extensions

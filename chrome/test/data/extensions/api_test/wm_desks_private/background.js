@@ -54,4 +54,10 @@ chrome.test.runTests([
       "Error: ResourceNotFoundError");
     chrome.test.succeed();
   },
+
+  async function testGetSavedDesks() {
+    const saved_desks = await chrome.wmDesksPrivate.getSavedDesks();
+    chrome.test.assertEq(0, saved_desks.length);
+    chrome.test.succeed();
+  }
 ]);

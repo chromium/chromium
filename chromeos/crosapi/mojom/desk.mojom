@@ -10,7 +10,7 @@ import "mojo/public/mojom/base/values.mojom";
 [Stable, Extensible]
 enum DeskCrosApiError {
   // Storage error.
-  kStorageError=0,
+  kStorageError = 0,
   // Therer is no active profile.
   kNoCurrentUserError,
   // Either the profile is not valid or there is not an active proflile.
@@ -27,20 +27,41 @@ enum DeskCrosApiError {
   [Default]kUnknownError,
 };
 
+[Stable, Extensible]
+enum SavedDeskType {
+  // Unknown desk type.
+  [Default] kUnknown,
+  // Desk saved for regular desk template.
+  kTemplate,
+  // Desk saved for Save & Recall.
+  kSaveAndRecall,
+};
+
 // A Struct represents an ash desk.
 [Stable]
 struct DeskModel {
- // Unique identifier of a desk.
- string desk_uuid@0;
- // Humane readable name of a desk.
- string desk_name@1;
+  // Unique identifier of a desk.
+  string desk_uuid@0;
+  // Human readable name of a desk.
+  string desk_name@1;
+};
+
+// A Struct represents an saved desk.
+[Stable]
+struct SavedDeskModel {
+  // Unique identifier of a saved desk.
+  string saved_desk_uuid@0;
+  // Human readable name of a saved desk.
+  string saved_desk_name@1;
+  // Saved desk type
+  SavedDeskType saved_desk_type@2;
 };
 
 // A Struct represents GUID.
 [Stable]
 struct GUID {
-// Lowercase string representation of GUID.
-string lowercase@0;
+  // Lowercase string representation of GUID.
+  string lowercase@0;
 };
 
 // The response from LaunchEmptyDesk API.
@@ -99,6 +120,27 @@ union SetAllDesksPropertyResult {
   bool succeeded;
 };
 
+// The response from GetSavedDesks API.
+[Stable]
+union GetSavedDesksResult {
+  DeskCrosApiError error;
+  array<SavedDeskModel> saved_desks;
+};
+
+// The response from GetActiveDesk API.
+[Stable]
+union GetActiveDeskResult {
+  DeskCrosApiError error;
+  GUID desk_id;
+};
+
+// The response from SwitchDesk API.
+[Stable]
+union SwitchDeskResult {
+  DeskCrosApiError error;
+  bool succeeded;
+};
+
 // Interface for desk operations. Implemented by ash-chrome. Used by
 // lacros-chrome to forward the desk operation to support wmDesksPrivate private
 // API.
@@ -131,11 +173,18 @@ interface Desk {
   DeleteSavedDesk@5(GUID saved_desk_uuid) => (DeleteSavedDeskResult result);
 
   // Launches a saved desk from the library back to active desk.
-  RecallSavedDesk@6(GUID saved_desk_uuid)
-      => (RecallSavedDeskResult result);
+  RecallSavedDesk@6(GUID saved_desk_uuid) => (RecallSavedDeskResult result);
 
   // Sets all-desk window property by the window app_restore_window_id.
   SetAllDesksProperty@7(int32 app_restore_window_id, bool all_desk)
       => (SetAllDesksPropertyResult result);
 
+  // Returns all available previously-saved desks.
+  [MinVersion=2]GetSavedDesks@8() => (GetSavedDesksResult result);
+
+  // Retrieves the UUID of the current active desk.
+  [MinVersion=2]GetActiveDesk@9() => (GetActiveDeskResult result);
+
+  // Switches to the target desk.
+  [MinVersion=2]SwitchDesk@10(GUID desk_uuid) => (SwitchDeskResult result);
 };

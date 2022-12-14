@@ -51,6 +51,9 @@ class DeskAsh : public mojom::Desk {
   void SetAllDesksProperty(int32_t app_restore_window_id,
                            bool all_desks,
                            SetAllDesksPropertyCallback callback) override;
+  void GetSavedDesks(GetSavedDesksCallback callback) override;
+  void GetActiveDesk(GetActiveDeskCallback callback) override;
+  void SwitchDesk(const base::GUID& uuid, SwitchDeskCallback callback) override;
 
  private:
   // Returns the window pointer by app restore window Id.
