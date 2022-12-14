@@ -1750,7 +1750,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
         } else {
 #if BUILDFLAG(IS_WIN)
           if (gl_surface_->SupportsDCLayers()) {
-            output_device_ = std::make_unique<SkiaOutputDeviceDComp>(
+            output_device_ = std::make_unique<SkiaOutputDeviceDCompGLSurface>(
                 dependency_->GetMailboxManager(),
                 shared_image_representation_factory_.get(),
                 context_state_.get(), gl_surface_, feature_info_,

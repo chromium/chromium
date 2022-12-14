@@ -32,63 +32,48 @@ class FeatureInfo;
 
 namespace viz {
 
-class SkiaOutputDeviceDComp final : public SkiaOutputDevice {
+// Base class for DComp-backed OutputDevices.
+class SkiaOutputDeviceDComp : public SkiaOutputDevice {
  public:
-  SkiaOutputDeviceDComp(
-      gpu::MailboxManager* mailbox_manager,
-      gpu::SharedImageRepresentationFactory*
-          shared_image_representation_factory,
-      gpu::SharedContextState* context_state,
-      scoped_refptr<gl::GLSurface> gl_surface,
-      scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
-      gpu::MemoryTracker* memory_tracker,
-      DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
-
   SkiaOutputDeviceDComp(const SkiaOutputDeviceDComp&) = delete;
   SkiaOutputDeviceDComp& operator=(const SkiaOutputDeviceDComp&) = delete;
 
   ~SkiaOutputDeviceDComp() override;
 
   // SkiaOutputDevice implementation:
-  bool Reshape(const SkSurfaceCharacterization& characterization,
-               const gfx::ColorSpace& color_space,
-               float device_scale_factor,
-               gfx::OverlayTransform transform) override;
   void SwapBuffers(BufferPresentedCallback feedback,
                    OutputSurfaceFrame frame) override;
   void PostSubBuffer(const gfx::Rect& rect,
                      BufferPresentedCallback feedback,
                      OutputSurfaceFrame frame) override;
-  void CommitOverlayPlanes(BufferPresentedCallback feedback,
-                           OutputSurfaceFrame frame) override;
-  bool SetDrawRectangle(const gfx::Rect& draw_rectangle) override;
-  void SetGpuVSyncEnabled(bool enabled) override;
-  void SetEnableDCLayers(bool enable) override;
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays) override;
-  void EnsureBackbuffer() override;
-  void DiscardBackbuffer() override;
-  SkSurface* BeginPaint(
-      std::vector<GrBackendSemaphore>* end_semaphores) override;
-  void EndPaint() override;
 
- private:
+ protected:
+  SkiaOutputDeviceDComp(
+      gpu::MailboxManager* mailbox_manager,
+      gpu::SharedImageRepresentationFactory*
+          shared_image_representation_factory,
+      gpu::SharedContextState* context_state,
+      gl::GLSurface* gl_surface,
+      scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
+      gpu::MemoryTracker* memory_tracker,
+      DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
+
   class OverlayData;
-
-  // Use instead of calling FinishSwapBuffers() directly. On Windows this cleans
-  // up old entries in |overlays_|.
-  void DoFinishSwapBuffers(const gfx::Size& size,
-                           OutputSurfaceFrame frame,
-                           gfx::SwapCompletionResult result);
-  // Used as callback for SwapBuffersAsync and PostSubBufferAsync to finish
-  // operation
-  void DoFinishSwapBuffersAsync(const gfx::Size& size,
-                                OutputSurfaceFrame frame,
-                                gfx::SwapCompletionResult result);
 
   gpu::OverlayImageRepresentation::ScopedReadAccess* BeginOverlayAccess(
       const gpu::Mailbox& mailbox);
 
   void CreateSkSurface();
+
+  virtual bool ScheduleDCLayer(
+      std::unique_ptr<ui::DCRendererLayerParams> params) = 0;
+
+  virtual gfx::Size GetRootSurfaceSize() const = 0;
+
+  virtual gfx::SwapResult DoPostSubBuffer(const gfx::Rect& rect,
+                                          BufferPresentedCallback feedback,
+                                          gl::FrameData data) = 0;
 
   // Mailboxes of overlays scheduled in the current frame.
   base::flat_set<gpu::Mailbox> scheduled_overlay_mailboxes_;
@@ -102,19 +87,55 @@ class SkiaOutputDeviceDComp final : public SkiaOutputDevice {
       shared_image_representation_factory_;
 
   const raw_ptr<gpu::SharedContextState> context_state_;
-  scoped_refptr<gl::GLSurface> gl_surface_;
-  const bool supports_async_swap_;
-
-  uint64_t backbuffer_estimated_size_ = 0;
-
-  gfx::Size size_;
-  SkColorType color_type_;
-  gfx::ColorSpace color_space_;
-  GrGLFramebufferInfo framebuffer_info_ = {};
-  int sample_count_ = 1;
-  sk_sp<SkSurface> sk_surface_;
 
   base::WeakPtrFactory<SkiaOutputDeviceDComp> weak_ptr_factory_{this};
+};
+
+// A DComp-backed OutputDevice whose root surface is wrapped in a GLSurface.
+class VIZ_SERVICE_EXPORT SkiaOutputDeviceDCompGLSurface final
+    : public SkiaOutputDeviceDComp {
+ public:
+  SkiaOutputDeviceDCompGLSurface(
+      gpu::MailboxManager* mailbox_manager,
+      gpu::SharedImageRepresentationFactory*
+          shared_image_representation_factory,
+      gpu::SharedContextState* context_state,
+      scoped_refptr<gl::GLSurface> gl_surface,
+      scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
+      gpu::MemoryTracker* memory_tracker,
+      DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
+
+  ~SkiaOutputDeviceDCompGLSurface() override;
+
+  // SkiaOutputDevice implementation:
+  bool Reshape(const SkSurfaceCharacterization& characterization,
+               const gfx::ColorSpace& color_space,
+               float device_scale_factor,
+               gfx::OverlayTransform transform) override;
+  bool SetDrawRectangle(const gfx::Rect& draw_rectangle) override;
+  void SetEnableDCLayers(bool enable) override;
+  void SetGpuVSyncEnabled(bool enabled) override;
+  SkSurface* BeginPaint(
+      std::vector<GrBackendSemaphore>* end_semaphores) override;
+  void EndPaint() override;
+
+ protected:
+  bool ScheduleDCLayer(
+      std::unique_ptr<ui::DCRendererLayerParams> params) override;
+  gfx::Size GetRootSurfaceSize() const override;
+  gfx::SwapResult DoPostSubBuffer(const gfx::Rect& rect,
+                                  BufferPresentedCallback feedback,
+                                  gl::FrameData data) override;
+
+ private:
+  scoped_refptr<gl::GLSurface> gl_surface_;
+
+  gfx::Size size_;
+  gfx::ColorSpace color_space_;
+  GrGLFramebufferInfo framebuffer_info_ = {};
+  sk_sp<SkSurface> sk_surface_;
+
+  uint64_t backbuffer_estimated_size_ = 0;
 };
 
 }  // namespace viz
