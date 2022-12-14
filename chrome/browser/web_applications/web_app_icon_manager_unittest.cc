@@ -172,19 +172,6 @@ class WebAppIconManagerTest : public WebAppTest {
     return result;
   }
 
-  SkBitmap ReadSmallestIconAny(const AppId& app_id,
-                               SquareSizePx min_icon_size) {
-    SkBitmap result;
-    base::RunLoop run_loop;
-    icon_manager().ReadSmallestIconAny(
-        app_id, min_icon_size, base::BindLambdaForTesting([&](SkBitmap bitmap) {
-          result = std::move(bitmap);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return result;
-  }
-
   struct PurposeAndData {
     IconPurpose purpose;
     std::vector<uint8_t> data;
@@ -1016,15 +1003,17 @@ TEST_F(WebAppIconManagerTest, FindSmallest) {
 
   {
     EXPECT_TRUE(icon_manager().HasSmallestIcon(app_id, {IconPurpose::ANY}, 40));
-    SkBitmap bitmap = ReadSmallestIconAny(app_id, 40);
-    EXPECT_FALSE(bitmap.empty());
-    EXPECT_EQ(SK_ColorGREEN, bitmap.getColor(0, 0));
+    PurposeAndBitmap result = ReadSmallestIcon(app_id, {IconPurpose::ANY}, 40);
+    EXPECT_FALSE(result.bitmap.empty());
+    EXPECT_EQ(IconPurpose::ANY, result.purpose);
+    EXPECT_EQ(SK_ColorGREEN, result.bitmap.getColor(0, 0));
   }
   {
     EXPECT_TRUE(icon_manager().HasSmallestIcon(app_id, {IconPurpose::ANY}, 20));
-    SkBitmap bitmap = ReadSmallestIconAny(app_id, 20);
-    EXPECT_FALSE(bitmap.empty());
-    EXPECT_EQ(SK_ColorBLUE, bitmap.getColor(0, 0));
+    PurposeAndBitmap result = ReadSmallestIcon(app_id, {IconPurpose::ANY}, 20);
+    EXPECT_FALSE(result.bitmap.empty());
+    EXPECT_EQ(IconPurpose::ANY, result.purpose);
+    EXPECT_EQ(SK_ColorBLUE, result.bitmap.getColor(0, 0));
   }
   {
     PurposeAndBitmap result =

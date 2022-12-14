@@ -61,6 +61,8 @@ namespace {
 using ReadCompressedIconCallback =
     base::OnceCallback<void(std::vector<uint8_t> data)>;
 
+using ReadIconCallback = base::OnceCallback<void(SkBitmap)>;
+
 // This utility struct is to carry error logs between threads via return values.
 // If we weren't generating multithreaded errors we would just append the errors
 // to WebAppIconManager::error_log() directly.
@@ -488,12 +490,6 @@ gfx::ImageSkia ConvertUiScaleFactorsBitmapsToImageSkia(
   }
 
   return image_skia;
-}
-
-void WrapReadIconCallback(WebAppIconManager::ReadIconCallback callback,
-                          IconPurpose ignored,
-                          SkBitmap bitmap) {
-  std::move(callback).Run(std::move(bitmap));
 }
 
 // A utility that manages writing icons to disk for a single app. Should only be
@@ -962,8 +958,8 @@ void WebAppIconManager::ReadSmallestIcon(
       FindIconMatchBigger(app_id, purposes, min_size_in_px);
   DCHECK(best_icon.has_value());
   IconId icon_id(app_id, best_icon->purpose, best_icon->size_px);
-  ReadIconCallback wrapped = base::BindOnce(
-      WrapReadIconWithPurposeCallback, std::move(callback), best_icon->purpose);
+  ReadIconCallback wrapped =
+      base::BindOnce(std::move(callback), best_icon->purpose);
 
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -993,15 +989,6 @@ void WebAppIconManager::ReadSmallestCompressedIcon(
                      std::move(icon_id)),
       base::BindOnce(&LogErrorsCallCallback<std::vector<uint8_t>>, GetWeakPtr(),
                      std::move(wrapped)));
-}
-
-void WebAppIconManager::ReadSmallestIconAny(const AppId& app_id,
-                                            SquareSizePx min_icon_size,
-                                            ReadIconCallback callback) {
-  ReadIconWithPurposeCallback wrapped =
-      base::BindOnce(WrapReadIconCallback, std::move(callback));
-  ReadSmallestIcon(app_id, {IconPurpose::ANY}, min_icon_size,
-                   std::move(wrapped));
 }
 
 SkBitmap WebAppIconManager::GetFavicon(const AppId& app_id) const {
@@ -1143,14 +1130,6 @@ base::WeakPtr<const WebAppIconManager> WebAppIconManager::GetWeakPtr() const {
 
 base::WeakPtr<WebAppIconManager> WebAppIconManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-// static
-void WebAppIconManager::WrapReadIconWithPurposeCallback(
-    ReadIconWithPurposeCallback callback,
-    IconPurpose purpose,
-    SkBitmap bitmap) {
-  std::move(callback).Run(purpose, std::move(bitmap));
 }
 
 absl::optional<WebAppIconManager::IconSizeAndPurpose>

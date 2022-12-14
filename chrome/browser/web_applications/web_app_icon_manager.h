@@ -144,12 +144,6 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
       SquareSizePx min_size_in_px,
       ReadCompressedIconWithPurposeCallback callback);
 
-  using ReadIconCallback = base::OnceCallback<void(SkBitmap)>;
-  // Convenience method for |ReadSmallestIcon| with IconPurpose::ANY only.
-  void ReadSmallestIconAny(const AppId& app_id,
-                           SquareSizePx min_icon_size,
-                           ReadIconCallback callback);
-
   // Returns a square icon of gfx::kFaviconSize px, or an empty bitmap if not
   // found.
   SkBitmap GetFavicon(const AppId& app_id) const;
@@ -200,11 +194,6 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   std::vector<std::string>* error_log() { return error_log_.get(); }
 
  private:
-  static void WrapReadIconWithPurposeCallback(
-      ReadIconWithPurposeCallback callback,
-      IconPurpose purpose,
-      SkBitmap bitmap);
-
   base::WeakPtr<const WebAppIconManager> GetWeakPtr() const;
   base::WeakPtr<WebAppIconManager> GetWeakPtr();
 

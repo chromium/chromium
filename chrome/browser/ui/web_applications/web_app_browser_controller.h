@@ -132,7 +132,7 @@ class WebAppBrowserController : public AppBrowserController,
   // Invoked when the icon is loaded.
   void OnLoadIcon(apps::IconValuePtr icon_value);
 
-  void OnReadIcon(SkBitmap bitmap);
+  void OnReadIcon(IconPurpose purpose, SkBitmap bitmap);
   void PerformDigitalAssetLinkVerification(Browser* browser);
 
 #if BUILDFLAG(IS_CHROMEOS)

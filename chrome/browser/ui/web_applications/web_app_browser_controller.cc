@@ -309,8 +309,8 @@ ui::ImageModel WebAppBrowserController::GetWindowAppIcon() const {
 
   if (provider_->icon_manager().HasSmallestIcon(app_id(), {IconPurpose::ANY},
                                                 kWebAppIconSmall)) {
-    provider_->icon_manager().ReadSmallestIconAny(
-        app_id(), kWebAppIconSmall,
+    provider_->icon_manager().ReadSmallestIcon(
+        app_id(), {IconPurpose::ANY}, kWebAppIconSmall,
         base::BindOnce(&WebAppBrowserController::OnReadIcon,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -553,7 +553,10 @@ void WebAppBrowserController::OnLoadIcon(apps::IconValuePtr icon_value) {
     std::move(callback_for_testing_).Run();
 }
 
-void WebAppBrowserController::OnReadIcon(SkBitmap bitmap) {
+void WebAppBrowserController::OnReadIcon(IconPurpose purpose, SkBitmap bitmap) {
+  // We request only IconPurpose::ANY icons.
+  DCHECK_EQ(purpose, IconPurpose::ANY);
+
   if (bitmap.empty()) {
     DLOG(ERROR) << "Failed to read icon for web app";
     return;
