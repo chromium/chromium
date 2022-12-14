@@ -993,6 +993,28 @@ void FileSystemManagerImpl::RegisterBlob(
     RegisterBlobCallback callback) {
   storage::FileSystemURL crack_url =
       context_->CrackURL(url, receivers_.current_context());
+
+  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      // security_policy_ is a singleton so refcounting is unnecessary
+      base::BindOnce(&ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
+                     base::Unretained(security_policy_), process_id_,
+                     crack_url),
+      base::BindOnce(&FileSystemManagerImpl::ContinueRegisterBlob,
+                     weak_factory_.GetWeakPtr(), content_type, url, length,
+                     expected_modification_time, std::move(callback),
+                     crack_url));
+}
+
+void FileSystemManagerImpl::ContinueRegisterBlob(
+    const std::string& content_type,
+    const GURL& url,
+    uint64_t length,
+    absl::optional<base::Time> expected_modification_time,
+    RegisterBlobCallback callback,
+    storage::FileSystemURL crack_url,
+    bool security_check_success) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   std::string uuid = base::GenerateGUID();
   mojo::PendingRemote<blink::mojom::Blob> blob_remote;
   mojo::PendingReceiver<blink::mojom::Blob> blob_receiver =
@@ -1000,7 +1022,7 @@ void FileSystemManagerImpl::RegisterBlob(
 
   if (crack_url.is_valid() &&
       context_->GetFileSystemBackend(crack_url.type()) &&
-      security_policy_->CanReadFileSystemFile(process_id_, crack_url)) {
+      security_check_success) {
     blob_storage_context_->CreateFileSystemBlob(
         context_, std::move(blob_receiver), crack_url, uuid, content_type,
         length, expected_modification_time.value_or(base::Time()));

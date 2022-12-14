@@ -209,6 +209,15 @@ class CONTENT_EXPORT FileSystemManagerImpl
   void ContinueCreateSnapshotFile(const storage::FileSystemURL& url,
                                   CreateSnapshotFileCallback callback,
                                   bool security_check_success);
+  void ContinueRegisterBlob(
+      const std::string& content_type,
+      const GURL& url,
+      uint64_t length,
+      absl::optional<base::Time> expected_modification_time,
+      RegisterBlobCallback callback,
+      storage::FileSystemURL crack_url,
+      bool security_check_success);
+
   void Cancel(
       OperationID op_id,
       blink::mojom::FileSystemCancellableOperation::CancelCallback callback);
