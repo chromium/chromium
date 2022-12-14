@@ -88,7 +88,7 @@ static_library("content") {
   ]
 
   if (is_chromeos_ash) {
-    sources += [ "android_app_communication_chrome_os.cc" ]
+    sources += [ "android_app_communication_ash.cc" ]
 
     deps += [
       "//ash/components/arc",

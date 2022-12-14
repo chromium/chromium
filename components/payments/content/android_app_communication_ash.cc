@@ -155,8 +155,9 @@ arc::mojom::PaymentParametersPtr CreatePaymentParameters(
   // at this time.
   auto supported_method_iterator =
       stringified_method_data.find(methods::kGooglePlayBilling);
-  if (supported_method_iterator == stringified_method_data.end())
+  if (supported_method_iterator == stringified_method_data.end()) {
     return nullptr;
+  }
 
   // Chrome OS TWA supports only one set of payment method specific data.
   if (supported_method_iterator->second.size() > 1) {
@@ -193,20 +194,19 @@ std::vector<std::unique_ptr<AndroidAppDescription>> CreateAppForTesting(
 }
 
 // Invokes the TWA Android app in Android subsystem on Chrome OS.
-class AndroidAppCommunicationChromeOS : public AndroidAppCommunication {
+class AndroidAppCommunicationAsh : public AndroidAppCommunication {
  public:
-  explicit AndroidAppCommunicationChromeOS(content::BrowserContext* context)
+  explicit AndroidAppCommunicationAsh(content::BrowserContext* context)
       : AndroidAppCommunication(context),
         get_app_service_(base::BindRepeating(
             &arc::ArcPaymentAppBridge::GetForBrowserContext)) {}
 
-  ~AndroidAppCommunicationChromeOS() override = default;
+  ~AndroidAppCommunicationAsh() override = default;
 
   // Disallow copy and assign.
-  AndroidAppCommunicationChromeOS(
-      const AndroidAppCommunicationChromeOS& other) = delete;
-  AndroidAppCommunicationChromeOS& operator=(
-      const AndroidAppCommunicationChromeOS& other) = delete;
+  AndroidAppCommunicationAsh(const AndroidAppCommunicationAsh& other) = delete;
+  AndroidAppCommunicationAsh& operator=(
+      const AndroidAppCommunicationAsh& other) = delete;
 
   // AndroidAppCommunication implementation:
   void GetAppDescriptions(const std::string& twa_package_name,
@@ -371,7 +371,7 @@ class AndroidAppCommunicationChromeOS : public AndroidAppCommunication {
 // static
 std::unique_ptr<AndroidAppCommunication> AndroidAppCommunication::Create(
     content::BrowserContext* context) {
-  return std::make_unique<AndroidAppCommunicationChromeOS>(context);
+  return std::make_unique<AndroidAppCommunicationAsh>(context);
 }
 
 }  // namespace payments
