@@ -266,7 +266,7 @@ void WaylandDataDragController::DrawIconInternal() {
       gfx::ScaleToCeiledSize(size_dip, icon_surface_buffer_scale_);
 
   icon_buffer_ = std::make_unique<WaylandShmBuffer>(
-      connection_->wayland_buffer_factory(), size_px);
+      connection_->buffer_factory(), size_px);
   if (!icon_buffer_->IsValid()) {
     LOG(ERROR) << "Failed to create drag icon buffer.";
     return;

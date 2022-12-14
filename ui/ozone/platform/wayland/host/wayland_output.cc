@@ -49,11 +49,11 @@ void WaylandOutput::Instantiate(WaylandConnection* connection,
     return;
   }
 
-  if (!connection->wayland_output_manager_) {
-    connection->wayland_output_manager_ =
+  if (!connection->output_manager_) {
+    connection->output_manager_ =
         std::make_unique<WaylandOutputManager>(connection);
   }
-  connection->wayland_output_manager_->AddWaylandOutput(name, output.release());
+  connection->output_manager_->AddWaylandOutput(name, output.release());
 }
 
 WaylandOutput::Metrics::Metrics() = default;

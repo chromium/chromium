@@ -79,11 +79,11 @@ void WaylandBufferManagerHost::OnCommitOverlayError(
 
 wl::BufferFormatsWithModifiersMap
 WaylandBufferManagerHost::GetSupportedBufferFormats() const {
-  return connection_->wayland_buffer_factory()->GetSupportedBufferFormats();
+  return connection_->buffer_factory()->GetSupportedBufferFormats();
 }
 
 bool WaylandBufferManagerHost::SupportsDmabuf() const {
-  return connection_->wayland_buffer_factory()->SupportsDmabuf();
+  return connection_->buffer_factory()->SupportsDmabuf();
 }
 
 bool WaylandBufferManagerHost::SupportsAcquireFence() const {

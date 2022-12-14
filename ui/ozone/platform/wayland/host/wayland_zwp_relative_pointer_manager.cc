@@ -31,7 +31,7 @@ void WaylandZwpRelativePointerManager::Instantiate(
   CHECK_EQ(interface, kInterfaceName) << "Expected \"" << kInterfaceName
                                       << "\" but got \"" << interface << "\"";
 
-  if (connection->wayland_zwp_relative_pointer_manager_ ||
+  if (connection->zwp_relative_pointer_manager_ ||
       !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
   }
@@ -43,7 +43,7 @@ void WaylandZwpRelativePointerManager::Instantiate(
     LOG(ERROR) << "Failed to bind zwp_relative_pointer_manager_v1";
     return;
   }
-  connection->wayland_zwp_relative_pointer_manager_ =
+  connection->zwp_relative_pointer_manager_ =
       std::make_unique<WaylandZwpRelativePointerManager>(
           zwp_relative_pointer_manager_v1.release(), connection);
 }

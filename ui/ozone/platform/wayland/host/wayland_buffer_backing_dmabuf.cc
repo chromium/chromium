@@ -32,7 +32,7 @@ void WaylandBufferBackingDmabuf::RequestBufferHandle(
     base::OnceCallback<void(wl::Object<wl_buffer>)> callback) {
   DCHECK(!callback.is_null());
   DCHECK(fd_.is_valid());
-  connection()->wayland_buffer_factory()->CreateDmabufBuffer(
+  connection()->buffer_factory()->CreateDmabufBuffer(
       fd_, size(), strides_, offsets_, modifiers_, format(), planes_count_,
       std::move(callback));
 

@@ -39,9 +39,8 @@ void WaylandBufferBackingShm::RequestBufferHandle(
 #else
   const bool with_alpha_channel = true;
 #endif
-  std::move(callback).Run(
-      connection()->wayland_buffer_factory()->CreateShmBuffer(
-          fd_, length_, size(), with_alpha_channel));
+  std::move(callback).Run(connection()->buffer_factory()->CreateShmBuffer(
+      fd_, length_, size(), with_alpha_channel));
   if (UseExplicitSyncRelease())
     auto close = std::move(fd_);
 }

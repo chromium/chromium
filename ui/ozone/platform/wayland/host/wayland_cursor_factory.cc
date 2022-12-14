@@ -171,7 +171,7 @@ void WaylandCursorFactory::MaybeLoadThemeCursors() {
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(LoadCursorTheme, name_, size_, scale_,
-                     connection_->wayland_buffer_factory()->shm()),
+                     connection_->buffer_factory()->shm()),
       base::BindOnce(&WaylandCursorFactory::OnThemeLoaded,
                      weak_factory_.GetWeakPtr(), name_, size_));
 }

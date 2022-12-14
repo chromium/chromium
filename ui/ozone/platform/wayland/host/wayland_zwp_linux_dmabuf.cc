@@ -31,7 +31,7 @@ void WaylandZwpLinuxDmabuf::Instantiate(WaylandConnection* connection,
                                         uint32_t version) {
   CHECK_EQ(interface, kInterfaceName) << "Expected \"" << kInterfaceName
                                       << "\" but got \"" << interface << "\"";
-  auto* buffer_factory = connection->wayland_buffer_factory();
+  auto* buffer_factory = connection->buffer_factory();
   if (buffer_factory->wayland_zwp_dmabuf_ ||
       !wl::CanBind(interface, version, kMinVersion, kMaxVersion)) {
     return;

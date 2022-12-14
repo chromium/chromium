@@ -26,7 +26,7 @@ void WaylandShm::Instantiate(WaylandConnection* connection,
   CHECK_EQ(interface, kInterfaceName) << "Expected \"" << kInterfaceName
                                       << "\" but got \"" << interface << "\"";
 
-  auto* buffer_factory = connection->wayland_buffer_factory();
+  auto* buffer_factory = connection->buffer_factory();
   if (buffer_factory->wayland_shm_ ||
       !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;

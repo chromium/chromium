@@ -68,7 +68,7 @@ class WaylandPointerGesturesTest : public WaylandTestSimple {
     });
 
     ASSERT_TRUE(connection_->seat()->pointer());
-    ASSERT_TRUE(connection_->wayland_zwp_pointer_gestures());
+    ASSERT_TRUE(connection_->zwp_pointer_gestures());
   }
 };
 

@@ -209,11 +209,10 @@ bool WaylandConnection::Initialize() {
 
   // Create the buffer factory before registry listener is set so that shm, drm,
   // zwp_linux_dmabuf objects are able to be stored.
-  wayland_buffer_factory_ = std::make_unique<WaylandBufferFactory>();
+  buffer_factory_ = std::make_unique<WaylandBufferFactory>();
 
   wl_registry_add_listener(registry_.get(), &registry_listener, this);
-  while (!wayland_output_manager_ ||
-         !wayland_output_manager_->IsOutputReady()) {
+  while (!output_manager_ || !output_manager_->IsOutputReady()) {
     RoundTripQueue();
   }
 
@@ -223,7 +222,7 @@ bool WaylandConnection::Initialize() {
     LOG(ERROR) << "No wl_compositor object";
     return false;
   }
-  if (!wayland_buffer_factory()->shm()) {
+  if (!buffer_factory()->shm()) {
     LOG(ERROR) << "No wl_shm object";
     return false;
   }
@@ -320,7 +319,7 @@ void WaylandConnection::UpdateInputDevices() {
   if (seat_->pointer()) {
     cursor_ = std::make_unique<WaylandCursor>(seat_->pointer(), this);
     cursor_->set_listener(listener_);
-    wayland_cursor_position_ = std::make_unique<WaylandCursorPosition>();
+    cursor_position_ = std::make_unique<WaylandCursorPosition>();
 
     // Wayland doesn't expose InputDeviceType.
     devices.emplace_back(InputDevice(seat_->pointer()->id(),
@@ -328,11 +327,12 @@ void WaylandConnection::UpdateInputDevices() {
                                      "pointer"));
 
     // Pointer is required for PointerGestures to be functional.
-    if (wayland_zwp_pointer_gestures_)
-      wayland_zwp_pointer_gestures_->Init();
+    if (zwp_pointer_gestures_) {
+      zwp_pointer_gestures_->Init();
+    }
   } else {
     cursor_.reset();
-    wayland_cursor_position_.reset();
+    cursor_position_.reset();
   }
 
   // Notify about mouse changes.
@@ -527,8 +527,9 @@ void WaylandConnection::Global(void* data,
       LOG(ERROR) << "Failed to bind zxdg_output_manager_v1";
       return;
     }
-    if (connection->wayland_output_manager_)
-      connection->wayland_output_manager_->InitializeAllXdgOutputs();
+    if (connection->output_manager_) {
+      connection->output_manager_->InitializeAllXdgOutputs();
+    }
   } else if (strcmp(interface, "org_kde_plasma_shell") == 0) {
     // Recognized but not yet supported.
     NOTIMPLEMENTED_LOG_ONCE();
@@ -604,8 +605,9 @@ void WaylandConnection::GlobalRemove(void* data,
   // WaylandConnection::GlobalRemove call. Thus, whatever unique |name| comes,
   // it's forwarded to the WaylandOutputManager, which checks if such a global
   // output object exists and removes it.
-  if (connection->wayland_output_manager_)
-    connection->wayland_output_manager_->RemoveWaylandOutput(name);
+  if (connection->output_manager_) {
+    connection->output_manager_->RemoveWaylandOutput(name);
+  }
 }
 
 // static

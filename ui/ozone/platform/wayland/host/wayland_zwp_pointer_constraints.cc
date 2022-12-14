@@ -31,7 +31,7 @@ void WaylandZwpPointerConstraints::Instantiate(WaylandConnection* connection,
   CHECK_EQ(interface, kInterfaceName) << "Expected \"" << kInterfaceName
                                       << "\" but got \"" << interface << "\"";
 
-  if (connection->wayland_zwp_pointer_constraints_ ||
+  if (connection->zwp_pointer_constraints_ ||
       !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
   }
@@ -42,7 +42,7 @@ void WaylandZwpPointerConstraints::Instantiate(WaylandConnection* connection,
     LOG(ERROR) << "Failed to bind wp_pointer_constraints_v1";
     return;
   }
-  connection->wayland_zwp_pointer_constraints_ =
+  connection->zwp_pointer_constraints_ =
       std::make_unique<WaylandZwpPointerConstraints>(
           zwp_pointer_constraints_v1.release(), connection);
 }
@@ -74,7 +74,7 @@ void WaylandZwpPointerConstraints::LockPointer(WaylandSurface* surface) {
 
 void WaylandZwpPointerConstraints::UnlockPointer() {
   locked_pointer_.reset();
-  connection_->wayland_zwp_relative_pointer_manager()->DisableRelativePointer();
+  connection_->zwp_relative_pointer_manager()->DisableRelativePointer();
 }
 
 // static
@@ -82,7 +82,7 @@ void WaylandZwpPointerConstraints::OnLock(
     void* data,
     struct zwp_locked_pointer_v1* zwp_locked_pointer_v1) {
   auto* pointer_constraints = static_cast<WaylandZwpPointerConstraints*>(data);
-  pointer_constraints->connection_->wayland_zwp_relative_pointer_manager()
+  pointer_constraints->connection_->zwp_relative_pointer_manager()
       ->EnableRelativePointer();
 }
 

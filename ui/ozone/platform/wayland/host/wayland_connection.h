@@ -170,12 +170,12 @@ class WaylandConnection {
   WaylandClipboard* clipboard() const { return clipboard_.get(); }
 
   WaylandOutputManager* wayland_output_manager() const {
-    return wayland_output_manager_.get();
+    return output_manager_.get();
   }
 
   // Returns the cursor position, which may be null.
   WaylandCursorPosition* wayland_cursor_position() const {
-    return wayland_cursor_position_.get();
+    return cursor_position_.get();
   }
 
   WaylandBufferManagerHost* buffer_manager_host() const {
@@ -198,9 +198,7 @@ class WaylandConnection {
 
   WaylandWindowManager* window_manager() { return &window_manager_; }
 
-  WaylandBufferFactory* wayland_buffer_factory() const {
-    return wayland_buffer_factory_.get();
-  }
+  WaylandBufferFactory* buffer_factory() const { return buffer_factory_.get(); }
 
   WaylandDataDeviceManager* data_device_manager() const {
     return data_device_manager_.get();
@@ -228,17 +226,16 @@ class WaylandConnection {
     return window_drag_controller_.get();
   }
 
-  WaylandZwpPointerConstraints* wayland_zwp_pointer_constraints() const {
-    return wayland_zwp_pointer_constraints_.get();
+  WaylandZwpPointerConstraints* zwp_pointer_constraints() const {
+    return zwp_pointer_constraints_.get();
   }
 
-  WaylandZwpPointerGestures* wayland_zwp_pointer_gestures() const {
-    return wayland_zwp_pointer_gestures_.get();
+  WaylandZwpPointerGestures* zwp_pointer_gestures() const {
+    return zwp_pointer_gestures_.get();
   }
 
-  WaylandZwpRelativePointerManager* wayland_zwp_relative_pointer_manager()
-      const {
-    return wayland_zwp_relative_pointer_manager_.get();
+  WaylandZwpRelativePointerManager* zwp_relative_pointer_manager() const {
+    return zwp_relative_pointer_manager_.get();
   }
 
   const XdgActivation* xdg_activation() const { return xdg_activation_.get(); }
@@ -396,21 +393,20 @@ class WaylandConnection {
 
   // Factory that wraps all the supported wayland objects that are provide
   // capabilities to create wl_buffers.
-  std::unique_ptr<WaylandBufferFactory> wayland_buffer_factory_;
+  std::unique_ptr<WaylandBufferFactory> buffer_factory_;
 
   std::unique_ptr<WaylandCursor> cursor_;
   std::unique_ptr<WaylandDataDeviceManager> data_device_manager_;
-  std::unique_ptr<WaylandOutputManager> wayland_output_manager_;
-  std::unique_ptr<WaylandCursorPosition> wayland_cursor_position_;
+  std::unique_ptr<WaylandOutputManager> output_manager_;
+  std::unique_ptr<WaylandCursorPosition> cursor_position_;
   std::unique_ptr<WaylandZAuraShell> zaura_shell_;
   std::unique_ptr<WaylandZcrColorManager> zcr_color_manager_;
   std::unique_ptr<WaylandZcrCursorShapes> zcr_cursor_shapes_;
   std::unique_ptr<WaylandZcrTouchpadHaptics> zcr_touchpad_haptics_;
-  std::unique_ptr<WaylandZwpPointerConstraints>
-      wayland_zwp_pointer_constraints_;
+  std::unique_ptr<WaylandZwpPointerConstraints> zwp_pointer_constraints_;
   std::unique_ptr<WaylandZwpRelativePointerManager>
-      wayland_zwp_relative_pointer_manager_;
-  std::unique_ptr<WaylandZwpPointerGestures> wayland_zwp_pointer_gestures_;
+      zwp_relative_pointer_manager_;
+  std::unique_ptr<WaylandZwpPointerGestures> zwp_pointer_gestures_;
   std::unique_ptr<WaylandSeat> seat_;
   std::unique_ptr<WaylandBufferManagerHost> buffer_manager_host_;
   std::unique_ptr<XdgActivation> xdg_activation_;
@@ -439,9 +435,9 @@ class WaylandConnection {
   // Describes the clock domain that wp_presentation timestamps are in.
   uint32_t presentation_clk_id_ = CLOCK_MONOTONIC;
 
-  // Helper class that lets input emulation access some data of objects
-  // that Wayland holds. For example, wl_surface and others. It's only
-  // created when platform window test config is set.
+  // Allows input emulation access some data of objects that Wayland holds.
+  // For example, wl_surface and others. It's only created when platform window
+  // test config is set.
   std::unique_ptr<wl::WaylandProxy> wayland_proxy_;
 
   raw_ptr<WaylandCursorBufferListener> listener_ = nullptr;

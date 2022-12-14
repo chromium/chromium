@@ -813,11 +813,11 @@ void WaylandToplevelWindow::Unlock() {
 }
 
 bool WaylandToplevelWindow::SupportsPointerLock() {
-  return !!connection()->wayland_zwp_pointer_constraints() &&
-         !!connection()->wayland_zwp_relative_pointer_manager();
+  return !!connection()->zwp_pointer_constraints() &&
+         !!connection()->zwp_relative_pointer_manager();
 }
 void WaylandToplevelWindow::LockPointer(bool enabled) {
-  auto* pointer_constraints = connection()->wayland_zwp_pointer_constraints();
+  auto* pointer_constraints = connection()->zwp_pointer_constraints();
   if (enabled)
     pointer_constraints->LockPointer(root_surface());
   else

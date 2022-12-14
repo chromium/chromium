@@ -36,7 +36,7 @@ void WaylandZwpPointerGestures::Instantiate(WaylandConnection* connection,
   CHECK_EQ(interface, kInterfaceName) << "Expected \"" << kInterfaceName
                                       << "\" but got \"" << interface << "\"";
 
-  if (connection->wayland_zwp_pointer_gestures_ ||
+  if (connection->zwp_pointer_gestures_ ||
       !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
   }
@@ -47,7 +47,7 @@ void WaylandZwpPointerGestures::Instantiate(WaylandConnection* connection,
     LOG(ERROR) << "Failed to bind wp_pointer_gestures_v1";
     return;
   }
-  connection->wayland_zwp_pointer_gestures_ =
+  connection->zwp_pointer_gestures_ =
       std::make_unique<WaylandZwpPointerGestures>(
           zwp_pointer_gestures_v1.release(), connection,
           connection->event_source());

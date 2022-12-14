@@ -371,7 +371,7 @@ TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
     });
 
     auto buffer_formats =
-        connection_->wayland_buffer_factory()->GetSupportedBufferFormats();
+        connection_->buffer_factory()->GetSupportedBufferFormats();
     ASSERT_EQ(buffer_formats.size(), 1u);
     ASSERT_EQ(buffer_formats.begin()->first,
               GetBufferFormatFromFourCCFormat(kFourccFormatR8));

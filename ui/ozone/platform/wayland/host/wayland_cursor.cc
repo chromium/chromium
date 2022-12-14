@@ -48,7 +48,7 @@ void WaylandCursor::UpdateBitmap(const std::vector<SkBitmap>& cursor_image,
     return HideCursor();
 
   gfx::Size image_size = gfx::SkISizeToSize(image.dimensions());
-  WaylandShmBuffer buffer(connection_->wayland_buffer_factory(), image_size);
+  WaylandShmBuffer buffer(connection_->buffer_factory(), image_size);
 
   if (!buffer.IsValid()) {
     LOG(ERROR) << "Failed to create SHM buffer for Cursor Bitmap.";
