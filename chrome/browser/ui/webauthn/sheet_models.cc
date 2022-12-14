@@ -337,6 +337,36 @@ AuthenticatorNoAvailableTransportsErrorModel::GetStepDescription() const {
       IDS_WEBAUTHN_ERROR_NO_TRANSPORTS_DESCRIPTION);
 }
 
+// AuthenticatorNoPasskeysErrorModel ------------------------------------------
+
+bool AuthenticatorNoPasskeysErrorModel::IsBackButtonVisible() const {
+  return false;
+}
+
+std::u16string AuthenticatorNoPasskeysErrorModel::GetCancelButtonLabel() const {
+  return l10n_util::GetStringUTF16(IDS_CLOSE);
+}
+
+const gfx::VectorIcon& AuthenticatorNoPasskeysErrorModel::GetStepIllustration(
+    ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyErrorDarkIcon
+                                                   : kPasskeyErrorIcon;
+  }
+  return color_scheme == ImageColorScheme::kDark ? kWebauthnErrorDarkIcon
+                                                 : kWebauthnErrorIcon;
+}
+
+std::u16string AuthenticatorNoPasskeysErrorModel::GetStepTitle() const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_ERROR_NO_PASSKEYS_TITLE);
+}
+
+std::u16string AuthenticatorNoPasskeysErrorModel::GetStepDescription() const {
+  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_ERROR_NO_PASSKEYS_DESCRIPTION,
+                                    GetRelyingPartyIdString(dialog_model()));
+}
+
 // AuthenticatorNotRegisteredErrorModel ---------------------------------------
 
 bool AuthenticatorNotRegisteredErrorModel::IsBackButtonVisible() const {

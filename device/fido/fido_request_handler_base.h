@@ -123,6 +123,18 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // authenticator and thus have privacy implications.
     ResidentKeyRequirement resident_key_requirement =
         ResidentKeyRequirement::kDiscouraged;
+
+    // transport_list_did_include_internal is set to true during a getAssertion
+    // request if at least one element of the allowList included the "internal"
+    // transport, or didn't have any transports.
+    //
+    // An embedder may use this to show a more precise UI when no transports
+    // are available. If the lack of transports is because the allowList only
+    // contained NFC-based credentials, and there's no NFC support, then that
+    // might be meaningfully different from the case where the allowList
+    // contained credentials that could have been on the local device but
+    // weren't.
+    bool transport_list_did_include_internal = false;
   };
 
   class COMPONENT_EXPORT(DEVICE_FIDO) Observer {

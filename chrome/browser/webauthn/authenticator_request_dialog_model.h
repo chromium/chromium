@@ -73,6 +73,7 @@ class AuthenticatorRequestDialogModel {
     // The request errored out before completing. Error will only be sent
     // after user interaction.
     kErrorNoAvailableTransports,
+    kErrorNoPasskeys,
     kErrorInternalUnrecognized,
 
     // The request is already complete, but the error dialog should wait

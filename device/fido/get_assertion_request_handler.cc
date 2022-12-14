@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -322,6 +323,13 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
       request_.allow_list.empty();
   transport_availability_info().is_off_the_record_context =
       request_.is_off_the_record_context;
+  transport_availability_info().transport_list_did_include_internal =
+      std::any_of(request_.allow_list.begin(), request_.allow_list.end(),
+                  [](const PublicKeyCredentialDescriptor& cred) {
+                    return cred.transports.empty() ||
+                           base::Contains(cred.transports,
+                                          FidoTransportProtocol::kInternal);
+                  });
 
   if (request_.allow_list.empty()) {
     // Resident credential requests always involve user verification.

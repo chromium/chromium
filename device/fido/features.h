@@ -53,6 +53,10 @@ BASE_DECLARE_FEATURE(kWebAuthnNonDiscoverableMakeCredentialQRFlag);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kDisableWebAuthnWithBrokenCerts);
 
+// Enable a special-case dialog for when there are no internal credentials.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnNoPasskeysError);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

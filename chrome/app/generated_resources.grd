@@ -13069,6 +13069,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_ERROR_NO_TRANSPORTS_DESCRIPTION" desc="Description in the dialog shown when the user could not sign in to a web site, because their computer did not support any of the hardware-based authentication mechanisms desired by the web site.">
         This device doesn't support the type of security key requested by this website
       </message>
+      <message name="IDS_WEBAUTHN_ERROR_NO_PASSKEYS_TITLE" desc="Title of the dialog shown when the user could not sign in to a web site because their computer did not have any of the passkeys registered with the site.">
+        No passkeys available
+      </message>
+      <message name="IDS_WEBAUTHN_ERROR_NO_PASSKEYS_DESCRIPTION" desc="Description in the dialog shown when the user could not sign in to a web site because their computer did not have any of the passkeys registered with the site.">
+        There aren't any passkeys for <ph name="APP_NAME">$1<ex>google.com</ex></ph> on this device
+      </message>
       <message name="IDS_WEBAUTHN_BLUETOOTH_POWER_ON_AUTO_TITLE" desc="Title of the dialog informing the user that Chrome needs to turn on Bluetooth by itself so that security keys can be used over Bluetooth.">
         Turn on Bluetooth?
       </message>

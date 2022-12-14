@@ -52,4 +52,8 @@ BASE_FEATURE(kDisableWebAuthnWithBrokenCerts,
              "DisableWebAuthnWithBrokenCerts",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWebAuthnNoPasskeysError,
+             "WebAuthenticationNoPasskeysError",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device
