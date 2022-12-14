@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/web_state_list/web_state_list_metrics_browser_agent.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -85,6 +86,12 @@ void WebStateListMetricsBrowserAgent::WillCloseWebStateAt(
     bool user_action) {
   if (metric_collection_paused_)
     return;
+
+  base::TimeDelta age_at_deletion =
+      base::Time::Now() - web_state->GetCreationTime();
+  base::UmaHistogramCustomTimes("Tab.AgeAtDeletion", age_at_deletion,
+                                base::Minutes(1), base::Days(24), 50);
+
   if (user_action)
     base::RecordAction(base::UserMetricsAction("MobileTabClosed"));
 }
