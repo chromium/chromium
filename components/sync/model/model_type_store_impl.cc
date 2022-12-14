@@ -40,11 +40,13 @@ absl::optional<ModelError> ReadAllDataAndPreprocessOnBackendSequence(
 }  // namespace
 
 ModelTypeStoreImpl::ModelTypeStoreImpl(
-    ModelType type,
+    ModelType model_type,
+    StorageType storage_type,
     std::unique_ptr<BlockingModelTypeStoreImpl, base::OnTaskRunnerDeleter>
         backend_store,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
-    : type_(type),
+    : model_type_(model_type),
+      storage_type_(storage_type),
       backend_task_runner_(std::move(backend_task_runner)),
       backend_store_(std::move(backend_store)) {
   DCHECK(backend_store_);
@@ -186,7 +188,8 @@ void ModelTypeStoreImpl::DeleteAllDataAndMetadata(CallbackWithResult callback) {
 std::unique_ptr<ModelTypeStore::WriteBatch>
 ModelTypeStoreImpl::CreateWriteBatch() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return BlockingModelTypeStoreImpl::CreateWriteBatchForType(type_);
+  return BlockingModelTypeStoreImpl::CreateWriteBatch(model_type_,
+                                                      storage_type_);
 }
 
 void ModelTypeStoreImpl::CommitWriteBatch(

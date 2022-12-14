@@ -32,6 +32,7 @@ class ModelTypeStoreServiceImpl : public ModelTypeStoreService {
   // ModelTypeStoreService:
   const base::FilePath& GetSyncDataPath() const override;
   RepeatingModelTypeStoreFactory GetStoreFactory() override;
+  RepeatingModelTypeStoreFactory GetStoreFactoryForAccountStorage() override;
   scoped_refptr<base::SequencedTaskRunner> GetBackendTaskRunner() override;
 
  private:

@@ -21,6 +21,7 @@
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/storage_type.h"
 #include "components/sync/model/blocking_model_type_store_impl.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
@@ -628,9 +629,12 @@ leveldb::Status GetExtensionKeys(leveldb::DB* db,
 
 bool IsAshOnlySyncDataType(base::StringPiece key) {
   for (auto type : kAshOnlySyncDataTypes) {
-    if ((base::StartsWith(key, FormatDataPrefix(type)) ||
-         base::StartsWith(key, FormatMetaPrefix(type)) ||
-         key == FormatGlobalMetadataKey(type))) {
+    if ((base::StartsWith(
+             key, FormatDataPrefix(type, syncer::StorageType::kUnspecified)) ||
+         base::StartsWith(
+             key, FormatMetaPrefix(type, syncer::StorageType::kUnspecified)) ||
+         key == FormatGlobalMetadataKey(type,
+                                        syncer::StorageType::kUnspecified))) {
       return true;
     }
   }

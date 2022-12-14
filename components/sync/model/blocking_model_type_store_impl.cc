@@ -10,6 +10,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store_backend.h"
@@ -23,6 +24,12 @@ namespace syncer {
 
 namespace {
 
+// Used for data and metadata explicitly linked to a server-side account. Note
+// that this prefix is used *before* the datatype's root tag, which also means
+// it shouldn't be a substring or superstring of root tags. Conveniently, root
+// tags are guaranteed to be lowercase.
+const char kAccountStoragePrefix[] = "A-";
+
 // Key prefix for data/metadata records.
 const char kDataPrefix[] = "-dt-";
 const char kMetadataPrefix[] = "-md-";
@@ -32,11 +39,13 @@ const char kGlobalMetadataKey[] = "-GlobalMetadata";
 
 class LevelDbMetadataChangeList : public MetadataChangeList {
  public:
-  LevelDbMetadataChangeList(ModelType type,
+  LevelDbMetadataChangeList(ModelType model_type,
+                            StorageType storage_type,
                             leveldb::WriteBatch* leveldb_write_batch)
       : leveldb_write_batch_(leveldb_write_batch),
-        metadata_prefix_(FormatMetaPrefix(type)),
-        global_metadata_key_(FormatGlobalMetadataKey(type)) {
+        metadata_prefix_(FormatMetaPrefix(model_type, storage_type)),
+        global_metadata_key_(
+            FormatGlobalMetadataKey(model_type, storage_type)) {
     DCHECK(leveldb_write_batch_);
   }
 
@@ -87,11 +96,13 @@ class LevelDbWriteBatch : public BlockingModelTypeStoreImpl::WriteBatch {
     return std::move(batch->leveldb_write_batch_);
   }
 
-  explicit LevelDbWriteBatch(ModelType type)
-      : type_(type),
-        data_prefix_(FormatDataPrefix(type)),
+  LevelDbWriteBatch(ModelType model_type, StorageType storage_type)
+      : type_(model_type),
+        data_prefix_(FormatDataPrefix(model_type, storage_type)),
         leveldb_write_batch_(std::make_unique<leveldb::WriteBatch>()),
-        metadata_change_list_(type, leveldb_write_batch_.get()) {}
+        metadata_change_list_(model_type,
+                              storage_type,
+                              leveldb_write_batch_.get()) {}
 
   ~LevelDbWriteBatch() override = default;
 
@@ -130,31 +141,52 @@ class LevelDbWriteBatch : public BlockingModelTypeStoreImpl::WriteBatch {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
+std::string GetStorageTypePrefix(StorageType storage_type) {
+  switch (storage_type) {
+    case StorageType::kUnspecified:
+      // Historically no prefix was used for the default storage, and that
+      // continues to be the case to avoid data migrations.
+      return "";
+    case StorageType::kAccount:
+      return kAccountStoragePrefix;
+  }
+  NOTREACHED();
+  return "";
+}
+
 }  // namespace
 
-// Formats key prefix for data records of |type|.
-std::string FormatDataPrefix(ModelType type) {
-  return std::string(GetModelTypeLowerCaseRootTag(type)) + kDataPrefix;
+// Formats key prefix for data records of |model_type| using |storage_type|.
+std::string FormatDataPrefix(ModelType model_type, StorageType storage_type) {
+  return base::StrCat({GetStorageTypePrefix(storage_type),
+                       GetModelTypeLowerCaseRootTag(model_type), kDataPrefix});
 }
 
-// Formats key prefix for metadata records of |type|.
-std::string FormatMetaPrefix(ModelType type) {
-  return std::string(GetModelTypeLowerCaseRootTag(type)) + kMetadataPrefix;
+// Formats key prefix for metadata records of |model_type| using |storage_type|.
+std::string FormatMetaPrefix(ModelType model_type, StorageType storage_type) {
+  return base::StrCat({GetStorageTypePrefix(storage_type),
+                       GetModelTypeLowerCaseRootTag(model_type),
+                       kMetadataPrefix});
 }
 
-// Formats key for global metadata record of |type|.
-std::string FormatGlobalMetadataKey(ModelType type) {
-  return std::string(GetModelTypeLowerCaseRootTag(type)) + kGlobalMetadataKey;
+// Formats key for global metadata record of |model_type| using |storage_type|.
+std::string FormatGlobalMetadataKey(ModelType model_type,
+                                    StorageType storage_type) {
+  return base::StrCat({GetStorageTypePrefix(storage_type),
+                       GetModelTypeLowerCaseRootTag(model_type),
+                       kGlobalMetadataKey});
 }
 
 BlockingModelTypeStoreImpl::BlockingModelTypeStoreImpl(
-    ModelType type,
+    ModelType model_type,
+    StorageType storage_type,
     scoped_refptr<ModelTypeStoreBackend> backend)
-    : type_(type),
+    : model_type_(model_type),
+      storage_type_(storage_type),
       backend_(std::move(backend)),
-      data_prefix_(FormatDataPrefix(type)),
-      metadata_prefix_(FormatMetaPrefix(type)),
-      global_metadata_key_(FormatGlobalMetadataKey(type)) {
+      data_prefix_(FormatDataPrefix(model_type, storage_type)),
+      metadata_prefix_(FormatMetaPrefix(model_type, storage_type)),
+      global_metadata_key_(FormatGlobalMetadataKey(model_type, storage_type)) {
   DCHECK(backend_);
 }
 
@@ -231,7 +263,7 @@ absl::optional<ModelError> BlockingModelTypeStoreImpl::ReadAllMetadata(
 std::unique_ptr<BlockingModelTypeStoreImpl::WriteBatch>
 BlockingModelTypeStoreImpl::CreateWriteBatch() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return CreateWriteBatchForType(type_);
+  return CreateWriteBatch(model_type_, storage_type_);
 }
 
 absl::optional<ModelError> BlockingModelTypeStoreImpl::CommitWriteBatch(
@@ -240,7 +272,7 @@ absl::optional<ModelError> BlockingModelTypeStoreImpl::CommitWriteBatch(
   DCHECK(write_batch);
   std::unique_ptr<LevelDbWriteBatch> write_batch_impl(
       static_cast<LevelDbWriteBatch*>(write_batch.release()));
-  DCHECK_EQ(write_batch_impl->GetModelType(), type_);
+  DCHECK_EQ(write_batch_impl->GetModelType(), model_type_);
   return backend_->WriteModifications(
       LevelDbWriteBatch::ToLevelDbWriteBatch(std::move(write_batch_impl)));
 }
@@ -249,13 +281,14 @@ absl::optional<ModelError>
 BlockingModelTypeStoreImpl::DeleteAllDataAndMetadata() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return backend_->DeleteDataAndMetadataForPrefix(
-      GetModelTypeLowerCaseRootTag(type_));
+      GetModelTypeLowerCaseRootTag(model_type_));
 }
 
 // static
 std::unique_ptr<BlockingModelTypeStoreImpl::WriteBatch>
-BlockingModelTypeStoreImpl::CreateWriteBatchForType(ModelType type) {
-  return std::make_unique<LevelDbWriteBatch>(type);
+BlockingModelTypeStoreImpl::CreateWriteBatch(ModelType model_type,
+                                             StorageType storage_type) {
+  return std::make_unique<LevelDbWriteBatch>(model_type, storage_type);
 }
 
 }  // namespace syncer

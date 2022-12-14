@@ -5,14 +5,11 @@
 #include "components/sync/test/test_model_type_store_service.h"
 
 #include "base/task/sequenced_task_runner.h"
-#include "components/sync/model/blocking_model_type_store_impl.h"
-#include "components/sync/model/model_type_store_backend.h"
 #include "components/sync/test/model_type_store_test_util.h"
 
 namespace syncer {
 
-TestModelTypeStoreService::TestModelTypeStoreService()
-    : store_backend_(ModelTypeStoreBackend::CreateInMemoryForTest()) {
+TestModelTypeStoreService::TestModelTypeStoreService() {
   DCHECK(sync_data_path_.CreateUniqueTempDir());
 }
 
@@ -23,6 +20,11 @@ const base::FilePath& TestModelTypeStoreService::GetSyncDataPath() const {
 }
 
 RepeatingModelTypeStoreFactory TestModelTypeStoreService::GetStoreFactory() {
+  return ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest();
+}
+
+RepeatingModelTypeStoreFactory
+TestModelTypeStoreService::GetStoreFactoryForAccountStorage() {
   return ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest();
 }
 

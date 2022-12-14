@@ -20,6 +20,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/crosapi/fake_migration_progress_tracker.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/storage_type.h"
 #include "components/sync/model/blocking_model_type_store_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -148,18 +149,28 @@ void SetUpSyncData(const base::FilePath& path,
   ASSERT_TRUE(status.ok());
 
   leveldb::WriteBatch batch;
-  batch.Put(syncer::FormatDataPrefix(kAshSyncDataType) + kMoveExtensionId,
+  batch.Put(syncer::FormatDataPrefix(kAshSyncDataType,
+                                     syncer::StorageType::kUnspecified) +
+                kMoveExtensionId,
             "ash_data");
-  batch.Put(syncer::FormatMetaPrefix(kAshSyncDataType) + kMoveExtensionId,
+  batch.Put(syncer::FormatMetaPrefix(kAshSyncDataType,
+                                     syncer::StorageType::kUnspecified) +
+                kMoveExtensionId,
             "ash_metadata");
-  batch.Put(syncer::FormatGlobalMetadataKey(kAshSyncDataType),
+  batch.Put(syncer::FormatGlobalMetadataKey(kAshSyncDataType,
+                                            syncer::StorageType::kUnspecified),
             "ash_globalmetadata");
 
-  batch.Put(syncer::FormatDataPrefix(kLacrosSyncDataType) + kMoveExtensionId,
+  batch.Put(syncer::FormatDataPrefix(kLacrosSyncDataType,
+                                     syncer::StorageType::kUnspecified) +
+                kMoveExtensionId,
             "lacros_data");
-  batch.Put(syncer::FormatMetaPrefix(kLacrosSyncDataType) + kMoveExtensionId,
+  batch.Put(syncer::FormatMetaPrefix(kLacrosSyncDataType,
+                                     syncer::StorageType::kUnspecified) +
+                kMoveExtensionId,
             "lacros_metadata");
-  batch.Put(syncer::FormatGlobalMetadataKey(kLacrosSyncDataType),
+  batch.Put(syncer::FormatGlobalMetadataKey(kLacrosSyncDataType,
+                                            syncer::StorageType::kUnspecified),
             "lacros_globalmetadata");
 
   leveldb::WriteOptions write_options;
@@ -440,22 +451,33 @@ TEST(BrowserDataMigratorUtilTest, MigrateSyncDataLevelDB) {
   // Check resulting Ash database.
   auto ash_db_map = ReadLevelDB(ash_db_path);
   std::map<std::string, std::string> expected_ash_db_map = {
-      {syncer::FormatDataPrefix(kAshSyncDataType) + kMoveExtensionId,
+      {syncer::FormatDataPrefix(kAshSyncDataType,
+                                syncer::StorageType::kUnspecified) +
+           kMoveExtensionId,
        "ash_data"},
-      {syncer::FormatMetaPrefix(kAshSyncDataType) + kMoveExtensionId,
+      {syncer::FormatMetaPrefix(kAshSyncDataType,
+                                syncer::StorageType::kUnspecified) +
+           kMoveExtensionId,
        "ash_metadata"},
-      {syncer::FormatGlobalMetadataKey(kAshSyncDataType), "ash_globalmetadata"},
+      {syncer::FormatGlobalMetadataKey(kAshSyncDataType,
+                                       syncer::StorageType::kUnspecified),
+       "ash_globalmetadata"},
   };
   EXPECT_EQ(expected_ash_db_map, ash_db_map);
 
   // Check resulting Lacros database.
   auto lacros_db_map = ReadLevelDB(lacros_db_path);
   std::map<std::string, std::string> expected_lacros_db_map = {
-      {syncer::FormatDataPrefix(kLacrosSyncDataType) + kMoveExtensionId,
+      {syncer::FormatDataPrefix(kLacrosSyncDataType,
+                                syncer::StorageType::kUnspecified) +
+           kMoveExtensionId,
        "lacros_data"},
-      {syncer::FormatMetaPrefix(kLacrosSyncDataType) + kMoveExtensionId,
+      {syncer::FormatMetaPrefix(kLacrosSyncDataType,
+                                syncer::StorageType::kUnspecified) +
+           kMoveExtensionId,
        "lacros_metadata"},
-      {syncer::FormatGlobalMetadataKey(kLacrosSyncDataType),
+      {syncer::FormatGlobalMetadataKey(kLacrosSyncDataType,
+                                       syncer::StorageType::kUnspecified),
        "lacros_globalmetadata"},
   };
   EXPECT_EQ(expected_lacros_db_map, lacros_db_map);

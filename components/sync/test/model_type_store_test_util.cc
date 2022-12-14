@@ -71,7 +71,8 @@ std::unique_ptr<ModelTypeStore>
 ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(ModelType type) {
   std::unique_ptr<BlockingModelTypeStoreImpl, base::OnTaskRunnerDeleter>
       blocking_store(new BlockingModelTypeStoreImpl(
-                         type, ModelTypeStoreBackend::CreateInMemoryForTest()),
+                         type, StorageType::kUnspecified,
+                         ModelTypeStoreBackend::CreateInMemoryForTest()),
                      base::OnTaskRunnerDeleter(
                          base::SequencedTaskRunner::GetCurrentDefault()));
   // Not all tests issue a RunUntilIdle() at the very end, to guarantee that
@@ -79,7 +80,7 @@ ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(ModelType type) {
   // let keep memory sanitizers happy.
   ANNOTATE_LEAKING_OBJECT_PTR(blocking_store.get());
   return std::make_unique<ModelTypeStoreImpl>(
-      type, std::move(blocking_store),
+      type, StorageType::kUnspecified, std::move(blocking_store),
       base::SequencedTaskRunner::GetCurrentDefault());
 }
 

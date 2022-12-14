@@ -7,13 +7,10 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/scoped_refptr.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_service.h"
 
 namespace syncer {
-
-class ModelTypeStoreBackend;
 
 // Test-only ModelTypeStoreService implementation that uses a temporary dir
 // for GetSyncDataPath() and uses in-memory storage for ModelTypeStore.
@@ -30,10 +27,10 @@ class TestModelTypeStoreService : public ModelTypeStoreService {
   // ModelTypeStoreService:
   const base::FilePath& GetSyncDataPath() const override;
   RepeatingModelTypeStoreFactory GetStoreFactory() override;
+  RepeatingModelTypeStoreFactory GetStoreFactoryForAccountStorage() override;
   scoped_refptr<base::SequencedTaskRunner> GetBackendTaskRunner() override;
 
  private:
-  const scoped_refptr<ModelTypeStoreBackend> store_backend_;
   base::ScopedTempDir sync_data_path_;
 };
 

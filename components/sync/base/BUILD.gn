@@ -43,6 +43,7 @@ static_library("base") {
     "report_unrecoverable_error.cc",
     "report_unrecoverable_error.h",
     "stop_source.h",
+    "storage_type.h",
     "sync_invalidation.cc",
     "sync_invalidation.h",
     "sync_invalidation_adapter.cc",

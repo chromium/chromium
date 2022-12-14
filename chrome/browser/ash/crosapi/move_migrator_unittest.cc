@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/crosapi/fake_migration_progress_tracker.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/base/storage_type.h"
 #include "components/sync/model/blocking_model_type_store_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -318,19 +319,29 @@ void SetUpSyncDataLevelDB(const base::FilePath& profile_path,
 
   leveldb::WriteBatch batch;
   if (ash) {
-    batch.Put(syncer::FormatDataPrefix(kAshSyncDataType) + kMoveExtensionId,
+    batch.Put(syncer::FormatDataPrefix(kAshSyncDataType,
+                                       syncer::StorageType::kUnspecified) +
+                  kMoveExtensionId,
               "ash_data");
-    batch.Put(syncer::FormatMetaPrefix(kAshSyncDataType) + kMoveExtensionId,
+    batch.Put(syncer::FormatMetaPrefix(kAshSyncDataType,
+                                       syncer::StorageType::kUnspecified) +
+                  kMoveExtensionId,
               "ash_metadata");
-    batch.Put(syncer::FormatGlobalMetadataKey(kAshSyncDataType),
+    batch.Put(syncer::FormatGlobalMetadataKey(
+                  kAshSyncDataType, syncer::StorageType::kUnspecified),
               "ash_globalmetadata");
   }
   if (lacros) {
-    batch.Put(syncer::FormatDataPrefix(kLacrosSyncDataType) + kMoveExtensionId,
+    batch.Put(syncer::FormatDataPrefix(kLacrosSyncDataType,
+                                       syncer::StorageType::kUnspecified) +
+                  kMoveExtensionId,
               "lacros_data");
-    batch.Put(syncer::FormatMetaPrefix(kLacrosSyncDataType) + kMoveExtensionId,
+    batch.Put(syncer::FormatMetaPrefix(kLacrosSyncDataType,
+                                       syncer::StorageType::kUnspecified) +
+                  kMoveExtensionId,
               "lacros_metadata");
-    batch.Put(syncer::FormatGlobalMetadataKey(kLacrosSyncDataType),
+    batch.Put(syncer::FormatGlobalMetadataKey(
+                  kLacrosSyncDataType, syncer::StorageType::kUnspecified),
               "lacros_globalmetadata");
   }
 
