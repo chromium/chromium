@@ -49,10 +49,6 @@
 #include "headless/public/headless_export.h"
 #include "headless/public/internal/message_dispatcher.h"
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace headless {
 
 class HEADLESS_EXPORT HeadlessDevToolsClientImpl
@@ -152,6 +148,7 @@ class HEADLESS_EXPORT HeadlessDevToolsClientImpl
     Callback& operator=(Callback&& other);
 
     base::OnceClosure callback;
+    // May be invoked with a Value::Dict or a null (default-constructed) Value.
     base::OnceCallback<void(const base::Value&)> callback_with_result;
   };
 
@@ -163,23 +160,20 @@ class HEADLESS_EXPORT HeadlessDevToolsClientImpl
                              base::Value params,
                              CallbackType callback);
 
-  bool DispatchMessageReply(std::unique_ptr<base::Value> owning_message,
-                            const base::DictionaryValue& message_dict);
+  bool DispatchMessageReply(base::Value::Dict message_dict);
+  // `result` may be a Value::Dict or a null (default-constructed) Value.
   void DispatchMessageReplyWithResultTask(
-      std::unique_ptr<base::Value> owning_message,
       base::OnceCallback<void(const base::Value&)> callback,
-      const base::Value* result_dict);
+      base::Value result);
   using EventHandler = base::RepeatingCallback<void(const base::Value&)>;
   using EventHandlerMap = std::unordered_map<std::string, EventHandler>;
 
-  bool DispatchEvent(std::unique_ptr<base::Value> owning_message,
-                     const base::DictionaryValue& message_dict);
-  void DispatchEventTask(std::unique_ptr<base::Value> owning_message,
-                         const EventHandler* event_handler,
-                         const base::DictionaryValue* result_dict);
+  bool DispatchEvent(base::Value::Dict message_dict);
+  void DispatchEventTask(const EventHandler* event_handler,
+                         base::Value::Dict result_dict);
 
   void ReceiveProtocolMessage(base::span<const uint8_t> json_message,
-                              std::unique_ptr<base::DictionaryValue> message);
+                              base::Value::Dict message);
   void SendProtocolMessage(const base::Value::Dict& message);
 
   std::unique_ptr<HeadlessDevToolsChannel> channel_;

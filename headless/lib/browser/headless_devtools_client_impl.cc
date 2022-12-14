@@ -151,16 +151,15 @@ void HeadlessDevToolsClientImpl::ReceiveProtocolMessage(
   base::StringPiece message_str(
       reinterpret_cast<const char*>(json_message.data()), json_message.size());
   // LOG(ERROR) << "[RECV] " << message_str;
-  std::unique_ptr<base::Value> message =
-      base::JSONReader::ReadDeprecated(message_str, base::JSON_PARSE_RFC);
+  absl::optional<base::Value> message =
+      base::JSONReader::Read(message_str, base::JSON_PARSE_RFC);
   if (!message || !message->is_dict()) {
     NOTREACHED() << "Badly formed reply " << message_str;
     return;
   }
-  std::unique_ptr<base::DictionaryValue> message_dict =
-      base::DictionaryValue::From(std::move(message));
 
-  const std::string* session_id = message_dict->FindStringKey("sessionId");
+  base::Value::Dict message_dict = std::move(*message).TakeDict();
+  const std::string* session_id = message_dict.FindString("sessionId");
   if (session_id) {
     auto it = sessions_.find(*session_id);
     if (it != sessions_.end()) {
@@ -173,38 +172,39 @@ void HeadlessDevToolsClientImpl::ReceiveProtocolMessage(
 
 void HeadlessDevToolsClientImpl::ReceiveProtocolMessage(
     base::span<const uint8_t> json_message,
-    std::unique_ptr<base::DictionaryValue> message) {
-  base::StringPiece message_str(
-      reinterpret_cast<const char*>(json_message.data()), json_message.size());
-  const base::DictionaryValue* message_dict;
-  if (!message || !message->GetAsDictionary(&message_dict)) {
-    NOTREACHED() << "Badly formed reply " << message_str;
-    return;
-  }
-
+    base::Value::Dict message) {
+  // Use of the legacy Value API below is needed since `HeadlessDevToolsClient`
+  // is a public interface which we cannot change.
   if (raw_protocol_listener_ &&
-      raw_protocol_listener_->OnProtocolMessage(json_message, *message_dict)) {
+      raw_protocol_listener_->OnProtocolMessage(
+          json_message,
+          base::Value::AsDictionaryValue(base::Value(message.Clone())))) {
     return;
   }
 
   bool success = false;
-  if (message_dict->FindKey("id"))
-    success = DispatchMessageReply(std::move(message), *message_dict);
-  else
-    success = DispatchEvent(std::move(message), *message_dict);
-  if (!success)
-    DLOG(ERROR) << "Unhandled protocol message: " << message_str;
+  if (message.contains("id")) {
+    success = DispatchMessageReply(std::move(message));
+  } else {
+    success = DispatchEvent(std::move(message));
+  }
+
+  if (!success) {
+    DLOG(ERROR) << "Unhandled protocol message: "
+                << base::StringPiece(
+                       reinterpret_cast<const char*>(json_message.data()),
+                       json_message.size());
+  }
 }
 
 bool HeadlessDevToolsClientImpl::DispatchMessageReply(
-    std::unique_ptr<base::Value> owning_message,
-    const base::DictionaryValue& message_dict) {
-  const base::Value* id_value = message_dict.FindKey("id");
-  if (!id_value) {
+    base::Value::Dict message_dict) {
+  auto maybe_id = message_dict.FindInt("id");
+  if (!maybe_id.has_value()) {
     NOTREACHED() << "ID must be specified.";
     return false;
   }
-  auto it = pending_messages_.find(id_value->GetInt());
+  auto it = pending_messages_.find(maybe_id.value());
   if (it == pending_messages_.end()) {
     NOTREACHED() << "Unexpected reply";
     return false;
@@ -212,37 +212,47 @@ bool HeadlessDevToolsClientImpl::DispatchMessageReply(
   Callback callback = std::move(it->second);
   pending_messages_.erase(it);
   if (!callback.callback_with_result.is_null()) {
-    const base::DictionaryValue* result_dict;
-    if (message_dict.GetDictionary("result", &result_dict)) {
+    const base::Value::Dict* maybe_result_dict =
+        message_dict.FindDict("result");
+    if (maybe_result_dict) {
       if (browser_main_thread_) {
         browser_main_thread_->PostTask(
             FROM_HERE,
             base::BindOnce(
                 &HeadlessDevToolsClientImpl::DispatchMessageReplyWithResultTask,
-                weak_ptr_factory_.GetWeakPtr(), std::move(owning_message),
-                std::move(callback.callback_with_result), result_dict));
+                weak_ptr_factory_.GetWeakPtr(),
+                std::move(callback.callback_with_result),
+                base::Value(maybe_result_dict->Clone())));
       } else {
-        std::move(callback.callback_with_result).Run(*result_dict);
+        std::move(callback.callback_with_result)
+            .Run(base::Value(maybe_result_dict->Clone()));
       }
-    } else if (message_dict.GetDictionary("error", &result_dict)) {
-      auto null_value = std::make_unique<base::Value>();
-      base::Value* null_value_ptr = null_value.get();
-      DLOG(ERROR) << "Error in method call result: " << *result_dict;
-      if (browser_main_thread_) {
-        browser_main_thread_->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &HeadlessDevToolsClientImpl::DispatchMessageReplyWithResultTask,
-                weak_ptr_factory_.GetWeakPtr(), std::move(null_value),
-                std::move(callback.callback_with_result), null_value_ptr));
-      } else {
-        std::move(callback.callback_with_result).Run(*null_value);
-      }
-    } else {
-      NOTREACHED() << "Reply has neither result nor error";
-      return false;
+
+      return true;
     }
-  } else if (!callback.callback.is_null()) {
+
+    maybe_result_dict = message_dict.FindDict("error");
+    if (maybe_result_dict) {
+      DLOG(ERROR) << "Error in method call result: " << *maybe_result_dict;
+      if (browser_main_thread_) {
+        browser_main_thread_->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &HeadlessDevToolsClientImpl::DispatchMessageReplyWithResultTask,
+                weak_ptr_factory_.GetWeakPtr(),
+                std::move(callback.callback_with_result), base::Value()));
+      } else {
+        std::move(callback.callback_with_result).Run(base::Value());
+      }
+
+      return true;
+    }
+
+    NOTREACHED() << "Reply has neither result nor error";
+    return false;
+  }
+
+  if (!callback.callback.is_null()) {
     if (browser_main_thread_) {
       browser_main_thread_->PostTask(
           FROM_HERE,
@@ -261,53 +271,52 @@ bool HeadlessDevToolsClientImpl::DispatchMessageReply(
 }
 
 void HeadlessDevToolsClientImpl::DispatchMessageReplyWithResultTask(
-    std::unique_ptr<base::Value> owning_message,
     base::OnceCallback<void(const base::Value&)> callback,
-    const base::Value* result_dict) {
-  std::move(callback).Run(*result_dict);
+    base::Value result) {
+  DCHECK(result.is_dict() || result.is_none());
+
+  std::move(callback).Run(result);
 }
 
-bool HeadlessDevToolsClientImpl::DispatchEvent(
-    std::unique_ptr<base::Value> owning_message,
-    const base::DictionaryValue& message_dict) {
-  const base::Value* method_value = message_dict.FindKey("method");
-  if (!method_value)
+bool HeadlessDevToolsClientImpl::DispatchEvent(base::Value::Dict message_dict) {
+  const std::string* method = message_dict.FindString("method");
+  if (!method)
     return false;
-  const std::string& method = method_value->GetString();
-  if (method == "Inspector.targetCrashed")
+  if (*method == "Inspector.targetCrashed")
     renderer_crashed_ = true;
-  EventHandlerMap::const_iterator it = event_handlers_.find(method);
+  EventHandlerMap::const_iterator it = event_handlers_.find(*method);
   if (it == event_handlers_.end()) {
-    if (method != "Inspector.targetCrashed")
+    if (*method != "Inspector.targetCrashed")
       NOTREACHED() << "Unknown event: " << method;
     return false;
   }
   if (!it->second.is_null()) {
-    const base::DictionaryValue* result_dict;
-    if (!message_dict.GetDictionary("params", &result_dict)) {
+    const base::Value::Dict* maybe_result_dict =
+        message_dict.FindDict("params");
+    if (!maybe_result_dict) {
       NOTREACHED() << "Badly formed event parameters";
       return false;
     }
+
     if (browser_main_thread_) {
       // DevTools assumes event handling is async so we must post a task here or
       // we risk breaking things.
       browser_main_thread_->PostTask(
           FROM_HERE,
           base::BindOnce(&HeadlessDevToolsClientImpl::DispatchEventTask,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         std::move(owning_message), &it->second, result_dict));
+                         weak_ptr_factory_.GetWeakPtr(), &it->second,
+                         maybe_result_dict->Clone()));
     } else {
-      DispatchEventTask(std::move(owning_message), &it->second, result_dict);
+      DispatchEventTask(&it->second, maybe_result_dict->Clone());
     }
   }
   return true;
 }
 
 void HeadlessDevToolsClientImpl::DispatchEventTask(
-    std::unique_ptr<base::Value> owning_message,
     const EventHandler* event_handler,
-    const base::DictionaryValue* result_dict) {
-  event_handler->Run(*result_dict);
+    base::Value::Dict result_dict) {
+  event_handler->Run(base::Value(std::move(result_dict)));
 }
 
 accessibility::Domain* HeadlessDevToolsClientImpl::GetAccessibility() {
