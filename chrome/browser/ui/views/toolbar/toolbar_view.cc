@@ -791,13 +791,13 @@ SkColor ToolbarView::GetDefaultColorForSeverity(
     case AppMenuIconController::Severity::NONE:
       return GetColorProvider()->GetColor(kColorToolbarButtonIcon);
     case AppMenuIconController::Severity::LOW:
-      color_id = ui::kColorAlertLowSeverity;
+      color_id = kColorAppMenuHighlightSeverityLow;
       break;
     case AppMenuIconController::Severity::MEDIUM:
-      color_id = ui::kColorAlertMediumSeverity;
+      color_id = kColorAppMenuHighlightSeverityMedium;
       break;
     case AppMenuIconController::Severity::HIGH:
-      color_id = ui::kColorAlertHighSeverity;
+      color_id = kColorAppMenuHighlightSeverityHigh;
       break;
   }
   return GetColorProvider()->GetColor(color_id);
