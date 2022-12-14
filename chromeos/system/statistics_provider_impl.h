@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_SYSTEM_STATISTICS_PROVIDER_IMPL_H_
 #define CHROMEOS_SYSTEM_STATISTICS_PROVIDER_IMPL_H_
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>

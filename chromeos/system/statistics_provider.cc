@@ -4,9 +4,6 @@
 
 #include "chromeos/system/statistics_provider.h"
 
-#include <memory>
-#include <vector>
-
 #include "base/memory/singleton.h"
 #include "chromeos/system/statistics_provider_impl.h"
 
@@ -111,38 +108,6 @@ bool StatisticsProvider::FlagValueToBool(FlagValue value, bool default_value) {
     case FlagValue::kFalse:
       return false;
   }
-}
-
-bool StatisticsProvider::GetMachineStatistic(const std::string& name,
-                                             std::string* result) {
-  auto statistic = GetMachineStatistic(name);
-
-  if (!statistic)
-    return false;
-
-  if (result)
-    *result = std::string(statistic.value());
-  return true;
-}
-
-bool StatisticsProvider::GetMachineFlag(const std::string& name, bool* result) {
-  FlagValue flag = GetMachineFlag(name);
-
-  if (flag == FlagValue::kUnset)
-    return false;
-
-  if (result)
-    *result = flag == FlagValue::kTrue;
-
-  return true;
-}
-
-std::string StatisticsProvider::GetEnterpriseMachineID() {
-  if (auto machine_id = GetMachineID()) {
-    return std::string(machine_id.value());
-  }
-
-  return "";
 }
 
 absl::optional<base::StringPiece> StatisticsProvider::GetMachineID() {

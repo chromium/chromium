@@ -13,8 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "chromeos/system/statistics_provider.h"
 
-namespace chromeos {
-namespace system {
+namespace chromeos::system {
 
 // A fake StatisticsProvider implementation that is useful in tests.
 class COMPONENT_EXPORT(CHROMEOS_SYSTEM) FakeStatisticsProvider
@@ -36,10 +35,6 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) FakeStatisticsProvider
   void Shutdown() override;
   bool IsRunningOnVm() override;
   VpdStatus GetVpdStatus() const override;
-
-  // TODO(b/213325251): Remove old getters once migration is completed.
-  using StatisticsProvider::GetMachineFlag;
-  using StatisticsProvider::GetMachineStatistic;
 
   void SetMachineStatistic(const std::string& key, const std::string& value);
   void ClearMachineStatistic(base::StringPiece key);
@@ -68,15 +63,12 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) ScopedFakeStatisticsProvider
   ~ScopedFakeStatisticsProvider() override;
 };
 
-}  // namespace system
-}  // namespace chromeos
+}  // namespace chromeos::system
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-namespace system {
+namespace ash::system {
 using ::chromeos::system::ScopedFakeStatisticsProvider;
-}
-}  // namespace ash
+}  // namespace ash::system
 
 #endif  // CHROMEOS_SYSTEM_FAKE_STATISTICS_PROVIDER_H_

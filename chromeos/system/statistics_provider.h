@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_SYSTEM_STATISTICS_PROVIDER_H_
 #define CHROMEOS_SYSTEM_STATISTICS_PROVIDER_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/strings/string_piece.h"
@@ -176,21 +174,11 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProvider {
   // not work safely together, returns custom tribool value.
   virtual FlagValue GetMachineFlag(base::StringPiece name) = 0;
 
-  // Old versions of machine statistic getters. Sets output
-  // to `result` if provided. Return false if statistic is not found.
-  // TODO(b/213325251): Remove old getters once migration is completed.
-  bool GetMachineStatistic(const std::string& name, std::string* result);
-  bool GetMachineFlag(const std::string& name, bool* result);
-
   // Returns the machine serial number after examining a set of well-known
   // keys. In case no serial is found nullopt is returned.
   // Caveat: On older Samsung devices, the last letter is omitted from the
   // serial number for historical reasons. This is fine.
   absl::optional<base::StringPiece> GetMachineID();
-  // Old version of `GetMachineID`. Returns an empty string if no serial is
-  // found. Soon to be removed.
-  // TODO(b/213325251): Remove old getters once migration is completed.
-  std::string GetEnterpriseMachineID();
 
   // Cancels any pending file operations.
   virtual void Shutdown() = 0;
@@ -215,8 +203,7 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProvider {
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-namespace system {
+namespace ash::system {
 using ::chromeos::system::kActivateDateKey;
 using ::chromeos::system::kBlockDevModeKey;
 using ::chromeos::system::kCheckEnrollmentKey;
@@ -229,7 +216,6 @@ using ::chromeos::system::kOemKeyboardDrivenOobeKey;
 using ::chromeos::system::kRlzBrandCodeKey;
 using ::chromeos::system::kSerialNumberKeyForTest;
 using ::chromeos::system::StatisticsProvider;
-}  // namespace system
-}  // namespace ash
+}  // namespace ash::system
 
 #endif  // CHROMEOS_SYSTEM_STATISTICS_PROVIDER_H_

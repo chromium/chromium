@@ -204,11 +204,13 @@ void PopulateEntriesAsync(std::unique_ptr<SystemLogsResponse> response,
     DCHECK(stats);
 
     // Get the HWID.
-    std::string hwid;
-    if (!stats->GetMachineStatistic(chromeos::system::kHardwareClassKey, &hwid))
+    absl::optional<base::StringPiece> hwid =
+        stats->GetMachineStatistic(chromeos::system::kHardwareClassKey);
+    if (!hwid) {
       VLOG(1) << "Couldn't get machine statistic 'hardware_class'.";
-    else
-      response->emplace(kHWIDKey, hwid);
+    } else {
+      response->emplace(kHWIDKey, std::string(hwid.value()));
+    }
 
     // Get the firmware version.
     response->emplace(kChromeOsFirmwareVersion,

@@ -4,8 +4,10 @@
 
 #include "chromeos/system/statistics_provider_impl.h"
 
+#include <memory>
 #include <string>
 #include <type_traits>
+#include <utility>
 
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"

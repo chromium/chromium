@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "chromeos/system/fake_statistics_provider.h"
-#include "base/task/sequenced_task_runner.h"
 
+#include <string>
 #include <utility>
 
-namespace chromeos {
-namespace system {
+#include "base/task/sequenced_task_runner.h"
+
+namespace chromeos::system {
 
 FakeStatisticsProvider::FakeStatisticsProvider() = default;
 
@@ -84,5 +85,4 @@ ScopedFakeStatisticsProvider::~ScopedFakeStatisticsProvider() {
   StatisticsProvider::SetTestProvider(nullptr);
 }
 
-}  // namespace system
-}  // namespace chromeos
+}  // namespace chromeos::system
