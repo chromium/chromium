@@ -8,6 +8,7 @@
 
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -1484,6 +1485,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   const sessions::SessionTab* toLoad = nullptr;
   if (openTabs->GetForeignTab(distantTab->session_tag, distantTab->tab_id,
                               &toLoad)) {
+    base::TimeDelta time_since_last_use = base::Time::Now() - toLoad->timestamp;
+    base::UmaHistogramCustomTimes("IOS.DistantTab.TimeSinceLastUse",
+                                  time_since_last_use, base::Minutes(1),
+                                  base::Days(24), 50);
+
     base::RecordAction(base::UserMetricsAction(
         "MobileRecentTabManagerTabFromOtherDeviceOpened"));
     if (self.searchTerms.length) {
