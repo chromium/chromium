@@ -44,6 +44,7 @@ web_component_files = [
   "chromeos/device_page/display_layout.ts",
   "chromeos/device_page/display_overscan_dialog.ts",
   "chromeos/device_page/keyboard.ts",
+  "chromeos/device_page/per_device_keyboard.ts",
   "chromeos/device_page/pointers.ts",
   "chromeos/device_page/power.ts",
   "chromeos/device_page/storage.ts",

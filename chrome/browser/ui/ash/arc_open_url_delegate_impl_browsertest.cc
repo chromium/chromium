@@ -344,6 +344,10 @@ void TestAllOSSettingPages(const GURL& base_url) {
   TestOpenOSSettingsChromePage(
       ChromePage::PRIVACYHUB,
       base_url.Resolve(chromeos::settings::mojom::kPrivacyHubSubpagePath));
+  TestOpenOSSettingsChromePage(
+      ChromePage::PERDEVICEKEYBOARD,
+      base_url.Resolve(
+          chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath));
 }
 
 void TestAllBrowserSettingPages(const GURL& base_url) {

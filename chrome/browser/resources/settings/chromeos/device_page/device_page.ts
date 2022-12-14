@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import './audio.js';
 import './display.js';
 import './keyboard.js';
+import './per_device_keyboard.js';
 import './pointers.js';
 import './power.js';
 import './storage.js';
@@ -130,7 +131,9 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
             map.set(routes.POINTERS.path, '#pointersRow');
           }
           // TODO(@wangdanny): Add route for mouse settings page.
-          // TODO(yyhyyh): Add routes for Per-device Keyboard page.
+          if (routes.PER_DEVICE_KEYBOARD) {
+            map.set(routes.PER_DEVICE_KEYBOARD.path, '#perDeviceKeyboardRow');
+          }
           if (routes.KEYBOARD) {
             map.set(routes.KEYBOARD.path, '#keyboardRow');
           }
@@ -229,6 +232,13 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
    */
   private onPointersTap_() {
     Router.getInstance().navigateTo(routes.POINTERS);
+  }
+
+  /**
+   * Handler for tapping the mouse and touchpad settings menu item.
+   */
+  private onPerDeviceKeyboardTap_() {
+    Router.getInstance().navigateTo(routes.PER_DEVICE_KEYBOARD);
   }
 
   /**

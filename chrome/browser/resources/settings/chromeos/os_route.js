@@ -141,6 +141,11 @@ function createOSSettingsRoutes() {
     r.AUDIO = createSubpage(
         r.DEVICE, routesMojomWebui.AUDIO_SUBPAGE_PATH, Subpage.kAudio);
   }
+  if (loadTimeData.getBoolean('enableInputDeviceSettingsSplit')) {
+    r.PER_DEVICE_KEYBOARD = createSubpage(
+        r.DEVICE, routesMojomWebui.PER_DEVICE_KEYBOARD_SUBPAGE_PATH,
+        Subpage.kPerDeviceKeyboard);
+  }
   r.STORAGE = createSubpage(
       r.DEVICE, routesMojomWebui.STORAGE_SUBPAGE_PATH, Subpage.kStorage);
   r.EXTERNAL_STORAGE_PREFERENCES = createSubpage(

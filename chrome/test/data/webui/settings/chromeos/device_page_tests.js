@@ -24,6 +24,7 @@ const TestNames = {
   Display: 'display',
   Keyboard: 'keyboard',
   NightLight: 'night light',
+  PerDeviceKeyboard: 'per-device keyboard',
   Pointers: 'pointers',
   PointingStick: 'pointing stick',
   Power: 'power',
@@ -275,7 +276,7 @@ suite('SettingsDevicePage', function() {
 
     DevicePageBrowserProxyImpl.setInstanceForTesting(
         new TestDevicePageBrowserProxy());
-
+    setDeviceSplitEnabled(true);
     // Allow the light DOM to be distributed to os-settings-animated-pages.
     setTimeout(done);
   });
@@ -461,6 +462,16 @@ suite('SettingsDevicePage', function() {
         `${elementDesc} should be focused for settingId=${settingId}.`);
   }
 
+  /**
+   * Set enableInputDeviceSettingsSplit feature flag to true for split tests.
+   * @param {!boolean} isEnabled
+   */
+  function setDeviceSplitEnabled(isEnabled) {
+    loadTimeData.overrideValues({
+      enableInputDeviceSettingsSplit: isEnabled,
+    });
+  }
+
   test(assert(TestNames.DevicePage), async function() {
     await init();
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
@@ -470,9 +481,9 @@ suite('SettingsDevicePage', function() {
     // enableAudioSettingsPage feature flag by default is turned on in tests.
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#audioRow')));
 
-    // enableInputDeviceSettingsSplit feature flag by default is turned off.
-    assertFalse(isVisible(devicePage.shadowRoot.querySelector('#mouseRow')));
-    assertFalse(isVisible(
+    // enableInputDeviceSettingsSplit feature flag by default is turned on.
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#mouseRow')));
+    assertTrue(isVisible(
         devicePage.shadowRoot.querySelector('#perDeviceKeyboardRow')));
 
     webUIListenerCallback('has-mouse-changed', false);
@@ -497,26 +508,39 @@ suite('SettingsDevicePage', function() {
   });
 
   test('mouse row visibility', async function() {
-    loadTimeData.overrideValues({
-      enableInputDeviceSettingsSplit: true,
-    });
     await init();
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#mouseRow')));
   });
 
   test('per-device-keyboard row visibility', async function() {
-    // Set enableInputDeviceSettingsSplit feature flag to true for split tests.
-    loadTimeData.overrideValues({
-      enableInputDeviceSettingsSplit: true,
-    });
+    setDeviceSplitEnabled(false);
     await init();
-    assertTrue(isVisible(
+    assertFalse(isVisible(
         devicePage.shadowRoot.querySelector('#perDeviceKeyboardRow')));
+  });
 
-    // Set enableInputDeviceSettingsSplit feature flag back to false to avoid
-    // corrupting other tests.
-    loadTimeData.overrideValues({
-      enableInputDeviceSettingsSplit: false,
+  suite(assert(TestNames.PerDeviceKeyboard), function() {
+    let perDeviceKeyboardPage;
+    setup(async function() {
+      await init();
+      const row = assert(
+          devicePage.shadowRoot.querySelector(`#main #perDeviceKeyboardRow`));
+      row.click();
+      assertEquals(
+          routes.PER_DEVICE_KEYBOARD, Router.getInstance().getCurrentRoute());
+      const page =
+          devicePage.shadowRoot.querySelector('settings-per-device-keyboard');
+      assert(page);
+      return Promise.resolve(page).then(function(page) {
+        perDeviceKeyboardPage = page;
+      });
+    });
+
+    test('per-device keyboard subpage visibility', function() {
+      assertEquals(
+          routes.PER_DEVICE_KEYBOARD, Router.getInstance().getCurrentRoute());
+      assertTrue(isVisible(perDeviceKeyboardPage.shadowRoot.querySelector(
+          '#perDeviceKeyboardSubpageTitle')));
     });
   });
 

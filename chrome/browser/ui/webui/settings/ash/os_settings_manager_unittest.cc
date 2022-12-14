@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_enum_reader.h"
@@ -50,9 +51,10 @@ class OsSettingsManagerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAccessibilitySelectToSpeakPageMigration);
-
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kAccessibilitySelectToSpeakPageMigration,
+         ash::features::kInputDeviceSettingsSplit},
+        {});
     ASSERT_TRUE(profile_manager_.SetUp());
     TestingProfile* profile =
         profile_manager_.CreateTestingProfile("TestingProfile");

@@ -174,8 +174,9 @@ enum ChromePage {
   KEYBOARDANDTEXTINPUT = 82,
   CURSORANDTOUCHPAD = 83,
   AUDIOANDCAPTIONS = 84,
+  PERDEVICEKEYBOARD = 85,
 
-  // Next value to be used is 85.
+  // Next value to be used is 86.
 };
 
 // Describes an unique chrome app.

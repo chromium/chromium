@@ -89,6 +89,7 @@ import {Route} from './router.js';
  *   OS_SIGN_OUT: !Route,
  *   OS_SYNC: !Route,
  *   OS_PEOPLE: !Route,
+ *   PER_DEVICE_KEYBOARD: !Route,
  *   PERSONALIZATION: !Route,
  *   POINTERS: !Route,
  *   POWER: !Route,
