@@ -488,7 +488,7 @@ struct FileChange {
 };
 
 // Definition of the search request sent to DriveFS.
-// Next MinVersion: 3
+// Next MinVersion: 4
 struct QueryParameters {
   // Where this request should go to.
   enum QuerySource {
@@ -543,6 +543,10 @@ struct QueryParameters {
   // Note: this field is preferred to "mime_type" field above, when processing
   // the query, the "mime_type" will be merged into this "mime_types" field.
   [MinVersion=2] array<string>? mime_types;
+
+  // Only show results that are in the users "My drive" directory excluding
+  // others such as Team drives and trashed files.
+  [MinVersion=3] bool my_drive_results_only = false;
 };
 
 // TODO(crbug.com/896777): Put this inside QueryParameters once linked bug is
