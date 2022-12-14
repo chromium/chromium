@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -2343,21 +2344,42 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyWithAppFallbackNameSAATest,
   EXPECT_EQ(fallback_app_name_, registrar.GetAppShortName(*app_id));
 }
 
+using ExternalPrefMigrationTestCases =
+    web_app::test::ExternalPrefMigrationTestCases;
+
 class WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest
     : public WebAppInstallForceListPolicyTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<ExternalPrefMigrationTestCases> {
  public:
   WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest() {
     test_page_ = "/close-socket";
     fallback_app_name_ = "fallback app name";
-    bool enable_migration = GetParam();
-    if (enable_migration) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kUseWebAppDBInsteadOfExternalPrefs}, {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {features::kUseWebAppDBInsteadOfExternalPrefs});
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    switch (GetParam()) {
+      case ExternalPrefMigrationTestCases::kDisableMigrationReadPref:
+        disabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
+        disabled_features.push_back(
+            features::kUseWebAppDBInsteadOfExternalPrefs);
+        break;
+      case ExternalPrefMigrationTestCases::kDisableMigrationReadDB:
+        disabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
+        enabled_features.push_back(
+            features::kUseWebAppDBInsteadOfExternalPrefs);
+        break;
+      case ExternalPrefMigrationTestCases::kEnableMigrationReadPref:
+        enabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
+        disabled_features.push_back(
+            features::kUseWebAppDBInsteadOfExternalPrefs);
+        break;
+      case ExternalPrefMigrationTestCases::kEnableMigrationReadDB:
+        enabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
+        enabled_features.push_back(
+            features::kUseWebAppDBInsteadOfExternalPrefs);
+        break;
     }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   ~WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest() override =
@@ -2395,7 +2417,11 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest,
-    ::testing::Bool());
+    ::testing::Values(ExternalPrefMigrationTestCases::kDisableMigrationReadPref,
+                      ExternalPrefMigrationTestCases::kDisableMigrationReadDB,
+                      ExternalPrefMigrationTestCases::kEnableMigrationReadPref,
+                      ExternalPrefMigrationTestCases::kEnableMigrationReadDB),
+    web_app::test::GetExternalPrefMigrationTestName);
 
 // Fixture for tests that have two profiles with a different policy for each.
 class ExtensionPolicyTest2Contexts : public PolicyTest {

@@ -314,7 +314,7 @@ enum class TestLacrosParam { kLacrosDisabled, kLacrosEnabled };
 
 struct TestParam {
   TestLacrosParam lacros_params;
-  bool is_external_pref_migration_enabled = false;
+  test::ExternalPrefMigrationTestCases pref_migration_test_param;
 };
 
 class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
@@ -421,11 +421,6 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
     std::vector<base::test::FeatureRef> disabled_features;
     enabled_features.push_back(
         features::kDesktopPWAsEnforceWebAppSettingsPolicy);
-    // Add external pref migration enable flags.
-    if (GetParam().is_external_pref_migration_enabled)
-      enabled_features.push_back(features::kUseWebAppDBInsteadOfExternalPrefs);
-    else
-      disabled_features.push_back(features::kUseWebAppDBInsteadOfExternalPrefs);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (GetParam().lacros_params == TestLacrosParam::kLacrosEnabled) {
       enabled_features.push_back(features::kWebAppsCrosapi);
@@ -434,6 +429,29 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
       disabled_features.push_back(ash::features::kLacrosPrimary);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+    switch (GetParam().pref_migration_test_param) {
+      case test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref:
+        disabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
+        disabled_features.push_back(
+            features::kUseWebAppDBInsteadOfExternalPrefs);
+        break;
+      case test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB:
+        disabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
+        enabled_features.push_back(
+            features::kUseWebAppDBInsteadOfExternalPrefs);
+        break;
+      case test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref:
+        enabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
+        disabled_features.push_back(
+            features::kUseWebAppDBInsteadOfExternalPrefs);
+        break;
+      case test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB:
+        enabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
+        enabled_features.push_back(
+            features::kUseWebAppDBInsteadOfExternalPrefs);
+        break;
+    }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
@@ -1336,14 +1354,53 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppPolicyManagerTest,
     testing::Values(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        TestParam({TestLacrosParam::kLacrosDisabled,
-                   /*is_external_pref_migration_enabled=*/false}),
-        TestParam({TestLacrosParam::kLacrosDisabled,
-                   /*is_external_pref_migration_enabled=*/true}),
+        TestParam(
+            {TestLacrosParam::kLacrosDisabled,
+             test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref}),
+        TestParam(
+            {TestLacrosParam::kLacrosDisabled,
+             test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB}),
+        TestParam(
+            {TestLacrosParam::kLacrosDisabled,
+             test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref}),
+        TestParam(
+            {TestLacrosParam::kLacrosDisabled,
+             test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB}),
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-        TestParam({TestLacrosParam::kLacrosEnabled,
-                   /*is_external_pref_migration_enabled=*/false}),
-        TestParam({TestLacrosParam::kLacrosEnabled,
-                   /*is_external_pref_migration_enabled=*/true})));
+        TestParam(
+            {TestLacrosParam::kLacrosEnabled,
+             test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref}),
+        TestParam(
+            {TestLacrosParam::kLacrosEnabled,
+             test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB}),
+        TestParam(
+            {TestLacrosParam::kLacrosEnabled,
+             test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref}),
+        TestParam(
+            {TestLacrosParam::kLacrosEnabled,
+             test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB})),
+    [](const ::testing::TestParamInfo<TestParam>& info) {
+      std::string test_name = "Test_";
+      if (info.param.lacros_params == TestLacrosParam::kLacrosEnabled)
+        test_name.append("LacrosEnabled_");
+      else
+        test_name.append("LacrosDisabled_");
+
+      switch (info.param.pref_migration_test_param) {
+        case test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref:
+          test_name.append("DisableMigration_ReadFromPrefs");
+          break;
+        case test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB:
+          test_name.append("DisableMigration_ReadFromDB");
+          break;
+        case test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref:
+          test_name.append("EnableMigration_ReadFromPrefs");
+          break;
+        case test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB:
+          test_name.append("EnableMigration_ReadFromDB");
+          break;
+      }
+      return test_name;
+    });
 
 }  // namespace web_app
