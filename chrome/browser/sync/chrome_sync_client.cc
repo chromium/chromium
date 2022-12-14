@@ -675,7 +675,7 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
       DCHECK(provider);
       DCHECK(web_app::AreWebAppsEnabled(profile_));
 
-      return provider->sync_bridge()
+      return provider->sync_bridge_unsafe()
           .change_processor()
           ->GetControllerDelegate();
     }
