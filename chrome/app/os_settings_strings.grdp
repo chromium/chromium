@@ -1251,11 +1251,17 @@ Use Ctrl + Alt + Brightness down to zoom out.
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_SYSTEM_VOICE" desc="In the Select-to-speak settings subpage, the label for the menu option for the voice name for the system default Text-to-Speech voice">
     System voice
   </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_VOICE_PREVIEW" desc="In the Select-to-speak settings subpage, the label for the control where the user can listen to a preview of the selected voice.">
+    Voice preview
+  </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DEFAULT_NETWORK_VOICE" desc="In the Select-to-speak settings subpage, the label for the natural voices option that uses a default, server-supplied Text-to-Speech voice">
     Default natural voice
   </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_NATURAL_VOICE_PREVIEW" desc="In the Select-to-speak settings subpage, the label for the control where the user can listen to a preview of the selected high-quality voice.">
+    Natural voice preview
+  </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT" desc="In the Select-to-speak settings subpage, the label for the group of options controlling highlighting.">
-    Highlighting
+    Highlight
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for option to highlight spoken words rather than spoken nodes.">
     Highlight each word as it is spoken
@@ -1306,7 +1312,7 @@ Use Ctrl + Alt + Brightness down to zoom out.
     The quick brown fox jumped over the lazy dog.
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_NAVIGATION_CONTROLS_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for option to show navigation controls, such as going to the previous or next paragraph, when Select-to-speak is activated.">
-    Enable navigation controls
+    Navigation controls
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_NAVIGATION_CONTROLS_SUBTITLE" desc="In the Select-to-speak settings subpage, the subtitle for option to show navigation controls, such as going to the previous or next paragraph, when Select-to-speak is activated.">
     Provides controls to speed up, slow down, and pause the reading voice

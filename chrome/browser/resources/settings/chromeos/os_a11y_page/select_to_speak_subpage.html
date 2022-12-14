@@ -23,6 +23,8 @@ found in the LICENSE file.
   }
 
   .settings-box {
+    margin-inline-end: var(--cr-section-padding);
+    padding-inline-end: 0;
     padding-inline-start: 0;
   }
 
@@ -89,6 +91,7 @@ found in the LICENSE file.
     border-radius: 4px;
     line-height: 1.5;
     margin-inline-end: var(--cr-section-padding);
+    margin-top: 16px;
     padding: 16px 24px 16px 24px;
     position: relative;
   }
@@ -147,7 +150,7 @@ found in the LICENSE file.
   </div>
   <div class="settings-box">
     <div id="voicePreview" class="start settings-box-text">
-      $i18n{textToSpeechPreviewInputLabel}
+      $i18n{selectToSpeakOptionsVoicePreview}
     </div>
     <cr-input id="voicePreviewInput"
         class="preview-input"
@@ -166,7 +169,7 @@ found in the LICENSE file.
   </div>
   <cr-link-row class="settings-box"
       label="$i18n{selectToSpeakTextToSpeechSettingsLink}"
-      on-click="onTextToSpeechSettingsTap_" external
+      on-click="onTextToSpeechSettingsTap_"
       embedded>
   </cr-link-row>
   <template is="dom-if"
@@ -210,7 +213,7 @@ found in the LICENSE file.
         </div>
         <div class="settings-box">
           <div id="enhancedNetworkVoicePreview" class="start settings-box-text">
-            $i18n{textToSpeechPreviewInputLabel}
+            $i18n{selectToSpeakOptionsNaturalVoicePreview}
           </div>
           <cr-input id="enhancedNetworkVoicePreviewInput"
               class="preview-input"
