@@ -14,6 +14,7 @@ tikuta@chromium.org
 file://tools/clang/scripts/OWNERS
 
 # For java build changes:
+smaier@chromium.org
 wnwen@chromium.org
 
 # NOTE: keep this in sync with lsc-owners-override@chromium.org owners
