@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS row-gap responsive to style changes
+FAIL row-gap clamped to 0px on keyframes assert_equals: expected "20px" but got "0px"
+PASS row-gap responsive to inherited changes
+Harness: the test ran to completion.
+

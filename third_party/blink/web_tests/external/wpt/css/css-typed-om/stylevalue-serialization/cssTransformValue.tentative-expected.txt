@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+PASS CSSTranslate with 2 arguments serializes correctly
+PASS CSSTranslate with 3 arguments serializes correctly
+PASS CSSScale with 2 arguments serializes correctly
+PASS CSSScale with 3 arguments serializes correctly
+PASS CSSRotate with 1 argument serializes correctly
+PASS CSSRotate with 4 arguments serializes correctly
+PASS CSSSkew serializes correctly
+PASS CSSSkew with Y which is 0 value serializes correctly
+PASS CSSSkewX serializes correctly
+PASS CSSSkewY serializes correctly
+PASS CSSPerspective serializes correctly
+PASS CSSPerspective with negative length serializes correctly
+PASS CSSPerspective with none as string serializes correctly
+PASS CSSPerspective with none as CSSKeyword serializes correctly
+PASS CSSTransformValue with a single transform serializes correctly
+PASS CSSTransformValue with multiple transforms serializes correctly
+PASS CSSTransformValue containing CSSMathValues serializes correctly
+PASS CSSMathInvert with 0 parameter serializes correctly
+FAIL CSSMathInvert with 0 parameter and nested serializes correctly assert_equals: expected "rotate3d(0, 0, 0, calc(1deg / 0))" but got "rotate3d(0, 0, 0, calc(1deg * (1 / 0)))"
+PASS CSSMatrixComponent with 6 elements serializes correctly
+PASS CSSMatrixComponent with 16 elements serializes correctly
+PASS CSSTransformValue with updated is2D serializes as 2D transforms
+Harness: the test ran to completion.
+
