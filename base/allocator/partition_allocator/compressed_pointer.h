@@ -450,7 +450,7 @@ class PA_TRIVIAL_ABI UncompressedPointer final {
  public:
   PA_ALWAYS_INLINE constexpr UncompressedPointer() = default;
   PA_ALWAYS_INLINE constexpr explicit UncompressedPointer(T* ptr) : ptr_(ptr) {}
-  PA_ALWAYS_INLINE constexpr explicit UncompressedPointer(nullptr_t)
+  PA_ALWAYS_INLINE constexpr explicit UncompressedPointer(std::nullptr_t)
       : ptr_(nullptr) {}
 
   PA_ALWAYS_INLINE constexpr UncompressedPointer(const UncompressedPointer&) =
