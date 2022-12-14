@@ -177,6 +177,8 @@ class Manifest final {
 
   // Deprecated: Use the FindDictPath(asValue) functions instead.
   bool GetDictionary(const std::string& path,
+                     const base::DictionaryValue** out_value) const;
+  bool GetDictionary(const std::string& path,
                      const base::Value** out_value) const;
   bool GetList(const std::string& path, const base::Value** out_value) const;
 

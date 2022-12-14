@@ -27,7 +27,6 @@
 #include "base/process/process.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
-#include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
@@ -110,7 +109,7 @@ bool SimulatingElevatedRecovery() {
 }
 
 std::vector<std::string> GetRecoveryInstallArguments(
-    const base::Value::Dict& manifest,
+    const base::DictionaryValue& manifest,
     bool is_deferred_run,
     const base::Version& version) {
   std::vector<std::string> arguments;
@@ -121,12 +120,12 @@ std::vector<std::string> GetRecoveryInstallArguments(
     arguments.push_back("/deferredrun");
 
   if (const std::string* recovery_args =
-          manifest.FindString("x-recovery-args")) {
+          manifest.FindStringKey("x-recovery-args")) {
     if (base::IsStringASCII(*recovery_args))
       arguments.push_back(*recovery_args);
   }
   if (const std::string* recovery_add_version =
-          manifest.FindString("x-recovery-add-version")) {
+          manifest.FindStringKey("x-recovery-add-version")) {
     if (*recovery_add_version == "yes") {
       arguments.push_back("/version");
       arguments.push_back(version.GetString());
@@ -138,7 +137,7 @@ std::vector<std::string> GetRecoveryInstallArguments(
 
 base::CommandLine BuildRecoveryInstallCommandLine(
     const base::FilePath& command,
-    const base::Value::Dict& manifest,
+    const base::DictionaryValue& manifest,
     bool is_deferred_run,
     const base::Version& version) {
   base::CommandLine command_line(command);
@@ -151,10 +150,11 @@ base::CommandLine BuildRecoveryInstallCommandLine(
   return command_line;
 }
 
-base::Value::Dict ReadManifest(const base::FilePath& manifest) {
+std::unique_ptr<base::DictionaryValue> ReadManifest(
+    const base::FilePath& manifest) {
   JSONFileValueDeserializer deserializer(manifest);
   std::string error;
-  return deserializer.Deserialize(NULL, &error)->TakeDict();
+  return base::DictionaryValue::From(deserializer.Deserialize(NULL, &error));
 }
 
 void WaitForElevatedInstallToComplete(base::Process process) {
@@ -178,12 +178,12 @@ void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
   if (!base::PathExists(main_file) || !base::PathExists(manifest_file))
     return;
 
-  base::Value::Dict manifest(ReadManifest(manifest_file));
-  const std::string* name = manifest.FindString("name");
+  std::unique_ptr<base::DictionaryValue> manifest(ReadManifest(manifest_file));
+  const std::string* name = manifest->FindStringKey("name");
   if (!name || *name != kRecoveryManifestName)
     return;
   std::string proposed_version;
-  if (const std::string* ptr = manifest.FindString("version")) {
+  if (const std::string* ptr = manifest->FindStringKey("version")) {
     if (base::IsStringASCII(*ptr))
       proposed_version = *ptr;
   }
@@ -194,7 +194,7 @@ void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
   const bool is_deferred_run = true;
 #if BUILDFLAG(IS_WIN)
   const auto cmdline = BuildRecoveryInstallCommandLine(
-      main_file, manifest, is_deferred_run, version);
+      main_file, *manifest, is_deferred_run, version);
 
   RecordRecoveryComponentUMAEvent(RCE_RUNNING_ELEVATED);
 
@@ -210,8 +210,8 @@ void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
     return;
   }
 
-  const auto arguments =
-      GetRecoveryInstallArguments(manifest, is_deferred_run, version);
+  const auto arguments = GetRecoveryInstallArguments(
+      *manifest, is_deferred_run, version);
   // Convert the arguments memory layout to the format required by
   // ExecuteWithPrivilegesAndGetPID(): an array of string pointers
   // that ends with a null pointer.
@@ -469,7 +469,8 @@ bool RecoveryComponentInstaller::DoInstall(
   // Run the recovery component.
   const bool is_deferred_run = false;
   const auto cmdline = BuildRecoveryInstallCommandLine(
-      main_file, manifest.GetDict(), is_deferred_run, current_version_);
+      main_file, base::Value::AsDictionaryValue(manifest), is_deferred_run,
+      current_version_);
 
   if (!RunInstallCommand(cmdline, path)) {
     return false;

@@ -50,13 +50,15 @@ SegmentationResultPrefs::ReadSegmentationResultFromPref(
   if (!value)
     return absl::nullopt;
 
-  const base::Value::Dict& segmentation_result = value->GetDict();
+  const base::DictionaryValue& segmentation_result =
+      base::Value::AsDictionaryValue(*value);
 
-  absl::optional<int> segment_id = segmentation_result.FindInt("segment_id");
-  absl::optional<float> rank = segmentation_result.FindDouble("segment_rank");
-  absl::optional<bool> in_use = segmentation_result.FindBool("in_use");
+  absl::optional<int> segment_id = segmentation_result.FindIntKey("segment_id");
+  absl::optional<float> rank =
+      segmentation_result.FindDoubleKey("segment_rank");
+  absl::optional<bool> in_use = segmentation_result.FindBoolKey("in_use");
   absl::optional<base::Time> selection_time =
-      base::ValueToTime(segmentation_result.Find("selection_time"));
+      base::ValueToTime(segmentation_result.FindPath("selection_time"));
 
   SelectedSegment selected_segment(static_cast<SegmentId>(segment_id.value()),
                                    rank);
