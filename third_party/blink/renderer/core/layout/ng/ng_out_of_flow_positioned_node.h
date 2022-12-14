@@ -380,6 +380,20 @@ struct NGFragmentedOutOfFlowData final : NGPhysicalFragment::OutOfFlowData {
   MulticolCollection multicols_with_pending_oofs;
 };
 
+inline PhysicalOffset RelativeInsetToPhysical(
+    LogicalOffset relative_inset,
+    WritingDirectionMode writing_direction) {
+  return relative_inset.ConvertToPhysical(writing_direction, PhysicalSize(),
+                                          PhysicalSize());
+}
+
+inline LogicalOffset RelativeInsetToLogical(
+    PhysicalOffset relative_inset,
+    WritingDirectionMode writing_direction) {
+  return relative_inset.ConvertToLogical(writing_direction, PhysicalSize(),
+                                         PhysicalSize());
+}
+
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
