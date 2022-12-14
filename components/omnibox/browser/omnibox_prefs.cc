@@ -83,8 +83,8 @@ void SetUserPreferenceForSuggestionGroupVisibility(
     SuggestionGroupVisibility visibility) {
   DCHECK(prefs);
 
-  DictionaryPrefUpdate update(prefs, kSuggestionGroupVisibility);
-  update->SetIntKey(base::NumberToString(suggestion_group_id), visibility);
+  ScopedDictPrefUpdate update(prefs, kSuggestionGroupVisibility);
+  update->Set(base::NumberToString(suggestion_group_id), visibility);
 
   base::SparseHistogram::FactoryGet(
       visibility == SuggestionGroupVisibility::SHOWN
