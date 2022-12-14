@@ -90,7 +90,7 @@ bool UserNetworkConfigurationUpdaterAsh::
       /*network_configs=*/nullptr, /*global_network_config=*/nullptr,
       &certificates_value);
   chromeos::onc::OncParsedCertificates onc_parsed_certificates(
-      base::Value(std::move(certificates_value)));
+      certificates_value);
   for (const auto& server_or_authority_cert :
        onc_parsed_certificates.server_or_authority_certificates()) {
     if (server_or_authority_cert.type() ==

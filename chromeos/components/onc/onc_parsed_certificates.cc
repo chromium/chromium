@@ -175,18 +175,12 @@ bool OncParsedCertificates::ClientCertificate::operator!=(
 }
 
 OncParsedCertificates::OncParsedCertificates()
-    : OncParsedCertificates(base::Value(base::Value::Type::LIST)) {}
+    : OncParsedCertificates(base::Value::List()) {}
 
 OncParsedCertificates::OncParsedCertificates(
-    const base::Value& onc_certificates) {
-  if (!onc_certificates.is_list()) {
-    LOG(WARNING) << "Value is not a list";
-    has_error_ = true;
-    return;
-  }
-
-  for (size_t i = 0; i < onc_certificates.GetList().size(); ++i) {
-    const base::Value& onc_certificate = onc_certificates.GetList()[i];
+    const base::Value::List& onc_certificates) {
+  for (size_t i = 0; i < onc_certificates.size(); ++i) {
+    const base::Value& onc_certificate = onc_certificates[i];
     DCHECK(onc_certificate.is_dict());
 
     VLOG(2) << "Parsing certificate at index " << i << ": " << onc_certificate;

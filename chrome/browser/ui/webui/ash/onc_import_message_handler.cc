@@ -124,8 +124,8 @@ void OncImportMessageHandler::ImportONCToNSSDB(const std::string& callback_id,
 
   auto cert_importer = std::make_unique<onc::CertificateImporterImpl>(
       content::GetIOThreadTaskRunner({}), nssdb);
-  auto certs = std::make_unique<chromeos::onc::OncParsedCertificates>(
-      base::Value(std::move(certificates)));
+  auto certs =
+      std::make_unique<chromeos::onc::OncParsedCertificates>(certificates);
   if (certs->has_error()) {
     has_error = true;
     result += "Some certificates could not be parsed.\n";

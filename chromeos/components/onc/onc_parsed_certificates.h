@@ -10,11 +10,8 @@
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "chromeos/components/onc/certificate_scope.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace net {
 class X509Certificate;
@@ -97,9 +94,8 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) OncParsedCertificates {
   // certificate lists will be empty.
   OncParsedCertificates();
 
-  // Parses |onc_certificates|. This must be a Value of type LIST, corresponding
-  // to the Certificates part of the ONC specification.
-  explicit OncParsedCertificates(const base::Value& onc_certificates);
+  // Parses |onc_certificates|.
+  explicit OncParsedCertificates(const base::Value::List& onc_certificates);
 
   OncParsedCertificates(const OncParsedCertificates&) = delete;
   OncParsedCertificates& operator=(const OncParsedCertificates&) = delete;

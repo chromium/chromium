@@ -275,8 +275,7 @@ std::string NetworkConfigurationUpdater::LogHeader() const {
 void NetworkConfigurationUpdater::ImportCertificates(
     base::Value::List certificates_onc) {
   std::unique_ptr<OncParsedCertificates> incoming_certs =
-      std::make_unique<OncParsedCertificates>(
-          base::Value(std::move(certificates_onc)));
+      std::make_unique<OncParsedCertificates>(certificates_onc);
 
   bool server_or_authority_certs_changed =
       certs_->server_or_authority_certificates() !=

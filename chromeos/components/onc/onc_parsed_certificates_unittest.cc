@@ -22,16 +22,14 @@ class OncParsedCertificatesTest : public testing::Test {
   ~OncParsedCertificatesTest() override = default;
 
  protected:
-  bool ReadFromJSON(
-      base::StringPiece onc_certificates_json,
-      std::unique_ptr<OncParsedCertificates>* out_onc_parsed_certificates) {
+  std::unique_ptr<OncParsedCertificates> ReadFromJSON(
+      base::StringPiece onc_certificates_json) {
     std::unique_ptr<base::Value> onc_certificates =
         base::JSONReader::ReadDeprecated(onc_certificates_json);
-    if (!onc_certificates)
-      return false;
-    *out_onc_parsed_certificates =
-        std::make_unique<OncParsedCertificates>(*onc_certificates);
-    return true;
+    if (!onc_certificates || !onc_certificates->is_list()) {
+      return nullptr;
+    }
+    return std::make_unique<OncParsedCertificates>(onc_certificates->GetList());
   }
 };
 
@@ -43,8 +41,9 @@ TEST_F(OncParsedCertificatesTest, ClientCert) {
           "Type": "Client" }
       ])";
 
-  std::unique_ptr<OncParsedCertificates> onc_parsed_certificates;
-  ASSERT_TRUE(ReadFromJSON(onc_certificates_json, &onc_parsed_certificates));
+  std::unique_ptr<OncParsedCertificates> onc_parsed_certificates =
+      ReadFromJSON(onc_certificates_json);
+  ASSERT_TRUE(onc_parsed_certificates);
 
   EXPECT_FALSE(onc_parsed_certificates->has_error());
   EXPECT_EQ(0u,
@@ -67,8 +66,9 @@ TEST_F(OncParsedCertificatesTest, ClientCertWithNewLines) {
           "Type": "Client" }
       ])";
 
-  std::unique_ptr<OncParsedCertificates> onc_parsed_certificates;
-  ASSERT_TRUE(ReadFromJSON(onc_certificates_json, &onc_parsed_certificates));
+  std::unique_ptr<OncParsedCertificates> onc_parsed_certificates =
+      ReadFromJSON(onc_certificates_json);
+  ASSERT_TRUE(onc_parsed_certificates);
 
   EXPECT_FALSE(onc_parsed_certificates->has_error());
   EXPECT_EQ(0u,
@@ -94,8 +94,9 @@ TEST_F(OncParsedCertificatesTest, ClientCertAndError) {
           "Type": "Client" }
       ])";
 
-  std::unique_ptr<OncParsedCertificates> onc_parsed_certificates;
-  ASSERT_TRUE(ReadFromJSON(onc_certificates_json, &onc_parsed_certificates));
+  std::unique_ptr<OncParsedCertificates> onc_parsed_certificates =
+      ReadFromJSON(onc_certificates_json);
+  ASSERT_TRUE(onc_parsed_certificates);
 
   EXPECT_TRUE(onc_parsed_certificates->has_error());
   EXPECT_EQ(0u,
@@ -161,8 +162,9 @@ TEST_F(OncParsedCertificatesTest, AuthorityCerts) {
       -----END CERTIFICATE-----" }
       ])";
 
-  std::unique_ptr<OncParsedCertificates> onc_parsed_certificates;
-  ASSERT_TRUE(ReadFromJSON(onc_certificates_json, &onc_parsed_certificates));
+  std::unique_ptr<OncParsedCertificates> onc_parsed_certificates =
+      ReadFromJSON(onc_certificates_json);
+  ASSERT_TRUE(onc_parsed_certificates);
 
   EXPECT_FALSE(onc_parsed_certificates->has_error());
   EXPECT_EQ(2u,
@@ -226,8 +228,9 @@ TEST_F(OncParsedCertificatesTest, AuthorityCertsScope) {
       -----END CERTIFICATE-----" }
       ])";
 
-  std::unique_ptr<OncParsedCertificates> onc_parsed_certificates;
-  ASSERT_TRUE(ReadFromJSON(onc_certificates_json, &onc_parsed_certificates));
+  std::unique_ptr<OncParsedCertificates> onc_parsed_certificates =
+      ReadFromJSON(onc_certificates_json);
+  ASSERT_TRUE(onc_parsed_certificates);
 
   EXPECT_FALSE(onc_parsed_certificates->has_error());
   ASSERT_EQ(1u,
@@ -276,8 +279,9 @@ TEST_F(OncParsedCertificatesTest, UnknownTrustBitsIgnored) {
       -----END CERTIFICATE-----" }
       ])";
 
-  std::unique_ptr<OncParsedCertificates> onc_parsed_certificates;
-  ASSERT_TRUE(ReadFromJSON(onc_certificates_json, &onc_parsed_certificates));
+  std::unique_ptr<OncParsedCertificates> onc_parsed_certificates =
+      ReadFromJSON(onc_certificates_json);
+  ASSERT_TRUE(onc_parsed_certificates);
 
   EXPECT_FALSE(onc_parsed_certificates->has_error());
   ASSERT_EQ(1u,
@@ -338,8 +342,9 @@ TEST_F(OncParsedCertificatesTest, ServerCertAndError) {
       trailing junk" }
       ])";
 
-  std::unique_ptr<OncParsedCertificates> onc_parsed_certificates;
-  ASSERT_TRUE(ReadFromJSON(onc_certificates_json, &onc_parsed_certificates));
+  std::unique_ptr<OncParsedCertificates> onc_parsed_certificates =
+      ReadFromJSON(onc_certificates_json);
+  ASSERT_TRUE(onc_parsed_certificates);
 
   EXPECT_TRUE(onc_parsed_certificates->has_error());
   EXPECT_EQ(1u,
@@ -389,8 +394,9 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
   std::unique_ptr<base::Value> onc_certificates =
       base::JSONReader::ReadDeprecated(onc_certificates_json);
   ASSERT_TRUE(onc_certificates);
+  ASSERT_TRUE(onc_certificates->is_list());
 
-  OncParsedCertificates authority_and_client_certs(*onc_certificates);
+  OncParsedCertificates authority_and_client_certs(onc_certificates->GetList());
   EXPECT_EQ(authority_and_client_certs.server_or_authority_certificates(),
             authority_and_client_certs.server_or_authority_certificates());
   EXPECT_EQ(authority_and_client_certs.client_certificates(),
@@ -407,7 +413,7 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
     trust_bits->GetList()[0] = base::Value("UnknownTrustBit");
 
     OncParsedCertificates parsed_authority_web_trust_mangled(
-        authority_web_trust_mangled);
+        authority_web_trust_mangled.GetList());
     EXPECT_FALSE(parsed_authority_web_trust_mangled.has_error());
     EXPECT_NE(
         authority_and_client_certs.server_or_authority_certificates(),
@@ -422,7 +428,8 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
     authority_guid_mangled.GetList()[1].SetKey("GUID",
                                                base::Value("otherguid"));
 
-    OncParsedCertificates parsed_authority_guid_mangled(authority_guid_mangled);
+    OncParsedCertificates parsed_authority_guid_mangled(
+        authority_guid_mangled.GetList());
     EXPECT_FALSE(parsed_authority_guid_mangled.has_error());
     EXPECT_NE(authority_and_client_certs.server_or_authority_certificates(),
               parsed_authority_guid_mangled.server_or_authority_certificates());
@@ -435,7 +442,8 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
     base::Value authority_type_mangled = onc_certificates->Clone();
     authority_type_mangled.GetList()[1].SetKey("Type", base::Value("Server"));
 
-    OncParsedCertificates parsed_authority_type_mangled(authority_type_mangled);
+    OncParsedCertificates parsed_authority_type_mangled(
+        authority_type_mangled.GetList());
     EXPECT_FALSE(parsed_authority_type_mangled.has_error());
     EXPECT_NE(authority_and_client_certs.server_or_authority_certificates(),
               parsed_authority_type_mangled.server_or_authority_certificates());
@@ -474,7 +482,8 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
                             oKjuSSsg/Q8Wx6cpJmttQz5olGPgstmACRWA==
                             -----END CERTIFICATE-----                    )"));
 
-    OncParsedCertificates parsed_authority_x509_mangled(authority_x509_mangled);
+    OncParsedCertificates parsed_authority_x509_mangled(
+        authority_x509_mangled.GetList());
     EXPECT_FALSE(parsed_authority_x509_mangled.has_error());
     EXPECT_NE(authority_and_client_certs.server_or_authority_certificates(),
               parsed_authority_x509_mangled.server_or_authority_certificates());
@@ -487,7 +496,8 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
     base::Value client_guid_mangled = onc_certificates->Clone();
     client_guid_mangled.GetList()[0].SetKey("GUID", base::Value("other-guid"));
 
-    OncParsedCertificates parsed_client_guid_mangled(client_guid_mangled);
+    OncParsedCertificates parsed_client_guid_mangled(
+        client_guid_mangled.GetList());
     EXPECT_FALSE(parsed_client_guid_mangled.has_error());
     EXPECT_EQ(authority_and_client_certs.server_or_authority_certificates(),
               parsed_client_guid_mangled.server_or_authority_certificates());
@@ -500,7 +510,8 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
     base::Value client_pkcs12_mangled = onc_certificates->Clone();
     client_pkcs12_mangled.GetList()[0].SetKey("PKCS12", base::Value("YQ=="));
 
-    OncParsedCertificates parsed_client_pkcs12_mangled(client_pkcs12_mangled);
+    OncParsedCertificates parsed_client_pkcs12_mangled(
+        client_pkcs12_mangled.GetList());
     EXPECT_FALSE(parsed_client_pkcs12_mangled.has_error());
     EXPECT_EQ(authority_and_client_certs.server_or_authority_certificates(),
               parsed_client_pkcs12_mangled.server_or_authority_certificates());

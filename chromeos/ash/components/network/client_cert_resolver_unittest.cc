@@ -87,7 +87,7 @@ OncParsedCertificatesForPkcs12File(
   onc_certificate.SetKey("GUID", base::Value(guid));
   onc_certificate.SetKey("Type", base::Value("Client"));
   onc_certificate.SetKey("PKCS12", base::Value(pkcs12_base64_encoded));
-  base::Value onc_certificates(base::Value::Type::LIST);
+  base::Value::List onc_certificates;
   onc_certificates.Append(std::move(onc_certificate));
   return std::make_unique<chromeos::onc::OncParsedCertificates>(
       onc_certificates);

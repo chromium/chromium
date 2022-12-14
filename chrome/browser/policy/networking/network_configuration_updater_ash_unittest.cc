@@ -278,7 +278,7 @@ void SelectSingleClientCertificateFromOnc(
   ASSERT_TRUE(certs->is_list());
   ASSERT_TRUE(certs->GetList().size() > client_certificate_index);
 
-  base::ListValue selected_certs;
+  base::Value::List selected_certs;
   selected_certs.Append(certs->GetList()[client_certificate_index].Clone());
 
   chromeos::onc::OncParsedCertificates parsed_selected_certs(selected_certs);
@@ -343,8 +343,8 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
         fake_toplevel_onc.FindKey(onc::toplevel_config::kCertificates);
     ASSERT_TRUE(certs->is_list());
 
-    fake_certificates_ =
-        std::make_unique<chromeos::onc::OncParsedCertificates>(*certs);
+    fake_certificates_ = std::make_unique<chromeos::onc::OncParsedCertificates>(
+        certs->GetList());
 
     certificate_importer_ = new FakeCertificateImporter;
     client_certificate_importer_owned_.reset(certificate_importer_);
