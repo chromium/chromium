@@ -130,7 +130,7 @@ found in the LICENSE file.
 
         <LinearLayout
             android:id="@+id/action_buttons"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:weightSum="2"
@@ -139,25 +139,26 @@ found in the LICENSE file.
             android:layout_marginHorizontal="24dp"
             android:visibility="invisible" >
 
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/settings_button"
+                android:focusable="true"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginEnd="@dimen/privacy_sandbox_consent_button_margin_between"
+                android:text="@string/privacy_sandbox_m1_notice_eea_settings_button"
+                style="@style/TextButton" />
 
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/ack_button"
                 android:focusable="true"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="0dp"
-                android:layout_marginBottom="@dimen/privacy_sandbox_notice_button_margin_between"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/privacy_sandbox_consent_button_margin_between"
                 android:text="@string/privacy_sandbox_m1_notice_eea_ack_button"
                 style="@style/FilledButton.Flat" />
-            <org.chromium.ui.widget.ButtonCompat
-                android:id="@+id/settings_button"
-                android:focusable="true"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:layout_height="0dp"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/privacy_sandbox_m1_notice_eea_settings_button"
-                style="@style/TextButton" />
 
         </LinearLayout>
     </org.chromium.components.browser_ui.widget.BoundedLinearLayout>
