@@ -69,15 +69,16 @@ void DownloadDangerPrompt::RecordDownloadWarningEvent(
   DownloadItemWarningData::WarningAction warning_action;
   switch (action) {
     case Action::ACCEPT:
-      warning_action = DownloadItemWarningData::PROCEED;
+      warning_action = DownloadItemWarningData::WarningAction::PROCEED;
       break;
     case Action::CANCEL:
-      warning_action = DownloadItemWarningData::CANCEL;
+      warning_action = DownloadItemWarningData::WarningAction::CANCEL;
       break;
     case Action::DISMISS:
-      warning_action = DownloadItemWarningData::CLOSE;
+      warning_action = DownloadItemWarningData::WarningAction::CLOSE;
       break;
   }
   DownloadItemWarningData::AddWarningActionEvent(
-      download, DownloadItemWarningData::DOWNLOAD_PROMPT, warning_action);
+      download, DownloadItemWarningData::WarningSurface::DOWNLOAD_PROMPT,
+      warning_action);
 }

@@ -24,8 +24,8 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   // go/chrome-download-warning-surfaces for details.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum WarningSurface {
-    // Applicable actions: DISCARD
+  enum class WarningSurface {
+    // Applicable actions: DISCARD, OPEN_SUBPAGE
     BUBBLE_MAINPAGE = 1,
     // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK
     BUBBLE_SUBPAGE = 2,
@@ -37,7 +37,9 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   };
 
   // Users action on the warning surface.
-  enum WarningAction {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class WarningAction {
     // The warning is shown. This is a special action that may not be triggered
     // by user. We will use this action as the anchor to track the latency of
     // other actions.
@@ -61,7 +63,8 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
     // to the bubble main page.
     BACK = 7,
     // The user has opened the subpage from the main page.
-    OPEN_SUBPAGE = 8
+    OPEN_SUBPAGE = 8,
+    kMaxValue = OPEN_SUBPAGE
   };
 
   struct WarningActionEvent {

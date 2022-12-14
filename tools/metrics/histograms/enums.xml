@@ -29430,6 +29430,18 @@ Called by update_document_policy_enum.py.-->
   <int value="9" label="WMV"/>
 </enum>
 
+<enum name="DownloadWarningAction">
+  <int value="0" label="SHOWN"/>
+  <int value="1" label="PROCEED"/>
+  <int value="2" label="DISCARD"/>
+  <int value="3" label="KEEP"/>
+  <int value="4" label="CLOSE"/>
+  <int value="5" label="CANCEL"/>
+  <int value="6" label="DISMISS"/>
+  <int value="7" label="BACK"/>
+  <int value="8" label="OPEN_SUBPAGE"/>
+</enum>
+
 <enum name="DownloadWarningSurface">
   <int value="1" label="BUBBLE_MAINPAGE"/>
   <int value="2" label="BUBBLE_SUBPAGE"/>

@@ -39,13 +39,14 @@ class DownloadItemWarningDataTest : public testing::Test {
     if (actual_event.surface != expected_surface) {
       success = false;
       ADD_FAILURE() << "Warning action event should have surface "
-                    << expected_surface << ", but found "
-                    << actual_event.surface;
+                    << static_cast<int>(expected_surface) << ", but found "
+                    << static_cast<int>(actual_event.surface);
     }
     if (actual_event.action != expected_action) {
       success = false;
       ADD_FAILURE() << "Warning action event should have action "
-                    << expected_action << ", but found " << actual_event.action;
+                    << static_cast<int>(expected_action) << ", but found "
+                    << static_cast<int>(actual_event.action);
     }
     if (actual_event.action_latency_msec != expected_latency) {
       success = false;

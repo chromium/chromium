@@ -99,7 +99,8 @@ void DownloadBubbleSecurityView::AddHeader() {
 void DownloadBubbleSecurityView::BackButtonPressed() {
   DownloadItemWarningData::AddWarningActionEvent(
       download_row_view_->model()->GetDownloadItem(),
-      DownloadItemWarningData::BUBBLE_SUBPAGE, DownloadItemWarningData::BACK);
+      DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE,
+      DownloadItemWarningData::WarningAction::BACK);
   navigation_handler_->OpenPrimaryDialog();
   base::UmaHistogramEnumeration(
       kSubpageActionHistogram, DownloadBubbleSubpageAction::kPressedBackButton);
@@ -114,7 +115,8 @@ void DownloadBubbleSecurityView::UpdateHeader() {
 void DownloadBubbleSecurityView::CloseBubble() {
   DownloadItemWarningData::AddWarningActionEvent(
       download_row_view_->model()->GetDownloadItem(),
-      DownloadItemWarningData::BUBBLE_SUBPAGE, DownloadItemWarningData::CLOSE);
+      DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE,
+      DownloadItemWarningData::WarningAction::CLOSE);
   // CloseDialog will delete the object. Do not access any members below.
   navigation_handler_->CloseDialog(
       views::Widget::ClosedReason::kCloseButtonClicked);

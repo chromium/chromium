@@ -1447,6 +1447,19 @@ chromium-metrics-reviews@google.com.
   <summary>Records events for local video thumbnail retrieval.</summary>
 </histogram>
 
+<histogram name="Download.WarningData.ActionAdded" enum="DownloadWarningAction"
+    expires_after="2023-06-07">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the warning action that is successfully added in warning action
+    event. Logged each time an action is taken on the download warning. For the
+    SHOWN action, only logged for the first time. Not logged if the action is
+    not added because the first warning is missing or the events have exceeded
+    the max length.
+  </summary>
+</histogram>
+
 <histogram name="Download.WarningData.AddWarningActionEventOutcome"
     enum="DownloadAddWarningActionEventOutcome" expires_after="2023-05-22">
   <owner>xinghuilu@chromium.org</owner>

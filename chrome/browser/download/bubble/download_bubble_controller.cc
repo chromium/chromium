@@ -391,10 +391,12 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
     case DownloadCommands::DISCARD:
       DownloadItemWarningData::AddWarningActionEvent(
           model->GetDownloadItem(),
-          is_main_view ? DownloadItemWarningData::BUBBLE_MAINPAGE
-                       : DownloadItemWarningData::BUBBLE_SUBPAGE,
-          command == DownloadCommands::KEEP ? DownloadItemWarningData::PROCEED
-                                            : DownloadItemWarningData::DISCARD);
+          is_main_view
+              ? DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE
+              : DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE,
+          command == DownloadCommands::KEEP
+              ? DownloadItemWarningData::WarningAction::PROCEED
+              : DownloadItemWarningData::WarningAction::DISCARD);
       commands.ExecuteCommand(command);
       break;
     case DownloadCommands::REVIEW:

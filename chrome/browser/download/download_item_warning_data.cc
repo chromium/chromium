@@ -46,6 +46,10 @@ void RecordSurfaceWithoutWarningShown(WarningSurface surface) {
   base::UmaHistogramEnumeration(
       "Download.WarningData.SurfaceWithoutWarningShown", surface);
 }
+
+void RecordWarningActionAdded(WarningAction action) {
+  base::UmaHistogramEnumeration("Download.WarningData.ActionAdded", action);
+}
 }  // namespace
 
 // static
@@ -81,6 +85,7 @@ void DownloadItemWarningData::AddWarningActionEvent(DownloadItem* download,
     if (data->warning_first_shown_time_.is_null()) {
       RecordAddWarningActionEventOutcome(
           AddWarningActionEventOutcome::ADDED_WARNING_FIRST_SHOWN);
+      RecordWarningActionAdded(action);
       data->warning_first_shown_time_ = base::Time::Now();
     } else {
       RecordAddWarningActionEventOutcome(
@@ -102,12 +107,15 @@ void DownloadItemWarningData::AddWarningActionEvent(DownloadItem* download,
   int64_t action_latency =
       (base::Time::Now() - data->warning_first_shown_time_).InMilliseconds();
   bool is_terminal_action =
-      (action == PROCEED || action == DISCARD) ? true : false;
+      (action == WarningAction::PROCEED || action == WarningAction::DISCARD)
+          ? true
+          : false;
   DCHECK_NE(WarningAction::SHOWN, action);
   data->action_events_.emplace_back(surface, action, action_latency,
                                     is_terminal_action);
   RecordAddWarningActionEventOutcome(
       AddWarningActionEventOutcome::ADDED_WARNING_ACTION);
+  RecordWarningActionAdded(action);
 }
 
 // static
@@ -116,57 +124,57 @@ DownloadItemWarningData::ConstructCsbrrDownloadWarningAction(
     const WarningActionEvent& event) {
   ClientSafeBrowsingReportRequest::DownloadWarningAction action;
   switch (event.surface) {
-    case DownloadItemWarningData::BUBBLE_MAINPAGE:
+    case DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE:
       action.set_surface(ClientSafeBrowsingReportRequest::
                              DownloadWarningAction::BUBBLE_MAINPAGE);
       break;
-    case DownloadItemWarningData::BUBBLE_SUBPAGE:
+    case DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE:
       action.set_surface(ClientSafeBrowsingReportRequest::
                              DownloadWarningAction::BUBBLE_SUBPAGE);
       break;
-    case DownloadItemWarningData::DOWNLOADS_PAGE:
+    case DownloadItemWarningData::WarningSurface::DOWNLOADS_PAGE:
       action.set_surface(ClientSafeBrowsingReportRequest::
                              DownloadWarningAction::DOWNLOADS_PAGE);
       break;
-    case DownloadItemWarningData::DOWNLOAD_PROMPT:
+    case DownloadItemWarningData::WarningSurface::DOWNLOAD_PROMPT:
       action.set_surface(ClientSafeBrowsingReportRequest::
                              DownloadWarningAction::DOWNLOAD_PROMPT);
       break;
   }
   switch (event.action) {
-    case DownloadItemWarningData::PROCEED:
+    case DownloadItemWarningData::WarningAction::PROCEED:
       action.set_action(
           ClientSafeBrowsingReportRequest::DownloadWarningAction::PROCEED);
       break;
-    case DownloadItemWarningData::DISCARD:
+    case DownloadItemWarningData::WarningAction::DISCARD:
       action.set_action(
           ClientSafeBrowsingReportRequest::DownloadWarningAction::DISCARD);
       break;
-    case DownloadItemWarningData::KEEP:
+    case DownloadItemWarningData::WarningAction::KEEP:
       action.set_action(
           ClientSafeBrowsingReportRequest::DownloadWarningAction::KEEP);
       break;
-    case DownloadItemWarningData::CLOSE:
+    case DownloadItemWarningData::WarningAction::CLOSE:
       action.set_action(
           ClientSafeBrowsingReportRequest::DownloadWarningAction::CLOSE);
       break;
-    case DownloadItemWarningData::CANCEL:
+    case DownloadItemWarningData::WarningAction::CANCEL:
       action.set_action(
           ClientSafeBrowsingReportRequest::DownloadWarningAction::CANCEL);
       break;
-    case DownloadItemWarningData::DISMISS:
+    case DownloadItemWarningData::WarningAction::DISMISS:
       action.set_action(
           ClientSafeBrowsingReportRequest::DownloadWarningAction::DISMISS);
       break;
-    case DownloadItemWarningData::BACK:
+    case DownloadItemWarningData::WarningAction::BACK:
       action.set_action(
           ClientSafeBrowsingReportRequest::DownloadWarningAction::BACK);
       break;
-    case DownloadItemWarningData::OPEN_SUBPAGE:
+    case DownloadItemWarningData::WarningAction::OPEN_SUBPAGE:
       action.set_action(
           ClientSafeBrowsingReportRequest::DownloadWarningAction::OPEN_SUBPAGE);
       break;
-    case DownloadItemWarningData::SHOWN:
+    case DownloadItemWarningData::WarningAction::SHOWN:
       NOTREACHED();
       break;
   }

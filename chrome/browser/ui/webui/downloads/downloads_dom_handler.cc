@@ -179,8 +179,8 @@ void DownloadsDOMHandler::SaveDangerousRequiringGesture(const std::string& id) {
   download::DownloadItem* file = GetDownloadByStringId(id);
   if (file) {
     DownloadItemWarningData::AddWarningActionEvent(
-        file, DownloadItemWarningData::DOWNLOADS_PAGE,
-        DownloadItemWarningData::KEEP);
+        file, DownloadItemWarningData::WarningSurface::DOWNLOADS_PAGE,
+        DownloadItemWarningData::WarningAction::KEEP);
     ShowDangerPrompt(file);
   }
 }
@@ -192,8 +192,8 @@ void DownloadsDOMHandler::DiscardDangerous(const std::string& id) {
     // The warning action event needs to be added before Safe Browsing report is
     // sent, because this event should be included in the report.
     DownloadItemWarningData::AddWarningActionEvent(
-        download, DownloadItemWarningData::DOWNLOADS_PAGE,
-        DownloadItemWarningData::DISCARD);
+        download, DownloadItemWarningData::WarningSurface::DOWNLOADS_PAGE,
+        DownloadItemWarningData::WarningAction::DISCARD);
     // If this download is no longer dangerous, is already canceled or
     // completed, don't send any report.
     // Only sends dangerous download discard report if :
