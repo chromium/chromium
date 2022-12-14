@@ -22,13 +22,14 @@ class PaymentHandlerEnableDelegationsTest
 
   void SetUpOnMainThread() override {
     PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
-    NavigateTo("/payment_handler.html");
+    NavigateTo("a.com", "/payment_handler.html");
   }
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerEnableDelegationsTest, EnableDelegations) {
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
   std::string expected = "success";
-  EXPECT_EQ(expected, content::EvalJs(GetActiveWebContents(), "install()"));
   EXPECT_EQ(
       expected,
       content::EvalJs(
@@ -39,10 +40,10 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerEnableDelegationsTest, EnableDelegations) {
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerEnableDelegationsTest,
                        InvalidDelegations) {
-  std::string expected = "success";
-  EXPECT_EQ(expected, content::EvalJs(GetActiveWebContents(), "install()"));
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
 
-  expected =
+  std::string expected =
       "TypeError: Failed to execute 'enableDelegations' on 'PaymentManager': "
       "The provided value 'invalid_delegation' is not a valid enum value of "
       "type PaymentDelegation.";

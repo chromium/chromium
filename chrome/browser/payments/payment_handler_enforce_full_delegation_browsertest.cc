@@ -42,21 +42,17 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerEnforceFullDelegationTest,
                        ShowPaymentSheetWhenOnlySomeAppsAreSkipped) {
   std::string expected = "success";
 
-  std::string method_name1 =
-      https_server()->GetURL("a.com", "/method_manifest.json").spec();
+  std::string method_name1;
   NavigateTo("a.com", "/enforce_full_delegation.test/index.html");
-  EXPECT_EQ(expected,
-            content::EvalJs(GetActiveWebContents(),
-                            content::JsReplace("install($1)", method_name1)));
+  InstallPaymentApp("a.com", "/enforce_full_delegation.test/app.js",
+                    &method_name1);
   EXPECT_EQ(expected, content::EvalJs(GetActiveWebContents(),
                                       "enableDelegations(['payerName'])"));
 
-  std::string method_name2 =
-      https_server()->GetURL("b.com", "/method_manifest.json").spec();
+  std::string method_name2;
   NavigateTo("b.com", "/enforce_full_delegation.test/index.html");
-  EXPECT_EQ(expected,
-            content::EvalJs(GetActiveWebContents(),
-                            content::JsReplace("install($1)", method_name2)));
+  InstallPaymentApp("b.com", "/enforce_full_delegation.test/app.js",
+                    &method_name2);
   EXPECT_EQ(expected,
             content::EvalJs(GetActiveWebContents(), "enableDelegations([])"));
 
@@ -87,12 +83,17 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerEnforceFullDelegationTest,
 
 IN_PROC_BROWSER_TEST_P(PaymentHandlerEnforceFullDelegationTest,
                        WhenEnabled_ShowPaymentSheet_WhenDisabled_Reject) {
-  NavigateTo("/enforce_full_delegation.test/index.html");
+  NavigateTo("a.com", "/enforce_full_delegation.test/index.html");
+
+  std::string method_name;
+  InstallPaymentApp("a.com", "/enforce_full_delegation.test/app.js",
+                    &method_name);
 
   std::string expected = "success";
-  EXPECT_EQ(expected, content::EvalJs(GetActiveWebContents(), "install()"));
-  EXPECT_EQ(expected, content::EvalJs(GetActiveWebContents(),
-                                      "addDefaultSupportedMethod()"));
+  EXPECT_EQ(expected,
+            content::EvalJs(
+                GetActiveWebContents(),
+                content::JsReplace("addSupportedMethods([$1])", method_name)));
   EXPECT_EQ(expected,
             content::EvalJs(GetActiveWebContents(), "enableDelegations([])"));
   EXPECT_EQ(expected,
@@ -112,7 +113,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerEnforceFullDelegationTest,
   if (GetParam() == ENABLED) {
     EXPECT_EQ(0u, test_controller()->app_descriptions().size());
     ExpectBodyContains(
-        "Skipping \"MaxPay\" for not providing all of the requested "
+        "Skipping \"Test App Name\" for not providing all of the requested "
         "PaymentOptions.");
   } else {
     EXPECT_EQ(1u, test_controller()->app_descriptions().size());
