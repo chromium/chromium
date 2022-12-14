@@ -61,6 +61,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                                  SettingsControllerProtocol> {
   std::unique_ptr<SyncObserverBridge> _syncObserver;
   BOOL _isUsingExplicitPassphrase;
+
+  // Whether Settings have been dismissed.
+  BOOL _settingsAreDismissed;
 }
 
 @property(nonatomic, assign, readonly) Browser* browser;
@@ -167,8 +170,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  DCHECK(self.browser) << "tableView:didSelectRowAtIndexPath called after "
-                          "-settingsWillBeDismissed";
+  DCHECK(!_settingsAreDismissed) << "tableView:didSelectRowAtIndexPath called "
+                                    "after -settingsWillBeDismissed";
   DCHECK_EQ(indexPath.section,
             [self.tableViewModel
                 sectionForSectionIdentifier:SectionIdentifierEncryption]);
@@ -214,14 +217,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)settingsWillBeDismissed {
+  DCHECK(!_settingsAreDismissed);
+
+  // Remove observer bridges.
   _syncObserver.reset();
+
+  // Clear C++ ivars.
   _browser = nil;
+
+  _settingsAreDismissed = YES;
 }
 
 #pragma mark SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  DCHECK(self.browser)
+  DCHECK(!_settingsAreDismissed)
       << "onSyncStateChanged called after -settingsWillBeDismissed";
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   syncer::SyncService* service =
