@@ -446,4 +446,13 @@ public class PrivacyGuideMetricsDelegateTest {
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickHistorySync"));
     }
+
+    @Test
+    @SmallTest
+    public void testSafeBrowsing_backClickUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
+                PrivacyGuideFragment.FragmentType.SAFE_BROWSING);
+        assertTrue(
+                mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickSafeBrowsing"));
+    }
 }

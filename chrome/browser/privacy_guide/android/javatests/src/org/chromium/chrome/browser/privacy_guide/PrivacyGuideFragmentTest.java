@@ -895,4 +895,22 @@ public class PrivacyGuideFragmentTest {
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickHistorySync"));
     }
+
+    @Test
+    @SmallTest
+    @Feature({"PrivacyGuide"})
+    public void testSafeBrowsingCard_backClickSafeBrowsingUserAction() {
+        launchPrivacyGuide();
+        mActionTester = new UserActionTester();
+        navigateToSafeBrowsingCard();
+
+        // Sync page <- SB page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_safe_browsing_intro));
+        onView(withText(R.string.back)).perform(click());
+
+        // Verify that the user action is emitted when the back button is clicked on the safe
+        // browsing card
+        assertTrue(
+                mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickSafeBrowsing"));
+    }
 }
