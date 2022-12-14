@@ -203,8 +203,8 @@ bool QuirksManager::QuirksEnabled() {
 void QuirksManager::SetLastServerCheck(int64_t product_id,
                                        const base::Time& last_check) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DictionaryPrefUpdate dict(local_state_, prefs::kQuirksClientLastServerCheck);
-  dict->SetDoubleKey(IdToHexString(product_id), last_check.ToDoubleT());
+  ScopedDictPrefUpdate dict(local_state_, prefs::kQuirksClientLastServerCheck);
+  dict->Set(IdToHexString(product_id), last_check.ToDoubleT());
 }
 
 }  // namespace quirks
