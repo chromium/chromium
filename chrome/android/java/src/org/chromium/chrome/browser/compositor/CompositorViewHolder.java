@@ -1587,6 +1587,7 @@ public class CompositorViewHolder extends FrameLayout
     private void updateViewStateListener(ContentView newContentView) {
         if (mContentView != null) {
             mContentView.removeOnHierarchyChangeListener(this);
+            mContentView.setDeferKeepScreenOnChanges(false);
         }
         if (newContentView != null) {
             newContentView.addOnHierarchyChangeListener(this);
