@@ -1,0 +1,23 @@
+ Button
+
+Hello
+World
+
+Touch Adjustment : Stylus writable - bug 1398127
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+test text-area
+PASS adjusted node was CANVAS#canvas1.
+PASS adjusted node was TEXTAREA#text-area.
+PASS adjusted node was BUTTON#button1.
+PASS adjusted node was TEXTAREA#text-area.
+test rich-text
+PASS adjusted node was DIV#rich-text.
+PASS adjusted node was DIV#rich-text.
+PASS adjusted node was DIV#rich-text.
+PASS adjusted node was DIV#rich-text.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

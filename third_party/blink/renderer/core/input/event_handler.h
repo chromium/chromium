@@ -207,6 +207,10 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
                                            const HitTestResult&,
                                            gfx::Point& target_point,
                                            Node*& target_node);
+  bool BestStylusWritableNodeForHitTestResult(const HitTestLocation& location,
+                                              const HitTestResult&,
+                                              gfx::Point& target_point,
+                                              Node*& target_node);
   void CacheTouchAdjustmentResult(uint32_t, gfx::PointF);
 
   // Dispatch a context menu event. If |override_target_element| is provided,

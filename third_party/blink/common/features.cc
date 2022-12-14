@@ -1469,6 +1469,10 @@ BASE_FEATURE(kStylusWritingToInput,
              "StylusWritingToInput",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kStylusPointerAdjustment,
+             "StylusPointerAdjustment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDisableArrayBufferSizeLimitsForTesting,
              "DisableArrayBufferSizeLimitsForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);

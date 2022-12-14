@@ -92,6 +92,18 @@ function testTouchPointContextMenu(touchpoint, targetNode, allowTextNodes)
     shouldBeNode(adjustedNode, targetNode);
 }
 
+function testTouchPointElementForStylusWritable(touchpoint, targetNode, allowTextNodes, disallowShadowDOM)
+{
+    var adjustedNode = internals.touchNodeAdjustedToBestStylusWritableNode(touchpoint.left, touchpoint.top, touchpoint.width, touchpoint.height, document);
+    if (!allowTextNodes && adjustedNode && adjustedNode.nodeType == 3)
+        adjustedNode = adjustedNode.parentNode;
+    if (disallowShadowDOM && adjustedNode && adjustedNode.nodeType == 1) {
+        while (shadowHost(adjustedNode))
+            adjustedNode = shadowHost(adjustedNode);
+    }
+    shouldBeNode(adjustedNode, targetNode);
+}
+
 function adjustTouchPoint(touchpoint)
 {
     var adjustedPoint = internals.touchPositionAdjustedToBestClickableNode(touchpoint.left, touchpoint.top, touchpoint.width, touchpoint.height, document);

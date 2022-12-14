@@ -1751,6 +1751,35 @@ bool EventHandler::BestContextMenuNodeForHitTestResult(
                                       HeapVector<Member<Node>>(nodes));
 }
 
+bool EventHandler::BestStylusWritableNodeForHitTestResult(
+    const HitTestLocation& location,
+    const HitTestResult& result,
+    gfx::Point& target_point,
+    Node*& target_node) {
+  DCHECK(location.IsRectBasedTest());
+
+  // If the touch is over a scrollbar, don't adjust the touch point since touch
+  // adjustment only takes into account DOM nodes so a touch over a scrollbar
+  // will be adjusted towards nearby nodes. This leads to things like textarea
+  // scrollbars being untouchable.
+  if (result.GetScrollbar() || result.IsOverResizer()) {
+    target_node = nullptr;
+    return false;
+  }
+
+  gfx::Point touch_center =
+      frame_->View()->ConvertToRootFrame(ToRoundedPoint(location.Point()));
+  gfx::Rect touch_rect =
+      frame_->View()->ConvertToRootFrame(location.ToEnclosingRect());
+  HeapVector<Member<Node>, 11> nodes(result.ListBasedTestResult());
+
+  // FIXME: the explicit Vector conversion copies into a temporary and is
+  // wasteful.
+  return FindBestStylusWritableCandidate(target_node, target_point,
+                                         touch_center, touch_rect,
+                                         HeapVector<Member<Node>>(nodes));
+}
+
 // Update the hover and active state across all frames.  This logic is
 // different than the mouse case because mice send MouseLeave events to frames
 // as they're exited.  With gestures or manual applications, a single event

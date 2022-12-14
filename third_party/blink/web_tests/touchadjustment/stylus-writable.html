@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Touch Adjustment : Stylus writable - bug 1398127</title>
+    <script src="../resources/js-test.js"></script>
+    <script src="resources/touchadjustment.js"></script>
+    <style>
+        body {
+            margin: 0;
+            line-height: 15px;
+        }
+
+        #text-area,
+        #button1,
+        #rich-text {
+            background: #eee;
+            margin: 0;
+            padding: 0;
+        }
+
+        #rich-text {
+            margin-top: 50px;
+            width: 300px;
+        }
+
+        #canvas1 {
+            touch-action: none;
+            border: 1px solid green;
+        }
+    </style>
+</head>
+
+<body>
+<div id=sandbox>
+    <textarea id="text-area" rows="1" cols="40">A lengthy line of text.</textarea>
+    <button id='button1'>Button</button>
+    <br>
+    <canvas id="canvas1"></canvas>
+    <div id="rich-text" contentEditable>
+        <b>Hello</b><br><i>World</i>
+    </div>
+</div>
+
+<p id='description'></p>
+<div id='console'></div>
+
+<script>
+    var element;
+    var touchOffset = 10;
+    var touchRadius = 20;
+
+    function testTouchOnBoundary(position, expectedElement) {
+        var touchpoint = offsetTouchPoint(findAbsoluteBounds(element), position, touchOffset, touchRadius, touchRadius);
+        testTouchPointElementForStylusWritable(touchpoint, expectedElement, /* allowTextNodes */ false, /* disallowShadowDOM */ true);
+    }
+
+    function testIndirectTouchesForTextArea() {
+        // Touch on canvas with touch-action:none should not be adjusted to writable text-area.
+        testTouchOnBoundary('bottom', document.getElementById('canvas1'));
+        testTouchOnBoundary('left', element);
+        // Touch on tappable button should not be adjusted to writable text-area.
+        testTouchOnBoundary('right', document.getElementById('button1'));
+        testTouchOnBoundary('top', element);
+    }
+
+    function testIndirectTouchesForRichText() {
+        // Test that touch around writable element without any nearby elements is adjusted to writable element.
+        testTouchOnBoundary('bottom', element);
+        testTouchOnBoundary('left', element);
+        testTouchOnBoundary('right', element);
+        testTouchOnBoundary('top', element);
+    }
+
+    function runTests()
+    {
+        if (window.testRunner && window.internals && internals.touchNodeAdjustedToBestStylusWritableNode) {
+            description(document.title);
+            debug('test text-area');
+            element = document.getElementById('text-area');
+            testIndirectTouchesForTextArea();
+            debug('test rich-text');
+            element = document.getElementById('rich-text');
+            testIndirectTouchesForRichText();
+        }
+    }
+    runTests();
+</script>
+</body>
+</html>

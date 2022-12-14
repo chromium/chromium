@@ -2018,6 +2018,32 @@ Node* Internals::touchNodeAdjustedToBestContextMenuNode(
   return target_node;
 }
 
+Node* Internals::touchNodeAdjustedToBestStylusWritableNode(
+    int x,
+    int y,
+    int width,
+    int height,
+    Document* document,
+    ExceptionState& exception_state) {
+  DCHECK(document);
+  if (!document->GetFrame()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The document provided is invalid.");
+    return nullptr;
+  }
+
+  HitTestLocation location;
+  HitTestResult result;
+  HitTestRect(location, result, x, y, width, height, document);
+  Node* target_node = nullptr;
+  gfx::Point adjusted_point;
+  document->GetFrame()
+      ->GetEventHandler()
+      .BestStylusWritableNodeForHitTestResult(location, result, adjusted_point,
+                                              target_node);
+  return target_node;
+}
+
 int Internals::lastSpellCheckRequestSequence(Document* document,
                                              ExceptionState& exception_state) {
   SpellCheckRequester* requester = GetSpellCheckRequester(document);

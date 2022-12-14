@@ -279,6 +279,12 @@ class Internals final : public ScriptWrappable {
                                                int height,
                                                Document*,
                                                ExceptionState&);
+  Node* touchNodeAdjustedToBestStylusWritableNode(int x,
+                                                  int y,
+                                                  int width,
+                                                  int height,
+                                                  Document*,
+                                                  ExceptionState&);
 
   int lastSpellCheckRequestSequence(Document*, ExceptionState&);
   int lastSpellCheckProcessedSequence(Document*, ExceptionState&);

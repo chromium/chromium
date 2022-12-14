@@ -43,6 +43,11 @@ bool FindBestContextMenuCandidate(Node*& target_node,
                                   const gfx::Point& touch_hotspot,
                                   const gfx::Rect& touch_area,
                                   const HeapVector<Member<Node>>&);
+bool FindBestStylusWritableCandidate(Node*& target_node,
+                                     gfx::Point& target_point,
+                                     const gfx::Point& touch_hotspot,
+                                     const gfx::Rect& touch_area,
+                                     const HeapVector<Member<Node>>&);
 
 // Applies an upper bound to the touch area as the adjustment rect. The
 // touch_area is in root frame coordinates, which is in physical pixel when

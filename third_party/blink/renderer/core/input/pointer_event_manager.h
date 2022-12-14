@@ -240,10 +240,15 @@ class CORE_EXPORT PointerEventManager final
                               Element** pointer_capture_target,
                               Element** pending_pointer_capture_target);
 
-  // Only adjust touch type primary pointer down.
+  // Only adjust primary pointer down.
   bool ShouldAdjustPointerEvent(const WebPointerEvent&) const;
-  // Adjust coordinates so it can be used to find the best clickable target.
-  void AdjustTouchPointerEvent(WebPointerEvent&);
+
+  // Whether touch adjustment is to be applied for stylus pointer events.
+  bool ShouldAdjustStylusPointerEvent(const WebPointerEvent&) const;
+
+  // Touch agnostic method to adjust coordinates so that it can be used to find
+  // best touch clickable target or best stylus writable target.
+  void AdjustPointerEvent(WebPointerEvent&);
 
   // Check if the SkipTouchEventFilter experiment is configured to skip
   // filtering on the given event.

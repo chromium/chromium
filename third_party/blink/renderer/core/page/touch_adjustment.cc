@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/input/touch_action_util.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
@@ -154,6 +155,29 @@ bool ProvidesContextMenuItems(Node* node) {
     // will be corrected in appendContextSubtargetsForNode.
     if (node->GetLayoutObject()->IsSelected())
       return true;
+  }
+  return false;
+}
+
+bool NodeRespondsToTapOrMove(Node* node) {
+  // This method considers nodes from NodeRespondsToTapGesture, those where pan
+  // touch action is disabled, and ones that are stylus writable. We do this to
+  // avoid adjusting the pointer position on drawable area or slidable control
+  // to the nearby writable input node.
+  node->GetDocument().UpdateStyleAndLayoutTree();
+
+  if (NodeRespondsToTapGesture(node))
+    return true;
+
+  TouchAction effective_touch_action =
+      touch_action_util::ComputeEffectiveTouchAction(*node);
+
+  if ((effective_touch_action & TouchAction::kPan) != TouchAction::kPan)
+    return true;
+
+  if ((effective_touch_action & TouchAction::kInternalNotWritable) !=
+      TouchAction::kInternalNotWritable) {
+    return true;
   }
   return false;
 }
@@ -506,6 +530,22 @@ bool FindNodeWithLowestDistanceMetric(Node*& target_node,
   return (target_node);
 }
 
+bool FindBestCandidate(Node*& target_node,
+                       gfx::Point& target_point,
+                       const gfx::Point& touch_hotspot,
+                       const gfx::Rect& touch_area,
+                       const HeapVector<Member<Node>>& nodes,
+                       NodeFilter node_filter,
+                       AppendSubtargetsForNode append_subtargets_for_node) {
+  gfx::Rect target_area;
+  touch_adjustment::SubtargetGeometryList subtargets;
+  touch_adjustment::CompileSubtargetList(nodes, subtargets, node_filter,
+                                         append_subtargets_for_node);
+  return touch_adjustment::FindNodeWithLowestDistanceMetric(
+      target_node, target_point, target_area, touch_hotspot, touch_area,
+      subtargets, touch_adjustment::HybridDistanceFunction);
+}
+
 }  // namespace touch_adjustment
 
 bool FindBestClickableCandidate(Node*& target_node,
@@ -513,14 +553,9 @@ bool FindBestClickableCandidate(Node*& target_node,
                                 const gfx::Point& touch_hotspot,
                                 const gfx::Rect& touch_area,
                                 const HeapVector<Member<Node>>& nodes) {
-  gfx::Rect target_area;
-  touch_adjustment::SubtargetGeometryList subtargets;
-  touch_adjustment::CompileSubtargetList(
-      nodes, subtargets, touch_adjustment::NodeRespondsToTapGesture,
-      touch_adjustment::AppendBasicSubtargetsForNode);
-  return touch_adjustment::FindNodeWithLowestDistanceMetric(
-      target_node, target_point, target_area, touch_hotspot, touch_area,
-      subtargets, touch_adjustment::HybridDistanceFunction);
+  return FindBestCandidate(target_node, target_point, touch_hotspot, touch_area,
+                           nodes, touch_adjustment::NodeRespondsToTapGesture,
+                           touch_adjustment::AppendBasicSubtargetsForNode);
 }
 
 bool FindBestContextMenuCandidate(Node*& target_node,
@@ -528,14 +563,19 @@ bool FindBestContextMenuCandidate(Node*& target_node,
                                   const gfx::Point& touch_hotspot,
                                   const gfx::Rect& touch_area,
                                   const HeapVector<Member<Node>>& nodes) {
-  gfx::Rect target_area;
-  touch_adjustment::SubtargetGeometryList subtargets;
-  touch_adjustment::CompileSubtargetList(
-      nodes, subtargets, touch_adjustment::ProvidesContextMenuItems,
-      touch_adjustment::AppendContextSubtargetsForNode);
-  return touch_adjustment::FindNodeWithLowestDistanceMetric(
-      target_node, target_point, target_area, touch_hotspot, touch_area,
-      subtargets, touch_adjustment::HybridDistanceFunction);
+  return FindBestCandidate(target_node, target_point, touch_hotspot, touch_area,
+                           nodes, touch_adjustment::ProvidesContextMenuItems,
+                           touch_adjustment::AppendContextSubtargetsForNode);
+}
+
+bool FindBestStylusWritableCandidate(Node*& target_node,
+                                     gfx::Point& target_point,
+                                     const gfx::Point& touch_hotspot,
+                                     const gfx::Rect& touch_area,
+                                     const HeapVector<Member<Node>>& nodes) {
+  return FindBestCandidate(target_node, target_point, touch_hotspot, touch_area,
+                           nodes, touch_adjustment::NodeRespondsToTapOrMove,
+                           touch_adjustment::AppendBasicSubtargetsForNode);
 }
 
 LayoutSize GetHitTestRectForAdjustment(LocalFrame& frame,

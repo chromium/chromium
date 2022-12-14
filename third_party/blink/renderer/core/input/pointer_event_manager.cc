@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/metrics/field_trial_params.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "ui/display/screen_info.h"
 
 namespace blink {
 
@@ -48,6 +50,11 @@ const char kSkipTouchEventFilterTrial[] = "SkipTouchEventFilter";
 const char kSkipTouchEventFilterTrialProcessParamName[] =
     "skip_filtering_process";
 const char kSkipTouchEventFilterTrialTypeParamName[] = "type";
+
+// Width and height of area of rectangle to hit test for potentially important
+// input fields to write into. This improves the chances of writing into the
+// intended input if the user starts writing close to it.
+const size_t kStylusWritableAdjustmentSizeDip = 30;
 
 size_t ToPointerTypeIndex(WebPointerProperties::PointerType t) {
   return static_cast<size_t>(t);
@@ -371,20 +378,49 @@ void PointerEventManager::HandlePointerInterruption(
 
 bool PointerEventManager::ShouldAdjustPointerEvent(
     const WebPointerEvent& pointer_event) const {
-  return pointer_event.pointer_type ==
-             WebPointerProperties::PointerType::kTouch &&
+  return (pointer_event.pointer_type ==
+              WebPointerProperties::PointerType::kTouch ||
+          ShouldAdjustStylusPointerEvent(pointer_event)) &&
          pointer_event.GetType() == WebInputEvent::Type::kPointerDown &&
          pointer_event_factory_.IsPrimary(pointer_event);
 }
 
-void PointerEventManager::AdjustTouchPointerEvent(
-    WebPointerEvent& pointer_event) {
-  DCHECK(pointer_event.pointer_type ==
-         WebPointerProperties::PointerType::kTouch);
+bool PointerEventManager::ShouldAdjustStylusPointerEvent(
+    const WebPointerEvent& pointer_event) const {
+  return base::FeatureList::IsEnabled(
+             blink::features::kStylusPointerAdjustment) &&
+         (pointer_event.pointer_type ==
+              WebPointerProperties::PointerType::kPen ||
+          pointer_event.pointer_type ==
+              WebPointerProperties::PointerType::kEraser);
+}
+
+void PointerEventManager::AdjustPointerEvent(WebPointerEvent& pointer_event) {
+  DCHECK(
+      pointer_event.pointer_type == WebPointerProperties::PointerType::kTouch ||
+      pointer_event.pointer_type == WebPointerProperties::PointerType::kPen ||
+      pointer_event.pointer_type == WebPointerProperties::PointerType::kEraser);
+
+  float adjustment_width = 0.0f;
+  float adjustment_height = 0.0f;
+  if (pointer_event.pointer_type == WebPointerProperties::PointerType::kTouch) {
+    adjustment_width = pointer_event.width;
+    adjustment_height = pointer_event.height;
+  } else {
+    // Calculate adjustment size for stylus tool types.
+    ChromeClient& chrome_client = frame_->GetChromeClient();
+    float device_scale_factor =
+        chrome_client.GetScreenInfo(*frame_).device_scale_factor;
+
+    float page_scale_factor = frame_->GetPage()->PageScaleFactor();
+    adjustment_width = adjustment_height =
+        kStylusWritableAdjustmentSizeDip *
+        (device_scale_factor / page_scale_factor);
+  }
 
   LayoutSize hit_rect_size = GetHitTestRectForAdjustment(
-      *frame_, LayoutSize(LayoutUnit(pointer_event.width),
-                          LayoutUnit(pointer_event.height)));
+      *frame_,
+      LayoutSize(LayoutUnit(adjustment_width), LayoutUnit(adjustment_height)));
 
   if (hit_rect_size.IsEmpty())
     return;
@@ -402,14 +438,31 @@ void PointerEventManager::AdjustTouchPointerEvent(
       root_frame.GetEventHandler().HitTestResultAtLocation(location, hit_type);
   Node* adjusted_node = nullptr;
   gfx::Point adjusted_point;
-  bool adjusted = frame_->GetEventHandler().BestClickableNodeForHitTestResult(
-      location, hit_test_result, adjusted_point, adjusted_node);
 
-  if (adjusted)
-    pointer_event.SetPositionInWidget(adjusted_point.x(), adjusted_point.y());
+  if (pointer_event.pointer_type == WebPointerProperties::PointerType::kTouch) {
+    bool adjusted = frame_->GetEventHandler().BestClickableNodeForHitTestResult(
+        location, hit_test_result, adjusted_point, adjusted_node);
 
-  frame_->GetEventHandler().CacheTouchAdjustmentResult(
-      pointer_event.unique_touch_event_id, pointer_event.PositionInWidget());
+    if (adjusted)
+      pointer_event.SetPositionInWidget(adjusted_point.x(), adjusted_point.y());
+
+    frame_->GetEventHandler().CacheTouchAdjustmentResult(
+        pointer_event.unique_touch_event_id, pointer_event.PositionInWidget());
+  } else if (pointer_event.pointer_type ==
+                 WebPointerProperties::PointerType::kPen ||
+             pointer_event.pointer_type ==
+                 WebPointerProperties::PointerType::kEraser) {
+    // We don't cache the adjusted point for Stylus in EventHandler to avoid
+    // taps being adjusted; this is intended only for stylus handwriting.
+    bool adjusted =
+        frame_->GetEventHandler().BestStylusWritableNodeForHitTestResult(
+            location, hit_test_result, adjusted_point, adjusted_node);
+
+    // TODO(crbug.com/1399797): Update Stylus pointer icon to indicate writing
+    // can be started when adjustment is about to be done.
+    if (adjusted)
+      pointer_event.SetPositionInWidget(adjusted_point.x(), adjusted_point.y());
+  }
 }
 
 bool PointerEventManager::ShouldFilterEvent(PointerEvent* pointer_event) {
@@ -632,7 +685,7 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
 
   WebPointerEvent pointer_event = event.WebPointerEventInRootFrame();
   if (ShouldAdjustPointerEvent(event))
-    AdjustTouchPointerEvent(pointer_event);
+    AdjustPointerEvent(pointer_event);
   event_handling_util::PointerEventTarget pointer_event_target =
       ComputePointerEventTarget(pointer_event);
 
