@@ -149,3 +149,38 @@ export async function testSplitterMove() {
   assertEquals(beforeWidth + 13, before.getBoundingClientRect().width);
   assertEquals(afterWidth - 13, after.getBoundingClientRect().width);
 }
+
+/**
+ * Tests that RTL layout changes the child sizes correctly.
+ */
+export async function testSplitterRTLMove() {
+  const splitter = getSplitterElement();
+  splitter.setAttribute('dir', 'rtl');
+  await waitForElementUpdate(splitter);
+  const before = document.querySelector('[slot=splitter-before]')!;
+  const beforeWidth = before.getBoundingClientRect().width;
+  const after = document.querySelector('[slot=splitter-after]')!;
+  const afterWidth = after.getBoundingClientRect().width;
+  // Move the splitter 10px to the right with mouse events.
+  const splitterDiv = getSplitterDivElement();
+  simulateMouseDown(splitterDiv, 0);
+  simulateMouseMove(splitter, 10);
+  simulateMouseUp(splitter);
+  // Check: 'before' section has shrunk and 'after' section has grown.
+  assertEquals(beforeWidth - 10, before.getBoundingClientRect().width);
+  assertEquals(afterWidth + 10, after.getBoundingClientRect().width);
+  // Move the splitter 15px to the right with touch events.
+  simulateTouchStart(splitterDiv, 0);
+  simulateTouchMove(splitter, 15);
+  simulateTouchEnd(splitter);
+  // Check: 'before' section has shrunk and 'after' section has grown.
+  assertEquals(beforeWidth - 25, before.getBoundingClientRect().width);
+  assertEquals(afterWidth + 25, after.getBoundingClientRect().width);
+  // Move splitter 12px to the left with mouse events.
+  simulateMouseDown(splitterDiv, 0);
+  simulateMouseMove(splitter, -12);
+  simulateMouseUp(splitter);
+  // Check: 'before' section has grown and 'after' section has shrunk.
+  assertEquals(beforeWidth - 13, before.getBoundingClientRect().width);
+  assertEquals(afterWidth + 13, after.getBoundingClientRect().width);
+}
