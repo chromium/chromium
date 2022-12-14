@@ -11,7 +11,6 @@ all,components/quirks/quirks_client.cc
 all,chromeos/ash/services/device_sync/cryptauth_client_impl.cc
 all,chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client.cc
 all,chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.cc
-all,chrome/browser/ash/net/network_diagnostics/http_request_manager.cc
 all,chrome/browser/ash/net/network_diagnostics/tls_prober.cc
 all,ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.cc
 all,chrome/browser/search/background/ntp_background_service.cc
