@@ -335,7 +335,6 @@ void WebAppInternalsSource::BuildWebAppInternalsJson(
 #if BUILDFLAG(IS_MAC)
   root.Append(BuildAppShimRegistryLocalStorageJson());
 #endif
-  root.Append(BuildInstallProcessErrorLogJson(*provider));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&BuildWebAppDiskStateJson,
