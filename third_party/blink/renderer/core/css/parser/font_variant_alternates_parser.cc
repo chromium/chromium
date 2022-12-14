@@ -67,8 +67,11 @@ bool FontVariantAlternatesParser::ConsumeAlternate(
   CSSParserTokenRange inner = css_parsing_utils::ConsumeFunction(range_copy);
   CSSValueList* aliases =
       ConsumeCommaSeparatedList(ConsumeCustomIdent, inner, context);
-  if (!inner.AtEnd())
+  // At least one argument is required:
+  // https://drafts.csswg.org/css-fonts-4/#font-variant-alternates-prop
+  if (!aliases || !inner.AtEnd()) {
     return false;
+  }
   if (aliases->length() > 1 && !multiple_idents_allowed) {
     return false;
   }
