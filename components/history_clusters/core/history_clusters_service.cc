@@ -184,8 +184,13 @@ HistoryClustersService::QueryClusters(
 }
 
 void HistoryClustersService::RepeatedlyUpdateClusters() {
-  if (!GetConfig().persist_clusters_in_history_db)
+  // If `persist_on_query` is enabled, clusters are updated on query and not on
+  // a timer.
+  if (!GetConfig().persist_clusters_in_history_db ||
+      GetConfig().persist_on_query) {
     return;
+  }
+
   // Update clusters, both periodically and once after startup because:
   // 1) To avoid having very stale (up to 90 days) clusters for the initial
   //    period after startup.
@@ -205,8 +210,38 @@ void HistoryClustersService::RepeatedlyUpdateClusters() {
 
 void HistoryClustersService::UpdateClusters() {
   DCHECK(history_service_);
+
+  // TODO(manukh): This logic (if task not done, if time since < period) is
+  //  repeated for both keyword caches and here. Should probably share it in
+  //  some kind of base task that all 3 inherit from.
+
   if (update_clusters_task_ && !update_clusters_task_->Done())
     return;
+
+  // Make sure clusters aren't updated too frequently. If `persist_on_query` is
+  // false, this is already ensured by `update_clusters_period_timer_`. If
+  // update_clusters_task_ is null, this is the 1st request which shouldn't be
+  // delayed.
+  if (GetConfig().persist_on_query &&
+      update_clusters_timer_.Elapsed() <=
+          base::Minutes(
+              GetConfig().persist_clusters_in_history_db_period_minutes) &&
+      update_clusters_task_) {
+    return;
+  }
+
+  // Using custom histogram as this occurs too infrequently to be captured by
+  // the built in histograms. `persist_clusters_in_history_db_period_minutes`
+  // ranges from 1 to 12 hours while the built in timing histograms go up to 1
+  // hr.
+  base::UmaHistogramCustomTimes(
+      "History.Clusters.UpdateClusters.TimeBetweenTasks",
+      update_clusters_timer_.Elapsed(), base::Minutes(60), base::Hours(48),
+      100);
+
+  // Reset the timer.
+  update_clusters_timer_ = {};
+
   update_clusters_task_ =
       std::make_unique<HistoryClustersServiceTaskUpdateClusters>(
           weak_ptr_factory_.GetWeakPtr(), incomplete_visit_context_annotations_,
@@ -223,6 +258,8 @@ HistoryClustersService::DoesQueryMatchAnyCluster(const std::string& query) {
     return absl::nullopt;
 
   StartKeywordCacheRefresh();
+  if (GetConfig().persist_on_query)
+    UpdateClusters();
 
   // Early exit for single-character queries, even if it's an exact match.
   // We still want to allow for two-character exact matches like "uk".
@@ -254,6 +291,8 @@ bool HistoryClustersService::DoesURLMatchAnyCluster(
     return false;
 
   StartKeywordCacheRefresh();
+  if (GetConfig().persist_on_query)
+    UpdateClusters();
 
   return short_url_keywords_cache_.find(url_keyword) !=
              short_url_keywords_cache_.end() ||

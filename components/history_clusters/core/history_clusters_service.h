@@ -210,6 +210,11 @@ class HistoryClustersService : public base::SupportsUserData,
   friend class HistoryClustersServiceTestApi;
 
   // Starts a keyword cache refresh, if necessary.
+  // TODO(manukh): `StartKeywordCacheRefresh()` and
+  //  `PopulateClusterKeywordCache()` should be encapsulated into their own task
+  //  to avoid cluttering `HistoryClusterService` with their callbacks. Similar
+  //  to the `HistoryClustersServiceTaskGetMostRecentClusters` and
+  //  `HistoryClustersServiceTaskUpdateClusters` tasks.
   void StartKeywordCacheRefresh();
 
   // This is a callback used for the `QueryClusters()` call from
@@ -280,6 +285,10 @@ class HistoryClustersService : public base::SupportsUserData,
   // Used to invoke `UpdateClusters()` periodically. See
   // `RepeatedlyUpdateClusters()`'s comment.
   base::RepeatingTimer update_clusters_period_timer_;
+
+  // The time of the last `UpdateClusters()` call. Used for logging and to limit
+  // requests when `persist_on_query` is enabled.
+  base::ElapsedTimer update_clusters_timer_;
 
   // A list of observers for this service.
   base::ObserverList<Observer> observers_;

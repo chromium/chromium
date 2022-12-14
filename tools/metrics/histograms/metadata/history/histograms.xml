@@ -1353,6 +1353,27 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="History.Clusters.UpdateClusters.TimeBetweenTasks" units="ms"
+    expires_after="2023-10-01">
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    The time elapsed between subsequent cluster update tasks
+    (HistoryClustersServiceTaskUpdateClusters). Depending on finch params, this
+    occurs either:
+
+    1) Never (e.g. if updating and persisting clusters is disabled).
+
+    2) OR N time after startup in addition to every M time; where N is typically
+    5-60 minutes, and M is typically 1-12 hours.
+
+    3) OR on keyword refresh request bounded to at most every M time, where M is
+    typically 1-12 hours. Keyword refresh requests occur when the omnibox input
+    looks like a search query and journeys in the omnibox is enabled.
+  </summary>
+</histogram>
+
 <histogram name="History.Clusters.WebUISessionDuration" units="ms"
     expires_after="2023-04-16">
   <owner>tommycli@chromium.org</owner>

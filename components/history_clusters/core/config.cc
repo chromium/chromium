@@ -107,6 +107,9 @@ Config::Config() {
             "JourneysPersistClustersInHistoryDbPeriodMinutes",
             persist_clusters_in_history_db_period_minutes);
 
+    persist_on_query = base::GetFieldTrialParamByFeatureAsBool(
+        internal::kPersistedClusters, "persist_on_query", persist_on_query);
+
     max_persisted_clusters_to_fetch = base::GetFieldTrialParamByFeatureAsInt(
         internal::kPersistedClusters, "max_persisted_clusters_to_fetch",
         max_persisted_clusters_to_fetch);

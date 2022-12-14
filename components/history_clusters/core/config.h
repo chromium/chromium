@@ -107,6 +107,16 @@ struct Config {
   // every hour.
   int persist_clusters_in_history_db_period_minutes = 60;
 
+  // No effect if `persist_clusters_in_history_db` is disabled. If disabled,
+  // persistence occurs on a timer (see the above 2 params). If enabled, will
+  // instead occur on query like refreshing the keyword cache does. This may
+  // help bound the number of persistence requests. If enabled, will continue to
+  // also be capped to at most 1 request per
+  // `persist_clusters_in_history_db_period_minutes`, but
+  // `persist_clusters_in_history_db_after_startup_delay_minutes` will be
+  // unused.
+  bool persist_on_query = false;
+
   // Hard cap on max clusters to fetch after exhausting unclustered visits and
   // fetching persisted clusters for the get most recent flow. Doesn't affect
   // the update flow, which uses day boundaries as well as
