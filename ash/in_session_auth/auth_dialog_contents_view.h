@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "ash/login/ui/login_palette.h"
 #include "ash/public/cpp/login_types.h"
 #include "ui/views/view.h"
 
@@ -176,8 +175,6 @@ class AuthDialogContentsView : public views::View {
 
   // Extra parameters to control the UI.
   AuthMethodsMetadata auth_metadata_;
-
-  LoginPalette palette_ = CreateInSessionAuthPalette();
 
   // Container which holds action buttons.
   views::View* action_view_container_ = nullptr;

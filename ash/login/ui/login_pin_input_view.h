@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/access_code_input.h"
-#include "ash/login/ui/login_palette.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/view.h"
@@ -53,7 +52,7 @@ class ASH_EXPORT LoginPinInputView
     LoginPinInputView* const view_;
   };
 
-  explicit LoginPinInputView(const LoginPalette& palette);
+  explicit LoginPinInputView();
   LoginPinInputView& operator=(const LoginPinInputView&) = delete;
   LoginPinInputView(const LoginPinInputView&) = delete;
   ~LoginPinInputView() override;
@@ -68,9 +67,6 @@ class ASH_EXPORT LoginPinInputView
 
   // Updates the length of the field. Used when switching users.
   void UpdateLength(const size_t pin_length);
-
-  // Updates the palette use by the view.
-  void UpdatePalette(const LoginPalette& palette);
 
   // When set, hitting return will attempt an unlock with an empty PIN.
   // LoginAuthUserView interprets such attempts as a SmartLock unlock.
@@ -98,9 +94,6 @@ class ASH_EXPORT LoginPinInputView
 
   // Current field length.
   size_t length_ = kDefaultLength;
-
-  // Palette for the instance.
-  LoginPalette palette_;
 
   // Whether the field is read only.
   bool is_read_only_ = false;

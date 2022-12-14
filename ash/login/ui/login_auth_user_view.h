@@ -218,9 +218,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   void RequestFocus() override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // NonAccessibleView:
-  void OnThemeChanged() override;
-
  private:
   struct UiState;
   class FingerprintView;

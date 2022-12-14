@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/login/ui/animated_rounded_image_view.h"
-#include "ash/login/ui/login_palette.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
@@ -90,7 +89,7 @@ class ASH_EXPORT LoginPasswordView
   using OnEasyUnlockIconHovered = base::RepeatingClosure;
 
   // Must call |Init| after construction.
-  explicit LoginPasswordView(const LoginPalette& palette);
+  LoginPasswordView();
 
   LoginPasswordView(const LoginPasswordView&) = delete;
   LoginPasswordView& operator=(const LoginPasswordView&) = delete;
@@ -175,10 +174,6 @@ class ASH_EXPORT LoginPasswordView
   // field.
   void SubmitPassword();
 
-  // When theme changes, palette should be updated and some subviews
-  // recalculated.
-  void UpdatePalette(const LoginPalette& palette);
-
  private:
   class EasyUnlockIcon;
   class DisplayPasswordButton;
@@ -212,8 +207,6 @@ class ASH_EXPORT LoginPasswordView
   // ChromeVox is enabled (otherwise, the user would not have time to navigate
   // through the password and make the characters read out loud one by one).
   base::RetainingOneShotTimer hide_password_timer_;
-
-  LoginPalette palette_;
 
   LoginPasswordRow* password_row_ = nullptr;
   LoginTextfield* textfield_ = nullptr;

@@ -7,11 +7,13 @@
 #include <string>
 
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/strings/strcat.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/range/range.h"
@@ -38,8 +40,7 @@ constexpr int kAccessCodeBetweenInputFieldsGapDp = 8;
 FlexCodeInput::FlexCodeInput(OnInputChange on_input_change,
                              OnEnter on_enter,
                              OnEscape on_escape,
-                             bool obscure_pin,
-                             SkColor text_color)
+                             bool obscure_pin)
     : on_input_change_(std::move(on_input_change)),
       on_enter_(std::move(on_enter)),
       on_escape_(std::move(on_escape)) {
@@ -58,7 +59,7 @@ FlexCodeInput::FlexCodeInput(OnInputChange on_input_change,
       gfx::Font::Weight::NORMAL));
   code_field_->SetBorder(views::CreateSolidSidedBorder(
       gfx::Insets::TLBR(0, 0, kAccessCodeFlexUnderlineThicknessDp, 0),
-      text_color));
+      kColorAshShieldAndBaseOpaque));
   code_field_->SetBackgroundColor(SK_ColorTRANSPARENT);
   code_field_->SetFocusBehavior(FocusBehavior::ALWAYS);
   code_field_->SetPreferredSize(
@@ -73,6 +74,12 @@ FlexCodeInput::FlexCodeInput(OnInputChange on_input_change,
 }
 
 FlexCodeInput::~FlexCodeInput() = default;
+
+void FlexCodeInput::OnThemeChanged() {
+  AccessCodeInput::OnThemeChanged();
+  const SkColor color = GetColorProvider()->GetColor(kColorAshTextColorPrimary);
+  SetInputColor(color);
+}
 
 void FlexCodeInput::SetAccessibleName(const std::u16string& name) {
   code_field_->SetAccessibleName(name);
@@ -207,8 +214,7 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
                                            OnInputChange on_input_change,
                                            OnEnter on_enter,
                                            OnEscape on_escape,
-                                           bool obscure_pin,
-                                           SkColor text_color)
+                                           bool obscure_pin)
     : on_input_change_(std::move(on_input_change)),
       on_enter_(std::move(on_enter)),
       on_escape_(std::move(on_escape)),
@@ -235,13 +241,13 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
     } else {
       field->SetTextInputType(ui::TEXT_INPUT_TYPE_NUMBER);
     }
-    field->SetTextColor(text_color);
+    field->SetTextColor(SK_ColorTRANSPARENT);
     field->SetFontList(views::Textfield::GetDefaultFontList().Derive(
         kAccessCodeFontSizeDeltaDp, gfx::Font::FontStyle::NORMAL,
         gfx::Font::Weight::NORMAL));
-    field->SetBorder(views::CreateSolidSidedBorder(
+    field->SetBorder(views::CreateThemedSolidSidedBorder(
         gfx::Insets::TLBR(0, 0, kAccessCodeInputFieldUnderlineThicknessDp, 0),
-        text_color));
+        kColorAshShieldAndBaseOpaque));
     field->SetGroup(kFixedLengthInputGroup);
 
     // Ignores the a11y focus of |field| because the a11y needs to focus to the
@@ -256,6 +262,12 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
 }
 
 FixedLengthCodeInput::~FixedLengthCodeInput() = default;
+
+void FixedLengthCodeInput::OnThemeChanged() {
+  AccessCodeInput::OnThemeChanged();
+  const SkColor color = GetColorProvider()->GetColor(kColorAshTextColorPrimary);
+  SetInputColor(color);
+}
 
 // Inserts |value| into the |active_field_| and moves focus to the next field
 // if it exists.

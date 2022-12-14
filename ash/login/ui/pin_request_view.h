@@ -132,7 +132,6 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
   void RequestFocus() override;
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnThemeChanged() override;
 
   // views::DialogDelegateView:
   views::View* GetInitiallyFocusedView() override;

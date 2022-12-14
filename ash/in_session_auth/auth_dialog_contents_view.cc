@@ -456,7 +456,7 @@ void AuthDialogContentsView::AddOriginNameView() {
 
 void AuthDialogContentsView::AddPinTextInputView() {
   pin_text_input_view_ =
-      container_->AddChildView(std::make_unique<LoginPasswordView>(palette_));
+      container_->AddChildView(std::make_unique<LoginPasswordView>());
 
   pin_text_input_view_->SetPaintToLayer();
   pin_text_input_view_->layer()->SetFillsBoundsOpaquely(false);
@@ -470,7 +470,7 @@ void AuthDialogContentsView::AddPinTextInputView() {
 
 void AuthDialogContentsView::AddPasswordView() {
   password_view_ =
-      container_->AddChildView(std::make_unique<LoginPasswordView>(palette_));
+      container_->AddChildView(std::make_unique<LoginPasswordView>());
 
   password_view_->SetPaintToLayer();
   password_view_->layer()->SetFillsBoundsOpaquely(false);
@@ -493,7 +493,7 @@ void AuthDialogContentsView::AddPinPadView() {
   DCHECK(auth_methods_ & kAuthPin);
   if (pin_autosubmit_on_) {
     pin_pad_view_ = container_->AddChildView(std::make_unique<LoginPinView>(
-        LoginPinView::Style::kAlphanumeric, palette_,
+        LoginPinView::Style::kAlphanumeric,
         base::BindRepeating(&AuthDialogContentsView::OnInsertDigitFromPinPad,
                             base::Unretained(this)),
         base::BindRepeating(&AuthDialogContentsView::OnBackspaceFromPinPad,
@@ -506,7 +506,7 @@ void AuthDialogContentsView::AddPinPadView() {
                             base::Unretained(this)));
   } else {
     pin_pad_view_ = container_->AddChildView(std::make_unique<LoginPinView>(
-        LoginPinView::Style::kAlphanumeric, palette_,
+        LoginPinView::Style::kAlphanumeric,
         base::BindRepeating(&AuthDialogContentsView::OnInsertDigitFromPinPad,
                             base::Unretained(this)),
         base::BindRepeating(&AuthDialogContentsView::OnBackspaceFromPinPad,
@@ -526,7 +526,7 @@ void AuthDialogContentsView::AddPinPadView() {
 
 void AuthDialogContentsView::AddPinDigitInputView() {
   pin_digit_input_view_ =
-      container_->AddChildView(std::make_unique<LoginPinInputView>(palette_));
+      container_->AddChildView(std::make_unique<LoginPinInputView>());
   pin_digit_input_view_->UpdateLength(auth_metadata_.autosubmit_pin_length);
   pin_digit_input_view_->SetVisible(true);
 }

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "base/time/time.h"
@@ -28,8 +29,6 @@
 namespace ash {
 namespace {
 
-// Arrow icon size.
-constexpr int kArrowIconSizeDp = 20;
 constexpr int kArrowIconBackroundRadius = 25;
 
 constexpr const int kBorderForFocusRingDp = 3;
@@ -89,6 +88,12 @@ ArrowButtonView::ArrowButtonView(PressedCallback callback, int size)
   views::FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<views::FixedSizeCircleHighlightPathGenerator>(
           kArrowIconBackroundRadius));
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(kLockScreenArrowIcon,
+                                               kColorAshButtonIconColor));
+  SetImageModel(views::Button::STATE_DISABLED,
+                ui::ImageModel::FromVectorIcon(
+                    kLockScreenArrowIcon, kColorAshButtonIconDisabledColor));
 }
 
 ArrowButtonView::~ArrowButtonView() = default;
@@ -99,12 +104,13 @@ void ArrowButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   // Draw background.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  if (background_color_) {
-    flags.setColor(*background_color_);
-  } else {
-    flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
-  }
+  SkColor background_color =
+      background_color_id_ ? GetColorProvider()->GetColor(*background_color_id_)
+                           : AshColorProvider::Get()->GetControlsLayerColor(
+                                 AshColorProvider::ControlsLayerType::
+                                     kControlBackgroundColorInactive);
+
+  flags.setColor(background_color);
   flags.setStyle(cc::PaintFlags::kFill_Style);
   canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), rect.width() / 2, flags);
 
@@ -114,24 +120,6 @@ void ArrowButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   // Draw the arc of the loading animation.
   if (loading_animation_)
     PaintLoadingArc(canvas, rect, loading_animation_->GetCurrentValue());
-}
-
-void ArrowButtonView::OnThemeChanged() {
-  LoginButton::OnThemeChanged();
-  auto* color_provider = AshColorProvider::Get();
-  SkColor icon_color;
-  if (icon_color_) {
-    icon_color = *icon_color_;
-  } else {
-    icon_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonIconColor);
-  }
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(kLockScreenArrowIcon, kArrowIconSizeDp,
-                                 icon_color));
-  SetImage(views::Button::STATE_DISABLED,
-           gfx::CreateVectorIcon(kLockScreenArrowIcon, kArrowIconSizeDp,
-                                 ColorUtil::GetDisabledColor(icon_color)));
 }
 
 void ArrowButtonView::RunTransformAnimation() {

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/login/ui/login_palette.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -97,7 +96,6 @@ class ASH_EXPORT LoginPinView : public NonAccessibleView {
   // If |on_submit| is valid, there will be a submit button on the pinpad that
   // calls it when the user wants to submit the PIN / password.
   LoginPinView(Style keyboard_style,
-               const LoginPalette& palette,
                const OnPinKey& on_key,
                const OnPinBackspace& on_backspace,
                const OnPinSubmit& on_submit = base::NullCallback());
@@ -113,8 +111,6 @@ class ASH_EXPORT LoginPinView : public NonAccessibleView {
   // Called when the password field text changed.
   void OnPasswordTextChanged(bool is_empty);
 
-  void UpdatePalette(const LoginPalette& palette);
-
  private:
   class BackspacePinButton;
   class DigitPinButton;
@@ -122,8 +118,6 @@ class ASH_EXPORT LoginPinView : public NonAccessibleView {
 
   // Builds and returns a new view which contains a row of the PIN keyboard.
   NonAccessibleView* BuildAndAddRow();
-
-  LoginPalette palette_;
 
   BackspacePinButton* backspace_ = nullptr;
   // The submit button does not exist when no |on_submit| callback is passed.

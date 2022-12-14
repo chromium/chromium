@@ -731,8 +731,6 @@ component("ash") {
     "login/ui/login_error_bubble.h",
     "login/ui/login_expanded_public_account_view.cc",
     "login/ui/login_expanded_public_account_view.h",
-    "login/ui/login_palette.cc",
-    "login/ui/login_palette.h",
     "login/ui/login_password_view.cc",
     "login/ui/login_password_view.h",
     "login/ui/login_pin_input_view.cc",

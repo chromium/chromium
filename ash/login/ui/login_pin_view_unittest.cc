@@ -32,14 +32,14 @@ class LoginPinViewTest : public LoginTestBase {
   // Creates login pin view with the specified keyboard |style| and sets it up
   // in a widget.
   void CreateLoginPinViewWithStyle(LoginPinView::Style style) {
-    view_ = new LoginPinView(
-        style, CreateDefaultLoginPalette(/*color_provider=*/nullptr),
-        base::BindRepeating(&LoginPinViewTest::OnPinKey,
-                            base::Unretained(this)),
-        base::BindRepeating(&LoginPinViewTest::OnPinBackspace,
-                            base::Unretained(this)),
-        base::BindRepeating(&LoginPinViewTest::OnPinSubmit,
-                            base::Unretained(this)));
+    view_ =
+        new LoginPinView(style,
+                         base::BindRepeating(&LoginPinViewTest::OnPinKey,
+                                             base::Unretained(this)),
+                         base::BindRepeating(&LoginPinViewTest::OnPinBackspace,
+                                             base::Unretained(this)),
+                         base::BindRepeating(&LoginPinViewTest::OnPinSubmit,
+                                             base::Unretained(this)));
 
     SetWidget(CreateWidgetWithContent(view_));
   }

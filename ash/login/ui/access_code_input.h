@@ -65,12 +65,13 @@ class FlexCodeInput : public AccessCodeInput {
   FlexCodeInput(OnInputChange on_input_change,
                 OnEnter on_enter,
                 OnEscape on_escape,
-                bool obscure_pin,
-                SkColor text_color);
+                bool obscure_pin);
 
   FlexCodeInput(const FlexCodeInput&) = delete;
   FlexCodeInput& operator=(const FlexCodeInput&) = delete;
   ~FlexCodeInput() override;
+
+  void OnThemeChanged() override;
 
   void SetAccessibleName(const std::u16string& name);
 
@@ -172,12 +173,13 @@ class FixedLengthCodeInput : public AccessCodeInput {
                        OnInputChange on_input_change,
                        OnEnter on_enter,
                        OnEscape on_escape,
-                       bool obscure_pin,
-                       SkColor text_color);
+                       bool obscure_pin);
 
   ~FixedLengthCodeInput() override;
   FixedLengthCodeInput(const FixedLengthCodeInput&) = delete;
   FixedLengthCodeInput& operator=(const FixedLengthCodeInput&) = delete;
+
+  void OnThemeChanged() override;
 
   // Inserts |value| into the |active_field_| and moves focus to the next field
   // if it exists.

@@ -5,7 +5,6 @@
 #include "ash/login/ui/login_pin_input_view.h"
 #include <memory>
 #include <string>
-#include "ash/login/ui/login_palette.h"
 #include "ash/login/ui/login_test_base.h"
 #include "base/bind.h"
 #include "base/strings/strcat.h"
@@ -32,8 +31,7 @@ class LoginPinInputViewTest
 
   void SetUp() override {
     LoginTestBase::SetUp();
-    view_ = new LoginPinInputView(
-        CreateDefaultLoginPalette(/*color_provider=*/nullptr));
+    view_ = new LoginPinInputView();
     view_->Init(base::BindRepeating(&LoginPinInputViewTest::OnPinSubmit,
                                     base::Unretained(this)),
                 base::BindRepeating(&LoginPinInputViewTest::OnPinChanged,
@@ -148,23 +146,6 @@ TEST_P(LoginPinInputViewTest, ReadOnly) {
   view_->SetReadOnly(false);
   PressKeyHelper(ui::KeyboardCode::VKEY_1);
   ExpectTextValue("\u2022     "); /* 1 bullet 5 spaces */
-}
-
-TEST_P(LoginPinInputViewTest, FlagsPreservedOnPaletteChange) {
-  EXPECT_TRUE(view_->GetVisible());
-  EXPECT_FALSE(view_->IsReadOnly());
-
-  // Updating the palette doesn't affect the default flags.
-  view_->UpdatePalette(CreateDefaultLoginPalette(/*color_provider=*/nullptr));
-  EXPECT_TRUE(view_->GetVisible());
-  EXPECT_FALSE(view_->IsReadOnly());
-
-  // After inverting flags and updating the pallette, the flags are preserved.
-  view_->SetVisible(false);
-  view_->SetReadOnly(true);
-  view_->UpdatePalette(CreateDefaultLoginPalette(/*color_provider=*/nullptr));
-  EXPECT_FALSE(view_->GetVisible());
-  EXPECT_TRUE(view_->IsReadOnly());
 }
 
 INSTANTIATE_TEST_SUITE_P(PinInputViewTests,

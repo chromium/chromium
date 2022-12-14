@@ -1057,9 +1057,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       callbacks.on_remove_warning_shown, callbacks.on_remove);
   user_view_ = user_view.get();
 
-  const LoginPalette palette = CreateDefaultLoginPalette(GetColorProvider());
-
-  auto password_view = std::make_unique<LoginPasswordView>(palette);
+  auto password_view = std::make_unique<LoginPasswordView>();
   password_view_ = password_view.get();
   password_view->SetPaintToLayer();  // Needed for opacity animation.
   password_view->layer()->SetFillsBoundsOpaquely(false);
@@ -1073,7 +1071,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       callbacks.on_easy_unlock_icon_hovered,
       callbacks.on_easy_unlock_icon_tapped);
 
-  auto pin_input_view = std::make_unique<LoginPinInputView>(palette);
+  auto pin_input_view = std::make_unique<LoginPinInputView>();
   pin_input_view_ = pin_input_view.get();
   pin_input_view->Init(base::BindRepeating(&LoginAuthUserView::OnAuthSubmit,
                                            base::Unretained(this)),
@@ -1094,7 +1092,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       gfx::Size(/*ignored*/ 0, kPinPasswordToggleButtonHeight));
 
   auto pin_view = std::make_unique<LoginPinView>(
-      LoginPinView::Style::kAlphanumeric, palette,
+      LoginPinView::Style::kAlphanumeric,
       base::BindRepeating(&LoginAuthUserView::OnPinPadInsertDigit,
                           base::Unretained(this)),
       base::BindRepeating(&LoginAuthUserView::OnPinPadBackspace,
@@ -1696,14 +1694,6 @@ void LoginAuthUserView::OnGestureEvent(ui::GestureEvent* event) {
   // inside it at their first attempt. We also want to bring up the virtual
   // keyboard if the user taps in the auth user view area.
   RequestFocus();
-}
-
-void LoginAuthUserView::OnThemeChanged() {
-  NonAccessibleView::OnThemeChanged();
-  const LoginPalette palette = CreateDefaultLoginPalette(GetColorProvider());
-  password_view_->UpdatePalette(palette);
-  pin_input_view_->UpdatePalette(palette);
-  pin_view_->UpdatePalette(palette);
 }
 
 void LoginAuthUserView::OnAuthSubmit(const std::u16string& password) {

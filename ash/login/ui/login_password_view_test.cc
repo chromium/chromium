@@ -4,7 +4,6 @@
 
 #include "ash/login/ui/login_password_view.h"
 
-#include "ash/login/ui/login_palette.h"
 #include "ash/login/ui/login_test_base.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/shell.h"
@@ -41,8 +40,7 @@ class LoginPasswordViewTest : public LoginTestBase {
   void SetUp() override {
     LoginTestBase::SetUp();
 
-    view_ = new LoginPasswordView(
-        CreateDefaultLoginPalette(/*color_provider=*/nullptr));
+    view_ = new LoginPasswordView();
     view_->Init(
         base::BindRepeating(&LoginPasswordViewTest::OnPasswordSubmit,
                             base::Unretained(this)),
