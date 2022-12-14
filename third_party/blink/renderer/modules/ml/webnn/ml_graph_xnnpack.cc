@@ -320,6 +320,127 @@ xnn_status DefineStaticXnnValue(xnn_subgraph_t subgraph,
                         error_message);
 }
 
+uint32_t GetOperatorInputValueId(const MLOperator* op,
+                                 const OperandValueIdMap& operand_value_id_map,
+                                 wtf_size_t index = 0) {
+  DCHECK_LE(index, op->Inputs().size());
+  const auto* input = op->Inputs()[index].Get();
+  DCHECK_NE(op, nullptr);
+  DCHECK(operand_value_id_map.Contains(input));
+  return operand_value_id_map.at(input);
+}
+
+uint32_t GetOperatorOutputValueId(const MLOperator* op,
+                                  const OperandValueIdMap& operand_value_id_map,
+                                  wtf_size_t index = 0) {
+  DCHECK_LE(index, op->Outputs().size());
+  const auto* output = op->Outputs()[index].Get();
+  DCHECK_NE(op, nullptr);
+  DCHECK(operand_value_id_map.Contains(output));
+  return operand_value_id_map.at(output);
+}
+
+xnn_status DefineXnnNodeForElementWiseBinary(
+    xnn_subgraph_t subgraph,
+    const MLOperator* binary,
+    const OperandValueIdMap& operand_value_id_map,
+    String& error_message) {
+  const uint32_t lhs_id =
+      GetOperatorInputValueId(binary, operand_value_id_map, 0);
+  const uint32_t rhs_id =
+      GetOperatorInputValueId(binary, operand_value_id_map, 1);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(binary, operand_value_id_map);
+  const float output_min = -std::numeric_limits<float>::infinity();
+  const float output_max = +std::numeric_limits<float>::infinity();
+  const uint32_t flags = 0;
+  switch (binary->Kind()) {
+    case MLOperator::OperatorKind::kAdd: {
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_add2(
+          subgraph, output_min, output_max, lhs_id, rhs_id, output_id, flags));
+      break;
+    }
+    case MLOperator::OperatorKind::kSub: {
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_subtract(
+          subgraph, output_min, output_max, lhs_id, rhs_id, output_id, flags));
+      break;
+    }
+    case MLOperator::OperatorKind::kMul: {
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_multiply2(
+          subgraph, output_min, output_max, lhs_id, rhs_id, output_id, flags));
+      break;
+    }
+    case MLOperator::OperatorKind::kDiv: {
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_divide(
+          subgraph, output_min, output_max, lhs_id, rhs_id, output_id, flags));
+      break;
+    }
+    case MLOperator::OperatorKind::kMax: {
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+          xnn_define_maximum2(subgraph, lhs_id, rhs_id, output_id, flags));
+      break;
+    }
+    case MLOperator::OperatorKind::kMin: {
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+          xnn_define_minimum2(subgraph, lhs_id, rhs_id, output_id, flags));
+      break;
+    }
+    default:
+      NOTREACHED();
+  }
+  return xnn_status_success;
+}
+
+xnn_status DefineXnnNodeForRelu(xnn_subgraph_t subgraph,
+                                const MLOperator* relu,
+                                const OperandValueIdMap& operand_value_id_map,
+                                String& error_message) {
+  const uint32_t input_id = GetOperatorInputValueId(relu, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(relu, operand_value_id_map);
+  const float output_min = 0.0f;
+  const float output_max = std::numeric_limits<float>::infinity();
+  const uint32_t flags = 0;
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_clamp(
+      subgraph, output_min, output_max, input_id, output_id, flags));
+  return xnn_status_success;
+}
+
+// Define an XNNPACK Node given an MLOperator object and add it into the
+// Subgraph object. The operand_value_id_map is used to find the corresponding
+// input and output XNNPACK Values of this MLOperator object. This method calls
+// the dedicated DefineXnnNode{OperatorName} helper method according to the kind
+// of the MLOperator object.
+xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
+                         const MLOperator* ml_operator,
+                         const OperandValueIdMap& operand_value_id_map,
+                         String& error_message) {
+  switch (ml_operator->Kind()) {
+    case MLOperator::OperatorKind::kAdd:
+    case MLOperator::OperatorKind::kSub:
+    case MLOperator::OperatorKind::kMul:
+    case MLOperator::OperatorKind::kDiv:
+    case MLOperator::OperatorKind::kMax:
+    case MLOperator::OperatorKind::kMin: {
+      XNN_CHECK_STATUS(DefineXnnNodeForElementWiseBinary(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    }
+    case MLOperator::OperatorKind::kRelu: {
+      XNN_CHECK_STATUS(DefineXnnNodeForRelu(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    }
+    default: {
+      error_message = "The operator (" +
+                      MLOperator::OperatorKindToString(ml_operator->Kind()) +
+                      ") is not supported.";
+      return xnn_status_unsupported_parameter;
+    }
+  }
+  return xnn_status_success;
+}
+
 }  // namespace
 
 // static
@@ -650,9 +771,8 @@ xnn_status MLGraphXnnpack::CreateXnnSubgraphAndRuntime(
       operand_value_id_map.insert(operand.Get(), value_id);
     }
 
-    // TODO(ningxin.hu@intel.com): Define the XNNPACK Node for the current
-    // operator. The operand_value_id_map will be used to find its corresponding
-    // input and output XNNPACK Values.
+    XNN_CHECK_STATUS(DefineXnnNode(subgraph.get(), current_operator,
+                                   operand_value_id_map, error_message));
   }
 
   xnn_runtime_t runtime_ptr = nullptr;

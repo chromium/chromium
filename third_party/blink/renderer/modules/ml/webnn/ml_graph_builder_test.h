@@ -93,7 +93,7 @@ std::string ExecutionModeParamToString(
 
 class MLGraphTestBase : public ::testing::Test,
                         public ::testing::WithParamInterface<ExecutionMode> {
- protected:
+ public:
   // BuildResult is returned by Build() method. Only one member of BuildResult
   // is valid. If the graph building is successful, graph points to the MLGraph
   // and exception is a nullptr. Otherwise, exception points to the DOMException

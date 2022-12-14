@@ -42,6 +42,8 @@ class MODULES_EXPORT MLOperator final : public ScriptWrappable {
     kSigmoid
   };
 
+  static String OperatorKindToString(MLOperator::OperatorKind kind);
+
   // It is safe for a caller, usually a MLGraphBuidler operation build method,
   // that passes the reference of the options dictionary argument received from
   // Blink to MLOperator constructor and stores it in this object. This is

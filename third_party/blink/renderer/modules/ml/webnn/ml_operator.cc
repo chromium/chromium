@@ -9,6 +9,46 @@
 
 namespace blink {
 
+// static
+String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
+  switch (kind) {
+    case MLOperator::OperatorKind::kClamp:
+      return "clamp";
+    case MLOperator::OperatorKind::kConv2d:
+      return "conv2d";
+    case MLOperator::OperatorKind::kAdd:
+      return "add";
+    case MLOperator::OperatorKind::kSub:
+      return "sub";
+    case MLOperator::OperatorKind::kMul:
+      return "mul";
+    case MLOperator::OperatorKind::kDiv:
+      return "div";
+    case MLOperator::OperatorKind::kMax:
+      return "max";
+    case MLOperator::OperatorKind::kMin:
+      return "min";
+    case MLOperator::OperatorKind::kGemm:
+      return "gemm";
+    case MLOperator::OperatorKind::kHardSwish:
+      return "hardSwish";
+    case MLOperator::OperatorKind::kAveragePool2d:
+      return "averagePool2d";
+    case MLOperator::OperatorKind::kMaxPool2d:
+      return "maxPool2d";
+    case MLOperator::OperatorKind::kRelu:
+      return "relu";
+    case MLOperator::OperatorKind::kReshape:
+      return "reshape";
+    case MLOperator::OperatorKind::kResample2d:
+      return "resample2d";
+    case MLOperator::OperatorKind::kSoftmax:
+      return "softmax";
+    case MLOperator::OperatorKind::kSigmoid:
+      return "sigmoid";
+  }
+}
+
 MLOperator::MLOperator(MLGraphBuilder* builder,
                        OperatorKind kind,
                        const bindings::DictionaryBase* options)
