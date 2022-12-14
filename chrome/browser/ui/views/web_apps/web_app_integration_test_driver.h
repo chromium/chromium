@@ -337,12 +337,12 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
  private:
   // Must be called at the beginning of every state change action function.
   // Returns if the test should continue.
-  bool BeforeStateChangeAction(const char* function);
+  [[nodiscard]] bool BeforeStateChangeAction(const char* function);
   // Must be called at the end of every state change action function.
   void AfterStateChangeAction();
   // Must be called at the beginning of every state check action function.
   // Returns if the test should continue.
-  bool BeforeStateCheckAction(const char* function);
+  [[nodiscard]] bool BeforeStateCheckAction(const char* function);
   // Must be called at the end of every state check action function.
   void AfterStateCheckAction();
 

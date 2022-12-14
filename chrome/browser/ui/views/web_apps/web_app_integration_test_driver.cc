@@ -1189,7 +1189,9 @@ void WebAppIntegrationTestDriver::LaunchFileExpectDialog(
     FilesOptions files_options,
     AllowDenyOptions allow_deny,
     AskAgainOptions ask_again) {
-  BeforeStateChangeAction(__FUNCTION__);
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
   AppId app_id = GetAppIdBySiteMode(site);
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "FileHandlerLaunchDialogView");
@@ -1229,7 +1231,9 @@ void WebAppIntegrationTestDriver::LaunchFileExpectDialog(
 void WebAppIntegrationTestDriver::LaunchFileExpectNoDialog(
     Site site,
     FilesOptions files_options) {
-  BeforeStateChangeAction(__FUNCTION__);
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
   AppId app_id = GetAppIdBySiteMode(site);
   base::RunLoop run_loop;
 #if BUILDFLAG(IS_MAC)
@@ -1787,7 +1791,9 @@ void WebAppIntegrationTestDriver::SetOpenInWindow(Site site) {
 }
 
 void WebAppIntegrationTestDriver::SwitchIncognitoProfile() {
-  BeforeStateChangeAction(__FUNCTION__);
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
   content::WebContentsAddedObserver nav_observer;
   CHECK(chrome::ExecuteCommand(browser(), IDC_NEW_INCOGNITO_WINDOW));
   ASSERT_EQ(1U, BrowserList::GetIncognitoBrowserCount());
@@ -2069,7 +2075,9 @@ void WebAppIntegrationTestDriver::CheckAppListEmpty() {
 }
 
 void WebAppIntegrationTestDriver::CheckAppInListIconCorrect(Site site) {
-  BeforeStateCheckAction(__FUNCTION__);
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
   GURL icon_url =
       apps::AppIconSource::GetIconURL(active_app_id_, icon_size::k128);
   SkBitmap icon_bitmap;
@@ -2307,13 +2315,17 @@ void WebAppIntegrationTestDriver::CheckAppTitle(Site site, Title title) {
 }
 
 void WebAppIntegrationTestDriver::CheckCreateShortcutNotShown() {
-  BeforeStateCheckAction(__FUNCTION__);
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
   EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kDisabled);
   AfterStateCheckAction();
 }
 
 void WebAppIntegrationTestDriver::CheckCreateShortcutShown() {
-  BeforeStateCheckAction(__FUNCTION__);
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
   EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kEnabled);
   AfterStateCheckAction();
 }
