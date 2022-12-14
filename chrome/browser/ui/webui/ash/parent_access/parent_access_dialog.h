@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -116,6 +117,23 @@ class ParentAccessDialogProvider {
   // error.  virtual so it can be overridden for tests to fake dialog behavior.
   virtual ShowError Show(parent_access_ui::mojom::ParentAccessParamsPtr params,
                          ParentAccessDialog::Callback callback);
+
+  // Used for metrics. Those values are logged to UMA. Entries should not be
+  // renumbered and numeric values should never be reused. Please keep in sync
+  // with "FamilyLinkUserParentAccessWidgetShowDialogError" in
+  // src/tools/metrics/histograms/enums.xml.
+  enum class ShowErrorType {
+    kUnknown = 0,
+    kAlreadyVisible = 1,
+    kNotAChildUser = 2,
+    kMaxValue = kNotAChildUser
+  };
+
+  // Returns the name of parent access widget error histogram for a flow type.
+  static const std::string
+  GetParentAccessWidgetShowDialogErrorHistogramForFlowType(
+      absl::optional<parent_access_ui::mojom::ParentAccessParams::FlowType>
+          flow_type);
 };
 
 }  // namespace ash

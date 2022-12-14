@@ -10,6 +10,8 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/window_dimmer.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
@@ -27,17 +29,66 @@ constexpr int kDialogHeightDp = 526;
 constexpr int kDialogWidthDp = 600;
 constexpr float kDimmerOpacity = 0.7f;
 
+constexpr char kParentAccessWidgetShowDialogErrorHistogramBase[] =
+    "ChromeOS.FamilyLinkUser.ParentAccessWidgetShowDialogError";
+// TODO(b/262555804) use shared constants for flow type variant suffixes.
+constexpr char kParentAccessWidgetShowDialogErrorSuffixAll[] = "All";
+constexpr char kParentAccessWidgetShowDialogErrorSuffixWebApprovals[] =
+    "WebApprovals";
+
+void RecordParentAccessWidgetShowDialogError(
+    ParentAccessDialogProvider::ShowErrorType error_type,
+    absl::optional<parent_access_ui::mojom::ParentAccessParams::FlowType>
+        flow_type) {
+  base::UmaHistogramEnumeration(
+      ParentAccessDialogProvider::
+          GetParentAccessWidgetShowDialogErrorHistogramForFlowType(flow_type),
+      error_type);
+
+  // Always record metric for "all" flow type.
+  base::UmaHistogramEnumeration(
+      ParentAccessDialogProvider::
+          GetParentAccessWidgetShowDialogErrorHistogramForFlowType(
+              absl::nullopt),
+      error_type);
+}
 }  // namespace
+
+// static
+const std::string ParentAccessDialogProvider::
+    GetParentAccessWidgetShowDialogErrorHistogramForFlowType(
+        absl::optional<parent_access_ui::mojom::ParentAccessParams::FlowType>
+            flow_type) {
+  const std::string separator = ".";
+  if (!flow_type.has_value()) {
+    return base::JoinString({kParentAccessWidgetShowDialogErrorHistogramBase,
+                             kParentAccessWidgetShowDialogErrorSuffixAll},
+                            separator);
+  }
+  switch (flow_type.value()) {
+    case parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess:
+      return base::JoinString(
+          {kParentAccessWidgetShowDialogErrorHistogramBase,
+           kParentAccessWidgetShowDialogErrorSuffixWebApprovals},
+          separator);
+  }
+}
 
 ParentAccessDialogProvider::ShowError ParentAccessDialogProvider::Show(
     parent_access_ui::mojom::ParentAccessParamsPtr params,
     ParentAccessDialog::Callback callback) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   if (!profile->IsChild()) {
+    RecordParentAccessWidgetShowDialogError(
+        ParentAccessDialogProvider::ShowErrorType::kNotAChildUser,
+        params->flow_type);
     return ParentAccessDialogProvider::ShowError::kNotAChildUser;
   }
 
   if (ParentAccessDialog::GetInstance()) {
+    RecordParentAccessWidgetShowDialogError(
+        ParentAccessDialogProvider::ShowErrorType::kAlreadyVisible,
+        params->flow_type);
     return ParentAccessDialogProvider::ShowError::kDialogAlreadyVisible;
   }
 

@@ -36462,6 +36462,46 @@ Called by update_extension_permission.py.-->
   <int value="2" label="User Enabled Supervision"/>
 </enum>
 
+<enum name="FamilyLinkUserParentAccessWidgetError">
+  <summary>
+    Error that occurs in the parent access widget. ChromeOS only.
+  </summary>
+  <int value="0" label="OAuth2 Error">
+    Error that occurs when OAuth2 token request fails.
+  </int>
+  <int value="1" label="Delegate Not Available">
+    Error that occurs when Delegate is not available in ParentAccessUIHandler.
+    Likely caused by trying to create WebUI without a dialog.
+  </int>
+  <int value="2" label="Decoding Error">
+    Error that occurs when parent access result cannot be decoded from base64.
+  </int>
+  <int value="3" label="Parsing Error">
+    Error that occurs when decoded parent access result cannot be parsed into a
+    proto.
+  </int>
+  <int value="4" label="Unknown Callback">
+    Error that occurs when an unknown type of callback is provided for
+    ParentAccessHandler::OnParentAccessCallback.
+  </int>
+</enum>
+
+<enum name="FamilyLinkUserParentAccessWidgetShowDialogError">
+  <summary>
+    Error that prevents the parent access widget dialog from showing. ChromeOS
+    only.
+  </summary>
+  <int value="0" label="Unknown Error">Unknown error in ParentAccess UI.</int>
+  <int value="1" label="Dialog Already Visible">
+    Error that occurs when ParentAccess UI invoked by non-child user. Indicates
+    a programming error.
+  </int>
+  <int value="2" label="Not a Child User">
+    Error that occurs when ParentAccess UI invoked while instance already
+    visible. Indicates a programming error.
+  </int>
+</enum>
+
 <enum name="FamilyLinkWebFilterType">
   <int value="0" label="Allow All Sites"/>
   <int value="1" label="Try To Block Mature Sites"/>

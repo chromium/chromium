@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -47,7 +48,50 @@ std::string GetCallerId(
   }
 }
 
+constexpr char kParentAccessWidgetErrorHistogramBase[] =
+    "ChromeOS.FamilyLinkUser.ParentAccessWidgetError";
+// TODO(b/262555804) use shared constants for flow type variant suffixes.
+constexpr char kParentAccessWidgetErrorSuffixAll[] = "All";
+constexpr char kParentAccessWidgetErrorSuffixWebApprovals[] = "WebApprovals";
 }  // namespace
+
+// static
+std::string
+ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+    absl::optional<parent_access_ui::mojom::ParentAccessParams::FlowType>
+        flow_type) {
+  const std::string separator = ".";
+  if (!flow_type.has_value()) {
+    return base::JoinString({kParentAccessWidgetErrorHistogramBase,
+                             kParentAccessWidgetErrorSuffixAll},
+                            separator);
+  }
+  switch (flow_type.value()) {
+    case parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess:
+      return base::JoinString({kParentAccessWidgetErrorHistogramBase,
+                               kParentAccessWidgetErrorSuffixWebApprovals},
+                              separator);
+  }
+}
+
+void ParentAccessUIHandlerImpl::RecordParentAccessWidgetError(
+    ParentAccessUIHandlerImpl::ParentAccessWidgetError error) {
+  if (delegate_) {
+    // TODO(b/260144025): Reduce the number of times params are cloned.
+    parent_access_ui::mojom::ParentAccessParamsPtr params =
+        delegate_->CloneParentAccessParams();
+    base::UmaHistogramEnumeration(
+        ParentAccessUIHandlerImpl::
+            GetParentAccessWidgetErrorHistogramForFlowType(params->flow_type),
+        error);
+  }
+
+  // Always record metric for "all" flow type.
+  base::UmaHistogramEnumeration(
+      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+          absl::nullopt),
+      error);
+}
 
 ParentAccessUIHandlerImpl::ParentAccessUIHandlerImpl(
     mojo::PendingReceiver<parent_access_ui::mojom::ParentAccessUIHandler>
@@ -99,7 +143,8 @@ void ParentAccessUIHandlerImpl::OnAccessTokenFetchComplete(
   if (error.state() != GoogleServiceAuthError::NONE) {
     DLOG(ERROR) << "ParentAccessUIHandlerImpl: OAuth2 token request failed. "
                 << error.state() << ": " << error.ToString();
-
+    RecordParentAccessWidgetError(
+        ParentAccessUIHandlerImpl::ParentAccessWidgetError::kOAuthError);
     std::move(callback).Run(
         parent_access_ui::mojom::GetOAuthTokenStatus::kError,
         "" /* No token */);
@@ -115,6 +160,9 @@ void ParentAccessUIHandlerImpl::GetParentAccessParams(
   if (!delegate_) {
     LOG(ERROR) << "Delegate not available in ParentAccessUIHandler - WebUI was "
                   "probably created without a dialog";
+    RecordParentAccessWidgetError(
+        ParentAccessUIHandlerImpl::ParentAccessWidgetError::
+            kDelegateNotAvailable);
     std::move(callback).Run(parent_access_ui::mojom::ParentAccessParams::New());
     return;
   }
@@ -129,6 +177,9 @@ void ParentAccessUIHandlerImpl::OnParentAccessDone(
   if (!delegate_) {
     LOG(ERROR) << "Delegate not available in ParentAccessUIHandler - WebUI was "
                   "probably created without a dialog";
+    RecordParentAccessWidgetError(
+        ParentAccessUIHandlerImpl::ParentAccessWidgetError::
+            kDelegateNotAvailable);
     std::move(callback).Run();
     return;
   }
@@ -172,6 +223,9 @@ void ParentAccessUIHandlerImpl::GetParentAccessURL(
   if (!delegate_) {
     LOG(ERROR) << "Delegate not available in ParentAccessUIHandler - WebUI was "
                   "probably created without a dialog";
+    RecordParentAccessWidgetError(
+        ParentAccessUIHandlerImpl::ParentAccessWidgetError::
+            kDelegateNotAvailable);
     std::move(callback).Run("");
     return;
   }
@@ -222,6 +276,9 @@ void ParentAccessUIHandlerImpl::OnParentAccessCallbackReceived(
                           &decoded_parent_access_callback)) {
     LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Error decoding "
                   "parent_access_result from base64";
+    RecordParentAccessWidgetError(
+        ParentAccessUIHandlerImpl::ParentAccessWidgetError::kDecodingError);
+
     message->type =
         parent_access_ui::mojom::ParentAccessServerMessageType::kError;
     std::move(callback).Run(std::move(message));
@@ -233,6 +290,8 @@ void ParentAccessUIHandlerImpl::OnParentAccessCallbackReceived(
   if (!parent_access_callback.ParseFromString(decoded_parent_access_callback)) {
     LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Error parsing "
                   "decoded_parent_access_result to proto";
+    RecordParentAccessWidgetError(
+        ParentAccessUIHandlerImpl::ParentAccessWidgetError::kParsingError);
 
     message->type =
         parent_access_ui::mojom::ParentAccessServerMessageType::kError;
@@ -266,6 +325,8 @@ void ParentAccessUIHandlerImpl::OnParentAccessCallbackReceived(
           << "ParentAccessHandler::OnParentAccessCallback: Unknown type of "
              "callback received and ignored: "
           << parent_access_callback.callback_case();
+      RecordParentAccessWidgetError(
+          ParentAccessUIHandlerImpl::ParentAccessWidgetError::kUnknownCallback);
       message->type =
           parent_access_ui::mojom::ParentAccessServerMessageType::kIgnore;
       std::move(callback).Run(std::move(message));

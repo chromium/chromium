@@ -12,8 +12,8 @@ namespace {
 constexpr char kParentAccessFlowResultHistogramBase[] =
     "ChromeOS.FamilyLinkUser.ParentAccess.FlowResult";
 
+// TODO(b/262555804) use shared constants for flow type variant suffixes.
 constexpr char kParentAccessFlowResultSuffixAll[] = "All";
-
 constexpr char kParentAccessFlowResultSuffixWebApprovals[] = "WebApprovals";
 }  // namespace
 

@@ -162,6 +162,35 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ChromeOS.FamilyLinkUser.ParentAccessWidgetError.{FlowType}"
+    enum="FamilyLinkUserParentAccessWidgetError" expires_after="2023-03-26">
+  <owner>agawronska@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records an error that occurs in the parent access widget. ChromeOS Only.
+  </summary>
+  <token key="FlowType">
+    <variant name="All"/>
+    <variant name="WebApprovals"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.FamilyLinkUser.ParentAccessWidgetShowDialogError.{FlowType}"
+    enum="FamilyLinkUserParentAccessWidgetShowDialogError"
+    expires_after="2023-03-26">
+  <owner>agawronska@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records an error where the parent access widget dialog cannot be shown.
+    Reported by the browser when the dialog fails to show. ChromeOS only.
+  </summary>
+  <token key="FlowType">
+    <variant name="All"/>
+    <variant name="WebApprovals"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.FamilyUser.ChildUserTypeMismatchError"
     enum="ChildUserTypeMismatchError" expires_after="2023-12-12">
   <owner>agawronska@chromium.org</owner>

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_browsertest_base.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
@@ -253,6 +254,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, DestroyedWithoutResult) {
 
 IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest,
                        ErrorOnDialogAlreadyVisible) {
+  base::HistogramTester histogram_tester;
   // Show the dialog.
   ParentAccessDialogProvider provider;
   ParentAccessDialogProvider::ShowError error = provider.Show(
@@ -282,6 +284,19 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest,
   EXPECT_EQ(error,
             ParentAccessDialogProvider::ShowError::kDialogAlreadyVisible);
   EXPECT_NE(ParentAccessDialog::GetInstance(), nullptr);
+
+  // Verify that metrics were recorded.
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessDialogProvider::
+          GetParentAccessWidgetShowDialogErrorHistogramForFlowType(
+              absl::nullopt),
+      ParentAccessDialogProvider::ShowErrorType::kAlreadyVisible, 1);
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessDialogProvider::
+          GetParentAccessWidgetShowDialogErrorHistogramForFlowType(
+              parent_access_ui::mojom::ParentAccessParams::FlowType::
+                  kWebsiteAccess),
+      ParentAccessDialogProvider::ShowErrorType::kAlreadyVisible, 1);
 }
 
 using ParentAccessDialogRegularUserBrowserTest =
@@ -290,6 +305,7 @@ using ParentAccessDialogRegularUserBrowserTest =
 // Verify that the dialog is not shown for non child users.
 IN_PROC_BROWSER_TEST_F(ParentAccessDialogRegularUserBrowserTest,
                        ErrorForNonChildUser) {
+  base::HistogramTester histogram_tester;
   // Show the dialog.
   ParentAccessDialogProvider provider;
   ParentAccessDialogProvider::ShowError error = provider.Show(
@@ -302,6 +318,19 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogRegularUserBrowserTest,
   // Verify it is not showing.
   EXPECT_EQ(error, ParentAccessDialogProvider::ShowError::kNotAChildUser);
   EXPECT_EQ(ParentAccessDialog::GetInstance(), nullptr);
+
+  // Verify that metrics were recorded.
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessDialogProvider::
+          GetParentAccessWidgetShowDialogErrorHistogramForFlowType(
+              absl::nullopt),
+      ParentAccessDialogProvider::ShowErrorType::kNotAChildUser, 1);
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessDialogProvider::
+          GetParentAccessWidgetShowDialogErrorHistogramForFlowType(
+              parent_access_ui::mojom::ParentAccessParams::FlowType::
+                  kWebsiteAccess),
+      ParentAccessDialogProvider::ShowErrorType::kNotAChildUser, 1);
 }
 
 }  // namespace ash

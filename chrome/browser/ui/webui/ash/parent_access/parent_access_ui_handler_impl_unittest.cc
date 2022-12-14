@@ -125,6 +125,7 @@ TEST_F(ParentAccessUIHandlerImplTest, GetOAuthTokenSuccess) {
 
 // Verifies that access token fetch errors are recorded.
 TEST_F(ParentAccessUIHandlerImplTest, GetOAuthTokenError) {
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   parent_access_ui_handler_->GetOAuthToken(base::BindLambdaForTesting(
       [&](parent_access_ui::mojom::GetOAuthTokenStatus status,
@@ -139,6 +140,17 @@ TEST_F(ParentAccessUIHandlerImplTest, GetOAuthTokenError) {
       GoogleServiceAuthError::FromServiceError("FAKE SERVICE ERROR"));
 
   run_loop.Run();
+
+  // Expect metric to be recorded.
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+          absl::nullopt),
+      ParentAccessUIHandlerImpl::ParentAccessWidgetError::kOAuthError, 1);
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::
+              kWebsiteAccess),
+      ParentAccessUIHandlerImpl::ParentAccessWidgetError::kOAuthError, 1);
 }
 
 // Verifies that only one access token fetch is possible at a time.
@@ -361,6 +373,7 @@ TEST_F(ParentAccessUIHandlerImplTest, OnError) {
 
 // Verifies that the ConsentDeclined status is ignored.
 TEST_F(ParentAccessUIHandlerImplTest, ConsentDeclinedParsed) {
+  base::HistogramTester histogram_tester;
   // Construct the ParentAccessCallback
   kids::platform::parentaccess::client::proto::ParentAccessCallback
       parent_access_callback;
@@ -384,10 +397,22 @@ TEST_F(ParentAccessUIHandlerImplTest, ConsentDeclinedParsed) {
             run_loop.Quit();
           }));
   run_loop.Run();
+
+  // Expect metric to be recorded.
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+          absl::nullopt),
+      ParentAccessUIHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::
+              kWebsiteAccess),
+      ParentAccessUIHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
 }
 
 // Verifies that the OnPageSizeChanged status is ignored.
 TEST_F(ParentAccessUIHandlerImplTest, OnPageSizeChangedIgnored) {
+  base::HistogramTester histogram_tester;
   // Construct the ParentAccessCallback
   kids::platform::parentaccess::client::proto::ParentAccessCallback
       parent_access_callback;
@@ -411,10 +436,23 @@ TEST_F(ParentAccessUIHandlerImplTest, OnPageSizeChangedIgnored) {
             run_loop.Quit();
           }));
   run_loop.Run();
+
+  // Expect metric to be recorded.
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+          absl::nullopt),
+      ParentAccessUIHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::
+              kWebsiteAccess),
+      ParentAccessUIHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
 }
 
 // Verifies that the OnCommunicationEstablished status is ignored.
 TEST_F(ParentAccessUIHandlerImplTest, OnCommunicationEstablishedIgnored) {
+  base::HistogramTester histogram_tester;
+
   // Construct the ParentAccessCallback
   kids::platform::parentaccess::client::proto::ParentAccessCallback
       parent_access_callback;
@@ -438,6 +476,90 @@ TEST_F(ParentAccessUIHandlerImplTest, OnCommunicationEstablishedIgnored) {
             run_loop.Quit();
           }));
   run_loop.Run();
+
+  // Expect metric to be recorded.
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+          absl::nullopt),
+      ParentAccessUIHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
 }
 
+// Verifies metric is recorded for no delegate error.
+TEST_F(ParentAccessUIHandlerImplTest, NoDelegateErrorMetricRecorded) {
+  base::HistogramTester histogram_tester;
+
+  // Construct a ParentAccessUIHandler without a delegate.
+  mojo::Remote<parent_access_ui::mojom::ParentAccessUIHandler> remote;
+  auto parent_access_ui_handler_no_delegate =
+      std::make_unique<ParentAccessUIHandlerImpl>(
+          remote.BindNewPipeAndPassReceiver(),
+          identity_test_env_->identity_manager(), nullptr);
+
+  // Send a result status.
+  base::RunLoop run_loop;
+  parent_access_ui_handler_no_delegate->OnParentAccessDone(
+      parent_access_ui::mojom::ParentAccessResult::kApproved,
+      base::BindLambdaForTesting([&]() -> void { run_loop.Quit(); }));
+
+  run_loop.Run();
+
+  // Expect metric to be recorded.
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+          absl::nullopt),
+      ParentAccessUIHandlerImpl::ParentAccessWidgetError::kDelegateNotAvailable,
+      1);
+}
+
+// Verifies metric is recorded when received callback cannot be decoded.
+TEST_F(ParentAccessUIHandlerImplTest, DecodingErrorMetricRecorded) {
+  base::HistogramTester histogram_tester;
+  base::RunLoop run_loop;
+
+  // Receive non-decodable callback.
+  parent_access_ui_handler_->OnParentAccessCallbackReceived(
+      "not_a_callback",
+      base::BindLambdaForTesting(
+          [&](parent_access_ui::mojom::ParentAccessServerMessagePtr message)
+              -> void { run_loop.Quit(); }));
+  run_loop.Run();
+
+  // Expect metric to be recorded.
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+          absl::nullopt),
+      ParentAccessUIHandlerImpl::ParentAccessWidgetError::kDecodingError, 1);
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::
+              kWebsiteAccess),
+      ParentAccessUIHandlerImpl::ParentAccessWidgetError::kDecodingError, 1);
+}
+
+// Verifies metric is recorded when received callback cannot be parsed to proto.
+TEST_F(ParentAccessUIHandlerImplTest, ParsingErrorMetricRecorded) {
+  base::HistogramTester histogram_tester;
+
+  // Receive non-parseable callback.
+  base::RunLoop run_loop;
+  std::string encoded_not_a_callback;
+  base::Base64Encode("not_a_callback", &encoded_not_a_callback);
+  parent_access_ui_handler_->OnParentAccessCallbackReceived(
+      encoded_not_a_callback,
+      base::BindLambdaForTesting(
+          [&](parent_access_ui::mojom::ParentAccessServerMessagePtr message)
+              -> void { run_loop.Quit(); }));
+  run_loop.Run();
+
+  // Expect metric to be recorded.
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+          absl::nullopt),
+      ParentAccessUIHandlerImpl::ParentAccessWidgetError::kParsingError, 1);
+  histogram_tester.ExpectUniqueSample(
+      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::
+              kWebsiteAccess),
+      ParentAccessUIHandlerImpl::ParentAccessWidgetError::kParsingError, 1);
+}
 }  // namespace ash
