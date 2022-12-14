@@ -40,8 +40,7 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable-v23/menu_action_bar_bg.xml",
-    "java/res/drawable-v31/menu_action_bar_bg.xml",
+    "java/res/drawable/menu_action_bar_bg.xml",
     "java/res/layout/icon_row_menu_item.xml",
     "java/res/layout/menu_item.xml",
     "java/res/layout/menu_item_start_with_icon.xml",
