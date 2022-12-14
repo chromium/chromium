@@ -13,7 +13,6 @@ ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     builderless = True,
     cores = 8,
-    ssd = True,
     pool = ci.DEFAULT_POOL,
     sheriff_rotations = sheriff_rotations.CFT,
     tree_closing = False,

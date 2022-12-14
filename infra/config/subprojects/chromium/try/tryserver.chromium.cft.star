@@ -11,7 +11,6 @@ try_.defaults.set(
     builder_group = "tryserver.chromium.cft",
     executable = try_.DEFAULT_EXECUTABLE,
     builderless = True,
-    ssd = True,
     pool = try_.DEFAULT_POOL,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
