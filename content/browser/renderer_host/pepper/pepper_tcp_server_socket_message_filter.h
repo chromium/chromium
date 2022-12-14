@@ -27,10 +27,6 @@
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "content/public/browser/firewall_hole_proxy.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace network {
 namespace mojom {
 class NetworkContext;
@@ -47,6 +43,7 @@ namespace content {
 
 class BrowserPpapiHostImpl;
 class ContentBrowserPepperHostFactory;
+class FirewallHoleProxy;
 
 // TODO(yzshen): Remove this class entirely and let
 // TCPServerSocketPrivateResource inherit TCPSocketResourceBase.
@@ -138,12 +135,12 @@ class CONTENT_EXPORT PepperTCPServerSocketMessageFilter
   void SendAcceptError(const ppapi::host::ReplyMessageContext& context,
                        int32_t pp_result);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void OpenFirewallHole(const ppapi::host::ReplyMessageContext& context,
                         const net::IPEndPoint& local_addr);
   void OnFirewallHoleOpened(const ppapi::host::ReplyMessageContext& context,
                             std::unique_ptr<FirewallHoleProxy> hole);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Following fields are initialized and used only on the IO thread.
   // Non-owning ptr.
@@ -159,9 +156,9 @@ class CONTENT_EXPORT PepperTCPServerSocketMessageFilter
 
   PP_NetAddress_Private bound_addr_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<FirewallHoleProxy> firewall_hole_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Following fields are initialized on the IO thread but used only
   // on the UI thread.

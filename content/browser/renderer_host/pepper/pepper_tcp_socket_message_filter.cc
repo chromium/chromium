@@ -45,6 +45,10 @@
 #include "ppapi/shared_impl/private/net_address_private_impl.h"
 #include "ppapi/shared_impl/private/ppb_x509_util_shared.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "content/public/browser/firewall_hole_proxy.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 using ppapi::NetAddressPrivateImpl;
 using ppapi::TCPSocketState;
 using ppapi::TCPSocketVersion;
@@ -1034,12 +1038,12 @@ void PepperTCPSocketMessageFilter::OnListenCompleted(
 
   DCHECK(state_.IsPending(TCPSocketState::LISTEN));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (pp_result == PP_OK) {
     OpenFirewallHole(context);
     return;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   SendListenReply(context, pp_result);
   state_.CompletePendingTransition(pp_result == PP_OK);
@@ -1185,7 +1189,7 @@ void PepperTCPSocketMessageFilter::SetStreams(
           base::Unretained(this)));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void PepperTCPSocketMessageFilter::OpenFirewallHole(
     const ppapi::host::ReplyMessageContext& context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1206,7 +1210,7 @@ void PepperTCPSocketMessageFilter::OnFirewallHoleOpened(
   SendListenReply(context, PP_OK);
   state_.CompletePendingTransition(true);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void PepperTCPSocketMessageFilter::SendBindReply(
     const ppapi::host::ReplyMessageContext& context,
@@ -1330,10 +1334,10 @@ void PepperTCPSocketMessageFilter::Close() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   state_.DoTransition(TCPSocketState::CLOSE, true);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Close the firewall hole, it is no longer needed.
   firewall_hole_.reset();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Make sure there are no further callbacks from Mojo, which could end up in a
   // double free (Add ref on the UI thread, while a deletion is pending on the

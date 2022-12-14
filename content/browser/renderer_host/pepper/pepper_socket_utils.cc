@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
@@ -24,8 +23,7 @@
 #include "ppapi/c/private/ppb_net_address_private.h"
 #include "ppapi/shared_impl/private/net_address_private_impl.h"
 
-namespace content {
-namespace pepper_socket_utils {
+namespace content::pepper_socket_utils {
 
 SocketPermissionRequest CreateSocketPermissionRequest(
     SocketPermissionRequest::OperationType type,
@@ -70,7 +68,7 @@ bool CanUseSocketAPIs(bool external_plugin,
   return true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 
 // The entire IPv4 subnet 127.0.0.0/8 is for loopback. See RFC3330.
@@ -111,7 +109,7 @@ void OpenUDPFirewallHole(const net::IPEndPoint& address,
       ->GetFirewallHoleProxyFactory()
       ->OpenUDPFirewallHole(std::string(), address.port(), std::move(callback));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 net::MutableNetworkTrafficAnnotationTag PepperTCPNetworkAnnotationTag() {
   return net::MutableNetworkTrafficAnnotationTag(
@@ -202,5 +200,4 @@ net::MutableNetworkTrafficAnnotationTag PepperUDPNetworkAnnotationTag() {
         })"));
 }
 
-}  // namespace pepper_socket_utils
-}  // namespace content
+}  // namespace content::pepper_socket_utils
