@@ -568,6 +568,8 @@ void WebContentsAndroid::EvaluateJavaScript(
   if (!InitializeRenderFrameForJavaScript())
     return;
 
+  content::RenderFrameHost::AllowInjectingJavaScript();
+
   if (!callback) {
     // No callback requested.
     web_contents_->GetMainFrame()->ExecuteJavaScript(

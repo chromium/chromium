@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.ChildProcessImportance;
+import org.chromium.content_public.browser.JavaScriptCallback;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -323,6 +324,17 @@ public interface Tab extends TabLifecycle {
 
     default void saveState() {
 
+    }
+
+    default void cacheThumbnail() {
+
+    }
+
+    default void evaluateJavaScript(String script, @Nullable JavaScriptCallback callback) {
+        WebContents webContents = getWebContents();
+        if (webContents != null) {
+            webContents.evaluateJavaScript(script, callback);
+        }
     }
 
 

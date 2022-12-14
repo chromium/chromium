@@ -636,7 +636,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public void stopLoading() {
-        TabSnapshotManager.getInstance().cacheTab(this);
+        cacheThumbnail();
         if (isLoading()) {
             RewindableIterator<TabObserver> observers = getTabObservers();
             while (observers.hasNext()) {
@@ -1095,7 +1095,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * Called when a navigation completes and no other navigation is in progress.
      */
     void onLoadStopped() {
-        TabSnapshotManager.getInstance().cacheTab(this);
+        cacheThumbnail();
         // mIsLoading should only be false if this is a same-document navigation.
         boolean toDifferentDocument = mIsLoading;
         mIsLoading = false;
@@ -1128,7 +1128,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * @param url URL that was loaded.
      */
     void didFinishPageLoad(GURL url) {
-        TabSnapshotManager.getInstance().cacheTab(this);
+        cacheThumbnail();
         updateTitle();
 
         for (TabObserver observer : mObservers) observer.onPageLoadFinished(this, url);
@@ -1786,4 +1786,14 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             Log.d(TAG, "saveState id=" + getId() + " deltaTime=" + (System.currentTimeMillis() - start));
         });
     }
+
+    @Override
+    public void cacheThumbnail() {
+//        if (mWindowAndroid == null) {
+//            return;
+//        }
+//        mWindowAndroid.getTabContentManager().cacheTabThumbnail(this);
+        TabSnapshotManager.getInstance().cacheTab(this);
+    }
+
 }

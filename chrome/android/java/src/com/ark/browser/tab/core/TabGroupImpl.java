@@ -494,7 +494,7 @@ public class TabGroupImpl implements ITabGroup {
             return;
         }
         this.index = index;
-//        PrefsHelper.with().putInt("tab_index", index);
+//        PrefsHelper.with().applyInt("tab_index", index);
 
 
         saveGroupFile();

@@ -28,7 +28,7 @@ public interface IPage {
     default void remove() {
         PageCacheManager.getInstance().removePage(getPageInfo());
         TabSnapshotManager.getInstance().removeSnapshot(getId());
-        deletePageInfo();
+        ThreadPool.executeIO(this::deletePageInfo);
     }
 
     Tab getNativePage();

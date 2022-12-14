@@ -125,9 +125,12 @@ public class PageCacheManager {
 
         ArkTabImpl tab = ArkTabBuilder.createLiveTab(pageInfo, false)
                 .setLaunchType(type)
-                .setLoadUrlParams(params)
+//                .setLoadUrlParams(params)
                 .build();
         putPage(tab);
+
+        tab.loadUrl(params);
+
         ArkLogger.d(TAG, "createLivePageByType create tab deltaTime=" + (System.currentTimeMillis() - start));
         return tab;
     }

@@ -272,8 +272,8 @@ public class PageInfo {
             os.writeBoolean(fromMerge);
             os.writeInt(themeColor);
             os.writeInt(originalIndex);
-            os.writeUTF(url);
-            os.writeUTF(title);
+            os.writeUTF(url == null ? "" : url);
+            os.writeUTF(title == null ? "" : title);
             os.close();
 
             byte[] bytes = stream.toByteArray();

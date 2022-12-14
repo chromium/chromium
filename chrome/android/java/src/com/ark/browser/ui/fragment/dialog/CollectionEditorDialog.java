@@ -234,7 +234,7 @@ public class CollectionEditorDialog extends OverDragBottomDialogFragment<Collect
                         @Override
                         public void onSelectFolder(String selectedFolder, BookmarkId folderId) {
                             moveToFolderId = folderId;
-                            PrefsHelper.with().putLong(KEY_MOVE_TO_BOOKMARK_FOLDER, folderId.getId());
+                            PrefsHelper.with().applyLong(KEY_MOVE_TO_BOOKMARK_FOLDER, folderId.getId());
                             mFolderTextView.setText(selectedFolder);
                         }
 

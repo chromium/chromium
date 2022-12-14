@@ -37,7 +37,7 @@ public final class AppConfig {
     }
 
     public static void toggleThemeMode() {
-        PrefsHelper.with().putBoolean(KEY_NIGHT_MODE, !isNightMode());
+        PrefsHelper.with().applyBoolean(KEY_NIGHT_MODE, !isNightMode());
     }
 
     public static boolean isPureMode() {
@@ -45,7 +45,7 @@ public final class AppConfig {
     }
 
     public static void togglePureMode() {
-        PrefsHelper.with().putBoolean(KEY_PURE_MODE, !isPureMode());
+        PrefsHelper.with().applyBoolean(KEY_PURE_MODE, !isPureMode());
     }
 
     public static boolean isFullscreenMode() {
@@ -53,7 +53,7 @@ public final class AppConfig {
     }
 
     public static void toggleFullscreenMode() {
-        PrefsHelper.with().putBoolean(KEY_FULLSCREEN_MODE, !isFullscreenMode());
+        PrefsHelper.with().applyBoolean(KEY_FULLSCREEN_MODE, !isFullscreenMode());
     }
 
     public static boolean isSmartNoImageMode() {
@@ -61,7 +61,7 @@ public final class AppConfig {
     }
 
     public static void toggleSmartNoImageMode() {
-        PrefsHelper.with().putBoolean(KEY_SMART_NO_IMAGE_MODE, !isSmartNoImageMode());
+        PrefsHelper.with().applyBoolean(KEY_SMART_NO_IMAGE_MODE, !isSmartNoImageMode());
     }
 
     public static boolean isIncognitoMode() {
@@ -69,7 +69,7 @@ public final class AppConfig {
     }
 
     public static void toggleIncognitoMode() {
-        PrefsHelper.with().putBoolean(KEY_INCOGNITO_MODE, !isIncognitoMode());
+        PrefsHelper.with().applyBoolean(KEY_INCOGNITO_MODE, !isIncognitoMode());
     }
 
     public static boolean isShowConsole() {
@@ -77,7 +77,7 @@ public final class AppConfig {
     }
 
     public static void toggleShowConsole() {
-        PrefsHelper.with().putBoolean(KEY_SHOW_CONSOLE, !isShowConsole());
+        PrefsHelper.with().applyBoolean(KEY_SHOW_CONSOLE, !isShowConsole());
     }
 
     public static boolean isRefreshTiming() {
@@ -85,7 +85,7 @@ public final class AppConfig {
     }
 
     public static void toggleRefreshTiming() {
-        PrefsHelper.with().putBoolean(KEY_REFRESH_TIMING, !isRefreshTiming());
+        PrefsHelper.with().applyBoolean(KEY_REFRESH_TIMING, !isRefreshTiming());
     }
 
     public static boolean isEditMode() {
@@ -93,7 +93,7 @@ public final class AppConfig {
     }
 
     public static void toggleEditMode() {
-        PrefsHelper.with().putBoolean(KEY_EDIT_MODE, !isEditMode());
+        PrefsHelper.with().applyBoolean(KEY_EDIT_MODE, !isEditMode());
     }
 
 }

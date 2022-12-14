@@ -55,7 +55,7 @@ public final class ArkTabGestureStateListener extends TabWebContentsUserData {
 
             @Override
             public void onFlingEndGesture(int scrollOffsetY, int scrollExtentY) {
-                TabSnapshotManager.getInstance().cacheTab(mTab);
+                mTab.cacheThumbnail();
                 onScrollingStateChanged();
             }
 
@@ -67,7 +67,9 @@ public final class ArkTabGestureStateListener extends TabWebContentsUserData {
 
             @Override
             public void onScrollEnded(int scrollOffsetY, int scrollExtentY) {
-                TabSnapshotManager.getInstance().cacheTab(mTab);
+
+                mTab.cacheThumbnail();
+
                 onScrollingStateChanged();
                 RewindableIterator<TabObserver> observers = mTab.getTabObservers();
                 while (observers.hasNext()) {
@@ -77,7 +79,7 @@ public final class ArkTabGestureStateListener extends TabWebContentsUserData {
             }
 
             private void onScrollingStateChanged() {
-                boolean scrolling = manager != null ? manager.isScrollInProgress() : false;
+                boolean scrolling = manager != null && manager.isScrollInProgress();
                 RewindableIterator<TabObserver> observers = mTab.getTabObservers();
                 while (observers.hasNext()) {
                     observers.next().onContentViewScrollingStateChanged(scrolling);

@@ -14,6 +14,7 @@ import com.ark.browser.core.utils.TabPrinter;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.settings.Keys;
+import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.ui.widget.DrawableTintTextView;
 import com.ark.browser.ui.widget.TextCircleImageView;
 import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageOrigin;
 import org.chromium.chrome.browser.offlinepages.downloads.OfflinePageDownloadBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.printing.PrintManagerDelegateImpl;
 import org.chromium.printing.PrintingController;
 import org.chromium.printing.PrintingControllerImpl;
@@ -216,11 +218,8 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
 
     private void changeHtmlColor(Tab page, TextCircleImageView textCircleImageView, int id) {
         onChangeColorClicked(textCircleImageView);
-        PrefsHelper.with().putInt("current_html_backgroundcolor", id);
-        if (page != null && page.getWebContents() != null) {
-            page.getWebContents().evaluateJavaScript("javascript:changeColor(" + PrefsHelper.with().getInt("current_html_backgroundcolor", 0) + ");", null);
-//                            mTab.reload();
-        }
+        PrefsHelper.with().applyInt("current_html_backgroundcolor", id);
+        page.evaluateJavaScript("javascript:changeColor(" + PrefsHelper.with().getInt("current_html_backgroundcolor", 0) + ");", null);
     }
 
     private boolean shouldShowPageMenu() {
@@ -259,7 +258,6 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
             HistoryStackDialogFragment.newInstance(mPage).show(context);
         } else if (id == R.id.tv_fullscreen) {
             boolean tag = !fullscreenMode;
-//                PrefsHelper.with().putBoolean("fullscreen_mode", tag);
             AppConfig.toggleFullscreenMode();
             if (tag) {
                 _mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -291,7 +289,6 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
             if (tag) {
                 initVConsole();
             }
-//                PrefsHelper.with().putBoolean("use_console", tag);
             AppConfig.toggleShowConsole();
             DrawableTintTextView tvConsole = (DrawableTintTextView) v;
             tvConsole.setTint(getResources().getColor(tag ? R.color.colorPrimary : R.color.google_black_400));
@@ -305,9 +302,9 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
         } else if (id == R.id.tv_edit_mode) {
             boolean tag = !mEditMode;
             if (tag) {
-                page.getWebContents().evaluateJavaScript("javascript:document.body.contentEditable = 'true'; document.designMode='on'; void 0", null);
+                page.evaluateJavaScript("javascript:document.body.contentEditable = 'true'; document.designMode='on'; void 0", null);
             } else {
-                page.getWebContents().evaluateJavaScript("javascript:document.body.contentEditable = 'false'; document.designMode='off'; void 0", null);
+                page.evaluateJavaScript("javascript:document.body.contentEditable = 'false'; document.designMode='off'; void 0", null);
             }
             AppConfig.toggleEditMode();
             DrawableTintTextView tvEditMode = (DrawableTintTextView) v;
@@ -320,21 +317,27 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
                 RecordUserAction.record("MobileMenuPrint");
             }
         } else if (id == R.id.tv_log) {
-            page.getWebContents().evaluateJavaScript("javascript:window.touchblock=!window.touchblock;setTimeout(function(){JsInterface.blocktoggle(window.touchblock)}, 100);", null);
+            page.evaluateJavaScript("javascript:window.touchblock=!window.touchblock;setTimeout(function(){JsInterface.blocktoggle(window.touchblock)}, 100);", null);
         } else if (id == R.id.tv_see_html) {
-            LoadUrlEvent.post("view-source:" + page.getWebContents().getVisibleUrl(), true);
+            LoadUrlEvent.post("view-source:" + page.getUrl(), true);
         } else if (id == R.id.tv_translate) {
 
         } else if (id == R.id.tv_smart_no_img) {
 //            tag = !smartNoImageMode;
 //            page.getActiveContentViewCore().setImagesEnabled(!tag);
-////                PrefsHelper.with().putBoolean("smart_no_img_mode", tag);
 //            AppConfig.toggleSmartNoImageMode();
 //            DrawableTintTextView tvSmartNoImg = (DrawableTintTextView) v;
 //            tvSmartNoImg.setTint(getResources().getColor(tag ? R.color.colorPrimary : R.color.google_black_400));
         } else if (id == R.id.tv_reader_mode) {
-            ReaderModeManager readerModeManager = page.getUserDataHost().getUserData(ReaderModeManager.USER_DATA_KEY);
-            readerModeManager.activateReaderMode();
+            String distillerUrl = DomDistillerUrlUtils.getDistillerViewUrlFromUrl(
+                    ReaderModeManager.DOM_DISTILLER_SCHEME, page.getUrl().getSpec(), page.getTitle());
+
+            if (page instanceof ArkTabImpl) {
+                LoadUrlEvent.post(((ArkTabImpl) page).getPageInfo(),
+                        distillerUrl, true, page.isIncognito());
+            } else {
+                LoadUrlEvent.post(distillerUrl, true);
+            }
         }
         dismiss();
     }
@@ -356,18 +359,18 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
                 "console.info('欢迎使用 vConsole。vConsole 是一个由微信公众平台前端团队研发的 Web 前端开发者面板，可用于展示 console 日志，方便开发、调试。');";
 //                "var div = document.querySelector('div.vc-switch');" +
 //                "div.setAttribute('style', 'display:none;');";
-        mPage.getWebContents().evaluateJavaScript(js, null);
+        mPage.evaluateJavaScript(js, null);
     }
 
     public void showVConsole(boolean flag) {
         if (flag) {
-            mPage.getWebContents().evaluateJavaScript("javascript:" +
+            mPage.evaluateJavaScript("javascript:" +
                     "var div = document.querySelectorAll('div.vc-switch')[0];" +
                     "if (div) {" +
                     "   div.removeAttribute('style');" +
                     "}", null);
         } else {
-            mPage.getWebContents().evaluateJavaScript("javascript:" +
+            mPage.evaluateJavaScript("javascript:" +
                     "var div = document.querySelector('div.vc-switch');" +
                     "if (div) {" +
                     "   div.setAttribute('style', 'display:none;');" +

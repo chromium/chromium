@@ -9,9 +9,7 @@ import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
-import com.ark.browser.tab.TabSnapshotManager;
 import com.ark.browser.tab.dao.ArkTabDao;
-import com.ark.browser.tab.dao.ArkTabStore;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
@@ -278,7 +276,7 @@ public interface ITabGroup {
                     if (lastTab.isInitialized() && !lastTab.isDestroyed()) {
                         if (!lastTab.isClosing()) {
 //                            lastTab.saveState();
-                            TabSnapshotManager.getInstance().cacheTab(lastTab);
+                            lastTab.cacheThumbnail();
                         }
                     }
 //                    lastTab.setImportance(ChildProcessImportance.NORMAL);

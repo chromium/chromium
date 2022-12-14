@@ -239,7 +239,7 @@ public interface ITab {
                     .subList(index, pageInfoList.getCount());
 
             List<IPage> tempPages = new ArrayList<>(pageRemoved);
-            ThreadPool.executeIO(() -> {
+            ThreadPool.postOnUIThread(() -> {
                 long start = System.currentTimeMillis();
                 ArkLogger.d(ITab.this, "openNewPage pageRemovedCount=" + tempPages.size());
 

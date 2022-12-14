@@ -28,7 +28,6 @@ public final class DomDistillerUrlUtils {
      * @param title The title of the page being distilled.
      * @return the URL to load to get the distilled version of a page.
      */
-    @VisibleForTesting
     public static String getDistillerViewUrlFromUrl(String scheme, String url, String title) {
         assert scheme != null;
         if (TextUtils.isEmpty(url)) return url;

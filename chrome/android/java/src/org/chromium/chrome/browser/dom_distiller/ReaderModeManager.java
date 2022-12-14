@@ -588,6 +588,11 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         navigateToReaderMode();
     }
 
+    public void openReaderMode() {
+
+
+    }
+
     /** Navigate the current tab to a Reader Mode URL. */
     private void navigateToReaderMode() {
         WebContents webContents = mTab.getWebContents();

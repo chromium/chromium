@@ -81,9 +81,9 @@ public class ExitDialog extends OverDragBottomDialogFragment<ExitDialog> impleme
     public void onClick(View v) {
         int id = v.getId();
         if (R.id.tv_ok == id) {
-            PrefsHelper.with().putBoolean("close_tabs_when_exit", closeTabs);
-            PrefsHelper.with().putBoolean("clear_history_when_exit", clearHistory);
-            PrefsHelper.with().putBoolean("send_background_when_exit", sendToBackground);
+            PrefsHelper.with().applyBoolean("close_tabs_when_exit", closeTabs);
+            PrefsHelper.with().applyBoolean("clear_history_when_exit", clearHistory);
+            PrefsHelper.with().applyBoolean("send_background_when_exit", sendToBackground);
             if (closeTabs && !sendToBackground) {
                 TabListManager.getInstance().getCurrentTabList().closeAllTabs();
             }

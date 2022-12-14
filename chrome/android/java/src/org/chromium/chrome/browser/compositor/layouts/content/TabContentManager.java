@@ -339,13 +339,13 @@ public class TabContentManager {
      * @param forceUpdate Whether to obtain the thumbnail from the live content.
      * @param writeBack When {@code forceUpdate}, whether to write the thumbnail to cache.
      */
-    public void getTabThumbnailWithCallback(@NonNull int tabId, @NonNull Callback<Bitmap> callback,
+    public void getTabThumbnailWithCallback(Tab tab, @NonNull Callback<Bitmap> callback,
             boolean forceUpdate, boolean writeBack) {
         if (!mSnapshotsEnabled) return;
 
         if (!forceUpdate) {
             assert !writeBack : "writeBack is ignored if not forceUpdate";
-            getTabThumbnailFromDisk(tabId, callback);
+            getTabThumbnailFromDisk(tab, callback);
             return;
         }
 
@@ -353,14 +353,8 @@ public class TabContentManager {
 
         // Reading thumbnail from disk is faster than taking screenshot from live Tab, so fetch
         // that first even if |forceUpdate|.
-        getTabThumbnailFromDisk(tabId, (diskBitmap) -> {
+        getTabThumbnailFromDisk(tab, (diskBitmap) -> {
             if (diskBitmap != null) callback.onResult(diskBitmap);
-
-            if (mTabFinder == null) return;
-
-            Tab tab = mTabFinder.getTabById(tabId);
-            if (tab == null) return;
-
             captureThumbnail(tab, writeBack, (bitmap) -> {
                 // Null check to avoid having a Bitmap from getTabThumbnailFromDisk() but
                 // cleared here.
@@ -421,9 +415,10 @@ public class TabContentManager {
         return BitmapFactory.decodeFile(file.getPath());
     }
 
-    private void getTabThumbnailFromDisk(@NonNull int tabId, @NonNull Callback<Bitmap> callback) {
+    private void getTabThumbnailFromDisk(@NonNull Tab tab, @NonNull Callback<Bitmap> callback) {
         mOnTheFlyRequests++;
         mRequests++;
+        int tabId = tab.getId();
         // Try JPEG thumbnail first before using the more costly
         // TabContentManagerJni.get().getEtc1TabThumbnail.
         TraceEvent.startAsync("GetTabThumbnailFromDisk", tabId);
