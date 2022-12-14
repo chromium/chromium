@@ -1,0 +1,160 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module attribution_reporting.mojom;
+
+import "components/aggregation_service/aggregation_service.mojom";
+import "mojo/public/mojom/base/int128.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/origin.mojom";
+
+struct DebugKey {
+  uint64 value;
+};
+
+// Encapsulates a potentially trustworthy origin. Equivalent to
+// attribution_reporting::SuitableOrigin.
+struct SuitableOrigin {
+  url.mojom.Origin origin;
+};
+
+// Filter data for selectively matching attribution sources and triggers.
+// See https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#optional-attribution-filters
+// for details.
+struct FilterData {
+  // Map of filter name to a possibly empty set of values. Must not contain a
+  // `source_type` key.
+  map<string, array<string>> filter_values;
+};
+
+// Filters for selectively matching attribution sources and triggers.
+// See https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#optional-attribution-filters
+// for details.
+struct Filters {
+  // Map of filter name to a possibly empty set of values. May contain a
+  // `source_type` key.
+  map<string, array<string>> filter_values;
+};
+
+// See https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#attribution-source-registration
+// for details.
+struct AggregationKeys {
+  map<string, mojo_base.mojom.Uint128> keys;
+};
+
+// Struct containing the trigger-side aggregatable data.
+struct AggregatableTriggerData {
+  mojo_base.mojom.Uint128 key_piece;
+  array<string> source_keys;
+  Filters filters;
+  Filters not_filters;
+};
+
+struct SourceRegistration {
+  // Target site where this source will be triggered.
+  //
+  // For sources associated with a navigation, the destination site must be
+  // same-site with the final committed url of the navigation. If they are not
+  // same-site, this source will be ignored by the browser.
+  SuitableOrigin destination;
+
+  // Data that will be sent in attribution reports to identify this source.
+  uint64 source_event_id = 0;
+
+  // Specifies how long this source is eligible for attribution.
+  mojo_base.mojom.TimeDelta? expiry;
+
+  // Optionally specifies how long after source registration an event-level report
+  // can be generated with this source.
+  mojo_base.mojom.TimeDelta? event_report_window;
+
+  // Optionally specifies how long after source registration an aggregatable
+  // report can be generated with this source.
+  mojo_base.mojom.TimeDelta? aggregatable_report_window;
+
+  // Priority for this source.
+  int64 priority = 0;
+
+  // A key that is propagated through the Attribution Reporting API for
+  // debugging purposes.
+  DebugKey? debug_key;
+
+  FilterData filter_data;
+
+  AggregationKeys aggregation_keys;
+
+  // Specifies whether to enable verbose debug reporting.
+  bool debug_reporting = false;
+};
+
+// Deduplication key set by a reporting origin which prevents duplicate triggers
+// from generating multiple attribution reports for a given source.
+struct TriggerDedupKey {
+  // Arbitrary value for deduplication set by the reporting origin.
+  uint64 value;
+};
+
+// Mojo representation of the trigger configuration provided by a reporting
+// origin. This data is provided arbitrarily by certain subresources on a
+// page which invoke Attribution Reporting.
+struct EventTriggerData {
+  // Value which identifies this trigger in attribution reports, determined by
+  // reporting origin.
+  uint64 data = 0;
+
+  // Priority of this trigger relative to other attributed triggers for a
+  // source. Reports created with high priority triggers will be reported over
+  // lower priority ones.
+  int64 priority = 0;
+
+  // Key which allows deduplication against existing attributions for the same
+  // source.
+  TriggerDedupKey? dedup_key;
+
+  // If non-empty, this trigger will be ignored unless the attributed source's
+  // filter data matches.
+  Filters filters;
+
+  // If non-empty, this trigger will be ignored unless the attributed source's
+  // filter data does *NOT* match.
+  Filters not_filters;
+};
+
+// Represents a request from a reporting origin to trigger attribution on a
+// given site. See:
+// https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#triggering-attribution
+struct TriggerRegistration {
+  // List of all event trigger data objects declared by the event trigger
+  // header. This data is arbitrarily set by the reporting origin.
+  array<EventTriggerData> event_triggers;
+
+  // If non-empty, this trigger will be ignored unless the attributed source's
+  // filter data matches.
+  Filters filters;
+
+  // If non-empty, this trigger will be ignored unless the attributed source's
+  // filter data does *NOT* match.
+  Filters not_filters;
+
+  // List of all aggregatable trigger data objects declared by the trigger
+  // header.
+  array<AggregatableTriggerData> aggregatable_trigger_data;
+
+  // A map of aggregation key identifier and the corresponding value.
+  map<string, uint32> aggregatable_values;
+
+  // A key that is propagated through the Attribution Reporting API for
+  // debugging purposes.
+  DebugKey? debug_key;
+
+  // Key which allows deduplication against existing aggregatable reports for
+  // the same source.
+  TriggerDedupKey? aggregatable_dedup_key;
+
+  // Specifies whether to enable verbose debug reporting.
+  bool debug_reporting = false;
+
+  // Specifies the deployment option for the aggregation service.
+  aggregation_service.mojom.AggregationCoordinator aggregation_coordinator;
+};

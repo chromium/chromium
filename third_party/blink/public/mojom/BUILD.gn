@@ -253,7 +253,7 @@ mojom("mojom_platform") {
     ":script_type_mojo_bindings",
     ":web_feature_mojo_bindings",
     "//cc/mojom",
-    "//components/aggregation_service:mojom",
+    "//components/attribution_reporting:registration_mojom",
     "//components/payments/mojom",
     "//components/schema_org/common:mojom",
     "//components/services/filesystem/public/mojom",
@@ -528,64 +528,6 @@ mojom("mojom_platform") {
       ]
       traits_headers = [ "//third_party/blink/public/common/link_to_text/link_to_text_mojom_traits.h" ]
       traits_public_deps = [ "//components/shared_highlighting/core/common" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.AttributionDebugKey"
-          cpp = "uint64_t"
-        },
-        {
-          mojom = "blink.mojom.AttributionTriggerDedupKey"
-          cpp = "uint64_t"
-        },
-        {
-          mojom = "blink.mojom.AttributionSuitableOrigin"
-          cpp = "::attribution_reporting::SuitableOrigin"
-
-          # Avoid expensive copies by forcing Mojo methods to take the type by
-          # value, not const ref
-          move_only = true
-        },
-        {
-          mojom = "blink.mojom.AttributionFilterData"
-          cpp = "::attribution_reporting::FilterData"
-        },
-        {
-          mojom = "blink.mojom.AttributionAggregationKeys"
-          cpp = "::attribution_reporting::AggregationKeys"
-        },
-        {
-          mojom = "blink.mojom.AttributionSourceData"
-          cpp = "::attribution_reporting::SourceRegistration"
-
-          # Avoid expensive copies by forcing Mojo methods to take the type by
-          # value, not const ref
-          move_only = true
-        },
-        {
-          mojom = "blink.mojom.AttributionFilters"
-          cpp = "::attribution_reporting::Filters"
-        },
-        {
-          mojom = "blink.mojom.EventTriggerData"
-          cpp = "::attribution_reporting::EventTriggerData"
-        },
-        {
-          mojom = "blink.mojom.AttributionAggregatableTriggerData"
-          cpp = "::attribution_reporting::AggregatableTriggerData"
-        },
-        {
-          mojom = "blink.mojom.AttributionTriggerData"
-          cpp = "::attribution_reporting::TriggerRegistration"
-
-          # Avoid expensive copies by forcing Mojo methods to take the type by
-          # value, not const ref
-          move_only = true
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/attribution_reporting/mojom_traits.h" ]
-      traits_public_deps = [ "//components/attribution_reporting" ]
     },
     {
       types = [

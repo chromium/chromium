@@ -133,3 +133,116 @@ fuzzer_test("trigger_registration_fuzzer") {
   seed_corpus =
       "//components/attribution_reporting/trigger_registration_fuzzer_corpus"
 }
+
+mojom("registration_mojom") {
+  sources = [ "registration.mojom" ]
+
+  generate_java = true
+
+  deps = [
+    "//components/aggregation_service:mojom",
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_origin",
+  ]
+
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "attribution_reporting.mojom.DebugKey"
+          cpp = "uint64_t"
+        },
+        {
+          mojom = "attribution_reporting.mojom.TriggerDedupKey"
+          cpp = "uint64_t"
+        },
+        {
+          mojom = "attribution_reporting.mojom.SuitableOrigin"
+          cpp = "::attribution_reporting::SuitableOrigin"
+          forward_declaration =
+              "namespace attribution_reporting { class SuitableOrigin; }"
+
+          # Avoid expensive copies by forcing Mojo methods to take the type by
+          # value, not const ref
+          move_only = true
+        },
+        {
+          mojom = "attribution_reporting.mojom.FilterData"
+          cpp = "::attribution_reporting::FilterData"
+          forward_declaration =
+              "namespace attribution_reporting { class FilterData; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.AggregationKeys"
+          cpp = "::attribution_reporting::AggregationKeys"
+          forward_declaration =
+              "namespace attribution_reporting { class AggregationKeys; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.SourceRegistration"
+          cpp = "::attribution_reporting::SourceRegistration"
+          forward_declaration =
+              "namespace attribution_reporting { struct SourceRegistration; }"
+
+          # Avoid expensive copies by forcing Mojo methods to take the type by
+          # value, not const ref
+          move_only = true
+        },
+        {
+          mojom = "attribution_reporting.mojom.Filters"
+          cpp = "::attribution_reporting::Filters"
+          forward_declaration =
+              "namespace attribution_reporting { class Filters; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.EventTriggerData"
+          cpp = "::attribution_reporting::EventTriggerData"
+          forward_declaration =
+              "namespace attribution_reporting { struct EventTriggerData; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.AggregatableTriggerData"
+          cpp = "::attribution_reporting::AggregatableTriggerData"
+          forward_declaration = "namespace attribution_reporting { struct AggregatableTriggerData; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.TriggerRegistration"
+          cpp = "::attribution_reporting::TriggerRegistration"
+          forward_declaration =
+              "namespace attribution_reporting { struct TriggerRegistration; }"
+
+          # Avoid expensive copies by forcing Mojo methods to take the type by
+          # value, not const ref
+          move_only = true
+        },
+      ]
+      traits_headers = [ "registration_mojom_traits.h" ]
+      traits_public_deps = [ ":registration_mojom_traits" ]
+    },
+  ]
+
+  blink_cpp_typemaps = cpp_typemaps
+}
+
+component("registration_mojom_traits") {
+  sources = [
+    "registration_mojom_traits.cc",
+    "registration_mojom_traits.h",
+  ]
+
+  defines = [ "IS_ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS_IMPL" ]
+
+  public_deps = [
+    ":attribution_reporting",
+    ":registration_mojom_shared",
+    "//base",
+    "//components/aggregation_service:mojom_shared",
+    "//mojo/public/cpp/base:shared_typemap_traits",
+    "//url",
+    "//url/mojom:mojom_traits",
+  ]
+}

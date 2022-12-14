@@ -1,4 +1,0 @@
-file://content/browser/attribution_reporting/OWNERS
-
-per-file *mojom_traits*.*=set noparent
-per-file *mojom_traits*.*=file://ipc/SECURITY_OWNERS
