@@ -12,6 +12,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
@@ -536,6 +537,120 @@ TEST_F(GeneratedCookiePrefsTest, SessionOnlyPref) {
   EXPECT_EQ(
       map->GetDefaultContentSetting(ContentSettingsType::COOKIES, nullptr),
       ContentSetting::CONTENT_SETTING_ALLOW);
+}
+
+TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref) {
+  auto pref = std::make_unique<
+      content_settings::GeneratedCookieDefaultContentSettingPref>(profile());
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  // Ensure that the preference represents the content setting value.
+  map->SetDefaultContentSetting(ContentSettingsType::COOKIES,
+                                CONTENT_SETTING_ALLOW);
+  auto pref_object = pref->GetPrefObject();
+  EXPECT_EQ(pref_object->value->GetInt(), CONTENT_SETTING_ALLOW);
+
+  // Ensure setting the preference correctly updates content settings and the
+  // preference state.
+  EXPECT_EQ(
+      pref->SetPref(
+          std::make_unique<base::Value>(CONTENT_SETTING_SESSION_ONLY).get()),
+      extensions::settings_private::SetPrefResult::SUCCESS);
+  EXPECT_EQ(
+      map->GetDefaultContentSetting(ContentSettingsType::COOKIES, nullptr),
+      CONTENT_SETTING_SESSION_ONLY);
+  pref_object = pref->GetPrefObject();
+  EXPECT_EQ(pref_object->value->GetInt(), CONTENT_SETTING_SESSION_ONLY);
+
+  EXPECT_EQ(
+      pref->SetPref(std::make_unique<base::Value>(CONTENT_SETTING_ALLOW).get()),
+      extensions::settings_private::SetPrefResult::SUCCESS);
+  EXPECT_EQ(
+      map->GetDefaultContentSetting(ContentSettingsType::COOKIES, nullptr),
+      CONTENT_SETTING_ALLOW);
+  pref_object = pref->GetPrefObject();
+  EXPECT_EQ(pref_object->value->GetInt(), CONTENT_SETTING_ALLOW);
+
+  EXPECT_EQ(
+      pref->SetPref(std::make_unique<base::Value>(CONTENT_SETTING_BLOCK).get()),
+      extensions::settings_private::SetPrefResult::SUCCESS);
+  EXPECT_EQ(
+      map->GetDefaultContentSetting(ContentSettingsType::COOKIES, nullptr),
+      CONTENT_SETTING_BLOCK);
+  pref_object = pref->GetPrefObject();
+  EXPECT_EQ(pref_object->value->GetInt(), CONTENT_SETTING_BLOCK);
+}
+
+TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref_TypeMismatch) {
+  auto pref = std::make_unique<
+      content_settings::GeneratedCookieDefaultContentSettingPref>(profile());
+
+  // Confirm that a type mismatch is reported as such.
+  EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>(false).get()),
+            extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
+  EXPECT_EQ(
+      pref->SetPref(std::make_unique<base::Value>(CONTENT_SETTING_ASK).get()),
+      extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
+  EXPECT_EQ(pref->SetPref(
+                std::make_unique<base::Value>(CONTENT_SETTING_DEFAULT).get()),
+            extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
+  EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>(100).get()),
+            extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
+}
+
+TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref_Enforced) {
+  auto pref = std::make_unique<
+      content_settings::GeneratedCookieDefaultContentSettingPref>(profile());
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  // Ensure management state is correctly reported for all possible content
+  // setting management sources.
+  auto provider = std::make_unique<content_settings::MockProvider>();
+  provider->SetWebsiteSetting(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_ALLOW));
+  content_settings::TestUtils::OverrideProvider(
+      map, std::move(provider),
+      HostContentSettingsMap::CUSTOM_EXTENSION_PROVIDER);
+  auto pref_object = pref->GetPrefObject();
+  EXPECT_EQ(pref_object->controlled_by,
+            settings_api::ControlledBy::CONTROLLED_BY_EXTENSION);
+  EXPECT_EQ(pref_object->enforcement,
+            settings_api::Enforcement::ENFORCEMENT_ENFORCED);
+
+  provider = std::make_unique<content_settings::MockProvider>();
+  provider->SetWebsiteSetting(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_ALLOW));
+  content_settings::TestUtils::OverrideProvider(
+      map, std::move(provider), HostContentSettingsMap::SUPERVISED_PROVIDER);
+  pref_object = pref->GetPrefObject();
+  EXPECT_EQ(pref_object->controlled_by,
+            settings_api::ControlledBy::CONTROLLED_BY_CHILD_RESTRICTION);
+  EXPECT_EQ(pref_object->enforcement,
+            settings_api::Enforcement::ENFORCEMENT_ENFORCED);
+
+  provider = std::make_unique<content_settings::MockProvider>();
+  provider->SetWebsiteSetting(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_ALLOW));
+  content_settings::TestUtils::OverrideProvider(
+      map, std::move(provider), HostContentSettingsMap::POLICY_PROVIDER);
+  pref_object = pref->GetPrefObject();
+  EXPECT_EQ(pref_object->controlled_by,
+            settings_api::ControlledBy::CONTROLLED_BY_DEVICE_POLICY);
+  EXPECT_EQ(pref_object->enforcement,
+            settings_api::Enforcement::ENFORCEMENT_ENFORCED);
+
+  // Ensure the preference cannot be changed when it is enforced.
+  EXPECT_EQ(
+      pref->SetPref(std::make_unique<base::Value>(CONTENT_SETTING_BLOCK).get()),
+      extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
+  EXPECT_EQ(
+      map->GetDefaultContentSetting(ContentSettingsType::COOKIES, nullptr),
+      CONTENT_SETTING_ALLOW);
 }
 
 }  // namespace content_settings

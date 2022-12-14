@@ -97,6 +97,8 @@ void GeneratedPrefs::CreatePrefs() {
   prefs_[content_settings::kCookieSessionOnly] =
       std::make_unique<content_settings::GeneratedCookieSessionOnlyPref>(
           profile_);
+  prefs_[content_settings::kCookieDefaultContentSetting] = std::make_unique<
+      content_settings::GeneratedCookieDefaultContentSettingPref>(profile_);
   prefs_[kGeneratedPasswordLeakDetectionPref] =
       std::make_unique<GeneratedPasswordLeakDetectionPref>(profile_);
   prefs_[safe_browsing::kGeneratedSafeBrowsingPref] =

@@ -10,6 +10,7 @@
 #include "chrome/common/extensions/api/settings_private.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -78,6 +79,8 @@ CookiePrimarySetting ToCookiePrimarySetting(
 
 const char kCookiePrimarySetting[] = "generated.cookie_primary_setting";
 const char kCookieSessionOnly[] = "generated.cookie_session_only";
+const char kCookieDefaultContentSetting[] =
+    "generated.cookie_default_content_setting";
 
 GeneratedCookiePrefBase::GeneratedCookiePrefBase(Profile* profile,
                                                  const std::string& pref_name)
@@ -328,6 +331,67 @@ GeneratedCookieSessionOnlyPref::GetPrefObject() const {
 
   // Content settings can be managed via policy, extension or supervision, but
   // cannot be recommended.
+  auto content_setting_source =
+      HostContentSettingsMap::GetSettingSourceFromProviderName(
+          content_setting_provider);
+  if (content_setting_source == SettingSource::SETTING_SOURCE_POLICY) {
+    pref_object->controlled_by =
+        settings_api::ControlledBy::CONTROLLED_BY_DEVICE_POLICY;
+    pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+  }
+  if (content_setting_source == SettingSource::SETTING_SOURCE_EXTENSION) {
+    pref_object->controlled_by =
+        settings_api::ControlledBy::CONTROLLED_BY_EXTENSION;
+    pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+  }
+  if (content_setting_source == SettingSource::SETTING_SOURCE_SUPERVISED) {
+    pref_object->controlled_by =
+        settings_api::ControlledBy::CONTROLLED_BY_CHILD_RESTRICTION;
+    pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+  }
+
+  return pref_object;
+}
+
+GeneratedCookieDefaultContentSettingPref::
+    GeneratedCookieDefaultContentSettingPref(Profile* profile)
+    : GeneratedCookiePrefBase(profile, kCookieDefaultContentSetting) {}
+
+extensions::settings_private::SetPrefResult
+GeneratedCookieDefaultContentSettingPref::SetPref(const base::Value* value) {
+  if (!value->is_int())
+    return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
+
+  int setting = value->GetInt();
+  if (setting != CONTENT_SETTING_ALLOW &&
+      setting != CONTENT_SETTING_SESSION_ONLY &&
+      setting != CONTENT_SETTING_BLOCK) {
+    return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
+  }
+
+  if (!IsDefaultCookieContentSettingUserControlled(host_content_settings_map_))
+    return extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
+
+  host_content_settings_map_->SetDefaultContentSetting(
+      ContentSettingsType::COOKIES, static_cast<ContentSetting>(setting));
+
+  return extensions::settings_private::SetPrefResult::SUCCESS;
+}
+
+std::unique_ptr<settings_api::PrefObject>
+GeneratedCookieDefaultContentSettingPref::GetPrefObject() const {
+  auto pref_object = std::make_unique<settings_api::PrefObject>();
+  pref_object->key = pref_name_;
+  pref_object->type = settings_api::PREF_TYPE_NUMBER;
+
+  std::string content_setting_provider;
+  auto content_setting = host_content_settings_map_->GetDefaultContentSetting(
+      ContentSettingsType::COOKIES, &content_setting_provider);
+
+  pref_object->value = base::Value(content_setting);
+
+  // Cookies content setting can be managed via policy, extension or
+  // supervision, but cannot be recommended.
   auto content_setting_source =
       HostContentSettingsMap::GetSettingSourceFromProviderName(
           content_setting_provider);
