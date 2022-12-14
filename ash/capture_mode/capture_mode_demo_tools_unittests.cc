@@ -17,17 +17,21 @@
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/key_combo_view.h"
+#include "ash/capture_mode/pointer_highlight_layer.h"
+#include "ash/capture_mode/video_recording_watcher.h"
 #include "ash/constants/ash_features.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/timer/timer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -86,6 +90,18 @@ class CaptureModeDemoToolsTest : public AshTestBase {
         CaptureModeController::Get()->video_recording_watcher_for_testing();
     DCHECK(recording_watcher);
     return recording_watcher->demo_tools_controller_for_testing();
+  }
+
+  void WaitForMouseHighlightAnimationCompleted() {
+    base::RunLoop run_loop;
+    CaptureModeDemoToolsController* demo_tools_controller =
+        GetCaptureModeDemoToolsController();
+    DCHECK(demo_tools_controller);
+    CaptureModeDemoToolsTestApi capture_mode_demo_tools_test_api(
+        demo_tools_controller);
+    capture_mode_demo_tools_test_api.SetOnMouseHighlightAnimationEndedCallback(
+        run_loop.QuitClosure());
+    run_loop.Run();
   }
 
  private:
@@ -407,6 +423,16 @@ class CaptureModeDemoToolsTestWithAllSources
     EXPECT_TRUE(controller->is_recording_in_progress());
     return controller;
   }
+
+  gfx::Rect GetDemoToolsConfinedBoundsInScreenCoordinates() {
+    auto* recording_watcher =
+        CaptureModeController::Get()->video_recording_watcher_for_testing();
+    gfx::Rect confined_bounds_in_screen =
+        recording_watcher->GetCaptureSurfaceConfineBounds();
+    wm::ConvertRectToScreen(recording_watcher->window_being_recorded(),
+                            &confined_bounds_in_screen);
+    return confined_bounds_in_screen;
+  }
 };
 
 // Tests that the key combo viewer widget should be centered within its confined
@@ -417,17 +443,8 @@ TEST_P(CaptureModeDemoToolsTestWithAllSources,
   auto* demo_tools_controller = GetCaptureModeDemoToolsController();
   EXPECT_TRUE(demo_tools_controller);
 
-  auto* recording_watcher =
-      CaptureModeController::Get()->video_recording_watcher_for_testing();
   gfx::Rect confined_bounds_in_screen =
-      recording_watcher->GetCaptureSurfaceConfineBounds();
-
-  // Converts the bounds if it is in the window's coordinate to screen
-  // coordinate.
-  if (GetParam() == CaptureModeSource::kWindow) {
-    auto window_bounds = window()->GetBoundsInScreen();
-    confined_bounds_in_screen.Offset(window_bounds.x(), window_bounds.y());
-  }
+      GetDemoToolsConfinedBoundsInScreenCoordinates();
 
   // Verifies that the `demo_tools_widget` is positioned in the middle
   // horizontally within the confined bounds.
@@ -456,6 +473,70 @@ TEST_P(CaptureModeDemoToolsTestWithAllSources,
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
   WaitForCaptureFileToBeSaved();
   EXPECT_FALSE(controller->IsActive());
+}
+
+// Tests that the mouse highlight layer will be created on mouse down and
+// will disappear after the animation.
+TEST_P(CaptureModeDemoToolsTestWithAllSources, MouseHighlightTest) {
+  ui::ScopedAnimationDurationScaleMode normal_animation(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  StartDemoToolsEnabledVideoRecordingWithParam();
+  auto* demo_tools_controller = GetCaptureModeDemoToolsController();
+  EXPECT_TRUE(demo_tools_controller);
+
+  gfx::Rect confined_bounds_in_screen =
+      GetDemoToolsConfinedBoundsInScreenCoordinates();
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(confined_bounds_in_screen.CenterPoint());
+  event_generator->PressLeftButton();
+  event_generator->ReleaseLeftButton();
+  EXPECT_FALSE(
+      demo_tools_controller->mouse_highlight_layers_for_testing().empty());
+  EXPECT_EQ(demo_tools_controller->mouse_highlight_layers_for_testing().size(),
+            1u);
+  WaitForMouseHighlightAnimationCompleted();
+  EXPECT_TRUE(
+      demo_tools_controller->mouse_highlight_layers_for_testing().empty());
+}
+
+// Tests that multiple mouse highlight layers will be visible on consecutive
+// mouse press events when the whole duration are within the expiration of the
+// first animation expiration. It also tests that each mouse highlight layer
+// will be centered on its mouse event location.
+TEST_P(CaptureModeDemoToolsTestWithAllSources,
+       MouseHighlightShouldBeCenteredWithMouseClick) {
+  ui::ScopedAnimationDurationScaleMode normal_animation(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  StartDemoToolsEnabledVideoRecordingWithParam();
+  auto* recording_watcher =
+      CaptureModeController::Get()->video_recording_watcher_for_testing();
+  auto* window_being_recorded = recording_watcher->window_being_recorded();
+  auto* demo_tools_controller = GetCaptureModeDemoToolsController();
+  EXPECT_TRUE(demo_tools_controller);
+
+  gfx::Rect inner_rect = GetDemoToolsConfinedBoundsInScreenCoordinates();
+  inner_rect.Inset(5);
+
+  auto& layers_vector =
+      demo_tools_controller->mouse_highlight_layers_for_testing();
+  auto* event_generator = GetEventGenerator();
+
+  for (auto point : {inner_rect.CenterPoint(), inner_rect.origin(),
+                     inner_rect.bottom_right()}) {
+    event_generator->MoveMouseTo(point);
+    event_generator->PressLeftButton();
+    event_generator->ReleaseLeftButton();
+    auto* highlight_layer = layers_vector.back().get();
+    auto highlight_center_point =
+        highlight_layer->layer()->bounds().CenterPoint();
+
+    // Convert the highlight layer center pointer to screen coordinates.
+    wm::ConvertPointToScreen(window_being_recorded, &highlight_center_point);
+
+    EXPECT_EQ(highlight_center_point, point);
+  }
+
+  EXPECT_EQ(layers_vector.size(), 3u);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

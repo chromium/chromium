@@ -68,4 +68,12 @@ views::ImageView* CaptureModeDemoToolsTestApi::GetNonModifierKeyItemIcon() {
   return key_combo_view->non_modifier_view_->icon();
 }
 
+void CaptureModeDemoToolsTestApi::SetOnMouseHighlightAnimationEndedCallback(
+    base::OnceClosure callback) {
+  DCHECK(demo_tools_controller_);
+  demo_tools_controller_
+      ->on_mouse_highlight_animation_ended_callback_for_test_ =
+      std::move(callback);
+}
+
 }  // namespace ash

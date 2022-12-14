@@ -5,6 +5,8 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_DEMO_TOOLS_CONTROLLER_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_DEMO_TOOLS_CONTROLLER_H_
 
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -15,8 +17,12 @@ class KeyEvent;
 
 namespace ash {
 
+class PointerHighlightLayer;
 class KeyComboView;
 class VideoRecordingWatcher;
+
+using MouseHighlightLayers =
+    std::vector<std::unique_ptr<PointerHighlightLayer>>;
 
 // Observes and decides whether to show a helper widget representing the
 // currently pressed key combination or not. The key combination will be used to
@@ -36,6 +42,14 @@ class CaptureModeDemoToolsController {
   // Decides whether to show a helper widget for the `event` or not.
   void OnKeyEvent(ui::KeyEvent* event);
 
+  // Creates a new highlight layer each time it gets called and performs the
+  // grow-and-fade-out animation on it.
+  void PerformMousePressAnimation(const gfx::PointF& event_location_in_window);
+
+  const MouseHighlightLayers& mouse_highlight_layers_for_testing() const {
+    return mouse_highlight_layers_;
+  }
+
  private:
   friend class CaptureModeDemoToolsTestApi;
 
@@ -51,6 +65,11 @@ class CaptureModeDemoToolsController {
   // Resets the `demo_tools_widget_` when the `hide_timer_` expires.
   void AnimateToResetTheWidget();
 
+  // Called when the mouse highlight animation ends to remove the corresponding
+  // pointer highlight from the `mouse_highlight_layers_`.
+  void OnMouseHighlightAnimationEnded(
+      PointerHighlightLayer* pointer_highlight_layer_ptr);
+
   VideoRecordingWatcher* const video_recording_watcher_;
   views::UniqueWidgetPtr demo_tools_widget_;
   KeyComboView* key_combo_view_ = nullptr;
@@ -64,6 +83,14 @@ class CaptureModeDemoToolsController {
   // Starts on key up of the last non-modifier key and the `key_combo_view_`
   // will disappear when it expires.
   base::OneShotTimer hide_timer_;
+
+  // Contains all the mouse highlight layers that are being animated.
+  MouseHighlightLayers mouse_highlight_layers_;
+
+  // If set, it will be called when the mouse highlight animation is completed.
+  base::OnceClosure on_mouse_highlight_animation_ended_callback_for_test_;
+
+  base::WeakPtrFactory<CaptureModeDemoToolsController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

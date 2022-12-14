@@ -7,16 +7,22 @@
 #include <memory>
 
 #include "ash/capture_mode/capture_mode_constants.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/key_combo_view.h"
+#include "ash/capture_mode/pointer_highlight_layer.h"
 #include "ash/capture_mode/video_recording_watcher.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -24,6 +30,11 @@ namespace ash {
 namespace {
 
 constexpr int kDistanceFromBottom = 24;
+
+constexpr float kHighlightLayerFinalOpacity = 0.f;
+constexpr float kHighlightLayerInitialScale = 0.1f;
+constexpr float kHighlightLayerFinalScale = 1.0f;
+constexpr base::TimeDelta kScaleUpDuration = base::Milliseconds(1500);
 
 int GetModifierFlagForKeyCode(ui::KeyboardCode key_code) {
   switch (key_code) {
@@ -101,6 +112,38 @@ void CaptureModeDemoToolsController::OnKeyEvent(ui::KeyEvent* event) {
 
   DCHECK_EQ(event->type(), ui::ET_KEY_PRESSED);
   OnKeyDownEvent(event);
+}
+
+void CaptureModeDemoToolsController::PerformMousePressAnimation(
+    const gfx::PointF& event_location_in_window) {
+  std::unique_ptr<PointerHighlightLayer> mouse_highlight_layer =
+      std::make_unique<PointerHighlightLayer>(
+          event_location_in_window,
+          video_recording_watcher_->GetOnCaptureSurfaceWidgetParentWindow()
+              ->layer());
+  PointerHighlightLayer* mouse_highlight_layer_ptr =
+      mouse_highlight_layer.get();
+  mouse_highlight_layers_.push_back(std::move(mouse_highlight_layer));
+
+  ui::Layer* highlight_layer = mouse_highlight_layer_ptr->layer();
+  highlight_layer->SetTransform(capture_mode_util::GetScaleTransformAboutCenter(
+      highlight_layer, kHighlightLayerInitialScale));
+  const gfx::Transform scale_up_transform =
+      capture_mode_util::GetScaleTransformAboutCenter(
+          highlight_layer, kHighlightLayerFinalScale);
+
+  views::AnimationBuilder()
+      .OnEnded(base::BindOnce(
+          &CaptureModeDemoToolsController::OnMouseHighlightAnimationEnded,
+          weak_ptr_factory_.GetWeakPtr(), mouse_highlight_layer_ptr))
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(kScaleUpDuration)
+      .SetTransform(highlight_layer, scale_up_transform,
+                    gfx::Tween::ACCEL_0_40_DECEL_100)
+      .SetOpacity(highlight_layer, kHighlightLayerFinalOpacity,
+                  gfx::Tween::ACCEL_0_80_DECEL_80);
 }
 
 void CaptureModeDemoToolsController::OnKeyUpEvent(ui::KeyEvent* event) {
@@ -186,6 +229,15 @@ void CaptureModeDemoToolsController::AnimateToResetTheWidget() {
   // specs are ready.
   demo_tools_widget_.reset();
   key_combo_view_ = nullptr;
+}
+
+void CaptureModeDemoToolsController::OnMouseHighlightAnimationEnded(
+    PointerHighlightLayer* pointer_highlight_layer_ptr) {
+  base::EraseIf(mouse_highlight_layers_,
+                base::MatchesUniquePtr(pointer_highlight_layer_ptr));
+
+  if (on_mouse_highlight_animation_ended_callback_for_test_)
+    std::move(on_mouse_highlight_animation_ended_callback_for_test_).Run();
 }
 
 }  // namespace ash

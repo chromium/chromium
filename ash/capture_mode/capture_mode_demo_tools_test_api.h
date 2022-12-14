@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/timer/timer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
@@ -53,6 +54,10 @@ class CaptureModeDemoToolsTestApi {
 
   // Returns the `icon_` of the non-modifier component of the key combo.
   views::ImageView* GetNonModifierKeyItemIcon();
+
+  // Sets a callback that will be triggered once the mouse highlight animation
+  // ends.
+  void SetOnMouseHighlightAnimationEndedCallback(base::OnceClosure callback);
 
  private:
   CaptureModeDemoToolsController* const demo_tools_controller_;
