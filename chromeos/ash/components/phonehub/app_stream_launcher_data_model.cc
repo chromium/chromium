@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 
 namespace ash::phonehub {
@@ -40,6 +41,8 @@ void AppStreamLauncherDataModel::ResetState() {
 
 void AppStreamLauncherDataModel::SetAppList(
     const std::vector<Notification::AppMetadata>& streamable_apps) {
+  PA_LOG(INFO) << "App Streaming Launcher data updated with "
+               << streamable_apps.size() << " apps";
   apps_list_ = streamable_apps;
 
   apps_list_sorted_by_name_ = streamable_apps;

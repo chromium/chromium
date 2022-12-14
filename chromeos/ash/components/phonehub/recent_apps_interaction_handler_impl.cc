@@ -77,8 +77,7 @@ void RecentAppsInteractionHandlerImpl::NotifyRecentAppClicked(
 
 // Load the |recent_app_metadata_list_| from |pref_service_| if there is a
 // history of |recent_app_metadata_list_| exist in |pref_service_|. Then add or
-// update |app_metadata| into |recent_app_metadata_list_| and sort
-// |recent_app_metadata_list_| based on |last_accessed_timestamp|. Also update
+// update |app_metadata| into |recent_app_metadata_list_|. Also update
 // this |app_metadata| back to |pref_service_|.
 void RecentAppsInteractionHandlerImpl::NotifyRecentAppAddedOrUpdated(
     const Notification::AppMetadata& app_metadata,
@@ -96,17 +95,8 @@ void RecentAppsInteractionHandlerImpl::NotifyRecentAppAddedOrUpdated(
     }
   }
 
-  recent_app_metadata_list_.emplace_back(app_metadata, last_accessed_timestamp);
-
-  // Sort |recent_app_metadata_list_| from most recently visited to least
-  // recently visited.
-  std::sort(recent_app_metadata_list_.begin(), recent_app_metadata_list_.end(),
-            [](const std::pair<Notification::AppMetadata, base::Time>& a,
-               const std::pair<Notification::AppMetadata, base::Time>& b) {
-              // More recently visited apps should come before earlier visited
-              // apps.
-              return a.second > b.second;
-            });
+  recent_app_metadata_list_.emplace(recent_app_metadata_list_.begin(),
+                                    app_metadata, last_accessed_timestamp);
 
   SaveRecentAppMetadataListToPref();
   ComputeAndUpdateUiState();

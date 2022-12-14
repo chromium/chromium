@@ -755,10 +755,10 @@ TEST_F(RecentAppsInteractionHandlerTest,
       handler().FetchRecentAppMetadataList();
 
   EXPECT_EQ(recent_apps_metadata_result.size(), 2u);
-  EXPECT_EQ(1, recent_apps_metadata_result[0].user_id);
-  EXPECT_EQ("com.fakeapp1", recent_apps_metadata_result[0].package_name);
-  EXPECT_EQ(2, recent_apps_metadata_result[1].user_id);
-  EXPECT_EQ("com.fakeapp2", recent_apps_metadata_result[1].package_name);
+  EXPECT_EQ(2, recent_apps_metadata_result[0].user_id);
+  EXPECT_EQ("com.fakeapp2", recent_apps_metadata_result[0].package_name);
+  EXPECT_EQ(1, recent_apps_metadata_result[1].user_id);
+  EXPECT_EQ("com.fakeapp1", recent_apps_metadata_result[1].package_name);
 }
 
 TEST_F(RecentAppsInteractionHandlerTest, ShowRecentAppsOfUserWithQuietModeOn) {
@@ -786,8 +786,9 @@ TEST_F(RecentAppsInteractionHandlerTest, ShowRecentAppsWhenGetsEmptyUser) {
       handler().FetchRecentAppMetadataList();
 
   EXPECT_EQ(recent_apps_metadata_result.size(), 2u);
-  EXPECT_EQ(1, recent_apps_metadata_result[0].user_id);
-  EXPECT_EQ(2, recent_apps_metadata_result[1].user_id);
+  // LIFO scheme is used, hence app 2 is first as it was pushed last.
+  EXPECT_EQ(2, recent_apps_metadata_result[0].user_id);
+  EXPECT_EQ(1, recent_apps_metadata_result[1].user_id);
 }
 
 TEST_F(RecentAppsInteractionHandlerTest, GetUserIdSet) {
