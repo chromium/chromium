@@ -15,20 +15,25 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.clickImageButtonNextToText;
 import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.getRootViewSanitized;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
 
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,9 +42,13 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.privacy_sandbox.FakePrivacySandboxBridge;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -62,6 +71,9 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
 public final class FledgeFragmentV4Test {
+    private static final String SITE_NAME_1 = "first.com";
+    private static final String SITE_NAME_2 = "second.com";
+
     @Rule
     public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
@@ -74,6 +86,17 @@ public final class FledgeFragmentV4Test {
     @Rule
     public SettingsActivityTestRule<FledgeFragmentV4> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(FledgeFragmentV4.class);
+
+    @Rule
+    public JniMocker mocker = new JniMocker();
+
+    private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
+
+    @Before
+    public void setUp() {
+        mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
+        mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mFakePrivacySandboxBridge);
+    }
 
     @After
     public void tearDown() {
@@ -108,6 +131,15 @@ public final class FledgeFragmentV4Test {
                 () -> FledgeFragmentV4.isFledgePrefEnabled());
     }
 
+    private void scrollToSetting(Matcher<View> matcher) {
+        onView(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(matcher)));
+    }
+
+    private String generateSiteFromNr(int nr) {
+        return "site-" + nr + ".com";
+    }
+
     @Test
     @SmallTest
     @Feature({"RenderTest"})
@@ -128,6 +160,16 @@ public final class FledgeFragmentV4Test {
 
     @Test
     @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderFledgePopulated() throws IOException {
+        setFledgePrefEnabled(true);
+        mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);
+        startFledgeSettings();
+        mRenderTestRule.render(getFledgeRootView(), "fledge_page_populated");
+    }
+
+    @Test
+    @SmallTest
     public void testToggleUncheckedWhenFledgeOff() {
         setFledgePrefEnabled(false);
         startFledgeSettings();
@@ -144,7 +186,7 @@ public final class FledgeFragmentV4Test {
 
     @Test
     @SmallTest
-    public void testTurnFledgeOn() {
+    public void testTurnFledgeOnWhenSitesListEmpty() {
         setFledgePrefEnabled(false);
         startFledgeSettings();
         onView(getFledgeToggleMatcher()).perform(click());
@@ -154,6 +196,29 @@ public final class FledgeFragmentV4Test {
                 .check(matches(isDisplayed()));
         onView(withText(R.string.settings_fledge_page_current_sites_description_disabled))
                 .check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    public void testTurnFledgeOnWhenSitesListPopulated() {
+        setFledgePrefEnabled(false);
+        mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);
+        startFledgeSettings();
+
+        // Check that the sites list is not displayed when Fledge is disabled.
+        onView(withText(SITE_NAME_1)).check(doesNotExist());
+        onView(withText(SITE_NAME_2)).check(doesNotExist());
+
+        // Click on the toggle.
+        onView(getFledgeToggleMatcher()).perform(click());
+
+        // Check that the all sites pref is displayed
+        onViewWaiting(withText(R.string.settings_fledge_page_see_all_sites_label))
+                .check(matches(isDisplayed()));
+
+        // Check that the sites list is displayed when Fledge is enabled.
+        onView(withText(SITE_NAME_1)).check(matches(isDisplayed()));
+        onView(withText(SITE_NAME_2)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -169,6 +234,60 @@ public final class FledgeFragmentV4Test {
         onView(withText(R.string.settings_fledge_page_current_sites_description_empty))
                 .check(doesNotExist());
     }
-    // TODO(http://b/261823248): Add Managed state tests when the Privacy Sandbox policy it
+
+    @Test
+    @SmallTest
+    public void testPopulateSitesList() {
+        setFledgePrefEnabled(true);
+        mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);
+        startFledgeSettings();
+
+        onView(withText(SITE_NAME_1)).check(matches(isDisplayed()));
+        onView(withText(SITE_NAME_2)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testMaxDisplayedSites() {
+        setFledgePrefEnabled(true);
+        for (int i = 0; i < FledgeFragmentV4.MAX_DISPLAYED_SITES + 1; i++) {
+            mFakePrivacySandboxBridge.setFledgeJoiningAllowed(generateSiteFromNr(i), true);
+        }
+        startFledgeSettings();
+
+        // Scroll to pref below last displayed site.
+        scrollToSetting(withText(R.string.settings_fledge_page_see_all_sites_label));
+
+        // Verify that only MAX_DISPLAY_SITES are shown.
+        onView(withText(generateSiteFromNr(FledgeFragmentV4.MAX_DISPLAYED_SITES - 1)))
+                .check(matches(isDisplayed()));
+        onView(withText(generateSiteFromNr(FledgeFragmentV4.MAX_DISPLAYED_SITES)))
+                .check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    public void testRemoveSitesFromList() {
+        setFledgePrefEnabled(true);
+        mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);
+        startFledgeSettings();
+
+        // Remove the first site from the list and check that it is blocked.
+        clickImageButtonNextToText(SITE_NAME_1);
+        onView(withText(SITE_NAME_1)).check(doesNotExist());
+        assertThat(PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay(),
+                hasItem(SITE_NAME_1));
+
+        // Remove the second site from the list and check that it is blocked.
+        clickImageButtonNextToText(SITE_NAME_2);
+        onView(withText(SITE_NAME_2)).check(doesNotExist());
+        assertThat(PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay(),
+                hasItem(SITE_NAME_2));
+
+        // Check that the empty state UI is displayed when the sites list is empty.
+        onView(withText(R.string.settings_fledge_page_current_sites_description_empty))
+                .check(matches(isDisplayed()));
+    }
+    // TODO(http://b/261823248): Add Managed state tests when the Privacy Sandbox policy is
     // implemented.
 }

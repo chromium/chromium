@@ -9,10 +9,13 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.privacy_sandbox.FledgePreference;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -21,14 +24,20 @@ import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+
+import java.util.List;
 
 /**
  * Fragment for the Privacy Sandbox -> Fledge preferences.
  */
 public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
-        implements Preference.OnPreferenceChangeListener {
+        implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
+    @VisibleForTesting
+    static final int MAX_DISPLAYED_SITES = 15;
+
     private static final String FLEDGE_TOGGLE_PREFERENCE = "fledge_toggle";
     private static final String CURRENT_SITES_PREFERENCE = "current_fledge_sites";
     private static final String EMPTY_FLEDGE_PREFERENCE = "fledge_empty";
@@ -40,6 +49,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
     private TextMessagePreference mEmptyFledgePreference;
     private TextMessagePreference mDisabledFledgePreference;
     private ChromeBasePreference mAllSitesPreference;
+    private LargeIconBridge mLargeIconBridge;
 
     static boolean isFledgePrefEnabled() {
         PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
@@ -84,7 +94,17 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
     @Override
     public void onResume() {
         super.onResume();
+        PrivacySandboxBridge.getFledgeJoiningEtldPlusOneForDisplay(this::populateCurrentSites);
         updatePreferenceVisibility();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mLargeIconBridge != null) {
+            mLargeIconBridge.destroy();
+        }
+        mLargeIconBridge = null;
     }
 
     @Override
@@ -96,6 +116,39 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
         }
 
         return false;
+    }
+
+    @Override
+    public boolean onPreferenceClick(@NonNull Preference preference) {
+        if (preference instanceof FledgePreference) {
+            PrivacySandboxBridge.setFledgeJoiningAllowed(
+                    ((FledgePreference) preference).getSite(), false);
+            mCurrentSitesCategory.removePreference(preference);
+            updatePreferenceVisibility();
+            return true;
+        }
+
+        return false;
+    }
+
+    private void populateCurrentSites(List<String> currentSites) {
+        if (mLargeIconBridge == null) {
+            mLargeIconBridge = new LargeIconBridge(Profile.getLastUsedRegularProfile());
+        }
+
+        mCurrentSitesCategory.removeAll();
+        int nrDisplayedSites = Math.min(currentSites.size(), MAX_DISPLAYED_SITES);
+        for (int i = 0; i < nrDisplayedSites; i++) {
+            String site = currentSites.get(i);
+            FledgePreference preference =
+                    new FledgePreference(getContext(), site, mLargeIconBridge);
+            preference.setImage(R.drawable.btn_close,
+                    getResources().getString(
+                            R.string.privacy_sandbox_remove_site_button_description, site));
+            preference.setDividerAllowedAbove(false);
+            preference.setOnPreferenceClickListener(this);
+            mCurrentSitesCategory.addPreference(preference);
+        }
     }
 
     private void updatePreferenceVisibility() {
