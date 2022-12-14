@@ -575,13 +575,9 @@ Status StorageQueue::WriteHeaderAndBlock(
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
 
   // Test only: Simulate failure if requested
-  if (test_injected_failures_.count(
-          test::StorageQueueOperationKind::kWriteBlock) > 0 &&
-      test_injected_failures_[test::StorageQueueOperationKind::kWriteBlock]
-          .count(next_sequencing_id_)) {
-    return Status(error::INTERNAL,
-                  base::StrCat({"Simulated failure, seq=",
-                                base::NumberToString(next_sequencing_id_)}));
+  if (test_injection_handler_) {
+    RETURN_IF_ERROR(test_injection_handler_.Run(
+        test::StorageQueueOperationKind::kWriteBlock, next_sequencing_id_));
   }
 
   // Prepare header.
@@ -646,13 +642,9 @@ Status StorageQueue::WriteMetadata(base::StringPiece current_record_digest) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
 
   // Test only: Simulate failure if requested
-  if (test_injected_failures_.count(
-          test::StorageQueueOperationKind::kWriteMetadata) > 0 &&
-      test_injected_failures_[test::StorageQueueOperationKind::kWriteMetadata]
-          .count(next_sequencing_id_)) {
-    return Status(error::INTERNAL,
-                  base::StrCat({"Simulated failure, seq=",
-                                base::NumberToString(next_sequencing_id_)}));
+  if (test_injection_handler_) {
+    RETURN_IF_ERROR(test_injection_handler_.Run(
+        test::StorageQueueOperationKind::kWriteMetadata, next_sequencing_id_));
   }
 
   // Synchronously write the metafile.
@@ -1229,15 +1221,9 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
         storage_queue_->storage_queue_sequence_checker_);
 
     // Test only: simulate error, if requested.
-    if (storage_queue_->test_injected_failures_.count(
-            test::StorageQueueOperationKind::kReadBlock) > 0 &&
-        storage_queue_
-                ->test_injected_failures_
-                    [test::StorageQueueOperationKind::kReadBlock]
-                .count(sequencing_id) > 0) {
-      return Status(error::INTERNAL,
-                    base::StrCat({"Simulated failure, seq=",
-                                  base::NumberToString(sequencing_id)}));
+    if (storage_queue_->test_injection_handler_) {
+      RETURN_IF_ERROR(storage_queue_->test_injection_handler_.Run(
+          test::StorageQueueOperationKind::kReadBlock, sequencing_id));
     }
 
     // Read from the current file at the current offset.
@@ -1560,20 +1546,21 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
         << "Unusually large timestamp (in milliseconds): "
         << wrapped_record.record().timestamp_us();
 
+    // Serialize wrapped record into a string.
     std::string buffer;
     if (!wrapped_record.SerializeToString(&buffer)) {
       Schedule(&ReadContext::Response, base::Unretained(this),
                Status(error::DATA_LOSS, "Cannot serialize record"));
       return;
     }
-    // Release wrapped record memory, so scoped reservation may act.
+    // Release wrapped record memory, so `scoped_reservation` may act.
     wrapped_record.Clear();
     CompressWrappedRecord(std::move(buffer), std::move(scoped_reservation));
   }
 
   void CompressWrappedRecord(std::string serialized_record,
                              ScopedReservation scoped_reservation) {
-    // Compress the string.
+    // Compress the string. If memory is insufficient, compression is skipped.
     storage_queue_->compression_module_->CompressRecord(
         std::move(serialized_record),
         storage_queue_->options().memory_resource(),
@@ -2077,9 +2064,10 @@ void StorageQueue::RegisterCompletionCallback(base::OnceClosure callback) {
 }
 
 void StorageQueue::TestInjectErrorsForOperation(
-    const test::StorageQueueOperationKind operation_kind,
-    std::initializer_list<int64_t> sequencing_ids) {
-  test_injected_failures_[operation_kind] = sequencing_ids;
+    base::RepeatingCallback<
+        Status(test::StorageQueueOperationKind operation_kind, int64_t)>
+        handler) {
+  test_injection_handler_ = handler;
 }
 
 //

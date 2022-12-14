@@ -40,6 +40,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
+using ::testing::AnyOf;
 using ::testing::AtMost;
 using ::testing::Between;
 using ::testing::DoAll;
@@ -629,10 +630,19 @@ class StorageQueueTest
     EXPECT_THAT(options_.disk_space_resource()->GetUsed(), Eq(0u));
   }
 
-  void InjectFailures(const test::StorageQueueOperationKind operation_kind,
-                      std::initializer_list<int64_t> sequencing_ids) {
-    storage_queue_->TestInjectErrorsForOperation(operation_kind,
-                                                 sequencing_ids);
+  std::unique_ptr<
+      ::testing::MockFunction<Status(test::StorageQueueOperationKind, int64_t)>>
+  InjectFailures() {
+    auto inject = std::make_unique<::testing::MockFunction<Status(
+        test::StorageQueueOperationKind, int64_t)>>();
+    // By default return OK status - no error injected.
+    EXPECT_CALL(*inject, Call(_, _))
+        .WillRepeatedly(WithoutArgs(Return(Status::StatusOK())));
+    storage_queue_->TestInjectErrorsForOperation(base::BindRepeating(
+        &::testing::MockFunction<Status(test::StorageQueueOperationKind,
+                                        int64_t)>::Call,
+        base::Unretained(inject.get())));
+    return inject;
   }
 
   QueueOptions BuildStorageQueueOptionsImmediate() const {
@@ -872,7 +882,14 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
   WriteStringOrDie(kData[2]);
 
   // Inject simulated failures.
-  InjectFailures(test::StorageQueueOperationKind::kReadBlock, {1});
+  auto inject = InjectFailures();
+  EXPECT_CALL(*inject,
+              Call(Eq(test::StorageQueueOperationKind::kReadBlock), Eq(1)))
+      .WillRepeatedly(WithArg<1>(Invoke([](int64_t seq_id) {
+        return Status(error::INTERNAL,
+                      base::StrCat({"Simulated read failure, seq=",
+                                    base::NumberToString(seq_id)}));
+      })));
 
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
@@ -1659,7 +1676,14 @@ TEST_P(StorageQueueTest,
   WriteStringOrDie(kMoreData[2]);
 
   // Inject simulated failures.
-  InjectFailures(test::StorageQueueOperationKind::kReadBlock, {4, 5});
+  auto inject = InjectFailures();
+  EXPECT_CALL(*inject, Call(Eq(test::StorageQueueOperationKind::kReadBlock),
+                            AnyOf(4, 5)))
+      .WillRepeatedly(WithArg<1>(Invoke([](int64_t seq_id) {
+        return Status(error::INTERNAL,
+                      base::StrCat({"Simulated read failure, seq=",
+                                    base::NumberToString(seq_id)}));
+      })));
 
   {
     // Set uploader expectations.
@@ -1687,8 +1711,8 @@ TEST_P(StorageQueueTest,
   // Confirm #2 and forward time again, removing record #2
   ConfirmOrDie(/*sequencing_id=*/2);
 
-  // Reset simulated failures.
-  InjectFailures(test::StorageQueueOperationKind::kReadBlock, {});
+  // Reset error injection.
+  storage_queue_->TestInjectErrorsForOperation();
 
   {
     // Set uploader expectations.
@@ -2098,7 +2122,16 @@ TEST_P(StorageQueueTest, WriteRecordWithNoData) {
 
 TEST_P(StorageQueueTest, WriteRecordWithWriteMetadataFailures) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
-  InjectFailures(test::StorageQueueOperationKind::kWriteMetadata, {0});
+
+  auto inject = InjectFailures();
+  EXPECT_CALL(*inject,
+              Call(Eq(test::StorageQueueOperationKind::kWriteMetadata), Eq(0)))
+      .WillOnce(WithArg<1>(Invoke([](int64_t seq_id) {
+        return Status(error::INTERNAL,
+                      base::StrCat({"Simulated metadata write failure, seq=",
+                                    base::NumberToString(seq_id)}));
+      })));
+
   Status write_result = WriteString(kData[0]);
   EXPECT_FALSE(write_result.ok());
   EXPECT_EQ(write_result.error_code(), error::INTERNAL);
@@ -2106,7 +2139,16 @@ TEST_P(StorageQueueTest, WriteRecordWithWriteMetadataFailures) {
 
 TEST_P(StorageQueueTest, WriteRecordWithWriteBlockFailures) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
-  InjectFailures(test::StorageQueueOperationKind::kWriteBlock, {0});
+
+  auto inject = InjectFailures();
+  EXPECT_CALL(*inject,
+              Call(Eq(test::StorageQueueOperationKind::kWriteBlock), Eq(0)))
+      .WillOnce(WithArg<1>(Invoke([](int64_t seq_id) {
+        return Status(error::INTERNAL,
+                      base::StrCat({"Simulated write failure, seq=",
+                                    base::NumberToString(seq_id)}));
+      })));
+
   Status write_result = WriteString(kData[0]);
   EXPECT_FALSE(write_result.ok());
   EXPECT_EQ(write_result.error_code(), error::INTERNAL);
