@@ -371,8 +371,13 @@ filelist.decorateListItem = (li, entry, metadataModel, volumeManager) => {
   // Overriding the default role 'list' to 'listbox' for better
   // accessibility on ChromeOS.
   li.setAttribute('role', 'option');
-  li.toggleAttribute(
-      'disabled', filelist.isDlpBlocked(entry, metadataModel, volumeManager));
+  const disabled = filelist.isDlpBlocked(entry, metadataModel, volumeManager);
+  li.toggleAttribute('disabled', disabled);
+  if (disabled) {
+    li.setAttribute('aria-disabled', 'true');
+  } else {
+    li.removeAttribute('aria-disabled');
+  }
 
   Object.defineProperty(li, 'selected', {
     /**
