@@ -379,8 +379,8 @@ class ManagementUiElement extends ManagementUiElementBase {
       }
       // </if>
       // <if expr="not chromeos_ash">
-      this.managementNoticeHtml_ =
-          sanitizeInnerHtml(data.browserManagementNotice);
+      this.managementNoticeHtml_ = sanitizeInnerHtml(
+          data.browserManagementNotice, {attrs: ['aria-label']});
       // </if>
     });
   }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/json/json_reader.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -84,7 +85,9 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
       {"browserManagementNotice",
        l10n_util::GetStringFUTF16(
            IDS_MANAGEMENT_NOT_MANAGED_NOTICE,
-           base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl))},
+           base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl),
+           base::EscapeForHTML(l10n_util::GetStringUTF16(
+               IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT)))},
       {"extensionReportingTitle",
        l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED)},
       {"pageSubtitle",
@@ -117,7 +120,9 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
       {"browserManagementNotice",
        l10n_util::GetStringFUTF16(
            IDS_MANAGEMENT_BROWSER_NOTICE,
-           base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl))},
+           base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl),
+           base::EscapeForHTML(l10n_util::GetStringUTF16(
+               IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT)))},
       {"extensionReportingTitle",
        l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED)},
       {"pageSubtitle", l10n_util::GetStringUTF16(IDS_MANAGEMENT_SUBTITLE)},
