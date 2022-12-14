@@ -15,11 +15,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-NSString* kClientIdPushNotificationDictionaryKey =
-    @"push_notification_client_id";
-}  // namespace
-
 PushNotificationClientManager::PushNotificationClientManager() {
   if (IsPriceNotificationsEnabled()) {
     AddPushNotificationClient(
@@ -33,34 +28,44 @@ void PushNotificationClientManager::AddPushNotificationClient(
   clients_.insert(std::make_pair(client->GetClientId(), std::move(client)));
 }
 
+void PushNotificationClientManager::RemovePushNotificationClient(
+    PushNotificationClientId client_id) {
+  clients_.erase(client_id);
+}
+
+std::vector<const PushNotificationClient*>
+PushNotificationClientManager::GetPushNotificationClients() {
+  std::vector<const PushNotificationClient*> manager_clients;
+
+  for (auto& client : clients_) {
+    manager_clients.push_back(std::move(client.second.get()));
+  }
+
+  return manager_clients;
+}
+
 void PushNotificationClientManager::HandleNotificationInteraction(
     UNNotificationResponse* notification_response) {
-  NSDictionary* user_info =
-      notification_response.notification.request.content.userInfo;
-
-  PushNotificationClientId client_id =
-      static_cast<PushNotificationClientId>([[user_info
-          objectForKey:kClientIdPushNotificationDictionaryKey] integerValue]);
-
-  auto it = clients_.find(client_id);
-  if (it != clients_.end()) {
-    it->second->HandleNotificationInteraction(notification_response);
+  for (auto& client : clients_) {
+    client.second->HandleNotificationInteraction(notification_response);
   }
 }
 
 UIBackgroundFetchResult
 PushNotificationClientManager::HandleNotificationReception(
     NSDictionary<NSString*, id>* user_info) {
-  PushNotificationClientId client_id =
-      static_cast<PushNotificationClientId>([[user_info
-          objectForKey:kClientIdPushNotificationDictionaryKey] integerValue]);
-
-  auto it = clients_.find(client_id);
-  if (it != clients_.end()) {
-    return it->second->HandleNotificationReception(user_info);
+  UIBackgroundFetchResult result = UIBackgroundFetchResultNoData;
+  for (auto& client : clients_) {
+    UIBackgroundFetchResult client_result =
+        client.second->HandleNotificationReception(user_info);
+    if (client_result == UIBackgroundFetchResultNewData) {
+      return UIBackgroundFetchResultNewData;
+    } else if (client_result == UIBackgroundFetchResultFailed) {
+      result = client_result;
+    }
   }
 
-  return UIBackgroundFetchResultNoData;
+  return result;
 }
 
 void PushNotificationClientManager::RegisterActionableNotifications() {

@@ -37,3 +37,29 @@ source_set("push_notification_client") {
   ]
   deps = [ "//base" ]
 }
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "push_notification_client_manager_unittest.mm" ]
+  deps = [
+    ":push_notification_client",
+    ":push_notification_service",
+    ":test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("test_support") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "test_push_notification_client.h",
+    "test_push_notification_client.mm",
+  ]
+
+  deps = [
+    ":push_notification_client",
+    ":push_notification_service",
+    "//base",
+  ]
+}

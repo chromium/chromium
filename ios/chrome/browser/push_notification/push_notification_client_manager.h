@@ -31,6 +31,14 @@ class PushNotificationClientManager {
   void AddPushNotificationClient(
       std::unique_ptr<PushNotificationClient> client);
 
+  // This function removes the mapping between a PushNotificationClientId and a
+  // PushNotificationClient from the manager.
+  void RemovePushNotificationClient(PushNotificationClientId client_id);
+
+  // This function returns a list of the PushNotificationClients stored by the
+  // manager.
+  std::vector<const PushNotificationClient*> GetPushNotificationClients();
+
   // This function is called when the user interacts with the delivered
   // notification. This function identifies and delegates the interacted with
   // notification to the appropriate PushNotificationClient.
@@ -58,11 +66,10 @@ class PushNotificationClientManager {
   static std::vector<PushNotificationClientId> GetClients();
 
  private:
-  // A list of features that support push notifications.
-  std::unordered_map<PushNotificationClientId,
-                     std::unique_ptr<PushNotificationClient>>
-      clients_ = std::unordered_map<PushNotificationClientId,
-                                    std::unique_ptr<PushNotificationClient>>();
+  using ClientMap = std::unordered_map<PushNotificationClientId,
+                                       std::unique_ptr<PushNotificationClient>>;
+  // A map of client ids to the features that support push notifications.
+  ClientMap clients_;
 };
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_CLIENT_MANAGER_H_
