@@ -10,7 +10,6 @@
 
 import 'chrome://resources/ash/common/cellular_setup/cellular_setup_icons.html.js';
 import 'chrome://resources/ash/common/network/sim_lock_dialogs.js';
-import 'chrome://resources/ash/common/network/apn_detail_dialog.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -37,13 +36,12 @@ import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setu
 import {getNumESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {ApnDetailDialog} from 'chrome://resources/ash/common/network/apn_detail_dialog.js';
-import {ApnDetailDialogMode, ApnEventData, hasActiveCellularNetwork, isConnectedToNonCellularNetwork} from 'chrome://resources/ash/common/network/cellular_utils.js';
+import {hasActiveCellularNetwork, isConnectedToNonCellularNetwork} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {ApnProperties, CrosNetworkConfigRemote, GlobalPolicy, NetworkStateProperties, StartConnectResult, VpnProvider} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfigRemote, GlobalPolicy, NetworkStateProperties, StartConnectResult, VpnProvider} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -54,6 +52,7 @@ import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 import {Route, Router} from '../router.js';
 
+import {ApnSubpageElement} from './apn_subpage';
 import {InternetConfigElement} from './internet_config.js';
 import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
 
@@ -195,12 +194,6 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
           return loadTimeData.valueExists('isApnRevampEnabled') &&
               loadTimeData.getBoolean('isApnRevampEnabled');
         },
-      },
-
-      /** @private */
-      shouldShowApnDetailDialog_: {
-        type: Boolean,
-        value: false,
       },
 
       /**
@@ -706,34 +699,6 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   /**
-   * @param {!string} guid
-   * @param {!ApnDetailDialogMode} mode
-   * @param {ApnProperties|undefined} apn
-   * @private
-   */
-  showApnDetailDialog_(guid, mode, apn) {
-    if (!this.isApnRevampEnabled_) {
-      return;
-    }
-    this.shouldShowApnDetailDialog_ = true;
-    // Added to ensure dom-if stamping.
-    afterNextRender(this, () => {
-      const apnDetailDialog = /** @type {ApnDetailDialog} */ (
-          this.shadowRoot.querySelector('#apnDetailDialog'));
-      assert(!!apnDetailDialog);
-
-      apnDetailDialog.guid = guid;
-      apnDetailDialog.mode = mode;
-      apnDetailDialog.apnProperties = apn;
-    });
-  }
-
-  /** @private */
-  onApnDetailDialogClose_() {
-    this.shouldShowApnDetailDialog_ = false;
-  }
-
-  /**
    * @param {!CustomEvent<!OncMojo.NetworkStateProperties>} event
    * @private
    */
@@ -1071,28 +1036,13 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
    * @private
    */
   onCreateCustomApnClicked_() {
-    if (this.shouldShowApnDetailDialog_ ||
-        this.isCreateCustomApnButtonDisabled_) {
+    if (this.isCreateCustomApnButtonDisabled_) {
       return;
     }
-    const guid = Router.getInstance().getQueryParameters().get('guid');
-    assert(!!guid);
-    this.showApnDetailDialog_(
-        guid, ApnDetailDialogMode.CREATE,
-        undefined /* apn */);
-  }
-
-  /**
-   *
-   * @param {!Event} event
-   */
-  onShowApnDetailDialog_(event) {
-    event.stopPropagation();
-    if (this.shouldShowApnDetailDialog_) {
-      return;
-    }
-    const eventData = /** @type {!ApnEventData} */ (event.detail);
-    this.showApnDetailDialog_(eventData.guid, eventData.mode, eventData.apn);
+    const apnSubpage = /** @type {ApnSubpageElement} */ (
+        this.shadowRoot.querySelector('#apnSubpage'));
+    assert(!!apnSubpage);
+    apnSubpage.openApnDetailDialogInCreateMode();
   }
 }
 

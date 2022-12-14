@@ -23,7 +23,6 @@ export const ApnDetailDialogMode = {
  * @typedef {{
  *   apn: !ApnProperties,
  *   mode: !ApnDetailDialogMode,
- *   guid: !string
  * }}
  */
 export let ApnEventData;

@@ -769,8 +769,12 @@ suite('InternetPage', function() {
       async function() {
         loadTimeData.overrideValues({isApnRevampEnabled: true});
         await navigateToApnSubpage();
+        const subpage = internetPage.shadowRoot.querySelector('apn-subpage');
+        assertTrue(!!subpage);
+        const apnList = subpage.shadowRoot.querySelector('apn-list');
+        assertTrue(!!apnList);
         const getApnDetailDialog = () =>
-            internetPage.shadowRoot.querySelector('apn-detail-dialog');
+            apnList.shadowRoot.querySelector('apn-detail-dialog');
 
         assertFalse(!!getApnDetailDialog());
         const createCustomApnButton =
@@ -780,7 +784,7 @@ suite('InternetPage', function() {
         await flushAsync();
 
         assertTrue(!!getApnDetailDialog());
-        const onCloseEventPromise = eventToPromise('close', window);
+        const onCloseEventPromise = eventToPromise('close', apnList);
         const cancelBtn = getApnDetailDialog().shadowRoot.querySelector(
             '#apnDetailCancelBtn');
         cancelBtn.click();

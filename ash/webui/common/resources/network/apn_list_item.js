@@ -83,7 +83,6 @@ class ApnListItem extends ApnListItemBase {
    * @private
    */
   onDetailsClicked_() {
-    assert(!!this.guid);
     assert(!!this.apn);
     this.dispatchEvent(new CustomEvent('show-apn-detail-dialog', {
       composed: true,
@@ -93,7 +92,6 @@ class ApnListItem extends ApnListItemBase {
         // Only allow editing if the APN is a custom APN.
         mode: this.isAutoDetected ? ApnDetailDialogMode.VIEW :
                                     ApnDetailDialogMode.EDIT,
-        guid: this.guid,
       }),
     }));
   }

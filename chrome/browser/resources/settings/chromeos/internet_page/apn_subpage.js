@@ -37,7 +37,7 @@ const ApnSubpageElementBase = mixinBehaviors(
     PolymerElement);
 
 /** @polymer */
-class ApnSubpageElement extends ApnSubpageElementBase {
+export class ApnSubpageElement extends ApnSubpageElementBase {
   static get is() {
     return 'apn-subpage';
   }
@@ -137,6 +137,16 @@ class ApnSubpageElement extends ApnSubpageElementBase {
       return;
     }
     this.getDeviceState_();
+  }
+
+  /**
+   * Helper method that can be used by parent elements to open the APN
+   * creation dialog.
+   */
+  openApnDetailDialogInCreateMode() {
+    assert(!!this.guid_);
+    assert(!!this.$.apnList);
+    this.$.apnList.openApnDetailDialogInCreateMode();
   }
 
   /** @private */

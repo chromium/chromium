@@ -222,7 +222,6 @@ suite('ApnListItemTest', function() {
         let eventData = await apnDetailsClickedEvent;
 
         assertEquals(TEST_APN_EVENT_DATA.apn.name, eventData.detail.apn.name);
-        assertEquals(TEST_APN_EVENT_DATA.guid, eventData.detail.guid);
         assertEquals(TEST_APN_EVENT_DATA.mode, eventData.detail.mode);
 
         // Case: the apn list item is not auto detected
@@ -232,7 +231,6 @@ suite('ApnListItemTest', function() {
         apnListItem.$.detailsButton.click();
         eventData = await apnDetailsClickedEvent;
         assertEquals(TEST_APN_EVENT_DATA.apn.name, eventData.detail.apn.name);
-        assertEquals(TEST_APN_EVENT_DATA.guid, eventData.detail.guid);
         assertEquals(ApnDetailDialogMode.EDIT, eventData.detail.mode);
       });
 });

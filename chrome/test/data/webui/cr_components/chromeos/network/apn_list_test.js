@@ -5,13 +5,15 @@
 import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/network/apn_list.js';
 
+import {ApnDetailDialogMode} from '//resources/ash/common/network/cellular_utils.js';
+import {ApnList} from 'chrome://resources/ash/common/network/apn_list.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {ApnProperties, ApnState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('ApnListTest', function() {
-  /** @type {ApnListElement} */
+  /** @type {ApnList} */
   let apnList = null;
 
   /** @type {ApnProperties} */
@@ -166,4 +168,19 @@ suite('ApnListTest', function() {
     assertTrue(apns[0].isConnected);
     assertFalse(apns[0].isAutoDetected);
   });
+
+  test(
+      'Calling openApnDetailDialogInCreateMode() opens APN detail dialog',
+      async function() {
+        const getApnDetailDialog = () =>
+            apnList.shadowRoot.querySelector('apn-detail-dialog');
+        apnList.guid = 'fake-guid';
+        assertFalse(!!getApnDetailDialog());
+        apnList.openApnDetailDialogInCreateMode();
+        await flushTasks();
+        assertTrue(!!getApnDetailDialog());
+        assertEquals(ApnDetailDialogMode.CREATE, getApnDetailDialog().mode);
+        assertEquals(apnList.guid, getApnDetailDialog().guid);
+        assertFalse(!!getApnDetailDialog().apnProperties);
+      });
 });
