@@ -975,6 +975,8 @@
       "external/wpt/webmessaging/broadcastchannel/cross-partition.https.tentative.html",
       "external/wpt/IndexedDB",
       "external/wpt/webstorage/localstorage-about-blank-3P-iframe-opens-3P-window.partitioned.tentative.html",
+      "external/wpt/secure-contexts/shared-worker-insecure-first.https.html",
+      "external/wpt/secure-contexts/shared-worker-secure-first.https.html",
       "fast/filesystem",
       "external/wpt/html/browsers/windows/post-message",
       "http/tests/inspector-protocol/storage/dom-storage-set-items-by-storage-key.js",
