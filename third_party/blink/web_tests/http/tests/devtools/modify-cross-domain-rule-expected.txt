@@ -7,8 +7,6 @@ Running: testAddProperty
 === Rule modified ===
 ['color':'green'] @[1:2-1:15] 
 ['width':'100%'] @[2:2-2:14] 
-['color':'green'] @[undefined-undefined] 
-['width':'100%'] @[undefined-undefined] 
 === Selector changed ===
 body {
   color: green;
