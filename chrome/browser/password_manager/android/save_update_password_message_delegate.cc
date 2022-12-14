@@ -21,7 +21,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/google_chrome_strings.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
-#include "components/messages/android/messages_feature.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -36,6 +35,10 @@
 using password_manager::features::kPasswordEditDialogWithDetails;
 
 namespace {
+
+// Duration of message before timeout; 20 seconds.
+const int kMessageDismissDurationMs = 20000;
+
 // Log the outcome of the save/update password workflow.
 // It differentiates whether the the flow was accepted/cancelled immediately
 // or after calling the password edit dialog.
@@ -182,13 +185,7 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
       base::BindOnce(&SaveUpdatePasswordMessageDelegate::HandleMessageDismissed,
                      base::Unretained(this)));
 
-  // The message duration experiment is controlled by a parameter, associated
-  // with MessagesForAndroidPasswords feature and thus should be adjusted for
-  // both save and update password prompt.
-  int message_dismiss_duration_ms =
-      messages::GetSavePasswordMessageDismissDurationMs();
-  if (message_dismiss_duration_ms != 0)
-    message_->SetDuration(message_dismiss_duration_ms);
+  message_->SetDuration(kMessageDismissDurationMs);
 
   const password_manager::PasswordForm& pending_credentials =
       passwords_state_.form_manager()->GetPendingCredentials();
@@ -339,8 +336,6 @@ int SaveUpdatePasswordMessageDelegate::GetPrimaryButtonTextId(
     return IDS_PASSWORD_MANAGER_SAVE_BUTTON;
   if (!use_followup_button_text)
     return IDS_PASSWORD_MANAGER_UPDATE_BUTTON;
-  if (messages::UseFollowupButtonTextForUpdatePasswordButton())
-    return IDS_PASSWORD_MANAGER_UPDATE_WITH_FOLLOWUP_BUTTON;
   return IDS_PASSWORD_MANAGER_CONTINUE_BUTTON;
 }
 

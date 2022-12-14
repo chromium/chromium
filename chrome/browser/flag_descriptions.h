@@ -2131,9 +2131,6 @@ extern const char kMessagesForAndroidNotificationBlockedDescription[];
 extern const char kMessagesForAndroidOfferNotificationName[];
 extern const char kMessagesForAndroidOfferNotificationDescription[];
 
-extern const char kMessagesForAndroidPasswordsName[];
-extern const char kMessagesForAndroidPasswordsDescription[];
-
 extern const char kMessagesForAndroidPermissionUpdateName[];
 extern const char kMessagesForAndroidPermissionUpdateDescription[];
 
@@ -2151,9 +2148,6 @@ extern const char kMessagesForAndroidSaveCardDescription[];
 
 extern const char kMessagesForAndroidStackingAnimationName[];
 extern const char kMessagesForAndroidStackingAnimationDescription[];
-
-extern const char kMessagesForAndroidUpdatePasswordName[];
-extern const char kMessagesForAndroidUpdatePasswordDescription[];
 
 extern const char kNetworkServiceInProcessName[];
 extern const char kNetworkServiceInProcessDescription[];

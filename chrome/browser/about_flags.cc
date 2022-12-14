@@ -7765,10 +7765,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMessagesForAndroidOfferNotificationDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(messages::kMessagesForAndroidOfferNotification)},
-    {"messages-for-android-passwords",
-     flag_descriptions::kMessagesForAndroidPasswordsName,
-     flag_descriptions::kMessagesForAndroidPasswordsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(messages::kMessagesForAndroidPasswords)},
     {"messages-for-android-permission-update",
      flag_descriptions::kMessagesForAndroidPermissionUpdateName,
      flag_descriptions::kMessagesForAndroidPermissionUpdateDescription,
@@ -7795,11 +7791,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMessagesForAndroidStackingAnimationDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(messages::kMessagesForAndroidStackingAnimation)},
-    {"messages-for-android-update-password",
-     flag_descriptions::kMessagesForAndroidUpdatePasswordName,
-     flag_descriptions::kMessagesForAndroidUpdatePasswordDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(messages::kMessagesForAndroidUpdatePassword)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

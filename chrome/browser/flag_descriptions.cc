@@ -3715,10 +3715,6 @@ extern const char kMessagesForAndroidOfferNotificationName[] =
 extern const char kMessagesForAndroidOfferNotificationDescription[] =
     "When enabled, offer notification will use the new Messages UI";
 
-const char kMessagesForAndroidPasswordsName[] = "Passwords Messages UI";
-const char kMessagesForAndroidPasswordsDescription[] =
-    "When enabled, password prompt will use the new Messages UI.";
-
 const char kMessagesForAndroidPermissionUpdateName[] =
     "Permission Update Messages UI";
 const char kMessagesForAndroidPermissionUpdateDescription[] =
@@ -3744,11 +3740,6 @@ const char kMessagesForAndroidStackingAnimationName[] =
     "Stacking Animation of Messages UI";
 const char kMessagesForAndroidStackingAnimationDescription[] =
     "When enabled, Messages UI will use the new stacking animation.";
-
-const char kMessagesForAndroidUpdatePasswordName[] =
-    "Update password Messages UI";
-const char kMessagesForAndroidUpdatePasswordDescription[] =
-    "When enabled, update password prompt will use the new Messages UI.";
 
 const char kNetworkServiceInProcessName[] =
     "Run the network service on the browser process";

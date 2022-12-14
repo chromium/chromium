@@ -4646,11 +4646,6 @@
     "expiry_milestone": 111
   },
   {
-    "name": "messages-for-android-passwords",
-    "owners": [ "pavely", "lazzzis" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "messages-for-android-permission-update",
     "owners": [ "pavely", "lazzzis" ],
     "expiry_milestone": 105
@@ -4679,11 +4674,6 @@
     "name": "messages-for-android-stacking-animation",
     "owners": [ "lazzzis", "aishwaryarj"],
     "expiry_milestone": 118
-  },
-  {
-    "name": "messages-for-android-update-password",
-    "owners": [ "pavely", "lazzzis" ],
-    "expiry_milestone": 105
   },
   {
     "name": "messages-preinstall",

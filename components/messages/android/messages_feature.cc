@@ -56,15 +56,6 @@ BASE_FEATURE(kMessagesForAndroidOfferNotification,
              "MessagesForAndroidOfferNotification",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMessagesForAndroidPasswords,
-             "MessagesForAndroidPasswords",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<int>
-    kMessagesForAndroidPasswords_MessageDismissDurationMs{
-        &kMessagesForAndroidPasswords,
-        "save_password_message_dismiss_duration_ms", 20000};
-
 BASE_FEATURE(kMessagesForAndroidPermissionUpdate,
              "MessagesForAndroidPermissionUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -85,14 +76,6 @@ BASE_FEATURE(kMessagesForAndroidStackingAnimation,
              "MessagesForAndroidStackingAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMessagesForAndroidUpdatePassword,
-             "MessagesForAndroidUpdatePassword",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<bool>
-    kMessagesForAndroidUpdatePassword_UseFollowupButtonText{
-        &kMessagesForAndroidUpdatePassword, "use_followup_button_text", false};
-
 bool IsAdsBlockedMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidAdsBlocked);
@@ -108,11 +91,6 @@ bool IsOfferNotificationMessagesUiEnabled() {
          base::FeatureList::IsEnabled(kMessagesForAndroidOfferNotification);
 }
 
-bool IsPasswordMessagesUiEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
-         base::FeatureList::IsEnabled(kMessagesForAndroidPasswords);
-}
-
 bool IsPopupBlockedMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidPopupBlocked);
@@ -123,15 +101,6 @@ bool IsSaveCardMessagesUiEnabled() {
          base::FeatureList::IsEnabled(kMessagesForAndroidSaveCard);
 }
 
-bool IsUpdatePasswordMessagesUiEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
-         base::FeatureList::IsEnabled(kMessagesForAndroidUpdatePassword);
-}
-
-bool UseFollowupButtonTextForUpdatePasswordButton() {
-  return kMessagesForAndroidUpdatePassword_UseFollowupButtonText.Get();
-}
-
 bool IsNotificationBlockedMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidNotificationBlocked);
@@ -140,10 +109,6 @@ bool IsNotificationBlockedMessagesUiEnabled() {
 bool IsPermissionUpdateMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidPermissionUpdate);
-}
-
-int GetSavePasswordMessageDismissDurationMs() {
-  return kMessagesForAndroidPasswords_MessageDismissDurationMs.Get();
 }
 
 static jboolean JNI_MessageFeatureList_IsEnabled(

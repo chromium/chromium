@@ -34,10 +34,6 @@ BASE_DECLARE_FEATURE(kMessagesForAndroidNotificationBlocked);
 // infrastructure.
 BASE_DECLARE_FEATURE(kMessagesForAndroidOfferNotification);
 
-// Feature that controls whether "save password" and "saved password
-// confirmation" prompts use Messages or Infobars infrastructure.
-BASE_DECLARE_FEATURE(kMessagesForAndroidPasswords);
-
 // Feature that controls whether permission update prompts use Messages or
 // Infobars infrastructure.
 BASE_DECLARE_FEATURE(kMessagesForAndroidPermissionUpdate);
@@ -58,10 +54,6 @@ BASE_DECLARE_FEATURE(kMessagesForAndroidSaveCard);
 // new Stacking Animation.
 BASE_DECLARE_FEATURE(kMessagesForAndroidStackingAnimation);
 
-// Feature that controls whether "update password" prompt uses Messages or
-// Infobars infrastructure.
-BASE_DECLARE_FEATURE(kMessagesForAndroidUpdatePassword);
-
 bool IsAdsBlockedMessagesUiEnabled();
 
 bool IsNearOomReductionMessagesUiEnabled();
@@ -70,8 +62,6 @@ bool IsNotificationBlockedMessagesUiEnabled();
 
 bool IsOfferNotificationMessagesUiEnabled();
 
-bool IsPasswordMessagesUiEnabled();
-
 bool IsPermissionUpdateMessagesUiEnabled();
 
 bool IsPopupBlockedMessagesUiEnabled();
@@ -79,12 +69,6 @@ bool IsPopupBlockedMessagesUiEnabled();
 bool IsSafetyTipMessagesUiEnabled();
 
 bool IsSaveCardMessagesUiEnabled();
-
-bool IsUpdatePasswordMessagesUiEnabled();
-
-int GetSavePasswordMessageDismissDurationMs();
-
-bool UseFollowupButtonTextForUpdatePasswordButton();
 
 bool UseFollowupButtonTextForSaveCardMessage();
 
