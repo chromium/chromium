@@ -947,11 +947,10 @@ xsltDocumentSortFunction(xmlNodeSetPtr list) {
 }
 
 /**
- * xsltComputeSortResultInternal:
+ * xsltComputeSortResultiInternal:
  * @ctxt:  a XSLT process context
- * @sort:  xsl:sort node
- * @number:  data-type is number
- * @locale:  transform strings according to locale
+ * @sort:  node list
+ * @xfrm:  Transform strings according to locale
  *
  * reorder the current node list accordingly to the set of sorting
  * requirement provided by the array of nodes.
@@ -960,11 +959,11 @@ xsltDocumentSortFunction(xmlNodeSetPtr list) {
  */
 static xmlXPathObjectPtr *
 xsltComputeSortResultInternal(xsltTransformContextPtr ctxt, xmlNodePtr sort,
-                              int number, xsltLocale locale) {
+                              int xfrm) {
 #ifdef XSLT_REFACTORED
     xsltStyleItemSortPtr comp;
 #else
-    const xsltStylePreComp *comp;
+    xsltStylePreCompPtr comp;
 #endif
     xmlXPathObjectPtr *results = NULL;
     xmlNodeSetPtr list = NULL;
@@ -1032,10 +1031,10 @@ xsltComputeSortResultInternal(xsltTransformContextPtr ctxt, xmlNodePtr sort,
 	if (res != NULL) {
 	    if (res->type != XPATH_STRING)
 		res = xmlXPathConvertString(res);
-	    if (number)
+	    if (comp->number)
 		res = xmlXPathConvertNumber(res);
 	    res->index = i;	/* Save original pos for dupl resolv */
-	    if (number) {
+	    if (comp->number) {
 		if (res->type == XPATH_NUMBER) {
 		    results[i] = res;
 		} else {
@@ -1047,9 +1046,9 @@ xsltComputeSortResultInternal(xsltTransformContextPtr ctxt, xmlNodePtr sort,
 		}
 	    } else {
 		if (res->type == XPATH_STRING) {
-		    if (locale != (xsltLocale)0) {
+		    if ((xfrm) && (comp->locale != (xsltLocale)0)) {
 			xmlChar *str = res->stringval;
-			res->stringval = (xmlChar *) xsltStrxfrm(locale, str);
+			res->stringval = (xmlChar *) xsltStrxfrm(comp->locale, str);
 			xmlFree(str);
 		    }
 
@@ -1089,8 +1088,7 @@ xsltComputeSortResultInternal(xsltTransformContextPtr ctxt, xmlNodePtr sort,
  */
 xmlXPathObjectPtr *
 xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
-    return xsltComputeSortResultInternal(ctxt, sort, /* number */ 0,
-                                         /* locale */ 0);
+    return xsltComputeSortResultInternal(ctxt, sort, /* xfrm */ 0);
 }
 
 /**
@@ -1108,19 +1106,20 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 #ifdef XSLT_REFACTORED
     xsltStyleItemSortPtr comp;
 #else
-    const xsltStylePreComp *comp;
+    xsltStylePreCompPtr comp;
 #endif
     xmlXPathObjectPtr *resultsTab[XSLT_MAX_SORT];
     xmlXPathObjectPtr *results = NULL, *res;
     xmlNodeSetPtr list = NULL;
+    int descending, number, desc, numb;
     int len = 0;
     int i, j, incr;
     int tst;
     int depth;
     xmlNodePtr node;
     xmlXPathObjectPtr tmp;
-    int number[XSLT_MAX_SORT], desc[XSLT_MAX_SORT];
-    xsltLocale locale[XSLT_MAX_SORT];
+    int tempstype[XSLT_MAX_SORT], temporder[XSLT_MAX_SORT],
+        templang[XSLT_MAX_SORT];
 
     if ((ctxt == NULL) || (sorts == NULL) || (nbsorts <= 0) ||
 	(nbsorts >= XSLT_MAX_SORT))
@@ -1137,70 +1136,71 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 
     for (j = 0; j < nbsorts; j++) {
 	comp = sorts[j]->psvi;
+	tempstype[j] = 0;
 	if ((comp->stype == NULL) && (comp->has_stype != 0)) {
-	    xmlChar *stype =
+	    comp->stype =
 		xsltEvalAttrValueTemplate(ctxt, sorts[j],
-					  BAD_CAST "data-type", NULL);
-	    number[j] = 0;
-	    if (stype != NULL) {
-		if (xmlStrEqual(stype, (const xmlChar *) "text"))
-		    ;
-		else if (xmlStrEqual(stype, (const xmlChar *) "number"))
-		    number[j] = 1;
+					  (const xmlChar *) "data-type",
+					  NULL);
+	    if (comp->stype != NULL) {
+		tempstype[j] = 1;
+		if (xmlStrEqual(comp->stype, (const xmlChar *) "text"))
+		    comp->number = 0;
+		else if (xmlStrEqual(comp->stype, (const xmlChar *) "number"))
+		    comp->number = 1;
 		else {
 		    xsltTransformError(ctxt, NULL, sorts[j],
 			  "xsltDoSortFunction: no support for data-type = %s\n",
-			  stype);
+				     comp->stype);
+		    comp->number = 0; /* use default */
 		}
-                xmlFree(stype);
 	    }
-	} else {
-	    number[j] = comp->number;
-        }
+	}
+	temporder[j] = 0;
 	if ((comp->order == NULL) && (comp->has_order != 0)) {
-	    xmlChar *order = xsltEvalAttrValueTemplate(ctxt, sorts[j],
-                                                       BAD_CAST "order", NULL);
-	    desc[j] = 0;
-	    if (order != NULL) {
-		if (xmlStrEqual(order, (const xmlChar *) "ascending"))
-		    ;
-		else if (xmlStrEqual(order, (const xmlChar *) "descending"))
-		    desc[j] = 1;
+	    comp->order = xsltEvalAttrValueTemplate(ctxt, sorts[j],
+						    (const xmlChar *) "order",
+						    NULL);
+	    if (comp->order != NULL) {
+		temporder[j] = 1;
+		if (xmlStrEqual(comp->order, (const xmlChar *) "ascending"))
+		    comp->descending = 0;
+		else if (xmlStrEqual(comp->order,
+				     (const xmlChar *) "descending"))
+		    comp->descending = 1;
 		else {
 		    xsltTransformError(ctxt, NULL, sorts[j],
 			     "xsltDoSortFunction: invalid value %s for order\n",
-			     order);
+				     comp->order);
+		    comp->descending = 0; /* use default */
 		}
-                xmlFree(order);
 	    }
-	} else {
-	    desc[j] = comp->descending;
 	}
+	templang[j] = 0;
 	if ((comp->lang == NULL) && (comp->has_lang != 0)) {
             xmlChar *lang = xsltEvalAttrValueTemplate(ctxt, sorts[j],
 						      (xmlChar *) "lang",
 						      NULL);
 	    if (lang != NULL) {
-                locale[j] = xsltNewLocale(lang);
+		templang[j] = 1;
+                comp->locale = xsltNewLocale(lang);
                 xmlFree(lang);
-            } else {
-                locale[j] = 0;
             }
-	} else {
-            locale[j] = comp->locale;
-        }
+	}
     }
 
     len = list->nodeNr;
 
-    resultsTab[0] = xsltComputeSortResultInternal(ctxt, sorts[0], number[0],
-                                                  locale[0]);
+    resultsTab[0] = xsltComputeSortResultInternal(ctxt, sorts[0],
+                                                  /* xfrm */ 1);
     for (i = 1;i < XSLT_MAX_SORT;i++)
 	resultsTab[i] = NULL;
 
     results = resultsTab[0];
 
     comp = sorts[0]->psvi;
+    descending = comp->descending;
+    number = comp->number;
     if (results == NULL)
 	goto cleanup;
 
@@ -1215,7 +1215,7 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 		if (results[j] == NULL)
 		    tst = 1;
 		else {
-		    if (number[0]) {
+		    if (number) {
 			/* We make NaN smaller than number in accordance
 			   with XSLT spec */
 			if (xmlXPathIsNaN(results[j]->floatval)) {
@@ -1232,16 +1232,16 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 				results[j + incr]->floatval)
 			    tst = 1;
 			else tst = -1;
-		    } else if(locale[0] != (xsltLocale)0) {
+		    } else if(comp->locale != (xsltLocale)0) {
 			tst = xsltLocaleStrcmp(
-			    locale[0],
+			    comp->locale,
 			    (xsltLocaleChar *) results[j]->stringval,
 			    (xsltLocaleChar *) results[j + incr]->stringval);
 		    } else {
 			tst = xmlStrcmp(results[j]->stringval,
 				     results[j + incr]->stringval);
 		    }
-		    if (desc[0])
+		    if (descending)
 			tst = -tst;
 		}
 		if (tst == 0) {
@@ -1255,6 +1255,8 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 			comp = sorts[depth]->psvi;
 			if (comp == NULL)
 			    break;
+			desc = comp->descending;
+			numb = comp->number;
 
 			/*
 			 * Compute the result of the next level for the
@@ -1264,8 +1266,7 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 			    resultsTab[depth] =
                                 xsltComputeSortResultInternal(ctxt,
                                                               sorts[depth],
-                                                              number[depth],
-                                                              locale[depth]);
+                                                              /* xfrm */ 1);
 			res = resultsTab[depth];
 			if (res == NULL)
 			    break;
@@ -1275,7 +1276,7 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 			} else if (res[j+incr] == NULL) {
 			    tst = -1;
 			} else {
-			    if (number[depth]) {
+			    if (numb) {
 				/* We make NaN smaller than number in
 				   accordance with XSLT spec */
 				if (xmlXPathIsNaN(res[j]->floatval)) {
@@ -1294,16 +1295,16 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 					res[j + incr]->floatval)
 				    tst = 1;
 				else tst = -1;
-			    } else if(locale[depth] != (xsltLocale)0) {
+			    } else if(comp->locale != (xsltLocale)0) {
 				tst = xsltLocaleStrcmp(
-				    locale[depth],
+				    comp->locale,
 				    (xsltLocaleChar *) res[j]->stringval,
 				    (xsltLocaleChar *) res[j + incr]->stringval);
 			    } else {
 				tst = xmlStrcmp(res[j]->stringval,
 					     res[j + incr]->stringval);
 			    }
-			    if (desc[depth])
+			    if (desc)
 				tst = -tst;
 			}
 
@@ -1348,11 +1349,20 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 cleanup:
     for (j = 0; j < nbsorts; j++) {
 	comp = sorts[j]->psvi;
-	if ((comp->lang == NULL) && (comp->has_lang != 0)) {
-            if (locale[j] != (xsltLocale)0) {
-                xsltFreeLocale(locale[j]);
-            }
-        }
+	if (tempstype[j] == 1) {
+	    /* The data-type needs to be recomputed each time */
+	    xmlFree((void *)(comp->stype));
+	    comp->stype = NULL;
+	}
+	if (temporder[j] == 1) {
+	    /* The order needs to be recomputed each time */
+	    xmlFree((void *)(comp->order));
+	    comp->order = NULL;
+	}
+	if (templang[j] == 1) {
+	    xsltFreeLocale(comp->locale);
+	    comp->locale = (xsltLocale)0;
+	}
 	if (resultsTab[j] != NULL) {
 	    for (i = 0;i < len;i++)
 		xmlXPathFreeObject(resultsTab[j][i]);
