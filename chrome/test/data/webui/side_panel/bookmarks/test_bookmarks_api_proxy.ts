@@ -29,6 +29,7 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
       'openBookmark',
       'cutBookmark',
       'copyBookmark',
+      'deleteBookmarks',
       'pasteToBookmark',
       'showContextMenu',
       'showUi',
@@ -76,6 +77,11 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
 
   cutBookmark(id: string) {
     this.methodCalled('cutBookmark', id);
+  }
+
+  deleteBookmarks(ids: string[]) {
+    this.methodCalled('deleteBookmarks', ids);
+    return Promise.resolve();
   }
 
   pasteToBookmark(parentId: string, destinationId?: string): Promise<void> {

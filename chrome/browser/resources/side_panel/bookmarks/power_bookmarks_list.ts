@@ -679,6 +679,17 @@ export class PowerBookmarksListElement extends PolymerElement {
     }
   }
 
+  private onDeleteClicked_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.bookmarksApi_
+        .deleteBookmarks(this.selectedBookmarks_.map(bookmark => bookmark.id))
+        .then(() => {
+          this.selectedBookmarks_ = [];
+          this.editing_ = false;
+        });
+  }
+
   private onSortTypeClicked_(event: DomRepeatEvent<string>) {
     event.preventDefault();
     event.stopPropagation();

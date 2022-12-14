@@ -77,12 +77,18 @@
     gap: 4px;
   }
 
-  .edit-footer {
+  .edit-description {
     align-items: center;
-    background-color: var(--edit-footer-background);
     color: var(--cr-secondary-text-color);
     display: flex;
     gap: 8px;
+  }
+
+  .edit-footer {
+    background-color: var(--edit-footer-background);
+    color: var(--cr-secondary-text-color);
+    display: flex;
+    justify-content: space-between;
     padding: 14px;
   }
 
@@ -317,10 +323,18 @@
       $i18n{addCurrentTab}
     </cr-button>
     <div class="edit-footer" hidden="[[!editing_]]">
-      <cr-icon-button iron-icon="cr:close"
-          aria-label="$i18n{cancelA11yLabel}"
-          on-click="onBulkEditClicked_"></cr-icon-button>
-      [[getSelectedDescription_(selectedBookmarks_.*)]]
+      <div class="edit-description">
+        <cr-icon-button iron-icon="cr:close"
+            aria-label="$i18n{cancelA11yLabel}"
+            on-click="onBulkEditClicked_"></cr-icon-button>
+        [[getSelectedDescription_(selectedBookmarks_.*)]]
+      </div>
+      <div class="edit-icons">
+        <cr-icon-button iron-icon="bookmarks:delete"
+            disabled="[[!selectedBookmarks_.length]]"
+            aria-label="$i18n{tooltipDelete}" on-click="onDeleteClicked_">
+        </cr-icon-button>
+      </div>
     </div>
   </div>
 </div>
