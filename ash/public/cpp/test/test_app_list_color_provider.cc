@@ -9,11 +9,6 @@
 
 namespace ash {
 
-SkColor TestAppListColorProvider::GetAppListItemTextColor(
-    const views::Widget* app_list_widget) const {
-  return gfx::kGoogleGrey200;
-}
-
 SkColor TestAppListColorProvider::GetFolderBackgroundColor(
     const views::Widget* app_list_widget) const {
   return gfx::kGoogleGrey900;
@@ -24,27 +19,12 @@ SkColor TestAppListColorProvider::GetPageSwitcherButtonColor(
   return gfx::kGoogleGrey700;
 }
 
-SkColor TestAppListColorProvider::GetFolderTitleTextColor(
-    const views::Widget* app_list_widget) const {
-  return gfx::kGoogleGrey200;
-}
-
-SkColor TestAppListColorProvider::GetFolderHintTextColor(
-    const views::Widget* app_list_widget) const {
-  return gfx::kGoogleGrey500;
-}
-
 SkColor TestAppListColorProvider::GetFolderNameBorderColor(
     bool active,
     const views::Widget* app_list_widget) const {
   if (!active)
     return SK_ColorTRANSPARENT;
 
-  return SkColorSetA(SK_ColorBLACK, 0x0F);
-}
-
-SkColor TestAppListColorProvider::GetFolderNameSelectionColor(
-    const views::Widget* app_list_widget) const {
   return SkColorSetA(SK_ColorBLACK, 0x0F);
 }
 
@@ -88,11 +68,6 @@ float TestAppListColorProvider::GetInkDropOpacity(
 SkColor TestAppListColorProvider::GetSearchResultViewHighlightColor(
     const views::Widget* widget) const {
   return SkColorSetA(SK_ColorWHITE, 0x0D);
-}
-
-SkColor TestAppListColorProvider::GetTextColorURL(
-    const views::Widget* app_list_widget) const {
-  return gfx::kGoogleBlue600;
 }
 
 }  // namespace ash

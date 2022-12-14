@@ -32,14 +32,6 @@ AppListColorProviderImpl::AppListColorProviderImpl() = default;
 
 AppListColorProviderImpl::~AppListColorProviderImpl() = default;
 
-SkColor AppListColorProviderImpl::GetAppListItemTextColor(
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  return app_list_widget->GetColorProvider()->GetColor(
-      cros_tokens::kTextColorPrimary);
-}
-
 SkColor AppListColorProviderImpl::GetPageSwitcherButtonColor(
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
@@ -56,22 +48,6 @@ SkColor AppListColorProviderImpl::GetFolderBackgroundColor(
       kColorAshShieldAndBase80);
 }
 
-SkColor AppListColorProviderImpl::GetFolderTitleTextColor(
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  return app_list_widget->GetColorProvider()->GetColor(
-      cros_tokens::kTextColorPrimary);
-}
-
-SkColor AppListColorProviderImpl::GetFolderHintTextColor(
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  return app_list_widget->GetColorProvider()->GetColor(
-      cros_tokens::kTextColorSecondary);
-}
-
 SkColor AppListColorProviderImpl::GetFolderNameBorderColor(
     bool active,
     const views::Widget* app_list_widget) const {
@@ -81,13 +57,6 @@ SkColor AppListColorProviderImpl::GetFolderNameBorderColor(
     return SK_ColorTRANSPARENT;
 
   return app_list_widget->GetColorProvider()->GetColor(ui::kColorAshFocusRing);
-}
-
-SkColor AppListColorProviderImpl::GetFolderNameSelectionColor(
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  return app_list_widget->GetColorProvider()->GetColor(kColorAshFocusAuraColor);
 }
 
 SkColor AppListColorProviderImpl::GetFolderNotificationBadgeColor(
@@ -173,12 +142,6 @@ SkColor AppListColorProviderImpl::GetSearchResultViewHighlightColor(
 
   return app_list_widget->GetColorProvider()->GetColor(
       kColorAshHighlightColorHover);
-}
-
-SkColor AppListColorProviderImpl::GetTextColorURL(
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-  return app_list_widget->GetColorProvider()->GetColor(kColorAshTextColorURL);
 }
 
 }  // namespace ash

@@ -15,6 +15,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/cursor/cursor.h"
@@ -96,20 +97,21 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
     Textfield::OnThemeChanged();
 
     const bool is_active = has_mouse_already_entered_ || HasFocus();
-    const views::Widget* app_list_widget = GetWidget();
+    const views::Widget* const app_list_widget = GetWidget();
     SetBackground(views::CreateRoundedRectBackground(
         GetFolderBackgroundColor(is_active, app_list_widget),
         kFolderNameBorderRadius, kFolderNameBorderThickness));
 
-    AppListColorProvider* color_provider = AppListColorProvider::Get();
+    const ui::ColorProvider* const color_provider =
+        app_list_widget->GetColorProvider();
     set_placeholder_text_color(
-        color_provider->GetFolderHintTextColor(app_list_widget));
+        color_provider->GetColor(kColorAshTextColorSecondary));
     const SkColor text_color =
-        color_provider->GetFolderTitleTextColor(app_list_widget);
+        color_provider->GetColor(kColorAshTextColorPrimary);
     SetTextColor(text_color);
     SetSelectionTextColor(text_color);
     SetSelectionBackgroundColor(
-        color_provider->GetFolderNameSelectionColor(app_list_widget));
+        color_provider->GetColor(kColorAshFocusAuraColor));
     SetNameViewBorderAndBackground(is_active);
   }
 

@@ -232,28 +232,12 @@ class BackgroundAnimation : public AppListFolderView::Animation,
 
 // Decrease the opacity of the folder item's title when opening the folder.
 // Increase it when closing the folder.
-class FolderItemTitleAnimation : public AppListFolderView::Animation,
-                                 public views::AnimationDelegateViews {
+class FolderItemTitleAnimation : public AppListFolderView::Animation {
  public:
   FolderItemTitleAnimation(bool show,
                            AppListFolderView* folder_view,
-                           AppListItemView* folder_item_view)
-      : views::AnimationDelegateViews(folder_view),
-        show_(show),
-        animation_(this),
-        folder_view_(folder_view),
-        folder_item_view_(folder_item_view) {
-    SkColor title_color = AppListColorProvider::Get()->GetAppListItemTextColor(
-        folder_view_->GetWidget());
-    // Calculate the source and target states.
-    from_color_ = show_ ? title_color : SK_ColorTRANSPARENT;
-    to_color_ = show_ ? SK_ColorTRANSPARENT : title_color;
-
-    animation_.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
-    animation_.SetSlideDuration(
-        ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
-        kFolderTransitionDuration);
-  }
+                           views::View* folder_title)
+      : show_(show), folder_view_(folder_view), folder_title_(folder_title) {}
 
   FolderItemTitleAnimation(const FolderItemTitleAnimation&) = delete;
   FolderItemTitleAnimation& operator=(const FolderItemTitleAnimation&) = delete;
@@ -265,45 +249,35 @@ class FolderItemTitleAnimation : public AppListFolderView::Animation,
   void ScheduleAnimation(base::OnceClosure completion_callback) override {
     DCHECK(!completion_callback_);
     completion_callback_ = std::move(completion_callback);
-    animation_.Show();
-  }
-  bool IsAnimationRunning() override { return animation_.is_animating(); }
 
-  // gfx::AnimationDelegate
-  void AnimationProgressed(const gfx::Animation* animation) override {
-    folder_item_view_->title()->SetEnabledColor(gfx::Tween::ColorValueBetween(
-        animation->GetCurrentValue(), from_color_, to_color_));
+    views::AnimationBuilder()
+        .OnEnded(base::BindOnce(&FolderItemTitleAnimation::AnimationEnded,
+                                weak_ptr_factory_.GetWeakPtr()))
+        .OnAborted(base::BindOnce(&FolderItemTitleAnimation::AnimationEnded,
+                                  weak_ptr_factory_.GetWeakPtr()))
+        .Once()
+        .SetDuration(kFolderTransitionDuration)
+        .SetOpacity(folder_title_->layer(), show_ ? 0.0f : 1.0f,
+                    gfx::Tween::FAST_OUT_SLOW_IN);
   }
+  bool IsAnimationRunning() override { return !!completion_callback_; }
 
-  void AnimationEnded(const gfx::Animation* animation) override {
-    folder_item_view_->title()->SetEnabledColor(to_color_);
+  void AnimationEnded() {
     folder_view_->RecordAnimationSmoothness();
 
     if (completion_callback_)
       std::move(completion_callback_).Run();
   }
 
-  void AnimationCanceled(const gfx::Animation* animation) override {
-    AnimationEnded(animation);
-  }
-
-  // True if opening the folder.
   const bool show_;
-
-  // The source and target state of the title's color.
-  SkColor from_color_;
-  SkColor to_color_;
-
-  gfx::SlideAnimation animation_;
 
   AppListFolderView* const folder_view_;  // Not owned.
 
-  // The app list item view with which the folder view is associated.
-  // NOTE: Users of `FolderItemTitleAnimation` should ensure the animation does
-  // not outlive the `folder_item_view_`.
-  AppListItemView* const folder_item_view_;
+  views::View* const folder_title_;
 
   base::OnceClosure completion_callback_;
+
+  base::WeakPtrFactory<FolderItemTitleAnimation> weak_ptr_factory_{this};
 };
 
 // Transit from the items within the folder item icon to the same items in the
@@ -808,9 +782,11 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
       std::make_unique<BackgroundAnimation>(show, this, background_view_));
 
   // Animate the folder item's title's opacity.
+  views::View* const folder_title = folder_item_view_->title();
+  folder_title->SetPaintToLayer();
+  folder_title->layer()->SetFillsBoundsOpaquely(false);
   folder_visibility_animations_.push_back(
-      std::make_unique<FolderItemTitleAnimation>(show, this,
-                                                 folder_item_view_));
+      std::make_unique<FolderItemTitleAnimation>(show, this, folder_title));
 
   // Animate the bounds and opacity of items in the first page of the opened
   // folder.
@@ -923,8 +899,7 @@ void AppListFolderView::ResetState(bool restore_folder_item_view_state) {
   SetBackgroundViewColor(background_view_, SK_ColorTRANSPARENT);
   if (restore_folder_item_view_state && folder_item_view_) {
     folder_item_view_->SetIconVisible(true);
-    folder_item_view_->title()->SetEnabledColor(
-        AppListColorProvider::Get()->GetAppListItemTextColor(GetWidget()));
+    folder_item_view_->title()->DestroyLayer();
   }
 
   folder_item_view_observer_.Reset();

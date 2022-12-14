@@ -613,7 +613,7 @@ void SearchBoxViewBase::OnThemeChanged() {
   views::View::OnThemeChanged();
   if (features::IsAutocompleteExtendedSuggestionsEnabled()) {
     search_box_->SetSelectionBackgroundColor(
-        AppListColorProvider::Get()->GetFolderNameSelectionColor(GetWidget()));
+        GetWidget()->GetColorProvider()->GetColor(kColorAshFocusAuraColor));
   }
   UpdatePlaceholderTextStyle();
 }

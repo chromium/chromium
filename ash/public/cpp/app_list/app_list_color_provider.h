@@ -18,20 +18,12 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   // Returns the singleton instance.
   static AppListColorProvider* Get();
 
-  virtual SkColor GetAppListItemTextColor(
-      const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetPageSwitcherButtonColor(
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetFolderBackgroundColor(
       const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetFolderTitleTextColor(
-      const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetFolderHintTextColor(
-      const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetFolderNameBorderColor(
       bool active,
-      const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetFolderNameSelectionColor(
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetFolderNotificationBadgeColor(
       const views::Widget* app_list_widget) const = 0;
@@ -50,8 +42,6 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
       const views::Widget* app_list_widget,
       SkColor bg_color = gfx::kPlaceholderColor) const = 0;
   virtual SkColor GetSearchResultViewHighlightColor(
-      const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetTextColorURL(
       const views::Widget* app_list_widget) const = 0;
 
  protected:
