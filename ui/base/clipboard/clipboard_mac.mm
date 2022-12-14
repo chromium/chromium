@@ -135,8 +135,8 @@ bool ClipboardMac::IsFormatAvailable(
   // Safari only places RTF on the pasteboard, never HTML. We can convert RTF
   // to HTML, so the presence of either indicates success when looking for HTML.
   if (format == ClipboardFormatType::HtmlType()) {
-    return [types containsObject:NSHTMLPboardType] ||
-           [types containsObject:NSRTFPboardType];
+    return [types containsObject:NSPasteboardTypeHTML] ||
+           [types containsObject:NSPasteboardTypeRTF];
   }
   // Chrome can retrieve an image from the clipboard as either a bitmap or PNG.
   if (format == ClipboardFormatType::PngType() ||
@@ -266,14 +266,15 @@ void ClipboardMac::ReadHTML(ClipboardBuffer buffer,
 
   NSPasteboard* pb = GetPasteboard();
   NSArray* supportedTypes =
-      @[ NSHTMLPboardType, NSRTFPboardType, NSPasteboardTypeString ];
+      @[ NSPasteboardTypeHTML, NSPasteboardTypeRTF, NSPasteboardTypeString ];
   NSString* bestType = [pb availableTypeFromArray:supportedTypes];
   if (bestType) {
     NSString* contents;
-    if ([bestType isEqualToString:NSRTFPboardType])
+    if ([bestType isEqualToString:NSPasteboardTypeRTF]) {
       contents = ClipboardUtil::GetHTMLFromRTFOnPasteboard(pb);
-    else
+    } else {
       contents = [pb stringForType:bestType];
+    }
     *markup = base::SysNSStringToUTF16(contents);
   }
 
@@ -417,7 +418,7 @@ void ClipboardMac::WriteHTML(const char* markup_data,
   NSString* html_fragment = base::SysUTF8ToNSString(html_fragment_str);
 
   // TODO(avi): url_data?
-  [GetPasteboard() setString:html_fragment forType:NSHTMLPboardType];
+  [GetPasteboard() setString:html_fragment forType:NSPasteboardTypeHTML];
 }
 
 void ClipboardMac::WriteSvg(const char* markup_data, size_t markup_len) {
