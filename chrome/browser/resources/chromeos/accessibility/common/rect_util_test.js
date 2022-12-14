@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../select_to_speak/select_to_speak_e2e_test_base.js']);
+GEN_INCLUDE(['testing/common_e2e_test_base.js']);
 
 /** Test fixture for rect_util.js. */
-RectUtilTest = class extends SelectToSpeakE2ETest {
+AccessibilityExtensionRectUtilTest = class extends CommonE2ETestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -13,7 +13,7 @@ RectUtilTest = class extends SelectToSpeakE2ETest {
   }
 };
 
-AX_TEST_F('RectUtilTest', 'Adjacent', function() {
+AX_TEST_F('AccessibilityExtensionRectUtilTest', 'Adjacent', function() {
   const baseRect = {left: 10, top: 10, width: 10, height: 10};
   const adjacentRects = [
     {left: 0, top: 0, width: 10, height: 10},
@@ -76,7 +76,7 @@ AX_TEST_F('RectUtilTest', 'Adjacent', function() {
   }
 });
 
-AX_TEST_F('RectUtilTest', 'Close', function() {
+AX_TEST_F('AccessibilityExtensionRectUtilTest', 'Close', function() {
   const centerRect = {left: 10, top: 10, width: 10, height: 10};
   assertTrue(RectUtil.close(centerRect, centerRect, 0));
 
@@ -133,7 +133,7 @@ AX_TEST_F('RectUtilTest', 'Close', function() {
   assertFalse(RectUtil.close(farRect, centerRect, 20));
 });
 
-AX_TEST_F('RectUtilTest', 'Equals', function() {
+AX_TEST_F('AccessibilityExtensionRectUtilTest', 'Equals', function() {
   const rect1 = {left: 0, top: 0, width: 10, height: 10};
   const rect2 = {left: 0, top: 0, width: 10, height: 10};
   const rect3 = {left: 1, top: 0, width: 10, height: 10};
@@ -158,7 +158,7 @@ AX_TEST_F('RectUtilTest', 'Equals', function() {
   assertFalse(RectUtil.equal(rect6, rect1), 'equal should be symmetric');
 });
 
-AX_TEST_F('RectUtilTest', 'Center', function() {
+AX_TEST_F('AccessibilityExtensionRectUtilTest', 'Center', function() {
   const rect1 = {left: 0, top: 0, width: 10, height: 10};
   const rect2 = {left: 10, top: 20, width: 10, height: 40};
 
@@ -171,7 +171,7 @@ AX_TEST_F('RectUtilTest', 'Center', function() {
   assertEquals(40, center2.y, 'Center2 y should be 40');
 });
 
-AX_TEST_F('RectUtilTest', 'Union', function() {
+AX_TEST_F('AccessibilityExtensionRectUtilTest', 'Union', function() {
   const rect1 = {left: 0, top: 0, width: 10, height: 10};
   const rect2 = {left: 4, top: 4, width: 2, height: 2};
   const rect3 = {left: 10, top: 20, width: 10, height: 40};
@@ -203,7 +203,7 @@ AX_TEST_F('RectUtilTest', 'Union', function() {
       'Union of rect1 and rect5 does not match expected value');
 });
 
-AX_TEST_F('RectUtilTest', 'UnionAll', function() {
+AX_TEST_F('AccessibilityExtensionRectUtilTest', 'UnionAll', function() {
   const rect1 = {left: 0, top: 0, width: 10, height: 10};
   const rect2 = {left: 0, top: 10, width: 10, height: 10};
   const rect3 = {left: 10, top: 0, width: 10, height: 10};
@@ -223,53 +223,55 @@ AX_TEST_F('RectUtilTest', 'UnionAll', function() {
       'Union of rects 1-5 does not match expected value');
 });
 
-AX_TEST_F('RectUtilTest', 'ExpandToFitWithPadding', function() {
-  const padding = 5;
-  let inner = {left: 100, top: 100, width: 100, height: 100};
-  let outer = {left: 120, top: 120, width: 20, height: 20};
-  let expected = {left: 95, top: 95, width: 110, height: 110};
-  assertTrue(
-      RectUtil.equal(
-          expected, RectUtil.expandToFitWithPadding(padding, outer, inner)),
-      'When outer is contained in inner, expandToFitWithPadding does not ' +
-          'match expected value');
+AX_TEST_F(
+    'AccessibilityExtensionRectUtilTest', 'ExpandToFitWithPadding', function() {
+      const padding = 5;
+      let inner = {left: 100, top: 100, width: 100, height: 100};
+      let outer = {left: 120, top: 120, width: 20, height: 20};
+      let expected = {left: 95, top: 95, width: 110, height: 110};
+      assertTrue(
+          RectUtil.equal(
+              expected, RectUtil.expandToFitWithPadding(padding, outer, inner)),
+          'When outer is contained in inner, expandToFitWithPadding does not ' +
+              'match expected value');
 
-  inner = {left: 100, top: 100, width: 100, height: 100};
-  outer = {left: 50, top: 50, width: 200, height: 200};
-  assertTrue(
-      RectUtil.equal(
-          outer, RectUtil.expandToFitWithPadding(padding, outer, inner)),
-      'When outer contains inner, expandToFitWithPadding should equal outer');
+      inner = {left: 100, top: 100, width: 100, height: 100};
+      outer = {left: 50, top: 50, width: 200, height: 200};
+      assertTrue(
+          RectUtil.equal(
+              outer, RectUtil.expandToFitWithPadding(padding, outer, inner)),
+          'When outer contains inner, expandToFitWithPadding should equal ' +
+              'outer');
 
-  inner = {left: 100, top: 100, width: 100, height: 100};
-  outer = {left: 10, top: 10, width: 10, height: 10};
-  expected = {left: 10, top: 10, width: 195, height: 195};
-  assertTrue(
-      RectUtil.equal(
-          expected, RectUtil.expandToFitWithPadding(padding, outer, inner)),
-      'When there is no overlap, expandToFitWithPadding does not match ' +
-          'expected value');
+      inner = {left: 100, top: 100, width: 100, height: 100};
+      outer = {left: 10, top: 10, width: 10, height: 10};
+      expected = {left: 10, top: 10, width: 195, height: 195};
+      assertTrue(
+          RectUtil.equal(
+              expected, RectUtil.expandToFitWithPadding(padding, outer, inner)),
+          'When there is no overlap, expandToFitWithPadding does not match ' +
+              'expected value');
 
-  inner = {left: 100, top: 100, width: 100, height: 100};
-  outer = {left: 120, top: 50, width: 200, height: 200};
-  expected = {left: 95, top: 50, width: 225, height: 200};
-  assertTrue(
-      RectUtil.equal(
-          expected, RectUtil.expandToFitWithPadding(padding, outer, inner)),
-      'When there is some overlap, expandToFitWithPadding does not match ' +
-          'expected value');
+      inner = {left: 100, top: 100, width: 100, height: 100};
+      outer = {left: 120, top: 50, width: 200, height: 200};
+      expected = {left: 95, top: 50, width: 225, height: 200};
+      assertTrue(
+          RectUtil.equal(
+              expected, RectUtil.expandToFitWithPadding(padding, outer, inner)),
+          'When there is some overlap, expandToFitWithPadding does not match ' +
+              'expected value');
 
-  inner = {left: 100, top: 100, width: 100, height: 100};
-  outer = {left: 97, top: 95, width: 108, height: 110};
-  expected = {left: 95, top: 95, width: 110, height: 110};
-  assertTrue(
-      RectUtil.equal(
-          expected, RectUtil.expandToFitWithPadding(padding, outer, inner)),
-      'When outer contains inner but without sufficient padding, ' +
-          'expandToFitWithPadding does not match expected value');
-});
+      inner = {left: 100, top: 100, width: 100, height: 100};
+      outer = {left: 97, top: 95, width: 108, height: 110};
+      expected = {left: 95, top: 95, width: 110, height: 110};
+      assertTrue(
+          RectUtil.equal(
+              expected, RectUtil.expandToFitWithPadding(padding, outer, inner)),
+          'When outer contains inner but without sufficient padding, ' +
+              'expandToFitWithPadding does not match expected value');
+    });
 
-AX_TEST_F('RectUtilTest', 'Contains', function() {
+AX_TEST_F('AccessibilityExtensionRectUtilTest', 'Contains', function() {
   const outer = {left: 10, top: 10, width: 10, height: 10};
   assertTrue(RectUtil.contains(outer, outer), 'Rect should contain itself');
 
@@ -326,7 +328,7 @@ AX_TEST_F('RectUtilTest', 'Contains', function() {
 });
 
 
-AX_TEST_F('RectUtilTest', 'Difference', function() {
+AX_TEST_F('AccessibilityExtensionRectUtilTest', 'Difference', function() {
   const outer = {left: 10, top: 10, width: 10, height: 10};
   assertTrue(
       RectUtil.equal(RectUtil.ZERO_RECT, RectUtil.difference(outer, outer)),
@@ -368,7 +370,7 @@ AX_TEST_F('RectUtilTest', 'Difference', function() {
       'Difference to the right should be the largest');
 });
 
-AX_TEST_F('RectUtilTest', 'Intersection', function() {
+AX_TEST_F('AccessibilityExtensionRectUtilTest', 'Intersection', function() {
   const rect1 = {left: 10, top: 10, width: 10, height: 10};
   assertTrue(
       RectUtil.equal(rect1, RectUtil.intersection(rect1, rect1)),
@@ -426,7 +428,7 @@ AX_TEST_F('RectUtilTest', 'Intersection', function() {
       'Intersection should be symmetric');
 });
 
-AX_TEST_F('RectUtilTest', 'Overlaps', function() {
+AX_TEST_F('AccessibilityExtensionRectUtilTest', 'Overlaps', function() {
   var rect1 = {left: 0, top: 0, width: 100, height: 100};
   var rect2 = {left: 80, top: 0, width: 100, height: 20};
   var rect3 = {left: 0, top: 80, width: 20, height: 100};
@@ -439,7 +441,7 @@ AX_TEST_F('RectUtilTest', 'Overlaps', function() {
   assertFalse(RectUtil.overlaps(rect2, rect3));
 });
 
-AX_TEST_F('RectUtilTest', 'RectFromPoints', function() {
+AX_TEST_F('AccessibilityExtensionRectUtilTest', 'RectFromPoints', function() {
   var rect = {left: 10, top: 20, width: 50, height: 60};
 
   assertNotEquals(
