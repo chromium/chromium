@@ -10,6 +10,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
 #include "ash/wallpaper/wallpaper_base_view.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
@@ -18,10 +19,10 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "ash/wm/wm_highlight_item_border.h"
 #include "ash/wm/workspace/backdrop_controller.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
@@ -56,9 +57,6 @@ constexpr int kRootHeightDividerForSmallScreen = 8;
 constexpr int kDeskPreviewMaxHeight = 140;
 constexpr int kDeskPreviewMinHeight = 48;
 constexpr int kUseSmallerHeightDividerWidthThreshold = 600;
-
-// The corner radius of the border in dips.
-constexpr int kBorderCornerRadius = 6;
 
 // The rounded corner radii, also in dips.
 constexpr int kCornerRadius = 4;
@@ -350,12 +348,6 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
     highlight_overlay_layer->SetIsFastRoundedCorner(true);
   }
 
-  auto border = std::make_unique<WmHighlightItemBorder>(kBorderCornerRadius);
-  border_ptr_ = border.get();
-  SetBorder(std::move(border));
-  // Do not install the default focus ring on the button since we have `border`.
-  SetInstallFocusRingOnFocus(false);
-
   RecreateDeskContentsMirrorLayers();
 }
 
@@ -372,11 +364,6 @@ int DeskPreviewView::GetHeight(aura::Window* root) {
           : kRootHeightDivider;
   return base::clamp(root->bounds().height() / height_divider,
                      kDeskPreviewMinHeight, kDeskPreviewMaxHeight);
-}
-
-void DeskPreviewView::SetBorderColor(SkColor color) {
-  border_ptr_->set_color(color);
-  SchedulePaint();
 }
 
 void DeskPreviewView::SetHighlightOverlayVisibility(bool visible) {
@@ -545,12 +532,12 @@ void DeskPreviewView::OnThemeChanged() {
 
 void DeskPreviewView::OnFocus() {
   UpdateOverviewHighlightForFocusAndSpokenFeedback(this);
-  mini_view_->UpdateBorderColor();
+  mini_view_->UpdateFocusColor();
   View::OnFocus();
 }
 
 void DeskPreviewView::OnBlur() {
-  mini_view_->UpdateBorderColor();
+  mini_view_->UpdateFocusColor();
   View::OnBlur();
 }
 
@@ -595,12 +582,12 @@ bool DeskPreviewView::MaybeActivateHighlightedViewOnOverviewExit(
 }
 
 void DeskPreviewView::OnViewHighlighted() {
-  mini_view_->UpdateBorderColor();
+  mini_view_->UpdateFocusColor();
   mini_view_->owner_bar()->ScrollToShowMiniViewIfNecessary(mini_view_);
 }
 
 void DeskPreviewView::OnViewUnhighlighted() {
-  mini_view_->UpdateBorderColor();
+  mini_view_->UpdateFocusColor();
 }
 
 }  // namespace ash

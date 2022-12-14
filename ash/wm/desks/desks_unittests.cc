@@ -114,6 +114,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/display.h"
+#include "ui/display/display_switches.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -384,6 +385,10 @@ class DesksTest : public AshTestBase,
   ~DesksTest() override = default;
 
   void SetUp() override {
+    // This allows us to snap to the bottom in portrait mode.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kUseFirstDisplayAsInternal);
+
     scoped_feature_list_.InitWithFeatureState(features::kEnable16Desks,
                                               GetParam().use_16_desks);
 
@@ -5046,7 +5051,7 @@ TEST_P(DesksTest, ScrollableDesks) {
 
   // Set the scroll delta large enough to make sure the desks bar can be
   // scrolled to the end each time.
-  const int x_scroll_delta = 400;
+  const int x_scroll_delta = 500;
   gfx::Rect display_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           root_window);
@@ -5103,17 +5108,18 @@ TEST_P(DesksTest, ScrollButtonsVisibility) {
   EXPECT_FALSE(DesksTestApi::GetDesksBarLeftScrollButton()->GetVisible());
   EXPECT_TRUE(DesksTestApi::GetDesksBarRightScrollButton()->GetVisible());
 
-  // Click the right scroll button should scroll to the next page. And left and
-  // right scroll buttons should both be visible while at the middle position.
-  ClickOnView(DesksTestApi::GetDesksBarRightScrollButton(), event_generator);
+  // Click the right scroll button until it reaches to the right most of the
+  // scroll view. Then verify the left scroll button is visible.
+  if (DesksTestApi::GetDesksBarRightScrollButton()->GetVisible())
+    ClickOnView(DesksTestApi::GetDesksBarRightScrollButton(), event_generator);
   EXPECT_TRUE(DesksTestApi::GetDesksBarLeftScrollButton()->GetVisible());
-  EXPECT_TRUE(DesksTestApi::GetDesksBarRightScrollButton()->GetVisible());
 
-  // Click the left scroll button should scroll to the previous page. In this
-  // case, it will scroll back to the start position and left scroll button
-  // should be hidden and right scroll button should be visible.
-  ClickOnView(DesksTestApi::GetDesksBarLeftScrollButton(), event_generator);
-  EXPECT_FALSE(DesksTestApi::GetDesksBarLeftScrollButton()->GetVisible());
+  // Click the left scroll button until it reaches to the right most of the
+  // scroll view. In this case, it will scroll back to the start position and
+  // left scroll button should be hidden and right scroll button should be
+  // visible.
+  if (DesksTestApi::GetDesksBarLeftScrollButton()->GetVisible())
+    ClickOnView(DesksTestApi::GetDesksBarLeftScrollButton(), event_generator);
   EXPECT_TRUE(DesksTestApi::GetDesksBarRightScrollButton()->GetVisible());
 
   // Left scroll button should be visible and right scroll button should be
@@ -5241,6 +5247,8 @@ TEST_P(DesksTest, ContinueScrollBar) {
   EXPECT_FALSE(left_button->GetVisible());
   EXPECT_TRUE(right_button->GetVisible());
 
+  const int focus_ring_width_and_padding = 4;
+
   // Press on the right scroll button by mouse should scroll to the next page.
   // And the final scroll position should be adjusted to make sure the desk
   // preview will not be cropped.
@@ -5248,7 +5256,7 @@ TEST_P(DesksTest, ContinueScrollBar) {
   event_generator->MoveMouseTo(right_button->GetBoundsInScreen().CenterPoint());
   event_generator->PressLeftButton();
   current_index += desks_in_one_page;
-  EXPECT_EQ(scroll_view->GetVisibleRect().x(),
+  EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
             mini_views[current_index]->bounds().x());
 
   // Both scroll buttons should be visible.
@@ -5258,7 +5266,7 @@ TEST_P(DesksTest, ContinueScrollBar) {
   // Wait for 1s, there will be another scroll.
   WaitForMilliseconds(1000);
   current_index += desks_in_one_page;
-  EXPECT_EQ(scroll_view->GetVisibleRect().x(),
+  EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
             mini_views[current_index]->bounds().x());
 
   // Release and click a few times to make sure we end up at the maximum offset.
@@ -5276,7 +5284,7 @@ TEST_P(DesksTest, ContinueScrollBar) {
 
   // Since we're scrolled all the way to the right and the new desk button is
   // visible, this is the index of the leftmost visible mini view.
-  current_index = max_desks_size - desks_in_one_page + 1;
+  current_index = max_desks_size - 1;
 
   // Press on left scroll button by gesture should scroll to the previous page.
   // And the final scroll position should also be adjusted while scrolling to
@@ -5284,13 +5292,13 @@ TEST_P(DesksTest, ContinueScrollBar) {
   event_generator->MoveTouch(left_button->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   current_index -= desks_in_one_page;
-  EXPECT_EQ(scroll_view->GetVisibleRect().x(),
+  EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
             mini_views[current_index]->bounds().x());
 
   // Wait for 1s, there is another scroll.
   WaitForMilliseconds(1000);
   current_index -= desks_in_one_page;
-  EXPECT_EQ(scroll_view->GetVisibleRect().x(),
+  EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
             mini_views[current_index]->bounds().x());
 
   event_generator->ReleaseTouch();
@@ -6198,11 +6206,13 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
   DeskMiniView* mini_view_0 = mini_views[0];
   Desk* desk_0 = mini_view_0->desk();
 
+  const int focus_ring_width_and_padding = 4;
+
   StartDragDeskPreview(mini_view_0, event_generator);
   EXPECT_TRUE(desks_bar->IsDraggingDesk());
   event_generator->MoveMouseTo(right_button->GetBoundsInScreen().CenterPoint());
   current_index += desks_in_one_page;
-  EXPECT_EQ(scroll_view->GetVisibleRect().x(),
+  EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
             mini_views[current_index]->bounds().x());
 
   // Both scroll buttons should be visible.
@@ -6212,7 +6222,7 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
   // Wait for 1s, there will be another scroll.
   WaitForMilliseconds(1000);
   current_index += desks_in_one_page;
-  EXPECT_EQ(scroll_view->GetVisibleRect().x(),
+  EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
             mini_views[current_index]->bounds().x());
 
   // While scrolling, the desk cannot be reordered.
@@ -6238,7 +6248,7 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
   EXPECT_EQ(max_index, desks_controller->GetDeskIndex(desk_0));
   event_generator->ReleaseLeftButton();
 
-  current_index = max_desks_size - desks_in_one_page + 1;
+  current_index = max_desks_size - 1;
 
   // Dragging the desk to left scroll button should scroll to the previous page.
   // And the final scroll position should also be adjusted while scrolling to
@@ -6247,13 +6257,13 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
   StartDragDeskPreview(mini_views[max_desks_size - 1], event_generator);
   event_generator->MoveMouseTo(left_button->GetBoundsInScreen().CenterPoint());
   current_index -= desks_in_one_page;
-  EXPECT_EQ(scroll_view->GetVisibleRect().x(),
+  EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
             mini_views[current_index]->bounds().x());
 
   // Wait for 1s, there is another scroll.
   WaitForMilliseconds(1000);
   current_index -= desks_in_one_page;
-  EXPECT_EQ(scroll_view->GetVisibleRect().x(),
+  EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
             mini_views[current_index]->bounds().x());
 
   // The desk is still not reordered while scrolling backward.

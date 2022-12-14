@@ -17,7 +17,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
 #include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desk_action_view.h"
@@ -58,6 +57,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/highlight_border.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -97,6 +97,8 @@ constexpr int kGradientZoneLength = 40;
 constexpr int kVerticalDotsButtonVerticalPadding = 8;
 constexpr int kVerticalDotsButtonRightPadding = 8;
 
+constexpr int kDeskPreviewViewFocusRingThicknessAndPadding = 4;
+
 // The duration of scrolling one page.
 constexpr base::TimeDelta kBarScrollDuration = base::Milliseconds(250);
 
@@ -109,10 +111,6 @@ OverviewHighlightController* GetHighlightController() {
   auto* overview_controller = Shell::Get()->overview_controller();
   DCHECK(overview_controller->InOverviewSession());
   return overview_controller->overview_session()->highlight_controller();
-}
-
-int GetSpaceBetweenMiniViews(DeskMiniView* mini_view) {
-  return kMiniViewsSpacing - mini_view->GetPreviewBorderInsets().width();
 }
 
 // Initialize a scoped layer animation settings for scroll view contents.
@@ -308,15 +306,18 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
         expanded_state_desks_templates_button->GetVisible();
 
     gfx::Size mini_view_size = mini_views[0]->GetPreferredSize();
-    const int mini_view_spacing = GetSpaceBetweenMiniViews(mini_views[0]);
+
     // The new desk button and template button in the expanded bar view has the
     // same size as mini view.
     const int num_items =
         static_cast<int>(mini_views.size()) +
         (expanded_state_desks_templates_button_visible ? 2 : 1);
+
+    // Content width is sum of the width of all views, and plus the spacing
+    // between the views, the focus ring's thickness and padding on each sides.
     const int content_width =
-        num_items * (mini_view_size.width() + mini_view_spacing) -
-        mini_view_spacing;
+        num_items * (mini_view_size.width() + kMiniViewsSpacing) -
+        kMiniViewsSpacing + kDeskPreviewViewFocusRingThicknessAndPadding * 2;
     width_ = std::max(scroll_bounds.width(), content_width);
 
     // Update the size of the |host|, which is |scroll_view_contents_| here.
@@ -325,17 +326,21 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
     // be scolled or not.
     host->SetSize(gfx::Size(width_, scroll_bounds.height()));
 
-    int x = (width_ - content_width) / 2;
+    // The x of the first mini view should include the focus ring thickness and
+    // padding into consideration, otherwise the focus ring won't be drawn on
+    // the left side of the first mini view.
+    int x = (width_ - content_width) / 2 +
+            kDeskPreviewViewFocusRingThicknessAndPadding;
     const int y = kMiniViewsY - mini_views[0]->GetPreviewBorderInsets().top();
     for (auto* mini_view : mini_views) {
       mini_view->SetBoundsRect(gfx::Rect(gfx::Point(x, y), mini_view_size));
-      x += (mini_view_size.width() + mini_view_spacing);
+      x += (mini_view_size.width() + kMiniViewsSpacing);
     }
     bar_view_->expanded_state_new_desk_button()->SetBoundsRect(
         gfx::Rect(gfx::Point(x, y), mini_view_size));
 
     if (expanded_state_desks_templates_button) {
-      x += (mini_view_size.width() + mini_view_spacing);
+      x += (mini_view_size.width() + kMiniViewsSpacing);
       expanded_state_desks_templates_button->SetBoundsRect(
           gfx::Rect(gfx::Point(x, y), mini_view_size));
     }
@@ -418,6 +423,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
           base::BindRepeating(&DesksBarView::OnNewDeskButtonPressed,
                               base::Unretained(this),
                               DesksCreationRemovalSource::kButton)));
+
   zero_state_default_desk_button_ = scroll_view_contents_->AddChildView(
       std::make_unique<ZeroStateDefaultDeskButton>(this));
   zero_state_new_desk_button_ =
@@ -553,11 +559,11 @@ void DesksBarView::SetDragDetails(const gfx::Point& screen_location,
     return;
 
   for (auto* mini_view : mini_views_)
-    mini_view->UpdateBorderColor();
+    mini_view->UpdateFocusColor();
 
   if (features::IsDragWindowToNewDeskEnabled() &&
       DesksController::Get()->CanCreateDesks()) {
-    expanded_state_new_desk_button()->UpdateBorderColor();
+    expanded_state_new_desk_button()->UpdateFocusColor();
   }
 }
 
@@ -915,7 +921,7 @@ void DesksBarView::OnDeskActivationChanged(const Desk* activated,
   for (auto* mini_view : mini_views_) {
     const Desk* desk = mini_view->desk();
     if (desk == activated || desk == deactivated)
-      mini_view->UpdateBorderColor();
+      mini_view->UpdateFocusColor();
   }
 }
 
@@ -1016,10 +1022,10 @@ void DesksBarView::UpdateButtonsForSavedDeskGrid() {
     return;
 
   FindMiniViewForDesk(Shell::Get()->desks_controller()->active_desk())
-      ->UpdateBorderColor();
+      ->UpdateFocusColor();
   expanded_state_desks_templates_button_->set_active(
       overview_grid_->IsShowingSavedDeskLibrary());
-  expanded_state_desks_templates_button_->UpdateBorderColor();
+  expanded_state_desks_templates_button_->UpdateFocusColor();
 }
 
 void DesksBarView::UpdateDeskButtonsVisibility() {
@@ -1257,9 +1263,10 @@ int DesksBarView::GetAdjustedUncroppedScrollPosition(int position) const {
   const int mini_views_size = static_cast<int>(mini_views_.size());
   for (; i < mini_views_size; i++) {
     mini_view_bounds = mini_views_[i]->bounds();
+
     // Return early if there is no desk preview cropped at the start position.
     if (mini_view_bounds.x() >= position)
-      return position;
+      return position - kDeskPreviewViewFocusRingThicknessAndPadding;
 
     if (mini_view_bounds.x() < position && mini_view_bounds.right() > position)
       break;
@@ -1273,7 +1280,7 @@ int DesksBarView::GetAdjustedUncroppedScrollPosition(int position) const {
     if (i + 1 < mini_views_size)
       adjusted_position = mini_views_[i + 1]->bounds().x();
   }
-  return adjusted_position;
+  return adjusted_position - kDeskPreviewViewFocusRingThicknessAndPadding;
 }
 
 void DesksBarView::OnLibraryButtonPressed() {

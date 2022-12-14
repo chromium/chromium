@@ -88,7 +88,10 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
 
   SystemShadow* shadow() const { return shadow_.get(); }
 
-  void SetBorderColor(SkColor color);
+  absl::optional<ui::ColorId> focus_color_id() { return focus_color_id_; }
+  void set_focus_color_id(absl::optional<ui::ColorId> focus_color_id) {
+    focus_color_id_ = focus_color_id;
+  }
 
   // Sets the visibility of `highlight_overlay_` to `visible`. If `visible` is
   // true, this `DeskPreviewView` becomes highlighted.
@@ -157,6 +160,8 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
       force_occlusion_tracker_visible_;
 
   std::unique_ptr<SystemShadow> shadow_;
+
+  absl::optional<ui::ColorId> focus_color_id_;
 };
 
 }  // namespace ash

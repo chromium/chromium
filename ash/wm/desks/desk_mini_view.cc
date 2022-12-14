@@ -9,8 +9,8 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/close_button.h"
+#include "ash/style/style_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_action_view.h"
@@ -21,6 +21,7 @@
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/desks_textfield.h"
 #include "ash/wm/float/float_controller.h"
+#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/bind.h"
@@ -34,8 +35,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -46,6 +49,8 @@ constexpr int kLabelPreviewSpacing = 8;
 constexpr int kCloseButtonMargin = 8;
 
 constexpr int kMinDeskNameViewWidth = 56;
+
+constexpr int kPreviewFocusRingRadius = 6;
 
 gfx::Rect ConvertScreenRect(views::View* view, const gfx::Rect& screen_rect) {
   gfx::Point origin = screen_rect.origin();
@@ -112,6 +117,19 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
       base::BindRepeating(&DeskMiniView::OnDeskPreviewPressed,
                           base::Unretained(this)),
       this));
+
+  views::FocusRing* preview_focus_ring = views::FocusRing::Get(desk_preview_);
+  views::InstallRoundRectHighlightPathGenerator(
+      desk_preview_, gfx::Insets(kFocusRingHaloInset), kPreviewFocusRingRadius);
+  preview_focus_ring->SetHasFocusPredicate([&](views::View* view) {
+    return (owner_bar_->dragged_item_over_bar() &&
+            IsPointOnMiniView(
+                owner_bar_->last_dragged_item_screen_location())) ||
+           desk_preview_->IsViewHighlighted() ||
+           (desk_->is_active() &&
+            !owner_bar_->overview_grid()->IsShowingSavedDeskLibrary());
+  });
+
   desk_name_view_ = AddChildView(std::move(desk_name_view));
 
   if (features::IsDesksCloseAllEnabled()) {
@@ -149,7 +167,6 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
         CloseButton::Type::kSmall));
   }
   UpdateDeskButtonVisibility();
-  UpdateBorderColor();
 }
 
 DeskMiniView::~DeskMiniView() {
@@ -223,21 +240,31 @@ void DeskMiniView::OnWidgetGestureTap(const gfx::Rect& screen_rect,
     UpdateDeskButtonVisibility();
 }
 
-void DeskMiniView::UpdateBorderColor() {
+void DeskMiniView::UpdateFocusColor() {
   DCHECK(desk_);
-  auto* color_provider = AshColorProvider::Get();
+  absl::optional<ui::ColorId> new_focus_color_id;
+
   if ((owner_bar_->dragged_item_over_bar() &&
        IsPointOnMiniView(owner_bar_->last_dragged_item_screen_location())) ||
       desk_preview_->IsViewHighlighted()) {
-    desk_preview_->SetBorderColor(color_provider->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kFocusRingColor));
-  } else if (!desk_->is_active() ||
-             owner_bar_->overview_grid()->IsShowingSavedDeskLibrary()) {
-    desk_preview_->SetBorderColor(SK_ColorTRANSPARENT);
+    new_focus_color_id = ui::kColorAshFocusRing;
+  } else if (desk_->is_active() &&
+             !owner_bar_->overview_grid()->IsShowingSavedDeskLibrary()) {
+    new_focus_color_id = kColorAshCurrentDeskColor;
   } else {
-    desk_preview_->SetBorderColor(color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kCurrentDeskColor));
+    new_focus_color_id = absl::nullopt;
   }
+
+  if (desk_preview_->focus_color_id() == new_focus_color_id)
+    return;
+
+  auto* focus_ring = views::FocusRing::Get(desk_preview_);
+
+  // Only repaint the focus ring if the color gets updated.
+  desk_preview_->set_focus_color_id(new_focus_color_id);
+  focus_ring->SetColorId(new_focus_color_id);
+
+  focus_ring->SchedulePaint();
 }
 
 gfx::Insets DeskMiniView::GetPreviewBorderInsets() const {
@@ -381,7 +408,7 @@ void DeskMiniView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void DeskMiniView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  UpdateBorderColor();
+  UpdateFocusColor();
 }
 
 void DeskMiniView::OnContentChanged() {

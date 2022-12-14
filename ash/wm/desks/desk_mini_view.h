@@ -88,10 +88,10 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // This is useful for touch-only UIs.
   void OnWidgetGestureTap(const gfx::Rect& screen_rect, bool is_long_gesture);
 
-  // Updates the border color of the DeskPreviewView based on the activation
+  // Updates the focus color of the `DeskPreviewView` based on the activation
   // state of the corresponding desk and whether the desks template grid is
   // visible.
-  void UpdateBorderColor();
+  void UpdateFocusColor();
 
   // Gets the preview border's insets.
   gfx::Insets GetPreviewBorderInsets() const;

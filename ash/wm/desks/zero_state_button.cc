@@ -22,6 +22,8 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 
 namespace ash {
 
@@ -49,7 +51,6 @@ ZeroStateDefaultDeskButton::ZeroStateDefaultDeskButton(DesksBarView* bar_view)
           /*set_text=*/true,
           base::BindRepeating(&ZeroStateDefaultDeskButton::OnButtonPressed,
                               base::Unretained(this)),
-          kCornerRadius,
           kCornerRadius),
       bar_view_(bar_view) {
   GetViewAccessibility().OverrideName(
@@ -111,7 +112,6 @@ ZeroStateIconButton::ZeroStateIconButton(const gfx::VectorIcon* button_icon,
     : DeskButtonBase(text,
                      /*set_text=*/false,
                      std::move(callback),
-                     kCornerRadius,
                      kCornerRadius),
       button_icon_(button_icon) {
   SetShouldPaintBackground(false);

@@ -14,13 +14,15 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
-#include "ash/wm/wm_highlight_item_border.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -48,15 +50,17 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
       : DeskButtonBase(text,
                        /*set_text=*/false,
                        std::move(callback),
-                       kBorderCornerRadius,
                        kCornerRadius),
-        outer_button_(outer_button) {
-    set_paint_contents_only(true);
-  }
+        outer_button_(outer_button) {}
   InnerExpandedDesksBarButton(const InnerExpandedDesksBarButton&) = delete;
   InnerExpandedDesksBarButton operator=(const InnerExpandedDesksBarButton&) =
       delete;
   ~InnerExpandedDesksBarButton() override = default;
+
+  absl::optional<ui::ColorId> focus_color_id() { return focus_color_id_; }
+  void set_focus_color_id(absl::optional<ui::ColorId> focus_color_id) {
+    focus_color_id_ = focus_color_id;
+  }
 
   void OnThemeChanged() override {
     DeskButtonBase::OnThemeChanged();
@@ -90,10 +94,11 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
     SchedulePaint();
   }
 
-  void UpdateBorderState() override { outer_button_->UpdateBorderColor(); }
+  void UpdateFocusState() override { outer_button_->UpdateFocusColor(); }
 
  private:
   ExpandedDesksBarButton* outer_button_;
+  absl::optional<ui::ColorId> focus_color_id_;
 };
 
 BEGIN_METADATA(InnerExpandedDesksBarButton, views::LabelButton)
@@ -121,6 +126,16 @@ ExpandedDesksBarButton::ExpandedDesksBarButton(
   layer()->SetFillsBoundsOpaquely(false);
   label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetButtonState(initially_enabled);
+
+  views::InstallRoundRectHighlightPathGenerator(
+      inner_button_, gfx::Insets(kFocusRingHaloInset), kBorderCornerRadius);
+  auto* focus_ring = views::FocusRing::Get(inner_button_);
+  focus_ring->SetHasFocusPredicate([&](views::View* view) {
+    return inner_button_->IsViewHighlighted() ||
+           ((bar_view_->dragged_item_over_bar() &&
+             IsPointOnButton(bar_view_->last_dragged_item_screen_location())) ||
+            active_);
+  });
 }
 
 DeskButtonBase* ExpandedDesksBarButton::GetInnerButton() {
@@ -145,24 +160,29 @@ bool ExpandedDesksBarButton::IsPointOnButton(
   return HitTestPoint(point_in_view);
 }
 
-void ExpandedDesksBarButton::UpdateBorderColor() const {
+void ExpandedDesksBarButton::UpdateFocusColor() const {
   DCHECK(inner_button_);
-  const bool focused =
-      inner_button_->IsViewHighlighted() ||
+  auto* inner_button_focus_ring = views::FocusRing::Get(inner_button_);
+  absl::optional<ui::ColorId> new_focus_color_id;
+
+  if (inner_button_->IsViewHighlighted() ||
       (bar_view_->dragged_item_over_bar() &&
-       IsPointOnButton(bar_view_->last_dragged_item_screen_location()));
-  bool should_paint = inner_button_->GetBorderPtr()->SetFocused(focused);
-  // Focus takes priority.
-  if (!focused) {
-    inner_button_->GetBorderPtr()->set_color(
-        active_ ? AshColorProvider::Get()->GetContentLayerColor(
-                      AshColorProvider::ContentLayerType::kCurrentDeskColor)
-                : SK_ColorTRANSPARENT);
-    should_paint = true;
+       IsPointOnButton(bar_view_->last_dragged_item_screen_location()))) {
+    new_focus_color_id = ui::kColorAshFocusRing;
+  } else if (active_) {
+    new_focus_color_id = kColorAshCurrentDeskColor;
+  } else {
+    new_focus_color_id = absl::nullopt;
   }
 
-  if (should_paint)
-    inner_button_->SchedulePaint();
+  if (inner_button_->focus_color_id() == new_focus_color_id)
+    return;
+
+  // Only repaint the focus ring if the color gets updated.
+  inner_button_->set_focus_color_id(new_focus_color_id);
+  inner_button_focus_ring->SetColorId(new_focus_color_id);
+
+  inner_button_focus_ring->SchedulePaint();
 }
 
 void ExpandedDesksBarButton::Layout() {
@@ -200,7 +220,12 @@ void ExpandedDesksBarButton::OnThemeChanged() {
   views::View::OnThemeChanged();
   label_->SetBackgroundColor(
       GetColorProvider()->GetColor(kColorAshShieldAndBase80));
-  UpdateBorderColor();
+  UpdateFocusColor();
+}
+
+absl::optional<ui::ColorId>
+ExpandedDesksBarButton::GetFocusColorIdForTesting() {
+  return inner_button_->focus_color_id();
 }
 
 BEGIN_METADATA(ExpandedDesksBarButton, views::View)

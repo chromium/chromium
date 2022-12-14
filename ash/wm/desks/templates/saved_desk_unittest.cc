@@ -16,7 +16,6 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/close_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/wm/desks/desk_action_view.h"
@@ -79,6 +78,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -2337,18 +2337,15 @@ TEST_F(SavedDeskTest, ShowTemplatesInAlphabeticalOrder) {
   EXPECT_EQ(u"B_template", grid_items[4]->GetAccessibleName());
 }
 
-// Tests that the color of the desks templates button border is as expected.
+// Tests that the color of the desks templates button focus ring is as expected.
 // Regression test for https://crbug.com/1265003.
-TEST_F(SavedDeskTest, DesksTemplatesButtonBorderColor) {
+TEST_F(SavedDeskTest, DesksTemplatesButtonFocusColor) {
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kKeyboard);
   AddEntry(base::GUID::GenerateRandomV4(), "name", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
-  auto* color_provider = AshColorProvider::Get();
-  const SkColor active_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kCurrentDeskColor);
-  const SkColor focused_color = color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor);
+  const ui::ColorId active_color_id = kColorAshCurrentDeskColor;
+  const ui::ColorId focused_color_id = ui::kColorAshFocusRing;
 
   ToggleOverview();
 
@@ -2356,31 +2353,22 @@ TEST_F(SavedDeskTest, DesksTemplatesButtonBorderColor) {
       GetExpandedStateDeskTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(button);
 
-  // Helper to get the color of the border of the desks templates button.
-  auto get_border_color = [button]() {
-    // The inner button is the one where the border is applied to.
-    DeskButtonBase* inner_button = button->GetInnerButton();
-    views::Border* border = inner_button->GetBorder();
-    DCHECK(border);
-    return border->color();
-  };
-
   // The templates button starts of neither focused nor active.
-  EXPECT_EQ(SK_ColorTRANSPARENT, get_border_color());
+  EXPECT_FALSE(button->GetFocusColorIdForTesting());
 
   // Tests that when we are viewing the templates grid, the button border is
   // active.
   ClickOnView(button);
-  EXPECT_EQ(active_color, get_border_color());
+  EXPECT_EQ(active_color_id, *button->GetFocusColorIdForTesting());
 
   // Tests that when focused, the templates button border has a focused color.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(focused_color, get_border_color());
+  EXPECT_EQ(focused_color_id, *button->GetFocusColorIdForTesting());
 
   // Shift focus away from the templates button. The button border should be
   // active.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(active_color, get_border_color());
+  EXPECT_EQ(active_color_id, *button->GetFocusColorIdForTesting());
 }
 
 // Tests that if we save a template (and get dropped into the templates grid),

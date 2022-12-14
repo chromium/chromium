@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -55,11 +56,13 @@ class ASH_EXPORT ExpandedDesksBarButton : public views::View {
 
   // Updates the border color of the ExpandedDesksBarButton based on
   // the dragged item's position and `active_`.
-  void UpdateBorderColor() const;
+  void UpdateFocusColor() const;
 
   // views::View:
   void Layout() override;
   void OnThemeChanged() override;
+
+  absl::optional<ui::ColorId> GetFocusColorIdForTesting();
 
  private:
   DesksBarView* const bar_view_;  // Not owned.

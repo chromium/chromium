@@ -13,8 +13,6 @@
 
 namespace ash {
 
-class WmHighlightItemBorder;
-
 // The base class of buttons that appear in the `DesksBarView`.
 class ASH_EXPORT DeskButtonBase : public views::LabelButton,
                                   public OverviewHighlightableView {
@@ -29,11 +27,8 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
   DeskButtonBase(const std::u16string& text,
                  bool set_text,
                  base::RepeatingClosure pressed_callback,
-                 int border_corder_radius,
                  int corner_radius);
   ~DeskButtonBase() override;
-
-  WmHighlightItemBorder* GetBorderPtr();
 
   // views::View:
   void OnFocus() override;
@@ -60,14 +55,7 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
   void SetShouldPaintBackground(bool should_paint_background);
 
  protected:
-  virtual void UpdateBorderState();
-
-  // We paint the background within the button's bounds by default. But if
-  // `paint_contents_only` is true, paints the contents' bounds of the button
-  // only. For example, InnerExpandedDesksBarButton needs to be kept as the same
-  // size of the desk preview, which has a gap between the view's contents and
-  // the border.
-  void set_paint_contents_only(bool paint_contents_only);
+  virtual void UpdateFocusState();
 
   // views::LabelButton:
   void UpdateBackgroundColor() override;
@@ -79,8 +67,6 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
   // button is painted with the background by default, exception like
   // ZeroStateIconButton only wants to be painted when the mouse hovers.
   bool should_paint_background_ = true;
-
-  bool paint_contents_only_ = false;
 
   SkColor background_color_;
 

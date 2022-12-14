@@ -37,7 +37,6 @@ PersistentDesksBarDeskButton::PersistentDesksBarDeskButton(const Desk* desk)
           /*set_text=*/true,
           base::BindRepeating(&PersistentDesksBarDeskButton::OnButtonPressed,
                               base::Unretained(this)),
-          kCornerRadius,
           kCornerRadius),
       desk_(desk) {
   // TODO(minch): A11y of bento bar.
