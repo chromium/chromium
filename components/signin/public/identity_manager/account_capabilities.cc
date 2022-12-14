@@ -153,3 +153,9 @@ AccountCapabilities::ConvertToJavaAccountCapabilities(JNIEnv* env) const {
                                         capabilities_size));
 }
 #endif
+
+#if BUILDFLAG(IS_IOS)
+AccountCapabilities::AccountCapabilities(
+    base::flat_map<std::string, bool> capabilities)
+    : capabilities_map_(std::move(capabilities)) {}
+#endif

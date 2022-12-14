@@ -20,6 +20,24 @@ source_set("signin") {
   ]
 }
 
+source_set("fetcher") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "account_capabilities_fetcher_ios.h",
+    "account_capabilities_fetcher_ios.mm",
+  ]
+  deps = [
+    ":signin",
+    "//base",
+    "//components/signin/internal/identity_manager",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/signin:system_identity",
+    "//ios/public/provider/chrome/browser/signin:capabilities_types",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
 source_set("signin_error_api") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "signin_error_api.h" ]

@@ -257,7 +257,6 @@ class ChromeIdentityService {
   // event, corresponds to an invalid grant error.
   virtual bool IsInvalidGrantError(NSDictionary* user_info);
 
- protected:
   // Asynchronously retrieves the list of supported capabilities for the given
   // Chrome identity.
   virtual void FetchCapabilities(
@@ -265,6 +264,7 @@ class ChromeIdentityService {
       NSArray<NSString*>* capabilities,
       ChromeIdentityCapabilitiesFetchCompletionBlock completion);
 
+ protected:
   // Fires `OnIdentityListChanged` on all observers.
   // `notify_user` is true if the identity list is updated by an external source
   // than Chrome. This means that a first party Google app had added or removed

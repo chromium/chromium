@@ -18,6 +18,10 @@
 #include "base/android/scoped_java_ref.h"
 #endif
 
+namespace ios {
+class AccountCapabilitiesFetcherIOS;
+}  // namespace ios
+
 // Stores the information about account capabilities. Capabilities provide
 // information about state and features of Gaia accounts.
 class AccountCapabilities {
@@ -36,6 +40,10 @@ class AccountCapabilities {
 
   base::android::ScopedJavaLocalRef<jobject> ConvertToJavaAccountCapabilities(
       JNIEnv* env) const;
+#endif
+
+#if BUILDFLAG(IS_IOS)
+  AccountCapabilities(base::flat_map<std::string, bool> capabilities);
 #endif
   // Keep sorted alphabetically.
 
@@ -78,6 +86,9 @@ class AccountCapabilities {
   friend absl::optional<AccountCapabilities> AccountCapabilitiesFromValue(
       const base::Value::Dict& account_capabilities);
   friend class AccountCapabilitiesFetcherGaia;
+#if BUILDFLAG(IS_IOS)
+  friend class ios::AccountCapabilitiesFetcherIOS;
+#endif
   friend class AccountCapabilitiesTestMutator;
   friend class AccountTrackerService;
 
