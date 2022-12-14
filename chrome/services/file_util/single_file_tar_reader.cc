@@ -4,95 +4,66 @@
 
 #include "chrome/services/file_util/single_file_tar_reader.h"
 
-#include <algorithm>
-#include <string>
-
 #include "base/check.h"
-#include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
-constexpr int kTarBufferSize = kDefaultBufferSize;
+// https://www.gnu.org/software/tar/manual/html_node/Standard.html
+constexpr size_t kHeaderSize = 512;
+constexpr size_t kFileSizeFieldOffset = 124;
+constexpr size_t kFileSizeFieldLength = 12;
 }  // namespace
 
-SingleFileTarReader::SingleFileTarReader(Delegate* delegate)
-    : delegate_(delegate), buffer_(kTarBufferSize) {}
-
+SingleFileTarReader::SingleFileTarReader() = default;
 SingleFileTarReader::~SingleFileTarReader() = default;
 
-SingleFileTarReader::Result SingleFileTarReader::ExtractChunk() {
-  // Drain as much of the data as we can fit into the buffer.
-  base::span<char> storage = base::make_span(buffer_);
-  size_t bytes_read = 0;
-  bool pipe_drained = false;
-  do {
-    uint32_t num_bytes = static_cast<uint32_t>(storage.size());
-    const Result result =
-        delegate_->ReadTarFile(storage.data(), &num_bytes, &error_);
-    switch (result) {
-      case Result::kFailure:
-        return result;
-
-      case Result::kSuccess:
-        if (num_bytes == 0) {
-          pipe_drained = true;
-        } else {
-          storage = storage.subspan(num_bytes);
-          bytes_read += num_bytes;
-        }
-        break;
-
-      case Result::kShouldWait:
-        pipe_drained = true;
-        break;
-    }
-  } while (!pipe_drained && !storage.empty());
-
-  int offset = 0;
-
+bool SingleFileTarReader::ExtractChunk(base::span<const uint8_t> src_buffer,
+                                       base::span<const uint8_t>& dst_buffer) {
+  dst_buffer = src_buffer;
   // We haven't read the header.
-  if (!total_bytes_.has_value()) {
-    if (bytes_read < 512) {
-      error_ = chrome::file_util::mojom::ExtractionResult::kInvalidSrcFile;
-      return Result::kFailure;
-    }
+  if (!tar_content_size_.has_value()) {
+    if (src_buffer.size() < kHeaderSize)
+      return false;
 
     // TODO(tetsui): check the file header checksum
 
-    // Read the actual file size.
-    total_bytes_ = ReadOctalNumber(buffer_.data() + 124, 12);
+    tar_content_size_ = ReadOctalNumber(
+        src_buffer.subspan(kFileSizeFieldOffset, kFileSizeFieldLength));
+    if (!tar_content_size_.has_value())
+      return false;
 
-    // Skip the rest of the header.
-    offset += 512;
+    // Drop the header.
+    dst_buffer = dst_buffer.subspan(kHeaderSize);
   }
 
-  DCHECK(total_bytes_.has_value());
+  if (bytes_processed_ > tar_content_size_.value())
+    return false;
 
-  // A tar file always has a padding at the end of the file. As they should not
-  // be included in the output, we should take the minimum of the actual
-  // remaining bytes versus the bytes read.
-  uint64_t bytes_written = std::min<uint64_t>(
-      total_bytes_.value() - curr_bytes_, bytes_read - offset);
-  if (!delegate_->WriteContents(buffer_.data() + offset, bytes_written,
-                                &error_)) {
-    return Result::kFailure;
+  const uint64_t bytes_remaining = tar_content_size_.value() - bytes_processed_;
+  // A tar file always has a padding at the end of the file. If `dst_buffer`
+  // contains the padding, drop it.
+  if (dst_buffer.size() > bytes_remaining) {
+    dst_buffer = dst_buffer.first(bytes_remaining);
   }
-  curr_bytes_ += bytes_written;
 
-  // TODO(tetsui): check it's the end of the file
+  bytes_processed_ += dst_buffer.size();
 
-  return Result::kSuccess;
+  return true;
 }
 
 bool SingleFileTarReader::IsComplete() const {
-  if (!total_bytes_.has_value())
+  if (!tar_content_size_.has_value())
     return false;
-  return total_bytes_.value() == curr_bytes_;
+  return tar_content_size_.value() <= bytes_processed_;
 }
 
 // static
-uint64_t SingleFileTarReader::ReadOctalNumber(const char* buffer,
-                                              size_t length) {
-  DCHECK(length > 8);
+absl::optional<uint64_t> SingleFileTarReader::ReadOctalNumber(
+    base::span<const uint8_t> buffer) {
+  const size_t length = buffer.size();
+  if (length < 8u)
+    return absl::nullopt;
 
   uint64_t num = 0;
 
@@ -100,19 +71,20 @@ uint64_t SingleFileTarReader::ReadOctalNumber(const char* buffer,
   // character 0x80, then non-leading 8 bytes of the field should be interpreted
   // as a big-endian integer.
   // https://www.gnu.org/software/tar/manual/html_node/Extensions.html
-  if (static_cast<unsigned char>(buffer[0]) == 0x80) {
+  if (buffer[0] == 0x80) {
     for (size_t i = length - 8; i < length; ++i) {
       num <<= 8;
-      num += static_cast<unsigned char>(buffer[i]);
+      num += buffer[i];
     }
     return num;
   }
 
   for (size_t i = 0; i < length; ++i) {
-    if (buffer[i] == '\0')
+    const char as_char = static_cast<char>(buffer[i]);
+    if (as_char == '\0')
       break;
     num *= 8;
-    num += buffer[i] - '0';
+    num += as_char - '0';
   }
   return num;
 }

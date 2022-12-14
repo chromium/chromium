@@ -22,16 +22,13 @@
 
 namespace {
 
+constexpr int kDefaultBufferSize = 8192;
 constexpr int kXzBufferSize = kDefaultBufferSize;
-
-// kTarBufferSize must be less than or equal to kTarBufferSize in
-// single_file_tar_reader.cc.
-// TODO(b/255682934): Resolve the above comment.
 constexpr int kTarBufferSize = kDefaultBufferSize;
 
 // ExtractorInner extracts a .TAR.XZ file and writes the extracted data to the
 // output file.
-class ExtractorInner : public SingleFileTarReader::Delegate {
+class ExtractorInner {
  public:
   ExtractorInner(mojo::PendingRemote<chrome::mojom::SingleFileExtractorListener>
                      pending_listener,
@@ -39,8 +36,7 @@ class ExtractorInner : public SingleFileTarReader::Delegate {
                  base::File dst_file)
       : listener_(std::move(pending_listener)),
         src_file_(std::move(src_file)),
-        dst_file_(std::move(dst_file)),
-        tar_reader_(this) {
+        dst_file_(std::move(dst_file)) {
     alloc_.Alloc = [](ISzAllocPtr, size_t size) { return malloc(size); };
     alloc_.Free = [](ISzAllocPtr, void* ptr) { return free(ptr); };
     XzUnpacker_Construct(&state_, &alloc_);
@@ -62,13 +58,17 @@ class ExtractorInner : public SingleFileTarReader::Delegate {
 
       absl::optional<chrome::file_util::mojom::ExtractionResult> result;
       ExtractChunk(
-          base::make_span(xz_buffer).first(static_cast<size_t>(bytes_read)),
+          base::make_span(xz_buffer.data(), static_cast<size_t>(bytes_read)),
           &result);
       if (result.has_value())
         return result.value();
 
-      listener_->OnProgress(tar_reader_.total_bytes().value(),
-                            tar_reader_.curr_bytes());
+      // TODO(sahok): This value can be 100% when ExtractChunk didn't return
+      // kSuccess because only footer is left. This can be confusing and not
+      // consistent with single_file_tar_file_extractor. Reorganize and make it
+      // clear if OnProgress will return 100% or not.
+      listener_->OnProgress(tar_reader_.tar_content_size().value(),
+                            tar_reader_.bytes_processed());
     }
   }
 
@@ -77,36 +77,40 @@ class ExtractorInner : public SingleFileTarReader::Delegate {
     dst_file_.Close();
   }
 
-  ~ExtractorInner() override { XzUnpacker_Free(&state_); }
+  ~ExtractorInner() { XzUnpacker_Free(&state_); }
 
  private:
   void ExtractChunk(
       base::span<const uint8_t> xz_buffer,
       absl::optional<chrome::file_util::mojom::ExtractionResult>* result) {
-    // With the size of tar_buffer_, XzUnpacker_Code cannot always extract all
+    std::vector<uint8_t> tar_buffer(kTarBufferSize);
+    // With the size of tar_buffer, XzUnpacker_Code cannot always extract all
     // data in xz_buffer. Repeat extract until it extracts all data in
     // xz_buffer.
     ECoderStatus status = CODER_STATUS_NOT_FINISHED;
     while (status == CODER_STATUS_NOT_FINISHED) {
-      size_t decompressed_size = kTarBufferSize;
+      size_t decompressed_size = tar_buffer.size();
       size_t compressed_size = xz_buffer.size();
-      int xz_result = XzUnpacker_Code(&state_, tar_buffer_, &decompressed_size,
-                                      xz_buffer.data(), &compressed_size,
-                                      /*srcFinished=*/xz_buffer.empty(),
-                                      CODER_FINISH_ANY, &status);
+      int xz_result = XzUnpacker_Code(
+          &state_, tar_buffer.data(), &decompressed_size, xz_buffer.data(),
+          &compressed_size,
+          /*srcFinished=*/xz_buffer.empty(), CODER_FINISH_ANY, &status);
       if (xz_result != SZ_OK) {
         *result = chrome::file_util::mojom::ExtractionResult::kGenericError;
         return;
       }
       xz_buffer = xz_buffer.subspan(compressed_size);
 
-      tar_buffer_size_ = decompressed_size;
-      // tar_reader_.ExtractChunk func needs to be called only once, because
-      // kTarBufferSize in single_file_tar_reader.cc and kTarBufferSize in this
-      // file are the same value.
-      // TODO(b/255682934): Resolve the above comment.
-      if (tar_reader_.ExtractChunk() != SingleFileTarReader::Result::kSuccess) {
-        *result = tar_reader_.error();
+      base::span<const uint8_t> tar_buffer_span =
+          base::make_span(tar_buffer.data(), decompressed_size);
+      base::span<const uint8_t> output_file_content;
+      if (!tar_reader_.ExtractChunk(tar_buffer_span, output_file_content)) {
+        *result = chrome::file_util::mojom::ExtractionResult::kInvalidSrcFile;
+        return;
+      }
+
+      if (!dst_file_.WriteAtCurrentPosAndCheck(output_file_content)) {
+        *result = chrome::file_util::mojom::ExtractionResult::kDstFileError;
         return;
       }
     }
@@ -118,30 +122,6 @@ class ExtractorInner : public SingleFileTarReader::Delegate {
       *result = chrome::file_util::mojom::ExtractionResult::kSuccess;
   }
 
-  // SingleFileTarReader::Delegate implementation.
-  SingleFileTarReader::Result ReadTarFile(
-      char* data,
-      uint32_t* size,
-      chrome::file_util::mojom::ExtractionResult* error) override {
-    *size = std::min(*size, base::checked_cast<uint32_t>(tar_buffer_size_));
-    std::copy(tar_buffer_, tar_buffer_ + *size, data);
-    tar_buffer_size_ -= *size;
-    return SingleFileTarReader::Result::kSuccess;
-  }
-
-  // SingleFileTarReader::Delegate implementation.
-  bool WriteContents(
-      const char* data,
-      int size,
-      chrome::file_util::mojom::ExtractionResult* error) override {
-    const int bytes_written = dst_file_.WriteAtCurrentPos(data, size);
-    if (bytes_written < 0 || bytes_written != size) {
-      *error = chrome::file_util::mojom::ExtractionResult::kDstFileError;
-      return false;
-    }
-    return true;
-  }
-
   const mojo::Remote<chrome::mojom::SingleFileExtractorListener> listener_;
 
   CXzUnpacker state_;
@@ -151,8 +131,6 @@ class ExtractorInner : public SingleFileTarReader::Delegate {
   base::File dst_file_;
 
   SingleFileTarReader tar_reader_;
-  uint8_t tar_buffer_[kTarBufferSize];
-  size_t tar_buffer_size_ = 0;
 };
 
 }  // namespace

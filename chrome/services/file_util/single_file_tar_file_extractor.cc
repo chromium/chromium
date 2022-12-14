@@ -5,15 +5,20 @@
 #include "chrome/services/file_util/single_file_tar_file_extractor.h"
 
 #include <utility>
+#include <vector>
 
+#include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "chrome/services/file_util/public/mojom/constants.mojom.h"
 #include "chrome/services/file_util/single_file_tar_reader.h"
 
 namespace {
 
+constexpr int kTarBufferSize = 8192;
+
 // TarExtractorInner extracts a .TAR file and writes the extracted data to the
 // destination file.
-class TarExtractorInner : public SingleFileTarReader::Delegate {
+class TarExtractorInner {
  public:
   TarExtractorInner(
       mojo::PendingRemote<chrome::mojom::SingleFileExtractorListener>
@@ -22,19 +27,32 @@ class TarExtractorInner : public SingleFileTarReader::Delegate {
       base::File dst_file)
       : listener_(std::move(pending_listener)),
         src_file_(std::move(src_file)),
-        dst_file_(std::move(dst_file)),
-        tar_reader_(this) {}
+        dst_file_(std::move(dst_file)) {}
 
   chrome::file_util::mojom::ExtractionResult Extract() {
+    std::vector<uint8_t> tar_buffer;
     while (true) {
-      if (tar_reader_.ExtractChunk() != SingleFileTarReader::Result::kSuccess)
-        return tar_reader_.error();
+      tar_buffer = ReadTarFile();
+      if (tar_buffer.empty()) {
+        return chrome::file_util::mojom::ExtractionResult::kGenericError;
+      }
+
+      base::span<const uint8_t> output_file_content;
+      if (!tar_reader_.ExtractChunk(base::make_span(tar_buffer),
+                                    output_file_content)) {
+        return chrome::file_util::mojom::ExtractionResult::kInvalidSrcFile;
+      }
+
+      // TODO(sahok): Utilize this logic and Deduplicate the same logic in
+      // single_file_tar_xz_file_extractor.cc
+      if (!dst_file_.WriteAtCurrentPosAndCheck(output_file_content))
+        return chrome::file_util::mojom::ExtractionResult::kDstFileError;
 
       if (tar_reader_.IsComplete())
         return chrome::file_util::mojom::ExtractionResult::kSuccess;
 
-      listener_->OnProgress(tar_reader_.total_bytes().value(),
-                            tar_reader_.curr_bytes());
+      listener_->OnProgress(tar_reader_.tar_content_size().value(),
+                            tar_reader_.bytes_processed());
     }
   }
 
@@ -44,40 +62,24 @@ class TarExtractorInner : public SingleFileTarReader::Delegate {
   }
 
  private:
-  // SingleFileTarReader::Delegate implementation.
-  // TODO(b/256967002): Use base::span<>.
-  SingleFileTarReader::Result ReadTarFile(
-      char* data,
-      uint32_t* size,
-      chrome::file_util::mojom::ExtractionResult* error) override {
-    const int bytes_read = src_file_.ReadAtCurrentPos(data, *size);
-    if (bytes_read < 0) {
-      *error = chrome::file_util::mojom::ExtractionResult::kGenericError;
-      return SingleFileTarReader::Result::kFailure;
-    }
+  // ReadTarFile reads .tar file and returns the contents. ReadTarFile reads
+  // kTarBufferSize bytes at most, and might return an empty vector on error.
+  // Returned vector is resized to actual bytes read.
+  std::vector<uint8_t> ReadTarFile() {
+    std::vector<uint8_t> tar_buffer(kTarBufferSize);
+    const int bytes_read = src_file_.ReadAtCurrentPos(
+        reinterpret_cast<char*>(tar_buffer.data()), kTarBufferSize);
+
+    if (bytes_read < 0)
+      return std::vector<uint8_t>();
     if (bytes_read == 0) {
-      // After reading the last chunk of file content, it is expected that the
+      // After reading the last chunk of file content, it is expected that
       // tar_reader_.IsComplete() in the Extract function returns true and the
       // .tar.xz file extraction ends.
-      *error = chrome::file_util::mojom::ExtractionResult::kGenericError;
-      return SingleFileTarReader::Result::kFailure;
+      return std::vector<uint8_t>();
     }
-    *size = bytes_read;
-    return SingleFileTarReader::Result::kSuccess;
-  }
-
-  // SingleFileTarReader::Delegate implementation.
-  // TODO(b/256967002): Use base::span<>.
-  bool WriteContents(
-      const char* data,
-      int size,
-      chrome::file_util::mojom::ExtractionResult* error) override {
-    const int bytes_written = dst_file_.WriteAtCurrentPos(data, size);
-    if (bytes_written < 0 || bytes_written != size) {
-      *error = chrome::file_util::mojom::ExtractionResult::kDstFileError;
-      return false;
-    }
-    return true;
+    tar_buffer.resize(bytes_read);
+    return tar_buffer;
   }
 
   const mojo::Remote<chrome::mojom::SingleFileExtractorListener> listener_;
