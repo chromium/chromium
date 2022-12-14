@@ -413,23 +413,20 @@ void WebStateImpl::RealizedWebState::ShowRepostFormWarningDialog(
   }
 }
 
-void WebStateImpl::RealizedWebState::RunJavaScriptDialog(
+void WebStateImpl::RealizedWebState::RunJavaScriptAlertDialog(
     const GURL& origin_url,
-    JavaScriptDialogType java_script_dialog_type,
     NSString* message_text,
-    NSString* default_prompt_text,
-    DialogClosedCallback callback) {
+    base::OnceClosure callback) {
   JavaScriptDialogPresenter* presenter =
       delegate_ ? delegate_->GetJavaScriptDialogPresenter(owner_) : nullptr;
   if (!presenter) {
-    std::move(callback).Run(false, nil);
+    std::move(callback).Run();
     return;
   }
 
   running_javascript_dialog_ = true;
-  presenter->RunJavaScriptDialog(
-      owner_, origin_url, java_script_dialog_type, message_text,
-      default_prompt_text,
+  presenter->RunJavaScriptAlertDialog(
+      owner_, origin_url, message_text,
       // Use a lambda to mark the dialog as closed if the `WebState` still
       // exists, then always run `callback`, even if the `WebState` has been
       // destroyed (otherwise, WebKit raises an inconsistent state exception).
@@ -438,16 +435,90 @@ void WebStateImpl::RealizedWebState::RunJavaScriptDialog(
       // are not called, this cannot be implemented by passing the `callback`
       // to `JavaScriptDialogClosed` as otherwise the call would not happen
       // if `WebState` is destroyed.
+      // TODO(crbug.com/1400873): Combine logic across all dialog callbacks.
       base::BindOnce(
           [](base::WeakPtr<WebStateImpl> weak_web_state,
-             DialogClosedCallback callback, bool success,
+             base::OnceClosure callback) {
+            if (weak_web_state) {
+              DCHECK(weak_web_state->pimpl_);
+              weak_web_state->pimpl_->JavaScriptDialogClosed();
+            }
+
+            std::move(callback).Run();
+          },
+          owner_->weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void WebStateImpl::RealizedWebState::RunJavaScriptConfirmDialog(
+    const GURL& origin_url,
+    NSString* message_text,
+    base::OnceCallback<void(bool success)> callback) {
+  JavaScriptDialogPresenter* presenter =
+      delegate_ ? delegate_->GetJavaScriptDialogPresenter(owner_) : nullptr;
+  if (!presenter) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  running_javascript_dialog_ = true;
+  presenter->RunJavaScriptConfirmDialog(
+      owner_, origin_url, message_text,
+      // Use a lambda to mark the dialog as closed if the `WebState` still
+      // exists, then always run `callback`, even if the `WebState` has been
+      // destroyed (otherwise, WebKit raises an inconsistent state exception).
+      //
+      // Since bound callback that take a member function and a `WeakPtr<T>`
+      // are not called, this cannot be implemented by passing the `callback`
+      // to `JavaScriptDialogClosed` as otherwise the call would not happen
+      // if `WebState` is destroyed.
+      // TODO(crbug.com/1400873): Combine logic across all dialog callbacks.
+      base::BindOnce(
+          [](base::WeakPtr<WebStateImpl> weak_web_state,
+             base::OnceCallback<void(bool success)> callback, bool success) {
+            if (weak_web_state) {
+              DCHECK(weak_web_state->pimpl_);
+              weak_web_state->pimpl_->JavaScriptDialogClosed();
+            }
+
+            std::move(callback).Run(success);
+          },
+          owner_->weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void WebStateImpl::RealizedWebState::RunJavaScriptPromptDialog(
+    const GURL& origin_url,
+    NSString* message_text,
+    NSString* default_prompt_text,
+    base::OnceCallback<void(NSString* user_input)> callback) {
+  JavaScriptDialogPresenter* presenter =
+      delegate_ ? delegate_->GetJavaScriptDialogPresenter(owner_) : nullptr;
+  if (!presenter) {
+    std::move(callback).Run(nil);
+    return;
+  }
+
+  running_javascript_dialog_ = true;
+  presenter->RunJavaScriptPromptDialog(
+      owner_, origin_url, message_text, default_prompt_text,
+      // Use a lambda to mark the dialog as closed if the `WebState` still
+      // exists, then always run `callback`, even if the `WebState` has been
+      // destroyed (otherwise, WebKit raises an inconsistent state exception).
+      //
+      // Since bound callback that take a member function and a `WeakPtr<T>`
+      // are not called, this cannot be implemented by passing the `callback`
+      // to `JavaScriptDialogClosed` as otherwise the call would not happen
+      // if `WebState` is destroyed.
+      // TODO(crbug.com/1400873): Combine logic across all dialog callbacks.
+      base::BindOnce(
+          [](base::WeakPtr<WebStateImpl> weak_web_state,
+             base::OnceCallback<void(NSString * user_input)> callback,
              NSString* user_input) {
             if (weak_web_state) {
               DCHECK(weak_web_state->pimpl_);
               weak_web_state->pimpl_->JavaScriptDialogClosed();
             }
 
-            std::move(callback).Run(success, user_input);
+            std::move(callback).Run(user_input);
           },
           owner_->weak_factory_.GetWeakPtr(), std::move(callback)));
 }

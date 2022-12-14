@@ -19,12 +19,21 @@ class OverlayJavaScriptDialogPresenter final
   ~OverlayJavaScriptDialogPresenter() override;
 
   // web::JavaScriptDialogPresenter:
-  void RunJavaScriptDialog(web::WebState* web_state,
-                           const GURL& origin_url,
-                           web::JavaScriptDialogType dialog_type,
-                           NSString* message_text,
-                           NSString* default_prompt_text,
-                           web::DialogClosedCallback callback) override;
+  void RunJavaScriptAlertDialog(web::WebState* web_state,
+                                const GURL& origin_url,
+                                NSString* message_text,
+                                base::OnceClosure callback) override;
+  void RunJavaScriptConfirmDialog(
+      web::WebState* web_state,
+      const GURL& origin_url,
+      NSString* message_text,
+      base::OnceCallback<void(bool success)> callback) override;
+  void RunJavaScriptPromptDialog(
+      web::WebState* web_state,
+      const GURL& origin_url,
+      NSString* message_text,
+      NSString* default_prompt_text,
+      base::OnceCallback<void(NSString* user_input)> callback) override;
   void CancelDialogs(web::WebState* web_state) override;
 };
 

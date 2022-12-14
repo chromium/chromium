@@ -109,11 +109,18 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void SendChangeLoadProgress(double progress);
   void HandleContextMenu(const ContextMenuParams& params);
   void ShowRepostFormWarningDialog(base::OnceCallback<void(bool)> callback);
-  void RunJavaScriptDialog(const GURL& origin_url,
-                           JavaScriptDialogType java_script_dialog_type,
-                           NSString* message_text,
-                           NSString* default_prompt_text,
-                           DialogClosedCallback callback);
+  void RunJavaScriptAlertDialog(const GURL& origin_url,
+                                NSString* message_text,
+                                base::OnceClosure callback);
+  void RunJavaScriptConfirmDialog(
+      const GURL& origin_url,
+      NSString* message_text,
+      base::OnceCallback<void(bool success)> callback);
+  void RunJavaScriptPromptDialog(
+      const GURL& origin_url,
+      NSString* message_text,
+      NSString* default_prompt_text,
+      base::OnceCallback<void(NSString* user_input)> callback);
   bool IsJavaScriptDialogRunning() const;
   WebState* CreateNewWebState(const GURL& url,
                               const GURL& opener_url,

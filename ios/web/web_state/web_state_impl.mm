@@ -259,15 +259,28 @@ void WebStateImpl::ShowRepostFormWarningDialog(
   RealizedState()->ShowRepostFormWarningDialog(std::move(callback));
 }
 
-void WebStateImpl::RunJavaScriptDialog(
+void WebStateImpl::RunJavaScriptAlertDialog(const GURL& origin_url,
+                                            NSString* message_text,
+                                            base::OnceClosure callback) {
+  RealizedState()->RunJavaScriptAlertDialog(origin_url, message_text,
+                                            std::move(callback));
+}
+
+void WebStateImpl::RunJavaScriptConfirmDialog(
     const GURL& origin_url,
-    JavaScriptDialogType javascript_dialog_type,
+    NSString* message_text,
+    base::OnceCallback<void(bool success)> callback) {
+  RealizedState()->RunJavaScriptConfirmDialog(origin_url, message_text,
+                                              std::move(callback));
+}
+
+void WebStateImpl::RunJavaScriptPromptDialog(
+    const GURL& origin_url,
     NSString* message_text,
     NSString* default_prompt_text,
-    DialogClosedCallback callback) {
-  RealizedState()->RunJavaScriptDialog(origin_url, javascript_dialog_type,
-                                       message_text, default_prompt_text,
-                                       std::move(callback));
+    base::OnceCallback<void(NSString* user_input)> callback) {
+  RealizedState()->RunJavaScriptPromptDialog(
+      origin_url, message_text, default_prompt_text, std::move(callback));
 }
 
 bool WebStateImpl::IsJavaScriptDialogRunning() {

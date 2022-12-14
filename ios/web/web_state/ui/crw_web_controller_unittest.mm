@@ -325,9 +325,22 @@ class JavaScriptDialogPresenterTest : public WebTestWithWebController {
   FakeJavaScriptDialogPresenter* js_dialog_presenter() {
     return web_state_delegate_.GetFakeJavaScriptDialogPresenter();
   }
-  const std::vector<std::unique_ptr<FakeJavaScriptDialog>>&
-  requested_dialogs() {
-    return js_dialog_presenter()->requested_dialogs();
+  const std::vector<std::unique_ptr<FakeJavaScriptAlertDialog>>&
+  requested_alert_dialogs() {
+    return js_dialog_presenter()->requested_alert_dialogs();
+  }
+  const std::vector<std::unique_ptr<FakeJavaScriptConfirmDialog>>&
+  requested_confirm_dialogs() {
+    return js_dialog_presenter()->requested_confirm_dialogs();
+  }
+  const std::vector<std::unique_ptr<FakeJavaScriptPromptDialog>>&
+  requested_prompt_dialogs() {
+    return js_dialog_presenter()->requested_prompt_dialogs();
+  }
+  bool JSDialogPresenterHasDialogs() {
+    return !requested_alert_dialogs().empty() ||
+           !requested_confirm_dialogs().empty() ||
+           !requested_prompt_dialogs().empty();
   }
   const GURL& page_url() { return page_url_; }
 
@@ -338,64 +351,65 @@ class JavaScriptDialogPresenterTest : public WebTestWithWebController {
 
 // Tests that window.alert dialog is shown.
 TEST_F(JavaScriptDialogPresenterTest, Alert) {
-  ASSERT_TRUE(requested_dialogs().empty());
+  ASSERT_FALSE(JSDialogPresenterHasDialogs());
 
   ExecuteJavaScript(@"alert('test')");
 
-  ASSERT_EQ(1U, requested_dialogs().size());
-  auto& dialog = requested_dialogs().front();
+  ASSERT_EQ(1U, requested_alert_dialogs().size());
+  ASSERT_TRUE(requested_confirm_dialogs().empty());
+  ASSERT_TRUE(requested_prompt_dialogs().empty());
+  auto& dialog = requested_alert_dialogs().front();
   EXPECT_EQ(web_state(), dialog->web_state);
   EXPECT_EQ(page_url(), dialog->origin_url);
-  EXPECT_EQ(JAVASCRIPT_DIALOG_TYPE_ALERT, dialog->java_script_dialog_type);
   EXPECT_NSEQ(@"test", dialog->message_text);
-  EXPECT_FALSE(dialog->default_prompt_text);
 }
 
 // Tests that window.confirm dialog is shown and its result is true.
 TEST_F(JavaScriptDialogPresenterTest, ConfirmWithTrue) {
-  ASSERT_TRUE(requested_dialogs().empty());
+  ASSERT_FALSE(JSDialogPresenterHasDialogs());
 
   js_dialog_presenter()->set_callback_success_argument(true);
 
   EXPECT_NSEQ(@YES, ExecuteJavaScript(@"confirm('test')"));
 
-  ASSERT_EQ(1U, requested_dialogs().size());
-  auto& dialog = requested_dialogs().front();
+  ASSERT_TRUE(requested_alert_dialogs().empty());
+  ASSERT_EQ(1U, requested_confirm_dialogs().size());
+  ASSERT_TRUE(requested_prompt_dialogs().empty());
+  auto& dialog = requested_confirm_dialogs().front();
   EXPECT_EQ(web_state(), dialog->web_state);
   EXPECT_EQ(page_url(), dialog->origin_url);
-  EXPECT_EQ(JAVASCRIPT_DIALOG_TYPE_CONFIRM, dialog->java_script_dialog_type);
   EXPECT_NSEQ(@"test", dialog->message_text);
-  EXPECT_FALSE(dialog->default_prompt_text);
 }
 
 // Tests that window.confirm dialog is shown and its result is false.
 TEST_F(JavaScriptDialogPresenterTest, ConfirmWithFalse) {
-  ASSERT_TRUE(requested_dialogs().empty());
+  ASSERT_FALSE(JSDialogPresenterHasDialogs());
 
   EXPECT_NSEQ(@NO, ExecuteJavaScript(@"confirm('test')"));
 
-  ASSERT_EQ(1U, requested_dialogs().size());
-  auto& dialog = requested_dialogs().front();
+  ASSERT_TRUE(requested_alert_dialogs().empty());
+  ASSERT_EQ(1U, requested_confirm_dialogs().size());
+  ASSERT_TRUE(requested_prompt_dialogs().empty());
+  auto& dialog = requested_confirm_dialogs().front();
   EXPECT_EQ(web_state(), dialog->web_state);
   EXPECT_EQ(page_url(), dialog->origin_url);
-  EXPECT_EQ(JAVASCRIPT_DIALOG_TYPE_CONFIRM, dialog->java_script_dialog_type);
   EXPECT_NSEQ(@"test", dialog->message_text);
-  EXPECT_FALSE(dialog->default_prompt_text);
 }
 
 // Tests that window.prompt dialog is shown.
 TEST_F(JavaScriptDialogPresenterTest, Prompt) {
-  ASSERT_TRUE(requested_dialogs().empty());
+  ASSERT_FALSE(JSDialogPresenterHasDialogs());
 
   js_dialog_presenter()->set_callback_user_input_argument(@"Maybe");
 
   EXPECT_NSEQ(@"Maybe", ExecuteJavaScript(@"prompt('Yes?', 'No')"));
 
-  ASSERT_EQ(1U, requested_dialogs().size());
-  auto& dialog = requested_dialogs().front();
+  ASSERT_TRUE(requested_alert_dialogs().empty());
+  ASSERT_TRUE(requested_confirm_dialogs().empty());
+  ASSERT_EQ(1U, requested_prompt_dialogs().size());
+  auto& dialog = requested_prompt_dialogs().front();
   EXPECT_EQ(web_state(), dialog->web_state);
   EXPECT_EQ(page_url(), dialog->origin_url);
-  EXPECT_EQ(JAVASCRIPT_DIALOG_TYPE_PROMPT, dialog->java_script_dialog_type);
   EXPECT_NSEQ(@"Yes?", dialog->message_text);
   EXPECT_NSEQ(@"No", dialog->default_prompt_text);
 }
@@ -403,7 +417,7 @@ TEST_F(JavaScriptDialogPresenterTest, Prompt) {
 // Tests that window.alert, window.confirm and window.prompt dialogs are not
 // shown if URL of presenting main frame is different from visible URL.
 TEST_F(JavaScriptDialogPresenterTest, DifferentVisibleUrl) {
-  ASSERT_TRUE(requested_dialogs().empty());
+  ASSERT_FALSE(JSDialogPresenterHasDialogs());
 
   // Change visible URL.
   AddPendingItem(GURL("https://pending.test/"), ui::PAGE_TRANSITION_TYPED);
@@ -412,13 +426,13 @@ TEST_F(JavaScriptDialogPresenterTest, DifferentVisibleUrl) {
             web_state()->GetVisibleURL().DeprecatedGetOriginAsURL());
 
   ExecuteJavaScript(@"alert('test')");
-  ASSERT_TRUE(requested_dialogs().empty());
+  ASSERT_TRUE(requested_alert_dialogs().empty());
 
   EXPECT_NSEQ(@NO, ExecuteJavaScript(@"confirm('test')"));
-  ASSERT_TRUE(requested_dialogs().empty());
+  ASSERT_TRUE(requested_confirm_dialogs().empty());
 
   EXPECT_NSEQ([NSNull null], ExecuteJavaScript(@"prompt('Yes?', 'No')"));
-  ASSERT_TRUE(requested_dialogs().empty());
+  ASSERT_TRUE(requested_prompt_dialogs().empty());
 }
 
 // Test fixture for testing visible security state.

@@ -12,7 +12,6 @@
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/ui/context_menu_params.h"
-#import "ios/web/public/ui/java_script_dialog_type.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/web_state/ui/crw_wk_ui_handler_delegate.h"
 #import "ios/web/web_state/user_interaction_state.h"
@@ -21,6 +20,7 @@
 #import "ios/web/webui/mojo_facade.h"
 #import "net/base/mac/url_conversions.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -187,13 +187,16 @@ enum class PermissionRequest {
     runJavaScriptAlertPanelWithMessage:(NSString*)message
                       initiatedByFrame:(WKFrameInfo*)frame
                      completionHandler:(void (^)())completionHandler {
-  [self runJavaScriptDialogOfType:web::JAVASCRIPT_DIALOG_TYPE_ALERT
-                 initiatedByFrame:frame
-                          message:message
-                      defaultText:nil
-                       completion:^(BOOL, NSString*) {
-                         completionHandler();
-                       }];
+  DCHECK(completionHandler);
+  GURL requestURL = net::GURLWithNSURL(frame.request.URL);
+  if (![self shouldPresentJavaScriptDialogForRequestURL:requestURL
+                                            isMainFrame:frame.mainFrame]) {
+    completionHandler();
+    return;
+  }
+
+  self.webStateImpl->RunJavaScriptAlertDialog(
+      requestURL, message, base::BindOnce(completionHandler));
 }
 
 - (void)webView:(WKWebView*)webView
@@ -201,15 +204,17 @@ enum class PermissionRequest {
                         initiatedByFrame:(WKFrameInfo*)frame
                        completionHandler:
                            (void (^)(BOOL result))completionHandler {
-  [self runJavaScriptDialogOfType:web::JAVASCRIPT_DIALOG_TYPE_CONFIRM
-                 initiatedByFrame:frame
-                          message:message
-                      defaultText:nil
-                       completion:^(BOOL success, NSString*) {
-                         if (completionHandler) {
-                           completionHandler(success);
-                         }
-                       }];
+  DCHECK(completionHandler);
+
+  GURL requestURL = net::GURLWithNSURL(frame.request.URL);
+  if (![self shouldPresentJavaScriptDialogForRequestURL:requestURL
+                                            isMainFrame:frame.mainFrame]) {
+    completionHandler(NO);
+    return;
+  }
+
+  self.webStateImpl->RunJavaScriptConfirmDialog(
+      requestURL, message, base::BindOnce(completionHandler));
 }
 
 - (void)webView:(WKWebView*)webView
@@ -226,15 +231,17 @@ enum class PermissionRequest {
     return;
   }
 
-  [self runJavaScriptDialogOfType:web::JAVASCRIPT_DIALOG_TYPE_PROMPT
-                 initiatedByFrame:frame
-                          message:prompt
-                      defaultText:defaultText
-                       completion:^(BOOL, NSString* input) {
-                         if (completionHandler) {
-                           completionHandler(input);
-                         }
-                       }];
+  DCHECK(completionHandler);
+
+  GURL requestURL = net::GURLWithNSURL(frame.request.URL);
+  if (![self shouldPresentJavaScriptDialogForRequestURL:requestURL
+                                            isMainFrame:frame.mainFrame]) {
+    completionHandler(nil);
+    return;
+  }
+
+  self.webStateImpl->RunJavaScriptPromptDialog(
+      requestURL, prompt, defaultText, base::BindOnce(completionHandler));
 }
 
 - (void)webView:(WKWebView*)webView
@@ -269,42 +276,6 @@ enum class PermissionRequest {
 
 #pragma mark - Helper
 
-// Helper to respond to `webView:runJavaScript...| delegate methods.
-// `completionHandler` must not be nil.
-- (void)runJavaScriptDialogOfType:(web::JavaScriptDialogType)type
-                 initiatedByFrame:(WKFrameInfo*)frame
-                          message:(NSString*)message
-                      defaultText:(NSString*)defaultText
-                       completion:(void (^)(BOOL, NSString*))completionHandler {
-  DCHECK(completionHandler);
-
-  // JavaScript dialogs should not be presented if there is no information about
-  // the requesting page's URL.
-  GURL requestURL = net::GURLWithNSURL(frame.request.URL);
-  if (!requestURL.is_valid()) {
-    completionHandler(NO, nil);
-    return;
-  }
-
-  if (self.webStateImpl->GetVisibleURL().DeprecatedGetOriginAsURL() !=
-          requestURL.DeprecatedGetOriginAsURL() &&
-      frame.mainFrame) {
-    // Dialog was requested by web page's main frame, but visible URL has
-    // different origin. This could happen if the user has started a new
-    // browser initiated navigation. There is no value in showing dialogs
-    // requested by page, which this WebState is about to leave. But presenting
-    // the dialog can lead to phishing and other abusive behaviors.
-    completionHandler(NO, nil);
-    return;
-  }
-
-  self.webStateImpl->RunJavaScriptDialog(
-      requestURL, type, message, defaultText,
-      base::BindOnce(^(bool success, NSString* input) {
-        completionHandler(success, input);
-      }));
-}
-
 // Helper that displays a prompt to the user that asks for access to
 // `permissions`.
 - (void)displayPromptForPermissions:(NSArray<NSNumber*>*)permissions
@@ -325,6 +296,29 @@ enum class PermissionRequest {
   } else {
     handler(WKPermissionDecisionPrompt);
   }
+}
+
+// Helper that returns whether or not a dialog should be presented for a
+// frame with `requestURL`.
+- (BOOL)shouldPresentJavaScriptDialogForRequestURL:(const GURL&)requestURL
+                                       isMainFrame:(BOOL)isMainFrame {
+  // JavaScript dialogs should not be presented if there is no information about
+  // the requesting page's URL.
+  if (!requestURL.is_valid()) {
+    return NO;
+  }
+
+  if (isMainFrame && url::Origin::Create(self.webStateImpl->GetVisibleURL()) !=
+                         url::Origin::Create(requestURL)) {
+    // Dialog was requested by web page's main frame, but visible URL has
+    // different origin. This could happen if the user has started a new
+    // browser initiated navigation. There is no value in showing dialogs
+    // requested by page, which this WebState is about to leave. But presenting
+    // the dialog can lead to phishing and other abusive behaviors.
+    return NO;
+  }
+
+  return YES;
 }
 
 @end

@@ -5,9 +5,9 @@
 #ifndef IOS_WEB_PUBLIC_UI_JAVA_SCRIPT_DIALOG_PRESENTER_H_
 #define IOS_WEB_PUBLIC_UI_JAVA_SCRIPT_DIALOG_PRESENTER_H_
 
-#import "ios/web/public/ui/java_script_dialog_callback.h"
-#include "ios/web/public/ui/java_script_dialog_type.h"
-#include "url/gurl.h"
+#import "base/callback.h"
+#import "base/functional/callback_forward.h"
+#import "url/gurl.h"
 
 @class NSString;
 
@@ -19,14 +19,28 @@ class JavaScriptDialogPresenter {
  public:
   virtual ~JavaScriptDialogPresenter() = default;
 
-  // Requests presentation of a JavaScript dialog. Clients must always call
-  // `callback` even if they choose not to present the dialog.
-  virtual void RunJavaScriptDialog(WebState* web_state,
-                                   const GURL& origin_url,
-                                   JavaScriptDialogType dialog_type,
-                                   NSString* message_text,
-                                   NSString* default_prompt_text,
-                                   DialogClosedCallback callback) = 0;
+  // Notifies the delegate that a JavaScript alert needs to be presented.
+  virtual void RunJavaScriptAlertDialog(WebState* web_state,
+                                        const GURL& origin_url,
+                                        NSString* message_text,
+                                        base::OnceClosure callback) = 0;
+
+  // Notifies the delegate that a JavaScript confirmation dialog needs to be
+  // presented.
+  virtual void RunJavaScriptConfirmDialog(
+      WebState* web_state,
+      const GURL& origin_url,
+      NSString* message_text,
+      base::OnceCallback<void(bool success)> callback) = 0;
+
+  // Notifies the delegate that a JavaScript prompt needs to be presented.
+  virtual void RunJavaScriptPromptDialog(
+      WebState* web_state,
+      const GURL& origin_url,
+      NSString* message_text,
+      NSString* default_prompt_text,
+      base::OnceCallback<void(NSString* user_input)> callback) = 0;
+
   // Informs clients that all requested dialogs associated with `web_state`
   // should be dismissed.
   virtual void CancelDialogs(WebState* web_state) = 0;

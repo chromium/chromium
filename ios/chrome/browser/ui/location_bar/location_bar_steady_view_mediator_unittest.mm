@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/java_script_dialog_overlay.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/java_script_alert_dialog_overlay.h"
 #import "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/ui/location_bar/test/fake_location_bar_steady_view_consumer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -26,8 +26,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-using java_script_dialog_overlays::JavaScriptDialogRequest;
 
 // Test fixture for LocationBarSteadyViewMediator.
 class LocationBarSteadyViewMediatorTest : public PlatformTest {
@@ -76,10 +74,10 @@ TEST_F(LocationBarSteadyViewMediatorTest, DisableShareForOverlays) {
   // longer shareable.
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       web_state, OverlayModality::kWebContentArea);
-  queue->AddRequest(OverlayRequest::CreateWithConfig<JavaScriptDialogRequest>(
-      web::JAVASCRIPT_DIALOG_TYPE_ALERT, web_state, kUrl,
-      /*is_main_frame=*/true, @"message",
-      /*default_text_field_value=*/nil));
+  queue->AddRequest(
+      OverlayRequest::CreateWithConfig<JavaScriptAlertDialogRequest>(
+          web_state, kUrl,
+          /*is_main_frame=*/true, @"message"));
   EXPECT_FALSE(consumer_.locationShareable);
 
   // Cancel the request and verify that the location is shareable again.

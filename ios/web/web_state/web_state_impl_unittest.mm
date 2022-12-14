@@ -438,17 +438,16 @@ TEST_F(WebStateImplTest, DelegateTest) {
   FakeJavaScriptDialogPresenter* presenter =
       delegate.GetFakeJavaScriptDialogPresenter();
   EXPECT_FALSE(delegate.get_java_script_dialog_presenter_called());
-  EXPECT_TRUE(presenter->requested_dialogs().empty());
+  EXPECT_TRUE(presenter->requested_alert_dialogs().empty());
   EXPECT_FALSE(presenter->cancel_dialogs_called());
 
   __block bool callback_called = false;
-  web_state_->RunJavaScriptDialog(GURL(), JAVASCRIPT_DIALOG_TYPE_ALERT, @"",
-                                  nil, base::BindOnce(^(bool, NSString*) {
-                                    callback_called = true;
-                                  }));
+  web_state_->RunJavaScriptAlertDialog(GURL(), @"", base::BindOnce(^() {
+                                         callback_called = true;
+                                       }));
 
   EXPECT_TRUE(delegate.get_java_script_dialog_presenter_called());
-  EXPECT_EQ(1U, presenter->requested_dialogs().size());
+  EXPECT_EQ(1U, presenter->requested_alert_dialogs().size());
   EXPECT_TRUE(callback_called);
 
   EXPECT_FALSE(presenter->cancel_dialogs_called());
@@ -1018,10 +1017,7 @@ TEST_F(WebStateImplTest, DisallowSnapshotsDuringDialogPresentation) {
   // presented.
   delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
       true);
-  web_state_->RunJavaScriptDialog(GURL(), JAVASCRIPT_DIALOG_TYPE_ALERT,
-                                  @"message", @"",
-                                  base::BindOnce(^(bool, NSString*){
-                                  }));
+  web_state_->RunJavaScriptAlertDialog(GURL(), @"message", base::DoNothing());
 
   // Verify that CanTakeSnapshot() returns no while the dialog is presented.
   EXPECT_FALSE(web_state_->CanTakeSnapshot());
@@ -1044,10 +1040,7 @@ TEST_F(WebStateImplTest, VerifyDialogRunningBoolean) {
   // presented.
   delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
       true);
-  web_state_->RunJavaScriptDialog(GURL(), JAVASCRIPT_DIALOG_TYPE_ALERT,
-                                  @"message", @"",
-                                  base::BindOnce(^(bool, NSString*){
-                                  }));
+  web_state_->RunJavaScriptAlertDialog(GURL(), @"message", base::DoNothing());
 
   // Verify that IsJavaScriptDialogRunning() returns true while the dialog is
   // presented.
@@ -1081,10 +1074,7 @@ TEST_F(WebStateImplTest, CreateFullPagePdfJavaScriptDialog) {
     // presented.
     delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
         true);
-    web_state_->RunJavaScriptDialog(GURL(), JAVASCRIPT_DIALOG_TYPE_ALERT,
-                                    @"message", @"",
-                                    base::BindOnce(^(bool, NSString*){
-                                    }));
+    web_state_->RunJavaScriptAlertDialog(GURL(), @"message", base::DoNothing());
 
     // Attempt to create a PDF for this page and validate that it return nil.
     __block NSData* callback_data_when_dialog = nil;

@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/java_script_dialog_overlay.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/java_script_alert_dialog_overlay.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/web/blocked_popup_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
@@ -20,7 +20,6 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/ui/java_script_dialog_presenter.h"
-#import "ios/web/public/ui/java_script_dialog_type.h"
 #import "ios/web/public/web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -29,8 +28,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-using java_script_dialog_overlays::JavaScriptDialogRequest;
 
 const char kURL1[] = "https://www.some.url.com";
 const char kURL2[] = "https://www.some.url2.com";
@@ -188,12 +185,8 @@ TEST_F(WebStateDelegateBrowserAgentTest, GetJavaScriptDialogPresenter) {
 
   // Present a JavaScript alert.
   GURL kOriginUrl("http://chromium.test");
-  web::DialogClosedCallback callback =
-      base::BindOnce(^(bool success, NSString* user_input){
-      });
-  presenter->RunJavaScriptDialog(web_state, kOriginUrl,
-                                 web::JAVASCRIPT_DIALOG_TYPE_ALERT, @"", @"",
-                                 std::move(callback));
+  presenter->RunJavaScriptAlertDialog(web_state, kOriginUrl, @"",
+                                      base::DoNothing());
 
   // Verify that JavaScript alert OverlayRequest has been added to the
   // WebState's queue.
@@ -202,5 +195,5 @@ TEST_F(WebStateDelegateBrowserAgentTest, GetJavaScriptDialogPresenter) {
   ASSERT_TRUE(queue);
   OverlayRequest* request = queue->front_request();
   EXPECT_TRUE(request);
-  EXPECT_TRUE(request->GetConfig<JavaScriptDialogRequest>());
+  EXPECT_TRUE(request->GetConfig<JavaScriptAlertDialogRequest>());
 }

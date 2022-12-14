@@ -19,7 +19,9 @@
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/app_launcher_overlay.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/java_script_dialog_overlay.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/java_script_alert_dialog_overlay.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/java_script_confirm_dialog_overlay.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/java_script_prompt_dialog_overlay.h"
 #import "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -27,7 +29,6 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "ios/web/public/ui/java_script_dialog_type.h"
 #import "ios/web/public/web_state.h"
 #import "testing/platform_test.h"
 
@@ -173,12 +174,10 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, JavaScriptAlertOverlay) {
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       browser_->GetWebStateList()->GetWebStateAt(0),
       OverlayModality::kWebContentArea);
-  queue->AddRequest(OverlayRequest::CreateWithConfig<
-                    java_script_dialog_overlays::JavaScriptDialogRequest>(
-      web::JAVASCRIPT_DIALOG_TYPE_ALERT,
-      browser_->GetWebStateList()->GetWebStateAt(0), GURL::EmptyGURL(),
-      /*is_main_frame=*/true, @"message",
-      /*default_text_field_value=*/nil));
+  queue->AddRequest(
+      OverlayRequest::CreateWithConfig<JavaScriptAlertDialogRequest>(
+          browser_->GetWebStateList()->GetWebStateAt(0), GURL::EmptyGURL(),
+          /*is_main_frame=*/true, @"message"));
   queue->CancelAllRequests();
 
   const auto& events = GetEvents();
@@ -199,12 +198,10 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, JavaScriptConfirmOverlay) {
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       browser_->GetWebStateList()->GetWebStateAt(0),
       OverlayModality::kWebContentArea);
-  queue->AddRequest(OverlayRequest::CreateWithConfig<
-                    java_script_dialog_overlays::JavaScriptDialogRequest>(
-      web::JAVASCRIPT_DIALOG_TYPE_CONFIRM,
-      browser_->GetWebStateList()->GetWebStateAt(0), GURL::EmptyGURL(),
-      /*is_main_frame=*/true, @"message",
-      /*default_text_field_value=*/nil));
+  queue->AddRequest(
+      OverlayRequest::CreateWithConfig<JavaScriptConfirmDialogRequest>(
+          browser_->GetWebStateList()->GetWebStateAt(0), GURL::EmptyGURL(),
+          /*is_main_frame=*/true, @"message"));
   queue->CancelAllRequests();
 
   const auto& events = GetEvents();
@@ -225,12 +222,11 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, JavaScriptPromptOverlay) {
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       browser_->GetWebStateList()->GetWebStateAt(0),
       OverlayModality::kWebContentArea);
-  queue->AddRequest(OverlayRequest::CreateWithConfig<
-                    java_script_dialog_overlays::JavaScriptDialogRequest>(
-      web::JAVASCRIPT_DIALOG_TYPE_PROMPT,
-      browser_->GetWebStateList()->GetWebStateAt(0), GURL::EmptyGURL(),
-      /*is_main_frame=*/true, @"message",
-      /*default_text_field_value=*/nil));
+  queue->AddRequest(
+      OverlayRequest::CreateWithConfig<JavaScriptPromptDialogRequest>(
+          browser_->GetWebStateList()->GetWebStateAt(0), GURL::EmptyGURL(),
+          /*is_main_frame=*/true, @"message",
+          /*default_text_field_value=*/nil));
   queue->CancelAllRequests();
 
   const auto& events = GetEvents();

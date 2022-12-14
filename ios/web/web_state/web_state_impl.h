@@ -23,8 +23,6 @@
 #import "ios/web/navigation/navigation_manager_delegate.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
-#import "ios/web/public/ui/java_script_dialog_callback.h"
-#include "ios/web/public/ui/java_script_dialog_type.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_delegate.h"
 #include "url/gurl.h"
@@ -203,12 +201,25 @@ class WebStateImpl final : public WebState {
   // Notifies the delegate that a Form Repost dialog needs to be presented.
   void ShowRepostFormWarningDialog(base::OnceCallback<void(bool)> callback);
 
-  // Notifies the delegate that a JavaScript dialog needs to be presented.
-  void RunJavaScriptDialog(const GURL& origin_url,
-                           JavaScriptDialogType java_script_dialog_type,
-                           NSString* message_text,
-                           NSString* default_prompt_text,
-                           DialogClosedCallback callback);
+  // Notifies the delegate that a JavaScript alert dialog needs to be presented.
+  void RunJavaScriptAlertDialog(const GURL& origin_url,
+                                NSString* message_text,
+                                base::OnceClosure callback);
+
+  // Notifies the delegate that a JavaScript confirmation dialog needs to be
+  // presented.
+  void RunJavaScriptConfirmDialog(
+      const GURL& origin_url,
+      NSString* message_text,
+      base::OnceCallback<void(bool success)> callback);
+
+  // Notifies the delegate that a JavaScript prompt dialog needs to be
+  // presented.
+  void RunJavaScriptPromptDialog(
+      const GURL& origin_url,
+      NSString* message_text,
+      NSString* default_prompt_text,
+      base::OnceCallback<void(NSString* user_input)> callback);
 
   // Returns true if a javascript dialog is running.
   bool IsJavaScriptDialogRunning();

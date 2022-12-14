@@ -15,14 +15,14 @@
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/app_launcher_overlay.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/java_script_dialog_overlay.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/java_script_alert_dialog_overlay.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/java_script_confirm_dialog_overlay.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/java_script_prompt_dialog_overlay.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-using java_script_dialog_overlays::JavaScriptDialogRequest;
 
 namespace {
 
@@ -148,18 +148,12 @@ void BreadcrumbManagerBrowserAgent::WillShowOverlay(OverlayPresenter* presenter,
   } else if (request->GetConfig<
                  app_launcher_overlays::AppLaunchConfirmationRequest>()) {
     event.push_back(kBreadcrumbOverlayAppLaunch);
-  } else if (auto* js_dialog = request->GetConfig<JavaScriptDialogRequest>()) {
-    switch (js_dialog->type()) {
-      case web::JAVASCRIPT_DIALOG_TYPE_ALERT:
-        event.push_back(kBreadcrumbOverlayJsAlert);
-        break;
-      case web::JAVASCRIPT_DIALOG_TYPE_CONFIRM:
-        event.push_back(kBreadcrumbOverlayJsConfirm);
-        break;
-      case web::JAVASCRIPT_DIALOG_TYPE_PROMPT:
-        event.push_back(kBreadcrumbOverlayJsPrompt);
-        break;
-    }
+  } else if (request->GetConfig<JavaScriptAlertDialogRequest>()) {
+    event.push_back(kBreadcrumbOverlayJsAlert);
+  } else if (request->GetConfig<JavaScriptConfirmDialogRequest>()) {
+    event.push_back(kBreadcrumbOverlayJsConfirm);
+  } else if (request->GetConfig<JavaScriptPromptDialogRequest>()) {
+    event.push_back(kBreadcrumbOverlayJsPrompt);
   } else if (request->GetConfig<alert_overlays::AlertRequest>()) {
     event.push_back(kBreadcrumbOverlayAlert);
   } else {
