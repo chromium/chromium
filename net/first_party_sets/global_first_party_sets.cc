@@ -499,15 +499,15 @@ bool GlobalFirstPartySets::ForEachEffectiveSetEntry(
 
 std::ostream& operator<<(std::ostream& os, const GlobalFirstPartySets& sets) {
   os << "{entries = {";
-  for (const auto& [site, entry] : sets.entries()) {
+  for (const auto& [site, entry] : sets.entries_) {
     os << "{" << site.Serialize() << ": " << entry << "}, ";
   }
   os << "}, aliases = {";
-  for (const auto& [alias, canonical] : sets.aliases()) {
+  for (const auto& [alias, canonical] : sets.aliases_) {
     os << "{" << alias.Serialize() << ": " << canonical.Serialize() << "}, ";
   }
   os << "}, manual_config = {";
-  sets.manual_config().ForEachCustomizationEntry(
+  sets.ForEachManualConfigEntry(
       [&](const net::SchemefulSite& site,
           const FirstPartySetEntryOverride& override) {
         os << "{" << site.Serialize() << ": " << override << "},";

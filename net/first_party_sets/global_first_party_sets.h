@@ -186,18 +186,6 @@ class NET_EXPORT GlobalFirstPartySets {
       base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)>
           f) const;
 
-  const base::flat_map<SchemefulSite, FirstPartySetEntry>& entries() const {
-    return entries_;
-  }
-
-  const base::flat_map<SchemefulSite, SchemefulSite>& aliases() const {
-    return aliases_;
-  }
-
-  const FirstPartySetsContextConfig& manual_config() const {
-    return manual_config_;
-  }
-
   // The version associated with the component_updater-provided public sets.
   // This may be invalid if the "First-Party Sets" component has not been
   // installed yet, or has been corrupted. Entries and aliases from invalid

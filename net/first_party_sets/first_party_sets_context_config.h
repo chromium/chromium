@@ -25,11 +25,9 @@ namespace net {
 // info in the given network context.
 class NET_EXPORT FirstPartySetsContextConfig {
  public:
-  using OverrideSets =
-      base::flat_map<SchemefulSite, FirstPartySetEntryOverride>;
-
   FirstPartySetsContextConfig();
-  explicit FirstPartySetsContextConfig(OverrideSets customizations);
+  explicit FirstPartySetsContextConfig(
+      base::flat_map<SchemefulSite, FirstPartySetEntryOverride> customizations);
 
   FirstPartySetsContextConfig(FirstPartySetsContextConfig&& other);
   FirstPartySetsContextConfig& operator=(FirstPartySetsContextConfig&& other);
@@ -69,9 +67,7 @@ class NET_EXPORT FirstPartySetsContextConfig {
       network::mojom::FirstPartySetsContextConfigDataView,
       FirstPartySetsContextConfig>;
 
-  const OverrideSets& customizations() const { return customizations_; }
-
-  OverrideSets customizations_;
+  base::flat_map<SchemefulSite, FirstPartySetEntryOverride> customizations_;
 };
 
 }  // namespace net

@@ -10,7 +10,7 @@ namespace net {
 
 FirstPartySetsContextConfig::FirstPartySetsContextConfig() = default;
 FirstPartySetsContextConfig::FirstPartySetsContextConfig(
-    FirstPartySetsContextConfig::OverrideSets customizations)
+    base::flat_map<SchemefulSite, FirstPartySetEntryOverride> customizations)
     : customizations_(std::move(customizations)) {}
 
 FirstPartySetsContextConfig::FirstPartySetsContextConfig(

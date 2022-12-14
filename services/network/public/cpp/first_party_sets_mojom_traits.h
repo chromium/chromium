@@ -119,17 +119,17 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
 
   static const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>&
   sets(const net::GlobalFirstPartySets& sets) {
-    return sets.entries();
+    return sets.entries_;
   }
 
   static const base::flat_map<net::SchemefulSite, net::SchemefulSite>& aliases(
       const net::GlobalFirstPartySets& sets) {
-    return sets.aliases();
+    return sets.aliases_;
   }
 
   static const net::FirstPartySetsContextConfig& manual_config(
       const net::GlobalFirstPartySets& sets) {
-    return sets.manual_config();
+    return sets.manual_config_;
   }
 
   static bool Read(network::mojom::GlobalFirstPartySetsDataView sets,
@@ -156,7 +156,7 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
   static const base::flat_map<net::SchemefulSite,
                               net::FirstPartySetEntryOverride>&
   customizations(const net::FirstPartySetsContextConfig& config) {
-    return config.customizations();
+    return config.customizations_;
   }
 
   static bool Read(network::mojom::FirstPartySetsContextConfigDataView config,
@@ -169,12 +169,12 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
                  net::FirstPartySetsCacheFilter> {
   static const base::flat_map<net::SchemefulSite, int64_t>& filter(
       const net::FirstPartySetsCacheFilter& cache_filter) {
-    return cache_filter.filter();
+    return cache_filter.filter_;
   }
 
   static int64_t browser_run_id(
       const net::FirstPartySetsCacheFilter& cache_filter) {
-    return cache_filter.browser_run_id();
+    return cache_filter.browser_run_id_;
   }
 
   static bool Read(

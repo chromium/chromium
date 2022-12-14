@@ -2415,9 +2415,8 @@ TEST_F(PrivacySandboxServiceTest,
   // this profile.
   mock_first_party_sets_handler().SetContextConfig(
       net::FirstPartySetsContextConfig(
-          net::FirstPartySetsContextConfig::OverrideSets{
-              {net::SchemefulSite(GURL("https://associate2.test")),
-               net::FirstPartySetEntryOverride()}}));
+          {{net::SchemefulSite(GURL("https://associate2.test")),
+            net::FirstPartySetEntryOverride()}}));
 
   first_party_sets_policy_service()->InitForTesting();
 
@@ -2540,11 +2539,10 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
   // this profile.
   mock_first_party_sets_handler().SetContextConfig(
       net::FirstPartySetsContextConfig(
-          net::FirstPartySetsContextConfig::OverrideSets{
-              {net::SchemefulSite(GURL("https://google.de")),
-               net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://new-primary.test")),
-                   net::SiteType::kAssociated, 0))}}));
+          {{net::SchemefulSite(GURL("https://google.de")),
+            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                net::SchemefulSite(GURL("https://new-primary.test")),
+                net::SiteType::kAssociated, 0))}}));
 
   first_party_sets_policy_service()->InitForTesting();
 

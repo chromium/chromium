@@ -62,12 +62,6 @@ class NET_EXPORT FirstPartySetsCacheFilter {
       network::mojom::FirstPartySetsCacheFilterDataView,
       FirstPartySetsCacheFilter>;
 
-  const base::flat_map<net::SchemefulSite, int64_t>& filter() const {
-    return filter_;
-  }
-
-  int64_t browser_run_id() const { return browser_run_id_; }
-
   // The filter used to bypass cache. The key is site may be bypassed for
   // cache access, the value indicates the browser run of which the site
   // was marked to be cleared.
