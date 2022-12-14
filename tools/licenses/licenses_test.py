@@ -40,6 +40,16 @@ class LicensesTest(unittest.TestCase):
             'Name': 'lib3',
             'License File': os.path.join('third_party', 'lib3', 'LICENSE'),
         },
+        os.path.join('third_party', 'lib3-v1'): {
+            # Test SPDX license file dedup. (different name, same license file)
+            'Name': 'lib3-v1',
+            'License File': os.path.join('third_party', 'lib3', 'LICENSE'),
+        },
+        os.path.join('third_party', 'lib3-v2'): {
+            # Test SPDX id dedup. (same name, different license file)
+            'Name': 'lib3',
+            'License File': os.path.join('third_party', 'lib3-v2', 'LICENSE'),
+        },
     }
 
   def test_get_third_party_deps_from_gn_deps_output(self):
@@ -91,6 +101,8 @@ class LicensesTest(unittest.TestCase):
         'lib1 license text\n',
         'lib2 license text\n',
         'lib3 license text\n',
+        'lib3 license text\n',
+        'lib3-v2 license text\n',
     ]
 
     license_txt = licenses.GenerateLicenseFilePlainText(
@@ -113,6 +125,16 @@ class LicensesTest(unittest.TestCase):
         'lib3',
         '--------------------',
         'lib3 license text',
+        '',
+        '--------------------',
+        'lib3-v1',
+        '--------------------',
+        'lib3 license text',
+        '',
+        '--------------------',
+        'lib3-v2',
+        '--------------------',
+        'lib3-v2 license text',
     ]) + '\n'  # extra new line to account for join not adding one to the end
     self.assertEqual(license_txt, expected)
 
@@ -122,6 +144,7 @@ class LicensesTest(unittest.TestCase):
         'lib1\nlicense text\n',
         'lib2\nlicense text\n',
         'lib3\nlicense text\n',
+        'lib3-v2\nlicense text\n',
     ]
 
     license_txt = licenses.GenerateLicenseFileSpdx(
@@ -167,11 +190,21 @@ class LicensesTest(unittest.TestCase):
             "SPDXID": "SPDXRef-Package-lib3",
             "name": "lib3",
             "licenseConcluded": "LicenseRef-lib3"
+        },
+        {
+            "SPDXID": "SPDXRef-Package-lib3-v1",
+            "name": "lib3-v1",
+            "licenseConcluded": "LicenseRef-lib3"
+        },
+        {
+            "SPDXID": "SPDXRef-Package-lib3-1",
+            "name": "lib3",
+            "licenseConcluded": "LicenseRef-lib3-1"
         }
     ],
     "hasExtractedLicensingInfos": [
         {
-            "name": "Chromium License",
+            "name": "Chromium",
             "licenseId": "LicenseRef-Chromium",
             "extractedText": "root\\nlicense text\\n",
             "crossRefs": [
@@ -181,7 +214,7 @@ class LicensesTest(unittest.TestCase):
             ]
         },
         {
-            "name": "lib1 License",
+            "name": "lib1",
             "licenseId": "LicenseRef-lib1",
             "extractedText": "lib1\\nlicense text\\n",
             "crossRefs": [
@@ -191,7 +224,7 @@ class LicensesTest(unittest.TestCase):
             ]
         },
         {
-            "name": "lib2 License",
+            "name": "lib2",
             "licenseId": "LicenseRef-lib2",
             "extractedText": "lib2\\nlicense text\\n",
             "crossRefs": [
@@ -201,12 +234,22 @@ class LicensesTest(unittest.TestCase):
             ]
         },
         {
-            "name": "lib3 License",
+            "name": "lib3",
             "licenseId": "LicenseRef-lib3",
             "extractedText": "lib3\\nlicense text\\n",
             "crossRefs": [
                 {
                     "url": "http://google.com/third_party/lib3/LICENSE"
+                }
+            ]
+        },
+        {
+            "name": "lib3",
+            "licenseId": "LicenseRef-lib3-1",
+            "extractedText": "lib3-v2\\nlicense text\\n",
+            "crossRefs": [
+                {
+                    "url": "http://google.com/third_party/lib3-v2/LICENSE"
                 }
             ]
         }
@@ -226,6 +269,16 @@ class LicensesTest(unittest.TestCase):
             "spdxElementId": "SPDXRef-Package-Chromium",
             "relationshipType": "CONTAINS",
             "relatedSpdxElement": "SPDXRef-Package-lib3"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-Chromium",
+            "relationshipType": "CONTAINS",
+            "relatedSpdxElement": "SPDXRef-Package-lib3-v1"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-Chromium",
+            "relationshipType": "CONTAINS",
+            "relatedSpdxElement": "SPDXRef-Package-lib3-1"
         }
     ]
 }'''

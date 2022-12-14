@@ -2,12 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import collections
 import dataclasses
 import json
 import os
 import pathlib
 import re
-from typing import Callable
+from typing import Callable, DefaultDict, Tuple
 
 
 class SpdxWriter:
@@ -22,7 +23,9 @@ class SpdxWriter:
                doc_namespace: str = None,
                read_file=lambda x: pathlib.Path(x).read_text(encoding='utf-8')):
     self.root_package = _Package(root_package_name, root_license)
-    self.packages = [self.root_package]
+    # Use dict to ensure no duplicate pkgs.
+    # In >=py3.7 dicts are ordered by insertion.
+    self.packages = {}
 
     self.root = root
     self.link_prefix = link_prefix
@@ -35,7 +38,7 @@ class SpdxWriter:
 
   def add_package(self, name: str, license_file: str):
     """Add a package to the SPDX output."""
-    self.packages.append(_Package(name, license_file))
+    self.packages[_Package(name, license_file)] = None
 
   def write_to_file(self, file_path: str):
     """Writes the content to a file."""
@@ -50,13 +53,10 @@ class SpdxWriter:
     for pkg in self.packages:
       writer.add_package(pkg)
 
-    for pkg in self.packages:
-      writer.add_license_file(pkg)
-
     return writer.write()
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class _Package:
   """Stores needed data for a package to output SPDX."""
   name: str
@@ -118,37 +118,93 @@ class _SPDXJSONWriter():
         'relationships': [],
     }
 
+    # Used to dedup license files based on file path.
+    self.existing_license_files = {}  # 'file path': 'licenseId'
+    # Used to make sure that there are no duplicate ids.
+    self.existing_package_ids = collections.defaultdict(int)  # 'packageId': num
+    self.existing_license_ids = collections.defaultdict(int)  # 'licenseId': num
+
+    # Add the root package to make sure that its ID isn't taken.
+    self.add_package(root_package)
+
   def write(self) -> str:
     """Returns a JSON string for the current state of the writer."""
     return json.dumps(self.content, indent=4)
 
+  def _get_dedup_id(self, elem_id: str, id_dict: DefaultDict[str, int]) -> str:
+    """Returns a unique id given a dictionary with existing ids.
+
+    IDs are case sensitive, so this method ignores casing for uniqueness.
+
+    Args:
+      elem_id: the requested id to use for the element.
+      id_dict: dictionary holding already used ids.
+
+    Returns:
+      When the elem_id is already unique, return elem_id.
+      When the elem_id has been used, return elem_id + '-[next num]'.
+    """
+    suffix = id_dict[elem_id]
+    id_dict[elem_id] += 1
+    return f'{elem_id}-{suffix}' if suffix > 0 else elem_id
+
+  def _get_package_id(self, pkg: _Package) -> str:
+    """Makes sure that there are no pkg id duplicates."""
+    return self._get_dedup_id(pkg.package_spdx_id, self.existing_package_ids)
+
+  def _get_license_id(self, pkg: _Package) -> Tuple[str, bool]:
+    """Handles license deduplication.
+
+    If this pkg.file has already been seen, reuse that same id instead. If
+    there are two packages with the same name but different license files,
+    handle deduping the names.
+
+    Args:
+      pkg: The package to get a license id for.
+
+    Returns:
+      First return value is the id, second is whether the license needs to be
+        added to the SPDX doc (False if it already exists in the doc).
+    """
+    existing = self.existing_license_files.get(pkg.file)
+    if existing:
+      return existing, False
+
+    license_id = self._get_dedup_id(pkg.license_spdx_id,
+                                    self.existing_license_ids)
+    self.existing_license_files[pkg.file] = license_id
+    return license_id, True
+
   def add_package(self, pkg: _Package):
     """Writes a package to the file (package metadata)."""
+    pkg_id = self._get_package_id(pkg)
+    license_id, need_to_add_license = self._get_license_id(pkg)
+
     self.content['packages'].append({
-        'SPDXID': pkg.package_spdx_id,
+        'SPDXID': pkg_id,
         'name': pkg.name,
-        'licenseConcluded': pkg.license_spdx_id,
+        'licenseConcluded': license_id,
     })
 
     if pkg.package_spdx_id != self.root_package_id:
       self.content['relationships'].append({
-          'spdxElementId':
-          self.root_package_id,
-          'relationshipType':
-          'CONTAINS',
-          'relatedSpdxElement':
-          pkg.package_spdx_id,
+          'spdxElementId': self.root_package_id,
+          'relationshipType': 'CONTAINS',
+          'relatedSpdxElement': pkg_id,
       })
 
-  def add_license_file(self, pkg: _Package):
+    if need_to_add_license:
+      self._add_license_file(pkg, license_id)
+
+  def _add_license_file(self, pkg: _Package, license_id: str):
     """Writes a license to the file (raw license text)."""
     spdx_path = _get_spdx_path(self.root, pkg.file)
     url = f'{self.link_prefix}{spdx_path.replace(os.sep, "/")}'
     self.content['hasExtractedLicensingInfos'].append({
         'name':
-        f'{pkg.name} License',
+        f'{pkg.name}',
         'licenseId':
-        pkg.license_spdx_id,
+        license_id,
         'extractedText':
         self.read_file(pkg.file),
         'crossRefs': [{
