@@ -28,7 +28,6 @@ constexpr uint8_t zigzag_8x8[] = {
     58, 59, 52, 45, 38, 31, 39, 46, 53, 60, 61, 54, 47, 55, 62, 63};
 
 constexpr uint32_t kNumberOfBuffersInCaptureQueue = 10;
-constexpr uint32_t kUncompressedFourcc = v4l2_fourcc('M', 'M', '2', '1');
 
 static_assert(kNumberOfBuffersInCaptureQueue <= 16,
               "Too many CAPTURE buffers are used. The number of CAPTURE "
@@ -442,17 +441,23 @@ std::unique_ptr<H264Decoder> H264Decoder::Create(
   CHECK(coded_size);
   LOG(INFO) << "h.264 coded size : " << coded_size->ToString();
 
-  // Currently only MM21 as an uncompressed format is supported
-  // because it can be converted by libyuv to NV12, which is then
-  // used to verify via MD5sum.
   constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_H264_SLICE;
 
   auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>();
+  uint32_t uncompressed_fourcc = V4L2_PIX_FMT_NV12;
+  int num_planes = 1;
 
   if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc,
-                                      kUncompressedFourcc)) {
-    LOG(ERROR) << "Device doesn't support the required FourCCs.";
-    return nullptr;
+                                      uncompressed_fourcc)) {
+    // Fall back to MM21 for MediaTek platforms
+    uncompressed_fourcc = v4l2_fourcc('M', 'M', '2', '1');
+    num_planes = 2;
+
+    if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc,
+                                        uncompressed_fourcc)) {
+      LOG(ERROR) << "Device doesn't support the provided FourCCs.";
+      return nullptr;
+    }
   }
 
   // TODO(stevecho): might need to consider using more than 1 file descriptor
@@ -466,9 +471,9 @@ std::unique_ptr<H264Decoder> H264Decoder::Create(
   // |num_planes| represents separate memory buffers, not planes for Y, U, V.
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/pixfmt-v4l2-mplane.html#c.V4L.v4l2_plane_pix_format
   auto CAPTURE_queue = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, kUncompressedFourcc,
+      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, uncompressed_fourcc,
       coded_size.value(),
-      /*num_planes=*/2, V4L2_MEMORY_MMAP,
+      /*num_planes=*/num_planes, V4L2_MEMORY_MMAP,
       /*num_buffers=*/kNumberOfBuffersInCaptureQueue);
 
   return base::WrapUnique(
@@ -515,16 +520,25 @@ VideoDecoder::Result H264Decoder::DecodeNextFrame(std::vector<char>& y_plane,
       << "Capture Queue Index greater than number of buffers";
 
   scoped_refptr<MmapedBuffer> buffer = CAPTURE_queue_->GetBuffer(CAPTURE_index);
-  CHECK_EQ(buffer->mmaped_planes().size(), 2u)
-      << "MM21 should have exactly 2 planes but CAPTURE queue does not.";
-
-  CHECK_EQ(media::FourccToString(CAPTURE_queue_->fourcc()),
-           media::FourccToString(kUncompressedFourcc));
   size = CAPTURE_queue_->display_size();
-  ConvertMM21ToYUV(y_plane, u_plane, v_plane, size,
-                   static_cast<char*>(buffer->mmaped_planes()[0].start_addr),
-                   static_cast<char*>(buffer->mmaped_planes()[1].start_addr),
-                   CAPTURE_queue_->coded_size());
+  if (CAPTURE_queue_->fourcc() == V4L2_PIX_FMT_NV12) {
+    CHECK_EQ(buffer->mmaped_planes().size(), 1u)
+        << "NV12 should have exactly 1 plane but CAPTURE queue does not.";
+
+    ConvertNV12ToYUV(y_plane, u_plane, v_plane, size,
+                     static_cast<char*>(buffer->mmaped_planes()[0].start_addr),
+                     CAPTURE_queue_->coded_size());
+  } else if (CAPTURE_queue_->fourcc() == v4l2_fourcc('M', 'M', '2', '1')) {
+    CHECK_EQ(buffer->mmaped_planes().size(), 2u)
+        << "MM21 should have exactly 2 planes but CAPTURE queue does not.";
+
+    ConvertMM21ToYUV(y_plane, u_plane, v_plane, size,
+                     static_cast<char*>(buffer->mmaped_planes()[0].start_addr),
+                     static_cast<char*>(buffer->mmaped_planes()[1].start_addr),
+                     CAPTURE_queue_->coded_size());
+  } else {
+    LOG(FATAL) << "Unsupported CAPTURE queue format";
+  }
 
   if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, CAPTURE_index)) {
     VLOG(4) << "VIDIOC_QBUF failed for CAPTURE queue.";

@@ -196,6 +196,53 @@ void VideoDecoder::Initialize() {
     LOG(FATAL) << "StreamOn for CAPTURE queue failed.";
 }
 
+// Unpacks NV12 to I420 and optionally trims padding from source.
+// This expects a contiguous NV12 buffer, as specified by
+// V4L2_PIX_FMT_NV12.
+void VideoDecoder::ConvertNV12ToYUV(std::vector<char>& dest_y,
+                                    std::vector<char>& dest_u,
+                                    std::vector<char>& dest_v,
+                                    gfx::Size dest_size,
+                                    const char* src,
+                                    gfx::Size src_size) {
+  CHECK(dest_size.width() <= src_size.width());
+  CHECK(dest_size.height() <= src_size.height());
+
+  // Copy Y plane
+  dest_y.reserve(dest_size.GetArea());
+  for (int i = 0; i < dest_size.height(); i++) {
+    dest_y.insert(dest_y.end(), src, src + dest_size.width());
+    src += src_size.width();
+  }
+
+  // Move to start of UV plane
+  if (dest_size.height() < src_size.height())
+    src += src_size.width() * (src_size.height() - dest_size.height());
+
+  // Pad size for U/V plane to handle odd dimensions
+  gfx::Size dest_aligned_size(base::bits::AlignUp(dest_size.width(), 2),
+                              base::bits::AlignUp(dest_size.height(), 2));
+  const int uv_height = dest_aligned_size.height() / 2;
+  const int uv_width = dest_aligned_size.width() / 2;
+
+  // Unpack UV plane
+  dest_u.reserve(dest_aligned_size.GetArea() / 4);
+  dest_v.reserve(dest_aligned_size.GetArea() / 4);
+
+  for (int i = 0; i < uv_height; i++) {
+    for (int j = 0; j < uv_width; j++) {
+      dest_u.push_back(src[0]);
+      dest_v.push_back(src[1]);
+      src += 2;
+    }
+
+    // Skip any trailing pixels on the line in the source image
+    // Skip is based on non-sub-sampled dimensions
+    if (dest_aligned_size.width() < src_size.width())
+      src += src_size.width() - dest_aligned_size.width();
+  }
+}
+
 void VideoDecoder::ConvertMM21ToYUV(std::vector<char>& dest_y,
                                     std::vector<char>& dest_u,
                                     std::vector<char>& dest_v,

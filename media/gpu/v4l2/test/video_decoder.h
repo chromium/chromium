@@ -50,6 +50,14 @@ class VideoDecoder {
   bool LastDecodedFrameVisible() const { return last_decoded_frame_visible_; }
 
  protected:
+  // Helper method for converting NV12 frames to I420.
+  static void ConvertNV12ToYUV(std::vector<char>& dest_y,
+                               std::vector<char>& dest_u,
+                               std::vector<char>& dest_v,
+                               gfx::Size dest_size,
+                               const char* src,
+                               gfx::Size src_size);
+
   // Helper method for converting MM21 frames to I420.
   static void ConvertMM21ToYUV(std::vector<char>& dest_y,
                                std::vector<char>& dest_u,

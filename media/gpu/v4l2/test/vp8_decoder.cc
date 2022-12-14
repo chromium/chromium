@@ -203,11 +203,6 @@ constexpr uint32_t kNumberOfBuffersInOutputQueue = 1;
 
 constexpr uint32_t kNumberOfPlanesInOutputQueue = 1;
 
-// MM21 is an uncompressed opaque format that is produced by MediaTek
-// video decoders.
-// TODO(b/256174196): Extend decoder format options to support non-MTK devices
-constexpr uint32_t kMm21Fourcc = v4l2_fourcc('M', 'M', '2', '1');
-
 static_assert(kNumberOfBuffersInCaptureQueue <= 16,
               "Too many CAPTURE buffers are used. The number of CAPTURE "
               "buffers is currently assumed to be no larger than 16.");
@@ -264,10 +259,20 @@ std::unique_ptr<Vp8Decoder> Vp8Decoder::Create(
   }
 
   auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>();
+  uint32_t uncompressed_fourcc = V4L2_PIX_FMT_NV12;
+  int num_planes = 1;
 
-  if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc, kMm21Fourcc)) {
-    LOG(ERROR) << "Device doesn't support the provided FourCCs.";
-    return nullptr;
+  if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc,
+                                      uncompressed_fourcc)) {
+    // Fall back to MM21 for MediaTek platforms
+    uncompressed_fourcc = v4l2_fourcc('M', 'M', '2', '1');
+    num_planes = 2;
+
+    if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc,
+                                        uncompressed_fourcc)) {
+      LOG(ERROR) << "Device doesn't support the provided FourCCs.";
+      return nullptr;
+    }
   }
 
   LOG(INFO) << "Ivf file header: " << file_header.width << " x "
@@ -285,9 +290,10 @@ std::unique_ptr<Vp8Decoder> Vp8Decoder::Create(
   // |num_planes| represents separate memory buffers, not planes for Y, U, V.
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/pixfmt-v4l2-mplane.html#c.V4L.v4l2_plane_pix_format
   auto CAPTURE_queue = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, kMm21Fourcc,
-      gfx::Size(file_header.width, file_header.height), /*num_planes=*/2,
-      V4L2_MEMORY_MMAP, /*num_buffers=*/kNumberOfBuffersInCaptureQueue);
+      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, uncompressed_fourcc,
+      gfx::Size(file_header.width, file_header.height),
+      /*num_planes=*/num_planes, V4L2_MEMORY_MMAP,
+      /*num_buffers=*/kNumberOfBuffersInCaptureQueue);
 
   return base::WrapUnique(
       new Vp8Decoder(std::move(ivf_parser), std::move(v4l2_ioctl),
@@ -565,15 +571,25 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<char>& y_plane,
     LOG(FATAL) << "VIDIOC_DQBUF failed for CAPTURE queue.";
 
   scoped_refptr<MmapedBuffer> buffer = CAPTURE_queue_->GetBuffer(CAPTURE_index);
-  CHECK_EQ(buffer->mmaped_planes().size(), 2u)
-      << "MM21 should have exactly 2 planes but CAPTURE queue does not.";
-
-  CHECK_EQ(CAPTURE_queue_->fourcc(), kMm21Fourcc);
   size = CAPTURE_queue_->display_size();
-  ConvertMM21ToYUV(y_plane, u_plane, v_plane, size,
-                   static_cast<char*>(buffer->mmaped_planes()[0].start_addr),
-                   static_cast<char*>(buffer->mmaped_planes()[1].start_addr),
-                   CAPTURE_queue_->coded_size());
+  if (CAPTURE_queue_->fourcc() == V4L2_PIX_FMT_NV12) {
+    CHECK_EQ(buffer->mmaped_planes().size(), 1u)
+        << "NV12 should have exactly 1 plane but CAPTURE queue does not.";
+
+    ConvertNV12ToYUV(y_plane, u_plane, v_plane, size,
+                     static_cast<char*>(buffer->mmaped_planes()[0].start_addr),
+                     CAPTURE_queue_->coded_size());
+  } else if (CAPTURE_queue_->fourcc() == v4l2_fourcc('M', 'M', '2', '1')) {
+    CHECK_EQ(buffer->mmaped_planes().size(), 2u)
+        << "MM21 should have exactly 2 planes but CAPTURE queue does not.";
+
+    ConvertMM21ToYUV(y_plane, u_plane, v_plane, size,
+                     static_cast<char*>(buffer->mmaped_planes()[0].start_addr),
+                     static_cast<char*>(buffer->mmaped_planes()[1].start_addr),
+                     CAPTURE_queue_->coded_size());
+  } else {
+    LOG(FATAL) << "Unsupported CAPTURE queue format";
+  }
 
   const std::set<int> reusable_buffer_slots = RefreshReferenceSlots(
       frame_hdr, CAPTURE_queue_->GetBuffer(CAPTURE_index).get(),
