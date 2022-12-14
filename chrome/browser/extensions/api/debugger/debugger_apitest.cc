@@ -148,10 +148,9 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunction(
       extension_function_test_utils::RunFunctionAndReturnSingleResult(
           get_targets_function.get(), "[]", browser()));
   EXPECT_TRUE(value->is_list());
-  const base::ListValue& targets = base::Value::AsListValue(*value);
 
   std::string debugger_target_id;
-  for (const base::Value& target_value : targets.GetList()) {
+  for (const base::Value& target_value : value->GetList()) {
     EXPECT_TRUE(target_value.is_dict());
     absl::optional<int> id = target_value.FindIntKey("tabId");
     if (id == tab_id) {

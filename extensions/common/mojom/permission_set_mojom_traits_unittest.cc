@@ -47,8 +47,7 @@ TEST(PermissionSetMojomTraitsTest, BasicAPIPermission) {
     value.Append("tcp-connect:*.example.com:80");
     value.Append("udp-bind::8080");
     value.Append("udp-send-to::8888");
-    ASSERT_TRUE(
-        input->FromValue(&base::Value::AsListValue(value), nullptr, nullptr));
+    ASSERT_TRUE(input->FromValue(&value, nullptr, nullptr));
   }
 
   std::unique_ptr<APIPermission> output = nullptr;
@@ -67,8 +66,7 @@ TEST(PermissionSetMojomTraitsTest, BasicAPIPermissionSet) {
     value.Append("tcp-connect:*.example.com:80");
     value.Append("udp-bind::8080");
     value.Append("udp-send-to::8888");
-    ASSERT_TRUE(permission->FromValue(&base::Value::AsListValue(value), nullptr,
-                                      nullptr));
+    ASSERT_TRUE(permission->FromValue(&value, nullptr, nullptr));
   }
 
   APIPermissionSet input;
@@ -135,8 +133,7 @@ TEST(PermissionSetMojomTraitsTest, BasicPermissionSet) {
     value.Append("tcp-connect:*.example.com:80");
     value.Append("udp-bind::8080");
     value.Append("udp-send-to::8888");
-    ASSERT_TRUE(permission->FromValue(&base::Value::AsListValue(value), nullptr,
-                                      nullptr));
+    ASSERT_TRUE(permission->FromValue(&value, nullptr, nullptr));
   }
 
   APIPermissionSet apis;

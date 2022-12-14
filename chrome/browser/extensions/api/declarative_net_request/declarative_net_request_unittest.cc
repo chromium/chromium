@@ -375,11 +375,10 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
             function.get(), "[]" /* args */, browser_context());
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_list());
-    const base::ListValue& ids_value = base::Value::AsListValue(*result);
 
     std::u16string error;
     std::vector<std::string> actual_ids;
-    for (const auto& val : ids_value.GetList())
+    for (const auto& val : result->GetList())
       actual_ids.push_back(val.GetString());
 
     EXPECT_THAT(expected_ids, UnorderedElementsAreArray(actual_ids));
