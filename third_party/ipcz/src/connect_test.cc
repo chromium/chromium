@@ -70,7 +70,7 @@ MULTINODE_TEST_NODE(ConnectTestNode, ExpectDisconnectFromBroker) {
   Close(b);
 }
 
-MULTINODE_TEST(ConnectTest, DisconnectWithoutBrokerHandshake) {
+MULTINODE_TEST(ConnectTest, DISABLED_DisconnectWithoutBrokerHandshake) {
   IpczDriverHandle our_transport;
   auto controller =
       SpawnTestNodeNoConnect<ExpectDisconnectFromBroker>(our_transport);
