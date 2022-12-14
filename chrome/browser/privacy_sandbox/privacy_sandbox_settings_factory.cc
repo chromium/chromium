@@ -26,7 +26,16 @@ PrivacySandboxSettingsFactory::GetForProfile(Profile* profile) {
 PrivacySandboxSettingsFactory::PrivacySandboxSettingsFactory()
     : ProfileKeyedServiceFactory(
           "PrivacySandboxSettings",
-          ProfileSelections::BuildForRegularAndIncognito()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {
+  // This service implicitly DependsOn the CookieSettingsFactory,
+  // HostContentSettingsMapFactory, and through the delegate, the
+  // IdentityManagerFactory but for reasons, cannot explicitly depend on them
+  // here. Instead, a scoped_refptr is held on CookieSettings, which itself
+  // holds a scoped_refptr for the HostContentSettingsMap (and so this service
+  // holds a raw ptr).
+  // TODO (crbug.com/1400663): Unwind these "reasons" and improve this so that
+  // the services can be explicitly depended on.
+}
 
 KeyedService* PrivacySandboxSettingsFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
