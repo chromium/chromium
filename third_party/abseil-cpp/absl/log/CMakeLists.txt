@@ -686,6 +686,7 @@ absl_cc_test(
     absl::config
     absl::core_headers
     absl::log_internal_test_helpers
+    absl::status
     GTest::gmock
     GTest::gtest_main
 )
@@ -729,6 +730,7 @@ absl_cc_test(
     absl::config
     absl::core_headers
     absl::log_internal_test_helpers
+    absl::status
     GTest::gmock
     GTest::gtest_main
 )

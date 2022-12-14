@@ -30,6 +30,9 @@
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/log/internal/test_helpers.h"
+#include "absl/status/status.h"
+
+// NOLINTBEGIN(misc-definitions-in-headers)
 
 namespace absl_log_internal {
 
@@ -117,6 +120,80 @@ TEST(CHECKDeathTest, TestChecksWithSideEffects) {
 }
 
 #endif  // GTEST_HAS_DEATH_TEST
+
+template <int a, int b>
+constexpr int sum() {
+  return a + b;
+}
+#define MACRO_ONE 1
+#define TEMPLATE_SUM(a, b) sum<a, b>()
+#define CONCAT(a, b) a b
+#define IDENTITY(x) x
+
+TEST(CHECKTest, TestPassingMacroExpansion) {
+  ABSL_TEST_CHECK(IDENTITY(true));
+  ABSL_TEST_CHECK_EQ(TEMPLATE_SUM(MACRO_ONE, 2), 3);
+  ABSL_TEST_CHECK_STREQ(CONCAT("x", "y"), "xy");
+}
+
+#if GTEST_HAS_DEATH_TEST
+
+TEST(CHECKTest, TestMacroExpansionInMessage) {
+  auto MessageGen = []() { ABSL_TEST_CHECK(IDENTITY(false)); };
+  EXPECT_DEATH(MessageGen(), HasSubstr("IDENTITY(false)"));
+}
+
+TEST(CHECKTest, TestNestedMacroExpansionInMessage) {
+  EXPECT_DEATH(ABSL_TEST_CHECK(IDENTITY(false)), HasSubstr("IDENTITY(false)"));
+}
+
+TEST(CHECKTest, TestMacroExpansionCompare) {
+  EXPECT_DEATH(ABSL_TEST_CHECK_EQ(IDENTITY(false), IDENTITY(true)),
+               HasSubstr("IDENTITY(false) == IDENTITY(true)"));
+  EXPECT_DEATH(ABSL_TEST_CHECK_GT(IDENTITY(1), IDENTITY(2)),
+               HasSubstr("IDENTITY(1) > IDENTITY(2)"));
+}
+
+TEST(CHECKTest, TestMacroExpansionStrCompare) {
+  EXPECT_DEATH(ABSL_TEST_CHECK_STREQ(IDENTITY("x"), IDENTITY("y")),
+               HasSubstr("IDENTITY(\"x\") == IDENTITY(\"y\")"));
+  EXPECT_DEATH(ABSL_TEST_CHECK_STRCASENE(IDENTITY("a"), IDENTITY("A")),
+               HasSubstr("IDENTITY(\"a\") != IDENTITY(\"A\")"));
+}
+
+TEST(CHECKTest, TestMacroExpansionStatus) {
+  EXPECT_DEATH(
+      ABSL_TEST_CHECK_OK(IDENTITY(absl::FailedPreconditionError("message"))),
+      HasSubstr("IDENTITY(absl::FailedPreconditionError(\"message\"))"));
+}
+
+TEST(CHECKTest, TestMacroExpansionComma) {
+  EXPECT_DEATH(ABSL_TEST_CHECK(TEMPLATE_SUM(MACRO_ONE, 2) == 4),
+               HasSubstr("TEMPLATE_SUM(MACRO_ONE, 2) == 4"));
+}
+
+TEST(CHECKTest, TestMacroExpansionCommaCompare) {
+  EXPECT_DEATH(
+      ABSL_TEST_CHECK_EQ(TEMPLATE_SUM(2, MACRO_ONE), TEMPLATE_SUM(3, 2)),
+      HasSubstr("TEMPLATE_SUM(2, MACRO_ONE) == TEMPLATE_SUM(3, 2)"));
+  EXPECT_DEATH(
+      ABSL_TEST_CHECK_GT(TEMPLATE_SUM(2, MACRO_ONE), TEMPLATE_SUM(3, 2)),
+      HasSubstr("TEMPLATE_SUM(2, MACRO_ONE) > TEMPLATE_SUM(3, 2)"));
+}
+
+TEST(CHECKTest, TestMacroExpansionCommaStrCompare) {
+  EXPECT_DEATH(ABSL_TEST_CHECK_STREQ(CONCAT("x", "y"), "z"),
+               HasSubstr("CONCAT(\"x\", \"y\") == \"z\""));
+  EXPECT_DEATH(ABSL_TEST_CHECK_STRNE(CONCAT("x", "y"), "xy"),
+               HasSubstr("CONCAT(\"x\", \"y\") != \"xy\""));
+}
+
+#endif  // GTEST_HAS_DEATH_TEST
+
+#undef TEMPLATE_SUM
+#undef CONCAT
+#undef MACRO
+#undef ONE
 
 #if GTEST_HAS_DEATH_TEST
 
@@ -445,5 +522,7 @@ TEST(CHECKDeathTest, TestUserDefinedStreaming) {
 }
 
 }  // namespace absl_log_internal
+
+// NOLINTEND(misc-definitions-in-headers)
 
 #endif  // ABSL_LOG_CHECK_TEST_IMPL_H_

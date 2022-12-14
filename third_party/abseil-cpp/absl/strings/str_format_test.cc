@@ -1142,16 +1142,49 @@ TEST_F(FormatExtensionTest, AbslStringifyExampleUsingFormat) {
   EXPECT_EQ(absl::StrFormat("a %v z", p), "a (10, 20) z");
 }
 
-enum class EnumWithStringify { Many = 0, Choices = 1 };
+enum class EnumClassWithStringify { Many = 0, Choices = 1 };
+
+template <typename Sink>
+void AbslStringify(Sink& sink, EnumClassWithStringify e) {
+  absl::Format(&sink, "%s",
+               e == EnumClassWithStringify::Many ? "Many" : "Choices");
+}
+
+enum EnumWithStringify { Many, Choices };
 
 template <typename Sink>
 void AbslStringify(Sink& sink, EnumWithStringify e) {
   absl::Format(&sink, "%s", e == EnumWithStringify::Many ? "Many" : "Choices");
 }
 
-TEST_F(FormatExtensionTest, AbslStringifyWithEnum) {
+TEST_F(FormatExtensionTest, AbslStringifyWithEnumWithV) {
+  const auto e_class = EnumClassWithStringify::Choices;
+  EXPECT_EQ(absl::StrFormat("My choice is %v", e_class),
+            "My choice is Choices");
+
   const auto e = EnumWithStringify::Choices;
   EXPECT_EQ(absl::StrFormat("My choice is %v", e), "My choice is Choices");
+}
+
+TEST_F(FormatExtensionTest, AbslStringifyEnumWithD) {
+  const auto e_class = EnumClassWithStringify::Many;
+  EXPECT_EQ(absl::StrFormat("My choice is %d", e_class), "My choice is 0");
+
+  const auto e = EnumWithStringify::Choices;
+  EXPECT_EQ(absl::StrFormat("My choice is %d", e), "My choice is 1");
+}
+
+enum class EnumWithLargerValue { x = 32 };
+
+template <typename Sink>
+void AbslStringify(Sink& sink, EnumWithLargerValue e) {
+  absl::Format(&sink, "%s", "Many");
+}
+
+TEST_F(FormatExtensionTest, AbslStringifyEnumOtherSpecifiers) {
+  const auto e = EnumWithLargerValue::x;
+  EXPECT_EQ(absl::StrFormat("My choice is %g", e), "My choice is 32");
+  EXPECT_EQ(absl::StrFormat("My choice is %x", e), "My choice is 20");
 }
 
 }  // namespace

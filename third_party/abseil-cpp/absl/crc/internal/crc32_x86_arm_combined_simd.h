@@ -38,7 +38,8 @@
 #define ABSL_CRC_INTERNAL_HAVE_X86_SIMD
 
 #elif defined(__aarch64__) && defined(__LITTLE_ENDIAN__) && \
-    defined(__ARM_FEATURE_CRC32) && defined(__ARM_NEON)
+    defined(__ARM_FEATURE_CRC32) && defined(__ARM_NEON) &&  \
+    defined(__ARM_FEATURE_CRYPTO)
 
 #include <arm_acle.h>
 #include <arm_neon.h>
@@ -254,7 +255,7 @@ inline int64_t V128_Low64(const V128 l) {
 }
 
 inline V128 V128_ShiftLeft64(const V128 l, const V128 r) {
-  return vshlq_u64(l, r);
+  return vshlq_u64(l, vreinterpretq_s64_u64(r));
 }
 
 #endif

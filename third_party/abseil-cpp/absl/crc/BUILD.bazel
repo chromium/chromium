@@ -163,6 +163,34 @@ cc_test(
     ],
 )
 
+cc_library(
+    name = "crc_cord_state",
+    srcs = ["internal/crc_cord_state.cc"],
+    hdrs = ["internal/crc_cord_state.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//absl/strings:__pkg__"],
+    deps = [
+        ":crc32c",
+        "//absl/base:config",
+        "//absl/numeric:bits",
+        "//absl/strings",
+    ],
+)
+
+cc_test(
+    name = "crc_cord_state_test",
+    srcs = ["internal/crc_cord_state_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:private"],
+    deps = [
+        ":crc32c",
+        ":crc_cord_state",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
 cc_binary(
     name = "crc32c_benchmark",
     testonly = 1,
@@ -176,6 +204,7 @@ cc_binary(
     deps = [
         ":crc32c",
         "//absl/memory",
+        "//absl/strings",
         "@com_github_google_benchmark//:benchmark_main",
     ],
 )

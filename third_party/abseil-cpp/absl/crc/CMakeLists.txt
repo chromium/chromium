@@ -146,3 +146,31 @@ absl_cc_test(
     absl::non_temporal_memcpy
     GTest::gtest_main
 )
+
+absl_cc_library(
+  NAME
+    crc_cord_state
+  HDRS
+    "internal/crc_cord_state.h"
+  SRCS
+    "internal/crc_cord_state.cc"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::crc32c
+    absl::config
+    absl::strings
+)
+
+absl_cc_test(
+  NAME
+    crc_cord_state_test
+  SRCS
+    "internal/crc_cord_state_test.cc"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::crc_cord_state
+    absl::crc32c
+    GTest::gtest_main
+)

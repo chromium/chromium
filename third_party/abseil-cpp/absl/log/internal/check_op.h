@@ -57,35 +57,40 @@
   ::absl::log_internal::NullStream().InternalStream()
 #endif
 
-#define ABSL_LOG_INTERNAL_CHECK_OP(name, op, val1, val2)                       \
+#define ABSL_LOG_INTERNAL_CHECK_OP(name, op, val1, val1_text, val2, val2_text) \
   while (                                                                      \
       ::std::string* absl_log_internal_check_op_result ABSL_ATTRIBUTE_UNUSED = \
           ::absl::log_internal::name##Impl(                                    \
               ::absl::log_internal::GetReferenceableValue(val1),               \
               ::absl::log_internal::GetReferenceableValue(val2),               \
-              ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(#val1 " " #op             \
-                                                           " " #val2)))        \
+              ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(val1_text                 \
+                                                     " " #op " " val2_text)))  \
   ABSL_LOG_INTERNAL_CHECK(*absl_log_internal_check_op_result).InternalStream()
-#define ABSL_LOG_INTERNAL_QCHECK_OP(name, op, val1, val2)                  \
-  while (::std::string* absl_log_internal_qcheck_op_result =               \
-             ::absl::log_internal::name##Impl(                             \
-                 ::absl::log_internal::GetReferenceableValue(val1),        \
-                 ::absl::log_internal::GetReferenceableValue(val2),        \
-                 ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(#val1 " " #op      \
-                                                              " " #val2))) \
+#define ABSL_LOG_INTERNAL_QCHECK_OP(name, op, val1, val1_text, val2, \
+                                    val2_text)                       \
+  while (::std::string* absl_log_internal_qcheck_op_result =         \
+             ::absl::log_internal::name##Impl(                       \
+                 ::absl::log_internal::GetReferenceableValue(val1),  \
+                 ::absl::log_internal::GetReferenceableValue(val2),  \
+                 ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(             \
+                     val1_text " " #op " " val2_text)))              \
   ABSL_LOG_INTERNAL_QCHECK(*absl_log_internal_qcheck_op_result).InternalStream()
-#define ABSL_LOG_INTERNAL_CHECK_STROP(func, op, expected, s1, s2)              \
+#define ABSL_LOG_INTERNAL_CHECK_STROP(func, op, expected, s1, s1_text, s2,     \
+                                      s2_text)                                 \
   while (::std::string* absl_log_internal_check_strop_result =                 \
              ::absl::log_internal::Check##func##expected##Impl(                \
                  (s1), (s2),                                                   \
-                 ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(#s1 " " #op " " #s2))) \
+                 ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(s1_text " " #op        \
+                                                                " " s2_text))) \
   ABSL_LOG_INTERNAL_CHECK(*absl_log_internal_check_strop_result)               \
       .InternalStream()
-#define ABSL_LOG_INTERNAL_QCHECK_STROP(func, op, expected, s1, s2)             \
+#define ABSL_LOG_INTERNAL_QCHECK_STROP(func, op, expected, s1, s1_text, s2,    \
+                                       s2_text)                                \
   while (::std::string* absl_log_internal_qcheck_strop_result =                \
              ::absl::log_internal::Check##func##expected##Impl(                \
                  (s1), (s2),                                                   \
-                 ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(#s1 " " #op " " #s2))) \
+                 ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(s1_text " " #op        \
+                                                                " " s2_text))) \
   ABSL_LOG_INTERNAL_QCHECK(*absl_log_internal_qcheck_strop_result)             \
       .InternalStream()
 // This one is tricky:
@@ -108,33 +113,35 @@
 // * As usual, no braces so we can stream into the expansion with `operator<<`.
 // * Also as usual, it must expand to a single (partial) statement with no
 //   ambiguous-else problems.
-#define ABSL_LOG_INTERNAL_CHECK_OK(val)                                      \
-  for (::std::pair<const ::absl::Status*, ::std::string*>                    \
-           absl_log_internal_check_ok_goo;                                   \
-       absl_log_internal_check_ok_goo.first =                                \
-           ::absl::log_internal::AsStatus(val),                              \
-       absl_log_internal_check_ok_goo.second =                               \
-           ABSL_PREDICT_TRUE(absl_log_internal_check_ok_goo.first->ok())     \
-               ? nullptr                                                     \
-               : ::absl::status_internal::MakeCheckFailString(               \
-                     absl_log_internal_check_ok_goo.first,                   \
-                     ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(#val " is OK")), \
-       !ABSL_PREDICT_TRUE(absl_log_internal_check_ok_goo.first->ok());)      \
-  ABSL_LOG_INTERNAL_CHECK(*absl_log_internal_check_ok_goo.second)            \
+#define ABSL_LOG_INTERNAL_CHECK_OK(val, val_text)                        \
+  for (::std::pair<const ::absl::Status*, ::std::string*>                \
+           absl_log_internal_check_ok_goo;                               \
+       absl_log_internal_check_ok_goo.first =                            \
+           ::absl::log_internal::AsStatus(val),                          \
+       absl_log_internal_check_ok_goo.second =                           \
+           ABSL_PREDICT_TRUE(absl_log_internal_check_ok_goo.first->ok()) \
+               ? nullptr                                                 \
+               : ::absl::status_internal::MakeCheckFailString(           \
+                     absl_log_internal_check_ok_goo.first,               \
+                     ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(val_text     \
+                                                            " is OK")),  \
+       !ABSL_PREDICT_TRUE(absl_log_internal_check_ok_goo.first->ok());)  \
+  ABSL_LOG_INTERNAL_CHECK(*absl_log_internal_check_ok_goo.second)        \
       .InternalStream()
-#define ABSL_LOG_INTERNAL_QCHECK_OK(val)                                     \
-  for (::std::pair<const ::absl::Status*, ::std::string*>                    \
-           absl_log_internal_check_ok_goo;                                   \
-       absl_log_internal_check_ok_goo.first =                                \
-           ::absl::log_internal::AsStatus(val),                              \
-       absl_log_internal_check_ok_goo.second =                               \
-           ABSL_PREDICT_TRUE(absl_log_internal_check_ok_goo.first->ok())     \
-               ? nullptr                                                     \
-               : ::absl::status_internal::MakeCheckFailString(               \
-                     absl_log_internal_check_ok_goo.first,                   \
-                     ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(#val " is OK")), \
-       !ABSL_PREDICT_TRUE(absl_log_internal_check_ok_goo.first->ok());)      \
-  ABSL_LOG_INTERNAL_QCHECK(*absl_log_internal_check_ok_goo.second)           \
+#define ABSL_LOG_INTERNAL_QCHECK_OK(val, val_text)                       \
+  for (::std::pair<const ::absl::Status*, ::std::string*>                \
+           absl_log_internal_check_ok_goo;                               \
+       absl_log_internal_check_ok_goo.first =                            \
+           ::absl::log_internal::AsStatus(val),                          \
+       absl_log_internal_check_ok_goo.second =                           \
+           ABSL_PREDICT_TRUE(absl_log_internal_check_ok_goo.first->ok()) \
+               ? nullptr                                                 \
+               : ::absl::status_internal::MakeCheckFailString(           \
+                     absl_log_internal_check_ok_goo.first,               \
+                     ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(val_text     \
+                                                            " is OK")),  \
+       !ABSL_PREDICT_TRUE(absl_log_internal_check_ok_goo.first->ok());)  \
+  ABSL_LOG_INTERNAL_QCHECK(*absl_log_internal_check_ok_goo.second)       \
       .InternalStream()
 
 namespace absl {

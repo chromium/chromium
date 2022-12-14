@@ -108,3 +108,26 @@ absl_test("non_temporal_memcpy_test") {
     ":non_temporal_memcpy",
   ]
 }
+
+absl_source_set("crc_cord_state") {
+  public = [ "internal/crc_cord_state.h" ]
+  sources = [ "internal/crc_cord_state.cc" ]
+  deps = [
+    ":crc32c",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/numeric:bits",
+    "//third_party/abseil-cpp/absl/strings",
+  ]
+  visibility = [
+    "//third_party/abseil-cpp/absl/strings:*",
+    "//third_party/abseil-cpp/absl/crc/*",
+  ]
+}
+
+absl_test("crc_cord_state_test") {
+  sources = [ "internal/crc_cord_state_test.cc" ]
+  deps = [
+    ":crc32c",
+    ":crc_cord_state",
+  ]
+}

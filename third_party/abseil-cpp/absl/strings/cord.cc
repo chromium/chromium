@@ -35,6 +35,7 @@
 #include "absl/base/port.h"
 #include "absl/container/fixed_array.h"
 #include "absl/container/inlined_vector.h"
+#include "absl/crc/internal/crc_cord_state.h"
 #include "absl/strings/cord_buffer.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/internal/cord_data_edge.h"
@@ -854,28 +855,44 @@ inline absl::string_view Cord::InlineRep::FindFlatStartPiece() const {
   return absl::string_view(node->external()->base + offset, length);
 }
 
-void Cord::SetExpectedChecksum(uint32_t crc) {
+void Cord::SetCrcCordState(crc_internal::CrcCordState state) {
   auto constexpr method = CordzUpdateTracker::kSetExpectedChecksum;
   if (empty()) {
     contents_.MaybeRemoveEmptyCrcNode();
-    CordRep* rep = CordRepCrc::New(nullptr, crc);
+    CordRep* rep = CordRepCrc::New(nullptr, std::move(state));
     contents_.EmplaceTree(rep, method);
   } else if (!contents_.is_tree()) {
     CordRep* rep = contents_.MakeFlatWithExtraCapacity(0);
-    rep = CordRepCrc::New(rep, crc);
+    rep = CordRepCrc::New(rep, std::move(state));
     contents_.EmplaceTree(rep, method);
   } else {
     const CordzUpdateScope scope(contents_.data_.cordz_info(), method);
-    CordRep* rep = CordRepCrc::New(contents_.data_.as_tree(), crc);
+    CordRep* rep = CordRepCrc::New(contents_.data_.as_tree(), std::move(state));
     contents_.SetTree(rep, scope);
   }
+}
+
+void Cord::SetExpectedChecksum(uint32_t crc) {
+  // Construct a CrcCordState with a single chunk.
+  crc_internal::CrcCordState state;
+  state.mutable_rep()->prefix_crc.push_back(
+      crc_internal::CrcCordState::PrefixCrc(size(), absl::crc32c_t{crc}));
+  SetCrcCordState(std::move(state));
+}
+
+const crc_internal::CrcCordState* Cord::MaybeGetCrcCordState() const {
+  if (!contents_.is_tree() || !contents_.tree()->IsCrc()) {
+    return nullptr;
+  }
+  return &contents_.tree()->crc()->crc_cord_state;
 }
 
 absl::optional<uint32_t> Cord::ExpectedChecksum() const {
   if (!contents_.is_tree() || !contents_.tree()->IsCrc()) {
     return absl::nullopt;
   }
-  return contents_.tree()->crc()->crc;
+  return static_cast<uint32_t>(
+      contents_.tree()->crc()->crc_cord_state.Checksum());
 }
 
 inline int Cord::CompareSlowPath(absl::string_view rhs, size_t compared_size,
@@ -1255,7 +1272,7 @@ static void DumpNode(CordRep* rep, bool include_data, std::ostream* os,
       *os << "NULL\n";
       leaf = true;
     } else if (rep->IsCrc()) {
-      *os << "CRC crc=" << rep->crc()->crc << "\n";
+      *os << "CRC crc=" << rep->crc()->crc_cord_state.Checksum() << "\n";
       indent += kIndentStep;
       rep = rep->crc()->child;
     } else if (rep->IsSubstring()) {

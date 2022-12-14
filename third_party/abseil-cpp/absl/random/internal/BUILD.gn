@@ -11,6 +11,7 @@ absl_source_set("traits") {
     "//third_party/abseil-cpp/absl/numeric:bits",
     "//third_party/abseil-cpp/absl/numeric:int128",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("distribution_caller") {
@@ -20,6 +21,7 @@ absl_source_set("distribution_caller") {
     "//third_party/abseil-cpp/absl/base:fast_type_id",
     "//third_party/abseil-cpp/absl/utility",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("fast_uniform_bits") {
@@ -29,6 +31,7 @@ absl_source_set("fast_uniform_bits") {
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/meta:type_traits",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("seed_material") {
@@ -47,6 +50,7 @@ absl_source_set("seed_material") {
     "//third_party/abseil-cpp/absl/types:optional",
     "//third_party/abseil-cpp/absl/types:span",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("pool_urbg") {
@@ -64,6 +68,7 @@ absl_source_set("pool_urbg") {
     "//third_party/abseil-cpp/absl/random:seed_gen_exception",
     "//third_party/abseil-cpp/absl/types:span",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("explicit_seed_seq") {
@@ -73,12 +78,14 @@ absl_source_set("explicit_seed_seq") {
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:endian",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("sequence_urbg") {
   testonly = true
   public = [ "sequence_urbg.h" ]
   deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("salted_seed_seq") {
@@ -90,6 +97,7 @@ absl_source_set("salted_seed_seq") {
     "//third_party/abseil-cpp/absl/types:optional",
     "//third_party/abseil-cpp/absl/types:span",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("iostream_state_saver") {
@@ -98,6 +106,7 @@ absl_source_set("iostream_state_saver") {
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/numeric:int128",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("generate_real") {
@@ -108,11 +117,13 @@ absl_source_set("generate_real") {
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/numeric:bits",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("fastmath") {
   public = [ "fastmath.h" ]
   deps = [ "//third_party/abseil-cpp/absl/numeric:bits" ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("wide_multiply") {
@@ -123,6 +134,7 @@ absl_source_set("wide_multiply") {
     "//third_party/abseil-cpp/absl/numeric:bits",
     "//third_party/abseil-cpp/absl/numeric:int128",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("nonsecure_base") {
@@ -136,6 +148,7 @@ absl_source_set("nonsecure_base") {
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/types:span",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("pcg_engine") {
@@ -148,6 +161,7 @@ absl_source_set("pcg_engine") {
     "//third_party/abseil-cpp/absl/numeric:bits",
     "//third_party/abseil-cpp/absl/numeric:int128",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("randen_engine") {
@@ -158,6 +172,7 @@ absl_source_set("randen_engine") {
     "//third_party/abseil-cpp/absl/base:endian",
     "//third_party/abseil-cpp/absl/meta:type_traits",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("platform") {
@@ -170,6 +185,7 @@ absl_source_set("platform") {
     "//build:chromeos_buildflags",
     "//third_party/abseil-cpp/absl/base:config",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("randen") {
@@ -181,6 +197,7 @@ absl_source_set("randen") {
     ":randen_slow",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("randen_slow") {
@@ -193,6 +210,7 @@ absl_source_set("randen_slow") {
     "//third_party/abseil-cpp/absl/base:endian",
     "//third_party/abseil-cpp/absl/numeric:int128",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("randen_hwaes") {
@@ -206,6 +224,7 @@ absl_source_set("randen_hwaes") {
     ":randen_hwaes_impl",
     "//third_party/abseil-cpp/absl/base:config",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("randen_hwaes_impl") {
@@ -219,6 +238,7 @@ absl_source_set("randen_hwaes_impl") {
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/numeric:int128",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 executable("gaussian_distribution_gentables") {
@@ -227,6 +247,7 @@ executable("gaussian_distribution_gentables") {
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/random:distributions",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 absl_source_set("distribution_test_util") {
@@ -247,6 +268,7 @@ absl_source_set("distribution_test_util") {
     "//third_party/abseil-cpp/absl/strings:str_format",
     "//third_party/abseil-cpp/absl/types:span",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }
 
 # TODO(danilchap): Enable when can be compiled on all chromium bots.
@@ -272,4 +294,5 @@ absl_source_set("uniform_helper") {
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/numeric:int128",
   ]
+  visibility = ["//third_party/abseil-cpp/absl/random/*"]
 }

@@ -29,13 +29,8 @@
 #include "absl/memory/memory.h"
 #include "absl/numeric/bits.h"
 
-#if defined(__aarch64__) && defined(__LITTLE_ENDIAN__) && \
-    defined(__ARM_FEATURE_CRC32) && defined(__ARM_NEON)
-#define ABSL_INTERNAL_CAN_USE_SIMD_CRC32C
-#elif defined(__SSE4_2__) && defined(__PCLMUL__)
-#define ABSL_INTERNAL_CAN_USE_SIMD_CRC32C
-#elif defined(_MSC_VER) && defined(__AVX__)
-// MSVC AVX support (/arch:AVX) implies SSE 4.2 and PCLMUL support.
+#if defined(ABSL_CRC_INTERNAL_HAVE_ARM_SIMD) || \
+    defined(ABSL_CRC_INTERNAL_HAVE_X86_SIMD)
 #define ABSL_INTERNAL_CAN_USE_SIMD_CRC32C
 #endif
 
@@ -434,6 +429,12 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
           ABSL_INTERNAL_STEP8BY3(l64, l641, l642, p, p1, p2);
           ABSL_INTERNAL_STEP8BY3(l64, l641, l642, p, p1, p2);
           ABSL_INTERNAL_STEP8BY3(l64, l641, l642, p, p1, p2);
+          base_internal::PrefetchT0(
+              reinterpret_cast<const char*>(p + kPrefetchHorizonMedium));
+          base_internal::PrefetchT0(
+              reinterpret_cast<const char*>(p1 + kPrefetchHorizonMedium));
+          base_internal::PrefetchT0(
+              reinterpret_cast<const char*>(p2 + kPrefetchHorizonMedium));
         }
         // Don't run crc on last 8 bytes.
         ABSL_INTERNAL_STEP8BY3(l64, l641, l642, p, p1, p2);

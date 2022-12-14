@@ -29,7 +29,7 @@ namespace log_internal {
 namespace {
 void EncodeRawVarint(uint64_t value, size_t size, absl::Span<char> *buf) {
   for (size_t s = 0; s < size; s++) {
-    (*buf)[s] = (value & 0x7f) | (s + 1 == size ? 0 : 0x80);
+    (*buf)[s] = static_cast<char>((value & 0x7f) | (s + 1 == size ? 0 : 0x80));
     value >>= 7;
   }
   buf->remove_prefix(size);
@@ -61,7 +61,7 @@ bool Encode64Bit(uint64_t tag, uint64_t value, absl::Span<char> *buf) {
   }
   EncodeRawVarint(tag_type, tag_type_size, buf);
   for (size_t s = 0; s < sizeof(value); s++) {
-    (*buf)[s] = value & 0xff;
+    (*buf)[s] = static_cast<char>(value & 0xff);
     value >>= 8;
   }
   buf->remove_prefix(sizeof(value));
@@ -77,7 +77,7 @@ bool Encode32Bit(uint64_t tag, uint32_t value, absl::Span<char> *buf) {
   }
   EncodeRawVarint(tag_type, tag_type_size, buf);
   for (size_t s = 0; s < sizeof(value); s++) {
-    (*buf)[s] = value & 0xff;
+    (*buf)[s] = static_cast<char>(value & 0xff);
     value >>= 8;
   }
   buf->remove_prefix(sizeof(value));
@@ -143,8 +143,9 @@ ABSL_MUST_USE_RESULT absl::Span<char> EncodeMessageStart(
 
 void EncodeMessageLength(absl::Span<char> msg, const absl::Span<char> *buf) {
   if (!msg.data()) return;
-  const uint64_t length_size = msg.size();
-  EncodeRawVarint(buf->data() - msg.data() - length_size, length_size, &msg);
+  const size_t length_size = msg.size();
+  EncodeRawVarint(static_cast<uint64_t>(buf->data() - msg.data()) - length_size,
+                  length_size, &msg);
 }
 
 namespace {

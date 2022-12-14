@@ -158,6 +158,7 @@ absl_source_set("cord_internal") {
     "//third_party/abseil-cpp/absl/container:compressed_tuple",
     "//third_party/abseil-cpp/absl/container:inlined_vector",
     "//third_party/abseil-cpp/absl/container:layout",
+    "//third_party/abseil-cpp/absl/crc:crc_cord_state",
     "//third_party/abseil-cpp/absl/functional:function_ref",
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/types:span",
@@ -204,6 +205,7 @@ absl_test("cord_rep_crc_test") {
     ":cord_internal",
     ":cord_rep_test_util",
     "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/crc:crc_cord_state",
   ]
 }
 
@@ -251,6 +253,7 @@ absl_source_set("cord") {
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/container:fixed_array",
     "//third_party/abseil-cpp/absl/container:inlined_vector",
+    "//third_party/abseil-cpp/absl/crc:crc_cord_state",
     "//third_party/abseil-cpp/absl/functional:function_ref",
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/numeric:bits",
@@ -400,6 +403,7 @@ absl_test("cordz_info_statistics_test") {
     ":cordz_update_scope",
     ":cordz_update_tracker",
     "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/crc:crc_cord_state",
     "//third_party/abseil-cpp/absl/synchronization",
     "//third_party/abseil-cpp/absl/synchronization:thread_pool",
   ]

@@ -34,7 +34,7 @@ static void BM_bitwidth(benchmark::State& state) {
     values.push_back(absl::Uniform<T>(rng, 0, std::numeric_limits<T>::max()));
   }
 
-  while (state.KeepRunningBatch(count)) {
+  while (state.KeepRunningBatch(static_cast<int64_t>(count))) {
     for (size_t i = 0; i < count; ++i) {
       benchmark::DoNotOptimize(values[i]);
     }
@@ -56,7 +56,7 @@ static void BM_bitwidth_nonzero(benchmark::State& state) {
     values.push_back(absl::Uniform<T>(rng, 1, std::numeric_limits<T>::max()));
   }
 
-  while (state.KeepRunningBatch(count)) {
+  while (state.KeepRunningBatch(static_cast<int64_t>(count))) {
     for (size_t i = 0; i < count; ++i) {
       const T value = values[i];
       ABSL_ASSUME(value > 0);

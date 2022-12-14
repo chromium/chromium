@@ -76,6 +76,7 @@
 #include "absl/base/macros.h"
 #include "absl/base/port.h"
 #include "absl/container/inlined_vector.h"
+#include "absl/crc/internal/crc_cord_state.h"
 #include "absl/functional/function_ref.h"
 #include "absl/meta/type_traits.h"
 #include "absl/strings/cord_analysis.h"
@@ -1002,6 +1003,10 @@ class Cord {
     });
     return H::combine(combiner.finalize(std::move(hash_state)), size());
   }
+
+  friend class CrcCord;
+  void SetCrcCordState(crc_internal::CrcCordState state);
+  const crc_internal::CrcCordState* MaybeGetCrcCordState() const;
 };
 
 ABSL_NAMESPACE_END

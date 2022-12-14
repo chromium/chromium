@@ -605,6 +605,7 @@ absl_cc_library(
     absl::compressed_tuple
     absl::config
     absl::core_headers
+    absl::crc_cord_state
     absl::endian
     absl::inlined_vector
     absl::layout
@@ -783,6 +784,7 @@ absl_cc_test(
     absl::cordz_statistics
     absl::cordz_update_scope
     absl::cordz_update_tracker
+    absl::crc_cord_state
     absl::thread_pool
     GTest::gmock_main
 )
@@ -882,6 +884,7 @@ absl_cc_library(
     absl::cordz_update_scope
     absl::cordz_update_tracker
     absl::core_headers
+    absl::crc_cord_state
     absl::endian
     absl::fixed_array
     absl::function_ref
@@ -1054,6 +1057,7 @@ absl_cc_test(
     absl::config
     absl::cord_internal
     absl::cord_rep_test_util
+    absl::crc_cord_state
     GTest::gmock_main
 )
 

@@ -211,6 +211,10 @@ bool SupportsArmCRC32PMULL() { return false; }
 
 #elif defined(__aarch64__) && defined(__linux__)
 
+#ifndef HWCAP_CPUID
+#define HWCAP_CPUID (1 << 11)
+#endif
+
 #define ABSL_INTERNAL_AARCH64_ID_REG_READ(id, val) \
   asm("mrs %0, " #id : "=r"(val))
 

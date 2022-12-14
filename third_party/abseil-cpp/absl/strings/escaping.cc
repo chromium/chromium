@@ -784,9 +784,7 @@ template <typename String>
 bool Base64UnescapeInternal(const char* src, size_t slen, String* dest,
                             const signed char* unbase64) {
   // Determine the size of the output string.  Base64 encodes every 3 bytes into
-  // 4 characters.  any leftover chars are added directly for good measure.
-  // This is documented in the base64 RFC:
-  // https://datatracker.ietf.org/doc/html/rfc3548
+  // 4 characters.  Any leftover chars are added directly for good measure.
   const size_t dest_len = 3 * (slen / 4) + (slen % 4);
 
   strings_internal::STLStringResizeUninitialized(dest, dest_len);

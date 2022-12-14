@@ -19,6 +19,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "absl/base/config.h"
+#include "absl/crc/internal/crc_cord_state.h"
 #include "absl/strings/cord.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_btree.h"
@@ -451,7 +452,8 @@ TEST(CordzInfoStatisticsTest, BtreeNodeShared) {
 TEST(CordzInfoStatisticsTest, Crc) {
   RefHelper ref;
   auto* left = Flat(1000);
-  auto* crc = ref.NeedsUnref(CordRepCrc::New(left, 12345));
+  auto* crc =
+      ref.NeedsUnref(CordRepCrc::New(left, crc_internal::CrcCordState()));
 
   CordzStatistics expected;
   expected.size = left->length;

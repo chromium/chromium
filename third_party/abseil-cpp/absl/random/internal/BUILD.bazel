@@ -24,9 +24,11 @@ load(
     "absl_random_randen_copts_init",
 )
 
-package(default_visibility = [
+default_package_visibility = [
     "//absl/random:__pkg__",
-])
+]
+
+package(default_visibility = default_package_visibility)
 
 licenses(["notice"])
 
@@ -248,6 +250,8 @@ cc_library(
     hdrs = ["randen_engine.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = default_package_visibility + [
+    ],
     deps = [
         ":iostream_state_saver",
         ":randen",

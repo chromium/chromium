@@ -29,6 +29,8 @@ namespace crc_internal {
 
 // Prefetch constants used in some Extend() implementations
 constexpr int kPrefetchHorizon = ABSL_CACHELINE_SIZE * 4;  // Prefetch this far
+// Shorter prefetch distance for smaller buffers
+constexpr int kPrefetchHorizonMedium = ABSL_CACHELINE_SIZE * 1;
 static_assert(kPrefetchHorizon >= 64, "CRCPrefetchHorizon less than loop len");
 
 // We require the Scramble() function:

@@ -344,6 +344,8 @@ cc_library(
     name = "proto",
     srcs = ["proto.cc"],
     hdrs = ["proto.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         "//absl/base",
         "//absl/base:config",

@@ -98,6 +98,8 @@ set(ABSL_INTERNAL_DLL_FILES
   "crc/internal/crc32_x86_arm_combined_simd.h"
   "crc/internal/crc.cc"
   "crc/internal/crc.h"
+  "crc/internal/crc_cord_state.cc"
+  "crc/internal/crc_cord_state.h"
   "crc/internal/crc_internal.h"
   "crc/internal/crc_x86_arm_combined.cc"
   "crc/internal/crc_memcpy_fallback.cc"

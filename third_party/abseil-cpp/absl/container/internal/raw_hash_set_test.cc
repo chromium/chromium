@@ -399,7 +399,7 @@ struct StringEq : std::equal_to<absl::string_view> {
 struct StringTable
     : raw_hash_set<StringPolicy, StringHash, StringEq, std::allocator<int>> {
   using Base = typename StringTable::raw_hash_set;
-  StringTable() {}
+  StringTable() = default;
   using Base::Base;
 };
 
@@ -419,7 +419,7 @@ struct Uint8Table
 
 template <typename T>
 struct CustomAlloc : std::allocator<T> {
-  CustomAlloc() {}
+  CustomAlloc() = default;
 
   template <typename U>
   explicit CustomAlloc(const CustomAlloc<U>& /*other*/) {}
@@ -446,7 +446,7 @@ struct BadFastHash {
 struct BadTable : raw_hash_set<IntPolicy, BadFastHash, std::equal_to<int>,
                                std::allocator<int>> {
   using Base = typename BadTable::raw_hash_set;
-  BadTable() {}
+  BadTable() = default;
   using Base::Base;
 };
 
@@ -1003,7 +1003,7 @@ TEST(Table, ClearBug) {
   // We are checking that original and second are close enough to each other
   // that they are probably still in the same group.  This is not strictly
   // guaranteed.
-  EXPECT_LT(std::abs(original - second),
+  EXPECT_LT(static_cast<size_t>(std::abs(original - second)),
             capacity * sizeof(IntTable::value_type));
 }
 
@@ -1079,19 +1079,6 @@ struct ProbeStats {
   std::vector<size_t> all_probes_histogram;
   // Ratios total_probe_length/size for every tested table.
   std::vector<double> single_table_ratios;
-
-  friend ProbeStats operator+(const ProbeStats& a, const ProbeStats& b) {
-    ProbeStats res = a;
-    res.all_probes_histogram.resize(std::max(res.all_probes_histogram.size(),
-                                             b.all_probes_histogram.size()));
-    std::transform(b.all_probes_histogram.begin(), b.all_probes_histogram.end(),
-                   res.all_probes_histogram.begin(),
-                   res.all_probes_histogram.begin(), std::plus<size_t>());
-    res.single_table_ratios.insert(res.single_table_ratios.end(),
-                                   b.single_table_ratios.begin(),
-                                   b.single_table_ratios.end());
-    return res;
-  }
 
   // Average ratio total_probe_length/size over tables.
   double AvgRatio() const {
@@ -1555,7 +1542,7 @@ TEST(Table, CopyConstructWithAlloc) {
 struct ExplicitAllocIntTable
     : raw_hash_set<IntPolicy, container_internal::hash_default_hash<int64_t>,
                    std::equal_to<int64_t>, Alloc<int64_t>> {
-  ExplicitAllocIntTable() {}
+  ExplicitAllocIntTable() = default;
 };
 
 TEST(Table, AllocWithExplicitCtor) {
@@ -1943,7 +1930,7 @@ TEST(Nodes, ExtractInsert) {
   EXPECT_FALSE(res.inserted);
   EXPECT_THAT(*res.position, Pair(k0, ""));
   EXPECT_TRUE(res.node);
-  EXPECT_FALSE(node);
+  EXPECT_FALSE(node);  // NOLINT(bugprone-use-after-move)
 }
 
 TEST(Nodes, HintInsert) {
@@ -1953,7 +1940,7 @@ TEST(Nodes, HintInsert) {
   auto it = t.insert(t.begin(), std::move(node));
   EXPECT_THAT(t, UnorderedElementsAre(1, 2, 3));
   EXPECT_EQ(*it, 1);
-  EXPECT_FALSE(node);
+  EXPECT_FALSE(node);  // NOLINT(bugprone-use-after-move)
 
   node = t.extract(2);
   EXPECT_THAT(t, UnorderedElementsAre(1, 3));
@@ -1963,7 +1950,7 @@ TEST(Nodes, HintInsert) {
   it = t.insert(t.begin(), std::move(node));
   EXPECT_EQ(*it, 2);
   // The node was not emptied by the insert call.
-  EXPECT_TRUE(node);
+  EXPECT_TRUE(node);  // NOLINT(bugprone-use-after-move)
 }
 
 IntTable MakeSimpleTable(size_t size) {

@@ -502,7 +502,7 @@ OpResult CordRepBtree::SetEdge(bool owned, CordRep* edge, size_t delta) {
     // open interval [begin, back) or [begin + 1, end) depending on `edge_type`.
     // We conveniently cover both case using a constexpr `shift` being 0 or 1
     // as `end :== back + 1`.
-    result = {CopyRaw(), kCopied};
+    result = {CopyRaw(length), kCopied};
     constexpr int shift = edge_type == kFront ? 1 : 0;
     for (CordRep* r : Edges(begin() + shift, back() + shift)) {
       CordRep::Ref(r);

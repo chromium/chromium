@@ -740,13 +740,18 @@ class CommonFields : public HashtablezInfoHandle {
         control_(that.control_),
         slots_(that.slots_),
         size_(that.size_),
-        capacity_(that.capacity_) {
+        capacity_(that.capacity_),
+        growth_left_(that.growth_left_) {
     that.control_ = EmptyGroup();
     that.slots_ = nullptr;
     that.size_ = 0;
     that.capacity_ = 0;
+    that.growth_left_ = 0;
   }
   CommonFields& operator=(CommonFields&&) = default;
+
+  HashtablezInfoHandle& infoz() { return *this; }
+  const HashtablezInfoHandle& infoz() const { return *this; }
 
   // TODO(b/259599413): Investigate removing some of these fields:
   // - control/slots can be derived from each other
@@ -768,8 +773,8 @@ class CommonFields : public HashtablezInfoHandle {
   // The total number of available slots.
   size_t capacity_ = 0;
 
-  HashtablezInfoHandle& infoz() { return *this; }
-  const HashtablezInfoHandle& infoz() const { return *this; }
+  // The number of slots we can still fill without needing to rehash.
+  size_t growth_left_ = 0;
 };
 
 // Returns he number of "cloned control bytes".
@@ -968,21 +973,20 @@ extern template FindInfo find_first_non_full(const CommonFields&, size_t);
 // performance critical routines.
 FindInfo find_first_non_full_outofline(const CommonFields&, size_t);
 
-inline void ResetGrowthLeft(CommonFields& common, size_t& growth_left) {
-  growth_left = CapacityToGrowth(common.capacity_) - common.size_;
+inline void ResetGrowthLeft(CommonFields& common) {
+  common.growth_left_ = CapacityToGrowth(common.capacity_) - common.size_;
 }
 
 // Sets `ctrl` to `{kEmpty, kSentinel, ..., kEmpty}`, marking the entire
 // array as marked as empty.
-inline void ResetCtrl(CommonFields& common, size_t& growth_left,
-                      size_t slot_size) {
+inline void ResetCtrl(CommonFields& common, size_t slot_size) {
   const size_t capacity = common.capacity_;
   ctrl_t* ctrl = common.control_;
   std::memset(ctrl, static_cast<int8_t>(ctrl_t::kEmpty),
               capacity + 1 + NumClonedBytes());
   ctrl[capacity] = ctrl_t::kSentinel;
   SanitizerPoisonMemoryRegion(common.slots_, slot_size * capacity);
-  ResetGrowthLeft(common, growth_left);
+  ResetGrowthLeft(common);
 }
 
 // Sets `ctrl[i]` to `h`.
@@ -1027,8 +1031,7 @@ inline size_t AllocSize(size_t capacity, size_t slot_size, size_t slot_align) {
 }
 
 template <typename Alloc, size_t SizeOfSlot, size_t AlignOfSlot>
-ABSL_ATTRIBUTE_NOINLINE void InitializeSlots(CommonFields& c,
-                                             size_t& growth_left, Alloc alloc) {
+ABSL_ATTRIBUTE_NOINLINE void InitializeSlots(CommonFields& c, Alloc alloc) {
   assert(c.capacity_);
   // Folks with custom allocators often make unwarranted assumptions about the
   // behavior of their classes vis-a-vis trivial destructability and what
@@ -1045,7 +1048,7 @@ ABSL_ATTRIBUTE_NOINLINE void InitializeSlots(CommonFields& c,
       Allocate<AlignOfSlot>(&alloc, AllocSize(cap, SizeOfSlot, AlignOfSlot)));
   c.control_ = reinterpret_cast<ctrl_t*>(mem);
   c.slots_ = mem + SlotOffset(cap, AlignOfSlot);
-  ResetCtrl(c, growth_left, SizeOfSlot);
+  ResetCtrl(c, SizeOfSlot);
   if (sample_size) {
     c.infoz() = Sample(sample_size);
   }
@@ -1073,12 +1076,11 @@ struct PolicyFunctions {
 // ClearBackingArray clears the backing array, either modifying it in place,
 // or creating a new one based on the value of "reuse".
 // REQUIRES: c.capacity > 0
-void ClearBackingArray(CommonFields& c, size_t& growth_left,
-                       const PolicyFunctions& policy, bool reuse);
+void ClearBackingArray(CommonFields& c, const PolicyFunctions& policy,
+                       bool reuse);
 
 // Type-erased version of raw_hash_set::erase_meta_only.
-void EraseMetaOnly(CommonFields& c, size_t& growth_left, ctrl_t* it,
-                   size_t slot_size);
+void EraseMetaOnly(CommonFields& c, ctrl_t* it, size_t slot_size);
 
 // Function to place in PolicyFunctions::dealloc for raw_hash_sets
 // that are using std::allocator. This allows us to share the same
@@ -1106,7 +1108,7 @@ ABSL_ATTRIBUTE_NOINLINE void TransferRelocatable(void*, void* dst, void* src) {
 }
 
 // Type-erased version of raw_hash_set::drop_deletes_without_resize.
-void DropDeletesWithoutResize(CommonFields& common, size_t& growth_left,
+void DropDeletesWithoutResize(CommonFields& common,
                               const PolicyFunctions& policy, void* tmp_space);
 
 // A SwissTable.
@@ -1130,7 +1132,7 @@ void DropDeletesWithoutResize(CommonFields& common, size_t& growth_left,
 // the storage of the hashtable will be allocated and the elements will be
 // constructed and destroyed.
 template <class Policy, class Hash, class Eq, class Alloc>
-class raw_hash_set : private CommonFields {
+class raw_hash_set {
   using PolicyTraits = hash_policy_traits<Policy>;
   using KeyArgImpl =
       KeyArg<IsTransparent<Eq>::value && IsTransparent<Hash>::value>;
@@ -1298,9 +1300,9 @@ class raw_hash_set : private CommonFields {
     using pointer = typename raw_hash_set::const_pointer;
     using difference_type = typename raw_hash_set::difference_type;
 
-    const_iterator() {}
+    const_iterator() = default;
     // Implicit construction from iterator.
-    const_iterator(iterator i) : inner_(std::move(i)) {}
+    const_iterator(iterator i) : inner_(std::move(i)) {}  // NOLINT
 
     reference operator*() const { return *inner_; }
     pointer operator->() const { return inner_.operator->(); }
@@ -1328,6 +1330,8 @@ class raw_hash_set : private CommonFields {
   using node_type = node_handle<Policy, hash_policy_traits<Policy>, Alloc>;
   using insert_return_type = InsertReturnType<iterator, node_type>;
 
+  // Note: can't use `= default` due to non-default noexcept (causes
+  // problems for some compilers). NOLINTNEXTLINE
   raw_hash_set() noexcept(
       std::is_nothrow_default_constructible<hasher>::value&&
           std::is_nothrow_default_constructible<key_equal>::value&&
@@ -1337,7 +1341,7 @@ class raw_hash_set : private CommonFields {
       size_t bucket_count, const hasher& hash = hasher(),
       const key_equal& eq = key_equal(),
       const allocator_type& alloc = allocator_type())
-      : settings_(0u, hash, eq, alloc) {
+      : settings_(CommonFields{}, hash, eq, alloc) {
     if (bucket_count) {
       common().capacity_ = NormalizeCapacity(bucket_count);
       initialize_slots();
@@ -1462,15 +1466,13 @@ class raw_hash_set : private CommonFields {
       :  // Hash, equality and allocator are copied instead of moved because
          // `that` must be left valid. If Hash is std::function<Key>, moving it
          // would create a nullptr functor that cannot be called.
-        CommonFields(std::move(that)),
-        settings_(absl::exchange(that.growth_left(), size_t{0}),
+        settings_(absl::exchange(that.common(), CommonFields{}),
                   that.hash_ref(), that.eq_ref(), that.alloc_ref()) {}
 
   raw_hash_set(raw_hash_set&& that, const allocator_type& a)
-      : settings_(0, that.hash_ref(), that.eq_ref(), a) {
+      : settings_(CommonFields{}, that.hash_ref(), that.eq_ref(), a) {
     if (a == that.alloc_ref()) {
       std::swap(common(), that.common());
-      std::swap(growth_left(), that.growth_left());
     } else {
       reserve(that.size());
       // Note: this will copy elements of dense_set and unordered_set instead of
@@ -1494,6 +1496,7 @@ class raw_hash_set : private CommonFields {
               std::is_nothrow_move_assignable<key_equal>::value) {
     // TODO(sbenza): We should only use the operations from the noexcept clause
     // to make sure we actually adhere to that contract.
+    // NOLINTNEXTLINE: not returning *this for performance.
     return move_assign(
         std::move(that),
         typename AllocTraits::propagate_on_container_move_assignment());
@@ -1545,7 +1548,7 @@ class raw_hash_set : private CommonFields {
       // Already guaranteed to be empty; so nothing to do.
     } else {
       destroy_slots();
-      ClearBackingArray(common(), growth_left(), GetPolicyFunctions(),
+      ClearBackingArray(common(), GetPolicyFunctions(),
                         /*reuse=*/cap < 128);
     }
   }
@@ -1843,7 +1846,6 @@ class raw_hash_set : private CommonFields {
           typename AllocTraits::propagate_on_container_swap{})) {
     using std::swap;
     swap(common(), that.common());
-    swap(growth_left(), that.growth_left());
     swap(hash_ref(), that.hash_ref());
     swap(eq_ref(), that.eq_ref());
     SwapAlloc(alloc_ref(), that.alloc_ref(),
@@ -1853,7 +1855,7 @@ class raw_hash_set : private CommonFields {
   void rehash(size_t n) {
     if (n == 0 && capacity() == 0) return;
     if (n == 0 && size() == 0) {
-      ClearBackingArray(common(), growth_left(), GetPolicyFunctions(),
+      ClearBackingArray(common(), GetPolicyFunctions(),
                         /*reuse=*/false);
       return;
     }
@@ -2079,7 +2081,7 @@ class raw_hash_set : private CommonFields {
   // This merely updates the pertinent control byte. This can be used in
   // conjunction with Policy::transfer to move the object to another place.
   void erase_meta_only(const_iterator it) {
-    EraseMetaOnly(common(), growth_left(), it.inner_.ctrl_, sizeof(slot_type));
+    EraseMetaOnly(common(), it.inner_.ctrl_, sizeof(slot_type));
   }
 
   // Allocates a backing array for `self` and initializes its control bytes.
@@ -2094,7 +2096,7 @@ class raw_hash_set : private CommonFields {
     using CharAlloc =
         typename absl::allocator_traits<Alloc>::template rebind_alloc<char>;
     InitializeSlots<CharAlloc, sizeof(slot_type), alignof(slot_type)>(
-        common(), growth_left(), CharAlloc(alloc_ref()));
+        common(), CharAlloc(alloc_ref()));
   }
 
   ABSL_ATTRIBUTE_NOINLINE void resize(size_t new_capacity) {
@@ -2134,8 +2136,7 @@ class raw_hash_set : private CommonFields {
   inline void drop_deletes_without_resize() {
     // Stack-allocate space for swapping elements.
     alignas(slot_type) unsigned char tmp[sizeof(slot_type)];
-    DropDeletesWithoutResize(common(), growth_left(), GetPolicyFunctions(),
-                             tmp);
+    DropDeletesWithoutResize(common(), GetPolicyFunctions(), tmp);
   }
 
   // Called whenever the table *might* need to conditionally grow.
@@ -2305,15 +2306,15 @@ class raw_hash_set : private CommonFields {
   // side-effect.
   //
   // See `CapacityToGrowth()`.
-  size_t& growth_left() { return settings_.template get<0>(); }
+  size_t& growth_left() { return common().growth_left_; }
 
   // Prefetch the heap-allocated memory region to resolve potential TLB misses.
   // This is intended to overlap with execution of calculating the hash for a
   // key.
   void prefetch_heap_block() const { base_internal::PrefetchT2(control()); }
 
-  CommonFields& common() { return *this; }
-  const CommonFields& common() const { return *this; }
+  CommonFields& common() { return settings_.template get<0>(); }
+  const CommonFields& common() const { return settings_.template get<0>(); }
 
   ctrl_t* control() const { return common().control_; }
   slot_type* slot_array() const {
@@ -2369,13 +2370,12 @@ class raw_hash_set : private CommonFields {
     return value;
   }
 
-  // Bundle together growth_left (number of slots that can be filled without
-  // rehashing) plus other objects which might be empty. CompressedTuple will
-  // ensure that sizeof is not affected by any of the empty fields that occur
-  // after growth_left.
-  absl::container_internal::CompressedTuple<size_t /* growth_left */, hasher,
-                                            key_equal, allocator_type>
-      settings_{0u, hasher{}, key_equal{}, allocator_type{}};
+  // Bundle together CommonFields plus other objects which might be empty.
+  // CompressedTuple will ensure that sizeof is not affected by any of the empty
+  // fields that occur after CommonFields.
+  absl::container_internal::CompressedTuple<CommonFields, hasher, key_equal,
+                                            allocator_type>
+      settings_{CommonFields{}, hasher{}, key_equal{}, allocator_type{}};
 };
 
 // Erases all elements that satisfy the predicate `pred` from the container `c`.
