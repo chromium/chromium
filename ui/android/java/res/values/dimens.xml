@@ -40,6 +40,9 @@ found in the LICENSE file.
     <dimen name="menu_footer_chip_icon_size">16dp</dimen>
     <dimen name="menu_footer_chip_vertical_inset">8dp</dimen>
 
+    <!-- Custom menu-->
+    <dimen name="menu_negative_software_vertical_offset">0dp</dimen>
+
     <!-- Dropdown default measures -->
     <dimen name="dropdown_item_height">50dp</dimen>
     <dimen name="dropdown_item_divider_height">1px</dimen>

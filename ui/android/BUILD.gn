@@ -131,6 +131,14 @@ java_strings_grd("ui_strings_grd") {
 
 android_resources("ui_java_resources") {
   sources = [
+    "java/res/anim/menu_enter.xml",
+    "java/res/anim/menu_enter_from_bottom.xml",
+    "java/res/anim/menu_enter_from_bottom_left.xml",
+    "java/res/anim/menu_enter_from_top_left.xml",
+    "java/res/anim/menu_exit.xml",
+    "java/res/anim/menu_exit_from_bottom.xml",
+    "java/res/anim/menu_exit_from_bottom_left.xml",
+    "java/res/anim/menu_exit_from_top_left.xml",
     "java/res/color/blue_when_enabled_dark.xml",
     "java/res/color/blue_when_enabled_list.xml",
     "java/res/color/default_text_color_light_list.xml",
@@ -179,6 +187,7 @@ android_resources("ui_java_resources") {
     "java/res/values-ldrtl/values.xml",
     "java/res/values-night/colors.xml",
     "java/res/values-night/dimens.xml",
+    "java/res/values-sw600dp/dimens.xml",
     "java/res/values-sw600dp/values.xml",
     "java/res/values-sw720dp-v17/values.xml",
     "java/res/values-v17/styles.xml",
@@ -193,6 +202,7 @@ android_resources("ui_java_resources") {
     "java/res/values/semantic_colors_adaptive.xml",
     "java/res/values/semantic_colors_non_adaptive.xml",
     "java/res/values/strings.xml",
+    "java/res/values/styles.xml",
     "java/res/values/values.xml",
   ]
 

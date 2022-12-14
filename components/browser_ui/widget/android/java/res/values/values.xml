@@ -6,10 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <!-- Menu Animation Constants -->
-    <item type="fraction" format="fraction" name="menu_animation_pivot_x">95%</item>
-    <item type="fraction" format="fraction" name="menu_start_animation_pivot_x">5%</item>
-
     <!-- Drag-Reorderable List Item -->
     <!-- Used for 90% = 230/255 alpha -->
     <integer name="list_item_dragged_alpha">230</integer>

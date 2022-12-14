@@ -61,22 +61,10 @@ found in the LICENSE file.
         <item name="android:paddingEnd">@dimen/default_list_row_padding</item>
     </style>
 
-    <style name="EndIconMenuAnim">
-        <item name="android:windowEnterAnimation">@anim/menu_enter</item>
-        <item name="android:windowExitAnimation">@anim/menu_exit</item>
-    </style>
-    <style name="EndIconMenuAnimBottom">
-        <item name="android:windowEnterAnimation">@anim/menu_enter_from_bottom</item>
-        <item name="android:windowExitAnimation">@anim/menu_exit_from_bottom</item>
-    </style>
-    <style name="StartIconMenuAnim">
-        <item name="android:windowEnterAnimation">@anim/menu_enter_from_top_left</item>
-        <item name="android:windowExitAnimation">@anim/menu_exit_from_top_left</item>
-    </style>
-    <style name="StartIconMenuAnimBottom">
-        <item name="android:windowEnterAnimation">@anim/menu_enter_from_bottom_left</item>
-        <item name="android:windowExitAnimation">@anim/menu_exit_from_bottom_left</item>
-    </style>
+    <style name="EndIconMenuAnim" parent="AnchoredPopupAnimEndTop" />
+    <style name="EndIconMenuAnimBottom" parent="AnchoredPopupAnimEndBottom" />
+    <style name="StartIconMenuAnim" parent="AnchoredPopupAnimStartTop" />
+    <style name="StartIconMenuAnimBottom" parent="AnchoredPopupAnimStartBottom" />
 
     <!-- Modern List Item -->
     <style name="ListItemContainer">

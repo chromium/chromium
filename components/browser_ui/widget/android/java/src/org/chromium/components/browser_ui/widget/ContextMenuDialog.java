@@ -188,6 +188,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                     mPopupWindow.setSmartAnchorWithMaxWidth(true);
                     mPopupWindow.setVerticalOverlapAnchor(true);
                     mPopupWindow.setOutsideTouchable(false);
+                    mPopupWindow.setAnimateFromAnchor(true);
                     // Set popup focusable so the screen reader can announce the popup properly.
                     if (mAccessibilityUtil != null
                             && mAccessibilityUtil.isTouchExplorationEnabled()) {

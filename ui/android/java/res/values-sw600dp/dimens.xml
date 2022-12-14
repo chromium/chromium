@@ -6,8 +6,7 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <!-- Menu Dimensions -->
-    <!-- Necessary to align the menu icon with the actual button. -->
-    <dimen name="menu_negative_software_vertical_offset">6dp</dimen>
+      <!-- Menu Dimensions -->
+      <!-- Necessary to align the menu icon with the actual button. -->
+      <dimen name="menu_negative_software_vertical_offset">6dp</dimen>
 </resources>
-
