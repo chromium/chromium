@@ -60,7 +60,7 @@ BASE_FEATURE(kEnableLibAssistantV2,
 
 BASE_FEATURE(kEnableLibAssistantDlc,
              "LibAssistantDlc",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAppSupportEnabled() {
   return base::FeatureList::IsEnabled(
