@@ -3,15 +3,28 @@
       `Tests that tracking and untracking IndexedDB for storage key works\n`);
 
   await dp.Page.enable();
+  const protocolMessages = [];
+  const originalDispatchMessage = DevToolsAPI.dispatchMessage;
+  DevToolsAPI.dispatchMessage = (message) => {
+    protocolMessages.push(message);
+    originalDispatchMessage(message);
+  };
+  window.onerror = (msg) => testRunner.log('onerror: ' + msg);
+  window.onunhandledrejection = (e) => testRunner.log('onunhandledrejection: ' + e.reason);
   let errorForLog = new Error();
-  setTimeout(() => {testRunner.die('Timeout', errorForLog)}, 9000);
-  testRunner.startDumpingProtocolMessages();
+  setTimeout(() => {
+    testRunner.log(protocolMessages);
+    testRunner.die('Timeout', errorForLog);
+  }, 9000);
 
   const frameId = (await dp.Page.getResourceTree()).result.frameTree.frame.id;
+  errorForLog = new Error();
   const storageKey = (await dp.Storage.getStorageKeyForFrame({
                        frameId: frameId
                      })).result.storageKey;
+  errorForLog = new Error();
   await dp.Storage.trackIndexedDBForStorageKey({storageKey});
+  errorForLog = new Error();
   const listUpdatedPromise = dp.Storage.onceIndexedDBListUpdated(
       message => {return `indexedDB list updated for storage key ${
           message.params.storageKey}`});
@@ -38,10 +51,12 @@
 
   testRunner.log(await Promise.all(
       [listUpdatedPromise, contentUpdatedPromise, valuePromise]));
+  errorForLog = new Error();
 
   testRunner.log('\nUntrack IndexedDB for storage key');
 
   await dp.Storage.untrackIndexedDBForStorageKey({storageKey});
+  errorForLog = new Error();
   dp.Storage.onIndexedDBListUpdated(message => {message.params.storageKey});
   dp.Storage.onIndexedDBContentUpdated(message => {message.params});
 
@@ -62,11 +77,13 @@
       };
     })
   `);
+  errorForLog = new Error();
 
   testRunner.log(oneMoreValue);
 
   // Clean up
   await dp.IndexedDB.deleteDatabase({storageKey, databaseName: "test-database"});
+  errorForLog = new Error();
 
   testRunner.completeTest();
 })
