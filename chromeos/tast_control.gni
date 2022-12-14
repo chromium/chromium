@@ -299,6 +299,9 @@ tast_disabled_tests_from_chrome_all = [
   # http://b/261363192
   "crostini.*@kevin",
 
+  # http://b/262361695
+  "printer.ProxyAdd.*",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
