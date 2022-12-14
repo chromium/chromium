@@ -1094,6 +1094,11 @@ void ServiceWorkerVersion::Doom() {
       stop_when_devtools_detached_ = true;
     }
   }
+
+  // If we abort before transferring |main_script_load_params_| to the remote
+  // worker service, we need to release it to avoid creating a reference loop
+  // between ServiceWorker(New|Updated)ScriptLoader and this class.
+  main_script_load_params_.reset();
 }
 
 void ServiceWorkerVersion::InitializeGlobalScope() {

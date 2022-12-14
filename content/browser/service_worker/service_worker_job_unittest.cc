@@ -1266,6 +1266,44 @@ TEST_F(ServiceWorkerJobTest, RegisterSameScriptMultipleTimesWhileUninstalling) {
   EXPECT_EQ(ServiceWorkerVersion::ACTIVATED, new_version->status());
 }
 
+// Make sure that the new version is cleared up after trying to register a
+// script with bad origin. (see https://crbug.com/1312995)
+TEST_F(ServiceWorkerJobTest, RegisterBadOrigin) {
+  blink::mojom::ServiceWorkerRegistrationOptions options;
+  options.scope = GURL("bad-origin://www.example.com/");
+  GURL script_url("bad-origin://www.example.com/service_worker.js");
+
+  base::RunLoop run_loop;
+  scoped_refptr<ServiceWorkerRegistration> registration;
+  job_coordinator()->Register(
+      script_url, options,
+      blink::StorageKey(url::Origin::Create(options.scope)),
+      blink::mojom::FetchClientSettingsObject::New(),
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      /*ancestor_frame_type=*/blink::mojom::AncestorFrameType::kNormalFrame,
+      SaveRegistration(blink::ServiceWorkerStatusCode::kErrorDisallowed,
+                       &registration, run_loop.QuitClosure()),
+      PolicyContainerPolicies());
+
+  // Get a reference for the new version before it aborts the registration.
+  TestServiceWorkerObserver observer(helper_->context_wrapper());
+  observer.RunUntilLiveVersion();
+  scoped_refptr<ServiceWorkerVersion> version =
+      helper_->context_wrapper()->GetLiveVersion(
+          helper_->context_wrapper()->GetAllLiveVersionInfo()[0].version_id);
+  ASSERT_TRUE(version);
+
+  run_loop.Run();
+
+  // Let everything release.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(registration);
+  EXPECT_TRUE(version->HasOneRef());
+  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(ServiceWorkerVersion::REDUNDANT, version->status());
+}
+
 // A fake instance client for toggling whether a fetch event handler exists.
 class FetchHandlerInstanceClient : public FakeEmbeddedWorkerInstanceClient {
  public:

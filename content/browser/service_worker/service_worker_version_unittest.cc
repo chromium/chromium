@@ -499,6 +499,10 @@ TEST_F(ServiceWorkerVersionTest, Doom) {
   EXPECT_TRUE(version_->HasControllee());
   EXPECT_TRUE(container_host->controller());
 
+  // Set main_script_load_params_.
+  version_->set_main_script_load_params(
+      blink::mojom::WorkerMainScriptLoadParams::New());
+
   // Doom the version.
   version_->Doom();
 
@@ -509,6 +513,9 @@ TEST_F(ServiceWorkerVersionTest, Doom) {
   EXPECT_EQ(ServiceWorkerVersion::REDUNDANT, version_->status());
   EXPECT_FALSE(version_->HasControllee());
   EXPECT_FALSE(container_host->controller());
+
+  // Ensure that the params are released.
+  EXPECT_TRUE(version_->main_script_load_params_.is_null());
 }
 
 TEST_F(ServiceWorkerVersionTest, SetDevToolsAttached) {

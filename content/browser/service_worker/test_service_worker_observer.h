@@ -46,12 +46,16 @@ class TestServiceWorkerObserver : public ServiceWorkerContextCoreObserver {
   void RunUntilActivated(ServiceWorkerVersion* version,
                          scoped_refptr<base::TestSimpleTaskRunner> runner);
 
+  // Returns when there is a live worker service version.
+  void RunUntilLiveVersion();
+
  private:
   // ServiceWorkerContextCoreObserver overrides:
   void OnVersionStateChanged(int64_t version_id,
                              const GURL& scope,
                              const blink::StorageKey& key,
                              ServiceWorkerVersion::Status status) override;
+  void OnNewLiveVersion(const ServiceWorkerVersionInfo& version_info) override;
 
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
 
@@ -59,6 +63,8 @@ class TestServiceWorkerObserver : public ServiceWorkerContextCoreObserver {
   ServiceWorkerVersion::Status status_for_status_change_ =
       ServiceWorkerVersion::NEW;
   base::OnceClosure quit_closure_for_status_change_;
+
+  base::OnceClosure quit_closure_for_live_version_;
 };
 
 }  // namespace content
