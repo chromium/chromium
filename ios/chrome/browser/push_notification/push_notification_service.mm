@@ -7,7 +7,9 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/values.h"
 #import "components/pref_registry/pref_registry_syncable.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/push_notification/push_notification_account_context_manager.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_manager.h"
 
@@ -16,13 +18,43 @@
 #endif
 
 PushNotificationService::PushNotificationService()
-    : client_manager_(std::make_unique<PushNotificationClientManager>()) {}
+    : PushNotificationService(
+          GetApplicationContext()->GetChromeBrowserStateManager()) {}
+
+PushNotificationService::PushNotificationService(
+    ios::ChromeBrowserStateManager* manager)
+    : client_manager_(std::make_unique<PushNotificationClientManager>()) {
+  context_manager_ = [[PushNotificationAccountContextManager alloc]
+      initWithChromeBrowserStateManager:manager];
+}
 
 PushNotificationService::~PushNotificationService() = default;
 
 PushNotificationClientManager*
 PushNotificationService::GetPushNotificationClientManager() {
   return client_manager_.get();
+}
+
+bool PushNotificationService::DeviceTokenIsSet() const {
+  return false;
+}
+
+void PushNotificationService::RegisterAccount(
+    NSString* account_id,
+    CompletionHandler completion_handler) {
+  if ([context_manager_ addAccount:account_id]) {
+    SetAccountsToDevice(context_manager_.contextMap.allKeys,
+                        completion_handler);
+  }
+}
+
+void PushNotificationService::UnregisterAccount(
+    NSString* account_id,
+    CompletionHandler completion_handler) {
+  if ([context_manager_ removeAccount:account_id]) {
+    SetAccountsToDevice(context_manager_.contextMap.allKeys,
+                        completion_handler);
+  }
 }
 
 void PushNotificationService::RegisterBrowserStatePrefs(

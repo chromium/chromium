@@ -24,6 +24,12 @@ class ChromiumPushNotificationService final : public PushNotificationService {
   void RegisterDevice(PushNotificationConfiguration* config,
                       void (^completion_handler)(NSError* error)) final;
   void UnregisterDevice(void (^completion_handler)(NSError* error)) final;
+  bool DeviceTokenIsSet() const final;
+
+ protected:
+  // PushNotificationService implementation.
+  void SetAccountsToDevice(NSArray<NSString*>* account_ids,
+                           CompletionHandler completion_handler) final;
 };
 
 void ChromiumPushNotificationService::RegisterDevice(
@@ -48,6 +54,27 @@ void ChromiumPushNotificationService::UnregisterDevice(
   // Chromium does not unregister the device on the push notification server. As
   // a result, the `completion_handler` is called with a
   // NSFeatureUnsupportedError.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        NSError* error =
+            [NSError errorWithDomain:kChromiumPushNotificationErrorDomain
+                                code:NSFeatureUnsupportedError
+                            userInfo:nil];
+        completion_handler(error);
+      }));
+}
+
+bool ChromiumPushNotificationService::DeviceTokenIsSet() const {
+  return false;
+}
+
+void ChromiumPushNotificationService::SetAccountsToDevice(
+    NSArray<NSString*>* account_ids,
+    void (^completion_handler)(NSError* error)) {
+  // Chromium does not initialize the device's connection to the push
+  // notification server. As a result, the `completion_handler` is called with
+  // a NSFeatureUnsupportedError.
+
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(^() {
         NSError* error =

@@ -5,6 +5,8 @@
 source_set("push_notification_service") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "push_notification_account_context_manager.h",
+    "push_notification_account_context_manager.mm",
     "push_notification_client_manager.h",
     "push_notification_client_manager.mm",
     "push_notification_configuration.h",

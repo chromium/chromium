@@ -27,6 +27,12 @@ class TestPushNotificationService final : public PushNotificationService {
   void RegisterDevice(PushNotificationConfiguration* config,
                       void (^completion_handler)(NSError* error)) final;
   void UnregisterDevice(void (^completion_handler)(NSError* error)) final;
+  bool DeviceTokenIsSet() const final;
+
+ protected:
+  // PushNotificationService implementation.
+  void SetAccountsToDevice(NSArray<NSString*>* account_ids,
+                           CompletionHandler completion_handler) final;
 };
 
 void TestPushNotificationService::RegisterDevice(
@@ -49,6 +55,26 @@ void TestPushNotificationService::UnregisterDevice(
     void (^completion_handler)(NSError* error)) {
   // Test implementation does nothing. As a result, the `completion_handler` is
   // called with a NSFeatureUnsupportedError.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        NSError* error =
+            [NSError errorWithDomain:kTestPushNotificationErrorDomain
+                                code:NSFeatureUnsupportedError
+                            userInfo:nil];
+        completion_handler(error);
+      }));
+}
+
+bool TestPushNotificationService::DeviceTokenIsSet() const {
+  return false;
+}
+
+void TestPushNotificationService::SetAccountsToDevice(
+    NSArray<NSString*>* account_ids,
+    void (^completion_handler)(NSError* error)) {
+  // Test implementation does nothing. As a result, the `completion_handler` is
+  // called with a NSFeatureUnsupportedError.
+
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(^() {
         NSError* error =

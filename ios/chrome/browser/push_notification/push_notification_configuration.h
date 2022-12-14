@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class PushNotificationAccountContextManager;
 @protocol SingleSignOnService;
 
 using GaiaIdToPushNotificationPreferenceMap =
@@ -28,9 +29,17 @@ using GaiaIdToPushNotificationPreferenceMap =
 // SingleSignOnService used by PushNotificationService.
 @property(nonatomic, strong) id<SingleSignOnService> ssoService;
 
-// A dictionary that maps a user's GAIA ID to its preferences for all push
-// notification enabled features.
+// DEPRECATED. Please use the `contextManager.contextMap` instead. A dictionary
+// that maps a user's GAIA ID to its preferences for all push notification
+// enabled features.
 @property(nonatomic, copy) GaiaIdToPushNotificationPreferenceMap* preferenceMap;
+
+// A dictionary that maps a user's GAIA ID to an object containing the account's
+// preferences for all push notification enabled features and an number
+// representing the number of times the account is signed in across
+// BrowserStates.
+@property(nonatomic, copy)
+    PushNotificationAccountContextManager* contextManager;
 
 @end
 
