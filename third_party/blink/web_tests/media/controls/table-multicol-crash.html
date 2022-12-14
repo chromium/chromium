@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<!-- crbug.com/1399620 -->
+<div style="columns:2;">
+  <div style="display:table-caption;">
+    <video controls src="not-exist.ogv"></video>
+  </div>
+</div>
+<script>
+testRunner.dumpAsText();
+internals.pauseAnimations(3600);
+</script>
+<p>PASS if no crash</p>

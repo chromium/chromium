@@ -510,7 +510,8 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
     const NGLayoutResult* cloned_cached_layout_result =
         NGLayoutResult::CloneWithPostLayoutFragments(*cached_layout_result);
 #endif
-    RecalcLayoutOverflow();
+    if (!NGDisableSideEffectsScope::IsDisabled())
+      RecalcLayoutOverflow();
 
     // We need to update the cached layout result, as the call to
     // RecalcLayoutOverflow() might have modified it.
