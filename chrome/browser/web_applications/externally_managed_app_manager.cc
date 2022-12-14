@@ -74,12 +74,16 @@ ExternallyManagedAppManager::~ExternallyManagedAppManager() {
 }
 
 void ExternallyManagedAppManager::SetSubsystems(
+    WebAppRegistrar* registrar,
     WebAppUiManager* ui_manager,
     WebAppInstallFinalizer* finalizer,
-    WebAppCommandScheduler* command_scheduler) {
+    WebAppCommandScheduler* command_scheduler,
+    WebAppSyncBridge* sync_bridge) {
+  registrar_ = registrar;
   ui_manager_ = ui_manager;
   finalizer_ = finalizer;
   command_scheduler_ = command_scheduler;
+  sync_bridge_ = sync_bridge;
 }
 
 void ExternallyManagedAppManager::SynchronizeInstalledApps(

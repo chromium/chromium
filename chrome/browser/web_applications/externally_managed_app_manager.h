@@ -25,9 +25,11 @@ enum class InstallResultCode;
 namespace web_app {
 
 class FullSystemLock;
+class WebAppRegistrar;
 class WebAppInstallFinalizer;
 class WebAppCommandScheduler;
 class WebAppUiManager;
+class WebAppSyncBridge;
 
 enum class RegistrationResultCode { kSuccess, kAlreadyRegistered, kTimeout };
 
@@ -88,9 +90,11 @@ class ExternallyManagedAppManager {
       delete;
   virtual ~ExternallyManagedAppManager();
 
-  void SetSubsystems(WebAppUiManager* ui_manager,
+  void SetSubsystems(WebAppRegistrar* registrar,
+                     WebAppUiManager* ui_manager,
                      WebAppInstallFinalizer* finalizer,
-                     WebAppCommandScheduler* command_scheduler);
+                     WebAppCommandScheduler* command_scheduler,
+                     WebAppSyncBridge* sync_bridge);
 
   // Queues an installation operation with the highest priority. Essentially
   // installing the app immediately if there are no ongoing operations or
@@ -156,9 +160,11 @@ class ExternallyManagedAppManager {
   virtual void Shutdown() = 0;
 
  protected:
+  WebAppRegistrar* registrar() { return registrar_; }
   WebAppUiManager* ui_manager() { return ui_manager_; }
   WebAppInstallFinalizer* finalizer() { return finalizer_; }
   WebAppCommandScheduler* command_scheduler() { return command_scheduler_; }
+  WebAppSyncBridge* sync_bridge() { return sync_bridge_; }
 
   virtual void OnRegistrationFinished(const GURL& launch_url,
                                       RegistrationResultCode result);
@@ -200,10 +206,12 @@ class ExternallyManagedAppManager {
                                        bool succeeded);
   void ContinueOrCompleteSynchronization(ExternalInstallSource source);
 
+  raw_ptr<WebAppRegistrar> registrar_ = nullptr;
   raw_ptr<WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
   raw_ptr<WebAppInstallFinalizer> finalizer_ = nullptr;
   raw_ptr<WebAppCommandScheduler, DanglingUntriaged> command_scheduler_ =
       nullptr;
+  raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
 
   base::flat_map<ExternalInstallSource, SynchronizeRequest>
       synchronize_requests_;
