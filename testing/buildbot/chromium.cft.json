@@ -5881,7 +5881,8 @@
       },
       {
         "args": [
-          "--test-launcher-timeout=90000",
+          "--gtest_shuffle",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000"
         ],
@@ -5905,10 +5906,9 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--test-launcher-timeout=90000",
+          "--gtest_shuffle",
+          "--test-launcher-timeout=180000",
           "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000",
           "--ui-test-action-timeout=40000"
         ],
         "isolate_profile_data": true,
