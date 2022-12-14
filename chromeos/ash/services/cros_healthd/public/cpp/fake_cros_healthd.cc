@@ -802,6 +802,24 @@ void FakeCrosHealthd::RunEmmcLifetimeRoutine(
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
+void FakeCrosHealthd::RunAudioSetVolumeRoutine(
+    uint64_t node_id,
+    uint8_t volume,
+    bool mute_on,
+    RunAudioSetVolumeRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kAudioSetVolume;
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+
+void FakeCrosHealthd::RunAudioSetGainRoutine(
+    uint64_t node_id,
+    uint8_t gain,
+    bool mute_on,
+    RunAudioSetGainRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kAudioSetGain;
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+
 void FakeCrosHealthd::AddBluetoothObserver(
     mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer) {
   bluetooth_observers_.Add(std::move(observer));

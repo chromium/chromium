@@ -527,6 +527,14 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       diagnostics_service->RunEmmcLifetimeRoutine(std::move(response_callback));
       break;
     }
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kAudioSetVolume: {
+      NOTIMPLEMENTED();
+      break;
+    }
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kAudioSetGain: {
+      NOTIMPLEMENTED();
+      break;
+    }
   }
 }
 

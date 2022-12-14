@@ -54,7 +54,7 @@ interface CrosHealthdServiceFactory {
 
 // Diagnostics interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 8, NextIndex: 39
+// NextMinVersion: 9, NextIndex: 41
 [Stable]
 interface CrosHealthdDiagnosticsService {
   // Returns an array of all diagnostic routines that the platform supports.
@@ -626,6 +626,42 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   [MinVersion=7] RunEmmcLifetimeRoutine@38() => (RunRoutineResponse response);
+
+  // Requests that the AudioSetVolume routine is created and started on the
+  // platform. This routine sets the audio |node_id| volume to |volume| and
+  // checks if any error happens. This routine is only available if
+  // GetAvailableRoutines returned kAudioSetVolume.
+  //
+  // The request:
+  // * |node_id| - the id of node to be configured.
+  // * |volume| - output node target volume in [0, 100], and we use 100 if
+  //              the target value is greater than 100.
+  // * |mute_on| - mute the output device or not.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=8] RunAudioSetVolumeRoutine@39(uint64 node_id, uint8 volume,
+                                             bool mute_on)
+      => (RunRoutineResponse response);
+
+  // Requests that the AudioSetGain routine is created and started on the
+  // platform. This routine sets the audio |node_id| gain to |gain| and checks
+  // if any error happens. This routine is only available if
+  // GetAvailableRoutines returned kAudioSetGain.
+  //
+  // The request:
+  // * |node_id| - the id of node to be configured.
+  // * |gain| - input node target gain in [0, 100], and we use 100 if the target
+  //            value is greater than 100.
+  // * |mute_on| - mute the input device or not.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=8] RunAudioSetGainRoutine@40(uint64 node_id, uint8 gain,
+                                           bool mute_on)
+      => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.

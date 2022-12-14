@@ -334,6 +334,15 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
       mojo::PendingRemote<mojom::LedLitUpRoutineReplier> replier,
       RunLedLitUpRoutineCallback callback) override;
   void RunEmmcLifetimeRoutine(RunEmmcLifetimeRoutineCallback callback) override;
+  void RunAudioSetVolumeRoutine(
+      uint64_t node_id,
+      uint8_t volume,
+      bool mute_on,
+      RunAudioSetVolumeRoutineCallback callback) override;
+  void RunAudioSetGainRoutine(uint64_t node_id,
+                              uint8_t gain,
+                              bool mute_on,
+                              RunAudioSetGainRoutineCallback callback) override;
 
   // CrosHealthdEventService overrides:
   void AddBluetoothObserver(
