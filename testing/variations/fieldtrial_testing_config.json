@@ -11599,6 +11599,44 @@
             ]
         }
     ],
+    "UserLevelMemoryPressureSignalOn4GbDevices": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "UserLevelMemoryPressureSignalOn4GbDevices",
+                    "params": {
+                        "memory_threshold_mb": "169"
+                    },
+                    "enable_features": [
+                        "UserLevelMemoryPressureSignalOn4GbDevices"
+                    ]
+                }
+            ]
+        }
+    ],
+    "UserLevelMemoryPressureSignalOn6GbDevices": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "UserLevelMemoryPressureSignalOn6GbDevices",
+                    "params": {
+                        "memory_threshold_mb": "197"
+                    },
+                    "enable_features": [
+                        "UserLevelMemoryPressureSignalOn6GbDevices"
+                    ]
+                }
+            ]
+        }
+    ],
     "UserMediaCaptureOnFocus": [
         {
             "platforms": [
