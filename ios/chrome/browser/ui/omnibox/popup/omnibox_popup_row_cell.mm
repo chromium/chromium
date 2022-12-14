@@ -231,8 +231,6 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   } else if (self.window) {
     // The layout guides may have been repositioned, so remove the constraints
     // and add them again.
-    [NSLayoutConstraint
-        deactivateConstraints:self.nonDeletingLayoutGuideConstraints];
     [self attachToLayoutGuides];
   }
 }
@@ -372,19 +370,18 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     iconXOffset += kImageAdditionalOffsetVariation2PopoutOmnibox;
   }
 
+  [NSLayoutConstraint
+      deactivateConstraints:self.nonDeletingLayoutGuideConstraints];
   self.nonDeletingLayoutGuideConstraints = @[
     [self.leadingIconView.centerXAnchor
         constraintEqualToAnchor:imageLayoutGuide.centerXAnchor
                        constant:iconXOffset],
-    stackViewToLayoutGuideLeading,
-    stackViewToLayoutGuideTrailing,
-  ];
-
-  [NSLayoutConstraint activateConstraints:@[
     [self.leadingIconView.widthAnchor
         constraintEqualToAnchor:imageLayoutGuide.widthAnchor],
+    stackViewToLayoutGuideLeading,
+    stackViewToLayoutGuideTrailing,
     stackViewToCellTrailing,
-  ]];
+  ];
 
   [NSLayoutConstraint
       activateConstraints:self.nonDeletingLayoutGuideConstraints];
