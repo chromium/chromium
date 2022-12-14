@@ -57,8 +57,9 @@ TEST_F(SidePanelToolbarButtonTest, DotIndicatorVisibleWithUnreadItems) {
                     "this test shouldn't run";
   }
   // Verify the dot indicator is seen when there is an unseen entry.
-  model()->AddEntry(GURL("http://foo/1"), "Tab 1",
-                    reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
+  model()->AddOrReplaceEntry(GURL("http://foo/1"), "Tab 1",
+                             reading_list::EntrySource::ADDED_VIA_CURRENT_APP,
+                             /*estimated_read_time=*/base::TimeDelta());
   SidePanelToolbarButton* const side_panel_button = GetSidePanelToolbarButton();
   ASSERT_TRUE(side_panel_button->GetDotIndicatorVisibilityForTesting());
 
@@ -71,8 +72,9 @@ TEST_F(SidePanelToolbarButtonTest, DotIndicatorVisibleWithUnreadItems) {
 
   // Verify the dot indicator is hidden when entries are added while the panel
   // is open.
-  model()->AddEntry(GURL("http://foo/2"), "Tab 2",
-                    reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
+  model()->AddOrReplaceEntry(GURL("http://foo/2"), "Tab 2",
+                             reading_list::EntrySource::ADDED_VIA_CURRENT_APP,
+                             /*estimated_read_time=*/base::TimeDelta());
   ASSERT_FALSE(side_panel_button->GetDotIndicatorVisibilityForTesting());
 }
 

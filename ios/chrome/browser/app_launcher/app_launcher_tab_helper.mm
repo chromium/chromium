@@ -215,7 +215,7 @@ void AppLauncherTabHelper::ShouldAllowRequest(
     ReadingListModel* model =
         ReadingListModelFactory::GetForBrowserState(browser_state);
     if (model && model->loaded())
-      model->SetReadStatus(original_pending_url, true);
+      model->SetReadStatusIfExists(original_pending_url, true);
   }
   if (last_committed_url.is_valid() ||
       !web_state_->GetNavigationManager()->GetLastCommittedItem()) {

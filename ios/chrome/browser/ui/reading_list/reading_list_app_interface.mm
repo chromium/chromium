@@ -90,8 +90,9 @@ class ConnectionTypeOverrider {
   if (error) {
     return error;
   }
-  for (const GURL& url : model->Keys())
+  for (const GURL& url : model->GetKeys()) {
     model->RemoveEntryByURL(url);
+  }
   return nil;
 }
 
@@ -101,10 +102,12 @@ class ConnectionTypeOverrider {
   if (error) {
     return error;
   }
-  model->AddEntry(net::GURLWithNSURL(url), base::SysNSStringToUTF8(title),
-                  reading_list::ADDED_VIA_CURRENT_APP);
+  model->AddOrReplaceEntry(net::GURLWithNSURL(url),
+                           base::SysNSStringToUTF8(title),
+                           reading_list::ADDED_VIA_CURRENT_APP,
+                           /*estimated_read_time=*/base::TimeDelta());
   if (read) {
-    model->SetReadStatus(net::GURLWithNSURL(url), true);
+    model->SetReadStatusIfExists(net::GURLWithNSURL(url), true);
   }
   return error;
 }

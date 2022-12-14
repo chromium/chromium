@@ -30,8 +30,6 @@ class ModelTypeChangeProcessor;
 // Concrete implementation of a reading list model using in memory lists.
 class ReadingListModelImpl : public ReadingListModel {
  public:
-  using ReadingListEntries = std::map<GURL, ReadingListEntry>;
-
   // Initialize a ReadingListModelImpl to load and save data in
   // |storage_layer|. Passing null to |storage_layer| will create a
   // ReadingListModelImpl without persistence. Data will not be persistent
@@ -51,36 +49,34 @@ class ReadingListModelImpl : public ReadingListModel {
   bool IsPerformingBatchUpdates() const override;
   ReadingListSyncBridge* GetModelTypeSyncBridge() override;
   std::unique_ptr<ScopedReadingListBatchUpdate> BeginBatchUpdates() override;
-  const std::vector<GURL> Keys() const override;
+  base::flat_set<GURL> GetKeys() const override;
   size_t size() const override;
   size_t unread_size() const override;
   size_t unseen_size() const override;
   void MarkAllSeen() override;
   bool DeleteAllEntries() override;
   const ReadingListEntry* GetEntryByURL(const GURL& gurl) const override;
-  const ReadingListEntry* GetFirstUnreadEntry(bool distilled) const override;
   bool IsUrlSupported(const GURL& url) override;
-  const ReadingListEntry& AddEntry(
+  const ReadingListEntry& AddOrReplaceEntry(
       const GURL& url,
       const std::string& title,
       reading_list::EntrySource source,
       base::TimeDelta estimated_read_time) override;
-  const ReadingListEntry& AddEntry(const GURL& url,
-                                   const std::string& title,
-                                   reading_list::EntrySource source) override;
   void RemoveEntryByURL(const GURL& url) override;
-  void SetReadStatus(const GURL& url, bool read) override;
-  void SetEntryTitle(const GURL& url, const std::string& title) override;
-  void SetEstimatedReadTime(const GURL& url,
-                            base::TimeDelta estimated_read_time) override;
-  void SetEntryDistilledState(
+  void SetReadStatusIfExists(const GURL& url, bool read) override;
+  void SetEntryTitleIfExists(const GURL& url,
+                             const std::string& title) override;
+  void SetEstimatedReadTimeIfExists(
+      const GURL& url,
+      base::TimeDelta estimated_read_time) override;
+  void SetEntryDistilledStateIfExists(
       const GURL& url,
       ReadingListEntry::DistillationState state) override;
-  void SetEntryDistilledInfo(const GURL& url,
-                             const base::FilePath& distilled_path,
-                             const GURL& distilled_url,
-                             int64_t distilation_size,
-                             const base::Time& distilation_time) override;
+  void SetEntryDistilledInfoIfExists(const GURL& url,
+                                     const base::FilePath& distilled_path,
+                                     const GURL& distilled_url,
+                                     int64_t distilation_size,
+                                     base::Time distilation_time) override;
   void AddObserver(ReadingListModelObserver* observer) override;
   void RemoveObserver(ReadingListModelObserver* observer) override;
 
@@ -159,7 +155,7 @@ class ReadingListModelImpl : public ReadingListModel {
 
   bool loaded_ = false;
 
-  ReadingListEntries entries_;
+  std::map<GURL, ReadingListEntry> entries_;
   size_t unread_entry_count_ = 0;
   size_t read_entry_count_ = 0;
   size_t unseen_entry_count_ = 0;

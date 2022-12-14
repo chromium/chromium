@@ -112,10 +112,10 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
       }
 
       case kMarkAsRead:
-        reading_list_model_->SetReadStatus(url_, true);
+        reading_list_model_->SetReadStatusIfExists(url_, true);
         break;
       case kMarkAsUnread:
-        reading_list_model_->SetReadStatus(url_, false);
+        reading_list_model_->SetReadStatusIfExists(url_, false);
         break;
       case kDelete:
         reading_list_model_->RemoveEntryByURL(url_);
@@ -197,7 +197,7 @@ void ReadingListPageHandler::OpenURL(
 }
 
 void ReadingListPageHandler::UpdateReadStatus(const GURL& url, bool read) {
-  reading_list_model_->SetReadStatus(url, read);
+  reading_list_model_->SetReadStatusIfExists(url, read);
   base::RecordAction(
       base::UserMetricsAction(read ? "DesktopReadingList.MarkAsRead"
                                    : "DesktopReadingList.MarkAsUnread"));
@@ -332,7 +332,7 @@ reading_list::mojom::ReadLaterEntriesByStatusPtr
 ReadingListPageHandler::CreateReadLaterEntriesByStatusData() {
   auto entries = reading_list::mojom::ReadLaterEntriesByStatus::New();
 
-  for (const auto& url : reading_list_model_->Keys()) {
+  for (const auto& url : reading_list_model_->GetKeys()) {
     const ReadingListEntry* entry = reading_list_model_->GetEntryByURL(url);
     DCHECK(entry);
     if (entry->IsRead()) {

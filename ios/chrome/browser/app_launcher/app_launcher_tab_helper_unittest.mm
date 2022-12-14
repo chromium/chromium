@@ -169,7 +169,9 @@ class AppLauncherTabHelperTest : public PlatformTest {
     ReadingListModel* model = ReadingListModelFactory::GetForBrowserState(
         chrome_browser_state_.get());
     EXPECT_TRUE(model->DeleteAllEntries());
-    model->AddEntry(pending_url, "unread", reading_list::ADDED_VIA_CURRENT_APP);
+    model->AddOrReplaceEntry(pending_url, "unread",
+                             reading_list::ADDED_VIA_CURRENT_APP,
+                             /*estimated_read_time=*/base::TimeDelta());
     abuse_detector_.policy = is_app_blocked ? ExternalAppLaunchPolicyBlock
                                             : ExternalAppLaunchPolicyAllow;
     ui::PageTransition transition_type =

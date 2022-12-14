@@ -85,7 +85,7 @@ bool EntrySorter(const ReadingListEntry* rhs, const ReadingListEntry* lhs) {
 }
 
 - (void)markEntryRead:(const GURL&)URL {
-  self.model->SetReadStatus(URL, true);
+  self.model->SetReadStatusIfExists(URL, true);
 }
 
 #pragma mark - ReadingListDataSource
@@ -108,7 +108,7 @@ bool EntrySorter(const ReadingListEntry* rhs, const ReadingListEntry* lhs) {
 }
 
 - (void)setReadStatus:(BOOL)read forItem:(id<ReadingListListItem>)item {
-  self.model->SetReadStatus(item.entryURL, read);
+  self.model->SetReadStatusIfExists(item.entryURL, read);
 }
 
 - (const ReadingListEntry*)entryWithURL:(const GURL&)URL {
@@ -125,7 +125,7 @@ bool EntrySorter(const ReadingListEntry* rhs, const ReadingListEntry* lhs) {
   std::vector<const ReadingListEntry*> readEntries;
   std::vector<const ReadingListEntry*> unreadEntries;
 
-  for (const auto& url : self.model->Keys()) {
+  for (const auto& url : self.model->GetKeys()) {
     const ReadingListEntry* entry = self.model->GetEntryByURL(url);
     DCHECK(entry);
     if (entry->IsRead()) {
@@ -147,7 +147,8 @@ bool EntrySorter(const ReadingListEntry* rhs, const ReadingListEntry* lhs) {
         addObject:[self.itemFactory cellItemForReadingListEntry:entry]];
   }
 
-  DCHECK(self.model->Keys().size() == [readArray count] + [unreadArray count]);
+  DCHECK(self.model->GetKeys().size() ==
+         [readArray count] + [unreadArray count]);
 }
 
 - (void)fetchFaviconForItem:(id<ReadingListListItem>)item {

@@ -1190,8 +1190,9 @@ bool MoveTabToReadLater(Browser* browser, content::WebContents* web_contents) {
                                      &title)) {
     return false;
   }
-  model->AddEntry(url, base::UTF16ToUTF8(title),
-                  reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
+  model->AddOrReplaceEntry(url, base::UTF16ToUTF8(title),
+                           reading_list::EntrySource::ADDED_VIA_CURRENT_APP,
+                           /*estimated_read_time=*/base::TimeDelta());
   browser->window()->MaybeShowFeaturePromo(
       feature_engagement::kIPHReadingListDiscoveryFeature);
   base::UmaHistogramEnumeration(
@@ -1211,7 +1212,7 @@ bool MarkCurrentTabAsReadInReadLater(Browser* browser) {
   const ReadingListEntry* entry = model->GetEntryByURL(url);
   // Mark current tab as read.
   if (entry && !entry->IsRead())
-    model->SetReadStatus(url, true);
+    model->SetReadStatusIfExists(url, true);
   return entry != nullptr;
 }
 

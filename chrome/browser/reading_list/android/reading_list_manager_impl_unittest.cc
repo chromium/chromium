@@ -20,7 +20,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using BookmarkNode = bookmarks::BookmarkNode;
-using ReadingListEntries = ReadingListModelImpl::ReadingListEntries;
 
 namespace {
 
@@ -315,7 +314,9 @@ TEST_F(ReadingListManagerImplTest, ReadStatus) {
 TEST_F(ReadingListManagerImplTest, ReadingListDidAddEntry) {
   GURL url(kURL);
   EXPECT_CALL(*observer(), ReadingListChanged()).RetiresOnSaturation();
-  reading_list_model()->AddEntry(url, kTitle, reading_list::ADDED_VIA_SYNC);
+  reading_list_model()->AddOrReplaceEntry(
+      url, kTitle, reading_list::ADDED_VIA_SYNC,
+      /*estimated_read_time=*/base::TimeDelta());
 
   const auto* node = manager()->Get(url);
   EXPECT_TRUE(node);

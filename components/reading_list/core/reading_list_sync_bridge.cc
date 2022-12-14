@@ -139,7 +139,7 @@ absl::optional<syncer::ModelError> ReadingListSyncBridge::MergeSyncData(
   }
 
   // Commit local only entries to server.
-  for (const auto& url : model_->Keys()) {
+  for (const auto& url : model_->GetKeys()) {
     const ReadingListEntry* entry = model_->GetEntryByURL(url);
     if (synced_entries.count(url.spec())) {
       // Entry already exists and has been merged above.
@@ -230,7 +230,7 @@ void ReadingListSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
-  for (const auto& url : model_->Keys()) {
+  for (const auto& url : model_->GetKeys()) {
     const ReadingListEntry* entry = model_->GetEntryByURL(GURL(url));
     AddEntryToBatch(batch.get(), *entry);
   }

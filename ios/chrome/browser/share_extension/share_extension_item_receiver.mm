@@ -286,8 +286,9 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
   switch (type) {
     case app_group::READING_LIST_ITEM: {
       LogHistogramReceivedItem(READINGLIST_ENTRY);
-      _readingListModel->AddEntry(entryURL, entryTitle,
-                                  reading_list::ADDED_VIA_EXTENSION);
+      _readingListModel->AddOrReplaceEntry(
+          entryURL, entryTitle, reading_list::ADDED_VIA_EXTENSION,
+          /*estimated_read_time=*/base::TimeDelta());
       break;
     }
     case app_group::BOOKMARK_ITEM: {

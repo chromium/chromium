@@ -100,8 +100,10 @@ class ReadingListNotificationServiceTest : public testing::Test {
   }
 
   void AddReadingList() {
-    reading_list_model()->AddEntry(GURL("https://a.example.com"), "title",
-                                   reading_list::ADDED_VIA_CURRENT_APP);
+    reading_list_model()->AddOrReplaceEntry(
+        GURL("https://a.example.com"), "title",
+        reading_list::ADDED_VIA_CURRENT_APP,
+        /*estimated_read_time=*/base::TimeDelta());
   }
 
  private:

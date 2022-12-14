@@ -2262,8 +2262,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   ReadingListModel* readingModel =
       ReadingListModelFactory::GetForBrowserState(self.browserState);
-  readingModel->AddEntry(URL, base::SysNSStringToUTF8(title),
-                         reading_list::ADDED_VIA_CURRENT_APP);
+  readingModel->AddOrReplaceEntry(URL, base::SysNSStringToUTF8(title),
+                                  reading_list::ADDED_VIA_CURRENT_APP,
+                                  /*estimated_read_time=*/base::TimeDelta());
 }
 
 #pragma mark - Private SingleNTP feature helper methods

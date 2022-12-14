@@ -79,8 +79,10 @@ class ReadingListWebStateObserverTest : public PlatformTest {
                   /* storage_layer */ nullptr, /* pref_service */ nullptr,
                   base::DefaultClock::GetInstance());
 
-              model->AddEntry(GURL(kTestURL), kTestTitle,
-                              reading_list::ADDED_VIA_CURRENT_APP);
+              model->AddOrReplaceEntry(
+                  GURL(kTestURL), kTestTitle,
+                  reading_list::ADDED_VIA_CURRENT_APP,
+                  /*estimated_read_time=*/base::TimeDelta());
 
               return model;
             }));
@@ -141,7 +143,7 @@ TEST_F(ReadingListWebStateObserverTest, TestLoadReadingListFailure) {
 TEST_F(ReadingListWebStateObserverTest, TestLoadReadingListOnline) {
   GURL url(kTestURL);
   std::string distilled_path = kTestDistilledPath;
-  reading_list_model()->SetEntryDistilledInfo(
+  reading_list_model()->SetEntryDistilledInfoIfExists(
       url, base::FilePath(distilled_path), GURL(kTestDistilledURL), 50,
       base::Time::FromTimeT(100));
   const ReadingListEntry* entry = reading_list_model()->GetEntryByURL(url);
@@ -169,7 +171,7 @@ TEST_F(ReadingListWebStateObserverTest, TestLoadReadingListOnline) {
 TEST_F(ReadingListWebStateObserverTest, TestLoadReadingListDistilledCommitted) {
   GURL url(kTestURL);
   std::string distilled_path = kTestDistilledPath;
-  reading_list_model()->SetEntryDistilledInfo(
+  reading_list_model()->SetEntryDistilledInfoIfExists(
       url, base::FilePath(distilled_path), GURL(kTestDistilledURL), 50,
       base::Time::FromTimeT(100));
   const ReadingListEntry* entry = reading_list_model()->GetEntryByURL(url);
@@ -202,7 +204,7 @@ TEST_F(ReadingListWebStateObserverTest, TestLoadReadingListDistilledCommitted) {
 TEST_F(ReadingListWebStateObserverTest, TestLoadReadingListDistilledPending) {
   GURL url(kTestURL);
   std::string distilled_path = kTestDistilledPath;
-  reading_list_model()->SetEntryDistilledInfo(
+  reading_list_model()->SetEntryDistilledInfoIfExists(
       url, base::FilePath(distilled_path), GURL(kTestDistilledURL), 50,
       base::Time::FromTimeT(100));
   const ReadingListEntry* entry = reading_list_model()->GetEntryByURL(url);

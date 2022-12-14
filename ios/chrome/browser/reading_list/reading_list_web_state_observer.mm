@@ -170,7 +170,7 @@ void ReadingListWebStateObserver::PageLoaded(
   }
 
   if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS) {
-    reading_list_model_->SetReadStatus(pending_url_, true);
+    reading_list_model_->SetReadStatusIfExists(pending_url_, true);
     UMA_HISTOGRAM_BOOLEAN("ReadingList.OfflineVersionDisplayed", false);
   } else {
     LoadOfflineReadingListEntry();
@@ -281,7 +281,7 @@ void ReadingListWebStateObserver::LoadOfflineReadingListEntry() {
                                         item->GetTransitionType(), NO);
     web_state_->OpenURL(params);
   }
-  reading_list_model_->SetReadStatus(entry->URL(), true);
+  reading_list_model_->SetReadStatusIfExists(entry->URL(), true);
   UMA_HISTOGRAM_BOOLEAN("ReadingList.OfflineVersionDisplayed", true);
 }
 

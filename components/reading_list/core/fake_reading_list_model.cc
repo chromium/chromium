@@ -30,7 +30,7 @@ FakeReadingListModel::BeginBatchUpdates() {
   return nullptr;
 }
 
-const std::vector<GURL> FakeReadingListModel::Keys() const {
+base::flat_set<GURL> FakeReadingListModel::GetKeys() const {
   NOTREACHED();
   return std::vector<GURL>();
 }
@@ -69,26 +69,12 @@ const ReadingListEntry* FakeReadingListModel::GetEntryByURL(
   return nullptr;
 }
 
-const ReadingListEntry* FakeReadingListModel::GetFirstUnreadEntry(
-    bool distilled) const {
-  NOTREACHED();
-  return nullptr;
-}
-
 bool FakeReadingListModel::IsUrlSupported(const GURL& url) {
   NOTREACHED();
   return false;
 }
 
-const ReadingListEntry& FakeReadingListModel::AddEntry(
-    const GURL& url,
-    const std::string& title,
-    reading_list::EntrySource source) {
-  NOTREACHED();
-  return *entry_;
-}
-
-const ReadingListEntry& FakeReadingListModel::AddEntry(
+const ReadingListEntry& FakeReadingListModel::AddOrReplaceEntry(
     const GURL& url,
     const std::string& title,
     reading_list::EntrySource source,
@@ -101,36 +87,36 @@ void FakeReadingListModel::RemoveEntryByURL(const GURL& url) {
   NOTREACHED();
 }
 
-void FakeReadingListModel::SetReadStatus(const GURL& url, bool read) {
+void FakeReadingListModel::SetReadStatusIfExists(const GURL& url, bool read) {
   DCHECK(entry_);
   if (entry_->URL() == url) {
     entry_->SetRead(true, base::Time());
   }
 }
 
-void FakeReadingListModel::SetEntryTitle(const GURL& url,
-                                         const std::string& title) {
+void FakeReadingListModel::SetEntryTitleIfExists(const GURL& url,
+                                                 const std::string& title) {
   NOTREACHED();
 }
 
-void FakeReadingListModel::SetEntryDistilledState(
+void FakeReadingListModel::SetEntryDistilledStateIfExists(
     const GURL& url,
     ReadingListEntry::DistillationState state) {
   NOTREACHED();
 }
 
-void FakeReadingListModel::SetEstimatedReadTime(
+void FakeReadingListModel::SetEstimatedReadTimeIfExists(
     const GURL& url,
     base::TimeDelta estimated_read_time) {
   NOTREACHED();
 }
 
-void FakeReadingListModel::SetEntryDistilledInfo(
+void FakeReadingListModel::SetEntryDistilledInfoIfExists(
     const GURL& url,
     const base::FilePath& distilled_path,
     const GURL& distilled_url,
     int64_t distilation_size,
-    const base::Time& distilation_time) {
+    base::Time distilation_time) {
   NOTREACHED();
 }
 

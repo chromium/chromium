@@ -208,8 +208,9 @@ TEST_F(ReadingListSyncBridgeTest, ApplySyncChangesOneAdd) {
 
 TEST_F(ReadingListSyncBridgeTest, ApplySyncChangesOneMerge) {
   AdvanceAndGetTime(&clock_);
-  model_->AddEntry(GURL("http://unread.example.com/"), "unread title",
-                   reading_list::ADDED_VIA_CURRENT_APP);
+  model_->AddOrReplaceEntry(GURL("http://unread.example.com/"), "unread title",
+                            reading_list::ADDED_VIA_CURRENT_APP,
+                            /*estimated_read_time=*/base::TimeDelta());
 
   ReadingListEntry new_entry(GURL("http://unread.example.com/"), "unread title",
                              AdvanceAndGetTime(&clock_));
@@ -243,8 +244,10 @@ TEST_F(ReadingListSyncBridgeTest, ApplySyncChangesOneIgnored) {
   old_entry.SetRead(true, AdvanceAndGetTime(&clock_));
 
   AdvanceAndGetTime(&clock_);
-  model_->AddEntry(GURL("http://unread.example.com/"), "new unread title",
-                   reading_list::ADDED_VIA_CURRENT_APP);
+  model_->AddOrReplaceEntry(GURL("http://unread.example.com/"),
+                            "new unread title",
+                            reading_list::ADDED_VIA_CURRENT_APP,
+                            /*estimated_read_time=*/base::TimeDelta());
 
   std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
       old_entry.AsReadingListSpecifics();
@@ -269,8 +272,9 @@ TEST_F(ReadingListSyncBridgeTest, ApplySyncChangesOneIgnored) {
 }
 
 TEST_F(ReadingListSyncBridgeTest, ApplySyncChangesOneRemove) {
-  model_->AddEntry(GURL("http://read.example.com/"), "read title",
-                   reading_list::ADDED_VIA_CURRENT_APP);
+  model_->AddOrReplaceEntry(GURL("http://read.example.com/"), "read title",
+                            reading_list::ADDED_VIA_CURRENT_APP,
+                            /*estimated_read_time=*/base::TimeDelta());
 
   syncer::EntityChangeList delete_changes;
   delete_changes.push_back(

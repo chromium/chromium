@@ -24,7 +24,7 @@ class FakeReadingListModel : public ReadingListModel {
 
   std::unique_ptr<ScopedReadingListBatchUpdate> BeginBatchUpdates() override;
 
-  const std::vector<GURL> Keys() const override;
+  base::flat_set<GURL> GetKeys() const override;
 
   size_t size() const override;
 
@@ -38,15 +38,9 @@ class FakeReadingListModel : public ReadingListModel {
 
   const ReadingListEntry* GetEntryByURL(const GURL& gurl) const override;
 
-  const ReadingListEntry* GetFirstUnreadEntry(bool distilled) const override;
-
   bool IsUrlSupported(const GURL& url) override;
 
-  const ReadingListEntry& AddEntry(const GURL& url,
-                                   const std::string& title,
-                                   reading_list::EntrySource source) override;
-
-  const ReadingListEntry& AddEntry(
+  const ReadingListEntry& AddOrReplaceEntry(
       const GURL& url,
       const std::string& title,
       reading_list::EntrySource source,
@@ -54,22 +48,24 @@ class FakeReadingListModel : public ReadingListModel {
 
   void RemoveEntryByURL(const GURL& url) override;
 
-  void SetReadStatus(const GURL& url, bool read) override;
+  void SetReadStatusIfExists(const GURL& url, bool read) override;
 
-  void SetEntryTitle(const GURL& url, const std::string& title) override;
+  void SetEntryTitleIfExists(const GURL& url,
+                             const std::string& title) override;
 
-  void SetEntryDistilledState(
+  void SetEntryDistilledStateIfExists(
       const GURL& url,
       ReadingListEntry::DistillationState state) override;
 
-  void SetEstimatedReadTime(const GURL& url,
-                            base::TimeDelta estimated_read_time) override;
+  void SetEstimatedReadTimeIfExists(
+      const GURL& url,
+      base::TimeDelta estimated_read_time) override;
 
-  void SetEntryDistilledInfo(const GURL& url,
-                             const base::FilePath& distilled_path,
-                             const GURL& distilled_url,
-                             int64_t distilation_size,
-                             const base::Time& distilation_time) override;
+  void SetEntryDistilledInfoIfExists(const GURL& url,
+                                     const base::FilePath& distilled_path,
+                                     const GURL& distilled_url,
+                                     int64_t distilation_size,
+                                     base::Time distilation_time) override;
 
   void AddObserver(ReadingListModelObserver* observer) override;
   void RemoveObserver(ReadingListModelObserver* observer) override;

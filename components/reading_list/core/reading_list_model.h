@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_entry.h"
 
@@ -52,9 +53,8 @@ class ReadingListModel : public KeyedService {
   // the batch update has completed.
   virtual std::unique_ptr<ScopedReadingListBatchUpdate> BeginBatchUpdates() = 0;
 
-  // Returns a vector of URLs in the model. The order of the URL is not
-  // specified and can vary on successive calls.
-  virtual const std::vector<GURL> Keys() const = 0;
+  // Returns the set of URLs in the model.
+  virtual base::flat_set<GURL> GetKeys() const = 0;
 
   // Returns the total number of entries in the model.
   virtual size_t size() const = 0;
@@ -76,10 +76,6 @@ class ReadingListModel : public KeyedService {
   // Returns a specific entry. Returns null if the entry does not exist.
   virtual const ReadingListEntry* GetEntryByURL(const GURL& gurl) const = 0;
 
-  // Returns the first unread entry. If |distilled| is true, prioritize the
-  // entries available offline.
-  virtual const ReadingListEntry* GetFirstUnreadEntry(bool distilled) const = 0;
-
   // Returns true if |url| can be added to the reading list.
   virtual bool IsUrlSupported(const GURL& url) = 0;
 
@@ -88,15 +84,11 @@ class ReadingListModel : public KeyedService {
   // trimmed copy of |title|. |time_to_read_minutes| is the estimated time to
   // read the page. The addition may be asynchronous, and the data will be
   // available only once the observers are notified.
-  virtual const ReadingListEntry& AddEntry(
+  virtual const ReadingListEntry& AddOrReplaceEntry(
       const GURL& url,
       const std::string& title,
       reading_list::EntrySource source,
       base::TimeDelta estimated_read_time) = 0;
-  virtual const ReadingListEntry& AddEntry(
-      const GURL& url,
-      const std::string& title,
-      reading_list::EntrySource source) = 0;
 
   // Removes an entry. The removal may be asynchronous, and not happen
   // immediately.
@@ -105,14 +97,16 @@ class ReadingListModel : public KeyedService {
   // If the |url| is in the reading list and entry(|url|).read != |read|, sets
   // the read state of the URL to read. This will also update the update time of
   // the entry.
-  virtual void SetReadStatus(const GURL& url, bool read) = 0;
+  virtual void SetReadStatusIfExists(const GURL& url, bool read) = 0;
 
   // Methods to mutate an entry. Will locate the relevant entry by URL. Does
   // nothing if the entry is not found.
-  virtual void SetEntryTitle(const GURL& url, const std::string& title) = 0;
-  virtual void SetEstimatedReadTime(const GURL& url,
-                                    base::TimeDelta estimated_read_time) = 0;
-  virtual void SetEntryDistilledState(
+  virtual void SetEntryTitleIfExists(const GURL& url,
+                                     const std::string& title) = 0;
+  virtual void SetEstimatedReadTimeIfExists(
+      const GURL& url,
+      base::TimeDelta estimated_read_time) = 0;
+  virtual void SetEntryDistilledStateIfExists(
       const GURL& url,
       ReadingListEntry::DistillationState state) = 0;
 
@@ -122,11 +116,12 @@ class ReadingListModel : public KeyedService {
   // was distilled, the |distillation_size| (the size of the offline data) and
   // the |distillation_date| (date of distillation in microseconds since Jan 1st
   // 1970.
-  virtual void SetEntryDistilledInfo(const GURL& url,
-                                     const base::FilePath& distilled_path,
-                                     const GURL& distilled_url,
-                                     int64_t distilation_size,
-                                     const base::Time& distilation_time) = 0;
+  virtual void SetEntryDistilledInfoIfExists(
+      const GURL& url,
+      const base::FilePath& distilled_path,
+      const GURL& distilled_url,
+      int64_t distilation_size,
+      base::Time distilation_time) = 0;
 
   // Observer registration methods. The model will remove all observers upon
   // destruction automatically.

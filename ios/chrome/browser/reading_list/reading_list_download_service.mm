@@ -153,7 +153,7 @@ void ReadingListDownloadService::SyncWithModel() {
   DCHECK(reading_list_model_->loaded());
   std::set<std::string> processed_directories;
   std::set<GURL> unprocessed_entries;
-  for (const auto& url : reading_list_model_->Keys()) {
+  for (const auto& url : reading_list_model_->GetKeys()) {
     const ReadingListEntry* entry = reading_list_model_->GetEntryByURL(url);
     switch (entry->DistilledState()) {
       case ReadingListEntry::PROCESSED:
@@ -220,8 +220,8 @@ void ReadingListDownloadService::DownloadEntry(const GURL& url) {
   // There is a connection.
   if (entry->FailedDownloadCounter() < kNumberOfFailsBeforeWifiOnly) {
     // Try to download the page, whatever the connection.
-    reading_list_model_->SetEntryDistilledState(entry->URL(),
-                                                ReadingListEntry::PROCESSING);
+    reading_list_model_->SetEntryDistilledStateIfExists(
+        entry->URL(), ReadingListEntry::PROCESSING);
     url_downloader_->DownloadOfflineURL(entry->URL());
 
   } else if (entry->FailedDownloadCounter() < kNumberOfFailsBeforeStop) {
@@ -236,8 +236,8 @@ void ReadingListDownloadService::DownloadEntry(const GURL& url) {
                        weak_ptr_factory_.GetWeakPtr()));
     if (connection_type == network::mojom::ConnectionType::CONNECTION_WIFI) {
       // The connection is wifi, download the page.
-      reading_list_model_->SetEntryDistilledState(entry->URL(),
-                                                  ReadingListEntry::PROCESSING);
+      reading_list_model_->SetEntryDistilledStateIfExists(
+          entry->URL(), ReadingListEntry::PROCESSING);
       url_downloader_->DownloadOfflineURL(entry->URL());
 
     } else {
@@ -268,12 +268,12 @@ void ReadingListDownloadService::OnDownloadEnd(
   switch (real_success_value) {
     case URLDownloader::DOWNLOAD_SUCCESS:
     case URLDownloader::DOWNLOAD_EXISTS: {
-      reading_list_model_->SetEntryDistilledInfo(
+      reading_list_model_->SetEntryDistilledInfoIfExists(
           url, distilled_path, distilled_url, size, base::Time::Now());
 
       std::string trimmed_title = base::CollapseWhitespaceASCII(title, false);
       if (!trimmed_title.empty())
-        reading_list_model_->SetEntryTitle(url, trimmed_title);
+        reading_list_model_->SetEntryTitleIfExists(url, trimmed_title);
 
       const ReadingListEntry* entry = reading_list_model_->GetEntryByURL(url);
       if (entry)
@@ -289,7 +289,7 @@ void ReadingListDownloadService::OnDownloadEnd(
       // Add this failure to the total failure count.
       if (entry && real_success_value == URLDownloader::ERROR &&
           entry->FailedDownloadCounter() + 1 < kNumberOfFailsBeforeStop) {
-        reading_list_model_->SetEntryDistilledState(
+        reading_list_model_->SetEntryDistilledStateIfExists(
             url, ReadingListEntry::WILL_RETRY);
         ScheduleDownloadEntry(url);
         UMA_HISTOGRAM_ENUMERATION("ReadingList.Download.Status", RETRY,
@@ -297,7 +297,7 @@ void ReadingListDownloadService::OnDownloadEnd(
       } else {
         UMA_HISTOGRAM_ENUMERATION("ReadingList.Download.Status", FAILURE,
                                   STATUS_MAX);
-        reading_list_model_->SetEntryDistilledState(
+        reading_list_model_->SetEntryDistilledStateIfExists(
             url, ReadingListEntry::DISTILLATION_ERROR);
       }
       break;

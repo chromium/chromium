@@ -274,7 +274,7 @@ void OfflinePageTabHelper::PageLoaded(
       !reading_list_model_->GetEntryByURL(url)) {
     return;
   }
-  reading_list_model_->SetReadStatus(url, true);
+  reading_list_model_->SetReadStatusIfExists(url, true);
   UMA_HISTOGRAM_BOOLEAN("ReadingList.OfflineVersionDisplayed",
                         presenting_offline_page_);
 }
