@@ -4,14 +4,15 @@
 <style type="text/css" media="screen">
 .box {
   position: relative;
+  background:  blue;
   left: 100px;
   top: 10px;
   height: 30px;
   width: 200px;
-  animation-delay: 0.1s;
   animation-duration: 0.1s;
-  animation-timing-function: linear;
+  animation-play-state: paused;
 }
+
 @keyframes anim1 {
   from { left: 200px; }
   50% { left: 250px; }
@@ -29,133 +30,112 @@
   50% { left: 250px; }
 }
 
-#a {
-  background-color: blue;
-  animation-fill-mode: none;
-  animation-name: anim1;
-}
-#b {
-  background-color: red;
-  animation-fill-mode: backwards;
-  animation-name: anim1;
-}
-#c {
-  background-color: green;
-  animation-fill-mode: forwards;
-  animation-name: anim1;
-}
-#d {
-  background-color: yellow;
-  animation-fill-mode: both;
-  animation-name: anim1;
-}
-#e {
-  background-color: #999;
-  animation-fill-mode: both;
-  animation-iteration-count: 2;
-  animation-direction: alternate;
-  animation-name: anim1;
+.fill-none {
+  animation-fill-mode:  none;
 }
 
-#f {
-  background-color: blue;
-  animation-fill-mode: none;
-  animation-name: anim2;
+.fill-forwards {
+  animation-fill-mode:  forwards;
 }
-#g {
-  background-color: red;
-  animation-fill-mode: backwards;
-  animation-name: anim2;
+
+.fill-backwards {
+  animation-fill-mode:  backwards;
 }
-#h {
-  background-color: green;
-  animation-fill-mode: forwards;
-  animation-name: anim2;
+
+.fill-both {
+  animation-fill-mode:  both;
 }
-#i {
-  background-color: yellow;
-  animation-fill-mode: both;
-  animation-name: anim2;
+
+.from-to {
+  animation-name:  anim1;
 }
-#j {
-  background-color: #999;
-  animation-fill-mode: both;
-  animation-iteration-count: 2;
-  animation-direction: alternate;
-  animation-name: anim2;
+
+.missing-from {
+  animation-name:  anim2;
+}
+
+.missing-to {
+  animation-name:  anim3;
+}
+
+.missing-from-to {
+  animation-name:  anim4;
 }
 </style>
+<body>
+  <!-- Dynamically inject content here. -->
+</body>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script type="text/javascript" charset="utf-8">
-const numAnims = 10;
-var animsFinished = 0;
-const allowance = 5;
-const expectedValues = [
-  {id: "a", start: 100, end: 100},
-  {id: "b", start: 200, end: 100},
-  {id: "c", start: 100, end: 300},
-  {id: "d", start: 200, end: 300},
-  {id: "e", start: 200, end: 200}
-];
 
-async_test(t => {
-  function endTest() {
-    for (var i=0; i < expectedValues.length; i++) {
-      var el = document.getElementById(expectedValues[i].id);
-      var expectedValue = expectedValues[i].end;
-      var realValue = parseFloat(window.getComputedStyle(el).left);
-      var diff = Math.abs(expectedValue - realValue);
-      assert_less_than(diff, allowance, "end of animation - id: " + expectedValues[i].id + " expected: " + expectedValue + " actual: " + realValue);
-    }
-    t.done();
+  function createDiv(test, classList) {
+    const el = document.createElement('div');
+    document.body.appendChild(el);
+    el.classList.add('box');
+    classList.forEach(className => {
+      el.classList.add(className);
+    });
+    test.add_cleanup(() => {
+      el.remove();
+    });
+    return el;
   }
 
-  window.addEventListener("load", t.step_func(() => {
-    for (var i=0; i < expectedValues.length; i++) {
-      var el = document.getElementById(expectedValues[i].id);
-      var expectedValue = expectedValues[i].start;
-      var realValue = parseFloat(window.getComputedStyle(el).left);
-      var diff = Math.abs(expectedValue - realValue);
-      assert_less_than(diff, allowance, "start of animation - id: " + expectedValues[i].id + " expected: " + expectedValue + " actual: " + realValue);
-    }
-    document.addEventListener("animationend", t.step_func(() => {
-      if (++animsFinished == numAnims) {
-          t.step_timeout(endTest, 0); // this set timeout should be ok in the test environment
-                                      // since we're just giving style a chance to resolve
-      }
-    }));
-  }));
-}, "This test performs an animation of the left property with four different fill modes. It animates over 0.1 second with a 0.1 second delay. It takes snapshots at document load and the end of the animation");
-</script>
-<div id="a" class="box">
-  None - from/to present
-</div>
-<div id="b" class="box">
-  Backwards - from/to present
-</div>
-<div id="c" class="box">
-  Forwards - from/to present
-</div>
-<div id="d" class="box">
-  Both - from/to present
-</div>
-<div id="e" class="box">
-  Both iterating - from/to present
-</div>
+  // Validates the computed style when the animations is in the before and
+  // after phases.
+  function assert_before_and_after_styles(element, expected_before,
+                                          expected_after) {
+    const anim = element.getAnimations()[0];
+    anim.currentTime = -1;
+    assert_equals(getComputedStyle(element).left, expected_before,
+                  `${element.classList}: unexpected value in the before phase`);
+    anim.currentTime = 100;
+    assert_equals(getComputedStyle(element).left, expected_after,
+                  `${element.classList}: unexpected value in the after phase`);
+  }
 
-<div id="f" class="box">
-  None - from missing
-</div>
-<div id="g" class="box">
-  Backwards - from missing
-</div>
-<div id="h" class="box">
-  Forwards - from missing
-</div>
-<div id="i" class="box">
-  Both - from missing
-</div>
-<div id="j" class="box">
-  Both iterating - from missing
-</div>
+  test(t => {
+    const fillNone = createDiv(t, ['fill-none', 'from-to']);
+    const fillForwards = createDiv(t, ['fill-forwards', 'from-to']);
+    const fillBackwards = createDiv(t, ['fill-backwards', 'from-to']);
+    const fillBoth = createDiv(t, ['fill-both', 'from-to']);
+    assert_before_and_after_styles(fillNone, '100px', '100px');
+    assert_before_and_after_styles(fillForwards, '100px', '300px');
+    assert_before_and_after_styles(fillBackwards, '200px', '100px');
+    assert_before_and_after_styles(fillBoth, '200px', '300px');
+  }, 'Values in before and after phase when both "from" and "to" are present');
+
+  test(t => {
+    const fillNone = createDiv(t, ['fill-none', 'missing-from']);
+    const fillForwards = createDiv(t, ['fill-forwards', 'missing-from']);
+    const fillBackwards = createDiv(t, ['fill-backwards', 'missing-from']);
+    const fillBoth = createDiv(t, ['fill-both', 'missing-from']);
+    assert_before_and_after_styles(fillNone, '100px', '100px');
+    assert_before_and_after_styles(fillForwards, '100px', '300px');
+    assert_before_and_after_styles(fillBackwards, '100px', '100px');
+    assert_before_and_after_styles(fillBoth, '100px', '300px');
+  }, 'Values in before and after phase when missing "from" keyframe');
+
+  test(t => {
+    const fillNone = createDiv(t, ['fill-none', 'missing-to']);
+    const fillForwards = createDiv(t, ['fill-forwards', 'missing-to']);
+    const fillBackwards = createDiv(t, ['fill-backwards', 'missing-to']);
+    const fillBoth = createDiv(t, ['fill-both', 'missing-to']);
+    assert_before_and_after_styles(fillNone, '100px', '100px');
+    assert_before_and_after_styles(fillForwards, '100px', '100px');
+    assert_before_and_after_styles(fillBackwards, '200px', '100px');
+    assert_before_and_after_styles(fillBoth, '200px', '100px');
+  }, 'Values in before and after phase when missing "to" keyframe');
+
+  test(t => {
+    const fillNone = createDiv(t, ['fill-none', 'missing-from-to']);
+    const fillForwards = createDiv(t, ['fill-forwards', 'missing-from-to']);
+    const fillBackwards = createDiv(t, ['fill-backwards', 'missing-from-to']);
+    const fillBoth = createDiv(t, ['fill-both', 'missing-from-to']);
+    assert_before_and_after_styles(fillNone, '100px', '100px');
+    assert_before_and_after_styles(fillForwards, '100px', '100px');
+    assert_before_and_after_styles(fillBackwards, '100px', '100px');
+    assert_before_and_after_styles(fillBoth, '100px', '100px');
+  }, 'Values in before and after phase when missing "from" and "to" keyframes');
+</script>
