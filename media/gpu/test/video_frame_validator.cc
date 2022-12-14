@@ -425,6 +425,7 @@ bool PSNRVideoFrameValidator::Passed() const {
     average += psnr.second;
   }
   average /= psnr_.size();
+  DVLOGF(4) << "Average PSNR: " << average;
   if (average < tolerance_) {
     LOG(ERROR) << "Average PSNR is too low: " << average;
     return false;
@@ -499,6 +500,7 @@ bool SSIMVideoFrameValidator::Passed() const {
     average += ssim.second;
   }
   average /= ssim_.size();
+  DVLOGF(4) << "Average SSIM: " << average;
   if (average < tolerance_) {
     LOG(ERROR) << "Average SSIM is too low: " << average;
     return false;
