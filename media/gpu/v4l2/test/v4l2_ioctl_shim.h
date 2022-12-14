@@ -158,7 +158,8 @@ class V4L2Queue {
 // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/user-func.html
 class V4L2IoctlShim {
  public:
-  V4L2IoctlShim();
+  // Finds first decoder that can decode |coded_fourcc|
+  V4L2IoctlShim(uint32_t coded_fourcc);
   V4L2IoctlShim(const V4L2IoctlShim&) = delete;
   V4L2IoctlShim& operator=(const V4L2IoctlShim&) = delete;
   ~V4L2IoctlShim();
@@ -247,9 +248,9 @@ class V4L2IoctlShim {
   [[nodiscard]] bool Ioctl(int request_code, T arg) const;
 
   // Decode device file descriptor used for ioctl requests.
-  const base::File decode_fd_;
+  base::File decode_fd_;
   // Media device file descriptor used for ioctl requests.
-  const base::File media_fd_;
+  base::File media_fd_;
 };
 
 }  // namespace v4l2_test

@@ -443,7 +443,7 @@ std::unique_ptr<H264Decoder> H264Decoder::Create(
 
   constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_H264_SLICE;
 
-  auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>();
+  auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>(kDriverCodecFourcc);
   uint32_t uncompressed_fourcc = V4L2_PIX_FMT_NV12;
   int num_planes = 1;
 

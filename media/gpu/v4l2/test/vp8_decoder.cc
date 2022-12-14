@@ -258,7 +258,7 @@ std::unique_ptr<Vp8Decoder> Vp8Decoder::Create(
     return nullptr;
   }
 
-  auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>();
+  auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>(kDriverCodecFourcc);
   uint32_t uncompressed_fourcc = V4L2_PIX_FMT_NV12;
   int num_planes = 1;
 
