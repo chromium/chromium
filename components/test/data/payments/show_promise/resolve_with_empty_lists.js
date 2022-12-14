@@ -5,14 +5,17 @@
  */
 
 /**
- * Launch PaymentRequest by resolving the promised passed into the shoe() method
+ * Launch PaymentRequest by resolving the promised passed into the show() method
  * with empty lists of display items, modifiers, and shipping options.
- * @param {string} supportedMethods The payment method that is supported by this
- *        request.
+ * @param {string} supportedMethods - The payment method identifier.
  */
-function buyWithMethods(supportedMethods) {
+function buy(supportedMethods) {
+  if (!supportedMethods) {
+    print('supportedMethods required');
+    return;
+  }
   try {
-    var request = new PaymentRequest(
+    const request = new PaymentRequest(
         [{supportedMethods}], {
           total: {label: 'Total', amount: {currency: 'USD', value: '1.00'}},
           displayItems: [{
@@ -21,7 +24,7 @@ function buyWithMethods(supportedMethods) {
             amount: {currency: 'USD', value: '99.99'},
           }],
           modifiers: [{
-            supportedMethods: 'basic-card',
+            supportedMethods,
             additionalDisplayItems: [{
               label: 'PENDING ADDITIONAL DISPLAY ITEM',
               pending: true,

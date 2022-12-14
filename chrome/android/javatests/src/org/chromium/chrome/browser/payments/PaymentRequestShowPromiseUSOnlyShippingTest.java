@@ -40,7 +40,8 @@ public class PaymentRequestShowPromiseUSOnlyShippingTest {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testCannotShipWithFastApp() throws TimeoutException {
-        mRule.addPaymentAppFactory("basic-card", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+        mRule.addPaymentAppFactory(
+                "https://example.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         runCannotShipTest();
     }
 
@@ -49,8 +50,8 @@ public class PaymentRequestShowPromiseUSOnlyShippingTest {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testCannotShipWithSlowApp() throws TimeoutException {
-        mRule.addPaymentAppFactory(
-                "basic-card", AppPresence.HAVE_APPS, FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
+        mRule.addPaymentAppFactory("https://example.test", AppPresence.HAVE_APPS,
+                FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
         runCannotShipTest();
     }
 
@@ -76,7 +77,8 @@ public class PaymentRequestShowPromiseUSOnlyShippingTest {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testCanShipWithFastApp() throws TimeoutException {
-        mRule.addPaymentAppFactory("basic-card", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+        mRule.addPaymentAppFactory(
+                "https://example.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         runCanShipTest();
     }
 
@@ -85,8 +87,8 @@ public class PaymentRequestShowPromiseUSOnlyShippingTest {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testCanShipWithSlowApp() throws TimeoutException {
-        mRule.addPaymentAppFactory(
-                "basic-card", AppPresence.HAVE_APPS, FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
+        mRule.addPaymentAppFactory("https://example.test", AppPresence.HAVE_APPS,
+                FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
         runCanShipTest();
     }
 

@@ -46,9 +46,9 @@ public class PaymentRequestShowPromiseEmptyTest {
     @Feature({"Payments"})
     public void testResolveWithEmptyDictionary() throws TimeoutException {
         mRule.addPaymentAppFactory(
-                "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+                "https://example.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        mRule.triggerUIAndWait("buyWithUrlMethod", mRule.getReadyToPay());
+        mRule.clickNodeAndWait("buy", mRule.getReadyToPay());
 
         Assert.assertEquals("USD $3.00", mRule.getOrderSummaryTotal());
 

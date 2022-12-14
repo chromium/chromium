@@ -53,7 +53,8 @@ public class PaymentRequestShowPromiseSingleOptionShippingWithUpdateTest {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testFastApp() throws TimeoutException {
-        mRule.addPaymentAppFactory("basic-card", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+        mRule.addPaymentAppFactory(
+                "https://example.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mRule.triggerUIAndWait("buy", mRule.getReadyToPay());
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
         Assert.assertEquals("$0.00", mRule.getShippingOptionCostSummaryOnBottomSheet());
@@ -68,8 +69,8 @@ public class PaymentRequestShowPromiseSingleOptionShippingWithUpdateTest {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testSlowApp() throws TimeoutException {
-        mRule.addPaymentAppFactory(
-                "basic-card", AppPresence.HAVE_APPS, FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
+        mRule.addPaymentAppFactory("https://example.test", AppPresence.HAVE_APPS,
+                FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
         mRule.triggerUIAndWait("buy", mRule.getReadyToPay());
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
         Assert.assertEquals("$0.00", mRule.getShippingOptionCostSummaryOnBottomSheet());

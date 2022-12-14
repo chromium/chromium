@@ -32,7 +32,8 @@ public class PaymentRequestShowPromiseRejectTest {
     @MediumTest
     @Feature({"Payments"})
     public void testReject() throws TimeoutException {
-        mRule.addPaymentAppFactory("basic-card", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+        mRule.addPaymentAppFactory(
+                "https://example.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mRule.clickNodeAndWait("buy", mRule.getRendererClosedMojoConnection());
         mRule.expectResultContains(new String[] {"AbortError"});
     }

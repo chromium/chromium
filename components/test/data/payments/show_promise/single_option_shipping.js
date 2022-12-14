@@ -7,10 +7,13 @@
 /**
  * Launch PaymentRequest with a show promise and a single pre-selected option
  * for shipping worldwide.
- * @param {string} supportedMethods The payment method that is supported by this
- *        request.
+ * @param {string} supportedMethods - The payment method identifier.
  */
-function buyWithMethods(supportedMethods) {
+function buy(supportedMethods) {
+  if (!supportedMethods) {
+    print('supportedMethods required');
+    return;
+  }
   try {
     new PaymentRequest(
         [{supportedMethods}],

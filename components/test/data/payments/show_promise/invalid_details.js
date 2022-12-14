@@ -5,12 +5,16 @@
  */
 
 /**
- * Launch PaymentRequest with a show promise that resolve with invalid details.
- * @param {string} supportedMethods The payment method that is supported by this
- *        request.
+ * Launch PaymentRequest with a show promise that resolve with invalid details
+ * (a negative total amount).
+ * @param {string} supportedMethods The payment method identifier.
  * @return {string} - The error message, if any.
  */
-async function buyWithMethods(supportedMethods) {
+async function buy(supportedMethods) {
+  if (!supportedMethods) {
+    print('supportedMethods required');
+    return 'supportedMethods required';
+  }
   try {
     await new PaymentRequest([{supportedMethods}], {
       total: {
@@ -22,7 +26,7 @@ async function buyWithMethods(supportedMethods) {
           resolve({
             total: {
               label: 'Total',
-              amount: {currency: 'USD', value: '-1.00'},
+              amount: {currency: 'USD', value: '-1.00'}, // -1.00 is not valid.
             },
           });
         }));

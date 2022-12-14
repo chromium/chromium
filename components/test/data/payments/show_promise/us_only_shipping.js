@@ -6,10 +6,13 @@
 
 /**
  * Launch PaymentRequest with a show promise and US-only shipping.
- * @param {string} supportedMethods The payment method that is supported by this
- *        request.
+ * @param {string} supportedMethods - The payment method identifier.
  */
-function buyWithMethods(supportedMethods) {
+function buy(supportedMethods) {
+  if (!supportedMethods) {
+    print('supportedMethods required');
+    return;
+  }
   var detailsForUSAddress = {
     shippingOptions: [{
       id: '1',

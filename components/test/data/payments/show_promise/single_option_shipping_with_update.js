@@ -8,10 +8,9 @@
  * Launch PaymentRequest with a show promise and a single pre-selected option
  * for shipping worldwide and a handler for shipping address change events that
  * does not change anything.
- * @param {string} supportedMethods The payment method that is supported by this
- *        request.
+ * @param {string} supportedMethods - The payment method identifier.
  */
-function buyWithMethods(supportedMethods) {
+function buy(supportedMethods) {
   var finalizedDetails = {
     total: {label: 'Total', amount: {currency: 'USD', value: '1.00'}},
     shippingOptions: [{

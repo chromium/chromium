@@ -46,7 +46,8 @@ public class PaymentRequestShowPromiseEmptyListsTest {
     @MediumTest
     @Feature({"Payments"})
     public void testResolveWithEmptyLists() throws TimeoutException {
-        mRule.addPaymentAppFactory("basic-card", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+        mRule.addPaymentAppFactory(
+                "https://example.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mRule.triggerUIAndWait("buy", mRule.getReadyForInput());
 
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
