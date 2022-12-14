@@ -3427,10 +3427,6 @@ crbug.com/626703 external/wpt/css/css-will-change/will-change-abspos-cb-001.html
 crbug.com/626703 [ Linux ] external/wpt/url/a-element.html [ Failure ]
 crbug.com/892337 external/wpt/resource-timing/content-type-parsing.html [ Failure Timeout ]
 
-# Out-of-order pointerevents: https://github.com/w3c/pointerevents/issues/355
-crbug.com/1186788 [ Linux ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Failure Pass Timeout ]
-crbug.com/1186788 [ Mac ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Failure Pass Timeout ]
-
 crbug.com/1147998 external/wpt/pointerevents/pointerevent_after_target_removed.html?mouse [ Failure ]
 crbug.com/1147674 external/wpt/pointerevents/pointerevent_after_target_removed.html?pen [ Failure ]
 crbug.com/1147674 external/wpt/pointerevents/pointerevent_after_target_removed.html?touch [ Failure ]
