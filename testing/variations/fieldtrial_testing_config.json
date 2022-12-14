@@ -2427,6 +2427,25 @@
             ]
         }
     ],
+    "ChromeOSARCVMAppRescue": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledGroupMedium_20221212",
+                    "params": {
+                        "interval": "30000",
+                        "swappiness": "0"
+                    },
+                    "enable_features": [
+                        "ArcMglruReclaim"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSARCVMReclaimThrottle": [
         {
             "platforms": [
