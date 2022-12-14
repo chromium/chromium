@@ -329,6 +329,16 @@ void OverviewItem::EnsureVisible() {
 }
 
 void OverviewItem::Shutdown() {
+  // If `hide_windows` still manages the visibility of this overview item
+  // window, remove it from the list without showing.
+  ScopedOverviewHideWindows* hide_windows =
+      overview_session_->hide_windows_for_saved_desks_grid();
+  if (item_widget_ && hide_windows &&
+      hide_windows->HasWindow(item_widget_->GetNativeWindow())) {
+    hide_windows->RemoveWindow(item_widget_->GetNativeWindow(),
+                               /*show_window=*/false);
+  }
+
   item_widget_.reset();
   overview_item_view_ = nullptr;
 }
@@ -1486,13 +1496,16 @@ void OverviewItem::ShowWindowInOverview() {
   if (hide_windows->HasWindow(GetWindow())) {
     const bool ignore_activations = overview_session_->ignore_activations();
     overview_session_->set_ignore_activations(true);
-    hide_windows->RemoveWindow(GetWindow());
+    hide_windows->RemoveWindow(GetWindow(), /*show_window=*/true);
     overview_session_->set_ignore_activations(ignore_activations);
   }
 
   // Show the overview item window.
-  if (item_widget_ && hide_windows->HasWindow(item_widget_->GetNativeWindow()))
-    hide_windows->RemoveWindow(item_widget_->GetNativeWindow());
+  if (item_widget_ &&
+      hide_windows->HasWindow(item_widget_->GetNativeWindow())) {
+    hide_windows->RemoveWindow(item_widget_->GetNativeWindow(),
+                               /*show_window=*/true);
+  }
 }
 
 }  // namespace ash
