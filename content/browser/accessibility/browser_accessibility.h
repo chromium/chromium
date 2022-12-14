@@ -82,9 +82,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
 
   bool IsLineBreakObject() const;
 
-  // See `AXNode::IsEmptyLeaf()`.
-  bool IsEmptyLeaf() const;
-
   // Returns true if this object can fire events.
   virtual bool CanFireEvents() const;
 
@@ -385,7 +382,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   bool IsPlatformDocument() const override;
   bool IsLeaf() const override;
   bool IsFocused() const override;
-  bool IsToplevelBrowserWindow() override;
   gfx::NativeViewAccessible GetLowestPlatformAncestor() const override;
   gfx::NativeViewAccessible GetTextFieldAncestor() const override;
   gfx::NativeViewAccessible GetSelectionContainer() const override;
@@ -394,7 +390,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   std::unique_ptr<ChildIterator> ChildrenBegin() override;
   std::unique_ptr<ChildIterator> ChildrenEnd() override;
 
-  std::u16string GetHypertext() const override;
   bool SetHypertextSelection(int start_offset, int end_offset) override;
   gfx::Rect GetBoundsRect(
       const ui::AXCoordinateSystem coordinate_system,

@@ -733,12 +733,6 @@ std::u16string BrowserAccessibility::GetNameAsString16() const {
   return node()->GetNameUTF16();
 }
 
-std::u16string BrowserAccessibility::GetHypertext() const {
-  // Overloaded by platforms which require a hypertext accessibility text
-  // implementation.
-  return std::u16string();
-}
-
 gfx::Rect BrowserAccessibility::RelativeToAbsoluteBounds(
     gfx::RectF bounds,
     const ui::AXCoordinateSystem coordinate_system,
@@ -986,10 +980,6 @@ gfx::NativeViewAccessible BrowserAccessibility::GetPreviousSibling() {
   return sibling->GetNativeViewAccessible();
 }
 
-bool BrowserAccessibility::IsEmptyLeaf() const {
-  return node()->IsEmptyLeaf();
-}
-
 bool BrowserAccessibility::IsLeaf() const {
   // According to the ARIA and Core-AAM specs:
   // https://w3c.github.io/aria/#button,
@@ -1016,10 +1006,6 @@ bool BrowserAccessibility::IsFocused() const {
   // TODO(nektar): Create an `ax_focus` class to share focus state between Views
   // and Web.
   return manager()->GetFocus() == this;
-}
-
-bool BrowserAccessibility::IsToplevelBrowserWindow() {
-  return false;
 }
 
 bool BrowserAccessibility::IsPlatformDocument() const {
