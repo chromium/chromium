@@ -350,6 +350,9 @@ ImmersiveModeController::ImmersiveModeController(NSWindow* browser_widget,
       [[NSTitlebarAccessoryViewController alloc] init]);
   thin_titlebar_view_controller_.get().view =
       [[[NSView alloc] init] autorelease];
+  thin_titlebar_view_controller_.get().view.wantsLayer = YES;
+  thin_titlebar_view_controller_.get().view.layer.backgroundColor =
+      NSColor.blackColor.CGColor;
   thin_titlebar_view_controller_.get().layoutAttribute =
       NSLayoutAttributeBottom;
   thin_titlebar_view_controller_.get().fullScreenMinHeight =
