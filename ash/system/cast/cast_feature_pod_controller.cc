@@ -30,7 +30,7 @@ CastFeaturePodController::CastFeaturePodController(
     : tray_controller_(tray_controller) {}
 
 CastFeaturePodController::~CastFeaturePodController() {
-  if (CastConfigController::Get() && button_)
+  if (CastConfigController::Get() && (button_ || tile_))
     CastConfigController::Get()->RemoveObserver(this);
 }
 
@@ -60,10 +60,11 @@ std::unique_ptr<FeatureTile> CastFeaturePodController::CreateTile() {
   DCHECK(features::IsQsRevampEnabled());
   auto tile = std::make_unique<FeatureTile>(base::BindRepeating(
       &CastFeaturePodController::OnIconPressed, weak_factory_.GetWeakPtr()));
+  tile_ = tile.get();
   tile->SetVectorIcon(kUnifiedMenuCastIcon);
   tile->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST));
-  // TODO(b/252872586): Show sublabel with cast device availability.
-  tile->SetSubLabelVisibility(false);
+  tile->SetSubLabel(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_DEVICES_AVAILABLE));
   const std::u16string tooltip =
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_TOOLTIP);
   tile->SetTooltipText(tooltip);
@@ -82,6 +83,12 @@ std::unique_ptr<FeatureTile> CastFeaturePodController::CreateTile() {
     TrackVisibilityUMA();
   tile->SetVisible(visible);
 
+  // Refresh cast devices to update the "Devices available" sublabel visibility.
+  if (cast_config) {
+    cast_config->AddObserver(this);
+    cast_config->RequestDeviceRefresh();
+  }
+  UpdateSublabelVisibility();
   return tile;
 }
 
@@ -116,8 +123,10 @@ void CastFeaturePodController::OnLabelPressed() {
 
 void CastFeaturePodController::OnDevicesUpdated(
     const std::vector<SinkAndRoute>& devices) {
-  DCHECK(!features::IsQsRevampEnabled());
-  Update();
+  if (features::IsQsRevampEnabled())
+    UpdateSublabelVisibility();
+  else
+    Update();
 }
 
 void CastFeaturePodController::Update() {
@@ -130,6 +139,16 @@ void CastFeaturePodController::Update() {
   if (!button_->GetVisible() && visible)
     TrackVisibilityUMA();
   button_->SetVisible(visible);
+}
+
+void CastFeaturePodController::UpdateSublabelVisibility() {
+  DCHECK(features::IsQsRevampEnabled());
+  DCHECK(tile_);
+  auto* cast_config = CastConfigController::Get();
+  bool devices_available =
+      cast_config && (cast_config->HasSinksAndRoutes() ||
+                      cast_config->AccessCodeCastingEnabled());
+  tile_->SetSubLabelVisibility(devices_available);
 }
 
 }  // namespace ash

@@ -39,11 +39,17 @@ class ASH_EXPORT CastFeaturePodController
   void OnDevicesUpdated(const std::vector<SinkAndRoute>& devices) override;
 
  private:
+  // Updates feature pod button visibility. Used pre-QsRevamp.
   void Update();
 
-  // Unowned.
+  // Updates tile sublabel visibility. Used post-QsRevamp.
+  void UpdateSublabelVisibility();
+
   UnifiedSystemTrayController* const tray_controller_;
+
+  // Owned by views hierarchy.
   FeaturePodButton* button_ = nullptr;
+  FeatureTile* tile_ = nullptr;
 
   base::WeakPtrFactory<CastFeaturePodController> weak_factory_{this};
 };

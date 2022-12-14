@@ -28,9 +28,11 @@ class TestCastConfigController : public CastConfigController {
   bool HasMediaRouterForPrimaryProfile() const override {
     return has_media_router_;
   }
-  bool HasSinksAndRoutes() const override { return false; }
+  bool HasSinksAndRoutes() const override { return has_sinks_and_routes_; }
   bool HasActiveRoute() const override { return false; }
-  bool AccessCodeCastingEnabled() const override { return false; }
+  bool AccessCodeCastingEnabled() const override {
+    return access_code_casting_enabled_;
+  }
   void RequestDeviceRefresh() override {}
   const std::vector<SinkAndRoute>& GetSinksAndRoutes() override {
     return sinks_and_routes_;
@@ -39,6 +41,8 @@ class TestCastConfigController : public CastConfigController {
   void StopCasting(const std::string& route_id) override {}
 
   bool has_media_router_ = true;
+  bool has_sinks_and_routes_ = false;
+  bool access_code_casting_enabled_ = false;
   std::vector<SinkAndRoute> sinks_and_routes_;
 };
 
@@ -77,6 +81,35 @@ TEST_F(CastFeaturePodControllerTest, TileNotVisibleWhenNoMediaRouter) {
   cast_config_.has_media_router_ = false;
   std::unique_ptr<FeatureTile> tile = controller_->CreateTile();
   EXPECT_FALSE(tile->GetVisible());
+}
+
+TEST_F(CastFeaturePodControllerTest, SubLabelVisibleWhenSinksAvailable) {
+  // When cast devices are available, the sub-label is visible.
+  cast_config_.has_sinks_and_routes_ = true;
+  std::unique_ptr<FeatureTile> tile = controller_->CreateTile();
+  EXPECT_TRUE(tile->sub_label()->GetVisible());
+  EXPECT_EQ(tile->sub_label()->GetText(), u"Devices available");
+}
+
+TEST_F(CastFeaturePodControllerTest,
+       SubLabelVisibleWhenAccessCodeCastingEnabled) {
+  // When access code casting is available, the sub-label is visible.
+  cast_config_.access_code_casting_enabled_ = true;
+  std::unique_ptr<FeatureTile> tile = controller_->CreateTile();
+  EXPECT_TRUE(tile->sub_label()->GetVisible());
+  EXPECT_EQ(tile->sub_label()->GetText(), u"Devices available");
+}
+
+TEST_F(CastFeaturePodControllerTest, SubLabelVisibleOnDevicesUpdated) {
+  // By default the sub-label is hidden.
+  std::unique_ptr<FeatureTile> tile = controller_->CreateTile();
+  EXPECT_FALSE(tile->sub_label()->GetVisible());
+
+  // If cast devices become available while the tray is open, the sub-label
+  // becomes visible.
+  cast_config_.has_sinks_and_routes_ = true;
+  controller_->OnDevicesUpdated({});
+  EXPECT_TRUE(tile->sub_label()->GetVisible());
 }
 
 }  // namespace

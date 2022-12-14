@@ -480,6 +480,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_CAST_SHORT" desc="The label used for Cast button in system tray bubble. [CHAR_LIMIT=14]">
         Cast
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_CAST_DEVICES_AVAILABLE" desc="Subtitle under the Cast button in the system tray bubble when Chromecast devices are available for casting">
+        Devices available
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST_TOOLTIP" desc="The tooltip text used for Cast button in system tray bubble.">
         Show cast devices
       </message>
