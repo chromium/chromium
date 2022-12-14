@@ -614,6 +614,13 @@
     "args": ["--disable-site-isolation-trials"],
     "expires": "Jul 1, 2023"
   },
+  {
+    "prefix": "not-site-per-process-nonexclusive",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/performance-timeline/tentative"],
+    "args": ["--disable-site-isolation-trials"],
+    "expires": "Jul 1, 2023"
+  },
 
   "----------------------- origin-keyed agent clusters --------------------",
   "Origin-keyed agent clusters web platform tests are for the feature at",
@@ -635,7 +642,6 @@
              "--reset-browsing-instance-between-tests"],
     "expires": "Jul 1, 2023"
   },
-
   {
     "prefix": "focusless-spat-nav",
     "platforms": ["Linux", "Mac", "Win"],

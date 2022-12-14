@@ -483,41 +483,49 @@ PerformanceEntryVector Performance::GetEntriesWithChildFrames(
   if (!window) {
     return entries;
   }
-  LocalFrame* parent_frame = window->GetFrame();
-  if (!parent_frame) {
+  LocalFrame* root_frame = window->GetFrame();
+  if (!root_frame) {
     return entries;
   }
+  const SecurityOrigin* root_origin =
+      ExecutionContext::From(script_state)->GetSecurityOrigin();
 
   HeapDeque<Member<Frame>> queue;
-  queue.push_back(parent_frame);
+  queue.push_back(root_frame);
 
   while (!queue.empty()) {
     Frame* current_frame = queue.TakeFirst();
 
-    if (LocalFrame* local_frame = DynamicTo<LocalFrame>(current_frame);
-        local_frame && !local_frame->IsCrossOriginToNearestMainFrame()) {
+    if (LocalFrame* local_frame = DynamicTo<LocalFrame>(current_frame)) {
       // Get the Performance object from the current frame.
       LocalDOMWindow* current_window = local_frame->DomWindow();
       // As we verified that the frame this was called with is not detached when
       // entring this loop, we can assume that all its children are also not
       // detached, and hence have a window object.
       DCHECK(current_window);
-      WindowPerformance* window_performance =
-          DOMWindowPerformance::performance(*current_window);
 
-      // Get the performance entries based on entry_type input.
-      PerformanceEntryVector current_entries;
-      if (entry_type.IsNull()) {
-        current_entries = window_performance->GetEntriesForCurrentFrame();
-      } else {
-        current_entries =
-            window_performance->GetEntriesByTypeForCurrentFrame(entry_type);
+      // Validate that the child frame's origin is the same as the root
+      // frame.
+      const SecurityOrigin* current_origin =
+          current_window->GetSecurityOrigin();
+      if (root_origin->IsSameOriginWith(current_origin)) {
+        WindowPerformance* window_performance =
+            DOMWindowPerformance::performance(*current_window);
+
+        // Get the performance entries based on entry_type input.
+        PerformanceEntryVector current_entries;
+        if (entry_type.IsNull()) {
+          current_entries = window_performance->GetEntriesForCurrentFrame();
+        } else {
+          current_entries =
+              window_performance->GetEntriesByTypeForCurrentFrame(entry_type);
+        }
+
+        entries.AppendVector(current_entries);
       }
-
-      entries.AppendVector(current_entries);
     }
 
-    // Add both Local and Remote Frames to the queue.
+    // Add both Local and Remote Frame children to the queue.
     for (Frame* child = current_frame->FirstChild(); child;
          child = child->NextSibling()) {
       queue.push_back(child);
