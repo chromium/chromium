@@ -41,6 +41,9 @@ class InteractionToNextPaintTest : public MetricIntegrationTest {
   // program. We are leveraging the Performance Observer to ensure we
   // received the input in renderer.
   void InjectWaitJavaScript();
+
+  // Perform hit test and frame waiter to ensure the frame is ready.
+  void WaitForFrameReady();
 };
 
 bool InteractionToNextPaintTest::ExtractUKMPageLoadMetric(
@@ -99,7 +102,7 @@ bool InteractionToNextPaintTest::VerifyUKMAndTraceData(
 
   // Extract the UKM INP values from ukm_recorder.
   int64_t INP_numOfInteraction_value;
-  int64_t INP_100th_value;
+  int64_t INP_worst_value;
   int64_t INP_98th_value;
 
   bool extract_num_of_interaction = ExtractUKMPageLoadMetric(
@@ -110,7 +113,7 @@ bool InteractionToNextPaintTest::VerifyUKMAndTraceData(
       ukm_recorder(),
       ukm::builders::PageLoad::
           kInteractiveTiming_WorstUserInteractionLatency_MaxEventDurationName,
-      &INP_100th_value);
+      &INP_worst_value);
   bool extract_98th_interaction = ExtractUKMPageLoadMetric(
       ukm_recorder(),
       ukm::builders::PageLoad::
@@ -126,7 +129,7 @@ bool InteractionToNextPaintTest::VerifyUKMAndTraceData(
   // Since the INP value takes 98th percentile all interactions,
   // the 98th percentile and 100th percentile should be the same when
   // we have less than 50 interactions.
-  EXPECT_EQ(INP_98th_value, INP_100th_value);
+  EXPECT_EQ(INP_98th_value, INP_worst_value);
 
   // The duration value in trace data is rounded to 8md
   // which means the value before rounding should be in the
@@ -141,7 +144,7 @@ bool InteractionToNextPaintTest::VerifyUKMAndTraceData(
 
 void InteractionToNextPaintTest::InjectWaitJavaScript() {
   EXPECT_TRUE(ExecJs(web_contents(), R"(
-   waitForClick = async () => {
+   waitForFirstInput = async () => {
       const observePromise = new Promise(resolve => {
         new PerformanceObserver(e => {
           e.getEntries().forEach(entry => {
@@ -154,7 +157,7 @@ void InteractionToNextPaintTest::InjectWaitJavaScript() {
 
     let eventCounts = {mouseup: 0, pointerup: 0, click: 0};
     let eventPromise;
-    waitForEvents = () => {
+    registerEventListeners = () => {
       eventPromise = new Promise(resolve => {
         for (let evt in eventCounts) {
           window.addEventListener(evt, function(e) {
@@ -169,10 +172,20 @@ void InteractionToNextPaintTest::InjectWaitJavaScript() {
       });
       return true;
     };
-    runwaitForEvents = async () => {
+    awaitEventListeners = async () => {
       return await eventPromise;
     };
   )"));
+  ASSERT_TRUE(EvalJs(web_contents(), "registerEventListeners()").ExtractBool());
+}
+
+void InteractionToNextPaintTest::WaitForFrameReady() {
+  // We should wait for the main frame's hit-test data to be ready before
+  // sending the click event below to avoid flakiness.
+  content::WaitForHitTestData(web_contents()->GetPrimaryMainFrame());
+  // Ensure the compositor thread is aware of the mouse events.
+  content::MainThreadFrameObserver frame_observer(GetRenderWidgetHost());
+  frame_observer.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest, INP_ClickOnPage) {
@@ -190,22 +203,15 @@ IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest, INP_ClickOnPage) {
   // Create Performance Observers to observe first input and events in the
   // program.
   InjectWaitJavaScript();
-  ASSERT_TRUE(EvalJs(web_contents(), "waitForEvents()").ExtractBool());
-
-  // We should wait for the main frame's hit-test data to be ready before
-  // sending the click event below to avoid flakiness.
-  content::WaitForHitTestData(web_contents()->GetPrimaryMainFrame());
-  // Ensure the compositor thread is aware of the mouse events.
-  content::MainThreadFrameObserver frame_observer(GetRenderWidgetHost());
-  frame_observer.Wait();
+  WaitForFrameReady();
 
   // Simulate a click on div which has no renderer actions as our interaction.
   content::SimulateMouseClick(web_contents(), 0,
                               blink::WebMouseEvent::Button::kLeft);
 
-  // Start the waitForClick Performance Observer.
-  ASSERT_TRUE(EvalJs(web_contents(), "waitForClick()").ExtractBool());
-  ASSERT_TRUE(EvalJs(web_contents(), "runwaitForEvents()").ExtractBool());
+  // Start the waitForFirstInput Performance Observer.
+  ASSERT_TRUE(EvalJs(web_contents(), "waitForFirstInput()").ExtractBool());
+  ASSERT_TRUE(EvalJs(web_contents(), "awaitEventListeners()").ExtractBool());
   waiter->Wait();
 
   // Navigate to blank page to ensure the data gets flushed from renderer to
@@ -231,21 +237,57 @@ IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest, INP_ClickOnButton) {
   // Create Performance Observers to observe first input and events in the
   // program.
   InjectWaitJavaScript();
-
-  ASSERT_TRUE(EvalJs(web_contents(), "waitForEvents()").ExtractBool());
-  // We should wait for the main frame's hit-test data to be ready before
-  // sending the click event below to avoid flakiness.
-  content::WaitForHitTestData(web_contents()->GetPrimaryMainFrame());
-  // Ensure the compositor thread is aware of the mouse events.
-  content::MainThreadFrameObserver frame_observer(GetRenderWidgetHost());
-  frame_observer.Wait();
+  WaitForFrameReady();
 
   // Simulate a click on button which has default browser-driven presentation.
   content::SimulateMouseClickOrTapElementWithId(web_contents(), "button");
 
-  // Start the waitForClick Performance Observer.
-  ASSERT_TRUE(EvalJs(web_contents(), "waitForClick()").ExtractBool());
-  ASSERT_TRUE(EvalJs(web_contents(), "runwaitForEvents()").ExtractBool());
+  // Start the waitForFirstInput Performance Observer.
+  ASSERT_TRUE(EvalJs(web_contents(), "waitForFirstInput()").ExtractBool());
+  ASSERT_TRUE(EvalJs(web_contents(), "awaitEventListeners()").ExtractBool());
+  waiter->Wait();
+
+  // Navigate to blank page to ensure the data gets flushed from renderer to
+  // browser.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  auto analyzer = StopTracingAndAnalyze();
+  ASSERT_TRUE(VerifyUKMAndTraceData(*analyzer));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest, INP_ClickWithPresentation) {
+  // Add waiter to wait for the interaction is arrived in browser.
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddNumInteractionsExpectation(1);
+
+  // Start tracing to record tracing data.
+  StartTracing({"devtools.timeline"});
+  LoadHTML(R"HTML(
+    <div id="div">content</div>
+  )HTML");
+
+  // Create Performance Observers to observe first input and events in the
+  // program.
+  InjectWaitJavaScript();
+
+  // Inject javascript to add event listener to change color
+  // after click. By doing this, we test click with
+  // presentation change for INP.
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    const element = document.getElementById('div');
+    element.addEventListener("pointerdown", () => {
+      element.style="color:red";
+    });
+  )"));
+  WaitForFrameReady();
+
+  // Simulate a click on button which has default browser-driven presentation.
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "div");
+
+  // Start the waitForFirstInput Performance Observer.
+  ASSERT_TRUE(EvalJs(web_contents(), "waitForFirstInput()").ExtractBool());
+  ASSERT_TRUE(EvalJs(web_contents(), "awaitEventListeners()").ExtractBool());
   waiter->Wait();
 
   // Navigate to blank page to ensure the data gets flushed from renderer to
