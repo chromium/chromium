@@ -21,6 +21,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/layout.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -297,6 +298,13 @@ void WindowTreeHostPlatform::OnOcclusionStateChanged(
       break;
   }
   SetNativeWindowOcclusionState(aura_occlusion_state, {});
+}
+
+int64_t WindowTreeHostPlatform::InsertSequencePoint() {
+  int64_t seq =
+      compositor()->local_surface_id_from_parent().child_sequence_number();
+  compositor()->RequestNewLocalSurfaceId();
+  return seq;
 }
 
 void WindowTreeHostPlatform::SetFrameRateThrottleEnabled(bool enabled) {

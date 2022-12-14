@@ -256,6 +256,12 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
     return host_->display_transform_hint();
   }
 
+  const viz::LocalSurfaceId& local_surface_id_from_parent() const {
+    return host_->local_surface_id_from_parent();
+  }
+
+  void RequestNewLocalSurfaceId() { host_->RequestNewLocalSurfaceId(); }
+
   // Returns the size of the widget that is being drawn to in pixel coordinates.
   const gfx::Size& size() const { return size_; }
 

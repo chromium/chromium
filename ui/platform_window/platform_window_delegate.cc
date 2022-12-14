@@ -42,6 +42,11 @@ absl::optional<MenuType> PlatformWindowDelegate::GetMenuType() {
 void PlatformWindowDelegate::OnOcclusionStateChanged(
     PlatformWindowOcclusionState occlusion_state) {}
 
+int64_t PlatformWindowDelegate::InsertSequencePoint() {
+  NOTREACHED();
+  return -1;
+}
+
 absl::optional<OwnedWindowAnchor>
 PlatformWindowDelegate::GetOwnedWindowAnchorAndRectInDIP() {
   return absl::nullopt;

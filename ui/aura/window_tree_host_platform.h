@@ -88,6 +88,7 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   void OnMouseEnter() override;
   void OnOcclusionStateChanged(
       ui::PlatformWindowOcclusionState occlusion_state) override;
+  int64_t InsertSequencePoint() override;
   void SetFrameRateThrottleEnabled(bool enabled) override;
 
   // Overridden from aura::WindowTreeHost:
