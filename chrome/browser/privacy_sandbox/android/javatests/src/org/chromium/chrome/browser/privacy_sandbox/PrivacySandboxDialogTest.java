@@ -9,7 +9,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -509,7 +508,7 @@ public final class PrivacySandboxDialogTest {
         assertEquals("Last dialog action", PromptAction.NOTICE_SHOWN,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         // Ack the notice and verify it worked correctly.
-        onView(withId(R.id.ack_button)).perform(click());
+        tryClickOn(withId(R.id.ack_button));
         assertEquals("Last dialog action", PromptAction.NOTICE_ACKNOWLEDGE,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
@@ -521,7 +520,6 @@ public final class PrivacySandboxDialogTest {
         assertEquals("Last dialog action", PromptAction.NOTICE_MORE_INFO_OPENED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
 
-        scrollToPosition(0);
         onView(withId(R.id.privacy_sandbox_notice_row_dropdown)).check(matches(isDisplayed()));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
         assertEquals("Last dialog action", PromptAction.NOTICE_MORE_INFO_CLOSED,
@@ -529,7 +527,7 @@ public final class PrivacySandboxDialogTest {
         onView(withId(R.id.privacy_sandbox_notice_row_dropdown)).check(doesNotExist());
 
         // Click on the settings button and verify it worked correctly.
-        onView(withId(R.id.settings_button)).perform(click());
+        tryClickOn(withId(R.id.settings_button));
         assertEquals("Last dialog action", PromptAction.NOTICE_OPEN_SETTINGS,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
