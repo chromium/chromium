@@ -1493,13 +1493,13 @@
     Sort options
   </message>
   <message name="IDS_FILE_BROWSER_GEAR_BUTTON_TOOLTIP" desc="Tooltip for the gear button in the Files app.">
-    More...
+    More options
   </message>
 <message name="IDS_FILE_BROWSER_READONLY_INDICATOR_TOOLTIP" desc="Tooltip for the readonly indicator in the Files app.">
     The contents of this folder are read-only. Some activities are not supported.
   </message>
   <message name="IDS_FILE_BROWSER_SELECTION_MENU_BUTTON_TOOLTIP" desc="Tooltip for the button to open the context menu of currently selected items in the Files app.">
-    More...
+    More options
   </message>
   <message name="IDS_FILE_BROWSER_CONTEXT_MENU_LABEL" desc="Label for Context menu used for Chromevox/screenreader.">
     Context
