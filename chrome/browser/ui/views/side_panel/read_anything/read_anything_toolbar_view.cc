@@ -24,7 +24,9 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/layout_types.h"
+#include "ui/views/layout/flex_layout.h"
+
+// #include "ui/views/layout/layout_types.h"
 
 ReadAnythingToolbarView::ReadAnythingToolbarView(
     ReadAnythingCoordinator* coordinator,
@@ -33,33 +35,34 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
     : delegate_(toolbar_delegate), coordinator_(std::move(coordinator)) {
   coordinator_->AddObserver(this);
 
-  // Create and set a BoxLayout LayoutManager for this view.
-  auto layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal);
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStretch);
-  layout->set_inside_border_insets(gfx::Insets(kInternalInsets));
-
-  SetLayoutManager(std::move(layout));
+  // Set a FlexLayout LayoutManager for this view.
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+      .SetInteriorMargin(gfx::Insets(kInternalInsets));
 
   // Create a font selection combobox for the toolbar. The font combobox uses
   // a custom MenuModel, so we have a separate View for it for convenience.
   auto combobox =
       std::make_unique<ReadAnythingFontCombobox>(font_combobox_delegate);
 
+  // Font combobox should shrink as panel gets smaller.
+  combobox->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum));
+
   // Create the decrease/increase text size buttons.
   auto decrease_size_button = std::make_unique<ReadAnythingButtonView>(
       base::BindRepeating(&ReadAnythingToolbarView::DecreaseFontSizeCallback,
                           weak_pointer_factory_.GetWeakPtr()),
-      kTextDecreaseIcon, kSmallIconSize, gfx::kPlaceholderColor,
+      kTextDecreaseIcon, kIconSize, gfx::kPlaceholderColor,
       l10n_util::GetStringUTF16(
           IDS_READ_ANYTHING_DECREASE_FONT_SIZE_BUTTON_LABEL));
 
   auto increase_size_button = std::make_unique<ReadAnythingButtonView>(
       base::BindRepeating(&ReadAnythingToolbarView::IncreaseFontSizeCallback,
                           weak_pointer_factory_.GetWeakPtr()),
-      kTextIncreaseIcon, kLargeIconSize, gfx::kPlaceholderColor,
+      kTextIncreaseIcon, kIconSize, gfx::kPlaceholderColor,
       l10n_util::GetStringUTF16(
           IDS_READ_ANYTHING_INCREASE_FONT_SIZE_BUTTON_LABEL));
 
@@ -170,17 +173,17 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
   letter_spacing_button_->SetBackground(
       views::CreateSolidBackground(background_skcolor));
 
-  decrease_text_size_button_->UpdateIcon(kTextDecreaseIcon, kSmallIconSize,
+  decrease_text_size_button_->UpdateIcon(kTextDecreaseIcon, kIconSize,
                                          foreground_skcolor);
 
-  increase_text_size_button_->UpdateIcon(kTextIncreaseIcon, kLargeIconSize,
+  increase_text_size_button_->UpdateIcon(kTextIncreaseIcon, kIconSize,
                                          foreground_skcolor);
 
-  colors_button_->SetIcon(kPaletteIcon, kLargeIconSize, foreground_skcolor);
+  colors_button_->SetIcon(kPaletteIcon, kIconSize, foreground_skcolor);
 
-  line_spacing_button_->SetIcon(kLineSpacingIcon, kLargeIconSize,
+  line_spacing_button_->SetIcon(kLineSpacingIcon, kIconSize,
                                 foreground_skcolor);
-  letter_spacing_button_->SetIcon(kLetterSpacingIcon, kLargeIconSize,
+  letter_spacing_button_->SetIcon(kLetterSpacingIcon, kIconSize,
                                   foreground_skcolor);
 
   for (views::Separator* separator : separators_) {

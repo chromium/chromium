@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_font_combobox.h"
 
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -61,6 +62,10 @@ void ReadAnythingFontCombobox::GetAccessibleNodeData(
 void ReadAnythingFontCombobox::FontNameChangedCallback() {
   if (delegate_)
     delegate_->OnFontChoiceChanged(GetSelectedIndex().value());
+}
+
+gfx::Size ReadAnythingFontCombobox::GetMinimumSize() const {
+  return gfx::Size(kMinimumComboboxWidth, CalculatePreferredSize().height());
 }
 
 ReadAnythingFontCombobox::~ReadAnythingFontCombobox() = default;

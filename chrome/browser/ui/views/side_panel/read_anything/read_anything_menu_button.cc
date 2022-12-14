@@ -22,7 +22,7 @@ ReadAnythingMenuButton::ReadAnythingMenuButton(
                                      base::Unretained(this))) {
   ConfigureInkDropForToolbar(this);
   views::InstallPillHighlightPathGenerator(this);
-  SetIcon(icon, kLargeIconSize, gfx::kPlaceholderColor);
+  SetIcon(icon, kIconSize, gfx::kPlaceholderColor);
   SetAccessibleName(tooltip);
   SetTooltipText(tooltip);
   SetMenuModel(menu_model);

@@ -24,6 +24,9 @@ class ReadAnythingFontCombobox : public views::Combobox {
   ReadAnythingFontCombobox& operator=(const ReadAnythingFontCombobox&) = delete;
   ~ReadAnythingFontCombobox() override;
 
+  // views::Combobox:
+  gfx::Size GetMinimumSize() const override;
+
  private:
   class MenuModel;
 
