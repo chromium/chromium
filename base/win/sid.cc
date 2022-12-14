@@ -7,25 +7,56 @@
 #include <windows.h>
 
 #include <sddl.h>
+#include <stdint.h>
 #include <stdlib.h>
 
+#include <algorithm>
 #include <iterator>
+#include <map>
 #include <utility>
 
 #include "base/check.h"
-#include "base/notreached.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
+#include "base/strings/string_util_win.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/windows_version.h"
+#include "third_party/boringssl/src/include/openssl/crypto.h"
+#include "third_party/boringssl/src/include/openssl/sha.h"
 
-namespace base {
-namespace win {
+namespace base::win {
 
 namespace {
 
-absl::optional<long>  // NOLINT(runtime/int)
-WellKnownCapabilityToRid(WellKnownCapability capability) {
+template <typename Iterator>
+Sid FromSubAuthorities(const SID_IDENTIFIER_AUTHORITY& identifier_authority,
+                       size_t sub_authority_count,
+                       Iterator sub_authorities) {
+  DCHECK(sub_authority_count <= SID_MAX_SUB_AUTHORITIES);
+  BYTE sid_buffer[SECURITY_MAX_SID_SIZE];
+  SID* sid = reinterpret_cast<SID*>(sid_buffer);
+  sid->Revision = SID_REVISION;
+  sid->SubAuthorityCount = static_cast<UCHAR>(sub_authority_count);
+  sid->IdentifierAuthority = identifier_authority;
+  for (size_t index = 0; index < sub_authority_count; ++index) {
+    sid->SubAuthority[index] = static_cast<DWORD>(*sub_authorities++);
+  }
+  DCHECK(::IsValidSid(sid));
+  return *Sid::FromPSID(sid);
+}
+
+Sid FromSubAuthorities(const SID_IDENTIFIER_AUTHORITY& identifier_authority,
+                       std::initializer_list<int32_t> sub_authorities) {
+  return FromSubAuthorities(identifier_authority, sub_authorities.size(),
+                            sub_authorities.begin());
+}
+
+Sid FromNtAuthority(std::initializer_list<int32_t> sub_authorities) {
+  return FromSubAuthorities(SECURITY_NT_AUTHORITY, sub_authorities);
+}
+
+int32_t WellKnownCapabilityToRid(WellKnownCapability capability) {
   switch (capability) {
     case WellKnownCapability::kInternetClient:
       return SECURITY_CAPABILITY_INTERNET_CLIENT;
@@ -52,97 +83,6 @@ WellKnownCapabilityToRid(WellKnownCapability capability) {
     case WellKnownCapability::kContacts:
       return SECURITY_CAPABILITY_CONTACTS;
   }
-  return absl::nullopt;
-}
-
-absl::optional<WELL_KNOWN_SID_TYPE> WellKnownSidToEnum(WellKnownSid sid) {
-  switch (sid) {
-    case WellKnownSid::kNull:
-      return WinNullSid;
-    case WellKnownSid::kWorld:
-      return WinWorldSid;
-    case WellKnownSid::kCreatorOwner:
-      return WinCreatorOwnerSid;
-    case WellKnownSid::kNetwork:
-      return WinNetworkSid;
-    case WellKnownSid::kBatch:
-      return WinBatchSid;
-    case WellKnownSid::kInteractive:
-      return WinInteractiveSid;
-    case WellKnownSid::kService:
-      return WinServiceSid;
-    case WellKnownSid::kAnonymous:
-      return WinAnonymousSid;
-    case WellKnownSid::kSelf:
-      return WinSelfSid;
-    case WellKnownSid::kAuthenticatedUser:
-      return WinAuthenticatedUserSid;
-    case WellKnownSid::kRestricted:
-      return WinRestrictedCodeSid;
-    case WellKnownSid::kLocalSystem:
-      return WinLocalSystemSid;
-    case WellKnownSid::kLocalService:
-      return WinLocalServiceSid;
-    case WellKnownSid::kNetworkService:
-      return WinNetworkServiceSid;
-    case WellKnownSid::kBuiltinAdministrators:
-      return WinBuiltinAdministratorsSid;
-    case WellKnownSid::kBuiltinUsers:
-      return WinBuiltinUsersSid;
-    case WellKnownSid::kBuiltinGuests:
-      return WinBuiltinGuestsSid;
-    case WellKnownSid::kUntrustedLabel:
-      return WinUntrustedLabelSid;
-    case WellKnownSid::kLowLabel:
-      return WinLowLabelSid;
-    case WellKnownSid::kMediumLabel:
-      return WinMediumLabelSid;
-    case WellKnownSid::kHighLabel:
-      return WinHighLabelSid;
-    case WellKnownSid::kSystemLabel:
-      return WinSystemLabelSid;
-    case WellKnownSid::kWriteRestricted:
-      return WinWriteRestrictedCodeSid;
-    case WellKnownSid::kCreatorOwnerRights:
-      return WinCreatorOwnerRightsSid;
-    case WellKnownSid::kAllApplicationPackages:
-      return WinBuiltinAnyPackageSid;
-    case WellKnownSid::kAllRestrictedApplicationPackages:
-      // This should be handled by FromKnownSid.
-      NOTREACHED();
-      break;
-  }
-  return absl::nullopt;
-}
-
-absl::optional<Sid> FromSubAuthorities(
-    PSID_IDENTIFIER_AUTHORITY identifier_authority,
-    BYTE sub_authority_count,
-    PDWORD sub_authorities) {
-  BYTE sid[SECURITY_MAX_SID_SIZE];
-  if (!::InitializeSid(sid, identifier_authority, sub_authority_count))
-    return absl::nullopt;
-
-  for (DWORD index = 0; index < sub_authority_count; ++index) {
-    PDWORD sub_authority = ::GetSidSubAuthority(sid, index);
-    *sub_authority = sub_authorities[index];
-  }
-  return Sid::FromPSID(sid);
-}
-
-template <typename T>
-absl::optional<std::vector<Sid>> FromVector(
-    const std::vector<T>& values,
-    absl::optional<Sid> (*create_sid)(T)) {
-  std::vector<Sid> converted_sids;
-  converted_sids.reserve(values.size());
-  for (T value : values) {
-    auto sid = create_sid(value);
-    if (!sid)
-      return absl::nullopt;
-    converted_sids.push_back(std::move(*sid));
-  }
-  return converted_sids;
 }
 
 }  // namespace
@@ -154,94 +94,128 @@ Sid::Sid(const void* sid, size_t length)
 }
 
 absl::optional<Sid> Sid::FromKnownCapability(WellKnownCapability capability) {
-  absl::optional<long> capability_rid =  // NOLINT(runtime/int)
-      WellKnownCapabilityToRid(capability);
-  if (!capability_rid)
-    return absl::nullopt;
-  SID_IDENTIFIER_AUTHORITY capability_authority = {
-      SECURITY_APP_PACKAGE_AUTHORITY};
-  DWORD sub_authorities[] = {SECURITY_CAPABILITY_BASE_RID,
-                             static_cast<DWORD>(*capability_rid)};
-  return FromSubAuthorities(&capability_authority, std::size(sub_authorities),
-                            sub_authorities);
+  int32_t capability_rid = WellKnownCapabilityToRid(capability);
+  return FromSubAuthorities(SECURITY_APP_PACKAGE_AUTHORITY,
+                            {SECURITY_CAPABILITY_BASE_RID, capability_rid});
 }
 
 absl::optional<Sid> Sid::FromNamedCapability(const wchar_t* capability_name) {
-  DCHECK_GE(GetVersion(), Version::WIN10);
-
-  if (!capability_name || !*capability_name)
-    return absl::nullopt;
-
-  typedef decltype(
-      ::DeriveCapabilitySidsFromName)* DeriveCapabilitySidsFromNameFunc;
-  static const DeriveCapabilitySidsFromNameFunc derive_capability_sids =
-      []() -> DeriveCapabilitySidsFromNameFunc {
-    HMODULE module = GetModuleHandle(L"api-ms-win-security-base-l1-2-2.dll");
-    if (!module)
-      return nullptr;
-
-    return reinterpret_cast<DeriveCapabilitySidsFromNameFunc>(
-        ::GetProcAddress(module, "DeriveCapabilitySidsFromName"));
-  }();
-  if (!derive_capability_sids)
-    return absl::nullopt;
-
-  // Pre-reserve some space for SID deleters.
-  std::vector<ScopedLocalAlloc> deleter_list;
-  deleter_list.reserve(16);
-
-  PSID* capability_groups = nullptr;
-  DWORD capability_group_count = 0;
-  PSID* capability_sids = nullptr;
-  DWORD capability_sid_count = 0;
-
-  if (!derive_capability_sids(capability_name, &capability_groups,
-                              &capability_group_count, &capability_sids,
-                              &capability_sid_count)) {
+  if (!capability_name || !*capability_name) {
     return absl::nullopt;
   }
+  static const base::NoDestructor<std::map<std::wstring, WellKnownCapability>>
+      known_capabilities(
+          {{L"INTERNETCLIENT", WellKnownCapability::kInternetClient},
+           {L"INTERNETCLIENTSERVER",
+            WellKnownCapability::kInternetClientServer},
+           {L"PRIVATENETWORKCLIENTSERVER",
+            WellKnownCapability::kPrivateNetworkClientServer},
+           {L"PICTURESLIBRARY", WellKnownCapability::kPicturesLibrary},
+           {L"VIDEOSLIBRARY", WellKnownCapability::kVideosLibrary},
+           {L"MUSICLIBRARY", WellKnownCapability::kMusicLibrary},
+           {L"DOCUMENTSLIBRARY", WellKnownCapability::kDocumentsLibrary},
+           {L"ENTERPRISEAUTHENTICATION",
+            WellKnownCapability::kEnterpriseAuthentication},
+           {L"SHAREDUSERCERTIFICATES",
+            WellKnownCapability::kSharedUserCertificates},
+           {L"REMOVABLESTORAGE", WellKnownCapability::kRemovableStorage},
+           {L"APPOINTMENTS", WellKnownCapability::kAppointments},
+           {L"CONTACTS", WellKnownCapability::kContacts}});
 
-  deleter_list.emplace_back(capability_groups);
-  deleter_list.emplace_back(capability_sids);
-
-  for (DWORD i = 0; i < capability_group_count; ++i) {
-    deleter_list.emplace_back(capability_groups[i]);
+  std::wstring cap_upper = base::ToUpperASCII(capability_name);
+  auto known_cap = known_capabilities->find(cap_upper);
+  if (known_cap != known_capabilities->end()) {
+    return FromKnownCapability(known_cap->second);
   }
-  for (DWORD i = 0; i < capability_sid_count; ++i) {
-    deleter_list.emplace_back(capability_sids[i]);
-  }
+  CRYPTO_library_init();
+  static_assert((SHA256_DIGEST_LENGTH / sizeof(DWORD)) ==
+                SECURITY_APP_PACKAGE_RID_COUNT);
+  DWORD rids[(SHA256_DIGEST_LENGTH / sizeof(DWORD)) + 2];
+  rids[0] = SECURITY_CAPABILITY_BASE_RID;
+  rids[1] = SECURITY_CAPABILITY_APP_RID;
 
-  if (capability_sid_count < 1)
-    return absl::nullopt;
-
-  return FromPSID(capability_sids[0]);
+  SHA256(reinterpret_cast<const uint8_t*>(cap_upper.c_str()),
+         cap_upper.size() * sizeof(wchar_t),
+         reinterpret_cast<uint8_t*>(&rids[2]));
+  return FromSubAuthorities(SECURITY_APP_PACKAGE_AUTHORITY, std::size(rids),
+                            rids);
 }
 
 absl::optional<Sid> Sid::FromKnownSid(WellKnownSid type) {
-  if (type == WellKnownSid::kAllRestrictedApplicationPackages) {
-    SID_IDENTIFIER_AUTHORITY package_authority = {
-        SECURITY_APP_PACKAGE_AUTHORITY};
-    DWORD sub_authorities[] = {SECURITY_APP_PACKAGE_BASE_RID,
-                               SECURITY_BUILTIN_PACKAGE_ANY_RESTRICTED_PACKAGE};
-    return FromSubAuthorities(&package_authority, 2, sub_authorities);
+  switch (type) {
+    case WellKnownSid::kNull:
+      return FromSubAuthorities(SECURITY_NULL_SID_AUTHORITY,
+                                {SECURITY_NULL_RID});
+    case WellKnownSid::kWorld:
+      return FromSubAuthorities(SECURITY_WORLD_SID_AUTHORITY,
+                                {SECURITY_WORLD_RID});
+    case WellKnownSid::kCreatorOwner:
+      return FromSubAuthorities(SECURITY_CREATOR_SID_AUTHORITY,
+                                {SECURITY_CREATOR_OWNER_RID});
+    case WellKnownSid::kCreatorOwnerRights:
+      return FromSubAuthorities(SECURITY_CREATOR_SID_AUTHORITY,
+                                {SECURITY_CREATOR_OWNER_RIGHTS_RID});
+    case WellKnownSid::kNetwork:
+      return FromNtAuthority({SECURITY_NETWORK_RID});
+    case WellKnownSid::kBatch:
+      return FromNtAuthority({SECURITY_BATCH_RID});
+    case WellKnownSid::kInteractive:
+      return FromNtAuthority({SECURITY_INTERACTIVE_RID});
+    case WellKnownSid::kService:
+      return FromNtAuthority({SECURITY_SERVICE_RID});
+    case WellKnownSid::kAnonymous:
+      return FromNtAuthority({SECURITY_ANONYMOUS_LOGON_RID});
+    case WellKnownSid::kSelf:
+      return FromNtAuthority({SECURITY_PRINCIPAL_SELF_RID});
+    case WellKnownSid::kAuthenticatedUser:
+      return FromNtAuthority({SECURITY_AUTHENTICATED_USER_RID});
+    case WellKnownSid::kRestricted:
+      return FromNtAuthority({SECURITY_RESTRICTED_CODE_RID});
+    case WellKnownSid::kWriteRestricted:
+      return FromNtAuthority({SECURITY_WRITE_RESTRICTED_CODE_RID});
+    case WellKnownSid::kLocalSystem:
+      return FromNtAuthority({SECURITY_LOCAL_SYSTEM_RID});
+    case WellKnownSid::kLocalService:
+      return FromNtAuthority({SECURITY_LOCAL_SERVICE_RID});
+    case WellKnownSid::kNetworkService:
+      return FromNtAuthority({SECURITY_NETWORK_SERVICE_RID});
+    case WellKnownSid::kBuiltinAdministrators:
+      return FromNtAuthority(
+          {SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS});
+    case WellKnownSid::kBuiltinUsers:
+      return FromNtAuthority(
+          {SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_USERS});
+    case WellKnownSid::kBuiltinGuests:
+      return FromNtAuthority(
+          {SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_GUESTS});
+    case WellKnownSid::kUntrustedLabel:
+      return FromIntegrityLevel(SECURITY_MANDATORY_UNTRUSTED_RID);
+    case WellKnownSid::kLowLabel:
+      return FromIntegrityLevel(SECURITY_MANDATORY_LOW_RID);
+    case WellKnownSid::kMediumLabel:
+      return FromIntegrityLevel(SECURITY_MANDATORY_MEDIUM_RID);
+    case WellKnownSid::kHighLabel:
+      return FromIntegrityLevel(SECURITY_MANDATORY_HIGH_RID);
+    case WellKnownSid::kSystemLabel:
+      return FromIntegrityLevel(SECURITY_MANDATORY_SYSTEM_RID);
+    case WellKnownSid::kAllApplicationPackages:
+      return FromSubAuthorities(SECURITY_APP_PACKAGE_AUTHORITY,
+                                {SECURITY_APP_PACKAGE_BASE_RID,
+                                 SECURITY_BUILTIN_PACKAGE_ANY_PACKAGE});
+    case WellKnownSid::kAllRestrictedApplicationPackages:
+      return FromSubAuthorities(
+          SECURITY_APP_PACKAGE_AUTHORITY,
+          {SECURITY_APP_PACKAGE_BASE_RID,
+           SECURITY_BUILTIN_PACKAGE_ANY_RESTRICTED_PACKAGE});
   }
-
-  BYTE sid[SECURITY_MAX_SID_SIZE];
-  DWORD size_sid = SECURITY_MAX_SID_SIZE;
-  absl::optional<WELL_KNOWN_SID_TYPE> known_sid = WellKnownSidToEnum(type);
-  if (!known_sid)
-    return absl::nullopt;
-  if (!::CreateWellKnownSid(*known_sid, nullptr, sid, &size_sid))
-    return absl::nullopt;
-
-  return Sid(sid, size_sid);
 }
 
 absl::optional<Sid> Sid::FromSddlString(const wchar_t* sddl_sid) {
   PSID psid = nullptr;
   if (!::ConvertStringSidToSid(sddl_sid, &psid))
     return absl::nullopt;
-  return FromPSID(TakeLocalAlloc(psid).get());
+  auto psid_alloc = TakeLocalAlloc(psid);
+  return FromPSID(psid_alloc.get());
 }
 
 absl::optional<Sid> Sid::FromPSID(PSID sid) {
@@ -252,37 +226,62 @@ absl::optional<Sid> Sid::FromPSID(PSID sid) {
 }
 
 absl::optional<Sid> Sid::GenerateRandomSid() {
-  SID_IDENTIFIER_AUTHORITY package_authority = {SECURITY_NULL_SID_AUTHORITY};
   DWORD sub_authorities[4] = {};
   RandBytes(&sub_authorities, sizeof(sub_authorities));
-  return FromSubAuthorities(&package_authority, _countof(sub_authorities),
-                            sub_authorities);
+  return FromSubAuthorities(SECURITY_NULL_SID_AUTHORITY,
+                            std::size(sub_authorities), sub_authorities);
 }
 
 absl::optional<Sid> Sid::FromIntegrityLevel(DWORD integrity_level) {
-  SID_IDENTIFIER_AUTHORITY package_authority = {
-      SECURITY_MANDATORY_LABEL_AUTHORITY};
-  return FromSubAuthorities(&package_authority, 1, &integrity_level);
+  return FromSubAuthorities(SECURITY_MANDATORY_LABEL_AUTHORITY, 1,
+                            &integrity_level);
 }
 
 absl::optional<std::vector<Sid>> Sid::FromSddlStringVector(
     const std::vector<const wchar_t*>& sddl_sids) {
-  return FromVector(sddl_sids, Sid::FromSddlString);
+  std::vector<Sid> converted_sids;
+  converted_sids.reserve(sddl_sids.size());
+  for (const wchar_t* sddl_sid : sddl_sids) {
+    absl::optional<Sid> sid = FromSddlString(sddl_sid);
+    if (!sid)
+      return absl::nullopt;
+    converted_sids.push_back(std::move(*sid));
+  }
+  return converted_sids;
 }
 
 absl::optional<std::vector<Sid>> Sid::FromNamedCapabilityVector(
     const std::vector<const wchar_t*>& capability_names) {
-  return FromVector(capability_names, Sid::FromNamedCapability);
+  std::vector<Sid> converted_sids;
+  converted_sids.reserve(capability_names.size());
+  for (const wchar_t* name : capability_names) {
+    absl::optional<Sid> sid = FromNamedCapability(name);
+    if (!sid)
+      return absl::nullopt;
+    converted_sids.push_back(std::move(*sid));
+  }
+  return converted_sids;
 }
 
 absl::optional<std::vector<Sid>> Sid::FromKnownCapabilityVector(
     const std::vector<WellKnownCapability>& capabilities) {
-  return FromVector(capabilities, Sid::FromKnownCapability);
+  std::vector<Sid> sids;
+  std::transform(capabilities.cbegin(), capabilities.cend(),
+                 std::back_inserter(sids),
+                 [](WellKnownCapability known_cap) -> Sid {
+                   return *Sid::FromKnownCapability(known_cap);
+                 });
+  return sids;
 }
 
 absl::optional<std::vector<Sid>> Sid::FromKnownSidVector(
-    const std::vector<WellKnownSid>& sids) {
-  return FromVector(sids, Sid::FromKnownSid);
+    const std::vector<WellKnownSid>& known_sids) {
+  std::vector<Sid> sids;
+  std::transform(known_sids.cbegin(), known_sids.cend(),
+                 std::back_inserter(sids), [](WellKnownSid known_sid) -> Sid {
+                   return *Sid::FromKnownSid(known_sid);
+                 });
+  return sids;
 }
 
 Sid::Sid(Sid&& sid) = default;
@@ -299,7 +298,8 @@ absl::optional<std::wstring> Sid::ToSddlString() const {
   LPWSTR sid = nullptr;
   if (!::ConvertSidToStringSid(GetPSID(), &sid))
     return absl::nullopt;
-  return TakeLocalAlloc(sid).get();
+  auto sid_ptr = TakeLocalAlloc(sid);
+  return sid_ptr.get();
 }
 
 Sid Sid::Clone() const {
@@ -318,5 +318,4 @@ bool Sid::operator!=(const Sid& sid) const {
   return !(operator==(sid));
 }
 
-}  // namespace win
-}  // namespace base
+}  // namespace base::win

@@ -74,13 +74,46 @@ bool TestFromSddlStringVector(const std::vector<const wchar_t*> sddl) {
   return TestSidVector(Sid::FromSddlStringVector(sddl), sddl);
 }
 
+bool EqualNamedCapSid(const Sid& sid, const std::wstring& capability_name) {
+  typedef decltype(::DeriveCapabilitySidsFromName)*
+      DeriveCapabilitySidsFromNameFunc;
+  static const DeriveCapabilitySidsFromNameFunc derive_capability_sids =
+      []() -> DeriveCapabilitySidsFromNameFunc {
+    HMODULE module = GetModuleHandle(L"api-ms-win-security-base-l1-2-2.dll");
+    CHECK(module);
+    return reinterpret_cast<DeriveCapabilitySidsFromNameFunc>(
+        ::GetProcAddress(module, "DeriveCapabilitySidsFromName"));
+  }();
+  CHECK(derive_capability_sids);
+
+  // Pre-reserve some space for SID deleters.
+  std::vector<base::win::ScopedLocalAlloc> deleter_list;
+  deleter_list.reserve(16);
+
+  PSID* capability_groups = nullptr;
+  DWORD capability_group_count = 0;
+  PSID* capability_sids = nullptr;
+  DWORD capability_sid_count = 0;
+
+  CHECK(derive_capability_sids(capability_name.c_str(), &capability_groups,
+                               &capability_group_count, &capability_sids,
+                               &capability_sid_count));
+  deleter_list.emplace_back(capability_groups);
+  deleter_list.emplace_back(capability_sids);
+
+  for (DWORD i = 0; i < capability_group_count; ++i) {
+    deleter_list.emplace_back(capability_groups[i]);
+  }
+  for (DWORD i = 0; i < capability_sid_count; ++i) {
+    deleter_list.emplace_back(capability_sids[i]);
+  }
+
+  CHECK_GE(capability_sid_count, 1U);
+  return sid.Equal(capability_sids[0]);
+}
+
 struct KnownCapabilityTestEntry {
   WellKnownCapability capability;
-  const wchar_t* sddl_sid;
-};
-
-struct NamedCapabilityTestEntry {
-  const wchar_t* capability_name;
   const wchar_t* sddl_sid;
 };
 
@@ -135,28 +168,25 @@ TEST(SidTest, KnownCapability) {
 }
 
 TEST(SidTest, NamedCapability) {
-  if (GetVersion() < Version::WIN10_RS2)
-    return;
+  const std::wstring capabilities[] = {L"InternetClient",
+                                       L"InternetClientServer",
+                                       L"PrivateNetworkClientServer",
+                                       L"PicturesLibrary",
+                                       L"VideosLibrary",
+                                       L"MusicLibrary",
+                                       L"DocumentsLibrary",
+                                       L"EnterpriseAuthentication",
+                                       L"SharedUserCertificates",
+                                       L"RemovableStorage",
+                                       L"Appointments",
+                                       L"Contacts",
+                                       L"registryRead",
+                                       L"lpacCryptoServices"};
 
-  EXPECT_FALSE(Sid::FromNamedCapability(nullptr));
-  EXPECT_FALSE(Sid::FromNamedCapability(L""));
-
-  const NamedCapabilityTestEntry capabilities[] = {
-      {L"internetClient", L"S-1-15-3-1"},
-      {L"internetClientServer", L"S-1-15-3-2"},
-      {L"registryRead",
-       L"S-1-15-3-1024-1065365936-1281604716-3511738428-"
-       "1654721687-432734479-3232135806-4053264122-3456934681"},
-      {L"lpacCryptoServices",
-       L"S-1-15-3-1024-3203351429-2120443784-2872670797-"
-       "1918958302-2829055647-4275794519-765664414-2751773334"},
-      {L"enterpriseAuthentication", L"S-1-15-3-8"},
-      {L"privateNetworkClientServer", L"S-1-15-3-3"}};
-
-  for (auto capability : capabilities) {
-    EXPECT_TRUE(EqualSid(Sid::FromNamedCapability(capability.capability_name),
-                         capability.sddl_sid))
-        << "Named Capability: " << capability.sddl_sid;
+  for (const std::wstring& capability : capabilities) {
+    EXPECT_TRUE(EqualNamedCapSid(*Sid::FromNamedCapability(capability.c_str()),
+                                 capability))
+        << "Named Capability: " << capability;
   }
 }
 
@@ -254,28 +284,24 @@ TEST(SidTest, FromSddlStringVector) {
 }
 
 TEST(SidTest, FromNamedCapabilityVector) {
-  if (GetVersion() < Version::WIN10_RS2)
-    return;
-  std::vector<const wchar_t*> capabilities = {L"internetClient",
-                                              L"internetClientServer",
+  std::vector<const wchar_t*> capabilities = {L"InternetClient",
+                                              L"InternetClientServer",
+                                              L"PrivateNetworkClientServer",
+                                              L"PicturesLibrary",
+                                              L"VideosLibrary",
+                                              L"MusicLibrary",
+                                              L"DocumentsLibrary",
+                                              L"EnterpriseAuthentication",
+                                              L"SharedUserCertificates",
+                                              L"RemovableStorage",
+                                              L"Appointments",
+                                              L"Contacts",
                                               L"registryRead",
-                                              L"lpacCryptoServices",
-                                              L"enterpriseAuthentication",
-                                              L"privateNetworkClientServer"};
-  std::vector<const wchar_t*> sddl_caps = {
-      L"S-1-15-3-1",
-      L"S-1-15-3-2",
-      L"S-1-15-3-1024-1065365936-1281604716-3511738428-1654721687-432734479-"
-      L"3232135806-4053264122-3456934681",
-      L"S-1-15-3-1024-3203351429-2120443784-2872670797-1918958302-2829055647-"
-      L"4275794519-765664414-2751773334",
-      L"S-1-15-3-8",
-      L"S-1-15-3-3"};
-  ASSERT_TRUE(
-      TestSidVector(Sid::FromNamedCapabilityVector(capabilities), sddl_caps));
-  ASSERT_FALSE(Sid::FromNamedCapabilityVector({L""}));
-  ASSERT_FALSE(Sid::FromNamedCapabilityVector({L"abc", nullptr}));
-  ASSERT_TRUE(Sid::FromNamedCapabilityVector({}));
+                                              L"lpacCryptoServices"};
+
+  ASSERT_TRUE(ranges::equal(*Sid::FromNamedCapabilityVector(capabilities),
+                            capabilities, EqualNamedCapSid));
+  EXPECT_EQ(Sid::FromNamedCapabilityVector({})->size(), 0U);
 }
 
 TEST(SidTest, FromKnownCapabilityVector) {
