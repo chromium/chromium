@@ -2044,7 +2044,7 @@ const char* gReactDevtoolsScript = R""""(
 
 (() => {
 
-const hook = {
+const stubHook = {
   supportsFiber: true,
   inject,
   onCommitFiberUnmount,
@@ -2053,11 +2053,13 @@ const hook = {
   renderers: [],
 };
 
+window.__REACT_DEVTOOLS_SAVED_RENDERERS__ = [];
+
 Object.defineProperty(window, "__REACT_DEVTOOLS_GLOBAL_HOOK__", {
   configurable: true,
   enumerable: false,
   get() {
-    return hook;
+    return stubHook;
   }
 });
 
@@ -2066,6 +2068,7 @@ let uidCounter = 0;
 function inject(renderer) {
   const id = ++uidCounter;
   window.__RECORD_REPLAY_ANNOTATION_HOOK__("react-devtools-hook", "inject");
+  window.__REACT_DEVTOOLS_SAVED_RENDERERS__.push(renderer);
   return id;
 }
 
