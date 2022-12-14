@@ -52,7 +52,6 @@
 #include "ui/display/manager/display_manager_util.h"
 #include "ui/display/screen.h"
 #include "ui/views/corewm/tooltip_controller.h"
-#include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"
