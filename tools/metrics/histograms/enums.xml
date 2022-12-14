@@ -59327,6 +59327,7 @@ from previous Chrome versions.
   <int value="-790900615" label="NtpShoppingTasksModule:disabled"/>
   <int value="-790544721"
       label="OverrideUnsupportedPageLanguageForHrefTranslate:disabled"/>
+  <int value="-790292839" label="LauncherKeywordExtractionScoring:enabled"/>
   <int value="-790036192" label="overscroll-start-threshold"/>
   <int value="-787969387" label="HTTPSServerPreviewsUsingURLLoader:enabled"/>
   <int value="-787885873" label="BorealisForceBetaClient:disabled"/>
@@ -62494,6 +62495,7 @@ from previous Chrome versions.
   <int value="1090377940" label="enable-quic-https"/>
   <int value="1090442943" label="SemanticColorDebugOverride:enabled"/>
   <int value="1091157601" label="SearchNavigationPrefetch:enabled"/>
+  <int value="1091520021" label="LauncherKeywordExtractionScoring:disabled"/>
   <int value="1091624595" label="BluetoothAdvertisementMonitoring:enabled"/>
   <int value="1091631619" label="disable-accelerated-video-encode"/>
   <int value="1092296990" label="EnableMultiMonitorsInCrd:disabled"/>

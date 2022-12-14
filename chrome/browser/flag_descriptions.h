@@ -3513,6 +3513,9 @@ extern const char kWifiSyncAndroidDescription[];
 extern const char kLauncherGameSearchName[];
 extern const char kLauncherGameSearchDescription[];
 
+extern const char kLauncherKeywordExtractionScoring[];
+extern const char kLauncherKeywordExtractionScoringDescription[];
+
 extern const char kMacAddressRandomizationName[];
 extern const char kMacAddressRandomizationDescription[];
 

@@ -6084,6 +6084,12 @@ const char kLauncherGameSearchName[] = "Enable launcher game search";
 const char kLauncherGameSearchDescription[] =
     "Enables cloud game search results in the launcher.";
 
+const char kLauncherKeywordExtractionScoring[] =
+    "Query keyword extraction and scoring in launcher";
+const char kLauncherKeywordExtractionScoringDescription[] =
+    "Enables extraction of keywords from query then calculate score from "
+    "extracted keyword in the launcher.";
+
 const char kMacAddressRandomizationName[] = "MAC address randomization";
 const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "

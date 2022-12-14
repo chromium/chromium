@@ -18,4 +18,12 @@ bool IsLauncherGameSearchEnabled() {
          chromeos::features::IsCloudGamingDeviceEnabled();
 }
 
+BASE_FEATURE(kLauncherKeywordExtractionScoring,
+             "LauncherKeywordExtractionScoring",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsLauncherKeywordExtractionScoringEnabled() {
+  return base::FeatureList::IsEnabled(kLauncherKeywordExtractionScoring);
+}
+
 }  // namespace search_features

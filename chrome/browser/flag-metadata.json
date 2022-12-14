@@ -4488,6 +4488,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "launcher-keyword-extraction-scoring",
+    "owners": ["rbeccahsu", "celiahe", "wrong", "amandadeacon"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "layout-extraction",
     "owners": [ "rhalavati", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 120

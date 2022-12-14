@@ -12,7 +12,11 @@ namespace search_features {
 // Enables cloud game search in the launcher.
 BASE_DECLARE_FEATURE(kLauncherGameSearch);
 
+// Query key word extraction and scoring while search in the launcher
+BASE_DECLARE_FEATURE(kLauncherKeywordExtractionScoring);
+
 bool IsLauncherGameSearchEnabled();
+bool IsLauncherKeywordExtractionScoringEnabled();
 
 }  // namespace search_features
 
