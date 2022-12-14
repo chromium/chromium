@@ -169,6 +169,20 @@ bool FileSharingThroughFuseBoxEnabled() {
   return base::FeatureList::IsEnabled(arc::kEnableArcNearbyShareFuseBox);
 }
 
+bool IsValidArcWindow(aura::Window* const window, uint32_t task_id) {
+  if (!ash::IsArcWindow(window)) {
+    return false;
+  }
+
+  absl::optional<int> maybe_task_id = arc::GetWindowTaskId(window);
+  if (!maybe_task_id.has_value() || maybe_task_id.value() < 0 ||
+      static_cast<uint32_t>(maybe_task_id.value()) != task_id) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 NearbyShareSessionImpl::NearbyShareSessionImpl(
@@ -242,14 +256,10 @@ void NearbyShareSessionImpl::OnWindowInitialized(aura::Window* const window) {
   DCHECK(window);
 
   DVLOG(1) << __func__;
-  if (!ash::IsArcWindow(window))
-    return;
-
-  absl::optional<int> maybe_id = arc::GetWindowTaskId(window);
-  if (!maybe_id.has_value() || maybe_id.value() < 0 ||
-      static_cast<uint32_t>(maybe_id.value()) != task_id_) {
+  if (!IsValidArcWindow(window, task_id_)) {
     return;
   }
+
   env_observation_.Reset();
   arc_window_observation_.Observe(window);
 }
@@ -261,18 +271,17 @@ void NearbyShareSessionImpl::OnWindowVisibilityChanged(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   DVLOG(1) << __func__;
-  absl::optional<int> task_id = arc::GetWindowTaskId(window);
-  DCHECK(task_id.has_value());
-  DCHECK_GE(task_id.value(), 0);
-  if (visible && (base::checked_cast<uint32_t>(task_id.value()) == task_id_)) {
-    VLOG(1) << "ARC Window is visible";
-    if (window_initialization_timer_.IsRunning()) {
-      window_initialization_timer_.Stop();
-    }
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&NearbyShareSessionImpl::OnArcWindowFound,
-                                  weak_ptr_factory_.GetWeakPtr(), window));
+  if (!IsValidArcWindow(window, task_id_) || !visible) {
+    return;
   }
+
+  VLOG(1) << "ARC Window is visible";
+  if (window_initialization_timer_.IsRunning()) {
+    window_initialization_timer_.Stop();
+  }
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&NearbyShareSessionImpl::OnArcWindowFound,
+                                weak_ptr_factory_.GetWeakPtr(), window));
 }
 
 void NearbyShareSessionImpl::OnArcWindowFound(aura::Window* const arc_window) {
