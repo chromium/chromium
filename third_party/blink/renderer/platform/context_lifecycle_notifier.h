@@ -37,6 +37,11 @@ class PLATFORM_EXPORT ContextLifecycleNotifier : public GarbageCollectedMixin {
 #if DCHECK_IS_ON()
   bool did_notify_observers_ = false;
 #endif
+
+  // When replaying, strong references are held on all observers, which are
+  // cleared out after the context is destroyed. This ensures we can notify
+  // the same observers when replaying as when originally recording
+  HeapVector<Member<ContextLifecycleObserver>> replay_observers_;
 };
 
 }  // namespace blink
