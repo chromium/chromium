@@ -29,10 +29,17 @@ export const DARK_DEFAULT_COLOR: Color = {
   foreground: {value: 0xff202124},
 };
 
+function isChromeColorSelected(
+    theme: Theme|undefined, colors: ChromeColor[]|undefined, color: SkColor) {
+  return !!theme && !!colors && !!theme.foregroundColor &&
+      theme.foregroundColor.value === color.value;
+}
+
 export interface ColorsElement {
   $: {
     defaultColor: ColorElement,
     chromeColors: DomRepeat,
+    customColorContainer: HTMLElement,
     customColor: ColorElement,
     colorPicker: HTMLInputElement,
     colorPickerIcon: HTMLElement,
@@ -56,6 +63,10 @@ export class ColorsElement extends PolymerElement {
       },
       colors_: Array,
       theme_: Object,
+      isDefaultColorSelected_: {
+        type: Object,
+        computed: 'computeIsDefaultColorSelected_(theme_)',
+      },
       isCustomColorSelected_: {
         type: Object,
         computed: 'computeIsCustomColorSelected_(theme_, color_)',
@@ -111,6 +122,10 @@ export class ColorsElement extends PolymerElement {
                                         LIGHT_DEFAULT_COLOR;
   }
 
+  private computeIsDefaultColorSelected_(): boolean {
+    return this.theme_ && !this.theme_.foregroundColor;
+  }
+
   private computeIsCustomColorSelected_(): boolean {
     return !!this.colors_ && !!this.theme_ && !!this.theme_.foregroundColor &&
         !this.colors_.find(
@@ -118,13 +133,16 @@ export class ColorsElement extends PolymerElement {
                 color.foreground.value === this.theme_.foregroundColor!.value);
   }
 
-  private isDefaultColorSelected_(): boolean {
-    return this.theme_ && !this.theme_.foregroundColor;
+  private isChromeColorSelected_(color: SkColor): boolean {
+    return isChromeColorSelected(this.theme_, this.colors_, color);
   }
 
-  private isChromeColorSelected_(color: SkColor): boolean {
-    return !!this.theme_ && !!this.colors_ && !!this.theme_.foregroundColor &&
-        this.theme_.foregroundColor.value === color.value;
+  private tabIndex_(selected: boolean): string {
+    return selected ? '0' : '-1';
+  }
+
+  private chromeColorTabIndex_(color: SkColor): string {
+    return isChromeColorSelected(this.theme_, this.colors_, color) ? '0' : '-1';
   }
 
   private onDefaultColorClick_() {

@@ -176,6 +176,10 @@ suite('ColorsTest', () => {
     let checkedColors = colorsElement.shadowRoot!.querySelectorAll('[checked]');
     assertEquals(1, checkedColors.length);
     assertEquals(colorsElement.$.defaultColor, checkedColors[0]);
+    let indexedColors =
+        colorsElement.shadowRoot!.querySelectorAll('[tabindex="0"]');
+    assertEquals(1, indexedColors.length);
+    assertEquals(colorsElement.$.defaultColor, indexedColors[0]);
 
     // Set Chrome color.
     theme.foregroundColor = {value: 2};
@@ -187,6 +191,10 @@ suite('ColorsTest', () => {
     assertEquals(1, checkedColors.length);
     assertEquals('chrome-color', checkedColors[0]!.className);
     assertEquals(2, (checkedColors[0]! as ColorElement).foregroundColor.value);
+    indexedColors =
+        colorsElement.shadowRoot!.querySelectorAll('[tabindex="0"]');
+    assertEquals(1, indexedColors.length);
+    assertEquals('chrome-color', indexedColors[0]!.className);
 
     // Set custom color.
     theme.foregroundColor = {value: 5};
@@ -197,5 +205,9 @@ suite('ColorsTest', () => {
     checkedColors = colorsElement.shadowRoot!.querySelectorAll('[checked]');
     assertEquals(1, checkedColors.length);
     assertEquals(colorsElement.$.customColor, checkedColors[0]);
+    indexedColors =
+        colorsElement.shadowRoot!.querySelectorAll('[tabindex="0"]');
+    assertEquals(1, indexedColors.length);
+    assertEquals(colorsElement.$.customColorContainer, indexedColors[0]);
   });
 });

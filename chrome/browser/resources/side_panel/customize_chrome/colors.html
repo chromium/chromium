@@ -37,15 +37,20 @@
     width: 20px;
   }
 </style>
-<!-- TODO(crbug.com/1384229): Make grid adaptive. -->
-<cr-grid columns="4">
-  <!-- TODO(crbug.com/1384229): Add extracted color. -->
+<!-- TODO(crbug.com/1395210): Make grid adaptive. -->
+<cr-grid columns="4" role="radiogroup"
+    aria-label="$i18n{colorsContainerLabel}">
+  <!-- TODO(crbug.com/1401018): Add extracted color. -->
   <customize-chrome-color
       id="defaultColor"
       background-color="[[defaultColor_.background]]"
       foreground-color="[[defaultColor_.foreground]]"
       title="$i18n{defaultColorName}"
-      checked='[[isDefaultColorSelected_(theme_)]]'
+      aria-label="$i18n{defaultColorName}"
+      role="radio"
+      checked="[[isDefaultColorSelected_]]"
+      aria-checked$="[[isDefaultColorSelected_]]"
+      tabindex$="[[tabIndex_(isDefaultColorSelected_)]]"
       on-click="onDefaultColorClick_">
   </customize-chrome-color>
   <template id="chromeColors" is="dom-repeat" items="[[colors_]]">
@@ -54,18 +59,27 @@
         background-color="[[item.background]]"
         foreground-color="[[item.foreground]]"
         title="[[item.name]]"
-        checked='[[isChromeColorSelected_(item.foreground, theme_, colors_)]]'
+        aria-label$="[[item.name]]"
+        role="radio"
+        checked="[[isChromeColorSelected_(item.foreground, theme_, colors_)]]"
+        aria-checked$=
+            "[[isChromeColorSelected_(item.foreground, theme_, colors_)]]"
+        tabindex$="[[chromeColorTabIndex_(item.foreground, theme_, colors_)]]"
         on-click="onChromeColorClick_">
     </customize-chrome-color>
   </template>
-  <div id="customColorContainer">
+  <div id="customColorContainer"
+      title="$i18n{colorPickerLabel}"
+      aria-label="$i18n{colorPickerLabel}"
+      role="radio"
+      aria-checked$="[[isCustomColorSelected_]]"
+      tabindex$="[[tabIndex_(isCustomColorSelected_)]]"
+      on-click="onCustomColorClick_">
     <customize-chrome-color
         id="customColor"
         background-color="[[customColor_.background]]"
         foreground-color="[[customColor_.foreground]]"
-        title="$i18n{colorPickerLabel}"
-        checked="[[isCustomColorSelected_]]"
-        on-click="onCustomColorClick_">
+        checked="[[isCustomColorSelected_]]">
     </customize-chrome-color>
     <div id="colorPickerIcon"></div>
     <input id="colorPicker" type="color" tabindex="-1" aria-hidden="true"
