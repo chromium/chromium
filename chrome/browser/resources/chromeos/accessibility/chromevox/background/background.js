@@ -124,7 +124,6 @@ export class Background extends ChromeVoxState {
     BrailleCommandHandler.init();
     ClipboardHandler.init();
     CommandHandler.init();
-    DesktopAutomationHandler.init();
     DownloadHandler.init();
     EventStreamLogger.init();
     FindHandler.init();
@@ -139,6 +138,11 @@ export class Background extends ChromeVoxState {
     PanelBackground.init();
     RangeAutomationHandler.init();
 
+    // Allow all async initializers to run simultaneously, but wait for them to
+    // complete before continuing.
+    await Promise.all([
+      DesktopAutomationHandler.init(),
+    ]);
     ChromeVoxState.resolveReadyPromise_();
   }
 
