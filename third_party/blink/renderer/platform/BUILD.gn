@@ -304,7 +304,6 @@ component("platform") {
     "audio/audio_dsp_kernel.h",
     "audio/audio_dsp_kernel_processor.cc",
     "audio/audio_dsp_kernel_processor.h",
-    "audio/audio_file_reader.h",
     "audio/audio_io_callback.h",
     "audio/audio_processor.cc",
     "audio/audio_processor.h",

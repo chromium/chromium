@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
-#include "third_party/blink/renderer/platform/audio/audio_file_reader.h"
 #include "third_party/blink/renderer/platform/bindings/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -79,7 +78,7 @@ void AsyncAudioDecoder::DecodeOnBackgroundThread(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const ExceptionContext& exception_context) {
   DCHECK(!IsMainThread());
-  scoped_refptr<AudioBus> bus = CreateBusFromInMemoryAudioFile(
+  scoped_refptr<AudioBus> bus = AudioBus::CreateBusFromInMemoryAudioFile(
       audio_data->Data(), audio_data->ByteLength(), false, sample_rate);
 
   // Decoding is finished, but we need to do the callbacks on the main thread.

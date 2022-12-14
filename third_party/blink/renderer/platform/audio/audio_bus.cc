@@ -37,7 +37,6 @@
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_audio_bus.h"
-#include "third_party/blink/renderer/platform/audio/audio_file_reader.h"
 #include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/audio/sinc_resampler.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
@@ -744,10 +743,11 @@ scoped_refptr<AudioBus> AudioBus::GetDataResource(int resource_id,
                                                 sample_rate);
 }
 
-scoped_refptr<AudioBus> CreateBusFromInMemoryAudioFile(const void* data,
-                                                       size_t data_size,
-                                                       bool mix_to_mono,
-                                                       float sample_rate) {
+scoped_refptr<AudioBus> AudioBus::CreateBusFromInMemoryAudioFile(
+    const void* data,
+    size_t data_size,
+    bool mix_to_mono,
+    float sample_rate) {
   scoped_refptr<AudioBus> audio_bus =
       DecodeAudioFileData(static_cast<const char*>(data), data_size);
   if (!audio_bus.get()) {
