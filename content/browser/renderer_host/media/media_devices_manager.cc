@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
@@ -49,6 +50,7 @@
 namespace content {
 
 namespace {
+using media::mojom::DeviceEnumerationResult;
 
 // Resolutions used if the source doesn't support capability enumeration.
 struct {
@@ -157,6 +159,16 @@ void BindDeviceNotifierFromUIThread(
     mojo::PendingReceiver<audio::mojom::DeviceNotifier> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   GetAudioService().BindDeviceNotifier(std::move(receiver));
+}
+
+void ReportVideoEnumerationStart() {
+  base::UmaHistogramBoolean(
+      "Media.MediaDevicesManager.VideoDeviceEnumeration.Start", true);
+}
+
+void ReportVideoEnumerationResult(DeviceEnumerationResult result_code) {
+  base::UmaHistogramEnumeration(
+      "Media.MediaDevicesManager.VideoDeviceEnumeration.Result", result_code);
 }
 
 }  // namespace
@@ -899,6 +911,7 @@ void MediaDevicesManager::DoEnumerateDevices(MediaDeviceType type) {
       EnumerateAudioDevices(true /* is_input */);
       break;
     case MediaDeviceType::MEDIA_VIDEO_INPUT:
+      ReportVideoEnumerationStart();
       video_capture_manager_->EnumerateDevices(
           base::BindOnce(&MediaDevicesManager::VideoInputDevicesEnumerated,
                          weak_factory_.GetWeakPtr()));
@@ -929,10 +942,12 @@ void MediaDevicesManager::EnumerateAudioDevices(bool is_input) {
 }
 
 void MediaDevicesManager::VideoInputDevicesEnumerated(
-    media::mojom::DeviceEnumerationResult result_code,
+    DeviceEnumerationResult result_code,
     const media::VideoCaptureDeviceDescriptors& descriptors) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (result_code != media::mojom::DeviceEnumerationResult::kSuccess) {
+  ReportVideoEnumerationResult(result_code);
+
+  if (result_code != DeviceEnumerationResult::kSuccess) {
     std::string log_message = base::StringPrintf(
         "VideoInputDevicesEnumerated got error %d", result_code);
     // Log to both WebRTC logs (for feedback reports) and text logs for

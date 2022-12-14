@@ -3112,6 +3112,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MediaDevicesManager.VideoDeviceEnumeration.Result"
+    enum="DeviceEnumerationResult" expires_after="2023-05-01">
+  <owner>toprice@chromium.org</owner>
+  <owner>agpalak@chromium.org</owner>
+  <summary>
+    The success or failure code of MediaDevicesManager requests to enumerate
+    video devices (ie cameras) with the camera capture service.
+  </summary>
+</histogram>
+
+<histogram name="Media.MediaDevicesManager.VideoDeviceEnumeration.Start"
+    enum="Boolean" expires_after="2023-05-01">
+  <owner>toprice@chromium.org</owner>
+  <owner>agpalak@chromium.org</owner>
+  <summary>
+    Count of MediaDevicesManager starting enumerating video devices (ie cameras)
+    with the camera capture service, including enumerations which never
+    finished.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaElement.ContentTypeParseable"
     enum="ContentTypeParseableResult" expires_after="2022-07-03">
   <obsolete>

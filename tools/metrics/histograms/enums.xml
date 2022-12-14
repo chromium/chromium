@@ -25591,6 +25591,12 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="27" label="DeviceActivityClientOnGetLastPingDatesStatusFetched"/>
 </enum>
 
+<enum name="DeviceEnumerationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown error"/>
+  <int value="2" label="Error - Video Capturer Service crashed"/>
+</enum>
+
 <enum name="DeviceIdMismatch">
   <int value="0" label="BOTH_NONEMPTY"/>
   <int value="1" label="SYNC_EMPTY"/>
