@@ -231,7 +231,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
 
   void OnStartTimedout();
 
-  void RecordStartOutcomeUMA(VideoCaptureStartOutcome outcome);
+  void RecordStartOutcomeUMA(media::VideoCaptureError error_code);
 
   // Callback for when GPU context lost is detected. The method fetches the new
   // GPU factories handle on |main_task_runner_| and sets |gpu_factories_| to
@@ -279,7 +279,6 @@ class PLATFORM_EXPORT VideoCaptureImpl
   base::TimeTicks first_frame_ref_time_;
 
   VideoCaptureState state_;
-  bool start_timedout_ = false;
   bool start_outcome_reported_ = false;
 
   int num_first_frame_logs_ = 0;

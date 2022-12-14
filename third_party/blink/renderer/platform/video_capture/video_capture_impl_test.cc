@@ -290,6 +290,8 @@ TEST_F(VideoCaptureImplTest, Simple) {
 
   histogram_tester.ExpectUniqueSample("Media.VideoCapture.StartOutcome",
                                       VideoCaptureStartOutcome::kStarted, 1);
+  histogram_tester.ExpectUniqueSample("Media.VideoCapture.StartErrorCode",
+                                      media::VideoCaptureError::kNone, 1);
 }
 
 TEST_F(VideoCaptureImplTest, TwoClientsInSequence) {
@@ -732,6 +734,8 @@ TEST_F(VideoCaptureImplTest, AlreadyStarted) {
 
   histogram_tester.ExpectTotalCount("Media.VideoCapture.Start", 1);
   histogram_tester.ExpectTotalCount("Media.VideoCapture.StartOutcome", 1);
+  histogram_tester.ExpectUniqueSample("Media.VideoCapture.StartErrorCode",
+                                      media::VideoCaptureError::kNone, 1);
 }
 
 TEST_F(VideoCaptureImplTest, EndedBeforeStop) {
@@ -767,6 +771,8 @@ TEST_F(VideoCaptureImplTest, ErrorBeforeStop) {
   // Successful start before the error, so StartOutcome is kStarted.
   histogram_tester.ExpectUniqueSample("Media.VideoCapture.StartOutcome",
                                       VideoCaptureStartOutcome::kStarted, 1);
+  histogram_tester.ExpectUniqueSample("Media.VideoCapture.StartErrorCode",
+                                      media::VideoCaptureError::kNone, 1);
 }
 
 TEST_F(VideoCaptureImplTest, WinSystemPermissionsErrorUpdatesCorrectState) {
@@ -922,6 +928,9 @@ TEST_F(VideoCaptureImplTest, StartTimeout) {
   histogram_tester.ExpectTotalCount("Media.VideoCapture.Start", 1);
   histogram_tester.ExpectUniqueSample("Media.VideoCapture.StartOutcome",
                                       VideoCaptureStartOutcome::kTimedout, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Media.VideoCapture.StartErrorCode",
+      media::VideoCaptureError::kVideoCaptureImplTimedOutOnStart, 1);
 }
 
 TEST_F(VideoCaptureImplTest, StartTimeout_FeatureDisabled) {
@@ -951,6 +960,8 @@ TEST_F(VideoCaptureImplTest, StartTimeout_FeatureDisabled) {
   histogram_tester.ExpectTotalCount("Media.VideoCapture.Start", 1);
   histogram_tester.ExpectUniqueSample("Media.VideoCapture.StartOutcome",
                                       VideoCaptureStartOutcome::kStarted, 1);
+  histogram_tester.ExpectUniqueSample("Media.VideoCapture.StartErrorCode",
+                                      media::VideoCaptureError::kNone, 1);
 }
 
 TEST_F(VideoCaptureImplTest, ErrorBeforeStart) {
@@ -971,6 +982,9 @@ TEST_F(VideoCaptureImplTest, ErrorBeforeStart) {
   histogram_tester.ExpectTotalCount("Media.VideoCapture.Start", 1);
   histogram_tester.ExpectUniqueSample("Media.VideoCapture.StartOutcome",
                                       VideoCaptureStartOutcome::kFailed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Media.VideoCapture.StartErrorCode",
+      media::VideoCaptureError::kIntentionalErrorRaisedByUnitTest, 1);
 }
 
 #if BUILDFLAG(IS_WIN)
