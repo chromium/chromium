@@ -119,12 +119,14 @@ function initialize() {
     $('block-reason-show-details-link').style.display = 'none';
     $('block-reason-hide-details-link').style.display = 'block';
     $('block-reason').style.display = 'flex';
+    $('block-reason-hide-details-link').focus();
   };
 
   $('block-reason-hide-details-link').onclick = function(event) {
     $('block-reason-show-details-link').style.display = 'block';
     $('block-reason-hide-details-link').style.display = 'none';
     $('block-reason').style.display = 'none';
+    $('block-reason-show-details-link').focus();
   };
 
   // Focus the top-level div for screen readers.
