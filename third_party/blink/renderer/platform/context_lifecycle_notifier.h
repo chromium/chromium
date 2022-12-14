@@ -38,6 +38,11 @@ class PLATFORM_EXPORT ContextLifecycleNotifier : public GarbageCollectedMixin {
  private:
   HeapObserverSet<ContextLifecycleObserver> observers_;
   bool context_destroyed_ = false;
+
+  // When replaying, strong references are held on all observers, which are
+  // cleared out after the context is destroyed. This ensures we can notify
+  // the same observers when replaying as when originally recording
+  HeapVector<Member<ContextLifecycleObserver>> replay_observers_;
 };
 
 }  // namespace blink
