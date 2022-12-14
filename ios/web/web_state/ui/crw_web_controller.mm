@@ -566,7 +566,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
   // Explicitly reset content to clean up views and avoid dangling KVO
   // observers.
-  [_containerView resetContent];
+  [_containerView resetContentForShutdown:YES];
 
   _webStateImpl = nullptr;
 
@@ -904,8 +904,8 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   }
 }
 
-- (void)removeWebViewFromViewHierarchy {
-  [_containerView resetContent];
+- (void)removeWebViewFromViewHierarchyForShutdown:(BOOL)shutdown {
+  [_containerView resetContentForShutdown:shutdown];
 }
 
 - (void)addWebViewToViewHierarchy {
@@ -1760,7 +1760,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 
   [self setWebView:nil];
   [self.navigationHandler stopLoading];
-  [_containerView resetContent];
+  [_containerView resetContentForShutdown:YES];
 
   // webView:didFailProvisionalNavigation:withError: may never be called after
   // resetting WKWebView, so it is important to clear pending navigations now.

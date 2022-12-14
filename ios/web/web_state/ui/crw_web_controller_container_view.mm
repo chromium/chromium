@@ -139,9 +139,9 @@
 
 #pragma mark Content Setters
 
-- (void)resetContent {
+- (void)resetContentForShutdown:(BOOL)shutdown {
   self.webViewContentView = nil;
-  self.contentViewProxy.contentView = nil;
+  [self.contentViewProxy clearContentViewAndAddPlaceholder:!shutdown];
 }
 
 - (void)displayWebViewContentView:(CRWWebViewContentView*)webViewContentView {

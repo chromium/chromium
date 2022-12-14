@@ -58,8 +58,9 @@
 // Returns YES if the container view is currently displaying content.
 - (BOOL)isViewAlive;
 
-// Removes all subviews and resets state to default.
-- (void)resetContent;
+// Removes all subviews and resets state to default. The `shutdown` parameter
+// indicates if this method was called in a shutdown context.
+- (void)resetContentForShutdown:(BOOL)shutdown;
 
 // Replaces the currently displayed content with `webViewContentView`.
 - (void)displayWebViewContentView:(CRWWebViewContentView*)webViewContentView;

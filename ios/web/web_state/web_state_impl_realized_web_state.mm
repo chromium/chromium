@@ -616,7 +616,7 @@ UIView* WebStateImpl::RealizedWebState::GetView() {
 }
 
 void WebStateImpl::RealizedWebState::DidCoverWebContent() {
-  [web_controller_ removeWebViewFromViewHierarchy];
+  [web_controller_ removeWebViewFromViewHierarchyForShutdown:NO];
   WasHidden();
 }
 

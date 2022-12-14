@@ -302,7 +302,7 @@ TEST_F(CRWWebControllerTest, RemoveWebViewFromViewHierarchy) {
 
   ASSERT_EQ(web_controller().view, web_view.superview.superview);
 
-  [web_controller() removeWebViewFromViewHierarchy];
+  [web_controller() removeWebViewFromViewHierarchyForShutdown:NO];
   EXPECT_EQ(nil, web_view.superview.superview);
 
   [web_controller() addWebViewToViewHierarchy];

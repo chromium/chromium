@@ -199,8 +199,9 @@ class WebStateImpl;
 // Creates a web view if it's not yet created. Returns the web view.
 - (WKWebView*)ensureWebViewCreated;
 
-// Removes the webView from the view hierarchy.
-- (void)removeWebViewFromViewHierarchy;
+// Removes the webView from the view hierarchy. The `shutdown` parameter
+// indicates if this method was called in a shutdown context.
+- (void)removeWebViewFromViewHierarchyForShutdown:(BOOL)shutdown;
 // Adds the webView back in the view hierarchy.
 - (void)addWebViewToViewHierarchy;
 
