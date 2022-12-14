@@ -57,9 +57,6 @@ android_resources("java_resources") {
     "//ui/android:ui_java_resources",
   ]
   sources = [
-    "java/res/drawable-v24/fast_checkout_item_background_bottom.xml",
-    "java/res/drawable-v24/fast_checkout_item_background_top.xml",
-    "java/res/drawable-v24/fast_checkout_list_view_background_middle.xml",
     "java/res/drawable/fast_checkout_item_background_bottom.xml",
     "java/res/drawable/fast_checkout_item_background_top.xml",
     "java/res/drawable/fast_checkout_list_view_background_middle.xml",
