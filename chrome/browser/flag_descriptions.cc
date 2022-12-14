@@ -1618,6 +1618,12 @@ const char kStartSurfaceReturnTimeName[] = "Start surface return time";
 const char kStartSurfaceReturnTimeDescription[] =
     "Enable showing start surface at startup after specified time has elapsed";
 
+const char kStorageBucketsName[] = "Storage Buckets API";
+const char kStorageBucketsDescription[] =
+    "Enable experimental Storage Buckets API, allowing websites to create "
+    "multiple buckets of storage to organize their data, allowing user agents "
+    "to delete each bucket independently of other buckets.";
+
 const char kHttpsOnlyModeName[] = "HTTPS-First Mode Setting";
 const char kHttpsOnlyModeDescription[] =
     "Adds a setting under chrome://settings/security to opt-in to HTTPS-First "

@@ -6428,6 +6428,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "storage-buckets",
+    "owners": [ "ayui", "estade", "chrome-owp-storage@google.com" ],
+    "expiry_milestone": 116
+  },
+  {
     "name": "strict-origin-isolation",
     "owners": [ "wjmaclean", "alexmos", "creis" ],
     // This can be used to opt in to origin isolation which isolates full

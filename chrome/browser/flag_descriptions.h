@@ -901,6 +901,9 @@ extern const char kTabSwitcherOnReturnDescription[];
 extern const char kStartSurfaceReturnTimeName[];
 extern const char kStartSurfaceReturnTimeDescription[];
 
+extern const char kStorageBucketsName[];
+extern const char kStorageBucketsDescription[];
+
 extern const char kHiddenNetworkMigrationName[];
 extern const char kHiddenNetworkMigrationDescription[];
 
