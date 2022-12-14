@@ -80,6 +80,20 @@ enum class LacrosAvailability {
   kLacrosOnly = 4
 };
 
+// Represents the policy indicating which Lacros browser to launch, named
+// LacrosSelection. The values shall be consistent with the controlling
+// policy. Unlike `LacrosSelection` representing which lacros to select,
+// `LacrosSelectionPolicy` represents how to decide which lacros to select.
+enum class LacrosSelectionPolicy {
+  // Indicates that the user decides which Lacros browser to launch: rootfs or
+  // stateful.
+  kUserChoice = 0,
+  // Indicates that rootfs Lacros will always be launched.
+  kRootfs = 1,
+  // Indicates that stateful Lacros will always be launched.
+  kStateful = 2,
+};
+
 // Represents the different options available for lacros selection.
 enum class LacrosSelection {
   kRootfs = 0,
@@ -456,6 +470,11 @@ void SetLacrosLaunchSwitchSourceForTest(LacrosAvailability test_value);
 // Parses the string representation of LacrosAvailability policy value into
 // the enum value. Returns nullopt on unknown value.
 absl::optional<LacrosAvailability> ParseLacrosAvailability(
+    base::StringPiece value);
+
+// Parses the string representation of LacrosSelection policy value into the
+// enum value. Returns nullopt on unknown value.
+absl::optional<LacrosSelectionPolicy> ParseLacrosSelectionPolicy(
     base::StringPiece value);
 
 // Returns the policy value name from the given value.

@@ -66,7 +66,7 @@ constexpr char kLacrosMetadataContentKey[] = "content";
 constexpr char kLacrosMetadataVersionKey[] = "version";
 
 // The conversion map for LacrosAvailability policy data. The values must match
-// the ones from policy_templates.json.
+// the ones from LacrosAvailability.yaml.
 constexpr auto kLacrosAvailabilityMap =
     base::MakeFixedFlatMap<base::StringPiece, LacrosAvailability>({
         {"user_choice", LacrosAvailability::kUserChoice},
@@ -88,6 +88,15 @@ constexpr auto kLacrosDataBackwardMigrationModeMap =
          LacrosDataBackwardMigrationMode::kKeepSafeData},
         {kLacrosDataBackwardMigrationModePolicyKeepAll,
          LacrosDataBackwardMigrationMode::kKeepAll},
+    });
+
+// The conversion map for LacrosSelection policy data. The values must match
+// the ones from LacrosSelection.yaml.
+constexpr auto kLacrosSelectionPolicyMap =
+    base::MakeFixedFlatMap<base::StringPiece, LacrosSelectionPolicy>({
+        {"user_choice", LacrosSelectionPolicy::kUserChoice},
+        {"rootfs", LacrosSelectionPolicy::kRootfs},
+        {"stateful", LacrosSelectionPolicy::kStateful},
     });
 
 // Some account types require features that aren't yet supported by lacros.
@@ -1107,6 +1116,16 @@ absl::optional<LacrosAvailability> ParseLacrosAvailability(
     return it->second;
 
   LOG(ERROR) << "Unknown LacrosAvailability policy value is passed: " << value;
+  return absl::nullopt;
+}
+
+absl::optional<LacrosSelectionPolicy> ParseLacrosSelectionPolicy(
+    base::StringPiece value) {
+  auto* it = kLacrosSelectionPolicyMap.find(value);
+  if (it != kLacrosSelectionPolicyMap.end())
+    return it->second;
+
+  LOG(ERROR) << "Unknown LacrosSelection policy value is passed: " << value;
   return absl::nullopt;
 }
 

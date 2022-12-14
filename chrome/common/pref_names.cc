@@ -3478,13 +3478,21 @@ const char kShowCaretBrowsingDialog[] =
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enum pref indicating how to launch the Lacros browser. It is managed by
-// LacrosAvailability policy can have one of the following values:
+// LacrosAvailability policy and can have one of the following values:
 // 0: User choice (default value).
 // 1: Lacros is disallowed.
 // 2: Lacros is enabled but not the pimary browser.
 // 3: Lacros is enabled as the primary browser.
 // 4: Lacros is the only available browser.
 const char kLacrosLaunchSwitch[] = "lacros_launch_switch";
+
+// Enum pref indicating which Lacros browser to launch: rootfs or stateful. It
+// is managed by LacrosSelection policy and can have one of the following
+// values:
+// 0: User choice (default value).
+// 1: Always load rootfs Lacros.
+// 2: Always load stateful Lacros.
+const char kLacrosSelection[] = "lacros_selection";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

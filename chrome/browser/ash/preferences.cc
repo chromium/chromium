@@ -146,6 +146,10 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       ::prefs::kLacrosLaunchSwitch,
       static_cast<int>(crosapi::browser_util::LacrosAvailability::kUserChoice));
+  registry->RegisterIntegerPref(
+      ::prefs::kLacrosSelection,
+      static_cast<int>(
+          crosapi::browser_util::LacrosSelectionPolicy::kUserChoice));
   registry->RegisterStringPref(::prefs::kLacrosDataBackwardMigrationMode, "");
   registry->RegisterBooleanPref(prefs::kDeviceSystemWideTracingEnabled, true);
   registry->RegisterBooleanPref(

@@ -1208,6 +1208,7 @@ extern const char kShowCaretBrowsingDialog[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kLacrosLaunchSwitch[];
+extern const char kLacrosSelection[];
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

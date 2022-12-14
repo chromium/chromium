@@ -18779,6 +18779,56 @@
       }
     ]
   },
+  "LacrosSelection": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "can_be_recommended": false,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "lacros_selection": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "LacrosSelection": "user_choice"
+        },
+        "prefs": {
+          "lacros_selection": {
+            "location": "local_state",
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "LacrosSelection": "rootfs"
+        },
+        "prefs": {
+          "lacros_selection": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "LacrosSelection": "stateful"
+        },
+        "prefs": {
+          "lacros_selection": {
+            "location": "local_state",
+            "value": 2
+          }
+        }
+      }
+    ]
+  },
   "LacrosDataBackwardMigrationMode": {
     "os": [
       "chromeos_ash"

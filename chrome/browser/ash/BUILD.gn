@@ -2317,6 +2317,8 @@ source_set("ash") {
     "policy/handlers/device_wifi_allowed_handler.h",
     "policy/handlers/lacros_availability_policy_handler.cc",
     "policy/handlers/lacros_availability_policy_handler.h",
+    "policy/handlers/lacros_selection_policy_handler.cc",
+    "policy/handlers/lacros_selection_policy_handler.h",
     "policy/handlers/lock_to_single_user_manager.cc",
     "policy/handlers/lock_to_single_user_manager.h",
     "policy/handlers/minimum_version_policy_handler.cc",

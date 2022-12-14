@@ -32315,6 +32315,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1042" label="ShowCastSessionsStartedByOtherDevices"/>
   <int value="1043" label="CloudAPAuthEnabled"/>
   <int value="1044" label="UsbDetectorNotificationEnabled"/>
+  <int value="1045" label="LacrosSelection"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
