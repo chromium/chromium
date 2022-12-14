@@ -185,11 +185,8 @@ def GetCommitDescription(commit):
   ], universal_newlines=True).rstrip()
 
 
-def AddCMakeToPath(args):
+def AddCMakeToPath():
   """Download CMake and add it to PATH."""
-  if args.use_system_cmake:
-    return
-
   if sys.platform == 'win32':
     zip_name = 'cmake-3.23.0-windows-x86_64.zip'
     dir_name = ['cmake-3.23.0-windows-x86_64', 'bin']
@@ -626,8 +623,8 @@ def main():
   WriteStampFile('', STAMP_FILE)
   WriteStampFile('', FORCE_HEAD_REVISION_FILE)
 
-  AddCMakeToPath(args)
-
+  if not args.use_system_cmake:
+    AddCMakeToPath()
 
   if args.skip_build:
     return 0

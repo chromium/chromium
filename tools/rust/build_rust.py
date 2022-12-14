@@ -49,7 +49,7 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
 
-from build import RunCommand
+from build import (AddCMakeToPath, RunCommand)
 from update import (CLANG_REVISION, CLANG_SUB_REVISION, LLVM_BUILD_DIR,
                     GetDefaultHostOs, RmTree, UpdatePackage)
 import build
@@ -137,8 +137,10 @@ def Configure(llvm_libs_root):
 def RunXPy(sub, args, gcc_toolchain_path, verbose):
     ''' Run x.py, Rust's build script'''
     RUSTENV = collections.defaultdict(str, os.environ)
-    # Cargo normally stores files in $HOME. Override this.
-    RUSTENV['CARGO_HOME'] = CARGO_HOME_DIR
+
+    ##### For C/C++ compilation steps #####
+    # The Rust toolchain does include some C/C++ code, and these env vars
+    # control the compilation and library making for that code.
 
     clang_path = os.path.join(LLVM_BUILD_DIR, 'bin')
     if sys.platform == 'win32':
@@ -174,34 +176,33 @@ def RunXPy(sub, args, gcc_toolchain_path, verbose):
         RUSTENV['AR'] = os.path.join(clang_path, 'llvm-ar')
         RUSTENV['CC'] = os.path.join(clang_path, 'clang')
         RUSTENV['CXX'] = os.path.join(clang_path, 'clang++')
-        RUSTENV['LD'] = os.path.join(clang_path, 'clang')
 
-    # We use these flags to avoid linking with the system libstdc++.
-    gcc_toolchain_flag = (f'--gcc-toolchain={gcc_toolchain_path}'
-                          if gcc_toolchain_path else '')
-    # These affect how C/C++ files are compiled, but not Rust libs/exes.
-    RUSTENV['CFLAGS'] += f' {gcc_toolchain_flag}'
-    RUSTENV['CXXFLAGS'] += f' {gcc_toolchain_flag}'
-    RUSTENV['LDFLAGS'] += f' {gcc_toolchain_flag}'
+    if gcc_toolchain_path:
+        # We use these flags to avoid linking with the system libstdc++.
+        gcc_toolchain_flag = (f'--gcc-toolchain={gcc_toolchain_path}')
+        RUSTENV['CFLAGS'] += f' {gcc_toolchain_flag}'
+        RUSTENV['CXXFLAGS'] += f' {gcc_toolchain_flag}'
+        RUSTENV['LDFLAGS'] += f' {gcc_toolchain_flag}'
 
-    # These affect how Rust crates are built. A `-Clink-arg=<foo>` arg passes
-    # foo to the clang invocation used to link.
+    ##### For Rust compilation steps #####
+    # These env vars set arguments passed to the rust compiler when building
+    # Rust target.
     #
-    # TODO(https://crbug.com/1281664): remove --no-gc-sections argument.
-    # Workaround for a bug causing std::env::args() to return an empty list,
-    # making Rust binaries unable to take command line arguments. Fix is landed
-    # upstream in LLVM but hasn't rolled into Chromium. Also see:
-    # * https://github.com/rust-lang/rust/issues/92181
-    # * https://reviews.llvm.org/D116528
-    RUSTENV['RUSTFLAGS_BOOTSTRAP'] = (f'-Clinker={clang_path} '
-                                      f'-Clink-arg=-fuse-ld=lld '
-                                      f'-Clink-arg=-Wl,--no-gc-sections')
+    # A `-Clink-arg=<foo>` arg passes `foo`` to the linker invovation.
+
+    RUSTENV['RUSTFLAGS_BOOTSTRAP'] = ''
     if gcc_toolchain_flag:
         RUSTENV['RUSTFLAGS_BOOTSTRAP'] += f' -Clink-arg={gcc_toolchain_flag} '
     if gcc_toolchain_path:
         RUSTENV['RUSTFLAGS_BOOTSTRAP'] += (
             f' -L native={gcc_toolchain_path}/lib64')
     RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] = RUSTENV['RUSTFLAGS_BOOTSTRAP']
+
+    ##### Do the build now #####
+
+    # Cargo normally stores files in $HOME. Override this.
+    RUSTENV['CARGO_HOME'] = CARGO_HOME_DIR
+
     os.chdir(RUST_SRC_DIR)
     cmd = [sys.executable, 'x.py', sub]
     if verbose and verbose > 0:
@@ -299,6 +300,8 @@ def main():
 
     # Set up config.toml in Rust source tree to configure build.
     Configure(llvm_libs_root)
+
+    AddCMakeToPath()
 
     if args.run_xpy:
         if rest[0] == '--':
