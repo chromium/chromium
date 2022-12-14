@@ -21,10 +21,10 @@ import './do_not_track_toggle.js';
 import '../controls/settings_radio_group.js';
 
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
@@ -34,10 +34,9 @@ import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
-import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
+import {ContentSetting, ContentSettingsTypes, CookieControlsMode} from '../site_settings/constants.js';
 import {CookiePrimarySetting} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
-import {SettingsCollapseRadioButtonElement} from './collapse_radio_button.js';
 import {getTemplate} from './cookies_page.html.js';
 
 /**
@@ -54,11 +53,6 @@ enum NetworkPredictionOptions {
 
 export interface SettingsCookiesPageElement {
   $: {
-    allowAll: SettingsCollapseRadioButtonElement,
-    blockAll: SettingsCollapseRadioButtonElement,
-    blockThirdPartyIncognito: SettingsCollapseRadioButtonElement,
-    blockThirdParty: SettingsCollapseRadioButtonElement,
-    primarySettingGroup: SettingsRadioGroupElement,
     toast: CrToastElement,
   };
 }
@@ -107,6 +101,12 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         value: CookiePrimarySetting,
       },
 
+      /** Cookie control modes for use in bindings. */
+      cookieControlsModeEnum_: {
+        type: Object,
+        value: CookieControlsMode,
+      },
+
       /**
        * Used for HTML bindings. This is defined as a property rather than
        * within the ready callback, because the value needs to be available
@@ -149,12 +149,18 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('firstPartySetsUIEnabled'),
       },
+
+      isPrivacySandboxSettings4_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isPrivacySandboxSettings4'),
+      },
     };
   }
 
   static get observers() {
     return [`onGeneratedPrefsUpdated_(prefs.generated.cookie_session_only,
-        prefs.generated.cookie_primary_setting)`];
+        prefs.generated.cookie_primary_setting,
+        prefs.generated.cookie_default_content_setting)`];
   }
 
   searchTerm: string;
@@ -162,6 +168,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private exceptionListsReadOnly_: boolean;
   private blockAllPref_: chrome.settingsPrivate.PrefObject;
   focusConfig: FocusConfig;
+  private isPrivacySandboxSettings4_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -202,6 +209,20 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   }
 
   private onGeneratedPrefsUpdated_() {
+    if (this.isPrivacySandboxSettings4_) {
+      // If the default cookie content setting is managed, the exception lists
+      // should be disabled. `profile.cookie_controls_mode` doesn't control the
+      // ability to create exceptions but the content setting does.
+      const defaultContentSettingPref =
+          this.getPref('generated.cookie_default_content_setting');
+      this.exceptionListsReadOnly_ = defaultContentSettingPref.enforcement ===
+          chrome.settingsPrivate.Enforcement.ENFORCED;
+      return;
+    }
+
+    // TODO(crbug.com/1378703): Clean up after the feature is launched and these
+    // generated preferences are deprecated. New page won't have 'session only'
+    // controls.
     const sessionOnlyPref = this.getPref('generated.cookie_session_only');
 
     // If the clear on exit toggle is managed this implies a content setting
@@ -224,11 +245,49 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         }));
   }
 
+  private onCookieControlsModeChanged_() {
+    // TODO(crbug.com/1378703): Use this.$.primarySettingGroup after the feature
+    // is launched and element isn't in dom-if anymore.
+    const primarySettingGroup: SettingsRadioGroupElement =
+        this.shadowRoot!.querySelector('#primarySettingGroup')!;
+
+    const selection = Number(primarySettingGroup.selected);
+    // TODO(crbug.com/1378703): Record metrics based on the selection.
+
+    // If this change resulted in the user now blocking 3P cookies where they
+    // previously were not, and any of privacy sandbox APIs are enabled,
+    // the privacy sandbox toast should be shown.
+    const currentCookieControlsMode =
+        this.getPref('profile.cookie_controls_mode').value;
+    const areAnyPrivacySandboxApisEnabled =
+        this.getPref('privacy_sandbox.m1.topics_enabled').value ||
+        this.getPref('privacy_sandbox.m1.fledge_enabled').value ||
+        this.getPref('privacy_sandbox.m1.fledge_enabled').value;
+    const areThirdPartyCookiesAllowed =
+        currentCookieControlsMode === CookieControlsMode.OFF ||
+        currentCookieControlsMode === CookieControlsMode.INCOGNITO_ONLY;
+
+    if (areAnyPrivacySandboxApisEnabled && areThirdPartyCookiesAllowed &&
+        selection === CookieControlsMode.BLOCK_THIRD_PARTY) {
+      if (!loadTimeData.getBoolean('isPrivacySandboxRestricted')) {
+        this.$.toast.show();
+      }
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.PrivacySandbox.Block3PCookies');
+    } else {
+      this.$.toast.hide();
+    }
+
+    primarySettingGroup.sendPrefChange();
+  }
+
   /**
    * Record interaction metrics for the primary cookie radio setting.
    */
   private onCookiePrimarySettingChanged_() {
-    const selection = Number(this.$.primarySettingGroup.selected);
+    const primarySettingGroup: SettingsRadioGroupElement =
+        this.shadowRoot!.querySelector('#primarySettingGroup')!;
+    const selection = Number(primarySettingGroup.selected);
     if (selection === CookiePrimarySetting.ALLOW_ALL) {
       this.metricsBrowserProxy_.recordSettingsPageHistogram(
           PrivacyElementInteractions.COOKIES_ALL);
@@ -268,7 +327,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
       this.$.toast.hide();
     }
 
-    this.$.primarySettingGroup.sendPrefChange();
+    primarySettingGroup.sendPrefChange();
   }
 
   private onClearOnExitChange_() {
@@ -290,12 +349,18 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.OpenedFromCookiesPageToast');
     this.$.toast.hide();
+    // TODO(crbug.com/1378703): Open new privacy sandbox settings page.
     // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call.
     this.shadowRoot!.querySelector<HTMLAnchorElement>(
                         '#privacySandboxLink')!.click();
   }
 
   private firstPartySetsToggleDisabled_() {
+    if (this.isPrivacySandboxSettings4_) {
+      return this.getPref('profile.cookie_controls_mode').value !==
+          CookieControlsMode.BLOCK_THIRD_PARTY;
+    }
+
     return this.getPref('generated.cookie_primary_setting').value !==
         CookiePrimarySetting.BLOCK_THIRD_PARTY;
   }

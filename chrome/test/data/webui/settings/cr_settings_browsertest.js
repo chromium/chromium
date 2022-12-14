@@ -744,6 +744,15 @@ var CrSettingsCookiesPageTest = class extends CrSettingsBrowserTest {
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/cookies_page_test.js';
   }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'privacy_sandbox::kPrivacySandboxSettings4',
+      ],
+    };
+  }
 };
 
 // Flaky on MacOS bots and times out on Linux Dbg: https://crbug.com/1240747
@@ -760,18 +769,29 @@ TEST_F('CrSettingsCookiesPageTest', 'FirstPartySetsUIEnabled', function() {
   runMochaSuite('CrSettingsCookiesPageTest_FirstPartySetsUIEnabled');
 });
 
+GEN('#if BUILDFLAG(IS_CHROMEOS_LACROS)');
+TEST_F('CrSettingsCookiesPageTest', 'LacrosSecondaryProfile', function() {
+  runMochaSuite('CrSettingsCookiesPageTest_lacrosSecondaryProfile');
+});
+GEN('#endif');
+
+GEN('#if (BUILDFLAG(IS_MAC)) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
+GEN('#define MAYBE_PrivacySandboxSettings4Disabled DISABLED_PrivacySandboxSettings4Disabled');
+GEN('#else');
+GEN('#define MAYBE_PrivacySandboxSettings4Disabled PrivacySandboxSettings4Disabled');
+GEN('#endif');
+TEST_F(
+    'CrSettingsCookiesPageTest', 'MAYBE_PrivacySandboxSettings4Disabled',
+    function() {
+      runMochaSuite('PrivacySandboxSettings4Disabled');
+    });
+
 var CrSettingsRouteTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/route_tests.js';
   }
 };
-
-GEN('#if BUILDFLAG(IS_CHROMEOS_LACROS)');
-TEST_F('CrSettingsCookiesPageTest', 'LacrosSecondaryProfile', function() {
-  runMochaSuite('CrSettingsCookiesPageTest_lacrosSecondaryProfile');
-});
-GEN('#endif');
 
 TEST_F('CrSettingsRouteTest', 'Basic', function() {
   runMochaSuite('route');

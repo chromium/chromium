@@ -51,105 +51,184 @@
       <img id="banner" alt=""
           src="chrome://settings/images/cookies_banner.svg">
     </picture>
-    <div id="generalControls">
-      <h2>$i18n{cookiePageGeneralControls}</h2>
-      <settings-radio-group id="primarySettingGroup" no-set-pref
-          pref="{{prefs.generated.cookie_primary_setting}}"
-          selectable-elements="cr-radio-button, settings-collapse-radio-button"
-          on-change="onCookiePrimarySettingChanged_">
-        <settings-collapse-radio-button id="allowAll"
-            pref="[[prefs.generated.cookie_primary_setting]]"
-            name="[[cookiePrimarySettingEnum_.ALLOW_ALL]]"
-            label="$i18n{cookiePageAllowAll}"
-            expand-aria-label="$i18n{cookiePageAllowAllExpandA11yLabel}">
-          <div slot="collapse">
-            <div class="bullet-line">
-              <iron-icon icon="settings:cookie"></iron-icon>
-              <div class="secondary">$i18n{cookiePageAllowAllBulOne}</div>
-            </div>
-            <div class="bullet-line">
-              <iron-icon icon="settings:cookie"></iron-icon>
-              <div class="secondary">$i18n{cookiePageAllowAllBulTwo}</div>
-            </div>
-          </div>
-        </settings-collapse-radio-button>
-        <settings-collapse-radio-button id="blockThirdPartyIncognito"
-            pref="[[prefs.generated.cookie_primary_setting]]"
-            name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY_INCOGNITO]]"
-            label="$i18n{cookiePageBlockThirdIncognito}"
-            expand-aria-label=
-                "$i18n{cookiePageBlockThirdIncognitoExpandA11yLabel}">
-          <div slot="collapse">
-            <div class="bullet-line">
-              <iron-icon icon="settings:cookie"></iron-icon>
-              <div class="secondary">
-                    $i18n{cookiePageBlockThirdIncognitoBulOne}
+    <template is="dom-if" if="[[isPrivacySandboxSettings4_]]">
+      <!-- TODO(crbug.com/1378703): Update strings -->
+      <div id="generalControls">
+        <!-- TODO(crbug.com/1378703): Add new description labels -->
+        <h2>$i18n{cookiePageGeneralControls}</h2>
+        <settings-radio-group id="primarySettingGroup" no-set-pref
+            pref="{{prefs.profile.cookie_controls_mode}}"
+            selectable-elements="
+                cr-radio-button, settings-collapse-radio-button"
+            on-change="onCookieControlsModeChanged_">
+          <settings-collapse-radio-button id="allowThirdParty"
+              pref="[[prefs.profile.cookie_controls_mode]]"
+              name="[[cookieControlsModeEnum_.OFF]]"
+              label="$i18n{cookiePageAllowAll}"
+              expand-aria-label="$i18n{cookiePageAllowAllExpandA11yLabel}">
+            <div slot="collapse">
+              <div class="bullet-line">
+                <iron-icon icon="settings:cookie"></iron-icon>
+                <div class="secondary">$i18n{cookiePageAllowAllBulOne}</div>
+              </div>
+              <div class="bullet-line">
+                <iron-icon icon="settings:cookie"></iron-icon>
+                <div class="secondary">$i18n{cookiePageAllowAllBulTwo}</div>
               </div>
             </div>
-            <div class="bullet-line">
-              <iron-icon icon="settings:block"></iron-icon>
-              <div class="secondary">
-                    $i18n{cookiePageBlockThirdIncognitoBulTwo}
+          </settings-collapse-radio-button>
+          <settings-collapse-radio-button id="blockThirdPartyIncognito"
+              pref="[[prefs.profile.cookie_controls_mode]]"
+              name="[[cookieControlsModeEnum_.INCOGNITO_ONLY]]"
+              label="$i18n{cookiePageBlockThirdIncognito}"
+              expand-aria-label=
+                  "$i18n{cookiePageBlockThirdIncognitoExpandA11yLabel}">
+            <div slot="collapse">
+              <div class="bullet-line">
+                <iron-icon icon="settings:cookie"></iron-icon>
+                <div class="secondary">
+                      $i18n{cookiePageBlockThirdIncognitoBulOne}
+                </div>
+              </div>
+              <div class="bullet-line">
+                <iron-icon icon="settings:block"></iron-icon>
+                <div class="secondary">
+                      $i18n{cookiePageBlockThirdIncognitoBulTwo}
+                </div>
               </div>
             </div>
-          </div>
-        </settings-collapse-radio-button>
-        <settings-collapse-radio-button id="blockThirdParty"
-            pref="[[prefs.generated.cookie_primary_setting]]"
-            name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY]]"
-            label="$i18n{cookiePageBlockThird}"
-            expand-aria-label="$i18n{cookiePageBlockThirdExpandA11yLabel}">
-          <div slot="collapse">
-            <div class="bullet-line">
-              <iron-icon icon="settings:cookie"></iron-icon>
-              <div class="secondary">$i18n{cookiePageBlockThirdBulOne}</div>
+          </settings-collapse-radio-button>
+          <settings-collapse-radio-button id="blockThirdParty"
+              pref="[[prefs.profile.cookie_controls_mode]]"
+              name="[[cookieControlsModeEnum_.BLOCK_THIRD_PARTY]]"
+              label="$i18n{cookiePageBlockThird}"
+              expand-aria-label="$i18n{cookiePageBlockThirdExpandA11yLabel}">
+            <div slot="collapse">
+              <div class="bullet-line">
+                <iron-icon icon="settings:cookie"></iron-icon>
+                <div class="secondary">$i18n{cookiePageBlockThirdBulOne}</div>
+              </div>
+              <div class="bullet-line">
+                <iron-icon icon="settings:block"></iron-icon>
+                <div class="secondary">$i18n{cookiePageBlockThirdBulTwo}</div>
+              </div>
+              <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
+                <settings-toggle-button
+                    id="firstPartySetsToggle"
+                    pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
+                    label="$i18n{cookiePageFpsLabel}"
+                    sub-label="$i18n{cookiePageFpsSubLabel}"
+                    disabled="[[firstPartySetsToggleDisabled_(
+                        prefs.profile.cookie_controls_mode.value)]]">
+                </settings-toggle-button>
+              </template>
             </div>
-            <div class="bullet-line">
-              <iron-icon icon="settings:block"></iron-icon>
-              <div class="secondary">$i18n{cookiePageBlockThirdBulTwo}</div>
+          </settings-collapse-radio-button>
+        </settings-radio-group>
+      </div>
+    </template>
+    <template is="dom-if" if="[[!isPrivacySandboxSettings4_]]">
+      <div id="generalControls">
+        <h2>$i18n{cookiePageGeneralControls}</h2>
+        <settings-radio-group id="primarySettingGroup" no-set-pref
+            pref="{{prefs.generated.cookie_primary_setting}}"
+            selectable-elements="
+                cr-radio-button, settings-collapse-radio-button"
+            on-change="onCookiePrimarySettingChanged_">
+          <settings-collapse-radio-button id="allowAll"
+              pref="[[prefs.generated.cookie_primary_setting]]"
+              name="[[cookiePrimarySettingEnum_.ALLOW_ALL]]"
+              label="$i18n{cookiePageAllowAll}"
+              expand-aria-label="$i18n{cookiePageAllowAllExpandA11yLabel}">
+            <div slot="collapse">
+              <div class="bullet-line">
+                <iron-icon icon="settings:cookie"></iron-icon>
+                <div class="secondary">$i18n{cookiePageAllowAllBulOne}</div>
+              </div>
+              <div class="bullet-line">
+                <iron-icon icon="settings:cookie"></iron-icon>
+                <div class="secondary">$i18n{cookiePageAllowAllBulTwo}</div>
+              </div>
             </div>
-            <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
-              <settings-toggle-button
-                  id="firstPartySetsToggle"
-                  pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
-                  label="$i18n{cookiePageFpsLabel}"
-                  sub-label="$i18n{cookiePageFpsSubLabel}"
-                  disabled="[[firstPartySetsToggleDisabled_(
-                      prefs.generated.cookie_primary_setting.value)]]">
-              </settings-toggle-button>
-            </template>
-          </div>
-        </settings-collapse-radio-button>
-        <settings-collapse-radio-button id="blockAll"
-            pref="[[blockAllPref_]]"
-            name="[[cookiePrimarySettingEnum_.BLOCK_ALL]]"
-            label="$i18n{cookiePageBlockAll}"
-            expand-aria-label="$i18n{cookiePageBlockAllExpandA11yLabel}">
-          <div slot="collapse">
-            <div class="bullet-line">
-              <iron-icon icon="settings:block"></iron-icon>
-              <div class="secondary">$i18n{cookiePageBlockAllBulOne}</div>
+          </settings-collapse-radio-button>
+          <settings-collapse-radio-button id="blockThirdPartyIncognito"
+              pref="[[prefs.generated.cookie_primary_setting]]"
+              name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY_INCOGNITO]]"
+              label="$i18n{cookiePageBlockThirdIncognito}"
+              expand-aria-label=
+                  "$i18n{cookiePageBlockThirdIncognitoExpandA11yLabel}">
+            <div slot="collapse">
+              <div class="bullet-line">
+                <iron-icon icon="settings:cookie"></iron-icon>
+                <div class="secondary">
+                      $i18n{cookiePageBlockThirdIncognitoBulOne}
+                </div>
+              </div>
+              <div class="bullet-line">
+                <iron-icon icon="settings:block"></iron-icon>
+                <div class="secondary">
+                      $i18n{cookiePageBlockThirdIncognitoBulTwo}
+                </div>
+              </div>
             </div>
-            <div class="bullet-line">
-              <iron-icon icon="settings:block"></iron-icon>
-              <div class="secondary">$i18n{cookiePageBlockAllBulTwo}</div>
+          </settings-collapse-radio-button>
+          <settings-collapse-radio-button id="blockThirdParty"
+              pref="[[prefs.generated.cookie_primary_setting]]"
+              name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY]]"
+              label="$i18n{cookiePageBlockThird}"
+              expand-aria-label="$i18n{cookiePageBlockThirdExpandA11yLabel}">
+            <div slot="collapse">
+              <div class="bullet-line">
+                <iron-icon icon="settings:cookie"></iron-icon>
+                <div class="secondary">$i18n{cookiePageBlockThirdBulOne}</div>
+              </div>
+              <div class="bullet-line">
+                <iron-icon icon="settings:block"></iron-icon>
+                <div class="secondary">$i18n{cookiePageBlockThirdBulTwo}</div>
+              </div>
+              <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
+                <settings-toggle-button
+                    id="firstPartySetsToggle"
+                    pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
+                    label="$i18n{cookiePageFpsLabel}"
+                    sub-label="$i18n{cookiePageFpsSubLabel}"
+                    disabled="[[firstPartySetsToggleDisabled_(
+                        prefs.generated.cookie_primary_setting.value)]]">
+                </settings-toggle-button>
+              </template>
             </div>
-            <div class="bullet-line one-line">
-              <iron-icon icon="settings:block"></iron-icon>
-              <div class="secondary">$i18n{cookiePageBlockAllBulThree}</div>
+          </settings-collapse-radio-button>
+          <settings-collapse-radio-button id="blockAll"
+              pref="[[blockAllPref_]]"
+              name="[[cookiePrimarySettingEnum_.BLOCK_ALL]]"
+              label="$i18n{cookiePageBlockAll}"
+              expand-aria-label="$i18n{cookiePageBlockAllExpandA11yLabel}">
+            <div slot="collapse">
+              <div class="bullet-line">
+                <iron-icon icon="settings:block"></iron-icon>
+                <div class="secondary">$i18n{cookiePageBlockAllBulOne}</div>
+              </div>
+              <div class="bullet-line">
+                <iron-icon icon="settings:block"></iron-icon>
+                <div class="secondary">$i18n{cookiePageBlockAllBulTwo}</div>
+              </div>
+              <div class="bullet-line one-line">
+                <iron-icon icon="settings:block"></iron-icon>
+                <div class="secondary">$i18n{cookiePageBlockAllBulThree}</div>
+              </div>
             </div>
-          </div>
-        </settings-collapse-radio-button>
-      </settings-radio-group>
-    </div>
-    <settings-toggle-button id="clearOnExit" class="hr"
-        pref="{{prefs.generated.cookie_session_only}}"
-        label="$i18n{cookiePageClearOnExit}"
-<if expr="not chromeos_ash">
-        sub-label="[[getClearOnExitSubLabel_()]]"
-</if>
-        on-settings-boolean-control-change="onClearOnExitChange_">
-    </settings-toggle-button>
+          </settings-collapse-radio-button>
+        </settings-radio-group>
+      </div>
+      <settings-toggle-button id="clearOnExit" class="hr"
+          pref="{{prefs.generated.cookie_session_only}}"
+          label="$i18n{cookiePageClearOnExit}"
+  <if expr="not chromeos_ash">
+          sub-label="[[getClearOnExitSubLabel_()]]"
+  </if>
+          on-settings-boolean-control-change="onClearOnExitChange_">
+      </settings-toggle-button>
+    </template>
     <settings-do-not-track-toggle id="doNotTrack"
         prefs="{{prefs}}">
     </settings-do-not-track-toggle>
@@ -169,6 +248,8 @@
     <div id="exceptionHeader">
       <h2>$i18n{siteSettingsCustomizedBehaviors}</h2>
     </div>
+    <!-- TODO(crbug.com/1378703): Update site-list element to display
+      correct exceptions -->
     <site-list id="allowExceptionsList"
         category="[[cookiesContentSettingType_]]"
         category-subtype="[[contentSetting_.ALLOW]]"
