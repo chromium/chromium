@@ -6,6 +6,7 @@ import {assert, assertExists, assertNotReached} from '../assert.js';
 import {AsyncJobQueue} from '../async_job_queue.js';
 import {reportError} from '../error.js';
 import {Point} from '../geometry.js';
+import * as state from '../state.js';
 import {
   ErrorLevel,
   ErrorType,
@@ -593,11 +594,24 @@ export class DeviceOperator {
             event.signal(new Blob([new Uint8Array(data)], {type: mimeType}));
           }
         });
+
+    function suspendObserver(val: boolean) {
+      if (val) {
+        for (const [effect, event] of reprocessEvents.entries()) {
+          if (effect === Effect.PORTRAIT_MODE) {
+            event.signalError(new Error('camera suspended'));
+          }
+        }
+      }
+    }
+    state.addOneTimeObserver(state.State.SUSPEND, suspendObserver);
+
     const device = await this.getDevice(deviceId);
     await device.setReprocessOptions(
         effects, listenerCallbacksRouter.$.bindNewPipeAndPassRemote());
 
     Promise.allSettled(callbacks).then(() => {
+      state.removeObserver(state.State.SUSPEND, suspendObserver);
       closeEndpoint(listenerCallbacksRouter);
     });
     return callbacks;
