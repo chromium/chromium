@@ -133,13 +133,12 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         CompositorButton modelSelectorButton = layoutHelper.getModelSelectorButton();
         boolean newTabButtonVisible = newTabButton.isVisible();
         boolean modelSelectorButtonVisible = modelSelectorButton.isVisible();
-
         TabStripSceneLayerJni.get().updateNewTabButton(mNativePtr, TabStripSceneLayer.this,
-                newTabButton.getResourceId(), newTabButton.getX() * mDpToPx,
-                newTabButton.getY() * mDpToPx, newTabButton.getWidth() * mDpToPx,
-                newTabButton.getHeight() * mDpToPx,
+                newTabButton.getResourceId(), newTabButton.getBackgroundResourceId(),
+                newTabButton.getX() * mDpToPx, newTabButton.getY() * mDpToPx,
                 layoutHelper.getNewTabBtnTouchTargetOffset() * mDpToPx, newTabButtonVisible,
-                newTabButton.getTint(), newTabButton.getOpacity(), resourceManager);
+                newTabButton.getTint(), newTabButton.getBackgroundTint(), newTabButton.getOpacity(),
+                resourceManager);
 
         TabStripSceneLayerJni.get().updateModelSelectorButton(mNativePtr, TabStripSceneLayer.this,
                 modelSelectorButton.getResourceId(), modelSelectorButton.getX() * mDpToPx,
@@ -218,8 +217,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         void updateStripScrim(long nativeTabStripSceneLayer, TabStripSceneLayer caller, float x,
                 float y, float width, float height, int color, float alpha);
         void updateNewTabButton(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
-                int resourceId, float x, float y, float width, float height,
-                float touchTargetOffset, boolean visible, int tint, float buttonAlpha,
+                int resourceId, int backgroundResourceId, float x, float y, float touchTargetOffset,
+                boolean visible, int tint, int backgroundTint, float buttonAlpha,
                 ResourceManager resourceManager);
         void updateModelSelectorButton(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
                 int resourceId, float x, float y, float width, float height, boolean incognito,

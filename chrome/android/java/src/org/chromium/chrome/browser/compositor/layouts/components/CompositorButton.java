@@ -64,6 +64,7 @@ public class CompositorButton implements VirtualView {
     private final CompositorOnClickHandler mClickHandler;
 
     protected int mResource;
+    protected int mBackgroundResource;
 
     private int mPressedResource;
     private int mIncognitoResource;

@@ -60,6 +60,15 @@ public class TabUiThemeProvider {
     }
 
     /**
+     * Returns the semantic color value that corresponds to colorPrimaryContainer.
+     *
+     * @param context {@link Context} used to retrieve color.
+     */
+    public static @ColorInt int getDefaultContainerColor(Context context) {
+        return MaterialColors.getColor(context, R.attr.colorPrimaryContainer, TAG);
+    }
+
+    /**
      * Returns the color for the tab strip background.
      *
      * @param context {@link Context} used to retrieve color.

@@ -21,6 +21,10 @@ public class TintedCompositorButton extends CompositorButton {
     private @ColorRes int mPressedTintResource;
     private @ColorRes int mIncognitoTintResource;
     private @ColorRes int mIncognitoPressedTintResource;
+    private @ColorInt int mBackgroundDefaultTint;
+    private @ColorInt int mBackgroundPressedTint;
+    private @ColorInt int mBackgroundIncognitoTint;
+    private @ColorInt int mBackgroundIncognitoPressedTint;
 
     public TintedCompositorButton(
             Context context, float width, float height, CompositorOnClickHandler clickHandler) {
@@ -32,7 +36,6 @@ public class TintedCompositorButton extends CompositorButton {
     public TintedCompositorButton(Context context, float width, float height,
             CompositorOnClickHandler clickHandler, @DrawableRes int resource) {
         super(context, width, height, clickHandler);
-
         mContext = context;
         mResource = resource;
     }
@@ -62,6 +65,20 @@ public class TintedCompositorButton extends CompositorButton {
     }
 
     /**
+     * @param backgroundResource The default Android resource.
+     */
+    public void setBackgroundResourceId(@DrawableRes int backgroundResource) {
+        mBackgroundResource = backgroundResource;
+    }
+
+    /**
+     * @return The Android resource that represents button background.
+     */
+    public int getBackgroundResourceId() {
+        return mBackgroundResource;
+    }
+
+    /**
      * A set of Android resources to supply to the compositor.
      * @param defaultTint           The default tint resource.
      * @param pressedTint           The pressed tint resource.
@@ -77,15 +94,42 @@ public class TintedCompositorButton extends CompositorButton {
     }
 
     /**
-     * @return The tint (color value, NOT the resource Id) depending on the state of the button and
-     *         the tab (incognito or not).
+     * A set of Android color to supply to the compositor.
+     * @param backgroundDefaultTint           The default background tint.
+     * @param backgroundPressedTint           The pressed background tint.
+     * @param backgroundIncognitoTint         The incognito background tint.
+     * @param backgroundIncognitoPressedTint  The incognito pressed background tint.
+     */
+    public void setBackgroundTint(@ColorInt int backgroundDefaultTint,
+            @ColorInt int backgroundPressedTint, @ColorInt int backgroundIncognitoTint,
+            @ColorInt int backgroundIncognitoPressedTint) {
+        mBackgroundDefaultTint = backgroundDefaultTint;
+        mBackgroundPressedTint = backgroundPressedTint;
+        mBackgroundIncognitoTint = backgroundIncognitoTint;
+        mBackgroundIncognitoPressedTint = backgroundIncognitoPressedTint;
+    }
+
+    /**
+     * @return The icon tint (color value, NOT the resource Id) depending on the state of the button
+     *         and the tab (incognito or not).
      */
     public @ColorInt int getTint() {
         int tint = isIncognito() ? mIncognitoTintResource : mDefaultTintResource;
         if (isPressed()) {
             tint = isIncognito() ? mIncognitoPressedTintResource : mPressedTintResource;
         }
-
         return AppCompatResources.getColorStateList(mContext, tint).getDefaultColor();
+    }
+
+    /**
+     * @return The button background tint (color value, NOT the resource Id) depending on the state
+     *         of the button and the tab.
+     */
+    public @ColorInt int getBackgroundTint() {
+        int tint = isIncognito() ? mBackgroundIncognitoTint : mBackgroundDefaultTint;
+        if (isPressed()) {
+            tint = isIncognito() ? mBackgroundIncognitoPressedTint : mBackgroundPressedTint;
+        }
+        return tint;
     }
 }

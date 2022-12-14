@@ -51,10 +51,14 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
+import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,14 +132,22 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private static final float REORDER_EDGE_SCROLL_START_MIN_DP = 87.4f;
     private static final float REORDER_EDGE_SCROLL_START_MAX_DP = 18.4f;
     private static final float NEW_TAB_BUTTON_Y_OFFSET_DP = 10.f;
+    private static final float NEW_TAB_BUTTON_BACKGROUND_Y_OFFSET_DP = 0.f;
     private static final float NEW_TAB_BUTTON_CLICK_SLOP_DP = 12.f;
     private static final float NEW_TAB_BUTTON_WIDTH_DP = 24.f;
     private static final float NEW_TAB_BUTTON_HEIGHT_DP = 24.f;
+    private static final float NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP_FOLIO = 36.f;
+    private static final float NEW_TAB_BUTTON_BACKGROUND_HEIGHT_DP_FOLIO = 36.f;
+    private static final float NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP_DETACHED = 38.f;
+    private static final float NEW_TAB_BUTTON_BACKGROUND_HEIGHT_DP_DETACHED = 38.f;
     private static final float NEW_TAB_BUTTON_PADDING_DP = 24.f;
     private static final float NEW_TAB_BUTTON_TOUCH_TARGET_OFFSET = 12.f;
     private static final float FOLIO_ATTACHED_BOTTOM_MARGIN_DP = 0.f;
     private static final float FOLIO_ANIM_INTERMEDIATE_MARGIN_DP = -12.f;
     private static final float FOLIO_DETACHED_BOTTOM_MARGIN_DP = 4.f;
+    private static final float NEW_TAB_BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
+    private static final float NEW_TAB_BUTTON_DEFAULT_PRESSED_OPACITY = 0.2f;
+    private static final float NEW_TAB_BUTTON_DARK_DETACHED_OPACITY = 0.15f;
     static final float BACKGROUND_TAB_BRIGHTNESS_DEFAULT = 1.f;
     static final float BACKGROUND_TAB_BRIGHTNESS_DIMMED = 0.65f;
     static final float DIVIDER_HIDDEN_OPACITY = 0.f;
@@ -242,7 +254,15 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     public StripLayoutHelper(Context context, LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost, boolean incognito, CompositorButton modelSelectorButton) {
         mTabOverlapWidth = TAB_OVERLAP_WIDTH_DP;
-        mNewTabButtonWidth = NEW_TAB_BUTTON_WIDTH_DP;
+        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+                mNewTabButtonWidth = NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP_FOLIO;
+            } else {
+                mNewTabButtonWidth = NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP_DETACHED;
+            }
+        } else {
+            mNewTabButtonWidth = NEW_TAB_BUTTON_WIDTH_DP;
+        }
         mModelSelectorButton = modelSelectorButton;
         mTabStripImpEnabled = ChromeFeatureList.sTabStripImprovements.isEnabled();
 
@@ -264,14 +284,78 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 handleNewTabClick();
             }
         };
-        mNewTabButton = new TintedCompositorButton(context, NEW_TAB_BUTTON_WIDTH_DP,
-                NEW_TAB_BUTTON_HEIGHT_DP, newTabClickHandler, R.drawable.ic_new_tab_button);
 
-        mNewTabButton.setTintResources(R.color.new_tab_button_tint_list,
-                R.color.new_tab_button_pressed_tint_list, R.color.modern_white,
-                R.color.default_icon_color_blue_light);
+        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            // Set new tab button background resource based on which TSR is enabled, background has
+            // different size.
+            if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+                // Tab strip redesign folio enabled, bg size 36 * 36.
+                mNewTabButton = new TintedCompositorButton(context,
+                        NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP_FOLIO,
+                        NEW_TAB_BUTTON_BACKGROUND_HEIGHT_DP_FOLIO, newTabClickHandler,
+                        R.drawable.ic_new_tab_button);
+                mNewTabButton.setBackgroundResourceId(R.drawable.bg_circle_new_tab_button_folio);
+            } else {
+                // Tab strip redesign detached enabled, bg size 38 * 38.
+                mNewTabButton = new TintedCompositorButton(context,
+                        NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP_DETACHED,
+                        NEW_TAB_BUTTON_BACKGROUND_HEIGHT_DP_DETACHED, newTabClickHandler,
+                        R.drawable.ic_new_tab_button);
+                mNewTabButton.setBackgroundResourceId(R.drawable.bg_circle_new_tab_button_detached);
+            }
+
+            // Primary container for default bg color.
+            int defaultBackgroundTint = TabUiThemeProvider.getDefaultContainerColor(context);
+
+            // Primary @ 20% for default pressed bg color.
+            int pressedBackgroundTint = androidx.core.graphics.ColorUtils.setAlphaComponent(
+                    SemanticColorUtils.getDefaultIconColorAccent1(context),
+                    (int) (NEW_TAB_BUTTON_DEFAULT_PRESSED_OPACITY * 255));
+
+            // Surface 2 baseline for folio, surface 3 baseline for detached incognito bg color.
+            int incognitoBackgroundTint = TabUiFeatureUtilities.isTabStripFolioEnabled()
+                    ? context.getResources().getColor(R.color.default_bg_color_dark_elev_2_baseline)
+                    : context.getResources().getColor(
+                            R.color.default_bg_color_dark_elev_3_baseline);
+
+            // surface 5 baseline for incognito pressed bg color
+            int incognitoBackgroundPressedTint =
+                    context.getResources().getColor(R.color.default_bg_color_dark_elev_5_baseline);
+
+            // Tab strip redesign new tab button night mode bg color.
+            if (ColorUtils.inNightMode(context)) {
+                // Surface 1 for folio night mode bg color.
+                if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+                    defaultBackgroundTint =
+                            ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_1);
+                } else {
+                    // Primary @ 15% for detached night mode bg color.
+                    defaultBackgroundTint = androidx.core.graphics.ColorUtils.setAlphaComponent(
+                            SemanticColorUtils.getDefaultIconColorAccent1(context),
+                            (int) (NEW_TAB_BUTTON_DARK_DETACHED_OPACITY * 255));
+                }
+                // Surface 5 for pressed night mode bg color.
+                pressedBackgroundTint =
+                        ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_5);
+            }
+            mNewTabButton.setBackgroundTint(defaultBackgroundTint, pressedBackgroundTint,
+                    incognitoBackgroundTint, incognitoBackgroundPressedTint);
+
+            // No pressed state color change for new tab button icon when TSR enabled.
+            mNewTabButton.setTintResources(R.color.default_icon_color_tint_list,
+                    R.color.default_icon_color_tint_list, R.color.modern_white,
+                    R.color.modern_white);
+            mNewTabButton.setY(NEW_TAB_BUTTON_BACKGROUND_Y_OFFSET_DP);
+        } else {
+            // when TSR disabled
+            mNewTabButton = new TintedCompositorButton(context, NEW_TAB_BUTTON_WIDTH_DP,
+                    NEW_TAB_BUTTON_HEIGHT_DP, newTabClickHandler, R.drawable.ic_new_tab_button);
+            mNewTabButton.setTintResources(R.color.new_tab_button_tint_list,
+                    R.color.new_tab_button_pressed_tint_list, R.color.modern_white,
+                    R.color.default_icon_color_blue_light);
+            mNewTabButton.setY(NEW_TAB_BUTTON_Y_OFFSET_DP);
+        }
         mNewTabButton.setIncognito(incognito);
-        mNewTabButton.setY(NEW_TAB_BUTTON_Y_OFFSET_DP);
         mNewTabButton.setClickSlop(NEW_TAB_BUTTON_CLICK_SLOP_DP);
         Resources res = context.getResources();
         mNewTabButton.setAccessibilityDescription(
@@ -352,6 +436,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      */
     public float getNewTabButtonTouchTargetOffset() {
         boolean isRtl = LocalizationUtils.isLayoutRtl();
+        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            float newTabButtonTouchTargetOffsetTSR =
+                    (NEW_TAB_BUTTON_DESIRED_TOUCH_TARGET_SIZE - mNewTabButtonWidth) / 2;
+            return isRtl ? newTabButtonTouchTargetOffsetTSR : -newTabButtonTouchTargetOffsetTSR;
+        }
         return isRtl ? NEW_TAB_BUTTON_TOUCH_TARGET_OFFSET : -NEW_TAB_BUTTON_TOUCH_TARGET_OFFSET;
     }
 
@@ -1583,7 +1672,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // 2. Get offset from strip stacker.
         float offset = mStripStacker.computeNewTabButtonOffset(mStripTabs, mTabOverlapWidth,
                 mLeftMargin, mRightMargin, mWidth, mNewTabButtonWidth,
-                NEW_TAB_BUTTON_TOUCH_TARGET_OFFSET, mCachedTabWidth, animate);
+                Math.abs(getNewTabButtonTouchTargetOffset()), mCachedTabWidth, animate);
 
         // 3. Hide the new tab button if it's not visible on the screen.
         boolean isRtl = LocalizationUtils.isLayoutRtl();
@@ -1601,7 +1690,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         } else {
             mNewTabButton.setX(offset);
         }
-
         return null;
     }
 
