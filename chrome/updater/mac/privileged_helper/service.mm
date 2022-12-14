@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #include <Security/Security.h>
 
+#include <pwd.h>
 #include <unistd.h>
 
 #include <string>
@@ -17,6 +18,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -227,28 +229,29 @@ void PrivilegedHelperService::SetupSystemUpdater(
     return;
   }
 
-  base::CommandLine chown_cmd(base::FilePath("/usr/sbin/chown"));
-  chown_cmd.AppendArg("-hR");
-  chown_cmd.AppendArg("root:wheel");
-  chown_cmd.AppendArg(browser_path);
-
-  int exit_code = 0;
-  std::string output;
-  if (!base::GetAppOutputWithExitCode(chown_cmd, &output, &exit_code)) {
-    VLOG(0) << "Something went wrong with altering the browser ownership: "
-            << browser_path;
+  struct passwd* root = getpwnam("root");
+  if (!root) {
+    PLOG(ERROR) << "Could not find root user.";
     main_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(result), kFailedToAlterBrowserOwnership));
     return;
   }
 
-  if (exit_code) {
-    VLOG(0) << "Output from attempting to alter browser ownership: " << output;
-    VLOG(0) << "Exit code: " << exit_code;
-    main_task_runner_->PostTask(FROM_HERE,
-                                base::BindOnce(std::move(result), exit_code));
-    return;
+  // Recursively change |browser_path| to be owned by root, deliberately not
+  // following symlinks.
+  base::FileEnumerator file_enumerator(
+      base::FilePath(browser_path), true,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
+  for (base::FilePath name = file_enumerator.Next(); !name.empty();
+       name = file_enumerator.Next()) {
+    if (lchown(name.value().c_str(), root->pw_uid, root->pw_gid)) {
+      PLOG(ERROR) << "Could not alter ownership of " << name;
+      main_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(result), kFailedToAlterBrowserOwnership));
+      return;
+    }
   }
 
   if (!ConfirmFilePermissions(base::FilePath(browser_path), kPermissionsMask)) {
