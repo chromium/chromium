@@ -1588,32 +1588,44 @@ TEST(ContentSecurityPolicy, ParseHash) {
 TEST(ContentSecurityPolicy, ParseInlineSpeculationRules) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kPrerender2ContentSecurityPolicyExtensions);
-  std::vector<mojom::ContentSecurityPolicyPtr> ok_policies =
+  std::vector<mojom::ContentSecurityPolicyPtr> script_src_policies =
       ParseCSP("script-src 'inline-speculation-rules'");
-  ASSERT_EQ(1u, ok_policies.size());
-  ASSERT_EQ(1u, ok_policies[0]->directives.size());
-  ASSERT_TRUE(
-      ok_policies[0]->directives.contains(mojom::CSPDirectiveName::ScriptSrc));
-  EXPECT_TRUE(ok_policies[0]
+  ASSERT_EQ(1u, script_src_policies.size());
+  ASSERT_EQ(1u, script_src_policies[0]->directives.size());
+  ASSERT_TRUE(script_src_policies[0]->directives.contains(
+      mojom::CSPDirectiveName::ScriptSrc));
+  EXPECT_TRUE(script_src_policies[0]
                   ->directives[mojom::CSPDirectiveName::ScriptSrc]
                   ->allow_inline_speculation_rules);
-  EXPECT_EQ(0u, ok_policies[0]->parsing_errors.size());
+  EXPECT_EQ(0u, script_src_policies[0]->parsing_errors.size());
 
-  std::vector<mojom::ContentSecurityPolicyPtr> ng_policies =
+  std::vector<mojom::ContentSecurityPolicyPtr> script_src_elem_policies =
+      ParseCSP("script-src-elem 'inline-speculation-rules'");
+  ASSERT_EQ(1u, script_src_elem_policies.size());
+  ASSERT_EQ(1u, script_src_elem_policies[0]->directives.size());
+  ASSERT_TRUE(script_src_elem_policies[0]->directives.contains(
+      mojom::CSPDirectiveName::ScriptSrcElem));
+  EXPECT_TRUE(script_src_elem_policies[0]
+                  ->directives[mojom::CSPDirectiveName::ScriptSrcElem]
+                  ->allow_inline_speculation_rules);
+  EXPECT_EQ(0u, script_src_elem_policies[0]->parsing_errors.size());
+
+  std::vector<mojom::ContentSecurityPolicyPtr> img_src_policies =
       ParseCSP("img-src 'inline-speculation-rules'");
-  ASSERT_EQ(1u, ng_policies.size());
-  ASSERT_EQ(1u, ng_policies[0]->directives.size());
-  ASSERT_TRUE(
-      ng_policies[0]->directives.contains(mojom::CSPDirectiveName::ImgSrc));
-  EXPECT_FALSE(ng_policies[0]
+  ASSERT_EQ(1u, img_src_policies.size());
+  ASSERT_EQ(1u, img_src_policies[0]->directives.size());
+  ASSERT_TRUE(img_src_policies[0]->directives.contains(
+      mojom::CSPDirectiveName::ImgSrc));
+  EXPECT_FALSE(img_src_policies[0]
                    ->directives[mojom::CSPDirectiveName::ImgSrc]
                    ->allow_inline_speculation_rules);
-  ASSERT_EQ(1u, ng_policies[0]->parsing_errors.size());
+  ASSERT_EQ(1u, img_src_policies[0]->parsing_errors.size());
   EXPECT_EQ(
       "The Content-Security-Policy directive 'img-src' contains "
       "''inline-speculation-rules'' as a source expression that is permitted "
-      "only for 'script-src' directive. It will be ignored.",
-      ng_policies[0]->parsing_errors[0]);
+      "only for 'script-src' and 'script-src-elem' directives. It will be "
+      "ignored.",
+      img_src_policies[0]->parsing_errors[0]);
 }
 
 TEST(ContentSecurityPolicy, IsValidRequiredCSPAttr) {

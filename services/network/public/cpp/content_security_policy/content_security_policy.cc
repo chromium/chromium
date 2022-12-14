@@ -656,14 +656,15 @@ mojom::CSPSourceListPtr ParseSourceList(
             features::kPrerender2ContentSecurityPolicyExtensions) &&
         base::EqualsCaseInsensitiveASCII(expression,
                                          "'inline-speculation-rules'")) {
-      if (directive_name == CSPDirectiveName::ScriptSrc) {
+      if (directive_name == CSPDirectiveName::ScriptSrc ||
+          directive_name == CSPDirectiveName::ScriptSrcElem) {
         directive->allow_inline_speculation_rules = true;
         continue;
       } else {
         parsing_errors.emplace_back(base::StringPrintf(
             "The Content-Security-Policy directive '%s' contains '%s' as a "
-            "source expression that is permitted only for 'script-src' "
-            "directive. It will be ignored.",
+            "source expression that is permitted only for 'script-src' and "
+            "'script-src-elem' directives. It will be ignored.",
             ToString(directive_name).c_str(), std::string(expression).c_str()));
         continue;
       }

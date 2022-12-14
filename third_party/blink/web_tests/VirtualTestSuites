@@ -1071,6 +1071,7 @@
     ],
     "exclusive_tests": [
       "external/wpt/speculation-rules/prerender/referrer-policy-from-rules.html",
+      "external/wpt/speculation-rules/prerender/csp-script-src-elem-inline-speculation-rules.tentative.html",
       "external/wpt/speculation-rules/prerender/csp-script-src-inline-speculation-rules.tentative.html"
     ],
     "args": [
