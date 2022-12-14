@@ -459,6 +459,8 @@ TEST_F(MediaClientAppUsingCameraInBrowserEnvironmentTest,
       MakeCapabilityAccess(app1_id, false);
   const apps::CapabilityAccessUpdate capability_access_update =
       MakeCapabilityAccessUpdate(capability_access.get());
+  const char* generic_notification_message_prefix =
+      "An app is trying to access";
 
   user_manager_.AddUser(account_id_);
   ASSERT_TRUE(user_manager::UserManager::Get()->GetActiveUser());
@@ -485,85 +487,31 @@ TEST_F(MediaClientAppUsingCameraInBrowserEnvironmentTest,
   ShowCameraOffNotification("device_id", "device_name");
   EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
   EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
-      app1_name));
+      generic_notification_message_prefix));
   EXPECT_EQ(notification_display_service->show_called_times(), 1u);
 
   // Start a second app that's also using the camera.
   LaunchApp(app2_id, app2_name, true);
-  // Since there is no eager update required it's fine to show the notification
-  // with the previous app name.
   EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
-      app1_name));
+      generic_notification_message_prefix));
   EXPECT_EQ(notification_display_service->show_called_times(), 1u);
 
   // Launching an App with `use_camera=false` is like minimizing/closing the
   // app for the purpose of this test.
   LaunchApp(app1_id, app1_name, false);
-  // As the state change of the first application hasn't propagated to the
-  // observer yet the outdated notification should still be around.
-  EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
-      app1_name));
 
   OnCapabilityAccessUpdate(capability_access_update);
 
-  // After the observer reacted to the change the notification with the updated
-  // app name should be visible.
+  // After the observer reacted to the change the notification should not pop up
+  // again but update the message body if necessary (which it isn't currently).
   EXPECT_EQ(notification_display_service->show_called_times(), 2u);
-  EXPECT_FALSE(notification_display_service->HasNotificationMessageContaining(
-      app1_name));
   EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
-      app2_name));
+      generic_notification_message_prefix));
   ASSERT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
   EXPECT_EQ(notification_display_service->GetActiveNotifications()
                 .front()
                 ->priority(),
             message_center::NotificationPriority::LOW_PRIORITY);
-
-  // Again no eager updating of the notification when launching, stopping and
-  // notifying the observer while the previously active app is still using the
-  // camera.
-  const char* app3_id = "app3";
-  const char* app3_name = "Ignored";
-  const apps::CapabilityAccessPtr ignored_capability_access =
-      MakeCapabilityAccess(app3_id, false);
-  const apps::CapabilityAccessUpdate ignored_capability_access_update =
-      MakeCapabilityAccessUpdate(ignored_capability_access.get());
-
-  LaunchApp(app3_id, app3_name, true);
-  LaunchApp(app3_id, app3_name, false);
-  OnCapabilityAccessUpdate(ignored_capability_access_update);
-  EXPECT_EQ(notification_display_service->show_called_times(), 2u);
-  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
-  EXPECT_FALSE(notification_display_service->HasNotificationMessageContaining(
-      app3_name));
-  EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
-      app2_name));
-
-  // App that's missing from the app registry cache.
-  const char* app4_id = "app4";
-  const apps::CapabilityAccessPtr missing_capability_access =
-      MakeCapabilityAccess(app4_id, false);
-  const apps::CapabilityAccessUpdate missing_capability_access_update =
-      MakeCapabilityAccessUpdate(missing_capability_access.get());
-
-  OnCapabilityAccessUpdate(missing_capability_access_update);
-  EXPECT_EQ(notification_display_service->show_called_times(), 2u);
-  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
-  EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
-      app2_name));
-
-  // In case the capability access is dropped for the last client before the
-  // active client callback from the remote finishes we also want to hide the
-  // notification and prevent blinking.
-  const apps::CapabilityAccessPtr app2_capability_access =
-      MakeCapabilityAccess(app2_id, false);
-  const apps::CapabilityAccessUpdate app2_capability_access_update =
-      MakeCapabilityAccessUpdate(app2_capability_access.get());
-
-  LaunchAppUpdateActiveClientCount(app2_id, app2_name, false, 0);
-  OnCapabilityAccessUpdate(app2_capability_access_update);
-  EXPECT_EQ(notification_display_service->show_called_times(), 2u);
-  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
 }
 
 TEST_F(MediaClientAppUsingCameraInBrowserEnvironmentTest,

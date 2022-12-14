@@ -674,18 +674,15 @@ void MediaClientImpl::ShowCameraOffNotification(const std::string& device_id,
   camera_switch_notification_shown_timestamp_ = base::TimeTicks::Now();
 
   const std::u16string device_name_u16 = base::UTF8ToUTF16(device_name);
-  std::u16string message;
+  const std::u16string message = l10n_util::GetStringFUTF16(
+      IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE, device_name_u16);
+  // TODO(b/262380194) Show a message which includes the app name once we can
+  // reliably determine which app is being used by what camera that has an
+  // active privacy switch.
   if (const std::string app_name = GetNameOfAppAccessingCameraInternal();
       !app_name.empty()) {
-    message = l10n_util::GetStringFUTF16(
-        IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE_WITH_APP_NAME,
-        base::UTF8ToUTF16(app_name), device_name_u16);
-
     last_device_for_app_.insert_or_assign(
         app_name, std::make_pair(device_id, device_name));
-  } else {
-    message = l10n_util::GetStringFUTF16(
-        IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE, device_name_u16);
   }
 
   const std::string notification_id =
