@@ -107,11 +107,9 @@ class ExtensionSupportsConnectionFromNativeAppTest : public ::testing::Test {
     EXPECT_TRUE(base::PathService::Get(DIR_TEST_DATA, &path));
 
     std::string error;
-    scoped_refptr<Extension> extension(
-        Extension::Create(path, mojom::ManifestLocation::kInternal,
-                          base::Value::AsDictionaryValue(
-                              base::Value(manifest_builder.BuildDict())),
-                          Extension::NO_FLAGS, &error));
+    scoped_refptr<Extension> extension(Extension::Create(
+        path, mojom::ManifestLocation::kInternal, manifest_builder.BuildDict(),
+        Extension::NO_FLAGS, &error));
     ASSERT_TRUE(extension.get()) << error;
     ExtensionRegistry::Get(&profile_)->AddEnabled(extension);
     extension_id_ = extension->id();

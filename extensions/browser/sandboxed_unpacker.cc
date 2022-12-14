@@ -538,8 +538,7 @@ void SandboxedUnpacker::ReadManifestDone(
 
   std::string error_msg;
   scoped_refptr<Extension> extension(
-      Extension::Create(extension_root_, location_,
-                        base::Value::AsDictionaryValue(manifest.value()),
+      Extension::Create(extension_root_, location_, manifest->GetDict(),
                         creation_flags_, extension_id_, &error_msg));
   if (!extension) {
     ReportUnpackExtensionFailed(error_msg);

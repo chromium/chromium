@@ -101,9 +101,9 @@ static scoped_refptr<Extension> CreateExtension(
   std::string error;
   scoped_refptr<Extension> extension;
 
-  extension = Extension::Create(bogus_file_pathname(name),
-                                extensions::mojom::ManifestLocation::kInternal,
-                                manifest, Extension::NO_FLAGS, &error);
+  extension = Extension::Create(
+      bogus_file_pathname(name), extensions::mojom::ManifestLocation::kInternal,
+      manifest.GetDict(), Extension::NO_FLAGS, &error);
 
   // Cannot ASSERT_* here because that attempts an illegitimate return.
   // Cannot EXPECT_NE here because that assumes non-pointers unlike EXPECT_EQ

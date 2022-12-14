@@ -213,18 +213,17 @@ TEST_F(ManifestHandlerTest, FailingHandlers) {
   ScopedTestingManifestHandlerRegistry scoped_registry;
   // Can't use ExtensionBuilder, because this extension will fail to
   // be parsed.
-  std::unique_ptr<base::DictionaryValue> manifest_a(
-      DictionaryBuilder()
-          .Set("name", "no name")
-          .Set("version", "0")
-          .Set("manifest_version", 2)
-          .Set("a", 1)
-          .Build());
+  base::Value::Dict manifest_a(DictionaryBuilder()
+                                   .Set("name", "no name")
+                                   .Set("version", "0")
+                                   .Set("manifest_version", 2)
+                                   .Set("a", 1)
+                                   .BuildDict());
 
   // Succeeds when "a" is not recognized.
   std::string error;
   scoped_refptr<Extension> extension = Extension::Create(
-      base::FilePath(), mojom::ManifestLocation::kInvalidLocation, *manifest_a,
+      base::FilePath(), mojom::ManifestLocation::kInvalidLocation, manifest_a,
       Extension::NO_FLAGS, &error);
   EXPECT_TRUE(extension.get());
 
@@ -237,7 +236,7 @@ TEST_F(ManifestHandlerTest, FailingHandlers) {
 
   extension = Extension::Create(base::FilePath(),
                                 mojom::ManifestLocation::kInvalidLocation,
-                                *manifest_a, Extension::NO_FLAGS, &error);
+                                manifest_a, Extension::NO_FLAGS, &error);
   EXPECT_FALSE(extension.get());
   EXPECT_EQ("A", error);
 }

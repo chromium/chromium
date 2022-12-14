@@ -140,7 +140,7 @@ bool IsManifestSupported(int manifest_version,
 
 // Computes the |extension_id| from the given parameters. On success, returns
 // true. On failure, populates |error| and returns false.
-bool ComputeExtensionID(const base::DictAdapterForMigration& manifest,
+bool ComputeExtensionID(const base::Value::Dict& manifest,
                         const base::FilePath& path,
                         int creation_flags,
                         std::u16string* error,
@@ -221,12 +221,11 @@ void Extension::set_silence_deprecated_manifest_version_warnings_for_testing(
 }
 
 // static
-scoped_refptr<Extension> Extension::Create(
-    const base::FilePath& path,
-    ManifestLocation location,
-    const base::DictAdapterForMigration& value,
-    int flags,
-    std::string* utf8_error) {
+scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
+                                           ManifestLocation location,
+                                           const base::Value::Dict& value,
+                                           int flags,
+                                           std::string* utf8_error) {
   return Extension::Create(path,
                            location,
                            value,
@@ -237,13 +236,12 @@ scoped_refptr<Extension> Extension::Create(
 
 // TODO(sungguk): Continue removing std::string errors and replacing
 // with std::u16string. See http://crbug.com/71980.
-scoped_refptr<Extension> Extension::Create(
-    const base::FilePath& path,
-    ManifestLocation location,
-    const base::DictAdapterForMigration& value,
-    int flags,
-    const std::string& explicit_id,
-    std::string* utf8_error) {
+scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
+                                           ManifestLocation location,
+                                           const base::Value::Dict& value,
+                                           int flags,
+                                           const std::string& explicit_id,
+                                           std::string* utf8_error) {
   base::ElapsedTimer timer;
   DCHECK(utf8_error);
   std::u16string error;

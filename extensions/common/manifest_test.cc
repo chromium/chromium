@@ -126,8 +126,7 @@ scoped_refptr<Extension> ManifestTest::LoadExtension(
   const base::Value& value = manifest.GetManifest(test_data_dir, error);
   if (value.is_none())
     return nullptr;
-  return Extension::Create(test_data_dir.DirName(), location,
-                           base::DictAdapterForMigration(value.GetDict()),
+  return Extension::Create(test_data_dir.DirName(), location, value.GetDict(),
                            flags, GetTestExtensionID(), error);
 }
 

@@ -212,7 +212,7 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
     scoped_refptr<extensions::Extension> extension =
         extensions::Extension::Create(
             base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
-            manifest, 0, &error);
+            manifest.GetDict(), 0, &error);
 
     extension_service()->AddExtension(extension.get());
     return extension;

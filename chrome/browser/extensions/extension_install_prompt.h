@@ -285,7 +285,7 @@ class ExtensionInstallPrompt {
   // Creates a dummy extension from the |manifest|, replacing the name and
   // description with the localizations if provided.
   static scoped_refptr<extensions::Extension> GetLocalizedExtensionForDisplay(
-      const base::DictAdapterForMigration manifest,
+      const base::Value::Dict& manifest,
       int flags,  // Extension::InitFromValueFlags
       const std::string& id,
       const std::string& localized_name,

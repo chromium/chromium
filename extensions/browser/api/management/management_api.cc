@@ -360,8 +360,7 @@ void ManagementGetPermissionWarningsByManifestFunction::OnParse(
   std::string error;
   scoped_refptr<Extension> extension =
       Extension::Create(base::FilePath(), ManifestLocation::kInvalidLocation,
-                        base::DictAdapterForMigration(*parsed_manifest),
-                        Extension::NO_FLAGS, &error);
+                        *parsed_manifest, Extension::NO_FLAGS, &error);
   // TODO(lazyboy): Do we need to use |error|?
   if (!extension) {
     Respond(Error(keys::kExtensionCreateError));

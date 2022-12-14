@@ -79,19 +79,20 @@ class ImageLoaderTest : public ExtensionsTest {
     std::string error;
     JSONFileValueDeserializer deserializer(
         extension_dir.AppendASCII("manifest.json"));
-    std::unique_ptr<base::DictionaryValue> valid_value =
-        base::DictionaryValue::From(
-            deserializer.Deserialize(&error_code, &error));
+    std::unique_ptr<base::Value> valid_value =
+        deserializer.Deserialize(&error_code, &error);
     EXPECT_EQ(0, error_code) << error;
     if (error_code != 0)
       return nullptr;
 
     EXPECT_TRUE(valid_value.get());
-    if (!valid_value)
+    EXPECT_TRUE(valid_value->is_dict());
+    if (!valid_value || !valid_value->is_dict()) {
       return nullptr;
+    }
 
-    return Extension::Create(
-        extension_dir, location, *valid_value, Extension::NO_FLAGS, &error);
+    return Extension::Create(extension_dir, location, valid_value->GetDict(),
+                             Extension::NO_FLAGS, &error);
   }
 
   gfx::Image image_;

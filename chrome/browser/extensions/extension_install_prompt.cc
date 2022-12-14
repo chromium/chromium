@@ -37,6 +37,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
@@ -476,30 +477,27 @@ ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(
 // static
 scoped_refptr<Extension>
 ExtensionInstallPrompt::GetLocalizedExtensionForDisplay(
-    const base::DictAdapterForMigration manifest,
+    const base::Value::Dict& manifest,
     int flags,
     const std::string& id,
     const std::string& localized_name,
     const std::string& localized_description,
     std::string* error) {
-  std::unique_ptr<base::DictionaryValue> localized_manifest;
+  absl::optional<base::Value::Dict> localized_manifest;
   if (!localized_name.empty() || !localized_description.empty()) {
-    localized_manifest = base::DictionaryValue::From(
-        base::Value::ToUniquePtrValue(base::Value(manifest.Clone())));
+    localized_manifest = manifest.Clone();
     if (!localized_name.empty()) {
-      localized_manifest->SetStringKey(extensions::manifest_keys::kName,
-                                       localized_name);
+      localized_manifest->Set(extensions::manifest_keys::kName, localized_name);
     }
     if (!localized_description.empty()) {
-      localized_manifest->SetStringKey(extensions::manifest_keys::kDescription,
-                                       localized_description);
+      localized_manifest->Set(extensions::manifest_keys::kDescription,
+                              localized_description);
     }
   }
 
   return Extension::Create(
       base::FilePath(), extensions::mojom::ManifestLocation::kInternal,
-      localized_manifest.get() ? *localized_manifest : manifest, flags, id,
-      error);
+      localized_manifest ? *localized_manifest : manifest, flags, id, error);
 }
 
 ExtensionInstallPrompt::ExtensionInstallPrompt(content::WebContents* contents)

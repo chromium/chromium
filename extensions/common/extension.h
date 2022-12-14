@@ -32,10 +32,6 @@
 #error "Extensions must be enabled"
 #endif
 
-namespace base {
-class DictAdapterForMigration;
-}
-
 namespace extensions {
 class HashedExtensionId;
 class PermissionsData;
@@ -156,22 +152,20 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   Extension(const Extension&) = delete;
   Extension& operator=(const Extension&) = delete;
 
-  static scoped_refptr<Extension> Create(
-      const base::FilePath& path,
-      mojom::ManifestLocation location,
-      const base::DictAdapterForMigration& value,
-      int flags,
-      std::string* error);
+  static scoped_refptr<Extension> Create(const base::FilePath& path,
+                                         mojom::ManifestLocation location,
+                                         const base::Value::Dict& value,
+                                         int flags,
+                                         std::string* error);
 
   // In a few special circumstances, we want to create an Extension and give it
   // an explicit id. Most consumers should just use the other Create() method.
-  static scoped_refptr<Extension> Create(
-      const base::FilePath& path,
-      mojom::ManifestLocation location,
-      const base::DictAdapterForMigration& value,
-      int flags,
-      const ExtensionId& explicit_id,
-      std::string* error);
+  static scoped_refptr<Extension> Create(const base::FilePath& path,
+                                         mojom::ManifestLocation location,
+                                         const base::Value::Dict& value,
+                                         int flags,
+                                         const ExtensionId& explicit_id,
+                                         std::string* error);
 
   // Valid schemes for web extent URLPatterns.
   static const int kValidWebExtentSchemes;
@@ -307,9 +301,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   const std::vector<InstallWarning>& install_warnings() const {
     return install_warnings_;
   }
-  const extensions::Manifest* manifest() const {
-    return manifest_.get();
-  }
+  const extensions::Manifest* manifest() const { return manifest_.get(); }
   bool wants_file_access() const { return wants_file_access_; }
   // TODO(rdevlin.cronin): This is needed for ContentScriptsHandler, and should
   // be moved out as part of crbug.com/159265. This should not be used anywhere
@@ -344,7 +336,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   bool is_extension() const;            // Regular browser extension, not an app
   bool is_shared_module() const;        // Shared module
   bool is_theme() const;                // Theme
-  bool is_login_screen_extension() const;  // Extension on login screen.
+  bool is_login_screen_extension() const;     // Extension on login screen.
   bool is_chromeos_system_extension() const;  // ChromeOS System Extension.
 
   // True if this is a platform app, hosted app, or legacy packaged app.
@@ -493,7 +485,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   base::GUID guid_;
 };
 
-typedef std::vector<scoped_refptr<const Extension> > ExtensionList;
+typedef std::vector<scoped_refptr<const Extension>> ExtensionList;
 
 // Handy struct to pass core extension info around.
 struct ExtensionInfo {

@@ -338,11 +338,11 @@ TEST_F(SimpleFeatureTest, Context) {
   feature.set_min_manifest_version(21);
   feature.set_max_manifest_version(25);
 
-  base::DictionaryValue manifest;
-  manifest.SetStringKey("name", "test");
-  manifest.SetStringKey("version", "1");
-  manifest.SetIntKey("manifest_version", 21);
-  manifest.SetStringPath("app.launch.local_path", "foo.html");
+  base::Value::Dict manifest;
+  manifest.Set("name", "test");
+  manifest.Set("version", "1");
+  manifest.Set("manifest_version", 21);
+  manifest.SetByDottedPath("app.launch.local_path", "foo.html");
 
   std::string error;
   scoped_refptr<const Extension> extension(
@@ -456,11 +456,11 @@ TEST_F(SimpleFeatureTest, Context) {
 }
 
 TEST_F(SimpleFeatureTest, SessionType) {
-  base::DictionaryValue manifest;
-  manifest.SetStringKey("name", "test");
-  manifest.SetStringKey("version", "1");
-  manifest.SetIntKey("manifest_version", 2);
-  manifest.SetStringPath("app.launch.local_path", "foo.html");
+  base::Value::Dict manifest;
+  manifest.Set("name", "test");
+  manifest.Set("version", "1");
+  manifest.Set("manifest_version", 2);
+  manifest.SetByDottedPath("app.launch.local_path", "foo.html");
 
   std::string error;
   scoped_refptr<const Extension> extension(

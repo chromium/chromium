@@ -131,8 +131,7 @@ void StandaloneBrowserTestController::LoadVpnExtension(
   std::string error;
   auto extension = extensions::Extension::Create(
       base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
-      base::Value::AsDictionaryValue(
-          base::Value(CreateVpnExtensionManifest(extension_name))),
+      CreateVpnExtensionManifest(extension_name),
       extensions::Extension::NO_FLAGS, &error);
   if (!error.empty()) {
     std::move(callback).Run(error);

@@ -144,11 +144,17 @@ scoped_refptr<const Extension> ExtensionBuilder::Build() {
     id_ = crx_file::id_util::GenerateId(manifest_data_->name);
 
   std::string error;
+
+  // This allows `*manifest_value` to be passed as a reference instead of
+  // needing to be cloned.
+  absl::optional<base::Value::Dict> manifest_data_value;
+  if (manifest_data_) {
+    manifest_data_value = manifest_data_->GetValue();
+  }
   scoped_refptr<const Extension> extension = Extension::Create(
       path_, location_,
-      manifest_data_ ? base::DictAdapterForMigration(manifest_data_->GetValue())
-                     : *manifest_value_,
-      flags_, id_, &error);
+      manifest_data_value ? *manifest_data_value : *manifest_value_, flags_,
+      id_, &error);
 
   CHECK(error.empty()) << error;
   CHECK(extension);
