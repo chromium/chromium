@@ -44,7 +44,6 @@
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
@@ -70,7 +69,6 @@ using password_manager::InsecureType;
 using password_manager::LeakCheckCredential;
 using password_manager::PasswordChangeSuccessTracker;
 using password_manager::PasswordForm;
-using password_manager::metrics_util::PasswordCheckScriptsCacheState;
 using ui::TimeFormat;
 
 using State = password_manager::BulkLeakCheckService::State;
