@@ -900,6 +900,22 @@ const AutocompleteResult& AutocompleteController::result() const {
   return DebouncingEnabled() ? published_result_ : result_;
 }
 
+void AutocompleteController::GroupSuggestionsBySearchVsURL(size_t begin,
+                                                           size_t end) {
+  if (begin == end)
+    return;
+  const size_t num_elements = result_.size();
+  if (begin < 0 || end <= begin || end > num_elements) {
+    DCHECK(false) << "Range [" << begin << "; " << end
+                  << ") is not valid for grouping; accepted range: [0; "
+                  << num_elements << ").";
+    return;
+  }
+
+  AutocompleteResult::GroupSuggestionsBySearchVsURL(
+      std::next(result_.begin(), begin), std::next(result_.begin(), end));
+}
+
 void AutocompleteController::UpdateResult(
     bool regenerate_result,
     bool force_notify_default_match_changed) {

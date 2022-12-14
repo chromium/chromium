@@ -9,6 +9,7 @@
 
 #include <memory>
 
+class AutocompleteController;
 @protocol OmniboxCommands;
 @protocol OmniboxKeyboardDelegate;
 @protocol OmniboxPopupPresenterDelegate;
@@ -23,6 +24,7 @@ class OmniboxPopupViewIOS;
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
+        autocompleteController:(AutocompleteController*)autocompleteController
                      popupView:(std::unique_ptr<OmniboxPopupViewIOS>)popupView
     NS_DESIGNATED_INITIALIZER;
 

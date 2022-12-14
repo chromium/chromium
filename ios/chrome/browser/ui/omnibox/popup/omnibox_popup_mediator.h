@@ -28,6 +28,7 @@ class FaviconLoader;
 @class PopupModel;
 @protocol SnackbarCommands;
 class WebStateList;
+class AutocompleteController;
 
 namespace image_fetcher {
 class ImageDataFetcher;
@@ -101,6 +102,7 @@ class OmniboxPopupMediatorDelegate {
                     (std::unique_ptr<image_fetcher::ImageDataFetcher>)
                         imageFetcher
                   faviconLoader:(FaviconLoader*)faviconLoader
+         autocompleteController:(AutocompleteController*)autocompleteController
                        delegate:(OmniboxPopupMediatorDelegate*)delegate;
 
 - (void)updateMatches:(const AutocompleteResult&)result;

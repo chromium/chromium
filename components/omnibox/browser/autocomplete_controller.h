@@ -206,6 +206,9 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   const AutocompleteInput& input() const { return input_; }
   const AutocompleteResult& result() const;
+  // Groups result_ by search vs URL.
+  // See also AutocompleteResult::GroupSuggestionsBySearchVsURL()
+  void GroupSuggestionsBySearchVsURL(size_t begin, size_t end);
   bool done() const { return done_; }
   bool in_start() const { return in_start_; }
   // TODO(manukh): Once we have a smarter `expire_timer_` that early runs when
