@@ -770,7 +770,7 @@ public class CompositorViewHolder extends FrameLayout
         // TODO(https://crbug.com/1378716): Track fling as well.
         boolean inMotion = mInGesture || mContentViewScrolling;
         mInMotionSupplier.set(inMotion);
-        if (sDeferKeepScreenOnFlag.isEnabled()) {
+        if (sDeferKeepScreenOnFlag.isEnabled() && mContentView != null) {
             mContentView.setDeferKeepScreenOnChanges(inMotion);
         }
     }
