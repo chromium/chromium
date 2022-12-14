@@ -775,6 +775,33 @@
                     "enable_features": [
                         "AssistMultiWord"
                     ]
+                },
+                {
+                    "name": "EnabledWithGboard_20221213",
+                    "params": {
+                        "group": "gboard"
+                    },
+                    "enable_features": [
+                        "AssistMultiWord"
+                    ]
+                },
+                {
+                    "name": "EnabledWithGboardD_20221213",
+                    "params": {
+                        "group": "gboard_d"
+                    },
+                    "enable_features": [
+                        "AssistMultiWord"
+                    ]
+                },
+                {
+                    "name": "EnabledWithGboardE_20221213",
+                    "params": {
+                        "group": "gboard_e"
+                    },
+                    "enable_features": [
+                        "AssistMultiWord"
+                    ]
                 }
             ]
         }
