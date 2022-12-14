@@ -11,10 +11,14 @@ import org.chromium.base.metrics.RecordHistogram;
 class WebsiteParentApprovalMetrics {
     // Histogram name
     static final String WEB_APPOVAL_OUTCOME_NAME = "FamilyLinkUser.LocalWebApprovalOutcome";
+    static final String WEB_APPOVAL_PACP_ERROR_CODE =
+            "Android.FamilyLinkUser.LocalWebApprovalParentAuthenticationError";
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     // The values need to be in sync with FamilyLinkUserLocalWebApprovalOutcome in enums.xml.
+    // TODO (b/261403529): Remove the unused values once the solution that records directly
+    // GMS error codes is integrated in Clank.
     @IntDef({FamilyLinkUserLocalWebApprovalOutcome.APPROVED_BY_PARENT,
             FamilyLinkUserLocalWebApprovalOutcome.DENIED_BY_PARENT,
             FamilyLinkUserLocalWebApprovalOutcome.PARENT_APPROVAL_CANCELLED,
@@ -41,5 +45,9 @@ class WebsiteParentApprovalMetrics {
     public static void recordOutcomeMetric(@FamilyLinkUserLocalWebApprovalOutcome int outcome) {
         RecordHistogram.recordEnumeratedHistogram(
                 WEB_APPOVAL_OUTCOME_NAME, outcome, FamilyLinkUserLocalWebApprovalOutcome.COUNT);
+    }
+
+    public static void recordParentAuthenticationErrorCode(int errorCode) {
+        RecordHistogram.recordSparseHistogram(WEB_APPOVAL_PACP_ERROR_CODE, errorCode);
     }
 }

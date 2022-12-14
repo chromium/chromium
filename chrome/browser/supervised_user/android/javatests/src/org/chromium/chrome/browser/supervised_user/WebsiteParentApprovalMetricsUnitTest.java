@@ -61,4 +61,25 @@ public class WebsiteParentApprovalMetricsUnitTest {
         count = mHistogramTestRule.getHistogramTotalCount(histogramName);
         Assert.assertEquals(3, count);
     }
+
+    @Test
+    @SmallTest
+    public void recordParentAuthenticationErrorMetrics() {
+        final String histogramName =
+                "Android.FamilyLinkUser.LocalWebApprovalParentAuthenticationError";
+        final int negativeErrorCode = -1;
+        final int lowValueCode = 10; // Example: value of CommonStatusCode.DEVELOPER_ERROR.
+
+        WebsiteParentApprovalMetrics.recordParentAuthenticationErrorCode(negativeErrorCode);
+        int count = mHistogramTestRule.getHistogramValueCount(histogramName, negativeErrorCode);
+        Assert.assertEquals(1, count);
+
+        WebsiteParentApprovalMetrics.recordParentAuthenticationErrorCode(lowValueCode);
+        WebsiteParentApprovalMetrics.recordParentAuthenticationErrorCode(lowValueCode);
+        count = mHistogramTestRule.getHistogramValueCount(histogramName, lowValueCode);
+        Assert.assertEquals(2, count);
+
+        count = mHistogramTestRule.getHistogramTotalCount(histogramName);
+        Assert.assertEquals(3, count);
+    }
 }
