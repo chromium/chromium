@@ -236,11 +236,16 @@ TEST_F(CocoaImmersiveModeControllerTest, TitlebarObserver) {
   [fullscreen_window.get().contentView addSubview:titlebar_container_view];
   [fullscreen_window orderBack:nil];
 
+  auto immersive_mode_controller = std::make_unique<ImmersiveModeController>(
+      browser(), overlay(), base::DoNothing());
+  base::WeakPtrFactory<ImmersiveModeController> weak_ptr_factory(
+      immersive_mode_controller.get());
+
   // Create a titlebar observer. This is the class under test.
   base::scoped_nsobject<ImmersiveModeTitlebarObserver> titlebar_observer(
       [[ImmersiveModeTitlebarObserver alloc]
-          initWithOverlayWindow:overlay()
-                    overlayView:overlay_view]);
+          initWithController:weak_ptr_factory.GetWeakPtr()
+                 overlayView:overlay_view]);
 
   // Observer the fake fake titlebar container view.
   [titlebar_container_view addObserver:titlebar_observer

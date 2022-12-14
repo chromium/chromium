@@ -1301,7 +1301,7 @@ void NativeWidgetNSWindowBridge::FullscreenControllerToggleFullscreen() {
   // break cross-display fullscreen transitions by losing focus of the
   // transitioning window (crbug.com/1338659) or changing the z-order of
   // windows on the previous space. Making the window key here seems to
-  // alleviate those apparent defects (crbug.com/1392542). 
+  // alleviate those apparent defects (crbug.com/1392542).
   if (is_key_window)
     [window_ makeKeyAndOrderFront:nil];
 }
@@ -1591,7 +1591,7 @@ void NativeWidgetNSWindowBridge::OrderChildren() {
       if (child_window.parentWindow == window)
         continue;
       if (immersive_mode_controller_ &&
-          immersive_mode_controller_->overlay_widget() == child_window) {
+          immersive_mode_controller_->overlay_window() == child_window) {
         continue;
       }
       [window addChildWindow:child_window ordered:NSWindowAbove];
