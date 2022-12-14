@@ -7,6 +7,5 @@ found in the LICENSE file.
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
        android:shape="oval">
-    <!-- Material Grey 500 from the non-public Color notification_icon_bg_color -->
-    <solid android:color="#ff9e9e9e"/>
+    <solid android:color="@color/baseline_neutral_500"/>
 </shape>
