@@ -102,6 +102,7 @@ source_set("flatland_unittests") {
     "//base",
     "//base/test:test_support",
     "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp_testing",
     "//ui/events:test_support",
     "//ui/ozone:platform",
     "//ui/ozone:test_support",
