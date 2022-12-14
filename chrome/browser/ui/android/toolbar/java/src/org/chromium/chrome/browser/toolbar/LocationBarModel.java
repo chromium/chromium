@@ -168,6 +168,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     private boolean mIsUsingBrandColor;
     private boolean mShouldShowOmniboxInOverviewMode;
     private boolean mIsShowingTabSwitcher;
+    private boolean mIsShowingStartSurface;
     @StartSurfaceState
     private int mStartSurfaceState;
 
@@ -525,10 +526,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     public boolean isInOverviewAndShowingOmnibox() {
         if (!mShouldShowOmniboxInOverviewMode) return false;
 
-        return mLayoutStateProvider != null && mIsShowingTabSwitcher
-                && (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
-                        || mStartSurfaceState == StartSurfaceState.SHOWING_HOMEPAGE
-                        || mStartSurfaceState == StartSurfaceState.SHOWING_START);
+        return mLayoutStateProvider != null
+                && (mIsShowingStartSurface
+                        || mIsShowingTabSwitcher
+                                && (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                                        || mStartSurfaceState == StartSurfaceState.SHOWING_HOMEPAGE
+                                        || mStartSurfaceState == StartSurfaceState.SHOWING_START));
     }
 
     /**
@@ -808,11 +811,16 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     /**
-     * Set whether tab switcher is showing or not and notify changes.
-     * @param isShowingTabSwitcher Whether tab switcher is showing or not.
+     * Set whether the start surface is showing or not and notify changes.
+     * TODO(1347089): Remove {@link isShowingTabSwitcher} when the Start surface refactoring is
+     * enabled by default.
+     * @param isShowingTabSwitcher Whether tab switcher layout is showing or not.
+     * @param isShowingStartSurface Whether Start surface layout is showing or not.
      */
-    public void setIsShowingTabSwitcher(boolean isShowingTabSwitcher) {
+    public void updateForNonStaticLayout(
+            boolean isShowingTabSwitcher, boolean isShowingStartSurface) {
         mIsShowingTabSwitcher = isShowingTabSwitcher;
+        mIsShowingStartSurface = isShowingStartSurface;
         notifyTitleChanged();
         notifyUrlChanged();
         notifyPrimaryColorChanged();

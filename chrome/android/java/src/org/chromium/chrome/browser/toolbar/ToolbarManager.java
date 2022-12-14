@@ -969,7 +969,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     @LayoutType int layoutType, boolean showToolbar, boolean delayAnimation) {
                 if (layoutType == LayoutType.TAB_SWITCHER
                         || layoutType == LayoutType.START_SURFACE) {
-                    mLocationBarModel.setIsShowingTabSwitcher(false);
+                    mLocationBarModel.updateForNonStaticLayout(false, false);
                     mToolbar.setTabSwitcherMode(false, showToolbar, delayAnimation);
                     updateButtonStatus();
                     if (mToolbar.setForceTextureCapture(true)) {
@@ -1079,7 +1079,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     layoutType);
         }
         if (layoutType == LayoutType.TAB_SWITCHER || layoutType == LayoutType.START_SURFACE) {
-            mLocationBarModel.setIsShowingTabSwitcher(true);
+            mLocationBarModel.updateForNonStaticLayout(
+                    layoutType == LayoutType.TAB_SWITCHER, layoutType == LayoutType.START_SURFACE);
             mToolbar.setTabSwitcherMode(true, showToolbar, false);
             updateButtonStatus();
             if (mLocationBarModel.shouldShowLocationBarInOverviewMode()) {
