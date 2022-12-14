@@ -622,6 +622,7 @@ if (is_win || is_mac || is_linux) {
           "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/${keystone_app_name}Agent",
           "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/Info.plist",
           "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Info.plist",
+          "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/launcher",
           "$root_build_dir/${updater_product_full_name}_test.app/Contents/PkgInfo",
         ]
         deps = [
