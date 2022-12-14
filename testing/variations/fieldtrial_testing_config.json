@@ -904,6 +904,21 @@
             ]
         }
     ],
+    "AutocorrectByDefault": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20221208",
+                    "enable_features": [
+                        "AutocorrectByDefault"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAcrossIframes": [
         {
             "platforms": [
