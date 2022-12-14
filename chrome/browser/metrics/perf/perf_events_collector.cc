@@ -195,7 +195,8 @@ const char kPerfDTLBMissCyclesCmdAtom[] =
 
 // TLB miss cycles using raw PMU event codes.
 const char kPerfITLBMissCyclesCmdTremont[] = "-- record -a -e r1085 -c 30001";
-const char kPerfDTLBMissCyclesCmdTremont[] = "-- record -a -e r1008 -c 350003";
+const char kPerfDTLBMissCyclesCmdTremont[] =
+    "-- record -a -e r1008 -g -c 350003";
 
 const char kPerfLLCMissesCmd[] = "-- record -a -e r412e -g -c 30007";
 // Precise events (request zero skid) for last level cache misses.
