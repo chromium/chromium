@@ -37,7 +37,8 @@ class BASE_EXPORT Token {
   constexpr Token& operator=(Token&&) = default;
 
   // Constructs a new Token with random |high| and |low| values taken from a
-  // cryptographically strong random source.
+  // cryptographically strong random source. The result's |is_zero()| is
+  // guaranteed to be false.
   static Token CreateRandom();
 
   // The high and low 64 bits of this Token.

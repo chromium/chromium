@@ -6,6 +6,7 @@
 
 #include <ostream>
 
+#include "base/check.h"
 #include "base/format_macros.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
@@ -20,7 +21,9 @@ UnguessableToken::UnguessableToken(const base::Token& token) : token_(token) {}
 
 // static
 UnguessableToken UnguessableToken::Create() {
-  return UnguessableToken(Token::CreateRandom());
+  Token token = Token::CreateRandom();
+  DCHECK(!token.is_zero());
+  return UnguessableToken(token);
 }
 
 // static

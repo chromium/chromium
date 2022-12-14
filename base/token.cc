@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include "base/check.h"
 #include "base/pickle.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
@@ -20,6 +21,9 @@ Token Token::CreateRandom() {
   // Use base::RandBytes instead of crypto::RandBytes, because crypto calls the
   // base version directly, and to prevent the dependency from base/ to crypto/.
   base::RandBytes(&token, sizeof(token));
+
+  CHECK(!token.is_zero());
+
   return token;
 }
 
