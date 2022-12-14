@@ -854,16 +854,16 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, MAYBE_DataURIType_SVG) {
                   blink::LargestContentfulPaintType::kSVG |
                   blink::LargestContentfulPaintType::kDataURI;
   // percent-encoding of the svg url obtained by encodeURIComponent("<svg
-  // xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect
-  // stroke-width='2' stroke='black' x='1' y='1' width='14' height='14'
-  // fill='lime'/></svg>"
+  // xmlns='http://www.w3.org/2000/svg' width='16' height='16'
+  // viewBox='0 0 16 16'><rect stroke-width='2' stroke='black' x='1' y='1'
+  // width='14' height='14'fill='lime'/></svg>"
   std::string imgSrc =
       "data:image/"
       "svg+xml, "
-      "%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%"
-      "200%2016%2016'%3E%3Crect%20stroke-width%3D'2'%20stroke%3D'black'%20x%3D'"
-      "1'%20y%3D'1'%20width%3D'14'%20height%3D'14'%20fill%3D'lime'%2F%3E%3C%"
-      "2Fsvg%3E";
+      "%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%2716%27%"
+      "20height%3D%2716%27%20viewBox%3D%270%200%2016%2016%27%3E%3Crect%20strok"
+      "e-width%3D%272%27%20stroke%3D%27black%27%20x%3D%271%27%20y%3D%271%27%20"
+      "width%3D%2714%27%20height%3D%2714%27%20fill%3D%27lime%27/%3E%3C/svg%3E";
 
   TestImage(imgSrc, flag_set);
 }

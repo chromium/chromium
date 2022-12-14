@@ -4539,8 +4539,29 @@
             ],
             "experiments": [
                 {
-                    "name": "Control_V1",
-                    "disable_features": [
+                    "name": "ExcludeEntropyL_V1",
+                    "params": {
+                        "min_bpp": "0.01"
+                    },
+                    "enable_features": [
+                        "ExcludeLowEntropyImagesFromLCP"
+                    ]
+                },
+                {
+                    "name": "ExcludeEntropyM_V1",
+                    "params": {
+                        "min_bpp": "0.05"
+                    },
+                    "enable_features": [
+                        "ExcludeLowEntropyImagesFromLCP"
+                    ]
+                },
+                {
+                    "name": "ExcludeEntropyH_V1",
+                    "params": {
+                        "min_bpp": "0.2"
+                    },
+                    "enable_features": [
                         "ExcludeLowEntropyImagesFromLCP"
                     ]
                 }
