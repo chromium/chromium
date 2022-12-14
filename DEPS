@@ -251,7 +251,11 @@ vars = {
   # Rust toolchain. Experimental. The corresponding GN arg
   # use_chromium_rust_toolchain directs the build to use this toolchain instead
   # of the Android toolchain.
-  'fetch_prebuilt_chromium_rust_toolchain': 'use_rust and host_os == "linux"',
+  #
+  # We avoid doing this on toolchain build bots (where
+  # `checkout_rust_toolchain_deps` is set) since they are building the Rust
+  # toolchain.
+  'fetch_prebuilt_chromium_rust_toolchain': 'use_rust and host_os == "linux" and not checkout_rust_toolchain_deps',
 
   # Build in-tree Rust toolchain. checkout_clang_libs must also be True. The
   # corresponding GN arg use_chromium_rust_toolchain directs the build to use
@@ -569,6 +573,9 @@ deps = {
     # TODO(https://crbug.com/1292038): gate this on use_rust as well as host_os.
     'condition': 'host_os == "linux"',
   },
+
+  # Rust sources are used to build the Rust standard library, and on toolchain
+  # build bots, to build the Rust toolchain.
   'src/third_party/rust_src/src': {
     'packages': [
       {
