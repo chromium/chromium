@@ -2290,7 +2290,7 @@
   {
     "name": "enable-external-keyboards-in-diagnostics-app",
     "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "enable-fake-keyboard-heuristic",
@@ -2627,7 +2627,7 @@
   {
     "name": "enable-log-controller-for-diagnostics-app",
     "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "enable-logging-js-console-messages",
@@ -3189,7 +3189,7 @@
   {
     "name": "enable-touchpads-in-diagnostics-app",
     "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "enable-touchscreen-calibration",
@@ -3201,7 +3201,7 @@
   {
     "name": "enable-touchscreens-in-diagnostics-app",
     "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "enable-translate-sub-frames",
