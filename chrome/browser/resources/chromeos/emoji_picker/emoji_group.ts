@@ -193,7 +193,7 @@ export class EmojiGroupComponent extends PolymerElement {
     // Polymer.
     beforeNextRender(this, () => {
       const variants = this.shownEmojiVariantIndex ?
-          this.shadowRoot!.getElementById(this.getEmojiVariantId(dataIndex)) :
+          this.shadowRoot!.getElementById(`emoji-variant-${dataIndex}`) :
           null;
 
       this.dispatchEvent(createCustomEvent(EMOJI_VARIANTS_SHOWN, {
@@ -202,22 +202,6 @@ export class EmojiGroupComponent extends PolymerElement {
         baseEmoji: emoji.base.string,
       }));
     });
-  }
-
-  /**
-   * Returns the id of an emoji button element at a specific data index.
-   * TODO(b/257860449): inline these functions below
-   */
-  private getEmojiButtonId(index: number): string {
-    return `emoji-${index}`;
-  }
-
-  /**
-   * Returns the id of an emoji variants element for an emoji at a
-   * specific data index.
-   */
-  private getEmojiVariantId(index: number): string {
-    return `emoji-variant-${index}`;
   }
 
   /**

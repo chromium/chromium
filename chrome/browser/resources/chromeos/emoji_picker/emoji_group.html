@@ -232,7 +232,7 @@
   <div id="fake-focus-target" tabindex="-1"></div>
   <template is="dom-repeat" items="[[data]]">
     <div class="emoji-button-container">
-      <button id="[[getEmojiButtonId(index)]]" data-index$="[[index]]"
+      <button id="emoji-[[index]]" data-index$="[[index]]"
         class$="emoji-button [[getEmojiButtonClassName(item)]]"
         on-mouseenter="showTooltip" on-focus="showTooltip"
         aria-label="[[getEmojiAriaLabel(item)]]">
@@ -241,7 +241,7 @@
       <template is="dom-if"
         if="[[isEmojiVariantVisible(index,shownEmojiVariantIndex)]]">
         <emoji-variants
-          id="[[getEmojiVariantId(index)]]"
+          id="emoji-variant-[[index]]"
           variants="[[item.alternates]]"
           tooltip="[[item.base.name]]">
         </emoji-variants>
