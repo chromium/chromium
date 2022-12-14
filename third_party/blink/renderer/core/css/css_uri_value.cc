@@ -52,6 +52,24 @@ AtomicString CSSURIValue::FragmentIdentifier() const {
   return AtomicString(AbsoluteUrl().FragmentIdentifier());
 }
 
+const AtomicString& CSSURIValue::NormalizedFragmentIdentifier() const {
+  if (normalized_fragment_identifier_cache_.IsNull()) {
+    normalized_fragment_identifier_cache_ =
+        AtomicString(DecodeURLEscapeSequences(
+            FragmentIdentifier(), DecodeURLMode::kUTF8OrIsomorphic));
+  }
+
+  // NOTE: If is_local_ is true, the normalized URL may be different
+  // (we don't invalidate the cache when the base URL changes),
+  // but it should not matter for the fragment. We DCHECK that we get
+  // the right result, to be sure.
+  DCHECK_EQ(normalized_fragment_identifier_cache_,
+            AtomicString(DecodeURLEscapeSequences(
+                FragmentIdentifier(), DecodeURLMode::kUTF8OrIsomorphic)));
+
+  return normalized_fragment_identifier_cache_;
+}
+
 KURL CSSURIValue::AbsoluteUrl() const {
   return KURL(absolute_url_);
 }

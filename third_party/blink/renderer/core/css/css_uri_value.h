@@ -24,7 +24,7 @@ class CORE_EXPORT CSSURIValue : public CSSValue {
   CSSURIValue(const AtomicString&, const KURL&);
   CSSURIValue(const AtomicString& relative_url,
               const AtomicString& absolute_url);
-  CSSURIValue(const AtomicString& absolute_url);
+  explicit CSSURIValue(const AtomicString& absolute_url);
   ~CSSURIValue();
 
   SVGResource* EnsureResourceReference() const;
@@ -39,6 +39,13 @@ class CORE_EXPORT CSSURIValue : public CSSValue {
   bool IsLocal(const Document&) const;
   AtomicString FragmentIdentifier() const;
 
+  // Fragment identifier with trailing spaces removed and URL
+  // escape sequences decoded. This is cached, because it can take
+  // a surprisingly long time to normalize the URL into an absolute
+  // value if we have lots of SVG elements that need to re-run this
+  // over and over again.
+  const AtomicString& NormalizedFragmentIdentifier() const;
+
   bool Equals(const CSSURIValue&) const;
 
   CSSURIValue* ValueWithURLMadeAbsolute(const KURL& base_url,
@@ -50,6 +57,7 @@ class CORE_EXPORT CSSURIValue : public CSSValue {
   KURL AbsoluteUrl() const;
 
   AtomicString relative_url_;
+  mutable AtomicString normalized_fragment_identifier_cache_;
   bool is_local_;
 
   mutable Member<SVGResource> resource_;

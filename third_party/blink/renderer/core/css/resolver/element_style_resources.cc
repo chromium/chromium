@@ -251,9 +251,8 @@ SVGResource* ElementStyleResources::GetSVGResourceFromValue(
   if (value.IsLocal(element_.GetDocument())) {
     SVGTreeScopeResources& tree_scope_resources =
         element_.OriginatingTreeScope().EnsureSVGTreeScopedResources();
-    AtomicString decoded_fragment(DecodeURLEscapeSequences(
-        value.FragmentIdentifier(), DecodeURLMode::kUTF8OrIsomorphic));
-    return tree_scope_resources.ResourceForId(decoded_fragment);
+    return tree_scope_resources.ResourceForId(
+        value.NormalizedFragmentIdentifier());
   }
   if (AllowExternalResources(property)) {
     pending_svg_resource_properties_.insert(property);
