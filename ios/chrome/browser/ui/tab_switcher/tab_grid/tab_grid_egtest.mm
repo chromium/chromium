@@ -451,8 +451,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests that Clear Browsing Data can be successfully done from tab grid.
-// TODO(crbug.com/1379374): test is flaky on the clear browsing data page.
-- (void)FLAKY_testClearBrowsingData {
+- (void)testClearBrowsingData {
   // Load history
   [self loadTestURLs];
 

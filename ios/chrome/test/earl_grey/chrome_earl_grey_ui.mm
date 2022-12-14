@@ -254,6 +254,7 @@ class ScopedDisableTimerTracking {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           HistoryClearBrowsingDataButton()]
       performAction:grey_tap()];
+  [self waitForClearBrowsingDataViewVisible:YES];
   [self selectAllBrowsingDataAndClear];
 
   // Include sufficientlyVisible condition for the case of the clear browsing
@@ -270,6 +271,7 @@ class ScopedDisableTimerTracking {
   [self openSettingsMenu];
   [self tapSettingsMenuButton:chrome_test_util::SettingsMenuPrivacyButton()];
   [self tapPrivacyMenuButton:chrome_test_util::ClearBrowsingDataCell()];
+  [self waitForClearBrowsingDataViewVisible:YES];
 
   // Clear all data.
   [self selectAllBrowsingDataAndClear];
@@ -526,6 +528,28 @@ class ScopedDisableTimerTracking {
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
       onElementWithMatcher:ClearBrowsingDataView()] performAction:grey_tap()];
+}
+
+// Waits for the clear browsing data view to become visible if `isVisible` is
+// YES, otherwise waits for it to disappear. If the condition is not met within
+// a timeout, a GREYAssert is induced.
+- (void)waitForClearBrowsingDataViewVisible:(BOOL)isVisible {
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    id<GREYMatcher> visibleMatcher =
+        isVisible ? grey_sufficientlyVisible() : grey_nil();
+    [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
+        assertWithMatcher:visibleMatcher
+                    error:&error];
+    return error == nil;
+  };
+  NSString* errorMessage = isVisible
+                               ? @"Clear browsing data view was not visible"
+                               : @"Clear browsing data view was visible";
+  bool clearBrowsingDataViewVisibility =
+      base::test::ios::WaitUntilConditionOrTimeout(kWaitForUIElementTimeout,
+                                                   condition);
+  EG_TEST_HELPER_ASSERT_TRUE(clearBrowsingDataViewVisibility, errorMessage);
 }
 
 @end
