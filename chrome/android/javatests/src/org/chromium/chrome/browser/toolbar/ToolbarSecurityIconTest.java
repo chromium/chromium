@@ -93,8 +93,8 @@ public final class ToolbarSecurityIconTest {
 
         mocker.mock(SecurityStateModelJni.TEST_HOOKS, mSecurityStateMocks);
 
-        Context context =
-                new ContextThemeWrapper(ContextUtils.getApplicationContext(), R.style.ColorOverlay);
+        Context context = new ContextThemeWrapper(
+                ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         // clang-format off
         mLocationBarModel = spy(
                 new LocationBarModel(context, NewTabPageDelegate.EMPTY,

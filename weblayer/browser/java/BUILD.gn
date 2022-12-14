@@ -22,7 +22,6 @@ android_resources("weblayer_resources") {
   sources = [
     "res/drawable/weblayer_tab_indicator.xml",
     "res/layout/weblayer_infobar_translate_compact_content.xml",
-    "res/values-night/styles.xml",
     "res/values/colors.xml",
     "res/values/dimens.xml",
     "res/values/styles.xml",

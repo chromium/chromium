@@ -238,7 +238,7 @@ public class FeedSurfaceCoordinatorTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).get();
-        mActivity.setTheme(R.style.ColorOverlay);
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mocker.mock(FeedStreamJni.TEST_HOOKS, mFeedStreamJniMock);
         mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
         mocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);

@@ -215,7 +215,6 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
         Context wrappedContext = ClassLoaderContextWrapperFactory.get(embedderContext);
         Context themedContext =
                 new ContextThemeWrapper(wrappedContext, R.style.Theme_WebLayer_Settings);
-        themedContext.getTheme().applyStyle(R.style.ColorOverlay_WebLayer, /*force=*/true);
         return new FragmentHostingRemoteFragmentImpl.RemoteFragmentContext(themedContext);
     }
 }

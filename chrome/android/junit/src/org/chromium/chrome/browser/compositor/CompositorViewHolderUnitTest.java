@@ -113,7 +113,7 @@ public class CompositorViewHolderUnitTest {
         when(mBrowserControlsManager.getTab()).thenReturn(mTab);
 
         mContext = new ContextThemeWrapper(
-                ApplicationProvider.getApplicationContext(), R.style.ColorOverlay);
+                ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mCompositorViewHolder = spy(new CompositorViewHolder(mContext));
         mCompositorViewHolder.setCompositorViewForTesting(mCompositorView);
         mCompositorViewHolder.setBrowserControlsManager(mBrowserControlsManager);

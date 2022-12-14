@@ -35,7 +35,7 @@ public class SuggestionSpannableUnitTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mActivity.setTheme(R.style.ColorOverlay_ChromiumAndroid);
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
     }
 
     @Test

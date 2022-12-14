@@ -166,7 +166,7 @@ public class WebApkIconNameUpdateDialogTest {
         // Applying a theme overlay because the context is used to show the dialog, which needs some
         // color attributes to inflate the views.
         Context context = new ContextThemeWrapper(
-                ApplicationProvider.getApplicationContext(), R.style.ColorOverlay_ChromiumAndroid);
+                ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
         dialog.show(context, mDialogManager, /* packageName= */ "", dialogParams.iconChanged,
                 dialogParams.shortNameChanged, dialogParams.nameChanged,
@@ -224,7 +224,7 @@ public class WebApkIconNameUpdateDialogTest {
         // Applying a theme overlay because the context is used to show the dialog, which needs some
         // color attributes to inflate the views.
         Context context = new ContextThemeWrapper(
-                ApplicationProvider.getApplicationContext(), R.style.ColorOverlay_ChromiumAndroid);
+                ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         WebApkUpdateReportAbuseDialog dialog =
                 new WebApkUpdateReportAbuseDialog(context, mDialogManager, /* packageName= */ "",
                         shortAppName, /* showAbuseCheckbox= */ true, this::onAbuseDialogResult);

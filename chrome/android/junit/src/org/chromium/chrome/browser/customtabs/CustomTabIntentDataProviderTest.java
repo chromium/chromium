@@ -72,7 +72,7 @@ public class CustomTabIntentDataProviderTest {
     @Before
     public void setUp() {
         mContext = new ContextThemeWrapper(
-                ApplicationProvider.getApplicationContext(), R.style.ColorOverlay);
+                ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
     }
 
     @After

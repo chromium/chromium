@@ -83,7 +83,6 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         ensureActivityNotExported();
 
-        setTheme(R.style.ColorOverlay_ChromiumAndroid);
         setContentView(R.layout.manage_space_activity);
         Resources r = getResources();
         setTitle(String.format(r.getString(R.string.storage_management_activity_label),

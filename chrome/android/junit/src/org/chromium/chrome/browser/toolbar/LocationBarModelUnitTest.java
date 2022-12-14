@@ -164,7 +164,7 @@ public class LocationBarModelUnitTest {
     private static class TestIncognitoLocationBarModel extends LocationBarModel {
         public TestIncognitoLocationBarModel(Tab tab, SearchEngineLogoUtils searchEngineLogoUtils) {
             super(new ContextThemeWrapper(
-                          ContextUtils.getApplicationContext(), R.style.ColorOverlay),
+                          ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight),
                     NewTabPageDelegate.EMPTY, url -> url.getSpec(),
                     IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid, OFFLINE_STATUS,
                     searchEngineLogoUtils);
@@ -175,7 +175,7 @@ public class LocationBarModelUnitTest {
     private static class TestRegularLocationBarModel extends LocationBarModel {
         public TestRegularLocationBarModel(Tab tab, SearchEngineLogoUtils searchEngineLogoUtils) {
             super(new ContextThemeWrapper(
-                          ContextUtils.getApplicationContext(), R.style.ColorOverlay),
+                          ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight),
                     NewTabPageDelegate.EMPTY, url -> url.getSpec(),
                     IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid, OFFLINE_STATUS,
                     searchEngineLogoUtils);

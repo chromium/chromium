@@ -16,7 +16,4 @@ found in the LICENSE file.
         <item name="android:textAppearanceListItem">@style/TextAppearance.TextLarge.Primary</item>
         <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
     </style>
-
-    <style name="ColorOverlay.WebLayer" parent="ColorOverlay.WebLayer.DayNight" />
-    <style name="ColorOverlay.WebLayer.DayNight" parent="ColorOverlay.BrowserUi" />
 </resources>

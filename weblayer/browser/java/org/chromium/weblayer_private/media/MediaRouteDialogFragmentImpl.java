@@ -38,7 +38,6 @@ public class MediaRouteDialogFragmentImpl extends FragmentHostingRemoteFragmentI
             // action bar. It's unclear why this is necessary when it's not in Chrome, and why
             // ContextThemeWrapper doesn't work.
             getTheme().applyStyle(R.style.Theme_BrowserUI_DayNight, /*force=*/true);
-            getTheme().applyStyle(R.style.ColorOverlay_WebLayer, /*force=*/true);
         }
     }
 

@@ -127,7 +127,7 @@ public class AccessorySheetRenderTest {
         mActivityTestRule.launchActivity(null);
         // Calling #setTheme() explicitly because the test rule doesn't have the @Rule annotation
         // and won't apply the theme.
-        mActivityTestRule.getActivity().setTheme(R.style.ColorOverlay_ChromiumAndroid);
+        mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AsyncViewStub sheetStub = initializeContentViewWithSheetStub();
 

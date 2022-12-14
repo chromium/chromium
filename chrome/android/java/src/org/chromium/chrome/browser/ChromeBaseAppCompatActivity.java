@@ -237,7 +237,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      */
     @CallSuper
     protected void applyThemeOverlays() {
-        setTheme(R.style.ColorOverlay_ChromiumAndroid);
         DynamicColors.applyToActivityIfAvailable(this);
 
         DeferredStartupHandler.getInstance().addDeferredTask(() -> {

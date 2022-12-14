@@ -195,8 +195,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     private void initializeLayoutManagerPhone(int standardTabCount, int incognitoTabCount,
             int standardIndexSelected, int incognitoIndexSelected, boolean incognitoSelected) {
-        Context context =
-                new ContextThemeWrapper(InstrumentationRegistry.getContext(), R.style.ColorOverlay);
+        Context context = new ContextThemeWrapper(
+                InstrumentationRegistry.getContext(), R.style.Theme_BrowserUI_DayNight);
 
         mDpToPx = context.getResources().getDisplayMetrics().density;
 

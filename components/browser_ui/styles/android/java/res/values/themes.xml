@@ -17,37 +17,6 @@ found in the LICENSE file.
     <style name="ThemeOverlay.BrowserUI.Fullscreen"
         parent="Base.ThemeOverlay.BrowserUI.Fullscreen" />
 
-    <!-- Color overlays -->
-
-    <!-- Indirection to allow downstream to add attributes. -->
-    <style name="ColorOverlay" parent="Base.ColorOverlay"/>
-    <!-- TODO(https://crbug.com/1216642): Inconsistent naming style. Remove
-         after downstream stops using. -->
-    <style name="Base.ColorOverlay" parent="ColorOverlay.BrowserUi"/>
-    <style name="ColorOverlay.BrowserUi" parent="ColorOverlay.BrowserUi.DayNight">
-        <item name="android:colorBackground">@color/baseline_neutral_0</item>
-        <item name="colorError">@color/baseline_error_600</item>
-        <item name="colorOnBackground">@color/baseline_neutral_900</item>
-        <item name="colorOnPrimary">@color/baseline_primary_0</item>
-        <item name="colorOnSurface">@color/baseline_neutral_900</item>
-        <item name="colorOnSurfaceInverse">@color/baseline_neutral_50</item>
-        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_700</item>
-        <item name="colorOutline">@color/baseline_neutral_variant_500</item>
-        <item name="colorPrimary">@color/baseline_primary_600</item>
-        <item name="colorSurface">@color/baseline_neutral_0</item>
-        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_100</item>
-
-        <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
-        <item name="elevationOverlayColor">@color/baseline_neutral_600</item>
-        <item name="elevationOverlayEnabled">true</item>
-    </style>
-    <style name="ColorOverlay.BrowserUi.DayNight" parent="ColorOverlay.Ui">
-        <item name="android:textColorPrimary">@color/default_text_color_list</item>
-        <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
-        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
-        <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
-    </style>
-
     <!-- Applied to the SettingsActivity's AppBarLayout to disable the
          liftOnScroll color-fill effect. -->
     <style name="ThemeOverlay.Settings.DisableElevationOverlay" parent="">

@@ -123,7 +123,7 @@ public class HomepageSettingsUnitTest {
         mActivityScenario.onActivity(activity -> {
             mActivity = activity;
             // Needed for HomepageSettings to inflate correctly.
-            mActivity.setTheme(R.style.ColorOverlay_ChromiumAndroid);
+            mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         });
         mActionTester = new UserActionTester();
     }
