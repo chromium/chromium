@@ -300,7 +300,6 @@ component("platform") {
     "audio/audio_delay_dsp_kernel.h",
     "audio/audio_destination.cc",
     "audio/audio_destination.h",
-    "audio/audio_destination_consumer.h",
     "audio/audio_dsp_kernel.cc",
     "audio/audio_dsp_kernel.h",
     "audio/audio_dsp_kernel_processor.cc",

@@ -40,7 +40,6 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_platform_media_stream_source.h"
-#include "third_party/blink/renderer/platform/audio/audio_destination_consumer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
@@ -54,6 +53,7 @@
 
 namespace blink {
 
+class AudioBus;
 class WebAudioDestinationConsumer;
 
 // GarbageCollected wrapper of a WebPlatformMediaStreamSource, which acts as a
@@ -167,15 +167,14 @@ class PLATFORM_EXPORT MediaStreamSource final
   void Dispose();
 
  private:
-  class PLATFORM_EXPORT ConsumerWrapper final
-      : public AudioDestinationConsumer {
+  class PLATFORM_EXPORT ConsumerWrapper final {
     USING_FAST_MALLOC(ConsumerWrapper);
 
    public:
     explicit ConsumerWrapper(WebAudioDestinationConsumer* consumer);
 
-    void SetFormat(int number_of_channels, float sample_rate) override;
-    void ConsumeAudio(AudioBus* bus, int number_of_frames) override;
+    void SetFormat(int number_of_channels, float sample_rate);
+    void ConsumeAudio(AudioBus* bus, int number_of_frames);
 
     // m_consumer is not owned by this class.
     WebAudioDestinationConsumer* consumer_;
