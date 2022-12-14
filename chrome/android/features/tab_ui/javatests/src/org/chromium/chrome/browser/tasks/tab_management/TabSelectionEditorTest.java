@@ -65,7 +65,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
@@ -205,6 +204,7 @@ public class TabSelectionEditorTest {
                 TabUiTestHelper.leaveTabSwitcher(sActivityTestRule.getActivity());
             }
         }
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mSnackbarManager.dismissAllSnackbars(); });
     }
 
     private @TabListCoordinator.TabListMode int getMode() {
@@ -254,7 +254,9 @@ public class TabSelectionEditorTest {
             for (int i = model.getCount() - urls.size(); i < model.getCount(); i++) {
                 tabs.add(model.getTabAt(i));
             }
-            filter.mergeListOfTabsToGroup(tabs.subList(1, tabs.size()), tabs.get(0), false, true);
+            // Don't notify to avoid snackbar appearing.
+            filter.mergeListOfTabsToGroup(tabs.subList(1, tabs.size()), tabs.get(0),
+                    /*isSameGroup=*/false, /*notify=*/false);
         });
     }
 
@@ -585,7 +587,6 @@ public class TabSelectionEditorTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1396326")
     @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testToolbarMenuItem_GroupActionAndUndo() throws Exception {
         prepareBlankTab(2, false);
