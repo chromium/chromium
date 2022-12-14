@@ -42,6 +42,10 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
   // TODO(b/252871301): Apply each feature tile.
   void AddTiles(std::vector<std::unique_ptr<FeatureTile>> tiles);
 
+  // Lays out the existing tiles into rows. Used when the visibility of a tile
+  // changes, which might change the number of required rows.
+  void RelayoutTiles();
+
   // Sets the number of rows of feature tiles based on the max height the
   // container can have.
   void SetRowsFromHeight(int max_height);

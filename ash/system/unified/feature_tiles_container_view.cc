@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -46,7 +47,9 @@ class FeatureTileRow : public views::FlexLayoutView {
  public:
   METADATA_HEADER(FeatureTileRow);
 
-  FeatureTileRow() {
+  explicit FeatureTileRow(FeatureTilesContainerView* container)
+      : container_(container) {
+    DCHECK(container_);
     SetPreferredSize(kFeatureTileRowSize);
     SetInteriorMargin(kFeatureTileRowInteriorMargin);
     SetDefault(views::kMarginsKey, kFeatureTileMargins);
@@ -56,6 +59,15 @@ class FeatureTileRow : public views::FlexLayoutView {
   FeatureTileRow(const FeatureTileRow&) = delete;
   FeatureTileRow& operator=(const FeatureTileRow&) = delete;
   ~FeatureTileRow() override = default;
+
+  // views::View:
+  void ChildVisibilityChanged(views::View* child) override {
+    views::FlexLayoutView::ChildVisibilityChanged(child);
+    container_->RelayoutTiles();
+  }
+
+ private:
+  FeatureTilesContainerView* const container_;
 };
 
 BEGIN_METADATA(FeatureTileRow, views::FlexLayoutView)
@@ -87,20 +99,48 @@ void FeatureTilesContainerView::AddTiles(
   // A FeatureTileRow can hold a combination of primary and compact tiles
   // depending on the added tile weights.
   int row_weight = 0;
+  bool create_row = true;
   for (auto& tile : tiles) {
-    if (row_weight == 0) {
+    if (create_row) {
       // TODO(crbug/1371668): Create new page container if number of rows
       // surpasses `displayable_rows_`.
       feature_tile_rows_.push_back(
-          AddChildView(std::make_unique<FeatureTileRow>()));
+          AddChildView(std::make_unique<FeatureTileRow>(this)));
+      create_row = false;
     }
-    row_weight += GetTileWeight(tile->tile_type());
+    // Invisible tiles don't take any weight.
+    if (tile->GetVisible())
+      row_weight += GetTileWeight(tile->tile_type());
     DCHECK_LE(row_weight, kMaxRowWeight);
     feature_tile_rows_.back()->AddChildView(std::move(tile));
 
-    if (row_weight == kMaxRowWeight)
+    if (row_weight == kMaxRowWeight) {
       row_weight = 0;
+      create_row = true;
+    }
   }
+}
+
+void FeatureTilesContainerView::RelayoutTiles() {
+  // Tile visibility changing may change the number of required rows. Rebuild
+  // the rows from scratch.
+  std::vector<std::unique_ptr<FeatureTile>> tiles;
+  for (FeatureTileRow* row : feature_tile_rows_) {
+    // Copy the list of children since we will be modifying it during iteration.
+    std::vector<views::View*> children = row->children();
+    for (views::View* child : children) {
+      DCHECK(views::IsViewClass<FeatureTile>(child));
+      FeatureTile* tile = static_cast<FeatureTile*>(child);
+      // Transfer ownership of each FeatureTile to `tiles`.
+      tiles.push_back(row->RemoveChildViewT(tile));
+    }
+    // Remove this row. It will be rebuilt by AddTiles().
+    RemoveChildViewT(row);
+  }
+  feature_tile_rows_.clear();
+
+  // Rebuild the rows of tiles.
+  AddTiles(std::move(tiles));
 }
 
 void FeatureTilesContainerView::SetRowsFromHeight(int max_height) {

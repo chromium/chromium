@@ -155,4 +155,35 @@ TEST_F(FeatureTilesContainerViewTest, FeatureTileRows) {
   EXPECT_EQ(FeatureTileRowCount(), 3);
 }
 
+TEST_F(FeatureTilesContainerViewTest, ChangeTileVisibility) {
+  // Create 3 full-size tiles. Normally they would require 2 rows.
+  auto tile_controller = std::make_unique<MockFeaturePodController>(
+      FeatureTile::TileType::kPrimary);
+  std::unique_ptr<FeatureTile> tile1 = tile_controller->CreateTile();
+  std::unique_ptr<FeatureTile> tile2 = tile_controller->CreateTile();
+  std::unique_ptr<FeatureTile> tile3 = tile_controller->CreateTile();
+
+  // Make the first tile invisible.
+  FeatureTile* tile1_ptr = tile1.get();
+  tile1_ptr->SetVisible(false);
+
+  // Add the tiles to the container.
+  std::vector<std::unique_ptr<FeatureTile>> tiles;
+  tiles.push_back(std::move(tile1));
+  tiles.push_back(std::move(tile2));
+  tiles.push_back(std::move(tile3));
+  container()->AddTiles(std::move(tiles));
+
+  // Only one row is created because the first tile is not visible.
+  EXPECT_EQ(FeatureTileRowCount(), 1);
+
+  // Making the tile visible causes a second row to be created.
+  tile1_ptr->SetVisible(true);
+  EXPECT_EQ(FeatureTileRowCount(), 2);
+
+  // Making the tile invisible causes the second row to be removed.
+  tile1_ptr->SetVisible(false);
+  EXPECT_EQ(FeatureTileRowCount(), 1);
+}
+
 }  // namespace ash
