@@ -3207,7 +3207,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolAndFileHandlingTest,
       InstallWebAppWithProtocolHandlers({protocol_handler}, {file_handler});
 
   // Skip the file handler dialog by simulating prior user approval of the API.
-  provider()->sync_bridge().SetAppFileHandlerApprovalState(
+  provider()->sync_bridge_unsafe().SetAppFileHandlerApprovalState(
       app_id, web_app::ApiApprovalState::kAllowed);
 
   // Pass a file:// url on the command line.
