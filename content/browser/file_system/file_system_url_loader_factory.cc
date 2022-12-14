@@ -128,10 +128,26 @@ class FileSystemEntryURLLoader
              mojo::PendingReceiver<network::mojom::URLLoader> loader,
              mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
              scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
+    net::Error net_error = net::OK;
+    if (!request.url.is_valid()) {
+      net_error = net::ERR_INVALID_URL;
+    }
+
+    // If the requested URL is not committable in the current process, block the
+    // request.  This prevents one origin from fetching filesystem: resources
+    // belonging to another origin, see https://crbug.com/964245.
+    if (params_.render_process_host_id != ChildProcessHost::kInvalidUniqueID &&
+        !ChildProcessSecurityPolicyImpl::GetInstance()->CanCommitURL(
+            params_.render_process_host_id, request.url)) {
+      DVLOG(1) << "Denied unauthorized request for "
+               << request.url.possibly_invalid_spec();
+      net_error = net::ERR_INVALID_URL;
+    }
+
     io_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&FileSystemEntryURLLoader::StartOnIOThread, AsWeakPtr(),
-                       request, std::move(loader), std::move(client_remote)));
+        FROM_HERE, base::BindOnce(&FileSystemEntryURLLoader::StartOnIOThread,
+                                  AsWeakPtr(), request, net_error,
+                                  std::move(loader), std::move(client_remote)));
   }
 
   void MaybeDeleteSelf() {
@@ -163,6 +179,7 @@ class FileSystemEntryURLLoader
  private:
   void StartOnIOThread(
       const network::ResourceRequest& request,
+      net::Error net_error,
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote) {
     receiver_.Bind(std::move(loader));
@@ -171,20 +188,10 @@ class FileSystemEntryURLLoader
 
     client_.Bind(std::move(client_remote));
 
-    if (!request.url.is_valid()) {
-      OnClientComplete(net::ERR_INVALID_URL);
-      return;
-    }
-
-    // If the requested URL is not commitable in the current process, block the
-    // request.  This prevents one origin from fetching filesystem: resources
-    // belonging to another origin, see https://crbug.com/964245.
-    if (params_.render_process_host_id != ChildProcessHost::kInvalidUniqueID &&
-        !ChildProcessSecurityPolicyImpl::GetInstance()->CanCommitURL(
-            params_.render_process_host_id, request.url)) {
-      DVLOG(1) << "Denied unauthorized request for "
-               << request.url.possibly_invalid_spec();
-      OnClientComplete(net::ERR_INVALID_URL);
+    // If checks which were performed on the UI thread failed, don't proceed
+    // any further and error out.
+    if (net_error != net::OK) {
+      OnClientComplete(net_error);
       return;
     }
 
