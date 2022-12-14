@@ -36,11 +36,28 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/lacros_extensions_util.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 #endif
 
 namespace apps {
 
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool HaveSameWindowTreeHostLacros(aura::Window* window1,
+                                  aura::Window* window2) {
+  if (window1 == nullptr || window2 == nullptr) {
+    return false;
+  }
+  auto* host1 = views::DesktopWindowTreeHostLacros::From(window1->GetHost());
+  auto* host2 = views::DesktopWindowTreeHostLacros::From(window2->GetHost());
+  if (host1 == nullptr || host2 == nullptr) {
+    return false;
+  } else {
+    return host1 == host2;
+  }
+}
+#endif
 
 Browser* GetBrowserWithTabStripModel(TabStripModel* tab_strip_model) {
   for (auto* browser : *BrowserList::GetInstance()) {
@@ -56,6 +73,11 @@ Browser* GetBrowserWithAuraWindow(aura::Window* aura_window) {
     if (window && window->GetNativeWindow() == aura_window) {
       return browser;
     }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (HaveSameWindowTreeHostLacros(window->GetNativeWindow(), aura_window)) {
+      return browser;
+    }
+#endif
   }
   return nullptr;
 }
@@ -78,7 +100,12 @@ wm::ActivationClient* ActivationClientForBrowser(Browser* browser) {
 bool IsBrowserActive(Browser* browser) {
   auto* aura_window = AuraWindowForBrowser(browser);
   auto* activation_client = ActivationClientForBrowser(browser);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return HaveSameWindowTreeHostLacros(aura_window,
+                                      activation_client->GetActiveWindow());
+#else
   return activation_client->GetActiveWindow() == aura_window;
+#endif
 }
 
 bool IsWebContentsActive(Browser* browser, content::WebContents* contents) {
