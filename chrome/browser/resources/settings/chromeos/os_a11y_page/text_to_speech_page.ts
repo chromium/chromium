@@ -18,6 +18,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
 import {routes} from '../os_route.js';
@@ -32,10 +33,11 @@ const SettingsTextToSpeechPageElementBase =
         [
           DeepLinkingBehavior,
         ],
-        RouteOriginMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as {
+        RouteOriginMixin(
+            PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))) as {
       new (): PolymerElement & I18nMixinInterface &
-          WebUiListenerMixinInterface & RouteOriginMixinInterface &
-          DeepLinkingBehaviorInterface,
+          WebUiListenerMixinInterface & PrefsMixinInterface &
+          RouteOriginMixinInterface & DeepLinkingBehaviorInterface,
     };
 
 class SettingsTextToSpeechPageElement extends
@@ -50,14 +52,6 @@ class SettingsTextToSpeechPageElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /**
        * |hasKeyboard_| starts undefined so observer doesn't trigger until it
        * has been populated.
@@ -85,7 +79,6 @@ class SettingsTextToSpeechPageElement extends
     };
   }
 
-  prefs: {[key: string]: any};
   private deviceBrowserProxy_: DevicePageBrowserProxy;
   private hasKeyboard_: boolean;
   private route_: Route;
