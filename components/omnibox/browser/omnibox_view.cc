@@ -20,6 +20,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
@@ -31,6 +32,7 @@
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+#include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "ui/gfx/paint_vector_icon.h"
 
 #endif
@@ -176,7 +178,7 @@ void OmniboxView::OpenMatch(const AutocompleteMatch& match,
 
 bool OmniboxView::IsEditingOrEmpty() const {
   return (model_.get() && model_->user_input_in_progress()) ||
-      (GetOmniboxTextLength() == 0);
+         (GetOmniboxTextLength() == 0);
 }
 
 // TODO (manukh) OmniboxView::GetIcon is very similar to
@@ -186,7 +188,9 @@ bool OmniboxView::IsEditingOrEmpty() const {
 // provider icons. It's possible they have other inconsistencies as well. We may
 // want to consider reusing the same code for both the popup and omnibox icons.
 ui::ImageModel OmniboxView::GetIcon(int dip_size,
-                                    SkColor color,
+                                    SkColor color_current_page_icon,
+                                    SkColor color_vectors,
+                                    SkColor color_bright_vectors,
                                     IconFetchedCallback on_icon_fetched) const {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // This is used on desktop only.
@@ -199,13 +203,14 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
     AutocompleteMatch fake_match;
     fake_match.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
     const gfx::VectorIcon& vector_icon = fake_match.GetVectorIcon(false);
-    return ui::ImageModel::FromVectorIcon(vector_icon, color, dip_size);
+    return ui::ImageModel::FromVectorIcon(vector_icon, color_current_page_icon,
+                                          dip_size);
   }
 
   if (model_->ShouldShowCurrentPageIcon()) {
     LocationBarModel* location_bar_model = controller_->GetLocationBarModel();
     return ui::ImageModel::FromVectorIcon(location_bar_model->GetVectorIcon(),
-                                          color, dip_size);
+                                          color_current_page_icon, dip_size);
   }
 
   gfx::Image favicon;
@@ -215,7 +220,7 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
     favicon = model_->client()->GetFaviconForDefaultSearchProvider(
         std::move(on_icon_fetched));
 
-  } else {
+  } else if (match.type != AutocompleteMatchType::HISTORY_CLUSTER) {
     // For site suggestions, display site's favicon.
     favicon = model_->client()->GetFaviconForPageUrl(
         match.destination_url, std::move(on_icon_fetched));
@@ -234,7 +239,9 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
       bookmark_model && bookmark_model->IsBookmarked(match.destination_url);
 
   const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmarked);
-
+  const auto& color = match.type == AutocompleteMatchType::HISTORY_CLUSTER
+                          ? color_bright_vectors
+                          : color_vectors;
   return ui::ImageModel::FromVectorIcon(vector_icon, color, dip_size);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }

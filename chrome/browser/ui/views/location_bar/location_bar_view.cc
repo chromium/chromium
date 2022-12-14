@@ -138,6 +138,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -1466,9 +1467,13 @@ void LocationBarView::RecordPageInfoMetrics() {
 ui::ImageModel LocationBarView::GetLocationIcon(
     LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) const {
   return omnibox_view_
-             ? omnibox_view_->GetIcon(GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
-                                      location_icon_view_->GetForegroundColor(),
-                                      std::move(on_icon_fetched))
+             ? omnibox_view_->GetIcon(
+                   GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+                   location_icon_view_->GetForegroundColor(),
+                   View::GetColorProvider()->GetColor(kColorOmniboxResultsIcon),
+                   View::GetColorProvider()->GetColor(
+                       kColorOmniboxResultsStarterPackIcon),
+                   std::move(on_icon_fetched))
              : ui::ImageModel();
 }
 

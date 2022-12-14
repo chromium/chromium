@@ -200,12 +200,11 @@ OmniboxResultView::OmniboxResultView(
   remove_suggestion_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_OMNIBOX_REMOVE_SUGGESTION));
   auto* const focus_ring = views::FocusRing::Get(remove_suggestion_button_);
-  focus_ring->SetHasFocusPredicate(
-      [&](View* view) {
-        return view->GetVisible() && GetMatchSelected() &&
-               (popup_contents_view_->GetSelection().state ==
-                OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION);
-      });
+  focus_ring->SetHasFocusPredicate([&](View* view) {
+    return view->GetVisible() && GetMatchSelected() &&
+           (popup_contents_view_->GetSelection().state ==
+            OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION);
+  });
   focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
 
   button_row_ = AddChildView(std::make_unique<OmniboxSuggestionButtonRowView>(
@@ -508,7 +507,6 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     node_data->AddState(ax::mojom::State::kHovered);
 }
 
-
 void OmniboxResultView::OnThemeChanged() {
   views::View::OnThemeChanged();
   ApplyThemeAndRefreshIcons(true);
@@ -541,11 +539,9 @@ gfx::Image OmniboxResultView::GetIcon() const {
   // in suggestion texts.
   ui::ColorId vector_icon_color_id;
   if (match_.type == AutocompleteMatchType::HISTORY_CLUSTER) {
-    // TODO(crbug.com/1327076): If we launch history cluster icons with blue or
-    //  another non-default color, use an appropriately named constant, e.g.
-    //  `kColorOmniboxResultSpecialIcon[Selected]`.
-    vector_icon_color_id = GetMatchSelected() ? kColorOmniboxResultsUrlSelected
-                                              : kColorOmniboxResultsUrl;
+    // TODO(manukh): Fix this when fixing icon inconsistencies between the
+    //   dropdown and omnibox.
+    vector_icon_color_id = kColorOmniboxResultsStarterPackIcon;
   } else if (match_.type == AutocompleteMatchType::STARTER_PACK) {
     vector_icon_color_id = kColorOmniboxResultsStarterPackIcon;
   } else {
