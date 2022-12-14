@@ -570,7 +570,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Notification.UserAction"
-    enum="FileManagerNotificationUserAction" expires_after="2022-12-25">
+    enum="FileManagerNotificationUserAction" expires_after="2023-12-25">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
