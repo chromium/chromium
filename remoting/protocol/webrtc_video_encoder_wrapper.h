@@ -16,18 +16,20 @@
 #include "remoting/base/running_samples.h"
 #include "remoting/base/session_options.h"
 #include "remoting/codec/webrtc_video_encoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/api/video/video_codec_type.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting::protocol {
 
-class VideoChannelStateObserver;
+class VideoStreamEventRouter;
 
-// WebrtcVideoEncoderWrapper is a wrapper around the remoting codecs, which
-// implements the webrtc::VideoEncoder interface. This class is instantiated
-// by WebRTC via the webrtc::VideoEncoderFactory, and all methods (including
-// the ctor) are called on WebRTC's foreground worker thread.
+// WebrtcVideoEncoderWrapper is a wrapper around the remoting codecs which
+// implement the webrtc::VideoEncoder interface. This class is instantiated by
+// WebRTC via the webrtc::VideoEncoderFactory, and all methods (including the
+// c'tor) are called on WebRTC's foreground worker thread.
 class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
  public:
   // Called by the VideoEncoderFactory. |video_channel_state_observer| is
@@ -37,7 +39,7 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
       const SessionOptions& session_options,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> encode_task_runner,
-      base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer);
+      base::WeakPtr<VideoStreamEventRouter> video_stream_event_router);
   ~WebrtcVideoEncoderWrapper() override;
 
   void SetEncoderForTest(std::unique_ptr<WebrtcVideoEncoder> encoder);
@@ -167,7 +169,11 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   int target_frame_rate_ = kTargetFrameRate;
   base::TimeDelta target_frame_interval_;
 
-  base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer_;
+  // Represents the screen which is being encoded by this instance. Initialized
+  // after the first captured frame has been received.
+  absl::optional<webrtc::ScreenId> screen_id_;
+
+  base::WeakPtr<VideoStreamEventRouter> video_stream_event_router_;
 
   // This class lives on WebRTC's encoding thread. All methods (including ctor
   // and dtor) are expected to be called on the same thread.

@@ -278,6 +278,8 @@ static_library("protocol") {
       "ice_connection_to_client.h",
       "video_frame_pump.cc",
       "video_frame_pump.h",
+      "video_stream_event_router.cc",
+      "video_stream_event_router.h",
       "webrtc_audio_source_adapter.cc",
       "webrtc_audio_source_adapter.h",
       "webrtc_audio_stream.cc",

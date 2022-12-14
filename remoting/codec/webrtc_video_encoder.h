@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "third_party/webrtc/api/video/encoded_image.h"
 #include "third_party/webrtc/api/video/video_codec_type.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
 namespace webrtc {
@@ -69,6 +70,9 @@ class WebrtcVideoEncoder {
     base::TimeDelta send_pending_delay{base::TimeDelta::Max()};
     base::TimeDelta rtt_estimate{base::TimeDelta::Max()};
     int bandwidth_estimate_kbps = -1;
+
+    // The screen that this frame was captured from.
+    webrtc::ScreenId screen_id = webrtc::kInvalidScreenId;
   };
 
   struct EncodedFrame {

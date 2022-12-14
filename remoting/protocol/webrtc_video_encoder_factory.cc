@@ -39,18 +39,12 @@ WebrtcVideoEncoderFactory::CreateVideoEncoder(
       base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::TaskPriority::HIGHEST},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED),
-      video_channel_state_observer_);
+      event_router_.GetWeakPtr());
 }
 
 std::vector<webrtc::SdpVideoFormat>
 WebrtcVideoEncoderFactory::GetSupportedFormats() const {
   return supported_formats_;
-}
-
-void WebrtcVideoEncoderFactory::SetVideoChannelStateObserver(
-    base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  video_channel_state_observer_ = video_channel_state_observer;
 }
 
 void WebrtcVideoEncoderFactory::ApplySessionOptions(

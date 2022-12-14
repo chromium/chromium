@@ -557,7 +557,7 @@ TEST_P(ConnectionTest, MAYBE_Video) {
 
   std::unique_ptr<VideoStream> video_stream =
       host_connection_->StartVideoStream(
-          "stream", std::make_unique<TestScreenCapturer>());
+          "screen_stream", std::make_unique<TestScreenCapturer>());
 
   // Receive 5 frames.
   for (int i = 0; i < 5; ++i) {
@@ -571,7 +571,7 @@ TEST_P(ConnectionTest, MAYBE_Video) {
 #else
 #define MAYBE_VideoWithSlowSignaling VideoWithSlowSignaling
 #endif
-// Verifies that the VideoStream doesn't loose any video frames while the
+// Verifies that the VideoStream doesn't lose any video frames while the
 // connection is being established.
 TEST_P(ConnectionTest, MAYBE_VideoWithSlowSignaling) {
   // Add signaling delay to slow down connection handshake.
@@ -582,7 +582,7 @@ TEST_P(ConnectionTest, MAYBE_VideoWithSlowSignaling) {
 
   std::unique_ptr<VideoStream> video_stream =
       host_connection_->StartVideoStream(
-          "stream", base::WrapUnique(new TestScreenCapturer()));
+          "screen_stream", base::WrapUnique(new TestScreenCapturer()));
 
   WaitNextVideoFrame();
 }
@@ -614,8 +614,8 @@ TEST_P(ConnectionTest, MAYBE_DestroyOnIncomingMessage) {
 
 // TODO(crbug.com/1146302): Test is flaky.
 TEST_P(ConnectionTest, DISABLED_VideoStats) {
-  // Currently this test only works for WebRTC because for ICE connections stats
-  // are reported by SoftwareVideoRenderer which is not used in this test.
+  // Currently this test only works for WebRTC because ICE connections stats are
+  // reported by SoftwareVideoRenderer which is not used in this test.
   // TODO(sergeyu): Fix this.
   if (!is_using_webrtc())
     return;
@@ -632,7 +632,7 @@ TEST_P(ConnectionTest, DISABLED_VideoStats) {
 
   std::unique_ptr<VideoStream> video_stream =
       host_connection_->StartVideoStream(
-          "stream", std::make_unique<TestScreenCapturer>());
+          "screen_stream", std::make_unique<TestScreenCapturer>());
   video_stream->SetEventTimestampsSource(input_event_timestamps_source);
 
   WaitNextVideoFrame();
@@ -695,7 +695,7 @@ TEST_P(ConnectionTest, DISABLED_FirstCaptureFailed) {
   auto capturer = std::make_unique<TestScreenCapturer>();
   capturer->FailNthFrame(0);
   auto video_stream =
-      host_connection_->StartVideoStream("stream", std::move(capturer));
+      host_connection_->StartVideoStream("screen_stream", std::move(capturer));
 
   WaitNextVideoFrame();
 }
@@ -708,7 +708,7 @@ TEST_P(ConnectionTest, DISABLED_SecondCaptureFailed) {
   auto capturer = std::make_unique<TestScreenCapturer>();
   capturer->FailNthFrame(1);
   auto video_stream =
-      host_connection_->StartVideoStream("stream", std::move(capturer));
+      host_connection_->StartVideoStream("screen_stream", std::move(capturer));
 
   WaitNextVideoFrame();
   WaitNextVideoFrame();

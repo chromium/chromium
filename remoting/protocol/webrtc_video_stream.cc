@@ -57,7 +57,6 @@ struct WebrtcVideoStream::FrameStats : public WebrtcVideoEncoder::FrameStats {
   base::TimeDelta capture_delay;
 
   uint32_t capturer_id = 0;
-  webrtc::ScreenId screen_id = webrtc::kInvalidScreenId;
 };
 
 class WebrtcVideoStream::Core : public webrtc::DesktopCapturer::Callback {
@@ -289,8 +288,8 @@ void WebrtcVideoStream::Start(
 
   webrtc_transport->OnVideoTransceiverCreated(transceiver_);
 
-  video_encoder_factory->SetVideoChannelStateObserver(
-      weak_factory_.GetWeakPtr());
+  video_encoder_factory->video_stream_event_router()
+      .SetVideoChannelStateObserver(stream_name_, weak_factory_.GetWeakPtr());
 
   core_ = std::make_unique<Core>(std::move(desktop_capturer),
                                  weak_factory_.GetWeakPtr());
