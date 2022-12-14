@@ -286,4 +286,8 @@ bool BrowserParamsProxy::IsPartialSplitEnabled() const {
   return BrowserInitParams::Get()->enable_partial_split;
 }
 
+bool BrowserParamsProxy::VcControlsUiEnabled() const {
+  return BrowserInitParams::Get()->vc_controls_ui_enabled;
+}
+
 }  // namespace chromeos

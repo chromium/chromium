@@ -159,6 +159,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/chromeos/video_conference/video_conference_manager_client.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
@@ -1388,6 +1389,11 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   }
 
   multi_capture_notification_ = std::make_unique<MultiCaptureNotification>();
+
+  if (features::IsVcControlsUiEnabled()) {
+    video_conference_manager_client_ =
+        std::make_unique<video_conference::VideoConferenceManagerClientImpl>();
+  }
 
   ChromeBrowserMainPartsLinux::PostBrowserStart();
 }

@@ -927,8 +927,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 56
-// Next id: 56
+// Next version: 57
+// Next id: 57
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1283,6 +1283,12 @@ struct BrowserInitParams {
   [MinVersion=55]
   bool enable_partial_split@55;
 
+  // Tells lacros-chrome if videoconference UI features are enabled. Used to
+  // guard the creation of `VideoConferenceManagerClient`. This client
+  // provides information about videoconference apps to the
+  // VideoConferenceManager in ash.
+  [MinVersion=56]
+  bool vc_controls_ui_enabled@56;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

@@ -583,6 +583,8 @@ void InjectBrowserInitParams(
           : crosapi::mojom::BrowserInitParams::GpuSandboxStartMode::kNormal;
 
   params->extension_keep_list = extensions::BuildExtensionKeeplistInitParam();
+
+  params->vc_controls_ui_enabled = ash::features::IsVcControlsUiEnabled();
 }
 
 template <typename BrowserParams>

@@ -50,6 +50,10 @@ namespace content {
 class ScreenOrientationDelegate;
 }  // namespace content
 
+namespace video_conference {
+class VideoConferenceManagerClientImpl;
+}  // namespace video_conference
+
 // Browser initialization for Lacros.
 class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
  public:
@@ -167,6 +171,11 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Records UI metrics such as dropped frame percentage.
   std::unique_ptr<UiMetricRecorderLacros> ui_metric_recorder_;
+
+  // Tracks videoconference apps and notifies VideoConferenceManagerAsh of
+  // changes to the permissions or capturing statuses of these apps.
+  std::unique_ptr<video_conference::VideoConferenceManagerClientImpl>
+      video_conference_manager_client_;
 
   // Controls sync-related Crosapi clients.
   SyncCrosapiManagerLacros sync_crosapi_manager_;

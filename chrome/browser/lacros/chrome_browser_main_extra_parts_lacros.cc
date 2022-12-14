@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_lacros.h"
 #include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
+#include "chrome/browser/chromeos/video_conference/video_conference_manager_client.h"
 #include "chrome/browser/lacros/app_mode/chrome_kiosk_launch_controller_lacros.h"
 #include "chrome/browser/lacros/app_mode/device_local_account_extension_installer_lacros.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
@@ -195,6 +196,13 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   }
 
   ui_metric_recorder_ = std::make_unique<UiMetricRecorderLacros>();
+
+  if (chromeos::BrowserParamsProxy::Get()->VcControlsUiEnabled() &&
+      chromeos::LacrosService::Get()
+          ->IsAvailable<crosapi::mojom::VideoConferenceManager>()) {
+    video_conference_manager_client_ =
+        std::make_unique<video_conference::VideoConferenceManagerClientImpl>();
+  }
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostProfileInit(

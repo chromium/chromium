@@ -56,6 +56,10 @@ namespace policy {
 class LockToSingleUserManager;
 }  // namespace policy
 
+namespace video_conference {
+class VideoConferenceManagerClientImpl;
+}  // namespace video_conference
+
 namespace ash {
 
 class AccessibilityEventRewriterDelegateImpl;
@@ -292,6 +296,9 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<traffic_counters::TrafficCountersHandler>
       traffic_counters_handler_;
   std::unique_ptr<ash::AuthMetricsRecorder> auth_metrics_recorder_;
+
+  std::unique_ptr<video_conference::VideoConferenceManagerClientImpl>
+      video_conference_manager_client_;
 
   base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};
 };

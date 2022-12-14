@@ -127,6 +127,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsPartialSplitEnabled() const;
 
+  bool VcControlsUiEnabled() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 
