@@ -138,11 +138,10 @@ export class Service implements ServiceInterface {
           populateError: true,
         },
         extraOptions);
-
     return chrome.developerPrivate.loadUnpacked(options)
         .then(loadError => {
           if (loadError) {
-            throw new Error(loadError.error);
+            throw loadError;
           }
           // The load was successful if there's no loadError.
           return true;
