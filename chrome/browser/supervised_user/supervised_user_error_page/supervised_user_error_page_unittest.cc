@@ -72,6 +72,12 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
         /* enabled_features */ {supervised_users::kWebFilterInterstitialRefresh,
                                 supervised_users::kLocalWebApprovals},
         /* disabled_features */ {});
+  } else {
+    scoped_feature_list_.InitWithFeatures(
+        /* enabled_features */ {},
+        /* disabled_features */ {
+            supervised_users::kWebFilterInterstitialRefresh,
+            supervised_users::kLocalWebApprovals});
   }
   std::string result =
       BuildHtml(param.allow_access_requests, param.profile_image_url,
