@@ -11,7 +11,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.ArrayMap;
+import android.util.SizeF;
 import android.widget.RemoteViews;
 
 import androidx.annotation.NonNull;
@@ -31,6 +34,9 @@ import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchW
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 import org.chromium.components.embedder_support.util.UrlConstants;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * {@link AppWidgetProvider} for a widget that provides an entry point for users to quickly perform
@@ -120,8 +126,8 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
 
         for (int index = 0; index < widgetIds.length; index++) {
             int widgetId = widgetIds[index];
-            manager.updateAppWidget(
-                    widgetId, getRemoteViews(context, preferences, manager, widgetId));
+            Bundle options = manager.getAppWidgetOptions(widgetId);
+            manager.updateAppWidget(widgetId, getRemoteViews(context, preferences, options));
         }
     }
 
@@ -186,21 +192,36 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
             @NonNull SearchActivityPreferences prefs, int areaWidthDp, int areaHeightDp);
 
     /**
-     * Acquire screen orientation specific layouts that will be applied to the
-     * widget.
-     * The two layouts represent screen orientations in Landscape and Portrait mode.
+     * Acquire the RemoteViews that represent the widget.
      *
      * @param context Current context.
      * @param prefs Widget settings and feature availability.
-     * @param manager The AppWidgetManager instance to query widget info.
-     * @param widgetId The widget to get the delegate for.
+     * @param options Options bundle passed by AppWidgetManager.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @NonNull
     RemoteViews getRemoteViews(@NonNull Context context, @NonNull SearchActivityPreferences prefs,
-            @NonNull AppWidgetManager manager, int widgetId) {
-        Bundle options = manager.getAppWidgetOptions(widgetId);
+            @NonNull Bundle options) {
+        var views = getSizeMappedRemoteViews(context, prefs, options);
+        if (views != null) {
+            return views;
+        }
+        return getOrientationSpecificRemoteViews(context, prefs, options);
+    }
 
+    /**
+     * Acquire screen orientation specific layouts that will be applied to the
+     * widget.
+     *
+     * @param context Current context.
+     * @param prefs Widget settings and feature availability.
+     * @param options Widget parameters passed by the AppWidgetManager.
+     * @return RemoteViews describing widget for landscape and portrait screen orientations.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    @NonNull
+    RemoteViews getOrientationSpecificRemoteViews(@NonNull Context context,
+            @NonNull SearchActivityPreferences prefs, @NonNull Bundle options) {
         var portraitViews = createWidget(context, prefs, getPortraitModeTargetAreaWidth(options),
                 getPortraitModeTargetAreaHeight(options));
 
@@ -208,6 +229,43 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
                 getLandscapeModeTargetAreaHeight(options));
 
         return new RemoteViews(landscapeViews, portraitViews);
+    }
+
+    /**
+     * Acquire size-specific layouts that will be applied to the widget.
+     *
+     * @param context Current context.
+     * @param prefs Widget settings and feature availability.
+     * @param options Widget parameters passed by the AppWidgetManager.
+     * @return RemoteViews describing widget for all sizes requested by the AppWidgetManager, or
+     *         null, if the AppWidgetManager did not specify the sizes.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    @Nullable
+    RemoteViews getSizeMappedRemoteViews(@NonNull Context context,
+            @NonNull SearchActivityPreferences prefs, @NonNull Bundle options) {
+        // On Android S and above, attempt to build widget from supplied array of sizes.
+        // This is reserved to Android S because appropriate RemoteViews constructor may not be
+        // available.
+        // Note that the creation may still fail, if the launcher is unable to offer appropriate
+        // details.
+        // Check for supported system version.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            return null;
+        }
+
+        ArrayList<SizeF> sizes =
+                options.getParcelableArrayList(AppWidgetManager.OPTION_APPWIDGET_SIZES);
+        if (sizes == null || sizes.isEmpty()) {
+            return null;
+        }
+        Map<SizeF, RemoteViews> mappings = new ArrayMap<>();
+
+        for (var size : sizes) {
+            mappings.put(size,
+                    createWidget(context, prefs, (int) size.getWidth(), (int) size.getHeight()));
+        }
+        return new RemoteViews(mappings);
     }
 
     /**
