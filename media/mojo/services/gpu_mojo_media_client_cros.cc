@@ -108,8 +108,7 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
                                                  traits.gpu_info)) {
     case VideoDecoderType::kVaapi:
     case VideoDecoderType::kV4L2: {
-      auto frame_pool = std::make_unique<PlatformVideoFramePool>(
-          traits.gpu_memory_buffer_factory);
+      auto frame_pool = std::make_unique<PlatformVideoFramePool>();
       auto frame_converter = MailboxVideoFrameConverter::Create(
           base::BindRepeating(&PlatformVideoFramePool::UnwrapFrame,
                               base::Unretained(frame_pool.get())),

@@ -417,7 +417,7 @@ bool V4L2VideoEncodeAccelerator::CreateImageProcessor(
   }
 
   auto platform_layout = GetPlatformVideoFrameLayout(
-      /*gpu_memory_buffer_factory=*/nullptr, output_format, output_size,
+      output_format, output_size,
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
   if (!platform_layout) {
     VLOGF(1) << "Failed to get Platform VideoFrameLayout";
@@ -487,7 +487,6 @@ bool V4L2VideoEncodeAccelerator::AllocateImageProcessorOutputBuffers(
     switch (output_config.storage_type()) {
       case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
         image_processor_output_buffers_[i] = CreateGpuMemoryBufferVideoFrame(
-            /*gpu_memory_buffer_factory=*/nullptr,
             output_config.fourcc.ToVideoPixelFormat(), output_config.size,
             output_config.visible_rect, output_config.visible_rect.size(),
             base::TimeDelta(),
@@ -1667,8 +1666,7 @@ bool V4L2VideoEncodeAccelerator::SetFormats(VideoPixelFormat input_format,
   gfx::Size input_size = encoder_input_visible_rect_.size();
   if (native_input_mode_) {
     auto input_layout = GetPlatformVideoFrameLayout(
-        /*gpu_memory_buffer_factory=*/nullptr, input_format,
-        encoder_input_visible_rect_.size(),
+        input_format, encoder_input_visible_rect_.size(),
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
     if (!input_layout)
       return false;

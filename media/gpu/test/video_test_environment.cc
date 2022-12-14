@@ -54,6 +54,8 @@ VideoTestEnvironment::VideoTestEnvironment(
 #if defined(USE_OZONE)
   // Initialize Ozone. This is necessary to gain access to the GPU for hardware
   // video acceleration.
+  // TODO(b/230370976): we may no longer need to initialize Ozone since we don't
+  // use it for buffer allocation.
   LOG(WARNING) << "Initializing Ozone Platform...\n"
                   "If this hangs indefinitely please call 'stop ui' first!";
   ui::OzonePlatform::InitParams params;

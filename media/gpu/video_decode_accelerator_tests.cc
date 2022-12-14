@@ -183,9 +183,8 @@ class VideoDecoderTest : public ::testing::Test {
     config.implementation = g_env->GetDecoderImplementation();
     config.linear_output = g_env->ShouldOutputLinearBuffers();
 
-    auto video_player = VideoPlayer::Create(
-        config, g_env->GetGpuMemoryBufferFactory(), std::move(frame_renderer),
-        std::move(frame_processors));
+    auto video_player = VideoPlayer::Create(config, std::move(frame_renderer),
+                                            std::move(frame_processors));
     LOG_ASSERT(video_player);
     LOG_ASSERT(video_player->Initialize(video));
 
@@ -510,8 +509,7 @@ TEST_F(VideoDecoderTest, Reinitialize) {
 TEST_F(VideoDecoderTest, DestroyBeforeInitialize) {
   VideoDecoderClientConfig config = VideoDecoderClientConfig();
   config.implementation = g_env->GetDecoderImplementation();
-  auto tvp = VideoPlayer::Create(config, g_env->GetGpuMemoryBufferFactory(),
-                                 FrameRendererDummy::Create());
+  auto tvp = VideoPlayer::Create(config, FrameRendererDummy::Create());
   EXPECT_NE(tvp, nullptr);
 }
 

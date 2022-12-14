@@ -535,8 +535,7 @@ class VideoEncoderTest : public ::testing::Test {
     }
 
     auto video_encoder =
-        VideoEncoder::Create(config, g_env->GetGpuMemoryBufferFactory(),
-                             std::move(bitstream_processors));
+        VideoEncoder::Create(config, std::move(bitstream_processors));
     LOG_ASSERT(video_encoder);
     LOG_ASSERT(video_encoder->Initialize(video));
 

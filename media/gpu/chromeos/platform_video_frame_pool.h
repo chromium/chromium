@@ -37,12 +37,9 @@ namespace media {
 // old parameter values will be purged from the pool.
 class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
  public:
-  explicit PlatformVideoFramePool(
-      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory);
-
+  PlatformVideoFramePool();
   PlatformVideoFramePool(const PlatformVideoFramePool&) = delete;
   PlatformVideoFramePool& operator=(const PlatformVideoFramePool&) = delete;
-
   ~PlatformVideoFramePool() override;
 
   // Returns the ID of the GpuMemoryBuffer wrapped by |frame|.
@@ -110,11 +107,6 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
 
   // The function used to allocate new frames.
   CreateFrameCB create_frame_cb_ GUARDED_BY(lock_);
-
-  // Used to allocate the video frame GpuMemoryBuffers, passed directly to
-  // the callback that creates video frames. Indirectly owned by GpuChildThread;
-  // therefore alive as long as the GPU process is.
-  gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_ = nullptr;
 
   // The arguments of current frame. We allocate new frames only if a pixel
   // format or size in |frame_layout_| is changed. When GetFrame() is

@@ -13,7 +13,6 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/stl_util.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame_layout.h"
@@ -380,24 +379,21 @@ struct AlignedDataHelper::VideoFrameData {
   gfx::GpuMemoryBufferHandle gmb_handle;
 };
 
-AlignedDataHelper::AlignedDataHelper(
-    const std::vector<uint8_t>& stream,
-    uint32_t num_frames,
-    uint32_t num_read_frames,
-    bool reverse,
-    VideoPixelFormat pixel_format,
-    const gfx::Size& src_coded_size,
-    const gfx::Size& dst_coded_size,
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    uint32_t frame_rate,
-    VideoFrame::StorageType storage_type,
-    gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory)
+AlignedDataHelper::AlignedDataHelper(const std::vector<uint8_t>& stream,
+                                     uint32_t num_frames,
+                                     uint32_t num_read_frames,
+                                     bool reverse,
+                                     VideoPixelFormat pixel_format,
+                                     const gfx::Size& src_coded_size,
+                                     const gfx::Size& dst_coded_size,
+                                     const gfx::Rect& visible_rect,
+                                     const gfx::Size& natural_size,
+                                     uint32_t frame_rate,
+                                     VideoFrame::StorageType storage_type)
     : num_frames_(num_frames),
       num_read_frames_(num_read_frames),
       reverse_(reverse),
       storage_type_(storage_type),
-      gpu_memory_buffer_factory_(gpu_memory_buffer_factory),
       visible_rect_(visible_rect),
       natural_size_(natural_size),
       time_stamp_interval_(base::Seconds(/*secs=*/0u)),
@@ -408,7 +404,6 @@ AlignedDataHelper::AlignedDataHelper(
   UpdateFrameRate(frame_rate);
 
   if (storage_type_ == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    LOG_ASSERT(gpu_memory_buffer_factory_ != nullptr);
     InitializeGpuMemoryBufferFrames(stream, pixel_format, src_coded_size,
                                     dst_coded_size);
   } else {
@@ -569,7 +564,7 @@ void AlignedDataHelper::InitializeGpuMemoryBufferFrames(
     const gfx::Size& dst_coded_size) {
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   layout_ = GetPlatformVideoFrameLayout(
-      gpu_memory_buffer_factory_, pixel_format, dst_coded_size,
+      pixel_format, dst_coded_size,
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
   ASSERT_TRUE(layout_) << "Failed getting platform VideoFrameLayout";
 
@@ -595,10 +590,9 @@ void AlignedDataHelper::InitializeGpuMemoryBufferFrames(
                         src_plane_rows[j]);
     }
     src_frame_ptr += src_video_frame_size;
-    auto frame =
-        CloneVideoFrame(gpu_memory_buffer_factory_, memory_frame.get(),
-                        *layout_, VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-                        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+    auto frame = CloneVideoFrame(
+        memory_frame.get(), *layout_, VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
     LOG_ASSERT(!!frame) << "Failed creating GpuMemoryBuffer VideoFrame";
     auto gmb_handle = CreateGpuMemoryBufferHandle(frame.get());
     LOG_ASSERT(!gmb_handle.is_null())

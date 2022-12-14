@@ -47,7 +47,6 @@ void CallbackThunk(
 
 VideoDecoderClient::VideoDecoderClient(
     const VideoPlayer::EventCallback& event_cb,
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     std::unique_ptr<FrameRenderer> renderer,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
     const VideoDecoderClientConfig& config)
@@ -56,8 +55,7 @@ VideoDecoderClient::VideoDecoderClient(
       frame_processors_(std::move(frame_processors)),
       decoder_client_config_(config),
       decoder_client_thread_("VDAClientDecoderThread"),
-      decoder_client_state_(VideoDecoderClientState::kUninitialized),
-      gpu_memory_buffer_factory_(gpu_memory_buffer_factory) {
+      decoder_client_state_(VideoDecoderClientState::kUninitialized) {
   DETACH_FROM_SEQUENCE(decoder_client_sequence_checker_);
 
   weak_this_ = weak_this_factory_.GetWeakPtr();
@@ -82,13 +80,12 @@ VideoDecoderClient::~VideoDecoderClient() {
 // static
 std::unique_ptr<VideoDecoderClient> VideoDecoderClient::Create(
     const VideoPlayer::EventCallback& event_cb,
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     std::unique_ptr<FrameRenderer> frame_renderer,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
     const VideoDecoderClientConfig& config) {
-  auto decoder_client = base::WrapUnique(new VideoDecoderClient(
-      event_cb, gpu_memory_buffer_factory, std::move(frame_renderer),
-      std::move(frame_processors), config));
+  auto decoder_client = base::WrapUnique(
+      new VideoDecoderClient(event_cb, std::move(frame_renderer),
+                             std::move(frame_processors), config));
   if (!decoder_client->CreateDecoder()) {
     return nullptr;
   }
@@ -187,7 +184,7 @@ void VideoDecoderClient::CreateDecoderTask(bool* success,
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
       decoder_ = VideoDecoderPipeline::Create(
           base::ThreadTaskRunnerHandle::Get(),
-          std::make_unique<PlatformVideoFramePool>(gpu_memory_buffer_factory_),
+          std::make_unique<PlatformVideoFramePool>(),
           std::make_unique<VideoFrameConverter>(),
           std::make_unique<NullMediaLog>());
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
@@ -204,7 +201,7 @@ void VideoDecoderClient::CreateDecoderTask(bool* success,
           // |*this|. The lifetime of |decoder_| must be shorter than |*this|.
           base::BindRepeating(&VideoDecoderClient::ResolutionChangeTask,
                               base::Unretained(this)),
-          gfx::ColorSpace(), frame_renderer_.get(), gpu_memory_buffer_factory_,
+          gfx::ColorSpace(), frame_renderer_.get(),
           decoder_client_config_.linear_output);
       break;
   }
