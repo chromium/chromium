@@ -128,14 +128,14 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
  protected:
   Gradient(Type, GradientSpreadMethod, ColorInterpolation, DegenerateHandling);
 
-  using ColorBuffer = Vector<SkColor, 8>;
+  using ColorBuffer = Vector<SkColor4f, 8>;
   using OffsetBuffer = Vector<SkScalar, 8>;
   virtual sk_sp<PaintShader> CreateShader(const ColorBuffer&,
                                           const OffsetBuffer&,
                                           SkTileMode,
                                           SkGradientShader::Interpolation,
                                           const SkMatrix&,
-                                          SkColor) const = 0;
+                                          SkColor4f) const = 0;
 
   DegenerateHandling GetDegenerateHandling() const {
     return degenerate_handling_;

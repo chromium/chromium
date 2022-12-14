@@ -104,7 +104,7 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
   if (stops_.empty()) {
     // A gradient with no stops must be transparent black.
     pos.push_back(WebCoreDoubleToSkScalar(0));
-    colors.push_back(SK_ColorTRANSPARENT);
+    colors.push_back(SkColors::kTransparent);
   } else if (stops_.front().stop > 0) {
     // Copy the first stop to 0.0. The first stop position may have a slight
     // rounding error, but we don't care in this float comparison, since
@@ -112,20 +112,20 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
     // with a stop at (0 + epsilon).
     pos.push_back(WebCoreDoubleToSkScalar(0));
     if (color_filter_) {
-      colors.push_back(color_filter_->filterColor(
-          stops_.front().color.ToSkColorDeprecated()));
+      colors.push_back(color_filter_->filterColor4f(
+          stops_.front().color.toSkColor4f(), nullptr, nullptr));
     } else {
-      colors.push_back(stops_.front().color.ToSkColorDeprecated());
+      colors.push_back(stops_.front().color.toSkColor4f());
     }
   }
 
   for (const auto& stop : stops_) {
     pos.push_back(WebCoreDoubleToSkScalar(stop.stop));
     if (color_filter_) {
-      colors.push_back(
-          color_filter_->filterColor(stop.color.ToSkColorDeprecated()));
+      colors.push_back(color_filter_->filterColor4f(stop.color.toSkColor4f(),
+                                                    nullptr, nullptr));
     } else {
-      colors.push_back(stop.color.ToSkColorDeprecated());
+      colors.push_back(stop.color.toSkColor4f());
     }
   }
 
@@ -232,10 +232,8 @@ sk_sp<PaintShader> Gradient::CreateShaderInternal(
 
   if (is_dark_mode_enabled_) {
     for (auto& color : colors) {
-      color = EnsureDarkModeFilter()
-                  .InvertColorIfNeeded(SkColor4f::FromColor(color),
-                                       DarkModeFilter::ElementRole::kBackground)
-                  .toSkColor();
+      color = EnsureDarkModeFilter().InvertColorIfNeeded(
+          color, DarkModeFilter::ElementRole::kBackground);
     }
   }
   // The matrix type is mutable and set lazily. Force it to be computed here to
@@ -298,23 +296,16 @@ class LinearGradient final : public Gradient {
                                   SkTileMode tile_mode,
                                   SkGradientShader::Interpolation interpolation,
                                   const SkMatrix& local_matrix,
-                                  SkColor fallback_color) const override {
+                                  SkColor4f fallback_color) const override {
     if (GetDegenerateHandling() == DegenerateHandling::kDisallow &&
         p0_ == p1_) {
       return PaintShader::MakeEmpty();
     }
 
     SkPoint pts[2] = {FloatPointToSkPoint(p0_), FloatPointToSkPoint(p1_)};
-    // TODO(crbug/1308932): Remove this helper vector colors4f and make all
-    // SkColor4f.
-    std::vector<SkColor4f> colors4f;
-    colors4f.reserve(colors.size());
-    for (auto& color : colors)
-      colors4f.push_back(SkColor4f::FromColor(color));
     return PaintShader::MakeLinearGradient(
-        pts, colors4f.data(), pos.data(), static_cast<int>(colors4f.size()),
-        tile_mode, interpolation, 0 /* flags */, &local_matrix,
-        SkColor4f::FromColor(fallback_color));
+        pts, colors.data(), pos.data(), static_cast<int>(colors.size()),
+        tile_mode, interpolation, 0 /* flags */, &local_matrix, fallback_color);
   }
 
  private:
@@ -348,7 +339,7 @@ class RadialGradient final : public Gradient {
                                   SkTileMode tile_mode,
                                   SkGradientShader::Interpolation interpolation,
                                   const SkMatrix& local_matrix,
-                                  SkColor fallback_color) const override {
+                                  SkColor4f fallback_color) const override {
     const SkMatrix* matrix = &local_matrix;
     absl::optional<SkMatrix> adjusted_local_matrix;
     if (aspect_ratio_ != 1) {
@@ -370,17 +361,10 @@ class RadialGradient final : public Gradient {
       return PaintShader::MakeEmpty();
     }
 
-    // TODO(crbug/1308932): Remove this helper vector colors4f and make all
-    // SkColor4f.
-    std::vector<SkColor4f> colors4f;
-    colors4f.reserve(colors.size());
-    for (auto& color : colors)
-      colors4f.push_back(SkColor4f::FromColor(color));
     return PaintShader::MakeTwoPointConicalGradient(
         FloatPointToSkPoint(p0_), radius0, FloatPointToSkPoint(p1_), radius1,
-        colors4f.data(), pos.data(), static_cast<int>(colors4f.size()),
-        tile_mode, interpolation, 0 /* flags */, matrix,
-        SkColor4f::FromColor(fallback_color));
+        colors.data(), pos.data(), static_cast<int>(colors.size()), tile_mode,
+        interpolation, 0 /* flags */, matrix, fallback_color);
   }
 
  private:
@@ -415,7 +399,7 @@ class ConicGradient final : public Gradient {
                                   SkTileMode tile_mode,
                                   SkGradientShader::Interpolation interpolation,
                                   const SkMatrix& local_matrix,
-                                  SkColor fallback_color) const override {
+                                  SkColor4f fallback_color) const override {
     if (GetDegenerateHandling() == DegenerateHandling::kDisallow &&
         start_angle_ == end_angle_) {
       return PaintShader::MakeEmpty();
@@ -432,17 +416,10 @@ class ConicGradient final : public Gradient {
       matrix = &*adjusted_local_matrix;
     }
 
-    // TODO(crbug/1308932): Remove this helper vector colors4f and make all
-    // SkColor4f.
-    std::vector<SkColor4f> colors4f;
-    colors4f.reserve(colors.size());
-    for (auto& color : colors)
-      colors4f.push_back(SkColor4f::FromColor(color));
     return PaintShader::MakeSweepGradient(
-        position_.x(), position_.y(), colors4f.data(), pos.data(),
-        static_cast<int>(colors4f.size()), tile_mode, start_angle_, end_angle_,
-        interpolation, 0 /* flags */, matrix,
-        SkColor4f::FromColor(fallback_color));
+        position_.x(), position_.y(), colors.data(), pos.data(),
+        static_cast<int>(colors.size()), tile_mode, start_angle_, end_angle_,
+        interpolation, 0 /* flags */, matrix, fallback_color);
   }
 
  private:
