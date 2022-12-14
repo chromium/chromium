@@ -270,6 +270,10 @@ bool AppBrowserController::AppUsesBorderlessMode() const {
   return false;
 }
 
+bool AppBrowserController::AppUsesTabbed() const {
+  return false;
+}
+
 bool AppBrowserController::IsIsolatedWebApp() const {
   return false;
 }

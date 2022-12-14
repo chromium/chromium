@@ -1987,6 +1987,10 @@ blink::mojom::DisplayMode Browser::GetDisplayMode(
       return blink::mojom::DisplayMode::kWindowControlsOverlay;
     }
 
+    if (app_controller_ && app_controller_->AppUsesTabbed()) {
+      return blink::mojom::DisplayMode::kTabbed;
+    }
+
     if (app_controller_ && app_controller_->AppUsesBorderlessMode() &&
         window_->IsBorderlessModeEnabled()) {
       return blink::mojom::DisplayMode::kBorderless;

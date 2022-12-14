@@ -59,7 +59,7 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
            ident == CSSValueID::kStandalone ||
            ident == CSSValueID::kMinimalUi ||
            ident == CSSValueID::kWindowControlsOverlay ||
-           ident == CSSValueID::kBrowser;
+           ident == CSSValueID::kBrowser || ident == CSSValueID::kTabbed;
   }
 
   if (media_feature == media_feature_names::kOrientationMediaFeature)

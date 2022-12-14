@@ -180,6 +180,9 @@ class AppBrowserController
   // Returns true when an app's effective display mode is borderless.
   virtual bool AppUsesBorderlessMode() const;
 
+  // Returns true when an app's effective display mode is tabbed.
+  virtual bool AppUsesTabbed() const;
+
   virtual bool IsIsolatedWebApp() const;
 
   // Returns true when the app's effective display mode is

@@ -178,6 +178,10 @@ bool WebAppBrowserController::AppUsesBorderlessMode() const {
   return display == DisplayMode::kBorderless;
 }
 
+bool WebAppBrowserController::AppUsesTabbed() const {
+  return registrar().IsTabbedWindowModeEnabled(app_id());
+}
+
 bool WebAppBrowserController::IsIsolatedWebApp() const {
   return registrar().IsIsolated(app_id());
 }

@@ -92,6 +92,7 @@ class WebAppBrowserController : public AppBrowserController,
   bool IsHostedApp() const override;
   std::unique_ptr<TabMenuModelFactory> GetTabMenuModelFactory() const override;
   bool AppUsesWindowControlsOverlay() const override;
+  bool AppUsesTabbed() const override;
   bool IsWindowControlsOverlayEnabled() const override;
   void ToggleWindowControlsOverlayEnabled(
       base::OnceClosure on_complete) override;

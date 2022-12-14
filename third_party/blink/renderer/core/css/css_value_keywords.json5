@@ -1054,6 +1054,7 @@
     "minimal-ui",
     "browser",
     "window-controls-overlay",
+    "tabbed",
 
     // position
     "sticky",

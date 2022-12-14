@@ -641,4 +641,23 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
       GURL("https://www.example.com"));
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, TabbedModeMediaCSS) {
+  GURL start_url = embedded_test_server()->GetURL(
+      "/banners/"
+      "manifest_test_page.html?manifest=manifest_tabbed_display_override.json");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+
+  Browser* app_browser = LaunchWebAppBrowser(browser()->profile(), app_id);
+  content::WebContents* web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
+  std::string match_media_standalone =
+      "window.matchMedia('(display-mode: standalone)').matches;";
+  std::string match_media_tabbed =
+      "window.matchMedia('(display-mode: tabbed)').matches;";
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+  ASSERT_FALSE(EvalJs(web_contents, match_media_standalone).ExtractBool());
+  ASSERT_TRUE(EvalJs(web_contents, match_media_tabbed).ExtractBool());
+}
+
 }  // namespace web_app
