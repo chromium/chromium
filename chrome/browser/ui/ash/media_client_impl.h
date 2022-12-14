@@ -79,6 +79,8 @@ class MediaClientImpl : public ash::MediaClient,
   void OnCameraHWPrivacySwitchStateChanged(
       const std::string& device_id,
       cros::mojom::CameraPrivacySwitchState state) override;
+  void OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState state) override;
 
   // media::CameraActiveClientObserver:
   void OnActiveClientChange(
@@ -134,13 +136,18 @@ class MediaClientImpl : public ash::MediaClient,
   void HandleMediaAction(ui::KeyboardCode code);
 
   // Shows a notification informing the user that an app is trying to use the
-  // camera while the camera privacy switch is turned on. If `resurface` is
-  // false the notification text will be updated but the notification won't be
-  // brought to the users attention again.
-  void ShowCameraOffNotification(const std::string& device_name,
+  // camera while the camera hardware privacy switch is turned on. If
+  // `resurface` is false the notification text will be updated but the
+  // notification won't be brought to the users attention again.
+  void ShowCameraOffNotification(const std::string& device_id,
+                                 const std::string& device_name,
                                  bool resurface = true);
 
-  void OnGetSourceInfosByPrivacySwitchStateChanged(
+  // Removes the camera notification with the give id `notification_id` and
+  // updates the internal data structures of the class accordingly.
+  void RemoveCameraOffNotificationByID(const std::string& notification_id);
+
+  void OnGetSourceInfosByCameraHWPrivacySwitchStateChanged(
       const std::string& device_id,
       cros::mojom::CameraPrivacySwitchState state,
       const std::vector<media::VideoCaptureDeviceInfo>& devices);
@@ -148,6 +155,16 @@ class MediaClientImpl : public ash::MediaClient,
   void OnGetSourceInfosByActiveClientChanged(
       const base::flat_set<std::string>& active_device_ids,
       const std::vector<media::VideoCaptureDeviceInfo>& devices);
+
+  // Returns true if the device (camera) with id `device_id` is being actively
+  // used by a client.
+  bool IsDeviceActive(const std::string& device_id);
+
+  void OnGetSourceInfosByCameraSWPrivacySwitchStateChanged(
+      const std::vector<media::VideoCaptureDeviceInfo>& devices);
+
+  void OnGetCameraSWPrivacySwitchState(
+      cros::mojom::CameraPrivacySwitchState state);
 
   ash::MediaController* media_controller_ = nullptr;
 
@@ -176,8 +193,23 @@ class MediaClientImpl : public ash::MediaClient,
   mojo::Remote<video_capture::mojom::VideoSourceProvider>
       video_source_provider_remote_;
 
-  // Points an active app (short)name to the last device name that used it.
-  base::flat_map<std::string, std::string> last_device_for_app_;
+  // Points an active app (short)name to the last (device id, device name) pair
+  // that the app used.
+  base::flat_map<std::string, std::pair<std::string, std::string>>
+      last_device_for_app_;
+
+  // Points each CameraClientType to a set which contains the id of the devices
+  // the CameraClientType is currently using.
+  base::flat_map<cros::mojom::CameraClientType, base::flat_set<std::string>>
+      devices_used_by_client_;
+
+  // IDs of the existing camera hardware switch notifications in the message
+  // center.
+  base::flat_set<std::string> existing_notifications_;
+
+  // Stores the state of the camera software privacy switch state locally.
+  cros::mojom::CameraPrivacySwitchState camera_sw_privacy_switch_state_ =
+      cros::mojom::CameraPrivacySwitchState::UNKNOWN;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

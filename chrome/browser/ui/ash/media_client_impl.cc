@@ -294,6 +294,10 @@ MediaClientImpl::MediaClientImpl() {
             ->AddCameraPrivacySwitchObserver(this);
     media::CameraHalDispatcherImpl::GetInstance()->AddActiveClientObserver(
         this);
+    media::CameraHalDispatcherImpl::GetInstance()
+        ->GetCameraSWPrivacySwitchState(
+            base::BindOnce(&MediaClientImpl::OnGetCameraSWPrivacySwitchState,
+                           weak_ptr_factory_.GetWeakPtr()));
     content::GetVideoCaptureService().ConnectToVideoSourceProvider(
         video_source_provider_remote_.BindNewPipeAndPassReceiver());
   }
@@ -442,8 +446,26 @@ void MediaClientImpl::OnCameraHWPrivacySwitchStateChanged(
     cros::mojom::CameraPrivacySwitchState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   video_source_provider_remote_->GetSourceInfos(base::BindOnce(
-      &MediaClientImpl::OnGetSourceInfosByPrivacySwitchStateChanged,
+      &MediaClientImpl::OnGetSourceInfosByCameraHWPrivacySwitchStateChanged,
       weak_ptr_factory_.GetWeakPtr(), device_id, state));
+}
+
+void MediaClientImpl::OnCameraSWPrivacySwitchStateChanged(
+    cros::mojom::CameraPrivacySwitchState state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  camera_sw_privacy_switch_state_ = state;
+  if (state == cros::mojom::CameraPrivacySwitchState::OFF) {
+    // The software switch is OFF. Display hardware switch notifications if any.
+    video_source_provider_remote_->GetSourceInfos(base::BindOnce(
+        &MediaClientImpl::OnGetSourceInfosByCameraSWPrivacySwitchStateChanged,
+        weak_ptr_factory_.GetWeakPtr()));
+  } else if (state == cros::mojom::CameraPrivacySwitchState::ON) {
+    // The software switch is ON. Clear all hardware switch notifications.
+    for (const auto& notification_id : existing_notifications_) {
+      SystemNotificationHelper::GetInstance()->Close(notification_id);
+    }
+    existing_notifications_.clear();
+  }
 }
 
 void MediaClientImpl::OnActiveClientChange(
@@ -456,6 +478,8 @@ void MediaClientImpl::OnActiveClientChange(
     DCHECK(active_camera_client_count_ > 0);
     active_camera_client_count_--;
   }
+
+  devices_used_by_client_.insert_or_assign(type, active_device_ids);
 
   video_source_provider_remote_->GetSourceInfos(
       base::BindOnce(&MediaClientImpl::OnGetSourceInfosByActiveClientChanged,
@@ -489,7 +513,7 @@ void MediaClientImpl::OnCapabilityAccessUpdate(
   if (!last_device_for_app_.contains(app_name))
     return;
 
-  const std::string device_name = last_device_for_app_.at(app_name);
+  const auto [device_id, device_name] = last_device_for_app_.at(app_name);
 
   // Remove the current app_name from the map. It will be repopulated in
   // `ShowCameraOffNotification`.
@@ -499,9 +523,9 @@ void MediaClientImpl::OnCapabilityAccessUpdate(
   // observers being called and introduce a blinking effect when the last
   // application stops using the camera.
   if (active_camera_client_count_ > 0) {
-    ShowCameraOffNotification(device_name, /*resurface=*/false);
+    ShowCameraOffNotification(device_id, device_name, /*resurface=*/false);
   } else {
-    SystemNotificationHelper::GetInstance()->Close(
+    RemoveCameraOffNotificationByID(
         PrivacySwitchOnNotificationIdForDevice(device_name));
   }
 }
@@ -627,8 +651,22 @@ std::string MediaClientImpl::GetNameOfAppAccessingCamera(
   return std::string();
 }
 
-void MediaClientImpl::ShowCameraOffNotification(const std::string& device_name,
+void MediaClientImpl::ShowCameraOffNotification(const std::string& device_id,
+                                                const std::string& device_name,
                                                 const bool resurface) {
+  auto it = device_id_to_camera_privacy_switch_state_.find(device_id);
+  if (it == device_id_to_camera_privacy_switch_state_.end() ||
+      it->second != cros::mojom::CameraPrivacySwitchState::ON ||
+      !IsDeviceActive(device_id)) {
+    return;
+  }
+
+  if (ash::features::IsCrosPrivacyHubEnabled() &&
+      camera_sw_privacy_switch_state_ ==
+          cros::mojom::CameraPrivacySwitchState::ON) {
+    return;
+  }
+
   base::UmaHistogramEnumeration(
       kCameraPrivacySwitchEventsHistogramName,
       CameraPrivacySwitchEvent::kSwitchOnNotificationShown);
@@ -643,7 +681,8 @@ void MediaClientImpl::ShowCameraOffNotification(const std::string& device_name,
         IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE_WITH_APP_NAME,
         base::UTF8ToUTF16(app_name), device_name_u16);
 
-    last_device_for_app_.insert_or_assign(app_name, device_name);
+    last_device_for_app_.insert_or_assign(
+        app_name, std::make_pair(device_id, device_name));
   } else {
     message = l10n_util::GetStringFUTF16(
         IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE, device_name_u16);
@@ -655,7 +694,7 @@ void MediaClientImpl::ShowCameraOffNotification(const std::string& device_name,
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.remove_on_click = true;
   if (resurface) {
-    SystemNotificationHelper::GetInstance()->Close(notification_id);
+    RemoveCameraOffNotificationByID(notification_id);
   } else {
     rich_notification_data.priority =
         message_center::NotificationPriority::LOW_PRIORITY;
@@ -676,9 +715,16 @@ void MediaClientImpl::ShowCameraOffNotification(const std::string& device_name,
       vector_icons::kSettingsIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   SystemNotificationHelper::GetInstance()->Display(notification);
+  existing_notifications_.insert(notification_id);
 }
 
-void MediaClientImpl::OnGetSourceInfosByPrivacySwitchStateChanged(
+void MediaClientImpl::RemoveCameraOffNotificationByID(
+    const std::string& notification_id) {
+  SystemNotificationHelper::GetInstance()->Close(notification_id);
+  existing_notifications_.erase(notification_id);
+}
+
+void MediaClientImpl::OnGetSourceInfosByCameraHWPrivacySwitchStateChanged(
     const std::string& device_id,
     cros::mojom::CameraPrivacySwitchState state,
     const std::vector<media::VideoCaptureDeviceInfo>& devices) {
@@ -712,7 +758,7 @@ void MediaClientImpl::OnGetSourceInfosByPrivacySwitchStateChanged(
       // notification is preferred to showing a toast.
       if (active_camera_client_count_ > 0 &&
           old_state == cros::mojom::CameraPrivacySwitchState::UNKNOWN) {
-        ShowCameraOffNotification(device_name);
+        ShowCameraOffNotification(device_id, device_name);
         break;
       }
 
@@ -765,7 +811,7 @@ void MediaClientImpl::OnGetSourceInfosByPrivacySwitchStateChanged(
   }
 
   if (state == cros::mojom::CameraPrivacySwitchState::OFF) {
-    SystemNotificationHelper::GetInstance()->Close(
+    RemoveCameraOffNotificationByID(
         PrivacySwitchOnNotificationIdForDevice(device_name));
   }
 }
@@ -778,19 +824,38 @@ void MediaClientImpl::OnGetSourceInfosByActiveClientChanged(
     const std::string& device_id = device.descriptor.device_id;
     const std::string& device_name = device.descriptor.display_name();
 
-    auto it = device_id_to_camera_privacy_switch_state_.find(device_id);
-    if (it != device_id_to_camera_privacy_switch_state_.end() &&
-        it->second == cros::mojom::CameraPrivacySwitchState::ON) {
-      if (active_device_ids.find(device_id) != active_device_ids.end()) {
-        // As the device is being actively used by the client, display a
-        // notification.
-        ShowCameraOffNotification(device_name);
-      } else if (active_camera_client_count_ == 0) {
-        // Clear the notification for this device as no client is trying to use
-        // this camera anymore.
-        SystemNotificationHelper::GetInstance()->Close(
-            PrivacySwitchOnNotificationIdForDevice(device_name));
-      }
+    if (active_device_ids.find(device_id) != active_device_ids.end()) {
+      // As the device is being actively used by the client, display a
+      // notification.
+      ShowCameraOffNotification(device_id, device_name);
+    } else if (active_camera_client_count_ == 0) {
+      // Clear the notification for this device as no client is trying to use
+      // this camera anymore.
+      RemoveCameraOffNotificationByID(
+          PrivacySwitchOnNotificationIdForDevice(device_name));
     }
   }
+}
+
+bool MediaClientImpl::IsDeviceActive(const std::string& device_id) {
+  for (const auto& [client_type, devices_used] : devices_used_by_client_) {
+    if (devices_used.find(device_id) != devices_used.end()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void MediaClientImpl::OnGetSourceInfosByCameraSWPrivacySwitchStateChanged(
+    const std::vector<media::VideoCaptureDeviceInfo>& devices) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& device : devices) {
+    ShowCameraOffNotification(device.descriptor.device_id,
+                              device.descriptor.display_name());
+  }
+}
+
+void MediaClientImpl::OnGetCameraSWPrivacySwitchState(
+    cros::mojom::CameraPrivacySwitchState state) {
+  camera_sw_privacy_switch_state_ = state;
 }

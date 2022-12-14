@@ -285,8 +285,24 @@ class MediaClientAppUsingCameraInBrowserEnvironmentTest
     LaunchApp(id, name, use_camera);
   }
 
-  void ShowCameraOffNotification() {
-    media_client_.ShowCameraOffNotification("a device");
+  void SetCameraHWPrivacySwitchState(
+      const std::string& device_id,
+      cros::mojom::CameraPrivacySwitchState state) {
+    media_client_.device_id_to_camera_privacy_switch_state_[device_id] = state;
+  }
+
+  // Adds the device with id `device_id` to the map of active devices. To
+  // display hardware switch notifications associated to this device, the device
+  // needs to be active.
+  void MakeDeviceActive(const std::string& device_id) {
+    media_client_
+        .devices_used_by_client_[cros::mojom::CameraClientType::CHROME] = {
+        device_id};
+  }
+
+  void ShowCameraOffNotification(const std::string& device_id,
+                                 const std::string& device_name) {
+    media_client_.ShowCameraOffNotification(device_id, device_name);
   }
 
   void OnCapabilityAccessUpdate(
@@ -463,7 +479,10 @@ TEST_F(MediaClientAppUsingCameraInBrowserEnvironmentTest,
 
   // Showing the camera notification, e.g. because the privacy switch was
   // toggled.
-  ShowCameraOffNotification();
+  SetCameraHWPrivacySwitchState("device_id",
+                                cros::mojom::CameraPrivacySwitchState::ON);
+  MakeDeviceActive("device_id");
+  ShowCameraOffNotification("device_id", "device_name");
   EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
   EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
       app1_name));
@@ -544,5 +563,43 @@ TEST_F(MediaClientAppUsingCameraInBrowserEnvironmentTest,
   LaunchAppUpdateActiveClientCount(app2_id, app2_name, false, 0);
   OnCapabilityAccessUpdate(app2_capability_access_update);
   EXPECT_EQ(notification_display_service->show_called_times(), 2u);
+  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
+}
+
+TEST_F(MediaClientAppUsingCameraInBrowserEnvironmentTest,
+       NotificationRemovedWhenSWSwitchChangedToON) {
+  const FakeNotificationDisplayService* notification_display_service =
+      SetSystemNotificationService();
+  const char* app_id = "app_id";
+  const char* app_name = "app_name";
+  const apps::CapabilityAccessPtr capability_access =
+      MakeCapabilityAccess(app_id, false);
+  const apps::CapabilityAccessUpdate capability_access_update =
+      MakeCapabilityAccessUpdate(capability_access.get());
+
+  user_manager_.AddUser(account_id_);
+  ASSERT_TRUE(user_manager::UserManager::Get()->GetActiveUser());
+
+  // No apps are active.
+  OnCapabilityAccessUpdate(capability_access_update);
+  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
+
+  // Launch an app. The notification shouldn't be displayed yet.
+  LaunchAppUpdateActiveClientCount(app_id, app_name, true, 1);
+  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
+
+  // Showing the camera notification, e.g. because the hardware privacy switch
+  // was toggled.
+  SetCameraHWPrivacySwitchState("device_id",
+                                cros::mojom::CameraPrivacySwitchState::ON);
+  MakeDeviceActive("device_id");
+  ShowCameraOffNotification("device_id", "device_name");
+  // One notification should be displayed.
+  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
+
+  // Setting the software privacy switch to ON. The existing hardware switch
+  // notification should be removed.
+  media_client_.OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::ON);
   EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
 }
