@@ -4,6 +4,8 @@
 
 #include "ui/gfx/color_conversions.h"
 
+#include <cmath>
+
 #include "skia/ext/skcolorspace_primaries.h"
 #include "skia/ext/skcolorspace_trfn.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -248,7 +250,7 @@ std::tuple<float, float, float> XYZD50ToLab(float x, float y, float z) {
     if (t <= delta_limit)
       return (841.0f / 108.0f) * t + (16.0f / 116.0f);
     else
-      return pow(t, 1.0f / 3.0f);
+      return std::pow(t, 1.0f / 3.0f);
   };
 
   x = LabTransferFunction(x / kD50_x);
