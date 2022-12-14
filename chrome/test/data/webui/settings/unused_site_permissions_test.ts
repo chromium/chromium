@@ -4,8 +4,10 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {ContentSettingsTypes, SettingsUnusedSitePermissionsElement, SiteSettingsPermissionsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 
 import {TestSiteSettingsPermissionsBrowserProxy} from './test_site_settings_permissions_browser_proxy.js';
 
@@ -43,21 +45,42 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     }
   }
 
+  /** Assert visibility and content of the undo toast. */
+  function assertToast(shouldBeOpen: boolean, expectedText?: string) {
+    const undoToast = testElement.shadowRoot!.querySelector('cr-toast')!;
+    if (!shouldBeOpen) {
+      assertFalse(undoToast.open);
+      return;
+    }
+    assertTrue(undoToast.open);
+    const actualText = undoToast.querySelector('div')!.textContent!.trim();
+    assertEquals(expectedText, actualText);
+  }
+
+  function clickGotIt() {
+    const button = testElement.shadowRoot!.querySelector(
+                       '.bulk-action-button') as HTMLElement;
+    button.click();
+  }
+
   function getSiteList() {
     return testElement.shadowRoot!.querySelectorAll('.site-list .site-entry');
   }
 
-  setup(async function() {
-    browserProxy = new TestSiteSettingsPermissionsBrowserProxy();
-    browserProxy.setUnusedSitePermissions(mockData);
-    SiteSettingsPermissionsBrowserProxyImpl.setInstance(browserProxy);
-
+  async function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-unused-site-permissions');
     testElement.setModelUpdateDelayMsForTesting(0);
     document.body.appendChild(testElement);
     await browserProxy.whenCalled('getRevokedUnusedSitePermissionsList');
     flush();
+  }
+
+  setup(async function() {
+    browserProxy = new TestSiteSettingsPermissionsBrowserProxy();
+    browserProxy.setUnusedSitePermissions(mockData);
+    SiteSettingsPermissionsBrowserProxyImpl.setInstance(browserProxy);
+    await createPage();
   });
 
   test('Unused Site Permission strings', function() {
@@ -133,9 +156,9 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
 
     assertEquals(siteList.length, 4);
     assertAnimation([false, false, false, false]);
+    assertToast(false);
 
-    const element = siteList[0]!.querySelector('cr-icon-button')!;
-    element.click();
+    siteList[0]!.querySelector('cr-icon-button')!.click();
 
     assertAnimation([true, false, false, false]);
     // Ensure the browser proxy call is done.
@@ -146,5 +169,49 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     assertEquals(unusedSitePermissions.origin, expectedOrigin);
     assertDeepEquals(
         unusedSitePermissions.permissions, mockData[0]!.permissions);
+    // Ensure the toast text is correct.
+    const expectedToastText = testElement.i18n(
+        'safetyCheckUnusedSitePermissionsToastLabel', expectedOrigin);
+    assertToast(true, expectedToastText);
+  });
+
+  test('Got It Click', async function() {
+    clickGotIt();
+    await flushTasks();
+
+    // Ensure the browser proxy call is done.
+    const [unusedSitePermissionsList] = await browserProxy.whenCalled(
+        'acknowledgeRevokedUnusedSitePermissionsList');
+    // |unusedSitePermissionsList| has the additional property |visible|, so
+    // assertDeepEquals doesn't work to compare it with |mockData|.
+    assertEquals(unusedSitePermissionsList.length, mockData.length);
+    for (let i = 0; i < unusedSitePermissionsList.length; ++i) {
+      assertEquals(unusedSitePermissionsList[i].origin, mockData[i]!.origin);
+      assertDeepEquals(
+          unusedSitePermissionsList[i].permissions, mockData[i]!.permissions);
+    }
+  });
+
+  test('Got It Toast Strings', async function() {
+    // Check plural version of the string.
+    assertToast(false);
+    clickGotIt();
+    await flushTasks();
+    const expectedPluralToastText =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'safetyCheckUnusedSitePermissionsToastBulkLabel', mockData.length);
+    assertToast(true, expectedPluralToastText);
+
+    // Check singular version of the string.
+    const oneElementMockData = mockData.slice(0, 1);
+    browserProxy.setUnusedSitePermissions(oneElementMockData);
+    await createPage();
+    assertToast(false);
+    clickGotIt();
+    await flushTasks();
+    const expectedSingularToastText =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'safetyCheckUnusedSitePermissionsToastBulkLabel', 1);
+    assertToast(true, expectedSingularToastText);
   });
 });

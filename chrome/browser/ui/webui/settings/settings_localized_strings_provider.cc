@@ -2211,7 +2211,7 @@ void AddSafetyCheckStrings(content::WebUIDataSource* html_source) {
      IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_REMOVED_FOUR_OR_MORE_PERMISSIONS_LABEL},
     {"safetyCheckUnusedSitePermissionsToastLabel",
      IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_TOAST_LABEL},
-    {"safetyCheckUnusedSitePermissionsUndoAllowAgainLabel",
+    {"safetyCheckUnusedSitePermissionsUndoLabel",
      IDS_SETTINGS_SAFETY_CHECK_TOAST_UNDO_BUTTON_LABEL},
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {"safetyCheckChromeCleanerPrimaryLabel",

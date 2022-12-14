@@ -62,12 +62,6 @@ export class SettingsUnusedSitePermissionsElement extends
       /* The string for the primary header label. */
       headerString_: String,
 
-      /* The last origin that the user interacted with. */
-      lastOrigin_: {
-        type: String,
-        observer: 'updateUndoToastText_',
-      },
-
       /**
        * List of unused sites where permissions have been removed. This list
        * being null indicates it has not loaded yet.
@@ -104,7 +98,6 @@ export class SettingsUnusedSitePermissionsElement extends
   private browserProxy_: SiteSettingsPermissionsBrowserProxy =
       SiteSettingsPermissionsBrowserProxyImpl.getInstance();
   private headerString_: string;
-  private lastOrigin_: string;
   private modelUpdateDelayMsForTesting_: number|null = null;
   private sites_: UnusedSitePermissionsDisplay[]|null;
   private shouldShowCompletionInfo_: boolean;
@@ -205,13 +198,23 @@ export class SettingsUnusedSitePermissionsElement extends
   private onAllowAgainClick_(event: DomRepeatEvent<UnusedSitePermissions>) {
     event.stopPropagation();
     const item = event.model.item;
-    this.lastOrigin_ = item.origin;
-    this.showUndoToast_();
-    this.hideItem_(this.lastOrigin_);
+    this.showUndoToast_(
+        this.i18n('safetyCheckUnusedSitePermissionsToastLabel', item.origin));
+    this.hideItem_(item.origin);
     setTimeout(
         this.browserProxy_.allowPermissionsAgainForUnusedSite.bind(
             this.browserProxy_, item),
         this.getModelUpdateDelayMs_());
+  }
+
+  private async onGotItClick_(e: Event) {
+    e.stopPropagation();
+    assert(this.sites_ !== null);
+
+    this.browserProxy_.acknowledgeRevokedUnusedSitePermissionsList(this.sites_);
+    const toastText = await PluralStringProxyImpl.getInstance().getPluralString(
+        'safetyCheckUnusedSitePermissionsToastBulkLabel', this.sites_.length);
+    this.showUndoToast_(toastText);
   }
 
   /* Repopulate the list when unused site permission list is updated. */
@@ -243,18 +246,13 @@ export class SettingsUnusedSitePermissionsElement extends
             this.sites_.length);
   }
 
-  private showUndoToast_() {
+  private showUndoToast_(text: string) {
+    this.toastText_ = text;
     // Re-open the toast if one was already open; this resets the timer.
     if (this.$.undoToast.open) {
       this.$.undoToast.hide();
     }
     this.$.undoToast.show();
-  }
-
-  private updateUndoToastText_() {
-    assert(this.lastOrigin_);
-    this.toastText_ = this.i18n(
-        'safetyCheckUnusedSitePermissionsToastLabel', this.lastOrigin_);
   }
 
   // TODO(crbug.com/1393005): Refactor common code across this and
