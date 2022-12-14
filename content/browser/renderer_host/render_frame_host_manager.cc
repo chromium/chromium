@@ -1982,10 +1982,9 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
   // If BackForwardCache is enabled, swap BrowsingInstances only when the
   // previous page can be stored in the back-forward cache.
   DCHECK(IsBackForwardCacheEnabled());
-  NavigationControllerImpl& controller =
-      render_frame_host_->frame_tree_node()->navigator().controller();
 
-  auto bfcache_eligibility = controller.GetBackForwardCache()
+  auto bfcache_eligibility = GetNavigationController()
+                                 .GetBackForwardCache()
                                  .GetFutureBackForwardCacheEligibilityPotential(
                                      render_frame_host_.get());
   if (bfcache_eligibility.CanStore()) {
