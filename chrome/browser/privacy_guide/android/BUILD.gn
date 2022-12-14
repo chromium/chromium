@@ -23,7 +23,6 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//chrome/browser/privacy_guide:privacy_guide_settings_states_enum_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/safe_browsing/android:java",
     "//chrome/browser/signin/services/android:java",
@@ -43,6 +42,7 @@ android_library("java") {
     "//third_party/androidx:androidx_viewpager2_viewpager2_java",
     "//ui/android:ui_full_java",
   ]
+  srcjar_deps = [ "//chrome/browser/privacy_guide:privacy_guide_enum_javagen" ]
   resources_package = "org.chromium.chrome.browser.privacy_guide"
 }
 
@@ -61,7 +61,6 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//chrome/browser/privacy_guide:privacy_guide_settings_states_enum_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/safe_browsing/android:java",
     "//chrome/browser/signin/services/android:java",
@@ -90,7 +89,6 @@ android_library("javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/browser/flags:java",
-    "//chrome/browser/privacy_guide:privacy_guide_settings_states_enum_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/safe_browsing/android:java",
     "//chrome/browser/settings:test_support_java",

@@ -140,7 +140,7 @@ export enum PrivacyGuideInteractions {
  * numeric values should never be reused.
  *
  * Must be kept in sync with SettingsPrivacyGuideSettingsStates in enums.xml and
- * PrivacyGuideSettingsStates in privacy_guide/privacy_guide_settings_states.h.
+ * PrivacyGuideSettingsStates in privacy_guide/privacy_guide.h.
  */
 export enum PrivacyGuideSettingsStates {
   MSBB_ON_TO_ON = 0,
