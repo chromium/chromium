@@ -50,6 +50,8 @@ export class AppListElement extends PolymerElement {
   private apps_: AppInfo[];
   private mojoEventTarget_: PageCallbackRouter;
   private listenerIds_: number[];
+  // The app context menu that's currently click opened by user.
+  private selectedActionMenuModel_: ActionMenuModel|null = null;
 
   constructor() {
     super();
@@ -114,7 +116,11 @@ export class AppListElement extends PolymerElement {
   }
 
   private onUninstallItemClick_() {
-    this.$.menu.close();
+    if (this.selectedActionMenuModel_?.data.id) {
+      BrowserProxy.getInstance().handler.uninstallApp(
+          this.selectedActionMenuModel_?.data.id);
+    }
+    this.closeMenu_();
   }
 
   private onAppSettingsItemClick_() {
@@ -122,10 +128,16 @@ export class AppListElement extends PolymerElement {
   }
 
   private onOpenMenu_(event: OpenMenuEvent) {
+    this.selectedActionMenuModel_ = event.detail;
     this.$.menu.showAtPosition({
       top: event.detail.event.clientY,
       left: event.detail.event.clientX,
     });
+  }
+
+  private closeMenu_() {
+    this.selectedActionMenuModel_ = null;
+    this.$.menu.close();
   }
 }
 
