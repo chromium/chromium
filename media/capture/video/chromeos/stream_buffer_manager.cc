@@ -98,6 +98,9 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
     DLOG(WARNING) << "Failed to map original buffer";
     return std::move(buffer_pair.vcd_buffer);
   }
+  base::ScopedClosureRunner unmap_original_gmb(
+      base::BindOnce([](gfx::GpuMemoryBuffer* gmb) { gmb->Unmap(); },
+                     base::Unretained(original_gmb.get())));
 
   const size_t original_width = stream_context->buffer_dimension.width();
   const size_t original_height = stream_context->buffer_dimension.height();
@@ -138,7 +141,6 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
                          static_cast<uint8_t*>(original_gmb->memory(1)),
                          original_gmb->stride(1), temp_uv_width,
                          temp_uv_height);
-    original_gmb->Unmap();
     return std::move(buffer_pair.vcd_buffer);
   }
 
@@ -149,7 +151,6 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
           client_type, format->frame_size, format->pixel_format,
           &rotated_buffer)) {
     DLOG(WARNING) << "Failed to reserve video capture buffer";
-    original_gmb->Unmap();
     return std::move(buffer_pair.vcd_buffer);
   }
 
@@ -160,9 +161,11 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
 
   if (!rotated_gmb || !rotated_gmb->Map()) {
     DLOG(WARNING) << "Failed to map rotated buffer";
-    original_gmb->Unmap();
     return std::move(buffer_pair.vcd_buffer);
   }
+  base::ScopedClosureRunner unmap_rotated_gmb(
+      base::BindOnce([](gfx::GpuMemoryBuffer* gmb) { gmb->Unmap(); },
+                     base::Unretained(rotated_gmb.get())));
 
   libyuv::NV12ToI420Rotate(
       static_cast<uint8_t*>(original_gmb->memory(0)), original_gmb->stride(0),
@@ -173,8 +176,6 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
   libyuv::MergeUVPlane(temp_u, temp_uv_height, temp_v, temp_uv_height,
                        static_cast<uint8_t*>(rotated_gmb->memory(1)),
                        rotated_gmb->stride(1), temp_uv_height, temp_uv_width);
-  rotated_gmb->Unmap();
-  original_gmb->Unmap();
   return std::move(rotated_buffer);
 }
 
@@ -476,20 +477,6 @@ void StreamBufferManager::ReserveBufferFromPool(StreamType stream_type) {
 }
 
 void StreamBufferManager::DestroyCurrentStreamsAndBuffers() {
-  for (const auto& iter : stream_context_) {
-    if (iter.second) {
-      if (!CanReserveBufferFromPool(iter.first)) {
-        // The GMB is mapped by default only when it's allocated locally.
-        for (auto& buf : iter.second->buffers) {
-          auto& buf_pair = buf.second;
-          if (buf_pair.gmb) {
-            buf_pair.gmb->Unmap();
-          }
-        }
-        iter.second->buffers.clear();
-      }
-    }
-  }
   stream_context_.clear();
 }
 
