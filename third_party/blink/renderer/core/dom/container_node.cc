@@ -868,6 +868,7 @@ void ContainerNode::RemoveChildren(SubtreeModificationAction action) {
     TreeOrderedMap::RemoveScope tree_remove_scope;
     StyleEngine& engine = GetDocument().GetStyleEngine();
     StyleEngine::DetachLayoutTreeScope detach_scope(engine);
+    bool has_element_child = false;
     {
       SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(GetDocument());
       StyleEngine::DOMRemovalScope style_scope(engine);
@@ -875,6 +876,9 @@ void ContainerNode::RemoveChildren(SubtreeModificationAction action) {
       ScriptForbiddenScope forbid_script;
 
       while (Node* child = first_child_) {
+        if (child->IsElementNode()) {
+          has_element_child = true;
+        }
         RemoveBetween(nullptr, child->nextSibling(), *child);
         NotifyNodeRemoved(*child);
         if (children_changed)
@@ -884,6 +888,9 @@ void ContainerNode::RemoveChildren(SubtreeModificationAction action) {
 
     ChildrenChange change = {ChildrenChangeType::kAllChildrenRemoved,
                              ChildrenChangeSource::kAPI,
+                             has_element_child
+                                 ? ChildrenChangeAffectsElements::kYes
+                                 : ChildrenChangeAffectsElements::kNo,
                              nullptr,
                              nullptr,
                              nullptr,
@@ -1536,6 +1543,11 @@ void ContainerNode::InvalidateNodeListCachesInAncestors(
       }
     }
   }
+
+  // This is a performance optimization, NodeList cache invalidation is
+  // not necessary for non-element nodes.
+  if (change && change->affects_elements == ChildrenChangeAffectsElements::kNo)
+    return;
 
   // Modifications to attributes that are not associated with an Element can't
   // invalidate NodeList caches.
