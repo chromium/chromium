@@ -119,7 +119,10 @@ class FlashDeviceTest(unittest.TestCase):
         match."""
 
         with mock.patch('os.path.exists', return_value=True), \
-                mock.patch('flash_device._add_exec_to_flash_binaries'):
+                mock.patch('flash_device._add_exec_to_flash_binaries'), \
+                mock.patch('flash_device.running_unattended',
+                           return_value=True), \
+                mock.patch('flash_device.subprocess.run'):
             self._ffx_mock.return_value.stdout = \
                 '[{"title": "Build", "child": [{"value": "wrong.version"}, ' \
                 '{"value": "wrong_product"}]}]'
@@ -127,7 +130,7 @@ class FlashDeviceTest(unittest.TestCase):
                                 'check',
                                 None,
                                 should_pave=False)
-            self.assertEqual(self._ffx_mock.call_count, 3)
+            self.assertEqual(self._ffx_mock.call_count, 4)
 
     def test_update_system_info_mismatch_adds_exec_to_flash_binaries(self
                                                                      ) -> None:

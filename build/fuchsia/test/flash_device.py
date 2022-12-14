@@ -28,6 +28,13 @@ def _get_system_info(target: Optional[str]) -> Tuple[str, str]:
         Tuple of strings, containing (product, version number).
     """
 
+    # TODO(b/242191374): Remove when devices in swarming are no longer booted
+    # into zedboot.
+    if running_unattended():
+        with ScopedFfxConfig('discovery.zedboot.enabled', 'true'):
+            run_ffx_command(('target', 'reboot'), target_id=target)
+        run_ffx_command(('target', 'wait'), target)
+
     info_cmd = run_ffx_command(('target', 'show', '--json'),
                                target_id=target,
                                capture_output=True,
