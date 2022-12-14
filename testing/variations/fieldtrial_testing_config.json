@@ -7367,7 +7367,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "omnibox_answer_color_reversal_countries": "zh-CN,zh-TW,ja-JP,ko-KR",
+                        "omnibox_answer_color_reversal_countries": "ja-JP,ko-KR,zh-CN,zh-TW",
                         "omnibox_answer_color_reversal_finance_only": "true"
                     },
                     "enable_features": [
