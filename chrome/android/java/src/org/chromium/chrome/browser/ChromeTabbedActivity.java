@@ -2600,6 +2600,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             layoutTypeToShow = LayoutType.START_SURFACE;
             if (state == StartSurfaceState.SHOWING_PREVIOUS) {
                 ReturnToChromeUtil.recordBackNavigationToStart("FromTab");
+            } else {
+                // Resets the scroll position when Start is showing not via back operations.
+                mStartSurfaceSupplier.get().resetScrollPosition();
             }
         }
 

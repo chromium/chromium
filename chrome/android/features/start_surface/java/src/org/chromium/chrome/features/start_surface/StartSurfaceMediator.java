@@ -512,14 +512,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mIsHomepageShown = true;
         notifyShowStateChange();
 
-        // TODO(crbug.com/1347089): When entering the Start surface by tapping back button or other
-        // back gestures, we shouldn't reset the scrolling position. Maybe we could add a boolean
-        // |mResetPosition| and set it as false only when this method is called because of back
-        // actions.
-        mPropertyModel.set(RESET_TASK_SURFACE_HEADER_SCROLL_POSITION, true);
-        mPropertyModel.set(RESET_FEED_SURFACE_SCROLL_POSITION, true);
-        StartSurfaceUserData.getInstance().saveFeedInstanceState(null);
-
         mIsIncognito = mTabModelSelector.isIncognitoSelected();
         mPropertyModel.set(IS_INCOGNITO, mIsIncognito);
         setMVTilesVisibility(!mIsIncognito);
@@ -680,6 +672,14 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         }
     }
 
+    void resetScrollPosition() {
+        if (mPropertyModel == null) return;
+
+        mPropertyModel.set(RESET_TASK_SURFACE_HEADER_SCROLL_POSITION, true);
+        mPropertyModel.set(RESET_FEED_SURFACE_SCROLL_POSITION, true);
+        StartSurfaceUserData.getInstance().saveFeedInstanceState(null);
+    }
+
     // TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
     // two different things, audit the wording usage and see if we can rename this method to
     // setStartSurfaceStateInternal.
@@ -687,10 +687,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         if (mStartSurfaceState == StartSurfaceState.SHOWING_HOMEPAGE) {
             // When entering the Start surface by tapping home button or new tab page, we need to
             // reset the scrolling position.
-            mPropertyModel.set(RESET_TASK_SURFACE_HEADER_SCROLL_POSITION, true);
-            mPropertyModel.set(RESET_FEED_SURFACE_SCROLL_POSITION, true);
-            StartSurfaceUserData.getInstance().saveFeedInstanceState(null);
-
+            resetScrollPosition();
         } else if (mStartSurfaceState == StartSurfaceState.SHOWING_TABSWITCHER) {
             maybeDestroyFeedPlaceholder();
             // Set secondary surface visible to make sure tab list recyclerview is updated in time

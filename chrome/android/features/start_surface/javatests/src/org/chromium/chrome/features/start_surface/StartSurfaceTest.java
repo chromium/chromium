@@ -667,8 +667,6 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testShow_SingleAsHomepage_ResetScrollPosition() {
-        assumeTrue("https://crbug.com/1385547 - Disable for NoInstant.", mUseInstantStart);
-        
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
@@ -694,6 +692,40 @@ public class StartSurfaceTest {
         // The Start surface should reset its scroll position.
         CriteriaHelper.pollInstrumentationThread(
                 () -> taskSurfaceHeader.getBottom() == taskSurfaceHeader.getHeight());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
+    public void testShow_SingleAsHomepage_DoNotResetScrollPositionFromBack() {
+        assumeTrue(mImmediateReturn);
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+
+        // Scroll the toolbar.
+        StartSurfaceTestUtils.scrollToolbarAndVerify(cta);
+        AppBarLayout taskSurfaceHeader = cta.findViewById(R.id.task_surface_header);
+        assertNotEquals(taskSurfaceHeader.getBottom(), taskSurfaceHeader.getHeight());
+
+        // Verifies the case of scrolling Start surface ->  MV tile -> tapping back ->
+        // Start surface. The Start surface should not reset its scroll position.
+        StartSurfaceTestUtils.launchFirstMVTile(cta, 1);
+        Assert.assertEquals("The launched tab should have the launch type FROM_START_SURFACE",
+                TabLaunchType.FROM_START_SURFACE,
+                cta.getActivityTabProvider().get().getLaunchType());
+        StartSurfaceTestUtils.pressBack(mActivityTestRule);
+        // Back gesture on the tab should take us back to the start surface homepage.
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+
+        // The Start surface should not reset its scroll position.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> taskSurfaceHeader.getBottom() != taskSurfaceHeader.getHeight());
     }
 
     @Test

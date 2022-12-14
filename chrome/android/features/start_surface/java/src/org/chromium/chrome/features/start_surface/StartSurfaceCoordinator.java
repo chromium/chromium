@@ -508,6 +508,11 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
+    public void resetScrollPosition() {
+        mStartSurfaceMediator.resetScrollPosition();
+    }
+
+    @Override
     public boolean onBackPressed() {
         return mStartSurfaceMediator.onBackPressed();
     }
