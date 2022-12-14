@@ -16,8 +16,6 @@ source_set("search_engines") {
     "search_engine_tab_helper.mm",
     "search_engine_tab_helper_factory.h",
     "search_engine_tab_helper_factory.mm",
-    "search_engines_util.cc",
-    "search_engines_util.h",
     "template_url_fetcher_factory.cc",
     "template_url_fetcher_factory.h",
     "template_url_service_client_impl.cc",
@@ -69,7 +67,7 @@ source_set("extension_search_engine_data_updater") {
     "extension_search_engine_data_updater.mm",
   ]
   deps = [
-    ":search_engines",
+    ":search_engines_util",
     "//base",
     "//components/search_engines",
     "//ios/chrome/browser/widget_kit:features",
@@ -119,6 +117,20 @@ source_set("template_url_service_factory") {
   deps = [
     "//base",
     "//components/keyed_service/ios",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("search_engines_util") {
+  sources = [
+    "search_engines_util.cc",
+    "search_engines_util.h",
+  ]
+  deps = [
+    "//base",
+    "//components/country_codes",
+    "//components/prefs",
+    "//components/search_engines",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

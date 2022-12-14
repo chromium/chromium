@@ -2,6 +2,7 @@ specific_include_rules = {
   # To compile base::Feature under EG2
   "chrome_earl_grey_app_interface\.mm":[
    "+components/autofill/core/common/autofill_features.h",
+   "+components/search_engines/template_url_service.h",
    "+components/password_manager/core/common/password_manager_features.h",
    "+components/payments/core/features.h",
    "+components/ukm/ios/features.h",

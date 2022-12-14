@@ -498,6 +498,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/screenshot",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/search_engines:extension_search_engine_data_updater",
+    "//ios/chrome/browser/search_engines:search_engines_util",
     "//ios/chrome/browser/sessions:scene_util",
     "//ios/chrome/browser/sessions:session_service",
     "//ios/chrome/browser/share_extension",
