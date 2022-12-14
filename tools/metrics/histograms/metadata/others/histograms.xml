@@ -7983,7 +7983,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="LoadingPredictor.PreconnectLearningPrecision"
-    units="%" expires_after="2022-12-19">
+    units="%" expires_after="2023-12-12">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
@@ -8018,7 +8018,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LoadingPredictor.PreresolveCount" units="hosts"
-    expires_after="2022-12-19">
+    expires_after="2023-12-12">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
@@ -8029,7 +8029,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LoadingPredictor.PreresolveHitsPercentage" units="%"
-    expires_after="2022-12-19">
+    expires_after="2023-12-12">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
