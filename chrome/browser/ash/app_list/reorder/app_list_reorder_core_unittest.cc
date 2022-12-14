@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/app_list/reorder/app_list_reorder_core.h"
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "chrome/browser/ui/app_list/chrome_app_list_item.h"
+#include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "components/crx_file/id_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

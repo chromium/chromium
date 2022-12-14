@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/ui/app_list/app_list_syncable_service.h"
+#include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
 class ShelfControllerHelper;

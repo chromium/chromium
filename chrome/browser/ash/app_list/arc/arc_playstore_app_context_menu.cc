@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "chrome/browser/ui/app_list/app_context_menu_delegate.h"
+#include "chrome/browser/ash/app_list/app_context_menu_delegate.h"
 #include "chrome/grit/generated_resources.h"
 
 ArcPlayStoreAppContextMenu::ArcPlayStoreAppContextMenu(

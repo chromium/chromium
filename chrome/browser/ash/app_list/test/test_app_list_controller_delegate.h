@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
+#include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 
 namespace test {
 

@@ -60,12 +60,9 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // Invoked to open the search result and log a click. If the result is
   // represented by a SuggestedChipView or is a zero state result,
   // |suggested_index| is the index of the view in the list of suggestions.
-  // |launched_from| values must match the LaunchedFrom enum in
-  // chrome/browser/ui/app_list/app_launch_event_logger.proto. |launch_type| is
-  // either kAppSearchResult or kSearchResult and is used to determine which
-  // histograms to log to.
-  // |launch_as_default|: True if the result is launched as the default result
-  // by user pressing ENTER key.
+  // |launch_type| is either kAppSearchResult or kSearchResult and is used to
+  // determine which histograms to log to. |launch_as_default|: True if the
+  // result is launched as the default result by user pressing ENTER key.
   virtual void OpenSearchResult(const std::string& result_id,
                                 int event_flags,
                                 AppListLaunchedFrom launched_from,

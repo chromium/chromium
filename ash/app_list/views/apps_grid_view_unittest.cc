@@ -5202,7 +5202,7 @@ TEST_P(AppsGridViewClamshellTest,
   // that contains the options to sort is verified to be shown in apps grid
   // view. The menu option selecting is also simulated to ensure the sorting is
   // called. The actual sort algorithm is tested in
-  // chrome/browser/ui/app_list/app_list_sort_browsertest.cc.
+  // chrome/browser/ash/app_list/app_list_sort_browsertest.cc.
 
   model_->PopulateApps(1);
 
@@ -5373,7 +5373,7 @@ TEST_P(AppsGridViewClamshellAndTabletTest, ContextMenuOnFolderItemSortAllApps) {
   // that contains the options to sort is verified to be shown on folder app
   // list item view. The menu option selecting is also simulated to ensure the
   // sorting is called. The actual sort algorithm is tested in
-  // chrome/browser/ui/app_list/app_list_sort_browsertest.cc.
+  // chrome/browser/ash/app_list/app_list_sort_browsertest.cc.
 
   // Create a folder item and update the layout.
   model_->CreateAndPopulateFolderWithApps(2);

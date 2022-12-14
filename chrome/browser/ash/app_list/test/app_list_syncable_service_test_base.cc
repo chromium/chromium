@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/app_list/test/app_list_syncable_service_test_base.h"
 
+#include "chrome/browser/ash/app_list/app_list_model_updater.h"
+#include "chrome/browser/ash/app_list/chrome_app_list_item.h"
+#include "chrome/browser/ash/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/app_list/app_list_model_updater.h"
-#include "chrome/browser/ui/app_list/chrome_app_list_item.h"
-#include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 

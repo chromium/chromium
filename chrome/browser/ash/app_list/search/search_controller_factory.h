@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/app_list/app_list_model_updater.h"
+#include "chrome/browser/ash/app_list/app_list_model_updater.h"
 
 class AppListControllerDelegate;
 class Profile;

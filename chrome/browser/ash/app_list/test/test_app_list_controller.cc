@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/app_list/test/test_app_list_controller.h"
 
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
-#include "chrome/browser/ui/app_list/app_list_client_impl.h"
-#include "chrome/browser/ui/app_list/app_list_model_updater.h"
+#include "chrome/browser/ash/app_list/app_list_client_impl.h"
+#include "chrome/browser/ash/app_list/app_list_model_updater.h"
 
 namespace test {
 

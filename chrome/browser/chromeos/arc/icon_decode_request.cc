@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/no_destructor.h"
-#include "chrome/browser/ui/app_list/md_icon_normalizer.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"

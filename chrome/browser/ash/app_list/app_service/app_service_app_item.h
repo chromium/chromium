@@ -9,8 +9,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/app_list/app_context_menu_delegate.h"
-#include "chrome/browser/ui/app_list/chrome_app_list_item.h"
+#include "chrome/browser/ash/app_list/app_context_menu_delegate.h"
+#include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"

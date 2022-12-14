@@ -7,7 +7,7 @@
 #include <map>
 
 #include "base/logging.h"
-#include "chrome/browser/ui/app_list/app_context_menu.h"
+#include "chrome/browser/ash/app_list/app_context_menu.h"
 #include "ui/base/models/image_model.h"
 
 ChromeSearchResult::ChromeSearchResult()

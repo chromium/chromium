@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/app_list/arc/arc_vpn_provider_manager.h"
 
 #include "ash/components/arc/test/fake_app_instance.h"
+#include "chrome/browser/ash/app_list/app_list_test_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/app_list_test_util.h"
 
 namespace app_list {
 

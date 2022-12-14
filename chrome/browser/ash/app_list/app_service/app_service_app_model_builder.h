@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_APP_SERVICE_APP_SERVICE_APP_MODEL_BUILDER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_APP_SERVICE_APP_SERVICE_APP_MODEL_BUILDER_H_
 
-#include "chrome/browser/ui/app_list/app_list_model_builder.h"
+#include "chrome/browser/ash/app_list/app_list_model_builder.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
 class AppListControllerDelegate;

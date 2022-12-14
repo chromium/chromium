@@ -322,8 +322,7 @@ enum class AppListGridAnimationStatus {
   kHideContinueSection,
 };
 
-// The UI component the user launched the search result from. Must match
-// chrome/browser/ui/app_list/app_launch_event_logger.proto.
+// The UI component the user launched the search result from.
 // This enum is used in a histogram, do not remove/renumber entries. If you're
 // adding to this enum with the intention that it will be logged, update the
 // AppListLaunchedFrom enum listing in tools/metrics/histograms/enums.xml.

@@ -42,7 +42,7 @@ chrome/browser/media/webrtc/rtp_dump_type.h
 chrome/browser/media_galleries/media_file_system_context.h
 chrome/browser/notifications/displayed_notifications_dispatch_callback.h
 chrome/browser/ui/app_icon_loader_delegate.h
-chrome/browser/ui/app_list/app_list_syncable_service_factory.h
+chrome/browser/ash/app_list/app_list_syncable_service_factory.h
 chrome/browser/ui/ash/ash_util.h
 chrome/browser/ui/ash/multi_user/multi_user_util.h
 chrome/browser/ui/network_profile_bubble.h

@@ -8,8 +8,8 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/numerics/safe_conversions.h"
-#include "chrome/browser/ui/app_list/app_list_model_updater.h"
-#include "chrome/browser/ui/app_list/chrome_app_list_item.h"
+#include "chrome/browser/ash/app_list/app_list_model_updater.h"
+#include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 
 namespace app_list {
 namespace reorder {

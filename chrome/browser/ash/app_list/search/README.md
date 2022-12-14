@@ -14,7 +14,7 @@ This folder contains the backend implementation of Chrome OS launcher search.
 
   To interact with the frontend, it calls the 
   [`AppListController`](https://source.chromium.org/chromium/chromium/src/+/main:ash/public/cpp/app_list/app_list_controller.h;l=31;drc=16b9100fa38b90f93e29fb6d7e4578a7eaeb7a1f) and
-  [`AppListModelUpdater`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/app_list/app_list_model_updater.h;l=26;drc=4a8573cb240df29b0e4d9820303538fb28e31d84), 
+  [`AppListModelUpdater`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/app_list/app_list_model_updater.h;l=26;drc=4a8573cb240df29b0e4d9820303538fb28e31d84), 
   and is called by the [`AppListClient`](https://source.chromium.org/chromium/chromium/src/+/main:ash/public/cpp/app_list/app_list_client.h;l=36;drc=3a215d1e60a3b32928a50d00ea07ae52ea491a16).
 - **SearchProvider**. The base class for all search providers. Each search
   provider typically handles one type of result, such as settings, apps or
@@ -43,7 +43,7 @@ subdirectory.
 ### Metrics
 
 - **AppListNotifierImpl**. Located in the parent directory
-  [`chrome/browser/ui/app_list/`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/app_list/). 
+  [`chrome/browser/ash/app_list/`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/app_list/). 
   Contains a state machine that converts raw UI events into information such as impressions and launches.
 - **SearchMetricsManager**. Observes the [`AppListNotifier`](https://source.chromium.org/chromium/chromium/src/+/main:ash/public/cpp/app_list/app_list_notifier.h;l=28;drc=ccc5ecdf824f172bf8675eb33f5377483289c334)
   and logs metrics accordingly.

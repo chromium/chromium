@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
-#include "chrome/browser/ui/app_list/app_list_syncable_service.h"
-#include "chrome/browser/ui/app_list/app_list_test_util.h"
+#include "chrome/browser/ash/app_list/app_list_syncable_service.h"
+#include "chrome/browser/ash/app_list/app_list_test_util.h"
 
 class ChromeAppListModelUpdater;
 

@@ -58,9 +58,9 @@ def GenerateLOCStats(start_date,
   #
   #   :thanhdng:2020-08-17:Use vector icons for zero state file results
   #
-  #  118     98      chrome/browser/ui/app_list/file_icon_util.cc
-  #  2       1       chrome/browser/ui/app_list/file_icon_util.h
-  #  0       20      chrome/browser/ui/app_list/file_icon_util_unittest.cc
+  #  118     98      chromeos/ui/base/file_icon_util.cc
+  #  2       1       chromeos/ui/base/file_icon_util.h
+  #  0       20      chromeos/ui/base/file_icon_util_unittest.cc
   #
   #  i.e.:
   #

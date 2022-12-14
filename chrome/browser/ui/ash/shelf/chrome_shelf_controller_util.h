@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/shelf_types.h"
-#include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
+#include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 
 class Browser;

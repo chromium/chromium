@@ -33,8 +33,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // #include "ash/public/cpp/shelf_model.h"
-#include "chrome/browser/ui/app_list/app_list_syncable_service.h"
-#include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ash/app_list/app_list_syncable_service.h"
+#include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_PLAYSTORE_APP_CONTEXT_MENU_H_
 #define CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_PLAYSTORE_APP_CONTEXT_MENU_H_
 
-#include "chrome/browser/ui/app_list/app_context_menu.h"
+#include "chrome/browser/ash/app_list/app_context_menu.h"
 
 class AppListControllerDelegate;
 class Profile;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_lacros_provider.h"
 
+#include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_answer_result.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_result.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"

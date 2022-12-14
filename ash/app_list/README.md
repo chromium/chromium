@@ -34,7 +34,7 @@
 code lived in `//ui/app_list` because the app list used to be supported on
 non-Chrome OS platforms.
 
-`//chrome/browser/ui/app_list` contains app list code that has Profile
+`//chrome/browser/ash/app_list` contains app list code that has Profile
 dependencies. This includes sync support and communication with the App Service
 (which provides the list of installed apps).
 
@@ -126,8 +126,8 @@ a model. See [go/move-applist][7].
 [2]: /ash/app_list/model/app_list_item_list.h
 [3]: /ash/app_list/model/app_list_item.h
 [4]: /ash/public/cpp/app_list/app_list_types.h
-[5]: /chrome/browser/ui/app_list/chrome_app_list_model_updater.h
-[6]: /chrome/browser/ui/app_list/chrome_app_list_item.h
+[5]: /chrome/browser/ash/app_list/chrome_app_list_model_updater.h
+[6]: /chrome/browser/ash/app_list/chrome_app_list_item.h
 [7]: http://go/move-applist
 
 #### Folders
