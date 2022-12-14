@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SITE_SETTINGS_PERMISSIONS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SITE_SETTINGS_PERMISSIONS_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 /**
@@ -14,11 +16,15 @@
 
 class SiteSettingsPermissionsHandler : public settings::SettingsPageUIHandler {
  public:
-  SiteSettingsPermissionsHandler();
+  explicit SiteSettingsPermissionsHandler(Profile* profile);
 
   ~SiteSettingsPermissionsHandler() override;
 
  private:
+  friend class SiteSettingsPermissionsHandlerTest;
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsPermissionsHandlerTest,
+                           PopulateUnusedSitePermissionsData);
+
   // SettingsPageUIHandler implementation.
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
@@ -26,9 +32,15 @@ class SiteSettingsPermissionsHandler : public settings::SettingsPageUIHandler {
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
 
-  // Returns the list of origins that haven't been visited recently with
-  // associated permissions.
+  // Returns the list of revoked permissions to be used in
+  // "Unused site permissions" module.
   void HandleGetRevokedUnusedSitePermissionsList(const base::Value::List& args);
+
+  // Returns the list of revoked permissions that belongs to origins which
+  // haven't been visited recently.
+  base::Value::List PopulateUnusedSitePermissionsData();
+
+  const raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_SITE_SETTINGS_PERMISSIONS_HANDLER_H_
