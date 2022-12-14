@@ -23,6 +23,8 @@ NSString* const kToolsMenuStop = @"kToolsMenuStop";
 NSString* const kToolsMenuNewTabId = @"kToolsMenuNewTabId";
 NSString* const kToolsMenuNewWindowId = @"kToolsMenuNewWindowId";
 NSString* const kToolsMenuNewIncognitoTabId = @"kToolsMenuNewIncognitoTabId";
+NSString* const kToolsMenuPinTabId = @"kToolsMenuPinTabId";
+NSString* const kToolsMenuUnpinTabId = @"kToolsMenuUnpinTabId";
 NSString* const kToolsMenuCloseAllTabsId = @"kToolsMenuCloseAllTabsId";
 NSString* const kToolsMenuCloseAllIncognitoTabsId =
     @"kToolsMenuCloseAllIncognitoTabsId";

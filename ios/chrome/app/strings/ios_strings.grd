@@ -2213,6 +2213,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TOOLS_MENU_NEW_WINDOW" desc="The iOS menu item for opening a new window [iOS only]" meaning="[Length: unlimited]">
         New Window
       </message>
+      <message name="IDS_IOS_TOOLS_MENU_PIN_TAB" desc="The iOS menu item for pinning a tab [iOS only]" meaning="[Length: unlimited]">
+        Pin Tab
+      </message>
+      <message name="IDS_IOS_TOOLS_MENU_UNPIN_TAB" desc="The iOS menu item for unpinning a tab [iOS only]" meaning="[Length: unlimited]">
+        Unpin Tab
+      </message>
       <message name="IDS_IOS_READING_LIST_CONTENT_CONTEXT_OFFLINE" desc="Title of the button to display the Offline version instead of the Online one. [Length: 50em]">
         View Offline Version in New Tab
       </message>

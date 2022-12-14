@@ -26,6 +26,10 @@ extern NSString* const kToolsMenuNewTabId;
 extern NSString* const kToolsMenuNewWindowId;
 // New incognito Tab item accessibility Identifier.
 extern NSString* const kToolsMenuNewIncognitoTabId;
+// Pin Tab item accessibility Identifier.
+extern NSString* const kToolsMenuPinTabId;
+// Unpin Tab item accessibility Identifier.
+extern NSString* const kToolsMenuUnpinTabId;
 // Close all Tabs item accessibility Identifier.
 extern NSString* const kToolsMenuCloseAllTabsId;
 // Close all incognito Tabs item accessibility Identifier.

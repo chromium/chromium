@@ -82,6 +82,7 @@ NSString* const kMicrophoneSymbol = @"mic";
 NSString* const kEllipsisCircleFillSymbol = @"ellipsis.circle.fill";
 NSString* const kPinSymbol = @"pin";
 NSString* const kPinFillSymbol = @"pin.fill";
+NSString* const kPinSlashSymbol = @"pin.slash";
 NSString* const kSettingsSymbol = @"gearshape";
 NSString* const kSettingsFilledSymbol = @"gearshape.fill";
 NSString* const kShareSymbol = @"square.and.arrow.up";

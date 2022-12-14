@@ -80,6 +80,14 @@ imageset("overflow_menu_action_new_window") {
   ]
 }
 
+imageset("overflow_menu_action_pin_tab") {
+  sources = [
+    "overflow_menu_action_pin_tab.imageset/Contents.json",
+    "overflow_menu_action_pin_tab.imageset/overflow_menu_action_pin_tab@2x.png",
+    "overflow_menu_action_pin_tab.imageset/overflow_menu_action_pin_tab@3x.png",
+  ]
+}
+
 imageset("overflow_menu_action_price_notifications") {
   sources = [
     "overflow_menu_action_price_notifications.imageset/Contents.json",
@@ -173,6 +181,14 @@ imageset("overflow_menu_action_unfollow") {
     "overflow_menu_action_unfollow.imageset/Contents.json",
     "overflow_menu_action_unfollow.imageset/overflow_menu_action_unfollow@2x.png",
     "overflow_menu_action_unfollow.imageset/overflow_menu_action_unfollow@3x.png",
+  ]
+}
+
+imageset("overflow_menu_action_unpin_tab") {
+  sources = [
+    "overflow_menu_action_unpin_tab.imageset/Contents.json",
+    "overflow_menu_action_unpin_tab.imageset/overflow_menu_action_unpin_tab@2x.png",
+    "overflow_menu_action_unpin_tab.imageset/overflow_menu_action_unpin_tab@3x.png",
   ]
 }
 
