@@ -200,11 +200,10 @@ void V4L2StatelessVideoDecoderBackend::OnOutputBufferDequeued(
     surface->video_frame()->AddDestructionObserver(std::move(reuse_buffer_cb));
   } else {
     // Keep a reference to the V4L2 buffer until the buffer is reused. The
-    // reason for this is that the config store uses V4L2 buffer IDs to
+    // reason for this is that the we currently use V4L2 buffer IDs to generate
+    // timestamps to
     // reference frames, therefore we cannot reuse the same V4L2 buffer ID for
     // another decode operation until all references to that frame are gone.
-    // Request API does not have this limitation, so we can probably remove this
-    // after config store is gone.
     surface->SetReleaseCallback(std::move(reuse_buffer_cb));
   }
 

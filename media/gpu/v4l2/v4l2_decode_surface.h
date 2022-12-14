@@ -56,8 +56,8 @@ class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
   // method must be called one time at most.
   void SetReleaseCallback(base::OnceClosure release_cb);
 
-  // Update the passed v4l2_ext_controls structure to add the request or
-  // config store information.
+  // Update the passed v4l2_ext_controls structure to add the request
+  // information.
   virtual void PrepareSetCtrls(struct v4l2_ext_controls* ctrls) const = 0;
   // Return the ID to use in order to reference this frame.
   virtual uint64_t GetReferenceID() const = 0;
