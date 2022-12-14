@@ -43,9 +43,6 @@ class TouchToFillCreditCardMediator {
     void showSheet(CreditCard[] cards, boolean shouldShowScanCreditCard) {
         assert cards != null;
 
-        // TODO(1247698): Show GPay logo if there is at least one card coming from
-        // GPay, if there are only local cards show Chrome logo.
-        boolean hasOnlyLocalCards = true;
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
 
@@ -60,7 +57,7 @@ class TouchToFillCreditCardMediator {
             sheetItems.add(new ListItem(FILL_BUTTON, sheetItems.get(0).model));
         }
 
-        sheetItems.add(0, buildHeader(hasOnlyLocalCards));
+        sheetItems.add(0, buildHeader(hasOnlyLocalCards(cards)));
 
         mModel.set(VISIBLE, true);
         mModel.set(SHOULD_SHOW_SCAN_CREDIT_CARD, shouldShowScanCreditCard);
@@ -112,5 +109,12 @@ class TouchToFillCreditCardMediator {
                                 hasOnlyLocalCards ? R.drawable.fre_product_logo
                                                   : R.drawable.google_pay)
                         .build());
+    }
+
+    private static boolean hasOnlyLocalCards(CreditCard[] cards) {
+        for (CreditCard card : cards) {
+            if (!card.getIsLocal()) return false;
+        }
+        return true;
     }
 }

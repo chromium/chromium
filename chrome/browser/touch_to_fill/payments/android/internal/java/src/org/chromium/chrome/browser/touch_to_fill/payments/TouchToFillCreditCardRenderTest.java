@@ -78,6 +78,9 @@ public class TouchToFillCreditCardRenderTest {
     private static final CreditCard MASTER_CARD =
             createCreditCard("MasterCard", "5555555555554444", "8", AutofillTestHelper.nextYear(),
                     true, "Mastercard", "• • • • 4444", R.drawable.mc_card);
+    private static final CreditCard SERVER_MASTER_CARD = createCreditCard("MasterCard-GPay",
+            "5454545454545454", "11", AutofillTestHelper.nextYear(), false, "MasterCard-GPay",
+            "• • • • 5454", R.drawable.mc_card);
 
     private BottomSheetController mBottomSheetController;
     private TouchToFillCreditCardCoordinator mCoordinator;
@@ -119,6 +122,19 @@ public class TouchToFillCreditCardRenderTest {
     public void testShowsVisaAndMastercard() throws IOException {
         runOnUiThreadBlocking(() -> {
             mCoordinator.showSheet(new CreditCard[] {VISA, MASTER_CARD}, true);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
+        mRenderTestRule.render(bottomSheetView, "touch_to_fill_credit_card_sheet");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowsLocalAndServerCards() throws IOException {
+        runOnUiThreadBlocking(() -> {
+            mCoordinator.showSheet(new CreditCard[] {VISA, SERVER_MASTER_CARD}, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
