@@ -25,6 +25,7 @@ promise_test(async (t) => {
 
   try {
     await detachedSerial.getPorts();
+    assert_unreached();
   } catch (e) {
     // Cannot use promise_rejects_dom() because |e| is thrown from a different
     // global.
@@ -37,6 +38,7 @@ promise_test(async (t) => {
 
   try {
     await detachedSerial.requestPort();
+    assert_unreached();
   } catch (e) {
     // Cannot use promise_rejects_dom() because |e| is thrown from a different
     // global.
