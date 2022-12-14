@@ -17,8 +17,6 @@ namespace gl {
 // Abstract base class for EGL-based images.
 class GL_EXPORT GLImageEGL : public GLImage {
  public:
-  explicit GLImageEGL(const gfx::Size& size);
-
   GLImageEGL(const GLImageEGL&) = delete;
   GLImageEGL& operator=(const GLImageEGL&) = delete;
 
@@ -30,6 +28,7 @@ class GL_EXPORT GLImageEGL : public GLImage {
   void ReleaseTexImage(unsigned target) override {}
 
  protected:
+  explicit GLImageEGL(const gfx::Size& size);
   ~GLImageEGL() override;
 
   // Same semantic as specified for eglCreateImageKHR. There two main usages:

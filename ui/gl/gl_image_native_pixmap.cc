@@ -126,6 +126,39 @@ gfx::BufferFormat GetBufferFormatFromFourCCFormat(int format) {
 
 }  // namespace
 
+scoped_refptr<GLImageNativePixmap> GLImageNativePixmap::Create(
+    const gfx::Size& size,
+    gfx::BufferFormat format,
+    scoped_refptr<gfx::NativePixmap> pixmap) {
+  return CreateForPlane(size, format, gfx::BufferPlane::DEFAULT,
+                        std::move(pixmap));
+}
+
+scoped_refptr<GLImageNativePixmap> GLImageNativePixmap::CreateForPlane(
+    const gfx::Size& size,
+    gfx::BufferFormat format,
+    gfx::BufferPlane plane,
+    scoped_refptr<gfx::NativePixmap> pixmap) {
+  auto image =
+      base::WrapRefCounted(new GLImageNativePixmap(size, format, plane));
+  if (!image->Initialize(std::move(pixmap))) {
+    return nullptr;
+  }
+  return image;
+}
+
+scoped_refptr<GLImageNativePixmap> GLImageNativePixmap::CreateFromTexture(
+    const gfx::Size& size,
+    gfx::BufferFormat format,
+    uint32_t texture_id) {
+  auto image = base::WrapRefCounted(
+      new GLImageNativePixmap(size, format, gfx::BufferPlane::DEFAULT));
+  if (!image->InitializeFromTexture(texture_id)) {
+    return nullptr;
+  }
+  return image;
+}
+
 GLImageNativePixmap::GLImageNativePixmap(const gfx::Size& size,
                                          gfx::BufferFormat format,
                                          gfx::BufferPlane plane)
@@ -238,7 +271,6 @@ bool GLImageNativePixmap::Initialize(scoped_refptr<gfx::NativePixmap> pixmap) {
                                 &attrs[0])) {
       return false;
     }
-    did_initialize_ = true;
   }
 
   pixmap_ = pixmap;
@@ -265,7 +297,6 @@ bool GLImageNativePixmap::InitializeFromTexture(uint32_t texture_id) {
                               nullptr)) {
     return false;
   }
-  did_initialize_ = true;
   return true;
 }
 
@@ -361,12 +392,10 @@ unsigned GLImageNativePixmap::GetDataType() {
 }
 
 bool GLImageNativePixmap::BindTexImage(unsigned target) {
-  DCHECK(did_initialize_);
   return GLImageEGL::BindTexImage(target);
 }
 
 bool GLImageNativePixmap::CopyTexImage(unsigned target) {
-  DCHECK(did_initialize_);
   if (egl_image_ != EGL_NO_IMAGE_KHR)
     return false;
 

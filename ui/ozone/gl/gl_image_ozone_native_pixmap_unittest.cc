@@ -60,8 +60,9 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
       client_pixmap->Unmap();
     }
 
-    auto image = base::MakeRefCounted<gl::GLImageNativePixmap>(size, format);
-    EXPECT_TRUE(image->Initialize(pixmap.get()));
+    auto image =
+        gl::GLImageNativePixmap::Create(size, format, std::move(pixmap));
+    EXPECT_TRUE(image);
     return image;
   }
 

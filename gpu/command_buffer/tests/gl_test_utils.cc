@@ -484,9 +484,9 @@ GpuCommandBufferTestEGL::CreateGLImageNativePixmap(gfx::BufferFormat format,
   EXPECT_NE(0u, tex_service_id);
 
   // Create an EGLImage from the real texture id.
-  auto image = base::MakeRefCounted<gl::GLImageNativePixmap>(size, format);
-  bool result = image->InitializeFromTexture(tex_service_id);
-  DCHECK(result);
+  auto image =
+      gl::GLImageNativePixmap::CreateFromTexture(size, format, tex_service_id);
+  DCHECK(image);
 
   // The test will own the EGLImage no need to keep a reference on the GL
   // texture after returning from this function. This is covered by the

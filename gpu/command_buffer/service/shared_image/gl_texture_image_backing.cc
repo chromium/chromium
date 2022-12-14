@@ -469,10 +469,8 @@ void GLTextureImageBacking::CreateEGLImage() {
   SharedContextState* shared_context_state = factory()->GetSharedContextState();
   ui::ScopedMakeCurrent smc(shared_context_state->context(),
                             shared_context_state->surface());
-  auto image_np = base::MakeRefCounted<gl::GLImageNativePixmap>(
-      size(), ToBufferFormat(format()));
-  image_np->InitializeFromTexture(GetGLServiceId());
-  image_egl_ = image_np;
+  image_egl_ = gl::GLImageNativePixmap::CreateFromTexture(
+      size(), ToBufferFormat(format()), GetGLServiceId());
   if (passthrough_texture_) {
     passthrough_texture_->SetLevelImage(passthrough_texture_->target(), 0,
                                         image_egl_.get());

@@ -17,14 +17,24 @@ namespace gl {
 
 class GL_EXPORT GLImageNativePixmap : public gl::GLImageEGL {
  public:
-  GLImageNativePixmap(const gfx::Size& size,
-                      gfx::BufferFormat format,
-                      gfx::BufferPlane plane = gfx::BufferPlane::DEFAULT);
-
   // Create an EGLImage from a given NativePixmap.
-  bool Initialize(scoped_refptr<gfx::NativePixmap> pixmap);
+  static scoped_refptr<GLImageNativePixmap> Create(
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      scoped_refptr<gfx::NativePixmap> pixmap);
+
+  // Create an EGLImage from a given NativePixmap and plane.
+  static scoped_refptr<GLImageNativePixmap> CreateForPlane(
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferPlane plane,
+      scoped_refptr<gfx::NativePixmap> pixmap);
   // Create an EGLImage from a given GL texture.
-  bool InitializeFromTexture(uint32_t texture_id);
+  static scoped_refptr<GLImageNativePixmap> CreateFromTexture(
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      uint32_t texture_id);
+
   // Export the wrapped EGLImage to dmabuf fds.
   gfx::NativePixmapHandle ExportHandle();
 
@@ -45,11 +55,18 @@ class GL_EXPORT GLImageNativePixmap : public gl::GLImageEGL {
   ~GLImageNativePixmap() override;
 
  private:
+  GLImageNativePixmap(const gfx::Size& size,
+                      gfx::BufferFormat format,
+                      gfx::BufferPlane plane);
+  // Create an EGLImage from a given NativePixmap.
+  bool Initialize(scoped_refptr<gfx::NativePixmap> pixmap);
+  // Create an EGLImage from a given GL texture.
+  bool InitializeFromTexture(uint32_t texture_id);
+
   gfx::BufferFormat format_;
   scoped_refptr<gfx::NativePixmap> pixmap_;
   gfx::BufferPlane plane_;
   bool has_image_dma_buf_export_;
-  bool did_initialize_;
 };
 
 }  // namespace gl

@@ -89,13 +89,14 @@ VaapiStatus VaapiPictureNativePixmapOzone::Initialize(
 
   // TODO(b/220336463): plumb the right color space.
   auto image =
-      base::MakeRefCounted<gl::GLImageNativePixmap>(visible_size_, format);
-  if (!image->Initialize(std::move(pixmap))) {
+      gl::GLImageNativePixmap::Create(visible_size_, format, std::move(pixmap));
+  if (!image) {
     LOG(ERROR) << "Failed to create GLImage";
     return VaapiStatus::Codes::kFailedToInitializeImage;
   }
 
-  gl_image_ = image;
+  gl_image_ = std::move(image);
+
   if (!gl_image_->BindTexImage(texture_target_)) {
     LOG(ERROR) << "Failed to bind texture to GLImage";
     return VaapiStatus::Codes::kFailedToBindTexture;

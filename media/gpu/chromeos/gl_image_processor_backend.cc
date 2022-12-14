@@ -83,9 +83,10 @@ scoped_refptr<gl::GLImageNativePixmap> CreateAndBindImage(
   DCHECK(native_pixmap->AreDmaBufFdsValid());
 
   // Import the NativePixmap into GL.
-  auto image = base::MakeRefCounted<gl::GLImageNativePixmap>(
-      video_frame->coded_size(), gfx::BufferFormat::YUV_420_BIPLANAR);
-  if (!image->Initialize(std::move(native_pixmap))) {
+  auto image = gl::GLImageNativePixmap::Create(
+      video_frame->coded_size(), gfx::BufferFormat::YUV_420_BIPLANAR,
+      std::move(native_pixmap));
+  if (!image) {
     LOG(ERROR) << "Could not initialize the GL image";
     return nullptr;
   }

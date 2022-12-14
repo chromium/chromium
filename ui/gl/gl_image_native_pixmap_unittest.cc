@@ -59,8 +59,9 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.width(), size.height(), 0,
                  GL_RGBA, GL_UNSIGNED_BYTE, pixels.get());
 
-    auto image = base::MakeRefCounted<gl::GLImageNativePixmap>(size, format);
-    EXPECT_TRUE(image->InitializeFromTexture(texture_id));
+    auto image =
+        gl::GLImageNativePixmap::CreateFromTexture(size, format, texture_id);
+    EXPECT_TRUE(image);
 
     glDeleteTextures(1, &texture_id);
     return image;
