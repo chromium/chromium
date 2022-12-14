@@ -54,18 +54,11 @@ namespace {
 using Attributability =
     ::attribution_internals::mojom::WebUISource::Attributability;
 
-using SourceOrTrigger = ::attribution_internals::mojom::ClearedDebugKey::Type;
 using Empty = ::attribution_internals::mojom::Empty;
 using ReportStatus = ::attribution_internals::mojom::ReportStatus;
 using ReportStatusPtr = ::attribution_internals::mojom::ReportStatusPtr;
 
 using ::attribution_internals::mojom::WebUIDebugReport;
-
-attribution_internals::mojom::DebugKeyPtr WebUIDebugKey(
-    absl::optional<uint64_t> debug_key) {
-  return debug_key ? attribution_internals::mojom::DebugKey::New(*debug_key)
-                   : nullptr;
-}
 
 attribution_internals::mojom::WebUISourcePtr WebUISource(
     const CommonSourceInfo& source,
@@ -73,15 +66,26 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
     const std::vector<uint64_t>& dedup_keys,
     int64_t aggregatable_budget_consumed,
     const std::vector<uint64_t>& aggregatable_dedup_keys,
-    bool debug_reporting_enabled) {
+    bool debug_reporting_enabled,
+    absl::optional<uint64_t> cleared_debug_key) {
   DCHECK_GE(aggregatable_budget_consumed, 0);
+
+  attribution_internals::mojom::SourceDebugKeyPtr debug_key =
+      cleared_debug_key
+          ? attribution_internals::mojom::SourceDebugKey::NewClearedDebugKey(
+                *cleared_debug_key)
+          : (source.debug_key()
+                 ? attribution_internals::mojom::SourceDebugKey::NewDebugKey(
+                       *source.debug_key())
+                 : nullptr);
+
   return attribution_internals::mojom::WebUISource::New(
       source.source_event_id(), source.source_origin(),
       source.DestinationSite().Serialize(), source.reporting_origin(),
       source.source_time().ToJsTime(), source.expiry_time().ToJsTime(),
       source.event_report_window_time().ToJsTime(),
       source.aggregatable_report_window_time().ToJsTime(), source.source_type(),
-      source.priority(), WebUIDebugKey(source.debug_key()), dedup_keys,
+      source.priority(), std::move(debug_key), dedup_keys,
       source.filter_data().filter_values(),
       base::MakeFlatMap<std::string, std::string>(
           source.aggregation_keys().keys(), {},
@@ -125,7 +129,8 @@ void ForwardSourcesToWebUI(
     web_ui_sources.push_back(WebUISource(
         source.common_info(), attributability, source.dedup_keys(),
         source.aggregatable_budget_consumed(), source.aggregatable_dedup_keys(),
-        /*debug_reporting_enabled=*/false));
+        /*debug_reporting_enabled=*/false,
+        /*cleared_debug_key=*/absl::nullopt));
   }
 
   std::move(web_ui_callback).Run(std::move(web_ui_sources));
@@ -298,18 +303,6 @@ void AttributionInternalsHandlerImpl::OnSourceHandled(
     absl::optional<uint64_t> cleared_debug_key,
     StorableSource::Result result) {
   Attributability attributability;
-  if (cleared_debug_key.has_value()) {
-    auto web_ui_log = attribution_internals::mojom::ClearedDebugKey::New();
-    web_ui_log->cleared_debug_key = WebUIDebugKey(cleared_debug_key.value());
-    web_ui_log->time = source.common_info().source_time().ToJsTime();
-    web_ui_log->reporting_origin = source.common_info().reporting_origin();
-    web_ui_log->cleared_from = SourceOrTrigger::kSource;
-
-    for (auto& observer : observers_) {
-      observer->OnDebugKeyCleared(web_ui_log.Clone());
-    }
-  }
-
   switch (result) {
     case StorableSource::Result::kSuccess:
     // TODO(linnan): Consider displaying source noised in internals UI.
@@ -335,7 +328,8 @@ void AttributionInternalsHandlerImpl::OnSourceHandled(
   auto web_ui_source =
       WebUISource(source.common_info(), attributability, /*dedup_keys=*/{},
                   /*aggregatable_budget_consumed=*/0,
-                  /*aggregatable_dedup_keys=*/{}, source.debug_reporting());
+                  /*aggregatable_dedup_keys=*/{}, source.debug_reporting(),
+                  cleared_debug_key);
 
   for (auto& observer : observers_) {
     observer->OnSourceRejected(web_ui_source.Clone());
@@ -496,17 +490,6 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
   const attribution_reporting::TriggerRegistration& registration =
       trigger.registration();
 
-  if (cleared_debug_key.has_value()) {
-    auto web_ui_log = attribution_internals::mojom::ClearedDebugKey::New();
-    web_ui_log->cleared_debug_key = WebUIDebugKey(cleared_debug_key.value());
-    web_ui_log->time = result.trigger_time().ToJsTime();
-    web_ui_log->reporting_origin = trigger.reporting_origin();
-    web_ui_log->cleared_from = SourceOrTrigger::kTrigger;
-
-    for (auto& observer : observers_) {
-      observer->OnDebugKeyCleared(web_ui_log.Clone());
-    }
-  }
   auto web_ui_trigger = attribution_internals::mojom::WebUITrigger::New();
   web_ui_trigger->trigger_time = result.trigger_time().ToJsTime();
   web_ui_trigger->destination_origin = trigger.destination_origin();
@@ -514,6 +497,10 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
   web_ui_trigger->registration_json =
       SerializeAttributionJson(registration.ToJson(),
                                /*pretty_print=*/true);
+  web_ui_trigger->cleared_debug_key =
+      cleared_debug_key ? attribution_internals::mojom::TriggerDebugKey::New(
+                              *cleared_debug_key)
+                        : nullptr;
   web_ui_trigger->event_level_status =
       GetWebUITriggerStatus(result.event_level_status());
   web_ui_trigger->aggregatable_status =

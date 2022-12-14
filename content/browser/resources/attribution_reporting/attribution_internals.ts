@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {ClearedDebugKey, ClearedDebugKey_Type, FailedSourceRegistration, Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportID, WebUIDebugReport, WebUIReport, WebUISource, WebUISource_Attributability, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
+import {FailedSourceRegistration, Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportID, WebUIDebugReport, WebUIReport, WebUISource, WebUISource_Attributability, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {ReportType, SourceType} from './attribution_reporting.mojom-webui.js';
 import {SourceRegistrationError} from './source_registration_error.mojom-webui.js';
@@ -258,7 +258,15 @@ class Source {
     this.filterData = JSON.stringify(mojo.filterData, null, ' ');
     this.aggregationKeys =
         JSON.stringify(mojo.aggregationKeys, bigintReplacer, ' ');
-    this.debugKey = mojo.debugKey ? mojo.debugKey.value.toString() : '';
+
+    if (mojo.debugKey?.debugKey !== undefined) {
+      this.debugKey = mojo.debugKey.debugKey.toString();
+    } else if (mojo.debugKey?.clearedDebugKey !== undefined) {
+      this.debugKey = `Cleared (was ${mojo.debugKey.clearedDebugKey})`;
+    } else {
+      this.debugKey = '';
+    }
+
     this.dedupKeys = mojo.dedupKeys.join(', ');
     this.aggregatableBudgetConsumed = mojo.aggregatableBudgetConsumed;
     this.aggregatableDedupKeys = mojo.aggregatableDedupKeys.join(', ');
@@ -343,6 +351,7 @@ class Trigger {
   destinationOrigin: string;
   reportingOrigin: string;
   registrationJson: string;
+  clearedDebugKey: string;
   eventLevelStatus: string;
   aggregatableStatus: string;
 
@@ -351,6 +360,8 @@ class Trigger {
     this.destinationOrigin = originToText(mojo.destinationOrigin);
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.registrationJson = mojo.registrationJson;
+    this.clearedDebugKey =
+        mojo.clearedDebugKey ? `${mojo.clearedDebugKey.value}` : '';
     this.eventLevelStatus = triggerStatusToText(mojo.eventLevelStatus);
     this.aggregatableStatus = triggerStatusToText(mojo.aggregatableStatus);
   }
@@ -373,6 +384,8 @@ class TriggerTableModel extends TableModel<Trigger> {
               'Reporting Origin', (e) => e.reportingOrigin),
           new CodeColumn<Trigger>(
               'Registration JSON', (e) => e.registrationJson),
+          new ValueColumn<Trigger, string>(
+              'Cleared Debug Key', (e) => e.clearedDebugKey),
         ],
         0,  // Sort by trigger time by default.
         'No triggers.',
@@ -715,49 +728,6 @@ abstract class Log {
   abstract renderDescription(td: HTMLElement): void;
 
   abstract renderMetadata(td: HTMLElement): void;
-}
-
-const CLEARED_DEBUG_KEY_COLS: Array<Column<ClearedDebugKeyLog>> = [
-  new ValueColumn<ClearedDebugKeyLog, string>(
-      'Cleared Debug Key', e => e.clearedDebugKey),
-  new ValueColumn<ClearedDebugKeyLog, string>('From', e => e.clearedFrom),
-  new ValueColumn<ClearedDebugKeyLog, string>(
-      'Reporting Origin', e => e.reportingOrigin),
-];
-
-class ClearedDebugKeyLog extends Log {
-  readonly clearedFrom: string;
-  readonly clearedDebugKey: string;
-
-  constructor(mojo: ClearedDebugKey) {
-    super(mojo);
-
-    this.clearedDebugKey = `${mojo.clearedDebugKey.value}`;
-
-    switch (mojo.clearedFrom) {
-      case (ClearedDebugKey_Type.kSource):
-        this.clearedFrom = 'Source';
-        break;
-      case (ClearedDebugKey_Type.kTrigger):
-        this.clearedFrom = 'Trigger';
-        break;
-      default:
-        this.clearedFrom = 'Unknown type';
-        break;
-    }
-  }
-
-  renderDescription(td: HTMLElement): void {
-    renderA(
-        td,
-        'Cleared Debug Key',
-        'https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#attribution-success-debugging-reports',
-    );
-  }
-
-  renderMetadata(td: HTMLElement) {
-    renderDL(td, this, CLEARED_DEBUG_KEY_COLS);
-  }
 }
 
 const FAILED_SOURCE_REGISTRATION_COLS:
@@ -1150,11 +1120,6 @@ class Observer implements ObserverInterface {
   onFailedSourceRegistration(mojo: FailedSourceRegistration) {
     assert(logTableModel);
     logTableModel.addLog(new FailedSourceRegistrationLog(mojo));
-  }
-
-  onDebugKeyCleared(mojo: ClearedDebugKey) {
-    assert(logTableModel);
-    logTableModel.addLog(new ClearedDebugKeyLog(mojo));
   }
 }
 

@@ -299,7 +299,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   manager()->NotifySourceHandled(
       SourceBuilder(now + base::Hours(5)).Build(),
-      StorableSource::Result::kInsufficientSourceCapacity);
+      StorableSource::Result::kInsufficientSourceCapacity,
+      /*cleared_debug_key=*/987);
 
   manager()->NotifySourceHandled(
       SourceBuilder(now + base::Hours(6)).Build(),
@@ -327,6 +328,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[1].children[13]?.innerText === "1300 / 65536" &&
           table.children[0].children[14]?.innerText === "19" &&
           table.children[1].children[14]?.innerText === "" &&
+          table.children[4].children[14]?.innerText === 'Cleared (was 987)' &&
           table.children[0].children[15]?.innerText === "" &&
           table.children[1].children[15]?.innerText === "13, 17" &&
           table.children[0].children[16]?.innerText === "" &&
@@ -388,89 +390,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   manager()->NotifySourceRegistrationFailure(
       "!", *SuitableOrigin::Deserialize("https://a.test"),
       SourceRegistrationError::kInvalidJson);
-  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
-}
-
-IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
-                       ClearedDebugKeyFromSource_LogShown) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
-
-  static constexpr char wait_script[] = R"(
-    const table = document.querySelector('#logTable')
-        .shadowRoot.querySelector('tbody');
-
-    const description = '<a href="https://github.com/WICG/attribution-report' +
-                    'ing-api/blob/main/EVENT.md#attribution-success-debugging-' +
-                    'reports" target="_blank">Cleared Debug Key</a>';
-    const metadata = '<dl><dt>Cleared Debug Key</dt><dd>1234</dd>' +
-                     '<dt>From</dt><dd>Source</dd>'+
-                     '<dt>Reporting Origin</dt><dd>https://report.test</dd></dl>';
-
-    let obs = new MutationObserver((_, obs) => {
-      if (table.children.length === 1 &&
-          table.children[0].children[1]?.innerHTML === description &&
-          table.children[0].children[2]?.innerHTML === metadata
-      ) {
-        obs.disconnect();
-        document.title = $1;
-      }
-    });
-    obs.observe(table, {childList: true, subtree: true, characterData: true});)";
-
-  ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
-
-  TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
-
-  manager()->NotifySourceHandled(SourceBuilder().Build(),
-                                 StorableSource::Result::kSuccess,
-                                 /*cleared_debug_key=*/1234);
-
-  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
-}
-
-IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
-                       ClearedDebugKeyFromTrigger_LogShown) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
-
-  static constexpr char wait_script[] = R"(
-    const table = document.querySelector('#logTable')
-        .shadowRoot.querySelector('tbody');
-
-    const description = '<a href="https://github.com/WICG/attribution-report' +
-                    'ing-api/blob/main/EVENT.md#attribution-success-debugging-' +
-                    'reports" target="_blank">Cleared Debug Key</a>';
-    const metadata = '<dl><dt>Cleared Debug Key</dt><dd>1234</dd>' +
-                     '<dt>From</dt><dd>Trigger</dd>'+
-                     '<dt>Reporting Origin</dt><dd>https://report.test</dd></dl>';
-
-    let obs = new MutationObserver((_, obs) => {
-      if (table.children.length === 1 &&
-          table.children[0].children[1]?.innerHTML === description &&
-          table.children[0].children[2]?.innerHTML === metadata
-      ) {
-        obs.disconnect();
-        document.title = $1;
-      }
-    });
-    obs.observe(table, {childList: true, subtree: true, characterData: true});)";
-
-  ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
-
-  TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
-
-  manager()->NotifyTriggerHandled(
-      DefaultTrigger(),
-      CreateReportResult(
-          /*trigger_time=*/base::Time::Now(),
-          /*event_level_status=*/AttributionTrigger::EventLevelResult::kSuccess,
-          /*aggregatable_status=*/
-          AttributionTrigger::AggregatableResult::kSuccess,
-          /*replaced_event_level_report=*/absl::nullopt,
-          /*new_event_level_report=*/IrreleventEventLevelReport(),
-          /*new_aggregatable_report=*/IrreleventAggregatableReport(),
-          /*source=*/SourceBuilder().BuildStored()),
-      /*cleared_debug_key=*/1234);
-
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 
@@ -1091,12 +1010,14 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       let table = document.querySelector('#triggerTable')
           .shadowRoot.querySelector('tbody');
       let obs = new MutationObserver((_, obs) => {
-        if (table.children.length === 1 &&
+        if (table.children.length === 2 &&
             table.children[0].children[1]?.innerText === "Success: Report stored" &&
             table.children[0].children[2]?.innerText === "Success: Report stored" &&
             table.children[0].children[3]?.innerText === "https://d.test" &&
             table.children[0].children[4]?.innerText === "https://r.test" &&
-            table.children[0].children[5]?.innerText.includes('{')) {
+            table.children[0].children[5]?.innerText.includes('{') &&
+            table.children[0].children[6]?.innerText === '' &&
+            table.children[1].children[6]?.innerText === '123') {
           obs.disconnect();
           document.title = $1;
         }
@@ -1106,7 +1027,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   auto notify_trigger_handled =
       [&](AttributionTrigger::EventLevelResult event_status,
-          AttributionTrigger::AggregatableResult aggregatable_status) {
+          AttributionTrigger::AggregatableResult aggregatable_status,
+          absl::optional<uint64_t> cleared_debug_key = absl::nullopt) {
         static int offset_hours = 0;
         manager()->NotifyTriggerHandled(
             trigger,
@@ -1116,11 +1038,16 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                 /*replaced_event_level_report=*/absl::nullopt,
                 /*new_event_level_report=*/IrreleventEventLevelReport(),
                 /*new_aggregatable_report=*/IrreleventAggregatableReport(),
-                /*source=*/SourceBuilder().BuildStored()));
+                /*source=*/SourceBuilder().BuildStored()),
+            cleared_debug_key);
       };
 
   notify_trigger_handled(AttributionTrigger::EventLevelResult::kSuccess,
                          AttributionTrigger::AggregatableResult::kSuccess);
+
+  notify_trigger_handled(AttributionTrigger::EventLevelResult::kSuccess,
+                         AttributionTrigger::AggregatableResult::kSuccess,
+                         /*cleared_debug_key=*/123);
 
   // TODO(apaseltiner): Add tests for other statuses.
 
