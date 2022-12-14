@@ -323,6 +323,7 @@ void NavigateToURLAndWait(Browser* browser,
                           bool proceed_through_interstitial) {
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
+
   {
     content::TestNavigationObserver observer(
         web_contents, content::MessageLoopRunner::QuitMode::DEFERRED);

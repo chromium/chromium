@@ -1631,7 +1631,12 @@ void WebAppIntegrationTestDriver::NavigatePwa(Site pwa, Site to) {
   if (!BeforeStateChangeAction(__FUNCTION__))
     return;
   app_browser_ = GetAppBrowserForSite(pwa);
+
+  content::TestNavigationObserver url_observer(GetUrlForSite(to));
+  url_observer.StartWatchingNewWebContents();
+  url_observer.WatchExistingWebContents();
   NavigateToURLAndWait(app_browser(), GetUrlForSite(to), false);
+  url_observer.Wait();
   AfterStateChangeAction();
 }
 
@@ -3101,14 +3106,18 @@ void WebAppIntegrationTestDriver::NavigateTabbedBrowserToSite(
     const GURL& url,
     NavigationMode mode) {
   DCHECK(browser());
+  content::TestNavigationObserver url_observer(url);
   if (mode == NavigationMode::kNewTab) {
+    url_observer.StartWatchingNewWebContents();
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
             ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   } else {
+    url_observer.WatchExistingWebContents();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
+  url_observer.Wait();
 }
 
 Browser* WebAppIntegrationTestDriver::GetAppBrowserForSite(
