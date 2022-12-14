@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-
 import collections
 import contextlib
 import glob
@@ -37,8 +36,9 @@ _ALL_PACKAGES = object()
 # These files are used as backing files for corresponding qcow2 images.
 _BACKING_FILES = ('system.img', 'vendor.img')
 
-_DEFAULT_AVDMANAGER_PATH = os.path.join(
-    constants.ANDROID_SDK_ROOT, 'cmdline-tools', 'latest', 'bin', 'avdmanager')
+_DEFAULT_AVDMANAGER_PATH = os.path.join(constants.ANDROID_SDK_ROOT,
+                                        'cmdline-tools', 'latest', 'bin',
+                                        'avdmanager')
 # Default to a 480dp mdpi screen (a relatively large phone).
 # See https://developer.android.com/training/multiscreen/screensizes
 # and https://developer.android.com/training/multiscreen/screendensities
@@ -187,19 +187,17 @@ class _AvdManagerAgent:
     if force:
       create_cmd += ['--force']
 
-    create_proc = cmd_helper.Popen(
-        create_cmd,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        env=self._env)
+    create_proc = cmd_helper.Popen(create_cmd,
+                                   stdin=subprocess.PIPE,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   env=self._env)
     output, error = create_proc.communicate(input='\n')
     if create_proc.returncode != 0:
-      raise AvdException(
-          'AVD creation failed',
-          command=create_cmd,
-          stdout=output,
-          stderr=error)
+      raise AvdException('AVD creation failed',
+                         command=create_cmd,
+                         stdout=output,
+                         stderr=error)
 
     for line in output.splitlines():
       logging.info('  %s', line)
@@ -342,14 +340,13 @@ class AvdConfig:
     if not os.path.exists(android_avd_home):
       os.makedirs(android_avd_home)
 
-    avd_manager = _AvdManagerAgent(
-        avd_home=android_avd_home, sdk_root=self._emulator_sdk_root)
+    avd_manager = _AvdManagerAgent(avd_home=android_avd_home,
+                                   sdk_root=self._emulator_sdk_root)
 
     logging.info('Creating AVD.')
-    avd_manager.Create(
-        avd_name=self._config.avd_name,
-        system_image=self._config.system_image_name,
-        force=force)
+    avd_manager.Create(avd_name=self._config.avd_name,
+                       system_image=self._config.system_image_name,
+                       force=force)
 
     try:
       logging.info('Modifying AVD configuration.')
@@ -856,8 +853,10 @@ class _AvdInstance:
       # Enable the emulator log when debug_tags is set.
       if not debug_tags:
         self._sink = open('/dev/null', 'w')
-      self._emulator_proc = cmd_helper.Popen(
-          emulator_cmd, stdout=self._sink, stderr=self._sink, env=emulator_env)
+      self._emulator_proc = cmd_helper.Popen(emulator_cmd,
+                                             stdout=self._sink,
+                                             stderr=self._sink,
+                                             env=emulator_env)
 
       # Waits for the emulator to report its serial as requested via
       # -report-console. See http://bit.ly/2lK3L18 for more.
@@ -869,7 +868,10 @@ class _AvdInstance:
 
       try:
         self._emulator_serial = timeout_retry.Run(
-            listen_for_serial, timeout=30, retries=0, args=[sock])
+            listen_for_serial,
+            timeout=120 if is_slow_start else 30,
+            retries=0,
+            args=[sock])
         logging.info('%s started', self._emulator_serial)
       except Exception:
         self.Stop(force=True)
