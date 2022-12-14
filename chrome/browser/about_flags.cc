@@ -9639,6 +9639,11 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
               entry.internal_name)) {
     return true;
   }
+  // Skip lacros-selection if it is controlled by LacrosSelection policy.
+  if (!strcmp(kLacrosSelectionInternalName, entry.internal_name)) {
+    return crosapi::browser_util::GetCachedLacrosSelectionPolicy() !=
+           crosapi::browser_util::LacrosSelectionPolicy::kUserChoice;
+  }
 
   if (!strcmp(kPreferDcheckInternalName, entry.internal_name)) {
     return !crosapi::browser_util::IsLacrosAllowedToBeEnabled();
