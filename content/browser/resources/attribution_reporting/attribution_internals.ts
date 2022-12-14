@@ -33,20 +33,12 @@ function bigintReplacer(_key: string, value: any): any {
 }
 
 class ValueColumn<T, V> implements Column<T> {
-  compare: (a: T, b: T) => number;
-  header: string;
-  protected getValue: (param: T) => V;
+  readonly compare: (a: T, b: T) => number;
 
   constructor(
-      header: string, getValue: (param: T) => V,
-      compare?: ((a: T, b: T) => number)) {
-    this.header = header;
-    this.getValue = getValue;
-    if (compare) {
-      this.compare = compare;
-    } else {
-      this.compare = (a: T, b: T) => compareDefault(getValue(a), getValue(b));
-    }
+      private readonly header: string,
+      protected readonly getValue: (param: T) => V) {
+    this.compare = (a: T, b: T) => compareDefault(getValue(a), getValue(b));
   }
 
   render(td: HTMLElement, row: T) {
@@ -109,8 +101,6 @@ function renderA(td: HTMLElement, text: string, href: string) {
 }
 
 class LogMetadataColumn implements Column<Log> {
-  compare = null;
-
   renderHeader(th: HTMLElement) {
     th.innerText = 'Metadata';
   }
@@ -121,8 +111,6 @@ class LogMetadataColumn implements Column<Log> {
 }
 
 class LogDescriptionColumn implements Column<Log> {
-  compare = null;
-
   renderHeader(th: HTMLElement) {
     th.innerText = 'Description';
   }
@@ -135,12 +123,12 @@ class LogDescriptionColumn implements Column<Log> {
 const debugPathPattern: RegExp =
     /(?<=\/\.well-known\/attribution-reporting\/)debug(?=\/)/;
 
-class ReportUrlColumn extends ValueColumn<Report, string> {
+class ReportUrlColumn<T extends Report> extends ValueColumn<T, string> {
   constructor() {
     super('Report URL', (e) => e.reportUrl);
   }
 
-  override render(td: HTMLElement, row: Report) {
+  override render(td: HTMLElement, row: T) {
     if (!row.isDebug) {
       td.innerText = row.reportUrl;
       return;
@@ -168,16 +156,11 @@ class Selectable {
 }
 
 class SelectionColumn<T extends Selectable> implements Column<T> {
-  compare: ((a: T, b: T) => number)|null;
-  model: TableModel<T>;
-  selectAll: HTMLInputElement;
-  listener: () => void;
-  selectionChangedListeners: Set<(param: boolean) => void>;
+  private readonly selectAll: HTMLInputElement;
+  private readonly listener: () => void;
+  readonly selectionChangedListeners: Set<(param: boolean) => void> = new Set();
 
-  constructor(model: TableModel<T>) {
-    this.compare = null;
-    this.model = model;
-
+  constructor(private readonly model: TableModel<T>) {
     this.selectAll = document.createElement('input');
     this.selectAll.type = 'checkbox';
     this.selectAll.addEventListener('input', () => {
@@ -192,7 +175,6 @@ class SelectionColumn<T extends Selectable> implements Column<T> {
 
     this.listener = () => this.onChange();
     this.model.rowsChangedListeners.add(this.listener);
-    this.selectionChangedListeners = new Set();
   }
 
   render(td: HTMLElement, row: T) {
@@ -283,48 +265,47 @@ class Source {
 }
 
 class SourceTableModel extends TableModel<Source> {
-  storedSources: Source[] = [];
-  unstoredSources: Source[] = [];
+  private storedSources: Source[] = [];
+  private unstoredSources: Source[] = [];
 
   constructor() {
-    super();
-
-    this.cols = [
-      new ValueColumn<Source, bigint>(
-          'Source Event ID', (e) => e.sourceEventId),
-      new ValueColumn<Source, string>('Status', (e) => e.status),
-      new ValueColumn<Source, string>('Source Origin', (e) => e.sourceOrigin),
-      new ValueColumn<Source, string>(
-          'Destination', (e) => e.attributionDestination),
-      new ValueColumn<Source, string>(
-          'Reporting Origin', (e) => e.reportingOrigin),
-      new DateColumn<Source>('Source Registration Time', (e) => e.sourceTime),
-      new DateColumn<Source>('Expiry Time', (e) => e.expiryTime),
-      new DateColumn<Source>(
-          'Event Report Window Time', (e) => e.eventReportWindowTime),
-      new DateColumn<Source>(
-          'Aggregatable Report Window Time',
-          (e) => e.aggregatableReportWindowTime),
-      new ValueColumn<Source, string>('Source Type', (e) => e.sourceType),
-      new ValueColumn<Source, bigint>('Priority', (e) => e.priority),
-      new CodeColumn<Source>('Filter Data', (e) => e.filterData),
-      new CodeColumn<Source>('Aggregation Keys', (e) => e.aggregationKeys),
-      new ValueColumn<Source, string>(
-          'Aggregatable Budget Consumed',
-          (e) => `${e.aggregatableBudgetConsumed} / ${BUDGET_PER_SOURCE}`),
-      new ValueColumn<Source, string>('Debug Key', (e) => e.debugKey),
-      new ValueColumn<Source, string>('Dedup Keys', (e) => e.dedupKeys),
-      new ValueColumn<Source, string>(
-          'Aggregatable Dedup Keys', (e) => e.aggregatableDedupKeys),
-      new ValueColumn<Source, string>(
-          'Verbose Debug Reporting',
-          (e) => e.debugReportingEnabled ? 'enabled' : 'disabled'),
-    ];
-
-    this.emptyRowText = 'No sources.';
-
-    // Sort by source registration time by default.
-    this.sortIdx = 5;
+    super(
+        [
+          new ValueColumn<Source, bigint>(
+              'Source Event ID', (e) => e.sourceEventId),
+          new ValueColumn<Source, string>('Status', (e) => e.status),
+          new ValueColumn<Source, string>(
+              'Source Origin', (e) => e.sourceOrigin),
+          new ValueColumn<Source, string>(
+              'Destination', (e) => e.attributionDestination),
+          new ValueColumn<Source, string>(
+              'Reporting Origin', (e) => e.reportingOrigin),
+          new DateColumn<Source>(
+              'Source Registration Time', (e) => e.sourceTime),
+          new DateColumn<Source>('Expiry Time', (e) => e.expiryTime),
+          new DateColumn<Source>(
+              'Event Report Window Time', (e) => e.eventReportWindowTime),
+          new DateColumn<Source>(
+              'Aggregatable Report Window Time',
+              (e) => e.aggregatableReportWindowTime),
+          new ValueColumn<Source, string>('Source Type', (e) => e.sourceType),
+          new ValueColumn<Source, bigint>('Priority', (e) => e.priority),
+          new CodeColumn<Source>('Filter Data', (e) => e.filterData),
+          new CodeColumn<Source>('Aggregation Keys', (e) => e.aggregationKeys),
+          new ValueColumn<Source, string>(
+              'Aggregatable Budget Consumed',
+              (e) => `${e.aggregatableBudgetConsumed} / ${BUDGET_PER_SOURCE}`),
+          new ValueColumn<Source, string>('Debug Key', (e) => e.debugKey),
+          new ValueColumn<Source, string>('Dedup Keys', (e) => e.dedupKeys),
+          new ValueColumn<Source, string>(
+              'Aggregatable Dedup Keys', (e) => e.aggregatableDedupKeys),
+          new ValueColumn<Source, string>(
+              'Verbose Debug Reporting',
+              (e) => e.debugReportingEnabled ? 'enabled' : 'disabled'),
+        ],
+        5,  // Sort by source registration time by default.
+        'No sources.',
+    );
   }
 
   override getRows() {
@@ -373,28 +354,26 @@ class Trigger {
 }
 
 class TriggerTableModel extends TableModel<Trigger> {
-  triggers: Trigger[] = [];
+  private triggers: Trigger[] = [];
 
   constructor() {
-    super();
-
-    this.cols = [
-      new DateColumn<Trigger>('Trigger Time', (e) => e.triggerTime),
-      new ValueColumn<Trigger, string>(
-          'Event-Level Status', (e) => e.eventLevelStatus),
-      new ValueColumn<Trigger, string>(
-          'Aggregatable Status', (e) => e.aggregatableStatus),
-      new ValueColumn<Trigger, string>(
-          'Destination', (e) => e.destinationOrigin),
-      new ValueColumn<Trigger, string>(
-          'Reporting Origin', (e) => e.reportingOrigin),
-      new CodeColumn<Trigger>('Registration JSON', (e) => e.registrationJson),
-    ];
-
-    this.emptyRowText = 'No triggers.';
-
-    // Sort by trigger time by default.
-    this.sortIdx = 0;
+    super(
+        [
+          new DateColumn<Trigger>('Trigger Time', (e) => e.triggerTime),
+          new ValueColumn<Trigger, string>(
+              'Event-Level Status', (e) => e.eventLevelStatus),
+          new ValueColumn<Trigger, string>(
+              'Aggregatable Status', (e) => e.aggregatableStatus),
+          new ValueColumn<Trigger, string>(
+              'Destination', (e) => e.destinationOrigin),
+          new ValueColumn<Trigger, string>(
+              'Reporting Origin', (e) => e.reportingOrigin),
+          new CodeColumn<Trigger>(
+              'Registration JSON', (e) => e.registrationJson),
+        ],
+        0,  // Sort by trigger time by default.
+        'No triggers.',
+    );
   }
 
   override getRows() {
@@ -492,19 +471,37 @@ class AggregatableAttributionReport extends Report {
   }
 }
 
-class ReportTableModel extends TableModel<Report> {
-  showDebugReportsCheckbox: HTMLInputElement;
-  hiddenDebugReportsSpan: HTMLSpanElement;
-  sendReportsButton: HTMLButtonElement;
-  selectionColumn: SelectionColumn<Report>;
-  sentOrDroppedReports: Report[] = [];
-  storedReports: Report[] = [];
-  debugReports: Report[] = [];
+function commonReportTableColumns<T extends Report>(): Array<Column<T>> {
+  return [
+    new CodeColumn<T>('Report Body', (e) => e.reportBody),
+    new ValueColumn<T, string>('Status', (e) => e.status),
+    new ReportUrlColumn<T>(),
+    new DateColumn<T>('Trigger Time', (e) => e.triggerTime),
+    new DateColumn<T>('Report Time', (e) => e.reportTime),
+  ];
+}
+
+class ReportTableModel<T extends Report> extends TableModel<T> {
+  private readonly showDebugReportsCheckbox: HTMLInputElement;
+  private readonly hiddenDebugReportsSpan: HTMLSpanElement;
+  private readonly sendReportsButton: HTMLButtonElement;
+  private sentOrDroppedReports: T[] = [];
+  private storedReports: T[] = [];
+  private debugReports: T[] = [];
 
   constructor(
-      showDebugReportsContainer: HTMLElement,
+      cols: Array<Column<T>>, showDebugReportsContainer: HTMLElement,
       sendReportsButton: HTMLButtonElement) {
-    super();
+    super(
+        commonReportTableColumns<T>().concat(cols),
+        5,  // Sort by report time by default; the extra column is added below
+        'No sent or pending reports.',
+    );
+
+    // This can't be included in the super call above, as `this` can't be
+    // accessed until after `super` returns.
+    const selectionColumn = new SelectionColumn<T>(this);
+    this.cols.unshift(selectionColumn);
 
     const showDebugReportsCheckbox =
         showDebugReportsContainer.querySelector<HTMLInputElement>(
@@ -519,18 +516,13 @@ class ReportTableModel extends TableModel<Report> {
 
     this.sendReportsButton = sendReportsButton;
 
-    this.selectionColumn = new SelectionColumn(this);
-
-    this.emptyRowText = 'No sent or pending reports.';
-
     this.showDebugReportsCheckbox.addEventListener(
         'input', () => this.notifyRowsChanged());
 
     this.sendReportsButton.addEventListener('click', () => this.sendReports_());
-    this.selectionColumn.selectionChangedListeners.add(
-        (anySelected: boolean) => {
-          this.sendReportsButton.disabled = !anySelected;
-        });
+    selectionColumn.selectionChangedListeners.add((anySelected: boolean) => {
+      this.sendReportsButton.disabled = !anySelected;
+    });
 
     this.rowsChangedListeners.add(() => this.updateHiddenDebugReportsSpan_());
   }
@@ -547,12 +539,12 @@ class ReportTableModel extends TableModel<Report> {
     return rows;
   }
 
-  setStoredReports(storedReports: Report[]) {
+  setStoredReports(storedReports: T[]) {
     this.storedReports = storedReports;
     this.notifyRowsChanged();
   }
 
-  addSentOrDroppedReport(report: Report) {
+  addSentOrDroppedReport(report: T) {
     // Prevent the page from consuming ever more memory if the user leaves the
     // page open for a long time.
     if (this.sentOrDroppedReports.length + this.debugReports.length >= 1000) {
@@ -614,51 +606,37 @@ class ReportTableModel extends TableModel<Report> {
   }
 }
 
-class EventLevelReportTableModel extends ReportTableModel {
+class EventLevelReportTableModel extends ReportTableModel<EventLevelReport> {
   constructor(
       showDebugReportsContainer: HTMLElement,
       sendReportsButton: HTMLButtonElement) {
-    super(showDebugReportsContainer, sendReportsButton);
-
-    this.cols = [
-      this.selectionColumn,
-      new CodeColumn<Report>('Report Body', (e) => e.reportBody),
-      new ValueColumn<Report, string>('Status', (e) => e.status),
-      new ReportUrlColumn(),
-      new DateColumn<Report>('Trigger Time', (e) => e.triggerTime),
-      new DateColumn<Report>('Report Time', (e) => e.reportTime),
-      new ValueColumn<Report, bigint>(
-          'Report Priority', (e) => (e as EventLevelReport).reportPriority),
-      new ValueColumn<Report, string>(
-          'Randomized Report',
-          (e) => (e as EventLevelReport).attributedTruthfully ? 'no' : 'yes'),
-    ];
-
-    // Sort by report time by default.
-    this.sortIdx = 5;
+    super(
+        [
+          new ValueColumn<EventLevelReport, bigint>(
+              'Report Priority', (e) => e.reportPriority),
+          new ValueColumn<EventLevelReport, string>(
+              'Randomized Report',
+              (e) => e.attributedTruthfully ? 'no' : 'yes'),
+        ],
+        showDebugReportsContainer,
+        sendReportsButton,
+    );
   }
 }
 
-class AggregatableAttributionReportTableModel extends ReportTableModel {
+class AggregatableAttributionReportTableModel extends
+    ReportTableModel<AggregatableAttributionReport> {
   constructor(
       showDebugReportsContainer: HTMLElement,
       sendReportsButton: HTMLButtonElement) {
-    super(showDebugReportsContainer, sendReportsButton);
-
-    this.cols = [
-      this.selectionColumn,
-      new CodeColumn<Report>('Report Body', (e) => e.reportBody),
-      new ValueColumn<Report, string>('Status', (e) => e.status),
-      new ReportUrlColumn(),
-      new DateColumn<Report>('Trigger Time', (e) => e.triggerTime),
-      new DateColumn<Report>('Report Time', (e) => e.reportTime),
-      new CodeColumn<Report>(
-          'Histograms',
-          (e) => (e as AggregatableAttributionReport).contributions),
-    ];
-
-    // Sort by report time by default.
-    this.sortIdx = 5;
+    super(
+        [
+          new CodeColumn<AggregatableAttributionReport>(
+              'Histograms', (e) => e.contributions),
+        ],
+        showDebugReportsContainer,
+        sendReportsButton,
+    );
   }
 }
 
@@ -684,22 +662,19 @@ class DebugReport {
 }
 
 class DebugReportTableModel extends TableModel<DebugReport> {
-  debugReports: DebugReport[] = [];
+  private debugReports: DebugReport[] = [];
 
   constructor() {
-    super();
-
-    this.cols = [
-      new DateColumn<DebugReport>('Time', (e) => e.time),
-      new ValueColumn<DebugReport, string>('URL', (e) => e.url),
-      new ValueColumn<DebugReport, string>('Status', (e) => e.status),
-      new CodeColumn<DebugReport>('Body', (e) => e.body),
-    ];
-
-    // Sort by report time by default.
-    this.sortIdx = 0;
-
-    this.emptyRowText = 'No verbose debug reports.';
+    super(
+        [
+          new DateColumn<DebugReport>('Time', (e) => e.time),
+          new ValueColumn<DebugReport, string>('URL', (e) => e.url),
+          new ValueColumn<DebugReport, string>('Status', (e) => e.status),
+          new CodeColumn<DebugReport>('Body', (e) => e.body),
+        ],
+        0,  // Sort by report time by default.
+        'No verbose debug reports.',
+    );
   }
 
   // TODO(apaseltiner): Style error rows like `ReportTableModel`
@@ -883,21 +858,18 @@ class FailedSourceRegistrationLog extends Log {
 }
 
 class LogTableModel extends TableModel<Log> {
-  logs: Log[] = [];
+  private logs: Log[] = [];
 
   constructor() {
-    super();
-
-    this.cols = [
-      new DateColumn<Log>('Timestamp', (e) => e.timestamp),
-      new LogDescriptionColumn(),
-      new LogMetadataColumn(),
-    ];
-
-    this.emptyRowText = 'No logs.';
-
-    // Sort by time by default.
-    this.sortIdx = 0;
+    super(
+        [
+          new DateColumn<Log>('Timestamp', (e) => e.timestamp),
+          new LogDescriptionColumn(),
+          new LogMetadataColumn(),
+        ],
+        0,  // Sort by time by default.
+        'No logs.',
+    );
   }
 
   override getRows() {
@@ -1262,14 +1234,15 @@ document.addEventListener('DOMContentLoaded', function() {
   triggerTable.setModel(triggerTableModel!);
 
   const reportTable =
-      document.querySelector<AttributionInternalsTableElement<Report>>(
-          '#reportTable');
+      document
+          .querySelector<AttributionInternalsTableElement<EventLevelReport>>(
+              '#reportTable');
   assert(reportTable);
   reportTable.setModel(eventLevelReportTableModel!);
 
-  const aggregatableReportTable =
-      document.querySelector<AttributionInternalsTableElement<Report>>(
-          '#aggregatableReportTable');
+  const aggregatableReportTable = document.querySelector<
+      AttributionInternalsTableElement<AggregatableAttributionReport>>(
+      '#aggregatableReportTable');
   assert(aggregatableReportTable);
   aggregatableReportTable.setModel(aggregatableAttributionReportTableModel!);
 
