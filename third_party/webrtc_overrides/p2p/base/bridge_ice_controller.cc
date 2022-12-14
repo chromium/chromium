@@ -28,7 +28,6 @@ using cricket::IceConfig;
 using cricket::IceControllerInterface;
 using cricket::IceMode;
 using cricket::IceRole;
-using cricket::IceSwitchReason;
 using cricket::NominationMode;
 }  // unnamed namespace
 
@@ -129,7 +128,8 @@ void BridgeIceController::HandlePingResult(
       base::Milliseconds(result.recheck_delay_ms));
 }
 
-void BridgeIceController::OnSortAndSwitchRequest(IceSwitchReason reason) {
+void BridgeIceController::OnSortAndSwitchRequest(
+    cricket::IceSwitchReason reason) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   if (!sort_pending_) {
     // To avoid recursion, enqueue a task to sort connections and check if a
@@ -149,7 +149,7 @@ void BridgeIceController::OnSortAndSwitchRequest(IceSwitchReason reason) {
 }
 
 void BridgeIceController::SortAndSwitchToBestConnection(
-    IceSwitchReason reason) {
+    cricket::IceSwitchReason reason) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   if (!sort_pending_) {
     return;
@@ -161,13 +161,13 @@ void BridgeIceController::SortAndSwitchToBestConnection(
 }
 
 void BridgeIceController::OnImmediateSortAndSwitchRequest(
-    IceSwitchReason reason) {
+    cricket::IceSwitchReason reason) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   DoSortAndSwitchToBestConnection(reason);
 }
 
 void BridgeIceController::DoSortAndSwitchToBestConnection(
-    IceSwitchReason reason) {
+    cricket::IceSwitchReason reason) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
 
   // Make sure the connection states are up-to-date since this affects how they
@@ -180,8 +180,9 @@ void BridgeIceController::DoSortAndSwitchToBestConnection(
   UpdateStateOnConnectionsResorted();
 }
 
-bool BridgeIceController::OnImmediateSwitchRequest(IceSwitchReason reason,
-                                                   const Connection* selected) {
+bool BridgeIceController::OnImmediateSwitchRequest(
+    cricket::IceSwitchReason reason,
+    const Connection* selected) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   IceControllerInterface::SwitchResult result =
       native_controller_->ShouldSwitchConnection(reason, selected);
@@ -190,7 +191,7 @@ bool BridgeIceController::OnImmediateSwitchRequest(IceSwitchReason reason,
 }
 
 void BridgeIceController::HandleSwitchResult(
-    IceSwitchReason reason_for_switch,
+    cricket::IceSwitchReason reason_for_switch,
     IceControllerInterface::SwitchResult result) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   if (result.connection.has_value()) {

@@ -4,8 +4,8 @@
 
 #include "third_party/webrtc_overrides/p2p/base/bridge_ice_controller.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
-
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,34 +74,35 @@ TEST(BridgeIceControllerTest, PassthroughIceControllerInterface) {
   std::unique_ptr<MockIceController> will_move =
       std::make_unique<MockIceController>(IceControllerFactoryArgs{});
   MockIceController* wrapped = will_move.get();
-  BridgeIceController controller(env.GetMainThreadTaskRunner(), &agent,
-                                 std::move(will_move));
+  scoped_refptr<BridgeIceController> controller =
+      base::MakeRefCounted<BridgeIceController>(env.GetMainThreadTaskRunner(),
+                                                &agent, std::move(will_move));
 
   EXPECT_CALL(*wrapped, SetIceConfig(Ref(*kIceConfig)));
-  controller.SetIceConfig(*kIceConfig);
+  controller->SetIceConfig(*kIceConfig);
 
   EXPECT_CALL(*wrapped,
               GetUseCandidateAttr(kConnection, NominationMode::AGGRESSIVE,
                                   IceMode::ICEMODE_LITE))
       .WillOnce(Return(true));
-  EXPECT_TRUE(controller.GetUseCandidateAttribute(
+  EXPECT_TRUE(controller->GetUseCandidateAttribute(
       kConnection, NominationMode::AGGRESSIVE, IceMode::ICEMODE_LITE));
 
   EXPECT_CALL(*wrapped, AddConnection(kConnection));
-  controller.OnConnectionAdded(kConnection);
+  controller->OnConnectionAdded(kConnection);
 
   EXPECT_CALL(*wrapped, OnConnectionDestroyed(kConnection));
-  controller.OnConnectionDestroyed(kConnection);
+  controller->OnConnectionDestroyed(kConnection);
 
   EXPECT_CALL(*wrapped, SetSelectedConnection(kConnection));
-  controller.OnConnectionSwitched(kConnection);
+  controller->OnConnectionSwitched(kConnection);
 
   EXPECT_CALL(*wrapped, MarkConnectionPinged(kConnection));
-  controller.OnConnectionPinged(kConnection);
+  controller->OnConnectionPinged(kConnection);
 
   EXPECT_CALL(*wrapped, FindNextPingableConnection())
       .WillOnce(Return(kConnection));
-  EXPECT_EQ(controller.FindNextPingableConnection(), kConnection);
+  EXPECT_EQ(controller->FindNextPingableConnection(), kConnection);
 }
 
 TEST(BridgeIceControllerTest, HandlesImmediateSwitchRequest) {
@@ -110,8 +111,9 @@ TEST(BridgeIceControllerTest, HandlesImmediateSwitchRequest) {
   std::unique_ptr<NiceMockIceController> will_move =
       std::make_unique<NiceMockIceController>(IceControllerFactoryArgs{});
   NiceMockIceController* wrapped = will_move.get();
-  BridgeIceController controller(env.GetMainThreadTaskRunner(), &agent,
-                                 std::move(will_move));
+  scoped_refptr<BridgeIceController> controller =
+      base::MakeRefCounted<BridgeIceController>(env.GetMainThreadTaskRunner(),
+                                                &agent, std::move(will_move));
 
   IceSwitchReason reason = IceSwitchReason::NOMINATION_ON_CONTROLLED_SIDE;
   std::vector<const Connection*> conns_to_forget{kConnectionTwo};
@@ -132,7 +134,7 @@ TEST(BridgeIceControllerTest, HandlesImmediateSwitchRequest) {
   EXPECT_CALL(agent, ForgetLearnedStateForConnections(
                          ElementsAreArray(conns_to_forget)));
 
-  EXPECT_TRUE(controller.OnImmediateSwitchRequest(reason, kConnection));
+  EXPECT_TRUE(controller->OnImmediateSwitchRequest(reason, kConnection));
 
   // No rechecks before recheck delay.
   env.FastForwardBy(base::Milliseconds(recheck_delay_ms - 1));
@@ -156,8 +158,9 @@ TEST(BridgeIceControllerTest, HandlesImmediateSortAndSwitchRequest) {
   std::unique_ptr<NiceMockIceController> will_move =
       std::make_unique<NiceMockIceController>(IceControllerFactoryArgs{});
   NiceMockIceController* wrapped = will_move.get();
-  BridgeIceController controller(env.GetMainThreadTaskRunner(), &agent,
-                                 std::move(will_move));
+  scoped_refptr<BridgeIceController> controller =
+      base::MakeRefCounted<BridgeIceController>(env.GetMainThreadTaskRunner(),
+                                                &agent, std::move(will_move));
 
   IceSwitchReason reason = IceSwitchReason::NEW_CONNECTION_FROM_LOCAL_CANDIDATE;
   std::vector<const Connection*> conns_to_forget{kConnectionTwo};
@@ -182,7 +185,7 @@ TEST(BridgeIceControllerTest, HandlesImmediateSortAndSwitchRequest) {
   EXPECT_CALL(agent, PruneConnections(ElementsAreArray(conns_to_prune)))
       .InSequence(sort_and_switch);
 
-  controller.OnImmediateSortAndSwitchRequest(reason);
+  controller->OnImmediateSortAndSwitchRequest(reason);
 
   // No rechecks before recheck delay.
   env.FastForwardBy(base::Milliseconds(recheck_delay_ms - 1));
@@ -210,8 +213,9 @@ TEST(BridgeIceControllerTest, HandlesSortAndSwitchRequest) {
   std::unique_ptr<NiceMockIceController> will_move =
       std::make_unique<NiceMockIceController>(IceControllerFactoryArgs{});
   NiceMockIceController* wrapped = will_move.get();
-  BridgeIceController controller(env.GetMainThreadTaskRunner(), &agent,
-                                 std::move(will_move));
+  scoped_refptr<BridgeIceController> controller =
+      base::MakeRefCounted<BridgeIceController>(env.GetMainThreadTaskRunner(),
+                                                &agent, std::move(will_move));
 
   IceSwitchReason reason = IceSwitchReason::NETWORK_PREFERENCE_CHANGE;
 
@@ -220,7 +224,7 @@ TEST(BridgeIceControllerTest, HandlesSortAndSwitchRequest) {
   EXPECT_CALL(*wrapped, SortAndSwitchConnection(_)).Times(0);
   EXPECT_CALL(agent, SwitchSelectedConnection(_, _)).Times(0);
 
-  controller.OnSortAndSwitchRequest(reason);
+  controller->OnSortAndSwitchRequest(reason);
 
   std::vector<const Connection*> conns_to_forget{kConnectionTwo};
   int recheck_delay_ms = 10;
@@ -250,15 +254,16 @@ TEST(BridgeIceControllerTest, StartPingingAfterSortAndSwitch) {
   std::unique_ptr<NiceMockIceController> will_move =
       std::make_unique<NiceMockIceController>(IceControllerFactoryArgs{});
   NiceMockIceController* wrapped = will_move.get();
-  BridgeIceController controller(env.GetMainThreadTaskRunner(), &agent,
-                                 std::move(will_move));
+  scoped_refptr<BridgeIceController> controller =
+      base::MakeRefCounted<BridgeIceController>(env.GetMainThreadTaskRunner(),
+                                                &agent, std::move(will_move));
 
   // Pinging does not start automatically, unless triggered through a sort.
   EXPECT_CALL(*wrapped, HasPingableConnection()).Times(0);
   EXPECT_CALL(*wrapped, SelectConnectionToPing(_)).Times(0);
   EXPECT_CALL(agent, OnStartedPinging()).Times(0);
 
-  controller.OnSortAndSwitchRequest(IceSwitchReason::DATA_RECEIVED);
+  controller->OnSortAndSwitchRequest(IceSwitchReason::DATA_RECEIVED);
 
   // Pinging does not start if no pingable connection.
   EXPECT_CALL(*wrapped, HasPingableConnection()).WillOnce(Return(false));
@@ -285,7 +290,7 @@ TEST(BridgeIceControllerTest, StartPingingAfterSortAndSwitch) {
       .WillOnce(Return(ping_result));
   EXPECT_CALL(agent, SendPingRequest(kConnection)).InSequence(start_pinging);
 
-  controller.OnSortAndSwitchRequest(IceSwitchReason::DATA_RECEIVED);
+  controller->OnSortAndSwitchRequest(IceSwitchReason::DATA_RECEIVED);
   env.FastForwardBy(kTick);
 
   // ICE controller should recheck and ping after the recheck delay.

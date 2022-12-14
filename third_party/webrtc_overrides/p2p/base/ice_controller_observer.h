@@ -5,7 +5,10 @@
 #ifndef THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_ICE_CONTROLLER_OBSERVER_H_
 #define THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_ICE_CONTROLLER_OBSERVER_H_
 
+#include "base/memory/scoped_refptr.h"
+
 #include "third_party/webrtc_overrides/p2p/base/ice_connection.h"
+#include "third_party/webrtc_overrides/p2p/base/ice_interaction_interface.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_ping_proposal.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_prune_proposal.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_switch_proposal.h"
@@ -19,8 +22,11 @@ class IceControllerObserverInterface {
   virtual ~IceControllerObserverInterface() = default;
 
   // Once attached, the observer will receive ICE controller events from the
-  // observed ICE controller.
-  virtual void OnObserverAttached() {}
+  // observed ICE controller. The observer can respond to events where the ICE
+  // controller expects such responses through the interaction agent supplied in
+  // this method.
+  virtual void OnObserverAttached(
+      scoped_refptr<IceInteractionInterface> agent) {}
   // The observer will no longer receive ICE controller events for the observed
   // ICE controller.
   virtual void OnObserverDetached() {}
