@@ -307,7 +307,7 @@ PersonalizationAppUI::PersonalizationAppUI(
       "script-src chrome://resources chrome://test chrome://webui-test "
       "'self';");
 
-  // TODO(crbug.com/1098690): Trusted Type Polymer
+  // TODO(crbug.com/1400799): Enable TrustedTypes.
   source->DisableTrustedTypesCSP();
 
   AddResources(source);

@@ -72,7 +72,7 @@ LockScreenNetworkUI::LockScreenNetworkUI(content::WebUI* web_ui)
   content::WebUIDataSource* html =
       content::WebUIDataSource::Create(chrome::kChromeUILockScreenNetworkHost);
 
-  // TODO(crbug.com/1098690): Trusted Type Polymer.
+  // TODO(crbug.com/1400799): Enable TrustedTypes
   html->DisableTrustedTypesCSP();
 
   html->AddLocalizedStrings(localized_strings);

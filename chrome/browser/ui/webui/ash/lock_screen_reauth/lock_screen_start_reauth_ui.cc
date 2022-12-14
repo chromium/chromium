@@ -49,7 +49,7 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::move(main_handler));
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
-  // TODO(crbug.com/1098690): Trusted Type Polymer
+  // TODO(crbug.com/1400799): Enable TrustedTypes.
   source->DisableTrustedTypesCSP();
 
   source->EnableReplaceI18nInJS();
