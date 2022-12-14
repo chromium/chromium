@@ -97,7 +97,7 @@ export class OutputFormatter {
         token === 'tableCellRowIndex' || token === 'tableCellColumnIndex') {
       this.formatTableCellIndex_(this.params_, token, options);
     } else if (token === 'cellIndexText') {
-      this.output_.formatCellIndexText_(this.params_, token, options);
+      this.formatCellIndexText_(this.params_, token, options);
     } else if (token === 'node') {
       this.output_.formatNode_(this.params_, token, tree, options);
     } else if (token === 'nameOrTextContent' || token === 'textContent') {
@@ -179,6 +179,43 @@ export class OutputFormatter {
       roles.add(currentNode.value);
     }
     return roles;
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @private
+   */
+  formatCellIndexText_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    if (node.htmlAttributes['aria-coltext']) {
+      let value = node.htmlAttributes['aria-coltext'];
+      let row = node;
+      while (row && row.role !== RoleType.ROW) {
+        row = row.parent;
+      }
+      if (!row || !row.htmlAttributes['aria-rowtext']) {
+        return;
+      }
+      value += row.htmlAttributes['aria-rowtext'];
+      this.output_.append_(buff, value, options);
+      formatLog.writeTokenWithValue(token, value);
+    } else {
+      formatLog.write(token);
+      this.output_.format_({
+        node,
+        outputFormat: ` @cell_summary($if($tableCellAriaRowIndex,
+                  $tableCellAriaRowIndex, $tableCellRowIndex),
+                $if($tableCellAriaColumnIndex, $tableCellAriaColumnIndex,
+                  $tableCellColumnIndex))`,
+        outputBuffer: buff,
+        outputFormatLogger: formatLog,
+      });
+    }
   }
 
   /**

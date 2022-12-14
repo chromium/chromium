@@ -672,38 +672,6 @@ export class Output {
   }
 
   /** @override */
-  formatCellIndexText_(data, token, options) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const formatLog = data.outputFormatLogger;
-
-    if (node.htmlAttributes['aria-coltext']) {
-      let value = node.htmlAttributes['aria-coltext'];
-      let row = node;
-      while (row && row.role !== RoleType.ROW) {
-        row = row.parent;
-      }
-      if (!row || !row.htmlAttributes['aria-rowtext']) {
-        return;
-      }
-      value += row.htmlAttributes['aria-rowtext'];
-      this.append_(buff, value, options);
-      formatLog.writeTokenWithValue(token, value);
-    } else {
-      formatLog.write(token);
-      this.format_({
-        node,
-        outputFormat: ` @cell_summary($if($tableCellAriaRowIndex,
-                  $tableCellAriaRowIndex, $tableCellRowIndex),
-                $if($tableCellAriaColumnIndex, $tableCellAriaColumnIndex,
-                  $tableCellColumnIndex))`,
-        outputBuffer: buff,
-        outputFormatLogger: formatLog,
-      });
-    }
-  }
-
-  /** @override */
   formatNode_(data, token, tree, options) {
     const buff = data.outputBuffer;
     const node = data.node;
