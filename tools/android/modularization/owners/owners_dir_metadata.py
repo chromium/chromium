@@ -4,19 +4,16 @@
 # found in the LICENSE file.
 
 import json
-import os
 import pathlib
 import sys
 from typing import Dict
 
 import owners_data
 
-_SRC_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
-
-sys.path.append(
-    os.path.join(_SRC_PATH, 'tools', 'android', 'dependency_analysis'))
-import subprocess_utils
+_TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve().parents[2]
+if str(_TOOLS_ANDROID_PATH) not in sys.path:
+  sys.path.append(str(_TOOLS_ANDROID_PATH))
+from python_utils import subprocess_utils
 
 
 def read_raw_dir_metadata(chromium_root: str, dirmd_path: str) -> Dict:
@@ -39,8 +36,7 @@ def build_dir_metadata(all_dir_metadata: Dict,
 synthetic_dir_metadatas: Dict[pathlib.Path, owners_data.DirMetadata] = {}
 
 
-def _build_dir_metadata_recursive(all_dir_metadata: Dict,
-                                  path: pathlib.Path
+def _build_dir_metadata_recursive(all_dir_metadata: Dict, path: pathlib.Path
                                   ) -> owners_data.DirMetadata:
   # Use memoized value
   if path in synthetic_dir_metadatas:

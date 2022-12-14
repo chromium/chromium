@@ -17,7 +17,7 @@ from typing import Dict, List, Optional, Set, Tuple
 import json_gn_editor
 import utils
 
-_TOOLS_ANDROID_PATH = pathlib.Path(__file__).parents[2].resolve()
+_TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve().parents[2]
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
     sys.path.append(str(_TOOLS_ANDROID_PATH))
 from python_utils import git_metadata_utils, subprocess_utils

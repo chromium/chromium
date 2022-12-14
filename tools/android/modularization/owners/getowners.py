@@ -4,21 +4,19 @@
 # found in the LICENSE file.
 r'''Get chromium OWNERS information for android directories.
 
-   tools/android/modularization/owners/getowners.py -- \
+   tools/android/modularization/owners/getowners.py \
    --git-dir ~/chromium/src \
    -o ~/owners.json
 '''
 
 import argparse
-import collections
-import dataclasses
 import datetime
 import functools
 import multiprocessing
 import os
 import re
 import time
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Tuple
 
 import owners_data
 import owners_dir_metadata
