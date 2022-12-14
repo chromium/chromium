@@ -6,10 +6,9 @@ package org.chromium.chrome.browser.privacy_sandbox.v4;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.view.Gravity;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
@@ -27,9 +26,15 @@ import org.chromium.ui.widget.CheckableImageView;
 /**
  * Dialog in the form of a notice shown for the Privacy Sandbox.
  */
-public class PrivacySandboxDialogNoticeEEAV4 extends Dialog implements View.OnClickListener {
+public class PrivacySandboxDialogNoticeEEAV4
+        extends Dialog implements View.OnClickListener, DialogInterface.OnShowListener {
     private SettingsLauncher mSettingsLauncher;
     private View mContentView;
+
+    private ButtonCompat mMoreButton;
+    private LinearLayout mActionButtons;
+    private ScrollView mScrollView;
+    private LinearLayout mDropdownElement;
 
     private final CheckableImageView mExpandArrowView;
     private LinearLayout mDropdownContainer;
@@ -48,15 +53,30 @@ public class PrivacySandboxDialogNoticeEEAV4 extends Dialog implements View.OnCl
         ButtonCompat settingsButton = mContentView.findViewById(R.id.settings_button);
         settingsButton.setOnClickListener(this);
 
+        mMoreButton = mContentView.findViewById(R.id.more_button);
+        mActionButtons = mContentView.findViewById(R.id.action_buttons);
+        mScrollView = mContentView.findViewById(R.id.privacy_sandbox_dialog_scroll_view);
+
         // Controls for the expanding section.
-        LinearLayout dropdownElement = mContentView.findViewById(R.id.dropdown_element);
-        dropdownElement.setOnClickListener(this);
+        mDropdownElement = mContentView.findViewById(R.id.dropdown_element);
+        mDropdownElement.setOnClickListener(this);
         mDropdownContainer = mContentView.findViewById(R.id.dropdown_container);
         mExpandArrowView = mContentView.findViewById(R.id.expand_arrow);
         mExpandArrowView.setImageDrawable(PrivacySandboxDialogUtils.createExpandDrawable(context));
         mExpandArrowView.setChecked(isDropdownExpanded());
 
         setBulletsDescription();
+
+        mMoreButton.setOnClickListener(this);
+        setOnShowListener(this);
+
+        mScrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
+            if (!mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
+                mMoreButton.setVisibility(View.GONE);
+                mActionButtons.setVisibility(View.VISIBLE);
+                mScrollView.post(() -> { mScrollView.pageScroll(ScrollView.FOCUS_DOWN); });
+            }
+        });
     }
 
     @Override
@@ -77,18 +97,19 @@ public class PrivacySandboxDialogNoticeEEAV4 extends Dialog implements View.OnCl
             dismiss();
             PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
                     getContext(), mSettingsLauncher, PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE);
+        } else if (id == R.id.more_button) {
+            if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
+                mScrollView.post(() -> { mScrollView.pageScroll(ScrollView.FOCUS_DOWN); });
+            } else {
+                mMoreButton.setVisibility(View.GONE);
+                mActionButtons.setVisibility(View.VISIBLE);
+                mScrollView.post(() -> { mScrollView.pageScroll(ScrollView.FOCUS_DOWN); });
+            }
         } else if (id == R.id.dropdown_element) {
-            var content = mContentView.findViewById(R.id.privacy_sandbox_notice_eea_content);
-            ScrollView scrollView =
-                    mContentView.findViewById(R.id.privacy_sandbox_notice_eea_scroll_view);
-
             if (isDropdownExpanded()) {
                 PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_MORE_INFO_CLOSED);
                 mDropdownContainer.setVisibility(View.GONE);
                 mDropdownContainer.removeAllViews();
-
-                ((FrameLayout.LayoutParams) content.getLayoutParams()).gravity =
-                        Gravity.CENTER_VERTICAL;
             } else {
                 mDropdownContainer.setVisibility(View.VISIBLE);
                 PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_MORE_INFO_OPENED);
@@ -109,12 +130,7 @@ public class PrivacySandboxDialogNoticeEEAV4 extends Dialog implements View.OnCl
                         R.id.privacy_sandbox_m1_notice_eea_learn_more_bullet_three,
                         R.string.privacy_sandbox_m1_notice_eea_learn_more_bullet_3);
 
-                ((FrameLayout.LayoutParams) content.getLayoutParams()).gravity = Gravity.TOP;
-
-                scrollView.post(() -> {
-                    scrollView.setSmoothScrollingEnabled(true);
-                    scrollView.fullScroll(ScrollView.FOCUS_DOWN);
-                });
+                mScrollView.post(() -> { mScrollView.scrollTo(0, mDropdownElement.getTop()); });
             }
 
             mExpandArrowView.setChecked(isDropdownExpanded());
@@ -125,6 +141,18 @@ public class PrivacySandboxDialogNoticeEEAV4 extends Dialog implements View.OnCl
                             ? R.string.accessibility_expanded_group
                             : R.string.accessibility_collapsed_group));
         }
+    }
+
+    @Override
+    public void onShow(DialogInterface dialogInterface) {
+        if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
+            mMoreButton.setVisibility(View.VISIBLE);
+            mActionButtons.setVisibility(View.GONE);
+        } else {
+            mMoreButton.setVisibility(View.GONE);
+            mActionButtons.setVisibility(View.VISIBLE);
+        }
+        mScrollView.setVisibility(View.VISIBLE);
     }
 
     private void setBulletsDescription() {

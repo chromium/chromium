@@ -25,8 +25,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ScrollView;
 
+import androidx.test.espresso.PerformException;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matcher;
@@ -161,19 +161,23 @@ public final class PrivacySandboxDialogTest {
     }
 
     private void tryClickOn(Matcher<View> viewMatcher) {
-        ScrollView scrollView = getScrollView();
-        while (scrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
-            clickMoreButton();
+        try {
+            onView(viewMatcher).perform(click());
+        } catch (PerformException p) {
+            clickMoreButtonUntilFullyScrolledDown();
+            onViewWaiting(viewMatcher).perform(click());
         }
-        onViewWaiting(viewMatcher).perform(click());
     }
 
-    private ScrollView getScrollView() {
-        ScrollView[] scrollViews = {null};
-        onView(withId(R.id.privacy_sandbox_consent_eea_scroll_view)).check(((v, e) -> {
-            scrollViews[0] = ((ScrollView) v);
-        }));
-        return scrollViews[0];
+    private void clickMoreButtonUntilFullyScrolledDown() {
+        boolean fullyScrolledDown = false;
+        while (!fullyScrolledDown) {
+            try {
+                onView(withId(R.id.more_button)).perform(click());
+            } catch (PerformException e) {
+                fullyScrolledDown = true;
+            }
+        }
     }
 
     private void clickMoreButton() {
@@ -465,7 +469,7 @@ public final class PrivacySandboxDialogTest {
         assertEquals("Last dialog action", PromptAction.NOTICE_SHOWN,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         // Ack the notice and verify it worked correctly.
-        onView(withId(R.id.ack_button)).perform(click());
+        tryClickOn(withId(R.id.ack_button));
         assertEquals("Last dialog action", PromptAction.NOTICE_ACKNOWLEDGE,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
@@ -485,7 +489,7 @@ public final class PrivacySandboxDialogTest {
         onView(withId(R.id.privacy_sandbox_notice_eea_dropdown)).check(doesNotExist());
 
         // Click on the settings button and verify it worked correctly.
-        onView(withId(R.id.settings_button)).perform(click());
+        tryClickOn(withId(R.id.settings_button));
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
         assertEquals("Last dialog action", PromptAction.NOTICE_OPEN_SETTINGS,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
