@@ -80,6 +80,10 @@ class UpdateScreen : public BaseScreen,
   base::OneShotTimer* GetErrorMessageTimerForTesting();
   VersionUpdater* GetVersionUpdaterForTesting();
 
+  void set_delay_for_delayed_timer_for_testing(base::TimeDelta delay) {
+    delay_error_message_ = delay;
+  }
+
   // VersionUpdater::Delegate:
   void OnWaitForRebootTimeElapsed() override;
   void PrepareForUpdateCheck() override;
@@ -238,6 +242,11 @@ class UpdateScreen : public BaseScreen,
   base::CallbackListSubscription connect_request_subscription_;
 
   base::CallbackListSubscription accessibility_subscription_;
+
+  // Delay before showing error message if captive portal is detected.
+  // We wait for this delay to let captive portal to perform redirect and show
+  // its login page before error message appears.
+  base::TimeDelta delay_error_message_ = base::Seconds(10);
 
   // PowerManagerClient::Observer is used only when screen is shown.
   base::ScopedObservation<chromeos::PowerManagerClient,

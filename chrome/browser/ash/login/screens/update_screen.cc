@@ -50,11 +50,6 @@ constexpr const char kUserActionOptOutInfoNext[] = "opt-out-info-next";
 // Time in seconds after which we initiate reboot.
 constexpr const base::TimeDelta kWaitBeforeRebootTime = base::Seconds(2);
 
-// Delay before showing error message if captive portal is detected.
-// We wait for this delay to let captive portal to perform redirect and show
-// its login page before error message appears.
-constexpr const base::TimeDelta kDelayErrorMessage = base::Seconds(10);
-
 constexpr const base::TimeDelta kDefaultShowDelay = base::Microseconds(400);
 
 // When battery percent is lower and DISCHARGING warn user about it.
@@ -283,7 +278,7 @@ void UpdateScreen::DelayErrorMessage() {
   if (error_message_timer_.IsRunning())
     return;
 
-  error_message_timer_.Start(FROM_HERE, kDelayErrorMessage, this,
+  error_message_timer_.Start(FROM_HERE, delay_error_message_, this,
                              &UpdateScreen::ShowErrorMessage);
 }
 

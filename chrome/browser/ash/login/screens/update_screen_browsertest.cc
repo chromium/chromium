@@ -154,6 +154,12 @@ class UpdateScreenTest : public OobeBaseTest,
     version_updater_->set_tick_clock_for_testing(&tick_clock_);
     update_screen_->set_tick_clock_for_testing(&tick_clock_);
 
+    // Waiting for update screen to be shown might take a long time on some test
+    // build and the timer might be fired already. Increase the delay and call
+    // fire from the test instead.
+    update_screen_->set_delay_for_delayed_timer_for_testing(
+        base::TimeDelta::Max());
+
     LoginDisplayHost::default_host()
         ->GetWizardContextForTesting()
         ->is_branded_build = true;
@@ -215,6 +221,7 @@ class UpdateScreenTest : public OobeBaseTest,
   // Postconditions:
   // - Timer to delay showing the `ErrorScreen` is started.
   void WaitForDelayedErrorTimerToStart() {
+    LOG(INFO) << "Waiting for delayed error timer to start";
     // Wait for the delayed timer to start running.
     auto* delayed_error_timer =
         update_screen_->GetErrorMessageTimerForTesting();
