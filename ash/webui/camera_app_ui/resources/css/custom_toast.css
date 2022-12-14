@@ -92,7 +92,7 @@
   border-radius: 18px;
   display: flex;
   padding: 8px 16px 8px 16px;
-  position: absolute;
+  position: fixed;
   white-space: nowrap;
 }
 
@@ -133,19 +133,6 @@
   width: var(--dot-size);
 }
 
-body.keyboard-navigation .custom-toast:focus::after {
-  --focus-ring-size: 5px;
-
-  border: 2px solid var(--focus-color);
-  border-radius: 24px;
-  bottom: calc(-1 * var(--focus-ring-size));
-  content: '';
-  left: calc(-1 * var(--focus-ring-size));
-  position: absolute;
-  right: calc(-1 * var(--focus-ring-size));
-  top: calc(-1 * var(--focus-ring-size));
-}
-
 @keyframes ripple-scale {
   0% {
     transform: scale(0);
@@ -173,7 +160,7 @@ body.keyboard-navigation .custom-toast:focus::after {
   border-radius: var(--border-radius-rounded-with-short-side);
   opacity: 0;
   pointer-events: none;
-  position: absolute;
+  position: fixed;
   transform-origin: center;
 }
 

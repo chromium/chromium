@@ -36,7 +36,9 @@ class RippleEffect {
   /**
    * @param anchor Element to show ripple effect on.
    */
-  constructor(private readonly anchor: HTMLElement) {
+  constructor(
+      private readonly anchor: HTMLElement,
+      private readonly parent: HTMLElement = document.body) {
     const style = this.anchor.computedStyleMap();
 
     this.width = util.getStyleValueInPx(style, '--ripple-start-width');
@@ -60,9 +62,9 @@ class RippleEffect {
     style.set('top', CSS.px(rect.top - (this.height - rect.height) / 2));
     style.set('width', CSS.px(this.width));
     style.set('height', CSS.px(this.height));
-    document.body.appendChild(template);
+    this.parent.appendChild(template);
     await animation.play(ripple);
-    document.body.removeChild(ripple);
+    ripple.remove();
   }
 
   /**
@@ -216,7 +218,8 @@ class Toast {
       protected readonly template: DocumentFragment,
       protected readonly toast: HTMLDivElement,
       protected readonly message: string,
-      protected readonly positionInfos: PositionInfos) {
+      protected readonly positionInfos: PositionInfos,
+      protected readonly parent: HTMLElement = document.body) {
     this.cancelHandle = setInterval(() => {
       updatePositions(anchor, positionInfos);
     }, TOAST_POSITION_UPDATE_MS);
@@ -224,7 +227,7 @@ class Toast {
   }
 
   show(): void {
-    document.body.appendChild(this.template);
+    this.parent.appendChild(this.template);
     speakMessage(this.message);
   }
 
@@ -243,7 +246,7 @@ class Toast {
 }
 
 class NewFeatureToast extends Toast {
-  constructor(anchor: HTMLElement) {
+  constructor(anchor: HTMLElement, parent?: HTMLElement) {
     const template = util.instantiateTemplate('#new-feature-toast-template');
     const toast = dom.getFrom(template, '#new-feature-toast', HTMLDivElement);
 
@@ -257,15 +260,18 @@ class NewFeatureToast extends Toast {
         loadTimeData.getI18nMessage(I18nString.NEW_CONTROL_NAVIGATION, text);
     toast.setAttribute('aria-label', ariaLabel);
 
-    super(anchor, template, toast, text, [{
-            target: toast,
-            properties: getOffsetProperties(anchor, 'toast'),
-          }]);
+    super(
+        anchor, template, toast, text, [{
+          target: toast,
+          properties: getOffsetProperties(anchor, 'toast'),
+        }],
+        parent);
   }
 }
 
 class IndicatorToast extends Toast {
-  constructor(anchor: HTMLElement, indicatorType: IndicatorType) {
+  constructor(
+      anchor: HTMLElement, indicatorType: IndicatorType, parent?: HTMLElement) {
     const template = util.instantiateTemplate('#indicator-toast-template');
     const toast = dom.getFrom(template, '#indicator-toast', HTMLDivElement);
 
@@ -288,16 +294,19 @@ class IndicatorToast extends Toast {
 
     const indicatorDot =
         dom.getFrom(template, '#indicator-dot', HTMLDivElement);
-    super(anchor, template, toast, text, [
-      {
-        target: toast,
-        properties: getOffsetProperties(anchor, 'toast'),
-      },
-      {
-        target: indicatorDot,
-        properties: getOffsetProperties(anchor, 'indicator-dot'),
-      },
-    ]);
+    super(
+        anchor, template, toast, text,
+        [
+          {
+            target: toast,
+            properties: getOffsetProperties(anchor, 'toast'),
+          },
+          {
+            target: indicatorDot,
+            properties: getOffsetProperties(anchor, 'indicator-dot'),
+          },
+        ],
+        parent);
   }
 }
 
@@ -350,8 +359,10 @@ const EFFECT_TIMEOUT_MS = 10000;
  *
  * @return Functions to hide the effect or focus the toast.
  */
-export function showNewFeature(anchor: HTMLElement): EffectHandle {
-  return show(new NewFeatureToast(anchor), new RippleEffect(anchor));
+export function showNewFeature(
+    anchor: HTMLElement, parent?: HTMLElement): EffectHandle {
+  return show(
+      new NewFeatureToast(anchor, parent), new RippleEffect(anchor, parent));
 }
 
 /**
@@ -362,8 +373,9 @@ export function showNewFeature(anchor: HTMLElement): EffectHandle {
  * @return Functions to hide the effect or focus the toast.
  */
 export function showIndicator(
-    anchor: HTMLElement, indicatorType: IndicatorType): EffectHandle {
-  return show(new IndicatorToast(anchor, indicatorType));
+    anchor: HTMLElement, indicatorType: IndicatorType,
+    parent?: HTMLElement): EffectHandle {
+  return show(new IndicatorToast(anchor, indicatorType, parent));
 }
 
 /**
@@ -404,9 +416,9 @@ export function focus(): void {
 /**
  * Shows feature visual effect for PTZ options entry.
  */
-export function showPtzToast(): void {
+export function showPtzToast(parent: HTMLElement): void {
   const ptzPanelEntry = dom.get('#open-ptz-panel', HTMLButtonElement);
-  const {hide, focusToast} = showNewFeature(ptzPanelEntry);
+  const {hide, focusToast} = showNewFeature(ptzPanelEntry, parent);
   focusToast();
   ptzPanelEntry.addEventListener('click', hide, {once: true});
 }
@@ -414,19 +426,20 @@ export function showPtzToast(): void {
 /**
  * Shows document scan feature is available indicator on the scan mode button.
  */
-export function showDocScanAvailableIndicator(): void {
+export function showDocScanAvailableIndicator(parent: HTMLElement): void {
   const scanModeButton = dom.get('input[data-mode="scan"]', HTMLInputElement);
-  showIndicator(scanModeButton, IndicatorType.DOC_SCAN_AVAILABLE);
+  showIndicator(scanModeButton, IndicatorType.DOC_SCAN_AVAILABLE, parent);
 }
 
 /**
  * Shows loading indicator toast for document mode when it's supported but not
  * yet ready.
  */
-export async function showDownloadingDocScanIndicator(): Promise<void> {
+export async function showDownloadingDocScanIndicator(parent: HTMLElement):
+    Promise<void> {
   const docModeButton = dom.get('#scan-document-option', HTMLDivElement);
-  const {hide} =
-      showIndicator(docModeButton, IndicatorType.DOWNLOAD_DOCUMENT_SCANNER);
+  const {hide} = showIndicator(
+      docModeButton, IndicatorType.DOWNLOAD_DOCUMENT_SCANNER, parent);
   await ChromeHelper.getInstance().checkDocumentModeReadiness();
   hide();
 }
