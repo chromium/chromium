@@ -637,6 +637,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         ScrimCoordinator.SystemUiScrimDelegate delegate =
                 new ScrimCoordinator.SystemUiScrimDelegate() {
                     @Override
+                    public void setScrimColor(int scrimColor) {
+                        mStatusBarColorController.setScrimColor(scrimColor);
+                    }
+
+                    @Override
                     public void setStatusBarScrimFraction(float scrimFraction) {
                         mStatusBarColorController.setStatusBarScrimFraction(scrimFraction);
                     }

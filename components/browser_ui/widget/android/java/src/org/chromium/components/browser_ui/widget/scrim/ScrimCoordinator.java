@@ -36,6 +36,14 @@ public class ScrimCoordinator {
      */
     public interface SystemUiScrimDelegate {
         /**
+         * Pass the current scrim color to the relevant system UI elements.
+         * @param scrimColor The current base color of the scrim.
+         */
+        default void setScrimColor(@ColorInt int scrimColor) {
+            // Default no-op, since we fallback to R.color.default_scrim_color if this isn't called.
+        }
+
+        /**
          * Set the amount of scrim over the status bar. The implementor may choose to not respect
          * the value provided to this method.
          * @param scrimFraction The scrim fraction over the status bar. 0 is completely hidden, 1 is

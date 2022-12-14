@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.scene_layer.TabListSceneLayer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabListDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherViewObserver;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -245,11 +247,19 @@ public class TabSwitcherLayout extends Layout {
 
     private void showBrowserScrim() {
         if (mScrimCoordinator == null) return;
-        PropertyModel scrimProp = new PropertyModel.Builder(ScrimProperties.REQUIRED_KEYS)
-                                          .with(ScrimProperties.ANCHOR_VIEW, mScrimAnchor)
-                                          .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
-                                          .build();
-        mScrimCoordinator.showScrim(scrimProp);
+
+        PropertyModel.Builder scrimPropertiesBuilder =
+                new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                        .with(ScrimProperties.ANCHOR_VIEW, mScrimAnchor)
+                        .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false);
+
+        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            int scrimColor = ChromeColors.getPrimaryBackgroundColor(getContext(), isIncognito());
+            scrimPropertiesBuilder.with(ScrimProperties.AFFECTS_STATUS_BAR, true)
+                    .with(ScrimProperties.BACKGROUND_COLOR, scrimColor);
+        }
+
+        mScrimCoordinator.showScrim(scrimPropertiesBuilder.build());
     }
 
     private void hideBrowserScrim() {

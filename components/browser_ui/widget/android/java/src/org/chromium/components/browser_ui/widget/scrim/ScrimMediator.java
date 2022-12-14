@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.widget.scrim;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.view.MotionEvent;
 
@@ -72,6 +73,13 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         mIsHidingOrHidden = false;
         int fadeDurationMs = getAnimationDuration(animDurationMs);
 
+        // Pass the current scrim color to the SystemUiScrimDelegate.
+        if (mSystemUiScrimDelegate != null
+                && model.getAllSetProperties().contains(ScrimProperties.BACKGROUND_COLOR)) {
+            int color = model.get(ScrimProperties.BACKGROUND_COLOR);
+            mSystemUiScrimDelegate.setScrimColor(color);
+        }
+
         // Make sure alpha is reset to 0 since the model may be reused.
         setAlphaInternal(0);
 
@@ -129,6 +137,15 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
             });
             mOverlayFadeOutAnimator.addUpdateListener(
                     animation -> { setAlphaInternal((float) animation.getAnimatedValue()); });
+            mOverlayFadeOutAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    // Reset the scrim color stored in the SystemUiScrimDelegate.
+                    if (mSystemUiScrimDelegate != null) {
+                        mSystemUiScrimDelegate.setScrimColor(ScrimProperties.INVALID_COLOR);
+                    }
+                }
+            });
         }
 
         mIsHidingOrHidden = true;

@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
@@ -93,7 +94,7 @@ public class StatusBarColorController
     private boolean mIsOmniboxFocused;
     private boolean mToolbarAnimationInProgress;
 
-    private @ColorInt int mScrimColor;
+    private @ColorInt int mScrimColor = ScrimProperties.INVALID_COLOR;
     private float mStatusBarScrimFraction;
 
     private float mToolbarUrlExpansionPercentage;
@@ -292,6 +293,21 @@ public class StatusBarColorController
     }
 
     /**
+     * Update the scrim color on the status bar.
+     * @param scrimColor The scrim color int.
+     */
+    public void setScrimColor(@ColorInt int scrimColor) {
+        mScrimColor = scrimColor;
+    }
+
+    /**
+     * @return The current scrim color for the status bar.
+     */
+    public int getScrimColorForTesting() {
+        return mScrimColor;
+    }
+
+    /**
      * Update the scrim amount on the status bar.
      * @param fraction The scrim fraction in range [0, 1].
      */
@@ -424,14 +440,14 @@ public class StatusBarColorController
      * @return The resulting color.
      */
     private @ColorInt int applyCurrentScrimToColor(@ColorInt int color) {
-        if (mScrimColor == 0) {
+        if (mScrimColor == ScrimProperties.INVALID_COLOR) {
             final View root = mWindow.getDecorView().getRootView();
             final Context context = root.getContext();
             mScrimColor = context.getColor(R.color.default_scrim_color);
         }
         // Apply a color overlay if the scrim is showing.
         float scrimColorAlpha = (mScrimColor >>> 24) / 255f;
-        int scrimColorOpaque = mScrimColor & 0xFF000000;
+        int scrimColorOpaque = mScrimColor | 0xFF000000;
         return ColorUtils.getColorWithOverlay(
                 color, scrimColorOpaque, mStatusBarScrimFraction * scrimColorAlpha);
     }
