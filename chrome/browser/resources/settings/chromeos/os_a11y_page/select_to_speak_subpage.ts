@@ -18,6 +18,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
+import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
@@ -73,6 +74,12 @@ interface HandlerVoice {
   displayLanguage?: string;
   displayLanguageAndCountry?: string;
   languageCode?: string;
+}
+
+interface SettingsSelectToSpeakSubpageElement {
+  $: {
+    enhancedNetworkVoicesToggle: SettingsToggleButtonElement,
+  };
 }
 
 const SettingsSelectToSpeakSubpageElementBase =
@@ -131,6 +138,17 @@ class SettingsSelectToSpeakSubpageElement extends
             type: chrome.settingsPrivate.PrefType.STRING,
             value: USE_DEVICE_LANGUAGE,
           };
+        },
+      },
+
+      /**
+       * Enhanced network voices pref, so that we can force disable when
+       * overridden by policy.
+       */
+      enhancedNetworkVoicesVirtualPref_: {
+        type: Object,
+        value() {
+          return {};
         },
       },
 
@@ -219,13 +237,20 @@ class SettingsSelectToSpeakSubpageElement extends
 
   static get observers() {
     return [
-      'onHighlightColorChanged_(prefs.settings.a11y.select_to_speak_highlight_color.value)',
+      'onHighlightColorChanged_(' +
+          'prefs.settings.a11y.select_to_speak_highlight_color.value)',
+      'onEnhancedNetworkVoicesPrefsChanged_(' +
+          'prefs.settings.a11y.' +
+          'enhanced_network_voices_in_select_to_speak_allowed.value,' +
+          'prefs.settings.a11y.select_to_speak_enhanced_network_voices.value)',
       'languageChanged_(languageFilterVirtualPref_.*)',
     ];
   }
 
   private route_: Route;
   private langBrowserProxy_: LanguagesBrowserProxy;
+  private enhancedNetworkVoicesVirtualPref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
   private isPreviewing_: boolean;
   private languageFilterVirtualPref_: chrome.settingsPrivate.PrefObject<string>;
   private languagesMenuOptions_: DropdownMenuOptionList;
@@ -282,6 +307,25 @@ class SettingsSelectToSpeakSubpageElement extends
     }
 
     this.attemptDeepLink();
+  }
+
+  private onEnhancedNetworkVoicesPrefsChanged_(
+      allowed: boolean, enabled: boolean): void {
+    this.enhancedNetworkVoicesVirtualPref_ = {
+      key: '',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: allowed && enabled,
+      ...(allowed ? {} : {
+        enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+        controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+      }),
+    };
+  }
+
+  private onEnhancedNetworkVoicesToggleChanged_(): void {
+    this.setPrefValue(
+        'settings.a11y.select_to_speak_enhanced_network_voices',
+        this.$.enhancedNetworkVoicesToggle.checked);
   }
 
   private onHighlightColorChanged_(color: string) {

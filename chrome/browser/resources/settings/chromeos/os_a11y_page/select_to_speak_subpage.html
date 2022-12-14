@@ -183,52 +183,52 @@ found in the LICENSE file.
         deep-link-focus-id$="[[Setting.kSelectToSpeakVoiceSwitching]]">
     </settings-toggle-button>
   </template>
-  <!-- TODO(crbug.com/1354821): Disable and turn off or hide enhanced network
-  voices settings when disabled by policy. -->
   <settings-toggle-button
       id="enhancedNetworkVoicesToggle"
       class="settings-box"
-      pref="{{prefs.settings.a11y.select_to_speak_enhanced_network_voices}}"
+      pref="[[enhancedNetworkVoicesVirtualPref_]]"
       label="$i18n{selectToSpeakOptionsEnhancedNetworkVoicesDescription}"
       sub-label="$i18n{selectToSpeakOptionsEnhancedNetworkVoicesSubtitle}"
       learn-more-url="$i18n{selectToSpeakLearnMoreUrl}"
-      deep-link-focus-id$="[[Setting.kSelectToSpeakEnhancedNetworkVoices]]">
+      on-settings-boolean-control-change="onEnhancedNetworkVoicesToggleChanged_"
+      deep-link-focus-id$="[[Setting.kSelectToSpeakEnhancedNetworkVoices]]"
+      no-set-pref>
   </settings-toggle-button>
-  <template is="dom-if"
-      if="[[prefs.settings.a11y.select_to_speak_enhanced_network_voices.value]]">
-    <div class="indented">
-      <div class="settings-box">
-        <div class="start settings-box-text">
-          $i18n{selectToSpeakOptionsEnhancedNetworkVoice}
+    <template is="dom-if" if="[[enhancedNetworkVoicesVirtualPref_.value]]">
+      <div class="indented" id="enhancedNetworkVoiceControls">
+        <div class="settings-box">
+          <div class="start settings-box-text">
+            $i18n{selectToSpeakOptionsEnhancedNetworkVoice}
+          </div>
+          <settings-dropdown-menu id="enhancedNetworkVoiceDropdown"
+              class="continuation"
+              label="$i18n{selectToSpeakOptionsEnhancedNetworkVoice}"
+              pref="{{prefs.settings.a11y.select_to_speak_enhanced_voice_name}}"
+              menu-options="[[networkVoicesMenuOptions_]]"
+              deep-link-focus-id$="[[Setting.kSelectToSpeakEnhancedNetworkVoice]]">
+          </settings-dropdown-menu>
         </div>
-        <settings-dropdown-menu id="enhancedNetworkVoiceDropdown"
-            class="continuation"
-            label="$i18n{selectToSpeakOptionsEnhancedNetworkVoice}"
-            pref="{{prefs.settings.a11y.select_to_speak_enhanced_voice_name}}"
-            menu-options="[[networkVoicesMenuOptions_]]"
-            deep-link-focus-id$="[[Setting.kSelectToSpeakEnhancedNetworkVoice]]">
-        </settings-dropdown-menu>
-      </div>
-      <div class="settings-box">
-        <div id="enhancedNetworkVoicePreview" class="start settings-box-text">
-          $i18n{textToSpeechPreviewInputLabel}
+        <div class="settings-box">
+          <div id="enhancedNetworkVoicePreview" class="start settings-box-text">
+            $i18n{textToSpeechPreviewInputLabel}
+          </div>
+          <cr-input id="enhancedNetworkVoicePreviewInput"
+              class="preview-input"
+              aria-labelledby="enhancedNetworkVoicePreview"
+              value="{{enhancedNetworkVoicePreviewText_}}"
+              disabled="[[isPreviewing_]]">
+            <cr-button id="enhancedNetworkVoicePreviewButton"
+                on-click="onEnhancedNetworkVoicePreviewClick_"
+                disabled$="[[!enablePreviewButton_(networkVoicesMenuOptions_,
+                            isPreviewing_,
+                            enhancedNetworkVoicePreviewText_)]]"
+                slot="suffix">
+              $i18n{textToSpeechPreviewPlay}
+            </cr-button>
+          </cr-input>
         </div>
-        <cr-input id="enhancedNetworkVoicePreviewInput"
-            class="preview-input"
-            aria-labelledby="enhancedNetworkVoicePreview"
-            value="{{enhancedNetworkVoicePreviewText_}}"
-            disabled="[[isPreviewing_]]">
-          <cr-button id="enhancedNetworkVoicePreviewButton"
-              on-click="onEnhancedNetworkVoicePreviewClick_"
-              disabled$="[[!enablePreviewButton_(networkVoicesMenuOptions_,
-                           isPreviewing_,
-                           enhancedNetworkVoicePreviewText_)]]"
-              slot="suffix">
-            $i18n{textToSpeechPreviewPlay}
-          </cr-button>
-        </cr-input>
       </div>
-    </div>
+    </template>
   </template>
 </div>
 

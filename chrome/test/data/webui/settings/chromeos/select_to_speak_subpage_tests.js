@@ -106,6 +106,95 @@ suite('SelectToSpeakSubpageTests', function() {
     assertTrue(enhancedNetworkVoicesPref.value);
   });
 
+  test('enhanced network voices toggle respects enterprise policy', function() {
+    // Make sure enhanced network voices toggle is togglable and off, matching
+    // default pref state, and verify enterprise managed icon + controls are not
+    // present.
+    const enhancedNetworkVoicesToggle =
+        page.shadowRoot.querySelector('#enhancedNetworkVoicesToggle');
+    assertFalse(
+        enhancedNetworkVoicesToggle.controlDisabled(),
+        'enhanced voices toggle should be togglable');
+    assertFalse(
+        enhancedNetworkVoicesToggle.checked,
+        'enhanced voices toggle should be off');
+    const getManagedIcon = () =>
+        enhancedNetworkVoicesToggle.shadowRoot.querySelector(
+            'cr-policy-pref-indicator');
+    const managedIconVisible = () => getManagedIcon().style.display !== 'none';
+    const getEnhancedVoiceControls = () =>
+        page.shadowRoot.querySelector('#enhancedNetworkVoiceControls');
+    const enhancedVoiceControlsVisible = () =>
+        getEnhancedVoiceControls().style.display !== 'none';
+    assertEquals(null, getManagedIcon(), 'managed icon should not be present');
+    assertEquals(
+        null, getEnhancedVoiceControls(),
+        'enhanced voice controls should not be present');
+
+    // Toggle enhanced network voices on, and verify voice_switching pref is
+    // enabled, toggle is on, enterprise managed icon is not present, and
+    // controls are visible.
+    enhancedNetworkVoicesToggle.click();
+    flush();
+    const enhancedNetworkVoicesPref =
+        page.getPref('settings.a11y.select_to_speak_enhanced_network_voices');
+    assertTrue(
+        enhancedNetworkVoicesPref.value,
+        'enhanced voices pref should be enabled');
+    assertTrue(
+        enhancedNetworkVoicesToggle.checked,
+        'enhanced voices toggle should be on');
+    assertEquals(
+        null, getManagedIcon(), 'managed icon should still not be present');
+    assertTrue(
+        enhancedVoiceControlsVisible(),
+        'enhanced voice controls should be visible');
+
+    // Disallow enhanced voices via enterprise policy.
+    page.setPrefValue(
+        'settings.a11y.enhanced_network_voices_in_select_to_speak_allowed',
+        false);
+    flush();
+
+    // Verify voice switching toggle is immediately disabled and off, enterprise
+    // managed icon is visible, and controls are not visible.
+    assertTrue(
+        enhancedNetworkVoicesToggle.controlDisabled(),
+        'enhanced voices toggle should not be togglable');
+    assertFalse(
+        enhancedNetworkVoicesToggle.checked,
+        'enhanced voices toggle should be off again');
+    assertTrue(managedIconVisible(), 'managed icon should be visible');
+    assertFalse(
+        enhancedVoiceControlsVisible(),
+        'enhanced voice controls should not be visible');
+
+    // Assert pref is still enabled (we don't disable the user's pref just
+    // because the enterprise policy pref is disabled).
+    assertTrue(
+        enhancedNetworkVoicesPref.value,
+        'enhanced voices pref should still be enabled');
+
+    // Reallow enhanced voices via enterprise policy.
+    page.setPrefValue(
+        'settings.a11y.enhanced_network_voices_in_select_to_speak_allowed',
+        true);
+    flush();
+
+    // Verify voice switching toggle is togglable and turned back on again,
+    // enterprise managed icon is not visible, and controls are visible.
+    assertFalse(
+        enhancedNetworkVoicesToggle.controlDisabled(),
+        'enhanced voices toggle should be togglable again');
+    assertTrue(
+        enhancedNetworkVoicesToggle.checked,
+        'enhanced voices toggle should be on again');
+    assertFalse(managedIconVisible(), 'managed icon should not be visible');
+    assertTrue(
+        enhancedVoiceControlsVisible(),
+        'enhanced voice controls should be visible again');
+  });
+
   test('enhanced network voice pref and dropdown synced', async function() {
     // Turn on enhanced network voices.
     const enhancedNetworkVoicesToggle =
