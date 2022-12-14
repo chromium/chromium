@@ -29,6 +29,11 @@ GFX_EXPORT size_t NumberOfPlanesForLinearBufferFormat(BufferFormat format);
 GFX_EXPORT size_t SubsamplingFactorForBufferFormat(BufferFormat format,
                                                    size_t plane);
 
+// Returns the alignment requirement to store a row of the given zero-indexed
+// |plane| of |format|.
+GFX_EXPORT size_t RowByteAlignmentForBufferFormat(BufferFormat format,
+                                                  size_t plane);
+
 // Returns the number of bytes used to store a row of the given zero-indexed
 // |plane| of |format|.
 GFX_EXPORT size_t RowSizeForBufferFormat(size_t width,

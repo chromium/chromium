@@ -309,39 +309,33 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
     bool allow_shm_overlays,
     const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat buffer_format,
+    gfx::BufferFormat format,
     gfx::BufferPlane plane,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage) {
-  DCHECK(IsValidSharedMemoryBufferFormat(size, buffer_format, plane));
-
-  const gfx::Size plane_size = GetPlaneSize(plane, size);
-  const viz::ResourceFormat plane_format =
-      viz::GetResourceFormat(GetPlaneBufferFormat(plane, buffer_format));
-
-  const size_t plane_index = GetPlaneIndex(plane, buffer_format);
-  handle.offset +=
-      gfx::BufferOffsetForBufferFormat(size, buffer_format, plane_index);
+  DCHECK(IsValidSharedMemoryBufferFormat(size, format, plane));
 
   SharedMemoryRegionWrapper shm_wrapper;
-  if (!shm_wrapper.Initialize(handle, plane_size, plane_format)) {
+  if (!shm_wrapper.Initialize(handle, size, format, plane)) {
     DLOG(ERROR) << "Failed to create SharedMemoryRegionWrapper";
     return nullptr;
   }
 
-  auto si_format = viz::SharedImageFormat::SinglePlane(plane_format);
+  const gfx::Size plane_size = GetPlaneSize(plane, size);
+  const auto plane_format = viz::SharedImageFormat::SinglePlane(
+      viz::GetResourceFormat(GetPlaneBufferFormat(plane, format)));
 
   auto shm_backing = std::make_unique<SharedMemoryImageBacking>(
-      mailbox, si_format, plane_size, color_space, surface_origin, alpha_type,
-      SHARED_IMAGE_USAGE_CPU_WRITE, std::move(shm_wrapper));
+      mailbox, plane_format, plane_size, color_space, surface_origin,
+      alpha_type, SHARED_IMAGE_USAGE_CPU_WRITE, std::move(shm_wrapper));
   shm_backing->SetNotRefCounted();
 
   return base::WrapUnique(new CompoundImageBacking(
-      mailbox, si_format, plane_size, color_space, surface_origin, alpha_type,
-      usage, allow_shm_overlays, std::move(shm_backing),
+      mailbox, plane_format, plane_size, color_space, surface_origin,
+      alpha_type, usage, allow_shm_overlays, std::move(shm_backing),
       gpu_backing_factory->GetWeakPtr()));
 }
 
