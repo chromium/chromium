@@ -841,9 +841,17 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // applicationWillTerminate to fail after a 5s delay. Experiment with skipping
   // this shutdown call. See: crbug.com/1328891
   if (base::FeatureList::IsEnabled(kFastApplicationWillTerminate)) {
-    [[SessionServiceIOS sharedService] shutdown];
     metrics::MetricsService* metrics =
         GetApplicationContext()->GetMetricsService();
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    static std::atomic<uint32_t> counter{metrics ? 2u : 1u};
+    ProceduralBlock completionBlock = ^{
+      if (!--counter) {
+        dispatch_semaphore_signal(semaphore);
+      }
+    };
+    [[SessionServiceIOS sharedService] shutdownWithCompletion:completionBlock];
+
     if (metrics) {
       metrics->Stop();
       // MetricsService::Stop() depends on a committed local state, and does so
@@ -851,12 +859,11 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       // This will introduce a wait that will likely be the source of a number
       // of watchdog kills, but it should still be fewer than the number of
       // kills `_chromeMain.reset()` is responsible for.
-      dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
       GetApplicationContext()->GetLocalState()->CommitPendingWrite(
-          {}, base::BindOnce(^{
-            dispatch_semaphore_signal(semaphore);
-          }));
-      dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+          {}, base::BindOnce(completionBlock));
+      dispatch_time_t dispatchTime =
+          dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC);
+      dispatch_semaphore_wait(semaphore, dispatchTime);
     }
 
     return;
