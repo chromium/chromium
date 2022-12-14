@@ -3426,10 +3426,8 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
   EXPECT_FALSE(print_backend_service_use_detected());
 }
 
-// TODO(crbug.com/1361032)  Enable once crash after processing error from
-// PrintingContext::NewDocument() is resolved.
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
-                       DISABLED_StartBasicPrintFails) {
+                       StartBasicPrintFails) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForErrorsInNewDocument();
@@ -3458,6 +3456,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     //     finished cleanly before completing the test.
     SetNumExpectedMessages(/*num=*/5);
   } else {
+#if BUILDFLAG(IS_WIN)
     // The expected events for this are:
     // 1.  Gets default settings.
     // 2.  Asks user for settings.
@@ -3472,6 +3471,22 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     //     DidPrintDocument is known to have completed, to ensure printing
     //     finished cleanly before completing the test.
     SetNumExpectedMessages(/*num=*/7);
+#else
+    // The expected events for this are:
+    // 1.  Gets default settings.
+    // 2.  Asks user for settings.  This is invoked from the browser process,
+    //     so there is no override to observe this.  Then a print job is
+    //     started, which fails.
+    // 3.  An error dialog is shown.
+    // 4.  The print job is canceled.  The callback from the service could occur
+    //     after the print job has been destroyed.
+    // 5.  Wait for the one print job to be destroyed, to ensure printing
+    //     finished cleanly before completing the test.
+    // 6.  The print compositor will have started to generate the document.
+    //     Wait until that is known to have completed, to ensure printing
+    //     finished cleanly before completing the test.
+    SetNumExpectedMessages(/*num=*/6);
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   StartBasicPrint(web_contents);
@@ -3480,7 +3495,9 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kFailed);
   EXPECT_EQ(error_dialog_shown_count(), 1u);
-  EXPECT_EQ(cancel_count(), 1);
+  EXPECT_EQ(
+      cancel_count(),
+      GetParam() == PrintBackendFeatureVariation::kInBrowserProcess ? 0 : 1);
   EXPECT_EQ(did_print_document_count(), 1);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }

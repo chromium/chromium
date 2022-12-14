@@ -449,6 +449,7 @@ bool PrintViewManagerBase::PrintJobHasDocument(int cookie) {
 }
 
 bool PrintViewManagerBase::OnComposePdfDoneImpl(
+    int document_cookie,
     const gfx::Size& page_size,
     const gfx::Rect& content_area,
     const gfx::Point& physical_offsets,
@@ -459,8 +460,10 @@ bool PrintViewManagerBase::OnComposePdfDoneImpl(
     return false;
   }
 
-  if (!print_job_->document())
+  if (!print_job_ || !print_job_->document() ||
+      print_job_->document()->cookie() != document_cookie) {
     return false;
+  }
 
   DCHECK(region.IsValid());
   DCHECK(LooksLikePdf(region.Map().GetMemoryAsSpan<char>()));
@@ -474,6 +477,7 @@ bool PrintViewManagerBase::OnComposePdfDoneImpl(
 }
 
 void PrintViewManagerBase::OnComposePdfDone(
+    int document_cookie,
     const gfx::Size& page_size,
     const gfx::Rect& content_area,
     const gfx::Point& physical_offsets,
@@ -482,8 +486,9 @@ void PrintViewManagerBase::OnComposePdfDone(
     base::ReadOnlySharedMemoryRegion region) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  bool success = OnComposePdfDoneImpl(page_size, content_area, physical_offsets,
-                                      status, std::move(region));
+  bool success =
+      OnComposePdfDoneImpl(document_cookie, page_size, content_area,
+                           physical_offsets, status, std::move(region));
   OnDidPrintDocument(std::move(callback), success);
 }
 
@@ -515,9 +520,9 @@ void PrintViewManagerBase::DidPrintDocument(
     client->DoCompositeDocumentToPdf(
         params->document_cookie, GetCurrentTargetFrame(), content,
         base::BindOnce(&PrintViewManagerBase::OnComposePdfDone,
-                       weak_ptr_factory_.GetWeakPtr(), params->page_size,
-                       params->content_area, params->physical_offsets,
-                       std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(), params->document_cookie,
+                       params->page_size, params->content_area,
+                       params->physical_offsets, std::move(callback)));
     return;
   }
   auto data = base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(
@@ -694,7 +699,15 @@ void PrintViewManagerBase::PrintingFailed(int32_t cookie,
   PrintManager::PrintingFailed(cookie, reason);
 
 #if !BUILDFLAG(IS_ANDROID)  // Android does not implement this function.
-  ShowPrintErrorDialog();
+  // `PrintingFailed()` can occur because asynchronous compositing results
+  // don't complete until after a print job has already failed and been
+  // destroyed.  In such cases the error notification to the user will
+  // have already been displayed, and a second message should not be
+  // shown.
+  if (print_job_ && print_job_->document() &&
+      print_job_->document()->cookie() == cookie) {
+    ShowPrintErrorDialog();
+  }
 #endif
 
   ReleasePrinterQuery();
@@ -978,7 +991,7 @@ bool PrintViewManagerBase::OpportunisticallyCreatePrintJob(int cookie) {
     return true;
 
   if (!cookie) {
-    // Out of sync. It may happens since we are completely asynchronous. Old
+    // Out of sync. It may happen since we are completely asynchronous. Old
     // spurious message can happen if one of the processes is overloaded.
     return false;
   }
@@ -987,7 +1000,8 @@ bool PrintViewManagerBase::OpportunisticallyCreatePrintJob(int cookie) {
   // thread.
   std::unique_ptr<PrinterQuery> queued_query = queue_->PopPrinterQuery(cookie);
   if (!queued_query) {
-    NOTREACHED();
+    // Out of sync.  It may happen since we are completely asynchronous, when
+    // an error occurs during the first setup of a print job.
     return false;
   }
 

@@ -220,14 +220,16 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   void NavigationStopped() override;
 
   // Implementation without callbacks.
-  bool OnComposePdfDoneImpl(const gfx::Size& page_size,
+  bool OnComposePdfDoneImpl(int document_cookie,
+                            const gfx::Size& page_size,
                             const gfx::Rect& content_area,
                             const gfx::Point& physical_offsets,
                             mojom::PrintCompositor::Status status,
                             base::ReadOnlySharedMemoryRegion region);
 
   // IPC message handlers for service.
-  void OnComposePdfDone(const gfx::Size& page_size,
+  void OnComposePdfDone(int document_cookie,
+                        const gfx::Size& page_size,
                         const gfx::Rect& content_area,
                         const gfx::Point& physical_offsets,
                         DidPrintDocumentCallback callback,
