@@ -13,6 +13,7 @@
 #include "components/webauthn/android/jni_headers/WebAuthnBrowserBridge_jni.h"
 #include "components/webauthn/android/webauthn_client_android.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/public_key_credential_user_entity.h"
 
@@ -91,7 +92,11 @@ void WebAuthnBrowserBridge::OnCredentialsDetailsListReceived(
   auto* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
   // A null client indicates the embedder does not support Conditional UI.
-  if (!client) {
+  // Also, crash reports suggest that there can be null WebContents at this
+  // point, presumably indicating that a tab is being closed while the
+  // listCredentials call is outstanding. See https://crbug.com/1399887.
+  if (!client || !render_frame_host ||
+      !content::WebContents::FromRenderFrameHost(render_frame_host)) {
     std::vector<uint8_t> credential_id = {};
     base::android::RunObjectCallbackAndroid(
         jcallback, base::android::ToJavaByteArray(
@@ -99,7 +104,7 @@ void WebAuthnBrowserBridge::OnCredentialsDetailsListReceived(
                        credential_id.data(), credential_id.size()));
     return;
   }
-  DCHECK(render_frame_host);
+
   std::vector<device::DiscoverableCredentialMetadata> credentials_metadata;
   ConvertJavaCredentialArrayToMetadataVector(env, credentials,
                                              &credentials_metadata);
@@ -116,6 +121,15 @@ void WebAuthnBrowserBridge::CancelRequest(
   auto* client = components::WebAuthnClientAndroid::GetClient();
   auto* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
-  DCHECK(render_frame_host);
+
+  // Crash reports indicate that there can be null WebContents at this point,
+  // although it isn't clear how, since the Cancel message was received from
+  // renderer and is processed synchronously. The null check exists to mitigate
+  // downstream dereferences. See https://crbug.com/1399887.
+  if (!render_frame_host ||
+      !content::WebContents::FromRenderFrameHost(render_frame_host)) {
+    return;
+  }
+
   client->CancelWebAuthnRequest(render_frame_host);
 }
