@@ -24,6 +24,7 @@ include_rules = [
   # as autofill or extensions, and chrome implementation details such as
   # settings, packaging details, installation or crash reporting.
 
+  "+components/attribution_reporting",
   "+components/browsing_topics/common",
   "+components/memory_pressure",
   "+components/ml/mojom",

@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/public/browser/storage_partition.h"
-#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-forward.h"
 
 namespace attribution_reporting {
 class SuitableOrigin;
@@ -38,7 +38,7 @@ class AttributionManager {
  public:
   static AttributionManager* FromWebContents(WebContents* web_contents);
 
-  static blink::mojom::AttributionOsSupport GetOsSupport();
+  static attribution_reporting::mojom::OsSupport GetOsSupport();
 
   virtual ~AttributionManager() = default;
 

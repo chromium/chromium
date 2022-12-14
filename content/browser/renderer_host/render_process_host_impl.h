@@ -324,7 +324,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
       const GlobalRenderFrameHostId& render_frame_host_id) override;
 
   void SetOsSupportForAttributionReporting(
-      blink::mojom::AttributionOsSupport os_support) override;
+      attribution_reporting::mojom::OsSupport os_support) override;
 
   // IPC::Sender via RenderProcessHost.
   bool Send(IPC::Message* msg) override;

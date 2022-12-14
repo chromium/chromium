@@ -11,10 +11,3 @@ enum AttributionNavigationType {
   kWindowOpen = 1,
   kContextMenu = 2,
 };
-
-// Indicates whether OS-level attribution is enabled.
-// See https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
-enum AttributionOsSupport {
-  kDisabled,
-  kEnabled,
-};

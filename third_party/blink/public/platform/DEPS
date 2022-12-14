@@ -26,6 +26,7 @@ include_rules = [
     "+base/trace_event",
     "+build/build_config.h",
     "+cc",
+    "+components/attribution_reporting",
     "+components/viz/common",
     "+media/base/audio_capturer_source.h",
     "+media/base/audio_latency.h",

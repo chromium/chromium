@@ -12,6 +12,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "components/attribution_reporting/os_support.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/render_message_filter.mojom.h"
@@ -25,7 +26,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
-#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 
@@ -331,9 +331,9 @@ void MockRenderThread::ReleaseAllWebViews() {
   page_broadcasts_.clear();
 }
 
-blink::mojom::AttributionOsSupport
+attribution_reporting::mojom::OsSupport
 MockRenderThread::GetOsSupportForAttributionReporting() {
-  return blink::mojom::AttributionOsSupport::kDisabled;
+  return attribution_reporting::mojom::OsSupport::kDisabled;
 }
 
 }  // namespace content

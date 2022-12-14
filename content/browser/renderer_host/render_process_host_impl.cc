@@ -66,6 +66,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
+#include "components/attribution_reporting/os_support.mojom.h"
 #include "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/metrics/single_sample_metrics.h"
@@ -194,7 +195,6 @@
 #include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
-#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 #include "third_party/blink/public/mojom/disk_allocator.mojom.h"
 #include "third_party/blink/public/mojom/plugins/plugin_registry.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
@@ -5385,7 +5385,7 @@ void RenderProcessHostImpl::ProvideSwapFileForRenderer() {
 }
 
 void RenderProcessHostImpl::SetOsSupportForAttributionReporting(
-    blink::mojom::AttributionOsSupport os_support) {
+    attribution_reporting::mojom::OsSupport os_support) {
   GetRendererInterface()->SetOsSupportForAttributionReporting(os_support);
 }
 

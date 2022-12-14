@@ -608,6 +608,7 @@ mojom("mojo_bindings") {
 
   public_deps = [
     "//cc/mojom",
+    "//components/attribution_reporting:mojom",
     "//components/services/storage/shared_storage/public/mojom",
     "//components/variations:variations_mojom",
     "//content/public/common:interfaces",

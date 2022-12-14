@@ -13,6 +13,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/types/expected.h"
+#include "components/attribution_reporting/os_registration.h"
+#include "components/attribution_reporting/os_support.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -26,7 +28,6 @@
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
-#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
@@ -428,19 +429,13 @@ bool AttributionSrcLoader::CanRegister(const KURL& url,
 }
 
 AtomicString AttributionSrcLoader::GetSupportHeader() const {
-  static constexpr const char kAttributionSupportWeb[] = "web";
-  static constexpr const char kAttributionSupportWebAndOs[] = "web, os";
-
-  if (HasOsSupport()) {
-    return kAttributionSupportWebAndOs;
-  } else {
-    return kAttributionSupportWeb;
-  }
+  return AtomicString(String::FromUTF8(attribution_reporting::GetSupportHeader(
+      Platform::Current()->GetOsSupportForAttributionReporting())));
 }
 
 bool AttributionSrcLoader::HasOsSupport() const {
   return Platform::Current()->GetOsSupportForAttributionReporting() ==
-         mojom::blink::AttributionOsSupport::kEnabled;
+         attribution_reporting::mojom::OsSupport::kEnabled;
 }
 
 bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(

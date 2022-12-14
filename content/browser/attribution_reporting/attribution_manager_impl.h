@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
+#include "components/attribution_reporting/os_support.mojom.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/report_scheduler_timer.h"
@@ -29,7 +30,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 
 namespace attribution_reporting {
 class SuitableOrigin;
@@ -91,7 +91,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   class CONTENT_EXPORT ScopedOsSupportForTesting {
    public:
-    explicit ScopedOsSupportForTesting(blink::mojom::AttributionOsSupport);
+    explicit ScopedOsSupportForTesting(attribution_reporting::mojom::OsSupport);
     ~ScopedOsSupportForTesting();
 
     ScopedOsSupportForTesting(const ScopedOsSupportForTesting&) = delete;
@@ -102,7 +102,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
     ScopedOsSupportForTesting& operator=(ScopedOsSupportForTesting&&) = delete;
 
    private:
-    const blink::mojom::AttributionOsSupport previous_;
+    const attribution_reporting::mojom::OsSupport previous_;
   };
 
   static std::unique_ptr<AttributionManagerImpl> CreateForTesting(
@@ -122,7 +122,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   // Returns whether OS-level attribution is enabled. `kDisabled` is returned
   // before the result is returned from the underlying platform (e.g. Android).
-  static blink::mojom::AttributionOsSupport GetOsSupport() {
+  static attribution_reporting::mojom::OsSupport GetOsSupport() {
     return g_os_support_;
   }
 
@@ -166,11 +166,11 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   friend class AttributionManagerImplTest;
 
   static void SetOsSupportForTesting(
-      blink::mojom::AttributionOsSupport os_support);
+      attribution_reporting::mojom::OsSupport os_support);
 
   // TODO(crbug.com/1373536): The OS-level support should be derived from the
   // underlying platform (e.g. Android).
-  static blink::mojom::AttributionOsSupport g_os_support_;
+  static attribution_reporting::mojom::OsSupport g_os_support_;
 
   using ReportSentCallback = AttributionReportSender::ReportSentCallback;
   using SourceOrTrigger = absl::variant<StorableSource, AttributionTrigger>;

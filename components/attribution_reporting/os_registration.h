@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/strings/string_piece_forward.h"
+#include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace attribution_reporting {
@@ -24,6 +25,9 @@ namespace attribution_reporting {
 // "https://x.test/abc"
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 GURL ParseOsSourceOrTriggerHeader(base::StringPiece);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::StringPiece GetSupportHeader(mojom::OsSupport);
 
 }  // namespace attribution_reporting
 

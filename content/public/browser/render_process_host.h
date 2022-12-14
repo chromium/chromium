@@ -19,6 +19,7 @@
 #include "base/supports_user_data.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
+#include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
@@ -35,7 +36,6 @@
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-forward.h"
-#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-forward.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
@@ -689,7 +689,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // See
   // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
   virtual void SetOsSupportForAttributionReporting(
-      blink::mojom::AttributionOsSupport os_support) = 0;
+      attribution_reporting::mojom::OsSupport os_support) = 0;
 
   // Static management functions -----------------------------------------------
 

@@ -4,6 +4,7 @@
 
 module content.mojom;
 
+import "components/attribution_reporting/os_support.mojom";
 import "content/common/agent_scheduling_group.mojom";
 import "content/common/native_types.mojom";
 import "ipc/ipc.mojom";
@@ -13,7 +14,6 @@ import "services/network/public/mojom/network_types.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
-import "third_party/blink/public/mojom/conversions/attribution_reporting.mojom";
 import "ui/color/color_id.mojom";
 
 struct UpdateScrollbarThemeParams {
@@ -165,7 +165,7 @@ interface Renderer {
   // Set the OS-level support for Attribution Reporting indicating whether
   // OS-level attribution is enabled.
   SetOsSupportForAttributionReporting(
-      blink.mojom.AttributionOsSupport os_support);
+      attribution_reporting.mojom.OsSupport os_support);
 
   // Initialize renderer user agent string, user agent metadata and CORS exempt
   // header list on renderer startup.
@@ -193,5 +193,5 @@ interface Renderer {
                      string reduced_user_agent,
                      blink.mojom.UserAgentMetadata metadata,
                      array<string> cors_exempt_header_list,
-                     blink.mojom.AttributionOsSupport attribution_os_support);
+                     attribution_reporting.mojom.OsSupport attribution_os_support);
 };
