@@ -1041,6 +1041,8 @@ static_library("browser") {
     "password_manager/account_password_store_factory.h",
     "password_manager/affiliation_service_factory.cc",
     "password_manager/affiliation_service_factory.h",
+    "password_manager/affiliations_prefetcher_factory.cc",
+    "password_manager/affiliations_prefetcher_factory.h",
     "password_manager/bulk_leak_check_service_factory.cc",
     "password_manager/bulk_leak_check_service_factory.h",
     "password_manager/chrome_password_manager_client.cc",

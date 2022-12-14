@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
@@ -20,16 +19,9 @@ namespace password_manager {
 
 AffiliatedMatchHelper::AffiliatedMatchHelper(
     AffiliationService* affiliation_service)
-    : affiliation_service_(affiliation_service),
-      affiliations_prefetcher_(std::make_unique<AffiliationsPrefetcher>()) {}
+    : affiliation_service_(affiliation_service) {}
 
 AffiliatedMatchHelper::~AffiliatedMatchHelper() = default;
-
-void AffiliatedMatchHelper::Initialize(PasswordStoreInterface* password_store) {
-  DCHECK(password_store);
-  DCHECK(affiliation_service_);
-  affiliations_prefetcher_->Init(affiliation_service_, password_store);
-}
 
 void AffiliatedMatchHelper::GetAffiliatedAndroidAndWebRealms(
     const PasswordFormDigest& observed_form,

@@ -157,7 +157,7 @@ class AffiliationsPrefetcherTest : public testing::Test,
   void RunDeferredInitialization() {
     task_environment_.RunUntilIdle();
     mock_affiliation_service()->ExpectCallToTrimUnusedCache();
-    prefetcher_->Init(mock_affiliation_service(), password_store());
+    prefetcher_->RegisterPasswordStore(password_store());
     // task_environment_.RunUntilIdle();
     task_environment_.FastForwardBy(base::Seconds(30));
   }
@@ -302,11 +302,12 @@ class AffiliationsPrefetcherTest : public testing::Test,
         testing::StrictMock<OverloadedMockAffiliationService>>();
     password_store()->Init(/*prefs=*/nullptr, nullptr);
 
-    prefetcher_ = std::make_unique<AffiliationsPrefetcher>();
+    prefetcher_ = std::make_unique<AffiliationsPrefetcher>(
+        mock_affiliation_service_.get());
   }
 
   void TearDown() override {
-    prefetcher_ = nullptr;
+    prefetcher()->Shutdown();
     if (password_store_)
       DestroyPasswordStore();
     mock_affiliation_service_.reset();

@@ -14,14 +14,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_form_digest.h"
 
 namespace password_manager {
 
 class AffiliationService;
-class AffiliationsPrefetcher;
-class PasswordStoreInterface;
-struct PasswordForm;
 
 // Interacts with the AffiliationService on behalf of the PasswordStore.
 // For each GetLogins() request, it provides the PasswordStore with a list of
@@ -45,9 +42,6 @@ class AffiliatedMatchHelper {
   AffiliatedMatchHelper(const AffiliatedMatchHelper&) = delete;
   AffiliatedMatchHelper& operator=(const AffiliatedMatchHelper&) = delete;
   virtual ~AffiliatedMatchHelper();
-
-  // Schedules deferred initialization.
-  void Initialize(PasswordStoreInterface* password_store);
 
   // Retrieves realms of Android applications and Web realms affiliated with the
   // realm of the |observed_form| if it is web-based. Otherwise, yields the
@@ -78,8 +72,6 @@ class AffiliatedMatchHelper {
       bool success);
 
   raw_ptr<AffiliationService, DanglingUntriaged> affiliation_service_;
-
-  std::unique_ptr<AffiliationsPrefetcher> affiliations_prefetcher_;
 
   base::WeakPtrFactory<AffiliatedMatchHelper> weak_ptr_factory_{this};
 };

@@ -375,9 +375,6 @@ void PasswordStore::OnInitCompleted(bool success) {
   base::UmaHistogramBoolean("PasswordManager.PasswordStoreInitResult", success);
   TRACE_EVENT_NESTABLE_ASYNC_END0(
       "passwords", "PasswordStore::InitOnBackgroundSequence", this);
-
-  if (affiliated_match_helper_)
-    affiliated_match_helper_->Initialize(this);
 }
 
 void PasswordStore::NotifyLoginsChangedOnMainSequence(

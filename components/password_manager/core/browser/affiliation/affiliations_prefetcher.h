@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 
@@ -22,14 +23,17 @@ class AffiliationService;
 
 // This class prefetches affiliation information on start-up for all credentials
 // stored in a PasswordStore.
-class AffiliationsPrefetcher : public PasswordStoreInterface::Observer,
+class AffiliationsPrefetcher : public KeyedService,
+                               public PasswordStoreInterface::Observer,
                                public PasswordStoreConsumer {
  public:
-  AffiliationsPrefetcher();
+  explicit AffiliationsPrefetcher(AffiliationService* affiliation_service);
   ~AffiliationsPrefetcher() override;
 
-  void Init(AffiliationService* affiliation_service,
-            PasswordStoreInterface* password_store);
+  void RegisterPasswordStore(PasswordStoreInterface* store);
+
+  // KeyedService:
+  void Shutdown() override;
 
  private:
   // PasswordStoreInterface::Observer:

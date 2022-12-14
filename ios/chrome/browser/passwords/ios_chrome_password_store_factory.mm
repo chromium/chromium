@@ -12,6 +12,7 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #import "components/password_manager/core/browser/login_database.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_store_built_in_backend.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/passwords/credentials_cleaner_runner_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/passwords/ios_chrome_affiliations_prefetcher_factory.h"
 #import "ios/chrome/browser/passwords/ios_password_store_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -62,6 +64,7 @@ IOSChromePasswordStoreFactory::IOSChromePasswordStoreFactory()
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(CredentialsCleanerRunnerFactory::GetInstance());
   DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
+  DependsOn(IOSChromeAffiliationsPrefetcherFactory::GetInstance());
 }
 
 IOSChromePasswordStoreFactory::~IOSChromePasswordStoreFactory() {}
@@ -94,6 +97,9 @@ IOSChromePasswordStoreFactory::BuildServiceInstanceFor(
     DelayReportingPasswordStoreMetrics(
         ChromeBrowserState::FromBrowserState(context));
   }
+
+  IOSChromeAffiliationsPrefetcherFactory::GetForBrowserState(context)
+      ->RegisterPasswordStore(store.get());
   return store;
 }
 

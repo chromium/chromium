@@ -123,6 +123,8 @@ source_set("store_factory") {
     "ios_chrome_account_password_store_factory.mm",
     "ios_chrome_affiliation_service_factory.h",
     "ios_chrome_affiliation_service_factory.mm",
+    "ios_chrome_affiliations_prefetcher_factory.cc",
+    "ios_chrome_affiliations_prefetcher_factory.h",
     "ios_chrome_password_change_success_tracker_factory.cc",
     "ios_chrome_password_change_success_tracker_factory.h",
     "ios_chrome_password_reuse_manager_factory.cc",

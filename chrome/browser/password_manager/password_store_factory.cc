@@ -12,11 +12,13 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
+#include "chrome/browser/password_manager/affiliations_prefetcher_factory.h"
 #include "chrome/browser/password_manager/credentials_cleaner_runner_factory.h"
 #include "chrome/browser/password_manager/password_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths_internal.h"
+#include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store.h"
@@ -58,6 +60,7 @@ PasswordStoreFactory::PasswordStoreFactory()
           "PasswordStore",
           ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(AffiliationServiceFactory::GetInstance());
+  DependsOn(AffiliationsPrefetcherFactory::GetInstance());
   DependsOn(CredentialsCleanerRunnerFactory::GetInstance());
 }
 
@@ -122,6 +125,9 @@ PasswordStoreFactory::BuildServiceInstanceFor(
   password_manager_util::RemoveUselessCredentials(
       CredentialsCleanerRunnerFactory::GetForProfile(profile), ps,
       profile->GetPrefs(), base::Seconds(60), network_context_getter);
+
+  AffiliationsPrefetcherFactory::GetForProfile(profile)->RegisterPasswordStore(
+      ps.get());
 
   DelayReportingPasswordStoreMetrics(profile);
 

@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check_op.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_service.h"
@@ -32,17 +33,18 @@ bool IsFacetValidForAffiliation(const FacetURI& facet) {
 
 }  // namespace
 
-AffiliationsPrefetcher::AffiliationsPrefetcher() = default;
+AffiliationsPrefetcher::AffiliationsPrefetcher(
+    AffiliationService* affiliation_service)
+    : affiliation_service_(affiliation_service) {}
 
-AffiliationsPrefetcher::~AffiliationsPrefetcher() {
-  if (password_store_)
-    password_store_->RemoveObserver(this);
-}
+AffiliationsPrefetcher::~AffiliationsPrefetcher() = default;
 
-void AffiliationsPrefetcher::Init(AffiliationService* affiliation_service,
-                                  PasswordStoreInterface* password_store) {
-  affiliation_service_ = affiliation_service;
-  password_store_ = password_store;
+void AffiliationsPrefetcher::RegisterPasswordStore(
+    PasswordStoreInterface* store) {
+  DCHECK(store);
+  DCHECK_EQ(nullptr, password_store_);
+
+  password_store_ = store;
 
   // I/O heavy initialization on start-up will be delayed by this long.
   // This should be high enough not to exacerbate start-up I/O contention too
@@ -53,6 +55,12 @@ void AffiliationsPrefetcher::Init(AffiliationService* affiliation_service,
       base::BindOnce(&AffiliationsPrefetcher::DoDeferredInitialization,
                      weak_ptr_factory_.GetWeakPtr()),
       kInitializationDelayOnStartup);
+}
+
+void AffiliationsPrefetcher::Shutdown() {
+  if (password_store_)
+    password_store_->RemoveObserver(this);
+  password_store_ = nullptr;
 }
 
 void AffiliationsPrefetcher::OnLoginsChanged(
@@ -121,8 +129,10 @@ void AffiliationsPrefetcher::OnGetPasswordStoreResults(
 void AffiliationsPrefetcher::DoDeferredInitialization() {
   // Must start observing for changes at the same time as when the snapshot is
   // taken to avoid inconsistencies due to any changes taking place in-between.
-  password_store_->AddObserver(this);
-  password_store_->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
+  if (password_store_) {
+    password_store_->AddObserver(this);
+    password_store_->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
+  }
 }
 
 }  // namespace password_manager
