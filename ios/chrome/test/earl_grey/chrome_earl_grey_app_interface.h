@@ -15,7 +15,6 @@
 
 @class ElementSelector;
 @class FakeSystemIdentity;
-@class NamedGuide;
 
 @interface JavaScriptExecutionResult : NSObject
 @property(readonly, nonatomic) BOOL success;
@@ -75,10 +74,6 @@
 
 // Reloads the page without waiting for the page to load.
 + (void)startReloading;
-
-// Returns the NamedGuide with the given `name`, if one is attached to `view`
-// or one of `view`'s ancestors.  If no guide is found, returns nil.
-+ (NamedGuide*)guideWithName:(NSString*)name view:(UIView*)view;
 
 // Loads `URL` as if it was opened from an external application.
 + (void)openURLFromExternalApp:(NSString*)URL;
