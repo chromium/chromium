@@ -12,6 +12,8 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/session_proto_db/session_proto_db.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -109,32 +111,37 @@ KeyedService* SessionProtoDBFactory<T>::BuildServiceInstanceFor(
     return new SessionProtoDB<T>(
         proto_database_provider,
         context->GetPath().AppendASCII(kPersistedStateDBFolder),
-        leveldb_proto::ProtoDbType::PERSISTED_STATE_DATABASE);
+        leveldb_proto::ProtoDbType::PERSISTED_STATE_DATABASE,
+        content::GetUIThreadTaskRunner({}));
   } else if (std::is_base_of<
                  commerce_subscription_db::CommerceSubscriptionContentProto,
                  T>::value) {
     return new SessionProtoDB<T>(
         proto_database_provider,
         context->GetPath().AppendASCII(kCommerceSubscriptionDBFolder),
-        leveldb_proto::ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE);
+        leveldb_proto::ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE,
+        content::GetUIThreadTaskRunner({}));
 #if !BUILDFLAG(IS_ANDROID)
   } else if (std::is_base_of<cart_db::ChromeCartContentProto, T>::value) {
     return new SessionProtoDB<T>(
         proto_database_provider,
         context->GetPath().AppendASCII(kChromeCartDBFolder),
-        leveldb_proto::ProtoDbType::CART_DATABASE);
+        leveldb_proto::ProtoDbType::CART_DATABASE,
+        content::GetUIThreadTaskRunner({}));
   } else if (std::is_base_of<coupon_db::CouponContentProto, T>::value) {
     return new SessionProtoDB<T>(
         proto_database_provider,
         context->GetPath().AppendASCII(kCouponDBFolder),
-        leveldb_proto::ProtoDbType::COUPON_DATABASE);
+        leveldb_proto::ProtoDbType::COUPON_DATABASE,
+        content::GetUIThreadTaskRunner({}));
 #else
   } else if (std::is_base_of<merchant_signal_db::MerchantSignalContentProto,
                              T>::value) {
     return new SessionProtoDB<T>(
         proto_database_provider,
         context->GetPath().AppendASCII(kMerchantTrustSignalDBFolder),
-        leveldb_proto::ProtoDbType::MERCHANT_TRUST_SIGNAL_DATABASE);
+        leveldb_proto::ProtoDbType::MERCHANT_TRUST_SIGNAL_DATABASE,
+        content::GetUIThreadTaskRunner({}));
 #endif
   } else {
     // Must add in leveldb_proto::ProtoDbType and database directory folder for
