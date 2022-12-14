@@ -63,4 +63,14 @@ chrome.test.runTests([
     chrome.test.assertEq(expected, result);
     chrome.test.succeed();
   },
+
+  // Don't set the optional path but set enabled to true.
+  async function setEnabledToTrueWithoutAPath() {
+    const newTabId = tabId + 200;
+    const expected = {tabId: newTabId, enabled: true};
+    await chrome.sidePanel.setOptions(expected);
+    const result = await chrome.sidePanel.getOptions({tabId: newTabId});
+    chrome.test.assertEq(expected, result);
+    chrome.test.succeed();
+  }
 ]);
