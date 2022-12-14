@@ -3339,6 +3339,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.NotifierFramework.Nudge.TimeToAction.{TimeRange}"
+    enum="NudgeCatalogName" expires_after="2023-02-10">
+  <owner>kradtke@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Tracks the time from when a specific educational nudge is shown to when it's
+    interacted with. Starts measuring time when the nudge is shown and records
+    the Nudge catalog name in one of the time buckets available if the user
+    performs the expected action that the nudge is informing about. This metric
+    can be compared with `Ash.NotifierFramework.Nudge.ShownCount` to infer the
+    nudge action wasn't taken within that session.
+  </summary>
+  <token key="TimeRange">
+    <variant name="Within1h"/>
+    <variant name="Within1m"/>
+    <variant name="WithinSession"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.NotifierFramework.Toast.Dismissed.{TimeRange}"
     enum="ToastCatalogName" expires_after="2023-02-10">
   <owner>kradtke@google.com</owner>

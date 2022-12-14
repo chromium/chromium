@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -28,6 +29,10 @@ class ASH_EXPORT SystemNudgeController {
   SystemNudgeController& operator=(const SystemNudgeController&) = delete;
   virtual ~SystemNudgeController();
 
+  // Records Nudge "TimeToAction" metric, which tracks the time from when a
+  // nudge was shown to when the action the nudge informs of was performed.
+  static void RecordNudgeAction(NudgeCatalogName catalog_name);
+
   // Shows the nudge widget.
   void ShowNudge();
 
@@ -40,6 +45,10 @@ class ASH_EXPORT SystemNudgeController {
   // Get the system nudge for testing purpose.
   SystemNudge* GetSystemNudgeForTesting() { return nudge_.get(); }
 
+  // Resets the `nudge_registry` object that records the time a nudge was last
+  // shown.
+  void ResetNudgeRegistryForTesting();
+
  protected:
   // Concrete subclasses must implement this method to return a
   // SystemNudge that creates a label and specifies an icon specific
@@ -50,8 +59,16 @@ class ASH_EXPORT SystemNudgeController {
   void HideNudge();
 
  private:
+  // Returns the registry which keeps track of when a nudge was last shown.
+  static std::vector<std::pair<NudgeCatalogName, base::TimeTicks>>&
+  GetNudgeRegistry();
+
   // Begins the animation for fading in or fading out the nudge.
   void StartFadeAnimation(bool show);
+
+  // Records the time a nudge was last shown and stores it in the
+  // `nudge_registry`.
+  void RecordNudgeShown(NudgeCatalogName catalog_name);
 
   // Contextual nudge which shows a view.
   std::unique_ptr<SystemNudge> nudge_;

@@ -66,6 +66,8 @@ class ASH_EXPORT SystemNudge : public ShelfObserver, public ShellObserver {
 
   views::Widget* widget() { return widget_.get(); }
 
+  NudgeCatalogName catalog_name() { return params_.catalog_name; }
+
  protected:
   // Each SystemNudge subclass must override these methods to customize
   // their nudge by creating a label and getting an icon specific to the feature

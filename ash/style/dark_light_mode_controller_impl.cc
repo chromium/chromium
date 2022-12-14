@@ -134,6 +134,7 @@ void DarkLightModeControllerImpl::ToggleColorMode() {
                                         !IsDarkModeEnabled());
   active_user_pref_service_->CommitPendingWrite();
   NotifyColorModeChanges();
+  SystemNudgeController::RecordNudgeAction(NudgeCatalogName::kDarkLightMode);
 
   // Updates showing logic of educational nudge on toggling the entry points of
   // dark/light mode.
