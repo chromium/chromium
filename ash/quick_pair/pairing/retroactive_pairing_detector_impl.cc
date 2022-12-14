@@ -127,20 +127,18 @@ void RetroactivePairingDetectorImpl::RemoveObserver(
 
 void RetroactivePairingDetectorImpl::OnDevicePaired(
     scoped_refptr<Device> device) {
-  // When a device is paired to via Fast Pair, we save the device's classic
-  // pairing address here so when we get the the BluetoothAdapter's
-  // |DevicePairedChanged| fired, we can determine if it was the one we already
-  // have paired to. The classic address is assigned to the Device during the
-  // initial Fast Pair pairing protocol during the key exchange, and if it
-  // doesn't exist, then it wasn't properly paired during initial Fast Pair
+  // The classic address is assigned to the Device during the
+  // initial Fast Pair pairing protocol and if it doesn't exist,
+  // then it wasn't properly paired during initial Fast Pair
   // pairing.
   if (!device->classic_address())
     return;
 
-  // Sometimes we might encounter the case where |DevicePairedChanged| fires
-  // before FastPair's |OnDevicePaired|, and if that is the case and a device
-  // has been inserted in the |potential_retroactive_addresses_|, we need
-  // to remove it.
+  // The Bluetooth Adapter system event `DevicePairedChanged` fires before
+  // Fast Pair's `OnDevicePaired`, and a Fast Pair pairing is expected to have
+  // both events. If a device is Fast Paired, it is already inserted in the
+  // |potential_retroactive_addresses_| in `DevicePairedChanged`; we need to
+  // remove it to prevent a false positive.
   if (base::Contains(potential_retroactive_addresses_,
                      device->classic_address().value())) {
     QP_LOG(VERBOSE)
@@ -151,9 +149,6 @@ void RetroactivePairingDetectorImpl::OnDevicePaired(
     RemoveDeviceInformation(device->classic_address().value());
     return;
   }
-
-  QP_LOG(INFO) << __func__ << ": Storing Fast Pair device address";
-  fast_pair_addresses_.insert(device->classic_address().value());
 }
 
 void RetroactivePairingDetectorImpl::DevicePairedChanged(
@@ -166,16 +161,18 @@ void RetroactivePairingDetectorImpl::DevicePairedChanged(
   // This event fires whenever a device pairing has changed with the adapter.
   // If the |new_paired_status| is false, it means a device was unpaired with
   // the adapter, so we early return since it would not be a device to
-  // retroactively pair to. If the device that was paired to that fires this
-  // event is a device we just paired to with Fast Pair, then we early return
-  // since it also wouldn't be one to retroactively pair to. We want to only
-  // continue our check here if we have a newly paired device that was paired
-  // with classic Bluetooth pairing.
-  const std::string& classic_address = device->GetAddress();
-  if (!new_paired_status ||
-      base::Contains(fast_pair_addresses_, classic_address)) {
+  // retroactively pair to.
+  if (!new_paired_status) {
     return;
   }
+
+  // Both classic paired and Fast paired devices call this function, so we
+  // have to add the device to |potential_retroactive_addresses_|. We expect
+  // devices paired via Fast Pair to always call `OnDevicePaired` after calling
+  // this function, which will remove the device from
+  // |potential_retroactive_addresses_|.
+  const std::string& classic_address = device->GetAddress();
+  potential_retroactive_addresses_.insert(classic_address);
 
   // In order to confirm that this device is a retroactive pairing, we need to
   // first check if it has already been saved to the user's account. If it has
@@ -192,17 +189,11 @@ void RetroactivePairingDetectorImpl::AttemptRetroactivePairing(
     bool is_device_saved_to_account) {
   if (is_device_saved_to_account) {
     QP_LOG(INFO) << __func__ << ": device already saved to user's account";
+    RemoveDeviceInformation(classic_address);
     return;
   }
 
   QP_LOG(VERBOSE) << __func__ << ": device = " << classic_address;
-
-  // The device pairing just changed, and this means that it was just
-  // classically paired. Because we have now verified that it not saved to the
-  // user's account, we can continue verifying this device for the retroactive
-  // pairing scenario by checking if the Message Stream contains the model id
-  // and ble address.
-  potential_retroactive_addresses_.insert(classic_address);
 
   // Attempt to retrieve a MessageStream instance immediately, if it was
   // already connected.

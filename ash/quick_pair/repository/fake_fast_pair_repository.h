@@ -89,9 +89,19 @@ class FakeFastPairRepository : public FastPairRepository {
   void IsDeviceSavedToAccount(const std::string& mac_address,
                               IsDeviceSavedToAccountCallback callback) override;
 
+  // `SetIsDeviceSavedToAccountCallbackDelay` and
+  // `TriggerIsDeviceSavedToAccountCallback` are used together to control when
+  // the callback is triggered.
+  void TriggerIsDeviceSavedToAccountCallback();
+  void SetIsDeviceSavedToAccountCallbackDelayed(bool is_delayed) {
+    saved_to_account_callback_is_delayed_ = is_delayed;
+  }
+
  private:
   static void SetInstance(FastPairRepository* instance);
 
+  IsDeviceSavedToAccountCallback saved_to_account_callback_;
+  bool saved_to_account_callback_is_delayed_ = false;
   nearby::fastpair::OptInStatus status_ =
       nearby::fastpair::OptInStatus::STATUS_UNKNOWN;
   std::vector<nearby::fastpair::FastPairDevice> devices_;

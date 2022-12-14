@@ -178,12 +178,21 @@ void FakeFastPairRepository::SaveMacAddressToAccount(
 void FakeFastPairRepository::IsDeviceSavedToAccount(
     const std::string& mac_address,
     IsDeviceSavedToAccountCallback callback) {
+  if (saved_to_account_callback_is_delayed_) {
+    saved_to_account_callback_ = std::move(callback);
+    return;
+  }
+
   if (base::Contains(saved_mac_addresses_, mac_address)) {
     std::move(callback).Run(true);
     return;
   }
 
   std::move(callback).Run(false);
+}
+
+void FakeFastPairRepository::TriggerIsDeviceSavedToAccountCallback() {
+  std::move(saved_to_account_callback_).Run(false);
 }
 
 }  // namespace quick_pair

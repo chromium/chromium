@@ -240,22 +240,6 @@ class RetroactivePairingDetectorTest
   std::unique_ptr<RetroactivePairingDetector> retroactive_pairing_detector_;
 };
 
-TEST_F(RetroactivePairingDetectorTest, DevicedPaired_FastPair) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  PairFastPairDeviceWithFastPair(kTestDeviceAddress);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-
-  EXPECT_FALSE(retroactive_pair_found_);
-}
-
 TEST_F(RetroactivePairingDetectorTest,
        DevicedPaired_FastPair_BluetoothEventFiresFirst) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
@@ -269,6 +253,46 @@ TEST_F(RetroactivePairingDetectorTest,
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
   PairFastPairDeviceWithFastPair(kTestDeviceAddress);
+
+  EXPECT_FALSE(retroactive_pair_found_);
+}
+
+// Regression test for b/261041950
+TEST_F(RetroactivePairingDetectorTest,
+       FastPairPairingEventCalledDuringBluetoothAdapterPairingEvent) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
+  CreateRetroactivePairingDetector();
+
+  EXPECT_FALSE(retroactive_pair_found_);
+
+  SetMessageStream(kModelIdBleAddressBytes);
+
+  // Simulate the Bluetooth Adapter event firing, with the callback to
+  // `IsDeviceSavedToAccount` delayed.
+  fast_pair_repository_.SetIsDeviceSavedToAccountCallbackDelayed(
+      /*is_delayed=*/true);
+  PairFastPairDeviceWithClassicBluetooth(
+      /*new_paired_status=*/true, kTestDeviceAddress);
+
+  // Simulate the Fast Pair pairing event firing during the Bluetooth Adapter
+  // pairing event call stack. The Bluetooth Adapter system
+  // event response has not finished completing because of the delay set in
+  // `SetIsDeviceSavedToAccountCallbackDelayed`.
+  PairFastPairDeviceWithFastPair(kTestDeviceAddress);
+
+  // Trigger the callback to check the repository after the Fast Pair pairing
+  // event fires. This will conclude the BluetoothAdapter pairing event call
+  // stack.
+  fast_pair_repository_.TriggerIsDeviceSavedToAccountCallback();
+
+  // Simulate data being received via Message Stream for the device. It should
+  // not be detected since the Fast Pair event has been fired, removing it
+  // as a possible retroactive device.
+  fake_socket_->TriggerReceiveCallback();
+  NotifyMessageStreamConnected(kTestDeviceAddress);
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(retroactive_pair_found_);
 }

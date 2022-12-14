@@ -133,10 +133,6 @@ class RetroactivePairingDetectorImpl final
 
   void RemoveDeviceInformation(const std::string& device_address);
 
-  // The classic pairing addresses of Fast Pair devices that we have already
-  // paired to.
-  base::flat_set<std::string> fast_pair_addresses_;
-
   // The classic pairing addresses of potential Retroactive Pair supported
   // devices that are found in the adapter. We have to store them and wait for a
   // MessageStream instance to be created for the device in order to fully
