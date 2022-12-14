@@ -114,7 +114,7 @@ void ShareInfoFileStreamAdapter::WriteToFile(int bytes_read) {
       [](int fd, scoped_refptr<net::IOBuffer> buf, int size) -> bool {
         const bool result =
             base::WriteFileDescriptor(fd, base::StringPiece(buf->data(), size));
-        PLOG_IF(ERROR, !result) << "Failed writting to fd";
+        PLOG_IF(ERROR, !result) << "Failed writing to fd.";
         return result;
       },
       dest_fd_.get(), net_iobuf_, bytes_read);

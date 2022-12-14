@@ -158,7 +158,7 @@ void ShareInfoFileHandler::StartPreparingFiles(
   file_sharing_started_ = true;
 
   if (!g_browser_process) {
-    LOG(ERROR) << "Unexpected null g_browser_process";
+    LOG(ERROR) << "Unexpected null g_browser_process.";
     UpdateNearbyShareDataHandlingFail(DataHandlingResult::kNullGBrowserProcess);
     NotifyFileSharingCompleted(base::File::FILE_ERROR_INVALID_OPERATION);
     return;
@@ -181,7 +181,8 @@ void ShareInfoFileHandler::StartPreparingFiles(
     return;
   }
 
-  VLOG(1) << "Creating unique directory for share and converting URLs to files";
+  VLOG(1)
+      << "Creating unique directory for share and converting URLs to files.";
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ShareInfoFileHandler::CreateShareDirectory, this),
@@ -402,7 +403,7 @@ void ShareInfoFileHandler::OnFileStreamReadCompleted(
         base::TimeTicks::Now() - file_streaming_started_;
     UpdateNearbyShareFileStreamCompleteTime(file_streaming_duration);
 
-    DVLOG(1) << "OnFileStreamReadCompleted: Completed streaming all files";
+    DVLOG(1) << "OnFileStreamReadCompleted: Completed streaming all files.";
     NotifyFileSharingCompleted(base::File::FILE_OK);
   }
 }
