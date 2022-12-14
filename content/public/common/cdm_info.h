@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_COMMON_CDM_INFO_H_
 #define CONTENT_PUBLIC_COMMON_CDM_INFO_H_
 
+#include <iosfwd>
 #include <string>
 #include <vector>
 
@@ -103,6 +104,14 @@ struct CONTENT_EXPORT CdmInfo {
   // CDM is not a separate library (e.g. Widevine on Android).
   base::FilePath path;
 };
+
+CONTENT_EXPORT std::string GetCdmInfoRobustnessName(
+    CdmInfo::Robustness robustness);
+
+inline std::ostream& operator<<(std::ostream& os,
+                                CdmInfo::Robustness robustness) {
+  return os << GetCdmInfoRobustnessName(robustness);
+}
 
 }  // namespace content
 

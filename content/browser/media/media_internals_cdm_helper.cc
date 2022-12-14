@@ -19,15 +19,6 @@ namespace content {
 
 namespace {
 
-std::string GetCdmInfoRobustnessName(CdmInfo::Robustness robustness) {
-  switch (robustness) {
-    case CdmInfo::Robustness::kHardwareSecure:
-      return "Hardware Secure";
-    case CdmInfo::Robustness::kSoftwareSecure:
-      return "Software Secure";
-  }
-}
-
 std::string GetCdmInfoCapabilityStatusName(CdmInfo::Status status) {
   switch (status) {
     case CdmInfo::Status::kUninitialized:
