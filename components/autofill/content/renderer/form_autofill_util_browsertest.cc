@@ -59,6 +59,22 @@ struct AutofillFieldUtilCase {
   const char16_t* expected_label;
 };
 
+// An <input> with a label placed on top of it (usually used as a placeholder
+// replacement).
+const char* kPoorMansPlaceholder = R"(
+  <style>
+    .fixed_position_and_size {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100px;
+      height: 20px;
+    }
+  </style>
+  <input id='target' class=fixed_position_and_size>
+  <span class=fixed_position_and_size>label</span>
+)";
+
 void VerifyButtonTitleCache(const WebFormElement& form_target,
                             const ButtonTitleList& expected_button_titles,
                             const ButtonTitlesCache& actual_cache) {
@@ -172,6 +188,9 @@ TEST_F(FormAutofillUtilsTest, FindChildTextSkipElementTest) {
 }
 
 TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kAutofillSupportPoorMansPlaceholder);
+
   static const AutofillFieldUtilCase test_cases[] = {
       {"DIV table test 1", R"(
        <div>
@@ -215,6 +234,7 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
        u""},
       {"Infer from next sibling",
        "<input id='target' type='checkbox'>hello <b>world</b>", u"hello world"},
+      {"Poor man's placeholder", kPoorMansPlaceholder, u"label"},
   };
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.description);
@@ -233,6 +253,9 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
 }
 
 TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kAutofillSupportPoorMansPlaceholder);
+
   struct AutofillFieldLabelSourceCase {
     const char* html;
     const FormFieldData::LabelSource label_source;
@@ -263,7 +286,7 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
        FormFieldData::LabelSource::kTdTag},
       {"<dl><dt>label</dt><dd><input id='target'></dd></dl>",
        FormFieldData::LabelSource::kDdTag},
-  };
+      {kPoorMansPlaceholder, FormFieldData::LabelSource::kOverlayingLabel}};
 
   for (auto test_case : test_cases) {
     SCOPED_TRACE(testing::Message() << test_case.label_source);

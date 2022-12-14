@@ -189,6 +189,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AutofillFeatures.AUTOFILL_SERVER_BEHAVIORS,
                     "When enabled, Autofill will request experimental "
                             + "predictions from the Autofill API."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_SUPPORT_POOR_MANS_PLACEHOLDER,
+                    "When enabled, Autofill will infer labels from artificial placeholders, "
+                            + "placed on top of input fields using CSS."),
             Flag.baseFeature(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                     "When enabled, merchant bound virtual cards will be offered in the keyboard "
                             + "accessory."),

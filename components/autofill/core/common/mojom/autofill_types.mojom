@@ -284,18 +284,19 @@ struct FormFieldData {
 
   // From which source the label is inferred.
   enum LabelSource {
-    kUnknown,  // The source is unknown.
-    kLabelTag,
-    kPTag,
-    kDivTable,
-    kTdTag,
-    kDdTag,
-    kLiTag,
-    kPlaceHolder,
-    kAriaLabel,
-    kCombined,  // Combined with various elements.
-    kValue,     // label is the value of element.
-    kFor,       // Derived from the "for" attribute of a label element.
+    kUnknown,          // No label.
+    kLabelTag,         // <label> sibling/ancestor.
+    kPTag,             // <p> sibling.
+    kDivTable,         // <div> ancestor.
+    kTdTag,            // <td> sibling.
+    kDdTag,            // <dd> sibling.
+    kLiTag,            // <li> ancestor.
+    kPlaceHolder,      // placeholder attribute.
+    kAriaLabel,        // aria-label attribute.
+    kCombined,         // Text node sibling (includes <b>, etc).
+    kValue,            // value attribute.
+    kFor,              // <label> for-attribute
+    kOverlayingLabel,  // Succeeding DOM node overlaying the input.
   };
 
   mojo_base.mojom.String16 label;

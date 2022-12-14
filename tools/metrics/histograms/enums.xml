@@ -51322,6 +51322,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="9" label="Text node sibling (includes &lt;b&gt;, etc)"/>
   <int value="10" label="value attribute"/>
   <int value="11" label="&lt;label&gt; for attribute"/>
+  <int value="12" label="Succeeding DOM node overlaying the input"/>
 </enum>
 
 <enum name="InfoBarClosingStates">
