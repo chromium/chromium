@@ -100,6 +100,7 @@ TEST_F(NtpCustomBackgroundServiceTest, SetCustomBackgroundURL) {
 
   auto custom_background = custom_background_service_->GetCustomBackground();
   EXPECT_EQ(kUrl, custom_background->custom_background_url);
+  EXPECT_EQ(false, custom_background->is_uploaded_image);
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
 }
 
@@ -138,6 +139,7 @@ TEST_F(NtpCustomBackgroundServiceTest, SetCustomBackgroundInfo) {
 
   auto custom_background = custom_background_service_->GetCustomBackground();
   EXPECT_EQ(kUrl, custom_background->custom_background_url);
+  EXPECT_EQ(false, custom_background->is_uploaded_image);
   EXPECT_EQ(kAttributionLine1,
             custom_background->custom_background_attribution_line_1);
   EXPECT_EQ(kAttributionLine2,
@@ -168,6 +170,8 @@ TEST_F(NtpCustomBackgroundServiceTest, LocalBackgroundImageCopyCreated) {
   EXPECT_EQ(true, profile_.GetTestingPrefService()->GetBoolean(
                       prefs::kNtpCustomBackgroundLocalToDevice));
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
+  auto custom_background = custom_background_service_->GetCustomBackground();
+  EXPECT_EQ(true, custom_background->is_uploaded_image);
 }
 
 TEST_F(NtpCustomBackgroundServiceTest,
@@ -194,6 +198,8 @@ TEST_F(NtpCustomBackgroundServiceTest,
   EXPECT_EQ(false, profile_.GetTestingPrefService()->GetBoolean(
                        prefs::kNtpCustomBackgroundLocalToDevice));
   ASSERT_TRUE(custom_background_service_->IsCustomBackgroundSet());
+  auto custom_background = custom_background_service_->GetCustomBackground();
+  EXPECT_EQ(false, custom_background->is_uploaded_image);
 }
 
 TEST_F(NtpCustomBackgroundServiceTest, UpdatingPrefUpdatesNtpTheme) {
@@ -218,6 +224,7 @@ TEST_F(NtpCustomBackgroundServiceTest, UpdatingPrefUpdatesNtpTheme) {
 
   custom_background = custom_background_service_->GetCustomBackground();
   EXPECT_EQ(kUrlBar, custom_background->custom_background_url);
+  EXPECT_EQ(false, custom_background->is_uploaded_image);
   EXPECT_EQ(false,
             pref_service->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice));
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
@@ -247,6 +254,7 @@ TEST_F(NtpCustomBackgroundServiceTest, SetLocalImage) {
   EXPECT_TRUE(
       pref_service->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice));
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
+  EXPECT_EQ(true, custom_background->is_uploaded_image);
 }
 
 TEST_F(NtpCustomBackgroundServiceTest, SyncPrefOverridesAndRemovesLocalImage) {
@@ -278,6 +286,7 @@ TEST_F(NtpCustomBackgroundServiceTest, SyncPrefOverridesAndRemovesLocalImage) {
 
   auto custom_background = custom_background_service_->GetCustomBackground();
   EXPECT_EQ(kUrl, custom_background->custom_background_url);
+  EXPECT_EQ(false, custom_background->is_uploaded_image);
   EXPECT_FALSE(
       pref_service->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice));
   EXPECT_FALSE(base::PathExists(path));
@@ -360,6 +369,7 @@ TEST_F(NtpCustomBackgroundServiceTest, LocalImageDoesNotHaveAttribution) {
   EXPECT_TRUE(
       pref_service->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice));
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
+  EXPECT_EQ(true, custom_background->is_uploaded_image);
   EXPECT_EQ("", custom_background->custom_background_attribution_line_1);
   EXPECT_EQ("", custom_background->custom_background_attribution_line_2);
   EXPECT_EQ(GURL(),

@@ -119,6 +119,9 @@ struct CustomBackground {
   // Url of the custom background selected by the user.
   GURL custom_background_url;
 
+  // Whether the image is a local resource.
+  bool is_uploaded_image;
+
   // First attribution string for custom background.
   std::string custom_background_attribution_line_1;
 

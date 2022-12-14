@@ -398,6 +398,7 @@ NtpCustomBackgroundService::GetCustomBackground() {
     std::string local_string(chrome::kChromeUIUntrustedNewTabPageBackgroundUrl);
     GURL timestamped_url(local_string + "?ts=" + time_string);
     custom_background->custom_background_url = timestamped_url;
+    custom_background->is_uploaded_image = true;
     custom_background->custom_background_attribution_line_1 = std::string();
     custom_background->custom_background_attribution_line_2 = std::string();
     custom_background->custom_background_attribution_action_url = GURL();
@@ -429,6 +430,7 @@ NtpCustomBackgroundService::GetCustomBackground() {
     const base::Value* color =
         background_info.Find(kNtpCustomBackgroundMainColor);
     custom_background->custom_background_url = custom_background_url;
+    custom_background->is_uploaded_image = false;
     custom_background->collection_id = collection_id;
 
     if (attribution_line_1) {

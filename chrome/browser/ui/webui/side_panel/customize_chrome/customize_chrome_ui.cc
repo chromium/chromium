@@ -42,6 +42,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"shortcutsSuggested", IDS_NTP_CUSTOMIZE_MOST_VISITED_DESC},
       {"showShortcutsToggle", IDS_NTP_CUSTOMIZE_SHOW_SHORTCUTS_LABEL},
       {"title", IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE},
+      {"uploadedImage", IDS_NTP_CUSTOMIZE_UPLOADED_IMAGE_LABEL},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 

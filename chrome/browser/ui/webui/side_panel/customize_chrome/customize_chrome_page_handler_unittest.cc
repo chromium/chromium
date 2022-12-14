@@ -270,6 +270,7 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
   CustomBackground custom_background;
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
   custom_background.custom_background_attribution_line_1 = "foo line";
+  custom_background.is_uploaded_image = false;
   ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
       .WillByDefault(testing::Return(absl::make_optional(custom_background)));
   ON_CALL(mock_theme_service(), UsingDefaultTheme())
@@ -284,6 +285,7 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
   ASSERT_TRUE(theme);
   ASSERT_TRUE(theme->background_image);
   EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);
+  ASSERT_FALSE(theme->background_image->is_uploaded_image);
   EXPECT_EQ("foo line", theme->background_image->title);
   EXPECT_TRUE(theme->system_dark_mode);
   EXPECT_EQ(
@@ -293,6 +295,32 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
             theme->foreground_color);
   EXPECT_EQ(web_contents().GetColorProvider().GetColor(kColorNewTabPageText),
             theme->color_picker_icon_color);
+}
+
+TEST_P(CustomizeChromePageHandlerSetThemeTest, SetUploadedImage) {
+  side_panel::mojom::ThemePtr theme;
+  EXPECT_CALL(mock_page_, SetTheme)
+      .Times(1)
+      .WillOnce(testing::Invoke([&theme](side_panel::mojom::ThemePtr arg) {
+        theme = std::move(arg);
+      }));
+  CustomBackground custom_background;
+  custom_background.custom_background_url = GURL("https://foo.com/img.png");
+  custom_background.is_uploaded_image = true;
+  ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
+      .WillByDefault(testing::Return(absl::make_optional(custom_background)));
+  ON_CALL(mock_theme_service(), UsingDefaultTheme())
+      .WillByDefault(testing::Return(false));
+  ON_CALL(mock_theme_service(), UsingSystemTheme())
+      .WillByDefault(testing::Return(false));
+
+  UpdateTheme();
+  mock_page_.FlushForTesting();
+
+  ASSERT_TRUE(theme);
+  ASSERT_TRUE(theme->background_image);
+  EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);
+  ASSERT_TRUE(theme->background_image->is_uploaded_image);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

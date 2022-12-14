@@ -1,11 +1,16 @@
 <style>
-  #themeSnapshot {
+  .theme-snapshot {
     align-items: center;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    margin-bottom: 8px;
     margin-inline-start: 16px;
     width: 288px;
+  }
+
+  .theme-snapshot img {
+    object-fit: fill;
   }
 
   .image {
@@ -16,11 +21,7 @@
     width: inherit;
   }
 
-  #themeSnapshot img {
-    object-fit: fill;
-  }
-
-  #classicChromeImageContainer {
+  #classicChrome {
     align-items: center;
     background-color: var(--customize-chrome-color-background-color);
     display: flex;
@@ -33,22 +34,25 @@
   }
 
   #themeTitle {
-    margin-bottom: 8px;
     overflow: hidden;
     white-space: nowrap;
   }
 </style>
-<div id="themeSnapshot">
-  <template is="dom-if" if="[[showThemeSnapshot_]]">
+<iron-pages selected="[[themeType_]]" attr-for-selected="theme-type">
+  <div class="theme-snapshot" theme-type="customTheme">
     <img class="image" is="cr-auto-img"
         auto-src="[[theme_.backgroundImage.url.url]]" draggable="false">
     </img>
     <label id="themeTitle">[[theme_.backgroundImage.title]]</label>
-  </template>
-  <template is="dom-if" if="[[!showThemeSnapshot_]]">
-    <div class="image" id="classicChromeImageContainer">
+  </div>
+  <div class="theme-snapshot" theme-type="classicChrome">
+    <div class="image" id="classicChrome">
       <img id="miniNewTabPage" src="icons/mini_new_tab_page.svg"></img>
     </div>
     <label id="themeTitle">$i18n{classicChrome}</label>
-  </template>
-</div>
+  </div>
+  <div class="theme-snapshot" theme-type="uploadedImage">
+    <img class="image" src="icons/uploaded_image.svg"></img>
+    <label id="themeTitle">$i18n{uploadedImage}</label>
+  </div>
+</iron-pages>

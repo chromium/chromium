@@ -9,7 +9,10 @@ assert(!is_android)
 generate_grd("build_grdp") {
   grd_prefix = "side_panel_customize_chrome"
   out_grd = "$target_gen_dir/resources.grdp"
-  input_files = [ "mini_new_tab_page.svg" ]
+  input_files = [
+    "mini_new_tab_page.svg",
+    "uploaded_image.svg",
+  ]
   input_files_base_dir = rebase_path(".", "//")
   resource_path_prefix = "icons"
 }
