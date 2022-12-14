@@ -130,8 +130,7 @@ bool g_is_opening_new_window = false;
 
 // Stores the pending web auth requests (typically while the profile is being
 // loaded) until they are passed to the AuthSessionRequest class.
-NSMutableDictionary<NSUUID*, ASWebAuthenticationSessionRequest*>*
-GetPendingWebAuthRequests() API_AVAILABLE(macos(10.15)) {
+NSMutableDictionary* GetPendingWebAuthRequests() API_AVAILABLE(macos(10.15)) {
   static NSMutableDictionary* g_pending_requests =
       [[NSMutableDictionary alloc] init];
   return g_pending_requests;
@@ -148,12 +147,10 @@ bool IsProfileSignedOut(const base::FilePath& profile_path);
 void BeginHandlingWebAuthenticationSessionRequestWithProfile(
     ASWebAuthenticationSessionRequest* request,
     Profile* profile) API_AVAILABLE(macos(10.15)) {
-  NSUUID* key = request.UUID;
+  NSUUID* key = [request UUID];
   if (![GetPendingWebAuthRequests() objectForKey:key])
     return;  // The request has been canceled, do not start the session.
-
   [GetPendingWebAuthRequests() removeObjectForKey:key];
-
   // If there is no safe profile, |profile| is nullptr, and the session will
   // fail immediately.
   AuthSessionRequest::StartNewAuthSession(request, profile);
@@ -1939,11 +1936,10 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   dispatch_async(dispatch_get_main_queue(), ^(void) {
     // Start tracking the pending request, so it's possible to cancel it before
     // the session actually starts.
-    NSUUID* key = request.UUID;
+    NSUUID* key = [request UUID];
     DCHECK(![GetPendingWebAuthRequests() objectForKey:key])
         << "Duplicate ASWebAuthenticationSessionRequest";
     [GetPendingWebAuthRequests() setObject:request forKey:key];
-
     app_controller_mac::RunInLastProfileSafely(
         base::BindOnce(&BeginHandlingWebAuthenticationSessionRequestWithProfile,
                        base::scoped_nsobject<ASWebAuthenticationSessionRequest>(
@@ -1955,24 +1951,10 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 - (void)cancelWebAuthenticationSessionRequest:
     (ASWebAuthenticationSessionRequest*)request API_AVAILABLE(macos(10.15)) {
   dispatch_async(dispatch_get_main_queue(), ^(void) {
-    NSUUID* key = request.UUID;
-    if ([GetPendingWebAuthRequests() objectForKey:key]) {
-      // Remove the pending request: for the case when the session is not
-      // started.
-      [GetPendingWebAuthRequests() removeObjectForKey:key];
-
-      // Take care of the undocumented requirement (https://crbug.com/1400714)
-      // that -[ASWebAuthenticationSessionRequest cancelWithError:] be called
-      // for authentication sessions canceled by the OS.
-      NSError* error = [NSError
-          errorWithDomain:ASWebAuthenticationSessionErrorDomain
-                     code:ASWebAuthenticationSessionErrorCodeCanceledLogin
-                 userInfo:nil];
-      [request cancelWithError:error];
-    } else {
-      // Cancel the session: for the case when it was already started.
-      AuthSessionRequest::CancelAuthSession(request);
-    }
+    // Remove the pending request: for the case when the session is not started.
+    [GetPendingWebAuthRequests() removeObjectForKey:[request UUID]];
+    // Cancel the session: for the case when it was already started.
+    AuthSessionRequest::CancelAuthSession(request);
   });
 }
 
