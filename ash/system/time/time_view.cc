@@ -194,10 +194,28 @@ void TimeView::UpdateClockLayout(ClockLayout clock_layout) {
   Layout();
 }
 
-void TimeView::SetTextColor(ui::ColorId color_id,
+void TimeView::SetTextColorId(ui::ColorId color_id,
+                              bool auto_color_readability_enabled) {
+  auto set_color_id = [&](views::Label* label) {
+    label->SetEnabledColorId(color_id);
+    label->SetAutoColorReadabilityEnabled(auto_color_readability_enabled);
+  };
+
+  switch (type_) {
+    case kTime:
+      set_color_id(horizontal_label_);
+      set_color_id(vertical_label_hours_);
+      set_color_id(vertical_label_minutes_);
+      return;
+    case kDate:
+      set_color_id(horizontal_label_date_);
+  }
+}
+
+void TimeView::SetTextColor(SkColor color,
                             bool auto_color_readability_enabled) {
   auto set_color = [&](views::Label* label) {
-    label->SetEnabledColorId(color_id);
+    label->SetEnabledColor(color);
     label->SetAutoColorReadabilityEnabled(auto_color_readability_enabled);
   };
 

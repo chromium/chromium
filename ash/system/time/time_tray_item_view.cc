@@ -22,7 +22,7 @@ TimeTrayItemView::TimeTrayItemView(Shelf* shelf, TimeView::Type type)
                                      : TimeView::ClockLayout::VERTICAL_CLOCK;
   time_view_ = AddChildView(std::make_unique<TimeView>(
       clock_layout, Shell::Get()->system_tray_model()->clock(), type));
-  time_view_->SetTextColor(kColorAshIconColorPrimary);
+  time_view_->SetTextColorId(kColorAshIconColorPrimary);
 }
 
 TimeTrayItemView::~TimeTrayItemView() = default;

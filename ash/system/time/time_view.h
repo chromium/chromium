@@ -76,9 +76,12 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   // Updates clock layout.
   void UpdateClockLayout(ClockLayout clock_layout);
 
-  // Updates the time text color.
-  void SetTextColor(ui::ColorId color_id,
-                    bool auto_color_readability_enabled = false);
+  // Updates the time text color id.
+  void SetTextColorId(ui::ColorId color_id,
+                      bool auto_color_readability_enabled = false);
+
+  // Updates the text color.
+  void SetTextColor(SkColor color, bool auto_color_readability_enabled = false);
 
   // Updates the time text fontlist.
   void SetTextFont(const gfx::FontList& font_list);
