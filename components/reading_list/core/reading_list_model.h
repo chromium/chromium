@@ -128,11 +128,6 @@ class ReadingListModel : public KeyedService {
                                      int64_t distilation_size,
                                      const base::Time& distilation_time) = 0;
 
-  // Sets the extra info for the entry |url|.
-  virtual void SetContentSuggestionsExtra(
-      const GURL& url,
-      const reading_list::ContentSuggestionsExtra& extra) = 0;
-
   // Observer registration methods. The model will remove all observers upon
   // destruction automatically.
   virtual void AddObserver(ReadingListModelObserver* observer) = 0;

@@ -353,14 +353,14 @@ TEST_F(ContentSuggestionsServiceTest, ShouldForwardSuggestions) {
 TEST_F(ContentSuggestionsServiceTest,
        ShouldNotReturnCategoryInfoForNonexistentCategory) {
   Category category =
-      Category::FromKnownCategory(KnownCategories::READING_LIST);
+      Category::FromKnownCategory(KnownCategories::READING_LIST_DEPRECATED);
   absl::optional<CategoryInfo> result = service()->GetCategoryInfo(category);
   EXPECT_FALSE(result.has_value());
 }
 
 TEST_F(ContentSuggestionsServiceTest, ShouldReturnCategoryInfo) {
   Category category =
-      Category::FromKnownCategory(KnownCategories::READING_LIST);
+      Category::FromKnownCategory(KnownCategories::READING_LIST_DEPRECATED);
   MockContentSuggestionsProvider* provider =
       MakeRegisteredMockProvider(category);
   provider->FireCategoryStatusChangedWithCurrentStatus(category);
@@ -376,7 +376,7 @@ TEST_F(ContentSuggestionsServiceTest, ShouldReturnCategoryInfo) {
 TEST_F(ContentSuggestionsServiceTest,
        ShouldRegisterNewCategoryOnNewSuggestions) {
   Category category =
-      Category::FromKnownCategory(KnownCategories::READING_LIST);
+      Category::FromKnownCategory(KnownCategories::READING_LIST_DEPRECATED);
   MockContentSuggestionsProvider* provider =
       MakeRegisteredMockProvider(category);
   provider->FireCategoryStatusChangedWithCurrentStatus(category);
@@ -413,7 +413,7 @@ TEST_F(ContentSuggestionsServiceTest,
 TEST_F(ContentSuggestionsServiceTest,
        ShouldRegisterNewCategoryOnCategoryStatusChanged) {
   Category category =
-      Category::FromKnownCategory(KnownCategories::READING_LIST);
+      Category::FromKnownCategory(KnownCategories::READING_LIST_DEPRECATED);
   MockContentSuggestionsProvider* provider =
       MakeRegisteredMockProvider(category);
   provider->FireCategoryStatusChangedWithCurrentStatus(category);
@@ -444,7 +444,7 @@ TEST_F(ContentSuggestionsServiceTest,
 
 TEST_F(ContentSuggestionsServiceTest, ShouldRemoveCategoryWhenNotProvided) {
   Category category =
-      Category::FromKnownCategory(KnownCategories::READING_LIST);
+      Category::FromKnownCategory(KnownCategories::READING_LIST_DEPRECATED);
   MockContentSuggestionsProvider* provider =
       MakeRegisteredMockProvider(category);
   NiceMock<MockServiceObserver> observer;

@@ -8,7 +8,6 @@ include_rules = [
   "+components/leveldb_proto",
   "+components/metrics",
   "+components/prefs",
-  "+components/reading_list",
   "+components/signin/public",
   "+components/strings/grit/components_strings.h",
   "+components/sync_preferences/testing_pref_service_syncable.h",

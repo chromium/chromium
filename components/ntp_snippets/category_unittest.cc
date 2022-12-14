@@ -32,7 +32,7 @@ TEST(CategoryFactoryTest,
 
 TEST(CategoryFactoryTest, FromIDValueShouldReturnSameKnownCategory) {
   Category known_category =
-      Category::FromKnownCategory(KnownCategories::READING_LIST);
+      Category::FromKnownCategory(KnownCategories::READING_LIST_DEPRECATED);
   Category known_category_by_id = Category::FromIDValue(known_category.id());
   EXPECT_EQ(known_category, known_category_by_id);
 }

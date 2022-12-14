@@ -35,7 +35,7 @@ enum class KnownCategories {
   FOREIGN_TABS_DEPRECATED,
 
   // Pages from the user reading list.
-  READING_LIST,
+  READING_LIST_DEPRECATED,
 
   // ****************** INSERT NEW LOCAL CATEGORIES HERE! ******************
   // Existing categories are persisted and they must never be removed. This may

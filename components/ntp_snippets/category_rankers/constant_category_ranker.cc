@@ -15,7 +15,7 @@ namespace ntp_snippets {
 namespace {
 // All categories must be present.
 constexpr KnownCategories kKnownCategoriesDefaultOrder[] = {
-    KnownCategories::READING_LIST,
+    KnownCategories::READING_LIST_DEPRECATED,
     KnownCategories::ARTICLES,
 };
 }  // namespace

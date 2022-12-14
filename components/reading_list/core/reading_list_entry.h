@@ -13,6 +13,7 @@
 #include "url/gurl.h"
 
 namespace reading_list {
+
 class ReadingListLocal;
 
 // The different ways a reading list entry is added.
@@ -22,17 +23,11 @@ class ReadingListLocal;
 // |ADDED_VIA_SYNC| is when the entry was added with sync.
 enum EntrySource { ADDED_VIA_CURRENT_APP, ADDED_VIA_EXTENSION, ADDED_VIA_SYNC };
 
-// Contains additional data used by the ContentSuggestions.
-struct ContentSuggestionsExtra {
-  // Whether the Reading List Entry has been dismissed in the Content
-  // Suggestions.
-  bool dismissed = false;
-};
-}
+}  // namespace reading_list
 
 namespace sync_pb {
 class ReadingListSpecifics;
-}
+}  // namespace sync_pb
 
 class ReadingListEntry;
 
@@ -113,9 +108,6 @@ class ReadingListEntry {
   // Returns if an entry has ever been seen.
   bool HasBeenSeen() const;
 
-  // Extra information about this entry for the Content Suggestions.
-  const reading_list::ContentSuggestionsExtra* ContentSuggestionsExtra() const;
-
   // The last update time of the entry. This value may be used to sort the
   // entries. The value is in microseconds since Jan 1st 1970.
   int64_t UpdateTime() const;
@@ -189,31 +181,26 @@ class ReadingListEntry {
   // If |first_read_time_us_| is 0 and read is READ, sets |first_read_time_us_|
   // to |now|.
   void SetRead(bool read, const base::Time& now);
-  // Sets extra information about this entry used by Content Suggestions.
-  void SetContentSuggestionsExtra(
-      const reading_list::ContentSuggestionsExtra& extra);
   // Sets the estimated time to read of this entry page.
   void SetEstimatedReadTime(base::TimeDelta estimated_read_time);
 
  private:
   enum State { UNSEEN, UNREAD, READ };
-  ReadingListEntry(
-      const GURL& url,
-      const std::string& title,
-      base::TimeDelta estimated_read_time,
-      State state,
-      int64_t creation_time,
-      int64_t first_read_time,
-      int64_t update_time,
-      int64_t update_title_time,
-      ReadingListEntry::DistillationState distilled_state,
-      const base::FilePath& distilled_path,
-      const GURL& distilled_url,
-      int64_t distillation_time,
-      int64_t distillation_size,
-      int failed_download_counter,
-      std::unique_ptr<net::BackoffEntry> backoff,
-      const reading_list::ContentSuggestionsExtra& content_suggestions_extra);
+  ReadingListEntry(const GURL& url,
+                   const std::string& title,
+                   base::TimeDelta estimated_read_time,
+                   State state,
+                   int64_t creation_time,
+                   int64_t first_read_time,
+                   int64_t update_time,
+                   int64_t update_title_time,
+                   ReadingListEntry::DistillationState distilled_state,
+                   const base::FilePath& distilled_path,
+                   const GURL& distilled_url,
+                   int64_t distillation_time,
+                   int64_t distillation_size,
+                   int failed_download_counter,
+                   std::unique_ptr<net::BackoffEntry> backoff);
   GURL url_;
   std::string title_;
   base::TimeDelta estimated_read_time_;
@@ -234,8 +221,6 @@ class ReadingListEntry {
   int64_t update_title_time_us_;
   int64_t distillation_time_us_;
   int64_t distillation_size_;
-
-  reading_list::ContentSuggestionsExtra content_suggestions_extra_;
 };
 
 #endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_ENTRY_H_

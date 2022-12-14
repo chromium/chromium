@@ -108,7 +108,8 @@ TEST(ContentSuggestionsMetricsTest,
   base::HistogramTester histogram_tester;
   OnPageShown(std::vector<Category>(
                   {Category::FromKnownCategory(KnownCategories::ARTICLES),
-                   Category::FromKnownCategory(KnownCategories::READING_LIST)}),
+                   Category::FromKnownCategory(
+                       KnownCategories::READING_LIST_DEPRECATED)}),
               /*suggestions_per_category=*/{10, 5},
               /*is_category_visible=*/{true, true});
   EXPECT_THAT(

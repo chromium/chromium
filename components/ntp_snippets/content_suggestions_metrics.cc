@@ -87,7 +87,7 @@ enum class HistogramCategories {
   PHYSICAL_WEB_PAGES_DEPRECATED,
   FOREIGN_TABS_DEPRECATED,
   ARTICLES,
-  READING_LIST,
+  READING_LIST_DEPRECATED,
   CONTEXTUAL,
   // Insert new values here!
   COUNT
@@ -106,8 +106,8 @@ HistogramCategories GetHistogramCategory(Category category) {
   switch (known_category) {
     case KnownCategories::ARTICLES:
       return HistogramCategories::ARTICLES;
-    case KnownCategories::READING_LIST:
-      return HistogramCategories::READING_LIST;
+    case KnownCategories::READING_LIST_DEPRECATED:
+      return HistogramCategories::READING_LIST_DEPRECATED;
     case KnownCategories::BOOKMARKS_DEPRECATED:
       return HistogramCategories::BOOKMARKS_DEPRECATED;
     case KnownCategories::DOWNLOADS_DEPRECATED:
@@ -134,7 +134,7 @@ std::string GetCategorySuffix(Category category) {
       return "Articles";
     case HistogramCategories::EXPERIMENTAL:
       return "Experimental";
-    case HistogramCategories::READING_LIST:
+    case HistogramCategories::READING_LIST_DEPRECATED:
       return "ReadingList";
     case HistogramCategories::CONTEXTUAL:
       return "Contextual";

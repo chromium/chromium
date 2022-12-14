@@ -638,21 +638,6 @@ TEST_F(ReadingListModelTest, UpdateReadDistilledInfo) {
             entry->DistillationTime());
 }
 
-// Tests setting ContentSuggestionsExtra info on entry.
-TEST_F(ReadingListModelTest, UpdateContentSuggestionsExtra) {
-  const GURL gurl("http://example.com");
-  model_->AddEntry(gurl, "sample", reading_list::ADDED_VIA_CURRENT_APP);
-  const ReadingListEntry* entry = model_->GetEntryByURL(gurl);
-  ClearCounts();
-
-  reading_list::ContentSuggestionsExtra extra;
-  extra.dismissed = true;
-
-  model_->SetContentSuggestionsExtra(gurl, extra);
-  AssertObserverCount(0, 0, 0, 0, 0, 0, 0, 1, 1, 1);
-  EXPECT_EQ(extra.dismissed, entry->ContentSuggestionsExtra()->dismissed);
-}
-
 // Tests that ReadingListModel calls CallbackModelBeingDeleted when destroyed.
 TEST_F(ReadingListModelTest, CallbackModelBeingDeleted) {
   AssertObserverCount(1, 0, 0, 0, 0, 0, 0, 0, 0, 0);

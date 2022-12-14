@@ -71,10 +71,6 @@ class FakeReadingListModel : public ReadingListModel {
                              int64_t distilation_size,
                              const base::Time& distilation_time) override;
 
-  void SetContentSuggestionsExtra(
-      const GURL& url,
-      const reading_list::ContentSuggestionsExtra& extra) override;
-
   void AddObserver(ReadingListModelObserver* observer) override;
   void RemoveObserver(ReadingListModelObserver* observer) override;
 

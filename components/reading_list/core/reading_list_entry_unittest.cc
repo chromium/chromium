@@ -319,7 +319,6 @@ TEST(ReadingListEntry, AsReadingListLocal) {
   EXPECT_EQ(pb_entry->distilled_path(), "");
   EXPECT_EQ(pb_entry->failed_download_counter(), 0);
   EXPECT_NE(pb_entry->backoff(), "");
-  EXPECT_FALSE(pb_entry->content_suggestions_extra().dismissed());
 
   entry.SetDistilledState(ReadingListEntry::WILL_RETRY);
   std::unique_ptr<reading_list::ReadingListLocal> will_retry_pb_entry(
@@ -337,10 +336,6 @@ TEST(ReadingListEntry, AsReadingListLocal) {
   entry.SetRead(true, base::Time::FromTimeT(20));
   entry.MarkEntryUpdated(base::Time::FromTimeT(30));
 
-  reading_list::ContentSuggestionsExtra extra;
-  extra.dismissed = true;
-  entry.SetContentSuggestionsExtra(extra);
-
   EXPECT_NE(entry.UpdateTime(), creation_time_us);
   std::unique_ptr<reading_list::ReadingListLocal> distilled_pb_entry(
       entry.AsReadingListLocal(base::Time::FromTimeT(40)));
@@ -355,7 +350,6 @@ TEST(ReadingListEntry, AsReadingListLocal) {
   EXPECT_EQ(distilled_pb_entry->distillation_time_us(),
             entry.DistillationTime());
   EXPECT_EQ(distilled_pb_entry->distillation_size(), entry.DistillationSize());
-  EXPECT_TRUE(distilled_pb_entry->content_suggestions_extra().dismissed());
 }
 
 // Tests that the reading list entry is correctly parsed from
@@ -381,10 +375,6 @@ TEST(ReadingListEntry, FromReadingListLocal) {
   pb_entry->set_distillation_time_us(now);
   pb_entry->set_distillation_size(50);
 
-  reading_list::ReadingListContentSuggestionsExtra* pb_extra =
-      pb_entry->mutable_content_suggestions_extra();
-  pb_extra->set_dismissed(true);
-
   std::unique_ptr<ReadingListEntry> waiting_entry(
       ReadingListEntry::FromReadingListLocal(*pb_entry,
                                              base::Time::FromTimeT(20)));
@@ -397,7 +387,6 @@ TEST(ReadingListEntry, FromReadingListLocal) {
   EXPECT_EQ(waiting_entry->DistilledPath(), base::FilePath());
   EXPECT_EQ(waiting_entry->DistillationSize(), 50);
   EXPECT_EQ(waiting_entry->DistillationTime(), now);
-  EXPECT_TRUE(waiting_entry->ContentSuggestionsExtra()->dismissed);
   // Allow twice the jitter as test is not instantaneous.
   double fuzzing = 2 * ReadingListEntry::kBackoffPolicy.jitter_factor;
   int nextTry = waiting_entry->TimeUntilNextTry().InMinutes();

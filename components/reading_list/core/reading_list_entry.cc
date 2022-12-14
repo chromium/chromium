@@ -74,8 +74,7 @@ ReadingListEntry::ReadingListEntry(const GURL& url,
                        0,
                        0,
                        0,
-                       std::move(backoff),
-                       reading_list::ContentSuggestionsExtra()) {}
+                       std::move(backoff)) {}
 
 ReadingListEntry::ReadingListEntry(
     const GURL& url,
@@ -92,8 +91,7 @@ ReadingListEntry::ReadingListEntry(
     int64_t distillation_time,
     int64_t distillation_size,
     int failed_download_counter,
-    std::unique_ptr<net::BackoffEntry> backoff,
-    const reading_list::ContentSuggestionsExtra& content_suggestions_extra)
+    std::unique_ptr<net::BackoffEntry> backoff)
     : url_(url),
       title_(title),
       estimated_read_time_(estimated_read_time),
@@ -107,8 +105,7 @@ ReadingListEntry::ReadingListEntry(
       update_time_us_(update_time),
       update_title_time_us_(update_title_time),
       distillation_time_us_(distillation_time),
-      distillation_size_(distillation_size),
-      content_suggestions_extra_(content_suggestions_extra) {
+      distillation_size_(distillation_size) {
   if (backoff) {
     backoff_ = std::move(backoff);
   } else {
@@ -136,8 +133,7 @@ ReadingListEntry::ReadingListEntry(ReadingListEntry&& entry)
       update_time_us_(std::move(entry.update_time_us_)),
       update_title_time_us_(std::move(entry.update_title_time_us_)),
       distillation_time_us_(std::move(entry.distillation_time_us_)),
-      distillation_size_(std::move(entry.distillation_size_)),
-      content_suggestions_extra_(std::move(entry.content_suggestions_extra_)) {}
+      distillation_size_(std::move(entry.distillation_size_)) {}
 
 ReadingListEntry::~ReadingListEntry() {}
 
@@ -197,7 +193,6 @@ ReadingListEntry& ReadingListEntry::operator=(ReadingListEntry&& other) {
   update_title_time_us_ = std::move(other.update_title_time_us_);
   distillation_time_us_ = std::move(other.distillation_time_us_);
   distillation_size_ = std::move(other.distillation_size_);
-  content_suggestions_extra_ = std::move(other.content_suggestions_extra_);
   return *this;
 }
 
@@ -238,16 +233,6 @@ bool ReadingListEntry::IsRead() const {
 
 bool ReadingListEntry::HasBeenSeen() const {
   return state_ != UNSEEN;
-}
-
-const reading_list::ContentSuggestionsExtra*
-ReadingListEntry::ContentSuggestionsExtra() const {
-  return &content_suggestions_extra_;
-}
-
-void ReadingListEntry::SetContentSuggestionsExtra(
-    const reading_list::ContentSuggestionsExtra& extra) {
-  content_suggestions_extra_ = extra;
 }
 
 void ReadingListEntry::SetEstimatedReadTime(
@@ -431,21 +416,11 @@ std::unique_ptr<ReadingListEntry> ReadingListEntry::FromReadingListLocal(
     }
   }
 
-  reading_list::ContentSuggestionsExtra content_suggestions_extra;
-  if (pb_entry.has_content_suggestions_extra()) {
-    const reading_list::ReadingListContentSuggestionsExtra& pb_extra =
-        pb_entry.content_suggestions_extra();
-    if (pb_extra.has_dismissed()) {
-      content_suggestions_extra.dismissed = pb_extra.dismissed();
-    }
-  }
-
   return base::WrapUnique<ReadingListEntry>(new ReadingListEntry(
       url, title, estimated_read_time, state, creation_time_us,
       first_read_time_us, update_time_us, update_title_time_us,
       distillation_state, distilled_path, distilled_url, distillation_time_us,
-      distillation_size, failed_download_counter, std::move(backoff),
-      content_suggestions_extra));
+      distillation_size, failed_download_counter, std::move(backoff)));
 }
 
 // static
@@ -511,8 +486,7 @@ std::unique_ptr<ReadingListEntry> ReadingListEntry::FromReadingListSpecifics(
   return base::WrapUnique<ReadingListEntry>(new ReadingListEntry(
       url, title, estimated_read_time, state, creation_time_us,
       first_read_time_us, update_time_us, update_title_time_us, WAITING,
-      base::FilePath(), GURL(), 0, 0, 0, nullptr,
-      reading_list::ContentSuggestionsExtra()));
+      base::FilePath(), GURL(), 0, 0, 0, nullptr));
 }
 
 void ReadingListEntry::MergeWithEntry(const ReadingListEntry& other) {
@@ -646,10 +620,6 @@ ReadingListEntry::AsReadingListLocal(const base::Time& now) const {
     serializer.Serialize(backoff);
     pb_entry->set_backoff(output);
   }
-
-  reading_list::ReadingListContentSuggestionsExtra* pb_extra =
-      pb_entry->mutable_content_suggestions_extra();
-  pb_extra->set_dismissed(content_suggestions_extra_.dismissed);
 
   return pb_entry;
 }

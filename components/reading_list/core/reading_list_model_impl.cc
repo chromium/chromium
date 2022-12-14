@@ -557,36 +557,6 @@ void ReadingListModelImpl::SetEntryDistilledState(
   }
 }
 
-void ReadingListModelImpl::SetContentSuggestionsExtra(
-    const GURL& url,
-    const reading_list::ContentSuggestionsExtra& extra) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(loaded());
-  ReadingListEntry* entry = GetMutableEntryFromURL(url);
-  if (!entry) {
-    return;
-  }
-
-  for (ReadingListModelObserver& observer : observers_) {
-    observer.ReadingListWillUpdateEntry(this, url);
-  }
-
-  entry->SetContentSuggestionsExtra(extra);
-  if (storage_layer_) {
-    std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
-        storage_layer_->EnsureBatchCreated();
-    batch->SaveEntry(*entry);
-    sync_bridge_.DidAddOrUpdateEntry(*entry,
-                                     batch->GetSyncMetadataChangeList());
-  }
-  for (ReadingListModelObserver& observer : observers_) {
-    observer.ReadingListDidUpdateEntry(this, url);
-  }
-  for (ReadingListModelObserver& observer : observers_) {
-    observer.ReadingListDidApplyChanges(this);
-  }
-}
-
 void ReadingListModelImpl::AddObserver(ReadingListModelObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(observer);

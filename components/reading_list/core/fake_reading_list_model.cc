@@ -134,12 +134,6 @@ void FakeReadingListModel::SetEntryDistilledInfo(
   NOTREACHED();
 }
 
-void FakeReadingListModel::SetContentSuggestionsExtra(
-    const GURL& url,
-    const reading_list::ContentSuggestionsExtra& extra) {
-  NOTREACHED();
-}
-
 void FakeReadingListModel::AddObserver(ReadingListModelObserver* observer) {
   observers_.AddObserver(observer);
   if (loaded()) {
