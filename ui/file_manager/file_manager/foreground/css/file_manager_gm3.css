@@ -368,61 +368,19 @@ html.col-resize #directory-tree .tree-row > .file-row > .root-eject:hover {
   pointer-events: none;
 }
 
-/* A vertical splitter between the directory tree and the file list. It is
-   a transparent area centered on the directory tree right border. */
-div.splitter {
-  align-items: center;
-  cursor: col-resize;
-  display: flex;
-  flex: none;
-  justify-content: center;
-  margin: 0;
-  position: relative;
-  width: 24px;
+.jelly-splitter {
+  --xf-splitter-tracker-offset: 16px;
   z-index: 500;  /* Must be below the contextmenu (600). */
 }
 
-div.splitter .splitter-button {
-  --hover-bg-color: var(--cros-sys-hover_on_quiet);
-  --ink-color: transparent;
-  border: none;
-  border-radius: 8px;
-  cursor: col-resize;
-  height: 64px;
-  left: 12px;
-  min-width: 16px;
-  padding: 0;
-  position: relative;
-  width: 16px;
+html.pointer-active .jelly-splitter:not(.splitter-active):hover {
+  --xf-splitter-cursor: default;
+  --xf-splitter-hover-color: none;
 }
 
-html.pointer-active div.splitter:not(.splitter-active):hover {
-  cursor: default;
-}
-
-html.col-resize div.splitter:not(.splitter-active) .splitter-button:hover {
-  --hover-bg-color: none;
-}
-
-html.pointer-active div.splitter:not(.splitter-active) .splitter-button:not(:active):hover {
-  --hover-bg-color: none;
-  cursor: default;
-}
-
-div.splitter.splitter-active .splitter-button:active:not(:hover) {
-  background-color: var(--cros-sys-hover_on_quiet);
-}
-
-div.splitter.splitter-active .splitter-button:not(:active) {
-  background-color: var(--cros-sys-hover_on_quiet);
-}
-
-div.splitter .splitter-button .icon {
-  display: none;
-}
-
-html.pointer-active div.splitter:not(.splitter-active) .splitter-button:not(:active):hover .icon {
-  cursor: default;
+html.col-resize .jelly-splitter:not(.splitter-active):hover {
+  --xf-splitter-cursor: col-resize;
+  --xf-splitter-hover-color: none;
 }
 
 /* Breadcrumbs and things under the title but above the list view. */

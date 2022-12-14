@@ -281,6 +281,7 @@ ts_files = [
   "file_manager/widgets/xf_path_display.ts",
   "file_manager/widgets/xf_search_options.ts",
   "file_manager/widgets/xf_select.ts",
+  "file_manager/widgets/xf_splitter.ts",
   "file_manager/foreground/js/ui/search_autocomplete_list.ts",
   "file_manager/widgets/xf_tree.ts",
   "file_manager/widgets/xf_tree_item.ts",
@@ -330,6 +331,7 @@ ts_test_files = [
   "file_manager/widgets/xf_path_display_unittest.ts",
   "file_manager/widgets/xf_search_options_unittest.ts",
   "file_manager/widgets/xf_select_unittest.ts",
+  "file_manager/widgets/xf_splitter_unittest.ts",
   "file_manager/widgets/xf_tree_unittest.ts",
   "file_manager/widgets/xf_tree_item_unittest.ts",
 
