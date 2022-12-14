@@ -77,8 +77,12 @@ constexpr char kAutocorrectV2QualityVkRejectedHistName[] =
     "InputMethod.Assistive.AutocorrectV2.Quality.VkRejected";
 constexpr char kAutocorrectV2QualityPkAcceptedHistName[] =
     "InputMethod.Assistive.AutocorrectV2.Quality.PkAccepted";
+constexpr char kAutocorrectV2QualityDefaultPkAcceptedHistName[] =
+    "InputMethod.Assistive.AutocorrectV2.Quality.PkAccepted.EnabledByDefault";
 constexpr char kAutocorrectV2QualityPkRejectedHistName[] =
     "InputMethod.Assistive.AutocorrectV2.Quality.PkRejected";
+constexpr char kAutocorrectV2QualityDefaultPkRejectedHistName[] =
+    "InputMethod.Assistive.AutocorrectV2.Quality.PkRejected.EnabledByDefault";
 constexpr char kAutocorrectV2Distance2dVkAcceptedHistName[] =
     "InputMethod.Assistive.AutocorrectV2.Distance."
     "OriginalLengthVsLevenshteinDistance.VkAccepted";
@@ -2233,6 +2237,29 @@ TEST_F(AutocorrectManagerTest, RecordQualityBreakdownForLowerCasedLetter) {
                                      4);
 }
 
+TEST_F(AutocorrectManagerTest, RecordQualityBreakdownForDefaultPkAccepted) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+                                 DisabledFeatures());
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.HandleAutocorrect(gfx::Range(0, 8), u"françaisss", u"français");
+
+  // Accept autocorrect implicitly.
+  manager_.OnSurroundingTextChanged(u"français ", 9, 9);
+  manager_.OnSurroundingTextChanged(u"français abc", 12, 12);
+
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2QualityDefaultPkAcceptedHistName,
+      AutocorrectQualityBreakdown::kSuggestionRemovedLetters, 1);
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2QualityDefaultPkAcceptedHistName,
+      AutocorrectQualityBreakdown::kSuggestionResolved, 1);
+  histogram_tester_.ExpectTotalCount(
+      kAutocorrectV2QualityDefaultPkAcceptedHistName, 2);
+  histogram_tester_.ExpectTotalCount(kAutocorrectV2QualityPkAcceptedHistName,
+                                     2);
+}
+
 TEST_F(AutocorrectManagerTest, RecordQualityBreakdownForVkAccepted) {
   keyboard_client_->set_keyboard_visible_for_test(true);
   manager_.HandleAutocorrect(gfx::Range(0, 8), u"françaisss", u"français");
@@ -2288,6 +2315,34 @@ TEST_F(AutocorrectManagerTest, RecordQualityBreakdownForPkRejected) {
   histogram_tester_.ExpectBucketCount(
       kAutocorrectV2QualityPkRejectedHistName,
       AutocorrectQualityBreakdown::kSuggestionResolved, 1);
+  histogram_tester_.ExpectTotalCount(kAutocorrectV2QualityPkRejectedHistName,
+                                     2);
+  histogram_tester_.ExpectTotalCount(
+      kAutocorrectV2QualityDefaultPkRejectedHistName, 0);
+}
+
+TEST_F(AutocorrectManagerTest, RecordQualityBreakdownDefaultForPkRejected) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+                                 DisabledFeatures());
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.HandleAutocorrect(gfx::Range(0, 8), u"françaisss", u"français");
+
+  // Accept autocorrect implicitly.
+  manager_.OnSurroundingTextChanged(u"français ", 9, 9);
+  // Clear range.
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(),
+                                                      base::DoNothing());
+  manager_.OnSurroundingTextChanged(u"franças ", 8, 8);
+
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2QualityDefaultPkRejectedHistName,
+      AutocorrectQualityBreakdown::kSuggestionRemovedLetters, 1);
+  histogram_tester_.ExpectBucketCount(
+      kAutocorrectV2QualityDefaultPkRejectedHistName,
+      AutocorrectQualityBreakdown::kSuggestionResolved, 1);
+  histogram_tester_.ExpectTotalCount(
+      kAutocorrectV2QualityDefaultPkRejectedHistName, 2);
   histogram_tester_.ExpectTotalCount(kAutocorrectV2QualityPkRejectedHistName,
                                      2);
 }

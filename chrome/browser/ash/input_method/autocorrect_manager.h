@@ -196,6 +196,10 @@ class AutocorrectManager {
   void LogAssistiveAutocorrectInternalState(
       AutocorrectInternalStates internal_state);
   bool AutoCorrectPrefIsPkEnabledByDefault();
+  void LogAssistiveAutocorrectQualityBreakdown(
+      AutocorrectQualityBreakdown quality_breakdown,
+      bool suggestion_accepted,
+      bool virtual_keyboard_visible);
 
   void OnTextFieldContextualInfoChanged(const TextFieldContextualInfo& info);
 

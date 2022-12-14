@@ -219,37 +219,6 @@ void LogAssistiveAutocorrectActionLatency(
   }
 }
 
-void LogAssistiveAutocorrectQualityBreakdown(
-    AutocorrectQualityBreakdown quality_breakdown,
-    bool suggestion_accepted,
-    bool virtual_keyboard_visible) {
-  std::string histogram_name = "InputMethod.Assistive.AutocorrectV2.Quality.";
-
-  // Explicitly use autocorrect histogram name so that this usage can be found
-  // using code search.
-  if (virtual_keyboard_visible) {
-    if (suggestion_accepted) {
-      base::UmaHistogramEnumeration(
-          "InputMethod.Assistive.AutocorrectV2.Quality.VkAccepted",
-          quality_breakdown);
-    } else {
-      base::UmaHistogramEnumeration(
-          "InputMethod.Assistive.AutocorrectV2.Quality.VkRejected",
-          quality_breakdown);
-    }
-  } else {
-    if (suggestion_accepted) {
-      base::UmaHistogramEnumeration(
-          "InputMethod.Assistive.AutocorrectV2.Quality.PkAccepted",
-          quality_breakdown);
-    } else {
-      base::UmaHistogramEnumeration(
-          "InputMethod.Assistive.AutocorrectV2.Quality.PkRejected",
-          quality_breakdown);
-    }
-  }
-}
-
 AutocorrectRejectionBreakdown LogControlInteractions(
     const ui::DomCode& last_key_press,
     const std::string& histogram_name) {
@@ -703,6 +672,23 @@ void AutocorrectManager::LogAssistiveAutocorrectInternalState(
   }
   base::UmaHistogramEnumeration(
       "InputMethod.Assistive.AutocorrectV2.Internal.PkState", internal_state);
+}
+
+void AutocorrectManager::LogAssistiveAutocorrectQualityBreakdown(
+    AutocorrectQualityBreakdown quality_breakdown,
+    bool suggestion_accepted,
+    bool virtual_keyboard_visible) {
+  std::string histogram_name = "InputMethod.Assistive.AutocorrectV2.Quality.";
+  histogram_name =
+      base::StrCat({histogram_name, virtual_keyboard_visible ? "Vk" : "Pk",
+                    suggestion_accepted ? "Accepted" : "Rejected"});
+
+  base::UmaHistogramEnumeration(histogram_name, quality_breakdown);
+
+  if (AutoCorrectPrefIsPkEnabledByDefault()) {
+    base::UmaHistogramEnumeration(histogram_name + ".EnabledByDefault",
+                                  quality_breakdown);
+  }
 }
 
 void AutocorrectManager::OnActivate(const std::string& engine_id) {
