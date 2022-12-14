@@ -12,8 +12,9 @@
 
 namespace views {
 
-// This class is used to add and handle text service items in the text context
-// menu under the CrOS environment.
+// This class is used to add and handle text service items in ChromeOS native UI
+// textfield context menus. The implementation is specific to the platform (Ash
+// or Lacros) where the textfield lives.
 class VIEWS_EXPORT ViewsTextServicesContextMenuChromeos
     : public ViewsTextServicesContextMenu {
  public:
@@ -40,9 +41,9 @@ class VIEWS_EXPORT ViewsTextServicesContextMenuChromeos
   bool SupportsCommand(int command_id) const override;
 
  private:
-  // CrOS functionality must be provided by the embedder, so requests are
-  // forwarded to this concrete object, whose construction can be controlled by
-  // `SetImplFactory()`.
+  // ChromeOS functionality is provided by a platform-specific implementation.
+  // Function calls are forwarded to this instance, whose construction is
+  // controlled by `SetImplFactory()`.
   std::unique_ptr<ViewsTextServicesContextMenu> impl_;
 };
 

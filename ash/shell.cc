@@ -100,7 +100,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/system_sounds_delegate.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
-#include "ash/public/cpp/views_text_services_context_menu_impl.h"
+#include "ash/public/cpp/views_text_services_context_menu_ash.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/root_window_controller.h"
@@ -1536,8 +1536,8 @@ void Shell::Init(
       base::BindRepeating(
           [](ui::SimpleMenuModel* menu_model, views::Textfield* textfield)
               -> std::unique_ptr<views::ViewsTextServicesContextMenu> {
-            return std::make_unique<ViewsTextServicesContextMenuImpl>(
-                menu_model, textfield);
+            return std::make_unique<ViewsTextServicesContextMenuAsh>(menu_model,
+                                                                     textfield);
           }));
 
   for (auto& observer : shell_observers_)

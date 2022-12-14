@@ -5590,6 +5590,8 @@ static_library("browser") {
       "lacros/task_manager_lacros.h",
       "lacros/ui_metric_recorder_lacros.cc",
       "lacros/ui_metric_recorder_lacros.h",
+      "lacros/views_text_services_context_menu_lacros.cc",
+      "lacros/views_text_services_context_menu_lacros.h",
       "lacros/vpn_extension_tracker_lacros.cc",
       "lacros/vpn_extension_tracker_lacros.h",
       "lacros/web_app_provider_bridge_lacros.cc",
@@ -5661,6 +5663,7 @@ static_library("browser") {
       "//ui/chromeos/strings:strings_grit",
       "//ui/chromeos/styles:cros_styles_views",
       "//ui/platform_window",
+      "//ui/strings:ui_strings_grit",
     ]
 
     if (enable_plugins) {

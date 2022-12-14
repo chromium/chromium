@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/views_text_services_context_menu_impl.h"
+#include "ash/public/cpp/views_text_services_context_menu_ash.h"
 
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
@@ -13,16 +13,25 @@
 
 namespace ash {
 
-ViewsTextServicesContextMenuImpl::ViewsTextServicesContextMenuImpl(
+ViewsTextServicesContextMenuAsh::ViewsTextServicesContextMenuAsh(
     ui::SimpleMenuModel* menu,
     views::Textfield* client)
     : views::ViewsTextServicesContextMenuBase(menu, client) {
-  AddClipboardHistoryMenuOption(menu);
+  // If the menu has a paste option, add a clipboard history option as well.
+  const absl::optional<size_t> paste_index =
+      menu->GetIndexOfCommandId(ui::TouchEditable::kPaste);
+
+  if (!paste_index.has_value())
+    return;
+
+  const size_t target_index = paste_index.value() + 1;
+  menu->InsertItemAt(target_index, IDS_APP_SHOW_CLIPBOARD_HISTORY,
+                     l10n_util::GetStringUTF16(IDS_APP_SHOW_CLIPBOARD_HISTORY));
 }
 
-ViewsTextServicesContextMenuImpl::~ViewsTextServicesContextMenuImpl() = default;
+ViewsTextServicesContextMenuAsh::~ViewsTextServicesContextMenuAsh() = default;
 
-bool ViewsTextServicesContextMenuImpl::GetAcceleratorForCommandId(
+bool ViewsTextServicesContextMenuAsh::GetAcceleratorForCommandId(
     int command_id,
     ui::Accelerator* accelerator) const {
   if (command_id == IDS_APP_SHOW_CLIPBOARD_HISTORY) {
@@ -34,35 +43,34 @@ bool ViewsTextServicesContextMenuImpl::GetAcceleratorForCommandId(
       command_id, accelerator);
 }
 
-bool ViewsTextServicesContextMenuImpl::IsCommandIdChecked(
-    int command_id) const {
+bool ViewsTextServicesContextMenuAsh::IsCommandIdChecked(int command_id) const {
   if (command_id == IDS_APP_SHOW_CLIPBOARD_HISTORY)
     return true;
 
   return ViewsTextServicesContextMenuBase::IsCommandIdChecked(command_id);
 }
 
-bool ViewsTextServicesContextMenuImpl::IsCommandIdEnabled(
-    int command_id) const {
+bool ViewsTextServicesContextMenuAsh::IsCommandIdEnabled(int command_id) const {
   if (command_id == IDS_APP_SHOW_CLIPBOARD_HISTORY)
     return ClipboardHistoryController::Get()->CanShowMenu();
 
   return ViewsTextServicesContextMenuBase::IsCommandIdEnabled(command_id);
 }
 
-void ViewsTextServicesContextMenuImpl::ExecuteCommand(int command_id,
-                                                      int event_flags) {
+void ViewsTextServicesContextMenuAsh::ExecuteCommand(int command_id,
+                                                     int event_flags) {
   if (command_id == IDS_APP_SHOW_CLIPBOARD_HISTORY) {
     auto* clipboard_history_controller = ClipboardHistoryController::Get();
 
     // Calculate the menu source type from `event_flags`.
     ui::MenuSourceType source_type;
-    if (event_flags & ui::EF_LEFT_MOUSE_BUTTON)
+    if (event_flags & ui::EF_LEFT_MOUSE_BUTTON) {
       source_type = ui::MENU_SOURCE_MOUSE;
-    else if (event_flags & ui::EF_FROM_TOUCH)
+    } else if (event_flags & ui::EF_FROM_TOUCH) {
       source_type = ui::MENU_SOURCE_TOUCH;
-    else
+    } else {
       source_type = ui::MENU_SOURCE_KEYBOARD;
+    }
 
     clipboard_history_controller->ShowMenu(
         client()->GetCaretBounds(), source_type,
@@ -74,26 +82,11 @@ void ViewsTextServicesContextMenuImpl::ExecuteCommand(int command_id,
   ViewsTextServicesContextMenuBase::ExecuteCommand(command_id, event_flags);
 }
 
-bool ViewsTextServicesContextMenuImpl::SupportsCommand(int command_id) const {
+bool ViewsTextServicesContextMenuAsh::SupportsCommand(int command_id) const {
   if (command_id == IDS_APP_SHOW_CLIPBOARD_HISTORY)
     return true;
 
   return ViewsTextServicesContextMenuBase::SupportsCommand(command_id);
-}
-
-void ViewsTextServicesContextMenuImpl::AddClipboardHistoryMenuOption(
-    ui::SimpleMenuModel* menu) {
-  const absl::optional<size_t> index_of_paste =
-      menu->GetIndexOfCommandId(ui::TouchEditable::kPaste);
-
-  // Only add the clipboard history menu option when having the menu option
-  // for paste.
-  if (!index_of_paste.has_value())
-    return;
-
-  const size_t target_index = index_of_paste.value() + 1;
-  menu->InsertItemAt(target_index, IDS_APP_SHOW_CLIPBOARD_HISTORY,
-                     l10n_util::GetStringUTF16(IDS_APP_SHOW_CLIPBOARD_HISTORY));
 }
 
 }  // namespace ash

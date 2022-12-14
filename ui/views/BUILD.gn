@@ -596,11 +596,11 @@ component("views") {
   }
 
   if (is_chromeos) {
-    sources += [ "controls/menu/menu_config_chromeos.cc" ]
-    if (!is_chromeos_lacros) {
-      public += [ "controls/views_text_services_context_menu_chromeos.h" ]
-      sources += [ "controls/views_text_services_context_menu_chromeos.cc" ]
-    }
+    public += [ "controls/views_text_services_context_menu_chromeos.h" ]
+    sources += [
+      "controls/menu/menu_config_chromeos.cc",
+      "controls/views_text_services_context_menu_chromeos.cc",
+    ]
   }
 
   if (is_mac) {
