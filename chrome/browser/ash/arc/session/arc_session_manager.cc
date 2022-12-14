@@ -1243,6 +1243,9 @@ void ArcSessionManager::OnRequirementChecksDone(
   switch (result) {
     case ArcRequirementChecker::RequirementCheckResult::kOk:
       VLOG(1) << "Starting ARC for first sign in.";
+      for (auto& observer : observer_list_)
+        observer.OnArcOptInUserAction();
+
       StartArc();
       break;
     case ArcRequirementChecker::RequirementCheckResult::

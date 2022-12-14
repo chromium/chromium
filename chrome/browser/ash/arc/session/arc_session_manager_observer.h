@@ -18,6 +18,11 @@ class ArcSessionManagerObserver {
   // is represented by "arc.enabled" preference, is updated.
   virtual void OnArcPlayStoreEnabledChanged(bool enabled) {}
 
+  // Called with when user opted-in for ARC and ARC is going to be created for
+  // this user. I.e. successful user action triggered ARC user instance
+  // initialization.
+  virtual void OnArcOptInUserAction() {}
+
   // Called to notify that checking of Android management status started
   // during the opt-in flow.
   virtual void OnArcOptInManagementCheckStarted() {}

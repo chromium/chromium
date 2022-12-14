@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/total_animation_throughput_reporter.h"
 
 namespace ui {
@@ -69,6 +70,16 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
 
   // This is called when the list of shelf icons is updated.
   void UpdateShelfIconList(const ShelfModel* model);
+
+  // This is called when ARC++ becomes enabled.
+  void OnArcOptedIn();
+
+  // This is called when list of ARC++ apps is updated.
+  void OnArcAppListReady();
+
+  // This is true if we need to report Ash.ArcAppInitialAppsInstallDuration
+  // histogram in this session but it has not been reported yet.
+  bool NeedReportArcAppListReady() const;
 
   void ResetScopedThroughputReporterBlockerForTesting();
 
@@ -136,6 +147,10 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
   bool shelf_icons_loaded_ = false;
 
   bool user_logged_in_ = false;
+
+  bool arc_app_list_ready_reported_ = false;
+
+  absl::optional<base::TimeTicks> arc_opt_in_time_;
 
   base::WeakPtr<ui::TotalAnimationThroughputReporter>
       login_animation_throughput_reporter_;

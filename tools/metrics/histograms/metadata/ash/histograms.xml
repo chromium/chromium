@@ -346,6 +346,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.ArcAppInitialAppsInstallDuration" units="ms"
+    expires_after="2023-12-01">
+  <owner>alemate@chromium.org</owner>
+  <owner>khmel@chromium.org</owner>
+  <owner>arc-performance@google.com</owner>
+  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <summary>
+    For each user after they opted-in into ARC++, records the duration of
+    initial apps installation. Duration is measured as an interval between the
+    opt-in and the moment when all default apps become either &quot;ready&quot;
+    or &quot;update error&quot;. This is only reported within the same opt-in
+    session, and is not reported if default apps were not installed within the
+    session.
+  </summary>
+</histogram>
+
 <histogram
     name="Ash.Assistant.AnimationSmoothness{AshAssistantAnimationSmoothness}"
     units="%" expires_after="2021-11-21">

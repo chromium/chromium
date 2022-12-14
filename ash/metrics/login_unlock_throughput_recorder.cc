@@ -28,6 +28,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/total_animation_throughput_reporter.h"
 #include "ui/views/animation/bounds_animator.h"
+#include "ui/views/animation/bounds_animator_observer.h"
 
 namespace ash {
 namespace {
@@ -349,6 +350,32 @@ void LoginUnlockThroughputRecorder::OnLoginAnimationFinish(
     const cc::FrameSequenceMetrics::CustomReportData& data) {
   ui_recorder_.OnPostLoginAnimationFinish();
   ReportLogin(start, data);
+}
+
+void LoginUnlockThroughputRecorder::OnArcOptedIn() {
+  arc_opt_in_time_ = base::TimeTicks::Now();
+}
+
+void LoginUnlockThroughputRecorder::OnArcAppListReady() {
+  if (arc_app_list_ready_reported_)
+    return;
+
+  // |Ash.ArcAppInitialAppsInstallDuration| histogram is only reported for
+  // the first user session after they opted into the ARC++.
+  // |arc_opt_in_time_| will only have value if user opted in into the ARC++
+  // in this session (in this browser instance).
+  if (arc_opt_in_time_.has_value()) {
+    const auto duration = base::TimeTicks::Now() - arc_opt_in_time_.value();
+    UmaHistogramCustomTimes("Ash.ArcAppInitialAppsInstallDuration", duration,
+                            base::Seconds(1) /* min */,
+                            base::Hours(1) /* max */, 100 /* buckets */);
+  }
+
+  arc_app_list_ready_reported_ = true;
+}
+
+bool LoginUnlockThroughputRecorder::NeedReportArcAppListReady() const {
+  return arc_opt_in_time_.has_value() && !arc_app_list_ready_reported_;
 }
 
 void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEnd() {

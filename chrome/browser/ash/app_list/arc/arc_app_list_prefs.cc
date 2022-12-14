@@ -18,6 +18,8 @@
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/metrics/login_unlock_throughput_recorder.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -43,6 +45,7 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -376,6 +379,44 @@ void MaybeRemoveDeprecatedPackagePrefs(arc::ArcAppScopedPrefUpdate&& update) {
   update.Get().Remove(kDeprecatePackagePrefsSystem);
 }
 
+ash::LoginUnlockThroughputRecorder* GetLoginRecorder() {
+  return ash::Shell::HasInstance()
+             ? ash::Shell::Get()->login_unlock_throughput_recorder()
+             : nullptr;
+}
+
+void OnArcAppListRefreshed(Profile* profile) {
+  if (!arc::IsArcPlayStoreEnabledForProfile(profile))
+    return;
+
+  ash::LoginUnlockThroughputRecorder* throughput_recorder = GetLoginRecorder();
+  if (!throughput_recorder || !throughput_recorder->NeedReportArcAppListReady())
+    return;
+
+  DCHECK_EQ(ProfileManager::GetPrimaryUserProfile(), profile);
+  auto* prefs = ArcAppListPrefs::Get(profile);
+  if (!prefs)
+    return;
+
+  const std::vector<std::string> app_ids = prefs->GetAppIds();
+  int launchable = 0;
+  int ready = 0;
+  int error = 0;
+  for (const auto& app_id : app_ids) {
+    std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
+    if (app_info) {
+      if (app_info->launchable)
+        ++launchable;
+
+      if (app_info->ready)
+        ++ready;
+    } else {
+      ++error;
+    }
+  }
+  if (ready + error >= launchable)
+    throughput_recorder->OnArcAppListReady();
+}
 }  // namespace
 
 // static
@@ -1589,6 +1630,7 @@ void ArcAppListPrefs::AddAppAndShortcut(
       }
     }
   }
+  OnArcAppListRefreshed(profile_);
 }
 
 void ArcAppListPrefs::RemoveApp(const std::string& app_id) {
@@ -1784,6 +1826,7 @@ void ArcAppListPrefs::OnAppListRefreshed(
       MaybeSetDefaultAppLoadingTimeout();
     }
   }
+  OnArcAppListRefreshed(profile_);
 }
 
 void ArcAppListPrefs::DetectDefaultAppAvailability() {
