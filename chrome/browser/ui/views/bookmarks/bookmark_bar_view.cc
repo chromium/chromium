@@ -318,9 +318,7 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
   }
 
   std::u16string GetTooltipText(const gfx::Point& p) const override {
-    return label()->GetPreferredSize().width() > label()->size().width()
-               ? GetAccessibleName()
-               : std::u16string();
+    return GetAccessibleName();
   }
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
