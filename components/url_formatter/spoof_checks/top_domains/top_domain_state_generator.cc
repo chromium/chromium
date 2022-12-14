@@ -108,7 +108,9 @@ std::string TopDomainStateGenerator::Generate(
   // most space efficient Huffman table for the given inputs. This table is used
   // for the second run.
 
+  // Tables must outlive `trie_entries` and `raw_trie_entries`.
   HuffmanRepresentationTable approximate_table = ApproximateHuffman(entries);
+  HuffmanRepresentationTable optimal_table;
   HuffmanBuilder huffman_builder;
 
   // Create trie entries for the first pass.
@@ -126,7 +128,7 @@ std::string TopDomainStateGenerator::Generate(
   if (!writer.WriteEntries(raw_trie_entries, &root_position))
     return std::string();
 
-  HuffmanRepresentationTable optimal_table = huffman_builder.ToTable();
+  optimal_table = huffman_builder.ToTable();
   TrieWriter new_writer(optimal_table, &huffman_builder);
 
   // Create trie entries using the optimal table for the second pass.
