@@ -3658,6 +3658,17 @@
       'VR Linux',
     ],
   },
+  'vulkan_pixel_skia_gold_test': {
+    'replacements': {
+      # The V8 builders pass the V8 revision for ${got_revision}, so instead
+      # use ${got_cr_revision}, which is only set on the V8 bots.
+      'Linux V8 FYI Release (NVIDIA)': {
+        'args': {
+          '--git-revision': '${got_cr_revision}',
+        },
+      },
+    },
+  },
   'wayland_client_perftests': {
     'remove_from': [
       'linux-chromeos-dbg',  # https://crbug.com/859307
