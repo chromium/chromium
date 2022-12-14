@@ -335,3 +335,37 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   browsing_data_model = BuildBrowsingDataModel();
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 }
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+                       InterestGroupsAccessReportedCorrectly) {
+  // Navigate to test page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+  auto* content_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+
+  // Validate that the allowed browsing data model is empty.
+  auto* allowed_browsing_data_model =
+      content_settings->allowed_browsing_data_model();
+  ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
+
+  // Join an interest group.
+  JoinInterestGroup(web_contents(), https_test_server());
+  while (std::distance(allowed_browsing_data_model->begin(),
+                       allowed_browsing_data_model->end()) != 1) {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+    run_loop.Run();
+  }
+
+  // Validate that an interest group is reported to the browsing data model.
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  content::InterestGroupManager::InterestGroupDataKey data_key{testOrigin,
+                                                               testOrigin};
+  ValidateBrowsingDataEntries(allowed_browsing_data_model,
+                              {{kTestHost,
+                                data_key,
+                                {BrowsingDataModel::StorageType::kInterestGroup,
+                                 /*storage_size=*/0, /*cookie_count=*/0}}});
+}
