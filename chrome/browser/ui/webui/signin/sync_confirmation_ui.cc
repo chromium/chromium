@@ -216,6 +216,9 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
         isSigninInterceptFre
             ? IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT
             : IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE;
+    illustration_path = "images/tangible_sync_illustration.svg";
+    illustration_id =
+        IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_ILLUSTRATION_SVG;
   }
 
   // Registering and resolving the strings with placeholders
