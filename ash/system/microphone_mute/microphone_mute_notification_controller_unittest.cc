@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/sensor_disabled_notification_delegate.h"
+#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/microphone_mute/microphone_mute_notification_controller.h"
@@ -17,14 +18,20 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
 namespace ash {
+
+namespace {
 
 class FakeSensorDisabledNotificationDelegate
     : public SensorDisabledNotificationDelegate {
@@ -48,16 +55,32 @@ class FakeSensorDisabledNotificationDelegate
   std::vector<std::u16string> apps_accessing_microphone_;
 };
 
+class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
+ public:
+  // TestNewWindowDelegate:
+  MOCK_METHOD(void,
+              OpenUrl,
+              (const GURL& url, OpenUrlFrom from, Disposition disposition),
+              (override));
+};
+
+}  // namespace
+
 class MicrophoneMuteNotificationControllerTest : public AshTestBase {
  public:
   MicrophoneMuteNotificationControllerTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kMicMuteNotifications);
+    auto delegate = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_ = delegate.get();
+    window_delegate_provider_ =
+        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
   }
   ~MicrophoneMuteNotificationControllerTest() override = default;
 
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
+
     controller_ = std::make_unique<MicrophoneMuteNotificationController>();
     delegate_ = std::make_unique<FakeSensorDisabledNotificationDelegate>();
   }
@@ -137,11 +160,15 @@ class MicrophoneMuteNotificationControllerTest : public AshTestBase {
     return histogram_tester_;
   }
 
+  MockNewWindowDelegate& new_window_delegate() { return *new_window_delegate_; }
+
  private:
   const base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<MicrophoneMuteNotificationController> controller_;
   std::unique_ptr<FakeSensorDisabledNotificationDelegate> delegate_;
+  MockNewWindowDelegate* new_window_delegate_ = nullptr;
+  std::unique_ptr<TestNewWindowDelegateProvider> window_delegate_provider_;
 };
 
 TEST_F(MicrophoneMuteNotificationControllerTest, SimpleMuteUnMute) {
@@ -269,7 +296,8 @@ TEST_F(MicrophoneMuteNotificationControllerTest,
   EXPECT_FALSE(GetNotification());
 }
 
-TEST_F(MicrophoneMuteNotificationControllerTest, MuteNotificationActionButton) {
+TEST_F(MicrophoneMuteNotificationControllerTest,
+       SwMuteNotificationActionButton) {
   MuteMicrophone();
   LaunchApp(u"junior");
   SetNumberOfActiveInputStreams(1);
@@ -296,7 +324,7 @@ TEST_F(MicrophoneMuteNotificationControllerTest, MuteNotificationActionButton) {
             1);
 }
 
-TEST_F(MicrophoneMuteNotificationControllerTest, MuteNotificationActionBody) {
+TEST_F(MicrophoneMuteNotificationControllerTest, SwMuteNotificationActionBody) {
   MuteMicrophone();
   LaunchApp(u"junior");
   SetNumberOfActiveInputStreams(1);
@@ -325,20 +353,42 @@ TEST_F(MicrophoneMuteNotificationControllerTest, MuteNotificationActionBody) {
 }
 
 TEST_F(MicrophoneMuteNotificationControllerTest,
-       NoNotificationActionButtonIfMutedByHwSwitch) {
+       HwMuteNotificationActionButton) {
   SetMicrophoneMuteSwitchState(/*muted=*/true);
 
   LaunchApp(u"junior");
   SetNumberOfActiveInputStreams(1);
 
-  // The mute notification should not have an action button if device is muted
-  // by a mute switch.
+  // The mute notification should have a "Learn more" button.
   message_center::Notification* notification = GetNotification();
   ASSERT_TRUE(notification);
-  EXPECT_EQ(0u, notification->buttons().size());
+  EXPECT_EQ(1u, notification->buttons().size());
+
+  // Clicking the "Learn more" button should open a new Chrome tab with the
+  // support link.
+  EXPECT_CALL(new_window_delegate(), OpenUrl).Times(1);
+  ClickOnNotificationButton();
+
+  EXPECT_TRUE(chromeos::CrasAudioHandler::Get()->IsInputMuted());
 
   SetMicrophoneMuteSwitchState(/*muted=*/false);
   ASSERT_FALSE(chromeos::CrasAudioHandler::Get()->IsInputMuted());
+  EXPECT_FALSE(GetNotification());
+}
+
+TEST_F(MicrophoneMuteNotificationControllerTest, HwMuteNotificationActionBody) {
+  SetMicrophoneMuteSwitchState(/*muted=*/true);
+  LaunchApp(u"junior");
+  SetNumberOfActiveInputStreams(1);
+
+  message_center::Notification* notification = GetNotification();
+  ASSERT_TRUE(notification);
+  EXPECT_EQ(1u, notification->buttons().size());
+
+  ClickOnNotificationBody();
+
+  // Check that clicking the body has no effect and notification disappears.
+  EXPECT_TRUE(chromeos::CrasAudioHandler::Get()->IsInputMuted());
   EXPECT_FALSE(GetNotification());
 }
 
@@ -353,12 +403,18 @@ TEST_F(MicrophoneMuteNotificationControllerTest,
   message_center::Notification* notification = GetNotification();
   ASSERT_TRUE(notification);
   EXPECT_EQ(1u, notification->buttons().size());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_MICROPHONE_MUTED_NOTIFICATION_ACTION_BUTTON),
+            notification->buttons()[0].title);
 
-  // Toggle microphone mute switch and verify the action button disappears.
+  // Toggle microphone mute switch and verify that new notification appears with
+  // a "Learn more" button.
   SetMicrophoneMuteSwitchState(/*muted=*/true);
   notification = GetNotification();
   ASSERT_TRUE(notification);
-  EXPECT_EQ(0u, notification->buttons().size());
+  EXPECT_EQ(1u, notification->buttons().size());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_LEARN_MORE),
+            notification->buttons()[0].title);
 
   SetMicrophoneMuteSwitchState(/*muted=*/false);
   ASSERT_FALSE(chromeos::CrasAudioHandler::Get()->IsInputMuted());

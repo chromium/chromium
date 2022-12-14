@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/shell.h"
@@ -21,9 +22,13 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace ash {
 namespace {
+
+// TODO(b/244529735): Replace the generic support URL with the final one.
+const char kLearnMoreUrl[] = "https://www.support.google.com/chromebook";
 
 void SetMicrophoneNotificationVisible(const bool visible) {
   PrivacyHubNotificationController* const privacy_hub_notification_controller =
@@ -132,12 +137,30 @@ MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
   notification_data.remove_on_click = true;
 
   scoped_refptr<message_center::NotificationDelegate> delegate;
-  // Don't show a button to unmute device if the microphone was muted by a HW
-  // mute switch, as in that case unmute action would not work.
-  if (!mic_muted_by_mute_switch_) {
+
+  if (mic_muted_by_mute_switch_) {
+    // If microphone is muted by the hardware(HW) switch, show the 'Learn more'
+    // button, pointing to the instructions how to unmute the system (unmute
+    // can't be done programmatically).
+    notification_data.buttons.emplace_back(
+        l10n_util::GetStringUTF16(IDS_ASH_LEARN_MORE));
+    delegate =
+        base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+            base::BindRepeating([](absl::optional<int> button_index) {
+              if (!button_index) {
+                return;
+              }
+
+              NewWindowDelegate::GetPrimary()->OpenUrl(
+                  GURL(kLearnMoreUrl),
+                  NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                  NewWindowDelegate::Disposition::kNewForegroundTab);
+            }));
+  } else {
+    // If microphone is muted by the software(SW) switch, add the unmute
+    // button to the notification.
     notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
         IDS_MICROPHONE_MUTED_NOTIFICATION_ACTION_BUTTON));
-
     delegate =
         base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
             base::BindRepeating([](absl::optional<int> button_index) {
