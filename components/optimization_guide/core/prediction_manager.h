@@ -45,6 +45,7 @@ class OptimizationGuideStore;
 class OptimizationTargetModelObserver;
 class PredictionModelDownloadManager;
 class PredictionModelFetcher;
+class PredictionModelStore;
 class ModelInfo;
 
 // A PredictionManager supported by the optimization guide that makes an
@@ -63,6 +64,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   PredictionManager(
       base::WeakPtr<OptimizationGuideStore> model_and_features_store,
+      PredictionModelStore* prediction_model_store,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* pref_service,
       bool off_the_record,
@@ -131,7 +133,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
       std::unique_ptr<ModelInfo> model_info);
 
   // PredictionModelDownloadObserver:
-  void OnModelReady(const proto::PredictionModel& model) override;
+  void OnModelReady(const base::FilePath& base_model_dir,
+                    const proto::PredictionModel& model) override;
   void OnModelDownloadStarted(
       proto::OptimizationTarget optimization_target) override;
   void OnModelDownloadFailed(
@@ -139,6 +142,10 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   std::vector<optimization_guide_internals::mojom::DownloadedModelInfoPtr>
   GetDownloadedModelsInfoForWebUI() const;
+
+  // Initialize the model metadata fetching and downloads.
+  void MaybeInitializeModelDownloads(
+      download::BackgroundDownloadService* background_download_service);
 
  protected:
   // Process |prediction_models| to be stored in the in memory optimization
@@ -150,6 +157,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
  private:
   friend class PredictionManagerTestBase;
+  friend class PredictionModelStoreBrowserTest;
 
   // Called on construction to initialize the prediction model.
   // |background_dowload_service_provider| can provide the
@@ -248,6 +256,10 @@ class PredictionManager : public PredictionModelDownloadObserver {
   void NotifyObserversOfNewModel(proto::OptimizationTarget optimization_target,
                                  const ModelInfo& model_info);
 
+  void SetModelCacheKeyForTesting(const proto::ModelCacheKey& model_cache_key) {
+    model_cache_key_ = model_cache_key;
+  }
+
   // A map of optimization target to the model file containing the model for the
   // target.
   base::flat_map<proto::OptimizationTarget, std::unique_ptr<ModelInfo>>
@@ -273,11 +285,15 @@ class PredictionManager : public PredictionModelDownloadObserver {
   std::unique_ptr<PredictionModelDownloadManager>
       prediction_model_download_manager_;
 
-  // TODO(crbug/1183507): Remove host model features store and all relevant
-  // code, and deprecate the proto field too.
+  // TODO(crbug/1358568): Remove this old model store once the new model store
+  // is launched.
   // The optimization guide store that contains prediction models and host
   // model features from the remote Optimization Guide Service.
   base::WeakPtr<OptimizationGuideStore> model_and_features_store_;
+
+  // The new optimization guide model store. Will be null when the feature is
+  // not enabled. Not owned and outlives |this| since its an install-wide store.
+  raw_ptr<PredictionModelStore> prediction_model_store_;
 
   // A stored response from a model and host model features fetch used to hold
   // models to be stored once host model features are processed and stored.
@@ -300,6 +316,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
   ComponentUpdatesEnabledProvider component_updates_enabled_provider_;
 
   // Time the prediction manager got initialized.
+  // TODO(crbug/1358568): Remove this old model store once the new model store
+  // is launched.
   base::TimeTicks init_time_;
 
   // The timer used to schedule fetching prediction models and host model
@@ -311,17 +329,18 @@ class PredictionManager : public PredictionModelDownloadObserver {
   raw_ptr<const base::Clock> clock_;
 
   // Whether the |model_and_features_store_| is initialized and ready for use.
+  // TODO(crbug/1358568): Remove this old model store once the new model store
+  // is launched.
   bool store_is_ready_ = false;
-
-  // Whether host model features have been loaded from the store and are ready
-  // for use.
-  bool host_model_features_loaded_ = false;
 
   // Whether the profile for this PredictionManager is off the record.
   bool off_the_record_ = false;
 
   // The locale of the application.
   std::string application_locale_;
+
+  // Model cache key for the profile.
+  proto::ModelCacheKey model_cache_key_;
 
   // The path to the directory containing the models.
   base::FilePath models_dir_path_;

@@ -36,6 +36,7 @@
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/prediction_manager.h"
+#include "components/optimization_guide/core/prediction_model_store.h"
 #include "components/optimization_guide/core/tab_url_provider.h"
 #include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -209,16 +210,19 @@ void OptimizationGuideKeyedService::Initialize() {
             : nullptr;
     hint_store = hint_store_ ? hint_store_->AsWeakPtr() : nullptr;
 
-    prediction_model_and_features_store_ = std::make_unique<
-        optimization_guide::OptimizationGuideStore>(
-        proto_db_provider,
-        profile_path.Append(
-            optimization_guide::kOptimizationGuidePredictionModelMetadataStore),
-        base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-        profile->GetPrefs());
-    prediction_model_and_features_store =
-        prediction_model_and_features_store_->AsWeakPtr();
+    if (!optimization_guide::features::IsInstallWideModelStoreEnabled()) {
+      prediction_model_and_features_store_ =
+          std::make_unique<optimization_guide::OptimizationGuideStore>(
+              proto_db_provider,
+              profile_path.Append(
+                  optimization_guide::
+                      kOptimizationGuidePredictionModelMetadataStore),
+              base::ThreadPool::CreateSequencedTaskRunner(
+                  {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+              profile->GetPrefs());
+      prediction_model_and_features_store =
+          prediction_model_and_features_store_->AsWeakPtr();
+    }
   }
 
   optimization_guide_logger_ = std::make_unique<OptimizationGuideLogger>();
@@ -228,7 +232,8 @@ void OptimizationGuideKeyedService::Initialize() {
       MaybeCreatePushNotificationManager(profile),
       optimization_guide_logger_.get());
   base::FilePath model_downloads_dir;
-  if (!profile->IsOffTheRecord()) {
+  if (!optimization_guide::features::IsInstallWideModelStoreEnabled() &&
+      !profile->IsOffTheRecord()) {
     // Do not explicitly hand off the model downloads directory to
     // off-the-record profiles. Underneath the hood, this variable is only used
     // in non off-the-record profiles to know where to download the model files
@@ -239,8 +244,11 @@ void OptimizationGuideKeyedService::Initialize() {
   }
 
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
-      prediction_model_and_features_store, url_loader_factory,
-      profile->GetPrefs(), profile->IsOffTheRecord(),
+      prediction_model_and_features_store,
+      optimization_guide::features::IsInstallWideModelStoreEnabled()
+          ? optimization_guide::PredictionModelStore::GetInstance()
+          : nullptr,
+      url_loader_factory, profile->GetPrefs(), profile->IsOffTheRecord(),
       g_browser_process->GetApplicationLocale(), model_downloads_dir,
       optimization_guide_logger_.get(),
       base::BindOnce(

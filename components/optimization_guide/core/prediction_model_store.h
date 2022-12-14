@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -32,8 +33,17 @@ class PredictionModelStore {
   using PredictionModelLoadedCallback =
       base::OnceCallback<void(std::unique_ptr<proto::PredictionModel>)>;
 
-  PredictionModelStore(PrefService* local_state,
-                       const base::FilePath& base_store_dir);
+  // Returns the singleton model store.
+  static PredictionModelStore* GetInstance();
+
+  static std::unique_ptr<PredictionModelStore>
+  CreatePredictionModelStoreForTesting(PrefService* local_state,
+                                       const base::FilePath& base_store_dir);
+
+  // Initializes the model store with |local_state| and the |base_store_dir|.
+  // Model store will be usable only after it is initialized.
+  void Initialize(PrefService* local_state,
+                  const base::FilePath& base_store_dir);
 
   PredictionModelStore(const PredictionModelStore&) = delete;
   PredictionModelStore& operator=(const PredictionModelStore&) = delete;
@@ -55,6 +65,13 @@ class PredictionModelStore {
                  const proto::ModelCacheKey& model_cache_key,
                  PredictionModelLoadedCallback callback);
 
+  // Update the model metadata for |model_info| if the model represented by
+  // |optimization_target| and |model_cache_key| exists.
+  void UpdateMetadataForExistingModel(
+      proto::OptimizationTarget optimization_target,
+      const proto::ModelCacheKey& model_cache_key,
+      const proto::ModelInfo& model_info);
+
   // Update the model for |model_info| in the store represented by
   // |optimization_target| and |model_cache_key|. The model files are stored in
   // |base_model_dir|. |callback| is invoked on completion.
@@ -72,7 +89,9 @@ class PredictionModelStore {
       const proto::ModelCacheKey& model_cache_key);
 
  private:
-  friend class PredictionModelStoreTest;
+  friend base::NoDestructor<PredictionModelStore>;
+
+  PredictionModelStore();
 
   // Loads the model and verifies if the model files exist and returns the
   // model. Otherwise nullptr is returned on any failures.
