@@ -1,8 +1,6 @@
 accessibility/content-changed-notification-causes-crash.html
 accessibility/scroll-window-sends-notification.html
 animations/animation-paused-hardware.html
-animations/missing-values-first-keyframe.html
-animations/missing-values-last-keyframe.html
 compositing/geometry/clipping-foreground.html
 compositing/geometry/video-fixed-scrolling.html
 compositing/geometry/video-opacity-overlay.html

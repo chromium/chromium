@@ -404,7 +404,6 @@ animations/keyframes-infinite-iterations.html
 animations/keyframes-iteration-count-non-integer.html
 animations/keyframes-missing-arguments.html
 animations/missing-from-to.html
-animations/missing-values-last-keyframe.html
 animations/prefixed/duplicated-keyframes-name-unprefixed-03.html
 animations/prefixed/keyframes-cssom-unprefixed-01.html
 animations/prefixed/keyframes-unprefixed-01.html

@@ -4489,14 +4489,10 @@ crbug.com/1043357 http/tests/credentialmanagement/credentialscontainer-get-with-
 # rebaselined. TODO(jonross): triage these into any existing bugs or file more
 # specific bugs.
 crbug.com/1043675 [ Linux ] animations/animation-paused-hardware.html [ Failure ]
-crbug.com/1043675 [ Linux ] animations/missing-values-first-keyframe.html [ Failure ]
-crbug.com/1043675 [ Linux ] animations/missing-values-last-keyframe.html [ Failure ]
 crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
 crbug.com/1043675 [ Linux ] http/tests/media/video-frame-size-change.html [ Failure ]
 crbug.com/1043675 [ Linux ] svg/custom/svg-root-with-opacity.html [ Failure ]
 crbug.com/1043675 [ Win ] animations/animation-paused-hardware.html [ Failure ]
-crbug.com/1043675 [ Win ] animations/missing-values-first-keyframe.html [ Failure ]
-crbug.com/1043675 [ Win ] animations/missing-values-last-keyframe.html [ Failure ]
 crbug.com/1043675 [ Win ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
 crbug.com/1043675 [ Win ] svg/custom/svg-root-with-opacity.html [ Failure ]
 
@@ -5080,8 +5076,6 @@ crbug.com/1207709 [ Mac10.13 ] external/wpt/pointerevents/pointerevent_contextme
 
 # For SkiaRenderer on MacOS
 crbug.com/1208173 [ Mac ] animations/animation-paused-hardware.html [ Failure ]
-crbug.com/1208173 [ Mac ] animations/missing-values-first-keyframe.html [ Failure Timeout ]
-crbug.com/1208173 [ Mac ] animations/missing-values-last-keyframe.html [ Failure ]
 crbug.com/1208173 [ Mac ] css3/filters/backdrop-filter-boundary.html [ Failure ]
 crbug.com/1208173 [ Mac ] external/wpt/css/css-paint-api/background-image-alpha.https.html [ Failure ]
 crbug.com/1208173 [ Mac ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
