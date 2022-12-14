@@ -163,7 +163,6 @@ crbug.com/1339293 external/wpt/html/semantics/embedded-content/media-elements/lo
 # TODO(crbug.com/1367142): Re-enable this test
 crbug.com/1339293 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-src.html [ Crash Failure Pass Timeout ]
 crbug.com/1339293 external/wpt/content-security-policy/media-src/media-src-7_1_2.sub.html [ Crash Failure Pass Timeout ]
-crbug.com/1339293 [ Linux ] external/wpt/content-security-policy/media-src/media-src-blocked.sub.html [ Failure Pass Timeout ]
 
 # ====== Timed HTML parser budget tests to here ========================
 
@@ -2137,7 +2136,6 @@ crbug.com/915903 http/tests/security/inactive-document-with-empty-security-origi
 crbug.com/987138 [ Linux ] media/controls/doubletap-to-jump-forwards.html [ Pass Timeout ]
 crbug.com/987138 [ Win ] media/controls/doubletap-to-jump-forwards.html [ Pass Timeout ]
 crbug.com/1122742 http/tests/devtools/sources/debugger/source-frame-inline-breakpoint-decorations.js [ Pass Timeout ]
-crbug.com/1002377 external/wpt/service-workers/service-worker/update-bytecheck.https.html [ Pass Timeout ]
 crbug.com/805756 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Pass Timeout ]
 
 # crbug.com/1218716: These fail when TrustTokenOriginTrial is enabled.
