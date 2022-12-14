@@ -27,15 +27,22 @@ export enum ModuleHeight {
 
 export class ModuleDescriptor {
   private id_: string;
+  private name_: string;
   private initializeCallback_: InitializeModuleCallback;
 
-  constructor(id: string, initializeCallback: InitializeModuleCallback) {
+  constructor(
+      id: string, name: string, initializeCallback: InitializeModuleCallback) {
     this.id_ = id;
+    this.name_ = name;
     this.initializeCallback_ = initializeCallback;
   }
 
   get id(): string {
     return this.id_;
+  }
+
+  get name(): string {
+    return this.name_;
   }
 
   get height(): ModuleHeight {
@@ -73,9 +80,9 @@ export class ModuleDescriptorV2 extends ModuleDescriptor {
   private height_: ModuleHeight;
 
   constructor(
-      id: string, height: ModuleHeight,
+      id: string, name: string, height: ModuleHeight,
       initializeCallback: InitializeModuleCallbackV2) {
-    super(id, initializeCallback);
+    super(id, name, initializeCallback);
     this.height_ = height;
   }
 

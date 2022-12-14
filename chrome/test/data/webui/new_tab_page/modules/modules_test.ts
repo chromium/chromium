@@ -45,9 +45,9 @@ suite('NewTabPageModulesModulesTest', () => {
   [true, false].forEach(visible => {
     test(`modules rendered if visibility ${visible}`, async () => {
       // Arrange.
-      const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-      const barDescriptor = new ModuleDescriptor('bar', initNullModule);
-      const bazDescriptor = new ModuleDescriptor('baz', initNullModule);
+      const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
+      const barDescriptor = new ModuleDescriptor('bar', 'Bar', initNullModule);
+      const bazDescriptor = new ModuleDescriptor('baz', 'Baz', initNullModule);
       moduleRegistry.setResultFor(
           'getDescriptors', [fooDescriptor, barDescriptor, bazDescriptor]);
       // Act.
@@ -103,9 +103,12 @@ suite('NewTabPageModulesModulesTest', () => {
     [true, false].forEach(visible => {
       test(`first run experience shows if modules ${visible}`, async () => {
         // Arrange.
-        const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-        const barDescriptor = new ModuleDescriptor('bar', initNullModule);
-        const bazDescriptor = new ModuleDescriptor('baz', initNullModule);
+        const fooDescriptor =
+            new ModuleDescriptor('foo', 'Foo', initNullModule);
+        const barDescriptor =
+            new ModuleDescriptor('bar', 'Bar', initNullModule);
+        const bazDescriptor =
+            new ModuleDescriptor('baz', 'Baz', initNullModule);
         moduleRegistry.setResultFor(
             'getDescriptors', [fooDescriptor, barDescriptor, bazDescriptor]);
         // Act.
@@ -155,7 +158,7 @@ suite('NewTabPageModulesModulesTest', () => {
 
     test(`clicking customize chrome link sends event`, async () => {
       // Arrange.
-      const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+      const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
       moduleRegistry.setResultFor('getDescriptors', [fooDescriptor]);
       const modulesElement = await createModulesElement([
         {
@@ -178,8 +181,8 @@ suite('NewTabPageModulesModulesTest', () => {
 
     test(`fre buttons work`, async () => {
       // Arrange.
-      const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-      const barDescriptor = new ModuleDescriptor('bar', initNullModule);
+      const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
+      const barDescriptor = new ModuleDescriptor('bar', 'Bar', initNullModule);
 
       moduleRegistry.setResultFor(
           'getDescriptors', [fooDescriptor, barDescriptor]);
@@ -246,13 +249,13 @@ suite('NewTabPageModulesModulesTest', () => {
         moduleArray.push(module);
       }
       const fooDescriptor = new ModuleDescriptorV2(
-          'foo', ModuleHeight.SHORT, async () => createElement());
+          'foo', 'foo', ModuleHeight.SHORT, async () => createElement());
       const barDescriptor = new ModuleDescriptorV2(
-          'bar', ModuleHeight.SHORT, async () => createElement());
+          'bar', 'bar', ModuleHeight.SHORT, async () => createElement());
       const bazDescriptor = new ModuleDescriptorV2(
-          'baz', ModuleHeight.SHORT, async () => createElement());
+          'baz', 'baz', ModuleHeight.SHORT, async () => createElement());
       const quzDescriptor = new ModuleDescriptorV2(
-          'quz', ModuleHeight.TALL, async () => createElement());
+          'quz', 'quz', ModuleHeight.TALL, async () => createElement());
       moduleRegistry.setResultFor(
           'getDescriptors',
           [fooDescriptor, barDescriptor, bazDescriptor, quzDescriptor]);
@@ -315,11 +318,11 @@ suite('NewTabPageModulesModulesTest', () => {
         moduleArray.push(module);
       }
       const fooDescriptor = new ModuleDescriptorV2(
-          'foo', ModuleHeight.SHORT, async () => createElement());
+          'foo', 'foo', ModuleHeight.SHORT, async () => createElement());
       const barDescriptor = new ModuleDescriptorV2(
-          'bar', ModuleHeight.SHORT, async () => createElement());
+          'bar', 'bar', ModuleHeight.SHORT, async () => createElement());
       const bazDescriptor = new ModuleDescriptorV2(
-          'baz', ModuleHeight.SHORT, async () => createElement());
+          'baz', 'baz', ModuleHeight.SHORT, async () => createElement());
       moduleRegistry.setResultFor(
           'getDescriptors', [fooDescriptor, barDescriptor, bazDescriptor]);
 
@@ -461,7 +464,7 @@ suite('NewTabPageModulesModulesTest', () => {
   test('modules can be dismissed and restored', async () => {
     // Arrange.
     let restoreCalled = false;
-    const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+    const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
     moduleRegistry.setResultFor('getDescriptors', [fooDescriptor]);
 
     // Act.
@@ -521,7 +524,7 @@ suite('NewTabPageModulesModulesTest', () => {
   test('modules can be disabled and restored', async () => {
     // Arrange.
     let restoreCalled = false;
-    const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+    const fooDescriptor = new ModuleDescriptor('foo', 'bar', initNullModule);
     moduleRegistry.setResultFor('getDescriptors', [fooDescriptor]);
 
     // Act.
@@ -602,8 +605,8 @@ suite('NewTabPageModulesModulesTest', () => {
 
   test('record number of loaded modules', async () => {
     // Arrange.
-    const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-    const barDescriptor = new ModuleDescriptor('bar', initNullModule);
+    const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
+    const barDescriptor = new ModuleDescriptor('bar', 'Bar', initNullModule);
     moduleRegistry.setResultFor(
         'getDescriptors', [fooDescriptor, barDescriptor]);
     await createModulesElement([
@@ -625,8 +628,8 @@ suite('NewTabPageModulesModulesTest', () => {
 
   test('record module loaded with other modules', async () => {
     // Arrange.
-    const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-    const barDescriptor = new ModuleDescriptor('bar', initNullModule);
+    const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
+    const barDescriptor = new ModuleDescriptor('bar', 'Bar', initNullModule);
     moduleRegistry.setResultFor(
         'getDescriptors', [fooDescriptor, barDescriptor]);
     await createModulesElement([
@@ -663,11 +666,11 @@ suite('NewTabPageModulesModulesTest', () => {
         moduleArray.push(module);
       }
       const fooDescriptor = new ModuleDescriptorV2(
-          'foo', ModuleHeight.TALL, async () => createElement());
+          'foo', 'Foo', ModuleHeight.TALL, async () => createElement());
       const barDescriptor = new ModuleDescriptorV2(
-          'bar', ModuleHeight.TALL, async () => createElement());
+          'bar', 'Bar', ModuleHeight.TALL, async () => createElement());
       const fooBarDescriptor = new ModuleDescriptorV2(
-          'foo bar', ModuleHeight.TALL, async () => createElement());
+          'foo bar', 'Foo Baz', ModuleHeight.TALL, async () => createElement());
 
       moduleRegistry.setResultFor(
           'getDescriptors', [fooDescriptor, barDescriptor, fooBarDescriptor]);
@@ -831,11 +834,12 @@ suite('NewTabPageModulesModulesTest', () => {
         moduleArray.push(module);
       }
       const fooDescriptor = new ModuleDescriptorV2(
-          'foo', ModuleHeight.TALL, async () => createElement());
+          'foo', 'Foo', ModuleHeight.TALL, async () => createElement());
       const barDescriptor = new ModuleDescriptorV2(
-          'bar', ModuleHeight.SHORT, async () => createElement());
+          'bar', 'Bar', ModuleHeight.SHORT, async () => createElement());
       const fooBarDescriptor = new ModuleDescriptorV2(
-          'foo bar', ModuleHeight.SHORT, async () => createElement());
+          'foo bar', 'Foo Baz', ModuleHeight.SHORT,
+          async () => createElement());
 
       moduleRegistry.setResultFor(
           'getDescriptors', [fooDescriptor, barDescriptor, fooBarDescriptor]);
@@ -916,11 +920,12 @@ suite('NewTabPageModulesModulesTest', () => {
         moduleArray.push(module);
       }
       const fooDescriptor = new ModuleDescriptorV2(
-          'foo', ModuleHeight.TALL, async () => createElement());
+          'foo', 'Foo', ModuleHeight.TALL, async () => createElement());
       const barDescriptor = new ModuleDescriptorV2(
-          'bar', ModuleHeight.SHORT, async () => createElement());
+          'bar', 'Bar', ModuleHeight.SHORT, async () => createElement());
       const fooBarDescriptor = new ModuleDescriptorV2(
-          'foo bar', ModuleHeight.SHORT, async () => createElement());
+          'foo bar', 'Foo Baz', ModuleHeight.SHORT,
+          async () => createElement());
 
       moduleRegistry.setResultFor(
           'getDescriptors', [fooDescriptor, barDescriptor, fooBarDescriptor]);

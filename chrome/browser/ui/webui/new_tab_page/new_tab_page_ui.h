@@ -5,10 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NEW_TAB_PAGE_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NEW_TAB_PAGE_UI_H_
 
-#include <string>
-#include <utility>
-#include <vector>
-
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
@@ -248,7 +244,6 @@ class NewTabPageUI
   // Time the NTP started loading. Used for logging the WebUI NTP's load
   // performance.
   base::Time navigation_start_time_;
-  const std::vector<std::pair<const std::string, int>> module_id_names_;
 
   // Mojo implementations for modules:
   std::unique_ptr<RecipesHandler> recipes_handler_;

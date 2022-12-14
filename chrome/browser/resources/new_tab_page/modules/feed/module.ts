@@ -10,7 +10,7 @@ import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render
 import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Article} from '../../feed.mojom-webui.js';
-import {I18nMixin} from '../../i18n_setup.js';
+import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {InfoDialogElement} from '../info_dialog.js';
 import {ModuleDescriptor, ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
 
@@ -58,9 +58,11 @@ async function createFeedElement(): Promise<HTMLElement> {
   return element;
 }
 
-const ID: string = 'feed';
 export const feedDescriptor: ModuleDescriptor = new ModuleDescriptor(
-    /*id=*/ ID, createFeedElement);
+    /*id=*/ 'feed',
+    /*name=*/ loadTimeData.getString('modulesFeedTitle'), createFeedElement);
+
 export const feedV2Descriptor: ModuleDescriptorV2 = new ModuleDescriptorV2(
-    /*id=*/ ID,
+    /*id=*/ 'feed',
+    /*name=*/ loadTimeData.getString('modulesFeedTitle'),
     /*height=*/ ModuleHeight.TALL, createFeedElement);

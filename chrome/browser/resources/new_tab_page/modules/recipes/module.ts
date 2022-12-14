@@ -182,5 +182,10 @@ async function createModule(): Promise<HTMLElement|null> {
   return element;
 }
 
-export const recipeTasksDescriptor: ModuleDescriptor =
-    new ModuleDescriptor(/*id=*/ 'recipe_tasks', createModule);
+export const recipeTasksDescriptor: ModuleDescriptor = new ModuleDescriptor(
+    /*id=*/ 'recipe_tasks',
+    /*name=*/
+    loadTimeData.getBoolean('modulesRecipeHistoricalExperimentEnabled') ?
+        loadTimeData.getString('modulesRecipeViewedTasksSentence') :
+        loadTimeData.getString('modulesRecipeTasksSentence'),
+    createModule);

@@ -40,7 +40,7 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
 
     // Act.
     moduleWrapper.module = {
-      descriptor: new ModuleDescriptor('foo', initNullModule),
+      descriptor: new ModuleDescriptor('foo', 'Foo', initNullModule),
       element: moduleElement,
     };
     await detectedImpression;
@@ -58,7 +58,7 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     // Act.
     moduleWrapper.module = {
       descriptor: new ModuleDescriptorV2(
-          'foo', ModuleHeight.TALL, async () => createElement()),
+          'foo', 'Foo', ModuleHeight.TALL, async () => createElement()),
       element: createElement(),
     };
 
@@ -69,12 +69,12 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
   test('descriptor can only be set once', () => {
     const moduleElement = createElement();
     moduleWrapper.module = {
-      descriptor: new ModuleDescriptor('foo', initNullModule),
+      descriptor: new ModuleDescriptor('foo', 'Foo', initNullModule),
       element: moduleElement,
     };
     assertThrows(() => {
       moduleWrapper.module = {
-        descriptor: new ModuleDescriptor('foo', initNullModule),
+        descriptor: new ModuleDescriptor('foo', 'Foo', initNullModule),
         element: moduleElement,
       };
     });
@@ -84,7 +84,7 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     // Arrange.
     const moduleElement = createElement();
     moduleWrapper.module = {
-      descriptor: new ModuleDescriptor('foo', initNullModule),
+      descriptor: new ModuleDescriptor('foo', 'Foo', initNullModule),
       element: moduleElement,
     };
 
@@ -100,7 +100,7 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     // Arrange.
     const moduleElement = createElement();
     moduleWrapper.module = {
-      descriptor: new ModuleDescriptor('foo', initNullModule),
+      descriptor: new ModuleDescriptor('foo', 'Foo', initNullModule),
       element: moduleElement,
     };
 
