@@ -190,6 +190,20 @@ const char* UserSessionTypeToString(UserSessionType value) {
 #undef CASE
 }
 
+const char* CrdSessionTypeToString(CrdSessionType value) {
+#define CASE(type_)           \
+  case CrdSessionType::type_: \
+    return #type_;
+
+  switch (value) {
+    CASE(CRD_SESSION_TYPE_UNKNOWN);
+    CASE(REMOTE_ACCESS_SESSION);
+    CASE(REMOTE_SUPPORT_SESSION);
+  }
+
+#undef CASE
+}
+
 void CalculateIsInManagedEnvironmentAsync(
     ManagedEnvironmentResultCallback result_callback) {
   auto network_service = std::make_unique<mojo::Remote<CrosNetworkConfig>>();

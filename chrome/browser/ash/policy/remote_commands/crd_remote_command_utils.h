@@ -19,6 +19,9 @@ namespace policy {
 // is currently logged in.
 using ::enterprise_management::UserSessionType;
 
+// The type of the CRD session.
+using ::enterprise_management::CrdSessionType;
+
 // Returns the time since the last user activity on this device.
 base::TimeDelta GetDeviceIdleTime();
 
@@ -34,6 +37,7 @@ bool UserSessionSupportsRemoteSupport(UserSessionType user_session);
 bool UserSessionSupportsRemoteAccess(UserSessionType user_session);
 
 const char* UserSessionTypeToString(UserSessionType value);
+const char* CrdSessionTypeToString(CrdSessionType value);
 
 // Returns asynchronously if the ChromeOS device is in a managed environment.
 // We consider the device's environment to be managed if there is a

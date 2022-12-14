@@ -51,6 +51,17 @@ enum UserSessionType {
   NO_SESSION = 7;
 }
 
+// The type of the CRD session. This enum is used in the response payload of the
+// `FETCH_CRD_AVAILABILITY_INFO` remote command.
+enum CrdSessionType {
+  CRD_SESSION_TYPE_UNKNOWN = 0;
+  // A session where the admin has exclusive control of the remote machine.
+  REMOTE_ACCESS_SESSION = 1;
+  // A session where the admin and the local user share control of the remote
+  // machine.
+  REMOTE_SUPPORT_SESSION = 2;
+}
+
 // Data along with a cryptographic signature verifying their authenticity.
 message SignedData {
   // The data to be signed.
