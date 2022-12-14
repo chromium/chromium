@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/mac/scoped_nsobject.h"
 #import "chrome/browser/app_controller_mac.h"
 
 #include "base/mac/foundation_util.h"
+#import "base/mac/scoped_nsobject.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -162,10 +162,14 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, OSCancellation) {
     ui_test_utils::WaitForBrowserToClose(browser);
     EXPECT_EQ(start_browser_count, browser_list->size());
 
-    // Expect there to not have been any callbacks.
+    // Expect there to have been the user cancellation callback.
 
     EXPECT_EQ(nil, session_request.get().callbackURL);
-    EXPECT_EQ(nil, session_request.get().cancellationError);
+    ASSERT_NE(nil, session_request.get().cancellationError);
+    EXPECT_EQ(ASWebAuthenticationSessionErrorDomain,
+              session_request.get().cancellationError.domain);
+    EXPECT_EQ(ASWebAuthenticationSessionErrorCodeCanceledLogin,
+              session_request.get().cancellationError.code);
   } else {
     GTEST_SKIP() << "ASWebAuthenticationSessionRequest is only available on "
                     "macOS 10.15 and higher.";
