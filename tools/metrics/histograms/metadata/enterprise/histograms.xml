@@ -2150,7 +2150,7 @@ chromium-metrics-reviews@google.com.
   <owner>domfc@chromium.org</owner>
   <summary>
     Records whether a browser unenrollment was completed succcessfully by
-    writing an invalid DM token to storage or not.
+    writing an invalid DMToken to storage or not.
   </summary>
 </histogram>
 
