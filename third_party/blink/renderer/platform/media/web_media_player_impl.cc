@@ -799,33 +799,47 @@ void WebMediaPlayerImpl::OnHasNativeControlsChanged(bool has_native_controls) {
 }
 
 void WebMediaPlayerImpl::OnDisplayTypeChanged(DisplayType display_type) {
+  DVLOG(2) << __func__ << ": display_type=" << static_cast<int>(display_type);
+
   if (surface_layer_for_video_enabled_) {
     vfc_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&VideoFrameCompositor::SetForceSubmit,
                        base::Unretained(compositor_.get()),
                        display_type == DisplayType::kPictureInPicture));
-  }
 
-  if (!watch_time_reporter_)
-    return;
-
-  switch (display_type) {
-    case DisplayType::kInline:
-      watch_time_reporter_->OnDisplayTypeInline();
-      break;
-    case DisplayType::kFullscreen:
-      watch_time_reporter_->OnDisplayTypeFullscreen();
-      break;
-    case DisplayType::kPictureInPicture:
-      watch_time_reporter_->OnDisplayTypePictureInPicture();
+    if (display_type == DisplayType::kPictureInPicture) {
+      // In picture in picture mode, since the video is compositing in the PIP
+      // windows, stop composting it in the original window. One exception is
+      // for persistent video, where can happen in auto-pip mode, where the
+      // video is not playing in the regular Picture-in-Picture mode.
+      if (!client_->IsInAutoPIP()) {
+        client_->SetCcLayer(nullptr);
+      }
 
       // Resumes playback if it was paused when hidden.
       if (paused_when_hidden_) {
         paused_when_hidden_ = false;
         client_->ResumePlayback();
       }
-      break;
+    } else {
+      // Resume compositing in the original window if not already doing so.
+      client_->SetCcLayer(bridge_->GetCcLayer());
+    }
+  }
+
+  if (watch_time_reporter_) {
+    switch (display_type) {
+      case DisplayType::kInline:
+        watch_time_reporter_->OnDisplayTypeInline();
+        break;
+      case DisplayType::kFullscreen:
+        watch_time_reporter_->OnDisplayTypeFullscreen();
+        break;
+      case DisplayType::kPictureInPicture:
+        watch_time_reporter_->OnDisplayTypePictureInPicture();
+        break;
+    }
   }
 
   SetPersistentState(display_type == DisplayType::kPictureInPicture);
@@ -2680,6 +2694,7 @@ void WebMediaPlayerImpl::SetVolumeMultiplier(double multiplier) {
 }
 
 void WebMediaPlayerImpl::SetPersistentState(bool value) {
+  DVLOG(2) << __func__ << ": value=" << value;
   overlay_info_.is_persistent_video = value;
   MaybeSendOverlayInfoToDecoder();
 }

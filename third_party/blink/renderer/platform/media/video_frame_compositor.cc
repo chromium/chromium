@@ -395,7 +395,9 @@ void VideoFrameCompositor::SetIsPageVisible(bool is_visible) {
 
 void VideoFrameCompositor::SetForceSubmit(bool force_submit) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  submitter_->SetForceSubmit(force_submit);
+  // The `submitter_` can be null in tests.
+  if (submitter_)
+    submitter_->SetForceSubmit(force_submit);
 }
 
 base::TimeDelta VideoFrameCompositor::GetLastIntervalWithoutLock()

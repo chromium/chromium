@@ -2157,6 +2157,48 @@ TEST_F(WebMediaPlayerImplTest, PictureInPictureStateChange) {
   EXPECT_CALL(*surface_layer_bridge_ptr_, ClearObserver());
 }
 
+TEST_F(WebMediaPlayerImplTest, DisplayTypeChange) {
+  InitializeWebMediaPlayerImpl();
+
+  scoped_refptr<cc::Layer> layer = cc::Layer::Create();
+
+  EXPECT_CALL(*surface_layer_bridge_ptr_, CreateSurfaceLayer());
+  EXPECT_CALL(*surface_layer_bridge_ptr_, GetSurfaceId())
+      .WillRepeatedly(ReturnRef(surface_id_));
+  EXPECT_CALL(*compositor_, EnableSubmission(_, _, _));
+  EXPECT_CALL(*surface_layer_bridge_ptr_, SetContentsOpaque(false));
+  EXPECT_CALL(*surface_layer_bridge_ptr_, GetCcLayer())
+      .WillRepeatedly(Return(layer.get()));
+
+  media::PipelineMetadata metadata;
+  metadata.has_video = true;
+  OnMetadata(metadata);
+
+  // When entering PIP mode the CC layer is set to null so we are not
+  // compositing the video in the original window.
+  EXPECT_CALL(client_, IsInAutoPIP()).WillOnce(Return(false));
+  EXPECT_CALL(client_, SetCcLayer(nullptr));
+  wmpi_->OnDisplayTypeChanged(DisplayType::kPictureInPicture);
+
+  // When switching back to the inline mode the CC layer is set back to the
+  // bridge CC layer.
+  EXPECT_CALL(client_, SetCcLayer(testing::NotNull()));
+  wmpi_->OnDisplayTypeChanged(DisplayType::kInline);
+
+  // When in persistent state (e.g. auto-pip), video is not playing in the
+  // regular Picture-in-Picture mode. Don't set the CC layer to null.
+  EXPECT_CALL(client_, IsInAutoPIP()).WillOnce(Return(true));
+  EXPECT_CALL(client_, SetCcLayer(_)).Times(0);
+  wmpi_->OnDisplayTypeChanged(DisplayType::kPictureInPicture);
+
+  // When switching back to fullscreen mode the CC layer is set back to the
+  // bridge CC layer.
+  EXPECT_CALL(client_, SetCcLayer(testing::NotNull()));
+  wmpi_->OnDisplayTypeChanged(DisplayType::kFullscreen);
+
+  EXPECT_CALL(*surface_layer_bridge_ptr_, ClearObserver());
+}
+
 TEST_F(WebMediaPlayerImplTest, RegisterFrameSinkHierarchy) {
   InitializeWebMediaPlayerImpl();
   media::PipelineMetadata metadata;
