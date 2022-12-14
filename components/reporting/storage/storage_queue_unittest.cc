@@ -2173,12 +2173,17 @@ TEST_P(StorageQueueTest, CreateStorageQueueInvalidOptionsPath) {
 TEST_P(StorageQueueTest, WriteRecordWithInsufficientDiskSpace) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
 
-  // Update total disk space and reset after running the write operation so it
-  // does not affect other tests
-  const auto original_disk_space = options_.disk_space_resource()->GetTotal();
-  options_.disk_space_resource()->Test_SetTotal(0);
+  // Inject simulated failures.
+  auto inject = InjectFailures();
+  EXPECT_CALL(
+      *inject,
+      Call(Eq(test::StorageQueueOperationKind::kWriteLowDiskSpace), Eq(0)))
+      .WillRepeatedly(WithArg<1>(Invoke([](int64_t seq_id) {
+        return Status(error::INTERNAL,
+                      base::StrCat({"Simulated data write low disk space, seq=",
+                                    base::NumberToString(seq_id)}));
+      })));
   Status write_result = WriteString(kData[0]);
-  options_.disk_space_resource()->Test_SetTotal(original_disk_space);
   EXPECT_FALSE(write_result.ok());
   EXPECT_EQ(write_result.error_code(), error::RESOURCE_EXHAUSTED);
 }
@@ -2192,6 +2197,64 @@ TEST_P(StorageQueueTest, WriteRecordWithInsufficientMemory) {
   options_.memory_resource()->Test_SetTotal(0);
   Status write_result = WriteString(kData[0]);
   options_.memory_resource()->Test_SetTotal(original_total_memory);
+  EXPECT_FALSE(write_result.ok());
+  EXPECT_EQ(write_result.error_code(), error::RESOURCE_EXHAUSTED);
+}
+
+TEST_P(StorageQueueTest, WrappedRecordWithInsufficientMemoryWithFailure) {
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
+
+  // Inject "low memory" error multiple times, then retire and return success.
+  auto inject = InjectFailures();
+  EXPECT_CALL(
+      *inject,
+      Call(Eq(test::StorageQueueOperationKind::kWrappedRecordLowMemory), Eq(0)))
+      .WillRepeatedly(WithArg<1>(Invoke([](int64_t seq_id) {
+        return Status(error::RESOURCE_EXHAUSTED,
+                      base::StrCat({"Not enough memory for WrappedRecord, seq=",
+                                    base::NumberToString(seq_id)}));
+      })))
+      .RetiresOnSaturation();
+  Record record;
+  record.set_data(std::string(kData[0]));
+  record.set_destination(UPLOAD_EVENTS);
+  if (!dm_token_.empty()) {
+    record.set_dm_token(dm_token_);
+  }
+  test::TestEvent<Status> write_event;
+  LOG(ERROR) << "Write data='" << record.data() << "'";
+  storage_queue_->Write(std::move(record), write_event.cb());
+  Status write_result = write_event.result();
+  EXPECT_FALSE(write_result.ok());
+  EXPECT_EQ(write_result.error_code(), error::RESOURCE_EXHAUSTED);
+}
+
+TEST_P(StorageQueueTest, EncryptedRecordWithInsufficientMemoryWithFailure) {
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
+
+  // Inject "low memory" error multiple times, then retire and return success.
+  auto inject = InjectFailures();
+  EXPECT_CALL(
+      *inject,
+      Call(Eq(test::StorageQueueOperationKind::kEncryptedRecordLowMemory),
+           Eq(0)))
+      .WillRepeatedly(WithArg<1>(Invoke([](int64_t seq_id) {
+        return Status(
+            error::RESOURCE_EXHAUSTED,
+            base::StrCat({"Not enough memory for EncryptedRecord, seq=",
+                          base::NumberToString(seq_id)}));
+      })))
+      .RetiresOnSaturation();
+  Record record;
+  record.set_data(std::string(kData[0]));
+  record.set_destination(UPLOAD_EVENTS);
+  if (!dm_token_.empty()) {
+    record.set_dm_token(dm_token_);
+  }
+  test::TestEvent<Status> write_event;
+  LOG(ERROR) << "Write data='" << record.data() << "'";
+  storage_queue_->Write(std::move(record), write_event.cb());
+  Status write_result = write_event.result();
   EXPECT_FALSE(write_result.ok());
   EXPECT_EQ(write_result.error_code(), error::RESOURCE_EXHAUSTED);
 }

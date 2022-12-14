@@ -47,6 +47,9 @@ enum class StorageQueueOperationKind {
   kReadBlock,
   kWriteBlock,
   kWriteMetadata,
+  kWrappedRecordLowMemory,
+  kEncryptedRecordLowMemory,
+  kWriteLowDiskSpace,
 };
 
 }  // namespace test

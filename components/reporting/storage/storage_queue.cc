@@ -1529,6 +1529,14 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     ScopedReservation scoped_reservation(
         wrapped_record.ByteSizeLong(),
         storage_queue_->options().memory_resource());
+    // Inject "memory unavailable" failure, if requested.
+    if (storage_queue_->test_injection_handler_ &&
+        !storage_queue_->test_injection_handler_
+             .Run(test::StorageQueueOperationKind::kWrappedRecordLowMemory,
+                  storage_queue_->next_sequencing_id_)
+             .ok()) {
+      scoped_reservation.Reduce(0);
+    }
     if (!scoped_reservation.reserved()) {
       Schedule(&ReadContext::Response, base::Unretained(this),
                Status(error::RESOURCE_EXHAUSTED,
@@ -1604,6 +1612,14 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     ScopedReservation scoped_reservation(
         encrypted_record_result.ValueOrDie().ByteSizeLong(),
         storage_queue_->options().memory_resource());
+    // Inject "memory unavailable" failure, if requested.
+    if (storage_queue_->test_injection_handler_ &&
+        !storage_queue_->test_injection_handler_
+             .Run(test::StorageQueueOperationKind::kEncryptedRecordLowMemory,
+                  storage_queue_->next_sequencing_id_)
+             .ok()) {
+      scoped_reservation.Reduce(0);
+    }
     if (!scoped_reservation.reserved()) {
       Schedule(&ReadContext::Response, base::Unretained(this),
                Status(error::RESOURCE_EXHAUSTED,
@@ -1789,7 +1805,12 @@ void StorageQueue::Write(Record record,
 }
 
 Status StorageQueue::ReserveNewRecordDiskSpace(const size_t total_size) {
-  if (!options_.disk_space_resource()->Reserve(total_size)) {
+  if ((test_injection_handler_ &&  // Test only: Simulate failure if requested
+       !test_injection_handler_
+            .Run(test::StorageQueueOperationKind::kWriteLowDiskSpace,
+                 next_sequencing_id_)
+            .ok()) ||
+      !options_.disk_space_resource()->Reserve(total_size)) {
     const uint64_t space_used = options_.disk_space_resource()->GetUsed();
     const uint64_t space_total = options_.disk_space_resource()->GetTotal();
     return Status(
@@ -2080,6 +2101,7 @@ StorageQueue::SingleFile::Create(
     scoped_refptr<ResourceManager> memory_resource,
     scoped_refptr<ResourceManager> disk_space_resource,
     scoped_refptr<RefCountedClosureList> completion_closure_list) {
+  // Reserve specified disk space for the file.
   if (!disk_space_resource->Reserve(size)) {
     LOG(WARNING) << "Disk space exceeded adding file "
                  << filename.MaybeAsASCII();
@@ -2088,6 +2110,7 @@ StorageQueue::SingleFile::Create(
         base::StrCat({"Not enough disk space available to include file=",
                       filename.MaybeAsASCII()}));
   }
+
   // Cannot use base::MakeRefCounted, since the constructor is private.
   return scoped_refptr<StorageQueue::SingleFile>(
       new SingleFile(filename, size, memory_resource, disk_space_resource,
