@@ -3256,7 +3256,7 @@
       },
       'fuchsia-fyi-x64-asan': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.service_unittests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.services_unittests.filter',
         ],
       },
     }
