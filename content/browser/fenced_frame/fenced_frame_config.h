@@ -85,7 +85,7 @@ namespace content {
 class FencedFrameURLMapping;
 
 extern const char kUrnUuidPrefix[];
-GURL GenerateUrnUuid();
+GURL CONTENT_EXPORT GenerateUrnUuid();
 
 using AdAuctionData = blink::FencedFrame::AdAuctionData;
 using ReportingMetadata = blink::FencedFrame::FencedFrameReporting;

@@ -125,7 +125,8 @@ FencedFrameURLMapping::AddMappingForUrl(const GURL& url) {
       .first;
 }
 
-void FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
+blink::FencedFrame::RedactedFencedFrameConfig
+FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
     const GURL& urn_uuid,
     const GURL& url,
     AdAuctionData ad_auction_data,
@@ -166,6 +167,8 @@ void FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   config.reporting_metadata_.emplace(reporting_metadata,
                                      VisibilityToEmbedder::kOpaque,
                                      VisibilityToContent::kTransparent);
+
+  return config.RedactFor(FencedFrameEntity::kEmbedder);
 }
 
 absl::optional<GURL> FencedFrameURLMapping::GeneratePendingMappedURN() {

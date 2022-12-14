@@ -315,7 +315,8 @@ void AdAuctionServiceImpl::RunAdAuction(
   auto* auction_result_metrics =
       AdAuctionResultMetrics::GetOrCreateForPage(render_frame_host().GetPage());
   if (!auction_result_metrics->ShouldRunAuction()) {
-    std::move(callback).Run(/*manually_aborted=*/false, absl::nullopt);
+    std::move(callback).Run(/*manually_aborted=*/false,
+                            /*config=*/absl::nullopt);
     return;
   }
 
@@ -326,7 +327,8 @@ void AdAuctionServiceImpl::RunAdAuction(
   // If pending mapped URN cannot be generated due to number of mappings has
   // reached limit, stop the auction.
   if (!urn_uuid.has_value()) {
-    std::move(callback).Run(/*manually_aborted=*/false, absl::nullopt);
+    std::move(callback).Run(/*manually_aborted=*/false,
+                            /*config=*/absl::nullopt);
     return;
   }
 
@@ -655,7 +657,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     }
 
     DCHECK(winning_group_ad_metadata.empty());
-    std::move(callback).Run(manually_aborted, absl::nullopt);
+    std::move(callback).Run(manually_aborted, /*config=*/absl::nullopt);
     if (auction_result_metrics) {
       // `auction_result_metrics` can be null since PageUserData like
       // AdAuctionResultMetrics isn't guaranteed to be destroyed after document
@@ -742,26 +744,28 @@ void AdAuctionServiceImpl::OnReporterComplete(
   // the callback needs directly.
   content::AdAuctionData ad_auction_data{winning_group_key.owner,
                                          winning_group_key.name};
-  fenced_frame_urls_map.AssignFencedFrameURLAndInterestGroupInfo(
-      urn_uuid, render_url, std::move(ad_auction_data),
-      base::BindRepeating(
-          &SendSuccessfulAuctionReportsAndUpdateInterestGroups,
-          /*has_sent_reports=*/base::Owned(std::make_unique<bool>(false)),
-          private_aggregation_manager_, &GetInterestGroupManager(),
-          main_frame_origin_, origin(), std::move(winning_group_key),
-          std::move(winning_group_ad_metadata),
-          base::Owned(
-              std::make_unique<std::map<
-                  url::Origin, std::vector<auction_worklet::mojom::
+  blink::FencedFrame::RedactedFencedFrameConfig config =
+      fenced_frame_urls_map.AssignFencedFrameURLAndInterestGroupInfo(
+          urn_uuid, render_url, std::move(ad_auction_data),
+          base::BindRepeating(
+              &SendSuccessfulAuctionReportsAndUpdateInterestGroups,
+              /*has_sent_reports=*/base::Owned(std::make_unique<bool>(false)),
+              private_aggregation_manager_, &GetInterestGroupManager(),
+              main_frame_origin_, origin(), std::move(winning_group_key),
+              std::move(winning_group_ad_metadata),
+              base::Owned(
+                  std::make_unique<
+                      std::map<url::Origin,
+                               std::vector<auction_worklet::mojom::
                                                PrivateAggregationRequestPtr>>>(
-                  std::move(private_aggregation_requests))),
-          std::move(report_urls), std::move(debug_win_report_urls),
-          std::move(debug_loss_report_urls),
-          std::move(interest_groups_that_bid), GetClientSecurityState(),
-          GetRefCountedTrustedURLLoaderFactory()),
-      ad_component_urls, ad_beacon_map);
+                      std::move(private_aggregation_requests))),
+              std::move(report_urls), std::move(debug_win_report_urls),
+              std::move(debug_loss_report_urls),
+              std::move(interest_groups_that_bid), GetClientSecurityState(),
+              GetRefCountedTrustedURLLoaderFactory()),
+          ad_component_urls, ad_beacon_map);
 
-  std::move(callback).Run(/*manually_aborted=*/false, urn_uuid);
+  std::move(callback).Run(/*manually_aborted=*/false, std::move(config));
 }
 
 void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeature(

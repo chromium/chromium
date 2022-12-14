@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
@@ -182,10 +183,11 @@ class MODULES_EXPORT NavigatorAuction final
   void FinalizeAdComplete(ScriptPromiseResolver* resolver,
                           const absl::optional<KURL>& creative_url);
   // Completion callback for Mojo call made by runAdAuction().
-  void AuctionComplete(ScriptPromiseResolver*,
-                       std::unique_ptr<ScopedAbortState>,
-                       bool manually_aborted,
-                       const absl::optional<KURL>&);
+  void AuctionComplete(
+      ScriptPromiseResolver*,
+      std::unique_ptr<ScopedAbortState>,
+      bool manually_aborted,
+      const absl::optional<FencedFrame::RedactedFencedFrameConfig>&);
   // Completion callback for Mojo call made by deprecatedURNToURL().
   void GetURLFromURNComplete(ScriptPromiseResolver*,
                              const absl::optional<KURL>&);

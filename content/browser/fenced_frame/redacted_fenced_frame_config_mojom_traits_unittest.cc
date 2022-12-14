@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config_mojom_traits.h"
+#include <type_traits>
+
+#include "base/test/gtest_util.h"
 #include "content/browser/fenced_frame/fenced_frame_config.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
+#include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config_mojom_traits.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom.h"
 
 namespace content {
@@ -111,6 +114,9 @@ using Entity = content::FencedFrameEntity;
   {                                                                           \
     /* Test an empty config */                                                \
     type config;                                                              \
+    if constexpr (std::is_same<FencedFrameConfig, type>::value) {             \
+      config.urn_.emplace(GenerateUrnUuid());                                 \
+    }                                                                         \
     TEST_PROPERTY_FOR_ENTITY_IS_DEFINED_IS_OPAQUE(                            \
         type, property, Entity::kEmbedder, false, false,                      \
         unredacted_redacted_equality_fn, redacted_redacted_equality_fn);      \
@@ -195,8 +201,56 @@ using Entity = content::FencedFrameEntity;
     return true;                                                         \
   }
 
+TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsInternalUrnTest) {
+  GURL test_url("test_url");
+
+  struct TestCase {
+    GURL urn;
+    bool pass = false;
+  } test_cases[] = {
+      {GURL(), false},
+      {GURL("https://example.com"), false},
+      {GURL("data:text/html<h1>MyWebsite"), false},
+      {GURL("urn:abcd:f81d4fae-7dec-11d0-a765-00a0c91e6bf6"), false},
+      {GURL("urn:uuid:foo"), false},
+      {GURL("urn:uuid:f81d4faea7deca11d0aa765a00a0c91e6bf6"), false},
+      {GURL("urn:uuid:f81d4fae-7dec-11d0-a765-00a0c91e6bf6"), true},
+      {GenerateUrnUuid(), true},
+  };
+
+  for (const TestCase& test_case : test_cases) {
+    FencedFrameConfig browser_config(test_case.urn, test_url);
+    RedactedFencedFrameConfig input_config =
+        browser_config.RedactFor(FencedFrameEntity::kEmbedder);
+    RedactedFencedFrameConfig output_config;
+
+    if (test_case.pass) {
+      ASSERT_TRUE(
+          mojo::test::SerializeAndDeserialize<blink::mojom::FencedFrameConfig>(
+              input_config, output_config));
+    } else {
+      ASSERT_FALSE(
+          mojo::test::SerializeAndDeserialize<blink::mojom::FencedFrameConfig>(
+              input_config, output_config));
+    }
+  }
+}
+
+TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsNullInternalUrnTest) {
+  FencedFrameConfig browser_config;
+  RedactedFencedFrameConfig input_config =
+      browser_config.RedactFor(FencedFrameEntity::kEmbedder);
+  RedactedFencedFrameConfig output_config;
+  EXPECT_DEATH(
+      mojo::test::SerializeAndDeserialize<blink::mojom::FencedFrameConfig>(
+          input_config, output_config),
+      "");
+}
+
 TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
   GURL test_url("test_url");
+
+  // See the above tests for `urn`.
 
   // Test `mapped_url`.
   {
@@ -248,7 +302,7 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
 
   // Test `nested_configs`.
   {
-    FencedFrameConfig test_nested_config(test_url);
+    FencedFrameConfig test_nested_config(GenerateUrnUuid(), test_url);
 
     {
       std::vector<FencedFrameConfig> test_nested_configs = {test_nested_config};

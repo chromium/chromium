@@ -92,12 +92,15 @@ union PotentiallyOpaqueReportingMetadata {
 };
 
 // The `FencedFrameConfig` struct is used to transfer a redacted version
-// (`blink::RedactedFencedFrameConfig`) of `content::FencedFrameConfig` across
-// processes. In brief, this is a collection of properties that the browser
-// process exposes to an embedder that may wish to load into a fenced frame.
-// The config will determine the fenced frame's behavior, but it may have
-// certain fields redacted (marked as opaque) in order to preserve privacy.
-// For example:
+// (`blink::RedactedFencedFrameConfig`) of `content::FencedFrameConfig` from the
+// browser process, to the renderer process, where the redaction process is
+// specific to whether the target renderer is either a fenced frame's embedder
+// or a frame inside the fenced frame tree. For more documentation on the
+// redaction process, see the comments above `content::FencedFrameConfig`. In
+// brief, this is a collection of properties that the browser process exposes to
+// an embedder that may wish to load into a fenced frame. The config will
+// determine the fenced frame's behavior, but it may have certain fields
+// redacted (marked as opaque) in order to preserve privacy. For example:
 // * This object is returned to the caller of APIs that use fenced frames,
 //   so that they can inspect the (unredacted) information inside and then
 //   load it into a fenced frame.
@@ -105,6 +108,10 @@ union PotentiallyOpaqueReportingMetadata {
 //   frame will be given access to these objects in order to load the nested
 //   configs.
 struct FencedFrameConfig {
+  // This is the actual URL that will be loaded into the fenced frame when
+  // navigated to. It can be opaque because for the current use cases (FLEDGE,
+  // shared storage), we never want to expose anything about the actual resource
+  // beyond its existence, to the embedder of a fenced frame.
   PotentiallyOpaqueURL? mapped_url;
 
   PotentiallyOpaqueSize? container_size;
@@ -120,6 +127,14 @@ struct FencedFrameConfig {
   PotentiallyOpaqueSharedStorageBudgetMetadata? shared_storage_budget_metadata;
 
   PotentiallyOpaqueReportingMetadata? reporting_metadata;
+
+  // This is the internal URN that represents this config in the browser-side
+  // `FencedFrameURLMapping`. When this config is navigated to via a fenced
+  // frame, it is this internal urn:uuid that we send to the browser to navigate
+  // to the actual browser-side `content::FencedFrameConfig` object that
+  // represents this instance of this struct. `blink::IsValidUrnUuidURL()` will
+  // always be true when called with this urn.
+  url.mojom.Url urn_uuid;
 };
 
 // The `FencedFrameProperties` struct is used to transfer a redacted version

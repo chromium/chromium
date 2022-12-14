@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
 import "third_party/blink/public/mojom/parakeet/ad_request.mojom";
 import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
 import "url/mojom/origin.mojom";
@@ -49,12 +50,13 @@ interface AdAuctionService {
   // the interest groups owned by `interest_group_buyers` and the auction
   // config `decision_logic_url`. The result of the auction is a URL for the
   // winning ad creative, which the publisher page loads into a page or iframe
-  // in the owner's domain. If no ad wins the auction, null is returned.
-  // `manually_aborted` is set to true only if the auction was manually
-  // cancelled successfully via a call to `abort_receiver->Abort()`.
+  // in the owner's domain. This URL is embedded inside `config` below. If no ad
+  // wins the auction, null is returned. `manually_aborted` is set to true only
+  // if the auction was manually cancelled successfully via a call to
+  // `abort_receiver->Abort()`.
   RunAdAuction(AuctionAdConfig config,
                pending_receiver<AbortableAdAuction>? abort_receiver)
-      => (bool manually_aborted, url.mojom.Url? ad_display_url);
+      => (bool manually_aborted, FencedFrameConfig? config);
 
   // Requests that the browser process create or overwrite persisted interest
   // group keyed by `group.owner` and `group.name` with information from

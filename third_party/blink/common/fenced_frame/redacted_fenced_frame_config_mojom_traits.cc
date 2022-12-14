@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config_mojom_traits.h"
 
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom.h"
 
@@ -416,7 +417,9 @@ bool StructTraits<blink::mojom::FencedFrameConfigDataView,
                   blink::FencedFrame::RedactedFencedFrameConfig>::
     Read(blink::mojom::FencedFrameConfigDataView data,
          blink::FencedFrame::RedactedFencedFrameConfig* out_config) {
-  if (!data.ReadMappedUrl(&out_config->mapped_url_) ||
+  GURL urn_uuid;
+  if (!data.ReadUrnUuid(&urn_uuid) ||
+      !data.ReadMappedUrl(&out_config->mapped_url_) ||
       !data.ReadContentSize(&out_config->content_size_) ||
       !data.ReadContainerSize(&out_config->container_size_) ||
       !data.ReadDeprecatedShouldFreezeInitialSize(
@@ -429,6 +432,11 @@ bool StructTraits<blink::mojom::FencedFrameConfigDataView,
     return false;
   }
 
+  if (!blink::IsValidUrnUuidURL(urn_uuid)) {
+    return false;
+  }
+
+  out_config->urn_ = std::move(urn_uuid);
   return true;
 }
 

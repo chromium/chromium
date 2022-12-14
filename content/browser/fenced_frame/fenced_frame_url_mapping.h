@@ -72,13 +72,18 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   // Move pending mapped `urn_uuid` from `pending_urn_uuid_to_url_map_` to
   // `urn_uuid_to_url_map_`. Then assign ad auction data as well as an ordered
   // list of ad component URLs, provided by a bidder running an auction, to the
-  // entry associated with the `urn_uuid`. These will to be made available to
-  // any fenced frame navigated to the returned URN, via the InterestGroup API.
+  // entry associated with the `urn_uuid` and its associated
+  // `FencedFrameConfig`. These will to be made available to any fenced frame
+  // that gets navigated to the URN encapsulated inside the
+  // `RedactedFencedFrameConfig` that is returned from this method. Either this
+  // config or the internal URN inside of it is returned to script via the
+  // InterestGroup API. They used to perform the fenced frame navigation.
   //
   // `on_navigate_callback` should be run on navigation to `urn_uuid`.
   //
   // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
-  void AssignFencedFrameURLAndInterestGroupInfo(
+  blink::FencedFrame::RedactedFencedFrameConfig
+  AssignFencedFrameURLAndInterestGroupInfo(
       const GURL& urn_uuid,
       const GURL& url,
       AdAuctionData auction_data,

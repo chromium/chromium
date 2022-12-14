@@ -765,19 +765,25 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
         rfh, ad_auction_service_.BindNewPipeAndPassReceiver());
 
     base::RunLoop run_loop;
-    absl::optional<GURL> maybe_url;
+    absl::optional<blink::FencedFrame::RedactedFencedFrameConfig> maybe_config;
     ad_auction_service_->RunAdAuction(
         auction_config, mojo::NullReceiver(),
         base::BindLambdaForTesting(
-            [&run_loop, &maybe_url](bool manually_aborted,
-                                    const absl::optional<GURL>& result) {
+            [&run_loop, &maybe_config](
+                bool manually_aborted,
+                const absl::optional<
+                    blink::FencedFrame::RedactedFencedFrameConfig>& config) {
               EXPECT_FALSE(manually_aborted);
-              maybe_url = result;
+              maybe_config = config;
               run_loop.Quit();
             }));
     ad_auction_service_.FlushForTesting();
     run_loop.Run();
-    return maybe_url;
+    if (!maybe_config) {
+      return absl::nullopt;
+    }
+    CHECK(maybe_config->urn().has_value());
+    return maybe_config->urn();
   }
 
   // Like RunAdAuctionAndFlushForFrame(), but uses the RenderFrameHost of the
@@ -5698,9 +5704,9 @@ function reportResult() {}
         base::BindLambdaForTesting(
             [&one_auction_complete](
                 bool manually_aborted,
-                const absl::optional<GURL>& ignored_result) {
-              one_auction_complete.Run();
-            }));
+                const absl::optional<
+                    blink::FencedFrame::RedactedFencedFrameConfig>&
+                    ignored_config) { one_auction_complete.Run(); }));
   }
   run_loop.Run();
 

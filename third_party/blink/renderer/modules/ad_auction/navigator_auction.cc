@@ -1785,7 +1785,8 @@ void NavigatorAuction::AuctionComplete(
     ScriptPromiseResolver* resolver,
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
     bool manually_aborted,
-    const absl::optional<KURL>& result_url) {
+    const absl::optional<FencedFrame::RedactedFencedFrameConfig>&
+        result_config) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
     return;
@@ -1796,8 +1797,10 @@ void NavigatorAuction::AuctionComplete(
   if (manually_aborted) {
     DCHECK(abort_signal && abort_signal->aborted());
     resolver->Reject(abort_signal->reason(script_state));
-  } else if (result_url) {
-    resolver->Resolve(result_url);
+  } else if (result_config) {
+    DCHECK(result_config->mapped_url().has_value());
+    DCHECK(!result_config->mapped_url()->potentially_opaque_value.has_value());
+    resolver->Resolve(KURL(result_config->urn().value()));
   } else {
     resolver->Resolve(v8::Null(script_state->GetIsolate()));
   }
