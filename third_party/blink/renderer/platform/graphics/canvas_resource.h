@@ -83,6 +83,8 @@ class PLATFORM_EXPORT CanvasResource
     last_unref_callback_ = std::move(callback);
   }
 
+  bool HasLastUnrefCallback() { return !!last_unref_callback_; }
+
   // We perform a lazy copy on write if the canvas content needs to be updated
   // while its current resource is in use. In order to avoid re-allocating
   // resources, its preferable to reuse a resource if its no longer in use.

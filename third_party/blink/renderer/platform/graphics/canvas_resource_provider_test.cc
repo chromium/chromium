@@ -251,6 +251,44 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_EQ(original_mailbox, provider->Snapshot()->GetMailboxHolder().mailbox);
 }
 
+TEST_F(CanvasResourceProviderTest, NoRecycleIfLastRefCallback) {
+  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
+
+  const uint32_t shared_image_usage_flags =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+
+  auto provider = CanvasResourceProvider::CreateSharedImageProvider(
+      kInfo, cc::PaintFlags::FilterQuality::kMedium,
+      CanvasResourceProvider::ShouldInitialize::kCallClear,
+      context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
+      shared_image_usage_flags);
+
+  ASSERT_TRUE(provider->IsValid());
+
+  scoped_refptr<StaticBitmapImage> snapshot1 = provider->Snapshot();
+  ASSERT_TRUE(snapshot1);
+
+  // Set up a LastUnrefCallback that recycles the resource asynchronously,
+  // similarly to what OffscreenCanvasPlaceholder would do.
+  provider->ProduceCanvasResource()->SetLastUnrefCallback(
+      base::BindOnce([](scoped_refptr<CanvasResource> resource) {}));
+
+  // Resource updated after draw.
+  provider->Canvas()->clear(SkColors::kWhite);
+  provider->FlushCanvas();
+  scoped_refptr<StaticBitmapImage> snapshot2 = provider->Snapshot();
+  EXPECT_NE(snapshot2->GetMailboxHolder().mailbox,
+            snapshot1->GetMailboxHolder().mailbox);
+
+  auto snapshot1_mailbox = snapshot1->GetMailboxHolder().mailbox;
+  snapshot1.reset();  // resource not recycled due to LastUnrefCallback
+  provider->Canvas()->clear(SkColors::kBlack);
+  provider->FlushCanvas();
+  scoped_refptr<StaticBitmapImage> snapshot3 = provider->Snapshot();
+  // confirm resource is not recycled.
+  EXPECT_NE(snapshot3->GetMailboxHolder().mailbox, snapshot1_mailbox);
+}
+
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderSharedImageCopyOnWriteDisabled) {
   auto* fake_context = static_cast<FakeWebGraphicsContext3DProvider*>(
