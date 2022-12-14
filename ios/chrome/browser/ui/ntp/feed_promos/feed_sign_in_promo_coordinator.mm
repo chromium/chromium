@@ -98,7 +98,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperationSigninAndSync
-            accessPoint:AccessPoint::ACCESS_POINT_UNKNOWN];
+            accessPoint:AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO];
   [handler showSignin:command baseViewController:self.baseViewController];
 }
 

@@ -40,7 +40,9 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::ACCESS_POINT_MACHINE_LOGON,
     AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS,
     AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO,
-    AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO};
+    AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO,
+    AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO,
+    AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO};
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::ACCESS_POINT_START_PAGE,
@@ -61,7 +63,9 @@ const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR,
     AccessPoint::ACCESS_POINT_TAB_SWITCHER,
     AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO,
-    AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO};
+    AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO,
+    AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO,
+    AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO};
 
 class SigninMetricsTest : public ::testing::Test {
  public:
@@ -143,6 +147,10 @@ class SigninMetricsTest : public ::testing::Test {
         return "PostDeviceRestoreBackgroundSignin";
       case AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
         return "NTPSignedOutIcon";
+      case AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
+        return "NTPFeedCardMenuSigninPromo";
+      case AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
+        return "NTPFeedBottomSigninPromo";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";

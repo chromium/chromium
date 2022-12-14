@@ -92806,6 +92806,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="39" label="Post device restore sign-in promo"/>
   <int value="40" label="Post device restore background sign-in"/>
   <int value="41" label="NTP Signed-out icon"/>
+  <int value="42" label="Sign-in promo on NTP feed card menu section."/>
+  <int value="43" label="Sign-in promo on NTP feed bottom section."/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

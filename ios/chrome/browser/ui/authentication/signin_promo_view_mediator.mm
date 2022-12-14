@@ -56,6 +56,8 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
       return true;
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
@@ -157,6 +159,8 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -224,6 +228,8 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -291,6 +297,8 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -347,6 +355,8 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }
@@ -401,6 +411,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }

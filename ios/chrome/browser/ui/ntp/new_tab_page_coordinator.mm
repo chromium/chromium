@@ -979,11 +979,12 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 
 - (void)showSignInUI {
   // Show sign-in and sync page.
+  using AccessPoint = signin_metrics::AccessPoint;
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperationSigninAndSync
-            accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN];
+            accessPoint:AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO];
   [handler showSignin:command baseViewController:self.ntpViewController];
   // TODO (crbug.com/1382615): add metrics.
 }

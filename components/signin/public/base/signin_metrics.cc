@@ -420,6 +420,14 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromNTPSignedOutIcon"));
       break;
+    case AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromNTPFeedCardMenuSigninPromo"));
+      break;
+    case AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromNTPFeedBottomSigninPromo"));
+      break;
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED();
       break;
@@ -517,6 +525,14 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Impression_FromPostDeviceRestoreSigninPromo"));
+      break;
+    case AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Impression_FromNTPFeedCardMenuSigninPromo"));
+      break;
+    case AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Impression_FromNTPFeedBottomSigninPromo"));
       break;
     case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_CONTENT_AREA:
