@@ -237,7 +237,7 @@ void TabletModeMultitaskMenu::EndDrag() {
       -menu_view_->GetPreferredSize().height() - kVerticalPosition;
   const float translated_ratio =
       base::clamp(current_translation_y / max_translation_y, 0.f, 1.f);
-  Animate(/*show=*/translated_ratio < 0.5f);
+  Animate(/*show=*/translated_ratio <= 0.5f);
 }
 
 void TabletModeMultitaskMenu::Reset() {
@@ -258,8 +258,10 @@ void TabletModeMultitaskMenu::OnWidgetActivationChanged(views::Widget* widget,
                                                         bool active) {
   // `widget` gets deactivated when the window state changes.
   DCHECK(widget_observation_.IsObservingSource(widget));
-  if (!active)
-    Reset();
+  if (!active) {
+    // Will destroy `this` at the end of animation.
+    AnimateFadeOut();
+  }
 }
 
 void TabletModeMultitaskMenu::OnDisplayMetricsChanged(

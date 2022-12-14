@@ -137,6 +137,7 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
         event->SetHandled();
       }
       break;
+    case ui::ET_SCROLL_FLING_CANCEL:
     case ui::ET_GESTURE_SCROLL_END:
     case ui::ET_GESTURE_END:
       if (multitask_menu_) {
@@ -146,16 +147,6 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
       break;
     default:
       break;
-  }
-
-  // Tap outside will dismiss the menu with a fade out animation.
-  // TODO(b/260113268): Use increased tap target and `HitTestRect` instead.
-  if (!event->handled() && multitask_menu_ &&
-      !gfx::RectF(multitask_menu_->widget()->GetWindowBoundsInScreen())
-           .Contains(screen_location)) {
-    multitask_menu_->AnimateFadeOut();
-    event->SetHandled();
-    return;
   }
 }
 
