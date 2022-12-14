@@ -13,7 +13,6 @@
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#include "chromeos/system/fake_statistics_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -36,7 +35,7 @@ constexpr char kTemplateIdentifiers[] =
     "https://dns.google.alternativeuri/"
     "${USER_EMAIL}-${USER_EMAIL_DOMAIN}-${USER_EMAIL_NAME}-${DEVICE_"
     "DIRECTORY_"
-    "ID}-${DEVICE_SERIAL_NUMBER}-${DEVICE_ASSET_ID}-${DEVICE_ANNOTATED_"
+    "ID}-${DEVICE_ASSET_ID}-${DEVICE_SERIAL_NUMBER}-${DEVICE_ANNOTATED_"
     "LOCATION}/"
     "dns-query{?dns}";
 constexpr char kDisplayTemplateIdentifiers[] =
@@ -48,8 +47,8 @@ constexpr char kDisplayTemplateIdentifiers[] =
 constexpr char kDisplayTemplateIdentifiersUnaffiliated[] =
     "https://dns.google.alternativeuri/"
     "${test-user@testdomain.com}-${testdomain.com}-${test-user}-${DEVICE_"
-    "DIRECTORY_ID}-${"
-    "DEVICE_SERIAL_NUMBER}-${DEVICE_ASSET_ID}-${DEVICE_ANNOTATED_LOCATION}/"
+    "DIRECTORY_ID}-${DEVICE_ASSET_ID}-${"
+    "DEVICE_SERIAL_NUMBER}-${DEVICE_ANNOTATED_LOCATION}/"
     "dns-query{?dns}";
 constexpr char kEffectiveTemplateIdentifiers[] =
     "https://dns.google.alternativeuri/"
@@ -75,7 +74,7 @@ constexpr char kEffectiveTemplateIdentifiersWithTestSalt[] =
 constexpr char kTestDeviceDirectoryId[] = "85729104-ef7a-5718d62e72ca";
 constexpr char kTestDeviceAssetId[] = "admin-provided-test-asset-ID";
 constexpr char kTestDeviceAnnotatedLocation[] = "admin-provided-test-location";
-constexpr char kTestSerialNummer[] = "serial-number";
+constexpr char kTestSerialNumber[] = "serial-number";
 }  // namespace
 
 class TemplatesUriResolverImplTest : public testing::Test {
@@ -100,12 +99,8 @@ class TemplatesUriResolverImplTest : public testing::Test {
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_));
 
-    chromeos::system::StatisticsProvider::SetTestProvider(
-        &statistics_provider_);
     doh_template_uri_resolver_ = std::make_unique<TemplatesUriResolverImpl>();
 
-    statistics_provider_.SetMachineStatistic("serial_number",
-                                             kTestSerialNummer);
     // Set up fake device attributes.
     std::unique_ptr<policy::FakeDeviceAttributes> device_attributes =
         std::make_unique<policy::FakeDeviceAttributes>();
@@ -113,6 +108,7 @@ class TemplatesUriResolverImplTest : public testing::Test {
     device_attributes->SetFakeDeviceAssetId(kTestDeviceAssetId);
     device_attributes->SetFakeDeviceAnnotatedLocation(
         kTestDeviceAnnotatedLocation);
+    device_attributes->SetFakeDeviceSerialNumber(kTestSerialNumber);
 
     doh_template_uri_resolver_->SetDeviceAttributesForTesting(
         std::move(device_attributes));
@@ -144,7 +140,6 @@ class TemplatesUriResolverImplTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   ScopedStubInstallAttributes test_install_attributes_{
       StubInstallAttributes::CreateCloudManaged("fake-domain", "fake-id")};
-  chromeos::system::FakeStatisticsProvider statistics_provider_;
 };
 
 // Test that verifies the correct substitution of placeholders in the template

@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/policy/core/device_attributes_impl.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -106,13 +105,11 @@ std::string ReplaceVariables(std::string templates,
       &templates, 0, kDeviceDirectoryIdPlaceholder,
       FormatVariable(attributes->GetDirectoryApiID(), salt));
   base::ReplaceSubstringsAfterOffset(
-      &templates, 0, kDeviceSerialNumberPlaceholder,
+      &templates, 0, kDeviceAssetIdPlaceholder,
       FormatVariable(attributes->GetDeviceAssetID(), salt));
   base::ReplaceSubstringsAfterOffset(
-      &templates, 0, kDeviceAssetIdPlaceholder,
-      FormatVariable(chromeos::system::StatisticsProvider::GetInstance()
-                         ->GetEnterpriseMachineID(),
-                     salt));
+      &templates, 0, kDeviceSerialNumberPlaceholder,
+      FormatVariable(attributes->GetDeviceSerialNumber(), salt));
   base::ReplaceSubstringsAfterOffset(
       &templates, 0, kDeviceAnnotatedLocationPlaceholder,
       FormatVariable(attributes->GetDeviceAnnotatedLocation(), salt));
