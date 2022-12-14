@@ -9,39 +9,42 @@
 namespace ui {
 
 AXTargetWin::AXTargetWin() = default;
-AXTargetWin::AXTargetWin(std::nullptr_t) : value_(absl::monostate()) {}
+AXTargetWin::AXTargetWin(std::nullptr_t) : value_(nullptr) {}
 AXTargetWin::AXTargetWin(const AXTargetWin&) = default;
 AXTargetWin::AXTargetWin(AXTargetWin&&) = default;
 
 AXTargetWin::~AXTargetWin() = default;
 
 std::string AXTargetWin::ToString() const {
-  if (absl::holds_alternative<IAccessibleComPtr>(value_))
+  if (!value_)
+    return "NULL";
+
+  if (Is<IAccessibleComPtr>())
     return "IAccessible";
 
-  if (absl::holds_alternative<IA2ComPtr>(value_))
+  if (Is<IA2ComPtr>())
     return "IAccessible2Interface";
 
-  if (absl::holds_alternative<IA2HypertextComPtr>(value_))
+  if (Is<IA2HypertextComPtr>())
     return "IAccessible2HyperlinkInferface";
 
-  if (absl::holds_alternative<IA2TableComPtr>(value_))
+  if (Is<IA2TableComPtr>())
     return "IAccessible2TableInterface";
 
-  if (absl::holds_alternative<IA2TableCellComPtr>(value_))
+  if (Is<IA2TableCellComPtr>())
     return "IAccessible2TableCellInterface";
 
-  if (absl::holds_alternative<IA2TextComPtr>(value_))
+  if (Is<IA2TextComPtr>())
     return "IAccessible2TextInterface";
 
-  if (absl::holds_alternative<IA2ValueComPtr>(value_))
+  if (Is<IA2ValueComPtr>())
     return "IAccessible2ValueInterface";
 
-  if (absl::holds_alternative<std::string>(value_))
-    return "\"" + absl::get<std::string>(value_) + "\"";
+  if (Is<std::string>())
+    return "\"" + As<std::string>() + "\"";
 
-  if (absl::holds_alternative<int>(value_))
-    return base::NumberToString(absl::get<int>(value_));
+  if (Is<int>())
+    return base::NumberToString(As<int>());
 
   return "Unsupported";
 }
