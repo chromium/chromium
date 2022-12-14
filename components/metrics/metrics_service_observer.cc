@@ -6,7 +6,9 @@
 
 #include "base/base64.h"
 #include "base/callback_list.h"
+#include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -152,6 +154,15 @@ bool MetricsServiceObserver::ExportLogsAsJson(bool include_log_proto_data,
 
   JSONStringValueSerializer serializer(json_output);
   return serializer.Serialize(dict);
+}
+
+void MetricsServiceObserver::ExportLogsToFile(const base::FilePath& path) {
+  std::string logs_data;
+  bool success = ExportLogsAsJson(/*include_log_proto_data=*/true, &logs_data);
+  DCHECK(success);
+  if (!base::WriteFile(path, logs_data)) {
+    LOG(ERROR) << "Failed to export logs to " << path << ": " << logs_data;
+  }
 }
 
 base::CallbackListSubscription MetricsServiceObserver::AddNotifiedCallback(

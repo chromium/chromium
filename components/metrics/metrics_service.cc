@@ -157,7 +157,9 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_rotation_scheduler.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/metrics/metrics_service_observer.h"
 #include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/metrics_switches.h"
 #include "components/metrics/persistent_system_profile.h"
 #include "components/metrics/stability_metrics_provider.h"
 #include "components/metrics/url_constants.h"
@@ -269,6 +271,27 @@ MetricsService::MetricsService(MetricsStateManager* state_manager,
   DCHECK(client_);
   DCHECK(local_state_);
 
+  bool create_logs_event_observer;
+#ifdef NDEBUG
+  // For non-debug builds, we only create |logs_event_observer_| if the
+  // |kExportUmaLogsToFile| command line flag is passed. This is mostly for
+  // performance reasons: 1) we don't want to have to notify an observer in
+  // non-debug circumstances (there may be heavy work like copying large
+  // strings), and 2) we don't want logs to be lingering in memory.
+  create_logs_event_observer =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kExportUmaLogsToFile);
+#else
+  // For debug builds, always create |logs_event_observer_|.
+  create_logs_event_observer = true;
+#endif  // NDEBUG
+
+  if (create_logs_event_observer) {
+    logs_event_observer_ = std::make_unique<MetricsServiceObserver>(
+        MetricsServiceObserver::MetricsServiceType::UMA);
+    logs_event_manager_.AddObserver(logs_event_observer_.get());
+  }
+
   RegisterMetricsProvider(
       std::make_unique<StabilityMetricsProvider>(local_state_));
 
@@ -277,6 +300,19 @@ MetricsService::MetricsService(MetricsStateManager* state_manager,
 
 MetricsService::~MetricsService() {
   DisableRecording();
+
+  if (logs_event_observer_) {
+    logs_event_manager_.RemoveObserver(logs_event_observer_.get());
+    const base::CommandLine* command_line =
+        base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kExportUmaLogsToFile)) {
+      // We should typically not write to files on the main thread, but since
+      // this only happens when |kExportUmaLogsToFile| is passed (which
+      // indicates debugging), this should be fine.
+      logs_event_observer_->ExportLogsToFile(
+          command_line->GetSwitchValuePath(switches::kExportUmaLogsToFile));
+    }
+  }
 }
 
 void MetricsService::InitializeMetricsRecordingState() {

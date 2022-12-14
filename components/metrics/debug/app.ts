@@ -70,6 +70,16 @@ export class MetricsInternalsAppElement extends CustomElement {
     await this.updateUmaSummary_();
     setInterval(() => this.updateUmaSummary_(), 3000);
 
+    // Set up the UMA table caption.
+    const umaTableCaption = this.$('#uma-table-caption') as HTMLElement;
+    const isUsingMetricsServiceObserver =
+        await this.browserProxy_.isUsingMetricsServiceObserver();
+    umaTableCaption.textContent = isUsingMetricsServiceObserver ?
+        'List of all UMA logs closed since browser startup.' :
+        'List of UMA logs closed since opening this page. Starting the browser \
+        with the --export-uma-logs-to-file command line flag will instead show \
+        all logs closed since browser startup.';
+
     // Set up a listener for UMA logs. Also update UMA log data immediately in
     // case there are logs that we already have data on.
     addWebUiListener(

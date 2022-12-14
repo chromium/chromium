@@ -13,6 +13,7 @@ namespace switches {
 // Alphabetical list of switches specific to the metrics component. Document
 // each in the .cc file.
 
+extern const char kExportUmaLogsToFile[];
 extern const char kForceEnableMetricsReporting[];
 extern const char kMetricsRecordingOnly[];
 extern const char kMetricsUploadIntervalSec[];

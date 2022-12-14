@@ -12,18 +12,24 @@
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_service_observer.h"
 
-MetricsInternalsHandler::MetricsInternalsHandler()
-    : uma_log_observer_(
-          metrics::MetricsServiceObserver::MetricsServiceType::UMA) {
-  g_browser_process->metrics_service()->AddLogsObserver(&uma_log_observer_);
+MetricsInternalsHandler::MetricsInternalsHandler() {
+  if (!ShouldUseMetricsServiceObserver()) {
+    uma_log_observer_ = std::make_unique<metrics::MetricsServiceObserver>(
+        metrics::MetricsServiceObserver::MetricsServiceType::UMA);
+    g_browser_process->metrics_service()->AddLogsObserver(
+        uma_log_observer_.get());
+  }
 }
 
 MetricsInternalsHandler::~MetricsInternalsHandler() {
-  g_browser_process->metrics_service()->RemoveLogsObserver(&uma_log_observer_);
+  if (uma_log_observer_) {
+    g_browser_process->metrics_service()->RemoveLogsObserver(
+        uma_log_observer_.get());
+  }
 }
 
 void MetricsInternalsHandler::OnJavascriptAllowed() {
-  uma_log_notified_subscription_ = uma_log_observer_.AddNotifiedCallback(
+  uma_log_notified_subscription_ = GetUmaObserver()->AddNotifiedCallback(
       base::BindRepeating(&MetricsInternalsHandler::OnUmaLogCreatedOrEvent,
                           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -47,6 +53,21 @@ void MetricsInternalsHandler::RegisterMessages() {
       "fetchUmaLogsData",
       base::BindRepeating(&MetricsInternalsHandler::HandleFetchUmaLogsData,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "isUsingMetricsServiceObserver",
+      base::BindRepeating(
+          &MetricsInternalsHandler::HandleIsUsingMetricsServiceObserver,
+          base::Unretained(this)));
+}
+
+bool MetricsInternalsHandler::ShouldUseMetricsServiceObserver() {
+  return g_browser_process->metrics_service()->logs_event_observer() != nullptr;
+}
+
+metrics::MetricsServiceObserver* MetricsInternalsHandler::GetUmaObserver() {
+  return ShouldUseMetricsServiceObserver()
+             ? g_browser_process->metrics_service()->logs_event_observer()
+             : uma_log_observer_.get();
 }
 
 void MetricsInternalsHandler::HandleFetchVariationsSummary(
@@ -79,9 +100,17 @@ void MetricsInternalsHandler::HandleFetchUmaLogsData(
 
   std::string logs_json;
   bool result =
-      uma_log_observer_.ExportLogsAsJson(include_log_proto_data, &logs_json);
+      GetUmaObserver()->ExportLogsAsJson(include_log_proto_data, &logs_json);
   DCHECK(result);
   ResolveJavascriptCallback(callback_id, base::Value(std::move(logs_json)));
+}
+
+void MetricsInternalsHandler::HandleIsUsingMetricsServiceObserver(
+    const base::Value::List& args) {
+  AllowJavascript();
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id,
+                            base::Value(ShouldUseMetricsServiceObserver()));
 }
 
 void MetricsInternalsHandler::OnUmaLogCreatedOrEvent() {

@@ -56,11 +56,6 @@ export interface LogData {
 
 export interface MetricsInternalsBrowserProxy {
   /**
-   * Signals to the browser that the page is ready to receive messages.
-   */
-  ready(): Promise<void>;
-
-  /**
    * Gets UMA log data. |includeLogProtoData| determines whether or not the
    * fetched data should also include the protos of the logs.
    */
@@ -75,14 +70,16 @@ export interface MetricsInternalsBrowserProxy {
    * Fetches a summary of UMA info.
    */
   fetchUmaSummary(): Promise<KeyValue[]>;
+
+  /**
+   * Fetches whether the logs observer being used is owned by the metrics
+   * service or is owned by the page.
+   */
+  isUsingMetricsServiceObserver(): Promise<boolean>;
 }
 
 export class MetricsInternalsBrowserProxyImpl implements
     MetricsInternalsBrowserProxy {
-  ready(): Promise<void> {
-    return sendWithPromise('ready');
-  }
-
   getUmaLogData(includeLogProtoData: boolean): Promise<string> {
     return sendWithPromise('fetchUmaLogsData', includeLogProtoData);
   }
@@ -93,6 +90,10 @@ export class MetricsInternalsBrowserProxyImpl implements
 
   fetchUmaSummary(): Promise<KeyValue[]> {
     return sendWithPromise('fetchUmaSummary');
+  }
+
+  isUsingMetricsServiceObserver(): Promise<boolean> {
+    return sendWithPromise('isUsingMetricsServiceObserver');
   }
 
   static getInstance(): MetricsInternalsBrowserProxy {

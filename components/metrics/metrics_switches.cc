@@ -9,6 +9,14 @@
 namespace metrics {
 namespace switches {
 
+// Enables the observing of all UMA logs created during the session and
+// automatically exports them to the passed file path on shutdown (the file is
+// created if it does not already exist). This also enables viewing all UMA logs
+// in the chrome://metrics-internals debug page. The format of the exported file
+// is outlined in MetricsServiceObserver::ExportLogsAsJson().
+// Example usage: --export-uma-logs-to-file=/tmp/logs.json
+const char kExportUmaLogsToFile[] = "export-uma-logs-to-file";
+
 // Forces metrics reporting to be enabled. Should not be used for tests as it
 // will send data to servers.
 const char kForceEnableMetricsReporting[] = "force-enable-metrics-reporting";

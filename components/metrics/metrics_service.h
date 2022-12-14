@@ -58,6 +58,7 @@ namespace metrics {
 
 class MetricsRotationScheduler;
 class MetricsServiceClient;
+class MetricsServiceObserver;
 class MetricsStateManager;
 
 // See metrics_service.cc for a detailed description.
@@ -256,6 +257,10 @@ class MetricsService {
   // uploaded, etc.). See MetricsLogsEventManager::LogEvent for more details.
   void AddLogsObserver(MetricsLogsEventManager::Observer* observer);
   void RemoveLogsObserver(MetricsLogsEventManager::Observer* observer);
+
+  MetricsServiceObserver* logs_event_observer() {
+    return logs_event_observer_.get();
+  }
 
   // Observers will be notified when the enablement state changes. The callback
   // should accept one boolean argument, which will signal whether or not the
@@ -619,6 +624,13 @@ class MetricsService {
   // service interacts with. An unowned pointer of this instance is passed down
   // to various objects that are owned by this class.
   MetricsLogsEventManager logs_event_manager_;
+
+  // An observer that observes all events notified through |logs_event_manager_|
+  // since the creation of this MetricsService instance. This is only created
+  // if this is a debug build, or the |kExportUmaLogsToFile| command line flag
+  // is passed. This is primarily used by the chrome://metrics-internals debug
+  // page.
+  std::unique_ptr<MetricsServiceObserver> logs_event_observer_;
 
   // A set of observers that keeps track of the metrics reporting state.
   base::RepeatingCallbackList<void(bool)> enablement_observers_;

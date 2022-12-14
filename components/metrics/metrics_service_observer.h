@@ -11,6 +11,7 @@
 
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "components/metrics/metrics_logs_event_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -125,6 +126,11 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
   // "data" field is a base64 encoding of the log's compressed (gzipped)
   // serialized protobuf. The "size" field is the size (in bytes) of the log.
   bool ExportLogsAsJson(bool include_log_proto_data, std::string* json_output);
+
+  // Exports logs data (see ExportLogsAsJson() above) to the passed |path|. If
+  // the file pointed by |path| does not exist, it will be created. If it
+  // already exists, its contents will be overwritten.
+  void ExportLogsToFile(const base::FilePath& path);
 
   // Registers a callback. This callback will be run every time this observer is
   // notified through OnLogCreated() or OnLogEvent(). When the returned
