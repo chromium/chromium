@@ -23,36 +23,12 @@
         margin-inline-end: 20px;
       }
 
-      iron-selector {
-        background-color: transparent;
-        color: var(--sidebar-unselected-color);
-        display: flex;
-        flex: 1;
-        flex-direction: column;
+      cr-menu-selector {
         padding-top: 8px;
         user-select: none;
       }
 
-      iron-selector > a {
-        /* Ensure the focus outline appears correctly (crbug.com/655503). */
-        align-items: center;
-        box-sizing: border-box;
-        color: inherit;
-        cursor: pointer;
-        display: flex;
-        font-weight: 500;
-        margin: 0 4px;
-        min-height: 40px;
-        padding-inline-start: 24px;
-        position: relative;
-        text-decoration: none;
-      }
-
-      iron-selector > a.iron-selected {
-        color: var(--cr-link-color);
-      }
-
-      iron-selector > a[disabled] {
+      cr-menu-selector > a[disabled] {
         opacity: 0.65;
         pointer-events: none;
       }
