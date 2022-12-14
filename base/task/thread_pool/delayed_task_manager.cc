@@ -211,16 +211,8 @@ std::pair<TimeTicks, subtle::DelayPolicy> DelayedTaskManager::
 
   const DelayedTask& ripest_delayed_task = delayed_task_queue_.top();
   subtle::DelayPolicy delay_policy = ripest_delayed_task.task.delay_policy;
-
-  TimeTicks delayed_run_time = ripest_delayed_task.task.delayed_run_time;
-  if (align_wake_ups_) {
-    TimeTicks aligned_run_time =
-        ripest_delayed_task.task.earliest_delayed_run_time().SnappedToNextTick(
-            TimeTicks(), GetTaskLeewayForCurrentThread());
-    delayed_run_time = std::min(
-        aligned_run_time, ripest_delayed_task.task.latest_delayed_run_time());
-  }
-  return std::make_pair(delayed_run_time, delay_policy);
+  return std::make_pair(ripest_delayed_task.task.delayed_run_time,
+                        delay_policy);
 }
 
 void DelayedTaskManager::ScheduleProcessRipeTasksOnServiceThread() {
