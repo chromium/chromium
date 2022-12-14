@@ -9,7 +9,7 @@ desc: |-
 
   This feature is available starting in <ph name="WIN_NAME">Microsoft® Windows®</ph> 10.
 
-  Note: This policy doesn't apply to Incognito or Guest modes unless <ph name="POLICY_AMBIENTAUTHENTICATIONINPRIVATEMODESENABLED">AmbientAuthenticationInPrivateModesEnabled</ph> is configured.
+  Note: This policy doesn't apply to Incognito or Guest modes.
 example_value: 1
 features:
   dynamic_refresh: true
