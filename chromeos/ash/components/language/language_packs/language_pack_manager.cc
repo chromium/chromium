@@ -341,6 +341,10 @@ void LanguagePackManager::InstallBasePack(
     return;
   }
 
+  base::UmaHistogramEnumeration(
+      "ChromeOS.LanguagePacks.InstallBasePack.FeatureId",
+      GetFeatureIdValueForUma(feature_id));
+
   InstallDlc(*dlc_id,
              base::BindOnce(&OnInstallDlcComplete, std::move(callback)));
 }
