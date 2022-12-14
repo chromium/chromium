@@ -69,11 +69,9 @@ class SidePanelExtensionsTest : public testing::Test {
     manifest_base.Set("version", "1.0");
     manifest_base.Set("manifest_version", 3);
     manifest_base.Merge(manifest.Clone());
-    auto value = base::Value(std::move(manifest_base));
-    auto& manifest_dict = std::move(base::Value::AsDictionaryValue(value));
     std::string error;
     scoped_refptr<Extension> extension = Extension::Create(
-        temp_dir_.GetPath(), mojom::ManifestLocation::kUnpacked, manifest_dict,
+        temp_dir_.GetPath(), mojom::ManifestLocation::kUnpacked, manifest_base,
         Extension::NO_FLAGS, "", &error);
     if (!extension.get())
       return nullptr;

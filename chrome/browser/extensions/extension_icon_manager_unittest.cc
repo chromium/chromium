@@ -121,14 +121,15 @@ TEST_F(ExtensionIconManagerTest, LoadRemoveLoad) {
       "extensions/image_loading_tracker/app.json");
 
   JSONFileValueDeserializer deserializer(manifest_path);
-  std::unique_ptr<base::DictionaryValue> manifest =
-      base::DictionaryValue::From(deserializer.Deserialize(nullptr, nullptr));
-  ASSERT_TRUE(manifest.get() != nullptr);
+  std::unique_ptr<base::Value> manifest =
+      deserializer.Deserialize(nullptr, nullptr);
+  ASSERT_TRUE(manifest.get());
+  ASSERT_TRUE(manifest->is_dict());
 
   std::string error;
   scoped_refptr<Extension> extension(Extension::Create(
       manifest_path.DirName(), mojom::ManifestLocation::kInvalidLocation,
-      *manifest, Extension::NO_FLAGS, &error));
+      manifest->GetDict(), Extension::NO_FLAGS, &error));
   ASSERT_TRUE(extension.get());
   ExtensionIconManager icon_manager;
   icon_manager.set_observer(this);
@@ -164,14 +165,15 @@ TEST_F(ExtensionIconManagerTest, LoadComponentExtensionResource) {
       "extensions/file_manager/app.json");
 
   JSONFileValueDeserializer deserializer(manifest_path);
-  std::unique_ptr<base::DictionaryValue> manifest =
-      base::DictionaryValue::From(deserializer.Deserialize(nullptr, nullptr));
-  ASSERT_TRUE(manifest.get() != nullptr);
+  std::unique_ptr<base::Value> manifest =
+      deserializer.Deserialize(nullptr, nullptr);
+  ASSERT_TRUE(manifest.get());
+  ASSERT_TRUE(manifest->is_dict());
 
   std::string error;
   scoped_refptr<Extension> extension(Extension::Create(
       manifest_path.DirName(), mojom::ManifestLocation::kComponent,
-      *manifest.get(), Extension::NO_FLAGS, &error));
+      manifest->GetDict(), Extension::NO_FLAGS, &error));
   ASSERT_TRUE(extension.get());
 
   ExtensionIconManager icon_manager;
@@ -208,14 +210,15 @@ TEST_F(ExtensionIconManagerTest, ScaleFactors) {
       test_dir.AppendASCII("extensions/context_menus/icons/manifest.json");
 
   JSONFileValueDeserializer deserializer(manifest_path);
-  std::unique_ptr<base::DictionaryValue> manifest =
-      base::DictionaryValue::From(deserializer.Deserialize(nullptr, nullptr));
-  ASSERT_TRUE(manifest);
+  std::unique_ptr<base::Value> manifest =
+      deserializer.Deserialize(nullptr, nullptr);
+  ASSERT_TRUE(manifest.get());
+  ASSERT_TRUE(manifest->is_dict());
 
   std::string error;
   scoped_refptr<Extension> extension(Extension::Create(
       manifest_path.DirName(), mojom::ManifestLocation::kInvalidLocation,
-      *manifest, Extension::NO_FLAGS, &error));
+      manifest->GetDict(), Extension::NO_FLAGS, &error));
   ASSERT_TRUE(extension);
 
   constexpr int kMaxIconSizeInManifest = 32;

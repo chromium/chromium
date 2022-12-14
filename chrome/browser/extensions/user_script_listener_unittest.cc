@@ -74,7 +74,7 @@ scoped_refptr<Extension> LoadExtension(const std::string& filename,
   if (!value)
     return nullptr;
   return Extension::Create(path.DirName(), mojom::ManifestLocation::kUnpacked,
-                           *value, Extension::NO_FLAGS, error);
+                           value->GetDict(), Extension::NO_FLAGS, error);
 }
 
 }  // namespace

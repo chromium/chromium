@@ -30,9 +30,9 @@ class StorageSchemaManifestHandlerTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
-    manifest_.SetString("name", "test");
-    manifest_.SetString("version", "1.2.3.4");
-    manifest_.SetInteger("manifest_version", 2);
+    manifest_.Set("name", "test");
+    manifest_.Set("version", "1.2.3.4");
+    manifest_.Set("manifest_version", 2);
   }
 
   scoped_refptr<Extension> CreateExtension(const std::string& schema) {
@@ -67,7 +67,7 @@ class StorageSchemaManifestHandlerTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   ScopedCurrentChannel scoped_channel_;
-  base::DictionaryValue manifest_;
+  base::Value::Dict manifest_;
 };
 
 TEST_F(StorageSchemaManifestHandlerTest, Parse) {
@@ -75,12 +75,12 @@ TEST_F(StorageSchemaManifestHandlerTest, Parse) {
   ASSERT_TRUE(extension.get());
 
   // Not a string.
-  manifest_.SetInteger("storage.managed_schema", 123);
+  manifest_.SetByDottedPath("storage.managed_schema", 123);
   extension = CreateExtension("");
   EXPECT_FALSE(extension.get());
 
   // All good now.
-  manifest_.SetString("storage.managed_schema", "schema.json");
+  manifest_.SetByDottedPath("storage.managed_schema", "schema.json");
   extension = CreateExtension("");
   ASSERT_TRUE(extension.get());
 }
@@ -88,22 +88,23 @@ TEST_F(StorageSchemaManifestHandlerTest, Parse) {
 TEST_F(StorageSchemaManifestHandlerTest, Validate) {
   base::ListValue permissions;
   permissions.Append("storage");
-  manifest_.SetKey("permissions", permissions.Clone());
+  manifest_.Set("permissions", permissions.Clone());
 
   // Absolute path.
-  manifest_.SetString("storage.managed_schema", "/etc/passwd");
+  manifest_.SetByDottedPath("storage.managed_schema", "/etc/passwd");
   EXPECT_FALSE(Validates(""));
 
   // Path with ..
-  manifest_.SetString("storage.managed_schema", "../../../../../etc/passwd");
+  manifest_.SetByDottedPath("storage.managed_schema",
+                            "../../../../../etc/passwd");
   EXPECT_FALSE(Validates(""));
 
   // Does not exist.
-  manifest_.SetString("storage.managed_schema", "not-there");
+  manifest_.SetByDottedPath("storage.managed_schema", "not-there");
   EXPECT_FALSE(Validates(""));
 
   // Invalid JSON.
-  manifest_.SetString("storage.managed_schema", "schema.json");
+  manifest_.SetByDottedPath("storage.managed_schema", "schema.json");
   EXPECT_FALSE(Validates("-invalid-"));
 
   // No version.

@@ -118,19 +118,19 @@ class ExtensionActionIconFactoryTest
     std::string error;
     JSONFileValueDeserializer deserializer(
         test_file.AppendASCII("manifest.json"));
-    std::unique_ptr<base::DictionaryValue> valid_value =
-        base::DictionaryValue::From(
-            deserializer.Deserialize(&error_code, &error));
+    std::unique_ptr<base::Value> valid_value =
+        deserializer.Deserialize(&error_code, &error);
     EXPECT_EQ(0, error_code) << error;
     if (error_code != 0)
       return nullptr;
 
-    EXPECT_TRUE(valid_value.get());
-    if (!valid_value)
+    EXPECT_TRUE(valid_value.get() && valid_value->is_dict());
+    if (!valid_value || !valid_value->is_dict())
       return nullptr;
 
-    scoped_refptr<Extension> extension = Extension::Create(
-        test_file, location, *valid_value, Extension::NO_FLAGS, &error);
+    scoped_refptr<Extension> extension =
+        Extension::Create(test_file, location, valid_value->GetDict(),
+                          Extension::NO_FLAGS, &error);
     EXPECT_TRUE(extension.get()) << error;
     if (extension.get())
       extension_service_->AddExtension(extension.get());

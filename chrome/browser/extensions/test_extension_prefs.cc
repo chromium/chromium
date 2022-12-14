@@ -146,7 +146,7 @@ scoped_refptr<Extension> TestExtensionPrefs::AddExtension(
 scoped_refptr<Extension> TestExtensionPrefs::AddApp(const std::string& name) {
   base::Value::Dict dictionary;
   AddDefaultManifestKeys(name, dictionary);
-  
+
   dictionary.SetByDottedPath(manifest_keys::kLaunchWebURL,
                              "http://example.com");
 

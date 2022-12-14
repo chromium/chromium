@@ -1320,10 +1320,9 @@ void WebstorePrivateGetExtensionStatusFunction::OnManifestParsed(
   }
 
   std::string error;
-  auto dummy_extension =
-      Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
-                        base::Value::AsDictionaryValue(*result),
-                        Extension::FROM_WEBSTORE, extension_id, &error);
+  auto dummy_extension = Extension::Create(
+      base::FilePath(), mojom::ManifestLocation::kInternal, result->GetDict(),
+      Extension::FROM_WEBSTORE, extension_id, &error);
 
   if (!dummy_extension) {
     Respond(Error(kWebstoreInvalidManifestError));

@@ -20,13 +20,13 @@ TEST(ChromeURLOverridesHandlerTest, TestFileMissing) {
   manifest.Set("description", "description");
   manifest.Set("chrome_url_overrides",
                DictionaryBuilder().Set("newtab", "newtab.html").Build());
-  std::unique_ptr<base::DictionaryValue> manifest_value = manifest.Build();
+  base::Value::Dict manifest_value = manifest.BuildDict();
   std::string error;
   std::vector<InstallWarning> warnings;
   base::ScopedTempDir dir;
   ASSERT_TRUE(dir.CreateUniqueTempDir());
   scoped_refptr<Extension> extension = Extension::Create(
-      dir.GetPath(), mojom::ManifestLocation::kInternal, *manifest_value,
+      dir.GetPath(), mojom::ManifestLocation::kInternal, manifest_value,
       Extension::NO_FLAGS, std::string(), &error);
   ASSERT_TRUE(extension);
   EXPECT_FALSE(

@@ -468,16 +468,16 @@ TEST(ExtensionAPITest, LazyGetSchema) {
 
 scoped_refptr<Extension> CreateExtensionWithPermissions(
     const std::set<std::string>& permissions) {
-  base::DictionaryValue manifest;
-  manifest.SetString("name", "extension");
-  manifest.SetString("version", "1.0");
-  manifest.SetInteger("manifest_version", 2);
+  base::Value::Dict manifest;
+  manifest.Set("name", "extension");
+  manifest.Set("version", "1.0");
+  manifest.Set("manifest_version", 2);
   {
     base::Value permissions_list(base::Value::Type::LIST);
     for (auto i = permissions.begin(); i != permissions.end(); ++i) {
       permissions_list.Append(*i);
     }
-    manifest.SetKey("permissions", std::move(permissions_list));
+    manifest.Set("permissions", std::move(permissions_list));
   }
 
   std::string error;
@@ -559,12 +559,13 @@ TEST(ExtensionAPITest, ExtensionWithUnprivilegedAPIs) {
 }
 
 scoped_refptr<Extension> CreateHostedApp() {
-  base::DictionaryValue values;
-  values.SetString(manifest_keys::kName, "test");
-  values.SetString(manifest_keys::kVersion, "0.1");
-  values.SetPath(manifest_keys::kWebURLs, base::Value(base::Value::Type::LIST));
-  values.SetString(manifest_keys::kLaunchWebURL,
-                   "http://www.example.com");
+  base::Value::Dict values;
+  values.Set(manifest_keys::kName, "test");
+  values.Set(manifest_keys::kVersion, "0.1");
+  values.SetByDottedPath(manifest_keys::kWebURLs,
+                         base::Value(base::Value::Type::LIST));
+  values.SetByDottedPath(manifest_keys::kLaunchWebURL,
+                         "http://www.example.com");
   std::string error;
   scoped_refptr<Extension> extension(
       Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
@@ -575,25 +576,25 @@ scoped_refptr<Extension> CreateHostedApp() {
 
 scoped_refptr<Extension> CreatePackagedAppWithPermissions(
     const std::set<std::string>& permissions) {
-  base::DictionaryValue values;
-  values.SetString(manifest_keys::kName, "test");
-  values.SetString(manifest_keys::kVersion, "0.1");
-  values.SetString(manifest_keys::kPlatformAppBackground,
-      "http://www.example.com");
+  base::Value::Dict values;
+  values.Set(manifest_keys::kName, "test");
+  values.Set(manifest_keys::kVersion, "0.1");
+  values.SetByDottedPath(manifest_keys::kPlatformAppBackground,
+                         "http://www.example.com");
 
-  base::Value app(base::Value::Type::DICTIONARY);
-  base::DictionaryValue background;
-  base::ListValue scripts;
+  base::Value::Dict app;
+  base::Value::Dict background;
+  base::Value::List scripts;
   scripts.Append("test.js");
-  background.SetKey("scripts", std::move(scripts));
-  app.SetKey("background", std::move(background));
-  values.SetKey(manifest_keys::kApp, std::move(app));
+  background.Set("scripts", std::move(scripts));
+  app.Set("background", std::move(background));
+  values.Set(manifest_keys::kApp, std::move(app));
   {
     base::Value permissions_list(base::Value::Type::LIST);
     for (auto i = permissions.begin(); i != permissions.end(); ++i) {
       permissions_list.Append(*i);
     }
-    values.SetKey("permissions", std::move(permissions_list));
+    values.Set("permissions", std::move(permissions_list));
   }
 
   std::string error;

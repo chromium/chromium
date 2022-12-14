@@ -63,17 +63,17 @@ class PermissionsBasedManagementPolicyProviderTest : public testing::Test {
       mojom::ManifestLocation location,
       const base::ListValue* required_permissions,
       const base::ListValue* optional_permissions) {
-    base::DictionaryValue manifest_dict;
-    manifest_dict.SetStringPath(manifest_keys::kName, "test");
-    manifest_dict.SetStringPath(manifest_keys::kVersion, "0.1");
-    manifest_dict.SetIntPath(manifest_keys::kManifestVersion, 2);
+    base::Value::Dict manifest_dict;
+    manifest_dict.Set(manifest_keys::kName, "test");
+    manifest_dict.Set(manifest_keys::kVersion, "0.1");
+    manifest_dict.Set(manifest_keys::kManifestVersion, 2);
     if (required_permissions) {
-      manifest_dict.SetPath(manifest_keys::kPermissions,
-                            required_permissions->Clone());
+      manifest_dict.Set(manifest_keys::kPermissions,
+                        required_permissions->Clone());
     }
     if (optional_permissions) {
-      manifest_dict.SetPath(manifest_keys::kOptionalPermissions,
-                            optional_permissions->Clone());
+      manifest_dict.Set(manifest_keys::kOptionalPermissions,
+                        optional_permissions->Clone());
     }
     std::string error;
     scoped_refptr<const Extension> extension = Extension::Create(

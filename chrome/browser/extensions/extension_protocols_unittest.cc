@@ -85,12 +85,11 @@ base::FilePath GetContentVerifierTestPath() {
 scoped_refptr<Extension> CreateTestExtension(const std::string& name,
                                              bool incognito_split_mode,
                                              const ExtensionId& extension_id) {
-  base::DictionaryValue manifest;
-  manifest.SetStringKey("name", name);
-  manifest.SetStringKey("version", "1");
-  manifest.SetIntKey("manifest_version", 2);
-  manifest.SetStringKey("incognito",
-                        incognito_split_mode ? "split" : "spanning");
+  base::Value::Dict manifest;
+  manifest.Set("name", name);
+  manifest.Set("version", "1");
+  manifest.Set("manifest_version", 2);
+  manifest.Set("incognito", incognito_split_mode ? "split" : "spanning");
 
   base::FilePath path = GetTestPath("response_headers");
 

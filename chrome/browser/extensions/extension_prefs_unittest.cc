@@ -56,8 +56,7 @@ static void AddPattern(URLPatternSet* extent, const std::string& pattern) {
 ExtensionPrefsTest::ExtensionPrefsTest()
     : prefs_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
-ExtensionPrefsTest::~ExtensionPrefsTest() {
-}
+ExtensionPrefsTest::~ExtensionPrefsTest() = default;
 
 void ExtensionPrefsTest::RegisterPreferences(
     user_prefs::PrefRegistrySyncable* registry) {}
@@ -303,10 +302,8 @@ class ExtensionPrefsGrantedPermissions : public ExtensionPrefsTest {
         prefs()->GetGrantedPermissions(extension_id_);
     EXPECT_TRUE(permissions.get());
     EXPECT_EQ(api_permissions_, permissions->apis());
-    EXPECT_EQ(ehost_permissions_,
-              permissions->explicit_hosts());
-    EXPECT_EQ(shost_permissions_,
-              permissions->scriptable_hosts());
+    EXPECT_EQ(ehost_permissions_, permissions->explicit_hosts());
+    EXPECT_EQ(shost_permissions_, permissions->scriptable_hosts());
   }
 
  private:
@@ -483,12 +480,10 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
                           Extension::NO_FLAGS, id, &errors);
     ASSERT_TRUE(extension.get()) << errors;
     ASSERT_EQ(id, extension->id());
-    prefs()->SetDelayedInstallInfo(extension.get(),
-                                   Extension::ENABLED,
+    prefs()->SetDelayedInstallInfo(extension.get(), Extension::ENABLED,
                                    kInstallFlagNone,
                                    ExtensionPrefs::DELAY_REASON_WAIT_FOR_IDLE,
-                                   syncer::StringOrdinal(),
-                                   std::string());
+                                   syncer::StringOrdinal(), std::string());
   }
 
   // Verifies that we get back expected idle install information previously
@@ -596,7 +591,6 @@ class ExtensionPrefsFinishDelayedInstallInfo : public ExtensionPrefsTest {
         dictionary, ManifestLocation::kInternal);
     id_ = extension->id();
 
-
     // Set idle info
     base::Value::Dict manifest;
     manifest.Set(manifest_keys::kName, "test");
@@ -606,20 +600,17 @@ class ExtensionPrefsFinishDelayedInstallInfo : public ExtensionPrefsTest {
     scripts.Append("test.js");
     manifest.SetByDottedPath(manifest_keys::kBackgroundScripts,
                              std::move(scripts));
-    base::FilePath path =
-        prefs_.extensions_dir().AppendASCII("test_0.2");
+    base::FilePath path = prefs_.extensions_dir().AppendASCII("test_0.2");
     std::string errors;
     scoped_refptr<Extension> new_extension =
         Extension::Create(path, ManifestLocation::kInternal, manifest,
                           Extension::NO_FLAGS, id_, &errors);
     ASSERT_TRUE(new_extension.get()) << errors;
     ASSERT_EQ(id_, new_extension->id());
-    prefs()->SetDelayedInstallInfo(new_extension.get(),
-                                   Extension::ENABLED,
+    prefs()->SetDelayedInstallInfo(new_extension.get(), Extension::ENABLED,
                                    kInstallFlagNone,
                                    ExtensionPrefs::DELAY_REASON_WAIT_FOR_IDLE,
-                                   syncer::StringOrdinal(),
-                                   "Param");
+                                   syncer::StringOrdinal(), "Param");
 
     // Finish idle installation
     ASSERT_TRUE(prefs()->FinishDelayedInstallInfo(id_));
@@ -655,10 +646,8 @@ class ExtensionPrefsOnExtensionInstalled : public ExtensionPrefsTest {
   void Initialize() override {
     extension_ = prefs_.AddExtension("on_extension_installed");
     EXPECT_FALSE(prefs()->IsExtensionDisabled(extension_->id()));
-    prefs()->OnExtensionInstalled(extension_.get(),
-                                  Extension::DISABLED,
-                                  syncer::StringOrdinal(),
-                                  "Param");
+    prefs()->OnExtensionInstalled(extension_.get(), Extension::DISABLED,
+                                  syncer::StringOrdinal(), "Param");
   }
 
   void Verify() override {
@@ -669,8 +658,8 @@ class ExtensionPrefsOnExtensionInstalled : public ExtensionPrefsTest {
  private:
   scoped_refptr<Extension> extension_;
 };
-TEST_F(ExtensionPrefsOnExtensionInstalled,
-       ExtensionPrefsOnExtensionInstalled) {}
+TEST_F(ExtensionPrefsOnExtensionInstalled, ExtensionPrefsOnExtensionInstalled) {
+}
 
 class ExtensionPrefsPopulatesInstallTimePrefs : public ExtensionPrefsTest {
  public:
@@ -835,8 +824,7 @@ class ExtensionPrefsFlags : public ExtensionPrefsTest {
 };
 TEST_F(ExtensionPrefsFlags, ExtensionPrefsFlags) {}
 
-PrefsPrepopulatedTestBase::PrefsPrepopulatedTestBase()
-    : ExtensionPrefsTest() {
+PrefsPrepopulatedTestBase::PrefsPrepopulatedTestBase() {
   base::Value::Dict simple_dict;
   std::string error;
 
@@ -865,8 +853,7 @@ PrefsPrepopulatedTestBase::PrefsPrepopulatedTestBase()
     installed_[i] = false;
 }
 
-PrefsPrepopulatedTestBase::~PrefsPrepopulatedTestBase() {
-}
+PrefsPrepopulatedTestBase::~PrefsPrepopulatedTestBase() = default;
 
 // Tests clearing the last launched preference.
 class ExtensionPrefsClearLastLaunched : public ExtensionPrefsTest {
@@ -979,8 +966,7 @@ class ExtensionPrefsComponentExtension : public ExtensionPrefsTest {
   scoped_refptr<const Extension> component_extension_;
   scoped_refptr<const Extension> no_component_extension_;
 };
-TEST_F(ExtensionPrefsComponentExtension, ExtensionPrefsComponentExtension) {
-}
+TEST_F(ExtensionPrefsComponentExtension, ExtensionPrefsComponentExtension) {}
 
 // Tests reading and writing runtime granted permissions.
 class ExtensionPrefsRuntimeGrantedPermissions : public ExtensionPrefsTest {
