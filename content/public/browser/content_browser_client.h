@@ -882,7 +882,10 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Allows the embedder to control if Shared Storage API operations can happen
   // in a given context.
-  virtual bool IsSharedStorageAllowed(content::RenderFrameHost* rfh,
+  //
+  // Note that `rfh` can be nullptr.
+  virtual bool IsSharedStorageAllowed(content::BrowserContext* browser_context,
+                                      content::RenderFrameHost* rfh,
                                       const url::Origin& top_frame_origin,
                                       const url::Origin& accessing_origin);
 

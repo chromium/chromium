@@ -321,7 +321,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin* impression_origin,
       const url::Origin* conversion_origin,
       const url::Origin* reporting_origin) override;
-  bool IsSharedStorageAllowed(content::RenderFrameHost* rfh,
+  bool IsSharedStorageAllowed(content::BrowserContext* browser_context,
+                              content::RenderFrameHost* rfh,
                               const url::Origin& top_frame_origin,
                               const url::Origin& accessing_origin) override;
   bool IsPrivateAggregationAllowed(

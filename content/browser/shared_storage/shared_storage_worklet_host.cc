@@ -864,9 +864,10 @@ SharedStorageWorkletHost::MaybeBindPrivateAggregationHost() {
 }
 
 bool SharedStorageWorkletHost::IsSharedStorageAllowed() {
+  RenderFrameHost* rfh =
+      document_service_ ? &(document_service_->render_frame_host()) : nullptr;
   return GetContentClient()->browser()->IsSharedStorageAllowed(
-      &(document_service_->render_frame_host()), main_frame_origin_,
-      shared_storage_origin_);
+      browser_context_, rfh, main_frame_origin_, shared_storage_origin_);
 }
 
 }  // namespace content

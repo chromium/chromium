@@ -344,8 +344,8 @@ bool SharedStorageDocumentServiceImpl::IsSharedStorageAllowed() {
     return true;
 
   return GetContentClient()->browser()->IsSharedStorageAllowed(
-      &render_frame_host(), main_frame_origin_,
-      render_frame_host().GetLastCommittedOrigin());
+      render_frame_host().GetBrowserContext(), &render_frame_host(),
+      main_frame_origin_, render_frame_host().GetLastCommittedOrigin());
 }
 
 std::string SharedStorageDocumentServiceImpl::SerializeLastCommittedOrigin()
