@@ -310,23 +310,6 @@ void SkiaOutputDeviceGL::DoFinishSwapBuffers(const gfx::Size& size,
   FinishSwapBuffers(std::move(result), size, std::move(frame));
 }
 
-bool SkiaOutputDeviceGL::SetDrawRectangle(const gfx::Rect& draw_rectangle) {
-  return gl_surface_->SetDrawRectangle(draw_rectangle);
-}
-
-void SkiaOutputDeviceGL::SetGpuVSyncEnabled(bool enabled) {
-  gl_surface_->SetGpuVSyncEnabled(enabled);
-}
-
-void SkiaOutputDeviceGL::SetEnableDCLayers(bool enable) {
-  gl_surface_->SetEnableDCLayers(enable);
-}
-
-void SkiaOutputDeviceGL::ScheduleOverlays(
-    SkiaOutputSurface::OverlayList overlays) {
-  NOTREACHED();
-}
-
 void SkiaOutputDeviceGL::EnsureBackbuffer() {
   gl_surface_->SetBackbufferAllocation(true);
 }

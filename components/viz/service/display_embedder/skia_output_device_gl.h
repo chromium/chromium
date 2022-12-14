@@ -54,10 +54,6 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
                      OutputSurfaceFrame frame) override;
   void CommitOverlayPlanes(BufferPresentedCallback feedback,
                            OutputSurfaceFrame frame) override;
-  bool SetDrawRectangle(const gfx::Rect& draw_rectangle) override;
-  void SetGpuVSyncEnabled(bool enabled) override;
-  void SetEnableDCLayers(bool enable) override;
-  void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays) override;
   void EnsureBackbuffer() override;
   void DiscardBackbuffer() override;
   SkSurface* BeginPaint(
@@ -67,8 +63,7 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
  private:
   class OverlayData;
 
-  // Use instead of calling FinishSwapBuffers() directly. On Windows this cleans
-  // up old entries in |overlays_|.
+  // Use instead of calling FinishSwapBuffers() directly.
   void DoFinishSwapBuffers(const gfx::Size& size,
                            OutputSurfaceFrame frame,
                            gfx::SwapCompletionResult result);
@@ -77,9 +72,6 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
   void DoFinishSwapBuffersAsync(const gfx::Size& size,
                                 OutputSurfaceFrame frame,
                                 gfx::SwapCompletionResult result);
-
-  gpu::OverlayImageRepresentation::ScopedReadAccess* BeginOverlayAccess(
-      const gpu::Mailbox& mailbox);
 
   void CreateSkSurface();
 
