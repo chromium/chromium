@@ -103,6 +103,9 @@ class ASH_EXPORT VcHostedEffect {
   // Inserts `state` into the vector of allowable states for this effect.
   void AddState(std::unique_ptr<VcEffectState> state);
 
+  // Retrieves the number of states.
+  int GetNumStates() const;
+
   // Retrieves a raw pointer to the `VcEffectState` at `index`.
   const VcEffectState* GetState(int index) const;
 

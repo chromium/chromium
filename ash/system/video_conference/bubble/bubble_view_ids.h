@@ -18,15 +18,12 @@ enum BubbleViewID {
   // The "return to app" UI, which is a child of `kMainBubbleView`.
   kReturnToApp,
 
-  // Container view for controls for VC effects, a child of the
+  // Container view for all "set-value" VC effects, a child of
   // `kMainBubbleView`.
-  kEffectsView,
+  kSetValueEffectsView,
 
-  // Container view for all "set-value" VC effects, a child of `kEffectsView`.
-  kSetValueEffectsContainer,
-
-  // Container view for all "toggle" VC effects, a child of `kEffectsView`.
-  kToggleEffectsContainer,
+  // Container view for all "toggle" VC effects, a child of `kMainBubbleView`.
+  kToggleEffectsView,
 
   // Button for toggling an individual "toggle" VC effect, a child of
   // `kToggleEffectsContainer`.

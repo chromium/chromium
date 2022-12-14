@@ -29,6 +29,10 @@ class Widget;
 
 namespace ash {
 
+namespace video_conference {
+class BubbleViewTest;
+}  // namespace video_conference
+
 class Shelf;
 class TrayBubbleView;
 class TrayBubbleWrapper;
@@ -96,6 +100,7 @@ class ASH_EXPORT VideoConferenceTray
   SkScalar GetRotationValueForToggleBubbleButton();
 
  private:
+  friend class video_conference::BubbleViewTest;
   friend class VideoConferenceTrayTest;
 
   // Callback function for `toggle_bubble_button_`.
