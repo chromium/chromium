@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller.h"
+#include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/diacritics_insensitive_string_comparator.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
@@ -192,6 +193,9 @@ class AutocorrectManager {
   void LogRejectionInteractions(AutocorrectActions action);
   void MeasureAndLogAssistiveAutocorrectQualityBreakdown(
       AutocorrectActions action);
+  void LogAssistiveAutocorrectInternalState(
+      AutocorrectInternalStates internal_state);
+  bool AutoCorrectPrefIsPkEnabledByDefault();
 
   void OnTextFieldContextualInfoChanged(const TextFieldContextualInfo& info);
 

@@ -162,25 +162,45 @@ void LogAssistiveAutocorrectDelay(base::TimeDelta delay) {
   }
 }
 
-void LogAssistiveAutocorrectActionLatency(AutocorrectActions action,
-                                          base::TimeDelta time_delta,
-                                          bool virtual_keyboard_visible) {
+void LogAssistiveAutocorrectActionLatency(
+    const AutocorrectActions action,
+    const base::TimeDelta time_delta,
+    const bool virtual_keyboard_visible,
+    const bool autocorrect_is_pk_enabled_by_default) {
   switch (action) {
     case AutocorrectActions::kUnderlined:
     case AutocorrectActions::kWindowShown:
       // Skip non-terminal actions.
       return;
     case AutocorrectActions::kUserAcceptedAutocorrect:
+      if (autocorrect_is_pk_enabled_by_default) {
+        base::UmaHistogramMediumTimes(
+            "InputMethod.Assistive.AutocorrectV2.Latency.Accept."
+            "EnabledByDefault",
+            time_delta);
+      }
       base::UmaHistogramMediumTimes(
           "InputMethod.Assistive.AutocorrectV2.Latency.Accept", time_delta);
       break;
     case AutocorrectActions::kReverted:
     case AutocorrectActions::kUserActionClearedUnderline:
     case AutocorrectActions::kInvalidRange:
+      if (autocorrect_is_pk_enabled_by_default) {
+        base::UmaHistogramMediumTimes(
+            "InputMethod.Assistive.AutocorrectV2.Latency.Reject."
+            "EnabledByDefault",
+            time_delta);
+      }
       base::UmaHistogramMediumTimes(
           "InputMethod.Assistive.AutocorrectV2.Latency.Reject", time_delta);
       break;
     case AutocorrectActions::kUserExitedTextFieldWithUnderline:
+      if (autocorrect_is_pk_enabled_by_default) {
+        base::UmaHistogramMediumTimes(
+            "InputMethod.Assistive.AutocorrectV2.Latency.ExitField."
+            "EnabledByDefault",
+            time_delta);
+      }
       base::UmaHistogramMediumTimes(
           "InputMethod.Assistive.AutocorrectV2.Latency.ExitField", time_delta);
       break;
@@ -196,17 +216,6 @@ void LogAssistiveAutocorrectActionLatency(AutocorrectActions action,
   } else {
     base::UmaHistogramMediumTimes(
         "InputMethod.Assistive.AutocorrectV2.Latency.PkPending", time_delta);
-  }
-}
-
-void LogAssistiveAutocorrectInternalState(
-    AutocorrectInternalStates internal_state) {
-  if (IsVkAutocorrect()) {
-    base::UmaHistogramEnumeration(
-        "InputMethod.Assistive.AutocorrectV2.Internal.VkState", internal_state);
-  } else {
-    base::UmaHistogramEnumeration(
-        "InputMethod.Assistive.AutocorrectV2.Internal.PkState", internal_state);
   }
 }
 
@@ -479,6 +488,15 @@ void AutocorrectManager::ProcessSetAutocorrectRangeDone(
   RecordAssistiveCoverage(AssistiveType::kAutocorrectUnderlined);
 }
 
+bool AutocorrectManager::AutoCorrectPrefIsPkEnabledByDefault() {
+  if (!active_engine_id_.has_value() || IsVkAutocorrect()) {
+    return false;
+  }
+  return GetPhysicalKeyboardAutocorrectPref(*(profile_->GetPrefs()),
+                                            *active_engine_id_) ==
+         AutocorrectPreference::kEnabledByDefault;
+}
+
 void AutocorrectManager::LogAssistiveAutocorrectAction(
     AutocorrectActions action) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Actions",
@@ -488,7 +506,8 @@ void AutocorrectManager::LogAssistiveAutocorrectAction(
     base::TimeDelta latency =
         base::TimeTicks::Now() - pending_autocorrect_->start_time;
     LogAssistiveAutocorrectActionLatency(
-        action, latency, pending_autocorrect_->virtual_keyboard_visible);
+        action, latency, pending_autocorrect_->virtual_keyboard_visible,
+        AutoCorrectPrefIsPkEnabledByDefault());
 
     LogAutocorrectAppCompatibilityUkm(
         action, latency, pending_autocorrect_->virtual_keyboard_visible);
@@ -502,6 +521,11 @@ void AutocorrectManager::LogAssistiveAutocorrectAction(
     base::UmaHistogramEnumeration(
         "InputMethod.Assistive.AutocorrectV2.Actions.VK", action);
   } else {
+    if (AutoCorrectPrefIsPkEnabledByDefault()) {
+      base::UmaHistogramEnumeration(
+          "InputMethod.Assistive.AutocorrectV2.Actions.PK.EnabledByDefault",
+          action);
+    }
     base::UmaHistogramEnumeration(
         "InputMethod.Assistive.AutocorrectV2.Actions.PK", action);
   }
@@ -662,6 +686,23 @@ void AutocorrectManager::MeasureAndLogAssistiveAutocorrectQualityBreakdown(
         AutocorrectQualityBreakdown::kSuggestedTextIsAscii, suggestion_accepted,
         virtual_keyboard_visible);
   }
+}
+
+void AutocorrectManager::LogAssistiveAutocorrectInternalState(
+    AutocorrectInternalStates internal_state) {
+  if (IsVkAutocorrect()) {
+    base::UmaHistogramEnumeration(
+        "InputMethod.Assistive.AutocorrectV2.Internal.VkState", internal_state);
+    return;
+  }
+  if (AutoCorrectPrefIsPkEnabledByDefault()) {
+    base::UmaHistogramEnumeration(
+        "InputMethod.Assistive.AutocorrectV2.Internal.PkState."
+        "EnabledByDefault",
+        internal_state);
+  }
+  base::UmaHistogramEnumeration(
+      "InputMethod.Assistive.AutocorrectV2.Internal.PkState", internal_state);
 }
 
 void AutocorrectManager::OnActivate(const std::string& engine_id) {
