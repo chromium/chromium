@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -148,7 +149,8 @@ class MetadataWriter {
   // Adds a MultiClassClassifier.
   void AddOutputConfigForMultiClassClassifier(
       const std::vector<std::string>& class_labels,
-      int top_k_outputs);
+      int top_k_outputs,
+      absl::optional<float> threshold);
 
   // Adds a BinnedClassifier.
   void AddOutputConfigForBinnedClassifier(

@@ -37,6 +37,10 @@ message Predictor {
     // model must be equal to the length of this list. Each label maps to the
     // corresponding output index.
     repeated string class_labels = 2;
+
+    // Threshold to get `class_labels` with score above it. Only labels with
+    // score above or equal to threshold are returned. 
+    optional float threshold = 3;
   }
 
   // A post-processor that converts a continuous model score into discrete

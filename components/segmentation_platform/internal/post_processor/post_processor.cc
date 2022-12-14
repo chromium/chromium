@@ -61,10 +61,14 @@ std::vector<std::string> PostProcessor::GetMultiClassClassifierResults(
                const std::pair<std::string, float>& b) {
               return a.second > b.second;
             });
-
+  float threshold = multi_class_classifier.threshold();
   int top_k_outputs = multi_class_classifier.top_k_outputs();
+
   std::vector<std::string> top_k_output_labels;
   for (int index = 0; index < top_k_outputs; index++) {
+    if (labeled_results[index].second < threshold) {
+      break;
+    }
     top_k_output_labels.emplace_back(labeled_results[index].first);
   }
   return top_k_output_labels;

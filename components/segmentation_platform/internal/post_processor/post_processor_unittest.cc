@@ -42,13 +42,14 @@ proto::OutputConfig GetTestOutputConfigForBinaryClassifier() {
 }
 
 proto::OutputConfig GetTestOutputConfigForMultiClassClassifier(
-    int top_k_outputs) {
+    int top_k_outputs,
+    absl::optional<float> threshold) {
   proto::SegmentationModelMetadata model_metadata;
   MetadataWriter writer(&model_metadata);
 
   writer.AddOutputConfigForMultiClassClassifier(
       /*class_labels=*/{kShareUser, kNewTabUser, kVoiceUser, kShoppingUser},
-      top_k_outputs);
+      top_k_outputs, threshold);
   return model_metadata.output_config();
 }
 
@@ -95,7 +96,9 @@ TEST(PostProcessorTest, MultiClassClassifierWithTopKLessThanElements) {
   std::vector<std::string> top_k_labels = post_processor.GetClassifierResults(
       metadata_utils::CreatePredictionResult(
           /*model_scores=*/{0.5, 0.2, 0.4, 0.7},
-          GetTestOutputConfigForMultiClassClassifier(/*top_k-outputs=*/2),
+          GetTestOutputConfigForMultiClassClassifier(
+              /*top_k-outputs=*/2,
+              /*threshold=*/absl::nullopt),
           /*timestamp=*/base::Time::Now()));
   EXPECT_THAT(top_k_labels, testing::ElementsAre(kShoppingUser, kShareUser));
 }
@@ -105,10 +108,48 @@ TEST(PostProcessorTest, MultiClassClassifierWithTopKEqualToElements) {
   std::vector<std::string> top_k_labels = post_processor.GetClassifierResults(
       metadata_utils::CreatePredictionResult(
           /*model_scores=*/{0.5, 0.2, 0.4, 0.7},
-          GetTestOutputConfigForMultiClassClassifier(/*top_k-outputs=*/4),
+          GetTestOutputConfigForMultiClassClassifier(
+              /*top_k-outputs=*/4,
+              /*threshold=*/absl::nullopt),
           /*timestamp=*/base::Time::Now()));
   EXPECT_THAT(top_k_labels, testing::ElementsAre(kShoppingUser, kShareUser,
                                                  kVoiceUser, kNewTabUser));
+}
+
+TEST(PostProcessorTest, MultiClassClassifierWithThresholdBetweenModelResult) {
+  PostProcessor post_processor;
+  std::vector<std::string> top_k_labels = post_processor.GetClassifierResults(
+      metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{0.5, 0.2, 0.4, 0.7},
+          GetTestOutputConfigForMultiClassClassifier(/*top_k-outputs=*/4,
+                                                     /*threshold=*/0.4),
+          /*timestamp=*/base::Time::Now()));
+  EXPECT_THAT(top_k_labels,
+              testing::ElementsAre(kShoppingUser, kShareUser, kVoiceUser));
+}
+
+TEST(PostProcessorTest,
+     MultiClassClassifierWithThresholdGreaterThanModelResult) {
+  PostProcessor post_processor;
+  std::vector<std::string> top_k_labels = post_processor.GetClassifierResults(
+      metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{0.5, 0.2, 0.4, 0.7},
+          GetTestOutputConfigForMultiClassClassifier(/*top_k-outputs=*/4,
+                                                     /*threshold=*/0.8),
+          /*timestamp=*/base::Time::Now()));
+  EXPECT_TRUE(top_k_labels.empty());
+}
+
+TEST(PostProcessorTest,
+     MultiClassClassifierWithThresholdLesserThanModelResult) {
+  PostProcessor post_processor;
+  std::vector<std::string> top_k_labels = post_processor.GetClassifierResults(
+      metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{0.5, 0.2, 0.4, 0.7},
+          GetTestOutputConfigForMultiClassClassifier(/*top_k-outputs=*/2,
+                                                     /*threshold=*/0.1),
+          /*timestamp=*/base::Time::Now()));
+  EXPECT_THAT(top_k_labels, testing::ElementsAre(kShoppingUser, kShareUser));
 }
 
 TEST(PostProcessorTest, BinnedClassifierScoreGreaterThanHighUserThreshold) {
