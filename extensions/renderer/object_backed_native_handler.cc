@@ -71,6 +71,17 @@ void ObjectBackedNativeHandler::Router(
 
   v8::Local<v8::Value> handler_function_value;
   v8::Local<v8::Value> feature_name_value;
+
+  // If the execution is terminating, it's unsafe to access any privates on the
+  // object. Bail.
+  if (isolate->IsExecutionTerminating())
+    return;
+
+  // Check with cbruni@ if we can turn on the following CHECK:
+  // // We should never enter a v8::Function callback if execution is
+  // // terminating.
+  // CHECK(!isolate->IsExecutionTerminating());
+
   // See comment in header file for why we do this.
   if (!GetPrivate(context, data, kHandlerFunction, &handler_function_value) ||
       handler_function_value->IsUndefined() ||
@@ -141,9 +152,13 @@ void ObjectBackedNativeHandler::RouteHandlerFunction(
   v8::Context::Scope context_scope(context_->v8_context());
 
   v8::Local<v8::Object> data = v8::Object::New(isolate);
+  // Create and store a new HandlerFunction, and add a weak reference to it
+  // in a v8 object so that we can retrieve it from the constructed v8
+  // function.
+  handler_functions_.push_back(
+      std::make_unique<HandlerFunction>(std::move(handler_function)));
   SetPrivate(data, kHandlerFunction,
-             v8::External::New(
-                 isolate, new HandlerFunction(std::move(handler_function))));
+             v8::External::New(isolate, handler_functions_.back().get()));
   DCHECK(feature_name.empty() ||
          ExtensionAPI::GetSharedInstance()->GetFeatureDependency(feature_name))
       << feature_name;
@@ -166,16 +181,19 @@ void ObjectBackedNativeHandler::Invalidate() {
   v8::HandleScope handle_scope(isolate);
   v8::Context::Scope context_scope(context_->v8_context());
 
-  for (auto& data : router_data_) {
-    v8::Local<v8::Object> local_data = data.Get(isolate);
-    v8::Local<v8::Value> handler_function_value;
-    CHECK(GetPrivate(local_data, kHandlerFunction, &handler_function_value));
-    delete static_cast<HandlerFunction*>(
-        handler_function_value.As<v8::External>()->Value());
-    DeletePrivate(local_data, kHandlerFunction);
+  // Note: It isn't safe to access v8::Private if IsExecutionTerminating returns
+  // true. It crashes if we do so: http://crbug.com/1276144.
+  if (!isolate->IsExecutionTerminating()) {
+    for (auto& data : router_data_) {
+      v8::Local<v8::Object> local_data = data.Get(isolate);
+      v8::Local<v8::Value> handler_function_value;
+      CHECK(GetPrivate(local_data, kHandlerFunction, &handler_function_value));
+      DeletePrivate(local_data, kHandlerFunction);
+    }
   }
 
   router_data_.clear();
+  handler_functions_.clear();
   object_template_.Reset();
 
   NativeHandler::Invalidate();
