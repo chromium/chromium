@@ -2518,7 +2518,7 @@ TEST_F(WidgetScrollViewTest, CompositedTransposedScrollEvents) {
 // is somewhat ambiguous. This is the case where the horizontal component is
 // larger than the vertical.
 TEST_F(WidgetScrollViewTest,
-       CompositedTransposedScrollEventsHorizontalComponentIsLarger) {
+       DISABLED_CompositedTransposedScrollEventsHorizontalComponentIsLarger) {
   // Set up with a vertical scroll bar.
   ScrollView* scroll_view =
       AddScrollViewWithContentSize(gfx::Size(kDefaultHeight * 5, 10));
