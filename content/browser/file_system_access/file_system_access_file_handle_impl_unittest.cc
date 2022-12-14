@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
@@ -139,6 +140,10 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
  protected:
   void SetupHelper(storage::FileSystemType type, bool is_incognito) {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
+#if BUILDFLAG(IS_WIN)
+    // Convert path to long format to avoid mixing long and 8.3 formats in test.
+    ASSERT_TRUE(dir_.Set(base::MakeLongFilePath(dir_.Take())));
+#endif  // BUILDFLAG(IS_WIN)
 
     web_contents_ = web_contents_factory_.CreateWebContents(&browser_context_);
     static_cast<TestWebContents*>(web_contents_)
