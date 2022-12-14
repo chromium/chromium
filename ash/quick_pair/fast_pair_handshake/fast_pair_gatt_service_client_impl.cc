@@ -289,11 +289,10 @@ void FastPairGattServiceClientImpl::NotifyWriteAccountKeyError(
 void FastPairGattServiceClientImpl::GattDiscoveryCompleteForService(
     device::BluetoothAdapter* adapter,
     device::BluetoothRemoteGattService* service) {
-  gatt_service_discovery_timer_.Stop();
-
   // Verify that the discovered service and device are the ones we care about.
   if (service->GetUUID() == kFastPairBluetoothUuid &&
       service->GetDevice()->GetAddress() == device_address_) {
+    gatt_service_discovery_timer_.Stop();
     QP_LOG(INFO) << __func__
                  << ": Completed discovery for Fast Pair GATT service";
     RecordGattInitializationStep(FastPairGattConnectionSteps::kConnectionReady);
