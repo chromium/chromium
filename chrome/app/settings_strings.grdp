@@ -1548,8 +1548,14 @@
     <message name="IDS_SETTINGS_LANGUAGES_AUTOMATIC_TRANSLATE" desc="Title of Translation settings that lists languages that should be automatically translated.">
       Automatically translate these languages
     </message>
+    <message name="IDS_SETTINGS_LANGUAGES_AUTOMATIC_TRANSLATE_ADD_ARIA_LABEL" desc="Text read by screen readers when focusing on the 'Add Languages' button for the automatically translate language list. When this button is activated a dialog for selecting and adding multiple languages is shown. This text is only announced by screen readers and is not visible in the UI.">
+      Add languages to automatically translate
+    </message>
     <message name="IDS_SETTINGS_LANGUAGES_NEVER_LANGUAGES" desc="Title of Translation settings that lists languages that should never be offered to translate.">
-      Don’t offer to translate these languages
+      Never offer to translate these languages
+    </message>
+    <message name="IDS_SETTINGS_LANGUAGES_NEVER_TRANSLATE_ADD_ARIA_LABEL" desc="Text read by screen readers when focusing on the 'Add Languages' button for the don't offer to translate language list. When this button is activated a dialog for selecting and adding multiple languages is shown. This text is only announced by screen readers and is not visible in the UI.">
+      Add languages to never offer translation
     </message>
     <message name="IDS_SETTINGS_LANGUAGES_SPELL_CHECK_TITLE" desc="Title for the section containing all the options for spell check settings. The options include picking between using the system's spell check or using Google's web service and a list of the enabled languages which support spell checking.">
       Spell check
