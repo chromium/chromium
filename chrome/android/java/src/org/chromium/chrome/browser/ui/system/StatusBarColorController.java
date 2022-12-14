@@ -227,6 +227,14 @@ public class StatusBarColorController
                 };
 
                 mLayoutStateProvider.addObserver(mLayoutStateObserver);
+                // It is possible that the Start surface is showing when the LayoutStateProvider
+                // becomes available. We need to check the current active layout and update the
+                // status bar color if that happens.
+                if (mLayoutStateProvider.getActiveLayoutType() == LayoutType.START_SURFACE
+                        && !mIsInOverviewMode) {
+                    mIsInOverviewMode = true;
+                    updateStatusBarColor();
+                }
             }));
         }
 
