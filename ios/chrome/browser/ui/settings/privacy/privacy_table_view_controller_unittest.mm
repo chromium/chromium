@@ -35,6 +35,7 @@
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -179,6 +180,10 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   CheckController();
 
   int expectedNumberOfSections = 4;
+  if (base::FeatureList::IsEnabled(
+          security_interstitials::features::kHttpsOnlyMode)) {
+    expectedNumberOfSections++;
+  }
   if (base::FeatureList::IsEnabled(kIOS3PIntentsInIncognito)) {
     expectedNumberOfSections++;
   }
@@ -197,6 +202,15 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   CheckTextCellTextAndDetailText(
       l10n_util::GetNSString(IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE),
       SafeBrowsingDetailText(), 1, 0);
+
+  // HTTPS-Only Mode section.
+  if (base::FeatureList::IsEnabled(
+          security_interstitials::features::kHttpsOnlyMode)) {
+    currentSection++;
+    EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
+    CheckSwitchCellStateAndTextWithId(
+        NO, IDS_IOS_SETTINGS_HTTPS_ONLY_MODE_TITLE, currentSection, 0);
+  }
 
   // WebServices section.
   currentSection++;
@@ -256,6 +270,10 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
   CheckController();
 
   int expectedNumberOfSections = 4;
+  if (base::FeatureList::IsEnabled(
+          security_interstitials::features::kHttpsOnlyMode)) {
+    expectedNumberOfSections++;
+  }
   if (base::FeatureList::IsEnabled(kIOS3PIntentsInIncognito)) {
     expectedNumberOfSections++;
   }
@@ -278,6 +296,10 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
   CheckController();
 
   int expectedNumberOfSections = 4;
+  if (base::FeatureList::IsEnabled(
+          security_interstitials::features::kHttpsOnlyMode)) {
+    expectedNumberOfSections++;
+  }
   if (base::FeatureList::IsEnabled(kIOS3PIntentsInIncognito)) {
     expectedNumberOfSections++;
   }
