@@ -13,6 +13,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gfx_export.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -24,6 +25,8 @@
 #endif
 
 namespace gfx {
+
+class Size;
 
 // NativePixmapPlane is used to carry the plane related information for GBM
 // buffer. More fields can be added if they are plane specific.
@@ -109,6 +112,29 @@ struct GFX_EXPORT NativePixmapHandle {
 GFX_EXPORT NativePixmapHandle
 CloneHandleForIPC(const NativePixmapHandle& handle);
 
+// Returns true iff the plane metadata (number of planes, plane size, offset,
+// and stride) in |handle| corresponds to a buffer that can store an image of
+// |size| and |format|. This function does not check the plane handles, so even
+// if this function returns true, it's not guaranteed that the memory objects
+// referenced by |handle| are consistent with the plane metadata. If
+// |assume_single_memory_object| is true, this function assumes that all planes
+// in |handle| reference the same memory object and that all planes are
+// contained in the range [0, last plane's offset + last plane's size) (and the
+// plane metadata is validated against this assumption).
+//
+// If this function returns true, the caller may make the following additional
+// assumptions:
+//
+// - The stride of each plane can fit in an int (and also in a size_t).
+// - If |assume_single_memory_object| is true:
+//   - The offset and size of each plane can fit in a size_t.
+//   - The result of offset + size for each plane does not overflow and can fit
+//     in a size_t.
+GFX_EXPORT bool CanFitImageForSizeAndFormat(
+    const gfx::NativePixmapHandle& handle,
+    const gfx::Size& size,
+    gfx::BufferFormat format,
+    bool assume_single_memory_object);
 }  // namespace gfx
 
 #endif  // UI_GFX_NATIVE_PIXMAP_HANDLE_H_
