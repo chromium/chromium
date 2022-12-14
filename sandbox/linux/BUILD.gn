@@ -16,6 +16,8 @@ declare_args() {
 
   compile_credentials = is_linux || is_chromeos
 
+  compile_syscall_broker = is_linux || is_chromeos
+
   # On Android, use plain GTest.
   use_base_test_suite = is_linux || is_chromeos
 }
@@ -83,10 +85,6 @@ source_set("sandbox_linux_unittests_sources") {
     "services/syscall_wrappers_unittest.cc",
     "services/thread_helpers_unittest.cc",
     "services/yama_unittest.cc",
-    "syscall_broker/broker_file_permission_unittest.cc",
-    "syscall_broker/broker_process_unittest.cc",
-    "syscall_broker/broker_simple_message_unittest.cc",
-    "syscall_broker/remote_syscall_arg_handler_unittest.cc",
     "tests/main.cc",
     "tests/scoped_temporary_file.cc",
     "tests/scoped_temporary_file.h",
@@ -100,7 +98,6 @@ source_set("sandbox_linux_unittests_sources") {
     ":sandbox_linux_test_utils",
     "//base",
     "//base/test:test_support",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//testing/gtest",
   ]
@@ -130,7 +127,6 @@ source_set("sandbox_linux_unittests_sources") {
       "bpf_dsl/verifier.cc",
       "bpf_dsl/verifier.h",
       "integration_tests/bpf_dsl_seccomp_unittest.cc",
-      "integration_tests/seccomp_broker_process_unittest.cc",
       "seccomp-bpf-helpers/baseline_policy_unittest.cc",
       "seccomp-bpf-helpers/syscall_parameters_restrictions_unittests.cc",
       "seccomp-bpf/bpf_tests_unittest.cc",
@@ -158,6 +154,19 @@ source_set("sandbox_linux_unittests_sources") {
 
     # For credentials_unittest.cc
     configs += [ "//build/config/linux:libcap" ]
+  }
+
+  if (compile_syscall_broker) {
+    sources += [
+      "syscall_broker/broker_file_permission_unittest.cc",
+      "syscall_broker/broker_process_unittest.cc",
+      "syscall_broker/broker_simple_message_unittest.cc",
+      "syscall_broker/remote_syscall_arg_handler_unittest.cc",
+    ]
+  }
+
+  if (use_seccomp_bpf && compile_syscall_broker) {
+    sources += [ "integration_tests/seccomp_broker_process_unittest.cc" ]
   }
 }
 
@@ -241,7 +250,6 @@ component("seccomp_bpf") {
   deps = [
     ":sandbox_services",
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//sandbox:sandbox_buildflags",
   ]
@@ -316,37 +324,12 @@ component("sandbox_services") {
     "services/thread_helpers.h",
     "services/yama.cc",
     "services/yama.h",
-    "syscall_broker/broker_channel.cc",
-    "syscall_broker/broker_channel.h",
-    "syscall_broker/broker_client.cc",
-    "syscall_broker/broker_client.h",
-    "syscall_broker/broker_command.cc",
-    "syscall_broker/broker_command.h",
-    "syscall_broker/broker_file_permission.cc",
-    "syscall_broker/broker_file_permission.h",
-    "syscall_broker/broker_host.cc",
-    "syscall_broker/broker_host.h",
-    "syscall_broker/broker_permission_list.cc",
-    "syscall_broker/broker_permission_list.h",
-    "syscall_broker/broker_process.cc",
-    "syscall_broker/broker_process.h",
-    "syscall_broker/broker_sandbox_config.cc",
-    "syscall_broker/broker_sandbox_config.h",
-    "syscall_broker/broker_simple_message.cc",
-    "syscall_broker/broker_simple_message.h",
-    "syscall_broker/remote_syscall_arg_handler.cc",
-    "syscall_broker/remote_syscall_arg_handler.h",
-    "syscall_broker/syscall_dispatcher.cc",
-    "syscall_broker/syscall_dispatcher.h",
   ]
 
   defines = [ "SANDBOX_IMPLEMENTATION" ]
 
   public_deps = [ "//sandbox:sandbox_export" ]
-  deps = [
-    "//base",
-    "//base/third_party/dynamic_annotations",
-  ]
+  deps = [ "//base" ]
 
   if (compile_credentials) {
     sources += [
@@ -361,6 +344,33 @@ component("sandbox_services") {
     public_deps += [ ":sandbox_services_headers" ]
   } else {
     deps += [ ":sandbox_services_headers" ]
+  }
+
+  if (compile_syscall_broker) {
+    sources += [
+      "syscall_broker/broker_channel.cc",
+      "syscall_broker/broker_channel.h",
+      "syscall_broker/broker_client.cc",
+      "syscall_broker/broker_client.h",
+      "syscall_broker/broker_command.cc",
+      "syscall_broker/broker_command.h",
+      "syscall_broker/broker_file_permission.cc",
+      "syscall_broker/broker_file_permission.h",
+      "syscall_broker/broker_host.cc",
+      "syscall_broker/broker_host.h",
+      "syscall_broker/broker_permission_list.cc",
+      "syscall_broker/broker_permission_list.h",
+      "syscall_broker/broker_process.cc",
+      "syscall_broker/broker_process.h",
+      "syscall_broker/broker_sandbox_config.cc",
+      "syscall_broker/broker_sandbox_config.h",
+      "syscall_broker/broker_simple_message.cc",
+      "syscall_broker/broker_simple_message.h",
+      "syscall_broker/remote_syscall_arg_handler.cc",
+      "syscall_broker/remote_syscall_arg_handler.h",
+      "syscall_broker/syscall_dispatcher.cc",
+      "syscall_broker/syscall_dispatcher.h",
+    ]
   }
 
   if (!is_android) {
@@ -408,7 +418,6 @@ if (compile_suid_client) {
     deps = [
       ":sandbox_services",
       "//base",
-      "//base/third_party/dynamic_annotations",
     ]
   }
 }
