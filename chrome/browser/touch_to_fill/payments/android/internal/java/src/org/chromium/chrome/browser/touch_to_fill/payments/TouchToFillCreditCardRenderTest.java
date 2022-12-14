@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCard;
 import static org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
@@ -35,7 +36,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.test.util.RenderTestRule.Component;
@@ -73,30 +73,11 @@ public class TouchToFillCreditCardRenderTest {
     @Mock
     private TouchToFillCreditCardComponent.Delegate mDelegateMock;
 
-    private static final CreditCard VISA = new CreditCard(/* guid= */ "",
-            /* origin= */ "",
-            /* isLocal= */ false, /* isCached= */ false, /* name= */ "MasterCard",
-            /* number= */ "4111111111111111",
-            /* obfuscatedNumber= */ "", /* month= */ "5", AutofillTestHelper.nextYear(),
-            /* basicCardIssuerNetwork =*/"visa",
-            /* issuerIconDrawableId= */ R.drawable.visa_card, /* billingAddressId= */ "",
-            /* serverId= */ "", /* instrumentId= */ 0, /* cardLabel= */ "", /* nickname= */ "",
-            /* cardArtUrl= */ null,
-            /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.UNSPECIFIED,
-            /* productDescription= */ "", /* cardNameForAutofillDisplay= */ "Visa",
-            /* obfuscatedLastFourDigits= */ "• • • • 1111");
-    private static final CreditCard MASTER_CARD = new CreditCard(/* guid= */ "",
-            /* origin= */ "",
-            /* isLocal= */ false, /* isCached= */ false, /* name= */ "MasterCard",
-            /* number= */ "5555555555554444",
-            /* obfuscatedNumber= */ "", /* month= */ "8", AutofillTestHelper.nextYear(),
-            /* basicCardIssuerNetwork =*/"mastercard",
-            /* issuerIconDrawableId= */ R.drawable.mc_card, /* billingAddressId= */ "",
-            /* serverId= */ "", /* instrumentId= */ 0, /* cardLabel= */ "", /* nickname= */ "",
-            /* cardArtUrl= */ null,
-            /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.UNSPECIFIED,
-            /* productDescription= */ "", /* cardNameForAutofillDisplay= */ "Mastercard",
-            /* obfuscatedLastFourDigits= */ "• • • • 4444");
+    private static final CreditCard VISA = createCreditCard("Visa", "4111111111111111", "5",
+            AutofillTestHelper.nextYear(), true, "Visa", "• • • • 1111", R.drawable.visa_card);
+    private static final CreditCard MASTER_CARD =
+            createCreditCard("MasterCard", "5555555555554444", "8", AutofillTestHelper.nextYear(),
+                    true, "Mastercard", "• • • • 4444", R.drawable.mc_card);
 
     private BottomSheetController mBottomSheetController;
     private TouchToFillCreditCardCoordinator mCoordinator;

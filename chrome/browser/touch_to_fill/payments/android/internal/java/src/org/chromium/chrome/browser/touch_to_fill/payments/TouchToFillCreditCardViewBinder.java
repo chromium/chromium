@@ -124,4 +124,22 @@ class TouchToFillCreditCardViewBinder {
             assert false : "Unhandled update to property:" + propertyKey;
         }
     }
+
+    static View createFillButtonView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.touch_to_fill_fill_button_modern, parent, false);
+    }
+
+    static void bindFillButtonView(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (propertyKey == ON_CLICK_ACTION) {
+            view.setOnClickListener(unusedView -> model.get(ON_CLICK_ACTION).run());
+            TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
+            buttonTitleText.setText(R.string.autofill_credit_card_continue_button);
+        } else if (propertyKey == CARD_ICON_ID || propertyKey == CARD_NAME
+                || propertyKey == CARD_NUMBER || propertyKey == CARD_EXPIRATION) {
+            // Skip, because none of these changes affect the button
+        } else {
+            assert false : "Unhandled update to property:" + propertyKey;
+        }
+    }
 }

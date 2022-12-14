@@ -782,6 +782,9 @@
     <message name="IDS_AUTOFILL_CREDIT_CARD_BOTTOM_SHEET_TITLE" desc="The title of the touch to fill bottom sheet for payments that appears under the GPay icon." formatter_data="android_java">
       Autofill payment info
     </message>
+    <message name="IDS_AUTOFILL_CREDIT_CARD_CONTINUE_BUTTON" desc="The label of the button, which would fill in the web form with card credentials." formatter_data="android_java">
+      Continue
+    </message>
   </if>
 
 </grit-part>

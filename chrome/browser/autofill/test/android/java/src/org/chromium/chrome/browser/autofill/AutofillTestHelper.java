@@ -10,6 +10,7 @@ import static org.chromium.content_public.browser.test.util.TestThreadUtils.runO
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.components.autofill.VirtualCardEnrollmentState;
 
 import java.util.Calendar;
 import java.util.List;
@@ -294,6 +295,24 @@ public class AutofillTestHelper {
     public static CreditCard createLocalCreditCard(
             String name, String number, String month, String year) {
         return new CreditCard("", "", true, false, name, number, "", month, year, "", 0, "", "");
+    }
+
+    public static CreditCard createCreditCard(String name, String number, String month, String year,
+            boolean isLocal, String nameForAutofillDisplay, String obfuscatedLastFourDigits,
+            int iconId) {
+        return new CreditCard(/* guid= */ "",
+                /* origin= */ "",
+                /* isLocal= */ isLocal, /* isCached= */ false, /* name= */ name,
+                /* number= */ number,
+                /* obfuscatedNumber= */ "", /* month= */ month, year,
+                /* basicCardIssuerNetwork =*/"",
+                /* issuerIconDrawableId= */ iconId, /* billingAddressId= */ "",
+                /* serverId= */ "", /* instrumentId= */ 0, /* cardLabel= */ "", /* nickname= */ "",
+                /* cardArtUrl= */ null,
+                /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.UNSPECIFIED,
+                /* productDescription= */ "",
+                /* cardNameForAutofillDisplay= */ nameForAutofillDisplay,
+                /* obfuscatedLastFourDigits= */ obfuscatedLastFourDigits);
     }
 
     private void registerDataObserver() {

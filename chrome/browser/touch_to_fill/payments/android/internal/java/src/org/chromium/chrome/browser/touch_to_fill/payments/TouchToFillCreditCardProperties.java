@@ -38,6 +38,9 @@ class TouchToFillCreditCardProperties {
 
         // A section containing the credit card data.
         int CREDIT_CARD = 1;
+
+        // A "Continue" button, which is shown when there is 1 credit card only.
+        int FILL_BUTTON = 2;
     }
 
     /**

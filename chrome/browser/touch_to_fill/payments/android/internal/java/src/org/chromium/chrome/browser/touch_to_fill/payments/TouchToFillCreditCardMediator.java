@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.FILL_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
@@ -53,6 +54,12 @@ class TouchToFillCreditCardMediator {
             sheetItems.add(new ListItem(CREDIT_CARD, model));
         }
 
+        if (cards.length == 1) {
+            // Use the credit card model as the property model for the fill button too
+            assert sheetItems.get(0).type == CREDIT_CARD;
+            sheetItems.add(new ListItem(FILL_BUTTON, sheetItems.get(0).model));
+        }
+
         sheetItems.add(0, buildHeader(hasOnlyLocalCards));
 
         mModel.set(VISIBLE, true);
@@ -77,7 +84,7 @@ class TouchToFillCreditCardMediator {
         mDelegate.showCreditCardSettings();
     }
 
-    private void onSelectedCreditCard(String uniqueId) {
+    public void onSelectedCreditCard(String uniqueId) {
         mDelegate.suggestionSelected(uniqueId);
     }
 

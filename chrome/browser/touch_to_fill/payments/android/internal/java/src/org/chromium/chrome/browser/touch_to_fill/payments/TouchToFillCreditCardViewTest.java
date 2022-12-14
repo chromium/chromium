@@ -183,6 +183,18 @@ public class TouchToFillCreditCardViewTest {
         verify(mDelegateMock).showCreditCardSettings();
     }
 
+    @Test
+    @MediumTest
+    public void testContinueButtonClick() {
+        runOnUiThreadBlocking(() -> mCoordinator.showSheet(new CreditCard[] {VISA}, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        runOnUiThreadBlocking(() -> mSheetSupport.setSheetState(SheetState.FULL, false));
+
+        onView(withId(R.id.touch_to_fill_button_title)).perform(click());
+
+        verify(mDelegateMock).suggestionSelected(VISA.getGUID());
+    }
+
     private RecyclerView getCreditCards() {
         return mTouchToFillCreditCardView.getContentView().findViewById(R.id.sheet_item_list);
     }
