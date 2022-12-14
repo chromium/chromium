@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -78,6 +79,11 @@ public class PrivacyGuideMetricsDelegateTest {
         mocker.mock(SafeBrowsingBridgeJni.TEST_HOOKS, mSafeBrowsingNativeMock);
         mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativesMock);
         when(mUserPrefsNativesMock.get(mProfile)).thenReturn(mPrefServiceMock);
+    }
+
+    @After
+    public void tearDown() {
+        mActionTester.tearDown();
     }
 
     private void mockMSBBState(boolean initialMSBBState, boolean finalMSBBState) {

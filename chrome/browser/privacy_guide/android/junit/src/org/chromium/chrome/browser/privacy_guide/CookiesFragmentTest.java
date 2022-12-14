@@ -76,6 +76,7 @@ public class CookiesFragmentTest {
         if (mScenario != null) {
             mScenario.close();
         }
+        mActionTester.tearDown();
     }
 
     public void initFragmentWithCookiesState(

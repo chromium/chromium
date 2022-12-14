@@ -62,6 +62,7 @@ public class SafeBrowsingFragmentTest {
         if (mScenario != null) {
             mScenario.close();
         }
+        mActionTester.tearDown();
     }
 
     private void initFragmentWithSBState(@SafeBrowsingState int state) {

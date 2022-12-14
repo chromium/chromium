@@ -69,6 +69,7 @@ public class SyncFragmentTest {
         if (mScenario != null) {
             mScenario.close();
         }
+        mActionTester.tearDown();
     }
 
     private void initFragmentWithSyncState(boolean syncAll, boolean historySync) {

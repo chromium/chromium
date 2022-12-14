@@ -100,6 +100,7 @@ public class PrivacyGuideFragmentTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { SyncService.resetForTests(); });
+        if (mActionTester != null) mActionTester.tearDown();
     }
 
     private void launchPrivacyGuide() {

@@ -12,6 +12,7 @@ import android.os.Bundle;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.testing.FragmentScenario;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,6 +52,11 @@ public class MSBBFragmentTest {
     public void setUp() {
         Profile.setLastUsedProfileForTesting(mProfile);
         mocker.mock(UnifiedConsentServiceBridgeJni.TEST_HOOKS, mNativeMock);
+    }
+
+    @After
+    public void tearDown() {
+        mActionTester.tearDown();
     }
 
     private void initFragmentWithMSBBState(boolean isMSBBOn) {
