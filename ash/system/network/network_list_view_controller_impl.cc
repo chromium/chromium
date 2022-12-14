@@ -423,6 +423,11 @@ void NetworkListViewControllerImpl::OnGetManagedPropertiesResult(
 
   if (setManagedIcon) {
     SetConnectionWarningIcon(connection_warning_, /*use_managed_icon=*/true);
+    if (!is_vpn_managed_.value()) {
+      // Managed proxies are considered a lower privacy risk.
+      connection_warning_label_->SetText(l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_NETWORK_MANAGED_WARNING));
+    }
   }
 }
 
@@ -822,8 +827,9 @@ void NetworkListViewControllerImpl::ShowConnectionWarning(
   // Set message label in middle of row.
   std::unique_ptr<views::Label> label =
       base::WrapUnique(TrayPopupUtils::CreateDefaultLabel());
-  label->SetText(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING));
+  label->SetText(l10n_util::GetStringUTF16(
+      show_managed_icon ? IDS_ASH_STATUS_TRAY_NETWORK_MANAGED_WARNING
+                        : IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING));
   label->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
@@ -831,6 +837,7 @@ void NetworkListViewControllerImpl::ShowConnectionWarning(
       label.get(), TrayPopupUtils::FontStyle::kDetailedViewLabel);
   label->SetID(static_cast<int>(
       NetworkListViewControllerViewChildId::kConnectionWarningLabel));
+  connection_warning_label_ = label.get();
 
   connection_warning->AddView(TriView::Container::CENTER, std::move(label));
   connection_warning->SetContainerBorder(

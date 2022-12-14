@@ -29,6 +29,7 @@
 
 namespace views {
 class ImageView;
+class Label;
 }
 
 namespace ash {
@@ -218,6 +219,8 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // is monitored by the admin, via policy, it displays the managed icon,
   // otherwise the system icon.
   views::ImageView* connection_warning_icon_ = nullptr;
+  // Owned by `connection_warning_`.
+  views::Label* connection_warning_label_ = nullptr;
 
   NetworkListWifiHeaderView* wifi_header_view_ = nullptr;
   views::Separator* wifi_separator_view_ = nullptr;

@@ -1278,6 +1278,12 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningSystemIconProxy) {
       GetManagedNetworkPropertiesWithProxy(/*is_managed*/ false));
   AddWifiDevice();
 
+  ASSERT_THAT(GetConnectionWarning(), NotNull());
+  ASSERT_THAT(GetConnectionLabelView(), NotNull());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING),
+      GetConnectionLabelView()->GetText());
+
   views::ImageView* icon = GetConnectionWarningIcon();
   ASSERT_THAT(icon, NotNull());
   EXPECT_TRUE(IsSystemIcon(icon));
@@ -1290,6 +1296,12 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningManagedIconProxy) {
   SetManagedNetworkPropertiesForTesting(GetManagedNetworkPropertiesWithProxy(
       /*is_managed=*/true));
   AddWifiDevice();
+
+  ASSERT_THAT(GetConnectionWarning(), NotNull());
+  ASSERT_THAT(GetConnectionLabelView(), NotNull());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MANAGED_WARNING),
+      GetConnectionLabelView()->GetText());
 
   views::ImageView* icon = GetConnectionWarningIcon();
   ASSERT_THAT(icon, NotNull());
@@ -1306,6 +1318,11 @@ TEST_P(NetworkListViewControllerTest,
   SetDefaultNetworkForTesting(std::move(default_network));
 
   AddWifiDevice();
+  ASSERT_THAT(GetConnectionWarning(), NotNull());
+  ASSERT_THAT(GetConnectionLabelView(), NotNull());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MANAGED_WARNING),
+      GetConnectionLabelView()->GetText());
 
   views::ImageView* icon = GetConnectionWarningIcon();
   ASSERT_THAT(icon, NotNull());

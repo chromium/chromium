@@ -2936,6 +2936,9 @@ Connect your device to power.
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING" desc="The label used in the tray popup to warn users their network may be monitored." >
         Network may be monitored
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_MANAGED_WARNING" desc="The label used in the tray popup to warn users their network is managed by an admin." >
+        Network is managed
+      </message>
       <message name="IDS_ASH_A11Y_ROLE_BUTTON" desc="The label used to identify a button. For accessibility only." >
         Button
       </message>
