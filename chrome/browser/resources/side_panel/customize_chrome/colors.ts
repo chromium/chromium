@@ -4,7 +4,6 @@
 
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import './color.js';
-import './check_mark_wrapper.js';
 
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
@@ -57,6 +56,10 @@ export class ColorsElement extends PolymerElement {
       },
       colors_: Array,
       theme_: Object,
+      isCustomColorSelected_: {
+        type: Object,
+        computed: 'computeIsCustomColorSelected_(theme_, color_)',
+      },
       customColor_: {
         type: Object,
         value: {
@@ -69,12 +72,13 @@ export class ColorsElement extends PolymerElement {
 
   static get observers() {
     return [
-      'updateCustomColor_(colors_, theme_)',
+      'updateCustomColor_(colors_, theme_, isCustomColorSelected_)',
     ];
   }
 
   private colors_: ChromeColor[];
   private theme_: Theme;
+  private isCustomColorSelected_: boolean;
   private customColor_: Color;
   private setThemeListenerId_: number|null = null;
 
@@ -107,6 +111,22 @@ export class ColorsElement extends PolymerElement {
                                         LIGHT_DEFAULT_COLOR;
   }
 
+  private computeIsCustomColorSelected_(): boolean {
+    return !!this.colors_ && !!this.theme_ && !!this.theme_.foregroundColor &&
+        !this.colors_.find(
+            (color: ChromeColor) =>
+                color.foreground.value === this.theme_.foregroundColor!.value);
+  }
+
+  private isDefaultColorSelected_(): boolean {
+    return this.theme_ && !this.theme_.foregroundColor;
+  }
+
+  private isChromeColorSelected_(color: SkColor): boolean {
+    return !!this.theme_ && !!this.colors_ && !!this.theme_.foregroundColor &&
+        this.theme_.foregroundColor.value === color.value;
+  }
+
   private onDefaultColorClick_() {
     CustomizeChromeApiProxy.getInstance().handler.setDefaultColor();
   }
@@ -127,14 +147,9 @@ export class ColorsElement extends PolymerElement {
   }
 
   private updateCustomColor_() {
-    const isCustomColorTheme = this.colors_ && this.theme_ &&
-        this.theme_.foregroundColor &&
-        !this.colors_.find(
-            (color: ChromeColor) =>
-                color.foreground.value === this.theme_.foregroundColor!.value);
     // We only change the custom color when theme updates to a new custom color
     // so that the picked color persists while clicking on other color circles.
-    if (!isCustomColorTheme) {
+    if (!this.isCustomColorSelected_) {
       return;
     }
     this.customColor_ = {

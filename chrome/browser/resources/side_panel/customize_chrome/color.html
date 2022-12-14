@@ -1,32 +1,51 @@
 <style>
   :host {
+    align-items: center;
     cursor: pointer;
+    display: flex;
+    justify-content: center;
   }
 
   :host,
   svg {
-    border-radius: 25px;
-    display: block;
     height: 50px;
     width: 50px;
+  }
+
+  :host([checked]) svg {
+    height: 46px;
+    width: 46px;
+  }
+
+  customize-chrome-check-mark {
+    --customize-chrome-check-mark-wrapper-end: -1px;
+  }
+
+  svg {
+    border-radius: 25px;
   }
 
   #background {
     fill: var(--customize-chrome-color-background-color);
   }
 
+  :host([checked]) #background {
+    r: 25px;
+  }
+
   #foreground {
     fill: var(--customize-chrome-color-foreground-color);
   }
 </style>
-<!-- TODO(crbug.com/1384229): Allow clicking. -->
-<svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"
-    xmlns:xlink="http://www.w3.org/1999/xlink">
-  <circle id="foreground" cx="25" cy="25" r="25">
-  </circle>
-  <clipPath id="bottomHalf">
-    <rect x="1" y="25" width="48" height="24"></rect>
-  </clipPath>
-  <circle id="background" cx="25" cy="25" r="24"
-      clip-path="url(#bottomHalf)"></circle>
-</svg>
+<customize-chrome-check-mark-wrapper checked="[[checked]]">
+  <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink">
+    <circle id="foreground" cx="25" cy="25" r="25">
+    </circle>
+    <clipPath id="bottomHalf">
+      <rect x="1" y="25" width="50" height="25"></rect>
+    </clipPath>
+    <circle id="background" cx="25" cy="25" r="24"
+        clip-path="url(#bottomHalf)"></circle>
+  </svg>
+</customize-chrome-check-mark-wrapper>

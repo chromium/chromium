@@ -156,4 +156,46 @@ suite('ColorsTest', () => {
     assertStyle(
         colorsElement.$.colorPickerIcon, 'background-color', 'rgb(0, 0, 255)');
   });
+
+  test('checks selected color', async () => {
+    const colors = {
+      colors: [
+        {id: 1, name: 'foo', background: {value: 1}, foreground: {value: 2}},
+        {id: 2, name: 'bar', background: {value: 3}, foreground: {value: 4}},
+      ],
+    };
+    chromeColorsResolver.resolve(colors);
+    const theme = createTheme();
+
+    // Set default color.
+    theme.foregroundColor = undefined;
+    callbackRouter.setTheme(theme);
+    await callbackRouter.$.flushForTesting();
+
+    // Check default color selected.
+    let checkedColors = colorsElement.shadowRoot!.querySelectorAll('[checked]');
+    assertEquals(1, checkedColors.length);
+    assertEquals(colorsElement.$.defaultColor, checkedColors[0]);
+
+    // Set Chrome color.
+    theme.foregroundColor = {value: 2};
+    callbackRouter.setTheme(theme);
+    await callbackRouter.$.flushForTesting();
+
+    // Check Chrome color selected.
+    checkedColors = colorsElement.shadowRoot!.querySelectorAll('[checked]');
+    assertEquals(1, checkedColors.length);
+    assertEquals('chrome-color', checkedColors[0]!.className);
+    assertEquals(2, (checkedColors[0]! as ColorElement).foregroundColor.value);
+
+    // Set custom color.
+    theme.foregroundColor = {value: 5};
+    callbackRouter.setTheme(theme);
+    await callbackRouter.$.flushForTesting();
+
+    // Check custom color selected.
+    checkedColors = colorsElement.shadowRoot!.querySelectorAll('[checked]');
+    assertEquals(1, checkedColors.length);
+    assertEquals(colorsElement.$.customColor, checkedColors[0]);
+  });
 });

@@ -5,6 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {ColorElement} from 'chrome://customize-chrome-side-panel.top-chrome/color.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {assertStyle} from './test_support.js';
 
@@ -23,5 +24,31 @@ suite('ColorTest', () => {
 
     assertStyle(colorElement.$.background, 'fill', 'rgb(255, 0, 0)');
     assertStyle(colorElement.$.foreground, 'fill', 'rgb(0, 255, 0)');
+  });
+
+  test('color can be checked', () => {
+    colorElement.checked = true;
+
+    const wrapper = colorElement.shadowRoot!.querySelector(
+        'customize-chrome-check-mark-wrapper')!;
+    assertTrue(wrapper.checked);
+    const svg = colorElement.shadowRoot!.querySelector('svg')!;
+    assertStyle(svg, 'width', '46px');
+    assertStyle(svg, 'height', '46px');
+    const background = colorElement.shadowRoot!.querySelector('#background')!;
+    assertStyle(background, 'r', '25px');
+  });
+
+  test('color can be unchecked', () => {
+    colorElement.checked = false;
+
+    const wrapper = colorElement.shadowRoot!.querySelector(
+        'customize-chrome-check-mark-wrapper')!;
+    assertFalse(wrapper.checked);
+    const svg = colorElement.shadowRoot!.querySelector('svg')!;
+    assertStyle(svg, 'width', '50px');
+    assertStyle(svg, 'height', '50px');
+    const background = colorElement.shadowRoot!.querySelector('#background')!;
+    assertStyle(background, 'r', '24px');
   });
 });
