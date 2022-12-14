@@ -150,6 +150,16 @@ declare_args() {
   # cast_shared_library targets are normal shared libraries. When false,
   # they become source_sets.
   use_vendor_shlibs = !is_android
+
+  # build APKs/bundles for the listed device types. Each APK has different
+  # features enabled in its manifest to ensure it is only distributed to select
+  # devices.
+  android_device_types = [
+    "generic",
+    "atv",
+    "tablet",
+    "automotive",
+  ]
 }
 
 declare_args() {

@@ -10,13 +10,13 @@
           xmlns:tools="http://schemas.android.com/tools"
           package="com.google.android.apps.mediashell"
           featureSplit="cast_browser"
-          {% set architecture_digit = {
-            'arm': 1,
-            'x86': 2,
-            'arm64': 3,
-            'x64': 4,
-            }[cast_build_architecture] %}
-          android:versionCode="{{ cast_build_incremental }}{{ architecture_digit }}" >
+          {% set device_type_digit = {
+            'generic': 0,
+            'atv': 1,
+            'tablet': 2,
+            'automotive': 3,
+          }[cast_device_type] %}
+          android:versionCode="{{ cast_build_incremental }}{{ device_type_digit }}" >
     <dist:module
         dist:onDemand="false"
         dist:title="cast_browser">

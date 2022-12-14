@@ -16,17 +16,17 @@ jinja_template("cast_shell_manifest") {
   output = cast_shell_android_manifest
 }
 
-cast_browser_android_manifest =
-    "$root_gen_dir/cast_browser_manifest/AndroidManifest.xml"
+foreach(device_type, android_device_types) {
+  jinja_template("cast_browser_${device_type}_manifest") {
+    input = "apk/CastBrowserAndroidManifest.xml.jinja2"
+    output =
+        "$root_gen_dir/cast_browser_${device_type}_manifest.AndroidManifest.xml"
 
-jinja_template("cast_browser_manifest") {
-  input = "apk/CastBrowserAndroidManifest.xml.jinja2"
-  output = cast_browser_android_manifest
-
-  variables = [
-    "cast_build_architecture=$target_cpu",
-    "cast_build_incremental=$cast_build_incremental",
-  ]
+    variables = [
+      "cast_build_incremental=$cast_build_incremental",
+      "cast_device_type=${device_type}",
+    ]
+  }
 }
 
 java_cpp_template("cast_shell_build_config_gen") {
@@ -73,8 +73,6 @@ android_resources("cast_shell_android_resources") {
 }
 
 android_resources("cast_browser_android_resources") {
-  android_manifest = cast_browser_android_manifest
-  android_manifest_dep = ":cast_browser_manifest"
   sources = extra_resources
 }
 
@@ -212,10 +210,7 @@ android_library("cast_browser_java") {
 
   jar_excluded_patterns = [ "*/ProductConfig.class" ]
 
-  deps = common_android_library_deps + [
-           ":cast_browser_android_resources",
-           ":cast_browser_manifest",
-         ]
+  deps = common_android_library_deps + [ ":cast_browser_android_resources" ]
   annotation_processor_deps = [
     "//base/android/jni_generator:jni_processor",
     "//components/module_installer/android:module_interface_processor",

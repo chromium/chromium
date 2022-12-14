@@ -36,7 +36,9 @@ group("all") {
     if (chromecast_branding == "public") {
       deps += [ ":cast_shell_apk" ]
     } else {
-      deps += [ ":cast_browser_bundle_module" ]
+      foreach(device_type, android_device_types) {
+        deps += [ ":cast_browser_${device_type}_bundle_module" ]
+      }
     }
   } else if (!is_fuchsia) {
     data_deps += [
@@ -665,7 +667,7 @@ if (is_android) {
   generate_jni_registration("cast_shell_jni_registration") {
     targets = [ ":cast_shell_apk" ]
     if (chromecast_branding != "public") {
-      targets += [ ":cast_browser_bundle_module" ]
+      targets += [ ":cast_browser_generic_bundle_module" ]
     }
     manual_jni_registration = true
   }
@@ -728,50 +730,51 @@ if (is_android) {
   }
 
   if (chromecast_branding != "public") {
-    android_app_bundle_module("cast_browser_bundle_module") {
-      is_base_module = false
-      base_module_target = "//chromecast/internal/service/main/android:cast_service_bundle_module"
+    foreach(device_type, android_device_types) {
+      android_app_bundle_module("cast_browser_${device_type}_bundle_module") {
+        is_base_module = false
+        base_module_target = "//chromecast/internal/service/main/android:cast_service_${device_type}_bundle_module"
 
-      android_manifest =
-          "$root_gen_dir/cast_browser_manifest/AndroidManifest.xml"
-      android_manifest_dep =
-          "//chromecast/browser/android:cast_browser_manifest"
+        android_manifest = "$root_gen_dir/cast_browser_${device_type}_manifest.AndroidManifest.xml"
+        android_manifest_dep =
+            "//chromecast/browser/android:cast_browser_${device_type}_manifest"
 
-      min_sdk_version = 24
-      target_sdk_version = 33
+        min_sdk_version = 24
+        target_sdk_version = 33
 
-      package_name = "cast_browser"
+        package_name = "cast_browser"
 
-      # |package_id| is required because the default one conflicts with the base
-      # modules' ID (0x7f).
-      package_id = 125
+        # |package_id| is required because the default one conflicts with the base
+        # modules' ID (0x7f).
+        package_id = 125
 
-      shared_libraries = [ "//chromecast/android:libcast_browser_android" ]
-      deps = [
-        "//base:base_java",
-        "//base:jni_java",
-        "//build/android:build_java",
-        "//chromecast/browser/android:cast_browser_java",
-        "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
-        "//components/viz/service:service_java",
-        "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline",
-      ]
+        shared_libraries = [ "//chromecast/android:libcast_browser_android" ]
+        deps = [
+          "//base:base_java",
+          "//base:jni_java",
+          "//build/android:build_java",
+          "//chromecast/browser/android:cast_browser_java",
+          "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
+          "//components/viz/service:service_java",
+          "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline",
+        ]
 
-      loadable_modules = [
-        "$root_out_dir/libchrome_crashpad_handler.so",
-        "$root_out_dir/libcrashpad_handler_trampoline.so",
-      ]
+        loadable_modules = [
+          "$root_out_dir/libchrome_crashpad_handler.so",
+          "$root_out_dir/libcrashpad_handler_trampoline.so",
+        ]
 
-      # TODO(b/228506503): remove the exclusion rule after cast_service and
-      # cast_browser depend on different resource targets.
-      resource_exclusion_regex = "cast_web_contents_activity.xml"
+        # TODO(b/228506503): remove the exclusion rule after cast_service and
+        # cast_browser depend on different resource targets.
+        resource_exclusion_regex = "cast_web_contents_activity.xml"
 
-      enable_multidex = true
+        enable_multidex = true
 
-      # TODO(b/222780347): Enable when compile errors are resolved on release
-      # builds.
-      proguard_enabled = false
-      generate_native_libraries_java = true
+        # TODO(b/222780347): Enable when compile errors are resolved on release
+        # builds.
+        proguard_enabled = false
+        generate_native_libraries_java = true
+      }
     }
   }
 }
