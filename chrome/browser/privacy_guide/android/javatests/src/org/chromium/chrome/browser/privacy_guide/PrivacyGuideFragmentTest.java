@@ -107,6 +107,12 @@ public class PrivacyGuideFragmentTest {
         ViewUtils.onViewWaiting(withText(R.string.prefs_privacy_guide_title));
     }
 
+    private void navigateToMSBBCard() {
+        // Welcome page -> MSBB page
+        onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.privacy_guide_start_button)).perform(click());
+    }
+
     private void navigateToSyncCard() {
         // Welcome page -> MSBB page
         onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
@@ -312,9 +318,7 @@ public class PrivacyGuideFragmentTest {
     public void testMSBBCard_nextClickMSBBUserAction() {
         launchPrivacyGuide();
         mActionTester = new UserActionTester();
-        // Welcome page -> MSBB page
-        onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
-        onView(withText(R.string.privacy_guide_start_button)).perform(click());
+        navigateToMSBBCard();
 
         // MSBB page -> Sync page
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
@@ -329,9 +333,7 @@ public class PrivacyGuideFragmentTest {
     public void testMSBBCard_offToOffSettingsStatesHistogram() {
         launchPrivacyGuide();
         setMSBBState(false);
-        // Welcome page -> MSBB page
-        onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
-        onView(withText(R.string.privacy_guide_start_button)).perform(click());
+        navigateToMSBBCard();
 
         assertEquals(0,
                 mHistogramTestRule.getHistogramValueCount(
@@ -352,9 +354,7 @@ public class PrivacyGuideFragmentTest {
     public void testMSBBCard_offToOnSettingsStatesHistogram() {
         launchPrivacyGuide();
         setMSBBState(false);
-        // Welcome page -> MSBB page
-        onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
-        onView(withText(R.string.privacy_guide_start_button)).perform(click());
+        navigateToMSBBCard();
 
         assertEquals(0,
                 mHistogramTestRule.getHistogramValueCount(
@@ -376,9 +376,7 @@ public class PrivacyGuideFragmentTest {
     public void testMSBBCard_onToOffSettingsStatesHistogram() {
         launchPrivacyGuide();
         setMSBBState(true);
-        // Welcome page -> MSBB page
-        onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
-        onView(withText(R.string.privacy_guide_start_button)).perform(click());
+        navigateToMSBBCard();
 
         assertEquals(0,
                 mHistogramTestRule.getHistogramValueCount(
@@ -400,9 +398,7 @@ public class PrivacyGuideFragmentTest {
     public void testMSBBCard_onToOnSettingsStatesHistogram() {
         launchPrivacyGuide();
         setMSBBState(true);
-        // Welcome page -> MSBB page
-        onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
-        onView(withText(R.string.privacy_guide_start_button)).perform(click());
+        navigateToMSBBCard();
 
         assertEquals(0,
                 mHistogramTestRule.getHistogramValueCount(
@@ -424,10 +420,7 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         mSettingsActivityTestRule.getFragment().setPrivacyGuideMetricsDelegateForTesting(
                 mPrivacyGuideMetricsDelegateMock);
-
-        // Welcome page -> MSBB page
-        onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
-        onView(withText(R.string.privacy_guide_start_button)).perform(click());
+        navigateToMSBBCard();
 
         // MSBB page
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
@@ -445,10 +438,7 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         mSettingsActivityTestRule.getFragment().setPrivacyGuideMetricsDelegateForTesting(
                 mPrivacyGuideMetricsDelegateMock);
-
-        // Welcome page -> MSBB page
-        onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
-        onView(withText(R.string.privacy_guide_start_button)).perform(click());
+        navigateToMSBBCard();
 
         // MSBB page -> Sync page
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
