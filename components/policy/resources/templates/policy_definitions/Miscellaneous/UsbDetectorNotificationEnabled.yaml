@@ -1,0 +1,26 @@
+caption: Show a notification when a USB device is detected
+default: true
+desc: |-
+  If this setting is enabled, a notification is shown to the user when a USB device gets plugged in on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
+
+        If this setting is disabled, no notifications about plugged-in USB devices will be shown to the user.
+
+        If this policy is left unset, users will receive the notifications about plugged-in USB devices.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Show notifications when USB devices are detected
+  value: true
+- caption: Do not show notifications when USB devices are detected
+  value: false
+owners:
+- mpetrisor@chromium.org
+- imprivata-eng@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:110-
+tags: []
+type: main

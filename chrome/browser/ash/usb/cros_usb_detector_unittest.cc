@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
@@ -421,6 +422,50 @@ TEST_F(CrosUsbDetectorTest, NotificationShown) {
   notification = display_service_->GetNotification(notification_id);
   ASSERT_TRUE(notification);
   EXPECT_EQ(notification->buttons().size(), 4u);
+  device_manager_.RemoveDevice(device);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(CrosUsbDetectorTest, NotificationControlledByPolicy) {
+  ConnectToDeviceManager();
+  base::RunLoop().RunUntilIdle();
+
+  auto device = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
+      0, 1, kManufacturerName, kProductName_1, "002");
+  std::string notification_id =
+      CrosUsbDetector::MakeNotificationId(device->guid());
+
+  // Notifications should be shown if UsbDetectorNotificationEnabled policy is
+  // unset.
+  crostini::FakeCrostiniFeatures crostini_features;
+  crostini_features.set_enabled(true);
+  device_manager_.AddDevice(device);
+  base::RunLoop().RunUntilIdle();
+  absl::optional<message_center::Notification> notification =
+      display_service_->GetNotification(notification_id);
+  EXPECT_TRUE(notification);
+  device_manager_.RemoveDevice(device);
+  base::RunLoop().RunUntilIdle();
+
+  // Notifications should not be shown if UsbDetectorNotificationEnabled policy
+  // is false.
+  profile()->GetPrefs()->SetBoolean(prefs::kUsbDetectorNotificationEnabled,
+                                    false);
+  device_manager_.AddDevice(device);
+  base::RunLoop().RunUntilIdle();
+  notification = display_service_->GetNotification(notification_id);
+  EXPECT_FALSE(notification);
+  device_manager_.RemoveDevice(device);
+  base::RunLoop().RunUntilIdle();
+
+  // Notifications should be shown if UsbDetectorNotificationEnabled policy is
+  // true.
+  profile()->GetPrefs()->SetBoolean(prefs::kUsbDetectorNotificationEnabled,
+                                    true);
+  device_manager_.AddDevice(device);
+  base::RunLoop().RunUntilIdle();
+  notification = display_service_->GetNotification(notification_id);
+  EXPECT_TRUE(notification);
   device_manager_.RemoveDevice(device);
   base::RunLoop().RunUntilIdle();
 }

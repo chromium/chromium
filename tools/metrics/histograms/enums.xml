@@ -32308,6 +32308,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1041" label="NewBaseUrlInheritanceBehaviorAllowed"/>
   <int value="1042" label="ShowCastSessionsStartedByOtherDevices"/>
   <int value="1043" label="CloudAPAuthEnabled"/>
+  <int value="1044" label="UsbDetectorNotificationEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -519,6 +519,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFloatingWorkspaceV2Enabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowPostRebootNotification[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kUsbDetectorNotificationEnabled[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kPersonalizationKeyboardBacklightColor[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAutozoomState[];

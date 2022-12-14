@@ -1373,6 +1373,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kTrashEnabled,
     ash::prefs::kFilesAppTrashEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kUsbDetectorNotificationEnabled,
+    ash::prefs::kUsbDetectorNotificationEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

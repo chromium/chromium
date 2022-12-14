@@ -11,6 +11,7 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/callback_helpers.h"
@@ -542,6 +543,11 @@ void CrosUsbDetector::ConnectToDeviceManager() {
 }
 
 bool CrosUsbDetector::ShouldShowNotification(const UsbDevice& device) {
+  PrefService* prefs = profile()->GetPrefs();
+  if (!prefs->GetBoolean(ash::prefs::kUsbDetectorNotificationEnabled)) {
+    return false;
+  }
+
   if (!crostini::CrostiniFeatures::Get()->IsEnabled(profile()) &&
       !plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile()) &&
       !IsPlayStoreEnabledWithArcVmForProfile(profile())) {

@@ -1124,6 +1124,11 @@ const char kFloatingWorkspaceV2Enabled[] = "ash.floating_workspace_v2_enabled";
 // user.
 const char kShowPostRebootNotification[] = "ash.show_post_reboot_notification";
 
+// Boolean value indicating that the USB device detected notification should be
+// shown to the user.
+const char kUsbDetectorNotificationEnabled[] =
+    "ash.usb_detector_notification_enabled";
+
 // This integer pref indicates which color for the backlight keyboard is
 // currently selected. A pref with this name is registered in two different
 // contexts:

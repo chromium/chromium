@@ -1042,6 +1042,7 @@ policies:
   1041: NewBaseUrlInheritanceBehaviorAllowed
   1042: ShowCastSessionsStartedByOtherDevices
   1043: CloudAPAuthEnabled
+  1044: UsbDetectorNotificationEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess
