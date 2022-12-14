@@ -912,6 +912,18 @@ suite('SettingsDevicePage', function() {
           audioPage.audioSystemProperties_.outputMuteState);
       assertFalse(audioPage.isOutputMuted_);
     });
+
+    test('simulate input mute button press test', async function() {
+      const inputMuteButton =
+          audioPage.shadowRoot.querySelector('#audioInputGainMuteButton');
+
+      assertFalse(audioPage.getIsInputMutedForTest());
+
+      inputMuteButton.click();
+      await flushTasks();
+
+      assertTrue(audioPage.getIsInputMutedForTest());
+    });
   });
 
   suite(assert(TestNames.Pointers), function() {

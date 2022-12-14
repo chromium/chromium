@@ -62,6 +62,7 @@ class SettingsAudioElement extends SettingsAudioElementBase {
       AudioSystemPropertiesObserverReceiver;
   private crosAudioConfig_: CrosAudioConfigInterface;
   private isOutputMuted_: boolean;
+  private isInputMuted_: boolean;
 
   constructor() {
     super();
@@ -87,10 +88,16 @@ class SettingsAudioElement extends SettingsAudioElementBase {
     // kMutedByPolicy.
     this.isOutputMuted_ =
         this.audioSystemProperties_.outputMuteState !== MuteState.kNotMuted;
+    this.isInputMuted_ =
+        this.audioSystemProperties_.inputMuteState !== MuteState.kNotMuted;
   }
 
   getIsOutputMutedForTest(): boolean {
     return this.isOutputMuted_;
+  }
+
+  getIsInputMutedForTest(): boolean {
+    return this.isInputMuted_;
   }
 
   private observeAudioSystemProperties_(): void {
@@ -109,6 +116,15 @@ class SettingsAudioElement extends SettingsAudioElementBase {
   private isOutputVolumeSliderDisabled_(): boolean {
     return this.audioSystemProperties_.outputMuteState ===
         MuteState.kMutedByPolicy;
+  }
+
+  protected onInputMuteClicked(): void {
+    // TODO(b/260277007): Remove condition when setInputMuted added to mojo
+    // definition.
+    if (!this.crosAudioConfig_.setInputMuted) {
+      return;
+    }
+    this.crosAudioConfig_.setInputMuted(!this.isInputMuted_);
   }
 
   /** Handles updating active input device. */
