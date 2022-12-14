@@ -519,8 +519,6 @@ TEST_P(WebAppPolicyManagerTest, NoPrefValues) {
   if (ShouldSkipPWASpecificTest())
     return;
 
-  base::RunLoop().RunUntilIdle();
-
   const auto& install_requests =
       externally_managed_app_manager().install_requests();
   EXPECT_TRUE(install_requests.empty());
@@ -902,6 +900,7 @@ TEST_P(WebAppPolicyManagerTest, DynamicRefresh) {
 TEST_P(WebAppPolicyManagerTest, UninstallAppInstalledInPreviousSession) {
   if (ShouldSkipPWASpecificTest())
     return;
+
   // Simulate two policy apps and a regular app that were installed in the
   // previous session.
   SimulatePreviouslyInstalledApp(GURL(kWindowedUrl),
@@ -935,7 +934,6 @@ TEST_P(WebAppPolicyManagerTest, UninstallAppInstalledInPreviousSession) {
 TEST_P(WebAppPolicyManagerTest, UninstallAppInstalledInCurrentSession) {
   if (ShouldSkipPWASpecificTest())
     return;
-  base::RunLoop().RunUntilIdle();
 
   // Add two sites, one that opens in a window and one that opens in a tab.
   base::Value::List first_list;
@@ -1087,7 +1085,7 @@ TEST_P(WebAppPolicyManagerTest, TryToInexistentPlaceholderApp) {
 TEST_P(WebAppPolicyManagerTest, SayRefreshTwoTimesQuickly) {
   if (ShouldSkipPWASpecificTest())
     return;
-  base::RunLoop().RunUntilIdle();
+
   // Add an app.
   {
     base::Value::List list;
@@ -1102,7 +1100,17 @@ TEST_P(WebAppPolicyManagerTest, SayRefreshTwoTimesQuickly) {
     profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                    std::move(list));
   }
-  base::RunLoop().RunUntilIdle();
+
+  // `OnAppsSynchronized` should be triggered twice.
+  base::RunLoop loop;
+  policy_manager().SetOnAppsSynchronizedCompletedCallbackForTesting(
+      loop.QuitClosure());
+  loop.Run();
+
+  base::RunLoop loop2;
+  policy_manager().SetOnAppsSynchronizedCompletedCallbackForTesting(
+      loop2.QuitClosure());
+  loop2.Run();
 
   // Both apps should have been installed.
   std::vector<ExternalInstallOptions> expected_options_list;
@@ -1167,8 +1175,6 @@ TEST_P(WebAppPolicyManagerTest, InstallResultHistogram) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_P(WebAppPolicyManagerTest, DisableSystemWebApps) {
-  base::RunLoop().RunUntilIdle();
-
   auto disabled_apps = policy_manager().GetDisabledSystemWebApps();
   EXPECT_TRUE(disabled_apps.empty());
 

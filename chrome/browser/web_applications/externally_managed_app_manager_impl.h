@@ -27,6 +27,7 @@ class WebContents;
 
 namespace web_app {
 
+class FullSystemLock;
 class ExternallyManagedAppRegistrationTaskBase;
 
 // Installs, uninstalls, and updates any External Web Apps. This class should
@@ -74,6 +75,7 @@ class ExternallyManagedAppManagerImpl : public ExternallyManagedAppManager {
   void PostMaybeStartNext();
 
   void MaybeStartNext();
+  void MaybeStartNextOnLockAcquired(FullSystemLock& lock);
 
   void StartInstallationTask(std::unique_ptr<TaskAndCallback> task);
 

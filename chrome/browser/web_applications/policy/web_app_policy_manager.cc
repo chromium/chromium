@@ -118,7 +118,11 @@ void WebAppPolicyManager::SetSystemWebAppDelegateMap(
   system_web_apps_delegate_map_ = system_web_apps_delegate_map;
 }
 
-void WebAppPolicyManager::Start(base::OnceClosure on_done) {
+void WebAppPolicyManager::Start(base::OnceClosure initialization_complete) {
+  DCHECK(initialization_complete_.is_null());
+
+  initialization_complete_ = std::move(initialization_complete);
+
   // When Lacros is enabled, don't run PWA-specific logic in Ash.
   // TODO(crbug.com/1251491): Consider factoring out logic that should only run
   // in Ash into a separate class. This way, when running in Ash, we won't need
@@ -131,8 +135,7 @@ void WebAppPolicyManager::Start(base::OnceClosure on_done) {
       ->PostTask(FROM_HERE,
                  base::BindOnce(
                      &WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy,
-                     weak_ptr_factory_.GetWeakPtr(), enable_pwa_support)
-                     .Then(std::move(on_done)));
+                     weak_ptr_factory_.GetWeakPtr(), enable_pwa_support));
 }
 
 void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
@@ -204,6 +207,10 @@ void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(
             weak_ptr_factory_.GetWeakPtr()));
     RefreshPolicyInstalledIsolatedWebApps();
 #endif
+  } else {
+    if (initialization_complete_) {
+      std::move(initialization_complete_).Run();
+    }
   }
   ObserveDisabledSystemFeaturesPolicy();
 }
@@ -538,7 +545,7 @@ RunOnOsLoginPolicy WebAppPolicyManager::GetUrlRunOnOsLoginPolicyByUnhashedAppId(
 
 void WebAppPolicyManager::SetOnAppsSynchronizedCompletedCallbackForTesting(
     base::OnceClosure callback) {
-  on_apps_synchronized_ = std::move(callback);
+  on_apps_synchronized_for_testing_ = std::move(callback);
 }
 
 void WebAppPolicyManager::SetRefreshPolicySettingsCompletedCallbackForTesting(
@@ -631,8 +638,13 @@ void WebAppPolicyManager::OnAppsSynchronized(
                                   url_and_result.second.code);
   }
 
-  if (on_apps_synchronized_)
-    std::move(on_apps_synchronized_).Run();
+  if (on_apps_synchronized_for_testing_) {
+    std::move(on_apps_synchronized_for_testing_).Run();
+  }
+
+  if (initialization_complete_) {
+    std::move(initialization_complete_).Run();
+  }
 }
 
 WebAppPolicyManager::WebAppSetting::WebAppSetting() {

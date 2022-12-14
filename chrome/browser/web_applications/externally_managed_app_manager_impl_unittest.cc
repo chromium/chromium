@@ -466,7 +466,7 @@ class ExternallyManagedAppManagerImplTest
   }
 
   void TearDown() override {
-    command_scheduler().Shutdown();
+    provider().Shutdown();
     WebAppTest::TearDown();
   }
 
@@ -510,7 +510,6 @@ class ExternallyManagedAppManagerImplTest
               barrier_closure.Run();
             }));
     run_loop.Run();
-
     return results;
   }
 
