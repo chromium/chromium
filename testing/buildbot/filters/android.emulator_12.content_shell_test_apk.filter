@@ -24,3 +24,6 @@
 -org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBar*Copy
 -org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBar*Cut
 -org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBar*Paste
+
+# crbug.com/1400782
+-org.chromium.content.browser.accessibility.WebContentsAccessibilityEventsTest.test_immediateRefresh
