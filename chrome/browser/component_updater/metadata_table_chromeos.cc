@@ -159,8 +159,8 @@ void MetadataTable::Store() {
   DCHECK(pref_service_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  DictionaryPrefUpdate update(pref_service_, kMetadataPrefPath);
-  update->GetDict().Set(kMetadataContentKey, installed_items_.Clone());
+  ScopedDictPrefUpdate update(pref_service_, kMetadataPrefPath);
+  update->Set(kMetadataContentKey, installed_items_.Clone());
 }
 
 void MetadataTable::AddItem(const std::string& hashed_user_id,
