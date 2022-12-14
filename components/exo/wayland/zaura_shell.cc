@@ -204,9 +204,9 @@ void aura_surface_set_server_start_resize(wl_client* client,
   GetUserDataAs<AuraSurface>(resource)->SetServerStartResize();
 }
 
-void aura_surface_intent_to_snap(wl_client* client,
-                                 wl_resource* resource,
-                                 uint32_t snap_direction) {
+void aura_surface_intent_to_snap_deprecated(wl_client* client,
+                                            wl_resource* resource,
+                                            uint32_t snap_direction) {
   GetUserDataAs<AuraSurface>(resource)->IntentToSnap(snap_direction);
 }
 
@@ -220,7 +220,8 @@ void aura_surface_set_snap_right_deprecated(wl_client* client,
   GetUserDataAs<AuraSurface>(resource)->SetSnapSecondary();
 }
 
-void aura_surface_unset_snap(wl_client* client, wl_resource* resource) {
+void aura_surface_unset_snap_deprecated(wl_client* client,
+                                        wl_resource* resource) {
   GetUserDataAs<AuraSurface>(resource)->UnsetSnap();
 }
 
@@ -311,10 +312,10 @@ const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_set_fullscreen_mode_deprecated,
     aura_surface_set_client_surface_str_id,
     aura_surface_set_server_start_resize,
-    aura_surface_intent_to_snap,
+    aura_surface_intent_to_snap_deprecated,
     aura_surface_set_snap_left_deprecated,
     aura_surface_set_snap_right_deprecated,
-    aura_surface_unset_snap,
+    aura_surface_unset_snap_deprecated,
     aura_surface_set_window_session_id,
     aura_surface_set_can_go_back,
     aura_surface_unset_can_go_back,
@@ -853,6 +854,24 @@ void AuraToplevel::SetSnapSecondary(float snap_ratio) {
   shell_surface_->SetSnapSecondary(snap_ratio);
 }
 
+void AuraToplevel::IntentToSnap(uint32_t snap_direction) {
+  switch (snap_direction) {
+    case ZAURA_SURFACE_SNAP_DIRECTION_NONE:
+      shell_surface_->HideSnapPreview();
+      break;
+    case ZAURA_SURFACE_SNAP_DIRECTION_LEFT:
+      shell_surface_->ShowSnapPreviewToPrimary();
+      break;
+    case ZAURA_SURFACE_SNAP_DIRECTION_RIGHT:
+      shell_surface_->ShowSnapPreviewToSecondary();
+      break;
+  }
+}
+
+void AuraToplevel::UnsetSnap() {
+  shell_surface_->UnsetSnap();
+}
+
 template <class T>
 void AddState(wl_array* states, T state) {
   T* value = static_cast<T*>(wl_array_add(states, sizeof(T)));
@@ -1304,6 +1323,16 @@ void aura_toplevel_set_snap_secondary(wl_client* client,
   GetUserDataAs<AuraToplevel>(resource)->SetSnapSecondary(snap_ratio);
 }
 
+void aura_toplevel_intent_to_snap(wl_client* client,
+                                  wl_resource* resource,
+                                  uint32_t snap_direction) {
+  GetUserDataAs<AuraToplevel>(resource)->IntentToSnap(snap_direction);
+}
+
+void aura_toplevel_unset_snap(wl_client* client, wl_resource* resource) {
+  GetUserDataAs<AuraToplevel>(resource)->UnsetSnap();
+}
+
 void aura_toplevel_set_restore_info_with_window_id_source(
     wl_client* client,
     wl_resource* resource,
@@ -1405,6 +1434,8 @@ const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_scale_factor,
     aura_toplevel_set_snap_primary,
     aura_toplevel_set_snap_secondary,
+    aura_toplevel_intent_to_snap,
+    aura_toplevel_unset_snap,
 };
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,

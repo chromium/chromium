@@ -147,6 +147,8 @@ class AuraToplevel {
   void UnsetFloat();
   void SetSnapPrimary(float snap_ratio);
   void SetSnapSecondary(float snap_ratio);
+  void IntentToSnap(uint32_t snap_direction);
+  void UnsetSnap();
 
   void OnConfigure(const gfx::Rect& bounds,
                    chromeos::WindowStateType state_type,

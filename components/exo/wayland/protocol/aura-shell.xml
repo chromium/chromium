@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="48">
+  <interface name="zaura_shell" version="49">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -353,6 +353,7 @@
 
     <request name="intent_to_snap" since="16">
       <description summary="client intents to snap the surface.">
+        [Deprecated] Use intent_to_snap on zaura_toplevel.
         Notify (or inform) the server the client's intent to snap the window.
         To inform it's no longer willing to snap, send 'none'.
       </description>
@@ -375,6 +376,7 @@
 
     <request name="unset_snap" since="16">
       <description summary="Unset the surface snap.">
+        [Deprecated] Use unset_snap on zaura_toplevel.
         Request that surface resets snapping.
       </description>
     </request>
@@ -753,7 +755,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_toplevel" version="48">
+  <interface name="zaura_toplevel" version="49">
     <description summary="aura shell interface to the toplevel shell">
       An interface to the toplevel shell, which allows the
       client to access shell specific functionality.
@@ -1069,6 +1071,32 @@
         layout, left or top otherwise.
       </description>
       <arg name="snap_ratio_as_uint" type="uint"/>
+    </request>
+
+    <!-- Version 49 additions-->
+    <enum name="snap_direction">
+      <description summary="window snap directions">
+        Window snap directions.
+      </description>
+      <entry name="none" value="0" summary="unsnap the window"/>
+      <entry name="primary" value="1" summary="snap the window to the left or
+        top in primary layout, right or bottom in secondary layout"/>
+      <entry name="secondary" value="2" summary="snap the window to the right
+        or bottom in primary layout, top or left in secondary layout"/>
+    </enum>
+
+    <request name="intent_to_snap" since="49">
+      <description summary="client intents to snap the surface.">
+        Notify (or inform) the server the client's intent to snap the window.
+        To inform it's no longer willing to snap, send 'none'.
+      </description>
+      <arg name="direction" type="uint" enum="snap_direction"/>
+    </request>
+
+    <request name="unset_snap" since="49">
+      <description summary="Unset the window snap.">
+        Request that window unsets snapping.
+      </description>
     </request>
   </interface>
 
