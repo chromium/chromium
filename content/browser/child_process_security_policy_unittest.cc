@@ -3221,6 +3221,9 @@ TEST_F(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
                        ProcessLock::FromSiteInfo(bar_instance->GetSiteInfo()));
       },
       "Cannot lock an already used process to .*bar\\.com");
+
+  // We need to remove it otherwise other tests may fail.
+  p->Remove(kRendererID);
 }
 
 }  // namespace content
