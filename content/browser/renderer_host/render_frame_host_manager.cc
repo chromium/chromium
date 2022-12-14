@@ -1585,7 +1585,7 @@ void RenderFrameHostManager::OnDidChangeCollapsedState(bool collapsed) {
   // to collapse the frame. Note `IsFencedFrameRoot` returns true for
   // ShadowDOM as well so we need to check the `FrameTree::Type` as well.
   if (frame_tree_node_->IsFencedFrameRoot() &&
-      frame_tree_node_->frame_tree().type() == FrameTree::Type::kFencedFrame) {
+      frame_tree_node_->IsInFencedFrameTree()) {
     if (GetProxyToOuterDelegate()->is_render_frame_proxy_live()) {
       GetProxyToOuterDelegate()->GetAssociatedRemoteFrame()->Collapse(
           collapsed);
