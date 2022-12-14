@@ -25,6 +25,8 @@ namespace {
 // Set to 'true' to get debug protos.
 #define WRITE_DEBUG_PROTO false
 
+// TODO(crbug.com/1278249): Name test files with more context. E.g. what is it
+// testing? Which site is it? etc.
 // Test definitions for ProtoConvertorViewHierarchyTest.
 constexpr int kProtoConversionTestCasesCount = 5;
 const char* kProtoConversionSampleInputFileNameFormat = "sample%i_ax_tree.json";
@@ -322,7 +324,7 @@ TEST_P(ProtoConvertorViewHierarchyTest, AxTreeJsonToProtoTest) {
 
   WriteDebugProto(
       serialized_proto,
-      base::StringPrintf("proto_convertor_sample_%i_output.pbtxt", GetParam()));
+      base::StringPrintf("proto_convertor_sample%i_output.pb", GetParam()));
 
   // Load expected Proto.
   screenai::ViewHierarchy expected_view_hierarchy;

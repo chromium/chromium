@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "components/services/screen_ai/proto/view_hierarchy.pb.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -207,6 +208,28 @@ screenai::UiElement CreateUiElementProto(const ui::AXTree& tree,
     AddAttribute("/extras/styles/display", display_value, uie);
   AddAttribute("/extras/styles/visibility",
                node_data.IsInvisible() ? "hidden" : "visible", uie);
+  // Add extra CSS attributes, such as text-align, font size, and font weight
+  // supported by both AXTree/AXNode and screen2x. Screen2x expects these
+  // properties to be in the string format, so we convert them into string.
+  int32_t int_attribute_value;
+  if (node_data.GetIntAttribute(ax::mojom::IntAttribute::kTextAlign,
+                                &int_attribute_value)) {
+    AddAttribute("/extras/styles/text-align",
+                 ui::ToString((ax::mojom::TextAlign)int_attribute_value), uie);
+  }
+  // Get float attributes and store them as string attributes in the screenai
+  // proto for the main content extractor (screen2x).
+  float float_attribute_value;
+  if (node_data.GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize,
+                                  &float_attribute_value)) {
+    AddAttribute("/extras/styles/font-size",
+                 base::StringPrintf("%.0fpx", float_attribute_value), uie);
+  }
+  if (node_data.GetFloatAttribute(ax::mojom::FloatAttribute::kFontWeight,
+                                  &float_attribute_value)) {
+    AddAttribute("/extras/styles/font-weight",
+                 base::StringPrintf("%.0f", float_attribute_value), uie);
+  }
 
   // This is a fixed constant for Chrome requests to Screen2x.
   AddAttribute("class_name", "chrome.unicorn", uie);
