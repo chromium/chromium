@@ -18,7 +18,7 @@ jboolean JNI_SurfaceWrapper_canBeUsedWithSurfaceControl(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj);
 
-base::android::ScopedJavaLocalRef<jobject> JNI_SurfaceWrapper_getSurface(
+base::android::ScopedJavaLocalRef<jobject> JNI_SurfaceWrapper_takeSurface(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj);
 

@@ -9,60 +9,41 @@
 
 #include <map>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
-#include "build/build_config.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "ui/gfx/native_widget_types.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/scoped_java_ref.h"
-#endif
+#include "ui/gl/android/scoped_java_surface.h"
 
 namespace gpu {
 
-// This class is used on Android and Mac, and is responsible for tracking native
+// This class is used on Android, and is responsible for tracking native
 // window surfaces exposed to the GPU process. Every surface gets registered to
 // this class, and gets a handle.  The handle can be passed to
 // CommandBufferProxyImpl::Create or to
 // GpuMemoryBufferManager::CreateGpuMemoryBuffer.
 // On Android, the handle is used in the GPU process to get a reference to the
-// ANativeWindow, using GpuSurfaceLookup (implemented by
-// ChildProcessSurfaceManager).  We require that an Android Surface is provided
-// with the ANativeWindow, so one must provide an explicit GpuSurfaceTracker::
-// SurfaceRecord when adding it.
-// On Mac, the handle just passes through the GPU process, and is sent back via
-// GpuCommandBufferMsg_SwapBuffersCompleted to reference the surface.
+// ScopedJavaSurface, using GpuSurfaceLookup (implemented by
+// ChildProcessSurfaceManager).
 // This class is thread safe.
 class GPU_EXPORT GpuSurfaceTracker : public gpu::GpuSurfaceLookup {
  public:
   struct SurfaceRecord {
-#if BUILDFLAG(IS_ANDROID)
-    SurfaceRecord(gfx::AcceleratedWidget widget,
-                  const base::android::JavaRef<jobject>& j_surface,
+    SurfaceRecord(gl::ScopedJavaSurface surface,
                   bool can_be_used_with_surface_control);
-#else   // BUILDFLAG(IS_ANDROID)
-    explicit SurfaceRecord(gfx::AcceleratedWidget widget);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
     SurfaceRecord(SurfaceRecord&&);
     SurfaceRecord(const SurfaceRecord&) = delete;
 
-    // TODO(crbug.com/1399516): Make this non-android.
-    gfx::AcceleratedWidget widget;
-#if BUILDFLAG(IS_ANDROID)
     gl::ScopedJavaSurface surface;
     bool can_be_used_with_surface_control;
-#endif
   };
 
-#if BUILDFLAG(IS_ANDROID)
   gl::ScopedJavaSurface AcquireJavaSurface(
       gpu::SurfaceHandle surface_handle,
       bool* can_be_used_with_surface_control) override;
-#endif
 
   // Gets the global instance of the surface tracker.
   static GpuSurfaceTracker* Get() { return GetInstance(); }

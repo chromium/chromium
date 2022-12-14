@@ -88,7 +88,6 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
   void DrawQuad(unsigned int textureHandle, const gfx::Transform& uv_transform);
 
   scoped_refptr<viz::ContextProvider> context_provider_;
-  std::unique_ptr<gl::ScopedJavaSurface> surface_;
   raw_ptr<gpu::gles2::GLES2Interface> gl_ = nullptr;
   raw_ptr<gpu::ContextSupport> context_support_ = nullptr;
   int surface_handle_ = gpu::kNullSurfaceHandle;

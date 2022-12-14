@@ -226,14 +226,14 @@ gl::ScopedJavaSurface ImageReaderGLOwner::CreateJavaSurface() const {
   // If we've already lost the texture, then do nothing.
   if (!image_reader_) {
     DLOG(ERROR) << "Already lost texture / image reader";
-    return gl::ScopedJavaSurface::AcquireExternalSurface(nullptr);
+    return nullptr;
   }
 
   // Get the android native window from the image reader.
   ANativeWindow* window = nullptr;
   if (loader_->AImageReader_getWindow(image_reader_, &window) != AMEDIA_OK) {
     DLOG(ERROR) << "unable to get a window from image reader.";
-    return gl::ScopedJavaSurface::AcquireExternalSurface(nullptr);
+    return nullptr;
   }
 
   // Get the java surface object from the Android native window.
@@ -243,7 +243,7 @@ gl::ScopedJavaSurface ImageReaderGLOwner::CreateJavaSurface() const {
   DCHECK(j_surface);
 
   // Get the scoped java surface that will call release() on destruction.
-  return gl::ScopedJavaSurface(j_surface);
+  return gl::ScopedJavaSurface(j_surface, /*auto_release=*/true);
 }
 
 void ImageReaderGLOwner::UpdateTexImage() {

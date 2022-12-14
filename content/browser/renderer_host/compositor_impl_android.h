@@ -40,8 +40,7 @@
 #include "ui/android/window_android_compositor.h"
 #include "ui/compositor/compositor_lock.h"
 #include "ui/display/display_observer.h"
-
-struct ANativeWindow;
+#include "ui/gl/android/scoped_a_native_window.h"
 
 namespace cc {
 class AnimationHost;
@@ -263,7 +262,7 @@ class CONTENT_EXPORT CompositorImpl
   gfx::Size size_;
   bool requires_alpha_channel_ = false;
 
-  raw_ptr<ANativeWindow> window_;
+  gl::ScopedANativeWindow window_;
   gpu::SurfaceHandle surface_handle_;
   std::unique_ptr<ScopedCachedBackBuffer> cached_back_buffer_;
 

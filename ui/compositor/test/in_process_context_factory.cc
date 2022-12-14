@@ -55,10 +55,6 @@
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #endif
 
-#if !defined(GPU_SURFACE_HANDLE_IS_ACCELERATED_WINDOW)
-#include "gpu/ipc/common/gpu_surface_tracker.h"
-#endif
-
 namespace ui {
 namespace {
 
@@ -318,10 +314,6 @@ void InProcessContextFactory::RemoveCompositor(Compositor* compositor) {
   PerCompositorData* data = it->second.get();
   frame_sink_manager_->UnregisterBeginFrameSource(data->begin_frame_source());
   DCHECK(data);
-#if !defined(GPU_SURFACE_HANDLE_IS_ACCELERATED_WINDOW)
-  if (data->surface_handle())
-    gpu::GpuSurfaceTracker::Get()->RemoveSurface(data->surface_handle());
-#endif
   per_compositor_data_.erase(it);
 }
 
@@ -399,20 +391,6 @@ InProcessContextFactory::CreatePerCompositorData(Compositor* compositor) {
   } else {
 #if defined(GPU_SURFACE_HANDLE_IS_ACCELERATED_WINDOW)
     data->SetSurfaceHandle(widget);
-#else
-    gpu::GpuSurfaceTracker* tracker = gpu::GpuSurfaceTracker::Get();
-    data->SetSurfaceHandle(tracker->AddSurfaceForNativeWidget(
-        gpu::GpuSurfaceTracker::SurfaceRecord(
-            widget
-#if BUILDFLAG(IS_ANDROID)
-            // We have to provide a surface too, but we don't have one.  For
-            // now, we don't proide it, since nobody should ask anyway.
-            // If we ever provide a valid surface here, then GpuSurfaceTracker
-            // can be more strict about enforcing it.
-            ,
-            nullptr, false /* can_be_used_with_surface_control */
-#endif
-            )));
 #endif
   }
 

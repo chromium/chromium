@@ -5,6 +5,8 @@
 #ifndef UI_GL_ANDROID_SCOPED_A_NATIVE_WINDOW_H_
 #define UI_GL_ANDROID_SCOPED_A_NATIVE_WINDOW_H_
 
+#include <cstddef>
+
 #include "ui/gl/gl_export.h"
 
 struct ANativeWindow;
@@ -16,6 +18,8 @@ class ScopedJavaSurface;
 class GL_EXPORT ScopedANativeWindow {
  public:
   static ScopedANativeWindow Wrap(ANativeWindow* a_native_window);
+  ScopedANativeWindow();
+  ScopedANativeWindow(std::nullptr_t);
   explicit ScopedANativeWindow(const ScopedJavaSurface& surface);
   ~ScopedANativeWindow();
 

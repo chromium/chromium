@@ -18,7 +18,6 @@
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -29,6 +28,7 @@
 #include "ui/gl/gl_surface.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "ui/gl/android/scoped_a_native_window.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/gl_surface_egl_surface_control.h"

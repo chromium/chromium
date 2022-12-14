@@ -6,31 +6,15 @@
 
 #include "base/check.h"
 #include "build/build_config.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include <android/native_window_jni.h>
 #include "ui/gl/android/scoped_java_surface.h"
-#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace gpu {
 
-#if BUILDFLAG(IS_ANDROID)
 GpuSurfaceTracker::SurfaceRecord::SurfaceRecord(
-    gfx::AcceleratedWidget widget,
-    const base::android::JavaRef<jobject>& j_surface,
+    gl::ScopedJavaSurface surface,
     bool can_be_used_with_surface_control)
-    : widget(widget),
-      can_be_used_with_surface_control(can_be_used_with_surface_control) {
-  // TODO(liberato): It would be nice to assert |surface|, but we
-  // can't.  in_process_context_factory.cc (for tests) actually calls us without
-  // a Surface from java.  Presumably, nobody uses it.  crbug.com/712717 .
-  if (j_surface)
-    surface = gl::ScopedJavaSurface::AcquireExternalSurface(j_surface);
-}
-#else   // BUILDFLAG(IS_ANDROID)
-GpuSurfaceTracker::SurfaceRecord::SurfaceRecord(gfx::AcceleratedWidget widget)
-    : widget(widget) {}
-#endif  // !BUILDFLAG(IS_ANDROID)
+    : surface(std::move(surface)),
+      can_be_used_with_surface_control(can_be_used_with_surface_control) {}
 
 GpuSurfaceTracker::SurfaceRecord::SurfaceRecord(SurfaceRecord&&) = default;
 
@@ -66,7 +50,6 @@ void GpuSurfaceTracker::RemoveSurface(gpu::SurfaceHandle surface_handle) {
   surface_map_.erase(surface_handle);
 }
 
-#if BUILDFLAG(IS_ANDROID)
 gl::ScopedJavaSurface GpuSurfaceTracker::AcquireJavaSurface(
     gpu::SurfaceHandle surface_handle,
     bool* can_be_used_with_surface_control) {
@@ -80,9 +63,8 @@ gl::ScopedJavaSurface GpuSurfaceTracker::AcquireJavaSurface(
 
   *can_be_used_with_surface_control =
       it->second.can_be_used_with_surface_control;
-  return gl::ScopedJavaSurface::AcquireExternalSurface(j_surface.j_surface());
+  return j_surface.CopyRetainOwnership();
 }
-#endif
 
 std::size_t GpuSurfaceTracker::GetSurfaceCount() {
   base::AutoLock lock(surface_map_lock_);

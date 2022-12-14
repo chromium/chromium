@@ -13,6 +13,7 @@
 #include "device/vr/android/arcore/arcore_shim.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 #include "ui/android/window_android.h"
+#include "ui/gl/android/scoped_java_surface.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;
@@ -80,7 +81,8 @@ void ArCoreJavaUtils::OnDrawingSurfaceReady(
   gpu::SurfaceHandle surface_handle =
       gpu::GpuSurfaceTracker::Get()->AddSurfaceForNativeWidget(
           gpu::GpuSurfaceTracker::SurfaceRecord(
-              window, surface, /*can_be_used_with_surface_control=*/false));
+              gl::ScopedJavaSurface(surface, /*auto_release=*/false),
+              /*can_be_used_with_surface_control=*/false));
   ui::WindowAndroid* root_window =
       ui::WindowAndroid::FromJavaWindowAndroid(java_root_window);
   display::Display::Rotation display_rotation =

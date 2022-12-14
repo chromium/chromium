@@ -21,10 +21,10 @@ jboolean JNI_SurfaceWrapper_canBeUsedWithSurfaceControl(
   return Java_SurfaceWrapper_canBeUsedWithSurfaceControl(env, obj);
 }
 
-base::android::ScopedJavaLocalRef<jobject> JNI_SurfaceWrapper_getSurface(
+base::android::ScopedJavaLocalRef<jobject> JNI_SurfaceWrapper_takeSurface(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj) {
-  return Java_SurfaceWrapper_getSurface(env, obj);
+  return Java_SurfaceWrapper_takeSurface(env, obj);
 }
 
 }  // namespace content.

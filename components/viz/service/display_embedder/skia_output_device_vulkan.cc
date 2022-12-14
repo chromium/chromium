@@ -14,7 +14,6 @@
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_implementation.h"
@@ -28,6 +27,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include <android/native_window_jni.h>
+#include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "ui/gl/android/scoped_a_native_window.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #endif

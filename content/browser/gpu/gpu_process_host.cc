@@ -111,10 +111,6 @@
 #include "content/common/zygote/zygote_handle_impl_linux.h"
 #endif
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-#include "gpu/ipc/common/gpu_surface_tracker.h"
-#endif
-
 #if BUILDFLAG(IS_MAC)
 #include "content/browser/gpu/ca_transaction_gpu_coordinator.h"
 #endif

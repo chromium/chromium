@@ -5,14 +5,10 @@
 #ifndef GPU_IPC_COMMON_GPU_SURFACE_LOOKUP_H_
 #define GPU_IPC_COMMON_GPU_SURFACE_LOOKUP_H_
 
-#include "build/build_config.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/native_widget_types.h"
-
-#if BUILDFLAG(IS_ANDROID)
 #include "ui/gl/android/scoped_java_surface.h"
-#endif
 
 namespace gpu {
 
@@ -30,11 +26,9 @@ class GPU_EXPORT GpuSurfaceLookup {
   static GpuSurfaceLookup* GetInstance();
   static void InitInstance(GpuSurfaceLookup* lookup);
 
-#if BUILDFLAG(IS_ANDROID)
   virtual gl::ScopedJavaSurface AcquireJavaSurface(
       int surface_id,
       bool* can_be_used_with_surface_control) = 0;
-#endif
 };
 
 }  // namespace gpu

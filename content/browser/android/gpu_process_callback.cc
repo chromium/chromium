@@ -30,7 +30,7 @@ void JNI_GpuProcessCallback_CompleteScopedSurfaceRequest(
   base::android::ScopedJavaGlobalRef<jobject> jsurface;
   jsurface.Reset(env, surface);
   ScopedSurfaceRequestManager::GetInstance()->FulfillScopedSurfaceRequest(
-      requestToken, gl::ScopedJavaSurface(jsurface));
+      requestToken, gl::ScopedJavaSurface(jsurface, /*auto_release=*/true));
 }
 
 base::android::ScopedJavaLocalRef<jobject>

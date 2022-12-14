@@ -18,21 +18,23 @@ import org.chromium.build.annotations.MainDex;
 @JNINamespace("content")
 @MainDex
 public class SurfaceWrapper implements Parcelable {
-    private final Surface mSurface;
+    private Surface mSurface;
     private final boolean mCanBeUsedWithSurfaceControl;
 
-    public SurfaceWrapper(Surface surface, boolean canBeUsedWithSurfaceControl) {
+    private SurfaceWrapper(Surface surface, boolean canBeUsedWithSurfaceControl) {
         mSurface = surface;
         mCanBeUsedWithSurfaceControl = canBeUsedWithSurfaceControl;
     }
 
     @CalledByNative
-    public Surface getSurface() {
-        return mSurface;
+    private Surface takeSurface() {
+        Surface surface = mSurface;
+        mSurface = null;
+        return surface;
     }
 
     @CalledByNative
-    public boolean canBeUsedWithSurfaceControl() {
+    private boolean canBeUsedWithSurfaceControl() {
         return mCanBeUsedWithSurfaceControl;
     }
 

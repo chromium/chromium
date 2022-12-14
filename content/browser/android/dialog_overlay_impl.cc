@@ -327,8 +327,8 @@ static jint JNI_DialogOverlayImpl_RegisterSurface(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return gpu::GpuSurfaceTracker::Get()->AddSurfaceForNativeWidget(
       gpu::GpuSurfaceTracker::SurfaceRecord(
-          gfx::kNullAcceleratedWidget, surface,
-          false /* can_be_used_with_surface_control */));
+          gl::ScopedJavaSurface(surface, /*auto_release=*/false),
+          /*can_be_used_with_surface_control=*/false));
 }
 
 static void JNI_DialogOverlayImpl_UnregisterSurface(
