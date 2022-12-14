@@ -11,8 +11,10 @@
 #include "base/check.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -63,10 +65,12 @@ void DlpCopyOrMoveHookDelegate::OnBeginProcessFile(
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
     StatusCallback callback) {
+  StatusCallback continuation = base::BindPostTask(
+      base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&DlpCopyOrMoveHookDelegate::RequestCopyAccess,
                                 base::Unretained(this), source_url,
-                                destination_url, std::move(callback)));
+                                destination_url, std::move(continuation)));
 }
 
 void DlpCopyOrMoveHookDelegate::OnEndCopy(

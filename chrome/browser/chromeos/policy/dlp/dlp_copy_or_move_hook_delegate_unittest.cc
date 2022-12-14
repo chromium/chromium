@@ -11,10 +11,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/task_environment.h"
+#include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_checker.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -98,7 +100,8 @@ class DlpCopyOrMoveHookDelegateTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_{
-      content::BrowserTaskEnvironment::ThreadPoolExecutionMode::QUEUED};
+      content::BrowserTaskEnvironment::ThreadPoolExecutionMode::QUEUED,
+      content::BrowserTaskEnvironment::REAL_IO_THREAD};
   MockDlpRulesManager* manager_;
   std::unique_ptr<DlpCopyOrMoveHookDelegate> hook_{
       std::make_unique<DlpCopyOrMoveHookDelegate>()};
@@ -117,7 +120,11 @@ class DlpCopyOrMoveHookDelegateTest : public testing::Test {
 };
 
 TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileAllow) {
-  base::test::TestFuture<void> continuation;
+  base::RunLoop continuation_run_loop;
+  base::RunLoop status_callback_run_loop;
+  base::MockCallback<base::OnceCallback<void()>> destructor_continuation;
+  EXPECT_CALL(destructor_continuation, Run)
+      .WillOnce([&continuation_run_loop]() { continuation_run_loop.Quit(); });
   EXPECT_CALL(*manager_, GetDlpFilesController)
       .WillOnce(testing::Return(controller_.get()));
 
@@ -125,15 +132,21 @@ TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileAllow) {
                                               base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<2>(
           std::make_unique<file_access::ScopedFileAccessCopy>(
-              true, base::ScopedFD(), continuation.GetCallback())));
+              true, base::ScopedFD(), destructor_continuation.Get())));
 
   auto task_runner = content::GetIOThreadTaskRunner({});
-  base::test::TestFuture<base::File::Error> status;
+  base::MockCallback<base::OnceCallback<void(base::File::Error)>> status;
+  EXPECT_CALL(status, Run)
+      .WillOnce([&status_callback_run_loop](base::File::Error status) {
+        DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+        EXPECT_EQ(base::File::FILE_OK, status);
+        status_callback_run_loop.Quit();
+      });
   task_runner->PostTask(
       FROM_HERE, base::BindOnce(&DlpCopyOrMoveHookDelegate::OnBeginProcessFile,
                                 base::Unretained(hook_.get()), source,
-                                destination, status.GetCallback()));
-  EXPECT_EQ(base::File::FILE_OK, status.Get());
+                                destination, status.Get()));
+  status_callback_run_loop.Run();
   EXPECT_EQ(1ul, GetAccessMap().size());
   EXPECT_TRUE(GetAccessMap().contains(
       std::make_pair(source.path(), destination.path())));
@@ -141,7 +154,7 @@ TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileAllow) {
       FROM_HERE,
       base::BindOnce(&DlpCopyOrMoveHookDelegate::OnEndCopy,
                      base::Unretained(hook_.get()), source, destination));
-  EXPECT_TRUE(continuation.Wait());
+  continuation_run_loop.Run();
   EXPECT_EQ(0ul, GetAccessMap().size());
 }
 
@@ -156,12 +169,19 @@ TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileDeny) {
                                                           base::ScopedFD())));
 
   auto task_runner = content::GetIOThreadTaskRunner({});
-  base::test::TestFuture<base::File::Error> status;
+  base::RunLoop status_callback_run_loop;
+  base::MockCallback<base::OnceCallback<void(base::File::Error)>> status;
+  EXPECT_CALL(status, Run)
+      .WillOnce([&status_callback_run_loop](base::File::Error status) {
+        DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+        EXPECT_EQ(base::File::FILE_ERROR_SECURITY, status);
+        status_callback_run_loop.Quit();
+      });
   task_runner->PostTask(
       FROM_HERE, base::BindOnce(&DlpCopyOrMoveHookDelegate::OnBeginProcessFile,
                                 base::Unretained(hook_.get()), source,
-                                destination, status.GetCallback()));
-  EXPECT_EQ(base::File::FILE_ERROR_SECURITY, status.Get());
+                                destination, status.Get()));
+  status_callback_run_loop.Run();
 }
 
 TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileNoManager) {
@@ -172,24 +192,38 @@ TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileNoManager) {
             return nullptr;
           }));
   auto task_runner = content::GetIOThreadTaskRunner({});
-  base::test::TestFuture<base::File::Error> status;
+  base::RunLoop status_callback_run_loop;
+  base::MockCallback<base::OnceCallback<void(base::File::Error)>> status;
+  EXPECT_CALL(status, Run)
+      .WillOnce([&status_callback_run_loop](base::File::Error status) {
+        DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+        EXPECT_EQ(base::File::FILE_OK, status);
+        status_callback_run_loop.Quit();
+      });
   task_runner->PostTask(
       FROM_HERE, base::BindOnce(&DlpCopyOrMoveHookDelegate::OnBeginProcessFile,
                                 base::Unretained(hook_.get()), source,
-                                destination, status.GetCallback()));
-  EXPECT_EQ(base::File::FILE_OK, status.Get());
+                                destination, status.Get()));
+  status_callback_run_loop.Run();
 }
 
 TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileNoController) {
   EXPECT_CALL(*manager_, GetDlpFilesController)
       .WillOnce(testing::Return(nullptr));
   auto task_runner = content::GetIOThreadTaskRunner({});
-  base::test::TestFuture<base::File::Error> status;
+  base::RunLoop status_callback_run_loop;
+  base::MockCallback<base::OnceCallback<void(base::File::Error)>> status;
+  EXPECT_CALL(status, Run)
+      .WillOnce([&status_callback_run_loop](base::File::Error status) {
+        DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+        EXPECT_EQ(base::File::FILE_OK, status);
+        status_callback_run_loop.Quit();
+      });
   task_runner->PostTask(
       FROM_HERE, base::BindOnce(&DlpCopyOrMoveHookDelegate::OnBeginProcessFile,
                                 base::Unretained(hook_.get()), source,
-                                destination, status.GetCallback()));
-  EXPECT_EQ(base::File::FILE_OK, status.Get());
+                                destination, status.Get()));
+  status_callback_run_loop.Run();
 }
 
 }  // namespace policy
