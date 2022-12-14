@@ -16,8 +16,6 @@
 
 namespace gpu {
 
-// TODO (hitawala): Add support for multiplanar formats.
-
 int BitsPerPixel(viz::SharedImageFormat format) {
   return viz::BitsPerPixel(format.resource_format());
 }
@@ -156,21 +154,62 @@ GLenum TextureStorageFormat(viz::SharedImageFormat format,
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
+// TODO (hitawala): Add support for multiplanar formats.
 bool HasVkFormat(viz::SharedImageFormat format) {
   return viz::HasVkFormat(format.resource_format());
 }
 
+// TODO (hitawala): Add support for multiplanar formats.
 VkFormat ToVkFormat(viz::SharedImageFormat format) {
   return viz::ToVkFormat(format.resource_format());
 }
 #endif
 
+// TODO (hitawala): Add support for multiplanar formats.
 wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
-  return viz::ToDawnFormat(format.resource_format());
+  if (format.is_single_plane()) {
+    switch (format.resource_format()) {
+      case viz::ResourceFormat::RGBA_8888:
+      case viz::ResourceFormat::RGBX_8888:
+        return wgpu::TextureFormat::RGBA8Unorm;
+      case viz::ResourceFormat::BGRA_8888:
+      case viz::ResourceFormat::BGRX_8888:
+        return wgpu::TextureFormat::BGRA8Unorm;
+      case viz::ResourceFormat::RED_8:
+      case viz::ResourceFormat::ALPHA_8:
+      case viz::ResourceFormat::LUMINANCE_8:
+        return wgpu::TextureFormat::R8Unorm;
+      case viz::ResourceFormat::RG_88:
+        return wgpu::TextureFormat::RG8Unorm;
+      case viz::ResourceFormat::RGBA_F16:
+        return wgpu::TextureFormat::RGBA16Float;
+      case viz::ResourceFormat::RGBA_1010102:
+        return wgpu::TextureFormat::RGB10A2Unorm;
+      case viz::ResourceFormat::YUV_420_BIPLANAR:
+        return wgpu::TextureFormat::R8BG8Biplanar420Unorm;
+      // TODO(crbug.com/1175525): Add a R8BG8A8Triplanar420Unorm
+      // format for dawn.
+      case viz::ResourceFormat::YUVA_420_TRIPLANAR:
+      case viz::ResourceFormat::RGBA_4444:
+      case viz::ResourceFormat::RGB_565:
+      case viz::ResourceFormat::BGR_565:
+      case viz::ResourceFormat::R16_EXT:
+      case viz::ResourceFormat::RG16_EXT:
+      case viz::ResourceFormat::BGRA_1010102:
+      case viz::ResourceFormat::YVU_420:
+      case viz::ResourceFormat::ETC1:
+      case viz::ResourceFormat::LUMINANCE_F16:
+      case viz::ResourceFormat::P010:
+        break;
+    }
+    return wgpu::TextureFormat::Undefined;
+  }
+  NOTREACHED();
+  return wgpu::TextureFormat::Undefined;
 }
 
 WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format) {
-  return viz::ToWGPUFormat(format.resource_format());
+  return static_cast<WGPUTextureFormat>(ToDawnFormat(format));
 }
 
 }  // namespace gpu

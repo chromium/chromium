@@ -8,6 +8,7 @@
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/vulkan/vulkan_command_buffer.h"
 #include "gpu/vulkan/vulkan_command_pool.h"
@@ -57,10 +58,11 @@ base::flat_map<VkFormat, VkImageUsageFlags> CreateImageUsageCache(
   base::flat_map<VkFormat, VkImageUsageFlags> image_usage_cache;
 
   for (int i = 0; i <= static_cast<int>(viz::RESOURCE_FORMAT_MAX); ++i) {
-    viz::ResourceFormat format = static_cast<viz::ResourceFormat>(i);
-    if (!viz::HasVkFormat(format))
+    viz::SharedImageFormat format = viz::SharedImageFormat::SinglePlane(
+        static_cast<viz::ResourceFormat>(i));
+    if (!HasVkFormat(format))
       continue;
-    VkFormat vk_format = viz::ToVkFormat(format);
+    VkFormat vk_format = ToVkFormat(format);
     DCHECK_NE(vk_format, VK_FORMAT_UNDEFINED);
     VkFormatProperties format_props = {};
     vkGetPhysicalDeviceFormatProperties(vk_physical_device, vk_format,

@@ -572,48 +572,6 @@ VkFormat ToVkFormat(ResourceFormat format) {
 }
 #endif
 
-wgpu::TextureFormat ToDawnFormat(ResourceFormat format) {
-  switch (format) {
-    case RGBA_8888:
-    case RGBX_8888:
-      return wgpu::TextureFormat::RGBA8Unorm;
-    case BGRA_8888:
-    case BGRX_8888:
-      return wgpu::TextureFormat::BGRA8Unorm;
-    case RED_8:
-    case ALPHA_8:
-    case LUMINANCE_8:
-      return wgpu::TextureFormat::R8Unorm;
-    case RG_88:
-      return wgpu::TextureFormat::RG8Unorm;
-    case RGBA_F16:
-      return wgpu::TextureFormat::RGBA16Float;
-    case RGBA_1010102:
-      return wgpu::TextureFormat::RGB10A2Unorm;
-    case YUV_420_BIPLANAR:
-      return wgpu::TextureFormat::R8BG8Biplanar420Unorm;
-    // TODO(crbug.com/1175525): Add a R8BG8A8Triplanar420Unorm
-    // format for dawn.
-    case YUVA_420_TRIPLANAR:
-    case RGBA_4444:
-    case RGB_565:
-    case BGR_565:
-    case R16_EXT:
-    case RG16_EXT:
-    case BGRA_1010102:
-    case YVU_420:
-    case ETC1:
-    case LUMINANCE_F16:
-    case P010:
-      break;
-  }
-  return wgpu::TextureFormat::Undefined;
-}
-
-WGPUTextureFormat ToWGPUFormat(ResourceFormat format) {
-  return static_cast<WGPUTextureFormat>(ToDawnFormat(format));
-}
-
 SkColorType ToClosestSkColorType(bool gpu_compositing,
                                  SharedImageFormat format,
                                  int plane_index) {

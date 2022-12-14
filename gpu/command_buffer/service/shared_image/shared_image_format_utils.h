@@ -34,12 +34,12 @@ struct GLFormatDesc {
 // A set of utility functions to get the equivalent GPU API (GL, Vulkan, Dawn,
 // Metal) type/format information for a given SharedImageFormat. These functions
 // should ideally only be called from the GPU service and viz.
-// WARNING: For all following functions, the `format` must be single planar.
-// TODO(hitawala): Add multiplanar format support.
 
+// Only use this function with single planar formats.
 // Returns the bits per pixel for given `format`.
 GPU_GLES2_EXPORT int BitsPerPixel(viz::SharedImageFormat format);
 
+// Only use this function with single planar formats.
 // Returns BufferFormat for given `format`.
 GPU_GLES2_EXPORT gfx::BufferFormat ToBufferFormat(
     viz::SharedImageFormat format);
@@ -81,6 +81,7 @@ GPU_GLES2_EXPORT GLenum TextureStorageFormat(viz::SharedImageFormat format,
 
 // Following functions return the appropriate Vulkan format for a
 // SharedImageFormat.
+// TODO(hitawala): Add multiplanar format support.
 #if BUILDFLAG(ENABLE_VULKAN)
 // Returns true if given `format` is supported by Vulkan.
 GPU_GLES2_EXPORT bool HasVkFormat(viz::SharedImageFormat format);
@@ -90,10 +91,12 @@ GPU_GLES2_EXPORT VkFormat ToVkFormat(viz::SharedImageFormat format);
 
 // Following functions return the appropriate WebGPU/Dawn format for a
 // SharedImageFormat.
+// TODO (hitawala): Add support for multiplanar formats.
 // Returns wgpu::TextureFormat format for given `format`.
 GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnFormat(
     viz::SharedImageFormat format);
-// Returns WGPUTextureFormat format for given `format`.
+// Same as ToDawnFormat, except it casts from wgpu::TextureFormat to
+// WGPUTextureFormat instead.
 GPU_GLES2_EXPORT WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format);
 
 // Following function return the appropriate Metal format for a

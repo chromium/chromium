@@ -292,18 +292,17 @@ IOSurfaceImageBackingFactory::ProduceDawn(
 #if BUILDFLAG(USE_DAWN)
   // See comments in IOSurfaceImageBackingFactory::CreateSharedImage
   // regarding RGBA versus BGRA.
-  viz::ResourceFormat actual_format = (backing->format()).resource_format();
-  if (actual_format == viz::RGBA_8888)
-    actual_format = viz::BGRA_8888;
+  viz::SharedImageFormat actual_format = backing->format();
+  if (actual_format == viz::SharedImageFormat::kRGBA_8888)
+    actual_format = viz::SharedImageFormat::kBGRA_8888;
 
   // TODO(crbug.com/1293514): Remove this if condition after using single
   // multiplanar mailbox and actual_format could report multiplanar format
   // correctly.
   if (IOSurfaceGetPixelFormat(io_surface) == '420v')
-    actual_format = viz::YUV_420_BIPLANAR;
+    actual_format = viz::SharedImageFormat::SinglePlane(viz::YUV_420_BIPLANAR);
 
-  absl::optional<WGPUTextureFormat> wgpu_format =
-      viz::ToWGPUFormat(actual_format);
+  absl::optional<WGPUTextureFormat> wgpu_format = ToWGPUFormat(actual_format);
   if (wgpu_format.value() == WGPUTextureFormat_Undefined)
     return nullptr;
 

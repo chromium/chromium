@@ -61,6 +61,8 @@ class SharedImageFormat {
   };
 
   static const SharedImageFormat kRGBA_8888;
+  static const SharedImageFormat kBGRA_8888;
+  static const SharedImageFormat kRGBA_F16;
 
   SharedImageFormat() = default;
   static constexpr SharedImageFormat SinglePlane(
@@ -194,6 +196,10 @@ class SharedImageFormat {
 
 constexpr SharedImageFormat SharedImageFormat::kRGBA_8888 =
     SharedImageFormat::SinglePlane(ResourceFormat::RGBA_8888);
+constexpr SharedImageFormat SharedImageFormat::kBGRA_8888 =
+    SharedImageFormat::SinglePlane(ResourceFormat::BGRA_8888);
+constexpr SharedImageFormat SharedImageFormat::kRGBA_F16 =
+    SharedImageFormat::SinglePlane(ResourceFormat::RGBA_F16);
 
 }  // namespace viz
 

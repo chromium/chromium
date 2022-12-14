@@ -74,13 +74,6 @@ VIZ_RESOURCE_FORMAT_EXPORT bool HasVkFormat(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT VkFormat ToVkFormat(ResourceFormat format);
 #endif
 
-VIZ_RESOURCE_FORMAT_EXPORT wgpu::TextureFormat ToDawnFormat(
-    ResourceFormat format);
-// Same as ToDawnFormat, except it casts from wgpu::TextureFormat to
-// WGPUTextureFormat instead.
-VIZ_RESOURCE_FORMAT_EXPORT WGPUTextureFormat
-ToWGPUFormat(ResourceFormat format);
-
 // Gets the closest SkColorType for a given `format` and `plane_index`. For
 // single planar formats (eg. RGBA) the plane_index is not required and is
 // default to 0; in such cases the corresponding function with ResourceFormat is
