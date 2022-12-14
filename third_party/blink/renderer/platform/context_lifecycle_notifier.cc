@@ -66,7 +66,7 @@ void ContextLifecycleNotifier::NotifyContextDestroyed() {
     int* observer_ids = new int[num_observers];
 
     if (recordreplay::IsRecording()) {
-      for (size_t i = 0; i < observers.size(); i++) {
+      for (wtf_size_t i = 0; i < observers.size(); i++) {
         int id = recordreplay::PointerId(observers[i]);
         CHECK(id);
         observer_ids[i] = id;
@@ -82,7 +82,7 @@ void ContextLifecycleNotifier::NotifyContextDestroyed() {
         int id = recordreplay::PointerId(observer);
         CHECK(id);
         bool found = false;
-        for (size_t i = 0; i < num_observers; i++) {
+        for (wtf_size_t i = 0; i < num_observers; i++) {
           if (observer_ids[i] == id) {
             found = true;
             break;
