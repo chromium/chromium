@@ -193,8 +193,6 @@ target(link_target_type, "gles2_sources") {
     "memory_program_cache.h",
     "multi_draw_manager.cc",
     "multi_draw_manager.h",
-    "passthrough_abstract_texture_impl.cc",
-    "passthrough_abstract_texture_impl.h",
     "passthrough_discardable_manager.cc",
     "passthrough_discardable_manager.h",
     "passthrough_program_cache.cc",
@@ -282,8 +280,6 @@ target(link_target_type, "gles2_sources") {
     "texture_manager.h",
     "transform_feedback_manager.cc",
     "transform_feedback_manager.h",
-    "validating_abstract_texture_impl.cc",
-    "validating_abstract_texture_impl.h",
     "value_validator.h",
     "vertex_array_manager.cc",
     "vertex_array_manager.h",
@@ -296,6 +292,15 @@ target(link_target_type, "gles2_sources") {
     "webgpu_decoder.cc",
     "webgpu_decoder.h",
   ]
+
+  if (!is_android) {
+    sources += [
+      "passthrough_abstract_texture_impl.cc",
+      "passthrough_abstract_texture_impl.h",
+      "validating_abstract_texture_impl.cc",
+      "validating_abstract_texture_impl.h",
+    ]
+  }
 
   if (use_egl) {
     sources += [

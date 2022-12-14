@@ -762,6 +762,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
 
   ErrorState* GetErrorState() override;
   const ContextState* GetContextState() override { return &state_; }
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AbstractTexture> CreateAbstractTexture(GLenum target,
                                                          GLenum internal_format,
                                                          GLsizei width,
@@ -770,6 +771,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
                                                          GLint border,
                                                          GLenum format,
                                                          GLenum type) override;
+#endif
 
   scoped_refptr<ShaderTranslatorInterface> GetTranslator(GLenum type) override;
   scoped_refptr<ShaderTranslatorInterface> GetOrCreateTranslator(GLenum type);
@@ -2805,12 +2807,14 @@ class GLES2DecoderImpl : public GLES2Decoder,
 
   SamplerState default_sampler_state_;
 
+#if !BUILDFLAG(IS_ANDROID)
   // All currently outstanding AbstractTextures that we've created.
   std::set<ValidatingAbstractTextureImpl*> abstract_textures_;
 
   // Set of texture refs that are pending destruction, at some point in the
   // future when our context is current.
   std::set<scoped_refptr<TextureRef>> texture_refs_pending_destruction_;
+#endif
 
   const raw_ptr<ImageFactory> image_factory_for_nacl_swapchain_;
 
@@ -4844,9 +4848,11 @@ bool GLES2DecoderImpl::MakeCurrent() {
   // Rebind textures if the service ids may have changed.
   RestoreAllExternalTextureBindingsIfNeeded();
 
+#if !BUILDFLAG(IS_ANDROID)
   // Since we have a context now, take the opportunity to drop any TextureRefs
   // that are pending destruction.
   texture_refs_pending_destruction_.clear();
+#endif
 
   return true;
 }
@@ -5300,6 +5306,7 @@ void GLES2DecoderImpl::Destroy(bool have_context) {
   if (surface_)
     surface_->PrepareToDestroy(have_context);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Destroy any textures that are pending destruction.
   if (!have_context) {
     for (auto iter : texture_refs_pending_destruction_)
@@ -5311,6 +5318,7 @@ void GLES2DecoderImpl::Destroy(bool have_context) {
   for (auto* iter : abstract_textures_)
     iter->OnDecoderWillDestroy(have_context);
   abstract_textures_.clear();
+#endif
 
   if (external_default_framebuffer_) {
     external_default_framebuffer_->Destroy(have_context);
@@ -17240,9 +17248,13 @@ void GLES2DecoderImpl::ProcessDescheduleUntilFinished() {
 }
 
 bool GLES2DecoderImpl::HasMoreIdleWork() const {
-  return !pending_readpixel_fences_.empty() ||
-         gpu_tracer_->HasTracesToProcess() ||
-         !texture_refs_pending_destruction_.empty();
+  bool has_more_idle_work =
+      !pending_readpixel_fences_.empty() || gpu_tracer_->HasTracesToProcess();
+#if !BUILDFLAG(IS_ANDROID)
+  has_more_idle_work =
+      has_more_idle_work || !texture_refs_pending_destruction_.empty();
+#endif
+  return has_more_idle_work;
 }
 
 void GLES2DecoderImpl::PerformIdleWork() {
@@ -19427,6 +19439,7 @@ void GLES2DecoderImpl::DoWindowRectanglesEXT(GLenum mode,
   state_.UpdateWindowRectangles();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<AbstractTexture> GLES2DecoderImpl::CreateAbstractTexture(
     GLenum target,
     GLenum internal_format,
@@ -19474,6 +19487,7 @@ void GLES2DecoderImpl::OnAbstractTextureDestroyed(
   else
     texture_refs_pending_destruction_.insert(std::move(texture_ref));
 }
+#endif
 
 void GLES2DecoderImpl::DoSetReadbackBufferShadowAllocationINTERNAL(
     GLuint buffer_id,

@@ -96,26 +96,6 @@ void ValidatingAbstractTextureImpl::BindImageInternal(gl::GLImage* image,
                                        image);
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void ValidatingAbstractTextureImpl::BindStreamTextureImage(gl::GLImage* image,
-                                                           GLuint service_id) {
-  DCHECK(image);
-  DCHECK(!decoder_managed_image_);
-
-  if (!texture_ref_)
-    return;
-
-  const GLint level = 0;
-  const GLuint target = texture_ref_->texture()->target();
-
-  // We set the state to UNBOUND, so that CopyTexImage is called.
-  GetTextureManager()->SetLevelStreamTextureImage(
-      texture_ref_.get(), target, level, image, Texture::ImageState::UNBOUND,
-      service_id);
-  SetCleared();
-}
-#endif
-
 gl::GLImage* ValidatingAbstractTextureImpl::GetImageForTesting() const {
   if (!texture_ref_)
     return nullptr;

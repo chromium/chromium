@@ -483,6 +483,7 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   gles2::ContextGroup* GetContextGroup() override;
   gles2::ErrorState* GetErrorState() override;
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<gles2::AbstractTexture> CreateAbstractTexture(
       GLenum target,
       GLenum internal_format,
@@ -492,6 +493,7 @@ class RasterDecoderImpl final : public RasterDecoder,
       GLint border,
       GLenum format,
       GLenum type) override;
+#endif
   bool IsCompressedTextureFormat(unsigned format) override;
   bool ClearLevel(gles2::Texture* texture,
                   unsigned target,
@@ -1599,6 +1601,7 @@ gles2::ErrorState* RasterDecoderImpl::GetErrorState() {
   return error_state_.get();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<gles2::AbstractTexture>
 RasterDecoderImpl::CreateAbstractTexture(GLenum target,
                                          GLenum internal_format,
@@ -1610,6 +1613,7 @@ RasterDecoderImpl::CreateAbstractTexture(GLenum target,
                                          GLenum type) {
   return nullptr;
 }
+#endif
 
 bool RasterDecoderImpl::IsCompressedTextureFormat(unsigned format) {
   return feature_info()->validators()->compressed_texture_format.IsValid(

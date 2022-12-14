@@ -271,6 +271,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     NOTREACHED();
     return nullptr;
   }
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<gles2::AbstractTexture> CreateAbstractTexture(
       GLenum target,
       GLenum internal_format,
@@ -283,6 +284,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     NOTREACHED();
     return nullptr;
   }
+#endif
   bool IsCompressedTextureFormat(unsigned format) override {
     NOTREACHED();
     return false;

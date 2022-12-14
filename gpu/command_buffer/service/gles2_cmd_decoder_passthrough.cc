@@ -335,6 +335,7 @@ GLES2DecoderPassthroughImpl::TexturePendingBinding::operator=(
 PassthroughResources::PassthroughResources() : texture_object_map(nullptr) {}
 PassthroughResources::~PassthroughResources() = default;
 
+#if !BUILDFLAG(IS_ANDROID)
 void PassthroughResources::DestroyPendingTextures(bool has_context) {
   if (!has_context) {
     for (scoped_refptr<TexturePassthrough> iter :
@@ -348,6 +349,7 @@ void PassthroughResources::DestroyPendingTextures(bool has_context) {
 bool PassthroughResources::HasTexturesPendingDestruction() const {
   return !textures_pending_destruction.empty();
 }
+#endif
 
 void PassthroughResources::Destroy(gl::GLApi* api,
                                    gl::ProgressReporter* progress_reporter) {
@@ -412,7 +414,9 @@ void PassthroughResources::Destroy(gl::GLApi* api,
   }
   texture_object_map.Clear();
   texture_shared_image_map.clear();
+#if !BUILDFLAG(IS_ANDROID)
   DestroyPendingTextures(have_context);
+#endif
 }
 
 PassthroughResources::SharedImageData::SharedImageData() = default;
@@ -1313,6 +1317,7 @@ void GLES2DecoderPassthroughImpl::Destroy(bool have_context) {
     }
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   if (resources_) {  // Initialize may not have been called yet.
     for (PassthroughAbstractTextureImpl* iter : abstract_textures_) {
       resources_->textures_pending_destruction.insert(
@@ -1323,6 +1328,7 @@ void GLES2DecoderPassthroughImpl::Destroy(bool have_context) {
       resources_->DestroyPendingTextures(/*has_context=*/true);
     }
   }
+#endif
 
   for (PendingQuery& pending_query : pending_queries_) {
     if (!have_context) {
@@ -1658,7 +1664,9 @@ bool GLES2DecoderPassthroughImpl::MakeCurrent() {
   ProcessReadPixels(false);
   ProcessQueries(false);
 
+#if !BUILDFLAG(IS_ANDROID)
   resources_->DestroyPendingTextures(/*has_context=*/true);
+#endif
 
   return true;
 }
@@ -1881,8 +1889,13 @@ void GLES2DecoderPassthroughImpl::ProcessPendingQueries(bool did_finish) {
 }
 
 bool GLES2DecoderPassthroughImpl::HasMoreIdleWork() const {
-  return gpu_tracer_->HasTracesToProcess() || !pending_read_pixels_.empty() ||
-         resources_->HasTexturesPendingDestruction();
+  bool has_more_idle_work =
+      gpu_tracer_->HasTracesToProcess() || !pending_read_pixels_.empty();
+#if !BUILDFLAG(IS_ANDROID)
+  has_more_idle_work =
+      has_more_idle_work || resources_->HasTexturesPendingDestruction();
+#endif
+  return has_more_idle_work;
 }
 
 void GLES2DecoderPassthroughImpl::PerformIdleWork() {
@@ -1968,6 +1981,7 @@ gpu::gles2::ErrorState* GLES2DecoderPassthroughImpl::GetErrorState() {
 void GLES2DecoderPassthroughImpl::WaitForReadPixels(
     base::OnceClosure callback) {}
 
+#if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<AbstractTexture>
 GLES2DecoderPassthroughImpl::CreateAbstractTexture(GLenum target,
                                                    GLenum internal_format,
@@ -2004,6 +2018,7 @@ void GLES2DecoderPassthroughImpl::OnAbstractTextureDestroyed(
     resources_->textures_pending_destruction.insert(std::move(texture));
   }
 }
+#endif
 
 bool GLES2DecoderPassthroughImpl::WasContextLost() const {
   return context_lost_;
