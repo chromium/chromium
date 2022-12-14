@@ -37,8 +37,7 @@ constexpr int kBytesPerRgbPixel = 4;
 constexpr int kVp9I420ProfileNumber = 0;
 constexpr int kVp9I444ProfileNumber = 1;
 
-// Magic encoder constants for adaptive quantization strategy.
-constexpr int kVp9AqModeNone = 0;
+// Magic encoder constant for adaptive quantization strategy.
 constexpr int kVp9AqModeCyclicRefresh = 3;
 
 constexpr int kDefaultTargetBitrateKbps = 1000;
@@ -111,25 +110,17 @@ void SetVp8CodecParameters(vpx_codec_enc_cfg_t* config,
 
 void SetVp9CodecParameters(vpx_codec_enc_cfg_t* config,
                            const webrtc::DesktopSize& size,
-                           bool lossless_color,
-                           bool lossless_encode) {
+                           bool lossless_color) {
   SetCommonCodecParameters(config, size);
 
   // Configure VP9 for I420 or I444 source frames.
   config->g_profile =
       lossless_color ? kVp9I444ProfileNumber : kVp9I420ProfileNumber;
 
-  if (lossless_encode) {
-    // Disable quantization entirely, putting the encoder in "lossless" mode.
-    config->rc_min_quantizer = 0;
-    config->rc_max_quantizer = 0;
-    config->rc_end_usage = VPX_VBR;
-  } else {
-    config->rc_end_usage = VPX_CBR;
-    // In the absence of a good bandwidth estimator set the target bitrate to a
-    // conservative default.
-    config->rc_target_bitrate = 500;
-  }
+  config->rc_end_usage = VPX_CBR;
+  // In the absence of a good bandwidth estimator set the target bitrate to a
+  // conservative default.
+  config->rc_target_bitrate = 500;
 }
 
 void SetVp8CodecOptions(vpx_codec_ctx_t* codec) {
@@ -144,9 +135,7 @@ void SetVp8CodecOptions(vpx_codec_ctx_t* codec) {
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set noise sensitivity";
 }
 
-void SetVp9CodecOptions(vpx_codec_ctx_t* codec,
-                        bool lossless_encode,
-                        int encoder_speed) {
+void SetVp9CodecOptions(vpx_codec_ctx_t* codec, int encoder_speed) {
   // Note that this knob uses the same parameter name as VP8.
   vpx_codec_err_t ret =
       vpx_codec_control(codec, VP8E_SET_CPUUSED, encoder_speed);
@@ -170,9 +159,8 @@ void SetVp9CodecOptions(vpx_codec_ctx_t* codec,
   ret = vpx_codec_control(codec, VP9E_SET_TUNE_CONTENT, VP9E_CONTENT_SCREEN);
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set screen content mode";
 
-  // Set cyclic refresh (aka "top-off") only for lossy encoding.
-  int aq_mode = lossless_encode ? kVp9AqModeNone : kVp9AqModeCyclicRefresh;
-  ret = vpx_codec_control(codec, VP9E_SET_AQ_MODE, aq_mode);
+  // Set cyclic refresh (aka "top-off") for lossy encoding.
+  ret = vpx_codec_control(codec, VP9E_SET_AQ_MODE, kVp9AqModeCyclicRefresh);
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set aq mode";
 }
 
@@ -195,20 +183,6 @@ WebrtcVideoEncoderVpx::~WebrtcVideoEncoderVpx() = default;
 void WebrtcVideoEncoderVpx::SetTickClockForTests(
     const base::TickClock* tick_clock) {
   clock_ = tick_clock;
-}
-
-void WebrtcVideoEncoderVpx::SetLosslessEncode(bool want_lossless) {
-  if (!use_vp9_)
-    return;
-
-  if (want_lossless != lossless_encode_) {
-    lossless_encode_ = want_lossless;
-    SetEncoderSpeed(lossless_encode_ ? kVp9LosslessEncodeSpeed
-                                     : kVp9DefaultEncoderSpeed);
-    if (codec_)
-      Configure(webrtc::DesktopSize(codec_->config.enc->g_w,
-                                    codec_->config.enc->g_h));
-  }
 }
 
 void WebrtcVideoEncoderVpx::SetLosslessColor(bool want_lossless) {
@@ -301,7 +275,7 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
 
   if (use_active_map_) {
     // VP8 doesn't return an active map so we assume it hasn't changed.
-    if (use_vp9_ && !lossless_encode_) {
+    if (use_vp9_) {
       ret = vpx_codec_control(codec_.get(), VP9E_GET_ACTIVEMAP, &act_map);
       DCHECK_EQ(ret, VPX_CODEC_OK)
           << "Failed to fetch active map: " << vpx_codec_err_to_string(ret)
@@ -373,13 +347,10 @@ WebrtcVideoEncoderVpx::WebrtcVideoEncoderVpx(bool use_vp9)
 
 void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
   DCHECK(use_vp9_ || !lossless_color_);
-  DCHECK(use_vp9_ || !lossless_encode_);
 
   if (use_vp9_) {
     VLOG(0) << "Configuring VP9 encoder with lossless-color="
-            << (lossless_color_ ? "true" : "false")
-            << ", lossless-encode=" << (lossless_encode_ ? "true" : "false")
-            << ".";
+            << (lossless_color_ ? "true" : "false") << ".";
   }
 
   // Tear down |image_| if it doesn't match the new frame size.
@@ -406,7 +377,7 @@ void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
 
   // Customize the default configuration to our needs.
   if (use_vp9_) {
-    SetVp9CodecParameters(&config_, size, lossless_color_, lossless_encode_);
+    SetVp9CodecParameters(&config_, size, lossless_color_);
   } else {
     SetVp8CodecParameters(&config_, size);
   }
@@ -425,7 +396,7 @@ void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
 
   // Apply further customizations to the codec now it's initialized.
   if (use_vp9_) {
-    SetVp9CodecOptions(codec_.get(), lossless_encode_, vp9_encoder_speed_);
+    SetVp9CodecOptions(codec_.get(), vp9_encoder_speed_);
   } else {
     SetVp8CodecOptions(codec_.get());
   }

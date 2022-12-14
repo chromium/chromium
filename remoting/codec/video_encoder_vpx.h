@@ -38,7 +38,6 @@ class VideoEncoderVpx : public VideoEncoder {
   void SetTickClockForTests(const base::TickClock* tick_clock);
 
   // VideoEncoder interface.
-  void SetLosslessEncode(bool want_lossless) override;
   void SetLosslessColor(bool want_lossless) override;
   std::unique_ptr<VideoPacket> Encode(
       const webrtc::DesktopFrame& frame) override;
@@ -47,7 +46,7 @@ class VideoEncoderVpx : public VideoEncoder {
   explicit VideoEncoderVpx(bool use_vp9);
 
   // (Re)Configures this instance to encode frames of the specified |size|,
-  // with the configured lossless color & encoding modes.
+  // with the configured lossless color mode.
   void Configure(const webrtc::DesktopSize& size);
 
   // Prepares |image_| for encoding. Writes updated rectangles into
@@ -66,9 +65,7 @@ class VideoEncoderVpx : public VideoEncoder {
   // True if the encoder is for VP9, false for VP8.
   const bool use_vp9_;
 
-  // Options controlling VP9 encode quantization and color space.
-  // These are always off (false) for VP8.
-  bool lossless_encode_ = false;
+  // Option controlling VP9 color space, this is always off (false) for VP8.
   bool lossless_color_ = false;
 
   // Holds the initialized & configured codec.

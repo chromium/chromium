@@ -22,8 +22,8 @@ const uint32_t kBlueColor = 0x0000ff;
 const uint32_t kGreenColor = 0x00ff00;
 
 // Creates a frame stippled between blue and red pixels, which is useful for
-// lossy/lossless encode and color tests. By default all pixels in the frame
-// are included in the updated_region().
+// lossy/lossless color tests. By default all pixels in the frame are included
+// in the updated_region().
 static std::unique_ptr<webrtc::DesktopFrame> CreateTestFrame(
     const webrtc::DesktopSize& frame_size) {
   std::unique_ptr<webrtc::DesktopFrame> frame(
@@ -48,34 +48,8 @@ TEST(VideoEncoderVpxTest, Vp8) {
 
 TEST(VideoEncoderVpxTest, Vp9) {
   std::unique_ptr<VideoEncoderVpx> encoder(VideoEncoderVpx::CreateForVP9());
-  // VP9 encoder defaults to lossless encode and lossy (I420) color.
+  // VP9 encoder defaults to lossy (I420) color.
   TestVideoEncoder(encoder.get(), false);
-}
-
-// Test that the VP9 encoder can switch between lossy & lossless encode.
-TEST(VideoEncoderVpxTest, Vp9LossyEncodeSwitching) {
-  std::unique_ptr<VideoEncoderVpx> encoder(VideoEncoderVpx::CreateForVP9());
-
-  webrtc::DesktopSize frame_size(100, 100);
-  std::unique_ptr<webrtc::DesktopFrame> frame(CreateTestFrame(frame_size));
-
-  // Lossy encode the first frame.
-  encoder->SetLosslessEncode(false);
-  std::unique_ptr<VideoPacket> lossy_packet = encoder->Encode(*frame);
-
-  // Lossless encode the second frame.
-  encoder->SetLosslessEncode(true);
-  std::unique_ptr<VideoPacket> lossless_packet = encoder->Encode(*frame);
-  // Lossless encode is so good that the frames are smaller than the lossy
-  // encodes. This comparison needs to be revisited.
-  // http://crbug.com/439166
-  // EXPECT_GT(lossless_packet->data().size(), lossy_packet->data().size());
-
-  // Lossy encode one more frame.
-  encoder->SetLosslessEncode(false);
-  lossy_packet = encoder->Encode(*frame);
-  // Same bug as above.
-  // EXPECT_LT(lossy_packet->data().size(), lossless_packet->data().size());
 }
 
 // Test that the VP9 encoder can switch between lossy & lossless color.
@@ -106,7 +80,6 @@ TEST(VideoEncoderVpxTest, Vp8IgnoreLossy) {
   std::unique_ptr<webrtc::DesktopFrame> frame(CreateTestFrame(frame_size));
 
   // Encode a frame, to give the encoder a chance to crash if misconfigured.
-  encoder->SetLosslessEncode(true);
   encoder->SetLosslessColor(true);
   std::unique_ptr<VideoPacket> packet = encoder->Encode(*frame);
   EXPECT_TRUE(packet);
@@ -169,15 +142,8 @@ TEST(VideoEncoderVpxTest, Vp8EncodeUnchangedFrame) {
   TestVideoEncoderEmptyFrames(encoder.get(), 0);
 }
 
-TEST(VideoEncoderVpxTest, Vp9LosslessUnchangedFrame) {
-  std::unique_ptr<VideoEncoderVpx> encoder(VideoEncoderVpx::CreateForVP9());
-  encoder->SetLosslessEncode(true);
-  TestVideoEncoderEmptyFrames(encoder.get(), 0);
-}
-
 TEST(VideoEncoderVpxTest, Vp9LossyUnchangedFrame) {
   std::unique_ptr<VideoEncoderVpx> encoder(VideoEncoderVpx::CreateForVP9());
-  encoder->SetLosslessEncode(false);
   // Expect that VP9+CR should generate no more than 10 top-off frames
   // per cycle, and take no more than 2 cycles to top-off.
   TestVideoEncoderEmptyFrames(encoder.get(), 20);

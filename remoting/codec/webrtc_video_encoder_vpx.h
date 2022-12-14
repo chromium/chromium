@@ -43,7 +43,6 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
   void SetTickClockForTests(const base::TickClock* tick_clock);
 
   // WebrtcVideoEncoder interface.
-  void SetLosslessEncode(bool want_lossless) override;
   void SetLosslessColor(bool want_lossless) override;
   void SetEncoderSpeed(int encoder_speed) override;
   void Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
@@ -54,7 +53,7 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
   explicit WebrtcVideoEncoderVpx(bool use_vp9);
 
   // (Re)Configures this instance to encode frames of the specified |size|,
-  // with the configured lossless color & encoding modes.
+  // with the configured lossless color mode.
   void Configure(const webrtc::DesktopSize& size);
 
   // Updates codec configuration.
@@ -79,9 +78,7 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
   // True if the encoder is for VP9, false for VP8.
   const bool use_vp9_;
 
-  // Options controlling VP9 encode quantization, color space, and speed.
-  // These are not used when configuring VP8.
-  bool lossless_encode_ = false;
+  // Controls VP9 color space and encode speed. Not used when configuring VP8.
   bool lossless_color_ = false;
   int vp9_encoder_speed_ = -1;
 

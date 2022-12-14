@@ -45,10 +45,6 @@ WebrtcVideoEncoderAV1::WebrtcVideoEncoderAV1()
 }
 WebrtcVideoEncoderAV1::~WebrtcVideoEncoderAV1() = default;
 
-void WebrtcVideoEncoderAV1::SetLosslessEncode(bool want_lossless) {
-  NOTIMPLEMENTED();
-}
-
 void WebrtcVideoEncoderAV1::SetLosslessColor(bool want_lossless) {
   if (want_lossless != lossless_color_) {
     lossless_color_ = want_lossless;
