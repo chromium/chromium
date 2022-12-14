@@ -127,7 +127,7 @@
 <translation id="1632985212731562677">సెట్టింగ్‌లు &gt; యాక్సెసిబిలిటీలో స్విచ్ యాక్సెస్‌ను డిజేబుల్ చేయవచ్చు.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> పరికరాలు</translation>
 <translation id="1639239467298939599">లోడ్ చేస్తోంది</translation>
-<translation id="1654477262762802994">వాయిస్ ప్రశ్నను ప్రారంభించు</translation>
+<translation id="1654477262762802994">వాయిస్ ప్రశ్నను ప్రారంభించండి</translation>
 <translation id="1668469839109562275">బిల్ట్-ఇన్ VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> మిగిలి ఉంది</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> కనెక్ట్ కాలేదు.</translation>
@@ -518,7 +518,7 @@
 <translation id="3886872229787704059">ఈ రోజు తెరిచారు</translation>
 <translation id="3891340733213178823">సైన్ అవుట్ చేయడానికి Ctrl+Shift+Qని రెండుసార్లు నొక్కండి.</translation>
 <translation id="3893630138897523026">ChromeVox (చదవబడే అభిప్రాయం)</translation>
-<translation id="3897533311200664389">వచన ప్రశ్నను ప్రారంభించు</translation>
+<translation id="3897533311200664389">వచన ప్రశ్నను ప్రారంభించండి</translation>
 <translation id="3899995891769452915">వాయిస్ ఇన్‌పుట్</translation>
 <translation id="3900355044994618856"><ph name="SESSION_TIME_REMAINING" /> తర్వాత మీ సెషన్ ముగుస్తుంది</translation>
 <translation id="3901991538546252627"><ph name="NAME" />కి కనెక్ట్ చేస్తోంది</translation>
@@ -764,7 +764,7 @@
 <translation id="5258528442992323769">సేవ్ చేసిన డెస్క్‌లు లేవు</translation>
 <translation id="5260676007519551770">డెస్క్ 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />, మీ అటెన్షన్ కోసం రిక్వెస్ట్ చేస్తోంది.</translation>
-<translation id="5283198616748585639">1 నిమి జోడించు</translation>
+<translation id="5283198616748585639">1 నిమి జోడించండి</translation>
 <translation id="528468243742722775">ముగించు</translation>
 <translation id="5286194356314741248">స్కాన్ చేస్తోంది</translation>
 <translation id="5293671101077843611">ఈ రోజు ఈవెంట్‌లు ఏవీ లేవు</translation>
@@ -793,7 +793,7 @@
 <translation id="5397578532367286026">ఈ వినియోగదారు యొక్క వినియోగం మరియు హిస్టరీని chrome.comలో నిర్వాహకుడు (<ph name="MANAGER_EMAIL" />) సమీక్షించవచ్చు.</translation>
 <translation id="5400461572260843123">త్వరిత సెట్టింగ్‌లు, నోటిఫికేషన్ సెంటర్‌ను యాక్సెస్ చేయడానికి శోధన + ఎడమకు నొక్కండి.</translation>
 <translation id="5426063383988017631">సెట్టింగ్‌ల మెనూ మూసివేయబడింది</translation>
-<translation id="5428899915242071344">ఎంచుకోవడం ప్రారంభించు</translation>
+<translation id="5428899915242071344">ఎంచుకోవడం ప్రారంభించండి</translation>
 <translation id="5429993543155113935">అజ్ఞాత విండోలు ప్రస్తుత సపోర్ట్ చేయవు</translation>
 <translation id="5430931332414098647">తక్షణ టెథెరింగ్</translation>
 <translation id="5431318178759467895">రంగు</translation>
@@ -871,7 +871,7 @@
 <translation id="5876666360658629066">తల్లిదండ్రుల కోడ్‌ను ఎంటర్ చేయండి</translation>
 <translation id="5881540930187678962">ఫోన్ హబ్‌ను తర్వాత సెటప్ చేయండి</translation>
 <translation id="5887954372087850114">విండో <ph name="WINDOW_TITLE" />, <ph name="DESK_TITLE" />కు కేటాయించబడింది, ఇంకా ఇతర డెస్క్‌ల నుండి కేటాయింపు తీసివేయబడింది</translation>
-<translation id="5895138241574237353">మళ్ళీ ప్రారంభించు</translation>
+<translation id="5895138241574237353">మళ్ళీ ప్రారంభించండి</translation>
 <translation id="589817443623831496">పాయింట్ స్కానింగ్</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">పసుపు</translation>
@@ -1192,7 +1192,7 @@
 <translation id="7672095158465655885"><ph name="NAME" />, <ph name="SUBTEXT" />కు కనెక్ట్ చేయబడింది</translation>
 <translation id="7684531502177797067">కెమెరా ఇన్‌పుట్ <ph name="CAMERA_NAME" />కు సెట్ చేయబడింది.</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7714767791242455379">కొత్త సెల్యులర్ నెట్‌వర్క్‌ను జోడించు</translation>
+<translation id="7714767791242455379">కొత్త సెల్యులర్ నెట్‌వర్క్‌ను జోడించండి</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> వరకు ఆన్‌లో ఉంటుంది</translation>
 <translation id="7720410380936703141">మళ్లీ ట్రై చేయండి</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 నోటిఫికేషన్‌}other{# నోటిఫికేషన్‌లు}}</translation>
@@ -1279,7 +1279,7 @@
 <translation id="8183592608247778598">మీ ఫోన్‌లోని తాజా ఫోటోలు, మీడియా, నోటిఫికేషన్‌లు, యాప్‌లను మీ <ph name="DEVICE_TYPE" />లో చూడండి</translation>
 <translation id="8192202700944119416">నోటిఫికేషన్‌లు దాచబడ్డాయి.</translation>
 <translation id="8196787716797768628">టాబ్లెట్ మోడ్‌లో, యాప్‌ల మధ్య త్వరగా మారడానికి, అలాగే మీ Chromebookతో ఇంటరాక్ట్ కావడానికి సంజ్ఞలను ఉపయోగించండి.</translation>
-<translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించు</translation>
+<translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>
 <translation id="8203795194971602413">కుడి క్లిక్</translation>
 <translation id="8209010265547628927">రీసెట్ చేయండి</translation>
 <translation id="8214996719228530800">కెనరీ ఛానెల్</translation>

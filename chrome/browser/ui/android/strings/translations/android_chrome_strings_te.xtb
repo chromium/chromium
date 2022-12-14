@@ -213,7 +213,7 @@
 <translation id="2132122640199389833">అన్ని లింక్ చేయబడిన పరికరాలను తీసివేయండి</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> మూసివేయబడింది</translation>
 <translation id="2134927169889348449">Chromeను ఉపయోగించడం ద్వారా, మీరు <ph name="BEGIN_TOS_LINK" />Google సర్వీస్ నియమాలు<ph name="END_TOS_LINK" />, అలాగే <ph name="BEGIN_ATOS_LINK" />Google Chrome, ChromeOS అదనపు సర్వీస్ నియమాలను<ph name="END_ATOS_LINK" /> అంగీకరిస్తున్నారు.</translation>
-<translation id="2139186145475833000">హోమ్ స్క్రీన్‌కు జోడించు</translation>
+<translation id="2139186145475833000">హోమ్ స్క్రీన్‌కు జోడించండి</translation>
 <translation id="2141396931810938595">మీ వినియోగం ఆధారంగా</translation>
 <translation id="214888715418183969">మీరు Chromeతో సౌకర్యవంతంగా షేర్ చేసుకోగలిగేవి ఎంచుకోండి. మీరు షేర్ చేసే కొలమానాలు, Chrome ఫీచర్‌లు, పనితీరు, ఇంకా స్థిరత్వాన్ని మెరుగుపరచడంలో సహాయపడతాయి.</translation>
 <translation id="2149973817440762519">బుక్‌మార్క్‌ను ఎడిట్ చేయండి</translation>
@@ -295,7 +295,7 @@
 <translation id="2612676031748830579">కార్డ్ నంబర్</translation>
 <translation id="2625189173221582860">పాస్‌వర్డ్ కాపీ చేయబడింది</translation>
 <translation id="2642087927315268160">సైన్ ఇన్ చేయదగిన దిగువున ఉన్న షీట్ మూసివేయబడింది.</translation>
-<translation id="2647434099613338025">భాషను జోడించు</translation>
+<translation id="2647434099613338025">భాషను జోడించండి</translation>
 <translation id="2649068648233607930">మీ బ్రౌజర్ <ph name="DOMAIN" /> ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="2650348088770008516">గోప్యతా గైడ్ వివరణ షీట్ మూసివేయబడింది</translation>
 <translation id="2650751991977523696">ఫైల్‌ను మళ్లీ డౌన్‌లోడ్ చేయాలా?</translation>
@@ -472,7 +472,7 @@
 <translation id="3527085408025491307">ఫోల్డర్</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB అందుబాటులో ఉంది</translation>
 <translation id="3549657413697417275">మీ హిస్టరీని వెతకండి</translation>
-<translation id="3557336313807607643">కాంటాక్ట్‌లకు జోడించు</translation>
+<translation id="3557336313807607643">కాంటాక్ట్‌లకు జోడించండి</translation>
 <translation id="3560491354538957576">ఆసక్తులను సైట్ నిర్వచించవచ్చు</translation>
 <translation id="3563767357928833671">క్లిప్ బోర్డ్ కంటెంట్‌లను చూపబడ్డాయి</translation>
 <translation id="3566639033325271639">సెట్టింగ్‌లను అప్‌డేట్ చేయండి</translation>
@@ -1251,14 +1251,14 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> నుండి షేర్ చేయబడిన వచనం</translation>
 <translation id="7762668264895820836">SD కార్డ్ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7762928140712606393">అదనపు ఫీచర్‌లు, Chrome అత్యంత శక్తివంతమైన రక్షణ కోసం సైన్ ఇన్ చేయండి</translation>
-<translation id="7764225426217299476">అడ్రస్‌ను జోడించు</translation>
+<translation id="7764225426217299476">అడ్రస్‌ను జోడించండి</translation>
 <translation id="7772032839648071052">రహస్య పదబంధాన్ని నిర్ధారించండి</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />ను మూసివేయి</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">కొత్త కథనాల కోసం తర్వాత మళ్లీ చెక్ చేయండి</translation>
 <translation id="7780645209293383778">మీరు సైన్ ఇన్ చేసి ఉన్నప్పుడు, మిమ్మల్ని అన్ని Google యాప్‌లలో కాపాడటానికి ఈ డేటాను తాత్కాలికంగా మీ Google ఖాతాకు లింక్ చేస్తుంది</translation>
 <translation id="7786595606756654269">వెబ్‌లో సెర్చ్ చేయడం కోసం, అలాగే మీరు తెరిచిన సైట్‌లతో ఎంగేజ్ అయ్యి ఉండటం కోసం Google Assistant మెరుగైన వాయిస్ అనుభవాన్ని అందిస్తుంది. Google Assistant మీరు దానితో ఉపయోగించే సైట్ల URL, అలాగే కంటెంట్‌లను అందుకుంటుంది.</translation>
-<translation id="7791543448312431591">జోడించు</translation>
+<translation id="7791543448312431591">జోడించండి</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ట్యాబ్‌లు రీస్టోర్ చేయబడ్డాయి</translation>
 <translation id="780301667611848630">వద్దు , ధన్యవాదాలు</translation>
 <translation id="7805768142964895445">స్థితి</translation>
@@ -1346,7 +1346,7 @@
 <translation id="8189750580333936930">గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్</translation>
 <translation id="8190358571722158785">1 రోజు మిగిలి ఉంది</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />మీ పరికరాలు<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించు</translation>
+<translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>
 <translation id="8209050860603202033">చిత్రాన్ని తెరువు</translation>
 <translation id="8216351761227087153">చూడండి</translation>
 <translation id="8218622182176210845">మీ ఖాతాను నిర్వహించండి</translation>
@@ -1496,7 +1496,7 @@
 <translation id="8955719471735800169">ఎగువకు తిరిగి వెళ్ళు</translation>
 <translation id="8964479563882643397">కొత్త అజ్ఞాత ట్యాబ్‌ను తెరవడానికి, మెనూను తెరవండి</translation>
 <translation id="8965591936373831584">పెండింగ్‌లో ఉంది</translation>
-<translation id="8967427617812342790">పఠనా లిస్ట్‌కు జోడించు</translation>
+<translation id="8967427617812342790">పఠనా లిస్ట్‌కు జోడించండి</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> అజ్ఞాత ట్యాబ్, ఇంకా మరో<ph name="TAB_COUNT_ONE" /> ట్యాబ్ మూసివేయబడతాయి}other{<ph name="INCOGNITO_TAB_COUNT" /> అజ్ఞాత ట్యాబ్, ఇంకా మరో<ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లు మూసివేయబడతాయి}}</translation>
 <translation id="8970887620466824814">ఏదో తప్పు జరిగింది.</translation>
 <translation id="8972098258593396643">డిఫాల్ట్ ఫోల్డర్‌కు డౌన్‌లోడ్ చేయాలా?</translation>

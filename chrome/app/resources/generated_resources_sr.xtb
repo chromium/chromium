@@ -947,7 +947,7 @@
 <translation id="1855079636134697549">Камера је укључена</translation>
 <translation id="1856715684130786728">Додај локацију...</translation>
 <translation id="1858585891038687145">Овај сертификат је поуздан за идентификацију произвођача софтвера</translation>
-<translation id="1861262398884155592">Овај директоријум је празан</translation>
+<translation id="1861262398884155592">Овај фолдер је празан</translation>
 <translation id="1862311223300693744">Да ли сте инсталирали било какав посебан софтвер за VPN, прокси, заштитни зид или NAS?</translation>
 <translation id="1863182668524159459">Нисмо пронашли ниједан серијски порт</translation>
 <translation id="1864111464094315414">Пријављивање</translation>
@@ -1956,7 +1956,7 @@
 <translation id="2767077837043621282">Ажурирање Chromebook-а није успело. Пробајте поново касније.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> ће моћи да мења датотеку <ph name="FILENAME" /> док не затворите све картице овог сајта</translation>
 <translation id="2770465223704140727">Уклони са листе</translation>
-<translation id="2770690685823456775">Извезите лозинке у други директоријум</translation>
+<translation id="2770690685823456775">Извезите лозинке у други фолдер</translation>
 <translation id="2770929488047004208">Резолуција монитора</translation>
 <translation id="2771268254788431918">Мобилни подаци су активирани</translation>
 <translation id="2771816809568414714">Сир</translation>
@@ -1999,7 +1999,7 @@
 <translation id="2800760947029405028">Отпреми слику</translation>
 <translation id="2801954693771979815">Величина екрана</translation>
 <translation id="2802557211515765772">Нема управљаних штампача.</translation>
-<translation id="2803313416453193357">Отворите директоријум</translation>
+<translation id="2803313416453193357">Отворите фолдер</translation>
 <translation id="2803719750464280163">Потврдите да је <ph name="PASSKEY" /> приступни кôд приказан на Bluetooth уређају <ph name="DEVICE" />.</translation>
 <translation id="2804043232879091219">Нисмо успели да отворимо алтернативни прегледач</translation>
 <translation id="2804667941345577550">Одјавићете се са овог сајта, укључујући и инстанце на отвореним картицама</translation>
@@ -2728,7 +2728,7 @@
 <translation id="3507421388498836150">Тренутне дозволе за „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="3507888235492474624">Поново скенирајте Bluetooth уређаје</translation>
 <translation id="3508492320654304609">Брисање података за пријављивање није успело</translation>
-<translation id="3508920295779105875">Одабери други директоријум...</translation>
+<translation id="3508920295779105875">Одабери други фолдер...</translation>
 <translation id="3509379002674019679">Правите и чувајте лозинке и управљајте њима да бисте се лако пријављивали на сајтове и у апликације.</translation>
 <translation id="3511200754045804813">Поново скенирај</translation>
 <translation id="3511307672085573050">Копирај адр&amp;есу линка</translation>
@@ -3142,7 +3142,7 @@
 <translation id="3893630138897523026">ChromeVox (говорне повратне информације)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Уврсти недавну историју Помоћника преко Sherlog-а. Она може да обухвата ваш идентитет, локацију и информације о отклањању грешака. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
-<translation id="3894427358181296146">Додајте директоријум</translation>
+<translation id="3894427358181296146">Додајте фолдер</translation>
 <translation id="3894770151966614831">Желите ли да преместите на Google налог?</translation>
 <translation id="3895076768659607631">&amp;Управљај претраживачима...</translation>
 <translation id="3895090224522145010">Kerberos корисничко име</translation>
@@ -3227,7 +3227,7 @@
 <translation id="3964480518399667971">Искључи мобилну мрежу</translation>
 <translation id="3965811923470826124">Са разрешивачем</translation>
 <translation id="3965965397408324205">Затвори <ph name="PROFILE_NAME" /></translation>
-<translation id="3966072572894326936">Одабери други директоријум...</translation>
+<translation id="3966072572894326936">Одабери други фолдер...</translation>
 <translation id="3967822245660637423">Преузимање је довршено</translation>
 <translation id="3967841595862839006">Изаберите језик и тастатуру</translation>
 <translation id="3968739731834770921">кана</translation>
@@ -3293,7 +3293,7 @@
 <translation id="4031179711345676612">Микрофон је дозвољен</translation>
 <translation id="4031527940632463547">Приступ сензорима је блокиран</translation>
 <translation id="4033415645631238123">Пријављивање помоћу Smart Lock-а више није доступно. И даље можете да откључавате помоћу Smart Lock-а.</translation>
-<translation id="4033471457476425443">Додај нови директоријум</translation>
+<translation id="4033471457476425443">Додај нови фолдер</translation>
 <translation id="4033711848170683365">То ће трајно избрисати податке прегледања са овог уређаја. Google налоге на овом профилу можда користе друге апликације на уређају <ph name="DEVICE_TYPE" />. Можете да уклоните те налоге у одељку <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Безбедни сајтови могу да уграде садржај, попут слика или веб-оквира који нису безбедни</translation>
 <translation id="4034741552964543387">Настави без локалних података</translation>
@@ -3327,7 +3327,7 @@
 <translation id="4057896668975954729">Прикажи у продавници</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">Провери документ одмах</translation>
-<translation id="4061374428807229313">Да бисте делили, кликните десним тастером миша на директоријум у апликацији Датотеке, па изаберите Дели са Parallels Desktop-ом.</translation>
+<translation id="4061374428807229313">Да бисте делили, кликните десним тастером миша на фолдер у апликацији Датотеке, па изаберите Дели са Parallels Desktop-ом.</translation>
 <translation id="406213378265872299">Прилагођена понашања</translation>
 <translation id="4062561150282203854">Синхронизујте<ph name="DEVICE_TYPE" /> апликације, подешавања и друго</translation>
 <translation id="4065876735068446555">Мрежа коју користите (<ph name="NETWORK_ID" />) ће можда захтевати да посетите страницу за пријављивање.</translation>
@@ -3666,7 +3666,7 @@
 <translation id="4402755511846832236">Не дозволите сајтовима да знају када активно користите овај уређај</translation>
 <translation id="4403012369005671154">Претварање говора у текст</translation>
 <translation id="4403266582403435904">Лако враћајте податке или мењајте уређаје у било ком тренутку. Резервне копије се отпремају на Google и шифрују лозинком за Google налог детета.</translation>
-<translation id="4403775189117163360">Одаберите други директоријум</translation>
+<translation id="4403775189117163360">Одаберите други фолдер</translation>
 <translation id="4404136731284211429">Скенирај поново</translation>
 <translation id="4404843640767531781">Родитељ блокира апликацију <ph name="APP_NAME" />. Затражи од родитеља дозволу за коришћење ове апликације.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -3869,7 +3869,7 @@
 <translation id="4582563038311694664">Ресетуј сва подешавања</translation>
 <translation id="4585793705637313973">Измени страницу</translation>
 <translation id="4586275095964870617">Нисмо успели да отворимо <ph name="URL" /> у алтернативном прегледачу. Контактирајте администратора система.</translation>
-<translation id="4589713469967853491">Евиденције су уписане у директоријум Подешавања.</translation>
+<translation id="4589713469967853491">Евиденције су уписане у фолдер Подешавања.</translation>
 <translation id="4590324241397107707">Складиштење базе података</translation>
 <translation id="459204634473266369">Нема сачуваних уређаја на <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Апликација за цртање помоћу писаљке</translation>
@@ -4346,7 +4346,7 @@
 <translation id="5059241099014281248">Ограничите пријављивање</translation>
 <translation id="5059526285558225588">Одаберите шта ћете делити</translation>
 <translation id="5060332552815861872">Доступан је 1 штампач за чување.</translation>
-<translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Овај директоријум садржи обележивач. Желите ли стварно да га избришете?}one{Овај директоријум садржи # обележивач. Желите ли стварно да га избришете?}few{Овај директоријум садржи # обележивача. Желите ли стварно да га избришете?}other{Овај директоријум садржи # обележивача. Желите ли стварно да га избришете?}}</translation>
+<translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Овај фолдер садржи обележивач. Желите ли стварно да га избришете?}one{Овај фолдер садржи # обележивач. Желите ли стварно да га избришете?}few{Овај фолдер садржи # обележивача. Желите ли стварно да га избришете?}other{Овај фолдер садржи # обележивача. Желите ли стварно да га избришете?}}</translation>
 <translation id="5062930723426326933">Пријављивање није успело. Повежите се са интернетом и покушајте поново.</translation>
 <translation id="5063480226653192405">Коришћење</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
@@ -4663,7 +4663,7 @@
 <translation id="5360150013186312835">Прикажи на траци с алаткама</translation>
 <translation id="5362741141255528695">Изаберите датотеку приватног кључа.</translation>
 <translation id="5363109466694494651">Обави Powerwash и врати</translation>
-<translation id="5365881113273618889">Фолдер који сте изабрали садржи осетљиве датотеке. Желите ли стварно да одобрите апликацији „<ph name="APP_NAME" />“ сталан приступ за уписивање за овај директоријум?</translation>
+<translation id="5365881113273618889">Фолдер који сте изабрали садржи осетљиве датотеке. Желите ли стварно да одобрите апликацији „<ph name="APP_NAME" />“ сталан приступ за уписивање за овај фолдер?</translation>
 <translation id="536638840841140142">Нема</translation>
 <translation id="5368246151595623328"><ph name="NETWORK_NAME" /> – сачувано са: <ph name="DEVICE_NAME" /></translation>
 <translation id="5368720394188453070">Телефон је закључан. Откључајте га да бисте приступили.</translation>
@@ -4906,7 +4906,7 @@
     <ph name="BEGIN_PARAGRAPH3" />Власник може да управља овом функцијом у одељку Подешавања &gt; Напредно &gt; Аутоматски шаљи дијагностику и податке о коришћењу Google-у.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Ако је укључено додатно подешавање за Активности на вебу и у апликацијама, ови подаци ће се можда чувати на Google налогу. Можете да прегледате и бришете податке и да мењате подешавања налога на account.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5585019845078534178">Картице</translation>
-<translation id="5585118885427931890">Није могуће направити директоријум обележивача.</translation>
+<translation id="5585118885427931890">Није могуће направити фолдер обележивача.</translation>
 <translation id="558563010977877295">Отвори одређену страницу или скуп страница</translation>
 <translation id="5585898376467608182">На уређају понестаје меморијског простора. Треба вам најмање <ph name="MINIMUM_SPACE" /> слободног простора да бисте користили <ph name="APP_NAME" />. Да бисте ослободили простор, избришите датотеке са уређаја.</translation>
 <translation id="5585912436068747822">Форматирање није успело</translation>
@@ -5093,7 +5093,7 @@
 <translation id="5776571780337000608">Помоћу ове апликације можете да отварате и мењате подржане фајлове из прегледача фајлова или других апликација. Да бисте контролисали који фајлови подразумевано отварају ову апликацију, <ph name="BEGIN_LINK" />сазнајте како да подесите подразумеване апликације на уређају<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Отвори Chrome</translation>
 <translation id="5778491106820461378">Можете да управљате Google налозима на које сте пријављени у <ph name="LINK_BEGIN" />Подешавањима<ph name="LINK_END" />. Дозволе које сте дали веб-сајтовима и апликацијама могу да важе за све налоге. Ако не желите да сајтови или апликације приступају информацијама о налогу, можете да се пријавите на <ph name="DEVICE_TYPE" /> као гост.</translation>
-<translation id="5780011244986845107">Фолдер који сте изабрали садржи осетљиве датотеке. Желите ли стварно да одобрите апликацији „<ph name="APP_NAME" />“ сталан приступ за читање за овај директоријум?</translation>
+<translation id="5780011244986845107">Фолдер који сте изабрали садржи осетљиве датотеке. Желите ли стварно да одобрите апликацији „<ph name="APP_NAME" />“ сталан приступ за читање за овај фолдер?</translation>
 <translation id="5780973441651030252">Приоритет процеса</translation>
 <translation id="5781092003150880845">Синхронизуј као <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Шаљите команде у <ph name="EXTENSION_NAME" /></translation>
@@ -5182,7 +5182,7 @@
 <translation id="5855267860608268405">Познате WiFi мреже</translation>
 <translation id="5855643921295613558">0,6 секунди</translation>
 <translation id="5856721540245522153">Омогућавање функција за отклањање грешака</translation>
-<translation id="5857090052475505287">Нови директоријум</translation>
+<translation id="5857090052475505287">Нови фолдер</translation>
 <translation id="5857171483910641802">Пречице се предлажу на основу веб-сајтова које често посећујете</translation>
 <translation id="5857675236236529683">Када будете спремни, овде пронађите листу за читање</translation>
 <translation id="5858490737742085133">Терминал</translation>
@@ -5811,7 +5811,7 @@
 <translation id="6453191633103419909">Квалитет пројекције за картицу/екран</translation>
 <translation id="6453921811609336127">Да бисте прешли на следећи метод уноса, притисните <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Тастер за размак<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">На одређеним сајтовима</translation>
-<translation id="6455894534188563617">&amp;Нови директоријум</translation>
+<translation id="6455894534188563617">&amp;Нови фолдер</translation>
 <translation id="645705751491738698">Настави блокирање JavaScript-а</translation>
 <translation id="6458347417133445570">Приказуј детаље о дозвољавању свих колачића</translation>
 <translation id="6458701200018867744">Отпремање није успело (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -5832,7 +5832,7 @@
 <translation id="6469557521904094793">Укључи мобилну мрежу</translation>
 <translation id="6470823736074966819">Искључите звук обавештења</translation>
 <translation id="6472893788822429178">Прикажи дугме Почетак</translation>
-<translation id="6474498546677193336">Опозивање дељења није успело јер једна апликација користи овај директоријум. Дељење директоријума ће бити опозвано када се Linux следећи пут затвори.</translation>
+<translation id="6474498546677193336">Опозивање дељења није успело јер једна апликација користи овај фолдер. Дељење фолдера ће бити опозвано када се Linux следећи пут затвори.</translation>
 <translation id="6474884162850599008">Прекини везу са налогом Google диска</translation>
 <translation id="6475294023568239942">У подешавањима ослободите простор на диску или промените величину диска за Linux</translation>
 <translation id="6476482583633999078">Брзина говора</translation>
@@ -6069,7 +6069,7 @@
 <translation id="6693745645188488741">{COUNT,plural, =1{1 страница}one{{COUNT} страница}few{{COUNT} странице}other{{COUNT} страница}}</translation>
 <translation id="6697172646384837537">Изаберите где желите да увезете лозинке</translation>
 <translation id="6697492270171225480">Приказуј предлоге за сличне странице када нека страница не може да се пронађе</translation>
-<translation id="6697690052557311665">Да бисте делили, кликните десним тастером на директоријум у апликацији Files, па изаберите „Дели са Linux-ом“.</translation>
+<translation id="6697690052557311665">Да бисте делили, кликните десним тастером на фолдер у апликацији Files, па изаберите „Дели са Linux-ом“.</translation>
 <translation id="6698810901424468597">Читање и мењање података на <ph name="WEBSITE_1" /> и <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Закључавање SIM-а за мобилну мрежу</translation>
 <translation id="6700480081846086223">Пребаци <ph name="HOST_NAME" /></translation>
@@ -6909,7 +6909,7 @@
 <translation id="7502220299952823578">Додај на листу Увек задржи ове сајтове активним</translation>
 <translation id="7503191893372251637">Тип Netscape сертификата</translation>
 <translation id="7503985202154027481">Посета овом сајту ће бити забележена на безбедносном кључу.</translation>
-<translation id="750509436279396091">Отвори директоријум Преузимања</translation>
+<translation id="750509436279396091">Отвори фолдер Преузимања</translation>
 <translation id="7505717542095249632">Сакриј корпу продавца <ph name="MERCHANT" /></translation>
 <translation id="7506093026325926984">Лозинка ће се чувати на овом уређају</translation>
 <translation id="7506130076368211615">Подесите нову мрежу</translation>
@@ -7357,7 +7357,7 @@
 <translation id="7909324225945368569">Промените име профила</translation>
 <translation id="7909969815743704077">Преузето је у режиму без архивирања</translation>
 <translation id="7909986151924474987">Можда нећете моћи да поново инсталирате овај профил</translation>
-<translation id="7910768399700579500">&amp;Нови директоријум</translation>
+<translation id="7910768399700579500">&amp;Нови фолдер</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="79113168483292735">Одељак Медијске картице у Претрази картица</translation>
 <translation id="7912080627461681647">Лозинка је промењена на серверу. Одјавите се, па се поново пријавите.</translation>
@@ -8567,7 +8567,7 @@
 <translation id="9037640663275993951">Уређај није дозвољен</translation>
 <translation id="9037818663270399707">Веза није приватна за сав мрежни саобраћај</translation>
 <translation id="9037965129289936994">Прикажи оригинал</translation>
-<translation id="9038489124413477075">Неименовани директоријум</translation>
+<translation id="9038489124413477075">Неименовани фолдер</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Имате још један покушај.}one{Имате још # покушај.}few{Имате још # покушаја.}other{Имате још # покушаја.}}</translation>
 <translation id="9040473193163777637">Желите ли да активирате ChromeVox, уграђени читач екрана за Chrome ОС? Ако је тако, притисните и задржите оба тастера за јачину звука пет секунди.</translation>
 <translation id="9040661932550800571">Желите ли да ажурирате лозинку за <ph name="ORIGIN" />?</translation>
@@ -8780,7 +8780,7 @@
 <translation id="938623846785894166">Неуобичајен фајл</translation>
 <translation id="939401694733344652">Ови налози се тренутно не користе са Android апликацијама. Ако изаберете налог за коришћење са овом Android апликацијом, он може да се користи и са другим Android апликацијама. Можете да промените приступ Android апликацијама у одељку <ph name="LINK_BEGIN" />Подешавања &gt; Налози<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Унесите приступну фразу</translation>
-<translation id="939736085109172342">Нови директоријум</translation>
+<translation id="939736085109172342">Нови фолдер</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> дели Chrome картицу и звук.</translation>
 <translation id="944799160843436808">Дошло је до проблема при подешавању Steam-а на Chromebook-у</translation>
 <translation id="945522503751344254">Пошаљи повратне информације</translation>
