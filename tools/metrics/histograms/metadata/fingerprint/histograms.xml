@@ -102,6 +102,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Fingerprint.SensorError.BadHwid" enum="BooleanSuccess"
+    expires_after="2023-12-12">
+  <owner>fsammoura@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Counts the number of times a bad Hardware ID is reported. This metric is
+    reported in biod during the sensor initialization phase.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.SensorError.InitializationFailure"
+    enum="BooleanSuccess" expires_after="2023-12-12">
+  <owner>fsammoura@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Counts the number of times an initialization failure is reported. This
+    metric is reported in biod during the sensor initialization phase.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.SensorError.NoIrq" enum="BooleanSuccess"
+    expires_after="2023-12-12">
+  <owner>fsammoura@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Counts the number of times no-IRQ hardware failure is reported. This metric
+    is reported in biod during the sensor initialization phase.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.SensorError.SpiCommunication"
+    enum="BooleanSuccess" expires_after="2023-12-12">
+  <owner>fsammoura@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Counts the number of times an error in SPI communication is reported. This
+    metric is reported in biod during the sensor initialization phase.
+  </summary>
+</histogram>
+
 <histogram name="Fingerprint.SetContext.Success" enum="BooleanSuccess"
     expires_after="2023-06-04">
   <owner>hesling@chromium.org</owner>
