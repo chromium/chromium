@@ -4,10 +4,9 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {Page, PasswordListItemElement, PasswordManagerImpl, PasswordsSectionElement, Router} from 'chrome://password-manager/password_manager.js';
+import {Page, PasswordListItemElement, PasswordManagerImpl, PasswordsSectionElement, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -20,11 +19,10 @@ import {createCredentialGroup, createPasswordEntry} from './test_util.js';
  * @param expectedPasswords The expected passwords in this subsection.
  */
 function validatePasswordsSubsection(
-    list: IronListElement,
+    section: PasswordsSectionElement,
     expectedGroups: chrome.passwordsPrivate.CredentialGroup[]) {
-  assertDeepEquals(expectedGroups, list.items);
-
-  const listItemElements = list.querySelectorAll('password-list-item');
+  const listItemElements =
+      section.shadowRoot!.querySelectorAll('password-list-item');
   assertEquals(listItemElements.length, expectedGroups.length);
 
   for (let index = 0; index < expectedGroups.length; ++index) {
@@ -41,12 +39,23 @@ suite('PasswordsSectionTest', function() {
   let passwordManager: TestPasswordManagerProxy;
   let pluralString: TestPluralStringProxy;
 
+  async function createPasswordsSection(): Promise<PasswordsSectionElement> {
+    const section: PasswordsSectionElement =
+        document.createElement('passwords-section');
+    document.body.appendChild(section);
+    await passwordManager.whenCalled('getCredentialGroups');
+    await flushTasks();
+
+    return section;
+  }
+
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
     pluralString = new TestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralString);
+    Router.getInstance().updateRouterParams(new URLSearchParams());
     return flushTasks();
   });
 
@@ -62,22 +71,13 @@ suite('PasswordsSectionTest', function() {
       }),
     ];
 
-    const section: PasswordsSectionElement =
-        document.createElement('passwords-section');
-    document.body.appendChild(section);
-    await passwordManager.whenCalled('getCredentialGroups');
-    await flushTasks();
+    const section = await createPasswordsSection();
 
-    validatePasswordsSubsection(
-        section.$.passwordsList, passwordManager.data.groups);
+    validatePasswordsSubsection(section, passwordManager.data.groups);
   });
 
   test('passwords list is hidden if nothing to show', async function() {
-    const section: PasswordsSectionElement =
-        document.createElement('passwords-section');
-    document.body.appendChild(section);
-    await passwordManager.whenCalled('getCredentialGroups');
-    await flushTasks();
+    const section = await createPasswordsSection();
 
     // PasswordsList is hidden as there are no passwords.
     assertFalse(isVisible(section.$.passwordsList));
@@ -95,11 +95,7 @@ suite('PasswordsSectionTest', function() {
     passwordManager.setRequestCredentialsDetailsResponse(
         passwordManager.data.groups[0]!.entries.slice());
 
-    const section: PasswordsSectionElement =
-        document.createElement('passwords-section');
-    document.body.appendChild(section);
-    await passwordManager.whenCalled('getCredentialGroups');
-    await flushTasks();
+    const section = await createPasswordsSection();
 
     const listEntry =
         section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
@@ -121,11 +117,7 @@ suite('PasswordsSectionTest', function() {
       ],
     })];
 
-    const section: PasswordsSectionElement =
-        document.createElement('passwords-section');
-    document.body.appendChild(section);
-    await passwordManager.whenCalled('getCredentialGroups');
-    await flushTasks();
+    const section = await createPasswordsSection();
 
     const listEntry =
         section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
@@ -176,5 +168,84 @@ suite('PasswordsSectionTest', function() {
     assertTrue(!!numberOfAccounts);
     assertTrue(isVisible(numberOfAccounts));
     assertEquals(pluralString.text, numberOfAccounts.textContent!.trim());
+  });
+
+  test('search by group name', async function() {
+    passwordManager.data.groups = [
+      createCredentialGroup({
+        name: 'foo.com',
+      }),
+      createCredentialGroup({
+        name: 'bar.com',
+      }),
+    ];
+
+    const section = await createPasswordsSection();
+
+    validatePasswordsSubsection(section, passwordManager.data.groups);
+
+    const query = new URLSearchParams();
+    query.set(UrlParam.SEARCH_TERM, 'bar');
+    Router.getInstance().updateRouterParams(query);
+    await flushTasks();
+
+    validatePasswordsSubsection(section, passwordManager.data.groups.slice(1));
+  });
+
+  test('search by username', async function() {
+    passwordManager.data.groups = [
+      createCredentialGroup({
+        name: 'foo.com',
+        credentials: [createPasswordEntry({username: 'qwerty', id: 0})],
+      }),
+      createCredentialGroup({
+        name: 'bar.com',
+        credentials: [createPasswordEntry({username: 'username', id: 1})],
+      }),
+    ];
+
+    const section = await createPasswordsSection();
+
+    validatePasswordsSubsection(section, passwordManager.data.groups);
+
+    const query = new URLSearchParams();
+    query.set(UrlParam.SEARCH_TERM, 'ert');
+    Router.getInstance().updateRouterParams(query);
+    await flushTasks();
+
+    validatePasswordsSubsection(
+        section, passwordManager.data.groups.slice(0, 1));
+  });
+
+  test('search by domain', async function() {
+    passwordManager.data.groups = [
+      createCredentialGroup({
+        name: 'foo.com',
+        credentials: [createPasswordEntry({username: 'qwerty', id: 0})],
+      }),
+      createCredentialGroup({
+        name: 'bar.com',
+        credentials: [createPasswordEntry({username: 'username', id: 1})],
+      }),
+    ];
+    passwordManager.data.groups[0]!.entries[0]!.affiliatedDomains = [
+      {name: 'foo.de', url: 'https://foo.de/'},
+      {name: 'Foo App', url: 'https://m.foo.com/'},
+    ];
+    passwordManager.data.groups[1]!.entries[0]!.affiliatedDomains = [
+      {name: 'bar.uk', url: 'https://bar.uk/'},
+      {name: 'Bar App', url: 'https://m.bar.com/'},
+    ];
+
+    const section = await createPasswordsSection();
+
+    validatePasswordsSubsection(section, passwordManager.data.groups);
+
+    const query = new URLSearchParams();
+    query.set(UrlParam.SEARCH_TERM, 'bar.uk');
+    Router.getInstance().updateRouterParams(query);
+    await flushTasks();
+
+    validatePasswordsSubsection(section, passwordManager.data.groups.slice(1));
   });
 });

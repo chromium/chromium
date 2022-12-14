@@ -15,6 +15,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_section.html.js';
+import {Route, RouteObserverMixin, UrlParam} from './router.js';
 
 export interface PasswordsSectionElement {
   $: {
@@ -22,7 +23,8 @@ export interface PasswordsSectionElement {
   };
 }
 
-const PasswordsSectionElementBase = I18nMixin(PolymerElement);
+const PasswordsSectionElementBase =
+    RouteObserverMixin(I18nMixin(PolymerElement));
 
 export class PasswordsSectionElement extends PasswordsSectionElementBase {
   static get is() {
@@ -42,10 +44,17 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         type: Array,
         value: () => [],
       },
+
+      /** Filter on the saved passwords and exceptions. */
+      searchTerm_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
   private groups_: chrome.passwordsPrivate.CredentialGroup[] = [];
+  private searchTerm_: string;
 
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
@@ -72,6 +81,38 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     PasswordManagerImpl.getInstance().removeSavedPasswordListChangedListener(
         this.setSavedPasswordsListener_);
     this.setSavedPasswordsListener_ = null;
+  }
+
+  override currentRouteChanged(newRoute: Route, _oldRoute: Route): void {
+    const searchTerm = newRoute.queryParameters.get(UrlParam.SEARCH_TERM) || '';
+    if (searchTerm !== this.searchTerm_) {
+      this.searchTerm_ = searchTerm;
+    }
+  }
+
+  private hideGroupsList_(): boolean {
+    return this.groups_.filter(this.groupFilter_()).length === 0;
+  }
+
+  private groupFilter_():
+      ((entry: chrome.passwordsPrivate.CredentialGroup) => boolean) {
+    const term = this.searchTerm_.trim().toLowerCase();
+    // Group is matching if:
+    // * group name includes term,
+    // * any credential's username within a group includes a term,
+    // * any credential within a group includes a term in a domain.
+    return group => group.name.toLowerCase().includes(term) ||
+        group.entries.some(
+            credential => credential.username.toLowerCase().includes(term) ||
+                credential.affiliatedDomains?.some(
+                    domain => domain.name.toLowerCase().includes(term)));
+  }
+
+  private async announceSearchResults_() {
+    if (!this.searchTerm_.trim()) {
+      return;
+    }
+    // TODO(crbug.com/1400289): Announce search result.
   }
 }
 

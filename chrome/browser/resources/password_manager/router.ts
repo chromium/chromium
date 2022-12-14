@@ -118,15 +118,15 @@ export class Router {
    * Notifies routeObservers_.
    */
   updateRouterParams(params: URLSearchParams) {
-    let url: string = this.currentRoute_.page;
+    let path: string = this.currentRoute_.path();
     const queryString = params.toString();
     if (queryString) {
-      url += '?' + queryString;
+      path += '?' + queryString;
     }
-    window.history.replaceState(window.history.state, '', url);
+    window.history.replaceState(window.history.state, '', path);
 
     const oldRoute = this.currentRoute_;
-    this.currentRoute_ = new Route(oldRoute.page, params);
+    this.currentRoute_ = new Route(oldRoute.page, params, oldRoute.details);
     this.notifyObservers_(oldRoute);
   }
 

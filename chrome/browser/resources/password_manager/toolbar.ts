@@ -10,7 +10,7 @@ import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_too
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, RouteObserverMixin, Router, UrlParam} from './router.js';
+import {Page, Route, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {getTemplate} from './toolbar.html.js';
 
 export interface PasswordManagerToolbarElement {
@@ -49,6 +49,8 @@ export class PasswordManagerToolbarElement extends RouteObserverMixin
     const newParams = Router.getInstance().currentRoute.queryParameters;
     if (event.detail) {
       newParams.set(UrlParam.SEARCH_TERM, event.detail);
+      // Switch to passwords page, since search is supported only on passwords.
+      Router.getInstance().navigateTo(Page.PASSWORDS);
     } else {
       newParams.delete(UrlParam.SEARCH_TERM);
     }
