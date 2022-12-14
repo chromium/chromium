@@ -1126,9 +1126,6 @@ extern const char kOmniboxMostVisitedTilesDescription[];
 extern const char kOmniboxMostVisitedTilesAddRecycledViewPoolName[];
 extern const char kOmniboxMostVisitedTilesAddRecycledViewPoolDescription[];
 
-extern const char kOmniboxMostVisitedTilesDynamicSpacingName[];
-extern const char kOmniboxMostVisitedTilesDynamicSpacingDescription[];
-
 extern const char kOmniboxMostVisitedTilesTitleWrapAroundName[];
 extern const char kOmniboxMostVisitedTilesTitleWrapAroundDescription[];
 

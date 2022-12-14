@@ -381,12 +381,6 @@ BASE_FEATURE(kMostVisitedTiles,
              "OmniboxMostVisitedTiles",
              enabled_by_default_android_only);
 
-// If enabled, computes spacing between MV tiles so that about 4.5 tiles are
-// shown on screen on narrow devices.
-BASE_FEATURE(kMostVisitedTilesDynamicSpacing,
-             "OmniboxMostVisitedTilesDynamicSpacing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, permits the title on the MostVisitedTiles to wrap around to
 // second line.
 BASE_FEATURE(kMostVisitedTilesTitleWrapAround,

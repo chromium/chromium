@@ -5286,11 +5286,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxMostVisitedTilesAddRecycledViewPool)},
 
-    {"omnibox-most-visited-tiles-dynamic-spacing",
-     flag_descriptions::kOmniboxMostVisitedTilesDynamicSpacingName,
-     flag_descriptions::kOmniboxMostVisitedTilesDynamicSpacingDescription,
-     kOsAndroid, FEATURE_VALUE_TYPE(omnibox::kMostVisitedTilesDynamicSpacing)},
-
     {"omnibox-remove-suggestion-header-chevron",
      flag_descriptions::kOmniboxRemoveSuggestionHeaderChevronName,
      flag_descriptions::kOmniboxRemoveSuggestionHeaderChevronDescription,

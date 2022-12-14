@@ -7309,7 +7309,6 @@
                         "OmniboxDynamicMaxAutocomplete",
                         "OmniboxFocusTriggersSRPZeroSuggest",
                         "OmniboxMaxURLMatches",
-                        "OmniboxMostVisitedTilesDynamicSpacing",
                         "OmniboxMostVisitedTilesFadingOnTablet",
                         "OmniboxMostVisitedTilesTitleWrapAround",
                         "OmniboxRemoveSuggestionHeaderChevron",
