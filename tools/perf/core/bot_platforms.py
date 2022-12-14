@@ -681,7 +681,7 @@ ANDROID_PIXEL4A_POWER_PGO = PerfPlatform(
     'android-pixel4a_power-perf-pgo', 'Android QD4A.200102.001.A1',
     _ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS, 12, 'android')
 ANDROID_GO_WEMBLEY = PerfPlatform('android-go-wembley-perf',
-                                  'Android M | MASTER',
+                                  'Android 9131443',
                                   _ANDROID_GO_WEMBLEY_BENCHMARK_CONFIGS, 2,
                                   'android')
 ANDROID_NEW_PIXEL = PerfPlatform('android-new-pixel-perf',

@@ -361,9 +361,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MASTER",
               "device_os_flavor": "google",
-              "device_type": "wembley",
+              "device_type": "wembley_2GB",
               "os": "Android",
               "pool": "chrome.tests.perf"
             }

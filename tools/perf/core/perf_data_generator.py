@@ -904,8 +904,7 @@ BUILDERS = {
         'dimension': {
             'pool': 'chrome.tests.perf',
             'os': 'Android',
-            'device_type': 'wembley',
-            'device_os': 'MASTER',
+            'device_type': 'wembley_2GB',
             'device_os_flavor': 'google',
         },
     },

@@ -68,7 +68,6 @@ def _ValidateSwarmingDimension(builder_name, swarming_dimensions):
         raise ValueError('Invalid perf pool %s in %s' % (v, builder_name))
       if k == 'os' and v == 'Android':
         if (not 'device_type' in dimension.keys() or
-            not 'device_os' in dimension.keys() or
             not 'device_os_flavor' in dimension.keys()):
           raise ValueError(
               'Invalid android dimensions %s in %s' % (v, builder_name))
