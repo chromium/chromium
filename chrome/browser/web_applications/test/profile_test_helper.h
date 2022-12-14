@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -23,6 +24,9 @@ enum class TestProfileType {
   kGuest,
 };
 
+using ExternalPrefMigrationTestCases =
+    web_app::test::ExternalPrefMigrationTestCases;
+
 // Profile type to test. Provided to subclasses of TestProfileTypeMixin via
 // GetParam().
 struct TestProfileParam {
@@ -30,7 +34,7 @@ struct TestProfileParam {
 
   TestProfileType profile_type;
   CrosapiParam crosapi_state = CrosapiParam::kDisabled;
-  bool external_pref_migration_enabled = false;
+  ExternalPrefMigrationTestCases external_pref_migration_case;
 };
 
 // GTest string formatter for TestProfileType. Appends, e.g. "/Guest" to the end
@@ -46,7 +50,7 @@ void ConfigureCommandLineForGuestMode(base::CommandLine* command_line);
 void InitCrosapiFeaturesForParam(
     web_app::test::CrosapiParam crosapi_state,
     base::test::ScopedFeatureList* scoped_feature_list,
-    bool external_pref_migration_enabled);
+    ExternalPrefMigrationTestCases external_pref_migration_case);
 
 // "Mixin" for configuring a test harness to parameterize on different profile
 // types. To use it, inherit from
@@ -71,7 +75,7 @@ class TestProfileTypeMixin
   explicit TestProfileTypeMixin(Args&&... args)
       : T(std::forward<Args>(args)...) {
     InitCrosapiFeaturesForParam(GetParam().crosapi_state, &scoped_feature_list_,
-                                GetParam().external_pref_migration_enabled);
+                                GetParam().external_pref_migration_case);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -126,18 +130,38 @@ class TestProfileTypeMixin
   INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                            \
       SUITE,                                                                  \
       ::testing::Values(                                                      \
-          TestProfileParam({TestProfileType::kRegular,                        \
-                            web_app::test::CrosapiParam::kDisabled,           \
-                            /*external_pref_migration_enabled=*/false}),      \
-          TestProfileParam({TestProfileType::kRegular,                        \
-                            web_app::test::CrosapiParam::kDisabled,           \
-                            /*external_pref_migration_enabled=*/true}),       \
-          TestProfileParam({TestProfileType::kRegular,                        \
-                            web_app::test::CrosapiParam::kEnabled,            \
-                            /*external_pref_migration_enabled=*/false}),      \
-          TestProfileParam({TestProfileType::kRegular,                        \
-                            web_app::test::CrosapiParam::kEnabled,            \
-                            /*external_pref_migration_enabled=*/true})))
+          TestProfileParam(                                                   \
+              {TestProfileType::kRegular,                                     \
+               web_app::test::CrosapiParam::kDisabled,                        \
+               ExternalPrefMigrationTestCases::kDisableMigrationReadPref}),   \
+          TestProfileParam(                                                   \
+              {TestProfileType::kRegular,                                     \
+               web_app::test::CrosapiParam::kDisabled,                        \
+               ExternalPrefMigrationTestCases::kDisableMigrationReadDB}),     \
+          TestProfileParam(                                                   \
+              {TestProfileType::kRegular,                                     \
+               web_app::test::CrosapiParam::kDisabled,                        \
+               ExternalPrefMigrationTestCases::kEnableMigrationReadPref}),    \
+          TestProfileParam(                                                   \
+              {TestProfileType::kRegular,                                     \
+               web_app::test::CrosapiParam::kDisabled,                        \
+               ExternalPrefMigrationTestCases::kEnableMigrationReadDB}),      \
+          TestProfileParam(                                                   \
+              {TestProfileType::kRegular,                                     \
+               web_app::test::CrosapiParam::kEnabled,                         \
+               ExternalPrefMigrationTestCases::kDisableMigrationReadPref}),   \
+          TestProfileParam(                                                   \
+              {TestProfileType::kRegular,                                     \
+               web_app::test::CrosapiParam::kEnabled,                         \
+               ExternalPrefMigrationTestCases::kDisableMigrationReadDB}),     \
+          TestProfileParam(                                                   \
+              {TestProfileType::kRegular,                                     \
+               web_app::test::CrosapiParam::kEnabled,                         \
+               ExternalPrefMigrationTestCases::kEnableMigrationReadPref}),    \
+          TestProfileParam(                                                   \
+              {TestProfileType::kRegular,                                     \
+               web_app::test::CrosapiParam::kEnabled,                         \
+               ExternalPrefMigrationTestCases::kEnableMigrationReadDB})))
 
 #define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(SUITE) \
   INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                           \
@@ -167,12 +191,22 @@ class TestProfileTypeMixin
   INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                            \
       SUITE,                                                                  \
       ::testing::Values(                                                      \
-          TestProfileParam({TestProfileType::kRegular,                        \
-                            web_app::test::CrosapiParam::kDisabled,           \
-                            /*external_pref_migration_enabled=*/false}),      \
-          TestProfileParam({TestProfileType::kRegular,                        \
-                            web_app::test::CrosapiParam::kDisabled,           \
-                            /*external_pref_migration_enabled=*/true})))
+          TestProfileParam(                                                   \
+              {TestProfileType::kRegular,                                     \
+               web_app::test::CrosapiParam::kDisabled,                        \
+               ExternalPrefMigrationTestCases::kDisableMigrationReadPref}),   \
+          TestProfileParam(                                                   \
+              {TestProfileType::kRegular,                                     \
+               web_app::test::CrosapiParam::kDisabled,                        \
+               ExternalPrefMigrationTestCases::kDisableMigrationReadDB}),     \
+          TestProfileParam(                                                   \
+              {TestProfileType::kRegular,                                     \
+               web_app::test::CrosapiParam::kDisabled,                        \
+               ExternalPrefMigrationTestCases::kEnableMigrationReadPref}),    \
+          TestProfileParam(                                                   \
+              {TestProfileType::kRegular,                                     \
+               web_app::test::CrosapiParam::kDisabled,                        \
+               ExternalPrefMigrationTestCases::kEnableMigrationReadDB})))
 
 #define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(SUITE) \
   INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                           \
