@@ -1888,6 +1888,16 @@
       origin_trial_feature_name: "NotificationTriggers",
       status: "experimental",
     },
+    // Origin trial to experiment with No-Vary-Search in Prefetch Cache
+    // See crbug.com/1378075. Depends on SpeculationRulesPrefetchProxy to be
+    // enabled.
+    // On the browser side, the trial needs features::kPrefetchUseContentRefactor
+    // enabled. If features::kPrefetchUseContentRefactor is disabled, then
+    // the code will behave as if PrefetchNoVarySearch is disabled.
+    {
+      name: "NoVarySearchPrefetch",
+      origin_trial_feature_name: "NoVarySearchPrefetch",
+    },
     {
       name: "OffMainThreadCSSPaint",
       status: "stable",
@@ -2617,7 +2627,7 @@
       status: "stable",
       base_feature: "SpeculationRulesPrefetchProxy",
       copied_from_base_feature_if: "overridden",
-      implied_by: ["SpeculationRulesPrefetchFuture"],
+      implied_by: ["SpeculationRulesPrefetchFuture", "NoVarySearchPrefetch"],
     },
     {
       "name": "SpeculationRulesPrefetchWithSubresources",

@@ -129,6 +129,7 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(
           &GetPrimaryMainFrame());
+  prefetch_document_manager->EnableNoVarySearchSupport();
   {
     // Create list of SpeculationCandidatePtrs.
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
@@ -245,6 +246,9 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
 }
 
 TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      network::features::kPrefetchNoVarySearch);
   // Create list of SpeculationCandidatePtrs.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
 

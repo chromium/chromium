@@ -860,7 +860,16 @@ TEST(HTTPParsersTest, ParseContentSecurityPoliciesSourceBasic) {
 
 class NoVarySearchPrefetchDisabledTest
     : public ::testing::Test,
-      public ::testing::WithParamInterface<base::StringPiece> {};
+      public ::testing::WithParamInterface<base::StringPiece> {
+ public:
+  NoVarySearchPrefetchDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        network::features::kPrefetchNoVarySearch);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 TEST_P(NoVarySearchPrefetchDisabledTest, ParsingNVSReturnsDefaultURLVariance) {
   const auto parsed_headers =

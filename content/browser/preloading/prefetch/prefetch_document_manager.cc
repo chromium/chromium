@@ -81,7 +81,8 @@ void PrefetchDocumentManager::DidStartNavigation(
   // No-Vary-Search equivalence. If there is not then stop.
   auto prefetch_iter = all_prefetches_.find(navigation_handle->GetURL());
   if (prefetch_iter == all_prefetches_.end() || !prefetch_iter->second) {
-    if (!base::FeatureList::IsEnabled(
+    if (!no_vary_search_support_enabled_ ||
+        !base::FeatureList::IsEnabled(
             network::features::kPrefetchNoVarySearch)) {
       return;
     }
@@ -299,7 +300,8 @@ void PrefetchDocumentManager::OnEligibilityCheckComplete(bool is_eligible) {
 }
 
 void PrefetchDocumentManager::OnPrefetchedHeadReceived(const GURL& url) {
-  if (!base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)) {
+  if (!no_vary_search_support_enabled_ ||
+      !base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)) {
     return;
   }
   // Find the PrefetchContainer associated with |url|.
@@ -315,6 +317,10 @@ void PrefetchDocumentManager::OnPrefetchedHeadReceived(const GURL& url) {
 
 void PrefetchDocumentManager::OnPrefetchSuccessful() {
   referring_page_metrics_.prefetch_successful_count++;
+}
+
+void PrefetchDocumentManager::EnableNoVarySearchSupport() {
+  no_vary_search_support_enabled_ = true;
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PrefetchDocumentManager);

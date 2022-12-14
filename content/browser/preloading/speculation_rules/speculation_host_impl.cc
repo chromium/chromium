@@ -6,6 +6,7 @@
 
 #include <functional>
 
+#include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/preloading_decider.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -70,6 +71,14 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
   preloading_decider->UpdateSpeculationCandidates(candidates);
+}
+
+void SpeculationHostImpl::EnableNoVarySearchSupport() {
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(
+          &render_frame_host());
+  DCHECK(prefetch_document_manager);
+  prefetch_document_manager->EnableNoVarySearchSupport();
 }
 
 }  // namespace content

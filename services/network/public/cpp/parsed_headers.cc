@@ -101,6 +101,10 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
     }
   }
 
+  // We're not checking that PrefetchNoVarySearch is enabled on the
+  // renderer side through the Origin Trial, as the network service
+  // doesn't know anything about blink.
+  // The code here only parses the No-Vary-Search header if it is present.
   if (base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch))
     parsed_headers->no_vary_search = ParseNoVarySearch(*headers);
 

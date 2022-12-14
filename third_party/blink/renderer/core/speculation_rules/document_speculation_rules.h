@@ -106,6 +106,7 @@ class CORE_EXPORT DocumentSpeculationRules
 
   bool has_pending_update_ = false;
   bool initialized_ = false;
+  bool sent_is_part_of_no_vary_search_trial_ = false;
 };
 
 }  // namespace blink

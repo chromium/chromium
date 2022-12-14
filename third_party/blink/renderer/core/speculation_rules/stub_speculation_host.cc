@@ -32,4 +32,8 @@ void StubSpeculationHost::OnConnectionLost() {
     std::move(done_closure_).Run();
 }
 
+void StubSpeculationHost::EnableNoVarySearchSupport() {
+  sent_no_vary_search_support_to_browser_ = true;
+}
+
 }  // namespace blink

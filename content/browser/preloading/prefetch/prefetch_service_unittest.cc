@@ -261,10 +261,11 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
   }
 
   virtual void InitScopedFeatureList() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        content::features::kPrefetchUseContentRefactor,
-        {{"ineligible_decoy_request_probability", "0"},
-         {"prefetch_container_lifetime_s", "-1"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{content::features::kPrefetchUseContentRefactor,
+          {{"ineligible_decoy_request_probability", "0"},
+           {"prefetch_container_lifetime_s", "-1"}}}},
+        {network::features::kPrefetchNoVarySearch});
   }
 
   void MakePrefetchService(std::unique_ptr<MockPrefetchServiceDelegate>
@@ -280,9 +281,12 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
 
   // Creates a prefetch request for |url| on the current main frame.
   void MakePrefetchOnMainFrame(const GURL& url,
-                               const PrefetchType& prefetch_type) {
+                               const PrefetchType& prefetch_type,
+                               bool enable_no_vary_search_header = false) {
     PrefetchDocumentManager* prefetch_document_manager =
         PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
+    if (enable_no_vary_search_header)
+      prefetch_document_manager->EnableNoVarySearchSupport();
     prefetch_document_manager->PrefetchUrl(url, prefetch_type,
                                            blink::mojom::Referrer(), nullptr);
   }
@@ -587,8 +591,9 @@ TEST_F(PrefetchServiceTest, CreateServiceWhenFeatureEnabled) {
   // Enable feature, which means that we should be able to create a
   // PrefetchService instance.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      content::features::kPrefetchUseContentRefactor);
+  scoped_feature_list.InitWithFeatures(
+      {content::features::kPrefetchUseContentRefactor},
+      {network::features::kPrefetchNoVarySearch});
 
   EXPECT_TRUE(PrefetchService::CreateIfPossible(browser_context()));
 }
@@ -597,8 +602,9 @@ TEST_F(PrefetchServiceTest, DontCreateServiceWhenFeatureDisabled) {
   // Disable feature, which means that we shouldn't be able to create a
   // PrefetchService instance.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      content::features::kPrefetchUseContentRefactor);
+  scoped_feature_list.InitWithFeatures(
+      {}, {content::features::kPrefetchUseContentRefactor,
+           network::features::kPrefetchNoVarySearch});
 
   EXPECT_FALSE(PrefetchService::CreateIfPossible(browser_context()));
 }
@@ -791,11 +797,12 @@ TEST_F(PrefetchServiceTest, NoPrefetchingDomainNotInAllowList) {
 class PrefetchServiceAllowAllDomainsTest : public PrefetchServiceTest {
  public:
   void InitScopedFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        content::features::kPrefetchUseContentRefactor,
-        {{"ineligible_decoy_request_probability", "0"},
-         {"prefetch_container_lifetime_s", "-1"},
-         {"allow_all_domains", "true"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{content::features::kPrefetchUseContentRefactor,
+          {{"ineligible_decoy_request_probability", "0"},
+           {"prefetch_container_lifetime_s", "-1"},
+           {"allow_all_domains", "true"}}}},
+        {network::features::kPrefetchNoVarySearch});
   }
 };
 
@@ -874,11 +881,12 @@ class PrefetchServiceAllowAllDomainsForExtendedPreloadingTest
     : public PrefetchServiceTest {
  public:
   void InitScopedFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        content::features::kPrefetchUseContentRefactor,
-        {{"ineligible_decoy_request_probability", "0"},
-         {"prefetch_container_lifetime_s", "-1"},
-         {"allow_all_domains_for_extended_preloading", "true"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{content::features::kPrefetchUseContentRefactor,
+          {{"ineligible_decoy_request_probability", "0"},
+           {"prefetch_container_lifetime_s", "-1"},
+           {"allow_all_domains_for_extended_preloading", "true"}}}},
+        {network::features::kPrefetchNoVarySearch});
   }
 };
 
@@ -2263,11 +2271,12 @@ TEST_F(PrefetchServiceTest, NotServeableNavigationInDifferentRenderFrameHost) {
 class PrefetchServiceLimitedPrefetchesTest : public PrefetchServiceTest {
  public:
   void InitScopedFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        content::features::kPrefetchUseContentRefactor,
-        {{"ineligible_decoy_request_probability", "0"},
-         {"prefetch_container_lifetime_s", "-1"},
-         {"max_srp_prefetches", "2"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{content::features::kPrefetchUseContentRefactor,
+          {{"ineligible_decoy_request_probability", "0"},
+           {"prefetch_container_lifetime_s", "-1"},
+           {"max_srp_prefetches", "2"}}}},
+        {network::features::kPrefetchNoVarySearch});
   }
 };
 
@@ -2425,11 +2434,12 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
 class PrefetchServiceWithHTMLOnlyTest : public PrefetchServiceTest {
  public:
   void InitScopedFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        content::features::kPrefetchUseContentRefactor,
-        {{"ineligible_decoy_request_probability", "0"},
-         {"prefetch_container_lifetime_s", "-1"},
-         {"html_only", "true"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{content::features::kPrefetchUseContentRefactor,
+          {{"ineligible_decoy_request_probability", "0"},
+           {"prefetch_container_lifetime_s", "-1"},
+           {"html_only", "true"}}}},
+        {network::features::kPrefetchNoVarySearch});
   }
 };
 
@@ -2497,10 +2507,11 @@ TEST_F(PrefetchServiceWithHTMLOnlyTest, FailedNonHTMLWithHTMLOnly) {
 class PrefetchServiceAlwaysMakeDecoyRequestTest : public PrefetchServiceTest {
  public:
   void InitScopedFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        content::features::kPrefetchUseContentRefactor,
-        {{"ineligible_decoy_request_probability", "1"},
-         {"prefetch_container_lifetime_s", "-1"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{content::features::kPrefetchUseContentRefactor,
+          {{"ineligible_decoy_request_probability", "1"},
+           {"prefetch_container_lifetime_s", "-1"}}}},
+        {network::features::kPrefetchNoVarySearch});
   }
 };
 
@@ -2971,7 +2982,8 @@ TEST_F(PrefetchServiceNoVarySearchTest, MAYBE_NoVarySearchSuccessCase) {
 
   MakePrefetchOnMainFrame(GURL("https://example.com/?a=1"),
                           PrefetchType(/*use_isolated_network_context=*/true,
-                                       /*use_prefetch_proxy=*/true));
+                                       /*use_prefetch_proxy=*/true),
+                          /*enable_no_vary_search_header*/ true);
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com/?a=1"),

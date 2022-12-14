@@ -313,6 +313,7 @@ void DocumentSpeculationRules::QueueUpdateSpeculationCandidates() {
   auto* execution_context = GetSupplementable()->GetExecutionContext();
   if (!execution_context)
     return;
+
   has_pending_update_ = true;
   execution_context->GetAgent()->event_loop()->EnqueueMicrotask(
       WTF::BindOnce(&DocumentSpeculationRules::UpdateSpeculationCandidates,
@@ -389,6 +390,11 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
   // Add candidates derived from document rule predicates.
   AddLinkBasedSpeculationCandidates(candidates);
 
+  if (!sent_is_part_of_no_vary_search_trial_ &&
+      RuntimeEnabledFeatures::NoVarySearchPrefetchEnabled(execution_context)) {
+    sent_is_part_of_no_vary_search_trial_ = true;
+    host->EnableNoVarySearchSupport();
+  }
   host->UpdateSpeculationCandidates(std::move(candidates));
 }
 

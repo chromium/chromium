@@ -1544,9 +1544,22 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-blink-features=SpeculationRulesPrefetchProxy,SpeculationRulesFetchFromHeader,SpeculationRulesReferrerPolicyKey,SpeculationRulesDocumentRules",
-      "--enable-features=SpeculationRulesPrefetchProxy,PrefetchUseContentRefactor,PrefetchNoVarySearch",
+      "--enable-blink-features=SpeculationRulesPrefetchProxy,SpeculationRulesFetchFromHeader,SpeculationRulesReferrerPolicyKey,SpeculationRulesDocumentRules,NoVarySearchPrefetch",
+      "--enable-features=SpeculationRulesPrefetchProxy,PrefetchUseContentRefactor",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
+    ],
+    "expires": "Jul 1, 2023"
+  },
+  {
+    "prefix": "prefetch-no-vary-search",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/speculation-rules/prefetch/no-vary-search"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-blink-features=NoVarySearchPrefetch",
+      "--enable-features=PrefetchUseContentRefactor"
     ],
     "expires": "Jul 1, 2023"
   },

@@ -96,6 +96,8 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // Helper function to get the |NoVarySearchHelper| associated with |this|.
   const NoVarySearchHelper& GetNoVarySearchHelper() const;
 
+  void EnableNoVarySearchSupport();
+
   static void SetPrefetchServiceForTesting(PrefetchService* prefetch_service);
 
  private:
@@ -128,6 +130,8 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // NoVarySearchHelper that manages NoVarySearch data and url matching.
   // Used through the getter GetNoVarySearchHelper
   NoVarySearchHelper no_vary_search_helper_;
+
+  bool no_vary_search_support_enabled_ = false;
 
   base::WeakPtrFactory<PrefetchDocumentManager> weak_method_factory_{this};
 

@@ -22,6 +22,8 @@ interface SpeculationHost {
   // sent.
   UpdateSpeculationCandidates(
       array<SpeculationCandidate> candidates);
+  // Enables matching prefetches according to No-Vary-Search response headers.
+  EnableNoVarySearchSupport();
 };
 
 // The action that is proposed.
