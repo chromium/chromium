@@ -283,7 +283,9 @@ void VideoCaptureDeviceChromeOSDelegate::CloseDevice(
                                       device_closed->Signal();
                                     },
                                     base::Unretained(&device_closed_))));
-  const base::TimeDelta kWaitTimeoutSecs = base::Seconds(1);
+  // TODO(kamesan): Reduce the timeout back to 1 second when we have a solution
+  // in platform level (b/258048698).
+  const base::TimeDelta kWaitTimeoutSecs = base::Seconds(2);
   device_closed_.TimedWait(kWaitTimeoutSecs);
 
   if (!unblock_suspend_token.is_empty())
