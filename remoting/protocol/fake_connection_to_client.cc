@@ -23,10 +23,6 @@ void FakeVideoStream::SetEventTimestampsSource(
 
 void FakeVideoStream::Pause(bool pause) {}
 
-void FakeVideoStream::SetLosslessEncode(bool want_lossless) {}
-
-void FakeVideoStream::SetLosslessColor(bool want_lossless) {}
-
 void FakeVideoStream::SetObserver(Observer* observer) {
   observer_ = observer;
 }

@@ -58,8 +58,6 @@ class MockVideoEncoder : public VideoEncoder {
   MockVideoEncoder() = default;
   ~MockVideoEncoder() override = default;
 
-  MOCK_METHOD1(SetLosslessEncode, void(bool));
-  MOCK_METHOD1(SetLosslessColor, void(bool));
   MOCK_METHOD1(EncodePtr, VideoPacket*(const webrtc::DesktopFrame&));
 
   std::unique_ptr<VideoPacket> Encode(

@@ -79,24 +79,6 @@ void VideoFramePump::Pause(bool pause) {
   capture_scheduler_.Pause(pause);
 }
 
-void VideoFramePump::SetLosslessEncode(bool want_lossless) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  encode_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VideoEncoder::SetLosslessEncode,
-                     base::Unretained(encoder_.get()), want_lossless));
-}
-
-void VideoFramePump::SetLosslessColor(bool want_lossless) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  encode_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VideoEncoder::SetLosslessColor,
-                     base::Unretained(encoder_.get()), want_lossless));
-}
-
 void VideoFramePump::SetObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   observer_ = observer;

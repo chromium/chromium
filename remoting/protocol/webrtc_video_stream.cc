@@ -331,14 +331,6 @@ void WebrtcVideoStream::Pause(bool pause) {
                                 base::Unretained(core_.get()), pause));
 }
 
-void WebrtcVideoStream::SetLosslessEncode(bool want_lossless_encode) {
-  NOTIMPLEMENTED();
-}
-
-void WebrtcVideoStream::SetLosslessColor(bool want_lossless_color) {
-  NOTIMPLEMENTED();
-}
-
 void WebrtcVideoStream::SetObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   observer_ = observer;

@@ -165,22 +165,6 @@ void ClientSession::ControlVideo(const protocol::VideoControl& video_control) {
       video_stream->Pause(pause_video_);
     }
   }
-  if (video_control.has_lossless_encode()) {
-    VLOG(1) << "Received VideoControl (lossless_encode="
-            << video_control.lossless_encode() << ")";
-    lossless_video_encode_ = video_control.lossless_encode();
-    for (const auto& [_, video_stream] : video_streams_) {
-      video_stream->SetLosslessEncode(lossless_video_encode_);
-    }
-  }
-  if (video_control.has_lossless_color()) {
-    VLOG(1) << "Received VideoControl (lossless_color="
-            << video_control.lossless_color() << ")";
-    lossless_video_color_ = video_control.lossless_color();
-    for (const auto& [_, video_stream] : video_streams_) {
-      video_stream->SetLosslessColor(lossless_video_color_);
-    }
-  }
 }
 
 void ClientSession::ControlAudio(const protocol::AudioControl& audio_control) {
@@ -532,10 +516,6 @@ void ClientSession::CreateMediaStreams() {
   }
 
   video_stream->SetObserver(this);
-
-  // Apply video-control parameters to the new stream.
-  video_stream->SetLosslessEncode(lossless_video_encode_);
-  video_stream->SetLosslessColor(lossless_video_color_);
 
   // Pause capturing if necessary.
   video_stream->Pause(pause_video_);

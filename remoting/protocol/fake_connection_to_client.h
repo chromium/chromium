@@ -33,8 +33,6 @@ class FakeVideoStream : public protocol::VideoStream {
   void SetEventTimestampsSource(scoped_refptr<InputEventTimestampsSource>
                                     event_timestamps_source) override;
   void Pause(bool pause) override;
-  void SetLosslessEncode(bool want_lossless) override;
-  void SetLosslessColor(bool want_lossless) override;
   void SetObserver(Observer* observer) override;
   void SelectSource(webrtc::ScreenId id) override;
   void SetComposeEnabled(bool enabled) override;

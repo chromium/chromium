@@ -38,11 +38,6 @@ class VideoStream {
   // only affects capture scheduling and does not stop/start the capturer.
   virtual void Pause(bool pause) = 0;
 
-  // Sets whether the video encoder should be requested to encode losslessly,
-  // or to use a lossless color space (typically requiring higher bandwidth).
-  virtual void SetLosslessEncode(bool want_lossless) = 0;
-  virtual void SetLosslessColor(bool want_lossless) = 0;
-
   // Control mouse cursor compositing in the video stream.
   virtual void SetComposeEnabled(bool enabled) = 0;
   virtual void SetMouseCursor(
