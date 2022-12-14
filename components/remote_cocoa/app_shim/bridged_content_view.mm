@@ -59,6 +59,26 @@ gfx::Point MovePointToWindow(const NSPoint& point,
                     NSHeight(content_rect) - point_in_window.y);
 }
 
+// Convert a |point| in |source_window|'s AppKit coordinate system (origin at
+// the bottom left of the window) to |target_view|'s coordinate, with the
+// origin at the top left of the view.
+// If |source_window| is nil, |point| will be treated as screen coordinates.
+gfx::Point MovePointToView(const NSPoint& point,
+                           NSWindow* source_window,
+                           NSView* target_view) {
+  NSPoint point_in_screen =
+      source_window ? ui::ConvertPointFromWindowToScreen(source_window, point)
+                    : point;
+
+  NSWindow* target_window = [target_view window];
+  NSPoint point_in_window =
+      ui::ConvertPointFromScreenToWindow(target_window, point_in_screen);
+  NSPoint point_in_view = [target_view convertPoint:point_in_window
+                                           fromView:nil];
+  return gfx::Point(point_in_window.x,
+                    NSHeight([target_view frame]) - point_in_view.y);
+}
+
 // Some keys are silently consumed by -[NSView interpretKeyEvents:]
 // They should not be processed as accelerators.
 // See comments at |keyDown:| for details.
@@ -305,8 +325,20 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
     return;
   }
 
-  gfx::Point event_location =
-      MovePointToWindow([theEvent locationInWindow], source, target);
+  gfx::Point event_location;
+  if (remote_cocoa::IsNSToolbarFullScreenWindow(target)) {
+    // We are in immersive fullscreen. This event is generated from the overlay
+    // window which sits atop the toolbar. Convert the event location to the
+    // content view coordiate, which should have the same bounds as the overlay
+    // window.
+    // This is to handle the case that `target` may contain the titlebar which
+    // the overlay window does not contain. Without this, buttons in the toolbar
+    // are not clickable when the titlebar is revealed.
+    event_location = MovePointToView([theEvent locationInWindow], source, self);
+  } else {
+    event_location =
+        MovePointToWindow([theEvent locationInWindow], source, target);
+  }
   [self updateTooltipIfRequiredAt:event_location];
 
   if (isScrollEvent) {

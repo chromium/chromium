@@ -357,6 +357,11 @@ class BrowserView : public BrowserWindow,
   // Returns the current shown ratio of the top browser controls.
   float GetTopControlsSlideBehaviorShownRatio() const;
 
+  // Returns the widget for anchoring bubbles and dialogs.
+  // This returns BrowserFrame except on fullscreen macOS where the toolbar is
+  // hosted in an OverlayWidget.
+  views::Widget* GetWidgetForAnchoring();
+
   // See ImmersiveModeController for description.
   ImmersiveModeController* immersive_mode_controller() const {
     return immersive_mode_controller_.get();

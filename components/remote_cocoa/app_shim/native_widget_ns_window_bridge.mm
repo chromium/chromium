@@ -1590,6 +1590,10 @@ void NativeWidgetNSWindowBridge::OrderChildren() {
     } else {
       if (child_window.parentWindow == window)
         continue;
+      if (immersive_mode_controller_ &&
+          immersive_mode_controller_->overlay_widget() == child_window) {
+        continue;
+      }
       [window addChildWindow:child_window ordered:NSWindowAbove];
     }
   }
@@ -1662,6 +1666,18 @@ void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
   // after the frame from the compositor arrives.
   if (content_resized && ![window_ isOpaque])
     invalidate_shadow_on_frame_swap_ = true;
+}
+
+void NativeWidgetNSWindowBridge::MoveChildrenTo(
+    NativeWidgetNSWindowBridge* target) {
+  // Make a copy of `child_windows_` because it will be updated during the loop.
+  std::vector<NativeWidgetNSWindowBridge*> child_windows(child_windows_);
+  for (NativeWidgetNSWindowBridge* child : child_windows) {
+    if (child != target) {
+      child->SetParent(target->id_);
+      child->host()->OnWindowParentChanged(target->id_);
+    }
+  }
 }
 
 void NativeWidgetNSWindowBridge::UpdateWindowDisplay() {
