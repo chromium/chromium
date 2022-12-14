@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "android_webview/browser/android_protocol_handler.h"
+#include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_contents_client_bridge.h"
 #include "android_webview/browser/aw_contents_io_thread_client.h"
 #include "android_webview/browser/aw_contents_origin_matcher.h"
@@ -21,8 +22,10 @@
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/url_constants.h"
 #include "base/android/build_info.h"
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/embedder_support/android/util/input_stream.h"
@@ -32,6 +35,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_request_id.h"
+#include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/url_utils.h"
@@ -54,6 +58,13 @@ const char kResponseHeaderViaShouldInterceptRequestValue[] =
     "shouldInterceptRequest";
 const char kAutoLoginHeaderName[] = "X-Auto-Login";
 const char kRequestedWithHeaderWebView[] = "WebView";
+
+// Argument struct for the |InterceptRequest::InterceptResponseReceived| method
+// which can live on the heap and be populated by async callbacks.
+struct InterceptResponseReceivedArgs {
+  std::unique_ptr<AwWebResourceInterceptResponse> intercept_response = nullptr;
+  bool xrw_origin_trial_enabled = false;
+};
 
 // Handles intercepted, in-progress requests/responses, so that they can be
 // controlled and modified accordingly.
@@ -111,7 +122,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
       std::unique_ptr<embedder_support::WebResourceResponse> response);
 
   void InterceptResponseReceived(
-      std::unique_ptr<AwWebResourceInterceptResponse> intercept_response);
+      std::unique_ptr<InterceptResponseReceivedArgs> args);
 
   // Returns true if the request was restarted or completed.
   bool InputStreamFailed(bool restart_needed);
@@ -305,6 +316,53 @@ InterceptedRequest::~InterceptedRequest() {
     SendErrorCallback(error_status_, false);
 }
 
+namespace {
+
+// Persistent Origin Trials can only be checked on the UI thread.
+// |result_args| is owned by a BarrierClosure that executes after this call.
+void CheckXrwOriginTrialOnUiThread(GURL request_url,
+                                   InterceptResponseReceivedArgs* result_args) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  content::OriginTrialsControllerDelegate* delegate =
+      AwBrowserContext::GetDefault()->GetOriginTrialsControllerDelegate();
+  if (!delegate)
+    return;
+
+  result_args->xrw_origin_trial_enabled = delegate->IsTrialPersistedForOrigin(
+      url::Origin::Create(request_url), "WebViewXRequestedWithDeprecation",
+      base::Time::Now());
+  base::UmaHistogramBoolean(
+      "Android.WebView.RequestedWithHeader.OriginTrialEnabled",
+      result_args->xrw_origin_trial_enabled);
+}
+
+// Post a call to the UI thread to check if the XRW deprecation trial is enabled
+// for |request_url|, saving the result in |result_args|.
+// |result_args| is owned by the |done_callback|.
+void CheckXrwOriginTrialAsync(GURL request_url,
+                              InterceptResponseReceivedArgs* result_args,
+                              base::OnceClosure done_callback) {
+  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&CheckXrwOriginTrialOnUiThread, request_url,
+                     base::Unretained(result_args)),
+      std::move(done_callback));
+}
+
+// Response callback for |AwContentsIoThreadClient::ShouldInterceptRequestAsync|
+// which saves the result to |result_args|, which is owned by the
+// |done_callback|.
+// |async_result| is last argument to allow currying through bind.
+void OnShouldInterceptRequestAsyncResult(
+    InterceptResponseReceivedArgs* result_args,
+    base::OnceClosure done_closure,
+    std::unique_ptr<AwWebResourceInterceptResponse> async_result) {
+  result_args->intercept_response = std::move(async_result);
+  std::move(done_closure).Run();
+}
+
+}  // namespace
+
 void InterceptedRequest::Restart() {
   std::unique_ptr<AwContentsIoThreadClient> io_thread_client =
       GetIoThreadClient();
@@ -325,7 +383,14 @@ void InterceptedRequest::Restart() {
       UpdateLoadFlags(request_.load_flags, io_thread_client.get());
   if (!io_thread_client || ShouldNotInterceptRequest()) {
     // equivalent to no interception
-    InterceptResponseReceived(nullptr);
+    std::unique_ptr<InterceptResponseReceivedArgs>
+        intercept_response_received_args =
+            std::make_unique<InterceptResponseReceivedArgs>();
+    CheckXrwOriginTrialAsync(
+        request_.url, intercept_response_received_args.get(),
+        base::BindOnce(&InterceptedRequest::InterceptResponseReceived,
+                       weak_factory_.GetWeakPtr(),
+                       std::move(intercept_response_received_args)));
   } else {
     if (request_.referrer.is_valid()) {
       // intentionally override if referrer header already exists
@@ -333,13 +398,31 @@ void InterceptedRequest::Restart() {
                                  request_.referrer.spec());
     }
 
+    base::RepeatingClosure arg_ready_closure;
+    // Pointer lifetime is tied to |arg_ready_closure|.
+    InterceptResponseReceivedArgs* intercept_response_received_args;
+    {
+      // Inner scope to prevent |call_args| from being accidentally used after
+      // being moved into the |arg_ready_closure|.
+      std::unique_ptr<InterceptResponseReceivedArgs> call_args =
+          std::make_unique<InterceptResponseReceivedArgs>();
+      intercept_response_received_args = call_args.get();
+      arg_ready_closure = base::BarrierClosure(
+          2, base::BindOnce(&InterceptedRequest::InterceptResponseReceived,
+                            weak_factory_.GetWeakPtr(), std::move(call_args)));
+    }
+
+    CheckXrwOriginTrialAsync(request_.url, intercept_response_received_args,
+                             arg_ready_closure);
+
     // TODO: verify the case when WebContents::RenderFrameDeleted is called
     // before network request is intercepted (i.e. if that's possible and
     // whether it can result in any issues).
     io_thread_client->ShouldInterceptRequestAsync(
         AwWebResourceRequest(request_),
-        base::BindOnce(&InterceptedRequest::InterceptResponseReceived,
-                       weak_factory_.GetWeakPtr()));
+        base::BindOnce(&OnShouldInterceptRequestAsyncResult,
+                       base::Unretained(intercept_response_received_args),
+                       arg_ready_closure));
   }
 }
 
@@ -358,7 +441,13 @@ bool InterceptedRequest::ShouldNotInterceptRequest() {
 }
 
 void InterceptedRequest::InterceptResponseReceived(
-    std::unique_ptr<AwWebResourceInterceptResponse> intercept_response) {
+    std::unique_ptr<InterceptResponseReceivedArgs> args) {
+  DCHECK(args);
+  if (args->xrw_origin_trial_enabled) {
+    requested_with_header_mode =
+        AwSettings::RequestedWithHeaderMode::APP_PACKAGE_NAME;
+  }
+
   // We send the application's package name in the X-Requested-With header for
   // compatibility with previous WebView versions. This should not be visible to
   // shouldInterceptRequest. It should also not trigger CORS prefetch if
@@ -396,17 +485,19 @@ void InterceptedRequest::InterceptResponseReceived(
       committed_mode);
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  if (intercept_response && intercept_response->RaisedException(env)) {
+  if (args->intercept_response &&
+      args->intercept_response->RaisedException(env)) {
     // The JNI handler has already raised an exception. Fail the resource load
     // as it may be insecure to load on error.
     SendErrorAndCompleteImmediately(net::ERR_UNEXPECTED);
     return;
   }
 
-  if (intercept_response && intercept_response->HasResponse(env)) {
+  if (args->intercept_response && args->intercept_response->HasResponse(env)) {
     // non-null response: make sure to use it as an override for the
     // normal network data.
-    ContinueAfterInterceptWithOverride(intercept_response->GetResponse(env));
+    ContinueAfterInterceptWithOverride(
+        args->intercept_response->GetResponse(env));
     return;
   }
 

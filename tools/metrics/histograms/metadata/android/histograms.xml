@@ -4461,6 +4461,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.RequestedWithHeader.OriginTrialEnabled"
+    enum="BooleanEnabled" expires_after="2023-07-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records if the WebViewXRequestedWithDeprecation Origin Trial was enabled on
+    a resource request. This histogram is recorded on every request sent by
+    WebView if Persistent Origin Trials are enabled.
+  </summary>
+</histogram>
+
 <histogram
     name="Android.WebView.RequestedWithHeader.SetRequestedWithHeaderMode"
     enum="WebViewRequestedWithHeaderMode" expires_after="2023-01-01">
