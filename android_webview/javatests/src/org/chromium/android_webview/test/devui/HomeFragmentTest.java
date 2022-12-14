@@ -40,7 +40,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -242,9 +241,6 @@ public class HomeFragmentTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testDifferentWebViewPackageError_bannerMessage_postNougat() throws Throwable {
-        Assume.assumeTrue("This test verifies behavior introduced in Nougat and above",
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
-
         Context context = InstrumentationRegistry.getTargetContext();
         // Inject a dummy PackageInfo as the current WebView package to make sure it will always be
         // different from the test's app package.
@@ -271,9 +267,6 @@ public class HomeFragmentTest {
     @Feature({"AndroidWebView"})
     // Test the dialog shown when the WebView package error message is clicked.
     public void testDifferentWebViewPackageError_dialog_postNougat() throws Throwable {
-        Assume.assumeTrue("This test verifies behavior introduced in Nougat and above",
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
-
         Context context = InstrumentationRegistry.getTargetContext();
         // Inject a dummy PackageInfo as the current WebView package to make sure it will always be
         // different from the test's app package.
@@ -297,66 +290,5 @@ public class HomeFragmentTest {
                 .check(matches(withText(WebViewPackageError.CHANGE_WEBVIEW_PROVIDER_BUTTON_TEXT)))
                 .perform(click());
         intended(IntentMatchers.hasAction(Settings.ACTION_WEBVIEW_SETTINGS));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView"})
-    // Test that error message is shown when system's WebView provider package is different from dev
-    // UI's on a preNougat android versions (where WebView provider can't be changed).
-    public void testDifferentWebViewPackageError_bannerMessage_preNougat() throws Throwable {
-        Assume.assumeTrue("This test verifies pre-Nougat behavior",
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.N);
-
-        Context context = InstrumentationRegistry.getTargetContext();
-        // Inject a dummy PackageInfo as the current WebView package to make sure it will always be
-        // different from the test's app package.
-        WebViewPackageHelper.setCurrentWebViewPackageForTesting(FAKE_WEBVIEW_PACKAGE);
-        launchHomeFragment();
-
-        String expectedErrorMessage = String.format(Locale.US,
-                WebViewPackageError.DIFFERENT_WEBVIEW_PROVIDER_ERROR_MESSAGE,
-                WebViewPackageHelper.loadLabel(context));
-        ViewUtils.waitForView(withId(R.id.main_error_view));
-        onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
-        onView(withId(R.id.error_text)).check(matches(withText(expectedErrorMessage)));
-        // Since the current provider is set to a fake package not an actual installed WebView
-        // provider, the UI shouldn't offer opening current WebView provider dev UI. It should not
-        // offer to change system WebView provider because this is not supported on pre-Nougat
-        // android versions.
-        onView(withId(R.id.action_button)).check(matches(not(isDisplayed())));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView"})
-    // Test the dialog shown when the WebView package error message is clicked (where WebView
-    // provider can't be changed).
-    public void testDifferentWebViewPackageError_dialog_preNougat() throws Throwable {
-        Assume.assumeTrue("This test verifies pre-Nougat behavior",
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.N);
-
-        Context context = InstrumentationRegistry.getTargetContext();
-        // Inject a dummy PackageInfo as the current WebView package to make sure it will always be
-        // different from the test's app package.
-        WebViewPackageHelper.setCurrentWebViewPackageForTesting(FAKE_WEBVIEW_PACKAGE);
-        launchHomeFragment();
-
-        String dialogExpectedMessage = String.format(Locale.US,
-                WebViewPackageError.DIFFERENT_WEBVIEW_PROVIDER_DIALOG_MESSAGE,
-                WebViewPackageHelper.loadLabel(context));
-        ViewUtils.waitForView(withId(R.id.main_error_view));
-        onView(withId(R.id.main_error_view)).perform(click());
-        ViewUtils.waitForView(withText(dialogExpectedMessage));
-        onView(withText(dialogExpectedMessage)).check(matches(isDisplayed()));
-        // Since the current provider is set to a fake package not an actual installed WebView
-        // provider, the UI shouldn't offer opening current WebView provider dev UI. It should not
-        // offer to change system WebView provider because this is not supported on pre-Nougat
-        // android versions.
-        //
-        // There should be no buttons in the Dialog.
-        onView(withId(android.R.id.button1)).check(matches(not(isDisplayed())));
-        onView(withId(android.R.id.button2)).check(matches(not(isDisplayed())));
-        onView(withId(android.R.id.button3)).check(matches(not(isDisplayed())));
     }
 }

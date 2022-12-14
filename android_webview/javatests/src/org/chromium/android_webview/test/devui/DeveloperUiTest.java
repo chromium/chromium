@@ -34,7 +34,6 @@ import android.app.Instrumentation.ActivityResult;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
@@ -46,7 +45,6 @@ import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -178,28 +176,12 @@ public class DeveloperUiTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testMenuOptions_switchProvider_shownOnNougat() throws Throwable {
-        Assume.assumeTrue("This test verifies behavior introduced in Nougat and above",
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
-
         launchHomeFragment();
 
         openOptionsMenu();
         onView(withText("Change WebView Provider")).check(matches(isDisplayed()));
         onView(withText("Change WebView Provider")).perform(click());
         intended(IntentMatchers.hasAction(Settings.ACTION_WEBVIEW_SETTINGS));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView"})
-    public void testMenuOptions_switchProvider_notShown() throws Throwable {
-        Assume.assumeTrue("This test verifies pre-Nougat behavior",
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.N);
-
-        launchHomeFragment();
-
-        openOptionsMenu();
-        onView(withId(R.id.options_menu_switch_provider)).check(doesNotExist());
     }
 
     @Test
