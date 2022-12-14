@@ -36,6 +36,29 @@ enum class PrivacyGuideSettingsStates {
   kMaxValue = kSafeBrowsingStandardToStandard,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Must be kept in sync with SettingsPrivacyGuideInteractions in
+// histograms/enums.xml and SettingsPrivacyGuideInteractions in
+// resources/settings/metrics_browser_proxy.ts.
+//
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_guide
+enum class PrivacyGuideInteractions {
+  kWelcomeNextButton = 0,
+  kMSBBNextButton = 1,
+  kHistorySyncNextButton = 2,
+  kSafeBrowsingNextButton = 3,
+  kCookiesNextButton = 4,
+  kCompletionNextButton = 5,
+  kSettingsLinkRowEntry = 6,
+  kPromoEntry = 7,
+  kSWAACompletionLink = 8,
+  kPrivacySandboxCompletionLink = 9,
+  kMaxValue = kPrivacySandboxCompletionLink,
+};
+
 }  // namespace privacy_guide_metrics
 
 #endif  // CHROME_BROWSER_PRIVACY_GUIDE_PRIVACY_GUIDE_H_
