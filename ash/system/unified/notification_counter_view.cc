@@ -4,19 +4,14 @@
 
 #include "ash/system/unified/notification_counter_view.h"
 
-#include <algorithm>
-
-#include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
 #include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/notification_icons_controller.h"
 #include "base/i18n/number_formatting.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -25,11 +20,9 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/canvas_image_source.h"
-#include "ui/gfx/vector_icon_utils.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 
 namespace ash {
@@ -196,11 +189,9 @@ QuietModeView::QuietModeView(Shelf* shelf) : TrayItemView(shelf) {
 QuietModeView::~QuietModeView() = default;
 
 void QuietModeView::Update() {
-  // TODO(yamaguchi): Add this check when new style of the system tray is
-  // implemented, so that icon resizing will not happen here.
-  // DCHECK_EQ(kTrayIconSize,
-  //     gfx::GetDefaultSizeOfVectorIcon(kSystemTrayDoNotDisturbIcon));
-  if (message_center::MessageCenter::Get()->IsQuietMode()) {
+  if (message_center::MessageCenter::Get()->IsQuietMode() &&
+      Shell::Get()->session_controller()->GetSessionState() ==
+          session_manager::SessionState::ACTIVE) {
     image_view()->SetImage(ui::ImageModel::FromVectorIcon(
         kSystemTrayDoNotDisturbIcon, kColorAshIconColorPrimary));
     SetVisible(true);

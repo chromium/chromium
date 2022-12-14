@@ -199,6 +199,31 @@ TEST_F(NotificationCenterTrayTest, BubbleHideBehavior) {
   EXPECT_FALSE(test_api()->IsBubbleShown());
 }
 
+// Tests that visibility of the Do not disturb icon changes with Do not disturb
+// mode.
+TEST_F(NotificationCenterTrayTest, DoNotDisturbIconVisibility) {
+  // Test the case where the tray is not initially visible.
+  ASSERT_FALSE(test_api()->IsTrayShown());
+  EXPECT_FALSE(test_api()->IsDoNotDisturbIconShown());
+  message_center::MessageCenter::Get()->SetQuietMode(true);
+  EXPECT_TRUE(test_api()->IsTrayShown());
+  EXPECT_TRUE(test_api()->IsDoNotDisturbIconShown());
+  message_center::MessageCenter::Get()->SetQuietMode(false);
+  EXPECT_FALSE(test_api()->IsTrayShown());
+  EXPECT_FALSE(test_api()->IsDoNotDisturbIconShown());
+
+  // Test the case where the tray is initially visible.
+  test_api()->AddNotification();
+  ASSERT_TRUE(test_api()->IsTrayShown());
+  EXPECT_FALSE(test_api()->IsDoNotDisturbIconShown());
+  message_center::MessageCenter::Get()->SetQuietMode(true);
+  EXPECT_TRUE(test_api()->IsTrayShown());
+  EXPECT_TRUE(test_api()->IsDoNotDisturbIconShown());
+  message_center::MessageCenter::Get()->SetQuietMode(false);
+  EXPECT_TRUE(test_api()->IsTrayShown());
+  EXPECT_FALSE(test_api()->IsDoNotDisturbIconShown());
+}
+
 // TODO(b/252875025):
 // Add following test cases as we add relevant functionality:
 // - Focus Change dismissing bubble

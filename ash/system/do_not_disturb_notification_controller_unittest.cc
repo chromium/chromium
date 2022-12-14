@@ -15,8 +15,6 @@ namespace {
 
 using message_center::MessageCenter;
 
-const char kDoNotDisturbNotificationId[] = "do_not_disturb";
-
 }  // namespace
 
 class DoNotDisturbNotificationControllerTest
@@ -42,7 +40,7 @@ class DoNotDisturbNotificationControllerTest
 
   bool IsDoNotDisturbNotificationPresent() {
     return MessageCenter::Get()->FindNotificationById(
-        kDoNotDisturbNotificationId);
+        DoNotDisturbNotificationController::kDoNotDisturbNotificationId);
   }
 
  private:
@@ -87,8 +85,8 @@ TEST_P(DoNotDisturbNotificationControllerTest,
   ASSERT_TRUE(IsDoNotDisturbNotificationPresent());
 
   // Simulate a click on the notification's "Turn off" button.
-  auto* notification =
-      message_center->FindNotificationById(kDoNotDisturbNotificationId);
+  auto* notification = message_center->FindNotificationById(
+      DoNotDisturbNotificationController::kDoNotDisturbNotificationId);
   notification->delegate()->Click(0, absl::nullopt);
   EXPECT_FALSE(IsDoNotDisturbNotificationPresent());
   EXPECT_FALSE(message_center->IsQuietMode());

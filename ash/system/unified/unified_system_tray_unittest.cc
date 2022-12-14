@@ -6,7 +6,6 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
-#include "ash/ime/ime_controller_impl.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
@@ -21,10 +20,8 @@
 #include "ash/system/time/time_tray_item_view.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/unified/ime_mode_view.h"
-#include "ash/system/unified/notification_counter_view.h"
 #include "ash/system/unified/unified_slider_bubble_controller.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
-#include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -37,7 +34,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/message_center/message_center.h"
 
@@ -147,10 +143,6 @@ class UnifiedSystemTrayTest : public AshTestBase,
 
   ImeModeView* ime_mode_view() {
     return GetPrimaryUnifiedSystemTray()->ime_mode_view_;
-  }
-
-  QuietModeView* quiet_mode_view() {
-    return GetPrimaryUnifiedSystemTray()->quiet_mode_view_;
   }
 
  private:
@@ -683,23 +675,6 @@ TEST_P(UnifiedSystemTrayTest, TrayBackgroundColorAfterSwitchToTabletMode) {
   tablet_mode_controller->SetEnabledForTest(false);
   EXPECT_EQ(tray->layer()->background_color(),
             ShelfConfig::Get()->GetShelfControlButtonColor(widget));
-}
-
-// Tests that the `quiet_mode_view_` is visible based on the system's quiet mode
-// setting.
-TEST_P(UnifiedSystemTrayTest, QuietModeViewVisibility) {
-  // `quiet_mode_view_` does not exist in `unified_system_tray_` if QsRevamp is
-  // not enabled. It is owned by `notification_icons_controller` in that case.
-  if (!IsQsRevampEnabled())
-    return;
-
-  auto* message_center = message_center::MessageCenter::Get();
-
-  message_center->SetQuietMode(false);
-  EXPECT_FALSE(quiet_mode_view()->GetVisible());
-
-  message_center->SetQuietMode(true);
-  EXPECT_TRUE(quiet_mode_view()->GetVisible());
 }
 
 // Tests that the bubble automatically hides if it is visible when another

@@ -61,9 +61,13 @@ class NotificationCenterTestApi {
   // otherwise.
   bool IsPopupShown(const std::string& id);
 
-  // Returns true if `NotificationCenterTray`` is showing in the shelf, false
+  // Returns true if `NotificationCenterTray` is showing in the shelf, false
   // otherwise.
   bool IsTrayShown();
+
+  // Returns true if `QuietModeView` is showing in the `NotificationCenterTray`,
+  // false otherwise.
+  bool IsDoNotDisturbIconShown();
 
   // Returns the notification view associated with the provided notification id.
   // Should be only used when the notifications bubble is open.

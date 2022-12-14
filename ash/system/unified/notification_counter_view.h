@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_item_view.h"
-#include "base/scoped_observation.h"
 
 namespace session_manager {
 enum class SessionState;

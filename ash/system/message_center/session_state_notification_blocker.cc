@@ -6,12 +6,11 @@
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
+#include "ash/system/do_not_disturb_notification_controller.h"
 #include "ash/system/power/battery_notification.h"
 #include "base/containers/contains.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
-#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 using session_manager::SessionState;
@@ -95,6 +94,15 @@ bool SessionStateNotificationBlocker::ShouldShowNotification(
   // Never show notifications in kiosk mode.
   if (Shell::Get()->session_controller()->IsRunningInAppMode())
     return false;
+
+  // Do not show the "Do not disturb" notification if there is no active
+  // session.
+  if (notification.id() ==
+          DoNotDisturbNotificationController::kDoNotDisturbNotificationId &&
+      Shell::Get()->session_controller()->GetSessionState() !=
+          SessionState::ACTIVE) {
+    return false;
+  }
 
   if (notification.id() == BatteryNotification::kNotificationId)
     return true;

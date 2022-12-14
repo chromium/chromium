@@ -30,6 +30,8 @@ class ASH_EXPORT DoNotDisturbNotificationController
 
   ~DoNotDisturbNotificationController() override;
 
+  static const char kDoNotDisturbNotificationId[];
+
   // message_center::MessageCenterObserver:
   void OnQuietModeChanged(bool in_quiet_mode) override;
 

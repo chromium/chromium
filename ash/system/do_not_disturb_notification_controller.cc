@@ -22,7 +22,6 @@ namespace {
 
 using message_center::MessageCenter;
 
-const char kDoNotDisturbNotificationId[] = "do_not_disturb";
 const char kDoNotDisturbNotifierId[] =
     "ash.do_not_disturb_notification_controller";
 
@@ -35,6 +34,10 @@ DoNotDisturbNotificationController::DoNotDisturbNotificationController() {
 DoNotDisturbNotificationController::~DoNotDisturbNotificationController() {
   MessageCenter::Get()->RemoveObserver(this);
 }
+
+// static
+const char DoNotDisturbNotificationController::kDoNotDisturbNotificationId[] =
+    "do_not_disturb";
 
 std::unique_ptr<message_center::Notification>
 DoNotDisturbNotificationController::CreateNotification() {

@@ -14,6 +14,7 @@
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/notification_center/notification_list_view.h"
 #include "ash/system/notification_center/stacked_notification_bar.h"
+#include "ash/system/unified/notification_counter_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/base/models/image_model.h"
@@ -82,6 +83,12 @@ bool NotificationCenterTestApi::IsPopupShown(const std::string& id) {
 
 bool NotificationCenterTestApi::IsTrayShown() {
   return notification_center_tray_->GetVisible();
+}
+
+bool NotificationCenterTestApi::IsDoNotDisturbIconShown() {
+  return notification_center_tray_->notification_icons_controller_
+      ->quiet_mode_view()
+      ->GetVisible();
 }
 
 views::View* NotificationCenterTestApi::GetNotificationViewForId(

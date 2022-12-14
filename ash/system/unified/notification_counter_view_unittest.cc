@@ -12,8 +12,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/image/image.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -43,7 +41,8 @@ void AddNotification(const std::string& notification_id,
 class NotificationCounterViewTest : public AshTestBase,
                                     public testing::WithParamInterface<bool> {
  public:
-  NotificationCounterViewTest() = default;
+  NotificationCounterViewTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   NotificationCounterViewTest(const NotificationCounterViewTest&) = delete;
   NotificationCounterViewTest& operator=(const NotificationCounterViewTest&) =
       delete;
@@ -70,6 +69,15 @@ class NotificationCounterViewTest : public AshTestBase,
                                : status_area_widget->unified_system_tray()
                                      ->notification_icons_controller_
                                      ->notification_counter_view();
+  }
+
+  QuietModeView* GetDoNotDisturbIconView() {
+    auto* status_area_widget = GetPrimaryShelf()->status_area_widget();
+    return IsQsRevampEnabled()
+               ? status_area_widget->notification_center_tray()
+                     ->notification_icons_controller_->quiet_mode_view()
+               : status_area_widget->unified_system_tray()
+                     ->notification_icons_controller_->quiet_mode_view();
   }
 
  private:
@@ -164,6 +172,22 @@ TEST_P(NotificationCounterViewTest, DisplayChanged) {
                                                            false /* by_user */);
   GetNotificationCounterView()->Update();
   EXPECT_FALSE(GetNotificationCounterView()->GetVisible());
+}
+
+TEST_P(NotificationCounterViewTest, DoNotDisturbIconVisibility) {
+  ASSERT_FALSE(GetDoNotDisturbIconView()->GetVisible());
+
+  // Turn on Do not disturb mode.
+  message_center::MessageCenter::Get()->SetQuietMode(true);
+  EXPECT_TRUE(GetDoNotDisturbIconView()->GetVisible());
+
+  // Show the lock screen.
+  BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
+  EXPECT_FALSE(GetDoNotDisturbIconView()->GetVisible());
+
+  // Log in.
+  UnblockUserSession();
+  EXPECT_TRUE(GetDoNotDisturbIconView()->GetVisible());
 }
 
 }  // namespace ash

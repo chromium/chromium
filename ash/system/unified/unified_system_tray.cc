@@ -36,7 +36,6 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
-#include "ash/system/tray/tray_event_filter.h"
 #include "ash/system/unified/camera_mic_tray_item_view.h"
 #include "ash/system/unified/current_locale_view.h"
 #include "ash/system/unified/date_tray.h"
@@ -49,7 +48,6 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
-#include "base/debug/stack_trace.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -63,8 +61,6 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/message_center/message_center.h"
-#include "ui/message_center/notification_view_controller.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -214,12 +210,6 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
 
   AddTrayItemToContainer(std::make_unique<ScreenCaptureTrayItemView>(shelf));
 
-  if (features::IsQsRevampEnabled()) {
-    quiet_mode_view_ =
-        tray_container()->AddChildView(std::make_unique<QuietModeView>(shelf));
-    tray_items_.push_back(quiet_mode_view_);
-  }
-
   if (!features::IsQsRevampEnabled()) {
     tray_items_.push_back(
         notification_icons_controller_->notification_counter_view());
@@ -275,11 +265,13 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
 
   ShelfConfig::Get()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
+  message_center::MessageCenter::Get()->AddObserver(this);
 }
 
 UnifiedSystemTray::~UnifiedSystemTray() {
   Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   ShelfConfig::Get()->RemoveObserver(this);
+  message_center::MessageCenter::Get()->RemoveObserver(this);
 
   DestroyBubbles();
 
@@ -513,6 +505,12 @@ void UnifiedSystemTray::OnTabletModeEnded() {
   UpdateLayout();
 }
 
+void UnifiedSystemTray::OnQuietModeChanged(bool in_quiet_mode) {
+  if (!features::IsQsRevampEnabled()) {
+    notification_icons_controller_->UpdateNotificationIndicators();
+  }
+}
+
 void UnifiedSystemTray::OnDateTrayActionPerformed(const ui::Event& event) {
   if (!bubble_)
     ShowBubble();
@@ -720,9 +718,6 @@ void UnifiedSystemTray::HideBubbleInternal() {
 }
 
 void UnifiedSystemTray::UpdateNotificationInternal() {
-  if (features::IsQsRevampEnabled())
-    quiet_mode_view_->Update();
-
   // Limit update frequency in order to avoid flashing when 2 updates are
   // incoming in a very short period of time. It happens when ARC++ apps
   // creating bundled notifications.

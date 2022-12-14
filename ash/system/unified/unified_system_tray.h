@@ -13,8 +13,6 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "ash/system/status_area_widget.h"
-#include "ash/system/time/time_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
@@ -49,7 +47,6 @@ class NotificationGroupingController;
 class NotificationIconsController;
 class PrivacyIndicatorsTrayItemView;
 class PrivacyScreenToastController;
-class QuietModeView;
 class Shelf;
 class TrayBubbleView;
 class TrayItemView;
@@ -74,7 +71,8 @@ class ASH_EXPORT UnifiedSystemTray
     : public TrayBackgroundView,
       public ShelfConfig::Observer,
       public UnifiedSystemTrayController::Observer,
-      public TabletModeObserver {
+      public TabletModeObserver,
+      public message_center::MessageCenterObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -216,6 +214,9 @@ class ASH_EXPORT UnifiedSystemTray
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
 
+  // message_center::MessageCenterObserver:
+  void OnQuietModeChanged(bool in_quiet_mode) override;
+
   // Gets called when an action is performed on the `DateTray`.
   void OnDateTrayActionPerformed(const ui::Event& event);
 
@@ -309,7 +310,6 @@ class ASH_EXPORT UnifiedSystemTray
 
   NetworkTrayView* network_tray_view_ = nullptr;
   ChannelIndicatorView* channel_indicator_view_ = nullptr;
-  QuietModeView* quiet_mode_view_ = nullptr;
 
   // Contains all tray items views added to tray_container().
   std::list<TrayItemView*> tray_items_;

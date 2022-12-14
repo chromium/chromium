@@ -175,15 +175,14 @@ void NotificationIconsController::AddNotificationTrayItems(
   notification_counter_view_ = tray_container->AddChildView(
       std::make_unique<NotificationCounterView>(shelf_, /*controller=*/this));
 
-  // `quiet_mode_view_` and `separator_` are only shown in the
-  // `UnifiedSystemTray` with the QsRevamp feature disabled. Once kQsRevamp
-  // launches `quiet_mode_view_` will remain in the `UnifiedSystemTray`.
-  // The `separator_` will not be needed because the icons related to this
-  // controller will have their own dedicated tray button.
-  if (!features::IsQsRevampEnabled()) {
-    quiet_mode_view_ =
-        tray_container->AddChildView(std::make_unique<QuietModeView>(shelf_));
+  quiet_mode_view_ =
+      tray_container->AddChildView(std::make_unique<QuietModeView>(shelf_));
 
+  // `separator_` is only shown in the `UnifiedSystemTray` with the QsRevamp
+  // feature disabled. The `separator_` will not be needed once kQsRevamp
+  // launches because the icons related to this controller will have their own
+  // dedicated tray button.
+  if (!features::IsQsRevampEnabled()) {
     separator_ = tray_container->AddChildView(
         std::make_unique<SeparatorTrayItemView>(shelf_));
   }
@@ -222,8 +221,7 @@ std::u16string NotificationIconsController::GetAccessibleNameString() const {
 
 void NotificationIconsController::UpdateNotificationIndicators() {
   notification_counter_view_->Update();
-  if (!features::IsQsRevampEnabled())
-    quiet_mode_view_->Update();
+  quiet_mode_view_->Update();
 }
 
 void NotificationIconsController::OnSystemTrayButtonSizeChanged(

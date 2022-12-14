@@ -9,9 +9,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/session/test_session_controller_client.h"
+#include "ash/system/do_not_disturb_notification_controller.h"
 #include "ash/system/power/battery_notification.h"
 #include "ash/test/ash_test_base.h"
-#include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/message_center/message_center.h"
@@ -93,6 +93,19 @@ class SessionStateNotificationBlockerTest
     if (notifier_id.id == kNotifierSystemPriority)
       notification.set_priority(message_center::SYSTEM_PRIORITY);
     return blocker_->ShouldShowNotificationAsPopup(notification);
+  }
+
+  bool ShouldShowDoNotDisturbNotification() {
+    message_center::Notification notification(
+        message_center::NOTIFICATION_TYPE_SIMPLE,
+        DoNotDisturbNotificationController::kDoNotDisturbNotificationId,
+        u"chromeos-title", u"chromeos-message", ui::ImageModel(),
+        u"chromeos-source", GURL(),
+        message_center::NotifierId(
+            message_center::NotifierType::SYSTEM_COMPONENT, "test-notifier",
+            NotificationCatalogName::kDoNotDisturb),
+        message_center::RichNotificationData(), nullptr);
+    return blocker_->ShouldShowNotification(notification);
   }
 
   void SetLockedState(bool locked) {
@@ -259,6 +272,28 @@ TEST_P(SessionStateNotificationBlockerTest, DelayAfterLogin) {
 
   // The notification delay should not be enabled for all other tests.
   SessionStateNotificationBlocker::SetUseLoginNotificationDelayForTest(false);
+}
+
+TEST_P(SessionStateNotificationBlockerTest, DoNotDisturbNotification) {
+  // OOBE.
+  GetSessionControllerClient()->SetSessionState(SessionState::OOBE);
+  EXPECT_FALSE(ShouldShowDoNotDisturbNotification());
+
+  // Login screen.
+  GetSessionControllerClient()->SetSessionState(SessionState::LOGIN_PRIMARY);
+  EXPECT_FALSE(ShouldShowDoNotDisturbNotification());
+
+  // Logged in as a normal user.
+  SimulateUserLogin("user@test.com");
+  EXPECT_TRUE(ShouldShowDoNotDisturbNotification());
+
+  // Lock.
+  SetLockedState(true);
+  EXPECT_FALSE(ShouldShowDoNotDisturbNotification());
+
+  // Unlock.
+  SetLockedState(false);
+  EXPECT_TRUE(ShouldShowDoNotDisturbNotification());
 }
 
 }  // namespace
