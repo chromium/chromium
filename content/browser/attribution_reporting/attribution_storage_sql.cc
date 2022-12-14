@@ -1449,17 +1449,12 @@ absl::optional<base::Time> AttributionStorageSql::GetNextReportTime(
   sql::Statement statement(db_->GetCachedStatement(id, sql));
   statement.BindTime(0, time);
 
-  absl::optional<base::Time> result;
-
   if (statement.Step() &&
       statement.GetColumnType(0) != sql::ColumnType::kNull) {
-    result = statement.ColumnTime(0);
+    return statement.ColumnTime(0);
   }
 
-  base::UmaHistogramBoolean("Conversions.Storage.GetNextReportTimeSucceeded",
-                            statement.Succeeded());
-
-  return result;
+  return absl::nullopt;
 }
 
 absl::optional<base::Time> AttributionStorageSql::GetNextEventLevelReportTime(

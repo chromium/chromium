@@ -4009,17 +4009,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.Storage.GetNextReportTimeSucceeded"
-    units="BooleanSuccess" expires_after="M117">
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records whether each GetNextReportTime SQL statement succeeded, regardless
-    of whether it returned any data.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.Storage.MigrationTime" units="ms"
     expires_after="M117">
   <owner>johnidel@chromium.org</owner>

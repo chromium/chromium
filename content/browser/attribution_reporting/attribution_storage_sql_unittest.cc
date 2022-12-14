@@ -1129,50 +1129,6 @@ TEST_F(AttributionStorageSqlTest,
               ElementsAre(Pair("x", ElementsAre("y"))));
 }
 
-TEST_F(AttributionStorageSqlTest, GetNextReportTime_RecordsSucceededMetric) {
-  using ::base::Bucket;
-  using ::base::BucketsAre;
-
-  static constexpr char kHistogram[] =
-      "Conversions.Storage.GetNextReportTimeSucceeded";
-  {
-    OpenDatabase();
-    storage()->StoreSource(SourceBuilder().Build());
-
-    base::HistogramTester histograms;
-
-    // Internally, this runs two statements.
-    storage()->GetNextReportTime(base::Time());
-
-    EXPECT_THAT(histograms.GetAllSamples(kHistogram),
-                BucketsAre(Bucket(true, 2)));
-
-    CloseDatabase();
-  }
-
-  ASSERT_TRUE(sql::test::CorruptIndexRootPage(
-      db_path(), "event_level_reports_by_report_time"));
-
-  {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
-
-    OpenDatabase();
-
-    base::HistogramTester histograms;
-
-    // Internally, this runs two statements.
-    storage()->GetNextReportTime(base::Time());
-
-    EXPECT_THAT(histograms.GetAllSamples(kHistogram),
-                BucketsAre(Bucket(false, 2)));
-
-    EXPECT_TRUE(expecter.SawExpectedErrors());
-
-    CloseDatabase();
-  }
-}
-
 TEST_F(AttributionStorageSqlTest,
        InvalidAggregationCoordinator_FailsDeserialization) {
   const struct {
