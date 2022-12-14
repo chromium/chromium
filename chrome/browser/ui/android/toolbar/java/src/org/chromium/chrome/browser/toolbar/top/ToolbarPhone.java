@@ -1944,6 +1944,12 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         animator.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
         animators.add(animator);
 
+        animator = ObjectAnimator.ofFloat(mHomeButton, TRANSLATION_X,
+                MathUtils.flipSignIf(-mHomeButton.getWidth() * density, isRtl));
+        animator.setDuration(URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS);
+        animator.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
+        animators.add(animator);
+
         if (mToggleTabStackButton != null) {
             animator = ObjectAnimator.ofFloat(
                     mToggleTabStackButton, TRANSLATION_X, toolbarButtonTranslationX);
@@ -1973,6 +1979,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         animators.add(animator);
 
         animator = getMenuButtonCoordinator().getUrlFocusingAnimator(false);
+        animator.setDuration(URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS);
+        animator.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
+        animators.add(animator);
+
+        animator = ObjectAnimator.ofFloat(mHomeButton, TRANSLATION_X, 0);
         animator.setDuration(URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS);
         animator.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
         animators.add(animator);
