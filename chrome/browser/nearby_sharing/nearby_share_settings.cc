@@ -213,11 +213,12 @@ void NearbyShareSettings::GetAllowedContacts(
 
 void NearbyShareSettings::SetAllowedContacts(
     const std::vector<std::string>& allowed_contacts) {
-  base::ListValue list;
+  base::Value::List list;
   for (const auto& id : allowed_contacts) {
     list.Append(id);
   }
-  pref_service_->Set(prefs::kNearbySharingAllowedContactsPrefName, list);
+  pref_service_->SetList(prefs::kNearbySharingAllowedContactsPrefName,
+                         std::move(list));
 }
 
 void NearbyShareSettings::Bind(
