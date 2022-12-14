@@ -1169,7 +1169,16 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                 MediaStore.Files.FileColumns.MIME_TYPE,
         };
 
-        Cursor cursor = contentResolver.query(mediaUri, filePathColumn, null, null, null);
+        Cursor cursor = null;
+        try {
+            cursor = contentResolver.query(mediaUri, filePathColumn, null, null, null);
+        } catch (Exception e) {
+            // The OS may fail at some point during this, as seen in crbug.com/1395702.
+            Log.w(TAG, "Failed to use ContentResolver", e);
+            return mediaPickerWasUsed ? FileSelectedAction.MEDIA_PICKER_UNKNOWN_TYPE
+                                      : FileSelectedAction.EXTERNAL_PICKER_UNKNOWN_TYPE;
+        }
+
         if (cursor != null) {
             Integer mediaType = null;
             if (cursor.moveToFirst()) {
