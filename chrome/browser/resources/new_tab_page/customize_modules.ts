@@ -15,7 +15,7 @@ import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer
 import {getTemplate} from './customize_modules.html.js';
 import {I18nMixin, loadTimeData} from './i18n_setup.js';
 import {ChromeCartProxy} from './modules/cart/chrome_cart_proxy.js';
-import {ModuleRegistry} from './modules/module_registry.js';
+import {ModuleIdName} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
 interface ModuleSetting {
@@ -62,11 +62,7 @@ export class CustomizeModulesElement extends I18nMixin
         value: () => loadTimeData.getBoolean('modulesVisibleManagedByPolicy'),
       },
 
-      modules_: {
-        type: Array,
-        value: () => ModuleRegistry.getInstance().getDescriptors().map(
-            d => ({name: d.name, id: d.id, checked: true, hidden: false})),
-      },
+      modules_: Array,
 
       // Discount toggle is a workaround for crbug.com/1199465 and will be
       // removed after module customization is better defined. Please avoid
@@ -88,7 +84,6 @@ export class CustomizeModulesElement extends I18nMixin
   private modules_: ModuleSetting[];
   private discountToggle_: {enabled: boolean, initiallyEnabled: boolean};
   private discountToggleEligible_: boolean;
-
   private setDisabledModulesListenerId_: number|null = null;
 
   override connectedCallback() {
@@ -106,19 +101,28 @@ export class CustomizeModulesElement extends I18nMixin
                     this.set(`modules_.${i}.disabled`, ids.includes(id));
                   });
                 });
-    NewTabPageProxy.getInstance().handler.updateDisabledModules();
 
-    if (this.modules_.some(module => module.id === 'chrome_cart')) {
-      ChromeCartProxy.getHandler().getDiscountToggleVisible().then(
-          ({toggleVisible}) => {
-            this.set('discountToggleEligible_', toggleVisible);
-          });
+    NewTabPageProxy.getInstance().handler.getModulesIdNames().then(({data}) => {
+      this.modules_ = data.map((d: ModuleIdName) => ({
+                                 name: d.name,
+                                 id: d.id,
+                                 checked: true,
+                               } as ModuleSetting));
 
-      ChromeCartProxy.getHandler().getDiscountEnabled().then(({enabled}) => {
-        this.set('discountToggle_.enabled', enabled);
-        this.discountToggle_.initiallyEnabled = enabled;
-      });
-    }
+      NewTabPageProxy.getInstance().handler.updateDisabledModules();
+
+      if (this.modules_.some(module => module.id === 'chrome_cart')) {
+        ChromeCartProxy.getHandler().getDiscountToggleVisible().then(
+            ({toggleVisible}) => {
+              this.set('discountToggleEligible_', toggleVisible);
+            });
+
+        ChromeCartProxy.getHandler().getDiscountEnabled().then(({enabled}) => {
+          this.set('discountToggle_.enabled', enabled);
+          this.discountToggle_.initiallyEnabled = enabled;
+        });
+      }
+    });
   }
 
   override disconnectedCallback() {

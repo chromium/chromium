@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NEW_TAB_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NEW_TAB_PAGE_HANDLER_H_
 
+#include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -58,15 +60,17 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                           public ui::SelectFileDialog::Listener,
                           public PromoServiceObserver {
  public:
-  NewTabPageHandler(mojo::PendingReceiver<new_tab_page::mojom::PageHandler>
-                        pending_page_handler,
-                    mojo::PendingRemote<new_tab_page::mojom::Page> pending_page,
-                    Profile* profile,
-                    NtpCustomBackgroundService* ntp_custom_background_service,
-                    ThemeService* theme_service,
-                    search_provider_logos::LogoService* logo_service,
-                    content::WebContents* web_contents,
-                    const base::Time& ntp_navigation_start_time);
+  NewTabPageHandler(
+      mojo::PendingReceiver<new_tab_page::mojom::PageHandler>
+          pending_page_handler,
+      mojo::PendingRemote<new_tab_page::mojom::Page> pending_page,
+      Profile* profile,
+      NtpCustomBackgroundService* ntp_custom_background_service,
+      ThemeService* theme_service,
+      search_provider_logos::LogoService* logo_service,
+      content::WebContents* web_contents,
+      const base::Time& ntp_navigation_start_time,
+      const std::vector<std::pair<const std::string, int>> module_id_names);
 
   NewTabPageHandler(const NewTabPageHandler&) = delete;
   NewTabPageHandler& operator=(const NewTabPageHandler&) = delete;
@@ -108,6 +112,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void UpdateDisabledModules() override;
   void OnModulesLoadedWithData(
       const std::vector<std::string>& module_ids) override;
+  void GetModulesIdNames(GetModulesIdNamesCallback callback) override;
   void SetModulesOrder(const std::vector<std::string>& module_ids) override;
   void GetModulesOrder(GetModulesOrderCallback callback) override;
   void IncrementModulesShownCount() override;
@@ -199,6 +204,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   raw_ptr<content::WebContents> web_contents_;
   base::Time ntp_navigation_start_time_;
+  const std::vector<std::pair<const std::string, int>> module_id_names_;
   NTPUserDataLogger logger_;
   std::unordered_map<const network::SimpleURLLoader*,
                      std::unique_ptr<network::SimpleURLLoader>>

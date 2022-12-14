@@ -29,7 +29,7 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
   test('instantiate module with data', async () => {
     // Arrange.
     const element = createElement();
-    const moduleDescriptor = new ModuleDescriptor('foo', 'bar', () => {
+    const moduleDescriptor = new ModuleDescriptor('foo', () => {
       // Move time forward to simulate delay instantiating module.
       windowProxy.setResultFor('now', 128);
       return Promise.resolve(element);
@@ -53,7 +53,7 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
 
   test('instantiate module without data', async () => {
     // Arrange.
-    const moduleDescriptor = new ModuleDescriptor('foo', 'bar', initNullModule);
+    const moduleDescriptor = new ModuleDescriptor('foo', initNullModule);
 
     // Act.
     const moduleElement = await moduleDescriptor.initialize(0);
@@ -69,7 +69,7 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
   test('module load times out', async () => {
     // Arrange.
     const moduleDescriptor = new ModuleDescriptor(
-        'foo', 'bar', () => new Promise(() => {}) /* Never resolves. */);
+        'foo', () => new Promise(() => {}) /* Never resolves. */);
 
     // Act.
     const initializePromise = moduleDescriptor.initialize(123);
@@ -86,7 +86,7 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
     test('creates element on timeout', async () => {
       // Arrange.
       const moduleDescriptor = new ModuleDescriptorV2(
-          'foo', 'bar', ModuleHeight.SHORT,
+          'foo', ModuleHeight.SHORT,
           () => new Promise(() => {}) /* Never resolves. */);
 
       // Act.

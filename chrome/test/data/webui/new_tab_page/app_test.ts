@@ -48,6 +48,7 @@ suite('NewTabPageAppTest', () => {
     handler.setResultFor('getDoodle', Promise.resolve({
       doodle: null,
     }));
+    handler.setResultFor('getModulesIdNames', Promise.resolve({data: []}));
     windowProxy.setResultMapperFor('matchMedia', () => ({
                                                    addListener() {},
                                                    removeListener() {},
@@ -589,13 +590,13 @@ suite('NewTabPageAppTest', () => {
       const barElement = document.createElement('div');
       moduleResolver.resolve([
         {
-          descriptor: new ModuleDescriptor(
-              'foo', 'foo', () => Promise.resolve(fooElement)),
+          descriptor:
+              new ModuleDescriptor('foo', () => Promise.resolve(fooElement)),
           element: fooElement,
         },
         {
-          descriptor: new ModuleDescriptor(
-              'bar', 'bar', () => Promise.resolve(barElement)),
+          descriptor:
+              new ModuleDescriptor('bar', () => Promise.resolve(barElement)),
           element: barElement,
         },
       ]);

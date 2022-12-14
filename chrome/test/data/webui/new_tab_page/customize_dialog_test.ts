@@ -35,6 +35,9 @@ suite('NewTabPageCustomizeDialogTest', () => {
     handler.setResultFor('getBackgroundImages', Promise.resolve({
       images: [],
     }));
+    handler.setResultFor('getModulesIdNames', Promise.resolve({
+      data: [],
+    }));
 
     customizeDialog = document.createElement('ntp-customize-dialog');
     document.body.appendChild(customizeDialog);

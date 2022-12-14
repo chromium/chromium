@@ -6,7 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
 import {NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {ModuleIdName, PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -41,12 +41,15 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
     const bazModuleResolver: PromiseResolver<HTMLElement> =
         new PromiseResolver();
     const descriptors = [
-      new ModuleDescriptor('foo', 'bli', () => Promise.resolve(fooModule)),
-      new ModuleDescriptor('bar', 'blu', initNullModule),
-      new ModuleDescriptor('baz', 'bla', () => bazModuleResolver.promise),
-      new ModuleDescriptor('buz', 'blo', () => Promise.resolve(fooModule)),
+      new ModuleDescriptor('foo', () => Promise.resolve(fooModule)),
+      new ModuleDescriptor('bar', initNullModule),
+      new ModuleDescriptor('baz', () => bazModuleResolver.promise),
+      new ModuleDescriptor('buz', () => Promise.resolve(fooModule)),
     ];
     windowProxy.setResultFor('now', 5.0);
+    handler.setResultFor('getModulesIdNames', Promise.resolve({
+      data: descriptors.map(d => ({id: d.id, name: d.id} as ModuleIdName)),
+    }));
     handler.setResultFor('getModulesOrder', Promise.resolve({
       moduleIds: [],
     }));
@@ -94,13 +97,14 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
           const barModule = createElement();
           const bazModule = createElement();
           const descriptors = [
-            new ModuleDescriptor(
-                'foo', 'bli', () => Promise.resolve(fooModule)),
-            new ModuleDescriptor(
-                'bar', 'blu', () => Promise.resolve(barModule)),
-            new ModuleDescriptor(
-                'baz', 'bla', () => Promise.resolve(bazModule)),
+            new ModuleDescriptor('foo', () => Promise.resolve(fooModule)),
+            new ModuleDescriptor('bar', () => Promise.resolve(barModule)),
+            new ModuleDescriptor('baz', () => Promise.resolve(bazModule)),
           ];
+          handler.setResultFor('getModulesIdNames', Promise.resolve({
+            data:
+                descriptors.map(d => ({id: d.id, name: d.id} as ModuleIdName)),
+          }));
           handler.setResultFor('getModulesOrder', Promise.resolve({
             moduleIds: ['bar', 'baz', 'foo'],
           }));
@@ -131,12 +135,15 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
       const bizModule = createElement();
       const buzModule = createElement();
       const descriptors = [
-        new ModuleDescriptor('foo', 'bli', () => Promise.resolve(fooModule)),
-        new ModuleDescriptor('bar', 'blu', () => Promise.resolve(barModule)),
-        new ModuleDescriptor('baz', 'bla', () => Promise.resolve(bazModule)),
-        new ModuleDescriptor('biz', 'blo', () => Promise.resolve(bizModule)),
-        new ModuleDescriptor('buz', 'ble', () => Promise.resolve(buzModule)),
+        new ModuleDescriptor('foo', () => Promise.resolve(fooModule)),
+        new ModuleDescriptor('bar', () => Promise.resolve(barModule)),
+        new ModuleDescriptor('baz', () => Promise.resolve(bazModule)),
+        new ModuleDescriptor('biz', () => Promise.resolve(bizModule)),
+        new ModuleDescriptor('buz', () => Promise.resolve(buzModule)),
       ];
+      handler.setResultFor('getModulesIdNames', Promise.resolve({
+        data: descriptors.map(d => ({id: d.id, name: d.id} as ModuleIdName)),
+      }));
       handler.setResultFor('getModulesOrder', Promise.resolve({
         moduleIds: ['biz', 'bar'],
       }));

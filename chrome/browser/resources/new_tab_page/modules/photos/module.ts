@@ -263,6 +263,4 @@ async function createPhotosElement(): Promise<PhotosModuleElement|null> {
 }
 
 export const photosDescriptor: ModuleDescriptor = new ModuleDescriptor(
-    /*id=*/ 'photos',
-    /*name=*/ loadTimeData.getString('modulesPhotosSentence'),
-    createPhotosElement);
+    /*id=*/ 'photos', createPhotosElement);

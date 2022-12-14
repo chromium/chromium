@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/bind.h"
@@ -29,6 +30,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
@@ -428,7 +430,8 @@ NewTabPageHandler::NewTabPageHandler(
     ThemeService* theme_service,
     search_provider_logos::LogoService* logo_service,
     content::WebContents* web_contents,
-    const base::Time& ntp_navigation_start_time)
+    const base::Time& ntp_navigation_start_time,
+    const std::vector<std::pair<const std::string, int>> module_id_names)
     : ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile)),
       ntp_custom_background_service_(ntp_custom_background_service),
@@ -438,6 +441,7 @@ NewTabPageHandler::NewTabPageHandler(
       profile_(profile),
       web_contents_(web_contents),
       ntp_navigation_start_time_(ntp_navigation_start_time),
+      module_id_names_(module_id_names),
       logger_(profile,
               GURL(chrome::kChromeUINewTabPageURL),
               ntp_navigation_start_time),
@@ -697,6 +701,18 @@ void NewTabPageHandler::OnModulesLoadedWithData(
   CHECK(hats_service);
   hats_service->LaunchDelayedSurveyForWebContents(kHatsSurveyTriggerNtpModules,
                                                   web_contents_, 0);
+}
+
+void NewTabPageHandler::GetModulesIdNames(GetModulesIdNamesCallback callback) {
+  std::vector<new_tab_page::mojom::ModuleIdNamePtr> modules_details;
+  for (const auto& id_name_pair : module_id_names_) {
+    auto module_id_name = new_tab_page::mojom::ModuleIdName::New();
+    module_id_name->id = id_name_pair.first;
+    module_id_name->name = l10n_util::GetStringUTF8(id_name_pair.second);
+    modules_details.push_back(std::move(module_id_name));
+  }
+
+  std::move(callback).Run(std::move(modules_details));
 }
 
 void NewTabPageHandler::SetModulesOrder(

@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted_memory.h"
@@ -26,10 +29,12 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
+#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -215,11 +220,13 @@ class NewTabPageHandlerTest : public testing::Test {
         .Times(1);
     webui::SetThemeProviderForTesting(&mock_theme_provider_);
     web_contents_->SetColorProviderSource(&mock_color_provider_source_);
+    const std::vector<std::pair<const std::string, int>> module_id_names = {
+        {"recipe_tasks", IDS_NTP_MODULES_RECIPE_TASKS_SENTENCE}};
     handler_ = std::make_unique<NewTabPageHandler>(
         mojo::PendingReceiver<new_tab_page::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), profile_.get(),
         &mock_ntp_custom_background_service_, &mock_theme_service_,
-        &mock_logo_service_, web_contents_, base::Time::Now());
+        &mock_logo_service_, web_contents_, base::Time::Now(), module_id_names);
     mock_page_.FlushForTesting();
     EXPECT_EQ(handler_.get(), theme_service_observer_);
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);
@@ -697,6 +704,25 @@ TEST_F(NewTabPageHandlerTest, OnDoodleShared) {
   EXPECT_TRUE(test_url_loader_factory_.IsPending(
       "https://www.google.com/"
       "gen_204?atype=i&ct=doodle&ntp=2&cad=sh,5,ct:food_id&ei=bar_id"));
+}
+
+TEST_F(NewTabPageHandlerTest, GetModulesIdNames) {
+  std::vector<new_tab_page::mojom::ModuleIdNamePtr> modules_details;
+  base::MockCallback<NewTabPageHandler::GetModulesIdNamesCallback> callback;
+  EXPECT_CALL(callback, Run(_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&modules_details](
+              std::vector<new_tab_page::mojom::ModuleIdNamePtr> arg) {
+            modules_details = std::move(arg);
+          }));
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{ntp_features::kNtpRecipeTasksModule},
+      /*disabled_features=*/{});
+  handler_->GetModulesIdNames(callback.Get());
+  EXPECT_EQ(modules_details.size(), 1u);
+  EXPECT_EQ(modules_details.front()->id, "recipe_tasks");
 }
 
 TEST_F(NewTabPageHandlerTest, GetModulesOrder) {
