@@ -18,59 +18,7 @@ using SecurePaymentConfirmationOptOutTest = SecurePaymentConfirmationTest;
 
 using Event2 = JourneyLogger::Event2;
 
-// The SPC opt-out experience should only be available if the Blink runtime flag
-// is set.
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
-                       RequiresRuntimeFlag) {
-  test_controller()->SetHasAuthenticator(true);
-  NavigateTo("a.com", "/secure_payment_confirmation.html");
-  std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
-  std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
-  webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
-          GetActiveWebContents()->GetBrowserContext(),
-          ServiceAccessType::EXPLICIT_ACCESS)
-          ->AddSecurePaymentConfirmationCredential(
-              std::make_unique<SecurePaymentConfirmationCredential>(
-                  std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
-
-  // Initiate SPC, with opt-out enabled.
-  ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
-  const bool show_opt_out = true;
-  ExecuteScriptAsync(
-      GetActiveWebContents(),
-      content::JsReplace(
-          "getSecurePaymentConfirmationStatus(undefined, undefined, $1)",
-          show_opt_out));
-  WaitForObservedEvent();
-
-  // Because the runtime flag isn't set, showOptOut should still have been set
-  // to false, and so there is no opt-out link to click.
-  EXPECT_FALSE(test_controller()->ClickOptOut());
-
-  // Close the dialog to trigger JourneyLogger metrics, and verify that opt out
-  // was not recorded as offered or taken.
-  test_controller()->CloseDialog();
-  EXPECT_EQ(
-      GetWebAuthnErrorMessage(),
-      content::EvalJs(GetActiveWebContents(), "getOutstandingStatusPromise()"));
-  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown,
-                         Event2::kUserAborted, Event2::kHadInitialFormOfPayment,
-                         Event2::kRequestMethodSecurePaymentConfirmation});
-}
-
-class SecurePaymentConfirmationOptOutEnabledTest
-    : public SecurePaymentConfirmationOptOutTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SecurePaymentConfirmationTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "SecurePaymentConfirmationOptOut");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
                        ShowOptOutOfferedAndTaken) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
@@ -109,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
                          Event2::kRequestMethodSecurePaymentConfirmation});
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
                        ShowOptOutOfferedButNotTaken) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
@@ -146,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
                          Event2::kRequestMethodSecurePaymentConfirmation});
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
                        ShowOptOutNotOffered) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
@@ -185,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
                          Event2::kRequestMethodSecurePaymentConfirmation});
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
                        ShowOptOutDefaultsToNotOffered) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
@@ -220,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
                          Event2::kRequestMethodSecurePaymentConfirmation});
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
                        ShowOptOutNoMatchingCredsOfferedAndTaken) {
   // Don't install a credential, so that the 'No Matching Credentials' UI will
   // be shown.
@@ -250,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
                          Event2::kRequestMethodSecurePaymentConfirmation});
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
                        ShowOptOutNoMatchingCredsOfferedButNotTaken) {
   // Don't install a credential, so that the 'No Matching Credentials' UI will
   // be shown.
@@ -279,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
                          Event2::kRequestMethodSecurePaymentConfirmation});
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
                        ShowOptOutNoMatchingCredsNotOffered) {
   // Don't install a credential, so that the 'No Matching Credentials' UI will
   // be shown.
@@ -310,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
                          Event2::kRequestMethodSecurePaymentConfirmation});
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
                        ShowOptOutNoMatchingCredsDefaultsToNotOffered) {
   // Don't install a credential, so that the 'No Matching Credentials' UI will
   // be shown.
@@ -334,6 +282,58 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutEnabledTest,
       content::EvalJs(GetActiveWebContents(), "getOutstandingStatusPromise()"));
   ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown,
                          Event2::kUserAborted, Event2::kNoMatchingCredentials,
+                         Event2::kRequestMethodSecurePaymentConfirmation});
+}
+
+class SecurePaymentConfirmationOptOutDisabledTest
+    : public SecurePaymentConfirmationOptOutTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SecurePaymentConfirmationTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kDisableBlinkFeatures,
+                                    "SecurePaymentConfirmationOptOut");
+  }
+};
+
+// The SPC opt-out experience should not be available if the Blink runtime flag
+// is disabled.
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutDisabledTest,
+                       RequiresRuntimeFlag) {
+  test_controller()->SetHasAuthenticator(true);
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+  std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
+  std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
+  webdata_services::WebDataServiceWrapperFactory::
+      GetPaymentManifestWebDataServiceForBrowserContext(
+          GetActiveWebContents()->GetBrowserContext(),
+          ServiceAccessType::EXPLICIT_ACCESS)
+          ->AddSecurePaymentConfirmationCredential(
+              std::make_unique<SecurePaymentConfirmationCredential>(
+                  std::move(credential_id), "a.com", std::move(user_id)),
+              /*consumer=*/this);
+
+  // Initiate SPC, with opt-out enabled.
+  ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
+  const bool show_opt_out = true;
+  ExecuteScriptAsync(
+      GetActiveWebContents(),
+      content::JsReplace(
+          "getSecurePaymentConfirmationStatus(undefined, undefined, $1)",
+          show_opt_out));
+  WaitForObservedEvent();
+
+  // Because the runtime flag isn't set, showOptOut should still have been set
+  // to false, and so there is no opt-out link to click.
+  EXPECT_FALSE(test_controller()->ClickOptOut());
+
+  // Close the dialog to trigger JourneyLogger metrics, and verify that opt out
+  // was not recorded as offered or taken.
+  test_controller()->CloseDialog();
+  EXPECT_EQ(
+      GetWebAuthnErrorMessage(),
+      content::EvalJs(GetActiveWebContents(), "getOutstandingStatusPromise()"));
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown,
+                         Event2::kUserAborted, Event2::kHadInitialFormOfPayment,
                          Event2::kRequestMethodSecurePaymentConfirmation});
 }
 
