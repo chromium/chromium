@@ -20,7 +20,6 @@ BASE_DECLARE_FEATURE(kAddToHomescreenIPH);
 BASE_DECLARE_FEATURE(kAllowNewIncognitoTabIntents);
 BASE_DECLARE_FEATURE(kAndroidScrollOptimizations);
 BASE_DECLARE_FEATURE(kAndroidSearchEngineChoiceNotification);
-BASE_DECLARE_FEATURE(kAssistantConsentModal);
 BASE_DECLARE_FEATURE(kAssistantConsentSimplifiedText);
 BASE_DECLARE_FEATURE(kAssistantConsentV2);
 BASE_DECLARE_FEATURE(kAssistantIntentExperimentId);

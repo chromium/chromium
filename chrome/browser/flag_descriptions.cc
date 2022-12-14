@@ -289,10 +289,6 @@ extern const char kIsolatedSandboxedIframesDescription[] =
     "grouped into processes based on their URL's site or origin. The default "
     "grouping when enabled is per-site.";
 
-const char kAssistantConsentModalName[] = "AssistantConsentModal";
-const char kAssistantConsentModalDescription[] =
-    "Enables the modal version of the Assistant voice search consent dialog.";
-
 const char kAssistantConsentSimplifiedTextName[] =
     "AssistantConsentSimplifiedText";
 const char kAssistantConsentSimplifiedTextDescription[] =

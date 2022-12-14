@@ -174,7 +174,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAllowNewIncognitoTabIntents,
     &kAndroidScrollOptimizations,
     &kAndroidSearchEngineChoiceNotification,
-    &kAssistantConsentModal,
     &kAssistantConsentSimplifiedText,
     &kAssistantConsentV2,
     &kAssistantIntentExperimentId,
@@ -475,10 +474,6 @@ BASE_FEATURE(kAndroidScrollOptimizations,
 BASE_FEATURE(kAndroidSearchEngineChoiceNotification,
              "AndroidSearchEngineChoiceNotification",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAssistantConsentModal,
-             "AssistantConsentModal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAssistantConsentSimplifiedText,
              "AssistantConsentSimplifiedText",

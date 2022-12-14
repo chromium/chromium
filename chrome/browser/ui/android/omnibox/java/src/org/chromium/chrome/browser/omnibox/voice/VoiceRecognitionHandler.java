@@ -863,8 +863,7 @@ public class VoiceRecognitionHandler {
             mDelegate.clearOmniboxFocus();
             AssistantVoiceSearchConsentController.show(windowAndroid,
                     SharedPreferencesManager.getInstance(), mLaunchAssistanceSettingsAction,
-                    BottomSheetControllerProvider.from(windowAndroid),
-                    windowAndroid.getModalDialogManager(), (useAssistant) -> {
+                    BottomSheetControllerProvider.from(windowAndroid), (useAssistant) -> {
                         // Notify the service about the consent completion.
                         assistantVoiceSearchService.onAssistantConsentDialogComplete(useAssistant);
 

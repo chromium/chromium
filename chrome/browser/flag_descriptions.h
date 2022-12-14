@@ -168,9 +168,6 @@ extern const char kUseMessagesStagingUrlDescription[];
 extern const char kUseCustomMessagesDomainName[];
 extern const char kUseCustomMessagesDomainDescription[];
 
-extern const char kAssistantConsentModalName[];
-extern const char kAssistantConsentModalDescription[];
-
 extern const char kAssistantConsentSimplifiedTextName[];
 extern const char kAssistantConsentSimplifiedTextDescription[];
 

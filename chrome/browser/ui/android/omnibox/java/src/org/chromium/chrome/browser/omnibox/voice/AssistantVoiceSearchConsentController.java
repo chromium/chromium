@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -40,9 +39,6 @@ class AssistantVoiceSearchConsentController
      * @param bottomSheetController The {@link BottomSheetController} used to show the bottom sheet
      *                              UI. This can be null when starting the consent flow from
      *                              SearchActivity.
-     * @param modalDialogManager The {@link ModalDialogManager} used to show the modal dialog UI.
-     *                           This can be null when starting the consent flow from
-     *                           SearchActivity.
      * @param completionCallback A callback to be invoked if the user is continuing with the
      *                           requested voice search.
      */
@@ -50,37 +46,23 @@ class AssistantVoiceSearchConsentController
             @NonNull SharedPreferencesManager sharedPreferencesManager,
             @NonNull Runnable launchAssistantSettingsAction,
             @Nullable BottomSheetController bottomSheetController,
-            @Nullable ModalDialogManager modalDialogManager,
             @NonNull Callback<Boolean> completionCallback) {
         AssistantVoiceSearchConsentUi consentUi;
         assert (!ChromeFeatureList.isEnabled(
                 ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH));
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ASSISTANT_CONSENT_MODAL)) {
-            // If the modal manager isn't available, bail out of the consent flow and fallback to
-            // system-ui. Consent will be retried the next time.
-            if (modalDialogManager == null) {
-                PostTask.postTask(TaskTraits.USER_VISIBLE,
-                        () -> { completionCallback.onResult(/* useAssistant= */ false); });
-                return;
-            }
-
-            consentUi = new AssistantVoiceSearchConsentModal(
-                    windowAndroid.getContext().get(), modalDialogManager);
-        } else {
-            // When attempting voice search through the search widget, the bottom sheet isn't
-            // available. When this happens, bail out of the consent flow and fallback to system-ui.
-            // Consent will be retried the next time.
-            if (bottomSheetController == null) {
-                PostTask.postTask(TaskTraits.USER_VISIBLE,
-                        () -> { completionCallback.onResult(/* useAssistant= */ false); });
-                return;
-            }
-
-            // Use the bottom sheet consent by default.
-            consentUi = new AssistantVoiceSearchConsentBottomSheet(
-                    windowAndroid.getContext().get(), bottomSheetController);
+        // When attempting voice search through the search widget, the bottom sheet isn't
+        // available. When this happens, bail out of the consent flow and fallback to system-ui.
+        // Consent will be retried the next time.
+        if (bottomSheetController == null) {
+            PostTask.postTask(TaskTraits.USER_VISIBLE,
+                    () -> { completionCallback.onResult(/* useAssistant= */ false); });
+            return;
         }
+
+        // Use the bottom sheet consent by default.
+        consentUi = new AssistantVoiceSearchConsentBottomSheet(
+                windowAndroid.getContext().get(), bottomSheetController);
 
         AssistantVoiceSearchConsentController consent =
                 new AssistantVoiceSearchConsentController(windowAndroid, sharedPreferencesManager,
