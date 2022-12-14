@@ -275,7 +275,6 @@ class PrivacyGuideMetricsDelegate {
     /**
      * A method to record metrics on the back click of a card {@link
      * PrivacyGuideFragment.FragmentType} in Privacy Guide.
-     * TODO(crbug.com/1238896): Support for other fragment types (COOKIES)
      *
      * @param fragmentType A privacy guide {@link PrivacyGuideFragment.FragmentType}.
      */
@@ -289,6 +288,13 @@ class PrivacyGuideMetricsDelegate {
                 RecordUserAction.record("Settings.PrivacyGuide.BackClickSafeBrowsing");
                 break;
             }
+            case PrivacyGuideFragment.FragmentType.COOKIES: {
+                RecordUserAction.record("Settings.PrivacyGuide.BackClickCookies");
+                break;
+            }
+            default:
+                // The MSBB card doesn't have a back button, and so we won't support a case for it.
+                assert false : "Unexpected fragmentType " + fragmentType;
         }
     }
 }

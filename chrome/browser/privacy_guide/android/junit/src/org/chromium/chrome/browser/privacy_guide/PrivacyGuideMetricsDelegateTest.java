@@ -455,4 +455,12 @@ public class PrivacyGuideMetricsDelegateTest {
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickSafeBrowsing"));
     }
+
+    @Test
+    @SmallTest
+    public void testCookies_backClickUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
+                PrivacyGuideFragment.FragmentType.COOKIES);
+        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickCookies"));
+    }
 }

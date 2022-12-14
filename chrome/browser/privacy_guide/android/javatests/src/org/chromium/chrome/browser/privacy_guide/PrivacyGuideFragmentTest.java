@@ -913,4 +913,21 @@ public class PrivacyGuideFragmentTest {
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickSafeBrowsing"));
     }
+
+    @Test
+    @SmallTest
+    @Feature({"PrivacyGuide"})
+    public void testCookiesCard_backClickCookiesUserAction() {
+        launchPrivacyGuide();
+        mActionTester = new UserActionTester();
+        navigateToCookiesCard();
+
+        // SB page <- Cookies page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_cookies_intro));
+        onView(withText(R.string.back)).perform(click());
+
+        // Verify that the user action is emitted when the back button is clicked on the Cookies
+        // card
+        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickCookies"));
+    }
 }
