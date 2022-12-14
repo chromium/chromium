@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">套件無效，詳情：<ph name="ERROR_MESSAGE" />。</translation>
 <translation id="8761756413268424715">「<ph name="APP_NAME" />」要求存取您其中一部裝置：</translation>
 <translation id="8885905466771744233">所指定的擴充功能已有私密金鑰，請使用該金鑰，或先將它刪除。</translation>
+<translation id="9039223174332979184">此電腦的管理員要求「<ph name="EXTENSION_NAME" />」至少要使用版本 3 的資訊清單。</translation>
 <translation id="907841381057066561">封裝過程中建立暫存壓縮檔失敗。</translation>
 <translation id="941543339607623937">私密金鑰無效。</translation>
 </translationbundle>

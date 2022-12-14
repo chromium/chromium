@@ -4498,6 +4498,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5143712164865402236">Enter Full Screen</translation>
 <translation id="5145464978649806571">If you move away from your device, your screen will lock automatically. When you're in front of your device, your screen will stay awake longer. If lock screen is disabled, your device will sleep instead of lock.</translation>
 <translation id="514575469079499857">Use your IP address to determine location (default)</translation>
+<translation id="5146896637028965135">System voice</translation>
 <translation id="5147103632304200977">Ask when a site wants to access HID devices (recommended)</translation>
 <translation id="5148277445782867161">Google's location service uses sources such as Wi-Fi, mobile networks and sensors to help estimate your device’s location.</translation>
 <translation id="5150254825601720210">Netscape Certificate SSL Server Name</translation>
@@ -7746,6 +7747,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8174047975335711832">Device information</translation>
 <translation id="8174876712881364124">Back up to Google Drive. Easily restore data or switch device at any time. This backup includes app data. Backups are uploaded to Google and encrypted using your child's Google Account password. <ph name="BEGIN_LINK1" />Learn More<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">Pink and white</translation>
+<translation id="8176529144855282213">To turn on microphone access, turn on the physical microphone switch on your device</translation>
 <translation id="8177196903785554304">Network Details</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Move tab to new window}other{Move tabs to new window}}</translation>
 <translation id="8179188928355984576">Not used with Android apps</translation>
@@ -8452,6 +8454,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838778928843281408">Manage phones</translation>
 <translation id="883924185304953854">Search by image</translation>
+<translation id="8839587819996519780">Show notification dot on app icon</translation>
 <translation id="8841843049738266382">Read and change the allowlist users</translation>
 <translation id="8842594465773264717">Delete this fingerprint</translation>
 <translation id="8845001906332463065">Get help</translation>

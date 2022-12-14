@@ -760,6 +760,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="510275257476243843">1 hour left</translation>
 <translation id="5115811374190515607">to <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Interests</translation>
+<translation id="5122378528687922675">If you need help, ask your parent (<ph name="PARENT_NAME_1" /> or <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Incognito tab</translation>
 <translation id="5126510351761255129">Verify your card</translation>
 <translation id="5132942445612118989">Sync your passwords, history and more on all devices</translation>
@@ -1331,6 +1332,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8084285576995584326">Control your Google Account data</translation>
 <translation id="808747664143081553">Connected to device</translation>
 <translation id="8088176524274673045">To share with people nearby, let them scan this QR code</translation>
+<translation id="8090732854597034573">If you need help, ask your parent</translation>
 <translation id="8100969750121413114">Sign in to make Chrome your own</translation>
 <translation id="8103578431304235997">Incognito Tab</translation>
 <translation id="8105613260829665809">By continuing, you agree to the <ph name="BEGIN_TOS_LINK" />Terms of Service<ph name="END_TOS_LINK" />.\nTo help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_UMA_LINK" />Manage<ph name="END_UMA_LINK" /></translation>
@@ -1339,6 +1341,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8109613176066109935">To get your bookmarks on all your devices, turn on sync</translation>
 <translation id="8110024788458304985">Help improve Chrome\u2019s features and performance</translation>
 <translation id="8110087112193408731">Show your Chrome activity in Digital Wellbeing?</translation>
+<translation id="8118117428362942925">If you need help, ask your parent (<ph name="PARENT_NAME" />)</translation>
 <translation id="8127542551745560481">Edit homepage</translation>
 <translation id="8130309322784422030">Your stored sign-in info might be out of date</translation>
 <translation id="813082847718468539">View site information</translation>

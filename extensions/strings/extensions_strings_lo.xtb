@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">ແພັກເກດໃຊ້ບໍ່ໄດ້. ລາຍລະອຽດ: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" ກຳລັງຮ້ອງຂໍການເຂົ້າເຖິງອຸປະກອນຂອງທ່ານໜຶ່ງເຄື່ອງ:</translation>
 <translation id="8885905466771744233">ມີລະຫັດສ່ວນຕົວສໍາລັບສ່ວນຂະຫຍາຍທີ່ລະບຸໄວ້ຢູ່ແລ້ວ. ໃຊ້ລະຫັດນັ້ນໃໝ່ ຫຼືລຶບມັນກ່ອນ.</translation>
+<translation id="9039223174332979184">ຜູ້ເບິ່ງແຍງລະບົບຂອງເຄື່ອງນີ້ກຳນົດໃຫ້ <ph name="EXTENSION_NAME" /> ຕ້ອງມີ manifest ເວີຊັນ 3 ເປັນຢ່າງໜ້ອຍ.</translation>
 <translation id="907841381057066561">ບໍ່​ສາມາດສ້າງໄຟລ໌ຊິບຊົ່ວຄາວໃນລະຫວ່າງການຫຸ້ມຫໍ່ໄດ້.</translation>
 <translation id="941543339607623937">ລະຫັດສ່ວນຕົວໃຊ້ບໍ່ໄດ້.</translation>
 </translationbundle>

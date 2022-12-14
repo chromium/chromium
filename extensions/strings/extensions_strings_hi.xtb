@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">पैकेज अमान्य है. ब्यौरा: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" आपके किसी एक डिवाइस का एक्‍सेस मांग रहा है:</translation>
 <translation id="8885905466771744233">तय किए गए एक्सटेंशन के लिए कोई 'निजी की' पहले से मौजूद है. उस की का फिर से इस्तेमाल करें या पहले उसे मिटाएं.</translation>
+<translation id="9039223174332979184">इस मशीन के एडमिन के पास, <ph name="EXTENSION_NAME" /> का कम से कम मेनिफ़ेस्ट वर्शन 3 होना चाहिए.</translation>
 <translation id="907841381057066561">पैकेजिंग के दौरान अस्थायी ज़िप फ़ाइल बनाने में विफल.</translation>
 <translation id="941543339607623937">गलत निजी कुंजी.</translation>
 </translationbundle>

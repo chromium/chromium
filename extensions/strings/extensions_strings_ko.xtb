@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">패키지가 잘못되었습니다. 세부정보: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">'<ph name="APP_NAME" />'이(가) 사용자의 기기 중 하나에 액세스 권한을 요청하고 있습니다.</translation>
 <translation id="8885905466771744233">지정한 확장 프로그램에 대한 비공개 키가 이미 있습니다. 해당 키를 다시 사용하거나 먼저 삭제하세요.</translation>
+<translation id="9039223174332979184">이 시스템의 관리자가 <ph name="EXTENSION_NAME" />에 최소 매니페스트 버전 3을 요구합니다.</translation>
 <translation id="907841381057066561">압축하는 동안 임시 zip 파일을 만들지 못했습니다.</translation>
 <translation id="941543339607623937">비공개 키가 잘못되었습니다.</translation>
 </translationbundle>

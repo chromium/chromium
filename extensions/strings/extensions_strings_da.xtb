@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Pakken er ugyldig. Info: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" anmoder om adgang til en af dine enheder:</translation>
 <translation id="8885905466771744233">Der findes allerede en personlig nøgle til den angivne udvidelse. Genbrug denne nøgle, eller slet den først.</translation>
+<translation id="9039223174332979184">Administratoren af denne maskine kræver, at <ph name="EXTENSION_NAME" /> har en manifestversion på mindst 3.</translation>
 <translation id="907841381057066561">Den midlertidige zip-fil kunne ikke oprettes under pakning.</translation>
 <translation id="941543339607623937">Ugyldig personlig nøgle.</translation>
 </translationbundle>

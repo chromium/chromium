@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Paket je neveljaven. Podrobnosti: »<ph name="ERROR_MESSAGE" />«.</translation>
 <translation id="8761756413268424715">Aplikacija »<ph name="APP_NAME" />« zahteva dostop do ene od vaših naprav:</translation>
 <translation id="8885905466771744233">Zasebni ključ za navedeno razširitev že obstaja. Uporabite ga znova ali pa ga izbrišite.</translation>
+<translation id="9039223174332979184">Skrbnik te naprave zahteva, da ima razširitev <ph name="EXTENSION_NAME" /> najmanj različico 3 manifesta.</translation>
 <translation id="907841381057066561">Pri pripravi paketov ni bilo mogoče ustvariti začasne datoteke zip.</translation>
 <translation id="941543339607623937">Neveljaven zasebni ključ.</translation>
 </translationbundle>

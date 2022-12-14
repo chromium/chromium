@@ -46,7 +46,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="1213216066620407844">ChromeVox - Chromeకు వాయిస్‌ను ఇస్తోంది</translation>
 <translation id="1225969361094801578">ముదురు మేఘవర్ణ బూడిద రంగు</translation>
 <translation id="122928249241119550">మునుపటి వాక్యానికి వెళ్లండి</translation>
-<translation id="1230503547248836149">ఎంపికను ప్రారంభించు</translation>
+<translation id="1230503547248836149">ఎంపికను ప్రారంభించండి</translation>
 <translation id="1236794971743289975">ఎండ్‌నోట్</translation>
 <translation id="1237797094773582699">అదే విధంగా, మునుపటి విభాగానికి వెళ్లడానికి కుడి నుండి ఎడమ వైపునకు నాలుగు వేళ్లతో స్వైప్ చేయవచ్చు. దీన్ని ఇప్పుడే ట్రై చేయండి!</translation>
 <translation id="1237866625126425153">rdgrp</translation>
@@ -368,7 +368,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3312997241656799641">తర్వాత సందర్శించిన లింక్</translation>
 <translation id="3313245066383501820">ChromeVox మాడిఫైయర్ కీ</translation>
 <translation id="3317212938060708859">స్లయిడర్</translation>
-<translation id="3321460131042519426">పదాల సర్దుబాటును ప్రారంభించు</translation>
+<translation id="3321460131042519426">పదాల సర్దుబాటును ప్రారంభించండి</translation>
 <translation id="3322936298410871309">మునుపటి స్థాయి 1 శీర్షిక</translation>
 <translation id="3323447499041942178">టెక్స్ట్ బాక్స్</translation>
 <translation id="3324983252691184275">ముదురు ఎరుపు రంగు</translation>
@@ -500,14 +500,14 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="4221012616705981690">మునుపటి లిస్ట్‌ లేదు</translation>
 <translation id="4225355998815256469">ఫారమ్ నియంత్రణలు</translation>
 <translation id="4230834257931120629">లేత మేఘవర్ణపు బూడిద రంగు</translation>
-<translation id="4231102694147661229">డెవలపర్ ఎంపికలను ప్రారంభించు</translation>
+<translation id="4231102694147661229">డెవలపర్ ఎంపికలను ప్రారంభించండి</translation>
 <translation id="423428485095722850">టోగుల్ చేయడం కోసం శోధన+స్పేస్ నొక్కండి</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, <ph name="GRADE" />వ గ్రేడ్</translation>
 <translation id="4246217262268234757">ఉక్కు నీలి రంగు</translation>
 <translation id="4253168017788158739">గమనిక</translation>
 <translation id="4254798249533888099">ట్రీ</translation>
 <translation id="4271220233568730077">తరువాత గణితం</translation>
-<translation id="4275397969489577657">ఈవెంట్ ప్రసార లాగింగ్‌ను ప్రారంభించు</translation>
+<translation id="4275397969489577657">ఈవెంట్ ప్రసార లాగింగ్‌ను ప్రారంభించండి</translation>
 <translation id="4278486392851938658">మునుపు సందర్శించిన లింక్ లేదు</translation>
 <translation id="4281245629646759298">లేత పసుపు రంగు</translation>
 <translation id="4289540628985791613">స్థూలదృష్టి</translation>
@@ -660,7 +660,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="5402791055281059602">నమూనా హెచ్చరిక</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{సెమీకోలన్ గుర్తు}other{# సెమీకోలన్ గుర్తులు}}</translation>
 <translation id="5420259671171615858">మెనూలలో వెతకండి</translation>
-<translation id="5435274640623994081">ఇయర్‌కాన్ లాగింగ్‌ను ప్రారంభించు</translation>
+<translation id="5435274640623994081">ఇయర్‌కాన్ లాగింగ్‌ను ప్రారంభించండి</translation>
 <translation id="5436105723448703439">{COUNT,plural, =1{న్యూన గుర్తు}other{# న్యూన గుర్తులు}}</translation>
 <translation id="5444587279251314700">(యాక్టివ్‌గా ఉంది)</translation>
 <translation id="5451268436205074266">చుక్కలు <ph name="DOT" /></translation>
@@ -1115,7 +1115,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="8640369214276455272">తెల్లని పొగ రంగు</translation>
 <translation id="8651481478098336970">వాల్యూమ్‌ను మ్యూట్ చేస్తుంది</translation>
 <translation id="8653646212587894517">లింక్‌ల లిస్ట్‌ను చూపండి</translation>
-<translation id="8656888282555543604">బ్రెయిలీ లాగింగ్‌ను ప్రారంభించు</translation>
+<translation id="8656888282555543604">బ్రెయిలీ లాగింగ్‌ను ప్రారంభించండి</translation>
 <translation id="8659501358298941449">డ్రాప్-డౌన్ లిస్ట్‌లు</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> ముగింపు</translation>
 <translation id="867187640362843212">శీర్షిక 5</translation>

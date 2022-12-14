@@ -4497,6 +4497,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5143712164865402236">전체화면 열기</translation>
 <translation id="5145464978649806571">기기를 자리에 두고 일어나면 화면이 자동으로 잠깁니다. 기기 앞에 있는 동안에는 화면의 절전모드 해제 상태가 더 오래 유지됩니다. 잠금 화면을 사용하고 있지 않은 경우 기기가 잠기지 않고 절전 모드로 전환됩니다.</translation>
 <translation id="514575469079499857">위치 파악에 IP 주소 사용(기본값)</translation>
+<translation id="5146896637028965135">시스템 음성</translation>
 <translation id="5147103632304200977">사이트에서 HID 기기에 액세스하려고 할 때 확인(권장)</translation>
 <translation id="5148277445782867161">Google 위치 서비스는 기기 위치를 파악하는 데에 Wi-Fi, 모바일 네트워크, 센서와 같은 소스를 사용합니다.</translation>
 <translation id="5150254825601720210">Netscape Certificate SSL Server Name</translation>
@@ -7746,6 +7747,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8174047975335711832">기기 정보</translation>
 <translation id="8174876712881364124">Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환하세요. 백업에는 앱 데이터가 포함됩니다. 백업 항목은 Google에 업로드되며 자녀의 Google 계정 비밀번호를 사용하여 암호화됩니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">분홍색 및 흰색</translation>
+<translation id="8176529144855282213">마이크 액세스를 사용 설정하려면 기기에서 실제 마이크 스위치를 켜세요.</translation>
 <translation id="8177196903785554304">네트워크 세부정보</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{탭을 새 창으로 이동}other{탭을 새 창으로 이동}}</translation>
 <translation id="8179188928355984576">Android 앱에서 사용되지 않음</translation>
@@ -8452,6 +8454,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8838770651474809439">햄버거</translation>
 <translation id="8838778928843281408">휴대전화 관리</translation>
 <translation id="883924185304953854">이미지로 검색</translation>
+<translation id="8839587819996519780">앱 아이콘에 알림 표시 점을 표시합니다.</translation>
 <translation id="8841843049738266382">허용 목록에 있는 사용자를 읽고 변경하기</translation>
 <translation id="8842594465773264717">이 지문 삭제</translation>
 <translation id="8845001906332463065">도움말 보기</translation>

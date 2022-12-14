@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">પૅકેજ અમાન્ય છે. વિગતો: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />", તમારા ઉપકરણો પૈકી એક પરની ઍક્સેસની વિનંતી કરી રહ્યું છે:</translation>
 <translation id="8885905466771744233">ઉલ્લેખિત એક્સટેન્શન માટે ખાનગી કી પહેલાંથી અસતિત્વમાં છે. તે કી ફરીથી વાપરો અથવા પહેલા એને ડિલીટ કરો.</translation>
+<translation id="9039223174332979184">ઓછામાં ઓછા 3નું મેનિફેસ્ટ વર્ઝન હોવા માટે, આ મશીનના ઍડમિનિસ્ટ્રેટરને <ph name="EXTENSION_NAME" />ની આવશ્યકતા છે.</translation>
 <translation id="907841381057066561">પૅકેજીંગ દરમિયાન અસ્થાયી ઝિપ ફાઇલ બનાવવામાં નિષ્ફળ.</translation>
 <translation id="941543339607623937">અમાન્ય ખાનગી કી.</translation>
 </translationbundle>

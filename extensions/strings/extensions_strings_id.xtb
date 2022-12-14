@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Paket tidak valid. Detail: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" meminta akses ke salah satu perangkat Anda:</translation>
 <translation id="8885905466771744233">Kunci pribadi untuk ekstensi yang ditentukan sudah ada. Gunakan kembali kunci itu atau hapus terlebih dulu.</translation>
+<translation id="9039223174332979184">Administrator perangkat ini mewajibkan <ph name="EXTENSION_NAME" /> untuk memiliki versi manifes minimum 3.</translation>
 <translation id="907841381057066561">Gagal membuat file zip sementara selama pengemasan</translation>
 <translation id="941543339607623937">Kunci pribadi tidak valid.</translation>
 </translationbundle>

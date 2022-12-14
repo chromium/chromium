@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Paket ist ungültig. Details: "<ph name="ERROR_MESSAGE" />"</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />“ fordert Zugriff auf eines deiner Geräte an:</translation>
 <translation id="8885905466771744233">Es existiert bereits ein privater Schlüssel für die angegebene Erweiterung. Verwende diesen Schlüssel oder lösche ihn zuerst.</translation>
+<translation id="9039223174332979184">Der Administrator dieses Computers hat festgelegt, dass <ph name="EXTENSION_NAME" /> die Manifest-Version 3 oder höher haben muss.</translation>
 <translation id="907841381057066561">Während des Packvorgangs wurde keine temporäre ZIP-Datei erstellt.</translation>
 <translation id="941543339607623937">Ungültiger privater Schlüssel</translation>
 </translationbundle>

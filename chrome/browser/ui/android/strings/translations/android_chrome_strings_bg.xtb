@@ -760,6 +760,7 @@
 <translation id="510275257476243843">Остава 1 час</translation>
 <translation id="5115811374190515607">до <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Интереси</translation>
+<translation id="5122378528687922675">Ако се нуждаете от помощ, попитайте родителя си (<ph name="PARENT_NAME_1" /> или <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Раздел в режим „инкогнито“</translation>
 <translation id="5126510351761255129">Потвърдете картата</translation>
 <translation id="5132942445612118989">Синхронизиране на паролите, историята ви и др. на всички устройства</translation>
@@ -1331,6 +1332,7 @@
 <translation id="8084285576995584326">Управление на данните в профила ви в Google</translation>
 <translation id="808747664143081553">Установена е връзка с устройството</translation>
 <translation id="8088176524274673045">За да споделите с хората в близост, те трябва да сканират този QR код</translation>
+<translation id="8090732854597034573">Ако се нуждаете от помощ, попитайте родителя си</translation>
 <translation id="8100969750121413114">Влезте в профила си, за да персонализирате Chrome според вкуса си</translation>
 <translation id="8103578431304235997">Раздел в режим „инкогнито“</translation>
 <translation id="8105613260829665809">Продължавайки, приемате <ph name="BEGIN_TOS_LINK" />Общите условия<ph name="END_TOS_LINK" />.\nС цел подобряване на приложението Chrome изпраща до Google данни за употребата и сривовете. <ph name="BEGIN_UMA_LINK" />Управление<ph name="END_UMA_LINK" /></translation>
@@ -1339,6 +1341,7 @@
 <translation id="8109613176066109935">Включете синхронизирането, за да получите отметките си на всичките си устройства</translation>
 <translation id="8110024788458304985">Помощ за подобряването на функциите и ефективността на Chrome</translation>
 <translation id="8110087112193408731">Искате ли активността ви в Chrome да се показва в „Дигитално благополучие“?</translation>
+<translation id="8118117428362942925">Ако се нуждаете от помощ, попитайте родителя си (<ph name="PARENT_NAME" />)</translation>
 <translation id="8127542551745560481">Редактиране на началната страница</translation>
 <translation id="8130309322784422030">Съхранената ви информация за вход може да не е актуална</translation>
 <translation id="813082847718468539">Преглед на информацията за сайта</translation>

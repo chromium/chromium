@@ -57,7 +57,7 @@
 <translation id="1321993286294231467">Дошло је до грешке при чувању слике.</translation>
 <translation id="1322735045095424339">Организација захтева режим без архивирања</translation>
 <translation id="1323735185997015385">Избриши</translation>
-<translation id="132683371494960526">Додирните двапут да бисте променили надређени директоријум.</translation>
+<translation id="132683371494960526">Додирните двапут да бисте променили надређени фолдер.</translation>
 <translation id="1335348992705722518">Управљај подешавањима…</translation>
 <translation id="1340643665687018190">Затвори мени</translation>
 <translation id="1358214951266274152">Посетите линк који сте копирали</translation>
@@ -117,7 +117,7 @@
 <translation id="1753905327828125965">Најпосећеније</translation>
 <translation id="1789803444939621101">Добро дошли назад, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Име власника картице</translation>
-<translation id="1809939268435598390">Избриши директоријум</translation>
+<translation id="1809939268435598390">Избриши фолдер</translation>
 <translation id="1813414402673211292">Брисање података прегледања</translation>
 <translation id="1815941218935345331">Шифра</translation>
 <translation id="1820259098641718022">Додато је на листу за читање</translation>
@@ -252,7 +252,7 @@
 <translation id="2883151425485251736">Прегледајте и мењајте теме које сте сакрили са налога</translation>
 <translation id="288655811176831528">Затвори картицу</translation>
 <translation id="2890171748217283516">Сајтови које пратите се чувају на Google налогу. Њима можете да управљате у подешавањима Discover-а.</translation>
-<translation id="2898963176829412617">Нови директоријум...</translation>
+<translation id="2898963176829412617">Нови фолдер...</translation>
 <translation id="2902684821701498619">Додај на Листу за читање</translation>
 <translation id="2916171785467530738">Аутоматски довршавај претраге и URL-ове</translation>
 <translation id="291754862089661335">Поставите QR или бар-код у овај оквир</translation>
@@ -636,7 +636,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5834415013958049700">Слика Објектива коју сте копирали</translation>
 <translation id="5846482154967366008">Претраживач</translation>
 <translation id="5854790677617711513">Старије од 30 дана</translation>
-<translation id="5857090052475505287">Нови директоријум</translation>
+<translation id="5857090052475505287">Нови фолдер</translation>
 <translation id="5857675236236529683">Када будете спремни, овде пронађите листу за читање</translation>
 <translation id="5857770089550859117">За почетак синхронизације потребна је приступна фраза.</translation>
 <translation id="5859715514067755465">Напред</translation>

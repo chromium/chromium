@@ -4481,6 +4481,7 @@
 <translation id="5143712164865402236">進入全螢幕</translation>
 <translation id="5145464978649806571">如果你不在裝置前方，系統會自動鎖定螢幕；當你回到裝置前方時，系統就會解除鎖定螢幕。假如停用螢幕鎖定，則裝置會進入休眠狀態，而不是鎖定螢幕。</translation>
 <translation id="514575469079499857">使用你的 IP 位址判斷所在位置 (預設)</translation>
+<translation id="5146896637028965135">系統語音</translation>
 <translation id="5147103632304200977">網站必須先詢問你，才能存取 HID 裝置 (建議)</translation>
 <translation id="5148277445782867161">Google 的定位服務會使用 Wi‑Fi、行動網路和感應器等來源，推測出這部裝置的所在位置。</translation>
 <translation id="5150254825601720210">Netscape 憑證 SSL 伺服器名稱</translation>
@@ -7726,6 +7727,7 @@
 <translation id="8174047975335711832">裝置資訊</translation>
 <translation id="8174876712881364124">備份到 Google 雲端硬碟。你隨時可以輕鬆還原資料或改用其他裝置。備份內容包含應用程式資料。備份內容會上傳到 Google，並以貴子女帳戶的 Google 帳戶密碼加密。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">粉紅色與白色</translation>
+<translation id="8176529144855282213">如要開啟麥克風存取權，請打開裝置的麥克風實體開關</translation>
 <translation id="8177196903785554304">網路詳細資料</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{將分頁移到新視窗}other{將分頁移到新視窗}}</translation>
 <translation id="8179188928355984576">無法存取 Android 應用程式</translation>
@@ -8432,6 +8434,7 @@
 <translation id="8838770651474809439">漢堡</translation>
 <translation id="8838778928843281408">管理手機</translation>
 <translation id="883924185304953854">以圖搜尋</translation>
+<translation id="8839587819996519780">在應用程式圖示上顯示通知圓點</translation>
 <translation id="8841843049738266382">讀取及變更列入許可清單的使用者</translation>
 <translation id="8842594465773264717">刪除這個指紋</translation>
 <translation id="8845001906332463065">尋求協助</translation>
