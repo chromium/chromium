@@ -69,21 +69,6 @@ bool IsLensWebResultsURL(const GURL& url);
 absl::optional<LensEntrypoint> GetLensEntryPointFromURL(const GURL& url);
 
 // Generates web load params for a Lens image search for the given
-// `image` and `entry_point`.
-web::NavigationManager::WebLoadParams GenerateLensLoadParamsForImage(
-    UIImage* image,
-    LensEntrypoint entry_point,
-    bool is_incognito);
-
-// Generates web load params for a Lens image search for the given
-// `image` and `entry_point`. `completion` will be run on the main
-// thread.
-void GenerateLensLoadParamsForImageAsync(UIImage* image,
-                                         LensEntrypoint entry_point,
-                                         bool is_incognito,
-                                         LensWebParamsCallback completion);
-
-// Generates web load params for a Lens image search for the given
 // `query`. `completion` will be run on the main thread.
 void GenerateLensLoadParamsAsync(LensQuery* query,
                                  LensWebParamsCallback completion);
