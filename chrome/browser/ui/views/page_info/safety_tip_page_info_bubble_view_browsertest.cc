@@ -269,6 +269,9 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
 
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     SetUpLookalikeTestParams();
+    // Check that the test top domain list contains google.
+    ASSERT_TRUE(IsTopDomain(GetDomainInfo("google.com")));
+
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
@@ -567,6 +570,10 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_FALSE(IsUIShowing());
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
+
+  // TODO(crbug.com/1401102): Only one UKM should have been recorded, but
+  // allowlisted domain also records one.
+  CheckRecordedHeuristicsUkmCount(2);
 }
 
 // Ensure sites allowed by enterprise policy don't get blocked.
@@ -584,11 +591,15 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
     EXPECT_FALSE(IsUIShowing());
     ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
   }
+
+  // TODO(crbug.com/1401102): This shouldn't record a UKM.
+  CheckRecordedHeuristicsUkmCount(2);
 }
 
 // After the user clicks 'leave site', the user should end up on a safe domain.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        LeaveSiteLeavesSite) {
+  ASSERT_TRUE(IsTopDomain(GetDomainInfo("google.sk")));
   // This domain is a lookalike of a top domain not in the top 500.
   const GURL kNavigatedUrl = GetURL("googlé.sk");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
@@ -753,6 +764,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                      browser()->tab_strip_model()->active_index() + 1);
   EXPECT_FALSE(IsUIShowing());
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
+  CheckRecordedHeuristicsUkmCount(0);
 }
 
 // Tests that Safety Tips do NOT trigger on lookalike domains that trigger an
@@ -763,12 +775,14 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_FALSE(IsUIShowing());
+  CheckRecordedHeuristicsUkmCount(0);
 }
 
 // Tests that Safety Tips trigger on lookalike domains that don't qualify for an
-// interstitial, but do not impact Page Info.
+// interstitial and Page Info shows Safety Tip information.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        TriggersOnLookalike) {
+  ASSERT_TRUE(IsTopDomain(GetDomainInfo("google.sk")));
   // This domain is a lookalike of a top domain not in the top 500.
   const GURL kNavigatedUrl = GetURL("googlé.sk");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
@@ -778,12 +792,14 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoShowsSafetyTipInfo(
       browser(), security_state::SafetyTipStatus::kLookalike,
       GURL("https://google.sk")));
+  CheckRecordedHeuristicsUkmCount(0);
 }
 
 // Tests that Safety Tips don't trigger on lookalike domains that are explicitly
 // allowed by the allowlist.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        NoTriggersOnLookalikeAllowlist) {
+  ASSERT_TRUE(IsTopDomain(GetDomainInfo("google.sk")));
   // This domain is a lookalike of a top domain not in the top 500.
   const GURL kNavigatedUrl = GetURL("googlé.sk");
 
@@ -802,6 +818,10 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 
   EXPECT_FALSE(IsUIShowing());
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
+
+  // TODO(crbug.com/1401102): Only one UKM should have been recorded, but
+  // allowlisted domain also records one.
+  CheckRecordedHeuristicsUkmCount(2);
 }
 
 // Tests that Safety Tips don't trigger on lookalike domains that are explicitly
@@ -833,6 +853,10 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(IsUIShowing());
+  CheckRecordedHeuristicsUkmCount(0);
+
+  CloseWarningLeaveSite(browser());
+  CheckRecordedHeuristicsUkmCount(1);
 }
 
 // Tests that Safety Tips don't trigger when using a scoped allowlist.
@@ -847,6 +871,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_FALSE(IsUIShowing());
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
+
+  // TODO(crbug.com/1401102): This shouldn't record metrics.
+  CheckRecordedHeuristicsUkmCount(1);
 }
 
 // Tests that Safety Tips trigger when the URL is on the allowlist, but is
@@ -861,6 +888,10 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(IsUIShowing());
+  CheckRecordedHeuristicsUkmCount(0);
+
+  CloseWarningLeaveSite(browser());
+  CheckRecordedHeuristicsUkmCount(1);
 }
 
 // Tests that Character Swap is enabled for lookalikes matching engaged sites.
@@ -872,6 +903,10 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(IsUIShowing());
+  CheckRecordedHeuristicsUkmCount(0);
+
+  CloseWarningLeaveSite(browser());
+  CheckRecordedHeuristicsUkmCount(1);
 }
 
 // Same as TriggersOnCharacterSwap_SiteEngagement, but this time
@@ -886,11 +921,17 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(IsUIShowing());
+  CheckRecordedHeuristicsUkmCount(0);
+
+  CloseWarningLeaveSite(browser());
+  CheckRecordedHeuristicsUkmCount(1);
 }
 
 // Tests that Character Swap is enabled for lookalikes matching top sites.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        TriggersOnCharacterSwap_TopSite) {
+  base::HistogramTester histograms;
+
   const GURL kNavigatedUrl = GetURL("goolge.com");
   const GURL kTargetUrl = GetURL("google.com");
   // Both the lookalike and the target have low engagement.
@@ -898,18 +939,28 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   SetEngagementScore(browser(), kTargetUrl, kLowEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(IsUIShowing());
+  CheckRecordedHeuristicsUkmCount(0);
+
+  CloseWarningLeaveSite(browser());
+  CheckRecordedHeuristicsUkmCount(1);
 }
 
 // Tests that a hostname on a safe TLD can spoof another hostname without a
 // lookalike warning.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        TriggersOnCharacterSwapSafeTLD_CanSpoof) {
+  base::HistogramTester histograms;
+
   const GURL kNavigatedUrl = GetURL("digitla.gov");
   const GURL kTargetUrl = GetURL("digital.gov");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_FALSE(IsUIShowing());
+
+  histograms.ExpectTotalCount(lookalikes::kHistogramName, 0);
+  // TODO(crbug.com/1401102): This shouldn't record metrics.
+  CheckRecordedHeuristicsUkmCount(1);
 }
 
 // Navigate to a domain within a character swap of 1 to a top domain,
@@ -918,6 +969,8 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     SafetyTipPageInfoBubbleViewBrowserTest,
     DoesntTriggerOnCharacterSwap_TopSiteWithDifferentRegistry) {
+  ASSERT_TRUE(IsTopDomain(GetDomainInfo("google.rs")));
+
   base::HistogramTester histograms;
   // google.sr is within one character swap of google.rs which is a top domain.
   const GURL kNavigatedUrl = GetURL("google.sr");
@@ -925,11 +978,11 @@ IN_PROC_BROWSER_TEST_F(
   // considered for lookalike suggestions.
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
 
-  // TestInterstitialNotShown(browser(), kNavigatedUrl);
-  // histograms.ExpectTotalCount(lookalikes::kHistogramName, 0);
-  // CheckNoUkm();
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_FALSE(IsUIShowing());
+
+  histograms.ExpectTotalCount(lookalikes::kHistogramName, 0);
+  CheckRecordedHeuristicsUkmCount(0);
 }
 
 // Tests that Safety Tips trigger on lookalike domains with tail embedding when
@@ -1009,6 +1062,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   // the safety tip.
   histogram_tester.ExpectTotalCount(
       GetInteractionHistogram("SafetyTip_Lookalike"), 0);
+
   CloseWarningLeaveSite(browser());
   histogram_tester.ExpectUniqueSample(
       GetInteractionHistogram("SafetyTip_Lookalike"),
