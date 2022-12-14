@@ -11,10 +11,8 @@
 
 #include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
-#include "ipcz/link_side.h"
 #include "ipcz/node.h"
 #include "ipcz/node_messages.h"
-#include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
 
 namespace ipcz {
