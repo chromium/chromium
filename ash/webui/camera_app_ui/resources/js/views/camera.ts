@@ -723,6 +723,9 @@ export class Camera extends View implements CameraViewUI {
       nav.close(ViewName.FLASH);
     }
     await this.reviewMultiPageDocument(enterInFixMode);
+    if (!state.get(state.State.DOC_MODE_REVIEWING)) {
+      ChromeHelper.getInstance().maybeTriggerSurvey();
+    }
   }
 
   /**
