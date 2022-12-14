@@ -20,6 +20,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/browsing_data_lifetime_policy_handler.h"
 #include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
+#include "chrome/browser/enterprise/idle/idle_timeout_policy_handler.h"
 #include "chrome/browser/first_party_sets/first_party_sets_overrides_policy_handler.h"
 #include "chrome/browser/net/disk_cache_dir_policy_handler.h"
 #include "chrome/browser/net/explicitly_allowed_network_ports_policy_handler.h"
@@ -1827,22 +1828,6 @@ void GetExtensionAllowedTypesMap(
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-void GetIdleTimeoutActionsMap(
-    std::vector<std::unique_ptr<StringMappingListPolicyHandler::MappingEntry>>*
-        result) {
-  // Mapping from IdleTimeoutActions action names to ActionType.
-  for (size_t i = 0; i < enterprise_idle::kActionTypeMapSize; i++) {
-    const enterprise_idle::ActionTypeMapEntry& entry =
-        enterprise_idle::kActionTypeMap[i];
-    result->push_back(
-        std::make_unique<StringMappingListPolicyHandler::MappingEntry>(
-            entry.name, std::make_unique<base::Value>(
-                            static_cast<int>(entry.action_type))));
-  }
-}
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
 // Future policies are not supported on Stable and Beta by default.
 bool AreFuturePoliciesSupported() {
   // Enable future policies for branded browser tests.
@@ -2033,11 +2018,11 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
-      key::kIdleTimeout, prefs::kIdleTimeout, 5, INT_MAX, /*clamp=*/true));
-  handlers->AddHandler(std::make_unique<StringMappingListPolicyHandler>(
-      key::kIdleTimeoutActions, prefs::kIdleTimeoutActions,
-      base::BindRepeating(&GetIdleTimeoutActionsMap)));
+  handlers->AddHandler(
+      std::make_unique<enterprise_idle::IdleTimeoutPolicyHandler>());
+  handlers->AddHandler(
+      std::make_unique<enterprise_idle::IdleTimeoutActionsPolicyHandler>(
+          chrome_schema));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   handlers->AddHandler(std::make_unique<RestoreOnStartupPolicyHandler>());

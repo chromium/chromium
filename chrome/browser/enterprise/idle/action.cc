@@ -30,10 +30,11 @@ class CloseBrowsersAction : public Action {
   CloseBrowsersAction() : Action(ActionType::kCloseBrowsers) {}
 
   void Run(Profile* profile, Continuation continuation) override {
-    int minutes = profile->GetPrefs()->GetInteger(prefs::kIdleTimeout);
+    base::TimeDelta timeout =
+        profile->GetPrefs()->GetTimeDelta(prefs::kIdleTimeout);
     continuation_ = std::move(continuation);
     subscription_ = BrowserCloser::GetInstance()->ShowDialogAndCloseBrowsers(
-        profile, base::Minutes(minutes),
+        profile, timeout,
         base::BindOnce(&CloseBrowsersAction::OnCloseFinished,
                        base::Unretained(this)));
   }

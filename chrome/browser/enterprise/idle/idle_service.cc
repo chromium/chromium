@@ -33,10 +33,11 @@ IdleService::IdleService(Profile* profile)
 IdleService::~IdleService() = default;
 
 void IdleService::OnIdleTimeoutPrefChanged() {
-  int minutes = profile_->GetPrefs()->GetInteger(prefs::kIdleTimeout);
-  if (minutes > 0) {
+  base::TimeDelta timeout =
+      profile_->GetPrefs()->GetTimeDelta(prefs::kIdleTimeout);
+  if (timeout.is_positive()) {
     // `is_idle_` will auto-update in 1 second, no need to set it here.
-    idle_threshold_ = base::Minutes(minutes);
+    idle_threshold_ = timeout;
     if (!polling_service_observation_.IsObserving()) {
       polling_service_observation_.Observe(
           ui::IdlePollingService::GetInstance());

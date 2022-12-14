@@ -20653,18 +20653,18 @@
         },
         "prefs": {
           "idle_timeout": {
-            "value": 10
+            "value": "600000000"
           }
         }
       },
       {
         "policies": {
-          "IdleTimeout": 1,
+          "IdleTimeout": 0,
           "IdleTimeoutActions": []
         },
         "prefs": {
           "idle_timeout": {
-            "value": 5
+            "value": "60000000"
           }
         }
       }
