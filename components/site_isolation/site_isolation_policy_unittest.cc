@@ -1205,7 +1205,13 @@ class OptInOriginIsolationPolicyTest : public BaseSiteIsolationTest {
     SetEnableStrictSiteIsolation(false);
     // Enable Origin-Agent-Cluster header.
     feature_list_.InitAndEnableFeature(::features::kOriginIsolationHeader);
+    SiteIsolationPolicy::SetDisallowMemoryThresholdCachingForTesting(true);
     BaseSiteIsolationTest::SetUp();
+  }
+
+  void TearDown() override {
+    SiteIsolationPolicy::SetDisallowMemoryThresholdCachingForTesting(false);
+    BaseSiteIsolationTest::TearDown();
   }
 
   content::BrowserContext* browser_context() { return &browser_context_; }
