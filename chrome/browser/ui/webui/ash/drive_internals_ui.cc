@@ -25,6 +25,7 @@
 #include "base/process/launch.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
@@ -42,6 +43,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/services/file_util/public/cpp/zip_file_creator.h"
+#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/download_item.h"
 #include "components/drive/drive_notification_manager.h"
@@ -229,7 +231,9 @@ void ZipLogs(Profile* profile,
              base::WeakPtr<DriveInternalsWebUIHandler> drive_internals);
 
 // Class to handle messages from chrome://drive-internals.
-class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
+class DriveInternalsWebUIHandler
+    : public content::WebUIMessageHandler,
+      public drivefs::pinning::DriveFsBulkPinObserver {
  public:
   DriveInternalsWebUIHandler() : last_sent_event_id_(-1) {}
 
@@ -601,6 +605,21 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
     MaybeCallJavascript("updateBulkPinning", base::Value(bulk_pinning_enabled));
   }
 
+  void OnSetupProgress(
+      const drivefs::pinning::SetupProgress& progress) override {
+    base::Value::Dict setup_progress;
+    setup_progress.Set("stage",
+                       base::NumberToString(static_cast<int>(progress.stage)));
+    setup_progress.Set("availableDiskSpace",
+                       base::NumberToString(progress.available_disk_space));
+    setup_progress.Set("requiredDiskSpace",
+                       base::NumberToString(progress.required_disk_space));
+    setup_progress.Set("pinnedDiskSpace",
+                       base::NumberToString(progress.pinned_disk_space));
+    MaybeCallJavascript("onBulkPinningProgress",
+                        base::Value(std::move(setup_progress)));
+  }
+
   // Called when GetDeveloperMode() is complete.
   void OnGetDeveloperMode(bool enabled) {
     developer_mode_ = enabled;
@@ -806,6 +825,15 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
       bool enabled = args[0].GetBool();
       profile()->GetPrefs()->SetBoolean(
           drive::prefs::kDriveFsBulkPinningEnabled, enabled);
+      auto* pin_manager = integration_service->GetDriveFsPinManager();
+      if (!pin_manager) {
+        return;
+      }
+      if (enabled) {
+        pin_manager->AddObserver(this);
+      } else {
+        pin_manager->RemoveObserver(this);
+      }
     }
   }
 
