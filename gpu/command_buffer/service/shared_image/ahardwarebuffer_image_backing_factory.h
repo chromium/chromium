@@ -31,7 +31,8 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
     : public SharedImageBackingFactory {
  public:
   explicit AHardwareBufferImageBackingFactory(
-      const gles2::FeatureInfo* feature_info);
+      const gles2::FeatureInfo* feature_info,
+      const GpuPreferences& gpu_preferences);
 
   AHardwareBufferImageBackingFactory(
       const AHardwareBufferImageBackingFactory&) = delete;
@@ -126,6 +127,7 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
   int32_t max_gl_texture_size_ = 0;
 
   scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
+  const bool use_passthrough_;
 };
 
 }  // namespace gpu

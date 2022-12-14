@@ -138,7 +138,8 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
       size_t estimated_size,
       bool is_thread_safe,
       base::ScopedFD initial_upload_fd,
-      scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs);
+      scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs,
+      bool use_passthrough);
 
   AHardwareBufferImageBacking(const AHardwareBufferImageBacking&) = delete;
   AHardwareBufferImageBacking& operator=(const AHardwareBufferImageBacking&) =
@@ -185,6 +186,7 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
 
   scoped_refptr<OverlayImage> overlay_image_ GUARDED_BY(lock_);
   scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
+  const bool use_passthrough_;
 };
 
 // Vk backed Skia representation of AHardwareBufferImageBacking.
@@ -263,7 +265,8 @@ AHardwareBufferImageBacking::AHardwareBufferImageBacking(
     size_t estimated_size,
     bool is_thread_safe,
     base::ScopedFD initial_upload_fd,
-    scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs)
+    scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs,
+    bool use_passthrough)
     : AndroidImageBacking(mailbox,
                           format,
                           size,
@@ -275,7 +278,8 @@ AHardwareBufferImageBacking::AHardwareBufferImageBacking(
                           is_thread_safe,
                           std::move(initial_upload_fd)),
       hardware_buffer_handle_(std::move(handle)),
-      dawn_procs_(std::move(dawn_procs)) {
+      dawn_procs_(std::move(dawn_procs)),
+      use_passthrough_(use_passthrough) {
   DCHECK(hardware_buffer_handle_.is_valid());
 }
 
@@ -384,14 +388,13 @@ AHardwareBufferImageBacking::ProduceSkia(
   }
   DCHECK(context_state->GrContextIsGL());
   DCHECK(hardware_buffer_handle_.is_valid());
-  auto* texture =
-      GenGLTexture(hardware_buffer_handle_.get(), GL_TEXTURE_2D, color_space(),
-                   size(), GetEstimatedSize(), ClearedRect());
-  if (!texture)
-    return nullptr;
-  auto gl_representation =
-      std::make_unique<GLTextureAndroidImageRepresentation>(
-          manager, this, tracker, std::move(texture));
+
+  std::unique_ptr<GLTextureImageRepresentationBase> gl_representation;
+  if (use_passthrough_)
+    gl_representation = ProduceGLTexturePassthrough(manager, tracker);
+  else
+    gl_representation = ProduceGLTexture(manager, tracker);
+
   return SkiaGLImageRepresentation::Create(std::move(gl_representation),
                                            std::move(context_state), manager,
                                            this, tracker);
@@ -471,7 +474,10 @@ void AHardwareBufferImageBacking::EndOverlayAccess() {
 }
 
 AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
-    const gles2::FeatureInfo* feature_info) {
+    const gles2::FeatureInfo* feature_info,
+    const GpuPreferences& gpu_preferences)
+    : use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder &&
+                       gl::PassthroughCommandDecoderSupported()) {
   DCHECK(base::AndroidHardwareBufferCompat::IsSupportAvailable());
   const gles2::Validators* validators = feature_info->validators();
   const bool is_egl_image_supported =
@@ -693,7 +699,7 @@ AHardwareBufferImageBackingFactory::MakeBacking(
   auto backing = std::make_unique<AHardwareBufferImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(handle), estimated_size, is_thread_safe,
-      std::move(initial_upload_fd), dawn_procs_);
+      std::move(initial_upload_fd), dawn_procs_, use_passthrough_);
 
   // If we uploaded initial data, set the backing as cleared.
   if (!pixel_data.empty())
@@ -811,7 +817,7 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
   auto backing = std::make_unique<AHardwareBufferImageBacking>(
       mailbox, si_format, size, color_space, surface_origin, alpha_type, usage,
       std::move(handle.android_hardware_buffer), estimated_size, false,
-      base::ScopedFD(), dawn_procs_);
+      base::ScopedFD(), dawn_procs_, use_passthrough_);
 
   backing->SetCleared();
   return backing;

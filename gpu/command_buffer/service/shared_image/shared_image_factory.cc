@@ -255,7 +255,7 @@ SharedImageFactory::SharedImageFactory(
   }
   if (is_ahb_supported) {
     auto ahb_factory = std::make_unique<AHardwareBufferImageBackingFactory>(
-        feature_info.get());
+        feature_info.get(), gpu_preferences);
     factories_.push_back(std::move(ahb_factory));
   }
   if (gr_context_type_ == GrContextType::kVulkan &&

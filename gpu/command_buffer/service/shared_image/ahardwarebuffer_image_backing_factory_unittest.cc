@@ -56,18 +56,19 @@ class AHardwareBufferImageBackingFactoryTest : public testing::Test {
     ASSERT_TRUE(result);
 
     GpuDriverBugWorkarounds workarounds;
+    auto gpu_preferences = GpuPreferences();
 
     scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
     context_state_ = base::MakeRefCounted<SharedContextState>(
         std::move(share_group), surface_, context_,
         false /* use_virtualized_gl_contexts */, base::DoNothing());
-    context_state_->InitializeGrContext(GpuPreferences(), workarounds, nullptr);
+    context_state_->InitializeGrContext(gpu_preferences, workarounds, nullptr);
     auto feature_info =
         base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
-    context_state_->InitializeGL(GpuPreferences(), std::move(feature_info));
+    context_state_->InitializeGL(gpu_preferences, std::move(feature_info));
 
     backing_factory_ = std::make_unique<AHardwareBufferImageBackingFactory>(
-        context_state_->feature_info());
+        context_state_->feature_info(), gpu_preferences);
 
     memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
     shared_image_representation_factory_ =
