@@ -7,6 +7,7 @@
 #include "base/time/time.h"
 #include "ui/aura/window.h"
 #include "ui/wm/public/activation_change_observer.h"
+#include "ui/wm/public/tooltip_observer.h"
 
 namespace views::corewm::test {
 
@@ -18,12 +19,22 @@ TooltipControllerTestHelper::TooltipControllerTestHelper(
 
 TooltipControllerTestHelper::~TooltipControllerTestHelper() = default;
 
-const std::u16string& TooltipControllerTestHelper::GetTooltipText() {
-  return controller_->state_manager_->tooltip_text();
+bool TooltipControllerTestHelper::UseServerSideTooltip() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformRuntimeProperties()
+      .supports_tooltip;
+#else
+  return false;
+#endif
 }
 
-const aura::Window* TooltipControllerTestHelper::GetTooltipParentWindow() {
-  return controller_->state_manager_->tooltip_parent_window();
+const std::u16string& TooltipControllerTestHelper::GetTooltipText() {
+  return state_manager()->tooltip_text();
+}
+
+aura::Window* TooltipControllerTestHelper::GetTooltipParentWindow() {
+  return state_manager()->tooltip_parent_window_;
 }
 
 const aura::Window* TooltipControllerTestHelper::GetObservedWindow() {
@@ -31,7 +42,7 @@ const aura::Window* TooltipControllerTestHelper::GetObservedWindow() {
 }
 
 const gfx::Point& TooltipControllerTestHelper::GetTooltipPosition() {
-  return controller_->state_manager_->position_;
+  return state_manager()->position_;
 }
 
 base::TimeDelta TooltipControllerTestHelper::GetShowTooltipDelay() {
@@ -47,15 +58,28 @@ void TooltipControllerTestHelper::UpdateIfRequired(TooltipTrigger trigger) {
 }
 
 void TooltipControllerTestHelper::FireHideTooltipTimer() {
-  controller_->state_manager_->HideAndReset();
+  state_manager()->HideAndReset();
 }
 
-bool TooltipControllerTestHelper::IsHideTooltipTimerRunning() {
-  return controller_->state_manager_->IsWillHideTooltipTimerRunningForTesting();
+void TooltipControllerTestHelper::AddObserver(wm::TooltipObserver* observer) {
+  controller_->AddObserver(observer);
+}
+
+void TooltipControllerTestHelper::RemoveObserver(
+    wm::TooltipObserver* observer) {
+  controller_->RemoveObserver(observer);
+}
+
+bool TooltipControllerTestHelper::IsWillShowTooltipTimerRunning() {
+  return state_manager()->IsWillShowTooltipTimerRunningForTesting();
+}
+
+bool TooltipControllerTestHelper::IsWillHideTooltipTimerRunning() {
+  return state_manager()->IsWillHideTooltipTimerRunningForTesting();
 }
 
 bool TooltipControllerTestHelper::IsTooltipVisible() {
-  return controller_->state_manager_->IsVisible();
+  return state_manager()->IsVisible();
 }
 
 void TooltipControllerTestHelper::SkipTooltipShowDelay(bool enable) {

@@ -425,6 +425,11 @@ void DesktopNativeWidgetAura::NotifyAccessibilityEvent(
   GetWidget()->GetRootView()->NotifyAccessibilityEvent(event_type, true);
 }
 
+views::corewm::TooltipController*
+DesktopNativeWidgetAura::tooltip_controller() {
+  return tooltip_controller_.get();
+}
+
 void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
   DCHECK(native_widget_delegate_);
   if (!native_widget_delegate_->ShouldHandleNativeWidgetActivationChanged(

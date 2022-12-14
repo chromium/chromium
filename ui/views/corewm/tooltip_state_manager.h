@@ -21,6 +21,10 @@ namespace aura {
 class Window;
 }
 
+namespace gfx {
+class Rect;
+}
+
 namespace wm {
 class TooltipObserver;
 }
@@ -49,15 +53,10 @@ class VIEWS_EXPORT TooltipStateManager {
   // Hide the tooltip, clear timers, and reset controller states.
   void HideAndReset();
 
-  // Returns true if there's a timer that'll show the tooltip running.
-  bool IsWillShowTooltipTimerRunning() const {
-    return will_show_tooltip_timer_.IsRunning();
-  }
-
   bool IsVisible() const { return tooltip_->IsVisible(); }
 
   // Update the tooltip state attributes and start timer to show the tooltip. If
-  // |hide_timeout| is greater than 0, set a timer to hide it after a specific
+  // `hide_timeout` is greater than 0, set a timer to hide it after a specific
   // delay. Otherwise, show indefinitely.
   void Show(aura::Window* window,
             const std::u16string& tooltip_text,
@@ -66,34 +65,34 @@ class VIEWS_EXPORT TooltipStateManager {
             const base::TimeDelta show_delay,
             const base::TimeDelta hide_delay);
 
-  // Returns the |tooltip_id_|, which corresponds to the pointer of the view on
+  // Returns the `tooltip_id_`, which corresponds to the pointer of the view on
   // which the tooltip was last added.
   const void* tooltip_id() const { return tooltip_id_; }
-
-  // Returns the |tooltip_text_|, which corresponds to the last value the
+  // Returns the `tooltip_text_`, which corresponds to the last value the
   // tooltip got updated to.
   const std::u16string& tooltip_text() const { return tooltip_text_; }
-
   const aura::Window* tooltip_parent_window() const {
     return tooltip_parent_window_;
   }
-
   TooltipTrigger tooltip_trigger() const { return tooltip_trigger_; }
 
-  // Update the |position_| if we're about to show the tooltip. This is to
+  // Update the 'position_' if we're about to show the tooltip. This is to
   // ensure that the tooltip's position is aligned with either the latest cursor
   // location for a cursor triggered tooltip or the most recent position
   // received for a keyboard triggered tooltip.
   void UpdatePositionIfNeeded(const gfx::Point& position,
                               TooltipTrigger trigger);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Called when tooltip is shown/hidden on server.
+  // Only used by Lacros.
+  void OnTooltipShownOnServer(const std::u16string& text,
+                              const gfx::Rect& bounds);
+  void OnTooltipHiddenOnServer();
+#endif
+
  private:
   friend class test::TooltipControllerTestHelper;
-
-  // For tests only.
-  bool IsWillHideTooltipTimerRunningForTesting() const {
-    return will_hide_tooltip_timer_.IsRunning();
-  }
 
   // Called once the |will_show_timer_| fires to show the tooltip.
   void ShowNow(const std::u16string& trimmed_text,
@@ -104,8 +103,16 @@ class VIEWS_EXPORT TooltipStateManager {
                                  const base::TimeDelta show_delay,
                                  const base::TimeDelta hide_delay);
 
+  // For tests only.
+  bool IsWillShowTooltipTimerRunningForTesting() const {
+    return will_show_tooltip_timer_.IsRunning();
+  }
+  bool IsWillHideTooltipTimerRunningForTesting() const {
+    return will_hide_tooltip_timer_.IsRunning();
+  }
+
   // The current position of the tooltip. This position is relative to the
-  // |tooltip_window_| and in that window's coordinate space.
+  // `tooltip_window_` and in that window's coordinate space.
   gfx::Point position_;
 
   std::unique_ptr<Tooltip> tooltip_;
@@ -123,6 +130,8 @@ class VIEWS_EXPORT TooltipStateManager {
 
   // Two timers for the tooltip: one to hide an on-screen tooltip after a delay,
   // and one to display the tooltip when the timer fires.
+  // Timers are always not running on Lacros using server side tooltip since
+  // they are handled on Ash side.
   base::OneShotTimer will_hide_tooltip_timer_;
   base::OneShotTimer will_show_tooltip_timer_;
 

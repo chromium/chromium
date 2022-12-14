@@ -7,6 +7,8 @@
 #include <aura-shell-client-protocol.h>
 
 #include "base/auto_reset.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
@@ -77,8 +79,12 @@ bool WaylandPopup::CreateShellPopup() {
   }
 
   if (connection()->zaura_shell() && !aura_surface()) {
+    static constexpr zaura_surface_listener zaura_surface_listener = {
+        nullptr, nullptr, nullptr,       nullptr,       &DeskChanged,
+        nullptr, nullptr, &TooltipShown, &TooltipHidden};
     SetAuraSurface(zaura_shell_get_aura_surface(
         connection()->zaura_shell()->wl_object(), root_surface()->surface()));
+    zaura_surface_add_listener(aura_surface(), &zaura_surface_listener, this);
   }
 
   parent_window()->set_child_window(this);
@@ -227,6 +233,51 @@ void WaylandPopup::PropagateBufferScale(float new_scale) {
     shell_popup()->SetScaleFactor(new_scale);
     last_sent_buffer_scale_ = new_scale;
   }
+}
+
+void WaylandPopup::ShowTooltip(const std::u16string& text,
+                               const gfx::Point& position,
+                               const PlatformWindowTooltipTrigger trigger,
+                               const base::TimeDelta show_delay,
+                               const base::TimeDelta hide_delay) {
+  if (IsSupportedOnAuraSurface(ZAURA_SURFACE_SHOW_TOOLTIP_SINCE_VERSION)) {
+    uint32_t zaura_shell_trigger =
+        trigger == PlatformWindowTooltipTrigger::kCursor
+            ? ZAURA_SURFACE_TOOLTIP_TRIGGER_CURSOR
+            : ZAURA_SURFACE_TOOLTIP_TRIGGER_KEYBOARD;
+    zaura_surface_show_tooltip(
+        aura_surface(), base::UTF16ToUTF8(text).c_str(), position.x(),
+        position.y(), zaura_shell_trigger,
+        // Cast `show_delay` and `hide_delay` into int32_t as TimeDelta should
+        // not be larger than what can be handled in int32_t
+        base::saturated_cast<uint32_t>(show_delay.InMilliseconds()),
+        base::saturated_cast<uint32_t>(hide_delay.InMilliseconds()));
+  }
+}
+
+void WaylandPopup::HideTooltip() {
+  if (IsSupportedOnAuraSurface(ZAURA_SURFACE_SHOW_TOOLTIP_SINCE_VERSION)) {
+    zaura_surface_hide_tooltip(aura_surface());
+  }
+}
+
+void WaylandPopup::TooltipShown(void* data,
+                                zaura_surface* surface,
+                                const char* text,
+                                int32_t x,
+                                int32_t y,
+                                int32_t width,
+                                int32_t height) {
+  WaylandPopup* self = static_cast<WaylandPopup*>(data);
+  DCHECK(self);
+  self->delegate()->OnTooltipShownOnServer(base::UTF8ToUTF16(text),
+                                           gfx::Rect(x, y, width, height));
+}
+
+void WaylandPopup::TooltipHidden(void* data, zaura_surface* surface) {
+  WaylandPopup* self = static_cast<WaylandPopup*>(data);
+  DCHECK(self);
+  self->delegate()->OnTooltipHiddenOnServer();
 }
 
 void WaylandPopup::OnCloseRequest() {

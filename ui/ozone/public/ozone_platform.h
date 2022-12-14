@@ -199,6 +199,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Wayland only: determine whether toplevel surfaces can be activated and
     // deactivated.
     bool supports_activation = false;
+
+    // Wayland only: determines whether tooltip can be delegated via wayland
+    // protocol.
+    bool supports_tooltip = false;
   };
 
   // Corresponds to chrome_browser_main_extra_parts.h.

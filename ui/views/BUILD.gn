@@ -777,6 +777,11 @@ component("views") {
         "accessibility/widget_ax_tree_id_map.cc",
       ]
     }
+    if (is_chromeos_lacros) {
+      public += [ "corewm/tooltip_lacros.h" ]
+
+      sources += [ "corewm/tooltip_lacros.cc" ]
+    }
     deps += [
       "//ui/aura",
       "//ui/base/cursor/mojom:cursor_type_shared",
@@ -1090,8 +1095,6 @@ source_set("test_support") {
 
   if (use_aura) {
     sources += [
-      "corewm/test/tooltip_aura_test_api.cc",
-      "corewm/test/tooltip_aura_test_api.h",
       "corewm/tooltip_controller_test_helper.cc",
       "corewm/tooltip_controller_test_helper.h",
       "test/desktop_test_views_delegate_aura.cc",
@@ -1100,6 +1103,12 @@ source_set("test_support") {
       "test/views_test_helper_aura.h",
       "test/widget_test_aura.cc",
     ]
+    if (!is_chromeos_lacros) {
+      sources += [
+        "corewm/test/tooltip_aura_test_api.cc",
+        "corewm/test/tooltip_aura_test_api.h",
+      ]
+    }
     deps += [
       "//ui/aura",
       "//ui/aura:test_support",
@@ -1412,6 +1421,13 @@ test("views_unittests") {
     if (is_win) {
       sources +=
           [ "widget/desktop_aura/desktop_window_tree_host_win_unittest.cc" ]
+    }
+
+    if (is_chromeos_lacros) {
+      # TODO(crbug.com/1394914): Tooltip is handled on server side for Lacros,
+      # so it requires TooltipLacros's test API instead of TooltipAura's one and
+      # tests need to support async operation.
+      sources -= [ "corewm/tooltip_controller_unittest.cc" ]
     }
 
     if (enable_desktop_aura) {

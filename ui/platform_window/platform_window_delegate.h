@@ -5,6 +5,8 @@
 #ifndef UI_PLATFORM_WINDOW_PLATFORM_WINDOW_DELEGATE_H_
 #define UI_PLATFORM_WINDOW_PLATFORM_WINDOW_DELEGATE_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -48,6 +50,11 @@ enum class PlatformWindowOcclusionState {
   kVisible,
   kOccluded,
   kHidden,
+};
+
+enum class PlatformWindowTooltipTrigger {
+  kCursor,
+  kKeyboard,
 };
 
 class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
@@ -161,6 +168,14 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
 
   // Enables or disables frame rate throttling.
   virtual void SetFrameRateThrottleEnabled(bool enabled);
+
+  // Called when tooltip is shown on server.
+  // `bounds` is in screen coordinates.
+  virtual void OnTooltipShownOnServer(const std::u16string& text,
+                                      const gfx::Rect& bounds);
+
+  // Called when tooltip is hidden on server.
+  virtual void OnTooltipHiddenOnServer();
 
   // Convert gfx::Rect in pixels to DIP in screen, and vice versa.
   virtual gfx::Rect ConvertRectToPixels(const gfx::Rect& rect_in_dp) const;

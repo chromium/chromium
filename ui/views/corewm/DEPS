@@ -24,6 +24,10 @@ specific_include_rules = {
     "+ui/views/view.h",
   ],
 
+  "tooltip_lacros.cc": [
+    "+ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h",
+  ],
+
   "desktop_capture_controller_unittest.cc": [
     "+ui/views/test/native_widget_factory.h",
     "+ui/views/test/widget_test.h",

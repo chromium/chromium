@@ -468,12 +468,12 @@ TEST_F(TooltipControllerTest, TooltipUpdateWhenTooltipDeferTimerIsRunning) {
   // Tooltip 1 is scheduled and invisibled
   generator_->MoveMouseRelativeTo(window, view_->bounds().CenterPoint());
   EXPECT_FALSE(helper_->IsTooltipVisible());
-  EXPECT_FALSE(helper_->IsHideTooltipTimerRunning());
+  EXPECT_FALSE(helper_->IsWillHideTooltipTimerRunning());
 
   // Tooltip 2 is scheduled and invisible, the expected tooltip is tooltip 2
   generator_->MoveMouseRelativeTo(window, view2->bounds().CenterPoint());
   EXPECT_FALSE(helper_->IsTooltipVisible());
-  EXPECT_FALSE(helper_->IsHideTooltipTimerRunning());
+  EXPECT_FALSE(helper_->IsWillHideTooltipTimerRunning());
   std::u16string expected_tooltip = u"Tooltip Text for view 2";
   EXPECT_EQ(expected_tooltip, wm::GetTooltipText(window));
   EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
@@ -496,18 +496,18 @@ TEST_F(TooltipControllerTest, TooltipHidesOnKeyPressAndStaysHiddenUntilChange) {
   EXPECT_TRUE(helper_->IsTooltipVisible());
   EXPECT_EQ(helper_->state_manager()->tooltip_trigger(),
             TooltipTrigger::kCursor);
-  EXPECT_TRUE(helper_->IsHideTooltipTimerRunning());
+  EXPECT_TRUE(helper_->IsWillHideTooltipTimerRunning());
 
   generator_->PressKey(ui::VKEY_1, 0);
   EXPECT_FALSE(helper_->IsTooltipVisible());
-  EXPECT_FALSE(helper_->IsHideTooltipTimerRunning());
+  EXPECT_FALSE(helper_->IsWillHideTooltipTimerRunning());
 
   // Moving the mouse inside |view1| should not change the state of the tooltip
   // or the timers.
   for (int i = 0; i < 49; i++) {
     generator_->MoveMouseBy(1, 0);
     EXPECT_FALSE(helper_->IsTooltipVisible());
-    EXPECT_FALSE(helper_->IsHideTooltipTimerRunning());
+    EXPECT_FALSE(helper_->IsWillHideTooltipTimerRunning());
     EXPECT_EQ(window, GetRootWindow()->GetEventHandlerForPoint(
                           generator_->current_screen_location()));
     std::u16string expected_tooltip = u"Tooltip Text for view 1";
@@ -522,7 +522,7 @@ TEST_F(TooltipControllerTest, TooltipHidesOnKeyPressAndStaysHiddenUntilChange) {
   EXPECT_TRUE(helper_->IsTooltipVisible());
   EXPECT_EQ(helper_->state_manager()->tooltip_trigger(),
             TooltipTrigger::kCursor);
-  EXPECT_TRUE(helper_->IsHideTooltipTimerRunning());
+  EXPECT_TRUE(helper_->IsWillHideTooltipTimerRunning());
   std::u16string expected_tooltip = u"Tooltip Text for view 2";
   EXPECT_EQ(expected_tooltip, wm::GetTooltipText(window));
   EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
@@ -561,18 +561,18 @@ TEST_F(TooltipControllerTest, TooltipHidesOnTimeoutAndStaysHiddenUntilChange) {
   EXPECT_TRUE(helper_->IsTooltipVisible());
   EXPECT_EQ(helper_->state_manager()->tooltip_trigger(),
             TooltipTrigger::kCursor);
-  EXPECT_TRUE(helper_->IsHideTooltipTimerRunning());
+  EXPECT_TRUE(helper_->IsWillHideTooltipTimerRunning());
 
   helper_->FireHideTooltipTimer();
   EXPECT_FALSE(helper_->IsTooltipVisible());
-  EXPECT_FALSE(helper_->IsHideTooltipTimerRunning());
+  EXPECT_FALSE(helper_->IsWillHideTooltipTimerRunning());
 
   // Moving the mouse inside |view1| should not change the state of the tooltip
   // or the timers.
   for (int i = 0; i < 49; ++i) {
     generator_->MoveMouseBy(1, 0);
     EXPECT_FALSE(helper_->IsTooltipVisible());
-    EXPECT_FALSE(helper_->IsHideTooltipTimerRunning());
+    EXPECT_FALSE(helper_->IsWillHideTooltipTimerRunning());
     EXPECT_EQ(window, GetRootWindow()->GetEventHandlerForPoint(
                           generator_->current_screen_location()));
     std::u16string expected_tooltip = u"Tooltip Text for view 1";
@@ -587,7 +587,7 @@ TEST_F(TooltipControllerTest, TooltipHidesOnTimeoutAndStaysHiddenUntilChange) {
   EXPECT_TRUE(helper_->IsTooltipVisible());
   EXPECT_EQ(helper_->state_manager()->tooltip_trigger(),
             TooltipTrigger::kCursor);
-  EXPECT_TRUE(helper_->IsHideTooltipTimerRunning());
+  EXPECT_TRUE(helper_->IsWillHideTooltipTimerRunning());
   std::u16string expected_tooltip = u"Tooltip Text for view 2";
   EXPECT_EQ(expected_tooltip, wm::GetTooltipText(window));
   EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
@@ -1276,7 +1276,7 @@ TEST_F(TooltipStateManagerTest, ShowTooltipWithDelay) {
   EXPECT_EQ(GetRootWindow(), helper_->state_manager()->tooltip_parent_window());
   EXPECT_EQ(expected_text, helper_->state_manager()->tooltip_text());
   EXPECT_FALSE(helper_->IsTooltipVisible());
-  EXPECT_TRUE(helper_->state_manager()->IsWillShowTooltipTimerRunning());
+  EXPECT_TRUE(helper_->IsWillShowTooltipTimerRunning());
 
   // 2. Showing the tooltip again with a different expected text will cancel the
   // existing timers running and will update the text, but it still won't make
@@ -1288,13 +1288,13 @@ TEST_F(TooltipStateManagerTest, ShowTooltipWithDelay) {
   EXPECT_EQ(GetRootWindow(), helper_->state_manager()->tooltip_parent_window());
   EXPECT_EQ(expected_text, helper_->state_manager()->tooltip_text());
   EXPECT_FALSE(helper_->IsTooltipVisible());
-  EXPECT_TRUE(helper_->state_manager()->IsWillShowTooltipTimerRunning());
+  EXPECT_TRUE(helper_->IsWillShowTooltipTimerRunning());
 
   // 3. Calling HideAndReset should cancel the timer running.
   helper_->HideAndReset();
   EXPECT_EQ(nullptr, helper_->state_manager()->tooltip_parent_window());
   EXPECT_FALSE(helper_->IsTooltipVisible());
-  EXPECT_FALSE(helper_->state_manager()->IsWillShowTooltipTimerRunning());
+  EXPECT_FALSE(helper_->IsWillShowTooltipTimerRunning());
 
   helper_->SkipTooltipShowDelay(true);
 }
@@ -1323,7 +1323,7 @@ TEST_F(TooltipStateManagerTest, UpdatePositionIfNeeded) {
     EXPECT_EQ(expected_text, helper_->state_manager()->tooltip_text());
     EXPECT_EQ(position, helper_->GetTooltipPosition());
     EXPECT_FALSE(helper_->IsTooltipVisible());
-    EXPECT_TRUE(helper_->state_manager()->IsWillShowTooltipTimerRunning());
+    EXPECT_TRUE(helper_->IsWillShowTooltipTimerRunning());
 
     gfx::Point new_position = gfx::Point(10, 10);
     // Because the tooltip was triggered by the cursor, the position should be
@@ -1360,7 +1360,7 @@ TEST_F(TooltipStateManagerTest, UpdatePositionIfNeeded) {
     EXPECT_EQ(expected_text, helper_->state_manager()->tooltip_text());
     EXPECT_EQ(position, helper_->GetTooltipPosition());
     EXPECT_FALSE(helper_->IsTooltipVisible());
-    EXPECT_TRUE(helper_->state_manager()->IsWillShowTooltipTimerRunning());
+    EXPECT_TRUE(helper_->IsWillShowTooltipTimerRunning());
 
     gfx::Point new_position = gfx::Point(10, 10);
     // Because the tooltip was triggered by the keyboard, the position shouldn't

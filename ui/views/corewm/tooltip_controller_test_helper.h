@@ -8,6 +8,9 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/corewm/tooltip_controller.h"
 #include "ui/views/corewm/tooltip_state_manager.h"
 #include "ui/views/view.h"
@@ -19,6 +22,10 @@ class Window;
 
 namespace base {
 class TimeDelta;
+}
+
+namespace wm {
+class TooltipObserver;
 }
 
 namespace views::corewm::test {
@@ -41,16 +48,24 @@ class TooltipControllerTestHelper {
     return controller_->state_manager_.get();
   }
 
+  // Returns true if server side tooltip is enabled. The server side means
+  // tooltip is handled on ash (server) and lacros is the client.
+  // Always returns false except for Lacros.
+  bool UseServerSideTooltip();
+
   // These are mostly cover methods for TooltipController private methods.
   const std::u16string& GetTooltipText();
-  const aura::Window* GetTooltipParentWindow();
+  aura::Window* GetTooltipParentWindow();
   const aura::Window* GetObservedWindow();
   const gfx::Point& GetTooltipPosition();
   base::TimeDelta GetShowTooltipDelay();
   void HideAndReset();
   void UpdateIfRequired(TooltipTrigger trigger);
   void FireHideTooltipTimer();
-  bool IsHideTooltipTimerRunning();
+  void AddObserver(wm::TooltipObserver* observer);
+  void RemoveObserver(wm::TooltipObserver* observer);
+  bool IsWillShowTooltipTimerRunning();
+  bool IsWillHideTooltipTimerRunning();
   bool IsTooltipVisible();
   void SkipTooltipShowDelay(bool enable);
   void MockWindowActivated(aura::Window* window, bool active);

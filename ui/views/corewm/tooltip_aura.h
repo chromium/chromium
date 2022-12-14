@@ -94,8 +94,8 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
   // showing.
   raw_ptr<aura::Window> tooltip_window_ = nullptr;
 
-  // Observers tooltip state change.
-  base::ObserverList<wm::TooltipObserver>::Unchecked observers_;
+  // Observes tooltip state change.
+  base::ObserverList<wm::TooltipObserver> observers_;
 };
 
 }  // namespace corewm

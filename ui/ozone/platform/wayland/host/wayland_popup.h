@@ -7,6 +7,10 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
+namespace views::corewm {
+enum class TooltipTrigger;
+}  // namespace views::corewm
+
 namespace ui {
 
 class WaylandConnection;
@@ -41,6 +45,12 @@ class WaylandPopup : public WaylandWindow {
   void SetWindowGeometry(gfx::Size size_dip) override;
   void UpdateWindowMask() override;
   void PropagateBufferScale(float new_scale) override;
+  void ShowTooltip(const std::u16string& text,
+                   const gfx::Point& position,
+                   const PlatformWindowTooltipTrigger trigger,
+                   const base::TimeDelta show_delay,
+                   const base::TimeDelta hide_delay) override;
+  void HideTooltip() override;
 
   // PlatformWindow
   void Show(bool inactive) override;
@@ -49,6 +59,17 @@ class WaylandPopup : public WaylandWindow {
   void SetBoundsInDIP(const gfx::Rect& bounds) override;
 
  private:
+  // zaura_surface listeners
+  static void DeskChanged(void* data, zaura_surface* surface, int32_t state) {}
+  static void TooltipShown(void* data,
+                           zaura_surface* surface,
+                           const char* text,
+                           int32_t x,
+                           int32_t y,
+                           int32_t width,
+                           int32_t height);
+  static void TooltipHidden(void* data, zaura_surface* surface);
+
   // Creates a popup window, which is visible as a menu window.
   bool CreateShellPopup();
 

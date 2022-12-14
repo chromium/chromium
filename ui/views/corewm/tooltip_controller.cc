@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/time/time.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
@@ -20,6 +21,9 @@
 #include "ui/compositor/layer_type.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/corewm/tooltip_state_manager.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/wm/public/activation_client.h"
@@ -348,6 +352,17 @@ void TooltipController::OnWindowActivated(ActivationReason reason,
   if (lost_active)
     HideAndReset();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void TooltipController::OnTooltipShownOnServer(const std::u16string& text,
+                                               const gfx::Rect& bounds) {
+  state_manager_->OnTooltipShownOnServer(text, bounds);
+}
+
+void TooltipController::OnTooltipHiddenOnServer() {
+  state_manager_->OnTooltipHiddenOnServer();
+}
+#endif  // BUILDFLA(IS_CHROMEOS_LACROS)
 
 ////////////////////////////////////////////////////////////////////////////////
 // TooltipController private:

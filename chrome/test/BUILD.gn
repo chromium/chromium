@@ -9910,7 +9910,6 @@ if (!is_android) {
           "//chrome/browser/ash/crosapi:crosapi",
           "//chrome/browser/ash/system_web_apps/test_support",
           "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
-          "//ui/wm/public:public",
         ]
       } else {
         sources += [
@@ -9925,6 +9924,7 @@ if (!is_android) {
       }
       if (use_aura) {
         sources += [ "../browser/ui/views/tooltip/tooltip_browsertest.cc" ]
+        deps += [ "//ui/wm/public" ]
       }
       if (use_aura || is_mac) {
         deps += [ "//ui/touch_selection" ]

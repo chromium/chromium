@@ -63,11 +63,15 @@ class VIEWS_EXPORT DesktopWindowTreeHostLacros
       ui::PlatformWindowState old_window_show_state,
       ui::PlatformWindowState new_window_show_state) override;
   void OnImmersiveModeChanged(bool enabled) override;
+  void OnTooltipShownOnServer(const std::u16string& text,
+                              const gfx::Rect& bounds) override;
+  void OnTooltipHiddenOnServer() override;
 
   // DesktopWindowTreeHostPlatform overrides:
   void AddAdditionalInitProperties(
       const Widget::InitParams& params,
       ui::PlatformWindowInitProperties* properties) override;
+  std::unique_ptr<corewm::Tooltip> CreateTooltip() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTestWithTouch,

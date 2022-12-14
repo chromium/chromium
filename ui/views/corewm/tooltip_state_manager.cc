@@ -13,7 +13,9 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/wm/public/tooltip_client.h"
 #include "ui/wm/public/tooltip_observer.h"
 
@@ -105,6 +107,19 @@ void TooltipStateManager::UpdatePositionIfNeeded(const gfx::Point& position,
   position_ = position;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void TooltipStateManager::OnTooltipShownOnServer(const std::u16string& text,
+                                                 const gfx::Rect& bounds) {
+  tooltip_->OnTooltipShownOnServer(text, bounds);
+}
+
+void TooltipStateManager::OnTooltipHiddenOnServer() {
+  tooltip_id_ = nullptr;
+  tooltip_parent_window_ = nullptr;
+  tooltip_->OnTooltipHiddenOnServer();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 void TooltipStateManager::ShowNow(const std::u16string& trimmed_text,
                                   const base::TimeDelta hide_delay) {
   if (!tooltip_parent_window_)
@@ -123,16 +138,34 @@ void TooltipStateManager::StartWillShowTooltipTimer(
     const std::u16string& trimmed_text,
     const base::TimeDelta show_delay,
     const base::TimeDelta hide_delay) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1338597): Remove support check and always use this step when
+  // Ash-chrome supporting server side tooltip is spread enough.
+  if (ui::OzonePlatform::GetInstance()
+          ->GetPlatformRuntimeProperties()
+          .supports_tooltip) {
+    // Send `show_delay` and `hide_delay` together and delegate the timer
+    // handling on Ash side.
+    tooltip_->Update(tooltip_parent_window_, tooltip_text_, position_,
+                     tooltip_trigger_);
+    tooltip_->SetDelay(show_delay, hide_delay);
+    tooltip_->Show();
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   if (!show_delay.is_zero()) {
+    // Start will show tooltip timer is show_delay is non-zero.
     will_show_tooltip_timer_.Start(
         FROM_HERE, show_delay,
         base::BindOnce(&TooltipStateManager::ShowNow,
                        weak_factory_.GetWeakPtr(), trimmed_text, hide_delay));
+    return;
   } else {
     // This other path is needed for the unit tests to pass because Show is not
     // immediately called when we have a `show_delay` of zero.
     // TODO(bebeaudr): Fix this by ensuring that the unit tests wait for the
-    // timer to fire before continuing.
+    // timer to fire before continuing for non-Lacros platforms.
     ShowNow(trimmed_text, hide_delay);
   }
 }

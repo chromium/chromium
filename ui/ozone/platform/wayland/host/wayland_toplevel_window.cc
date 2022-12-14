@@ -7,6 +7,7 @@
 #include <aura-shell-client-protocol.h>
 #include <string>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -110,6 +111,7 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
       IsSupportedOnAuraSurface(ZAURA_SURFACE_SET_FRAME_SINCE_VERSION)) {
     zaura_surface_set_frame(aura_surface(), ZAURA_SURFACE_FRAME_TYPE_SHADOW);
   }
+
   if (screen_coordinates_enabled_)
     SetBoundsInDIP(GetBoundsInDIP());
 
@@ -620,6 +622,33 @@ void WaylandToplevelWindow::PropagateBufferScale(float new_scale) {
   }
 }
 
+void WaylandToplevelWindow::ShowTooltip(
+    const std::u16string& text,
+    const gfx::Point& position,
+    const PlatformWindowTooltipTrigger trigger,
+    const base::TimeDelta show_delay,
+    const base::TimeDelta hide_delay) {
+  if (IsSupportedOnAuraSurface(ZAURA_SURFACE_SHOW_TOOLTIP_SINCE_VERSION)) {
+    uint32_t zaura_shell_trigger =
+        trigger == PlatformWindowTooltipTrigger::kCursor
+            ? ZAURA_SURFACE_TOOLTIP_TRIGGER_CURSOR
+            : ZAURA_SURFACE_TOOLTIP_TRIGGER_KEYBOARD;
+    zaura_surface_show_tooltip(
+        aura_surface(), base::UTF16ToUTF8(text).c_str(), position.x(),
+        position.y(), zaura_shell_trigger,
+        // Cast `show_delay` and `hide_delay` into int32_t as TimeDelta should
+        // not be larger than what can be handled in int32_t
+        base::saturated_cast<uint32_t>(show_delay.InMilliseconds()),
+        base::saturated_cast<uint32_t>(hide_delay.InMilliseconds()));
+  }
+}
+
+void WaylandToplevelWindow::HideTooltip() {
+  if (IsSupportedOnAuraSurface(ZAURA_SURFACE_HIDE_TOOLTIP_SINCE_VERSION)) {
+    zaura_surface_hide_tooltip(aura_surface());
+  }
+}
+
 bool WaylandToplevelWindow::IsClientControlledWindowMovementSupported() const {
   auto* window_drag_controller = connection()->window_drag_controller();
   DCHECK(window_drag_controller);
@@ -689,6 +718,25 @@ void WaylandToplevelWindow::StartThrottle(void* data, zaura_surface* surface) {
 void WaylandToplevelWindow::EndThrottle(void* data, zaura_surface* surface) {
   auto* self = static_cast<WaylandToplevelWindow*>(data);
   self->delegate()->SetFrameRateThrottleEnabled(false);
+}
+
+void WaylandToplevelWindow::TooltipShown(void* data,
+                                         zaura_surface* surface,
+                                         const char* text,
+                                         int32_t x,
+                                         int32_t y,
+                                         int32_t width,
+                                         int32_t height) {
+  WaylandToplevelWindow* self = static_cast<WaylandToplevelWindow*>(data);
+  DCHECK(self);
+  self->delegate()->OnTooltipShownOnServer(base::UTF8ToUTF16(text),
+                                           gfx::Rect(x, y, width, height));
+}
+
+void WaylandToplevelWindow::TooltipHidden(void* data, zaura_surface* surface) {
+  WaylandToplevelWindow* self = static_cast<WaylandToplevelWindow*>(data);
+  DCHECK(self);
+  self->delegate()->OnTooltipHiddenOnServer();
 }
 
 bool WaylandToplevelWindow::RunMoveLoop(const gfx::Vector2d& drag_offset) {

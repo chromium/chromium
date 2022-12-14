@@ -19,6 +19,10 @@
 #include "ui/platform_window/wm/wm_move_loop_handler.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 
+namespace views::corewm {
+enum class TooltipTrigger;
+}  // namespace views::corewm
+
 namespace wl {
 
 // Client-side decorations on Wayland take some portion of the window surface,
@@ -83,6 +87,12 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool IsActive() const override;
   void SetWindowGeometry(gfx::Size size_dip) override;
   bool IsScreenCoordinatesEnabled() const override;
+  void ShowTooltip(const std::u16string& text,
+                   const gfx::Point& position,
+                   const PlatformWindowTooltipTrigger trigger,
+                   const base::TimeDelta show_delay,
+                   const base::TimeDelta hide_delay) override;
+  void HideTooltip() override;
 
   // WmDragHandler overrides:
   bool ShouldReleaseCaptureForDrag(ui::OSExchangeData* data) const override;
@@ -190,8 +200,8 @@ class WaylandToplevelWindow : public WaylandWindow,
                            int32_t x,
                            int32_t y,
                            int32_t width,
-                           int32_t height) {}
-  static void TooltipHidden(void* data, zaura_surface* surface) {}
+                           int32_t height);
+  static void TooltipHidden(void* data, zaura_surface* surface);
 
   void UpdateSystemModal();
 

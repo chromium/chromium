@@ -97,6 +97,8 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
 
   aura::Window* content_window() { return content_window_; }
 
+  views::corewm::TooltipController* tooltip_controller();
+
   Widget::InitParams::Type widget_type() const { return widget_type_; }
 
   // Ensures that the correct window is activated/deactivated based on whether

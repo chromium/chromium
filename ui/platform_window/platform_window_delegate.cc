@@ -49,6 +49,11 @@ PlatformWindowDelegate::GetOwnedWindowAnchorAndRectInDIP() {
 
 void PlatformWindowDelegate::SetFrameRateThrottleEnabled(bool enabled) {}
 
+void PlatformWindowDelegate::OnTooltipShownOnServer(const std::u16string& text,
+                                                    const gfx::Rect& bounds) {}
+
+void PlatformWindowDelegate::OnTooltipHiddenOnServer() {}
+
 gfx::Rect PlatformWindowDelegate::ConvertRectToPixels(
     const gfx::Rect& rect_in_dip) const {
   return rect_in_dip;

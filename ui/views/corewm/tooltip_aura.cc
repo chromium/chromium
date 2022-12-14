@@ -37,12 +37,9 @@
 #include "ui/views/view.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/public/tooltip_observer.h"
 
 namespace {
-
-// Max visual tooltip width. If a tooltip is greater than this width, it will
-// be wrapped.
-constexpr int kTooltipMaxWidthPixels = 800;
 
 // Paddings
 constexpr int kHorizontalPadding = 8;
@@ -302,7 +299,7 @@ void TooltipAura::DestroyWidget() {
 int TooltipAura::GetMaxWidth(const gfx::Point& location) const {
   display::Screen* screen = display::Screen::GetScreen();
   gfx::Rect display_bounds(screen->GetDisplayNearestPoint(location).bounds());
-  return std::min(kTooltipMaxWidthPixels, (display_bounds.width() + 1) / 2);
+  return std::min(kTooltipMaxWidth, (display_bounds.width() + 1) / 2);
 }
 
 void TooltipAura::Update(aura::Window* window,
