@@ -30,11 +30,8 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "ui/gfx/buffer_format_util.h"
-#include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_image_stub.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
@@ -1070,152 +1067,6 @@ TEST_P(IOSurfaceImageBackingFactoryNewTest, TexImageTexStorageEquivalence) {
   }
 }
 
-class StubImage : public gl::GLImageStub {
- public:
-  StubImage(const gfx::Size& size, gfx::BufferFormat format)
-      : size_(size), format_(format) {}
-
-  gfx::Size GetSize() override { return size_; }
-  unsigned GetInternalFormat() override {
-    return gl::BufferFormatToGLInternalFormat(format_);
-  }
-  unsigned GetDataType() override {
-    return gl::BufferFormatToGLDataType(format_);
-  }
-
-  BindOrCopy ShouldBindOrCopy() override { return BIND; }
-
-  bool BindTexImage(unsigned target) override {
-    if (!bound_) {
-      bound_ = true;
-      ++update_counter_;
-    }
-    return true;
-  }
-
-  void ReleaseTexImage(unsigned target) override { bound_ = false; }
-
-  bool bound() const { return bound_; }
-  int update_counter() const { return update_counter_; }
-
- private:
-  ~StubImage() override = default;
-
-  gfx::Size size_;
-  gfx::BufferFormat format_;
-  bool bound_ = false;
-  int update_counter_ = 0;
-};
-
-class IOSurfaceImageBackingFactoryWithGMBTest
-    : public IOSurfaceImageBackingFactoryNewTestBase,
-      public gpu::ImageFactory {
- public:
-  IOSurfaceImageBackingFactoryWithGMBTest()
-      : IOSurfaceImageBackingFactoryNewTestBase(false) {}
-  void SetUp() override { SetUpBase(GpuDriverBugWorkarounds(), this); }
-
-  scoped_refptr<gl::GLImage> GetImageFromMailbox(Mailbox mailbox) {
-    auto representation =
-        shared_image_representation_factory_->ProduceGLTexturePassthrough(
-            mailbox);
-    DCHECK(representation);
-    return representation->GetTexturePassthrough()->GetLevelImage(GL_TEXTURE_2D,
-                                                                  0);
-  }
-
- protected:
-  // gpu::ImageFactory implementation.
-  scoped_refptr<gl::GLImage> CreateImageForGpuMemoryBuffer(
-      gfx::GpuMemoryBufferHandle handle,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      const gfx::ColorSpace& color_space,
-      gfx::BufferPlane plane,
-      int client_id,
-      gpu::SurfaceHandle surface_handle) override {
-    // pretend to handle NATIVE_PIXMAP types.
-    if (handle.type != gfx::NATIVE_PIXMAP)
-      return nullptr;
-    if (client_id != kClientId)
-      return nullptr;
-    return base::MakeRefCounted<StubImage>(size, format);
-  }
-
-  static constexpr int kClientId = 3;
-};
-
-TEST_P(IOSurfaceImageBackingFactoryWithGMBTest, GpuMemoryBufferImportEmpty) {
-  auto mailbox = Mailbox::GenerateForSharedImage();
-  gfx::Size size(256, 256);
-  gfx::BufferFormat format = ToBufferFormat(get_format());
-  auto color_space = gfx::ColorSpace::CreateSRGB();
-  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
-
-  gfx::GpuMemoryBufferHandle handle;
-  auto backing = backing_factory_->CreateSharedImage(
-      mailbox, kClientId, std::move(handle), format, gfx::BufferPlane::DEFAULT,
-      size, color_space, surface_origin, alpha_type, usage);
-  EXPECT_FALSE(backing);
-}
-
-TEST_P(IOSurfaceImageBackingFactoryWithGMBTest, GpuMemoryBufferImportNative) {
-  // TODO(jonahr): Test crashes on Mac with ANGLE/passthrough
-  // (crbug.com/1100975)
-  gpu::GPUTestBotConfig bot_config;
-  if (bot_config.LoadCurrentConfig(nullptr) &&
-      bot_config.Matches("mac passthrough")) {
-    return;
-  }
-  auto mailbox = Mailbox::GenerateForSharedImage();
-  gfx::Size size(256, 256);
-  gfx::BufferFormat format = ToBufferFormat(get_format());
-  auto color_space = gfx::ColorSpace::CreateSRGB();
-  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
-
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::NATIVE_PIXMAP;
-  auto backing = backing_factory_->CreateSharedImage(
-      mailbox, kClientId, std::move(handle), format, gfx::BufferPlane::DEFAULT,
-      size, color_space, surface_origin, alpha_type, usage);
-  if (!can_create_scanout_or_gmb_shared_image(get_format())) {
-    EXPECT_FALSE(backing);
-    return;
-  }
-  ASSERT_TRUE(backing);
-
-  std::unique_ptr<SharedImageRepresentationFactoryRef> ref =
-      shared_image_manager_->Register(std::move(backing),
-                                      memory_type_tracker_.get());
-  scoped_refptr<gl::GLImage> image = GetImageFromMailbox(mailbox);
-  AssertGLImageHasTypeNone(image.get());
-  auto* stub_image = static_cast<StubImage*>(image.get());
-  EXPECT_FALSE(stub_image->bound());
-  int update_counter = stub_image->update_counter();
-  ref->Update(nullptr);
-  EXPECT_EQ(stub_image->update_counter(), update_counter);
-  EXPECT_FALSE(stub_image->bound());
-
-  {
-    auto skia_representation =
-        shared_image_representation_factory_->ProduceSkia(mailbox,
-                                                          context_state_);
-    std::vector<GrBackendSemaphore> begin_semaphores;
-    std::vector<GrBackendSemaphore> end_semaphores;
-    std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
-        scoped_read_access;
-    skia_representation->BeginScopedReadAccess(&begin_semaphores,
-                                               &end_semaphores);
-    EXPECT_TRUE(stub_image->bound());
-  }
-  EXPECT_FALSE(stub_image->bound());
-  EXPECT_GT(stub_image->update_counter(), update_counter);
-}
-
 const auto kSharedImageFormats = ::testing::Values(
     viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888),
     viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_1010102),
@@ -1228,10 +1079,6 @@ std::string TestParamToString(
 
 INSTANTIATE_TEST_SUITE_P(Service,
                          IOSurfaceImageBackingFactoryNewTest,
-                         kSharedImageFormats,
-                         TestParamToString);
-INSTANTIATE_TEST_SUITE_P(Service,
-                         IOSurfaceImageBackingFactoryWithGMBTest,
                          kSharedImageFormats,
                          TestParamToString);
 
