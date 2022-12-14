@@ -1363,7 +1363,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.TrustedVaultDegradedRecoverabilityValue"
+<histogram name="Sync.TrustedVaultDegradedRecoverabilityValue2"
     enum="TrustedVaultDegradedRecoverabilityValue" expires_after="2023-04-09">
   <owner>mmrashad@google.com</owner>
   <owner>mmoskvitin@google.com</owner>
@@ -1475,7 +1475,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.TrustedVaultHintDegradedRecoverabilityChangedReason"
+<histogram name="Sync.TrustedVaultHintDegradedRecoverabilityChangedReason2"
     enum="TrustedVaultHintDegradedRecoverabilityChangedReason"
     expires_after="2023-04-09">
   <owner>mmrashad@google.com</owner>

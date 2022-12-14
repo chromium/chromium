@@ -56,10 +56,6 @@ class TrustedVaultDegradedRecoverabilityHandler {
   // GetIsRecoverabilityDegraded().
   void GetIsRecoverabilityDegraded(base::OnceCallback<void(bool)> cb);
 
-  // TODO(crbug.com/1247990): Should be inlined inside
-  // HintDegradedRecoverabilityChanged().
-  void RefreshImmediately();
-
  private:
   void UpdateCurrentRefreshPeriod();
   void Start();
