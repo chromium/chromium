@@ -422,7 +422,8 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that the credit card View Controller is dismissed when tapping the
 // keyboard.
-- (void)testTappingKeyboardDismissCreditCardControllerPopOver {
+// TODO(crbug.com/1400980): reenable this flaky test.
+- (void)DISABLED_testTappingKeyboardDismissCreditCardControllerPopOver {
   if (![ChromeEarlGrey isIPadIdiom]) {
     return;
   }
