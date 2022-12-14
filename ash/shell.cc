@@ -231,6 +231,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/user_activity/user_activity_detector.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/chromeos/user_activity_power_manager_notifier.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/compositor/layer.h"
@@ -985,6 +986,8 @@ Shell::~Shell() {
 
   usb_peripheral_notification_controller_.reset();
 
+  keyboard_capability_.reset();
+
   message_center_ash_impl_.reset();
 
   // Destroys the MessageCenter singleton, so must happen late.
@@ -1042,6 +1045,9 @@ void Shell::Init(
   message_center_controller_ = std::make_unique<MessageCenterController>();
 
   message_center_ash_impl_ = std::make_unique<MessageCenterAshImpl>();
+
+  // Initialized early since it is used by some other objects.
+  keyboard_capability_ = std::make_unique<ui::KeyboardCapability>();
 
   // These controllers call Shell::Get() in their constructors, so they cannot
   // be in the member initialization list.

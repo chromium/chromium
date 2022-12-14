@@ -13,6 +13,8 @@ source_set("events") {
   sources = [
     "event_rewriter_chromeos.cc",
     "event_rewriter_chromeos.h",
+    "keyboard_capability.cc",
+    "keyboard_capability.h",
     "keyboard_layout_util.cc",
     "keyboard_layout_util.h",
     "modifier_key.h",
@@ -23,6 +25,7 @@ source_set("events") {
     "//ash/constants",
     "//base",
     "//device/udev_linux",
+    "//ui/base",
     "//ui/base:features",
     "//ui/base/ime/ash",
     "//ui/events",

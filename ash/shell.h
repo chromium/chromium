@@ -60,6 +60,7 @@ class KeyboardUIFactory;
 
 namespace ui {
 class ContextFactory;
+class KeyboardCapability;
 class UserActivityDetector;
 class UserActivityPowerManagerNotifier;
 }  // namespace ui
@@ -520,6 +521,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   KeyboardBrightnessControlDelegate* keyboard_brightness_control_delegate() {
     return keyboard_brightness_control_delegate_.get();
+  }
+  ui::KeyboardCapability* keyboard_capability() {
+    return keyboard_capability_.get();
   }
   KeyboardControllerImpl* keyboard_controller() {
     return keyboard_controller_.get();
@@ -1017,6 +1021,7 @@ class ASH_EXPORT Shell : public SessionObserver,
       bluetooth_device_status_ui_handler_;
   std::unique_ptr<KeyboardControllerImpl> keyboard_controller_;
   std::unique_ptr<DisplayAlignmentController> display_alignment_controller_;
+  std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   std::unique_ptr<DisplayColorManager> display_color_manager_;
   std::unique_ptr<DisplayErrorObserver> display_error_observer_;
   std::unique_ptr<ProjectingObserver> projecting_observer_;
