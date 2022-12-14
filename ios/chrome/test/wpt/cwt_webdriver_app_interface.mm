@@ -192,56 +192,38 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
 + (NSString*)executeAsyncJavaScriptFunction:(NSString*)function
                                       inTab:(NSString*)tabID
                                     timeout:(base::TimeDelta)timeout {
-  const std::string kMessageResultKey("result");
-
-  // Use a distinct messageID value for each invocation of this method to
-  // distinguish stale messages (from previous script invocations that timed
-  // out) from a message for the current script.
-  static NSUInteger messageID = 0;
-  std::string command = base::StringPrintf("CWTWebDriver%lu", messageID++);
-
-  // Construct a completion handler that takes a single argument and sends a
-  // message with this argument.
-  std::string scriptCompletionHandler =
-      base::StringPrintf("function(value) {"
-                         "__gCrWeb.message.invokeOnHost({command: "
-                         "'%s.result', %s: value}); }",
-                         command.c_str(), kMessageResultKey.c_str());
-
-  // Construct a script that calls the given `function` with
-  // `scriptCompletionHandler` as an argument.
-  std::string scriptFunctionWithCompletionHandler = base::StringPrintf(
-      "(%s).call(null, %s)", base::SysNSStringToUTF8(function).c_str(),
-      scriptCompletionHandler.c_str());
-
-  __block absl::optional<base::Value> messageValue;
-  const web::WebState::ScriptCommandCallback callback =
-      base::BindRepeating(^(const base::Value& value, const GURL&,
-                            /*interacted*/ bool,
-                            /*sender_frame*/ web::WebFrame*) {
-        const base::Value* result = value.FindKey(kMessageResultKey);
-
-        // `result` will be null when the computed result in JavaScript is
-        // `undefined`. This happens, for example, when injecting a script that
-        // performs some action (like setting the document's title) but doesn't
-        // return any value.
-        if (result)
-          messageValue = result->Clone();
-        else
-          messageValue = base::Value();
-      });
-
   __block BOOL webStateFound = NO;
-  __block base::CallbackListSubscription subscription;
+  __block absl::optional<base::Value> messageValue;
   DispatchSyncOnMainThread(^{
     web::WebState* webState = GetWebStateWithId(tabID);
     if (!webState)
       return;
+    web::WebFrame* mainFrame = web::GetMainFrame(webState);
+    if (!mainFrame) {
+      return;
+    }
     webStateFound = YES;
-    subscription = webState->AddScriptCommandCallback(callback, command);
-    web::WebFrame* main_frame = web::GetMainFrame(webState);
-    main_frame->ExecuteJavaScript(
-        base::UTF8ToUTF16(scriptFunctionWithCompletionHandler));
+
+    NSString* script =
+        [NSString stringWithFormat:@"var result;"
+                                   @"(%@).call(null, (r) => { result = r; } );"
+                                   @"result;",
+                                   function];
+
+    mainFrame->ExecuteJavaScript(base::SysNSStringToUTF16(script),
+                                 base::BindOnce(^(const base::Value* result) {
+                                   // `result` will be null when the computed
+                                   // result in JavaScript is `undefined`. This
+                                   // happens, for example, when injecting a
+                                   // script that performs some action (like
+                                   // setting the document's title) but doesn't
+                                   // return any value.
+                                   if (result) {
+                                     messageValue = result->Clone();
+                                   } else {
+                                     messageValue = base::Value();
+                                   }
+                                 }));
   });
 
   if (!webStateFound)
