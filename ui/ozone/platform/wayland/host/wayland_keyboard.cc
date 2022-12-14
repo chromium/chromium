@@ -37,6 +37,34 @@
 
 namespace ui {
 
+namespace {
+
+bool IsModifierKey(int key) {
+  auto dom_code = KeycodeConverter::EvdevCodeToDomCode(key);
+  switch (dom_code) {
+    // Based on ui::NonPrintableCodeEntry map.
+    case DomCode::ALT_LEFT:
+    case DomCode::ALT_RIGHT:
+    case DomCode::SHIFT_LEFT:
+    case DomCode::SHIFT_RIGHT:
+    case DomCode::CONTROL_LEFT:
+    case DomCode::CONTROL_RIGHT:
+    case DomCode::FN:
+    case DomCode::FN_LOCK:
+    case DomCode::HYPER:
+    case DomCode::META_LEFT:
+    case DomCode::META_RIGHT:
+    case DomCode::CAPS_LOCK:
+    case DomCode::NUM_LOCK:
+    case DomCode::SCROLL_LOCK:
+    case DomCode::SUPER:
+      return true;
+    default:
+      return false;
+  }
+}
+}  // namespace
+
 class WaylandKeyboard::ZCRExtendedKeyboard {
  public:
   // Takes the ownership of |extended_keyboard|.
@@ -277,9 +305,9 @@ void WaylandKeyboard::OnKey(uint32_t serial,
                                                serial);
   }
 
-  if (kind == KeyEventKind::kKey) {
+  if (kind == KeyEventKind::kKey && !IsModifierKey(key)) {
     auto_repeat_handler_.UpdateKeyRepeat(key, 0 /*scan_code*/, down,
-                                         false /*suppress_auto_repeat*/,
+                                         /*suppress_auto_repeat=*/false,
                                          device_id());
   }
 

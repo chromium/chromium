@@ -338,4 +338,102 @@ TEST_F(WaylandKeyboardTest, NoEventAutoRepeatOnLeave) {
   });
 }
 
+// This test verifies the following scenario:
+//
+// 1/ press and hold a modifier key (in this case SHIFT, ALT, CTRL);
+// 2/ ensure that no auto-repeat gets triggered;
+// 3/ with the modifier key still pressed, press another
+//    key (in this case 'a');
+// 4/ ensure that they auto-repeat logic gets started and
+//    the modifier key is properly handled as part of the
+//    event construction.
+TEST_F(WaylandKeyboardTest, NoEventAutoRepeatForModifiers) {
+  constexpr int32_t rate = 5;    // num key events per second.
+  constexpr int32_t delay = 60;  // in milliseconds.
+
+  SendEnter(rate, delay);
+
+  const struct {
+    int evdev_key;
+    KeyboardCode key_code;
+    int mods_depressed;
+    int modifier;
+  } kIncomeModifiersAndExpectedResults[] = {
+      {42 /*shift*/, VKEY_SHIFT, 1, EF_SHIFT_DOWN},
+      {29 /*ctrl*/, VKEY_CONTROL, 4, EF_CONTROL_DOWN},
+      {56 /*alt*/, VKEY_MENU, 8, EF_ALT_DOWN},
+  };
+
+  for (auto values : kIncomeModifiersAndExpectedResults) {
+    // Press a modifier key and wait 1s, to ensure no repeated events come.
+    base::RunLoop run_loop;
+    std::vector<std::unique_ptr<Event>> events;
+    EXPECT_CALL(delegate_, DispatchEvent(_))
+        .WillRepeatedly(AppendEvent(&events));
+
+    PostToServerAndWait([&values](wl::TestWaylandServerThread* server) {
+      auto* const keyboard = server->seat()->keyboard()->resource();
+
+      wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                           server->GetNextTime(), values.evdev_key,
+                           WL_KEYBOARD_KEY_STATE_PRESSED);
+      wl_keyboard_send_modifiers(keyboard, server->GetNextSerial(),
+                                 values.mods_depressed /* mods_depressed*/,
+                                 0 /* mods_latched */, 0 /* mods_locked */,
+                                 0 /* group */);
+    });
+
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
+    run_loop.Run();
+    Mock::VerifyAndClearExpectations(&delegate_);
+
+    // Ensure that only the modifier key down event is processed, ie no auto
+    // repeat is triggered.
+    ASSERT_EQ(events.size(), 1u);
+    EXPECT_EQ(events[0]->AsKeyEvent()->key_code(), values.key_code);
+
+    // With the modifier key still held, press another key ('a' in this case).
+    std::vector<std::unique_ptr<Event>> events2;
+    base::RunLoop run_loop2;
+    EXPECT_CALL(delegate_, DispatchEvent(_))
+        .WillRepeatedly(
+            AppendEventAndQuitLoop(&events2, 5u, run_loop2.QuitClosure()));
+    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+      auto* const keyboard = server->seat()->keyboard()->resource();
+
+      wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                           server->GetNextTime(), 30 /* a */,
+                           WL_KEYBOARD_KEY_STATE_PRESSED);
+    });
+    run_loop2.Run();
+
+    // Ensure that 4 consecutive auto-repeat key press events are dispatched,
+    // with the proper modifier key.
+    auto check_repeat_event = [&values](const Event& event) {
+      EXPECT_EQ(ET_KEY_PRESSED, event.type());
+      EXPECT_TRUE(event.flags() & (EF_IS_REPEAT | values.modifier));
+      EXPECT_EQ(KeyboardCode::VKEY_A, event.AsKeyEvent()->key_code());
+    };
+    for (size_t i = 1; i < events2.size(); i++) {
+      const auto& repeat_event = *events2[i];
+      check_repeat_event(repeat_event);
+    }
+
+    // Release the keys.
+    Mock::VerifyAndClearExpectations(&delegate_);
+
+    PostToServerAndWait([&values](wl::TestWaylandServerThread* server) {
+      auto* const keyboard = server->seat()->keyboard()->resource();
+
+      wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                           server->GetNextTime(), values.evdev_key,
+                           WL_KEYBOARD_KEY_STATE_RELEASED);
+      wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                           server->GetNextTime(), 30 /* a */,
+                           WL_KEYBOARD_KEY_STATE_RELEASED);
+    });
+  }
+}
+
 }  // namespace ui
