@@ -25,6 +25,8 @@
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/events/event_observer.h"
+#include "ui/views/event_monitor.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/frame_background.h"
 #include "ui/views/window/window_shape.h"
@@ -88,6 +90,72 @@ class BackToTabButton : public OverlayWindowImageButton {
 
 BEGIN_METADATA(BackToTabButton, OverlayWindowImageButton)
 END_METADATA
+
+// Helper class for observing mouse and key events from native window.
+class WindowEventObserver : public ui::EventObserver {
+ public:
+  explicit WindowEventObserver(
+      PictureInPictureBrowserFrameView* pip_browser_frame_view)
+      : pip_browser_frame_view_(pip_browser_frame_view) {
+    event_monitor_ = views::EventMonitor::CreateWindowMonitor(
+        this, pip_browser_frame_view_->GetWidget()->GetNativeWindow(),
+        {ui::ET_MOUSE_MOVED, ui::ET_MOUSE_EXITED, ui::ET_KEY_PRESSED,
+         ui::ET_KEY_RELEASED});
+  }
+
+  WindowEventObserver(const WindowEventObserver&) = delete;
+  WindowEventObserver& operator=(const WindowEventObserver&) = delete;
+  ~WindowEventObserver() override = default;
+
+  void OnEvent(const ui::Event& event) override {
+    if (event.IsKeyEvent()) {
+      pip_browser_frame_view_->UpdateTopBarView(true);
+      return;
+    }
+
+    // TODO(crbug.com/1400085): Windows doesn't capture mouse exit event
+    // sometimes when mouse leaves the window.
+    // TODO(jazzhsu): We are checking if mouse is in bounds rather than strictly
+    // checking mouse enter/exit event because of two reasons: 1. We are getting
+    // mouse exit/enter events when mouse moves between client and non-client
+    // area on Linux and Windows; 2. We will get a mouse exit event when a
+    // context menu is brought up. This might cause the pip window stuck in the
+    // "in" state when some other window is on top of the pip window.
+    pip_browser_frame_view_->OnMouseEnteredOrExitedWindow(IsMouseInBounds());
+  }
+
+ private:
+  bool IsMouseInBounds() {
+    gfx::Point point = event_monitor_->GetLastMouseLocation();
+    views::View::ConvertPointFromScreen(pip_browser_frame_view_, &point);
+
+    gfx::Rect input_bounds = pip_browser_frame_view_->GetLocalBounds();
+
+#if BUILDFLAG(IS_LINUX)
+    // Calculate input bounds for Linux. This is needed because the input bounds
+    // is not necessary the same as the local bounds on Linux.
+    if (pip_browser_frame_view_->ShouldDrawFrameShadow()) {
+      gfx::Insets insets = pip_browser_frame_view_->MirroredFrameBorderInsets();
+      const auto tiled_edges = pip_browser_frame_view_->frame()->tiled_edges();
+      if (tiled_edges.left)
+        insets.set_left(0);
+      if (tiled_edges.right)
+        insets.set_right(0);
+      if (tiled_edges.top)
+        insets.set_top(0);
+      if (tiled_edges.bottom)
+        insets.set_bottom(0);
+
+      input_bounds.Inset(insets + pip_browser_frame_view_->GetInputInsets());
+    }
+#endif
+
+    return input_bounds.Contains(point);
+  }
+
+  raw_ptr<PictureInPictureBrowserFrameView> pip_browser_frame_view_;
+  std::unique_ptr<views::EventMonitor> event_monitor_;
+};
 
 }  // namespace
 
@@ -296,26 +364,14 @@ void PictureInPictureBrowserFrameView::Layout() {
 
 void PictureInPictureBrowserFrameView::AddedToWidget() {
   widget_observation_.Observe(GetWidget());
-
-#if !BUILDFLAG(IS_MAC)
-  // For non-Mac platforms that use Aura, add a pre target handler to receive
-  // events before the Widget so that we can override event handlers to update
-  // the top bar view.
-  GetWidget()->GetNativeWindow()->AddPreTargetHandler(this);
-#endif
+  window_event_observer_ = std::make_unique<WindowEventObserver>(this);
 
   BrowserNonClientFrameView::AddedToWidget();
 }
 
 void PictureInPictureBrowserFrameView::RemovedFromWidget() {
-  if (GetWidget()->IsClosed())
-    return;
-
   widget_observation_.Reset();
-
-#if !BUILDFLAG(IS_MAC)
-  GetWidget()->GetNativeWindow()->RemovePreTargetHandler(this);
-#endif
+  window_event_observer_.reset();
 
   BrowserNonClientFrameView::RemovedFromWidget();
 }
@@ -484,44 +540,8 @@ void PictureInPictureBrowserFrameView::OnWidgetActivationChanged(
 
 void PictureInPictureBrowserFrameView::OnWidgetDestroying(
     views::Widget* widget) {
-#if !BUILDFLAG(IS_MAC)
-  widget->GetNativeWindow()->RemovePreTargetHandler(this);
-#endif
-
+  window_event_observer_.reset();
   widget_observation_.Reset();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// ui::EventHandler implementations:
-void PictureInPictureBrowserFrameView::OnKeyEvent(ui::KeyEvent* event) {
-  // Highlight when a user uses a keyboard to interact on the window.
-  UpdateTopBarView(true);
-}
-
-void PictureInPictureBrowserFrameView::OnMouseEvent(ui::MouseEvent* event) {
-  // TODO(https://crbug.com/1346734): This does not work on Mac since Mac does
-  // not use Aura, so we need to find another way for Mac.
-  switch (event->type()) {
-    case ui::ET_MOUSE_MOVED:
-      if (!mouse_inside_window_) {
-        mouse_inside_window_ = true;
-        UpdateTopBarView(true);
-      }
-      break;
-
-    case ui::ET_MOUSE_EXITED: {
-      // This can be triggered even when the mouse is still over the window such
-      // as on the content settings popup modal, so we need to check the bounds.
-      if (!GetLocalBounds().Contains(event->location())) {
-        mouse_inside_window_ = false;
-        UpdateTopBarView(false);
-      }
-      break;
-    }
-
-    default:
-      break;
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -668,6 +688,15 @@ gfx::ShadowValues PictureInPictureBrowserFrameView::GetShadowValues() {
 
 views::View* PictureInPictureBrowserFrameView::GetBackToTabButtonForTesting() {
   return back_to_tab_button_;
+}
+
+void PictureInPictureBrowserFrameView::OnMouseEnteredOrExitedWindow(
+    bool entered) {
+  if (mouse_inside_window_ == entered)
+    return;
+
+  mouse_inside_window_ = entered;
+  UpdateTopBarView(mouse_inside_window_);
 }
 
 BEGIN_METADATA(PictureInPictureBrowserFrameView, BrowserNonClientFrameView)

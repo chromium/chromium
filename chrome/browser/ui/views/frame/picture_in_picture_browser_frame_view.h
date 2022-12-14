@@ -29,6 +29,10 @@ class FrameBackground;
 class Label;
 }
 
+namespace {
+class WindowEventObserver;
+}
+
 class PictureInPictureBrowserFrameView
     : public BrowserNonClientFrameView,
       public ChromeLocationBarModelDelegate,
@@ -113,10 +117,6 @@ class PictureInPictureBrowserFrameView
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // ui::EventHandler:
-  void OnKeyEvent(ui::KeyEvent* event) override;
-  void OnMouseEvent(ui::MouseEvent* event) override;
-
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
@@ -153,6 +153,9 @@ class PictureInPictureBrowserFrameView
 
   // Returns the height of the top bar area, including the window top border.
   int GetTopAreaHeight() const;
+
+  // Called when mouse entered or exited the pip window.
+  void OnMouseEnteredOrExitedWindow(bool entered);
 
 #if BUILDFLAG(IS_LINUX)
   // Sets the window frame provider so that it will be used for drawing.
@@ -200,6 +203,9 @@ class PictureInPictureBrowserFrameView
   // enabled.
   std::unique_ptr<views::FrameBackground> frame_background_;
 #endif
+
+  // Userd to monitor key and mouse event from native window.
+  std::unique_ptr<WindowEventObserver> window_event_observer_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_
