@@ -46,7 +46,9 @@ ci.builder(
         target_platform = builder_config.target_platform.MAC,
         build_config = builder_config.build_config.RELEASE,
     ),
-    console_view_entry = consoles.console_view_entry(),
+    console_view_entry = consoles.console_view_entry(
+        short_name = "mac-rel-cft",
+    ),
     cores = None,
     os = os.MAC_DEFAULT,
 )
@@ -57,7 +59,9 @@ ci.builder(
         target_platform = builder_config.target_platform.LINUX,
         build_config = builder_config.build_config.RELEASE,
     ),
-    console_view_entry = consoles.console_view_entry(),
+    console_view_entry = consoles.console_view_entry(
+        short_name = "linux-rel-cft",
+    ),
     os = os.LINUX_DEFAULT,
 )
 
@@ -67,6 +71,8 @@ ci.builder(
         target_platform = builder_config.target_platform.WIN,
         build_config = builder_config.build_config.RELEASE,
     ),
-    console_view_entry = consoles.console_view_entry(),
+    console_view_entry = consoles.console_view_entry(
+        short_name = "win-rel-cft",
+    ),
     os = os.WINDOWS_DEFAULT,
 )
