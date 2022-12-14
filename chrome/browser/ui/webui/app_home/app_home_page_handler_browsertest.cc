@@ -31,6 +31,11 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/base_paths_win.h"
+#include "base/test/scoped_path_override.h"
+#endif  // BUILDFLAG(OS_WIN)
+
 using web_app::AppId;
 using GetAppsCallback =
     base::OnceCallback<void(std::vector<app_home::mojom::AppInfoPtr>)>;
@@ -439,6 +444,14 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, CreateExtensionAppShortcut) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, SetRunOnOsLoginMode) {
+#if BUILDFLAG(IS_WIN)
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  // This prevents the test from leaving shortcuts in the Windows startup
+  // directory that cause Chrome to get launched when Windows starts on a bot.
+  // See https://crbug.com/1239809
+  base::ScopedPathOverride override_user_startup{base::DIR_USER_STARTUP};
+#endif  // BUILDFLAG(IS_WIN)
+
   std::unique_ptr<TestAppHomePageHandler> page_handler =
       GetAppHomePageHandler();
   EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)))
