@@ -66,8 +66,7 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
                          const content::ContextMenuParams& params) override;
 
   // content::WebContentsObserver:
-  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
-                              content::RenderFrameHost* new_host) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
