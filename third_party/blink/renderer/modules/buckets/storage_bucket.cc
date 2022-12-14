@@ -247,10 +247,9 @@ void StorageBucket::DidGetEstimate(ScriptPromiseResolver* resolver,
     return;
   }
 
-  // TODO(ayui): Pass correct values once connected to quota.
   StorageEstimate* estimate = StorageEstimate::Create();
-  estimate->setUsage(0);
-  estimate->setQuota(0);
+  estimate->setUsage(current_usage);
+  estimate->setQuota(current_quota);
   StorageUsageDetails* details = StorageUsageDetails::Create();
   estimate->setUsageDetails(details);
   resolver->Resolve(estimate);

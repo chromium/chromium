@@ -16,19 +16,23 @@ promise_test(async testCase => {
   await promise_rejects_dom(testCase, 'UnknownError', bucket.persisted());
 }, 'persisted() should default to false');
 
-// TODO(estade): Update this test by adding some usage and verifying that
-// estimate() returns actual usage metrics.
 promise_test(async testCase => {
   const bucket = await navigator.storageBuckets.open('bucket_name');
   testCase.add_cleanup(async () => {
     await navigator.storageBuckets.delete('bucket_name');
   });
   const estimate = await bucket.estimate();
-  assert_equals(estimate.quota, 0);
+  assert_greater_than(estimate.quota, 0);
   assert_equals(estimate.usage, 0);
 
-  await navigator.storageBuckets.delete('bucket_name');
-  await promise_rejects_dom(testCase, 'UnknownError', bucket.estimate());
+  const cacheName = 'attachments';
+  const cacheKey = 'receipt1.txt';
+  var inboxCache = await bucket.caches.open(cacheName);
+  await inboxCache.put(cacheKey, new Response('bread x 2'))
+
+  const estimate2 = await bucket.estimate();
+  assert_equals(estimate.quota, estimate2.quota);
+  assert_less_than(estimate.usage, estimate2.usage);
 }, 'estimate() should retrieve quota usage');
 
 promise_test(async testCase => {
