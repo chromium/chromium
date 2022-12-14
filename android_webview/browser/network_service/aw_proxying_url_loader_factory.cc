@@ -334,6 +334,13 @@ void CheckXrwOriginTrialOnUiThread(GURL request_url,
   base::UmaHistogramBoolean(
       "Android.WebView.RequestedWithHeader.OriginTrialEnabled",
       result_args->xrw_origin_trial_enabled);
+
+  if (result_args->xrw_origin_trial_enabled &&
+      (request_url.SchemeIsHTTPOrHTTPS() || request_url.SchemeIsWSOrWSS())) {
+    base::UmaHistogramBoolean(
+        "Android.WebView.RequestedWithHeader.PageSchemeIsCryptographic",
+        request_url.SchemeIsCryptographic());
+  }
 }
 
 // Post a call to the UI thread to check if the XRW deprecation trial is enabled
