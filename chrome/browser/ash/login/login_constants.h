@@ -29,9 +29,9 @@ constexpr int kDefaultGaiaOfflineSigninTimeLimitDays =
 constexpr int kDefaultSAMLOfflineSigninTimeLimit = base::Days(14).InSeconds();
 
 constexpr int kDefaultGaiaLockScreenOfflineSigninTimeLimitDays =
-    kLockScreenOfflineSigninTimeLimitDaysMatchLogin;
+    kOfflineSigninTimeLimitNotSet;
 constexpr int kDefaultSamlLockScreenOfflineSigninTimeLimitDays =
-    kLockScreenOfflineSigninTimeLimitDaysMatchLogin;
+    kOfflineSigninTimeLimitNotSet;
 
 // In-session password-change feature (includes password expiry notifications).
 const bool kDefaultSamlInSessionPasswordChangeEnabled = false;

@@ -75,6 +75,7 @@ class OfflineSigninLimiterTest : public testing::Test {
 
   std::unique_ptr<TestingProfile> profile_;
   base::WallClockTimer* timer_ = nullptr;  // Not owned.
+  base::WallClockTimer* lockscreen_timer_ = nullptr;  // Not owned.
 
   OfflineSigninLimiter* limiter_ = nullptr;  // Owned.
   base::test::ScopedPowerMonitorTestSource test_power_monitor_source_;
@@ -109,6 +110,7 @@ void OfflineSigninLimiterTest::DestroyLimiter() {
     delete limiter_;
     limiter_ = nullptr;
     timer_ = nullptr;
+    lockscreen_timer_ = nullptr;
   }
 }
 
@@ -117,6 +119,7 @@ void OfflineSigninLimiterTest::CreateLimiter() {
   limiter_ = new OfflineSigninLimiter(profile_.get(),
                                       task_environment_.GetMockClock());
   timer_ = limiter_->GetTimerForTesting();
+  lockscreen_timer_ = limiter_->GetLockscreenTimerForTesting();
 }
 
 void OfflineSigninLimiterTest::SetUp() {
@@ -1315,6 +1318,24 @@ TEST_F(OfflineSigninLimiterTest, SAMLLogInOfflineWithOnLockReauth) {
   EXPECT_TRUE(password_sync_manager->IsLockReauthEnabled());
   // After changing the re-auth flag timer should be stopped.
   EXPECT_FALSE(timer_->IsRunning());
+}
+
+TEST_F(OfflineSigninLimiterTest, SAMLLockscreenReauthDefaultLimit) {
+  AddSAMLUser();
+  PrefService* prefs = profile_->GetPrefs();
+
+  // Set the time of last login with SAML, time limit defaults to -1 which is no
+  // limit.
+  prefs->SetTime(prefs::kSAMLLastGAIASignInTime,
+                 task_environment_.GetMockClock()->Now());
+
+  // Advance time by four weeks.
+  task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
+
+  // Authenticate offline and check if lockscreen timer is not running.
+  CreateLimiter();
+  limiter_->SignedIn(UserContext::AUTH_FLOW_OFFLINE);
+  EXPECT_FALSE(lockscreen_timer_->IsRunning());
 }
 
 }  //  namespace ash

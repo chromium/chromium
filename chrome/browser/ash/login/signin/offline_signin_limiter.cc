@@ -111,6 +111,10 @@ base::WallClockTimer* OfflineSigninLimiter::GetTimerForTesting() {
   return offline_signin_limit_timer_.get();
 }
 
+base::WallClockTimer* OfflineSigninLimiter::GetLockscreenTimerForTesting() {
+  return offline_lock_screen_signin_limit_timer_.get();
+}
+
 void OfflineSigninLimiter::Shutdown() {
   offline_signin_limit_timer_->Stop();
   offline_lock_screen_signin_limit_timer_->Stop();

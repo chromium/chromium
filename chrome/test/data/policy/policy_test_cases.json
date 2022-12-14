@@ -8903,7 +8903,7 @@
         "policies": {},
         "prefs": {
           "saml.lock_screen_offline_signin_time_limit": {
-            "default_value": -2
+            "default_value": -1
           }
         }
       }

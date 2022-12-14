@@ -40,6 +40,8 @@ class OfflineSigninLimiter : public KeyedService,
 
   base::WallClockTimer* GetTimerForTesting();
 
+  base::WallClockTimer* GetLockscreenTimerForTesting();
+
   // KeyedService:
   void Shutdown() override;
 
