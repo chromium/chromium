@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/system_monitor.h"
 #include "base/unguessable_token.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/device_event_log/device_event_log.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
@@ -125,7 +126,72 @@ base::flat_set<int32_t> GetAvailableFramerates(
 
 }  // namespace
 
-CameraHalDelegate::CameraHalDelegate()
+class CameraHalDelegate::PowerManagerClientProxy
+    : public chromeos::PowerManagerClient::Observer {
+ public:
+  PowerManagerClientProxy() = default;
+  PowerManagerClientProxy(const PowerManagerClientProxy&) = delete;
+  PowerManagerClientProxy& operator=(const PowerManagerClientProxy&) = delete;
+
+  void Init(scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
+    ui_task_runner_ = std::move(ui_task_runner);
+    ui_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&PowerManagerClientProxy::InitOnDBusThread,
+                                  GetWeakPtr()));
+  }
+
+  void Shutdown() {
+    ui_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PowerManagerClientProxy::ShutdownOnDBusThread,
+                       GetWeakPtr()));
+  }
+
+  chromeos::PowerManagerClient::LidState GetLidState() { return lid_state_; }
+
+ private:
+  void InitOnDBusThread() {
+    DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+    chromeos::PowerManagerClient* power_manager_client =
+        chromeos::PowerManagerClient::Get();
+    // power_manager_client may be NULL in unittests.
+    if (power_manager_client)
+      power_manager_client->AddObserver(this);
+  }
+
+  void ShutdownOnDBusThread() {
+    DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+    chromeos::PowerManagerClient* power_manager_client =
+        chromeos::PowerManagerClient::Get();
+    // power_manager_client may be NULL in unittests.
+    if (power_manager_client)
+      power_manager_client->RemoveObserver(this);
+  }
+
+  // chromeos::PowerManagerClient::Observer:
+  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
+                        base::TimeTicks timestamp) final {
+    if (lid_state_ != state) {
+      lid_state_ = state;
+      NotifyVideoCaptureDevicesChanged();
+    }
+  }
+
+  base::WeakPtr<CameraHalDelegate::PowerManagerClientProxy> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
+
+  chromeos::PowerManagerClient::LidState lid_state_ =
+      chromeos::PowerManagerClient::LidState::OPEN;
+
+  base::WeakPtrFactory<CameraHalDelegate::PowerManagerClientProxy>
+      weak_ptr_factory_{this};
+};
+
+CameraHalDelegate::CameraHalDelegate(
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
     : authenticated_(false),
       camera_module_has_been_set_(
           base::WaitableEvent::ResetPolicy::MANUAL,
@@ -141,8 +207,11 @@ CameraHalDelegate::CameraHalDelegate()
       num_builtin_cameras_(0),
       camera_buffer_factory_(new CameraBufferFactory()),
       camera_hal_ipc_thread_("CamerHalIpcThread"),
-      camera_module_callbacks_(this) {
+      camera_module_callbacks_(this),
+      power_manager_client_proxy_(new PowerManagerClientProxy()),
+      ui_task_runner_(std::move(ui_task_runner)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  power_manager_client_proxy_->Init(ui_task_runner_);
 }
 
 bool CameraHalDelegate::Init() {
@@ -158,6 +227,9 @@ bool CameraHalDelegate::Init() {
 
 CameraHalDelegate::~CameraHalDelegate() {
   camera_hal_ipc_thread_.Stop();
+  power_manager_client_proxy_->Shutdown();
+  ui_task_runner_->DeleteSoon(FROM_HERE,
+                              std::move(power_manager_client_proxy_));
 }
 
 bool CameraHalDelegate::RegisterCameraClient() {
@@ -404,12 +476,22 @@ void CameraHalDelegate::GetDevicesInfo(
       }
     }
   }
-  // TODO(shik): Report external camera first when lid is closed.
   // TODO(jcliang): Remove this after JS API supports query camera facing
   // (http://crbug.com/543997).
   std::sort(
       devices_info.begin(), devices_info.end(),
-      [](const VideoCaptureDeviceInfo& a, const VideoCaptureDeviceInfo& b) {
+      [&](const VideoCaptureDeviceInfo& a, const VideoCaptureDeviceInfo& b) {
+        auto IsExternalCamera = [](const VideoCaptureDeviceInfo& vcd_info) {
+          return vcd_info.descriptor.facing ==
+                 VideoFacingMode::MEDIA_VIDEO_FACING_NONE;
+        };
+        chromeos::PowerManagerClient::LidState lid_state =
+            power_manager_client_proxy_->GetLidState();
+        if (lid_state == chromeos::PowerManagerClient::LidState::CLOSED) {
+          if (IsExternalCamera(a) == IsExternalCamera(b))
+            return a.descriptor < b.descriptor;
+          return IsExternalCamera(a);
+        }
         return a.descriptor < b.descriptor;
       });
   DVLOG(1) << "Number of devices: " << devices_info.size();
