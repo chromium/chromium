@@ -654,8 +654,8 @@ void LogAndTraceResult(
     const RenderFrameHostImpl& rfh,
     const BackForwardCacheCanStoreDocumentResult& flattened_result,
     const perfetto::StaticString& caller) {
-  LOG(ERROR) << caller.value << ": " << rfh.GetLastCommittedURL() << " : "
-             << flattened_result.ToString();
+  VLOG(1) << caller.value << ": " << rfh.GetLastCommittedURL() << " : "
+          << flattened_result.ToString();
   TRACE_EVENT("navigation", caller,
               ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult,
               flattened_result);
