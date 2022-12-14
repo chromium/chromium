@@ -125,28 +125,28 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
   }
 
   if (request_description.GetFontVariantAlternates()) {
-    StyleRuleFontFeatureValues* font_feature_values =
+    const FontFeatureValuesStorage* feature_values_storage =
         document.GetStyleEngine().FontFeatureValuesForFamily(family_name);
     scoped_refptr<FontVariantAlternates> new_alternates = nullptr;
-    if (font_feature_values) {
+    if (feature_values_storage) {
       new_alternates = request_description.GetFontVariantAlternates()->Resolve(
-          [font_feature_values](AtomicString alias) {
-            return font_feature_values->ResolveStylistic(alias);
+          [feature_values_storage](AtomicString alias) {
+            return feature_values_storage->ResolveStylistic(alias);
           },
-          [font_feature_values](AtomicString alias) {
-            return font_feature_values->ResolveStyleset(alias);
+          [feature_values_storage](AtomicString alias) {
+            return feature_values_storage->ResolveStyleset(alias);
           },
-          [font_feature_values](AtomicString alias) {
-            return font_feature_values->ResolveCharacterVariant(alias);
+          [feature_values_storage](AtomicString alias) {
+            return feature_values_storage->ResolveCharacterVariant(alias);
           },
-          [font_feature_values](AtomicString alias) {
-            return font_feature_values->ResolveSwash(alias);
+          [feature_values_storage](AtomicString alias) {
+            return feature_values_storage->ResolveSwash(alias);
           },
-          [font_feature_values](AtomicString alias) {
-            return font_feature_values->ResolveOrnaments(alias);
+          [feature_values_storage](AtomicString alias) {
+            return feature_values_storage->ResolveOrnaments(alias);
           },
-          [font_feature_values](AtomicString alias) {
-            return font_feature_values->ResolveAnnotation(alias);
+          [feature_values_storage](AtomicString alias) {
+            return feature_values_storage->ResolveAnnotation(alias);
           });
     } else {
       // If no StyleRuleFontFeature alias table values for this font was found,

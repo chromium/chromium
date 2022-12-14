@@ -47,6 +47,55 @@ struct DowncastTraits<StyleRuleFontFeature> {
   }
 };
 
+class CORE_EXPORT FontFeatureValuesStorage {
+ public:
+  FontFeatureValuesStorage(FontFeatureAliases stylistic,
+                           FontFeatureAliases styleset,
+                           FontFeatureAliases character_variant,
+                           FontFeatureAliases swash,
+                           FontFeatureAliases ornaments,
+                           FontFeatureAliases annotation);
+
+  FontFeatureValuesStorage() = default;
+  FontFeatureValuesStorage(const FontFeatureValuesStorage& other) = default;
+
+  FontFeatureValuesStorage& operator=(const FontFeatureValuesStorage& other) =
+      default;
+
+  Vector<uint32_t> ResolveStylistic(AtomicString) const;
+  Vector<uint32_t> ResolveStyleset(AtomicString) const;
+  Vector<uint32_t> ResolveCharacterVariant(AtomicString) const;
+  Vector<uint32_t> ResolveSwash(AtomicString) const;
+  Vector<uint32_t> ResolveOrnaments(AtomicString) const;
+  Vector<uint32_t> ResolveAnnotation(AtomicString) const;
+
+  // Update and extend this FontFeatureValuesStorage with information from
+  // `other`. Intended to be used in `StyleEngine::AddFontFeatureValuesRules`
+  // to merge multiple at-rules in a document so that their maps became
+  // unified, compare
+  // https://drafts.csswg.org/css-fonts-4/#font-feature-values-syntax: If
+  // multiple @font-feature-values rules are defined for a given family, the
+  // resulting values definitions are the union of the definitions contained
+  // within these rules.
+  // Updates FontFeatureAliases from other without checking families overlap.
+  void FuseUpdate(const FontFeatureValuesStorage& other);
+
+ private:
+  // TODO(https://crbug.com/716567): Only styleset and character variant take
+  // two values for each alias, the others take 1 value. Consider reducing
+  // storage here.
+  FontFeatureAliases stylistic_;
+  FontFeatureAliases styleset_;
+  FontFeatureAliases character_variant_;
+  FontFeatureAliases swash_;
+  FontFeatureAliases ornaments_;
+  FontFeatureAliases annotation_;
+  static Vector<uint32_t> ResolveInternal(const FontFeatureAliases&,
+                                          AtomicString);
+
+  friend class StyleRuleFontFeatureValues;
+};
+
 class CORE_EXPORT StyleRuleFontFeatureValues : public StyleRuleBase {
  public:
   StyleRuleFontFeatureValues(Vector<AtomicString> families,
@@ -68,35 +117,31 @@ class CORE_EXPORT StyleRuleFontFeatureValues : public StyleRuleBase {
     return MakeGarbageCollected<StyleRuleFontFeatureValues>(*this);
   }
 
-  Vector<uint32_t> ResolveStylistic(AtomicString);
-  Vector<uint32_t> ResolveStyleset(AtomicString);
-  Vector<uint32_t> ResolveCharacterVariant(AtomicString);
-  Vector<uint32_t> ResolveSwash(AtomicString);
-  Vector<uint32_t> ResolveOrnaments(AtomicString);
-  Vector<uint32_t> ResolveAnnotation(AtomicString);
+  const FontFeatureValuesStorage& Storage() { return feature_values_storage_; }
 
   // Accessors needed for cssom implementation.
-  FontFeatureAliases* GetStylistic() { return &stylistic_; }
-  FontFeatureAliases* GetStyleset() { return &styleset_; }
-  FontFeatureAliases* GetCharacterVariant() { return &character_variant_; }
-  FontFeatureAliases* GetSwash() { return &swash_; }
-  FontFeatureAliases* GetOrnaments() { return &ornaments_; }
-  FontFeatureAliases* GetAnnotation() { return &annotation_; }
+  FontFeatureAliases* GetStylistic() {
+    return &feature_values_storage_.stylistic_;
+  }
+  FontFeatureAliases* GetStyleset() {
+    return &feature_values_storage_.styleset_;
+  }
+  FontFeatureAliases* GetCharacterVariant() {
+    return &feature_values_storage_.character_variant_;
+  }
+  FontFeatureAliases* GetSwash() { return &feature_values_storage_.swash_; }
+  FontFeatureAliases* GetOrnaments() {
+    return &feature_values_storage_.ornaments_;
+  }
+  FontFeatureAliases* GetAnnotation() {
+    return &feature_values_storage_.annotation_;
+  }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
-  Vector<uint32_t> ResolveInternal(const FontFeatureAliases&, AtomicString);
-  // TODO(https://crbug.com/716567): Only styleset and character variant take
-  // two values for each alias, the others take 1 value. Consider reducing
-  // storage here.
   Vector<AtomicString> families_;
-  FontFeatureAliases stylistic_;
-  FontFeatureAliases styleset_;
-  FontFeatureAliases character_variant_;
-  FontFeatureAliases swash_;
-  FontFeatureAliases ornaments_;
-  FontFeatureAliases annotation_;
+  FontFeatureValuesStorage feature_values_storage_;
 };
 
 template <>

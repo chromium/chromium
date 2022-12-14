@@ -31,6 +31,76 @@ void StyleRuleFontFeature::OverrideAliasesIn(FontFeatureAliases& destination) {
   }
 }
 
+FontFeatureValuesStorage::FontFeatureValuesStorage(
+    FontFeatureAliases stylistic,
+    FontFeatureAliases styleset,
+    FontFeatureAliases character_variant,
+    FontFeatureAliases swash,
+    FontFeatureAliases ornaments,
+    FontFeatureAliases annotation)
+    : stylistic_(stylistic),
+      styleset_(styleset),
+      character_variant_(character_variant),
+      swash_(swash),
+      ornaments_(ornaments),
+      annotation_(annotation) {}
+
+Vector<uint32_t> FontFeatureValuesStorage::ResolveStylistic(
+    AtomicString alias) const {
+  return ResolveInternal(stylistic_, alias);
+}
+
+Vector<uint32_t> FontFeatureValuesStorage::ResolveStyleset(
+    AtomicString alias) const {
+  return ResolveInternal(styleset_, alias);
+}
+
+Vector<uint32_t> FontFeatureValuesStorage::ResolveCharacterVariant(
+    AtomicString alias) const {
+  return ResolveInternal(character_variant_, alias);
+}
+
+Vector<uint32_t> FontFeatureValuesStorage::ResolveSwash(
+    AtomicString alias) const {
+  return ResolveInternal(swash_, alias);
+}
+
+Vector<uint32_t> FontFeatureValuesStorage::ResolveOrnaments(
+    AtomicString alias) const {
+  return ResolveInternal(ornaments_, alias);
+}
+Vector<uint32_t> FontFeatureValuesStorage::ResolveAnnotation(
+    AtomicString alias) const {
+  return ResolveInternal(annotation_, alias);
+}
+
+void FontFeatureValuesStorage::FuseUpdate(
+    const FontFeatureValuesStorage& other) {
+  auto merge_maps = [](FontFeatureAliases& own,
+                       const FontFeatureAliases& other) {
+    for (auto entry : other) {
+      own.Set(entry.key, entry.value);
+    }
+  };
+
+  merge_maps(stylistic_, other.stylistic_);
+  merge_maps(styleset_, other.styleset_);
+  merge_maps(character_variant_, other.character_variant_);
+  merge_maps(swash_, other.swash_);
+  merge_maps(ornaments_, other.ornaments_);
+  merge_maps(annotation_, other.annotation_);
+}
+
+/* static */
+Vector<uint32_t> FontFeatureValuesStorage::ResolveInternal(
+    const FontFeatureAliases& aliases,
+    AtomicString alias) {
+  auto find_result = aliases.find(alias);
+  if (find_result == aliases.end())
+    return {};
+  return find_result->value;
+}
+
 StyleRuleFontFeatureValues::StyleRuleFontFeatureValues(
     Vector<AtomicString> families,
     FontFeatureAliases stylistic,
@@ -41,12 +111,12 @@ StyleRuleFontFeatureValues::StyleRuleFontFeatureValues(
     FontFeatureAliases annotation)
     : StyleRuleBase(kFontFeatureValues),
       families_(std::move(families)),
-      stylistic_(stylistic),
-      styleset_(styleset),
-      character_variant_(character_variant),
-      swash_(swash),
-      ornaments_(ornaments),
-      annotation_(annotation) {}
+      feature_values_storage_(stylistic,
+                              styleset,
+                              character_variant,
+                              swash,
+                              ornaments,
+                              annotation) {}
 
 StyleRuleFontFeatureValues::StyleRuleFontFeatureValues(
     const StyleRuleFontFeatureValues&) = default;
@@ -70,43 +140,6 @@ String StyleRuleFontFeatureValues::FamilyAsString() const {
 void StyleRuleFontFeatureValues::TraceAfterDispatch(
     blink::Visitor* visitor) const {
   StyleRuleBase::TraceAfterDispatch(visitor);
-}
-
-Vector<uint32_t> StyleRuleFontFeatureValues::ResolveStylistic(
-    AtomicString alias) {
-  return ResolveInternal(stylistic_, alias);
-}
-
-Vector<uint32_t> StyleRuleFontFeatureValues::ResolveStyleset(
-    AtomicString alias) {
-  return ResolveInternal(styleset_, alias);
-}
-
-Vector<uint32_t> StyleRuleFontFeatureValues::ResolveCharacterVariant(
-    AtomicString alias) {
-  return ResolveInternal(character_variant_, alias);
-}
-
-Vector<uint32_t> StyleRuleFontFeatureValues::ResolveSwash(AtomicString alias) {
-  return ResolveInternal(swash_, alias);
-}
-
-Vector<uint32_t> StyleRuleFontFeatureValues::ResolveOrnaments(
-    AtomicString alias) {
-  return ResolveInternal(ornaments_, alias);
-}
-Vector<uint32_t> StyleRuleFontFeatureValues::ResolveAnnotation(
-    AtomicString alias) {
-  return ResolveInternal(annotation_, alias);
-}
-
-Vector<uint32_t> StyleRuleFontFeatureValues::ResolveInternal(
-    const FontFeatureAliases& aliases,
-    AtomicString alias) {
-  auto find_result = aliases.find(alias);
-  if (find_result == aliases.end())
-    return {};
-  return find_result->value;
 }
 
 }  // namespace blink
