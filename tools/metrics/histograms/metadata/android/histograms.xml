@@ -2666,7 +2666,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionView.SessionViewsCreated"
-    units="views created" expires_after="2023-07-01">
+    units="count" expires_after="2023-07-01">
   <owner>ender@google.com</owner>
   <owner>rongtan@google.com</owner>
   <summary>
