@@ -56,8 +56,6 @@ GPU_GLES2_EXPORT SkYUVAInfo::Subsampling ToSkYUVASubsampling(
 
 // Following functions return the appropriate GL type/format for a
 // SharedImageFormat.
-// Returns true if given `format` is supported by GL.
-GPU_GLES2_EXPORT bool GLSupportsFormat(viz::SharedImageFormat format);
 // Return the GLFormatDesc when using external sampler for a given `format`.
 GPU_GLES2_EXPORT GLFormatDesc
 ToGLFormatDescExternalSampler(viz::SharedImageFormat format);

@@ -42,13 +42,6 @@ SkYUVAInfo::Subsampling ToSkYUVASubsampling(viz::SharedImageFormat format) {
   }
 }
 
-bool GLSupportsFormat(viz::SharedImageFormat format) {
-  if (format.is_single_plane())
-    return viz::GLSupportsFormat(format.resource_format());
-  // No support for multiplanar formats.
-  return false;
-}
-
 GLFormatDesc ToGLFormatDescExternalSampler(viz::SharedImageFormat format) {
   DCHECK(format.is_multi_plane());
   DCHECK(format.PrefersExternalSampler());
