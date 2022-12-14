@@ -275,6 +275,10 @@
 #include "content/browser/serial/serial_service.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#include "content/browser/smart_card/smart_card_service.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "content/browser/renderer_host/popup_menu_helper_mac.h"
 #endif
@@ -10534,6 +10538,13 @@ void RenderFrameHostImpl::BindSerialService(
 void RenderFrameHostImpl::GetHidService(
     mojo::PendingReceiver<blink::mojom::HidService> receiver) {
   HidService::Create(this, std::move(receiver));
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+void RenderFrameHostImpl::GetSmartCardService(
+    mojo::PendingReceiver<blink::mojom::SmartCardService> receiver) {
+  SmartCardService::Create(this, std::move(receiver));
 }
 #endif
 

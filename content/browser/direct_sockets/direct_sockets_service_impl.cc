@@ -8,6 +8,7 @@
 #include "content/browser/direct_sockets/direct_udp_socket_impl.h"
 #include "content/browser/direct_sockets/resolve_host_and_open_socket.h"
 #include "content/browser/process_lock.h"
+#include "content/browser/renderer_host/isolated_context_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/direct_sockets_delegate.h"
@@ -54,22 +55,6 @@ constexpr int32_t kMaxBufferSize = 32 * 1024 * 1024;
 network::mojom::NetworkContext*& GetNetworkContextForTesting() {
   static network::mojom::NetworkContext* network_context = nullptr;
   return network_context;
-}
-
-bool IsFrameSufficientlyIsolated(content::RenderFrameHost* frame) {
-  if (frame->GetWebExposedIsolationLevel() >=
-      content::RenderFrameHost::WebExposedIsolationLevel::
-          kMaybeIsolatedApplication) {
-    return true;
-  }
-
-  if (GetContentClient()->browser()->IsIsolatedContextAllowedForUrl(
-          frame->GetBrowserContext(),
-          frame->GetProcess()->GetProcessLock().lock_url())) {
-    return true;
-  }
-
-  return false;
 }
 
 network::mojom::TCPConnectedSocketOptionsPtr CreateTCPConnectedSocketOptions(

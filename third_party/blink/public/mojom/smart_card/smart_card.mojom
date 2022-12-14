@@ -1,0 +1,11 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Interface for accessing smart card readers from the render process.
+// The implementation is responsible for checking access permissions.
+interface SmartCardService {
+  // TODO(crbug.com/1386175): Add methods
+};

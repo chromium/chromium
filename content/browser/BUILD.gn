@@ -1687,6 +1687,8 @@ source_set("browser") {
     "renderer_host/input/touchscreen_tap_suppression_controller.h",
     "renderer_host/ipc_utils.cc",
     "renderer_host/ipc_utils.h",
+    "renderer_host/isolated_context_util.cc",
+    "renderer_host/isolated_context_util.h",
     "renderer_host/isolated_web_app_throttle.cc",
     "renderer_host/isolated_web_app_throttle.h",
     "renderer_host/keep_alive_handle_factory.cc",
@@ -2304,6 +2306,13 @@ source_set("browser") {
     "worker_host/worker_script_loader_factory.cc",
     "worker_host/worker_script_loader_factory.h",
   ]
+
+  if (!is_android && !is_fuchsia) {
+    sources += [
+      "smart_card/smart_card_service.cc",
+      "smart_card/smart_card_service.h",
+    ]
+  }
 
   # TODO(crbug.com/1327384): Remove `permissions_common`.
   # DO NOT add unrelated entries to this block.
