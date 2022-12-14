@@ -12,13 +12,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ash/app_list/search/types.h"
-
-class ChromeSearchResult;
 
 namespace ash {
 enum class AppListSearchResultType;
@@ -33,16 +30,6 @@ namespace app_list {
 
 class AppSearchDataSource;
 class SearchProvider;
-
-// Common types used throughout result ranking.
-//
-// TODO(crbug.com/1383002): Ideally these would be grouped with other common
-// type aliases in types.h, but this creates a circular dependency issue with
-// ChromeSearchResult. Try to iron this out, and group these type aliases with
-// the others.
-
-using Results = std::vector<std::unique_ptr<ChromeSearchResult>>;
-using ResultsMap = base::flat_map<ProviderType, Results>;
 
 // Controller that collects query from given SearchBoxModel, dispatches it
 // to all search providers, then invokes the mixer to mix and to publish the
@@ -120,8 +107,8 @@ class SearchController {
 
   virtual void disable_ranking_for_test() = 0;
 
-  // Registers a callback to be run when zero state search returns (eiher due to
-  // all zero state providers returning results, or a timeout). The callback
+  // Registers a callback to be run when zero state search returns (either due
+  // to all zero state providers returning results, or a timeout). The callback
   // will run immediately if there is no pending zero state search callback.
   virtual void WaitForZeroStateCompletionForTest(
       base::OnceClosure callback) = 0;

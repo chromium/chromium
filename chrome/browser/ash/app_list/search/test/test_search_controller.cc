@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 

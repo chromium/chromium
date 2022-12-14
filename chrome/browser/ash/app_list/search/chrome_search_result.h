@@ -12,7 +12,7 @@
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/app_list/search/types.h"
+#include "chrome/browser/ash/app_list/search/scoring.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_default_app_list.h"
 #include "chrome/browser/ash/app_list/search/app_search_provider_test_base.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"

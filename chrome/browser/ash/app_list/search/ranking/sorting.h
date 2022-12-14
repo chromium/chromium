@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_SCORING_H_
-#define CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_SCORING_H_
+#ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_SORTING_H_
+#define CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_SORTING_H_
 
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/types.h"
@@ -32,4 +32,4 @@ void SortResults(std::vector<ChromeSearchResult*>& results,
 
 }  // namespace app_list
 
-#endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_SCORING_H_
+#endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_SORTING_H_

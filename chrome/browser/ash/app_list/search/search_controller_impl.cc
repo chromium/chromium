@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/app_list/search/common/string_util.h"
 #include "chrome/browser/ash/app_list/search/cros_action_history/cros_action_recorder.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
-#include "chrome/browser/ash/app_list/search/ranking/scoring.h"
+#include "chrome/browser/ash/app_list/search/ranking/sorting.h"
 #include "chrome/browser/ash/app_list/search/search_metrics_manager.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/app_list/search/search_session_metrics_manager.h"

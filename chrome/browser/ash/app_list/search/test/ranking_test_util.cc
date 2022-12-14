@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_list/search/test/ranking_test_util.h"
 
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/search/test/test_result.h"
 
 namespace app_list {
