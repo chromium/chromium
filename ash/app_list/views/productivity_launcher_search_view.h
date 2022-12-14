@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_APP_LIST_VIEWS_APP_LIST_SEARCH_VIEW_H_
-#define ASH_APP_LIST_VIEWS_APP_LIST_SEARCH_VIEW_H_
+#ifndef ASH_APP_LIST_VIEWS_PRODUCTIVITY_LAUNCHER_SEARCH_VIEW_H_
+#define ASH_APP_LIST_VIEWS_PRODUCTIVITY_LAUNCHER_SEARCH_VIEW_H_
 
 #include <memory>
 #include <string>
@@ -27,18 +27,22 @@ class SearchResultPageDialogController;
 // The search results view for productivity launcher. Contains a scrolling list
 // of search results. Does not include the search box, which is owned by a
 // parent view.
-class ASH_EXPORT AppListSearchView : public views::View,
-                                     public SearchResultContainerView::Delegate,
-                                     public AppListModelProvider::Observer {
+class ASH_EXPORT ProductivityLauncherSearchView
+    : public views::View,
+      public SearchResultContainerView::Delegate,
+      public AppListModelProvider::Observer {
  public:
-  METADATA_HEADER(AppListSearchView);
+  METADATA_HEADER(ProductivityLauncherSearchView);
 
-  AppListSearchView(AppListViewDelegate* view_delegate,
-                    SearchResultPageDialogController* dialog_controller,
-                    SearchBoxView* search_box_view);
-  AppListSearchView(const AppListSearchView&) = delete;
-  AppListSearchView& operator=(const AppListSearchView&) = delete;
-  ~AppListSearchView() override;
+  ProductivityLauncherSearchView(
+      AppListViewDelegate* view_delegate,
+      SearchResultPageDialogController* dialog_controller,
+      SearchBoxView* search_box_view);
+  ProductivityLauncherSearchView(const ProductivityLauncherSearchView&) =
+      delete;
+  ProductivityLauncherSearchView& operator=(
+      const ProductivityLauncherSearchView&) = delete;
+  ~ProductivityLauncherSearchView() override;
 
   // SearchResultContainerView::Delegate:
   void OnSearchResultContainerResultsChanging() override;
@@ -143,4 +147,4 @@ class ASH_EXPORT AppListSearchView : public views::View,
 
 }  // namespace ash
 
-#endif  // ASH_APP_LIST_VIEWS_APP_LIST_SEARCH_VIEW_H_
+#endif  // ASH_APP_LIST_VIEWS_PRODUCTIVITY_LAUNCHER_SEARCH_VIEW_H_

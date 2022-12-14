@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/views/app_list_search_view.h"
+#include "ash/app_list/views/productivity_launcher_search_view.h"
 
 #include <algorithm>
 #include <limits>
@@ -59,7 +59,7 @@ constexpr base::TimeDelta kForcedFastAnimationInterval =
 
 }  // namespace
 
-AppListSearchView::AppListSearchView(
+ProductivityLauncherSearchView::ProductivityLauncherSearchView(
     AppListViewDelegate* view_delegate,
     SearchResultPageDialogController* dialog_controller,
     SearchBoxView* search_box_view)
@@ -92,8 +92,9 @@ AppListSearchView::AppListSearchView(
 
   result_selection_controller_ = std::make_unique<ResultSelectionController>(
       &result_container_views_,
-      base::BindRepeating(&AppListSearchView::OnSelectedResultChanged,
-                          base::Unretained(this)));
+      base::BindRepeating(
+          &ProductivityLauncherSearchView::OnSelectedResultChanged,
+          base::Unretained(this)));
   search_box_view_->SetResultSelectionController(
       result_selection_controller_.get());
 
@@ -155,11 +156,11 @@ AppListSearchView::AppListSearchView(
   model_provider->AddObserver(this);
 }
 
-AppListSearchView::~AppListSearchView() {
+ProductivityLauncherSearchView::~ProductivityLauncherSearchView() {
   AppListModelProvider::Get()->RemoveObserver(this);
 }
 
-void AppListSearchView::OnSearchResultContainerResultsChanging() {
+void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanging() {
   // Block any result selection changes while result updates are in flight.
   // The selection will be reset once the results are all updated.
   result_selection_controller_->set_block_selection_changes(true);
@@ -168,7 +169,7 @@ void AppListSearchView::OnSearchResultContainerResultsChanging() {
   SetIgnoreResultChangesForA11y(true);
 }
 
-void AppListSearchView::OnSearchResultContainerResultsChanged() {
+void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanged() {
   DCHECK(!result_container_views_.empty());
 
   int result_count = 0;
@@ -268,8 +269,8 @@ void AppListSearchView::OnSearchResultContainerResultsChanged() {
   }
 }
 
-void AppListSearchView::VisibilityChanged(View* starting_from,
-                                          bool is_visible) {
+void ProductivityLauncherSearchView::VisibilityChanged(View* starting_from,
+                                                       bool is_visible) {
   if (!is_visible) {
     result_selection_controller_->ClearSelection();
     for (auto* container : result_container_views_)
@@ -277,7 +278,8 @@ void AppListSearchView::VisibilityChanged(View* starting_from,
   }
 }
 
-void AppListSearchView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+void ProductivityLauncherSearchView::GetAccessibleNodeData(
+    ui::AXNodeData* node_data) {
   if (!GetVisible())
     return;
 
@@ -305,14 +307,14 @@ void AppListSearchView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetValue(value);
 }
 
-void AppListSearchView::OnActiveAppListModelsChanged(
+void ProductivityLauncherSearchView::OnActiveAppListModelsChanged(
     AppListModel* model,
     SearchModel* search_model) {
   for (auto* container : result_container_views_)
     container->SetResults(search_model->results());
 }
 
-void AppListSearchView::UpdateForNewSearch(bool search_active) {
+void ProductivityLauncherSearchView::UpdateForNewSearch(bool search_active) {
   for (auto* container : result_container_views_)
     container->SetActive(search_active);
 
@@ -331,7 +333,7 @@ void AppListSearchView::UpdateForNewSearch(bool search_active) {
   }
 }
 
-void AppListSearchView::OnSelectedResultChanged() {
+void ProductivityLauncherSearchView::OnSelectedResultChanged() {
   if (!result_selection_controller_->selected_result()) {
     return;
   }
@@ -345,14 +347,15 @@ void AppListSearchView::OnSelectedResultChanged() {
   MaybeNotifySelectedResultChanged();
 }
 
-void AppListSearchView::SetIgnoreResultChangesForA11y(bool ignore) {
+void ProductivityLauncherSearchView::SetIgnoreResultChangesForA11y(
+    bool ignore) {
   if (ignore_result_changes_for_a11y_ == ignore)
     return;
   ignore_result_changes_for_a11y_ = ignore;
   SetViewIgnoredForAccessibility(this, ignore);
 }
 
-void AppListSearchView::ScheduleResultsChangedA11yNotification() {
+void ProductivityLauncherSearchView::ScheduleResultsChangedA11yNotification() {
   if (!ignore_result_changes_for_a11y_) {
     NotifyA11yResultsChanged();
     return;
@@ -360,18 +363,18 @@ void AppListSearchView::ScheduleResultsChangedA11yNotification() {
 
   notify_a11y_results_changed_timer_.Start(
       FROM_HERE, kNotifyA11yDelay,
-      base::BindOnce(&AppListSearchView::NotifyA11yResultsChanged,
+      base::BindOnce(&ProductivityLauncherSearchView::NotifyA11yResultsChanged,
                      base::Unretained(this)));
 }
 
-void AppListSearchView::NotifyA11yResultsChanged() {
+void ProductivityLauncherSearchView::NotifyA11yResultsChanged() {
   SetIgnoreResultChangesForA11y(false);
 
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
   MaybeNotifySelectedResultChanged();
 }
 
-void AppListSearchView::MaybeNotifySelectedResultChanged() {
+void ProductivityLauncherSearchView::MaybeNotifySelectedResultChanged() {
   if (ignore_result_changes_for_a11y_)
     return;
 
@@ -391,12 +394,12 @@ void AppListSearchView::MaybeNotifySelectedResultChanged() {
       selected_view->GetViewAccessibility().GetUniqueId().Get());
 }
 
-bool AppListSearchView::CanSelectSearchResults() {
+bool ProductivityLauncherSearchView::CanSelectSearchResults() {
   DCHECK(!result_container_views_.empty());
   return last_search_result_count_ > 0;
 }
 
-int AppListSearchView::TabletModePreferredHeight() {
+int ProductivityLauncherSearchView::TabletModePreferredHeight() {
   int max_height = 0;
   for (SearchResultContainerView* view : result_container_views_) {
     if (view->GetVisible()) {
@@ -406,13 +409,13 @@ int AppListSearchView::TabletModePreferredHeight() {
   return max_height;
 }
 
-ui::Layer* AppListSearchView::GetPageAnimationLayer() const {
+ui::Layer* ProductivityLauncherSearchView::GetPageAnimationLayer() const {
   // The scroll view has a layer containing all the visible contents, so use
   // that for "whole page" animations.
   return scroll_view_->contents()->layer();
 }
 
-BEGIN_METADATA(AppListSearchView, views::View)
+BEGIN_METADATA(ProductivityLauncherSearchView, views::View)
 END_METADATA
 
 }  // namespace ash

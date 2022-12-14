@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/views/app_list_search_view.h"
+#include "ash/app_list/views/productivity_launcher_search_view.h"
 
 #include <tuple>
 #include <utility>
@@ -52,14 +52,16 @@ namespace ash {
 
 // Subclasses set `test_under_tablet_` in the constructor to indicate
 // which mode to test.
-class AppListSearchViewTest : public AshTestBase {
+class ProductivityLauncherSearchViewTest : public AshTestBase {
  public:
-  explicit AppListSearchViewTest(bool test_under_tablet)
+  explicit ProductivityLauncherSearchViewTest(bool test_under_tablet)
       : AshTestBase((base::test::TaskEnvironment::TimeSource::MOCK_TIME)),
         test_under_tablet_(test_under_tablet) {}
-  AppListSearchViewTest(const AppListSearchViewTest&) = delete;
-  AppListSearchViewTest& operator=(const AppListSearchViewTest&) = delete;
-  ~AppListSearchViewTest() override = default;
+  ProductivityLauncherSearchViewTest(
+      const ProductivityLauncherSearchViewTest&) = delete;
+  ProductivityLauncherSearchViewTest& operator=(
+      const ProductivityLauncherSearchViewTest&) = delete;
+  ~ProductivityLauncherSearchViewTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -118,13 +120,13 @@ class AppListSearchViewTest : public AshTestBase {
         ->GetText();
   }
 
-  AppListSearchView* GetSearchView() {
+  ProductivityLauncherSearchView* GetProductivityLauncherSearchView() {
     if (tablet_mode()) {
       return GetAppListTestHelper()
           ->GetFullscreenSearchResultPageView()
-          ->search_view_for_test();
+          ->productivity_launcher_search_view_for_test();
     }
-    return GetAppListTestHelper()->GetBubbleAppListSearchView();
+    return GetAppListTestHelper()->GetProductivityLauncherSearchView();
   }
 
   views::View* GetSearchPage() {
@@ -138,14 +140,14 @@ class AppListSearchViewTest : public AshTestBase {
   ui::Layer* GetSearchPageAnimationLayer() {
     if (tablet_mode())
       return GetSearchPage()->layer();
-    return GetSearchView()->GetPageAnimationLayer();
+    return GetProductivityLauncherSearchView()->GetPageAnimationLayer();
   }
 
   bool IsSearchResultPageVisible() { return GetSearchPage()->GetVisible(); }
 
   std::vector<size_t> GetVisibleResultContainers() {
     std::vector<SearchResultContainerView*> result_containers =
-        GetSearchView()->result_container_views_for_test();
+        GetProductivityLauncherSearchView()->result_container_views_for_test();
     std::vector<size_t> visible_result_containers = {};
     for (size_t i = 0; i < result_containers.size(); i++) {
       if (result_containers[i]->GetVisible())
@@ -163,7 +165,7 @@ class AppListSearchViewTest : public AshTestBase {
   SearchResultView* GetSearchResultView(size_t container_index,
                                         int view_index) {
     std::vector<SearchResultContainerView*> result_containers =
-        GetSearchView()->result_container_views_for_test();
+        GetProductivityLauncherSearchView()->result_container_views_for_test();
     if (container_index >= result_containers.size()) {
       ADD_FAILURE() << "Container index out of bounds";
       return nullptr;
@@ -191,21 +193,22 @@ class AppListSearchViewTest : public AshTestBase {
 // Parameterized based on whether the search view is shown within the clamshell
 // or tablet mode launcher UI.
 class SearchViewClamshellAndTabletTest
-    : public AppListSearchViewTest,
+    : public ProductivityLauncherSearchViewTest,
       public testing::WithParamInterface<bool> {
  public:
   SearchViewClamshellAndTabletTest()
-      : AppListSearchViewTest(/*test_under_tablet=*/GetParam()) {}
+      : ProductivityLauncherSearchViewTest(/*test_under_tablet=*/GetParam()) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(Tablet,
                          SearchViewClamshellAndTabletTest,
                          testing::Bool());
 
-// AppListSearchViewTest which only tests tablet mode.
-class SearchViewTabletTest : public AppListSearchViewTest {
+// ProductivityLauncherSearchViewTest which only tests tablet mode.
+class SearchViewTabletTest : public ProductivityLauncherSearchViewTest {
  public:
-  SearchViewTabletTest() : AppListSearchViewTest(/*test_under_tablet=*/true) {}
+  SearchViewTabletTest()
+      : ProductivityLauncherSearchViewTest(/*test_under_tablet=*/true) {}
 };
 
 // An extension of SearchViewClamshellAndTabletTest to test launcher image
@@ -245,7 +248,7 @@ TEST_P(SearchResultImageViewTest, ImageListViewVisible) {
 
   // Check result container visibility.
   std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
   for (auto* container : result_containers)
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
 
@@ -283,7 +286,7 @@ TEST_P(SearchResultImageViewTest, ShowContextMenu) {
 
   // Check result container visibility.
   std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
   for (auto* container : result_containers)
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
@@ -347,7 +350,7 @@ TEST_P(SearchViewClamshellAndTabletTest, AnimateSearchResultView) {
   // Verify that search containers have a scheduled update, and ensure they get
   // run.
   std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
   for (auto* container : result_containers)
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
 
@@ -405,7 +408,7 @@ TEST_P(SearchViewClamshellAndTabletTest, ResultContainerIsVisible) {
   PressAndReleaseKey(ui::VKEY_A);
 
   std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
   for (auto* container : result_containers)
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
 
@@ -416,7 +419,8 @@ TEST_P(SearchViewClamshellAndTabletTest, ResultContainerIsVisible) {
   // Clear search, and verify result containers get hidden.
   PressAndReleaseKey(ui::VKEY_ESCAPE);
 
-  result_containers = GetSearchView()->result_container_views_for_test();
+  result_containers =
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
   for (auto* container : result_containers)
     EXPECT_FALSE(container->UpdateScheduled());
 
@@ -458,7 +462,7 @@ TEST_P(SearchViewClamshellAndTabletTest,
   PressAndReleaseKey(ui::VKEY_A);
 
   std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
   for (auto* container : result_containers)
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
 
@@ -541,7 +545,7 @@ TEST_F(SearchViewTabletTest, SearchResultPageShownWhileClosing) {
   PressAndReleaseKey(ui::VKEY_A);
 
   std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
   for (auto* container : result_containers)
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
 
@@ -599,7 +603,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SelectionChangeDuringHide) {
   PressAndReleaseKey(ui::VKEY_A);
 
   std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
   for (auto* container : result_containers)
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
 
@@ -624,7 +628,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SelectionChangeDuringHide) {
   // been cleared and hidden.
   ui::LayerAnimationStoppedWaiter().Wait(GetSearchPageAnimationLayer());
 
-  EXPECT_FALSE(GetSearchView()
+  EXPECT_FALSE(GetProductivityLauncherSearchView()
                    ->result_selection_controller_for_test()
                    ->selected_result());
 
@@ -636,7 +640,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SelectionChangeDuringHide) {
 TEST_P(SearchViewClamshellAndTabletTest, ResultSelectionCycle) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
-  EXPECT_FALSE(GetSearchView()->CanSelectSearchResults());
+  EXPECT_FALSE(GetProductivityLauncherSearchView()->CanSelectSearchResults());
 
   // Press a key to start a search.
   PressAndReleaseKey(ui::VKEY_A);
@@ -654,14 +658,15 @@ TEST_P(SearchViewClamshellAndTabletTest, ResultSelectionCycle) {
                      false, SearchResult::Category::kWeb);
 
   std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
   for (auto* container : result_containers)
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
 
   // Press VKEY_DOWN and check if the first result view is selected.
-  EXPECT_TRUE(GetSearchView()->CanSelectSearchResults());
+  EXPECT_TRUE(GetProductivityLauncherSearchView()->CanSelectSearchResults());
   ResultSelectionController* controller =
-      GetSearchView()->result_selection_controller_for_test();
+      GetProductivityLauncherSearchView()
+          ->result_selection_controller_for_test();
 
   // Traverse the first results container.
   for (int i = 0; i < kDefaultSearchItems - 1; ++i) {
@@ -713,7 +718,7 @@ TEST_P(SearchViewClamshellAndTabletTest, AnswerCardSelection) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
 
-  EXPECT_FALSE(GetSearchView()->CanSelectSearchResults());
+  EXPECT_FALSE(GetProductivityLauncherSearchView()->CanSelectSearchResults());
 
   // Press a key to start a search.
   PressAndReleaseKey(ui::VKEY_A);
@@ -730,7 +735,7 @@ TEST_P(SearchViewClamshellAndTabletTest, AnswerCardSelection) {
 
   // Verify result container ordering.
   std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
   for (auto* container : result_containers)
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
 
@@ -740,9 +745,10 @@ TEST_P(SearchViewClamshellAndTabletTest, AnswerCardSelection) {
 
   EXPECT_EQ(GetVisibleResultContainers(), (std::vector<size_t>{0, 2}));
 
-  EXPECT_TRUE(GetSearchView()->CanSelectSearchResults());
+  EXPECT_TRUE(GetProductivityLauncherSearchView()->CanSelectSearchResults());
   ResultSelectionController* controller =
-      GetSearchView()->result_selection_controller_for_test();
+      GetProductivityLauncherSearchView()
+          ->result_selection_controller_for_test();
   // Press VKEY_DOWN and check if the next is selected.
   EXPECT_EQ(controller->selected_location_details()->container_index, 0);
   EXPECT_EQ(controller->selected_location_details()->result_index, 0);
@@ -759,7 +765,7 @@ TEST_P(SearchViewClamshellAndTabletTest, AnswerCardSelection) {
 TEST_P(SearchViewClamshellAndTabletTest, ResultSelection) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
-  EXPECT_FALSE(GetSearchView()->CanSelectSearchResults());
+  EXPECT_FALSE(GetProductivityLauncherSearchView()->CanSelectSearchResults());
 
   // Press a key to start a search.
   PressAndReleaseKey(ui::VKEY_A);
@@ -777,16 +783,17 @@ TEST_P(SearchViewClamshellAndTabletTest, ResultSelection) {
                      false, SearchResult::Category::kWeb);
 
   std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
   for (auto* container : result_containers)
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
 
   EXPECT_EQ(GetVisibleResultContainers(), (std::vector<size_t>{2, 3}));
 
   // Press VKEY_DOWN and check if the first result view is selected.
-  EXPECT_TRUE(GetSearchView()->CanSelectSearchResults());
+  EXPECT_TRUE(GetProductivityLauncherSearchView()->CanSelectSearchResults());
   ResultSelectionController* controller =
-      GetSearchView()->result_selection_controller_for_test();
+      GetProductivityLauncherSearchView()
+          ->result_selection_controller_for_test();
   // Tests that VKEY_DOWN selects the next result.
   EXPECT_EQ(controller->selected_location_details()->container_index, 2);
   EXPECT_EQ(controller->selected_location_details()->result_index, 0);
@@ -838,7 +845,7 @@ TEST_P(SearchViewClamshellAndTabletTest, ResultPageHiddenInZeroSearchState) {
 
   // Verify that containers are not updating if search is not in progress.
   std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
   for (auto* container : result_containers)
     EXPECT_FALSE(container->UpdateScheduled());
 
@@ -861,7 +868,8 @@ TEST_P(SearchViewClamshellAndTabletTest, ResultPageHiddenInZeroSearchState) {
   EXPECT_EQ(u"a", GetSearchBoxView()->search_box()->GetText());
   EXPECT_TRUE(IsSearchResultPageVisible());
   ResultSelectionController* controller =
-      GetSearchView()->result_selection_controller_for_test();
+      GetProductivityLauncherSearchView()
+          ->result_selection_controller_for_test();
   EXPECT_TRUE(controller->selected_result());
 
   // Backspace should clear selection, and search box content.
@@ -886,7 +894,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchResultCategoricalSort) {
   SearchModel::SearchResults* results = test_helper->GetSearchResults();
 
   std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
 
   // Create categorized results and order categories as {kApps, kWeb}.
@@ -929,7 +937,8 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchResultCategoricalSort) {
                      SearchResult::Category::kApps);
   SetUpSearchResults(results, 1 + kDefaultSearchItems, kDefaultSearchItems, 100,
                      false, SearchResult::Category::kWeb);
-  result_containers = GetSearchView()->result_container_views_for_test();
+  result_containers =
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
   for (auto* container : result_containers)
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
 
@@ -977,7 +986,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchResultA11y) {
   SetUpSearchResults(results, 1, kDefaultSearchItems, 100, true,
                      SearchResult::Category::kApps);
   std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
   for (auto* container : result_containers)
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
 
@@ -1020,7 +1029,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchPageA11y) {
   // Delete all results and verify the bubble search page's A11yNodeData.
   AppListModelProvider::Get()->search_model()->DeleteAllResults();
 
-  auto* search_view = GetSearchView();
+  auto* search_view = GetProductivityLauncherSearchView();
   // Check result container visibility.
   std::vector<SearchResultContainerView*> result_containers =
       search_view->result_container_views_for_test();
@@ -1068,7 +1077,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchClearedOnModelUpdate) {
                      SearchResult::Category::kApps);
 
   std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
   for (auto* container : result_containers)
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
 
@@ -1091,7 +1100,8 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchClearedOnModelUpdate) {
   PressAndReleaseKey(ui::VKEY_A);
   SetUpSearchResults(search_model_override->results(), 2, 1, 100, true,
                      SearchResult::Category::kApps);
-  result_containers = GetSearchView()->result_container_views_for_test();
+  result_containers =
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
   for (auto* container : result_containers)
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
 
