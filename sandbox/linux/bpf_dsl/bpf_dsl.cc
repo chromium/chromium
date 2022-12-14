@@ -52,7 +52,7 @@ class ReturnResultExprImpl : public internal::ResultExprImpl {
 class TrapResultExprImpl : public internal::ResultExprImpl {
  public:
   TrapResultExprImpl(TrapRegistry::TrapFnc func, const void* arg, bool safe)
-      : func_(func), arg_(arg), safe_(safe) {
+      : func_(func), arg_(reinterpret_cast<uintptr_t>(arg)), safe_(safe) {
     DCHECK(func_);
   }
 
@@ -62,7 +62,7 @@ class TrapResultExprImpl : public internal::ResultExprImpl {
   ~TrapResultExprImpl() override {}
 
   CodeGen::Node Compile(PolicyCompiler* pc) const override {
-    return pc->Trap(func_, arg_, safe_);
+    return pc->Trap(func_, reinterpret_cast<const void*>(arg_), safe_);
   }
 
   bool HasUnsafeTraps() const override { return safe_ == false; }
@@ -71,7 +71,7 @@ class TrapResultExprImpl : public internal::ResultExprImpl {
 
  private:
   TrapRegistry::TrapFnc func_;
-  raw_ptr<const void> arg_;
+  uintptr_t arg_;  // Usually a pointer, but may be a smuggled int.
   bool safe_;
 };
 

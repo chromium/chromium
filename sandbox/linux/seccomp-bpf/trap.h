@@ -47,14 +47,17 @@ class SANDBOX_EXPORT Trap : public bpf_dsl::TrapRegistry {
 
  private:
   struct TrapKey {
-    TrapKey() : fnc(nullptr), aux(nullptr), safe(false) {}
-    TrapKey(TrapFnc f, const void* a, bool s) : fnc(f), aux(a), safe(s) {}
-    TrapFnc fnc;
-    raw_ptr<const void> aux;
-    bool safe;
+    TrapKey() = default;
+    TrapKey(TrapFnc f, const void* a, bool s)
+        : fnc(f), aux(reinterpret_cast<uintptr_t>(a)), safe(s) {}
+
     bool operator<(const TrapKey&) const;
+
+    TrapFnc fnc = nullptr;
+    uintptr_t aux = 0;  // Usually a pointer, but may be a smuggled int.
+    bool safe = false;
   };
-  typedef std::map<TrapKey, uint16_t> TrapIds;
+  using TrapIds = std::map<TrapKey, uint16_t>;
 
   // Our constructor is private. A shared global instance is created
   // automatically as needed.
