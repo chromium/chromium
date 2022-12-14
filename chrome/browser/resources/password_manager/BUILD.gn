@@ -39,6 +39,7 @@ build_webui("build") {
     "prefs/pref_mixin.ts",
     "prefs/prefs_browser_proxy.ts",
     "router.ts",
+    "show_password_mixin.ts",
   ]
 
   # Files that are passed as input to css_to_wrapper().

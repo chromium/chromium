@@ -18,6 +18,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './password_details_card.html.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {ShowPasswordMixin} from './show_password_mixin.js';
 
 export interface PasswordDetailsCardElement {
   $: {
@@ -32,9 +33,10 @@ export interface PasswordDetailsCardElement {
   };
 }
 
+const PasswordDetailsCardElementBase =
+    ShowPasswordMixin(I18nMixin(PolymerElement));
 
-export class PasswordDetailsCardElement extends I18nMixin
-(PolymerElement) {
+export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   static get is() {
     return 'password-details-card';
   }
@@ -46,18 +48,11 @@ export class PasswordDetailsCardElement extends I18nMixin
   static get properties() {
     return {
       password: Object,
-
-      isPasswordVisible_: {
-        type: Boolean,
-        value: false,
-      },
-
       toastMessage_: String,
     };
   }
 
   password: chrome.passwordsPrivate.PasswordUiEntry;
-  private isPasswordVisible_: boolean;
   private toastMessage_: string;
 
   private isFederated_(): boolean {
@@ -75,7 +70,7 @@ export class PasswordDetailsCardElement extends I18nMixin
   }
 
   private getPasswordType_(): string {
-    return this.isFederated_() || this.isPasswordVisible_ ? 'text' : 'password';
+    return this.isFederated_() ? 'text' : this.getPasswordInputType();
   }
 
   private onCopyPasswordClick_() {

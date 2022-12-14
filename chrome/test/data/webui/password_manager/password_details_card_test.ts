@@ -139,4 +139,32 @@ suite('PasswordDetailsCardTest', function() {
       assertEquals(expectedDomain.url, listItemElement.href);
     });
   });
+
+  test('show/hide password', async function() {
+    const password = createPasswordEntry(
+        {id: 1, url: 'test.com', username: 'vik', password: 'password69'});
+
+    const card = document.createElement('password-details-card');
+    card.password = password;
+    document.body.appendChild(card);
+    await flushTasks();
+
+    assertEquals(
+        loadTimeData.getString('showPassword'),
+        card.$.showPasswordButton.title);
+    assertEquals('password', card.$.passwordValue.type);
+    assertTrue(card.$.showPasswordButton.hasAttribute('class'));
+    assertEquals(
+        'icon-visibility', card.$.showPasswordButton.getAttribute('class'));
+
+    card.$.showPasswordButton.click();
+
+    assertEquals(
+        loadTimeData.getString('hidePassword'),
+        card.$.showPasswordButton.title);
+    assertEquals('text', card.$.passwordValue.type);
+    assertTrue(card.$.showPasswordButton.hasAttribute('class'));
+    assertEquals(
+        'icon-visibility-off', card.$.showPasswordButton.getAttribute('class'));
+  });
 });
