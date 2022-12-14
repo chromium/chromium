@@ -17,24 +17,35 @@ class PaymentHandlerUninstallTest
 
   void SetUpOnMainThread() override {
     PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
-    NavigateTo("/payment_handler.html");
+    NavigateTo("a.com", "/payment_handler.html");
   }
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerUninstallTest, URLBasedPaymentMethod) {
-  EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(), "install()"));
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
 
   // Launch the payment request and confirm checkout completion.
   ResetEventWaiterForSingleEvent(TestEvent::kPaymentCompleted);
-  EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(), "launch()"));
+  EXPECT_EQ("success",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace("launch($1)", method_name)));
   WaitForObservedEvent();
 
   // Uninstall the payment app and verify that a new request.show() gets
   // rejected after the app uninstallation.
-  EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(), "uninstall()"));
+  EXPECT_EQ("success",
+            content::EvalJs(
+                GetActiveWebContents(),
+                content::JsReplace("uninstall($1)",
+                                   https_server()->GetURL(
+                                       "a.com", "/payment_handler_sw.js"))));
   ResetEventWaiterForSingleEvent(TestEvent::kNotSupportedError);
-  EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(),
-                                       "launchWithoutWaitForResponse()"));
+  EXPECT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
   WaitForObservedEvent();
 }
 

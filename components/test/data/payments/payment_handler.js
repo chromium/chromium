@@ -42,12 +42,15 @@ async function install(method = DEFAULT_METHOD_NAME) {
 
 /**
  * Uninstalls the payment handler.
+ * @param {string} swSrcUrlOverride - Optional service worker JavaScript file
+ * URL.
  * @return {Promise<string>} - 'success' or error message on failure.
  */
-async function uninstall() {
+async function uninstall(swSrcUrlOverride) {
+  let swSrcUrl =
+      (swSrcUrlOverride !== undefined) ? swSrcUrlOverride : SW_SRC_URL;
   try {
-    let registration =
-        await navigator.serviceWorker.getRegistration(SW_SRC_URL);
+    let registration = await navigator.serviceWorker.getRegistration(swSrcUrl);
     if (!registration) {
       return 'The Payment handler has not been installed yet.';
     }
