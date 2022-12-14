@@ -127,6 +127,7 @@
       # Disabling MSan tests since linux-chromeos chrome crashes on MSan build.
       # TODO(crbug.com/1376064): Re-enable.
       'Linux ChromiumOS MSan Tests',
+      'Linux ChromiumOS MSan Focal',
     ]
   },
   'aura_unittests amd64-generic': {
