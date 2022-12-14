@@ -83,6 +83,9 @@ declare_args() {
   # research. ASAN BRP is not supported in Chromium-external builds.
   use_asan_backup_ref_ptr =
       build_with_chromium && is_asan && (is_win || is_android || is_linux)
+
+  # Use probe-on-destruct unowned ptr detection with ASAN.
+  use_asan_unowned_ptr = false
 }
 
 # AsanBackupRefPtr is not supported outside Chromium. The implementation is
@@ -95,6 +98,11 @@ assert(build_with_chromium || !use_asan_backup_ref_ptr,
 assert(
     !enable_backup_ref_ptr_support || !use_asan_backup_ref_ptr,
     "Both BackupRefPtr and AsanBackupRefPtr can't be enabled at the same time")
+
+# AsanBackupRefPtr and AsanUnownedPtr are mutually exclusive variants of raw_ptr.
+assert(
+    !use_asan_unowned_ptr || !use_asan_backup_ref_ptr,
+    "Both AsanUnownedPtr and AsanBackupRefPtr can't be enabled at the same time")
 
 assert(!use_asan_backup_ref_ptr || is_asan,
        "AsanBackupRefPtr requires AddressSanitizer")
@@ -151,6 +159,7 @@ if (!use_partition_alloc) {
   enable_backup_ref_ptr_support = false
   enable_mte_checked_ptr_support = false
   use_asan_backup_ref_ptr = false
+  use_asan_unowned_ptr = false
   put_ref_count_in_previous_slot = false
   enable_backup_ref_ptr_slow_checks = false
   enable_dangling_raw_ptr_checks = false
@@ -186,6 +195,9 @@ assert(
 assert(
     enable_backup_ref_ptr_support || !backup_ref_ptr_poison_oob_ptr,
     "Can't enable poisoning for OOB pointers if BackupRefPtr isn't enabled at all")
+
+assert(!use_asan_unowned_ptr || is_asan,
+       "AsanUnownedPtr requires AddressSanitizer")
 
 declare_args() {
   enable_pkeys = is_linux && target_cpu == "x64"

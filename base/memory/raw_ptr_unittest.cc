@@ -56,7 +56,8 @@ static_assert(sizeof(raw_ptr<int>) == sizeof(int*),
 static_assert(sizeof(raw_ptr<std::string>) == sizeof(std::string*),
               "raw_ptr shouldn't add memory overhead");
 
-#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
+    !BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 // |is_trivially_copyable| assertion means that arrays/vectors of raw_ptr can
 // be copied by memcpy.
 static_assert(std::is_trivially_copyable<raw_ptr<void>>::value,

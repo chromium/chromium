@@ -83,6 +83,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
       std::is_same_v<Impl, internal::AsanBackupRefPtrImpl> ||
 #endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#if BUILDFLAG(USE_ASAN_UNOWNED_PTR)
+      std::is_same_v<Impl, internal::AsanUnownedPtrImpl> ||
+#endif  // BUILDFLAG(USE_ASAN_UNOWNED_PTR)
       std::is_same_v<Impl, internal::RawPtrNoOpImpl>;
 
  public:
