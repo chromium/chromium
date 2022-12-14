@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/preloading_data.h"
 
 #include "content/public/browser/web_contents_observer.h"
@@ -18,6 +19,7 @@ namespace content {
 
 class PreloadingAttemptImpl;
 class PreloadingPrediction;
+class PrefetchDocumentManager;
 
 // The scope of current preloading logging is only limited to the same
 // WebContents navigations. If the predicted URL is opened in a new tab we lose
@@ -33,6 +35,14 @@ class CONTENT_EXPORT PreloadingDataImpl
 
   static PreloadingDataImpl* GetOrCreateForWebContents(
       WebContents* web_contents);
+
+  // NoVarySearch is a `/content/browser` feature so is the matcher getter.
+  // The matcher first checks if `destination_url` is the same as the
+  // prediction; if not, the matcher checks if the `destination_url` matches
+  // any NoVarySearch query using `NoVarySearchHelper`.
+  static PreloadingURLMatchCallback GetSameURLAndNoVarySearchURLMatcher(
+      base::WeakPtr<PrefetchDocumentManager> manager,
+      const GURL& destination_url);
 
   // Disallow copy and assign.
   PreloadingDataImpl(const PreloadingDataImpl& other) = delete;

@@ -4,6 +4,8 @@
 
 #include "content/browser/preloading/preloading_data_impl.h"
 
+#include "content/browser/preloading/prefetch/no_vary_search_helper.h"
+#include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_prediction.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -21,6 +23,28 @@ PreloadingURLMatchCallback PreloadingData::GetSameURLMatcher(
         return predicted_url == navigated_url;
       },
       destination_url);
+}
+
+// static
+PreloadingURLMatchCallback
+PreloadingDataImpl::GetSameURLAndNoVarySearchURLMatcher(
+    base::WeakPtr<PrefetchDocumentManager> manager,
+    const GURL& destination_url) {
+  return base::BindRepeating(
+      [](base::WeakPtr<PrefetchDocumentManager> prefetch_doc_manager,
+         const GURL& predicted_url, const GURL& navigated_url) {
+        if (!prefetch_doc_manager)
+          return predicted_url == navigated_url;
+
+        if (predicted_url == navigated_url)
+          return true;
+
+        const absl::optional<GURL> match_url =
+            prefetch_doc_manager->GetNoVarySearchHelper().MatchUrl(
+                navigated_url);
+        return match_url == predicted_url;
+      },
+      manager, destination_url);
 }
 
 // static

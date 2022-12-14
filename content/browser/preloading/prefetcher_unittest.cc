@@ -51,6 +51,7 @@ class TestPrefetchService : public PrefetchService {
 
   void PrefetchUrl(
       base::WeakPtr<PrefetchContainer> prefetch_container) override {
+    prefetch_container->DisablePrecogLoggingForTest();
     prefetches_.push_back(prefetch_container);
 
     const auto& devtools_observer = prefetch_container->GetDevToolsObserver();

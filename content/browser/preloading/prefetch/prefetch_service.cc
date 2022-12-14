@@ -21,6 +21,7 @@
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_proxy_configurator.h"
+#include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
 #include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
@@ -50,8 +51,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
-#include "services/network/public/mojom/cookie_partition_key.mojom.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
@@ -88,11 +87,11 @@ bool ShouldConsiderDecoyRequestForStatus(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
     case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
     case PrefetchStatus::kPrefetchNotEligibleExistingProxy:
+    case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
       // These statuses don't relate to any user state, so don't send a decoy
       // request.
       return false;
     case PrefetchStatus::kPrefetchUsedNoProbe:
-    case PrefetchStatus::kPrefetchUsedProbeSuccess:
     case PrefetchStatus::kPrefetchNotUsedProbeFailed:
     case PrefetchStatus::kPrefetchNotStarted:
     case PrefetchStatus::kPrefetchNotFinishedInTime:
@@ -118,6 +117,9 @@ bool ShouldConsiderDecoyRequestForStatus(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchIsStaleNSPNotStarted:
     case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
     case PrefetchStatus::kPrefetchFailedRedirectsDisabled:
+    case PrefetchStatus::kPrefetchResponseUsed:
+    case PrefetchStatus::kPrefetchHeldback:
+    case PrefetchStatus::kPrefetchAllowed:
       // These statuses should not be returned by the eligibility checks, and
       // thus not be passed in here.
       NOTREACHED();
@@ -195,6 +197,21 @@ void RecordPrefetchProxyPrefetchMainframeCookiesToCopy(
 void CookieSetHelper(base::RepeatingClosure closure,
                      net::CookieAccessResult access_result) {
   closure.Run();
+}
+
+// Returns true if the prefetch is heldback, and set the holdback status
+// correspondingly.
+bool CheckAndSetPrefetchHoldbackStatus(
+    base::WeakPtr<PrefetchContainer> prefetch_container) {
+  if (!prefetch_container->HasPreloadingAttempt())
+    return false;
+  if (!IsContentPrefetchHoldback()) {
+    prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchAllowed);
+    return false;
+  } else {
+    prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchHeldback);
+    return true;
+  }
 }
 
 }  // namespace
@@ -293,7 +310,9 @@ void PrefetchService::CheckEligibilityOfPrefetch(
   // checks provide a PrefetchStatus related to the check.
 
   if (browser_context_->IsOffTheRecord()) {
-    std::move(result_callback).Run(prefetch_container, false, absl::nullopt);
+    std::move(result_callback)
+        .Run(prefetch_container, false,
+             PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord);
     return;
   }
 
@@ -509,43 +528,49 @@ void PrefetchService::OnGotEligibilityResult(
     base::WeakPtr<PrefetchContainer> prefetch_container,
     bool eligible,
     absl::optional<PrefetchStatus> status) {
-  if (prefetch_container)
-    prefetch_container->OnEligibilityCheckComplete(eligible);
-
-  if (!eligible || !prefetch_container) {
-    if (status && prefetch_container) {
-      prefetch_container->SetPrefetchStatus(status.value());
-
-      if (prefetch_container->GetPrefetchType().IsProxyRequired() &&
-          ShouldConsiderDecoyRequestForStatus(
-              prefetch_container->GetPrefetchStatus()) &&
-          PrefetchServiceSendDecoyRequestForIneligblePrefetch(
-              delegate_ ? delegate_->DisableDecoysBasedOnUserSettings()
-                        : false)) {
-        prefetch_container->SetIsDecoy(true);
-        prefetch_queue_.push_back(prefetch_container);
-        prefetch_container->SetPrefetchStatus(
-            PrefetchStatus::kPrefetchIsPrivacyDecoy);
-        Prefetch();
-      }
-    }
+  if (!prefetch_container)
     return;
+
+  bool is_decoy = false;
+  if (!eligible) {
+    // Expect a status if the container is alive but prefetch not eligible.
+    DCHECK(status.has_value());
+    is_decoy =
+        prefetch_container->GetPrefetchType().IsProxyRequired() &&
+        ShouldConsiderDecoyRequestForStatus(status.value()) &&
+        PrefetchServiceSendDecoyRequestForIneligblePrefetch(
+            delegate_ ? delegate_->DisableDecoysBasedOnUserSettings() : false);
+  }
+  // The prefetch decoy is pushed onto the queue and the network request will be
+  // dispatched, but the response will not be used. Thus it is eligible but a
+  // failure.
+  prefetch_container->SetIsDecoy(is_decoy);
+  if (is_decoy) {
+    prefetch_container->OnEligibilityCheckComplete(true, absl::nullopt);
+  } else {
+    prefetch_container->OnEligibilityCheckComplete(eligible, status);
   }
 
-  prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchNotStarted);
+  if (!eligible && !is_decoy)
+    return;
+
+  if (!is_decoy)
+    prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchNotStarted);
   prefetch_queue_.push_back(prefetch_container);
 
   Prefetch();
 
-  // Registers a cookie listener for this prefetch if it is using an isolated
-  // network context. If the cookies in the default partition associated with
-  // this URL change after this point, then the prefetched resources should not
-  // be served.
-  if (prefetch_container->GetPrefetchType()
-          .IsIsolatedNetworkContextRequired()) {
-    prefetch_container->RegisterCookieListener(
-        browser_context_->GetDefaultStoragePartition()
-            ->GetCookieManagerForBrowserProcess());
+  if (!is_decoy) {
+    // Registers a cookie listener for this prefetch if it is using an isolated
+    // network context. If the cookies in the default partition associated with
+    // this URL change after this point, then the prefetched resources should
+    // not be served.
+    if (prefetch_container->GetPrefetchType()
+            .IsIsolatedNetworkContextRequired()) {
+      prefetch_container->RegisterCookieListener(
+          browser_context_->GetDefaultStoragePartition()
+              ->GetCookieManagerForBrowserProcess());
+    }
   }
 }
 
@@ -691,6 +716,12 @@ void PrefetchService::StartSinglePrefetch(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(prefetch_container);
+
+  // Do not prefetch for a Holdback control group. Called after the checks in
+  // `PopNextPrefetchContainer` because we want to compare against the
+  // prefetches that would have been dispatched.
+  if (CheckAndSetPrefetchHoldbackStatus(prefetch_container))
+    return;
 
   TakeOwnershipOfPrefetch(prefetch_container);
 
@@ -902,6 +933,8 @@ void PrefetchService::OnPrefetchComplete(
   prefetch_container->OnPrefetchComplete();
 
   if (prefetch_container->IsDecoy()) {
+    prefetch_container->SetPrefetchStatus(
+        PrefetchStatus::kPrefetchIsPrivacyDecoy);
     // Since this prefetch was a decoy, we don't cache the response.
     prefetch_container->ResetURLLoader();
     Prefetch();
@@ -1085,6 +1118,8 @@ void PrefetchService::OnStreamingPrefetchResponseCompleted(
   prefetch_container->OnPrefetchComplete();
 
   if (prefetch_container->IsDecoy()) {
+    prefetch_container->SetPrefetchStatus(
+        PrefetchStatus::kPrefetchIsPrivacyDecoy);
     prefetch_container->ResetStreamingLoader();
     Prefetch();
     return;
@@ -1105,10 +1140,11 @@ void PrefetchService::OnStreamingPrefetchResponseCompleted(
   RecordPrefetchProxyPrefetchMainframeNetError(net_error);
 
   // Updates the prefetch's status if it hasn't been updated since the request
-  // first started.
-  if (!prefetch_container->HasPrefetchStatus() ||
-      prefetch_container->GetPrefetchStatus() ==
-          PrefetchStatus::kPrefetchNotFinishedInTime) {
+  // first started. For the prefetch to reach the network stack, it must have
+  // `PrefetchStatus::kPrefetchAllowed` or beyond.
+  DCHECK(prefetch_container->HasPrefetchStatus());
+  if (prefetch_container->GetPrefetchStatus() ==
+      PrefetchStatus::kPrefetchNotFinishedInTime) {
     prefetch_container->SetPrefetchStatus(
         net_error == net::OK ? PrefetchStatus::kPrefetchSuccessful
                              : PrefetchStatus::kPrefetchFailedNetError);

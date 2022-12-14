@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/callback.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "content/browser/preloading/prefetch/prefetch_cookie_listener.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
@@ -21,7 +21,10 @@
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
 #include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
+#include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/preloading_data_impl.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -50,6 +53,118 @@ void RecordCookieCopyTimes(
       base::Seconds(5), 50);
 }
 
+static_assert(
+    static_cast<int>(PrefetchStatus::kMaxValue) +
+        static_cast<int>(
+            PreloadingEligibility::kPreloadingEligibilityCommonEnd) <=
+    static_cast<int>(PreloadingEligibility::kPreloadingEligibilityContentEnd));
+
+PreloadingEligibility ToPreloadingEligibility(PrefetchStatus status) {
+  if (status == PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled)
+    return PreloadingEligibility::kDataSaverEnabled;
+  return static_cast<PreloadingEligibility>(
+      static_cast<int>(status) +
+      static_cast<int>(PreloadingEligibility::kPreloadingEligibilityCommonEnd));
+}
+
+// Please follow go/preloading-dashboard-updates if a new eligibility is added.
+void SetIneligibilityFromStatus(PreloadingAttempt* attempt,
+                                PrefetchStatus status) {
+  if (attempt) {
+    switch (status) {
+      case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
+      case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
+      case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
+      case PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps:
+      case PrefetchStatus::kPrefetchProxyNotAvailable:
+      case PrefetchStatus::kPrefetchNotEligibleNonDefaultStoragePartition:
+      case PrefetchStatus::kPrefetchIneligibleRetryAfter:
+      case PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker:
+      case PrefetchStatus::kPrefetchNotEligibleUserHasCookies:
+      case PrefetchStatus::kPrefetchNotEligibleExistingProxy:
+        attempt->SetEligibility(ToPreloadingEligibility(status));
+        break;
+      default:
+        NOTIMPLEMENTED();
+    }
+  }
+}
+
+static_assert(
+    static_cast<int>(PrefetchStatus::kMaxValue) +
+        static_cast<int>(
+            PreloadingFailureReason::kPreloadingFailureReasonCommonEnd) <=
+    static_cast<int>(
+        PreloadingFailureReason::kPreloadingFailureReasonContentEnd));
+
+PreloadingFailureReason ToPreloadingFailureReason(PrefetchStatus status) {
+  return static_cast<PreloadingFailureReason>(
+      static_cast<int>(status) +
+      static_cast<int>(
+          PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
+}
+
+// Please follow go/preloading-dashboard-updates if a new outcome enum or a
+// failure reason enum is added.
+void SetTriggeringOutcomeAndFailureReasonFromStatus(PreloadingAttempt* attempt,
+                                                    PrefetchStatus status) {
+  if (attempt) {
+    switch (status) {
+      case PrefetchStatus::kPrefetchNotFinishedInTime:
+        attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kRunning);
+        break;
+      case PrefetchStatus::kPrefetchSuccessful:
+        // A successful prefetch means the response is ready to be used for the
+        // next navigation.
+        attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
+        break;
+      case PrefetchStatus::kPrefetchResponseUsed:
+        attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kSuccess);
+        break;
+      // A decoy is considered eligible because a network request is made for
+      // it. It is considered as a failure as the final response is never
+      // served.
+      case PrefetchStatus::kPrefetchIsPrivacyDecoy:
+      case PrefetchStatus::kPrefetchFailedRedirectsDisabled:
+      case PrefetchStatus::kPrefetchFailedNetError:
+      case PrefetchStatus::kPrefetchFailedNon2XX:
+      case PrefetchStatus::kPrefetchFailedMIMENotSupported:
+        attempt->SetFailureReason(ToPreloadingFailureReason(status));
+        break;
+      case PrefetchStatus::kPrefetchHeldback:
+      // `kPrefetchAllowed` will soon transition into `kPrefetchNotStarted`.
+      case PrefetchStatus::kPrefetchAllowed:
+      case PrefetchStatus::kPrefetchNotStarted:
+        // `kPrefetchNotStarted` is set in
+        // `PrefetchService::OnGotEligibilityResult` when the container is
+        // pushed onto the prefetch queue, which occurs before the holdback
+        // status is determined in `PrefetchService::StartSinglePrefetch`.
+        // After the container is queued and before it is sent for prefetch, the
+        // only status change is when the container is popped from the queue but
+        // heldback. This is covered by attempt's holdback status. For these two
+        // reasons this PrefetchStatus does not fire a `SetTriggeringOutcome`.
+        break;
+      default:
+        NOTIMPLEMENTED();
+    }
+  }
+}
+
+void SetHoldbackFromStatus(PreloadingAttempt* attempt, PrefetchStatus status) {
+  if (attempt) {
+    switch (status) {
+      case PrefetchStatus::kPrefetchAllowed:
+        attempt->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
+        break;
+      case PrefetchStatus::kPrefetchHeldback:
+        attempt->SetHoldbackStatus(PreloadingHoldbackStatus::kHoldback);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
 }  // namespace
 
 PrefetchContainer::PrefetchContainer(
@@ -67,7 +182,20 @@ PrefetchContainer::PrefetchContainer(
                          ? prefetch_document_manager_->render_frame_host()
                                .GetPageUkmSourceId()
                          : ukm::kInvalidSourceId),
-      request_id_(base::UnguessableToken::Create().ToString()) {}
+      request_id_(base::UnguessableToken::Create().ToString()) {
+  auto* rfh = RenderFrameHost::FromID(referring_render_frame_host_id_);
+  if (rfh) {
+    auto* preloading_data = PreloadingData::GetOrCreateForWebContents(
+        WebContents::FromRenderFrameHost(rfh));
+    auto* attempt = preloading_data->AddPreloadingAttempt(
+        ToPreloadingPredictor(ContentPreloadingPredictor::kSpeculationRules),
+        PreloadingType::kPrefetch,
+        PreloadingDataImpl::GetSameURLAndNoVarySearchURLMatcher(
+            prefetch_document_manager_, url_));
+    attempt_ = attempt->GetWeakPtr();
+    // `PreloadingPrediction` is added in `PreloadingDecider`.
+  }
+}
 
 PrefetchContainer::~PrefetchContainer() {
   ukm::builders::PrefetchProxy_PrefetchedResource builder(ukm_source_id_);
@@ -94,6 +222,13 @@ PrefetchContainer::~PrefetchContainer() {
   // UKM event.
 
   builder.Record(ukm::UkmRecorder::Get());
+}
+
+void PrefetchContainer::SetPrefetchStatus(PrefetchStatus prefetch_status) {
+  prefetch_status_ = prefetch_status;
+  SetHoldbackFromStatus(attempt_.get(), prefetch_status);
+  SetTriggeringOutcomeAndFailureReasonFromStatus(attempt_.get(),
+                                                 prefetch_status);
 }
 
 PrefetchStatus PrefetchContainer::GetPrefetchStatus() const {
@@ -127,8 +262,18 @@ PrefetchDocumentManager* PrefetchContainer::GetPrefetchDocumentManager() const {
   return prefetch_document_manager_.get();
 }
 
-void PrefetchContainer::OnEligibilityCheckComplete(bool is_eligible) {
+void PrefetchContainer::OnEligibilityCheckComplete(
+    bool is_eligible,
+    absl::optional<PrefetchStatus> status) {
   is_eligible_ = is_eligible;
+  if (!is_eligible_) {
+    // Expect a reason (status) if not eligible.
+    DCHECK(status.has_value());
+    prefetch_status_ = status;
+    SetIneligibilityFromStatus(attempt_.get(), prefetch_status_.value());
+  } else if (attempt_) {
+    attempt_->SetEligibility(PreloadingEligibility::kEligible);
+  }
   prefetch_document_manager_->OnEligibilityCheckComplete(is_eligible);
 }
 
@@ -257,12 +402,14 @@ void PrefetchContainer::OnPrefetchProbeResult(
       break;
     case PrefetchProbeResult::kDNSProbeSuccess:
     case PrefetchProbeResult::kTLSProbeSuccess:
-      prefetch_status_ = PrefetchStatus::kPrefetchUsedProbeSuccess;
+      SetPrefetchStatus(PrefetchStatus::kPrefetchResponseUsed);
       break;
     case PrefetchProbeResult::kDNSProbeFailure:
     case PrefetchProbeResult::kTLSProbeFailure:
       prefetch_status_ = PrefetchStatus::kPrefetchNotUsedProbeFailed;
       break;
+    default:
+      NOTIMPLEMENTED();
   }
 }
 
@@ -376,6 +523,13 @@ void PrefetchContainer::UpdateServingPageMetrics() {
   if (HasPrefetchStatus()) {
     serving_page_metrics_container_->SetPrefetchStatus(GetPrefetchStatus());
   }
+}
+
+void PrefetchContainer::SimulateAttemptAtInterceptorForTest() {
+  if (attempt_)
+    attempt_->SetEligibility(PreloadingEligibility::kEligible);
+  SetPrefetchStatus(PrefetchStatus::kPrefetchAllowed);
+  SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
 }
 
 }  // namespace content

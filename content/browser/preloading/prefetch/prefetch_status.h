@@ -15,8 +15,11 @@ enum class PrefetchStatus {
   // The interceptor used a prefetch.
   kPrefetchUsedNoProbe = 0,
 
+  // Deprecated. Probe success implies the response is used. Thus replaced
+  // by `kPrefetchResponseUsed`.
+  //
   // The interceptor used a prefetch after successfully probing the origin.
-  kPrefetchUsedProbeSuccess = 1,
+  // kPrefetchUsedProbeSuccess = 1,
 
   // The interceptor was not able to use an available prefetch because the
   // origin probe failed.
@@ -137,6 +140,20 @@ enum class PrefetchStatus {
   // The URL is not eligible to be prefetched, because in the default network
   // context it is configured to use a proxy server.
   kPrefetchNotEligibleExistingProxy = 38,
+
+  // Prefetch not supported in Guest or Incognito mode.
+  kPrefetchNotEligibleBrowserContextOffTheRecord = 39,
+
+  // Whether this prefetch is heldback for counterfactual logging.
+  kPrefetchHeldback = 40,
+  kPrefetchAllowed = 41,
+
+  // The response of the prefetch is used for the next navigation. This is the
+  // final successful state.
+  kPrefetchResponseUsed = 42,
+
+  // The max value of the PrefetchStatus. Update this when new enums are added.
+  kMaxValue = kPrefetchResponseUsed,
 };
 
 }  // namespace content

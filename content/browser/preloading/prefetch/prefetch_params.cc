@@ -222,4 +222,8 @@ bool PrefetchUseStreamingURLLoader() {
       features::kPrefetchUseContentRefactor, "use_streaming_url_loader", true);
 }
 
+bool IsContentPrefetchHoldback() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kPrefetchUseContentRefactor, "prefetch_holdback", false);
+}
 }  // namespace content

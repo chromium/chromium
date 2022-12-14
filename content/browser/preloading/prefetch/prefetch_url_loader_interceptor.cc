@@ -233,6 +233,16 @@ void PrefetchURLLoaderInterceptor::InterceptPrefetchedNavigation(
     return;
   }
 
+  // This can only happen when probing is required and probing is successful.
+  // `PrefetchURLLoaderInterceptor::InterceptPrefetchedNavigation` is reached
+  // from a different code path, see
+  // `PrefetchURLLoaderInterceptor::MaybeCreateLoader`.
+  if (const auto status = prefetch_container->GetPrefetchStatus();
+      status != PrefetchStatus::kPrefetchResponseUsed) {
+    prefetch_container->SetPrefetchStatus(
+        PrefetchStatus::kPrefetchResponseUsed);
+  }
+
   // Set up URL loader that will serve the prefetched data, and URL loader
   // factory that will "create" this loader.
   scoped_refptr<network::SingleRequestURLLoaderFactory>
