@@ -1,0 +1,57 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+template("build_webui_tests") {
+  not_needed([ "target_name" ])
+
+  forward_variables_from(invoker,
+                         [
+                           "files",
+                           "ts_path_mappings",
+                           "ts_definitions",
+                           "ts_deps",
+                         ])
+
+  preprocess_dir = "${target_gen_dir}/preprocessed"
+  tsc_dir = "${target_gen_dir}/tsc"
+
+  preprocess_if_expr("preprocess") {
+    visibility = [ ":build_ts" ]
+    defines = chrome_grit_defines
+    in_folder = "."
+    out_folder = preprocess_dir
+    in_files = files
+  }
+
+  ts_library("build_ts") {
+    visibility = [ ":build_grdp" ]
+    root_dir = preprocess_dir
+    out_dir = tsc_dir
+    tsconfig_base = "tsconfig_base.json"
+    path_mappings = [ "chrome://webui-test/*|" +
+                      rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                                  target_gen_dir) ] + ts_path_mappings
+    in_files = files
+    definitions = ts_definitions
+    deps = [ "//chrome/test/data/webui:build_ts" ] + ts_deps
+    extra_deps = [ ":preprocess" ]
+  }
+
+  # This target is public so that it can be depended on by
+  # chrome/test/data/webui:build_grd which will place this grdp file into a grd
+  # file.
+  generate_grd("build_grdp") {
+    grd_prefix = "webui_${invoker.resource_path_prefix}"
+    out_grd = "$target_gen_dir/resources.grdp"
+    deps = [ ":build_ts" ]
+    manifest_files =
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+    resource_path_prefix = invoker.resource_path_prefix
+  }
+}

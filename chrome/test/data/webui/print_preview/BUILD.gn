@@ -2,109 +2,85 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("../build_webui_tests.gni")
 
-# Print Preview test files that contain // <if expr> and therefore require
-# preprocessing.
-preprocessed_tests = [
-  "button_strip_test.ts",
-  "color_settings_test.ts",
-  "destination_dialog_test.ts",
-  "destination_settings_test.ts",
-  "destination_store_test.ts",
-  "duplex_settings_test.ts",
-  "invalid_settings_browsertest.ts",
-  "key_event_test.ts",
-  "model_settings_availability_test.ts",
-  "model_settings_policy_test.ts",
-  "model_test.ts",
-  "native_layer_stub.ts",
-  "policy_test.ts",
-  "preview_generation_test.ts",
-  "print_button_test.ts",
-  "print_preview_app_test.ts",
-  "print_preview_sidebar_test.ts",
-  "print_preview_test_utils.ts",
-  "restore_state_test.ts",
-]
+build_webui_tests("build") {
+  resource_path_prefix = "print_preview"
 
-if (is_mac || is_win) {
-  preprocessed_tests += [ "system_dialog_browsertest.ts" ]
-}
-
-# Print Preview test files that do not require preprocessing. If adding
-# // <if expr to any file below, move it to the list above.
-non_preprocessed_tests = [
-  "advanced_dialog_test.ts",
-  "advanced_item_test.ts",
-  "button_strip_interactive_test.ts",
-  "copies_settings_test.ts",
-  "custom_margins_test.ts",
-  "destination_item_test.ts",
-  "destination_list_test.ts",
-  "dpi_settings_test.ts",
-  "header_test.ts",
-  "layout_settings_test.ts",
-  "margins_settings_test.ts",
-  "media_size_settings_test.ts",
-  "number_settings_section_interactive_test.ts",
-  "number_settings_section_test.ts",
-  "other_options_settings_test.ts",
-  "pages_per_sheet_settings_test.ts",
-  "pages_settings_test.ts",
-  "pdf_toolbar_manager_test.ts",
-  "pdf_viewer_test.ts",
-  "pdf_zoom_toolbar_test.ts",
-  "preview_area_test.ts",
-  "scaling_settings_interactive_test.ts",
-  "scaling_settings_test.ts",
-  "select_mixin_test.ts",
-  "settings_select_test.ts",
-  "test_plugin_proxy.ts",
-]
-
-if (is_chromeos) {
-  non_preprocessed_tests += [
-    "destination_dialog_cros_interactive_test.ts",
-    "destination_dialog_cros_test.ts",
-    "destination_dropdown_cros_test.ts",
-    "destination_item_test_cros.ts",
-    "destination_search_test_chromeos.ts",
-    "destination_select_test_cros.ts",
-    "native_layer_cros_stub.ts",
-    "pin_settings_test.ts",
-    "print_server_store_test.ts",
+  files = [
+    "advanced_dialog_test.ts",
+    "advanced_item_test.ts",
+    "button_strip_interactive_test.ts",
+    "button_strip_test.ts",
+    "color_settings_test.ts",
+    "copies_settings_test.ts",
+    "custom_margins_test.ts",
+    "destination_dialog_test.ts",
+    "destination_item_test.ts",
+    "destination_list_test.ts",
+    "destination_settings_test.ts",
+    "destination_store_test.ts",
+    "dpi_settings_test.ts",
+    "duplex_settings_test.ts",
+    "header_test.ts",
+    "invalid_settings_browsertest.ts",
+    "key_event_test.ts",
+    "layout_settings_test.ts",
+    "margins_settings_test.ts",
+    "media_size_settings_test.ts",
+    "model_settings_availability_test.ts",
+    "model_settings_policy_test.ts",
+    "model_test.ts",
+    "native_layer_stub.ts",
+    "number_settings_section_interactive_test.ts",
+    "number_settings_section_test.ts",
+    "other_options_settings_test.ts",
+    "pages_per_sheet_settings_test.ts",
+    "pages_settings_test.ts",
+    "pdf_toolbar_manager_test.ts",
+    "pdf_viewer_test.ts",
+    "pdf_zoom_toolbar_test.ts",
+    "policy_test.ts",
+    "preview_area_test.ts",
+    "preview_generation_test.ts",
+    "print_button_test.ts",
+    "print_preview_app_test.ts",
+    "print_preview_sidebar_test.ts",
+    "print_preview_test_utils.ts",
+    "restore_state_test.ts",
+    "scaling_settings_interactive_test.ts",
+    "scaling_settings_test.ts",
+    "select_mixin_test.ts",
+    "settings_select_test.ts",
+    "test_plugin_proxy.ts",
   ]
-} else {
-  non_preprocessed_tests += [
-    "destination_dialog_interactive_test.ts",
-    "destination_search_test.ts",
-    "destination_select_test.ts",
-  ]
-  preprocessed_tests += [ "link_container_test.ts" ]
-}
 
-preprocessed_folder = "$target_gen_dir/preprocessed"
+  if (is_mac || is_win) {
+    files += [ "system_dialog_browsertest.ts" ]
+  }
 
-preprocess_if_expr("preprocess") {
-  in_folder = "./"
-  out_folder = preprocessed_folder
-  in_files = preprocessed_tests
-}
+  if (is_chromeos) {
+    files += [
+      "destination_dialog_cros_interactive_test.ts",
+      "destination_dialog_cros_test.ts",
+      "destination_dropdown_cros_test.ts",
+      "destination_item_test_cros.ts",
+      "destination_search_test_chromeos.ts",
+      "destination_select_test_cros.ts",
+      "native_layer_cros_stub.ts",
+      "pin_settings_test.ts",
+      "print_server_store_test.ts",
+    ]
+  } else {
+    files += [
+      "destination_dialog_interactive_test.ts",
+      "destination_search_test.ts",
+      "destination_select_test.ts",
+    ]
+    files += [ "link_container_test.ts" ]
+  }
 
-copy("copy") {
-  sources = non_preprocessed_tests
-  outputs = [ "$preprocessed_folder/{{source_target_relative}}" ]
-}
-
-ts_library("build_ts") {
-  root_dir = preprocessed_folder
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  path_mappings = [
+  ts_path_mappings = [
     "chrome://print/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/print_preview/tsc/*",
             target_gen_dir),
@@ -115,31 +91,15 @@ ts_library("build_ts") {
         rebase_path(
             "$root_gen_dir/chrome/browser/resources/pdf/tsc/pdf_viewer_pp.js",
             target_gen_dir),
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
   ]
-  definitions = [
+
+  ts_definitions = [
     "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/mime_handler_private.d.ts",
   ]
-  in_files = preprocessed_tests + non_preprocessed_tests
-  deps = [
-    "..:build_ts",
+
+  ts_deps = [
     "//chrome/browser/resources/pdf:build_ts",
     "//chrome/browser/resources/print_preview:build_ts",
   ]
-  extra_deps = [
-    ":copy",
-    ":preprocess",
-  ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "webui_print_preview"
-  out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  resource_path_prefix = "print_preview"
 }

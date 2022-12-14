@@ -377,8 +377,8 @@ grit("resources") {
 See the [go/build-webui-pipeline](http://go/build-webui-pipeline) design doc for
 more info (internal only).
 
-The flow diagram below shows a high level view of how a typical modern user-facing
-WebUI is being built.
+The flow diagram below shows a high level view of how a typical modern
+user-facing WebUI is being built.
 
 ![WebUI build pipeline flow diagram](images/webui_build_pipeline.png)
 
@@ -517,6 +517,81 @@ build_webui("build") {
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
+  ]
+}
+
+```
+
+### **build_webui_tests**
+
+The flow diagram below shows a high level view of how a typical modern user-facing
+WebUI's tests are built.
+
+![WebUI tests build pipeline flow diagram](images/webui_build_pipeline_tests.png)
+
+```
+This umbrella rule captures the most common WebUI test build pipeline
+configuration and aims to hide the complexity of having to define multiple other
+targets directly. Using build_webui_tests() is the recommended approach for most
+modern user-facing WebUIs tests that reside under
+chrome/test/data/webui/<webui_name>/ and are served from
+chrome://webui-test/<webui_name>/
+
+Under the cover, build_webui_tests() defines the following targets
+
+preprocess_if_expr("preprocess")
+ts_library("build_ts")
+generate_grd("build_grdp")
+
+The parameters passed to build_webui_tests() are forwarded as needed to
+the targets above. Only the ":build_grdp" target is public and can be referred
+to from other parts of the build.
+
+```
+
+#### **Arguments**
+```
+
+List of files params:
+files: Required parameter. List of all test related files.
+
+TypeScript (ts_library()) related params:
+ts_definitions: See |definitions| in ts_library(). Required parameter.
+ts_deps: See |deps| in ts_library(). Required parameter.
+ts_path_mappings: See |path_mappings| in ts_library(). Required parameter.
+
+Other params:
+resource_path_prefix: See |resource_path_prefix| in generate_grd(). Required
+                      parameter.
+```
+
+#### **Example**
+```
+import("//chrome/test/data/webui/settings/tools/build_webui_tests.gni")
+
+build_webui_tests("build") {
+  resource_path_prefix = "settings"
+
+  files = [
+    "checkbox_tests.ts",
+    "collapse_radio_button_tests.ts",
+    "controlled_button_tests.ts",
+    "controlled_radio_button_tests.ts",
+    "dropdown_menu_tests.ts",
+  ]
+
+  ts_path_mappings =
+      [ "chrome://settings/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/settings/tsc/*",
+                    target_gen_dir) ]
+
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
+  ]
+
+  ts_deps = [
+    "//chrome/browser/resources/settings:build_ts",
   ]
 }
 
