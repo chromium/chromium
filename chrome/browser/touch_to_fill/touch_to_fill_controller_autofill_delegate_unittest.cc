@@ -74,11 +74,13 @@ class MockPasswordManagerClient
 };
 
 struct MockPasswordManagerDriver : password_manager::StubPasswordManagerDriver {
-  MOCK_METHOD2(FillSuggestion,
-               void(const std::u16string&, const std::u16string&));
-  MOCK_METHOD1(TouchToFillClosed, void(ShowVirtualKeyboard));
-  MOCK_METHOD0(TriggerFormSubmission, void());
-  MOCK_CONST_METHOD0(GetLastCommittedURL, const GURL&());
+  MOCK_METHOD(void,
+              FillSuggestion,
+              (const std::u16string&, const std::u16string&),
+              (override));
+  MOCK_METHOD(void, TouchToFillClosed, (ShowVirtualKeyboard), (override));
+  MOCK_METHOD(void, TriggerFormSubmission, (), (override));
+  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const override));
 };
 
 struct MockTouchToFillView : TouchToFillView {
@@ -90,8 +92,8 @@ struct MockTouchToFillView : TouchToFillView {
                base::span<const TouchToFillWebAuthnCredential>,
                bool),
               (override));
-  MOCK_METHOD1(OnCredentialSelected, void(const UiCredential&));
-  MOCK_METHOD0(OnDismiss, void());
+  MOCK_METHOD(void, OnCredentialSelected, (const UiCredential&));
+  MOCK_METHOD(void, OnDismiss, ());
 };
 
 struct MakeUiCredentialParams {

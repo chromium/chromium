@@ -55,6 +55,10 @@ class TouchToFillController {
   // The web page view containing the focused field.
   gfx::NativeView GetNativeView();
 
+  // Called by the owner to dismiss the sheet without waiting for user
+  // interaction.
+  void Close();
+
 #if defined(UNIT_TEST)
   void set_view(std::unique_ptr<TouchToFillView> view) {
     view_ = std::move(view);

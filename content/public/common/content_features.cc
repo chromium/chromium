@@ -1297,6 +1297,12 @@ BASE_FEATURE(kWebAuthConditionalUI,
              "WebAuthenticationConditionalUI",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether WebAuthn get requests for discoverable credentials use the
+// Touch To Fill bottom sheet on Android.
+BASE_FEATURE(kWebAuthnTouchToFillCredentialSelection,
+             "WebAuthnTouchToFillCredentialSelection",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the Web Bluetooth API is enabled:
 // https://webbluetoothcg.github.io/web-bluetooth/
 BASE_FEATURE(kWebBluetooth, "WebBluetooth", base::FEATURE_DISABLED_BY_DEFAULT);

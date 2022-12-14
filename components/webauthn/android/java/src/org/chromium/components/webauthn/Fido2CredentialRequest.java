@@ -33,11 +33,13 @@ import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
 import org.chromium.content_public.browser.WebAuthenticationDelegate;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.GURLUtils;
 import org.chromium.url.Origin;
 
@@ -208,7 +210,10 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             return;
         }
 
-        if (options.allowCredentials == null || options.allowCredentials.length == 0) {
+        boolean hasAllowCredentials =
+                options.allowCredentials != null && options.allowCredentials.length != 0;
+
+        if (!hasAllowCredentials) {
             // No UVM support for discoverable credentials.
             options.userVerificationMethods = false;
         }
@@ -246,7 +251,10 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             }
         }
 
-        if (options.isConditional) {
+        if (options.isConditional
+                || (ContentFeatureList.isEnabled(
+                            ContentFeatures.WEB_AUTHN_TOUCH_TO_FILL_CREDENTIAL_SELECTION)
+                        && !hasAllowCredentials)) {
             // For use in the lambda expression.
             final byte[] finalClientDataHash = clientDataHash;
             mConditionalUiState = ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST;
@@ -359,19 +367,21 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         assert mConditionalUiState == ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST
                 || mConditionalUiState == ConditionalUiState.CANCEL_PENDING;
 
+        boolean hasAllowCredentials =
+                options.allowCredentials != null && options.allowCredentials.length != 0;
+        boolean isConditionalRequest = options.isConditional;
+        assert isConditionalRequest || !hasAllowCredentials;
+
         if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
             // The request was completed synchronously when the cancellation was received.
             return;
         }
 
-        if (mBrowserBridge == null) {
-            mBrowserBridge = new WebAuthnBrowserBridge();
-        }
         List<WebAuthnCredentialDetails> discoverableCredentials = new ArrayList<>();
         for (WebAuthnCredentialDetails credential : credentials) {
             if (!credential.mIsDiscoverable) continue;
 
-            if (options.allowCredentials == null || options.allowCredentials.length == 0) {
+            if (!hasAllowCredentials) {
                 discoverableCredentials.add(credential);
                 continue;
             }
@@ -384,8 +394,23 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             }
         }
 
+        if (!isConditionalRequest && discoverableCredentials.isEmpty()) {
+            mConditionalUiState = ConditionalUiState.NONE;
+            // When no passkeys are present for a non-conditional request, pass the request
+            // through to GMSCore. It will show an error message to the user. If at some point in
+            // the future GMSCore supports passkeys from other devices, this will also allow it to
+            // initiate a cross-device flow.
+            maybeDispatchGetAssertionRequest(options, callerOriginString, clientDataHash, null);
+            return;
+        }
+
+        if (mBrowserBridge == null) {
+            mBrowserBridge = new WebAuthnBrowserBridge();
+        }
+
         mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
         mBrowserBridge.onCredentialsDetailsListReceived(frameHost, discoverableCredentials,
+                isConditionalRequest,
                 (selectedCredentialId)
                         -> maybeDispatchGetAssertionRequest(
                                 options, callerOriginString, clientDataHash, selectedCredentialId));
@@ -396,6 +421,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         // For Conditional UI requests, this is invoked by a callback, and might have been
         // cancelled before a credential was selected.
         if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
+            mConditionalUiState = ConditionalUiState.NONE;
             returnErrorAndResetCallback(AuthenticatorStatus.ABORT_ERROR);
             return;
         }
@@ -403,10 +429,16 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         mConditionalUiState = ConditionalUiState.NONE;
         if (credentialId != null) {
             if (credentialId.length == 0) {
-                // An empty credential ID means an error from native code, which can happen if the
-                // embedder does not support Conditional UI.
-                Log.e(TAG, "Empty credential ID from account selection.");
-                returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                if (options.isConditional) {
+                    // An empty credential ID means an error from native code, which can happen if
+                    // the embedder does not support Conditional UI.
+                    Log.e(TAG, "Empty credential ID from account selection.");
+                    returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                    return;
+                }
+                // For non-conditional requests, an empty credential ID means the user dismissed
+                // the account selection dialog.
+                returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
                 return;
             }
             PublicKeyCredentialDescriptor selected_credential = new PublicKeyCredentialDescriptor();

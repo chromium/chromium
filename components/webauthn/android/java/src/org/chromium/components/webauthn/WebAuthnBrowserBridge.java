@@ -19,16 +19,20 @@ public class WebAuthnBrowserBridge {
     private long mNativeWebAuthnBrowserBridge;
 
     /**
-     * Provides a list of credentials for WebAuthn Conditional UI. These credentials become
-     * available as options for autofill UI on sign-in input fields. The callback is invoked when
-     * a user selects one of the credentials from the list.
+     * Provides a list of discoverable credentials for user selection. If this is a conditional UI
+     * request, then these credentials become available as options for autofill UI on sign-in input
+     * fields. For non-conditional requests, a selection sheet is shown immediately. The callback
+     * is invoked when a user selects one of the credentials from the list.
      *
      * @param frameHost The RenderFrameHost for the frame that generated the request.
      * @param credentialList The list of credentials that can be used as autofill suggestions.
+     * @param isConditionalRequest Boolean indicating whether this is a conditional UI request or
+     *     not.
      * @param callback The callback to be invoked with the credential ID of a selected credential.
      */
     public void onCredentialsDetailsListReceived(RenderFrameHost frameHost,
-            List<WebAuthnCredentialDetails> credentialList, Callback<byte[]> callback) {
+            List<WebAuthnCredentialDetails> credentialList, boolean isConditionalRequest,
+            Callback<byte[]> callback) {
         assert credentialList != null;
         assert callback != null;
 
@@ -42,7 +46,7 @@ public class WebAuthnBrowserBridge {
                 credentialList.toArray(new WebAuthnCredentialDetails[credentialList.size()]);
         WebAuthnBrowserBridgeJni.get().onCredentialsDetailsListReceived(
                 mNativeWebAuthnBrowserBridge, WebAuthnBrowserBridge.this, credentialArray,
-                frameHost, callback);
+                frameHost, isConditionalRequest, callback);
     }
 
     /**
@@ -86,7 +90,7 @@ public class WebAuthnBrowserBridge {
         long createNativeWebAuthnBrowserBridge(WebAuthnBrowserBridge caller);
         void onCredentialsDetailsListReceived(long nativeWebAuthnBrowserBridge,
                 WebAuthnBrowserBridge caller, WebAuthnCredentialDetails[] credentialList,
-                RenderFrameHost frameHost, Callback<byte[]> callback);
+                RenderFrameHost frameHost, boolean isConditionalRequest, Callback<byte[]> callback);
         void cancelRequest(long nativeWebAuthnBrowserBridge, RenderFrameHost frameHost);
     }
 }

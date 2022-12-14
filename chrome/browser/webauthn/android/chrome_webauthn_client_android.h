@@ -22,6 +22,7 @@ class ChromeWebAuthnClientAndroid : public components::WebAuthnClientAndroid {
   void OnWebAuthnRequestPending(
       content::RenderFrameHost* frame_host,
       const std::vector<device::DiscoverableCredentialMetadata>& credentials,
+      bool is_conditional_request,
       base::OnceCallback<void(const std::vector<uint8_t>& id)> callback)
       override;
 

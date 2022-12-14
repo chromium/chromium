@@ -243,8 +243,10 @@ public final class AuthenticatorImpl implements Authenticator {
 
     @Override
     public void cancel() {
-        // This is not implemented for anything other than Conditional UI getAssertion requests,
-        // since there is no way to cancel a request that has already triggered gmscore UI.
+        // This is not implemented for anything other than getAssertion requests, since there is
+        // no way to cancel a request that has already triggered gmscore UI. Get requests can be
+        // cancelled if they are pending conditional UI requests, or if they are discoverable
+        // credential requests with the account selector being shown to the user.
         if (!mIsOperationPending || mGetAssertionCallback == null) {
             return;
         }

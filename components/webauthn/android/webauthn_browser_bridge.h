@@ -22,6 +22,7 @@ class WebAuthnBrowserBridge {
       const base::android::JavaParamRef<jobject>&,
       const base::android::JavaParamRef<jobjectArray>& credentials,
       const base::android::JavaParamRef<jobject>& jframe_host,
+      jboolean is_conditional_request,
       const base::android::JavaParamRef<jobject>& jcallback) const;
 
   void CancelRequest(

@@ -104,6 +104,13 @@ gfx::NativeView TouchToFillController::GetNativeView() {
   return delegate_->GetNativeView();
 }
 
+void TouchToFillController::Close() {
+  view_.reset();
+  // Unretained is safe here because TouchToFillController owns the delegate.
+  delegate_->OnDismiss(base::BindOnce(&TouchToFillController::ActionCompleted,
+                                      base::Unretained(this)));
+}
+
 void TouchToFillController::ActionCompleted() {
   delegate_.reset();
 }

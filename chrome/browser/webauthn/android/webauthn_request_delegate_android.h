@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 
 namespace content {
@@ -19,13 +20,15 @@ namespace device {
 class DiscoverableCredentialMetadata;
 }
 
+class TouchToFillController;
+
 // Helper class for connecting the autofill implementation to the WebAuthn
 // request handling for Conditional UI on Android. This is attached to a
 // WebContents via SetUserData. It caches a callback that will complete the
 // WebAuthn 'get' request when a user selects a credential.
 class WebAuthnRequestDelegateAndroid : public base::SupportsUserData::Data {
  public:
-  WebAuthnRequestDelegateAndroid();
+  explicit WebAuthnRequestDelegateAndroid(content::WebContents* web_contents);
 
   WebAuthnRequestDelegateAndroid(const WebAuthnRequestDelegateAndroid&) =
       delete;
@@ -40,6 +43,7 @@ class WebAuthnRequestDelegateAndroid : public base::SupportsUserData::Data {
   void OnWebAuthnRequestPending(
       content::RenderFrameHost* frame_host,
       const std::vector<device::DiscoverableCredentialMetadata>& credentials,
+      bool is_conditional_request,
       base::OnceCallback<void(const std::vector<uint8_t>& id)> callback);
 
   // Called when an outstanding request is aborted. This triggers the cached
@@ -49,7 +53,10 @@ class WebAuthnRequestDelegateAndroid : public base::SupportsUserData::Data {
   // Tells the driver that the user has selected a Web Authentication
   // credential from a dialog, and provides the credential ID for the selected
   // credential.
-  void OnWebAuthnAccountSelected(const std::vector<uint8_t>& id);
+  virtual void OnWebAuthnAccountSelected(const std::vector<uint8_t>& id);
+
+  // Returns the WebContents that owns this object.
+  content::WebContents* web_contents();
 
   // Returns a delegate associated with the |web_contents|. It creates one if
   // one does not already exist.
@@ -61,6 +68,15 @@ class WebAuthnRequestDelegateAndroid : public base::SupportsUserData::Data {
  private:
   base::OnceCallback<void(const std::vector<uint8_t>& user_id)>
       webauthn_account_selection_callback_;
+
+  // Controller for using the Touch To Fill bottom sheet for non-conditional
+  // requests.
+  std::unique_ptr<TouchToFillController> touch_to_fill_controller_;
+
+  // The WebContents that has this object in its userdata.
+  raw_ptr<content::WebContents> web_contents_;
+
+  bool conditional_request_in_progress_ = false;
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_ANDROID_WEBAUTHN_REQUEST_DELEGATE_ANDROID_H_

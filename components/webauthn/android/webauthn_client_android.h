@@ -29,12 +29,13 @@ class WebAuthnClientAndroid {
   // Accessor for the client that has been set by the embedder.
   static WebAuthnClientAndroid* GetClient();
 
-  // Called when a Web Authentication Conditional UI request is received. This
-  // provides the callback that will complete the request if and when a user
-  // selects a credential from a form autofill dialog.
+  // Called when a Web Authentication request is received that can be handled
+  // by the browser. This provides the callback that will complete the request
+  // if and when a user selects a credential from a selection dialog.
   virtual void OnWebAuthnRequestPending(
       content::RenderFrameHost* frame_host,
       const std::vector<device::DiscoverableCredentialMetadata>& credentials,
+      bool is_conditional_request,
       base::OnceCallback<void(const std::vector<uint8_t>& id)> callback) = 0;
 
   // Cancels a request if one is outstanding. Revokes the credential list and

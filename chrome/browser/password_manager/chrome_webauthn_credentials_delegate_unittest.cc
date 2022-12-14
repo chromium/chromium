@@ -122,7 +122,7 @@ class ChromeWebAuthnCredentialsDelegateTest
     dialog_model()->ReplaceCredListForTesting(std::move(creds));
 #else
     delegate_->OnWebAuthnRequestPending(
-        main_rfh(), creds,
+        main_rfh(), creds, /*is_conditional_request=*/true,
         base::BindOnce(
             &ChromeWebAuthnCredentialsDelegateTest::OnAccountSelected,
             base::Unretained(this)));
