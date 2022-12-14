@@ -173,4 +173,10 @@ void UDPClientSocket::SetIOSNetworkServiceType(int ios_network_service_type) {
 #endif
 }
 
+void UDPClientSocket::SetDontClose(bool dont_close) {
+#if BUILDFLAG(IS_POSIX)
+  socket_.SetDontClose(dont_close);
+#endif
+}
+
 }  // namespace net

@@ -85,6 +85,11 @@ class NET_EXPORT_PRIVATE DatagramClientSocket : public DatagramSocket,
   // Set iOS Network Service Type for socket option SO_NET_SERVICE_TYPE.
   // No-op by default.
   virtual void SetIOSNetworkServiceType(int ios_network_service_type) {}
+
+  // Set "don't close" flag for socket.
+  // No-op by default.
+  // TODO(nidhijaju): Remove this method once crbug.com/1383390 is fixed.
+  virtual void SetDontClose(bool dont_close) {}
 };
 
 }  // namespace net
