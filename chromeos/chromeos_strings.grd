@@ -3685,6 +3685,9 @@ Try tapping the mic to ask me anything.
         <message name="IDS_SETTINGS_APN_DESCRIPTION_NO_LINK" desc="Text describing APN settings menu without a link to more detailed information.">
           Manage network APN settings. APNs establish a connection between a cellular network and the internet.
         </message>
+        <message name="IDS_SETTINGS_CUSTOM_APN_LIMIT_REACHED" desc="Title shown when custom APNs limit is reached">
+          Remove an APN to add a new APN
+        </message>
         <message name="IDS_SETTINGS_APN_DESCRIPTION_WITH_LEARN_MORE_LINK" desc="Text describing APN settings menu with a link to more detailed information.">
           Manage network APN settings. APNs establish a connection between a cellular network and the internet. <ph name="BEGIN_LINK">&lt;a href="#" &gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
         </message>

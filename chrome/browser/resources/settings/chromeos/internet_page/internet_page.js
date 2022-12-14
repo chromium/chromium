@@ -17,6 +17,7 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../../prefs/prefs.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
@@ -31,6 +32,7 @@ import './network_summary.js';
 import './esim_rename_dialog.js';
 import './esim_remove_profile_dialog.js';
 
+import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {getNumESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
@@ -41,7 +43,6 @@ import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resourc
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {ApnProperties, CrosNetworkConfigRemote, GlobalPolicy, NetworkStateProperties, StartConnectResult, VpnProvider} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -309,6 +310,13 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
           return loadTimeData.valueExists('isHotspotEnabled') &&
               loadTimeData.getBoolean('isHotspotEnabled');
         },
+      },
+
+      /**
+       * Whether the 'Add custom APN' button is disabled.
+       */
+      isCreateCustomApnButtonDisabled_: {
+        type: Boolean,
       },
     };
   }
@@ -1063,7 +1071,8 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
    * @private
    */
   onCreateCustomApnClicked_() {
-    if (this.shouldShowApnDetailDialog_) {
+    if (this.shouldShowApnDetailDialog_ ||
+        this.isCreateCustomApnButtonDisabled_) {
       return;
     }
     const guid = Router.getInstance().getQueryParameters().get('guid');

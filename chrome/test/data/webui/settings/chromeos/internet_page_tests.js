@@ -9,7 +9,7 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/m
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
-import {CrosNetworkConfigRemote, InhibitReason, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfigRemote, InhibitReason, MAX_NUM_CUSTOM_APNS, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
@@ -820,6 +820,51 @@ suite('InternetPage', function() {
         await windowPopstatePromise;
         await waitBeforeNextRender(internetPage);
         assertNotEquals(Router.getInstance().getCurrentRoute(), routes.APN);
+      });
+
+  test(
+      'Disable and show tooltip for New APN button when custom APNs limit is' +
+          'reached',
+      async function() {
+        loadTimeData.overrideValues({isApnRevampEnabled: true});
+        await navigateToApnSubpage();
+        const getApnButton = () =>
+            internetPage.shadowRoot.querySelector('#createCustomApnButton');
+        const getApnTooltip = () =>
+            internetPage.shadowRoot.querySelector('#apnTooltip');
+
+        assertTrue(!!getApnButton());
+        assertFalse(!!getApnTooltip());
+        assertFalse(getApnButton().disabled);
+
+        let properties = OncMojo.getDefaultManagedProperties(
+            NetworkType.kCellular, 'cellular1', 'cellular');
+        // We're setting the list of APNs to the max number
+        properties.typeProperties.cellular = {
+          customApnList:
+              Array.apply(null, {length: MAX_NUM_CUSTOM_APNS}).map(_ => {
+                return {
+                  accessPointName: 'apn',
+                };
+              }),
+        };
+        mojoApi_.setManagedPropertiesForTest(properties);
+        await flushAsync();
+
+        assertTrue(!!getApnTooltip());
+        assertTrue(getApnButton().disabled);
+        assertTrue(getApnTooltip().innerHTML.includes(
+            internetPage.i18n('customApnLimitReached')));
+
+        properties = OncMojo.getDefaultManagedProperties(
+            NetworkType.kCellular, 'cellular1', 'cellular');
+        properties.typeProperties.cellular = {
+          customApnList: [],
+        };
+        mojoApi_.setManagedPropertiesForTest(properties);
+        await flushAsync();
+        assertFalse(!!getApnTooltip());
+        assertFalse(getApnButton().disabled);
       });
   // TODO(stevenjb): Figure out a way to reliably test navigation. Currently
   // such tests are flaky.

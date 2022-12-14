@@ -184,6 +184,7 @@ js_library("internet_page") {
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//chrome/browser/resources/settings/chromeos:router",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
+    "//third_party/polymer/v3_0/components-chromium/paper-tooltip:paper-tooltip",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [
