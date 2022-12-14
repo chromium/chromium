@@ -55,7 +55,7 @@ struct DateTimeChooserParameters;
 
 class CORE_EXPORT HTMLInputElement
     : public TextControlElement,
-      public ActiveScriptWrappable<HTMLInputElement> {
+      public LazyActiveScriptWrappable<HTMLInputElement> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

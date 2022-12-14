@@ -10,7 +10,7 @@
 
 namespace blink {
 
-void ActiveScriptWrappableBase::ActiveScriptWrappableBaseConstructed() {
+void ActiveScriptWrappableBase::RegisterActiveScriptWrappable() {
   DCHECK(ThreadState::Current());
   V8PerIsolateData::From(ThreadState::Current()->GetIsolate())
       ->GetActiveScriptWrappableManager()

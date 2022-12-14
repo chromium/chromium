@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_base.h"
-
 namespace blink {
 
 class ExecutionContext;
@@ -31,6 +30,9 @@ class ExecutionContext;
 // ActiveScriptWrappable<T> also have to provide a GetExecutionContext() method
 // that returns the ExecutionContext or nullptr. A nullptr or already destroyed
 // context results in ignoring HasPendingActivity().
+//
+// Automatically activates the ASW behavior after construction. For lazy
+// initialization, see LazyActiveScriptWrappable below.
 template <typename T>
 class ActiveScriptWrappable : public ActiveScriptWrappableBase {
  public:
@@ -39,8 +41,10 @@ class ActiveScriptWrappable : public ActiveScriptWrappableBase {
 
   ~ActiveScriptWrappable() override = default;
 
- protected:
-  ActiveScriptWrappable() = default;
+  // See trait below.
+  void ActiveScriptWrappableBaseConstructed() {
+    RegisterActiveScriptWrappable();
+  }
 
   bool IsContextDestroyed() const final {
     return IsContextDestroyedForActiveScriptWrappable(
@@ -50,6 +54,40 @@ class ActiveScriptWrappable : public ActiveScriptWrappableBase {
   bool DispatchHasPendingActivity() const final {
     return static_cast<const T*>(this)->HasPendingActivity();
   }
+
+ protected:
+  ActiveScriptWrappable() = default;
+};
+
+// Same as ActiveScriptWrappable with the difference the the object is not
+// automatically activated. Instead, child classes need to use
+// `RegisterActiveScriptWrappable()` to activate the
+// ASW behavior.
+template <typename T>
+class LazyActiveScriptWrappable : public ActiveScriptWrappableBase {
+ public:
+  LazyActiveScriptWrappable(const LazyActiveScriptWrappable&) = delete;
+  LazyActiveScriptWrappable& operator=(const LazyActiveScriptWrappable&) =
+      delete;
+
+  ~LazyActiveScriptWrappable() override = default;
+
+  // Registers the ASW, activating it.
+  void RegisterActiveScriptWrappable() {
+    ActiveScriptWrappableBase::RegisterActiveScriptWrappable();
+  }
+
+  bool IsContextDestroyed() const final {
+    return IsContextDestroyedForActiveScriptWrappable(
+        static_cast<const T*>(this)->GetExecutionContext());
+  }
+
+  bool DispatchHasPendingActivity() const final {
+    return static_cast<const T*>(this)->HasPendingActivity();
+  }
+
+ protected:
+  LazyActiveScriptWrappable() = default;
 };
 
 // Helper for ActiveScriptWrappable<T>::IsContextDestroyed();
@@ -57,5 +95,29 @@ CORE_EXPORT bool IsContextDestroyedForActiveScriptWrappable(
     const ExecutionContext* execution_context);
 
 }  // namespace blink
+
+namespace cppgc {
+
+template <typename T, typename Unused>
+struct PostConstructionCallbackTrait;
+template <typename T>
+struct PostConstructionCallbackTrait<
+    T,
+    std::void_t<
+        decltype(std::declval<T>().ActiveScriptWrappableBaseConstructed())>> {
+  static void Call(T* object) {
+    static_assert(std::is_base_of<blink::ActiveScriptWrappableBase, T>::value,
+                  "Only ActiveScriptWrappableBase should use the "
+                  "post-construction hook.");
+    // Registering the ActiveScriptWrappableBase after construction means that
+    // the garbage collector does not need to deal with objects that are
+    // currently under construction. This is important as checking whether ASW
+    // should be treated as active involves calling virtual functions which may
+    // not work during construction. The objects in construction are kept alive
+    // via conservative stack scanning.
+    object->ActiveScriptWrappableBaseConstructed();
+  }
+};
+}  // namespace cppgc
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ACTIVE_SCRIPT_WRAPPABLE_H_

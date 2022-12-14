@@ -169,8 +169,10 @@ bool HTMLInputElement::HasPendingActivity() const {
 }
 
 HTMLImageLoader& HTMLInputElement::EnsureImageLoader() {
-  if (!image_loader_)
+  if (!image_loader_) {
     image_loader_ = MakeGarbageCollected<HTMLImageLoader>(this);
+    RegisterActiveScriptWrappable();
+  }
   return *image_loader_;
 }
 
