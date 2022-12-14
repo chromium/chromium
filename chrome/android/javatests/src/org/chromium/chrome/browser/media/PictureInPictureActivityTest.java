@@ -297,12 +297,22 @@ public class PictureInPictureActivityTest {
         testExitOn(activity, () -> activity.close());
     }
 
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    public void testNotifyNativeWhenTabClose() throws Throwable {
+        PictureInPictureActivity activity = startPictureInPictureActivity();
+        testExitOn(activity, () -> mTab.setClosing(/*closing=*/true));
+        verify(mNativeMock, times(1)).destroy(NATIVE_OVERLAY);
+    }
+
     private WebContents getWebContents() {
         return mActivityTestRule.getActivity().getCurrentWebContents();
     }
 
     private void testExitOn(Activity activity, Runnable runnable) throws Throwable {
-        runnable.run();
+        TestThreadUtils.runOnUiThreadBlocking(() -> runnable.run());
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(activity == null || activity.isDestroyed(), Matchers.is(true));

@@ -365,13 +365,22 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
     private class InitiatorTabObserver extends EmptyTabObserver {
         @Override
+        public void onClosingStateChanged(Tab tab, boolean closing) {
+            if (closing) {
+                PictureInPictureActivity.this.onExitPictureInPicture(/*closeByNative=*/false);
+            }
+        }
+
+        @Override
         public void onDestroyed(Tab tab) {
-            if (tab.isClosing()) PictureInPictureActivity.this.finish();
+            if (tab.isClosing()) {
+                PictureInPictureActivity.this.onExitPictureInPicture(/*closeByNative=*/false);
+            }
         }
 
         @Override
         public void onCrash(Tab tab) {
-            PictureInPictureActivity.this.finish();
+            PictureInPictureActivity.this.onExitPictureInPicture(/*closeByNative=*/false);
         }
     }
 
@@ -465,7 +474,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         // or InitiatorTab has been destroyed by user or crashed.
         if (mNativeOverlayWindowAndroid != sPendingNativeOverlayWindowAndroid
                 || TabUtils.getActivity(mInitiatorTab) == null) {
-            this.finish();
+            onExitPictureInPicture(/*closeByNative=*/false);
             return;
         }
         sPendingNativeOverlayWindowAndroid = 0;
@@ -497,14 +506,35 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        if (mCompositorView != null) mCompositorView.destroy();
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void onPictureInPictureModeChanged(
+            boolean isInPictureInPictureMode, Configuration newConfig) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+        if (isInPictureInPictureMode) return;
+        PictureInPictureActivityJni.get().onBackToTab(mNativeOverlayWindowAndroid);
+        onExitPictureInPicture(/*closeByNative=*/false);
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    protected ActivityWindowAndroid createWindowAndroid() {
+        return new ActivityWindowAndroid(
+                this, /* listenToActivityState= */ true, getIntentRequestTracker());
+    }
+
+    @CalledByNative
+    public void close() {
+        onExitPictureInPicture(/*closeByNative=*/true);
+    }
+
+    private void onExitPictureInPicture(boolean closeByNative) {
+        if (!closeByNative && mNativeOverlayWindowAndroid != 0) {
+            PictureInPictureActivityJni.get().destroy(mNativeOverlayWindowAndroid);
+        }
+
+        if (mCompositorView != null) {
+            mCompositorView.destroy();
+            mCompositorView = null;
+        }
 
         if (mMediaSessionReceiver != null) {
             unregisterReceiver(mMediaSessionReceiver);
@@ -516,26 +546,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             mInitiatorTab = null;
         }
         mTabObserver = null;
-    }
 
-    @Override
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void onPictureInPictureModeChanged(
-            boolean isInPictureInPictureMode, Configuration newConfig) {
-        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
-        if (isInPictureInPictureMode) return;
-        PictureInPictureActivityJni.get().onBackToTab(mNativeOverlayWindowAndroid);
-        this.finish();
-    }
-
-    @Override
-    protected ActivityWindowAndroid createWindowAndroid() {
-        return new ActivityWindowAndroid(
-                this, /* listenToActivityState= */ true, getIntentRequestTracker());
-    }
-
-    @CalledByNative
-    public void close() {
         this.finish();
     }
 
@@ -682,7 +693,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             PictureInPictureActivity pipActivity = (PictureInPictureActivity) activity;
             if (nativeOverlayWindowAndroid == pipActivity.getNativeOverlayWindowAndroid()) {
                 pipActivity.resetNativeOverlayWindowAndroid();
-                pipActivity.finish();
+                pipActivity.onExitPictureInPicture(/*closeByNative=*/true);
             }
         }
     }
