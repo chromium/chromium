@@ -33,12 +33,15 @@ function bigintReplacer(_key: string, value: any): any {
 }
 
 class ValueColumn<T, V> implements Column<T> {
-  readonly compare: (a: T, b: T) => number;
+  readonly compare?: (a: T, b: T) => number;
 
   constructor(
       private readonly header: string,
-      protected readonly getValue: (param: T) => V) {
-    this.compare = (a: T, b: T) => compareDefault(getValue(a), getValue(b));
+      protected readonly getValue: (param: T) => V,
+      comparable: boolean = true) {
+    if (comparable) {
+      this.compare = (a: T, b: T) => compareDefault(getValue(a), getValue(b));
+    }
   }
 
   render(td: HTMLElement, row: T) {
@@ -62,7 +65,7 @@ class DateColumn<T> extends ValueColumn<T, Date> {
 
 class CodeColumn<T> extends ValueColumn<T, string> {
   constructor(header: string, getValue: (p: T) => string) {
-    super(header, getValue);
+    super(header, getValue, /*comparable=*/ false);
   }
 
   override render(td: HTMLElement, row: T) {
