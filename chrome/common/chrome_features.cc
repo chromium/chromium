@@ -353,7 +353,7 @@ const base::FeatureParam<bool> kChromeAppsDeprecationHideLaunchAnyways{
 // disruptive notifications.
 BASE_FEATURE(kDisruptiveNotificationPermissionRevocation,
              "DisruptiveNotificationPermissionRevocation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable DNS over HTTPS (DoH).
 BASE_FEATURE(kDnsOverHttps,
