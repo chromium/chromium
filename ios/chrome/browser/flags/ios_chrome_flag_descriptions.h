@@ -591,6 +591,11 @@ extern const char kOptimizationTargetPredictionName[];
 extern const char kPasswordReuseDetectionName[];
 extern const char kPasswordReuseDetectionDescription[];
 
+// Title and description for the flag to enable PriceNotifications IPH to be
+// alwayws be displayed.
+extern const char kIPHPriceNotificationsWhileBrowsingName[];
+extern const char kIPHPriceNotificationsWhileBrowsingDescription[];
+
 // Title and description for the flag to native restore web states.
 extern const char kRestoreSessionFromCacheName[];
 extern const char kRestoreSessionFromCacheDescription[];

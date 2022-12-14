@@ -656,6 +656,13 @@ const char kPasswordReuseDetectionDescription[] =
     "Displays warning when user types or pastes a saved password into a "
     "phishing website.";
 
+const char kIPHPriceNotificationsWhileBrowsingName[] =
+    "Price Tracking IPH Display";
+const char kIPHPriceNotificationsWhileBrowsingDescription[] =
+    "Always displays the Price Tracking IPH when the user navigates to a "
+    "product "
+    "webpage that supports price tracking.";
+
 const char kRecordSnapshotSizeName[] =
     "Record the size of image and PDF snapshots in UMA histograms";
 const char kRecordSnapshotSizeDescription[] =

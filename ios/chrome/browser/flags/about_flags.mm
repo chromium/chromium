@@ -1325,6 +1325,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSForceTranslateEnabledName,
      flag_descriptions::kIOSForceTranslateEnabledDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(translate::kIOSForceTranslateEnabled)},
+    {"iph-price-notifications-while-browsing",
+     flag_descriptions::kIPHPriceNotificationsWhileBrowsingName,
+     flag_descriptions::kIPHPriceNotificationsWhileBrowsingDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         feature_engagement::kIPHPriceNotificationsWhileBrowsingFeature)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -1734,6 +1734,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE" desc="Title for Price Notifications table view.">
         Track Price
       </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TOAST_IPH_TEXT" desc="Text for Price tracking toast IPH.">
+        Track price here
+      </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKABLE_SECTION_HEADER" desc="Section header for a Price Notifications table view section that lists items available on the current page to have their prices tracked.">
         Current Site
       </message>

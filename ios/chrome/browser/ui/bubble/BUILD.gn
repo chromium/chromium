@@ -23,6 +23,7 @@ source_set("bubble") {
     "//components/feature_engagement/public",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/commerce/push_notification",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/ui/commands",

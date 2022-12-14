@@ -421,6 +421,9 @@ BASE_FEATURE(kIPHFollowWhileBrowsingFeature,
 BASE_FEATURE(kIPHOverflowMenuTipFeature,
              "IPH_OverflowMenuTip",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHPriceNotificationsWhileBrowsingFeature,
+             "IPH_PriceNotificationsWhileBrowsing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

@@ -58,6 +58,10 @@ class ChromeBrowserState;
 // Presents a help bubble for What's New, if applicable.
 - (void)presentWhatsNewBottomToolbarBubble;
 
+// Presents a help bubble to inform the user that they can track the price of
+// the item on the current website.
+- (void)presentPriceNotificationsWhileBrowsingTipBubble;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_PRESENTER_H_

@@ -1097,6 +1097,24 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("whats_new_used", Comparator(EQUAL, 0), 360, 360);
     return config;
   }
+
+  if (kIPHPriceNotificationsWhileBrowsingFeature.name == feature->name) {
+    // A config that allows a user education bubble to be shown for the bottom
+    // toolbar.
+
+    // TODO(crbug.com/1382913): Set the trigger policy to the desired occurrence
+    // frequency threshold. Currently, the threshold is set to an arbitrary
+    // value.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger =
+        EventConfig("price_notifications_trigger", Comparator(EQUAL, 0), 7, 7);
+    config->used =
+        EventConfig("price_notifications_used", Comparator(EQUAL, 0), 7, 7);
+    return config;
+  }
 #endif  // BUILDFLAG(IS_IOS)
 
   if (kIPHDummyFeature.name == feature->name) {

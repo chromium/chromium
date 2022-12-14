@@ -4322,6 +4322,11 @@
     "expiry_milestone": 112
   },
   {
+      "name": "iph-price-notifications-while-browsing",
+      "owners": [ "danieltwhite", "ajuma" ],
+      "expiry_milestone": 114
+  },
+  {
     "name": "isolate-origins",
     "owners": [ "site-isolation-dev", "alexmos", "creis", "lukasza" ],
     // This is useful for isolating additional origins beyond the normal site

@@ -182,6 +182,7 @@ BASE_DECLARE_FEATURE(kIPHDefaultSiteViewFeature);
 BASE_DECLARE_FEATURE(kIPHPasswordSuggestionsFeature);
 BASE_DECLARE_FEATURE(kIPHFollowWhileBrowsingFeature);
 BASE_DECLARE_FEATURE(kIPHOverflowMenuTipFeature);
+BASE_DECLARE_FEATURE(kIPHPriceNotificationsWhileBrowsingFeature);
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

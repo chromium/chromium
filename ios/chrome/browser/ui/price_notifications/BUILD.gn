@@ -32,6 +32,21 @@ source_set("price_notifications") {
   ]
 }
 
+source_set("price_notifications_iph") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "price_notifications_iph_coordinator.h",
+    "price_notifications_iph_coordinator.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/browser/commerce/price_notifications",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+  ]
+}
+
 source_set("price_notifications_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

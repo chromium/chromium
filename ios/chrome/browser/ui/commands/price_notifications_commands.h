@@ -14,6 +14,9 @@
 // Shows the price notifications UI.
 - (void)showPriceNotifications;
 
+// Shows the price notifications IPH.
+- (void)presentPriceNotificationsWhileBrowsingIPH;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_COMMANDS_PRICE_NOTIFICATIONS_COMMANDS_H_
