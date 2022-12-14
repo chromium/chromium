@@ -1439,7 +1439,8 @@ bool Browser::IsBackForwardCacheSupported() {
 bool Browser::IsPrerender2Supported(content::WebContents& web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents.GetBrowserContext());
-  return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs()) ==
+  return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs(),
+                                           &web_contents) ==
          content::PreloadingEligibility::kEligible;
 }
 

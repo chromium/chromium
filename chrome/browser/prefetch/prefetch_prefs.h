@@ -8,6 +8,10 @@
 #include "base/feature_list.h"
 #include "content/public/browser/preloading.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -60,8 +64,11 @@ void SetPreloadPagesState(PrefService* prefs, PreloadPagesState state);
 
 // Returns PreloadingEligibility:kEligible if preloading is not entirely
 // disabled. Returns the first blocking reason encountered otherwise.
+// TODO(crbug/1391411): Audit the all callsites whether the default_value =
+// nullptr is suitable.
 content::PreloadingEligibility IsSomePreloadingEnabled(
-    const PrefService& prefs);
+    const PrefService& prefs,
+    content::WebContents* web_contents = nullptr);
 
 // Returns PreloadingEligibility:kEligible if preloading is not entirely
 // disabled. Returns the first blocking reason encountered otherwise.

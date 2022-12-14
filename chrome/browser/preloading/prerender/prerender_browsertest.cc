@@ -15,6 +15,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -73,6 +74,16 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
 
  private:
   content::test::PrerenderTestHelper prerender_helper_;
+};
+
+class PrerenderHoldbackBrowserTest : public PrerenderBrowserTest {
+ public:
+  PrerenderHoldbackBrowserTest() {
+    feature_list_.InitAndEnableFeature(prefetch::kPreloadingHoldback);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // An end-to-end test of prerendering and activating.
@@ -238,6 +249,67 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DisableNetworkPrediction) {
   registry_observer.WaitForTrigger(prerender_url);
   host_id = prerender_helper().GetHostForUrl(prerender_url);
   EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+}
+
+// Tests that Devtools open overrides PreloadingHoldback on non-Android
+// platforms.
+// TODO(crbug/1391411): revisit for Android platforms.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(PrerenderHoldbackBrowserTest,
+                       PreloadingHoldbackOverridden) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+  // Emulating Devtools attached to make PreloadingHoldback overridden.
+  ASSERT_NE(content::DevToolsAgentHost::GetOrCreateFor(GetActiveWebContents()),
+            nullptr);
+
+  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
+  ASSERT_EQ(prefetch::IsSomePreloadingEnabled(*prefs),
+            content::PreloadingEligibility::kPreloadingDisabled);
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
+  prerender_helper().AddPrerender(prerender_url);
+
+  // Activate.
+  content::TestActivationManager activation_manager(GetActiveWebContents(),
+                                                    prerender_url);
+  ASSERT_TRUE(
+      content::ExecJs(GetActiveWebContents()->GetPrimaryMainFrame(),
+                      content::JsReplace("location = $1", prerender_url)));
+  activation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(activation_manager.was_activated());
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      kFinalStatusActivated, 1);
+}
+#endif
+
+// Tests that Prerender2 cannot be triggered when PreloadingHoldback is not
+// overridden by Devtools.
+IN_PROC_BROWSER_TEST_F(PrerenderHoldbackBrowserTest,
+                       PreloadingHoldbackNotOverridden) {
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
+  ASSERT_EQ(prefetch::IsSomePreloadingEnabled(*prefs),
+            content::PreloadingEligibility::kPreloadingDisabled);
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+
+  // Attempt to trigger prerendering.
+  GURL prerender_url = embedded_test_server()->GetURL("/simple.html?1");
+  prerender_helper().AddPrerenderAsync(prerender_url);
+  // Since preload setting is disabled, prerender shouldn't be triggered.
+  registry_observer.WaitForTrigger(prerender_url);
+  int host_id = prerender_helper().GetHostForUrl(prerender_url);
+  EXPECT_EQ(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
 }
 
 }  // namespace
