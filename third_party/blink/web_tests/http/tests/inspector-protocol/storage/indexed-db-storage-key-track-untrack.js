@@ -15,7 +15,7 @@
   setTimeout(() => {
     testRunner.log(protocolMessages);
     testRunner.die('Timeout', errorForLog);
-  }, 9000);
+  }, 5000);
 
   const frameId = (await dp.Page.getResourceTree()).result.frameTree.frame.id;
   errorForLog = new Error();
