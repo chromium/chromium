@@ -78,7 +78,8 @@ class SelectToSpeakOptionsPage {
     this.syncCheckboxControlToPref_(
         'navigationControls', PrefsManager.NAVIGATION_CONTROLS_KEY);
     this.syncCheckboxControlToPref_(
-        'voiceSwitching', PrefsManager.VOICE_SWITCHING_KEY);
+        'voiceSwitching', PrefsManager.VOICE_SWITCHING_KEY,
+        checked => this.voiceSwitchingToggleChanged(/* isEnabled = */ checked));
 
     this.setUpHighlightListener_();
     this.setUpNaturalVoicePreviewListener_();
@@ -117,7 +118,18 @@ class SelectToSpeakOptionsPage {
   }
 
   /**
+   * When voice switching toggle is on, disable natural voice toggle.
+   * @param {boolean} isEnabled If voice switching toggle is enabled.
+   * @private
+   */
+  voiceSwitchingToggleChanged(isEnabled) {
+    const naturalVoiceToggle = document.getElementById('naturalVoices');
+    naturalVoiceToggle.disabled = isEnabled;
+  }
+
+  /**
    * Sets the visibility for natural voices selection and preview.
+   * Also disable voice switching toggle if natural voices enabled.
    * @param {boolean} isVisible The intended visibility of the elements.
    * @private
    */
@@ -125,9 +137,11 @@ class SelectToSpeakOptionsPage {
     const voice = document.getElementById('naturalVoiceSelection');
     const preview = document.getElementById('naturalVoicePreview');
     const select = document.getElementById('naturalVoice');
+    const voiceSwitchingToggle = document.getElementById('voiceSwitching');
     this.setElementVisible(voice, isVisible);
     this.setElementVisible(preview, isVisible);
     select.disabled = !isVisible;
+    voiceSwitchingToggle.disabled = isVisible;
   }
 
   /**
