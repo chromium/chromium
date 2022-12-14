@@ -36,6 +36,9 @@ struct SimpleEntry: TimelineEntry {
 
 @main
 struct ChromeWidgets: WidgetBundle {
+  init() {
+    CrashHelper.configure()
+  }
   @WidgetBundleBuilder
   var body: some Widget {
     QuickActionsWidget()

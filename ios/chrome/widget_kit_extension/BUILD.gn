@@ -35,6 +35,17 @@ compile_entitlements("entitlements") {
       [ "entitlements/external/widget_kit_extension.appex.entitlements" ]
 }
 
+source_set("crash_helper") {
+  sources = [
+    "crash_helper.h",
+    "crash_helper.mm",
+  ]
+
+  deps = [ "//ios/chrome/common/crash_report" ]
+  frameworks = [ "Foundation.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 swift_source_set("widget_kit_extension_swift") {
   sources = [
     "dino_game_widget.swift",
@@ -47,6 +58,7 @@ swift_source_set("widget_kit_extension_swift") {
   bridge_header = "widget_kit_swift_bridge.h"
 
   deps = [
+    ":crash_helper",
     ":system_strings",
     "resources:lockscreen_chrome_logo",
     "resources:lockscreen_game_logo",
