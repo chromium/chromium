@@ -2913,10 +2913,16 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInternalLinkClickTest, ShiftLeft) {
 
 class PDFExtensionComboBoxTest : public PDFExtensionTest {
  public:
+  // TODO(crbug.com/1261928): Prefer using LoadTestComboBoxPdfGetMimeHanderView
   void LoadTestComboBoxPdfGetGuestContents() {
     guest_contents_ = LoadPdfGetGuestContents(
         embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
     ASSERT_TRUE(guest_contents_);
+  }
+
+  MimeHandlerViewGuest* LoadTestComboBoxPdfGetMimeHanderView() {
+    return LoadPdfGetMimeHandlerView(
+        embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
   }
 
   // Returns a point near the left edge of the editable combo box in
@@ -2927,10 +2933,19 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
   // Blink page coordinates corresponds to approximately (102, 62) in PDF user
   // space coordinates. See PDFExtensionLinkClickTest::GetLinkPosition() for
   // more information on all the coordinate systems involved.
+  // TODO(crbug.com/1261928): Prefer the MimeHandlerViewGuest overload of this
+  // method.
   gfx::Point GetEditableComboBoxLeftPosition() {
     return ConvertPageCoordToScreenCoord(guest_contents_, {136, 318});
   }
 
+  gfx::Point GetEditableComboBoxLeftPosition(MimeHandlerViewGuest* guest) {
+    return ConvertPageCoordToScreenCoord(guest->GetGuestMainFrame(),
+                                         {136, 318});
+  }
+
+  // TODO(crbug.com/1261928): Prefer the MimeHandlerViewGuest overload of this
+  // method.
   void ClickLeftSideOfEditableComboBox() {
     WebContents* contents = GetWebContentsForInputRouting();
     content::SimulateMouseClickAt(contents, 0,
@@ -2945,6 +2960,20 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
     mouse_waiter.Wait();
   }
 
+  void ClickLeftSideOfEditableComboBox(MimeHandlerViewGuest* guest) {
+    SimulateMouseClickAt(guest, 0, blink::WebMouseEvent::Button::kLeft,
+                         GetEditableComboBoxLeftPosition(guest));
+
+    // Make sure mouse events are sent completely before proceeding, in order to
+    // avoid races with subsequent keyboard events.
+    content::InputEventAckWaiter mouse_waiter(
+        GetPluginFrame(guest)->GetRenderWidgetHost(),
+        blink::WebInputEvent::Type::kMouseUp);
+    mouse_waiter.Wait();
+  }
+
+  // TODO(crbug.com/1261928): Prefer the MimeHandlerViewGuest overload of this
+  // method.
   void TypeHello() {
     struct KeyData {
       char ch;
@@ -2969,6 +2998,37 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
                                 /*command=*/false);
       content::InputEventAckWaiter key_waiter(
           rwh, blink::WebInputEvent::Type::kKeyUp);
+      key_waiter.Wait();
+    }
+  }
+
+  void TypeHello(MimeHandlerViewGuest* guest) {
+    struct KeyData {
+      char ch;
+      ui::DomCode code;
+      ui::KeyboardCode key_code;
+    };
+
+    constexpr KeyData kData[] = {
+        {'H', ui::DomCode::US_H, ui::VKEY_H},
+        {'E', ui::DomCode::US_E, ui::VKEY_E},
+        {'L', ui::DomCode::US_L, ui::VKEY_L},
+        {'L', ui::DomCode::US_L, ui::VKEY_L},
+        {'O', ui::DomCode::US_O, ui::VKEY_O},
+    };
+
+    content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
+    // Make sure that the plugin frame of guest has focus.
+    ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(), plugin_frame);
+    for (const auto& data : kData) {
+      content::SimulateKeyPress(guest->embedder_web_contents(),
+                                ui::DomKey::FromCharacter(data.ch), data.code,
+                                data.key_code, /*control=*/false,
+                                /*shift=*/false, /*alt=*/false,
+                                /*command=*/false);
+      content::InputEventAckWaiter key_waiter(
+          plugin_frame->GetRenderWidgetHost(),
+          blink::WebInputEvent::Type::kKeyUp);
       key_waiter.Wait();
     }
   }
@@ -3018,9 +3078,9 @@ class PDFExtensionSaveTest : public PDFExtensionComboBoxTest {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
 
-  void SaveEditedPdf() {
+  void SaveEditedPdf(MimeHandlerViewGuest* guest) {
     ASSERT_TRUE(content::ExecuteScript(
-        GetWebContentsForInputRouting(),
+        guest->GetGuestMainFrame(),
         "var viewer = document.getElementById('viewer');"
         "var toolbar = viewer.shadowRoot.getElementById('toolbar');"
         "var downloads = toolbar.shadowRoot.getElementById('downloads');"
@@ -3053,10 +3113,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionSaveTest, MAYBE_Save) {
   using FileChooser = extensions::FileSystemChooseEntryFunction;
   FileChooser::SkipPickerAndAlwaysSelectPathForTest file_picker(save_path);
 
-  LoadTestComboBoxPdfGetGuestContents();
-  ClickLeftSideOfEditableComboBox();
-  TypeHello();
-  SaveEditedPdf();
+  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHanderView();
+  ClickLeftSideOfEditableComboBox(guest);
+  TypeHello(guest);
+  SaveEditedPdf(guest);
   WaitForSavedPdf(save_path);
 }
 
@@ -3123,10 +3183,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionSaveWithPolicyTest, MAYBE_SaveWithPolicy) {
   DownloadPrefs::FromBrowserContext(profile())
       ->SkipSanitizeDownloadTargetPathForTesting();
 
-  LoadTestComboBoxPdfGetGuestContents();
-  ClickLeftSideOfEditableComboBox();
-  TypeHello();
-  SaveEditedPdf();
+  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHanderView();
+  ClickLeftSideOfEditableComboBox(guest);
+  TypeHello(guest);
+  SaveEditedPdf(guest);
   WaitForSavedPdf(save_path);
 }
 
@@ -3153,10 +3213,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionSaveWithPolicyTest,
   DownloadPrefs::FromBrowserContext(profile())
       ->SkipSanitizeDownloadTargetPathForTesting();
 
-  LoadTestComboBoxPdfGetGuestContents();
-  ClickLeftSideOfEditableComboBox();
-  TypeHello();
-  SaveEditedPdf();
+  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHanderView();
+  ClickLeftSideOfEditableComboBox(guest);
+  TypeHello(guest);
+  SaveEditedPdf(guest);
   WaitForSavedPdf(save_path);
 }
 
@@ -3173,10 +3233,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionSaveWithPolicyTest,
   DownloadPrefs::FromBrowserContext(profile())
       ->SkipSanitizeDownloadTargetPathForTesting();
 
-  LoadTestComboBoxPdfGetGuestContents();
-  ClickLeftSideOfEditableComboBox();
-  TypeHello();
-  SaveEditedPdf();
+  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHanderView();
+  ClickLeftSideOfEditableComboBox(guest);
+  TypeHello(guest);
+  SaveEditedPdf(guest);
   while (CountPdfFilesInDir(GetDownloadDir()) != 102)
     content::RunAllTasksUntilIdle();
 }
