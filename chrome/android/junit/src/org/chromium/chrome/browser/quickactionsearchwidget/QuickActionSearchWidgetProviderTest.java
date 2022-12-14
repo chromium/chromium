@@ -49,6 +49,18 @@ public class QuickActionSearchWidgetProviderTest {
      */
     private class TestProvider extends QuickActionSearchWidgetProvider {
         @Override
+        RemoteViews createWidget(Context context, SearchActivityPreferences prefs, int areaWidthDp,
+                int areaHeightDp) {
+            // Unit Tests cannot build a composite RemoteViews object easily. This will fail
+            // because mocsk won't share the same package id as the test app -- and these
+            // details aren't easily mockable.
+            // The only alternative is to build actual RemoteViews which seems to fall outside
+            // of the Unit test scope.
+            assert false : "This method should be ignored for testing";
+            return null;
+        }
+
+        @Override
         RemoteViews getRemoteViews(Context context, SearchActivityPreferences prefs,
                 AppWidgetManager manager, int widgetId) {
             return mRemoteViews;

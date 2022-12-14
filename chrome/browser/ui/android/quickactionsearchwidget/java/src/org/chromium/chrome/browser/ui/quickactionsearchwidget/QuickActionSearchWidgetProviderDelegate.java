@@ -363,29 +363,21 @@ public class QuickActionSearchWidgetProviderDelegate {
      *
      * @param context Current context.
      * @param prefs Structure describing current preferences and feature availability.
-     * @param portraitModeWidthDp Width of the widget area in portrait mode.
-     * @param portraitModeHeightDp Height of the widget area in portrait mode.
-     * @param landscapeModeWidthDp Width of the widget area in landscape mode.
-     * @param landscapeModeHeightDp Height of the widget area in landscape mode.
+     * @param areaWidthDp Width of the widget area.
+     * @param areaHeightDp Height of the widget area.
      * @return RemoteViews to be installed on the Dino widget.
      */
     public @NonNull RemoteViews createDinoWidgetRemoteViews(@NonNull Context context,
-            @NonNull SearchActivityPreferences prefs, int portraitModeWidthDp,
-            int portraitModeHeightDp, int landscapeModeWidthDp, int landscapeModeHeightDp) {
-        RemoteViews landscapeViews =
-                createWidgetRemoteViews(context, R.layout.quick_action_search_widget_dino_layout);
-        RemoteViews portraitViews =
+            @NonNull SearchActivityPreferences prefs, int areaWidthDp, int areaHeightDp) {
+        RemoteViews views =
                 createWidgetRemoteViews(context, R.layout.quick_action_search_widget_dino_layout);
 
         // Dino widget is specific; we want to scale up a lot of dimensions based on the actual size
         // of the widget area. This makes layout a lot more responsive but also a lot more
         // complicated since we have to compute everything manually.
-        Resources res = context.getApplicationContext().getResources();
         resizeDinoWidgetToFillTargetCellArea(
-                res, landscapeViews, landscapeModeWidthDp, landscapeModeHeightDp);
-        resizeDinoWidgetToFillTargetCellArea(
-                res, portraitViews, portraitModeWidthDp, portraitModeHeightDp);
-        return new RemoteViews(landscapeViews, portraitViews);
+                context.getApplicationContext().getResources(), views, areaWidthDp, areaHeightDp);
+        return views;
     }
 
     /**
@@ -396,26 +388,16 @@ public class QuickActionSearchWidgetProviderDelegate {
      *
      * @param context Current context.
      * @param prefs Structure describing current preferences and feature availability.
-     * @param portraitModeWidthDp Width of the widget area in portrait mode.
-     * @param portraitModeHeightDp Height of the widget area in portrait mode.
-     * @param landscapeModeWidthDp Width of the widget area in landscape mode.
-     * @param landscapeModeHeightDp Height of the widget area in landscape mode.
-     * @return RemoteViews to be installed on the Search widget.
+     * @param areaWidthDp Width of the widget area.
+     * @param areaHeightDp Height of the widget area.
+     * @return RemoteViews to be installed on the Search widget for the passed variant.
      */
     public @NonNull RemoteViews createSearchWidgetRemoteViews(@NonNull Context context,
-            @NonNull SearchActivityPreferences prefs, int portraitModeWidthDp,
-            int portraitModeHeightDp, int landscapeModeWidthDp, int landscapeModeHeightDp) {
-        WidgetVariant landscapeVariant = getSearchWidgetVariantForHeight(landscapeModeHeightDp);
-        RemoteViews landscapeViews = createWidgetRemoteViews(context, landscapeVariant.layout);
-        applyRemoteViewsButtonVisibilityToFitWidth(
-                landscapeViews, prefs, landscapeVariant, landscapeModeWidthDp);
-
-        WidgetVariant portraitVariant = getSearchWidgetVariantForHeight(portraitModeHeightDp);
-        RemoteViews portraitViews = createWidgetRemoteViews(context, portraitVariant.layout);
-        applyRemoteViewsButtonVisibilityToFitWidth(
-                portraitViews, prefs, portraitVariant, portraitModeWidthDp);
-
-        return new RemoteViews(landscapeViews, portraitViews);
+            @NonNull SearchActivityPreferences prefs, int areaWidthDp, int areaHeightDp) {
+        WidgetVariant variant = getSearchWidgetVariantForHeight(areaHeightDp);
+        RemoteViews views = createWidgetRemoteViews(context, variant.layout);
+        applyRemoteViewsButtonVisibilityToFitWidth(views, prefs, variant, areaWidthDp);
+        return views;
     }
 
     /**

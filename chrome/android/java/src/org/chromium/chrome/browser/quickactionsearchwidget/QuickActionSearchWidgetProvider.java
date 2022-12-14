@@ -45,15 +45,10 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
             extends QuickActionSearchWidgetProvider {
         @Override
         @NonNull
-        RemoteViews getRemoteViews(@NonNull Context context,
-                @NonNull SearchActivityPreferences prefs, @NonNull AppWidgetManager manager,
-                int widgetId) {
-            Bundle options = manager.getAppWidgetOptions(widgetId);
-            return getDelegate().createSearchWidgetRemoteViews(context, prefs,
-                    getPortraitModeTargetAreaWidth(options),
-                    getPortraitModeTargetAreaHeight(options),
-                    getLandscapeModeTargetAreaWidth(options),
-                    getLandscapeModeTargetAreaHeight(options));
+        RemoteViews createWidget(@NonNull Context context, @NonNull SearchActivityPreferences prefs,
+                int areaWidthDp, int areaHeightDp) {
+            return getDelegate().createSearchWidgetRemoteViews(
+                    context, prefs, areaWidthDp, areaHeightDp);
         }
     }
 
@@ -85,15 +80,10 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
             extends QuickActionSearchWidgetProvider {
         @Override
         @NonNull
-        RemoteViews getRemoteViews(@NonNull Context context,
-                @NonNull SearchActivityPreferences prefs, @NonNull AppWidgetManager manager,
-                int widgetId) {
-            Bundle options = manager.getAppWidgetOptions(widgetId);
-            return getDelegate().createDinoWidgetRemoteViews(context, prefs,
-                    getPortraitModeTargetAreaWidth(options),
-                    getPortraitModeTargetAreaHeight(options),
-                    getLandscapeModeTargetAreaWidth(options),
-                    getLandscapeModeTargetAreaHeight(options));
+        RemoteViews createWidget(@NonNull Context context, @NonNull SearchActivityPreferences prefs,
+                int areaWidthDp, int areaHeightDp) {
+            return getDelegate().createDinoWidgetRemoteViews(
+                    context, prefs, areaWidthDp, areaHeightDp);
         }
     }
 
@@ -182,18 +172,43 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
     }
 
     /**
+     * Construct the widget for specific dimensions.
+     *
+     * @param context Current context.
+     * @param prefs Widget settings and feature availability.
+     * @param areaWidthDp The width of the widget area, expressed in Dp.
+     * @param areaHeightDp The height of the widget area, expressed in Dp.
+     * @return RemoteViews description for a single widget layout.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    @NonNull
+    abstract RemoteViews createWidget(@NonNull Context context,
+            @NonNull SearchActivityPreferences prefs, int areaWidthDp, int areaHeightDp);
+
+    /**
      * Acquire screen orientation specific layouts that will be applied to the
      * widget.
      * The two layouts represent screen orientations in Landscape and Portrait mode.
      *
      * @param context Current context.
+     * @param prefs Widget settings and feature availability.
      * @param manager The AppWidgetManager instance to query widget info.
      * @param widgetId The widget to get the delegate for.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    abstract @NonNull RemoteViews getRemoteViews(@NonNull Context context,
-            @NonNull SearchActivityPreferences prefs, @NonNull AppWidgetManager manager,
-            int widgetId);
+    @NonNull
+    RemoteViews getRemoteViews(@NonNull Context context, @NonNull SearchActivityPreferences prefs,
+            @NonNull AppWidgetManager manager, int widgetId) {
+        Bundle options = manager.getAppWidgetOptions(widgetId);
+
+        var portraitViews = createWidget(context, prefs, getPortraitModeTargetAreaWidth(options),
+                getPortraitModeTargetAreaHeight(options));
+
+        var landscapeViews = createWidget(context, prefs, getLandscapeModeTargetAreaWidth(options),
+                getLandscapeModeTargetAreaHeight(options));
+
+        return new RemoteViews(landscapeViews, portraitViews);
+    }
 
     /**
      * This function initializes the QuickActionSearchWidgetProvider component. Namely, this
