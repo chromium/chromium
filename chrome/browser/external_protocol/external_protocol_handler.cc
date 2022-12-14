@@ -391,25 +391,25 @@ void ExternalProtocolHandler::SetBlockState(
   if (MayRememberAllowDecisionsForThisOrigin(&initiating_origin)) {
     PrefService* profile_prefs = profile->GetPrefs();
     if (profile_prefs) {  // May be NULL during testing.
-      DictionaryPrefUpdate update_allowed_origin_protocol_pairs(
+      ScopedDictPrefUpdate update_allowed_origin_protocol_pairs(
           profile_prefs, prefs::kProtocolHandlerPerOriginAllowedProtocols);
 
       const std::string serialized_origin = initiating_origin.Serialize();
-      base::Value* allowed_protocols_for_origin =
-          update_allowed_origin_protocol_pairs->FindDictKey(serialized_origin);
+      base::Value::Dict* allowed_protocols_for_origin =
+          update_allowed_origin_protocol_pairs->FindDict(serialized_origin);
       if (!allowed_protocols_for_origin) {
-        update_allowed_origin_protocol_pairs->SetKey(
-            serialized_origin, base::Value(base::Value::Type::DICTIONARY));
+        update_allowed_origin_protocol_pairs->Set(serialized_origin,
+                                                  base::Value::Dict());
         allowed_protocols_for_origin =
-            update_allowed_origin_protocol_pairs->FindDictKey(
-                serialized_origin);
+            update_allowed_origin_protocol_pairs->FindDict(serialized_origin);
       }
       if (state == DONT_BLOCK) {
-        allowed_protocols_for_origin->SetBoolKey(scheme, true);
+        allowed_protocols_for_origin->Set(scheme, true);
       } else {
-        allowed_protocols_for_origin->RemoveKey(scheme);
-        if (allowed_protocols_for_origin->DictEmpty())
-          update_allowed_origin_protocol_pairs->RemoveKey(serialized_origin);
+        allowed_protocols_for_origin->Remove(scheme);
+        if (allowed_protocols_for_origin->empty()) {
+          update_allowed_origin_protocol_pairs->Remove(serialized_origin);
+        }
       }
     }
   }
