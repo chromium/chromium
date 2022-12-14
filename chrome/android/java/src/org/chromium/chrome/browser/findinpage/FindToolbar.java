@@ -134,6 +134,7 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
         }
 
         @Override
+        @SuppressLint("GestureBackNavigation")
         public boolean onKey(View v, int keyCode, KeyEvent event) {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {

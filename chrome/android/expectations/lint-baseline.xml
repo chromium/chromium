@@ -13,28 +13,6 @@
     </issue>
 
     <issue
-        id="GestureBackNavigation"
-        message="If intercepting back events, this should be handled through the registration of callbacks on the window level; Please see https://developer.android.com/about/versions/13/features/predictive-back-gesture"
-        errorLine1="            if (keyCode == KeyEvent.KEYCODE_BACK) {"
-        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/findinpage/FindToolbar.java"
-            line="138"
-            column="28"/>
-    </issue>
-
-    <issue
-        id="GestureBackNavigation"
-        message="If intercepting back events, this should be handled through the registration of callbacks on the window level; Please see https://developer.android.com/about/versions/13/features/predictive-back-gesture"
-        errorLine1="        } else if (keyCode == KeyEvent.KEYCODE_BACK) {"
-        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/LocationBarMediator.java"
-            line="1143"
-            column="31"/>
-    </issue>
-
-    <issue
         id="ResourceType"
         message="Expected resource of type styleable"
         errorLine1="                R.style.SelectPopupDialog, SELECT_DIALOG_ATTRS);"
