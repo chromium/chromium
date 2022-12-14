@@ -17,28 +17,6 @@
 
 namespace gpu {
 
-namespace {
-
-absl::optional<uint32_t> FindMemoryTypeIndex(
-    VkPhysicalDevice physical_device,
-    const VkMemoryRequirements* requirements,
-    VkMemoryPropertyFlags flags) {
-  VkPhysicalDeviceMemoryProperties properties;
-  vkGetPhysicalDeviceMemoryProperties(physical_device, &properties);
-  constexpr uint32_t kMaxIndex = 31;
-  for (uint32_t i = 0; i <= kMaxIndex; i++) {
-    if (((1u << i) & requirements->memoryTypeBits) == 0)
-      continue;
-    if ((properties.memoryTypes[i].propertyFlags & flags) != flags)
-      continue;
-    return i;
-  }
-  NOTREACHED();
-  return absl::nullopt;
-}
-
-}  // namespace
-
 // static
 std::unique_ptr<VulkanImage> VulkanImage::Create(
     VulkanDeviceQueue* device_queue,
@@ -113,13 +91,12 @@ std::unique_ptr<VulkanImage> VulkanImage::Create(
   auto image = std::make_unique<VulkanImage>(base::PassKey<VulkanImage>());
   image->device_queue_ = device_queue;
   image->image_ = vk_image;
-  image->device_memory_ = vk_device_memory;
+  image->memory_ = VulkanMemory::Create(device_queue, vk_device_memory,
+                                        device_size, memory_type_index);
   image->create_info_.extent = {static_cast<uint32_t>(size.width()),
                                 static_cast<uint32_t>(size.height()), 1};
   image->create_info_.format = format;
   image->create_info_.tiling = image_tiling;
-  image->device_size_ = device_size;
-  image->memory_type_index_ = memory_type_index;
   image->ycbcr_info_ = ycbcr_info;
   image->create_info_.usage = usage;
   image->create_info_.flags = flags;
@@ -131,7 +108,7 @@ VulkanImage::VulkanImage(base::PassKey<VulkanImage> pass_key) {}
 VulkanImage::~VulkanImage() {
   DCHECK(!device_queue_);
   DCHECK(image_ == VK_NULL_HANDLE);
-  DCHECK(device_memory_ == VK_NULL_HANDLE);
+  DCHECK(!memory_);
 }
 
 void VulkanImage::Destroy() {
@@ -142,34 +119,48 @@ void VulkanImage::Destroy() {
     vkDestroyImage(vk_device, image_, nullptr /* pAllocator */);
     image_ = VK_NULL_HANDLE;
   }
-  if (device_memory_ != VK_NULL_HANDLE) {
-    vkFreeMemory(vk_device, device_memory_, nullptr /* pAllocator */);
-    device_memory_ = VK_NULL_HANDLE;
+  if (memory_) {
+    memory_->Destroy();
+    memory_.reset();
   }
   device_queue_ = nullptr;
 }
 
-#if BUILDFLAG(IS_POSIX)
-base::ScopedFD VulkanImage::GetMemoryFd(
-    VkExternalMemoryHandleTypeFlagBits handle_type) {
-  VkMemoryGetFdInfoKHR get_fd_info = {
-      .sType = VK_STRUCTURE_TYPE_MEMORY_GET_FD_INFO_KHR,
-      .memory = device_memory_,
-      .handleType = handle_type,
+VkMemoryRequirements VulkanImage::GetMemoryRequirements(size_t plane) {
+  DCHECK(device_queue_);
+  DCHECK(image_ != VK_NULL_HANDLE);
+  DCHECK(plane < plane_count_);
 
-  };
-
-  VkDevice device = device_queue_->GetVulkanDevice();
-  int memory_fd = -1;
-  vkGetMemoryFdKHR(device, &get_fd_info, &memory_fd);
-  if (memory_fd < 0) {
-    DLOG(ERROR) << "Unable to extract file descriptor out of external VkImage";
-    return base::ScopedFD();
+  if (disjoint_) {
+    DCHECK_LT(plane, 3u);
+    static const VkImageAspectFlagBits kPlaneAspects[3] = {
+        VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT,
+        VK_IMAGE_ASPECT_MEMORY_PLANE_1_BIT_EXT,
+        VK_IMAGE_ASPECT_MEMORY_PLANE_2_BIT_EXT,
+    };
+    VkMemoryRequirements2 requirements2 = {
+        VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2};
+    VkImagePlaneMemoryRequirementsInfo plane_memory_requirements = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_PLANE_MEMORY_REQUIREMENTS_INFO,
+        .pNext = nullptr,
+        .planeAspect = kPlaneAspects[plane],
+    };
+    VkImageMemoryRequirementsInfo2 info = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2,
+        .pNext = &plane_memory_requirements,
+        .image = image_,
+    };
+    vkGetImageMemoryRequirements2(device_queue_->GetVulkanDevice(), &info,
+                                  &requirements2);
+    return requirements2.memoryRequirements;
   }
 
-  return base::ScopedFD(memory_fd);
+  DCHECK_EQ(plane, 0u);
+  VkMemoryRequirements requirements;
+  vkGetImageMemoryRequirements(device_queue_->GetVulkanDevice(), image_,
+                               &requirements);
+  return requirements;
 }
-#endif  // BUILDFLAG(IS_POSIX)
 
 bool VulkanImage::Initialize(VulkanDeviceQueue* device_queue,
                              const gfx::Size& size,
@@ -182,7 +173,7 @@ bool VulkanImage::Initialize(VulkanDeviceQueue* device_queue,
                              const VkMemoryRequirements* requirements) {
   DCHECK(!device_queue_);
   DCHECK(image_ == VK_NULL_HANDLE);
-  DCHECK(device_memory_ == VK_NULL_HANDLE);
+  DCHECK(!memory_);
 
   device_queue_ = device_queue;
   create_info_ = {
@@ -216,7 +207,7 @@ bool VulkanImage::Initialize(VulkanDeviceQueue* device_queue,
 
   VkMemoryRequirements tmp_requirements;
   if (!requirements) {
-    vkGetImageMemoryRequirements(vk_device, image_, &tmp_requirements);
+    tmp_requirements = GetMemoryRequirements(0);
     if (!tmp_requirements.memoryTypeBits) {
       DLOG(ERROR) << "vkGetImageMemoryRequirements failed";
       Destroy();
@@ -224,8 +215,6 @@ bool VulkanImage::Initialize(VulkanDeviceQueue* device_queue,
     }
     requirements = &tmp_requirements;
   }
-
-  device_size_ = requirements->size;
 
   // Some vulkan implementations require dedicated memory for sharing memory
   // object between vulkan instances.
@@ -235,32 +224,14 @@ bool VulkanImage::Initialize(VulkanDeviceQueue* device_queue,
       .image = image_,
   };
 
-  auto index =
-      FindMemoryTypeIndex(device_queue->GetVulkanPhysicalDevice(), requirements,
-                          VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-  if (!index) {
-    DLOG(ERROR) << "Cannot find validate memory type index.";
+  memory_ =
+      VulkanMemory::Create(device_queue_, requirements, &dedicated_memory_info);
+  if (!memory_) {
     Destroy();
     return false;
   }
 
-  memory_type_index_ = index.value();
-  VkMemoryAllocateInfo memory_allocate_info = {
-      .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-      .pNext = &dedicated_memory_info,
-      .allocationSize = device_size_,
-      .memoryTypeIndex = memory_type_index_,
-  };
-
-  result = vkAllocateMemory(vk_device, &memory_allocate_info,
-                            nullptr /* pAllocator */, &device_memory_);
-  if (result != VK_SUCCESS) {
-    DLOG(ERROR) << "vkAllocateMemory failed result:" << result;
-    Destroy();
-    return false;
-  }
-
-  result = vkBindImageMemory(vk_device, image_, device_memory_,
+  result = vkBindImageMemory(vk_device, image_, memory_->device_memory(),
                              0 /* memoryOffset */);
   if (result != VK_SUCCESS) {
     DLOG(ERROR) << "Failed to bind memory to external VkImage: " << result;

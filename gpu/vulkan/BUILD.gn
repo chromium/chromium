@@ -96,6 +96,8 @@ if (enable_vulkan) {
       "vulkan_implementation.h",
       "vulkan_instance.cc",
       "vulkan_instance.h",
+      "vulkan_memory.cc",
+      "vulkan_memory.h",
       "vulkan_surface.cc",
       "vulkan_surface.h",
       "vulkan_swap_chain.cc",

@@ -16,6 +16,7 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
+#include "gpu/vulkan/vulkan_memory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -98,19 +99,25 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
 
   void Destroy();
 
+  VkMemoryRequirements GetMemoryRequirements(size_t plane);
+
 #if BUILDFLAG(IS_POSIX)
   base::ScopedFD GetMemoryFd(VkExternalMemoryHandleTypeFlagBits handle_type =
-                                 VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT);
+                                 VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT) {
+    return memory_->GetMemoryFd(handle_type);
+  }
 #endif
 
 #if BUILDFLAG(IS_WIN)
   base::win::ScopedHandle GetMemoryHandle(
       VkExternalMemoryHandleTypeFlagBits handle_type =
-          VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT);
+          VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT) {
+    return memory_->GetMemoryHandle(handle_type);
+  }
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-  zx::vmo GetMemoryZirconHandle();
+  zx::vmo GetMemoryZirconHandle() { return memory_->GetMemoryZirconHandle(); }
 #endif
 
   VulkanDeviceQueue* device_queue() const { return device_queue_; }
@@ -121,8 +128,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
   VkFormat format() const { return create_info_.format; }
   VkImageCreateFlags flags() const { return create_info_.flags; }
   VkImageUsageFlags usage() const { return create_info_.usage; }
-  VkDeviceSize device_size() const { return device_size_; }
-  uint32_t memory_type_index() const { return memory_type_index_; }
+  VkDeviceSize device_size() const { return memory_->size(); }
+  uint32_t memory_type_index() const { return memory_->type_index(); }
   VkImageTiling image_tiling() const { return create_info_.tiling; }
   uint32_t queue_family_index() const { return queue_family_index_; }
   void set_queue_family_index(uint32_t index) { queue_family_index_ = index; }
@@ -130,7 +137,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
     return ycbcr_info_;
   }
   VkImage image() const { return image_; }
-  VkDeviceMemory device_memory() const { return device_memory_; }
+  VkDeviceMemory device_memory() const { return memory_->device_memory(); }
   VkExternalMemoryHandleTypeFlags handle_types() const { return handle_types_; }
   void set_native_pixmap(scoped_refptr<gfx::NativePixmap> pixmap) {
     native_pixmap_ = std::move(pixmap);
@@ -179,14 +186,13 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
                                                 VkImageCreateFlags flags);
 #endif
 
+  bool disjoint_ = false;
   raw_ptr<VulkanDeviceQueue> device_queue_ = nullptr;
   VkImageCreateInfo create_info_{VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
-  VkDeviceSize device_size_ = 0;
-  uint32_t memory_type_index_ = 0;
   uint32_t queue_family_index_ = VK_QUEUE_FAMILY_IGNORED;
   absl::optional<VulkanYCbCrInfo> ycbcr_info_;
   VkImage image_ = VK_NULL_HANDLE;
-  VkDeviceMemory device_memory_ = VK_NULL_HANDLE;
+  std::unique_ptr<VulkanMemory> memory_;
   VkExternalMemoryHandleTypeFlags handle_types_ = 0;
   scoped_refptr<gfx::NativePixmap> native_pixmap_;
   uint64_t modifier_ = gfx::NativePixmapHandle::kNoModifier;
