@@ -8,6 +8,7 @@
 #import "components/policy/policy_constants.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -73,6 +74,12 @@ void WaitForSettingDoneButton() {
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForClearBrowsingDataTimeout, condition),
              @"Settings done button not visible");
+}
+
+// Sets up the sign-in policy value dynamically at runtime.
+void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
+  policy_test_utils::SetPolicy(static_cast<int>(signinMode),
+                               policy::key::kBrowserSignin);
 }
 
 }  // namespace
@@ -418,19 +425,10 @@ void WaitForSettingDoneButton() {
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
-// TODO(crbug.com/1247487): Fix this test.
 // Tests that the sign-in cell can't be used when sign-in is disabled by policy.
-- (void)DISABLED_testSigninDisabledByPolicy {
-  AppLaunchConfiguration config;
-  config.additional_args.push_back(std::string("-") +
-                                   test_switches::kSignInAtStartup);
-  // Relaunch the app to take the configuration into account.
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
+- (void)testSigninDisabledByPolicy {
   // Disable browser sign-in.
-  [self setUpSigninDisabledEnterprisePolicy];
-  [ChromeEarlGrey setIntegerValue:static_cast<int>(BrowserSigninMode::kDisabled)
-                forLocalStatePref:prefs::kBrowserSigninPolicy];
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kDisabled);
 
   // Open Google services settings and verify the sign-in cell shows the
   // sign-in cell (even if greyed out).
@@ -446,48 +444,6 @@ void WaitForSettingDoneButton() {
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_SETTING_OFF))]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Clean-up policy.
-  [ChromeEarlGrey setIntegerValue:static_cast<int>(BrowserSigninMode::kEnabled)
-                forLocalStatePref:prefs::kBrowserSigninPolicy];
-  [[NSUserDefaults standardUserDefaults]
-      removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
-}
-
-// TODO(crbug.com/1247487): Fix this test.
-// Tests that the sign-in cell can't be used when sign-in is forced by policy.
-- (void)DISABLED_testSigninForcedByPolicy {
-  AppLaunchConfiguration config;
-  config.additional_args.push_back(std::string("-") +
-                                   test_switches::kSignInAtStartup);
-  // Relaunch the app to take the configuration into account.
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
-  // Force browser sign-in.
-  [self setUpSigninForcedEnterprisePolicy];
-  [ChromeEarlGrey setIntegerValue:static_cast<int>(BrowserSigninMode::kForced)
-                forLocalStatePref:prefs::kBrowserSigninPolicy];
-
-  // Open Google services settings and verify the sign-in cell shows the
-  // sign-in cell (even if greyed out).
-  [self openGoogleServicesSettings];
-  id<GREYMatcher> signinMatcher = [self
-      cellMatcherWithTitleID:IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_TEXT
-                detailTextID:
-                    IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL];
-  [[EarlGrey selectElementWithMatcher:signinMatcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Assert that sign-in cell shows the "Off" status instead of the knob.
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_IOS_SETTING_OFF))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Clean-up policy.
-  [ChromeEarlGrey setIntegerValue:static_cast<int>(BrowserSigninMode::kEnabled)
-                forLocalStatePref:prefs::kBrowserSigninPolicy];
-  [[NSUserDefaults standardUserDefaults]
-      removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
 }
 
 #pragma mark - Helpers

@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/string_util.h"
@@ -193,6 +194,31 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
   http_response->set_content("<html><head><title>Hello World</title></head>"
                              "<body>Hello World!</body></html>");
   return std::move(http_response);
+}
+// Returns grey matcher for an item in Google Service Settings with `titleID`
+// and `detailTextID`.
+id<GREYMatcher> GetItemMatcherWithTitleAndTextIDs(int titleID,
+                                                  int detailTextID) {
+  NSString* accessibilityLabel = l10n_util::GetNSString(titleID);
+  if (detailTextID) {
+    accessibilityLabel =
+        [NSString stringWithFormat:@"%@, %@", accessibilityLabel,
+                                   l10n_util::GetNSString(detailTextID)];
+  }
+  return grey_allOf(grey_accessibilityLabel(accessibilityLabel),
+                    grey_kindOfClassName(@"UITableViewCell"),
+                    grey_sufficientlyVisible(), nil);
+}
+
+// Opens the Google services settings.
+void OpenGoogleServicesSettings() {
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::GoogleServicesSettingsButton()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kGoogleServicesSettingsViewIdentifier)]
+      assertWithMatcher:grey_notNil()];
 }
 
 }  // namespace
@@ -1209,6 +1235,37 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
   // Wait and verify that the forced sign-in screen is shown when the policy is
   // enabled and the browser is signed out.
   [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
+}
+
+// Tests that the sign-in item in Google Service Settings can't be used when
+// sign-in is forced by policy.
+- (void)testGoogleServiceSettingsUI {
+  // Add an identity to sign-in to enable the "Continue as ..." button in the
+  // sign-in screen.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Enable forced sign-in and sign in from the prompt.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kForced);
+  ScrollToElementAndAssertVisibility(
+      GetContinueButtonWithIdentityMatcher(fakeIdentity));
+  [[EarlGrey selectElementWithMatcher:GetContinueButtonWithIdentityMatcher(
+                                          fakeIdentity)]
+      performAction:grey_tap()];
+
+  // Open Google services settings and verify that sign-in item is greyed out.
+  OpenGoogleServicesSettings();
+  id<GREYMatcher> signinMatcher = GetItemMatcherWithTitleAndTextIDs(
+      IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_TEXT,
+      IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL);
+  [[EarlGrey selectElementWithMatcher:signinMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Assert the sign-in item shows the "On" label in replacement of the toggle
+  // switch.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_SETTING_ON))]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end
