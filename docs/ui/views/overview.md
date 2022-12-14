@@ -132,7 +132,7 @@ affecting the client view.
 
 The overall structure of a Widget and its helper Views looks like this:
 
-![views](views.png)
+![views](images/views.png)
 
 ## Dialogs
 
