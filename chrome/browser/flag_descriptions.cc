@@ -2091,12 +2091,6 @@ const char kOmniboxMlLogUrlScoringSignalsName[] =
 const char kOmniboxMlLogUrlScoringSignalsDescription[] =
     "Enables Omnibox to log scoring signals of URL suggestions.";
 
-const char kOmniboxMostVisitedTilesFadingOnTabletName[] =
-    "Omnibox Most Visited Tiles fading on tablet";
-const char kOmniboxMostVisitedTilesFadingOnTabletDescription[] =
-    "Set most visited website tiles carousel to fade on horizontal ends on"
-    "tablet mode.";
-
 const char kOmniboxOnClobberFocusTypeOnContentName[] =
     "Omnibox On Clobber Focus Type On Content";
 const char kOmniboxOnClobberFocusTypeOnContentDescription[] =

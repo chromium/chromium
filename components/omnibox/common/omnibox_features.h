@@ -99,7 +99,6 @@ BASE_DECLARE_FEATURE(kOmniboxDefaultBrowserPedal);
 BASE_DECLARE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor);
 BASE_DECLARE_FEATURE(kOmniboxRemoveSuggestionHeaderChevron);
 BASE_DECLARE_FEATURE(kOmniboxMostVisitedTilesAddRecycledViewPool);
-BASE_DECLARE_FEATURE(kOmniboxMostVisitedTilesFadingOnTablet);
 BASE_DECLARE_FEATURE(kUniformRowHeight);
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopup);
 

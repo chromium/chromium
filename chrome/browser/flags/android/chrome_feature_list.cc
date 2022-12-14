@@ -367,7 +367,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &omnibox::kOmniboxRemoveExcessiveRecycledViewClearCalls,
     &omnibox::kOmniboxRemoveSuggestionHeaderChevron,
     &omnibox::kOmniboxMostVisitedTilesAddRecycledViewPool,
-    &omnibox::kOmniboxMostVisitedTilesFadingOnTablet,
     &omnibox::kOmniboxOnClobberFocusTypeOnContent,
     &omnibox::kSuggestionAnswersColorReverse,
     &omnibox::kUpdatedConnectionSecurityIndicators,

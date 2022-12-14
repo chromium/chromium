@@ -8,7 +8,6 @@ import android.content.Context;
 
 import androidx.annotation.CallSuper;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -19,7 +18,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 public abstract class BaseCarouselSuggestionProcessor implements SuggestionProcessor {
     private final Context mContext;
     private final int mCarouselViewDecorationHeightPx;
-    private boolean mEnableHorizontalFade;
 
     /**
      * @param context Current context.
@@ -45,17 +43,9 @@ public abstract class BaseCarouselSuggestionProcessor implements SuggestionProce
 
     @CallSuper
     @Override
-    public void onNativeInitialized() {
-        mEnableHorizontalFade = ChromeFeatureList.isEnabled(
-                ChromeFeatureList.OMNIBOX_MOST_VISITED_TILES_FADING_ON_TABLET);
-    }
-
-    @CallSuper
-    @Override
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int matchIndex) {
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
-        model.set(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE,
-                isTablet && mEnableHorizontalFade);
+        model.set(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE, isTablet);
     }
 
     @Override

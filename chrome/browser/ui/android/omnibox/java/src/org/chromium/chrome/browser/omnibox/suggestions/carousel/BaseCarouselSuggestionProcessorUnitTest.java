@@ -18,9 +18,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -78,7 +76,6 @@ public class BaseCarouselSuggestionProcessorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MOST_VISITED_TILES_FADING_ON_TABLET})
     public void testPopulateModelTest_notTablet() {
         mProcessor.onNativeInitialized();
         mProcessor.populateModel(null, mModel, 0);
@@ -87,7 +84,6 @@ public class BaseCarouselSuggestionProcessorUnitTest {
 
     @Test
     @Config(qualifiers = "w600dp-h820dp")
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MOST_VISITED_TILES_FADING_ON_TABLET})
     public void testPopulateModelTest_isTablet() {
         mProcessor.onNativeInitialized();
         mProcessor.populateModel(null, mModel, 0);
