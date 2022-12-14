@@ -136,6 +136,17 @@ bool DownloadBubbleRowView::UpdateBubbleUIInfo(bool initial_setup) {
     GetViewAccessibility().AnnounceText(alert_text);
   }
 
+  // When in progress, announce the progress immediately and start the timer for
+  // further updates.
+  if (state == download::DownloadItem::IN_PROGRESS &&
+      (initial_setup || state_ != state)) {
+    AnnounceInProgressAlert();
+    accessible_alert_in_progress_timer_.Reset();
+  } else if (!initial_setup && state_ == download::DownloadItem::IN_PROGRESS &&
+             state != state_) {
+    accessible_alert_in_progress_timer_.Stop();
+  }
+
   mode_ = mode;
   state_ = state;
   is_paused_ = is_paused;
@@ -285,7 +296,12 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       navigation_handler_(navigation_handler),
       browser_(browser),
       inkdrop_container_(
-          AddChildView(std::make_unique<views::InkDropContainerView>())) {
+          AddChildView(std::make_unique<views::InkDropContainerView>())),
+      accessible_alert_in_progress_timer_(
+          FROM_HERE,
+          base::Minutes(3),
+          base::BindRepeating(&DownloadBubbleRowView::AnnounceInProgressAlert,
+                              base::Unretained(this))) {
   model_->SetDelegate(this);
   SetBorder(views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ROW)));
 
@@ -819,6 +835,11 @@ void DownloadBubbleRowView::ShowContextMenuForViewImpl(
   context_menu_->Run(GetWidget()->GetTopLevelWidget(),
                      gfx::Rect(point, gfx::Size()), source_type,
                      base::RepeatingClosure());
+}
+
+void DownloadBubbleRowView::AnnounceInProgressAlert() {
+  GetViewAccessibility().AnnounceText(
+      model_->GetInProgressAccessibleAlertText());
 }
 
 BEGIN_METADATA(DownloadBubbleRowView, views::View)

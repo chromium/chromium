@@ -536,6 +536,10 @@ class DownloadUIModel {
       const base::FilePath& target_path,
       bool is_filetype_handled_safely);
 
+  // Returns the accessible alert text that should be announced when the
+  // download is in progress.
+  virtual std::u16string GetInProgressAccessibleAlertText() const;
+
  protected:
   // Returns the MIME type of the download.
   virtual std::string GetMimeType() const;

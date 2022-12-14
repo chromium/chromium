@@ -1780,3 +1780,33 @@ bool DownloadUIModel::ShouldShowDropdown() const {
 void DownloadUIModel::DetermineAndSetShouldPreferOpeningInBrowser(
     const base::FilePath& target_path,
     bool is_filetype_handled_safely) {}
+
+std::u16string DownloadUIModel::GetInProgressAccessibleAlertText() const {
+  // Prefer to announce the time remaining, if known.
+  base::TimeDelta remaining;
+  if (TimeRemaining(&remaining)) {
+    // If complete, skip this round: a completion status update is coming soon.
+    if (remaining.is_zero())
+      return std::u16string();
+
+    const std::u16string remaining_string =
+        ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_REMAINING,
+                               ui::TimeFormat::LENGTH_SHORT, remaining);
+    return l10n_util::GetStringFUTF16(
+        IDS_DOWNLOAD_STATUS_TIME_REMAINING_ACCESSIBLE_ALERT, remaining_string);
+  }
+
+  // Time remaining is unknown, try to announce percent remaining.
+  if (PercentComplete() > 0) {
+    DCHECK_LE(PercentComplete(), 100);
+    return l10n_util::GetStringFUTF16Int(
+        IDS_DOWNLOAD_STATUS_PERCENT_COMPLETE_ACCESSIBLE_ALERT,
+        100 - PercentComplete());
+  }
+
+  // Percent remaining is also unknown, announce bytes to download.
+  return l10n_util::GetStringFUTF16(
+      IDS_DOWNLOAD_STATUS_IN_PROGRESS_ACCESSIBLE_ALERT,
+      ui::FormatBytes(GetTotalBytes()),
+      GetFileNameToReportUser().LossyDisplayName());
+}

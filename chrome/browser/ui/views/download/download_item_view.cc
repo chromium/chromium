@@ -948,33 +948,7 @@ std::u16string DownloadItemView::GetInProgressAccessibleAlertText() const {
   if (model_->GetOpenWhenComplete() || has_warning_label(mode_))
     return accessible_name_;
 
-  // Prefer to announce the time remaining, if known.
-  base::TimeDelta remaining;
-  if (model_->TimeRemaining(&remaining)) {
-    // If complete, skip this round: a completion status update is coming soon.
-    if (remaining.is_zero())
-      return std::u16string();
-
-    const std::u16string remaining_string =
-        ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_REMAINING,
-                               ui::TimeFormat::LENGTH_SHORT, remaining);
-    return l10n_util::GetStringFUTF16(
-        IDS_DOWNLOAD_STATUS_TIME_REMAINING_ACCESSIBLE_ALERT, remaining_string);
-  }
-
-  // Time remaining is unknown, try to announce percent remaining.
-  if (model_->PercentComplete() > 0) {
-    DCHECK_LE(model_->PercentComplete(), 100);
-    return l10n_util::GetStringFUTF16Int(
-        IDS_DOWNLOAD_STATUS_PERCENT_COMPLETE_ACCESSIBLE_ALERT,
-        100 - model_->PercentComplete());
-  }
-
-  // Percent remaining is also unknown, announce bytes to download.
-  return l10n_util::GetStringFUTF16(
-      IDS_DOWNLOAD_STATUS_IN_PROGRESS_ACCESSIBLE_ALERT,
-      ui::FormatBytes(model_->GetTotalBytes()),
-      model_->GetFileNameToReportUser().LossyDisplayName());
+  return model_->GetInProgressAccessibleAlertText();
 }
 
 void DownloadItemView::AnnounceAccessibleAlert() {
