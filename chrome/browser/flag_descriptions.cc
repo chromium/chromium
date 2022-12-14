@@ -2226,10 +2226,11 @@ const char kPageEntitiesPageContentAnnotationsName[] =
 const char kPageEntitiesPageContentAnnotationsDescription[] =
     "Enables annotating the page entities model for each page load on-device.";
 
-const char kPageInfoAboutThisSiteName[] =
-    "'About this site' section in page info";
-const char kPageInfoAboutThisSiteDescription[] =
-    "Enable the 'About this site' section in the page info.";
+const char kPageInfoAboutThisSiteNonEnName[] =
+    "'About this site' section in page info in all languages";
+const char kPageInfoAboutThisSiteNonEnDescription[] =
+    "Enable the 'About this site' section in the page info UI in languages "
+    "other than English.";
 
 const char kPageInfoboutThisPageDescriptionPlaceholderName[] =
     "AboutThisPage description placeholder";

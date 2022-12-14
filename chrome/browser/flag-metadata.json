@@ -5431,6 +5431,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "page-info-about-this-site-non-en",
+    "owners": [ "dullweber" ],
+    "expiry_milestone": 112
+  },
+  {
     "name": "page-info-cookies-subpage",
     "owners": [ "zsalata@google.com", "olesiamarukhno@google.com", "dullweber" ],
     "expiry_milestone": 112

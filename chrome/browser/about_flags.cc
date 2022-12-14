@@ -7442,6 +7442,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSiteMoreInfo)},
 
+    {"page-info-about-this-site-non-en",
+     flag_descriptions::kPageInfoAboutThisSiteNonEnName,
+     flag_descriptions::kPageInfoAboutThisSiteNonEnDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSiteNonEn)},
+
     {"page-info-about-this-page-description-placeholder",
      flag_descriptions::kPageInfoboutThisPageDescriptionPlaceholderName,
      flag_descriptions::kPageInfoboutThisPageDescriptionPlaceholderDescription,
