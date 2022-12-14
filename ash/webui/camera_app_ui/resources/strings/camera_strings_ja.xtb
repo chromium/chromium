@@ -71,7 +71,7 @@
 <translation id="3411958449466169012">タイマーをオフにする</translation>
 <translation id="3448774564454087943">短すぎるため動画は保存されません</translation>
 <translation id="346539236881580388">撮り直し</translation>
-<translation id="3517926952904427380">縦向きの写真を撮影できません</translation>
+<translation id="3517926952904427380">ポートレート写真を撮影できません</translation>
 <translation id="3566302376254083266">左上に移動しています</translation>
 <translation id="3569311554794739032"><ph name="FILE" /> を削除してもよろしいですか？</translation>
 <translation id="3573890771273113519">スキャンモードに切り替えます</translation>
@@ -179,7 +179,7 @@
 <translation id="8712637175834984815">閉じる</translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8732462232047530626">メタデータのプレビュー</translation>
-<translation id="8815966864175525708">縦向きの写真の撮影に切り替え</translation>
+<translation id="8815966864175525708">ポートレート写真の撮影に切り替え</translation>
 <translation id="8828441885228359828">録画を再開</translation>
 <translation id="8870695351537079478">録画を開始できません</translation>
 <translation id="8880167521484863515">4 対 3</translation>

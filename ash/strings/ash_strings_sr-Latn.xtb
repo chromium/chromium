@@ -69,7 +69,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1287002645302686982">Sačuvana radna površina pod naslovom <ph name="DESK_TEMPLATE_NAME" /> već postoji</translation>
 <translation id="1289185460362160437">Vratite se u: <ph name="COME_BACK_DAY_OF_WEEK" /> u <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Slab signal</translation>
-<translation id="1290982764014248209">Premesti aplikaciju <ph name="DRAGGED_APP" /> u direktorijum <ph name="FOLDER_NAME" />.</translation>
+<translation id="1290982764014248209">Premesti aplikaciju <ph name="DRAGGED_APP" /> u folder <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">Uređaj sa USB priključkom tipa C (levi port)</translation>
 <translation id="1293556467332435079">Datoteke</translation>
 <translation id="1293699935367580298">Esc</translation>
@@ -594,7 +594,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="4285498937028063278">Otkači</translation>
 <translation id="4294319844246081198">Dobro jutro, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Obrišite sva obaveštenja (<ph name="COUNT" />)</translation>
-<translation id="430191667033048642">Aplikacija <ph name="MOVED_APP_NAME" /> je premeštena u direktorijum <ph name="FOLDER_NAME" />.</translation>
+<translation id="430191667033048642">Aplikacija <ph name="MOVED_APP_NAME" /> je premeštena u folder <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Nije dostupno</translation>
 <translation id="4303223480529385476">Proširite oblast statusa</translation>
 <translation id="4312840429157639164">Kamera je uklopljena u gornji desni ugao. Neusaglašenost sa površinom sistema.</translation>
@@ -756,7 +756,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5170568018924773124">Prikaži u direktorijumu</translation>
 <translation id="5176318573511391780">Snimi deo ekrana</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> događaja</translation>
-<translation id="5198715732953550718">Aplikacija <ph name="MOVED_APP_NAME" /> je kombinovana sa aplikacijom <ph name="IN_PLACE_APP" /> da bi se napravio novi direktorijum.</translation>
+<translation id="5198715732953550718">Aplikacija <ph name="MOVED_APP_NAME" /> je kombinovana sa aplikacijom <ph name="IN_PLACE_APP" /> da bi se napravio novi folder.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Još 1 obaveštenje}one{Još # obaveštenje}few{Još # obaveštenja}other{Još # obaveštenja}}</translation>
 <translation id="5207949376430453814">Istakni kursor za tekst</translation>
@@ -796,7 +796,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5379115545237091094">Previše pokušaja</translation>
 <translation id="5391307769715781764">Želite da zamenite sačuvanu radnu površinu?</translation>
 <translation id="5393156353051693207">Dodirnite i zadržite bilo gde da biste promenili redosled aplikacija</translation>
-<translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> preko aplikacije <ph name="IN_PLACE_APP" />, otpustite da biste napravili direktorijum.</translation>
+<translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> preko aplikacije <ph name="IN_PLACE_APP" />, otpustite da biste napravili folder.</translation>
 <translation id="5397578532367286026">Menadžer (<ph name="MANAGER_EMAIL" />) može da pregleda korišćenje i istoriju ovog korisnika na chrome.com.</translation>
 <translation id="5400461572260843123">Brza podešavanja, pritisnite taster za pretragu i strelicu ulevo da biste pristupili centru za obaveštenja.</translation>
 <translation id="5426063383988017631">Meni Podešavanja je zatvoren</translation>
@@ -1042,7 +1042,7 @@ Novo instaliranje</translation>
 <translation id="6777216307882431711">Napaja povezane uređaje sa USB priključkom tipa C</translation>
 <translation id="6781002679438061620">Radna površina 9</translation>
 <translation id="6782182743534150858">Radna površina 13</translation>
-<translation id="6786750046913594791">Zatvorite direktorijum</translation>
+<translation id="6786750046913594791">Zatvorite folder</translation>
 <translation id="6787595647772650851">Vratite poslednju sesiju</translation>
 <translation id="6790428901817661496">Pusti</translation>
 <translation id="6801878137098616817">Nedavno izmenjeno</translation>

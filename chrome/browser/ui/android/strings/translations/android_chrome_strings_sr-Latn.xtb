@@ -334,7 +334,7 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="2839327205551510876">Opozvali ste praćenje sajta <ph name="SITE_NAME" /></translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> kartica bez arhiviranja će biti zatvorena}one{<ph name="TAB_COUNT_MANY" /> kartica bez arhiviranja će biti zatvorena}few{<ph name="TAB_COUNT_MANY" /> kartice bez arhiviranja će biti zatvorene}other{<ph name="TAB_COUNT_MANY" /> kartica bez arhiviranja će biti zatvoreno}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Provereno pre 1 dan}one{Provereno pre # dan}few{Provereno pre # dana}other{Provereno pre # dana}}</translation>
-<translation id="2842985007712546952">Nadređeni direktorijum</translation>
+<translation id="2842985007712546952">Nadređeni folder</translation>
 <translation id="2856503607207334158">Prijavljivanje nije uspelo</translation>
 <translation id="2860954141821109167">Uverite se da je neka aplikacija za telefon omogućena na ovom uređaju</translation>
 <translation id="2861923151411510142">Neke Chrome funkcije više neće biti dostupne</translation>
@@ -525,7 +525,7 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="3861633093716975811">Popularni video snimci</translation>
 <translation id="3874520961715512166">Sajt je uklonjen</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>
-<translation id="3894427358181296146">Dodajte direktorijum</translation>
+<translation id="3894427358181296146">Dodajte folder</translation>
 <translation id="3899682235662194879">Zatvori sve kartice bez arhiviranja</translation>
 <translation id="3908308510347173149">Ažurirajte <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Traže se najbolji podaci sa veba…</translation>
@@ -636,7 +636,7 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 
 Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i aktivnosti u drugim Google uslugama na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="452750746583162491">Pregledajte sinhronizovane podatke</translation>
-<translation id="4532845899244822526">Izaberite direktorijum</translation>
+<translation id="4532845899244822526">Izaberite folder</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> kartica}one{<ph name="TAB_COUNT_MANY" /> kartica, <ph name="TAB_COUNT_INCOGNITO" /> bez arhiviranja}few{<ph name="TAB_COUNT_MANY" /> kartice, <ph name="TAB_COUNT_INCOGNITO" /> bez arhiviranja}other{<ph name="TAB_COUNT_MANY" /> kartica, <ph name="TAB_COUNT_INCOGNITO" /> bez arhiviranja}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Povezani ste pomoću USB kabla</translation>
@@ -1042,7 +1042,7 @@ Pouzdani tokeni poboljšavaju privatnost na vebu i ne mogu da se koriste za otkr
 <translation id="661266467055912436">Poboljšava bezbednost za vas i druge na vebu.</translation>
 <translation id="6618554661997243500">Da biste videli sajtove koje najčešće posećujete i vesti koje najčešće čitate, dodirnite dugme Početak</translation>
 <translation id="6621391692573306628">Da biste poslali ovu karticu na drugi uređaj, prijavite se u Chrome na oba uređaja</translation>
-<translation id="6627583120233659107">Izmeni direktorijum</translation>
+<translation id="6627583120233659107">Izmeni folder</translation>
 <translation id="6633067410344541938">Otključaj kartice bez arhiviranja</translation>
 <translation id="6636623428211296678">Istražite još podešavanja u nastavku ili završite</translation>
 <translation id="663674369910034433">Više podešavanja u vezi sa privatnošću, bezbednošću i prikupljanjem podataka potražite u odeljku <ph name="BEGIN_LINK1" />Sinhronizacija<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Google usluge<ph name="END_LINK2" /></translation>
@@ -1310,7 +1310,7 @@ Pouzdani tokeni poboljšavaju privatnost na vebu i ne mogu da se koriste za otkr
 <translation id="8027863900915310177">Odaberite gde želite da preuzmete</translation>
 <translation id="8030852056903932865">Odobri</translation>
 <translation id="8032569120109842252">Pratite</translation>
-<translation id="8035133914807600019">Novi direktorijum...</translation>
+<translation id="8035133914807600019">Novi folder...</translation>
 <translation id="8037750541064988519">Još <ph name="DAYS" /> dana</translation>
 <translation id="8037801708772278989">Provereno malopre</translation>
 <translation id="804335162455518893">SD kartica nije pronađena</translation>
@@ -1499,7 +1499,7 @@ Pouzdani tokeni poboljšavaju privatnost na vebu i ne mogu da se koriste za otkr
 <translation id="8967427617812342790">Dodaj na listu za čitanje</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Kartice bez arhiviranja (<ph name="INCOGNITO_TAB_COUNT" />) i još <ph name="TAB_COUNT_ONE" /> kartica će biti zatvorene}one{Kartice bez arhiviranja (<ph name="INCOGNITO_TAB_COUNT" />) i još <ph name="TAB_COUNT_MANY" /> kartica će biti zatvorene}few{Kartice bez arhiviranja (<ph name="INCOGNITO_TAB_COUNT" />) i još <ph name="TAB_COUNT_MANY" /> kartice će biti zatvorene}other{Kartice bez arhiviranja (<ph name="INCOGNITO_TAB_COUNT" />) i još <ph name="TAB_COUNT_MANY" /> kartica će biti zatvorene}}</translation>
 <translation id="8970887620466824814">Došlo je do greške.</translation>
-<translation id="8972098258593396643">Preuzimate u podrazumevani direktorijum?</translation>
+<translation id="8972098258593396643">Preuzimate u podrazumevani folder?</translation>
 <translation id="8987641763863173640">Upravljajte podešavanjima pregleda videa</translation>
 <translation id="898854820045159673">Reakcija je dodata</translation>
 <translation id="8989968390305463310">Istorija pregledanja utiče na oglase koji vam se prikazuju i interesovanja procenjena u nastavku. Radi zaštite privatnosti Chrome automatski briše interesovanja svakog meseca čim postanu dostupna. Interesovanja mogu da se osvežavaju ako ih ne uklonite.</translation>

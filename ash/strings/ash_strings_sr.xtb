@@ -69,7 +69,7 @@
 <translation id="1287002645302686982">Сачувана радна површина под насловом <ph name="DESK_TEMPLATE_NAME" /> већ постоји</translation>
 <translation id="1289185460362160437">Вратите се у: <ph name="COME_BACK_DAY_OF_WEEK" /> у <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Слаб сигнал</translation>
-<translation id="1290982764014248209">Премести апликацију <ph name="DRAGGED_APP" /> у директоријум <ph name="FOLDER_NAME" />.</translation>
+<translation id="1290982764014248209">Премести апликацију <ph name="DRAGGED_APP" /> у фолдер <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">Уређај са USB прикључком типа C (леви порт)</translation>
 <translation id="1293556467332435079">Датотеке</translation>
 <translation id="1293699935367580298">Esc</translation>
@@ -594,7 +594,7 @@
 <translation id="4285498937028063278">Откачи</translation>
 <translation id="4294319844246081198">Добро јутро, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Обришите сва обавештења (<ph name="COUNT" />)</translation>
-<translation id="430191667033048642">Апликација <ph name="MOVED_APP_NAME" /> је премештена у директоријум <ph name="FOLDER_NAME" />.</translation>
+<translation id="430191667033048642">Апликација <ph name="MOVED_APP_NAME" /> је премештена у фолдер <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Није доступно</translation>
 <translation id="4303223480529385476">Проширите област статуса</translation>
 <translation id="4312840429157639164">Камера је уклопљена у горњи десни угао. Неусаглашеност са површином система.</translation>
@@ -756,7 +756,7 @@
 <translation id="5170568018924773124">Прикажи у директоријуму</translation>
 <translation id="5176318573511391780">Сними део екрана</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> догађаја</translation>
-<translation id="5198715732953550718">Апликација <ph name="MOVED_APP_NAME" /> је комбинована са апликацијом <ph name="IN_PLACE_APP" /> да би се направио нови директоријум.</translation>
+<translation id="5198715732953550718">Апликација <ph name="MOVED_APP_NAME" /> је комбинована са апликацијом <ph name="IN_PLACE_APP" /> да би се направио нови фолдер.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Још 1 обавештење}one{Још # обавештење}few{Још # обавештења}other{Још # обавештења}}</translation>
 <translation id="5207949376430453814">Истакни курсор за текст</translation>
@@ -796,7 +796,7 @@
 <translation id="5379115545237091094">Превише покушаја</translation>
 <translation id="5391307769715781764">Желите да замените сачувану радну површину?</translation>
 <translation id="5393156353051693207">Додирните и задржите било где да бисте променили редослед апликација</translation>
-<translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> преко апликације <ph name="IN_PLACE_APP" />, отпустите да бисте направили директоријум.</translation>
+<translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> преко апликације <ph name="IN_PLACE_APP" />, отпустите да бисте направили фолдер.</translation>
 <translation id="5397578532367286026">Менаџер (<ph name="MANAGER_EMAIL" />) може да прегледа коришћење и историју овог корисника на chrome.com.</translation>
 <translation id="5400461572260843123">Брза подешавања, притисните тастер за претрагу и стрелицу улево да бисте приступили центру за обавештења.</translation>
 <translation id="5426063383988017631">Мени Подешавања је затворен</translation>
@@ -1042,7 +1042,7 @@
 <translation id="6777216307882431711">Напаја повезане уређаје са USB прикључком типа C</translation>
 <translation id="6781002679438061620">Радна површина 9</translation>
 <translation id="6782182743534150858">Радна површина 13</translation>
-<translation id="6786750046913594791">Затворите директоријум</translation>
+<translation id="6786750046913594791">Затворите фолдер</translation>
 <translation id="6787595647772650851">Вратите последњу сесију</translation>
 <translation id="6790428901817661496">Пусти</translation>
 <translation id="6801878137098616817">Недавно измењено</translation>

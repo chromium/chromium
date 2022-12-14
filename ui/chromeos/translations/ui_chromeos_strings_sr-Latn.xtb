@@ -6,7 +6,7 @@
 <translation id="1049926623896334335">Word dokument</translation>
 <translation id="1056775291175587022">Nema mreža</translation>
 <translation id="1056898198331236512">Upozorenje</translation>
-<translation id="1060368002126861100">Da biste otvarali datoteke pomoću aplikacije <ph name="APP_NAME" />, prvo ih premestite u direktorijum sa Windows datotekama.</translation>
+<translation id="1060368002126861100">Da biste otvarali datoteke pomoću aplikacije <ph name="APP_NAME" />, prvo ih premestite u folder sa Windows datotekama.</translation>
 <translation id="1062407476771304334">Zameni</translation>
 <translation id="1119447706177454957">Interna greška</translation>
 <translation id="1120073797882051782">Hangul romadža</translation>
@@ -47,7 +47,7 @@
 <translation id="1399511500114202393">Nema korisničkog sertifikata</translation>
 <translation id="1404323374378969387">norveški</translation>
 <translation id="1433628812591023318">Da biste otpustili fajlove na Parallels Desktop, morate da ih premestite u Windows fajlove.</translation>
-<translation id="1435838927755162558">Delite direktorijum sa Parallels Desktop-om</translation>
+<translation id="1435838927755162558">Delite folder sa Parallels Desktop-om</translation>
 <translation id="1439919885608649279">Osoba sa cvećem</translation>
 <translation id="1471718551822868769">slovački</translation>
 <translation id="1482884275703521657">finski</translation>
@@ -101,7 +101,7 @@
 <translation id="1832073788765803750">katakana sa pola širine</translation>
 <translation id="1834290891154666894">Nevažeći unos podudaranja alternativnog naziva subjekta</translation>
 <translation id="1838709767668011582">Google sajt</translation>
-<translation id="1853795129690976061">Ovaj direktorijum se deli sa Linux-om</translation>
+<translation id="1853795129690976061">Ovaj folder se deli sa Linux-om</translation>
 <translation id="1864756863218646478">Nije moguće pronaći datoteku.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, poveži</translation>
 <translation id="1920670151694390848">transliteracija malajalama</translation>
@@ -139,7 +139,7 @@
 <translation id="22085916256174561">korejski</translation>
 <translation id="2208919847696382164">Instalirajte pomoću Linux-a</translation>
 <translation id="2225536596944493418">Želite li stvarno da izbrišete stavke (<ph name="NUMBER_OF_ITEMS" />)?</translation>
-<translation id="2230062665678605299">Nije moguće napraviti direktorijum „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2230062665678605299">Nije moguće napraviti folder „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Osoba sa kafom</translation>
 <translation id="2251368349685848079">Vrati iz otpada</translation>
 <translation id="2282155092769082568">URL za automatsku konfiguraciju:</translation>
@@ -163,7 +163,7 @@
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> slobodnog prostora</translation>
 <translation id="2417486498593892439">Prijavite se na mrežu</translation>
 <translation id="2425665904502185219">Ukupna veličina datoteke</translation>
-<translation id="2428749644083375155">Stavke (<ph name="NUMBER_OF_ITEMS" />) se kopiraju u direktorijum <ph name="FOLDER_NAME" /></translation>
+<translation id="2428749644083375155">Stavke (<ph name="NUMBER_OF_ITEMS" />) se kopiraju u folder <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Tip</translation>
 <translation id="2452444014801043526">Osoba sa megafonom</translation>
 <translation id="2464079411014186876">Sladoled</translation>
@@ -287,7 +287,7 @@
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3548125359243647069">Previše puta ste uneli pogrešan PIN.</translation>
 <translation id="3549797760399244642">Idi na drive.google.com...</translation>
-<translation id="3553048479571901246">Da biste otvarali datoteke pomoću aplikacije <ph name="APP_NAME" />, prvo ih kopirajte u direktorijum sa Windows datotekama.</translation>
+<translation id="3553048479571901246">Da biste otvarali datoteke pomoću aplikacije <ph name="APP_NAME" />, prvo ih kopirajte u folder sa Windows datotekama.</translation>
 <translation id="3556731189587832921">engleski (SAD) sa internacionalnom tastaturom za računar</translation>
 <translation id="3557414470514932909">Fajl <ph name="FILE_NAME" /> se premešta u otpad</translation>
 <translation id="3567221313191587603">Izaberite fajl i obeležite <ph name="OFFLINE_CHECKBOX_NAME" /> da biste aktivirali oflajn pristup fajlovima.</translation>
@@ -363,7 +363,7 @@
 <translation id="4218274196133425560">Ukloni izuzetak za <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Google prezentacija</translation>
 <translation id="4277536868133419688">Filter <ph name="FILTER_NAME" /> je uključen.</translation>
-<translation id="4290535918735525311">1 direktorijum se deli sa Linux-om</translation>
+<translation id="4290535918735525311">1 folder se deli sa Linux-om</translation>
 <translation id="4299729908419173967">portugalski (Brazil)</translation>
 <translation id="4302605047395093221">Svako ko koristi ovaj uređaj mora da unese PIN da bi se povezao na ovu mobilnu mrežu</translation>
 <translation id="4303531889494116116">Ova mreža je zauzeta. Probajte ponovo kasnije.</translation>
@@ -408,7 +408,7 @@
 <translation id="4583436353463424810">Nema nedavnih dokumenata</translation>
 <translation id="4594543368593301662">Prikazuju se rezultati za: <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Filter je resetovan.</translation>
-<translation id="4603392156942865207"><ph name="FILE_NAME" /> se kopira u direktorijum <ph name="FOLDER_NAME" /></translation>
+<translation id="4603392156942865207"><ph name="FILE_NAME" /> se kopira u folder <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Izvođač</translation>
 <translation id="4642769377300286600">Instalira se profil za mobilne uređaje, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">češki sa Qwerty tastaturom</translation>
@@ -457,7 +457,7 @@
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, baterija telefona <ph name="BATTERY_STATUS" />%, detalji</translation>
 <translation id="4935975195727477204">Cvet gazanije</translation>
 <translation id="4943368462779413526">Fudbalska lopta</translation>
-<translation id="4961158930123534723">1 direktorijum se deli sa Parallels Desktop-om</translation>
+<translation id="4961158930123534723">1 folder se deli sa Parallels Desktop-om</translation>
 <translation id="496656650103537022">Vraćen je fajl <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4973523518332075481">Koristite naziv čiji je maksimalni broj znakova <ph name="MAX_LENGTH" /></translation>
@@ -476,7 +476,7 @@
 <translation id="5059127710849015030">nepalski, transliteracija</translation>
 <translation id="5068919226082848014">Pica</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> datoteka će se izbrisati</translation>
-<translation id="508423945471810158">Stavke (<ph name="NUMBER_OF_ITEMS" />) se premeštaju u direktorijum <ph name="FOLDER_NAME" /></translation>
+<translation id="508423945471810158">Stavke (<ph name="NUMBER_OF_ITEMS" />) se premeštaju u folder <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Došlo je do greške.</translation>
 <translation id="5098629044894065541">hebrejski</translation>
 <translation id="5102922915594634436">Upravljajte sinhronizovanim folderima</translation>
@@ -524,7 +524,7 @@
 <translation id="5358764674931277">Brzina kadrova</translation>
 <translation id="5363339716524495120">Jezik unosa je kineski</translation>
 <translation id="5364067326287025678">Otpad je prazan</translation>
-<translation id="5368191757080475556">Delite direktorijum sa Linux-om</translation>
+<translation id="5368191757080475556">Delite folder sa Linux-om</translation>
 <translation id="5402367795255837559">Brajeva azbuka</translation>
 <translation id="5411472733320185105">Ne koristi podešavanja proksija za ove hostove i domene:</translation>
 <translation id="541890217011173530">sorani kurdski sa tastaturom zasnovanom na engleskom</translation>
@@ -603,7 +603,7 @@
 <translation id="6074825444536523002">Google obrazac</translation>
 <translation id="6079871810119356840">mađarski sa Qwerty tastaturom</translation>
 <translation id="6096979789310008754">Tekst pretrage je obrisan, prikazuju se sve datoteke i direktorijumi.</translation>
-<translation id="610101264611565198"><ph name="FILE_NAME" /> se premešta u direktorijum <ph name="FOLDER_NAME" /></translation>
+<translation id="610101264611565198"><ph name="FILE_NAME" /> se premešta u folder <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">CSV tekst</translation>
 <translation id="6129953537138746214">Razmak</translation>
 <translation id="6133173853026656527">Premeštanje datoteke <ph name="FILE_NAME" />...</translation>
@@ -674,7 +674,7 @@
 <translation id="6710213216561001401">Prethodno</translation>
 <translation id="6732801395666424405">Sertifikati nisu otpremljeni</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6751256176799620176">Izabran je 1 direktorijum</translation>
+<translation id="6751256176799620176">Izabran je 1 folder</translation>
 <translation id="6755827872271341378">Chrome OS Flex uređaj</translation>
 <translation id="6790428901817661496">Pusti</translation>
 <translation id="6794539005637808366">Vratite stavku ili je prevucite u nov folder izvan otpada</translation>
@@ -874,7 +874,7 @@
 <translation id="8297012244086013755">Hangul, 3 reda (No Shift)</translation>
 <translation id="8299269255470343364">japanski</translation>
 <translation id="8300849813060516376">OTASP nije uspeo</translation>
-<translation id="8312871300878166382">Nalepi u direktorijum</translation>
+<translation id="8312871300878166382">Nalepi u folder</translation>
 <translation id="8329978297633540474">Čisti tekst</translation>
 <translation id="8335587457941836791">Otkači sa police</translation>
 <translation id="8335837413233998004">beloruski</translation>
@@ -982,7 +982,7 @@
 <translation id="9219103736887031265">Slike</translation>
 <translation id="9219908252191632183">Mesečeva površina</translation>
 <translation id="938470336146445890">Instalirajte korisnički sertifikat.</translation>
-<translation id="939736085109172342">Novi direktorijum</translation>
+<translation id="939736085109172342">Novi folder</translation>
 <translation id="943972244133411984">Izmenio/la</translation>
 <translation id="945522503751344254">Pošalji povratne informacije</translation>
 <translation id="947144732524271678">Izabrali ste niz stavki (<ph name="ENTRY_COUNT" />) od stavke <ph name="FROM_ENTRY_NAME" /> do stavke <ph name="TO_ENTRY_NAME" />.</translation>
