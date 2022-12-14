@@ -1057,7 +1057,7 @@ public class SigninFirstRunFragmentTest {
                 mFragment.getView().findViewById(R.id.signin_fre_selected_account)::isShown);
         verify(mFirstRunPageDelegateMock).recordNativePolicyAndChildStatusLoadedHistogram();
         final DisplayableProfileData profileData =
-                new DisplayableProfileData(email, mock(Drawable.class), fullName, givenName);
+                new DisplayableProfileData(email, mock(Drawable.class), fullName, givenName, true);
         onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
         onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
         onView(withText(email)).check(matches(isDisplayed()));

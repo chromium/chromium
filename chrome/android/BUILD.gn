@@ -355,6 +355,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/touch_to_fill/android/internal:resource_provider_public_impl_java",
       "//components/externalauth/android:google_delegate_public_impl_java",
       "//components/language/android:ulp_delegate_public_java",
+      "//components/signin/public/android:account_email_domain_displayability_java",
     ]
   }
 

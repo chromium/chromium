@@ -24,6 +24,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/signin/AccessTokenData.java",
     "java/src/org/chromium/components/signin/AccountCapabilitiesFetcher.java",
+    "java/src/org/chromium/components/signin/AccountEmailDomainDisplayability.java",
     "java/src/org/chromium/components/signin/AccountManagerDelegate.java",
     "java/src/org/chromium/components/signin/AccountManagerFacade.java",
     "java/src/org/chromium/components/signin/AccountManagerFacadeImpl.java",
@@ -53,6 +54,15 @@ android_library("java") {
   ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  # Add the actual implementation where necessary so that downstream targets
+  # can provide their own implementations.
+  jar_excluded_patterns = [ "*/AccountEmailDomainDisplayability.class" ]
+}
+
+android_library("account_email_domain_displayability_java") {
+  deps = [ ":java" ]
+  sources = [ "java/src/org/chromium/components/signin/AccountEmailDomainDisplayability.java" ]
 }
 
 generate_jni("jni_headers") {

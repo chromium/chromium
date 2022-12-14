@@ -16,15 +16,17 @@ public class DisplayableProfileData {
     private final Drawable mImage;
     private final @Nullable String mFullName;
     private final @Nullable String mGivenName;
+    private final boolean mHasDisplayableEmailAddress;
 
     public DisplayableProfileData(String accountEmail, Drawable image, @Nullable String fullName,
-            @Nullable String givenName) {
+            @Nullable String givenName, boolean hasDisplayableEmailAddress) {
         assert accountEmail != null;
         assert image != null;
         mAccountEmail = accountEmail;
         mImage = image;
         mFullName = fullName;
         mGivenName = givenName;
+        mHasDisplayableEmailAddress = hasDisplayableEmailAddress;
     }
 
     /**
@@ -73,5 +75,12 @@ public class DisplayableProfileData {
             return mGivenName;
         }
         return getFullNameOrEmail();
+    }
+
+    /**
+     * @return Whether the account email address can be displayed.
+     */
+    public boolean hasDisplayableEmailAddress() {
+        return mHasDisplayableEmailAddress;
     }
 }
