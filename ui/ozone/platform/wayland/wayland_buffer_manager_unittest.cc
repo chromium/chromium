@@ -2431,16 +2431,8 @@ TEST_P(WaylandBufferManagerTest, FencedRelease) {
 
 // Tests that destroying a channel doesn't result in resetting surface state
 // and buffers can be attached after the channel has been reinitialized.
-// TODO(crbug.com/1396725): Failing on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_CanSubmitBufferAfterChannelDestroyedAndInitialized \
-  DISABLED_CanSubmitBufferAfterChannelDestroyedAndInitialized
-#else
-#define MAYBE_CanSubmitBufferAfterChannelDestroyedAndInitialized \
-  CanSubmitBufferAfterChannelDestroyedAndInitialized
-#endif
 TEST_P(WaylandBufferManagerTest,
-       MAYBE_CanSubmitBufferAfterChannelDestroyedAndInitialized) {
+       CanSubmitBufferAfterChannelDestroyedAndInitialized) {
   constexpr uint32_t kBufferId1 = 1;
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
@@ -2492,6 +2484,9 @@ TEST_P(WaylandBufferManagerTest,
   // reset the state of |configured|.
   manager_host_->OnChannelDestroyed();
   manager_host_ = connection_->buffer_manager_host();
+
+  // Let mojo messages from host to gpu go through.
+  base::RunLoop().RunUntilIdle();
 
   // The surface must has the buffer detached and all the buffers are destroyed.
   // Release the fence as there is no further need to hold that as the client
@@ -2602,6 +2597,9 @@ TEST_P(WaylandBufferManagerTest, HidesSubsurfacesOnChannelDestroyed) {
   // Pretend that the channel gets destroyed because of some internal reason.
   manager_host_->OnChannelDestroyed();
   manager_host_ = connection_->buffer_manager_host();
+
+  // Let mojo messages from host to gpu go through.
+  base::RunLoop().RunUntilIdle();
 
   // The root surface should still have the buffer attached....
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
