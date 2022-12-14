@@ -181,9 +181,44 @@ source_set("system_identity_manager") {
   ]
 }
 
+source_set("fake_system_identity_manager") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "fake_refresh_access_token_error.h",
+    "fake_refresh_access_token_error.mm",
+    "fake_system_identity_details.h",
+    "fake_system_identity_details.mm",
+    "fake_system_identity_interaction_manager.h",
+    "fake_system_identity_interaction_manager.mm",
+    "fake_system_identity_manager.h",
+    "fake_system_identity_manager.mm",
+    "fake_system_identity_manager_storage.h",
+    "fake_system_identity_manager_storage.mm",
+  ]
+  public = [
+    "fake_system_identity_interaction_manager.h",
+    "fake_system_identity_manager.h",
+  ]
+  public_deps =
+      [ "//ios/public/provider/chrome/browser/signin:signin_resources_api" ]
+  deps = [
+    ":fake_account_details_view_controller",
+    ":fake_system_identity",
+    ":system_identity",
+    ":system_identity_manager",
+    "//google_apis",
+    "//ios/public/provider/chrome/browser/signin:signin_error_api",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("fake_account_details_view_controller") {
   testonly = true
-  visibility = [ "//ios/public/provider/chrome/browser/signin:test_support" ]
+  visibility = [
+    ":fake_system_identity_manager",
+    "//ios/public/provider/chrome/browser/signin:test_support",
+  ]
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "fake_account_details_view_controller.h",

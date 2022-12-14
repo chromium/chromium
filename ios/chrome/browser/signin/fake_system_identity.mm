@@ -79,6 +79,31 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
                                               name:name];
 }
 
++ (instancetype)identityWithName:(NSString*)name domain:(NSString*)domain {
+  DCHECK(name.length);
+  DCHECK(domain.length);
+
+  NSString* gaiaID = nil;
+  NSString* email = [NSString stringWithFormat:@"%@@%@", name, domain];
+  if ([domain isEqualToString:@"gmail.com"]) {
+    // Consumer domain, use "%(name)ID" as Gaia ID.
+    gaiaID = [NSString stringWithFormat:@"%@ID", name];
+  } else if ([domain isEqualToString:@"google.com"]) {
+    // Managed domain, use "%(name)ManagedID" as Gaia ID.
+    gaiaID = [NSString stringWithFormat:@"%@ManagedID", name];
+  } else {
+    // Other domain, include the domain in the Gaia ID, replacing "." with "-".
+    gaiaID = [NSString
+        stringWithFormat:@"%@-%@-ID", name,
+                         [domain stringByReplacingOccurrencesOfString:@"."
+                                                           withString:@"-"]];
+  }
+
+  return [[FakeSystemIdentity alloc] initWithEmail:email
+                                            gaiaID:gaiaID
+                                              name:name];
+}
+
 - (instancetype)initWithEmail:(NSString*)email
                        gaiaID:(NSString*)gaiaID
                          name:(NSString*)name {

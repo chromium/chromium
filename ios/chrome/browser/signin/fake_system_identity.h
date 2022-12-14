@@ -41,6 +41,10 @@
                            gaiaID:(NSString*)gaiaID
                              name:(NSString*)name;
 
+// Returns a SystemIdentity based on `name` and `domain`. All other
+// values will be derived from those.
++ (instancetype)identityWithName:(NSString*)name domain:(NSString*)domain;
+
 // Redeclared as readwrite.
 @property(strong, nonatomic, readwrite) NSString* userEmail;
 @property(strong, nonatomic, readwrite) NSString* gaiaID;

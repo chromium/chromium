@@ -12,6 +12,16 @@ source_set("chromium_signin_error") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("chromium_signin_identity") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "chromium_signin_identity.mm" ]
+  deps = [
+    "//base",
+    "//ios/public/provider/chrome/browser/signin:signin_identity_api",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("chromium_signin_resources") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_signin_resources.mm" ]

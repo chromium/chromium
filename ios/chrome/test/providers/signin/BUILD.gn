@@ -6,6 +6,7 @@ group("signin") {
   testonly = true
   deps = [
     ":signin_error",
+    ":signin_identity",
     ":signin_resources",
     ":signin_sso",
     ":trusted_vault",
@@ -19,6 +20,17 @@ source_set("signin_error") {
   deps = [
     "//base",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("signin_identity") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "test_signin_identity.mm" ]
+  deps = [
+    "//ios/chrome/browser/signin:fake_system_identity_manager",
+    "//ios/public/provider/chrome/browser/signin:signin_identity_api",
   ]
   frameworks = [ "Foundation.framework" ]
 }
