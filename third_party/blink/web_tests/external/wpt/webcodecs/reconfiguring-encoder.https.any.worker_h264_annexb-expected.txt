@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+NOTRUN Reconfiguring encoder Unsupported config: {"codec":"avc1.42001E","avc":{"format":"annexb"},"hardwareAcceleration":"prefer-software","bitrateMode":"constant","scalabilityMode":"L1T2","framerate":30,"width":800,"height":600,"bitrate":3000000}
+Harness: the test ran to completion.
+

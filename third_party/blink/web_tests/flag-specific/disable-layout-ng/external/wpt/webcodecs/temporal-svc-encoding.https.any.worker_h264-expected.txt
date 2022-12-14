@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+NOTRUN SVC L1T2 Unsupported config: {"codec":"avc1.42001E","avc":{"format":"annexb"},"hardwareAcceleration":"prefer-software","width":320,"height":200,"bitrate":1000000,"bitrateMode":"constant","framerate":30,"scalabilityMode":"L1T2"}
+NOTRUN SVC L1T3 Unsupported config: {"codec":"avc1.42001E","avc":{"format":"annexb"},"hardwareAcceleration":"prefer-software","width":320,"height":200,"bitrate":1000000,"bitrateMode":"constant","framerate":30,"scalabilityMode":"L1T3"}
+Harness: the test ran to completion.
+
