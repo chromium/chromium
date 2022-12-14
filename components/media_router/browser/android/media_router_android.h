@@ -168,7 +168,7 @@ class MediaRouterAndroid : public MediaRouterBase {
                          std::unique_ptr<MediaSinksObserverList>>;
   MediaSinkObservers sinks_observers_;
 
-  base::ObserverList<MediaRoutesObserver>::Unchecked routes_observers_;
+  base::ObserverList<MediaRoutesObserver> routes_observers_;
 
   struct MediaRouteRequest {
     MediaRouteRequest(const MediaSource& source,

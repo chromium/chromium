@@ -10,9 +10,11 @@
 #include <string>
 #include <vector>
 
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/browser/media_router_base.h"
+#include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
@@ -127,15 +129,24 @@ class MockMediaRouter : public MediaRouterBase {
   MOCK_METHOD1(RegisterMediaSinksObserver, bool(MediaSinksObserver* observer));
   MOCK_METHOD1(UnregisterMediaSinksObserver,
                void(MediaSinksObserver* observer));
-  MOCK_METHOD1(RegisterMediaRoutesObserver,
-               void(MediaRoutesObserver* observer));
-  MOCK_METHOD1(UnregisterMediaRoutesObserver,
-               void(MediaRoutesObserver* observer));
+  void RegisterMediaRoutesObserver(MediaRoutesObserver* observer) override {
+    routes_observers_.AddObserver(observer);
+  }
+  void UnregisterMediaRoutesObserver(MediaRoutesObserver* observer) override {
+    routes_observers_.RemoveObserver(observer);
+  }
   MOCK_METHOD1(RegisterPresentationConnectionMessageObserver,
                void(PresentationConnectionMessageObserver* observer));
   MOCK_METHOD1(UnregisterPresentationConnectionMessageObserver,
                void(PresentationConnectionMessageObserver* observer));
   MOCK_METHOD0(GetMediaSinkServiceStatus, std::string());
+
+  base::ObserverList<MediaRoutesObserver>& routes_observers() {
+    return routes_observers_;
+  }
+
+ protected:
+  base::ObserverList<MediaRoutesObserver> routes_observers_;
 
  private:
 #if !BUILDFLAG(IS_ANDROID)

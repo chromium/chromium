@@ -83,8 +83,6 @@ class CastHandlerTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   void EnableHandler() {
-    EXPECT_CALL(*router_, RegisterMediaRoutesObserver(_))
-        .WillOnce(SaveArg<0>(&routes_observer_));
     EXPECT_CALL(*router_, RegisterMediaSinksObserver(_))
         .WillRepeatedly(
             WithArg<0>([this](media_router::MediaSinksObserver* observer) {
@@ -102,7 +100,6 @@ class CastHandlerTest : public ChromeRenderViewHostTestHarness {
 
   std::unique_ptr<CastHandler> handler_;
   media_router::MockMediaRouter* router_ = nullptr;
-  media_router::MediaRoutesObserver* routes_observer_ = nullptr;
   media_router::MediaSinksObserver* desktop_sinks_observer_ = nullptr;
   media_router::MediaSinksObserver* sinks_observer_ = nullptr;
 };
@@ -201,14 +198,14 @@ TEST_F(CastHandlerTest, StartTabMirroringWithInvalidName) {
 
 TEST_F(CastHandlerTest, StopCasting) {
   sinks_observer_->OnSinksUpdated({sink1, sink2}, {});
-  routes_observer_->OnRoutesUpdated({Route1()});
+  router_->routes_observers().begin()->OnRoutesUpdated({Route1()});
   EXPECT_CALL(*router_, TerminateRoute(kRouteId1));
   EXPECT_TRUE(handler_->StopCasting(kSinkName1).IsSuccess());
 }
 
 TEST_F(CastHandlerTest, StopCastingWithInvalidName) {
   sinks_observer_->OnSinksUpdated({sink1, sink2}, {});
-  routes_observer_->OnRoutesUpdated({Route1()});
+  router_->routes_observers().begin()->OnRoutesUpdated({Route1()});
   // Attempting to stop casting to a sink without a route should fail.
   EXPECT_TRUE(handler_->StopCasting(kSinkName2).IsError());
 }

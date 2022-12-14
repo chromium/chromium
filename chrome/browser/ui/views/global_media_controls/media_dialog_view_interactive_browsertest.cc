@@ -316,24 +316,13 @@ class TestMediaRouter : public media_router::MockMediaRouter {
     return logger_.get();
   }
 
-  void RegisterMediaRoutesObserver(
-      media_router::MediaRoutesObserver* observer) override {
-    routes_observers_.push_back(observer);
-  }
-
-  void UnregisterMediaRoutesObserver(
-      media_router::MediaRoutesObserver* observer) override {
-    base::Erase(routes_observers_, observer);
-  }
-
   void NotifyMediaRoutesChanged(
       const std::vector<media_router::MediaRoute>& routes) {
-    for (auto* observer : routes_observers_)
-      observer->OnRoutesUpdated(routes);
+    for (auto& observer : routes_observers_)
+      observer.OnRoutesUpdated(routes);
   }
 
  private:
-  std::vector<media_router::MediaRoutesObserver*> routes_observers_;
   std::unique_ptr<media_router::LoggerImpl> logger_;
 };
 

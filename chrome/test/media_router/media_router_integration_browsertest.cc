@@ -220,7 +220,7 @@ void MediaRouterIntegrationBrowserTest::WaitUntilNoRoutes(
   // TerminateRoute, or add pass callback to the TestProvider to run when all
   // routes are gone.
   base::RunLoop run_loop;
-  NoRoutesObserver no_routes_observer(
+  auto no_routes_observer = std::make_unique<NoRoutesObserver>(
       MediaRouterFactory::GetApiForBrowserContext(
           web_contents->GetBrowserContext()),
       run_loop.QuitClosure());

@@ -143,22 +143,6 @@ void AccessCodeCastIntegrationBrowserTest::OnWillCreateBrowserContextServices(
         }
       });
 
-  ON_CALL(*media_router_, RegisterMediaRoutesObserver(_))
-      .WillByDefault([this](MediaRoutesObserver* observer) {
-        media_routes_observers_.push_back(observer);
-        return true;
-      });
-
-  // Remove route observers as appropriate (destructing handlers will cause
-  // this to occur).
-  ON_CALL(*media_router_, UnregisterMediaRoutesObserver(_))
-      .WillByDefault([this](MediaRoutesObserver* observer) {
-        auto it = base::ranges::find(media_routes_observers_, observer);
-        if (it != media_routes_observers_.end()) {
-          media_routes_observers_.erase(it);
-        }
-      });
-
   // Handler so MockMediaRouter will respond to requests to create a route.
   // Will construct a RouteRequestResult based on the set result code and
   // then call the handler's callback, which should call the page's callback.
@@ -547,8 +531,9 @@ void AccessCodeCastIntegrationBrowserTest::UpdateSinks(
 
 void AccessCodeCastIntegrationBrowserTest::UpdateRoutes(
     const std::vector<MediaRoute>& routes) {
-  for (MediaRoutesObserver* routes_observer : media_routes_observers_) {
-    routes_observer->OnRoutesUpdated(routes);
+  for (MediaRoutesObserver& routes_observer :
+       media_router_->routes_observers()) {
+    routes_observer.OnRoutesUpdated(routes);
   }
 }
 

@@ -141,8 +141,9 @@ void MediaRouterMojoTest::TearDown() {
 void MediaRouterMojoTest::ProvideTestRoute(
     mojom::MediaRouteProviderId provider_id,
     const MediaRoute::Id& route_id) {
-  if (!routes_observer_)
+  if (!routes_observer_) {
     routes_observer_ = std::make_unique<MediaRoutesObserver>(router());
+  }
   MediaRoute route = CreateMediaRoute();
   route.set_media_route_id(route_id);
   router()->OnRoutesUpdated(provider_id, {route});

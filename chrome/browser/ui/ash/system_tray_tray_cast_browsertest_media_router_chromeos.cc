@@ -131,8 +131,7 @@ class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
   }
 
   media_router::MediaRoutesObserver* media_routes_observer() const {
-    DCHECK(media_routes_observer_);
-    return media_routes_observer_;
+    return &(*media_router_->routes_observers().begin());
   }
 
  private:
@@ -149,9 +148,6 @@ class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
     ON_CALL(*media_router_, RegisterMediaSinksObserver(_))
         .WillByDefault(Invoke(
             this, &SystemTrayTrayCastMediaRouterChromeOSTest::CaptureSink));
-    ON_CALL(*media_router_, RegisterMediaRoutesObserver(_))
-        .WillByDefault(Invoke(
-            this, &SystemTrayTrayCastMediaRouterChromeOSTest::CaptureRoutes));
     CastConfigControllerMediaRouter::SetMediaRouterForTest(media_router_.get());
     InProcessBrowserTest::PreRunTestOnMainThread();
   }
@@ -171,13 +167,8 @@ class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
     return true;
   }
 
-  void CaptureRoutes(media_router::MediaRoutesObserver* media_routes_observer) {
-    media_routes_observer_ = media_routes_observer;
-  }
-
   std::unique_ptr<media_router::MockMediaRouter> media_router_;
   media_router::MediaSinksObserver* media_sinks_observer_ = nullptr;
-  media_router::MediaRoutesObserver* media_routes_observer_ = nullptr;
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
 };
 

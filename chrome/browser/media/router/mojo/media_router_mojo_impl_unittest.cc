@@ -36,7 +36,6 @@
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/test/test_helper.h"
 #include "components/version_info/version_info.h"
-#include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -619,33 +618,38 @@ TEST_F(MediaRouterMojoImplTest, TabSinksObserverIsShared) {
 TEST_F(MediaRouterMojoImplTest, RegisterAndUnregisterMediaRoutesObserver) {
   MockMediaRouter mock_router;
 
-  MediaRoutesObserver* observer_captured;
-  EXPECT_CALL(mock_router, RegisterMediaRoutesObserver(_))
-      .Times(3)
-      .WillRepeatedly(SaveArg<0>(&observer_captured));
-  MockMediaRoutesObserver routes_observer(&mock_router);
-  EXPECT_EQ(observer_captured, &routes_observer);
+  auto routes_observer =
+      std::make_unique<MockMediaRoutesObserver>(&mock_router);
+  EXPECT_TRUE(
+      mock_router.routes_observers().HasObserver(routes_observer.get()));
 
-  MockMediaRoutesObserver extra_routes_observer(&mock_router);
-  EXPECT_EQ(observer_captured, &extra_routes_observer);
+  auto extra_routes_observer =
+      std::make_unique<MockMediaRoutesObserver>(&mock_router);
+  EXPECT_TRUE(
+      mock_router.routes_observers().HasObserver(extra_routes_observer.get()));
 
-  MockMediaRoutesObserver different_routes_observer(&mock_router);
-  EXPECT_EQ(observer_captured, &different_routes_observer);
+  routes_observer.reset();
+  extra_routes_observer.reset();
+  EXPECT_TRUE(mock_router.routes_observers().empty());
+}
 
-  EXPECT_CALL(mock_router, UnregisterMediaRoutesObserver(&routes_observer));
-  EXPECT_CALL(mock_router,
-              UnregisterMediaRoutesObserver(&extra_routes_observer));
-  EXPECT_CALL(mock_router,
-              UnregisterMediaRoutesObserver(&different_routes_observer));
-  UnregisterMediaRoutesObserver(&routes_observer);
-  UnregisterMediaRoutesObserver(&extra_routes_observer);
-  UnregisterMediaRoutesObserver(&different_routes_observer);
+TEST_F(MediaRouterMojoImplTest, UnregisterBeforeNotificationDoesntCrash) {
+  auto routes_observer = std::make_unique<MediaRoutesObserver>(router());
+  auto routes_observer_two = std::make_unique<MediaRoutesObserver>(router());
+
+  // Resetting the observer immediately should cause it to be invalidated before
+  // the callback for NotifyOfExistingRoutesIfRegistered is called.
+  routes_observer_two.reset();
+
+  // Make sure the Notify task executes.
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(MediaRouterMojoImplTest, RegisteredObserversGetMediaRouteUpdates) {
-  StrictMock<MockMediaRoutesObserver> routes_observer(router());
-  StrictMock<MockMediaRoutesObserver> extra_routes_observer(router());
-  StrictMock<MockMediaRoutesObserver> different_routes_observer(router());
+  auto routes_observer =
+      std::make_unique<StrictMock<MockMediaRoutesObserver>>(router());
+  auto extra_routes_observer =
+      std::make_unique<StrictMock<MockMediaRoutesObserver>>(router());
 
   MediaSource media_source(kSource);
   std::vector<MediaRoute> expected_routes{
@@ -656,16 +660,14 @@ TEST_F(MediaRouterMojoImplTest, RegisteredObserversGetMediaRouteUpdates) {
   incognito_expected_route.set_off_the_record(true);
   expected_routes.push_back(incognito_expected_route);
 
-  EXPECT_CALL(routes_observer, OnRoutesUpdated(expected_routes)).Times(1);
-  EXPECT_CALL(extra_routes_observer, OnRoutesUpdated(expected_routes)).Times(1);
-  EXPECT_CALL(different_routes_observer, OnRoutesUpdated(expected_routes))
+  EXPECT_CALL(*routes_observer, OnRoutesUpdated(expected_routes)).Times(1);
+  EXPECT_CALL(*extra_routes_observer, OnRoutesUpdated(expected_routes))
       .Times(1);
 
   UpdateRoutes(mojom::MediaRouteProviderId::CAST, expected_routes);
 
-  UnregisterMediaRoutesObserver(&routes_observer);
-  UnregisterMediaRoutesObserver(&extra_routes_observer);
-  UnregisterMediaRoutesObserver(&different_routes_observer);
+  routes_observer.reset();
+  extra_routes_observer.reset();
 
   // No route observers should be notified.
   UpdateRoutes(mojom::MediaRouteProviderId::CAST, expected_routes);
