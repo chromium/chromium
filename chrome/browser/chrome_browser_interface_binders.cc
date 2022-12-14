@@ -1034,6 +1034,9 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         metrics_reporter::mojom::PageMetricsHost, TabSearchUI, NewTabPageUI>(
         map);
+  } else {
+    RegisterWebUIControllerInterfaceBinder<
+        metrics_reporter::mojom::PageMetricsHost, NewTabPageUI>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<
