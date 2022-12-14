@@ -6,7 +6,8 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Colors should be mirrored by Theme.BrowserUI.DialogWhenLarge. -->
+    <!-- Colors should be mirrored by Theme.BrowserUI.DialogWhenLarge and
+         Theme.BrowserUI.AlertDialog.NoActionBar. -->
     <style name="Base.V21.Theme.BrowserUI" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
 
@@ -149,21 +150,62 @@ found in the LICENSE file.
     <style name="Theme.BrowserUI.DialogWhenLarge.DayNight" parent="Theme.BrowserUI.DialogWhenLarge"/>
 
     <!-- Unlike |ThemeOverlay.BrowserUI.AlertDialog|, this is a complete theme that can be used as
-         an activity theme on its own. This should be kept in sync with
-         |ThemeOverlay.BrowserUI.AlertDialog|.
+         an activity theme on its own. In addition to mirroring |Base.V21.Theme.BrowserUI|, this
+         should include all the attributes that |ThemeOverlay.BrowserUI.AlertDialog| has.
          -->
-    <style name="Theme.BrowserUI.AlertDialog.NoActionBar"
-        parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
-        <item name="android:textColorPrimary">@macro/default_text_color</item>
-        <item name="android:windowBackground">@drawable/dialog_bg_no_shadow</item>
-        <item name="android:windowTitleStyle">@style/TextAppearance.AlertDialogTitleStyle</item>
-        <item name="android:textColorHighlight">@color/text_highlight_color</item>
+    <style name="Theme.BrowserUI.AlertDialog.NoActionBar" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
 
-        <!--  Overriding AppCompat values -->
+        <!-- Color palettes -->
+        <item name="colorPrimary">@color/baseline_primary_600</item>
+        <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="colorPrimaryInverse">@color/baseline_primary_200</item>
+        <item name="colorOnPrimary">@color/baseline_primary_0</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
+        <item name="colorSecondaryContainer">@color/baseline_secondary_100</item>
+        <item name="colorOnSecondaryContainer">@color/baseline_secondary_900</item>
         <item name="colorAccent">@macro/default_control_color_active</item>
+        <item name="android:colorBackground">@color/baseline_neutral_0</item>
+        <item name="colorOnBackground">@color/baseline_neutral_900</item>
+        <item name="colorSurface">@color/baseline_neutral_0</item>
+        <item name="colorOnSurface">@color/baseline_neutral_900</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_100</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_700</item>
+        <item name="colorOnSurfaceInverse">@color/baseline_neutral_50</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_500</item>
+        <item name="colorError">@color/baseline_error_600</item>
+
+        <!-- Text colors-->
+        <item name="android:textColorPrimary">@color/default_text_color_list</item>
+        <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
+        <item name="android:textColorLink">@macro/default_text_color_link</item>
+        <item name="android:textColorHighlight">@color/text_highlight_color</item>
+        <item name="android:textColorHint">@color/default_text_color_hint_list</item>
+
+        <!-- Widget colors: checkboxes, switches, buttons, etc. -->
         <item name="colorControlNormal">@macro/default_control_color_normal</item>
         <item name="colorControlActivated">@macro/default_control_color_active</item>
         <item name="colorControlHighlight">@color/control_highlight_color</item>
+
+        <!-- Elevation overlays -->
+        <item name="elevationOverlayEnabled">true</item>
+        <item name="elevationOverlayColor">@color/baseline_neutral_600</item>
+        <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
+
+        <!-- Dynamic colors that are applied to the buttons and links. -->
+        <item name="globalFilledButtonBgColor">@color/filled_button_bg_dynamic_list</item>
+        <item name="globalFilledButtonTextColor">@color/default_text_color_on_accent1_list</item>
+        <item name="globalTextButtonTextColor">@color/default_text_color_accent1_tint_list</item>
+        <item name="globalTextButtonRippleColor">@color/text_button_ripple_color_list</item>
+        <item name="globalOutlinedButtonBorderColor">@macro/divider_line_bg_color</item>
+        <item name="globalLinkTextColor">?attr/colorPrimary</item>
+        <item name="globalClickableSpanColor">?attr/colorPrimary</item>
+
+        <item name="android:windowBackground">@drawable/dialog_bg_no_shadow</item>
+        <item name="android:windowTitleStyle">@style/TextAppearance.AlertDialogTitleStyle</item>
+
+        <!--  Overriding AppCompat values -->
         <item name="spinnerStyle">@style/SpinnerStyle</item>
 
         <!-- Depending on if the support library or framework is inflating the
@@ -178,6 +220,8 @@ found in the LICENSE file.
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
     </style>
+    <!-- Overridden by night mode. -->
+    <style name="Theme.BrowserUI.AlertDialog.NoActionBar.DayNight" parent="Theme.BrowserUI.AlertDialog.NoActionBar"/>
 
     <!-- This theme is used instead of android:style/Theme.NoDisplay so that it has the required
         attributes in case the context ends up being used to inflate views. -->
