@@ -13,7 +13,7 @@ import {str, strf, util} from '../../common/js/util.js';
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.js';
-import {MetadataModel} from '../../foreground/js/metadata/metadata_model.js';
+import {MetadataModelInterface} from '../../externs/metadata_model.js';
 
 import {fileOperationUtil} from './file_operation_util.js';
 
@@ -36,7 +36,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
 
     /**
      * The metadata model to notify entries have changed.
-     * @type {?MetadataModel}
+     * @type {?MetadataModelInterface}
      * @private
      */
     this.metadataModel_ = null;
@@ -197,7 +197,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
   }
 
   /**
-   * @param {!MetadataModel} model
+   * @param {!MetadataModelInterface} model
    */
   set metadataModel(model) {
     this.metadataModel_ = model;
