@@ -6403,7 +6403,6 @@ crbug.com/1385905 [ Win ] external/wpt/editing/run/caret-navigation-around-line-
 crbug.com/1385881 [ Win ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/1385870 [ Win ] external/wpt/screen-capture/getdisplaymedia.https.html [ Skip Timeout ]
 crbug.com/1385870 [ Win ] external/wpt/screen-capture/getdisplaymedia-capture-controller.https.window.html [ Skip Timeout ]
-crbug.com/1385858 [ Win ] virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Skip Timeout ]
 crbug.com/1385929 [ Win ] editing/selection/mouse/mouse-selection-vertical-lr.html [ Timeout ]
 crbug.com/1385929 [ Win ] editing/selection/mouse/mouse-selection-horizontal.html [ Timeout ]
 crbug.com/1392480 [ Win ] wpt_internal/hid/hidDevice_reports.https.window.html [ Timeout ]
