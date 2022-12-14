@@ -82,9 +82,10 @@ class CrosAudioConfigImplTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeature(features::kAudioSettingsPage);
     CrasAudioClient::InitializeFake();
     fake_cras_audio_client_ = FakeCrasAudioClient::Get();
-    audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
-    CrasAudioHandler::Initialize(mojo::NullRemote(), audio_pref_handler_);
+    CrasAudioHandler::InitializeForTesting();
     cras_audio_handler_ = CrasAudioHandler::Get();
+    audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
+    cras_audio_handler_->SetPrefHandlerForTesting(audio_pref_handler_);
     cros_audio_config_ = std::make_unique<CrosAudioConfigImpl>();
   }
 
