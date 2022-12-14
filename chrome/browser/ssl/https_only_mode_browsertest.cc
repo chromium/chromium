@@ -25,6 +25,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/hashing.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -36,6 +37,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/test_data_directory.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
 
@@ -882,6 +884,49 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, RevisitingBumpsExpiration) {
   EXPECT_FALSE(
       chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
           contents));
+}
+
+// Tests that if a hostname has an HSTS entry registered, then HTTPS-First Mode
+// should not try to upgrade it (instead allowing HSTS to handle the upgrade as
+// it is more strict).
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, PreferHstsOverHttpsFirstMode) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+
+  // URL for HTTPS server that will result in a certificate error.
+  GURL https_url = https_server()->GetURL("bad-https.test", "/simple.html");
+
+  // HTTP version of that URL that will get upgraded to HTTPS (but with the
+  // correct port for the HTTPS server -- the test code can configure
+  // HTTPS-First Mode to be aware of the different ports, but can't do that for
+  // HSTS).
+  GURL::Replacements downgrade_scheme_to_http;
+  downgrade_scheme_to_http.SetSchemeStr(url::kHttpScheme);
+  GURL http_url = https_url.ReplaceComponents(downgrade_scheme_to_http);
+
+  // Add hostname to the TransportSecurityState.
+  base::Time expiry = base::Time::Now() + base::Days(100);
+  bool include_subdomains = false;
+  auto* network_context =
+      profile->GetDefaultStoragePartition()->GetNetworkContext();
+  base::RunLoop run_loop;
+  network_context->AddHSTS(http_url.host(), expiry, include_subdomains,
+                           run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Navigate to the HTTP URL. It should get upgraded to HTTPS and trigger a
+  // fatal certificate error (because of HTTPS) instead of falling back to the
+  // HTTPS-First Mode interstitial.
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingSSLInterstitial(contents));
+
+  // Verify that no HFM event histograms were emitted (to check that HFM did not
+  // trigger for this navigation at all).
+  histograms()->ExpectTotalCount(kEventHistogram, 0);
 }
 
 // A simple test fixture that ensures the kHttpsOnlyMode feature is enabled and

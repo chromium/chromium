@@ -15,7 +15,11 @@
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }  // namespace content
+
+class PrefService;
+class Profile;
 
 // A class that attempts to intercept HTTP navigation requests and redirect them
 // to HTTPS. Its lifetime matches that of the content/ navigation loader code.
@@ -36,8 +40,19 @@ class HttpsOnlyModeUpgradeInterceptor
       content::BrowserContext* browser_context,
       content::URLLoaderRequestInterceptor::LoaderCallback callback) override;
 
-  // Sets the ports used by the EmbeddedTestServer (which uses random ports) to
-  // determine the correct port to upgrade/fallback to in tests.
+  // Continuation of MaybeCreateLoader() after querying the network service for
+  // the HSTS status for the hostname in the request.
+  void MaybeCreateLoaderOnHstsQueryCompleted(
+      const network::ResourceRequest& tentative_resource_request,
+      content::BrowserContext* browser_context,
+      content::URLLoaderRequestInterceptor::LoaderCallback callback,
+      Profile* profile,
+      PrefService* prefs,
+      content::WebContents* web_contents,
+      bool is_hsts_active_for_host);
+
+  // Sets the ports used by the EmbeddedTestServer (which uses random ports)
+  // to determine the correct port to upgrade/fallback to in tests.
   static void SetHttpsPortForTesting(int port);
   static void SetHttpPortForTesting(int port);
   static int GetHttpsPortForTesting();
@@ -62,6 +77,8 @@ class HttpsOnlyModeUpgradeInterceptor
   int frame_tree_node_id_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<HttpsOnlyModeUpgradeInterceptor> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_SSL_HTTPS_ONLY_MODE_UPGRADE_INTERCEPTOR_H_
