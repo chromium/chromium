@@ -825,9 +825,7 @@ BASE_FEATURE(kEnableTouchscreensInDiagnosticsApp,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, allows user to request to view PPD for a printer.
-BASE_FEATURE(kEnableViewPpd,
-             "EnableViewPpd",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableViewPpd, "EnableViewPpd", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enforces Ash extension keep-list. Only the extensions/Chrome apps in the
 // keep-list are enabled in Ash.
