@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -2536,12 +2537,10 @@ void Browser::OnTabReplacedAt(WebContents* old_contents,
 }
 
 void Browser::OnDevToolsAvailabilityChanged() {
-  using DTPH = policy::DeveloperToolsPolicyHandler;
-  // We close all windows as a safety measure, even for
-  // kDisallowedForForceInstalledExtensions.
-  if (DTPH::GetDevToolsAvailability(profile_->GetPrefs()) !=
-      DTPH::Availability::kAllowed) {
-    content::DevToolsAgentHost::DetachAllClients();
+  for (auto& agent_host : content::DevToolsAgentHost::GetAll()) {
+    if (!DevToolsWindow::AllowDevToolsFor(profile_,
+                                          agent_host->GetWebContents()))
+      agent_host->ForceDetachAllSessions();
   }
 }
 

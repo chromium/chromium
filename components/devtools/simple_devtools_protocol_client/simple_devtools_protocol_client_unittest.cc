@@ -74,6 +74,7 @@ class MockDevToolsAgentHost : public content::DevToolsAgentHost {
   bool Close() override { return true; }
   base::TimeTicks GetLastActivityTime() override { return base::TimeTicks(); }
   content::RenderProcessHost* GetProcessHost() override { return nullptr; }
+  void ForceDetachAllSessions() override {}
 
  protected:
   ~MockDevToolsAgentHost() override = default;

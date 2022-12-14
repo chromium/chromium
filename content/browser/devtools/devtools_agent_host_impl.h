@@ -62,6 +62,7 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   void DisconnectWebContents() override;
   void ConnectWebContents(WebContents* wc) override;
   RenderProcessHost* GetProcessHost() override;
+  void ForceDetachAllSessions() override;
 
   struct NetworkLoaderFactoryParamsAndInfo {
     NetworkLoaderFactoryParamsAndInfo();
@@ -119,7 +120,6 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   void NotifyCreated();
   void NotifyNavigated();
   void NotifyCrashed(base::TerminationStatus status);
-  void ForceDetachAllSessions();
   void ForceDetachRestrictedSessions(
       const std::vector<DevToolsSession*>& restricted_sessions);
   DevToolsIOContext* GetIOContext() { return &io_context_; }

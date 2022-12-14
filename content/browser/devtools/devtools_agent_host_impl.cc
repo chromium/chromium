@@ -29,7 +29,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_external_agent_proxy_delegate.h"
-#include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/devtools_socket_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -85,6 +84,15 @@ bool DevToolsAgentHost::IsSupportedProtocolVersion(const std::string& version) {
   // TODO(dgozman): generate this.
   return version == "1.0" || version == "1.1" || version == "1.2" ||
          version == "1.3";
+}
+
+// static
+DevToolsAgentHost::List DevToolsAgentHost::GetAll() {
+  DevToolsAgentHost::List result;
+  for (auto& instance : GetDevtoolsInstances()) {
+    result.push_back(instance.second);
+  }
+  return result;
 }
 
 // static

@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
@@ -110,6 +111,9 @@ class CONTENT_EXPORT DevToolsAgentHost
   static bool IsDebuggerAttached(WebContents* web_contents);
 
   using List = std::vector<scoped_refptr<DevToolsAgentHost>>;
+
+  // Returns all DevToolsAgentHosts without forcing their creation.
+  static List GetAll();
 
   // Returns all non-browser target DevToolsAgentHosts content is aware of.
   static List GetOrCreateAll();
@@ -223,6 +227,9 @@ class CONTENT_EXPORT DevToolsAgentHost
 
   // Returns the time when the host was last active.
   virtual base::TimeTicks GetLastActivityTime() = 0;
+
+  // Terminates all debugging sessions and detaches all clients.
+  virtual void ForceDetachAllSessions() = 0;
 
   // Terminates all debugging sessions and detaches all clients.
   static void DetachAllClients();
