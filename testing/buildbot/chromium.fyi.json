@@ -5058,11 +5058,6 @@
         "test_id_prefix": "ninja://chrome/test:unit_tests/"
       },
       {
-        "args": [
-          "--test-launcher-timeout=90000",
-          "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -6818,12 +6813,6 @@
         "test_id_prefix": "ninja://chrome/test:unit_tests/"
       },
       {
-        "args": [
-          "--gtest_shuffle",
-          "--test-launcher-timeout=180000",
-          "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -6835,12 +6824,6 @@
         "test_id_prefix": "ninja://chrome/updater:updater_tests/"
       },
       {
-        "args": [
-          "--gtest_shuffle",
-          "--test-launcher-timeout=180000",
-          "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94636,9 +94619,6 @@
       },
       {
         "args": [
-          "--test-launcher-timeout=90000",
-          "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000",
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
@@ -96350,11 +96330,6 @@
         "test_id_prefix": "ninja://chrome/test:unit_tests/"
       },
       {
-        "args": [
-          "--test-launcher-timeout=90000",
-          "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
-        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -98013,11 +97988,6 @@
         "test_id_prefix": "ninja://chrome/test:unit_tests/"
       },
       {
-        "args": [
-          "--test-launcher-timeout=90000",
-          "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -100704,10 +100674,6 @@
       },
       {
         "args": [
-          "--gtest_shuffle",
-          "--test-launcher-timeout=180000",
-          "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000",
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
@@ -100729,10 +100695,6 @@
       },
       {
         "args": [
-          "--gtest_shuffle",
-          "--test-launcher-timeout=180000",
-          "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000",
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
@@ -103186,12 +103148,6 @@
         "test_id_prefix": "ninja://chrome/test:unit_tests/"
       },
       {
-        "args": [
-          "--gtest_shuffle",
-          "--test-launcher-timeout=180000",
-          "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
-        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -103205,12 +103161,6 @@
         "test_id_prefix": "ninja://chrome/updater:updater_tests/"
       },
       {
-        "args": [
-          "--gtest_shuffle",
-          "--test-launcher-timeout=180000",
-          "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
-        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -105213,12 +105163,6 @@
         "test_id_prefix": "ninja://chrome/test:unit_tests/"
       },
       {
-        "args": [
-          "--gtest_shuffle",
-          "--test-launcher-timeout=180000",
-          "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
-        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -105240,12 +105184,6 @@
         "test_id_prefix": "ninja://chrome/updater:updater_tests/"
       },
       {
-        "args": [
-          "--gtest_shuffle",
-          "--test-launcher-timeout=180000",
-          "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
-        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],

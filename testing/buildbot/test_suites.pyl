@@ -4350,14 +4350,7 @@
     'mac_specific_chromium_gtests': {
       'power_sampler_unittests': {},
       'sandbox_unittests': {},
-      'updater_tests': {
-        'args': [
-          # Timeouts based on empirical observations of test runtimes, 2021-07.
-          '--test-launcher-timeout=90000',
-          '--ui-test-action-max-timeout=45000',
-          '--ui-test-action-timeout=40000',
-        ],
-      },
+      'updater_tests': {},
       'xr_browser_tests': {
         'test': 'xr_browser_tests',
       },
@@ -4969,23 +4962,8 @@
     },
 
     'updater_gtests_mac': {
-      'updater_tests': {
-        'args': [
-          '--gtest_shuffle',
-          # Timeouts based on empirical observations of test runtimes, 2021-07.
-          '--test-launcher-timeout=90000',
-          '--ui-test-action-max-timeout=45000',
-          '--ui-test-action-timeout=40000',
-        ],
-      },
+      'updater_tests': {},
       'updater_tests_system': {
-        'args': [
-          '--gtest_shuffle',
-          # Timeouts based on empirical observations of test runtimes, 2021-07.
-          '--test-launcher-timeout=90000',
-          '--ui-test-action-max-timeout=45000',
-          '--ui-test-action-timeout=40000',
-        ],
         'swarming': {
           'dimension_sets': [
             {
@@ -4997,27 +4975,9 @@
       },
     },
 
-    # For updater_gtests on Windows, the test action timeouts are based on
-    # empirical observations of test runtimes, 2021-07. The test launcher
-    # timeout is set at 180000 to work around an unfixable issue in the
-    # COM runtime class activation crbug.com/1259178.
     'updater_gtests_win': {
-      'updater_tests': {
-        'args': [
-          '--gtest_shuffle',
-          '--test-launcher-timeout=180000',
-          '--ui-test-action-max-timeout=45000',
-          '--ui-test-action-timeout=40000',
-        ],
-      },
+      'updater_tests': {},
       'updater_tests_system': {
-        'args': [
-          '--gtest_shuffle',
-          '--test-launcher-timeout=180000',
-          '--ui-test-action-max-timeout=45000',
-          '--ui-test-action-timeout=40000',
-          '--exclude-paths-from-win-defender',
-        ],
         'swarming': {
           'dimension_sets': [
             {
@@ -5030,13 +4990,6 @@
 
     'updater_gtests_win_uac': {
       'updater_tests_system': {
-        'args': [
-          '--gtest_shuffle',
-          '--test-launcher-timeout=180000',
-          '--ui-test-action-max-timeout=45000',
-          '--ui-test-action-timeout=40000',
-          '--exclude-paths-from-win-defender',
-        ],
         'swarming': {
           'dimension_sets': [
             {
@@ -5045,16 +4998,7 @@
           ]
         }
       },
-      'updater_tests_win_uac': {
-        'args': [
-          '--test-launcher-bot-mode',
-          '--cfi-diag=0',
-          '--gtest_shuffle',
-          '--test-launcher-timeout=180000',
-          '--ui-test-action-max-timeout=45000',
-          '--ui-test-action-timeout=40000',
-        ],
-      },
+      'updater_tests_win_uac': {},
     },
 
     'upload_perfetto': {
@@ -5379,24 +5323,8 @@
           ],
         },
       },
-      'updater_tests': {
-        'args': [
-          # Timeouts based on empirical observations of test runtimes, 2022-12.
-          '--gtest_shuffle',
-          '--test-launcher-timeout=180000',
-          '--ui-test-action-max-timeout=45000',
-          '--ui-test-action-timeout=40000',
-        ],
-      },
-      'updater_tests_system': {
-        'args': [
-          # Timeouts based on empirical observations of test runtimes, 2022-12.
-          '--gtest_shuffle',
-          '--test-launcher-timeout=180000',
-          '--ui-test-action-max-timeout=45000',
-          '--ui-test-action-timeout=40000',
-        ],
-      },
+      'updater_tests': {},
+      'updater_tests_system': {},
       'zucchini_unittests': {},
     },
 

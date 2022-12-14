@@ -1859,13 +1859,31 @@
     "label": "//chrome/test:unit_tests",
     "type": "windowed_test_launcher",
   },
+  # The test action timeouts for `updater_tests`, `updater_tests_system`, and
+  # `updater_tests_win_uac` are based on empirical observations of test
+  # runtimes, 2021-07. The launcher timeout was 90000 but then we increased
+  # the value to 180000 to work around an unfixable issue in the Windows
+  # COM runtime class activation crbug.com/1259178.
   "updater_tests": {
     "label": "//chrome/updater:updater_tests",
     "type": "console_test_launcher",
+    "args": [
+      "--gtest_shuffle",
+      "--test-launcher-timeout=180000",
+      "--ui-test-action-max-timeout=45000",
+      "--ui-test-action-timeout=40000",
+    ],
   },
   "updater_tests_system": {
     "label": "//chrome/updater:updater_tests_system",
     "type": "console_test_launcher",
+    "args": [
+      "--gtest_shuffle",
+      "--test-launcher-timeout=180000",
+      "--ui-test-action-max-timeout=45000",
+      "--ui-test-action-timeout=40000",
+      "--exclude-paths-from-win-defender",
+    ],
   },
   "updater_tests_win_uac": {
     "label": "//chrome/updater:updater_tests_win_uac",
@@ -1874,6 +1892,12 @@
     "args": [
       "test_service/run_command_as_standard_user.py",
       "--command=updater_tests.exe",
+      "--test-launcher-bot-mode",
+      "--cfi-diag=0",
+      "--gtest_shuffle",
+      "--test-launcher-timeout=180000",
+      "--ui-test-action-max-timeout=45000",
+      "--ui-test-action-timeout=40000",
     ],
   },
   "upload_trace_processor": {
