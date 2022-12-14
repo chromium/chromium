@@ -3774,15 +3774,6 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/tools/bazel/windows-amd64': {
-    'packages': [{
-       'package': 'infra/3pp/tools/bazel_bootstrap/windows-amd64',
-       'version': 'version:2@5.3.2',
-    }],
-    'dep_type': 'cipd',
-    'condition': 'checkout_win and checkout_bazel',
-  },
-
   'src/tools/bazel/linux-amd64': {
     'packages': [{
        'package': 'infra/3pp/tools/bazel_bootstrap/linux-amd64',
@@ -3790,6 +3781,33 @@ deps = {
     }],
     'dep_type': 'cipd',
     'condition': 'checkout_linux and checkout_bazel',
+  },
+
+  'src/tools/bazel/mac-amd64': {
+    'packages': [{
+       'package': 'infra/3pp/tools/bazel_bootstrap/mac-amd64',
+       'version': 'version:2@5.3.2.1',
+    }],
+    'dep_type': 'cipd',
+    'condition': 'checkout_mac and checkout_bazel',
+  },
+
+  'src/tools/bazel/mac-arm64': {
+    'packages': [{
+       'package': 'infra/3pp/tools/bazel_bootstrap/mac-arm64',
+       'version': 'version:2@5.3.2.1',
+    }],
+    'dep_type': 'cipd',
+    'condition': 'checkout_mac and checkout_bazel',
+  },
+
+  'src/tools/bazel/windows-amd64': {
+    'packages': [{
+       'package': 'infra/3pp/tools/bazel_bootstrap/windows-amd64',
+       'version': 'version:2@5.3.2',
+    }],
+    'dep_type': 'cipd',
+    'condition': 'checkout_win and checkout_bazel',
   },
 }
 
