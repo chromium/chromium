@@ -2485,6 +2485,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Float.FloatWindowMoveToAnotherDeskCounts" units="windows"
+    expires_after="2023-12-11">
+  <owner>nupurjain@google.com</owner>
+  <owner>shidi@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    The counts of how many times floated windows moved to another desk per
+    session, which is from the time a user logs in to the time they log off.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Float.MultitaskMenuEntryType.{TabletOrClamshell}"
     enum="MultitaskMenuEntryType" expires_after="2023-11-11">
   <owner>nupurjain@google.com</owner>

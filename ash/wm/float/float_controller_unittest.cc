@@ -689,6 +689,45 @@ TEST_F(WindowFloatMetricsTest, FloatWindowCountPerSession) {
   EXPECT_EQ(Shell::Get()->float_controller()->floated_window_counter_, 3);
 }
 
+// Tests the float window moved to another desk counts.
+TEST_F(WindowFloatMetricsTest, FloatWindowMovedToAnotherDeskCountPerSession) {
+  // Float a window, then move to another desk, tests that it counts properly.
+  std::unique_ptr<aura::Window> window_1 = CreateFloatedWindow();
+  // Create a new desk.
+  NewDesk();
+  auto* desks_controller = DesksController::Get();
+  auto* desk_2 = desks_controller->desks()[1].get();
+  EnterOverview();
+  auto* overview_session =
+      Shell::Get()->overview_controller()->overview_session();
+  // The window should exist on the grid of the first display.
+  auto* overview_item =
+      overview_session->GetOverviewItemForWindow(window_1.get());
+  auto* grid =
+      overview_session->GetGridWithRootWindow(Shell::GetPrimaryRootWindow());
+  EXPECT_EQ(1u, grid->size());
+  // Get position of `desk_2`'s desk mini view.
+  const auto* desks_bar_view = grid->desks_bar_view();
+  gfx::Point desk_2_mini_view_center =
+      desks_bar_view->mini_views()[1]->GetBoundsInScreen().CenterPoint();
+
+  // On overview, drag and drop floated `window_1` to `desk_2`.
+  DragItemToPoint(overview_item, desk_2_mini_view_center, GetEventGenerator(),
+                  /*by_touch_gestures=*/false,
+                  /*drop=*/true);
+
+  // Verify `window_1` belongs to `desk_2`.
+  auto* float_controller = Shell::Get()->float_controller();
+  ASSERT_EQ(float_controller->FindDeskOfFloatedWindow(window_1.get()), desk_2);
+  // Check total counts, it should count 1.
+  EXPECT_EQ(float_controller->floated_window_move_to_another_desk_counter_, 1);
+  // Move to `desk_2` and remove `desk_2` by combine 2 desks.
+  // Check total counts, it should count 2.
+  ActivateDesk(desk_2);
+  RemoveDesk(desk_2, DeskCloseType::kCombineDesks);
+  EXPECT_EQ(float_controller->floated_window_move_to_another_desk_counter_, 2);
+}
+
 // Tests that the float window duration histogram is properly recorded.
 TEST_F(WindowFloatMetricsTest, FloatWindowDuration) {
   constexpr char kHistogramName[] = "Ash.Float.FloatWindowDuration";

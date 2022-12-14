@@ -44,6 +44,8 @@ constexpr char kFloatWindowCountsPerSessionHistogramName[] =
     "Ash.Float.FloatWindowCountsPerSession";
 constexpr char kFloatWindowDurationHistogramName[] =
     "Ash.Float.FloatWindowDuration";
+constexpr char kFloatWindowMoveToAnotherDeskCountsHistogramName[] =
+    "Ash.Float.FloatWindowMoveToAnotherDeskCounts";
 
 namespace {
 
@@ -245,6 +247,9 @@ FloatController::~FloatController() {
   // Record how many windows are floated per session.
   base::UmaHistogramCounts100(kFloatWindowCountsPerSessionHistogramName,
                               floated_window_counter_);
+  // Record how many windows are moved to another desk per session.
+  base::UmaHistogramCounts100(kFloatWindowMoveToAnotherDeskCountsHistogramName,
+                              floated_window_move_to_another_desk_counter_);
 }
 
 // static
@@ -491,6 +496,8 @@ void FloatController::OnMovingAllWindowsOutToDesk(Desk* original_desk,
   auto* original_desk_floated_window = FindFloatedWindowOfDesk(original_desk);
   if (!original_desk_floated_window)
     return;
+  // Records floated window being moved to another desk.
+  ++floated_window_move_to_another_desk_counter_;
   auto* target_desk_floated_window = FindFloatedWindowOfDesk(target_desk);
 
   // Float window might have been hidden on purpose and won't show
@@ -531,6 +538,8 @@ void FloatController::OnMovingFloatedWindowToDesk(aura::Window* floated_window,
   DCHECK(float_info);
   DCHECK_EQ(float_info->desk(), active_desk);
   float_info->set_desk(target_desk);
+  // Records floated window being moved to another desk.
+  ++floated_window_move_to_another_desk_counter_;
   if (root != target_root) {
     // If `floated_window_` is dragged to a desk on a different display, we
     // also need to move it to the target display.
