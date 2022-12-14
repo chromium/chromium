@@ -20,6 +20,7 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -40,6 +41,7 @@
 #include "base/win/post_async_results.h"
 #include "base/win/scoped_hstring.h"
 #include "chrome/browser/enterprise/platform_auth/cloud_ap_utils_win.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_request_headers.h"
 #include "url/gurl.h"
@@ -200,14 +202,31 @@ net::HttpRequestHeaders GetAuthData(const GURL& url) {
                                      &cookie_info_count, &cookie_info);
     if (SUCCEEDED(hresult)) {
       DCHECK(!cookie_info_count || cookie_info);
-      // Add the new auth cookies to the existing set of cookies.
-      // TODO(crbug.com/1246839): Check if cookies whose name begins with
-      // `x-ms-` should be treated as headers.
       net::cookie_util::ParsedRequestCookies parsed_cookies;
-      for (DWORD i = 0; i < cookie_info_count; ++i) {
-        const ProofOfPossessionCookieInfo& cookie = cookie_info[i];
-        parsed_cookies.emplace_back(base::WideToASCII(cookie.name),
-                                    base::WideToASCII(cookie.data));
+      if (base::FeatureList::IsEnabled(
+              enterprise_auth::kCloudApAuthAttachAsHeader)) {
+        // If the auth cookie name begins with 'x-ms-', attach the cookie as a
+        // new header. Otherwise, append it to the existing list of cookies.
+        static constexpr base::StringPiece kHeaderPrefix("x-ms-");
+        for (DWORD i = 0; i < cookie_info_count; ++i) {
+          const ProofOfPossessionCookieInfo& cookie = cookie_info[i];
+          auto ascii_name = base::WideToASCII(cookie.name);
+          if (base::StartsWith(ascii_name, kHeaderPrefix,
+                               base::CompareCase::INSENSITIVE_ASCII)) {
+            auth_headers.SetHeader(std::move(ascii_name),
+                                   base::WideToASCII(cookie.data));
+          } else {
+            parsed_cookies.emplace_back(std::move(ascii_name),
+                                        base::WideToASCII(cookie.data));
+          }
+        }
+      } else {
+        // Append all auth cookies to the existing set of cookies.
+        for (DWORD i = 0; i < cookie_info_count; ++i) {
+          const ProofOfPossessionCookieInfo& cookie = cookie_info[i];
+          parsed_cookies.emplace_back(base::WideToASCII(cookie.name),
+                                      base::WideToASCII(cookie.data));
+        }
       }
       if (parsed_cookies.size() > 0) {
         auth_headers.SetHeader(
