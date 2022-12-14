@@ -61,10 +61,10 @@ PasswordStoreAndroidBackendDispatcherBridgeImpl::
 }
 
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::Init(
-    const PasswordStoreAndroidBackendReceiverBridge& receiver_bridge) {
+    base::android::ScopedJavaGlobalRef<jobject> receiver_bridge) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   java_object_ = Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_create(
-      base::android::AttachCurrentThread(), receiver_bridge.GetJavaBridge());
+      base::android::AttachCurrentThread(), receiver_bridge);
 }
 
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetAllLogins(

@@ -78,7 +78,7 @@ class MockPasswordStoreAndroidBackendDispatcherBridge
  public:
   MOCK_METHOD(void,
               Init,
-              (const PasswordStoreAndroidBackendReceiverBridge&),
+              (base::android::ScopedJavaGlobalRef<jobject>),
               (override));
   MOCK_METHOD(void, GetAllLogins, (JobId, Account), (override));
   MOCK_METHOD(void, GetAutofillableLogins, (JobId, Account), (override));
@@ -110,8 +110,6 @@ class PasswordStoreAndroidBackendBridgeHelperImplTest : public testing::Test {
                     class PasswordStoreAndroidBackendBridgeHelperImplTest>(),
                 CreateMockReceiverBridge(),
                 CreateMockDispatcherBridge()) {
-    EXPECT_CALL(*dispatcher_bridge(), Init);
-    EXPECT_CALL(*receiver_bridge(), SetConsumer);
     helper_.SetConsumer(consumer_weak_factory_.GetWeakPtr());
     RunUntilIdle();
   }
@@ -145,6 +143,9 @@ class PasswordStoreAndroidBackendBridgeHelperImplTest : public testing::Test {
         StrictMock<MockPasswordStoreAndroidBackendReceiverBridge>>();
     receiver_bridge_ = unique_receiver_bridge.get();
 
+    EXPECT_CALL(*receiver_bridge(), GetJavaBridge);
+    EXPECT_CALL(*receiver_bridge(), SetConsumer);
+
     return unique_receiver_bridge;
   }
 
@@ -153,6 +154,9 @@ class PasswordStoreAndroidBackendBridgeHelperImplTest : public testing::Test {
     auto unique_dispatcher_bridge = std::make_unique<
         StrictMock<MockPasswordStoreAndroidBackendDispatcherBridge>>();
     dispatcher_bridge_ = unique_dispatcher_bridge.get();
+
+    EXPECT_CALL(*dispatcher_bridge(), Init);
+
     return unique_dispatcher_bridge;
   }
 

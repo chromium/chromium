@@ -49,7 +49,7 @@ PasswordStoreAndroidBackendBridgeHelperImpl::
       FROM_HERE,
       base::BindOnce(&PasswordStoreAndroidBackendDispatcherBridge::Init,
                      base::Unretained(dispatcher_bridge_.get()),
-                     std::ref(*receiver_bridge_)));
+                     receiver_bridge_->GetJavaBridge()));
 }
 
 PasswordStoreAndroidBackendBridgeHelperImpl::
@@ -68,7 +68,7 @@ PasswordStoreAndroidBackendBridgeHelperImpl::
       FROM_HERE,
       base::BindOnce(&PasswordStoreAndroidBackendDispatcherBridge::Init,
                      base::Unretained(dispatcher_bridge_.get()),
-                     std::ref(*receiver_bridge_)));
+                     receiver_bridge_->GetJavaBridge()));
 }
 
 PasswordStoreAndroidBackendBridgeHelperImpl::

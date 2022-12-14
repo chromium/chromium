@@ -33,10 +33,10 @@ class PasswordStoreAndroidBackendDispatcherBridge {
 
   // Perform bridge and Java counterpart initialization. This method should be
   // executed on the same thread where all operations will run.
-  // `receiver_bridge` will be set to handle callbacks from the Java side and
-  // should outlive this object.
+  // `receiver_bridge` is the java counterpart of the
+  // `PasswordStoreAndroidBackendReceiverBridge` and should outlive this object.
   virtual void Init(
-      const PasswordStoreAndroidBackendReceiverBridge& receiver_bridge) = 0;
+      base::android::ScopedJavaGlobalRef<jobject> receiver_bridge) = 0;
 
   // Triggers an asynchronous request to retrieve all stored passwords. The
   // registered `Consumer` is notified with `OnCompleteWithLogins` via the

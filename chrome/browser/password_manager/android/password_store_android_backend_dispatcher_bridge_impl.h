@@ -35,8 +35,8 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl
       const PasswordStoreAndroidBackendDispatcherBridgeImpl&) = delete;
   ~PasswordStoreAndroidBackendDispatcherBridgeImpl() override;
 
-  void Init(const PasswordStoreAndroidBackendReceiverBridge& receiver_bridge)
-      override;
+  void Init(
+      base::android::ScopedJavaGlobalRef<jobject> receiver_bridge) override;
 
  private:
   // Implements PasswordStoreAndroidBackendDispatcherBridge interface.
