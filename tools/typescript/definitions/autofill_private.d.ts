@@ -85,6 +85,13 @@ declare global {
         metadata?: AutofillMetadata;
       }
 
+      export interface IbanEntry {
+        guid?: string;
+        value?: string;
+        nickname?: string;
+        metadata?: AutofillMetadata;
+      }
+
       export interface ValidatePhoneParams {
         phoneNumbers: string[];
         indexOfNewNumber: number;
@@ -97,10 +104,12 @@ declare global {
           countryCode: string): Promise<AddressComponents>;
       export function getAddressList(): Promise<AddressEntry[]>;
       export function saveCreditCard(card: CreditCardEntry): void;
+      export function saveIban(iban: IbanEntry): void;
       export function removeEntry(guid: string): void;
       export function validatePhoneNumbers(
           params: ValidatePhoneParams): Promise<string[]>;
       export function getCreditCardList(): Promise<CreditCardEntry[]>;
+      export function getIbanList(): Promise<IbanEntry[]>;
       export function maskCreditCard(guid: string): void;
       export function migrateCreditCards(): void;
       export function logServerCardLinkClicked(): void;
@@ -110,7 +119,8 @@ declare global {
       export function removeVirtualCard(cardId: string): void;
 
       export const onPersonalDataChanged: ChromeEvent<
-          (addresses: AddressEntry[], creditCards: CreditCardEntry[]) => void>;
+          (addresses: AddressEntry[], creditCards: CreditCardEntry[],
+          ibans: IbanEntry[]) => void>;
     }
   }
 }

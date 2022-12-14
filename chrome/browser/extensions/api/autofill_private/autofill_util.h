@@ -18,6 +18,7 @@ namespace autofill_util {
 using AddressEntryList = std::vector<api::autofill_private::AddressEntry>;
 using CountryEntryList = std::vector<api::autofill_private::CountryEntry>;
 using CreditCardEntryList = std::vector<api::autofill_private::CreditCardEntry>;
+using IbanEntryList = std::vector<api::autofill_private::IbanEntry>;
 
 // Uses |personal_data| to generate a list of up-to-date AddressEntry objects.
 AddressEntryList GenerateAddressList(
@@ -30,6 +31,11 @@ CountryEntryList GenerateCountryList(
 // Uses |personal_data| to generate a list of up-to-date CreditCardEntry
 // objects.
 CreditCardEntryList GenerateCreditCardList(
+    const autofill::PersonalDataManager& personal_data);
+
+// Uses |personal_data| to generate a list of up-to-date IbanEntry
+// objects.
+IbanEntryList GenerateIbanList(
     const autofill::PersonalDataManager& personal_data);
 
 }  // namespace autofill_util

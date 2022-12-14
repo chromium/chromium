@@ -83,4 +83,8 @@ IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, AddAndUpdateCreditCard) {
   EXPECT_TRUE(RunAutofillSubtest("addAndUpdateCreditCard")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, AddAndUpdateIban) {
+  EXPECT_TRUE(RunAutofillSubtest("addAndUpdateIban")) << message_;
+}
+
 }  // namespace extensions

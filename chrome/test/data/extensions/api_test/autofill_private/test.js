@@ -21,6 +21,7 @@ var CARD_NAME = 'CardName';
 var NUMBER = '4111 1111 1111 1111';
 var EXP_MONTH = '02';
 var EXP_YEAR = '2999';
+var IBAN_VALUE = 'AD14 0008 0001 0012 3456 7890';
 
 var failOnceCalled = function() {
   chrome.test.fail();
@@ -302,6 +303,104 @@ var availableTests = [
         }));
   },
 
+  function addNewIban() {
+    function filterIbanProperties(ibans) {
+      return ibans.map(iban => {
+        var filteredIban = {};
+        ['value', 'nickname'].forEach(property => {
+          filteredIban[property] = iban[property];
+        });
+        return filteredIban;
+      });
+    }
+
+    chrome.autofillPrivate.getIbanList(chrome.test.callbackPass(function(
+        ibanList) {
+      chrome.test.assertEq([], ibanList);
+
+      // Set up the callback that verifies that the IBAN was correctly added.
+      chrome.test.listenOnce(
+          chrome.autofillPrivate.onPersonalDataChanged,
+          chrome.test.callbackPass(function(addressList, cardList, ibanList) {
+            chrome.test.assertEq(
+                [{value: IBAN_VALUE, nickname: undefined}],
+                filterIbanProperties(ibanList));
+          }));
+
+      chrome.autofillPrivate.saveIban({
+        value: IBAN_VALUE,
+      });
+    }));
+  },
+
+  function noChangesToExistingIban() {
+    chrome.autofillPrivate.getIbanList(chrome.test.callbackPass(function(
+        ibanList) {
+      // The IBAN from the addNewIban function should still be there.
+      chrome.test.assertEq(1, ibanList.length);
+      var ibanGuid = ibanList[0].guid;
+
+      // Set up the listener that verifies that onPersonalDataChanged shouldn't
+      // be called.
+      chrome.autofillPrivate.onPersonalDataChanged.addListener(failOnceCalled);
+
+      // Save the IBAN with the same info, shouldn't invoke
+      // onPersonalDataChanged.
+      chrome.autofillPrivate.saveIban({
+        guid: ibanGuid,
+        value: IBAN_VALUE,
+      });
+
+      // Reset onPersonalDataChanged.
+      chrome.autofillPrivate.onPersonalDataChanged.removeListener(
+          failOnceCalled);
+    }));
+  },
+
+  function updateExistingIban() {
+    var UPDATED_IBAN_VALUE = 'AL35 2021 1109 0000 0000 0123 4567';
+    var UPDATED_NICKNAME = 'New nickname';
+
+    function filterIbanProperties(ibans) {
+      return ibans.map(iban => {
+        var filteredIban = {};
+        ['guid', 'value', 'nickname'].forEach(property => {
+          filteredIban[property] = iban[property];
+        });
+        return filteredIban;
+      });
+    }
+
+    chrome.autofillPrivate.getIbanList(chrome.test.callbackPass(function(
+        ibanList) {
+      // The IBAN from the addNewIban function should still be there.
+      chrome.test.assertEq(1, ibanList.length);
+      var ibanGuid = ibanList[0].guid;
+
+      // Set up the callback that verifies that the IBAN was correctly
+      // updated.
+      chrome.test.listenOnce(
+          chrome.autofillPrivate.onPersonalDataChanged,
+          chrome.test.callbackPass(function(addressList, cardList, ibanList) {
+            chrome.test.assertEq(
+                [{
+                  guid: ibanGuid,
+                  value: UPDATED_IBAN_VALUE,
+                  nickname: UPDATED_NICKNAME
+                }],
+                filterIbanProperties(ibanList));
+          }));
+
+      // Update the IBAN by saving an IBAN with the same guid and using some
+      // different information.
+      chrome.autofillPrivate.saveIban({
+        guid: ibanGuid,
+        value: UPDATED_IBAN_VALUE,
+        nickname: UPDATED_NICKNAME
+      });
+    }));
+  },
+
   function removeEntry() {
     var guid;
 
@@ -397,7 +496,9 @@ var TESTS_FOR_CONFIG = {
   'addAndUpdateCreditCard': [
     'addNewCreditCard', 'noChangesToExistingCreditCard',
     'updateExistingCreditCard'
-  ]
+  ],
+  'addAndUpdateIban':
+      ['addNewIban', 'noChangesToExistingIban', 'updateExistingIban']
 };
 
 chrome.test.getConfig(function(config) {

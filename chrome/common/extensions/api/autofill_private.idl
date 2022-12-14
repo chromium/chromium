@@ -185,6 +185,21 @@ namespace autofillPrivate {
     AutofillMetadata? metadata;
   };
 
+  // An IBAN entry which can be saved in the autofill section of the
+  // settings UI.
+  dictionary IbanEntry {
+    // Globally unique identifier for this entry.
+    DOMString? guid;
+
+    // IBAN value.
+    DOMString? value;
+
+    // IBAN's nickname.
+    DOMString? nickname;
+
+    AutofillMetadata? metadata;
+  };
+
   // Parameters to be passed to validatePhoneNumbers().
   dictionary ValidatePhoneParams {
     // The phone numbers to validate.
@@ -205,6 +220,7 @@ namespace autofillPrivate {
   callback ValidatePhoneNumbersCallback =
       void(DOMString[] validatedPhoneNumbers);
   callback GetCreditCardListCallback = void(CreditCardEntry[] entries);
+  callback GetIbanListCallback = void(IbanEntry[] entries);
   callback GetUpiIdListCallback = void(DOMString[] entries);
 
   interface Functions {
@@ -237,6 +253,11 @@ namespace autofillPrivate {
     // |card|: The card entry to save.
     static void saveCreditCard(CreditCardEntry card);
 
+    // Saves the given IBAN. If `iban` has an empty string as its ID, it will be
+    // assigned a new one and added as a new entry.
+    // |iban|: The IBAN entry to save.
+    static void saveIban(IbanEntry iban);
+
     // Removes the entry (address or credit card) with the given ID.
     // |guid|: ID of the entry to remove.
     static void removeEntry(DOMString guid);
@@ -254,6 +275,11 @@ namespace autofillPrivate {
     // |callback|: Callback which will be called with the list of credit cards.
     [supportsPromises] static void getCreditCardList(
         GetCreditCardListCallback callback);
+
+    // Gets the list of IBANs.
+    // `callback`: Callback which will be called with the list of IBANs.
+    [supportsPromises] static void getIbanList(
+        GetIbanListCallback callback);
 
     // Clears the data associated with a wallet card which was saved
     // locally so that the saved copy is masked (e.g., "Card ending
@@ -289,8 +315,11 @@ namespace autofillPrivate {
   interface Events {
     // Fired when the personal data has changed, meaning that an entry has
     // been added, removed, or changed.
-    // |entries| The updated list of entries.
+    // `addressEntries`: the updated list of addresses.
+    // `creditCardEntries`: the updated list of credit cards.
+    // `ibans`: the updated list of IBANs.
     static void onPersonalDataChanged(AddressEntry[] addressEntries,
-        CreditCardEntry[] creditCardEntries);
+        CreditCardEntry[] creditCardEntries,
+        IbanEntry[] ibans);
   };
 };

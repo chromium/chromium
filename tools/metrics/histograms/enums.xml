@@ -35505,6 +35505,8 @@ Called by update_extension_histograms.py.-->
   <int value="1740" label="AUTOTESTPRIVATE_REFRESHREMOTECOMMANDS"/>
   <int value="1741" label="FILESYSTEMPROVIDERINTERNAL_RESPONDTOMOUNTREQUEST"/>
   <int value="1742" label="OS_DIAGNOSTICS_RUNEMMCLIFETIMEROUTINE"/>
+  <int value="1743" label="AUTOFILLPRIVATE_SAVEIBAN"/>
+  <int value="1744" label="AUTOFILLPRIVATE_GETIBANLIST"/>
 </enum>
 
 <enum name="ExtensionIconState">

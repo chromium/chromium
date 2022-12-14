@@ -117,6 +117,16 @@ chrome.autofillPrivate.CreditCardEntry;
 
 /**
  * @typedef {{
+ *   guid: (string|undefined),
+ *   value: (string|undefined),
+ *   nickname: (string|undefined),
+ *   metadata: (!chrome.autofillPrivate.AutofillMetadata|undefined)
+ * }}
+ */
+chrome.autofillPrivate.IbanEntry;
+
+/**
+ * @typedef {{
  *   phoneNumbers: !Array<string>,
  *   indexOfNewNumber: number,
  *   countryCode: string
@@ -164,6 +174,13 @@ chrome.autofillPrivate.getAddressList = function(callback) {};
 chrome.autofillPrivate.saveCreditCard = function(card) {};
 
 /**
+ * Saves the given IBAN. If `iban` has an empty string as its ID, it will be
+ * assigned a new one and added as a new entry.
+ * @param {!chrome.autofillPrivate.IbanEntry} iban The IBAN entry to save.
+ */
+chrome.autofillPrivate.saveIban = function(iban) {};
+
+/**
  * Removes the entry (address or credit card) with the given ID.
  * @param {string} guid ID of the entry to remove.
  */
@@ -186,6 +203,13 @@ chrome.autofillPrivate.validatePhoneNumbers = function(params, callback) {};
  *     callback Callback which will be called with the list of credit cards.
  */
 chrome.autofillPrivate.getCreditCardList = function(callback) {};
+
+/**
+ * Gets the list of IBANs.
+ * @param {function(!Array<!chrome.autofillPrivate.IbanEntry>): void} callback
+ *     Callback which will be called with the list of IBANs.
+ */
+chrome.autofillPrivate.getIbanList = function(callback) {};
 
 /**
  * Clears the data associated with a wallet card which was saved locally so that

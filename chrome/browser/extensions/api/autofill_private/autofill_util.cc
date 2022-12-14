@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
@@ -210,6 +211,27 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   return card;
 }
 
+autofill_private::IbanEntry IbanToIbanEntry(
+    const autofill::IBAN& iban,
+    const autofill::PersonalDataManager& personal_data) {
+  autofill_private::IbanEntry iban_entry;
+
+  // Populated IBAN fields need to be converted to an `IbanEntry` to be rendered
+  // in the settings page.
+  iban_entry.guid = iban.guid();
+  if (!iban.nickname().empty())
+    iban_entry.nickname = base::UTF16ToUTF8(iban.nickname());
+
+  iban_entry.value = base::UTF16ToUTF8(iban.value());
+
+  // Create IBAN metadata and add it to `iban_entry`.
+  iban_entry.metadata.emplace();
+  iban_entry.metadata->summary_label =
+      base::UTF16ToUTF8(iban.GetIdentifierStringForAutofillDisplay());
+
+  return iban_entry;
+}
+
 }  // namespace
 
 namespace extensions {
@@ -257,6 +279,15 @@ CreditCardEntryList GenerateCreditCardList(
   CreditCardEntryList list;
   for (const autofill::CreditCard* card : cards)
     list.push_back(CreditCardToCreditCardEntry(*card, personal_data));
+
+  return list;
+}
+
+IbanEntryList GenerateIbanList(
+    const autofill::PersonalDataManager& personal_data) {
+  IbanEntryList list;
+  for (const autofill::IBAN* iban : personal_data.GetLocalIBANs())
+    list.push_back(IbanToIbanEntry(*iban, personal_data));
 
   return list;
 }

@@ -600,6 +600,66 @@ AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateSaveIbanFunction
+
+ExtensionFunction::ResponseAction AutofillPrivateSaveIbanFunction::Run() {
+  std::unique_ptr<api::autofill_private::SaveIban::Params> parameters =
+      api::autofill_private::SaveIban::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters.get());
+
+  autofill::PersonalDataManager* personal_data =
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context()));
+  if (!personal_data || !personal_data->IsDataLoaded())
+    return RespondNow(Error(kErrorDataUnavailable));
+
+  api::autofill_private::IbanEntry* iban_entry = &parameters->iban;
+  DCHECK(iban_entry->value);
+
+  // The IBAN guid is specified if the user tries to update an existing IBAN via
+  // the Chrome payment settings page. Otherwise, leaving it blank creates a new
+  // IBAN.
+  std::string guid = iban_entry->guid ? *iban_entry->guid : "";
+  const autofill::IBAN* existing_iban = nullptr;
+  if (!guid.empty()) {
+    existing_iban = personal_data->GetIBANByGUID(guid);
+    if (!existing_iban)
+      return RespondNow(Error(kErrorDataUnavailable));
+  }
+  autofill::IBAN iban =
+      existing_iban ? *existing_iban : autofill::IBAN(base::GenerateGUID());
+
+  iban.SetRawInfo(autofill::IBAN_VALUE, base::UTF8ToUTF16(*iban_entry->value));
+
+  if (iban_entry->nickname)
+    iban.set_nickname(base::UTF8ToUTF16(*iban_entry->nickname));
+
+  if (guid.empty()) {
+    personal_data->AddIBAN(iban);
+  } else if (existing_iban->Compare(iban) != 0) {
+    personal_data->UpdateIBAN(iban);
+  }
+
+  return RespondNow(NoArguments());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateGetIbanListFunction
+
+ExtensionFunction::ResponseAction AutofillPrivateGetIbanListFunction::Run() {
+  autofill::PersonalDataManager* personal_data =
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context()));
+
+  DCHECK(personal_data && personal_data->IsDataLoaded());
+
+  autofill_util::IbanEntryList iban_list =
+      autofill_util::GenerateIbanList(*personal_data);
+  return RespondNow(ArgumentList(
+      api::autofill_private::GetIbanList::Results::Create(iban_list)));
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateGetUpiIdListFunction
 
 ExtensionFunction::ResponseAction AutofillPrivateGetUpiIdListFunction::Run() {
