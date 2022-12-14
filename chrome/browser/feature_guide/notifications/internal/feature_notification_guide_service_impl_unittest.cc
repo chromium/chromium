@@ -114,6 +114,11 @@ class TestSegmentationPlatformService
       const std::string& segmentation_key,
       scoped_refptr<segmentation_platform::InputContext> input_context,
       SegmentSelectionCallback callback) override {}
+  void GetClassificationResult(
+      const std::string& segmentation_key,
+      const PredictionOptions& prediction_options,
+      scoped_refptr<segmentation_platform::InputContext> input_context,
+      segmentation_platform::ClassificationResultCallback callback) override {}
   void EnableMetrics(bool signal_collection_allowed) override {}
   segmentation_platform::ServiceProxy* GetServiceProxy() override {
     return nullptr;

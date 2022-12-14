@@ -136,6 +136,14 @@ void SegmentationPlatformServiceImpl::GetSelectedSegment(
   selector->GetSelectedSegment(std::move(callback));
 }
 
+void SegmentationPlatformServiceImpl::GetClassificationResult(
+    const std::string& segmentation_key,
+    const PredictionOptions& prediction_options,
+    scoped_refptr<InputContext> input_context,
+    ClassificationResultCallback callback) {
+  // TODO(ritikagup@) : Implement logic.
+}
+
 SegmentSelectionResult SegmentationPlatformServiceImpl::GetCachedSegmentResult(
     const std::string& segmentation_key) {
   CHECK(segment_selectors_.find(segmentation_key) != segment_selectors_.end());

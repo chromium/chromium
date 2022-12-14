@@ -13,6 +13,7 @@
 #include "base/types/id_type.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/segmentation_platform/public/result.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -74,6 +75,16 @@ class SegmentationPlatformService : public KeyedService,
   // result.
   virtual void GetSelectedSegment(const std::string& segmentation_key,
                                   SegmentSelectionCallback callback) = 0;
+
+  // Called to get the classification results for a given client. The
+  // classification config must be defined in the associated model metadata.
+  // Depending on the options and client config, it either runs the associated
+  // model or uses unexpired cached results.
+  virtual void GetClassificationResult(
+      const std::string& segmentation_key,
+      const PredictionOptions& prediction_options,
+      scoped_refptr<InputContext> input_context,
+      ClassificationResultCallback callback) = 0;
 
   // Called to get the selected segment synchronously. If none, returns empty
   // result.

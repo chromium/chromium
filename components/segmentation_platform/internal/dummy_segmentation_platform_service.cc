@@ -23,6 +23,12 @@ void DummySegmentationPlatformService::GetSelectedSegment(
       FROM_HERE, base::BindOnce(std::move(callback), SegmentSelectionResult()));
 }
 
+void DummySegmentationPlatformService::GetClassificationResult(
+    const std::string& segmentation_key,
+    const PredictionOptions& prediction_options,
+    scoped_refptr<InputContext> input_context,
+    ClassificationResultCallback callback) {}
+
 SegmentSelectionResult DummySegmentationPlatformService::GetCachedSegmentResult(
     const std::string& segmentation_key) {
   return SegmentSelectionResult();
