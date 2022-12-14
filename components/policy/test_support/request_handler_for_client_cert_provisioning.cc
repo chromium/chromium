@@ -17,7 +17,6 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/test_server_helpers.h"
 #include "net/base/url_util.h"
-#include "net/cert/x509_certificate.h"
 #include "net/http/http_status_code.h"
 #include "net/test/cert_builder.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -67,10 +66,7 @@ std::string GeneratePEMEncodedCertificate(
                             base::Time::Now() + base::Days(30));
   cert_builder->SetSubjectCommonName(subject_common_name);
 
-  std::string pem_encoded_cert;
-  DCHECK(net::X509Certificate::GetPEMEncoded(
-      cert_builder->GetX509Certificate()->cert_buffer(), &pem_encoded_cert));
-  return pem_encoded_cert;
+  return cert_builder->GetPEM();
 }
 
 bool ProcessClientCertProvisioningRequest(
