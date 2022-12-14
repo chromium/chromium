@@ -31,9 +31,17 @@ class MockWaylandPlatformWindowDelegate : public MockPlatformWindowDelegate {
   // MockPlatformWindowDelegate:
   gfx::Rect ConvertRectToPixels(const gfx::Rect& rect_in_dp) const override;
   gfx::Rect ConvertRectToDIP(const gfx::Rect& rect_in_pixels) const override;
+  int64_t InsertSequencePoint() override;
+
+  int64_t viz_seq() const { return viz_seq_; }
 
  private:
   raw_ptr<WaylandWindow> wayland_window_ = nullptr;
+
+  // |viz_seq_| is used to save an incrementing sequence point on each
+  // call to InsertSequencePoint. Test code can check this value to know
+  // what sequence point is required to advance to the latest state.
+  int64_t viz_seq_ = 0;
 };
 
 }  // namespace ui

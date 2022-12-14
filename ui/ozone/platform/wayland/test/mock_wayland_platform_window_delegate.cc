@@ -34,4 +34,8 @@ MockWaylandPlatformWindowDelegate::CreateWaylandWindow(
   return window;
 }
 
+int64_t MockWaylandPlatformWindowDelegate::InsertSequencePoint() {
+  return viz_seq_++;
+}
+
 }  // namespace ui
