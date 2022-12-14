@@ -27,9 +27,29 @@ email to chrome-atls@google.com:
 * Motivation of your project
 * Design docs
 * Additional checkout size
+   * If the increase is significant (e.g., 20+ MB), can we consider limiting the
+   files to be checked in?
 * Build time increase
-* Binary size increase on Android ([official](https://www.chromium.org/developers/gn-build-configuration)  builds)
+   * If the increase is significant (e.g., 30+ seconds), can we consider making
+   this an optional build target?
+* Binary size increase on Android ([official](https://www.chromium.org/developers/gn-build-configuration) builds)
+   * Any 16 KB increase on Android is flagged on the build bots and
+   justification is needed.
 * Binary size increase on Windows
+* Is this library maintained on all platforms that we will use it on?
+   * If not, will the Chrome org be expected to maintain this for some or all
+   platforms?
+* Does it have any performance / memory implications (esp. on Android)? Was the
+library designed with intended use on Android?
+* Do we really need the library? Is there any alternative such as an existing
+library already in Chromium? If introducing a library with similar functionality
+as existing, will it be easy for another developer to understand which should be
+used where? Will you commit to consolidating uses in Chromium and remove the
+alternative libraries?
+* For desktop (Win/Mac/Linux/ChromeOS), does the dependency introduce closed
+source components (e.g., binaries, WASM binaries, obfuscated code)? If yes,
+please reach out to Chrome ATLs.
+
 
 Googlers can access [go/chrome-atls](https://goto.google.com/chrome-atls) and review
 existing topics in g/chrome-atls, and can also come to office hours to ask
