@@ -114,9 +114,9 @@ public class LensUtilsTest {
     }
 
     @Test
-    public void isGoogleLensFeatureEnabled_tabletDisabled() {
+    public void isGoogleLensFeatureEnabled_tabletEnabledByDefault() {
         configureFeature(ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS);
-        Assert.assertFalse("Feature incorrectly enabled when Lens on tablet was disabled",
+        Assert.assertTrue("Feature incorrectly disabled when Lens on tablet was enabled",
                 LensUtils.isGoogleLensFeatureEnabledOnTablet());
     }
 

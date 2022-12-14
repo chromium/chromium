@@ -660,7 +660,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sInstantStart = new CachedFlag(INSTANT_START, false);
     public static final CachedFlag sInterestFeedV2 = new CachedFlag(INTEREST_FEED_V2, true);
     public static final CachedFlag sLensCameraAssistedSearch =
-            new CachedFlag(LENS_CAMERA_ASSISTED_SEARCH, false);
+            new CachedFlag(LENS_CAMERA_ASSISTED_SEARCH, true);
     public static final CachedFlag sNewWindowAppMenu = new CachedFlag(NEW_WINDOW_APP_MENU, true);
     public static final CachedFlag sOmahaMinSdkVersionAndroid =
             new CachedFlag(OMAHA_MIN_SDK_VERSION_ANDROID, false);

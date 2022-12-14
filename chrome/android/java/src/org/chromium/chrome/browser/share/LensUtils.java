@@ -158,7 +158,7 @@ public class LensUtils {
     public static boolean isGoogleLensFeatureEnabledOnTablet() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS, ENABLE_ON_TABLET_PARAM_NAME,
-                false);
+                true);
     }
 
     /**
