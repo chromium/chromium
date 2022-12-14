@@ -5,8 +5,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -28,11 +30,13 @@
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_metrics.h"
@@ -62,6 +66,19 @@ const int kWebAppLargeIconSize = 128;
 bool IsYoutubeExtension(const std::string& extension_id) {
   return extension_id == extension_misc::kYoutubeAppId;
 }
+
+void AcquireAppLockAndScheduleCallback(
+    const std::string& operation_name,
+    web_app::WebAppProvider& provider,
+    const web_app::AppId& app_id,
+    base::OnceCallback<void(web_app::AppLock& lock)> callback) {
+  provider.scheduler().ScheduleCallbackWithLock<web_app::AppLock>(
+      operation_name,
+      std::make_unique<web_app::AppLockDescription,
+                       base::flat_set<web_app::AppId>>({app_id}),
+      std::move(callback));
+}
+
 }  // namespace
 
 AppHomePageHandler::AppHomePageHandler(
@@ -91,6 +108,53 @@ AppHomePageHandler::~AppHomePageHandler() {
 
 Browser* AppHomePageHandler::GetCurrentBrowser() {
   return chrome::FindBrowserWithWebContents(web_ui_->GetWebContents());
+}
+
+void AppHomePageHandler::OnOsHooksInstalled(
+    const web_app::AppId& app_id,
+    const web_app::OsHooksErrors os_hooks_errors) {
+  // TODO(dmurph): Once installation takes the OsHooksErrors bitfield, then
+  // use that to compare with the results, and record if they all were
+  // successful, instead of just shortcuts.
+  bool error = os_hooks_errors[web_app::OsHookType::kShortcuts];
+  base::UmaHistogramBoolean("Apps.Launcher.InstallLocallyShortcutsCreated",
+                            !error);
+  web_app_provider_->install_manager().NotifyWebAppInstalledWithOsHooks(app_id);
+}
+
+void AppHomePageHandler::InstallOsHooks(const web_app::AppId& app_id,
+                                        web_app::AppLock* lock) {
+  web_app::InstallOsHooksOptions options;
+  options.add_to_desktop = true;
+  options.add_to_quick_launch_bar = false;
+  options.os_hooks[web_app::OsHookType::kShortcuts] = true;
+  options.os_hooks[web_app::OsHookType::kShortcutsMenu] = true;
+  options.os_hooks[web_app::OsHookType::kFileHandlers] = true;
+  options.os_hooks[web_app::OsHookType::kProtocolHandlers] = true;
+  options.os_hooks[web_app::OsHookType::kRunOnOsLogin] =
+      web_app_provider_->registrar().GetAppRunOnOsLoginMode(app_id).value ==
+      web_app::RunOnOsLoginMode::kWindowed;
+
+  // Installed WebApp here is user uninstallable app, but it needs to check user
+  // uninstall-ability if there are apps with different source types.
+  // WebApp::CanUserUninstallApp will handles it.
+  const web_app::WebApp* web_app =
+      web_app_provider_->registrar().GetAppById(app_id);
+  options.os_hooks[web_app::OsHookType::kUninstallationViaOsSettings] =
+      web_app->CanUserUninstallWebApp();
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+  options.os_hooks[web_app::OsHookType::kUrlHandlers] = true;
+#else
+  options.os_hooks[web_app::OsHookType::kUrlHandlers] = false;
+#endif
+
+  lock->os_integration_manager().InstallOsHooks(
+      app_id,
+      base::BindOnce(&AppHomePageHandler::OnOsHooksInstalled,
+                     weak_ptr_factory_.GetWeakPtr(), app_id),
+      /*web_app_info=*/nullptr, std::move(options));
 }
 
 void AppHomePageHandler::ShowWebAppSettings(const std::string& app_id) {
@@ -566,6 +630,27 @@ void AppHomePageHandler::LaunchDeprecatedAppDialog() {
   TabDialogs::FromWebContents(web_ui_->GetWebContents())
       ->ShowDeprecatedAppsDialog(extensions::ExtensionId(), deprecated_app_ids_,
                                  web_ui_->GetWebContents(), base::DoNothing());
+}
+
+void AppHomePageHandler::InstallAppLocally(const std::string& app_id) {
+  AcquireAppLockAndScheduleCallback(
+      "AppHomePageHandler::InstallAppLocally", *web_app_provider_, app_id,
+      base::BindOnce(
+          [](const web_app::AppId& app_id,
+             base::OnceCallback<void(const web_app::AppId& app_id,
+                                     web_app::AppLock* lock)>
+                 install_os_hooks_handler,
+             web_app::AppLock& lock) {
+            if (!lock.registrar().IsInstalled(app_id))
+              return;
+
+            std::move(install_os_hooks_handler).Run(app_id, &lock);
+            lock.sync_bridge().SetAppIsLocallyInstalled(app_id, true);
+            lock.sync_bridge().SetAppInstallTime(app_id, base::Time::Now());
+          },
+          app_id,
+          base::BindOnce(&AppHomePageHandler::InstallOsHooks,
+                         weak_ptr_factory_.GetWeakPtr())));
 }
 
 }  // namespace webapps

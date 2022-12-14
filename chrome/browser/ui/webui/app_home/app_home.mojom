@@ -51,6 +51,7 @@ interface PageHandlerFactory {
                     pending_receiver<PageHandler> handler);
 };
 
+// Following APIs are only called from `chrome://apps` page.
 interface PageHandler {
   // Get all apps' information that defined in `AppInfo`.
   GetApps() => (array<AppInfo> app_list);
@@ -69,6 +70,9 @@ interface PageHandler {
   SetRunOnOsLoginMode(string app_id, RunOnOsLoginMode run_on_os_login_mode);
   // Open the deprecated apps dialog.
   LaunchDeprecatedAppDialog();
+  // Install app and set this app locally installed.
+  // A locally installed app has shortcuts installed on various UI surfaces.
+  InstallAppLocally(string app_id);
 };
 
 // The `Page` interface is used for sending mojom action messsage

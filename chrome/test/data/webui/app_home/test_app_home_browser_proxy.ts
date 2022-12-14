@@ -32,6 +32,8 @@ export class FakePageHandler implements PageHandlerInterface {
   setRunOnOsLoginMode(_appId: string, _runOnOsLoginMode: RunOnOsLoginMode) {}
 
   launchDeprecatedAppDialog() {}
+
+  installAppLocally(_appId: string) {}
 }
 
 export class TestAppHomeBrowserProxy implements BrowserProxy {
