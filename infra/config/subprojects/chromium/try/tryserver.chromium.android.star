@@ -348,6 +348,8 @@ try_.orchestrator_builder(
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
+    use_java_coverage = True,
+    coverage_test_types = ["unit", "overall"],
 )
 
 try_.orchestrator_builder(
@@ -367,6 +369,8 @@ try_.orchestrator_builder(
         "chromium_rts.inverted_rts_bail_early": 100,
     },
     use_orchestrator_pool = True,
+    use_java_coverage = True,
+    coverage_test_types = ["unit", "overall"],
 )
 
 try_.compilator_builder(

@@ -623,6 +623,7 @@
   "android-nougat-x86-rel": {
     "gn_args": {
       "android_static_analysis": "off",
+      "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
       "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
@@ -635,12 +636,14 @@
       "system_webview_shell_package_name": "org.chromium.my_webview_shell",
       "target_cpu": "x86",
       "target_os": "android",
+      "use_jacoco_coverage": true,
       "use_remoteexec": true
     }
   },
   "android-nougat-x86-rel-inverse-fyi": {
     "gn_args": {
       "android_static_analysis": "off",
+      "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
       "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
@@ -653,7 +656,8 @@
       "system_webview_shell_package_name": "org.chromium.my_webview_shell",
       "target_cpu": "x86",
       "target_os": "android",
-      "use_goma": true
+      "use_goma": true,
+      "use_jacoco_coverage": true
     }
   },
   "android-oreo-arm64-dbg": {

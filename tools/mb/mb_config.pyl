@@ -1006,8 +1006,8 @@
       'android-deterministic-rel': 'android_without_codecs_release_trybot',
       'android-fieldtrial-rel': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google',
       'android-inverse-fieldtrials-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google_invert_fieldtrials',
-      'android-nougat-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
-      'android-nougat-x86-rel-inverse-fyi': 'android_release_trybot_x86_fastbuild_webview_monochrome',
+      'android-nougat-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_coverage_reclient',
+      'android-nougat-x86-rel-inverse-fyi': 'android_release_trybot_x86_fastbuild_webview_monochrome_coverage',
       'android-oreo-arm64-dbg': 'android_debug_trybot_arm64_reclient',
       'android-perfetto-rel': 'perfetto_release_trybot_android',
       # TODO(crbug/1182468) Remove android coverage bots after coverage is
@@ -1744,6 +1744,18 @@
     'android_release_trybot_x86_fastbuild_webview_monochrome': [
       'android', 'release_trybot', 'strip_debug_info', 'x86',
       'android_fastbuild', 'webview_monochrome', 'webview_shell',
+    ],
+
+    'android_release_trybot_x86_fastbuild_webview_monochrome_coverage': [
+      'android', 'release_trybot', 'strip_debug_info', 'x86',
+      'android_fastbuild', 'use_java_coverage', 'partial_code_coverage_instrumentation',
+      'webview_monochrome', 'webview_shell',
+    ],
+
+    'android_release_trybot_x86_fastbuild_webview_monochrome_coverage_reclient': [
+      'android', 'release_trybot_reclient', 'strip_debug_info', 'x86',
+      'android_fastbuild', 'use_java_coverage', 'partial_code_coverage_instrumentation',
+      'webview_monochrome', 'webview_shell',
     ],
 
     'android_release_trybot_x86_fastbuild_webview_monochrome_reclient': [
