@@ -129,6 +129,7 @@ export class Background extends ChromeVoxState {
     EventStreamLogger.init();
     FindHandler.init();
     FocusAutomationHandler.init();
+    GestureCommandHandler.init();
     JaPhoneticData.init(JaPhoneticMap.MAP);
     LiveRegions.init();
     LocaleOutputHelper.init();
