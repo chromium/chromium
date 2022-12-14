@@ -1251,6 +1251,13 @@ void ArcNetHostImpl::TranslatePasspointCredentialsToDictWithEapTranslated(
                   cred->metered);
   dict.SetStringKey(shill::kPasspointCredentialsAndroidPackageNameProperty,
                     cred->package_name);
+  if (cred->friendly_name.has_value()) {
+    dict.SetStringKey(shill::kPasspointCredentialsFriendlyNameProperty,
+                      cred->friendly_name.value());
+  }
+  dict.SetStringKey(
+      shill::kPasspointCredentialsExpirationTimeMillisecondsProperty,
+      base::NumberToString(cred->subscription_expiration_time_ms));
 
   std::move(callback).Run(std::move(dict));
 }
