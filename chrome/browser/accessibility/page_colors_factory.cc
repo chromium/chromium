@@ -47,10 +47,11 @@ bool PageColorsFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 
-KeyedService* PageColorsFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PageColorsFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  std::unique_ptr<PageColors> page_colors = std::make_unique<PageColors>(
+  auto page_colors = std::make_unique<PageColors>(
       Profile::FromBrowserContext(context)->GetPrefs());
   page_colors->Init();
-  return page_colors.release();
+  return page_colors;
 }
