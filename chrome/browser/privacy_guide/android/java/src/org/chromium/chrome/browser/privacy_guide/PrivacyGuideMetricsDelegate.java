@@ -26,6 +26,10 @@ class PrivacyGuideMetricsDelegate {
      * Initial state of the Safe Browsing when {@link SafeBrowsingFragment} is created.
      */
     private @SafeBrowsingState int mInitialSafeBrowsingState;
+    /**
+     * Initial mode of the Cookies Control when {@link CookiesFragment} is created.
+     */
+    private @CookieControlsMode int mInitialCookiesControlMode;
 
     /**
      * A method to record metrics on the next click of {@link MSBBFragment}
@@ -110,9 +114,38 @@ class PrivacyGuideMetricsDelegate {
     }
 
     /**
+     * A method to record metrics on the next click of {@link CookiesFragment}
+     */
+    private void recordMetricsOnNextForCookiesCard() {
+        @CookieControlsMode
+        int currentValue = PrivacyGuideUtils.getCookieControlsMode();
+
+        boolean isInitialStateBlock3PIncognito =
+                mInitialCookiesControlMode == CookieControlsMode.INCOGNITO_ONLY;
+        boolean isEndStateBlock3PIncognito = currentValue == CookieControlsMode.INCOGNITO_ONLY;
+
+        int stateChange;
+
+        if (isInitialStateBlock3PIncognito && isEndStateBlock3PIncognito) {
+            stateChange = PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P_INCOGNITO;
+        } else if (isInitialStateBlock3PIncognito && !isEndStateBlock3PIncognito) {
+            stateChange = PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P;
+        } else if (!isInitialStateBlock3PIncognito && isEndStateBlock3PIncognito) {
+            stateChange = PrivacyGuideSettingsStates.BLOCK3P_TO3P_INCOGNITO;
+        } else {
+            stateChange = PrivacyGuideSettingsStates.BLOCK3P_TO3P;
+        }
+
+        // Record histogram comparing |mInitialCookiesControlMode| and |currentValue|
+        RecordHistogram.recordEnumeratedHistogram("Settings.PrivacyGuide.SettingsStates",
+                stateChange, PrivacyGuideSettingsStates.MAX_VALUE);
+        // Record user action for clicking the next button on the Cookies card
+        RecordUserAction.record("Settings.PrivacyGuide.NextClickCookies");
+    }
+
+    /**
      * A method to set the initial state of a card {@link PrivacyGuideFragment.FragmentType} in
      * Privacy Guide.
-     * TODO(crbug.com/1238896): Support for other fragment types (COOKIES)
      *
      * @param fragmentType A privacy guide {@link PrivacyGuideFragment.FragmentType}.
      */
@@ -130,13 +163,18 @@ class PrivacyGuideMetricsDelegate {
                 mInitialSafeBrowsingState = PrivacyGuideUtils.getSafeBrowsingState();
                 break;
             }
+            case PrivacyGuideFragment.FragmentType.COOKIES: {
+                mInitialCookiesControlMode = PrivacyGuideUtils.getCookieControlsMode();
+                break;
+            }
+            default:
+                assert false : "Unexpected fragmentType " + fragmentType;
         }
     }
 
     /**
      * A method to record metrics on the next click of a card {@link
      * PrivacyGuideFragment.FragmentType} in Privacy Guide.
-     * TODO(crbug.com/1238896): Support for other fragment types (COOKIES)
      *
      * @param fragmentType A privacy guide {@link PrivacyGuideFragment.FragmentType}.
      */
@@ -154,6 +192,12 @@ class PrivacyGuideMetricsDelegate {
                 recordMetricsOnNextForSafeBrowsingCard();
                 break;
             }
+            case PrivacyGuideFragment.FragmentType.COOKIES: {
+                recordMetricsOnNextForCookiesCard();
+                break;
+            }
+            default:
+                assert false : "Unexpected fragmentType " + fragmentType;
         }
     }
 

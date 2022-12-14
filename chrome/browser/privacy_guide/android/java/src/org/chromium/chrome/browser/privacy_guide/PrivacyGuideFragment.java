@@ -122,6 +122,10 @@ public class PrivacyGuideFragment extends Fragment {
     }
 
     private void displayDonePage() {
+        // Record metrics when the user clicks the next button on the final card
+        mPrivacyGuideMetricsDelegate.recordMetricsOnNextForCard(
+                mPagerAdapter.getFragmentType(mViewPager.getCurrentItem()));
+
         FrameLayout content = mView.findViewById(R.id.fragment_content);
         content.removeAllViews();
         getLayoutInflater().inflate(R.layout.privacy_guide_done, content);

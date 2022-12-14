@@ -43,7 +43,10 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.content_settings.CookieControlsMode;
+import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.ViewUtils;
@@ -128,6 +131,24 @@ public class PrivacyGuideFragmentTest {
         onView(withText(R.string.next)).perform(click());
     }
 
+    private void navigateToCookiesCard() {
+        // Welcome page -> MSBB page
+        onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.privacy_guide_start_button)).perform(click());
+
+        // MSBB page -> Sync page
+        ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
+        onView(withText(R.string.next)).perform(click());
+
+        // Sync page -> SB page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        onView(withText(R.string.next)).perform(click());
+
+        // SB page -> Cookies page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_safe_browsing_intro));
+        onView(withText(R.string.next)).perform(click());
+    }
+
     private void setMSBBState(boolean isMSBBon) {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -142,6 +163,13 @@ public class PrivacyGuideFragmentTest {
     private void setSafeBrowsingState(@SafeBrowsingState int safeBrowsingState) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> SafeBrowsingBridge.setSafeBrowsingState(safeBrowsingState));
+    }
+
+    private void setCookieControlsMode(@CookieControlsMode int cookieControlsMode) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                   .setInteger(PrefNames.COOKIE_CONTROLS_MODE, cookieControlsMode));
     }
 
     private void testButtonVisibility(int buttonTextId, boolean isVisible) {
@@ -727,6 +755,125 @@ public class PrivacyGuideFragmentTest {
 
         verify(mPrivacyGuideMetricsDelegateMock, times(2))
                 .setInitialStateForCard(PrivacyGuideFragment.FragmentType.SAFE_BROWSING);
+
+        mSettingsActivityTestRule.getFragment().setPrivacyGuideMetricsDelegateForTesting(null);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PrivacyGuide"})
+    public void testCookiesCard_nextClickCookiesUserAction() {
+        launchPrivacyGuide();
+        mActionTester = new UserActionTester();
+        navigateToCookiesCard();
+
+        // Cookies page -> Complete page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_cookies_intro));
+        onView(withText(R.string.privacy_guide_finish_button)).perform(click());
+
+        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.NextClickCookies"));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PrivacyGuide"})
+    public void testCookiesCard_block3PIncognitoTo3PIncognitoSettingsStatesHistogram() {
+        launchPrivacyGuide();
+        setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
+        navigateToCookiesCard();
+
+        assertEquals(0,
+                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P_INCOGNITO));
+
+        // Cookies page -> Complete page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_cookies_intro));
+        onView(withText(R.string.privacy_guide_finish_button)).perform(click());
+
+        assertEquals(1,
+                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P_INCOGNITO));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PrivacyGuide"})
+    public void testCookiesCard_block3PIncognitoTo3PSettingsStatesHistogram() {
+        launchPrivacyGuide();
+        setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
+        navigateToCookiesCard();
+
+        assertEquals(0,
+                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P));
+
+        // Cookies page -> Complete page | with click on block third party radio button
+        ViewUtils.waitForView(withText(R.string.privacy_guide_cookies_intro));
+        onView(withId(R.id.block_third_party)).perform(click());
+        onView(withText(R.string.privacy_guide_finish_button)).perform(click());
+
+        assertEquals(1,
+                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PrivacyGuide"})
+    public void testCookiesCard_block3PTo3PIncognitoSettingsStatesHistogram() {
+        launchPrivacyGuide();
+        setCookieControlsMode(CookieControlsMode.BLOCK_THIRD_PARTY);
+        navigateToCookiesCard();
+
+        assertEquals(0,
+                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.BLOCK3P_TO3P_INCOGNITO));
+
+        // Cookies page -> Complete page | with click on block incognito radio button
+        ViewUtils.waitForView(withText(R.string.privacy_guide_cookies_intro));
+        onView(withId(R.id.block_third_party_incognito)).perform(click());
+        onView(withText(R.string.privacy_guide_finish_button)).perform(click());
+
+        assertEquals(1,
+                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.BLOCK3P_TO3P_INCOGNITO));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PrivacyGuide"})
+    public void testCookiesCard_block3PTo3PSettingsStatesHistogram() {
+        launchPrivacyGuide();
+        setCookieControlsMode(CookieControlsMode.BLOCK_THIRD_PARTY);
+        navigateToCookiesCard();
+
+        assertEquals(0,
+                mHistogramTestRule.getHistogramValueCount(
+                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.BLOCK3P_TO3P));
+
+        // Cookies page -> Complete page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_cookies_intro));
+        onView(withText(R.string.privacy_guide_finish_button)).perform(click());
+
+        assertEquals(1,
+                mHistogramTestRule.getHistogramValueCount(
+                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.BLOCK3P_TO3P));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PrivacyGuide"})
+    public void testCookiesCard_nextButtonInitialCookiesStateIsSet() {
+        launchPrivacyGuide();
+        mSettingsActivityTestRule.getFragment().setPrivacyGuideMetricsDelegateForTesting(
+                mPrivacyGuideMetricsDelegateMock);
+        navigateToCookiesCard();
+
+        // Cookies page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_cookies_intro));
+
+        verify(mPrivacyGuideMetricsDelegateMock)
+                .setInitialStateForCard(PrivacyGuideFragment.FragmentType.COOKIES);
 
         mSettingsActivityTestRule.getFragment().setPrivacyGuideMetricsDelegateForTesting(null);
     }

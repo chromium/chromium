@@ -30,7 +30,11 @@ import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJni;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.content_settings.CookieControlsMode;
+import org.chromium.components.content_settings.PrefNames;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 
 import java.util.Set;
 
@@ -56,6 +60,10 @@ public class PrivacyGuideMetricsDelegateTest {
     private Set<Integer> mSyncTypes;
     @Mock
     private SafeBrowsingBridge.Natives mSafeBrowsingNativeMock;
+    @Mock
+    private PrefService mPrefServiceMock;
+    @Mock
+    private UserPrefs.Natives mUserPrefsNativesMock;
 
     private final PrivacyGuideMetricsDelegate mPrivacyGuideMetricsDelegate =
             new PrivacyGuideMetricsDelegate();
@@ -68,6 +76,8 @@ public class PrivacyGuideMetricsDelegateTest {
         SyncService.overrideForTests(mSyncService);
         when(mSyncService.getSelectedTypes()).thenReturn(mSyncTypes);
         mocker.mock(SafeBrowsingBridgeJni.TEST_HOOKS, mSafeBrowsingNativeMock);
+        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativesMock);
+        when(mUserPrefsNativesMock.get(mProfile)).thenReturn(mPrefServiceMock);
     }
 
     private void mockMSBBState(boolean initialMSBBState, boolean finalMSBBState) {
@@ -84,6 +94,12 @@ public class PrivacyGuideMetricsDelegateTest {
             boolean initialHistorySyncState, boolean finalHistorySyncState) {
         when(mSyncTypes.contains(UserSelectableType.HISTORY))
                 .thenReturn(initialHistorySyncState, finalHistorySyncState);
+    }
+
+    private void mockCookieControlsMode(
+            @CookieControlsMode int initialCookiesMode, @CookieControlsMode int finalCookiesMode) {
+        when(mPrefServiceMock.getInteger(PrefNames.COOKIE_CONTROLS_MODE))
+                .thenReturn(initialCookiesMode, finalCookiesMode);
     }
 
     private void triggerMetricsOnNext(@PrivacyGuideFragment.FragmentType int fragmentType) {
@@ -276,6 +292,71 @@ public class PrivacyGuideMetricsDelegateTest {
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SAFE_BROWSING);
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.NextClickSafeBrowsing"));
+    }
+
+    @Test
+    @SmallTest
+    public void testCookies_block3PIncognitoTo3PIncognitoSettingsStatesHistogram() {
+        mockCookieControlsMode(
+                CookieControlsMode.INCOGNITO_ONLY, CookieControlsMode.INCOGNITO_ONLY);
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P_INCOGNITO));
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P_INCOGNITO));
+    }
+
+    @Test
+    @SmallTest
+    public void testCookies_block3PIncognitoTo3PSettingsStatesHistogram() {
+        mockCookieControlsMode(
+                CookieControlsMode.INCOGNITO_ONLY, CookieControlsMode.BLOCK_THIRD_PARTY);
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P));
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P));
+    }
+
+    @Test
+    @SmallTest
+    public void testCookies_block3PTo3PIncognitoSettingsStatesHistogram() {
+        mockCookieControlsMode(
+                CookieControlsMode.BLOCK_THIRD_PARTY, CookieControlsMode.INCOGNITO_ONLY);
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.BLOCK3P_TO3P_INCOGNITO));
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.BLOCK3P_TO3P_INCOGNITO));
+    }
+
+    @Test
+    @SmallTest
+    public void testCookies_block3PTo3PSettingsStatesHistogram() {
+        mockCookieControlsMode(
+                CookieControlsMode.BLOCK_THIRD_PARTY, CookieControlsMode.BLOCK_THIRD_PARTY);
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.BLOCK3P_TO3P));
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.BLOCK3P_TO3P));
+    }
+
+    @Test
+    @SmallTest
+    public void testCookies_nextClickUserAction() {
+        mockCookieControlsMode(
+                CookieControlsMode.INCOGNITO_ONLY, CookieControlsMode.INCOGNITO_ONLY);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
+        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.NextClickCookies"));
     }
 
     @Test
