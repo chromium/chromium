@@ -179,7 +179,7 @@ void HeadlessProtocolBrowserTest::ProcessTestResult(
     ADD_FAILURE() << "Unable to read expectations at " << expectation_path;
   }
 
-  EXPECT_EQ(test_result, expectation);
+  EXPECT_EQ(expectation, test_result);
 }
 
 void HeadlessProtocolBrowserTest::OnConsoleAPICalled(
