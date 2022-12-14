@@ -87,11 +87,14 @@ async function enableDelegations(delegations) {
 
 /**
  * Launches the payment handler.
+ * @param {string} methodNameOverride - Optional payment method identifier.
  * @return {Promise<string>} - 'success' or error message on failure.
  */
-async function launch() {
+async function launch(methodNameOverride) {
+  let method =
+      (methodNameOverride !== undefined) ? methodNameOverride : methodName;
   try {
-    const request = new PaymentRequest([{supportedMethods: methodName}], {
+    const request = new PaymentRequest([{supportedMethods: method}], {
       total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
     });
     const response = await request.show();
