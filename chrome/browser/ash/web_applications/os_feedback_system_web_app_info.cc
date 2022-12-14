@@ -102,7 +102,7 @@ bool OSFeedbackAppDelegate::ShouldShowInLauncher() const {
 }
 
 bool OSFeedbackAppDelegate::ShouldShowInSearch() const {
-  return ShouldShowInLauncher();
+  return IsUserFeedbackAllowed(profile());
 }
 
 gfx::Rect OSFeedbackAppDelegate::GetDefaultBounds(Browser* browser) const {
