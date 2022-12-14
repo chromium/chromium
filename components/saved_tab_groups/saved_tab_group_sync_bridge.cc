@@ -231,15 +231,25 @@ void SavedTabGroupSyncBridge::SavedTabGroupRemovedLocally(
 }
 
 void SavedTabGroupSyncBridge::SavedTabGroupUpdatedLocally(
-    const base::GUID& guid) {
+    const base::GUID& group_guid,
+    const absl::optional<base::GUID>& tab_guid) {
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
 
-  const SavedTabGroup* group = model_->Get(guid);
+  const SavedTabGroup* group = model_->Get(group_guid);
   DCHECK(group);
-  UpsertEntitySpecific(group->ToSpecifics(), write_batch.get());
-  for (const SavedTabGroupTab& tab : group->saved_tabs())
-    UpsertEntitySpecific(tab.ToSpecifics(), write_batch.get());
+
+  if (tab_guid.has_value()) {
+    if (!group->ContainsTab(tab_guid.value())) {
+      RemoveEntitySpecific(tab_guid.value(), write_batch.get());
+    } else {
+      int tab_index = group->GetIndexOfTab(tab_guid.value()).value();
+      UpsertEntitySpecific(group->saved_tabs()[tab_index].ToSpecifics(),
+                           write_batch.get());
+    }
+  } else {
+    UpsertEntitySpecific(group->ToSpecifics(), write_batch.get());
+  }
 
   store_->CommitWriteBatch(
       std::move(write_batch),

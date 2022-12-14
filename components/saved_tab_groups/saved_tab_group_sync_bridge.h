@@ -16,6 +16,7 @@
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class SavedTabGroupModel;
 
@@ -59,7 +60,9 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   // SavedTabGroupModelObserver
   void SavedTabGroupAddedLocally(const base::GUID& guid) override;
   void SavedTabGroupRemovedLocally(const SavedTabGroup* removed_group) override;
-  void SavedTabGroupUpdatedLocally(const base::GUID& guid) override;
+  void SavedTabGroupUpdatedLocally(
+      const base::GUID& group_guid,
+      const absl::optional<base::GUID>& tab_guid = absl::nullopt) override;
   void SavedTabGroupReorderedLocally() override;
 
  private:

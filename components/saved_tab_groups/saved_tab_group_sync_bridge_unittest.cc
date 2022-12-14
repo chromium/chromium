@@ -614,14 +614,10 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateGroupLocally) {
   base::GUID tab_2_guid = tab_2.saved_tab_guid();
   saved_tab_group_model_.Add(std::move(group));
 
-  EXPECT_CALL(processor_, Put(tab_1_guid.AsLowercaseString(), _, _));
-  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _));
   EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _));
+  EXPECT_CALL(processor_, Put(tab_1_guid.AsLowercaseString(), _, _)).Times(0);
+  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(0);
 
-  // TODO(dljames): For now, updating a groups visual data also notifies
-  // observers of the tabs in the group. This is done for simplicity. Once the
-  // observer function changes are made this test will fail and we can remove
-  // the Put() calls for the tabs.
   tab_groups::TabGroupVisualData visual_data(
       u"New Title", tab_groups::TabGroupColorId::kYellow);
   saved_tab_group_model_.UpdateVisualData(group_guid, &visual_data);
@@ -646,10 +642,10 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddTabLocally) {
   base::GUID tab_3_guid = tab_3.saved_tab_guid();
   saved_tab_group_model_.Add(std::move(group));
 
-  EXPECT_CALL(processor_, Put(tab_1_guid.AsLowercaseString(), _, _));
-  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _));
   EXPECT_CALL(processor_, Put(tab_3_guid.AsLowercaseString(), _, _));
-  EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _));
+  EXPECT_CALL(processor_, Put(tab_1_guid.AsLowercaseString(), _, _)).Times(0);
+  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(0);
+  EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _)).Times(0);
 
   // TODO(dljames): Because `tab_3` was added to the middle of the group, only
   // `tab_2` will have its position updated. Once tab ordering is implemented,
@@ -659,8 +655,6 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddTabLocally) {
 }
 
 // Verify that locally removed tabs remove the correct tabs from the processor.
-// TODO(dljames): Update the test with delete calls once the observer API is
-// updated.
 TEST_F(SavedTabGroupSyncBridgeTest, RemoveTabLocally) {
   EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
 
@@ -676,9 +670,9 @@ TEST_F(SavedTabGroupSyncBridgeTest, RemoveTabLocally) {
   base::GUID tab_2_guid = tab_2.saved_tab_guid();
   saved_tab_group_model_.Add(std::move(group));
 
-  EXPECT_CALL(processor_, Put(tab_1_guid.AsLowercaseString(), _, _)).Times(0);
-  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _));
-  EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _));
+  EXPECT_CALL(processor_, Delete(tab_1_guid.AsLowercaseString(), _));
+  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(0);
+  EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _)).Times(0);
 
   saved_tab_group_model_.RemoveTabFromGroup(group_guid, tab_1_guid);
 }
@@ -702,12 +696,10 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateTabLocally) {
   base::GUID tab_3_guid = tab_3.saved_tab_guid();
   saved_tab_group_model_.Add(std::move(group));
 
-  // TODO(dljames): Ensure Delete() is called on tab_1 once the observer api
-  // changes are made.
-  EXPECT_CALL(processor_, Put(tab_1_guid.AsLowercaseString(), _, _)).Times(0);
-  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _));
+  EXPECT_CALL(processor_, Delete(tab_1_guid.AsLowercaseString(), _));
   EXPECT_CALL(processor_, Put(tab_3_guid.AsLowercaseString(), _, _));
-  EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _));
+  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(0);
+  EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _)).Times(0);
 
   saved_tab_group_model_.ReplaceTabInGroupAt(group_guid, tab_1_guid, tab_3);
 }

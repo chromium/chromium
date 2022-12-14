@@ -9,6 +9,7 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Serves to notify any SavedTabGroupModel listeners that a change has occurred
 // supply the SavedTabGroup that was changed.
@@ -25,10 +26,13 @@ class SavedTabGroupModelObserver {
   virtual void SavedTabGroupRemovedLocally(const SavedTabGroup* removed_group) {
   }
 
-  // Called when the title, tabs, or color change.
-  // TODO(dljames): Update parameters to take 2 guids. 1 for the group and an
-  // optional guid for the tab. Do the same for the sync version.
-  virtual void SavedTabGroupUpdatedLocally(const base::GUID& guid) {}
+  // Called when the title, tabs, or color change. `group_guid` denotes the
+  // group that is currently being updated. `tab_guid` denotes if a tab in this
+  // group was changed (added, removed, updated). Otherwise, only the group is
+  // being changed.
+  virtual void SavedTabGroupUpdatedLocally(
+      const base::GUID& group_guid,
+      const absl::optional<base::GUID>& tab_guid = absl::nullopt) {}
 
   // Called when the order of saved tab groups in the bookmark bar are changed.
   // TODO(crbug/1372052): Figure out if we can maintain ordering of groups and
@@ -43,7 +47,13 @@ class SavedTabGroupModelObserver {
   virtual void SavedTabGroupRemovedFromSync(
       const SavedTabGroup* removed_group) {}
 
-  virtual void SavedTabGroupUpdatedFromSync(const base::GUID& guid) {}
+  // Called when the title, tabs, or color change. `group_guid` denotes the
+  // group that is currently being updated. `tab_guid` denotes if a tab in this
+  // group was changed (added, removed, updated). Specifically, this is called
+  // when addressing merge conflicts for duplicate groups and tabs.
+  virtual void SavedTabGroupUpdatedFromSync(
+      const base::GUID& group_guid,
+      const absl::optional<base::GUID>& tab_guid = absl::nullopt) {}
 
  protected:
   SavedTabGroupModelObserver() = default;

@@ -129,9 +129,12 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
     retrieved_guid_ = removed_group->saved_guid();
   }
 
-  void SavedTabGroupUpdatedLocally(const base::GUID& guid) override {
-    retrieved_group_.emplace_back(*saved_tab_group_model_->Get(guid));
-    retrieved_index_ = saved_tab_group_model_->GetIndexOf(guid).value_or(-1);
+  void SavedTabGroupUpdatedLocally(
+      const base::GUID& group_guid,
+      const absl::optional<base::GUID>& tab_guid = absl::nullopt) override {
+    retrieved_group_.emplace_back(*saved_tab_group_model_->Get(group_guid));
+    retrieved_index_ =
+        saved_tab_group_model_->GetIndexOf(group_guid).value_or(-1);
   }
 
   void SavedTabGroupAddedFromSync(const base::GUID& guid) override {
@@ -144,9 +147,12 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
     retrieved_guid_ = removed_group->saved_guid();
   }
 
-  void SavedTabGroupUpdatedFromSync(const base::GUID& guid) override {
-    retrieved_group_.emplace_back(*saved_tab_group_model_->Get(guid));
-    retrieved_index_ = saved_tab_group_model_->GetIndexOf(guid).value_or(-1);
+  void SavedTabGroupUpdatedFromSync(
+      const base::GUID& group_guid,
+      const absl::optional<base::GUID>& tab_guid = absl::nullopt) override {
+    retrieved_group_.emplace_back(*saved_tab_group_model_->Get(group_guid));
+    retrieved_index_ =
+        saved_tab_group_model_->GetIndexOf(group_guid).value_or(-1);
   }
 
   void SavedTabGroupReorderedLocally() override { reordered_called_ = true; }

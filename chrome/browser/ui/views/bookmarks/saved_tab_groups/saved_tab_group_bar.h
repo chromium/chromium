@@ -11,6 +11,7 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "content/public/browser/page.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/accessible_pane_view.h"
 
 class Browser;
@@ -47,12 +48,16 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // SavedTabGroupModelObserver
   void SavedTabGroupAddedLocally(const base::GUID& guid) override;
   void SavedTabGroupRemovedLocally(const SavedTabGroup* removed_group) override;
-  void SavedTabGroupUpdatedLocally(const base::GUID& guid) override;
+  void SavedTabGroupUpdatedLocally(
+      const base::GUID& group_guid,
+      const absl::optional<base::GUID>& tab_guid = absl::nullopt) override;
   void SavedTabGroupReorderedLocally() override;
   void SavedTabGroupAddedFromSync(const base::GUID& guid) override;
   void SavedTabGroupRemovedFromSync(
       const SavedTabGroup* removed_group) override;
-  void SavedTabGroupUpdatedFromSync(const base::GUID& guid) override;
+  void SavedTabGroupUpdatedFromSync(
+      const base::GUID& group_guid,
+      const absl::optional<base::GUID>& tab_guid = absl::nullopt) override;
 
   // Calculates what the visible width would be when a restriction on width is
   // placed on the bar.
