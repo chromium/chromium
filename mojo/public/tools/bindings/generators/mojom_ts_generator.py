@@ -285,8 +285,7 @@ class Generator(generator.Generator):
       # names.
       return False
     return (mojom.IsIntegralKind(kind) or mojom.IsFloatKind(kind)
-            or mojom.IsDoubleKind(kind) or mojom.IsStringKind(kind)
-            or mojom.IsEnumKind(kind))
+            or mojom.IsDoubleKind(kind) or mojom.IsStringKind(kind))
 
   def _TypescriptType(self, kind, maybe_nullable=False):
     def recurse_nullable(kind):
@@ -302,10 +301,13 @@ class Generator(generator.Generator):
         else:
           return "%s[]" % get_type_name(kind.kind)
 
-      if (mojom.IsMapKind(kind) and self._IsStringableKind(kind.key_kind)
-          and not mojom.IsNullableKind(kind.key_kind)):
-        return "{[key: %s]: %s}" % (get_type_name(
-            kind.key_kind), recurse_nullable(kind.value_kind))
+      if (mojom.IsMapKind(kind) and not mojom.IsNullableKind(kind.key_kind)):
+        if mojom.IsEnumKind(kind.key_kind):
+          return "{[key in %s]?: %s}" % (get_type_name(
+              kind.key_kind), recurse_nullable(kind.value_kind))
+        if self._IsStringableKind(kind.key_kind):
+          return "{[key: %s]: %s}" % (get_type_name(
+              kind.key_kind), recurse_nullable(kind.value_kind))
 
       if mojom.IsMapKind(kind):
         return "Map<%s, %s>" % (recurse_nullable(
