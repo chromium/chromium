@@ -83,6 +83,8 @@ TEST_P(AppListViewPixelRTLTest, AnswerCardSearchResult) {
   SetUpAnswerCardResult(results, 1, 1);
   test_helper->GetProductivityLauncherSearchView()
       ->OnSearchResultContainerResultsChanged();
+  // OnSearchResultContainerResultsChanged will schedule show animations().
+  base::RunLoop().RunUntilIdle();
 
   HideCursor();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
