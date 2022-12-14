@@ -2682,7 +2682,7 @@
             ]
         }
     ],
-    "ClankAppLanguagePrompt": [
+    "ClankAppLanguagePromptGlobal": [
         {
             "platforms": [
                 "android"
@@ -2691,7 +2691,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AppLanguagePrompt"
+                        "AppLanguagePrompt",
+                        "AppLanguagePromptULP"
                     ]
                 }
             ]
