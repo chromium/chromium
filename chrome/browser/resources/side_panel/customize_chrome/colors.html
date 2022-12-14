@@ -8,6 +8,34 @@
   customize-chrome-check-mark {
     --customize-chrome-check-mark-wrapper-end: -1px;
   }
+
+  /* colorPicker is placed on top of the theme icon to work around
+     https://crbug.com/1162053. */
+  #colorPicker {
+    border: 0;
+    height: 50px;
+    left: 0;
+    margin: 0;
+    opacity: 0;
+    padding: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    width: 50px;
+  }
+
+  #colorPickerIcon {
+    -webkit-mask-image: url(chrome://resources/cr_components/customize_themes/colorize.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background-color: var(--google-grey-700);
+    height: 20px;
+    left: calc(50% - 10px);
+    pointer-events: none;
+    position: absolute;
+    top: calc(50% - 10px);
+    width: 20px;
+  }
 </style>
 <!-- TODO(crbug.com/1384229): Make grid adaptive. -->
 <cr-grid columns="4">
@@ -33,5 +61,16 @@
       </customize-chrome-color>
     </customize-chrome-check-mark-wrapper>
   </template>
-  <!-- TODO(crbug.com/1384229): Add color picker. -->
+  <customize-chrome-check-mark-wrapper checked>
+    <customize-chrome-color
+        id="customColor"
+        background-color="[[customColor_.background]]"
+        foreground-color="[[customColor_.foreground]]"
+        title="$i18n{colorPickerLabel}"
+        on-click="onCustomColorClick_">
+    </customize-chrome-color>
+    <div id="colorPickerIcon"></div>
+    <input id="colorPicker" type="color" tabindex="-1" aria-hidden="true"
+        on-change="onCustomColorChange_">
+  </customize-chrome-check-mark-wrapper>
 </cr-grid>

@@ -51,5 +51,13 @@ export function createTheme(systemDarkMode = false): Theme {
     systemDarkMode,
     backgroundColor: {value: 0xffff0000},
     foregroundColor: undefined,
+    colorPickerIconColor: {value: 0xffff0000},
   };
+}
+
+export function capture(
+    target: HTMLElement, event: string): {received: boolean} {
+  const capture = {received: false};
+  target.addEventListener(event, () => capture.received = true);
+  return capture;
 }

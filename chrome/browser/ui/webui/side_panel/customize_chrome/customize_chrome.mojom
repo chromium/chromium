@@ -25,6 +25,8 @@ struct Theme {
   skia.mojom.SkColor background_color;
   // The current theme foreground color. If not set, we use the default theme.
   skia.mojom.SkColor? foreground_color;
+  // The color of the color picker icon.
+  skia.mojom.SkColor color_picker_icon_color;
 };
 
 struct ChromeColor {

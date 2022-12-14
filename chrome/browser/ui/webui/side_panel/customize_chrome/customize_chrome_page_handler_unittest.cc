@@ -291,6 +291,8 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
       theme->background_color);
   EXPECT_EQ(web_contents().GetColorProvider().GetColor(ui::kColorFrameActive),
             theme->foreground_color);
+  EXPECT_EQ(web_contents().GetColorProvider().GetColor(kColorNewTabPageText),
+            theme->color_picker_icon_color);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

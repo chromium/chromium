@@ -116,6 +116,8 @@ void CustomizeChromePageHandler::UpdateTheme() {
     theme->foreground_color =
         web_contents_->GetColorProvider().GetColor(ui::kColorFrameActive);
   }
+  theme->color_picker_icon_color =
+      web_contents_->GetColorProvider().GetColor(kColorNewTabPageText);
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   CHECK(native_theme);
   theme->system_dark_mode = native_theme->ShouldUseDarkColors();

@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import './color.js';
 import './check_mark_wrapper.js';
 
+import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -33,6 +34,9 @@ export interface ColorsElement {
   $: {
     defaultColor: ColorElement,
     chromeColors: DomRepeat,
+    customColor: ColorElement,
+    colorPicker: HTMLInputElement,
+    colorPickerIcon: HTMLElement,
   };
 }
 
@@ -53,11 +57,25 @@ export class ColorsElement extends PolymerElement {
       },
       colors_: Array,
       theme_: Object,
+      customColor_: {
+        type: Object,
+        value: {
+          background: {value: 0xffffffff},
+          foreground: {value: 0xfff1f3f4},
+        },
+      },
     };
+  }
+
+  static get observers() {
+    return [
+      'updateCustomColor_(colors_, theme_)',
+    ];
   }
 
   private colors_: ChromeColor[];
   private theme_: Theme;
+  private customColor_: Color;
   private setThemeListenerId_: number|null = null;
 
   constructor() {
@@ -96,6 +114,35 @@ export class ColorsElement extends PolymerElement {
   private onChromeColorClick_(e: Event) {
     CustomizeChromeApiProxy.getInstance().handler.setForegroundColor(
         this.$.chromeColors.itemForElement(e.target as HTMLElement).foreground);
+  }
+
+  private onCustomColorClick_() {
+    this.$.colorPicker.focus();
+    this.$.colorPicker.click();
+  }
+
+  private onCustomColorChange_(e: Event) {
+    CustomizeChromeApiProxy.getInstance().handler.setForegroundColor(
+        hexColorToSkColor((e.target as HTMLInputElement).value));
+  }
+
+  private updateCustomColor_() {
+    const isCustomColorTheme = this.colors_ && this.theme_ &&
+        this.theme_.foregroundColor &&
+        !this.colors_.find(
+            (color: ChromeColor) =>
+                color.foreground.value === this.theme_.foregroundColor!.value);
+    // We only change the custom color when theme updates to a new custom color
+    // so that the picked color persists while clicking on other color circles.
+    if (!isCustomColorTheme) {
+      return;
+    }
+    this.customColor_ = {
+      background: this.theme_.backgroundColor,
+      foreground: this.theme_.foregroundColor!,
+    };
+    this.$.colorPickerIcon.style.setProperty(
+        'background-color', skColorToRgba(this.theme_.colorPickerIconColor));
   }
 }
 
