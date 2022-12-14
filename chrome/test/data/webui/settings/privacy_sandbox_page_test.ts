@@ -9,7 +9,7 @@ import {SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandbo
 import {CrSettingsPrefs, Router, routes, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('PrivacySandboxPageTests', function() {
   let page: SettingsPrivacySandboxPageElement;
@@ -145,6 +145,9 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     assertEquals(
         loadTimeData.getString('topicsPageToggleSubLabel'),
         page.$.topicsToggle.subLabel);
+    assertFalse(isChildVisible(page, '#currentTopicsDescription'));
+    assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmpty'));
+    assertTrue(isChildVisible(page, '#currentTopicsDescriptionDisabled'));
 
     page.$.topicsToggle.click();
     await flushTasks();
@@ -154,6 +157,12 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
         loadTimeData.getString('topicsPageToggleSubLabel'),
         page.$.topicsToggle.subLabel);
     assertTrue(!!page.getPref('privacy_sandbox.m1.topics_enabled.value'));
+    // TODO(crbug.com/1378703): Test for `#currentTopicsDescription` and
+    // `#currentTopicsDescriptionEmpty` separately.
+    assertTrue(
+        isChildVisible(page, '#currentTopicsDescription') ||
+        isChildVisible(page, '#currentTopicsDescriptionEmpty'));
+    assertFalse(isChildVisible(page, '#currentTopicsDescriptionDisabled'));
   });
 
   test('disableTopicsToggle', async function() {
@@ -164,6 +173,12 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     assertEquals(
         loadTimeData.getString('topicsPageToggleSubLabel'),
         page.$.topicsToggle.subLabel);
+    // TODO(crbug.com/1378703): Test for `#currentTopicsDescription` and
+    // `#currentTopicsDescriptionEmpty` separately.
+    assertTrue(
+        isChildVisible(page, '#currentTopicsDescription') ||
+        isChildVisible(page, '#currentTopicsDescriptionEmpty'));
+    assertFalse(isChildVisible(page, '#currentTopicsDescriptionDisabled'));
 
     page.$.topicsToggle.click();
     await flushTasks();
@@ -173,6 +188,9 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
         loadTimeData.getString('topicsPageToggleSubLabel'),
         page.$.topicsToggle.subLabel);
     assertFalse(!!page.getPref('privacy_sandbox.m1.topics_enabled.value'));
+    assertFalse(isChildVisible(page, '#currentTopicsDescription'));
+    assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmpty'));
+    assertTrue(isChildVisible(page, '#currentTopicsDescriptionDisabled'));
   });
 });
 
