@@ -2163,29 +2163,6 @@ TEST(PaintOpSerializationTest, CompleteBufferSerialization) {
                   PaintOpEq(RestoreOp()))));
 }
 
-TEST(PaintOpSerializationTest, DoNotPreservePaintOps) {
-  PaintOpBuffer buffer;
-  PushDrawIRectOps(&buffer);
-
-  PaintOpBufferSerializer::Preamble preamble;
-  preamble.content_size = gfx::Size(1000, 1000);
-  preamble.playback_rect = gfx::Rect(preamble.content_size);
-  preamble.full_raster_rect = preamble.playback_rect;
-  preamble.requires_clear = true;
-
-  std::unique_ptr<char, base::AlignedFreeDeleter> memory(
-      static_cast<char*>(base::AlignedAlloc(PaintOpBuffer::kInitialBufferSize,
-                                            PaintOpBuffer::kPaintOpAlign)));
-  TestOptionsProvider options_provider;
-  SimpleBufferSerializer serializer(memory.get(),
-                                    PaintOpBuffer::kInitialBufferSize,
-                                    options_provider.serialize_options());
-  serializer.SerializeAndDestroy(&buffer, nullptr, preamble);
-  ASSERT_NE(serializer.written(), 0u);
-
-  EXPECT_TRUE(buffer.are_ops_destroyed());
-}
-
 TEST(PaintOpSerializationTest, Preamble) {
   PaintOpBufferSerializer::Preamble preamble;
   preamble.content_size = gfx::Size(30, 40);
@@ -2205,7 +2182,7 @@ TEST(PaintOpSerializationTest, Preamble) {
   SimpleBufferSerializer serializer(memory.get(),
                                     PaintOpBuffer::kInitialBufferSize,
                                     options_provider.serialize_options());
-  serializer.SerializeAndDestroy(&buffer, nullptr, preamble);
+  serializer.Serialize(&buffer, nullptr, preamble);
   ASSERT_NE(serializer.written(), 0u);
 
   sk_sp<PaintOpBuffer> deserialized_buffer =
@@ -2299,7 +2276,7 @@ TEST(PaintOpBufferTest, ClipsImagesDuringSerialization) {
     // Avoid clearing.
     preamble.content_size = gfx::Size(1000, 1000);
     preamble.requires_clear = false;
-    serializer.SerializeAndDestroy(&buffer, nullptr, preamble);
+    serializer.Serialize(&buffer, nullptr, preamble);
     ASSERT_NE(serializer.written(), 0u);
 
     sk_sp<PaintOpBuffer> deserialized_buffer =
@@ -2343,7 +2320,7 @@ TEST(PaintOpBufferSerializationTest, AlphaFoldingDuringSerialization) {
   SimpleBufferSerializer serializer(memory.get(),
                                     PaintOpBuffer::kInitialBufferSize,
                                     options_provider.serialize_options());
-  serializer.SerializeAndDestroy(&buffer, nullptr, preamble);
+  serializer.Serialize(&buffer, nullptr, preamble);
   ASSERT_NE(serializer.written(), 0u);
 
   sk_sp<PaintOpBuffer> deserialized_buffer =

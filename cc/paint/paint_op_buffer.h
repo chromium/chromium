@@ -224,9 +224,6 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   bool has_effects_preventing_lcd_text_for_save_layer_alpha() const {
     return has_effects_preventing_lcd_text_for_save_layer_alpha_;
   }
-  bool are_ops_destroyed() const { return are_ops_destroyed_; }
-  void MarkOpsDestroyed() { are_ops_destroyed_ = true; }
-
   bool NeedsAdditionalInvalidationForLCDText(
       const PaintOpBuffer& old_buffer) const;
 
@@ -366,7 +363,6 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   bool has_save_layer_ops_ : 1;
   bool has_save_layer_alpha_ops_ : 1;
   bool has_effects_preventing_lcd_text_for_save_layer_alpha_ : 1;
-  bool are_ops_destroyed_ : 1;
 };
 
 }  // namespace cc

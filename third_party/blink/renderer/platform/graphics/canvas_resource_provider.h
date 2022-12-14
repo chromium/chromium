@@ -319,11 +319,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // decodes/uploads in the cache is invalidated only when the canvas contents
   // change.
   cc::PaintImage MakeImageSnapshot();
-  virtual void RasterRecord(sk_sp<cc::PaintRecord>, bool preserve_recording);
+  virtual void RasterRecord(sk_sp<cc::PaintRecord>);
   void RasterRecordOOP(sk_sp<cc::PaintRecord> last_recording,
                        bool needs_clear,
-                       gpu::Mailbox mailbox,
-                       bool preserve_recording);
+                       gpu::Mailbox mailbox);
 
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
   void TearDownSkSurface();

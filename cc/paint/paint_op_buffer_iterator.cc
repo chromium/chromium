@@ -44,9 +44,7 @@ PaintOpBuffer::CompositeIterator::CompositeIterator(
                                : absl::variant<Iterator, OffsetIterator>(
                                      absl::in_place_type<OffsetIterator>,
                                      buffer,
-                                     offsets)) {
-  DCHECK(!buffer->are_ops_destroyed());
-}
+                                     offsets)) {}
 
 PaintOpBuffer::CompositeIterator::CompositeIterator(
     const CompositeIterator& other) = default;
@@ -58,7 +56,6 @@ PaintOpBuffer::PlaybackFoldingIterator::PlaybackFoldingIterator(
     const std::vector<size_t>* offsets)
     : iter_(buffer, offsets),
       folded_draw_color_(SkColors::kTransparent, SkBlendMode::kSrcOver) {
-  DCHECK(!buffer->are_ops_destroyed());
   FindNextOp();
 }
 

@@ -46,9 +46,7 @@ class CC_PAINT_EXPORT PaintOpBuffer::Iterator {
 
  private:
   Iterator(const PaintOpBuffer* buffer, const char* ptr, size_t op_offset)
-      : buffer_(buffer), ptr_(ptr), op_offset_(op_offset) {
-    DCHECK(!buffer->are_ops_destroyed());
-  }
+      : buffer_(buffer), ptr_(ptr), op_offset_(op_offset) {}
 
   // `buffer_` and `ptr_` are not a raw_ptr<...> for performance reasons
   // (based on analysis of sampling profiler data and tab_search:top100:2020).
@@ -65,7 +63,6 @@ class CC_PAINT_EXPORT PaintOpBuffer::OffsetIterator {
   OffsetIterator(const PaintOpBuffer* buffer,
                  const std::vector<size_t>* offsets)
       : buffer_(buffer), ptr_(buffer_->data_.get()), offsets_(offsets) {
-    DCHECK(!buffer->are_ops_destroyed());
     if (!offsets || offsets->empty()) {
       *this = end();
       return;
@@ -119,9 +116,7 @@ class CC_PAINT_EXPORT PaintOpBuffer::OffsetIterator {
                  const char* ptr,
                  size_t op_offset,
                  const std::vector<size_t>* offsets)
-      : buffer_(buffer), ptr_(ptr), offsets_(offsets), op_offset_(op_offset) {
-    DCHECK(!buffer->are_ops_destroyed());
-  }
+      : buffer_(buffer), ptr_(ptr), offsets_(offsets), op_offset_(op_offset) {}
 
   // `buffer_`, `ptr_`, and `offsets_` are not a raw_ptr<...> for performance
   // reasons (based on analysis of sampling profiler data and

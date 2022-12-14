@@ -58,11 +58,6 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
   void Serialize(const PaintOpBuffer* buffer,
                  const std::vector<size_t>* offsets,
                  const Preamble& preamble);
-  // Sereialize the buffer as |Serialize| with a preamble. This function also
-  // destroys the PaintOps in |buffer| after serialization.
-  void SerializeAndDestroy(PaintOpBuffer* buffer,
-                           const std::vector<size_t>* offsets,
-                           const Preamble& preamble);
   // Serialize the buffer without a preamble. This function serializes the whole
   // buffer without any extra ops added.  No clearing is done.  This should
   // generally be used for internal PaintOpBuffers that want to be sent as-is.
@@ -86,9 +81,6 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
   void SerializeBuffer(SkCanvas* canvas,
                        const PaintOpBuffer* buffer,
                        const std::vector<size_t>* offsets);
-  void SerializeBufferAndDestroy(SkCanvas* canvas,
-                                 PaintOpBuffer* buffer,
-                                 const std::vector<size_t>* offsets);
   // Returns whether searilization of |op| succeeded and we need to serialize
   // the next PaintOp in the PaintOpBuffer.
   bool WillSerializeNextOp(const PaintOp& op,

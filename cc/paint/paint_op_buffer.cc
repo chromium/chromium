@@ -93,8 +93,7 @@ PaintOpBuffer::PaintOpBuffer()
       has_draw_text_ops_(false),
       has_save_layer_ops_(false),
       has_save_layer_alpha_ops_(false),
-      has_effects_preventing_lcd_text_for_save_layer_alpha_(false),
-      are_ops_destroyed_(false) {}
+      has_effects_preventing_lcd_text_for_save_layer_alpha_(false) {}
 
 PaintOpBuffer::PaintOpBuffer(PaintOpBuffer&& other) {
   *this = std::move(other);
@@ -121,7 +120,6 @@ PaintOpBuffer& PaintOpBuffer::operator=(PaintOpBuffer&& other) {
   has_save_layer_alpha_ops_ = other.has_save_layer_alpha_ops_;
   has_effects_preventing_lcd_text_for_save_layer_alpha_ =
       other.has_effects_preventing_lcd_text_for_save_layer_alpha_;
-  are_ops_destroyed_ = other.are_ops_destroyed_;
 
   // Make sure the other pob can destruct safely or is ready for reuse.
   other.reserved_ = 0;
@@ -130,7 +128,7 @@ PaintOpBuffer& PaintOpBuffer::operator=(PaintOpBuffer&& other) {
 }
 
 void PaintOpBuffer::DestroyOps() {
-  if (!are_ops_destroyed_ && data_) {
+  if (data_) {
     for (size_t offset = 0; offset < used_;) {
       auto* op = reinterpret_cast<PaintOp*>(data_.get() + offset);
       offset += op->skip;
@@ -159,7 +157,6 @@ void PaintOpBuffer::ResetRetainingBuffer() {
   has_save_layer_ops_ = false;
   has_save_layer_alpha_ops_ = false;
   has_effects_preventing_lcd_text_for_save_layer_alpha_ = false;
-  are_ops_destroyed_ = false;
 }
 
 void PaintOpBuffer::Playback(SkCanvas* canvas) const {
