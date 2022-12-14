@@ -10,13 +10,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Build.VERSION_CODES;
+import android.os.Bundle;
+import android.view.Display;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.test.core.app.ApplicationProvider;
@@ -51,7 +56,11 @@ public class CastWebContentsComponentTest {
 
     private static final String SESSION_ID = "123456789";
 
+    private static final int DISPLAY_ID = 1;
+    private static final String ACTIVITY_OPTIONS_DISPLAY_ID = "android.activity.launchDisplayId";
+
     private @Mock WebContents mWebContents;
+    private @Mock Display mDisplay;
     private Activity mActivity;
     private ShadowActivity mShadowActivity;
     private StartParams mStartParams;
@@ -62,6 +71,7 @@ public class CastWebContentsComponentTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        when(mDisplay.getDisplayId()).thenReturn(DISPLAY_ID);
         mActivity = Mockito.spy(Robolectric.buildActivity(Activity.class).setup().get());
         mShadowActivity = Shadows.shadowOf(mActivity);
         mStartParams = new StartParams(mActivity, mWebContents, APP_ID);
@@ -79,6 +89,29 @@ public class CastWebContentsComponentTest {
                 intent.getComponent().getClassName(), CastWebContentsActivity.class.getName());
 
         component.stop(mActivity);
+    }
+
+    @Test
+    @Config(minSdk = VERSION_CODES.R)
+    public void testStartStartsWebContentsActivityWithDisplayId() {
+        Assume.assumeFalse(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
+
+        ContextWrapper context =
+                Mockito.spy(new ContextWrapper(ContextUtils.getApplicationContext()) {
+                    @Override
+                    public Display getDisplay() {
+                        return mDisplay;
+                    }
+                });
+        StartParams startParams = new StartParams(context, mWebContents, APP_ID);
+
+        CastWebContentsComponent component =
+                new CastWebContentsComponent(SESSION_ID, null, null, false, false, true, false);
+        component.start(startParams, false);
+
+        ArgumentCaptor<Bundle> bundle = ArgumentCaptor.forClass(Bundle.class);
+        verify(context).startActivity(any(Intent.class), bundle.capture());
+        Assert.assertEquals(bundle.getValue().getInt(ACTIVITY_OPTIONS_DISPLAY_ID), DISPLAY_ID);
     }
 
     @Test

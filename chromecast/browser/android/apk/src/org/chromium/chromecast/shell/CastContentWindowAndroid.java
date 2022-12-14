@@ -5,6 +5,8 @@
 package org.chromium.chromecast.shell;
 
 import android.content.Context;
+import android.hardware.display.DisplayManager;
+import android.view.Display;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -40,10 +42,27 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
     @CalledByNative
     private static CastContentWindowAndroid create(long nativeCastContentWindowAndroid,
             boolean enableTouchInput, boolean isRemoteControlMode, boolean turnOnScreen,
-            boolean keepScreenOn, String sessionId) {
+            boolean keepScreenOn, String sessionId, String displayId) {
         return new CastContentWindowAndroid(nativeCastContentWindowAndroid,
-                ContextUtils.getApplicationContext(), enableTouchInput, isRemoteControlMode,
+                getContextWithDisplay(displayId), enableTouchInput, isRemoteControlMode,
                 turnOnScreen, keepScreenOn, sessionId);
+    }
+
+    private static Context getContextWithDisplay(String displayId) {
+        Context context = ContextUtils.getApplicationContext();
+        try {
+            int id = Integer.parseInt(displayId);
+            DisplayManager displayManager = context.getSystemService(DisplayManager.class);
+            Display display = displayManager.getDisplay(id);
+            if (display != null) {
+                return context.createDisplayContext(display);
+            }
+        } catch (NumberFormatException e) {
+        }
+        Log.i(TAG,
+                "Display with the given cast display id is not available, "
+                        + "use the default display to create the web view.");
+        return context;
     }
 
     private CastContentWindowAndroid(long nativeCastContentWindowAndroid, final Context context,
