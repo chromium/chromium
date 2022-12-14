@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_METRICS_STRUCTURED_ASH_STRUCTURED_METRICS_RECORDER_H_
 #define CHROME_BROWSER_METRICS_STRUCTURED_ASH_STRUCTURED_METRICS_RECORDER_H_
 
+#include "chrome/browser/metrics/structured/structured_metrics_user_session_observer.h"
 #include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/structured_metrics_client.h"
@@ -38,7 +39,7 @@ class AshStructuredMetricsRecorder
 
  private:
   mojo::Remote<crosapi::mojom::StructuredMetricsService> remote_;
-
+  std::unique_ptr<StructuredMetricsUserSessionObserver> user_session_observer_;
   bool is_initialized_ = false;
 };
 

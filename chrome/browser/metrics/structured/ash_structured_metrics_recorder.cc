@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"
+#include <memory>
 
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -11,6 +12,7 @@
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/recorder.h"
+#include "components/metrics/structured/structured_metrics_features.h"
 
 namespace metrics {
 namespace structured {
@@ -22,13 +24,21 @@ void AshStructuredMetricsRecorder::Initialize() {
   DCHECK(!is_initialized_);
 
   // If already initialized, do nothing.
-  if (is_initialized_)
+  if (is_initialized_) {
     return;
+  }
 
   // Crosapi may not be initialized, in which case a pipe cannot be setup.
   if (crosapi::CrosapiManager::IsInitialized()) {
     crosapi::CrosapiManager::Get()->crosapi_ash()->BindStructuredMetricsService(
         remote_.BindNewPipeAndPassReceiver());
+
+    if (base::FeatureList::IsEnabled(kEventSequenceLogging)) {
+      auto* user_manager = user_manager::UserManager::Get();
+      DCHECK(user_manager);
+      user_session_observer_ =
+          std::make_unique<StructuredMetricsUserSessionObserver>(user_manager);
+    }
     is_initialized_ = true;
   } else {
     VLOG(2) << "Initialize() called before CrosApi is initialized.";

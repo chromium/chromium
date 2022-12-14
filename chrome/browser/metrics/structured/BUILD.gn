@@ -28,9 +28,14 @@ static_library("structured") {
     sources += [
       "ash_structured_metrics_recorder.cc",
       "ash_structured_metrics_recorder.h",
+      "structured_metrics_user_session_observer.cc",
+      "structured_metrics_user_session_observer.h",
     ]
 
-    deps += [ "//chrome/browser/ash/crosapi" ]
+    deps += [
+      "//chrome/browser/ash/crosapi",
+      "//components/user_manager:user_manager",
+    ]
   }
 
   if (is_chromeos_lacros) {
