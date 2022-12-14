@@ -11,14 +11,16 @@
 namespace sandbox {
 namespace bpf_dsl {
 
-TestTrapRegistry::TestTrapRegistry() : map_() {}
-TestTrapRegistry::~TestTrapRegistry() {}
+TestTrapRegistry::TestTrapRegistry() = default;
 
-uint16_t TestTrapRegistry::Add(TrapFnc fnc, const void* aux, bool safe) {
-  EXPECT_TRUE(safe);
+TestTrapRegistry::~TestTrapRegistry() = default;
+
+uint16_t TestTrapRegistry::Add(const Handler& handler) {
+  EXPECT_TRUE(handler.safe);
 
   const uint16_t next_id = map_.size() + 1;
-  return map_.insert(std::make_pair(Key(fnc, aux), next_id)).first->second;
+  auto result = map_.insert({handler, next_id});
+  return result.first->second;  // Old value if pre-existing handler.
 }
 
 bool TestTrapRegistry::EnableUnsafeTraps() {

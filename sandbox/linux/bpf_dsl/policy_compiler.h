@@ -60,7 +60,7 @@ class SANDBOX_EXPORT PolicyCompiler {
 
   // Trap returns a CodeGen::Node to indicate the system call should
   // instead invoke a trap handler.
-  CodeGen::Node Trap(TrapRegistry::TrapFnc fnc, const void* aux, bool safe);
+  CodeGen::Node Trap(const TrapRegistry::Handler& handler);
 
   // MaskedEqual returns a CodeGen::Node that represents a conditional branch.
   // Argument "argno" (1..6) will be bitwise-AND'd with "mask" and compared

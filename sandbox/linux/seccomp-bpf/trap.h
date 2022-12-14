@@ -33,8 +33,7 @@ class SANDBOX_EXPORT Trap : public bpf_dsl::TrapRegistry {
   Trap(const Trap&) = delete;
   Trap& operator=(const Trap&) = delete;
 
-  uint16_t Add(TrapFnc fnc, const void* aux, bool safe) override;
-
+  uint16_t Add(const Handler& handler) override;
   bool EnableUnsafeTraps() override;
 
   // Registry returns the trap registry used by Trap's SIGSYS handler,
@@ -46,18 +45,7 @@ class SANDBOX_EXPORT Trap : public bpf_dsl::TrapRegistry {
   static bool SandboxDebuggingAllowedByUser();
 
  private:
-  struct TrapKey {
-    TrapKey() = default;
-    TrapKey(TrapFnc f, const void* a, bool s)
-        : fnc(f), aux(reinterpret_cast<uintptr_t>(a)), safe(s) {}
-
-    bool operator<(const TrapKey&) const;
-
-    TrapFnc fnc = nullptr;
-    uintptr_t aux = 0;  // Usually a pointer, but may be a smuggled int.
-    bool safe = false;
-  };
-  using TrapIds = std::map<TrapKey, uint16_t>;
+  using HandlerToIdMap = std::map<TrapRegistry::Handler, uint16_t>;
 
   // Our constructor is private. A shared global instance is created
   // automatically as needed.
@@ -73,18 +61,20 @@ class SANDBOX_EXPORT Trap : public bpf_dsl::TrapRegistry {
   // dumps.
   void SigSys(int nr, LinuxSigInfo* info, ucontext_t* ctx)
       __attribute__((noinline));
+
   // We have a global singleton that handles all of our SIGSYS traps. This
   // variable must never be deallocated after it has been set up initially, as
   // there is no way to reset in-kernel BPF filters that generate SIGSYS
   // events.
   static Trap* global_trap_;
 
-  TrapIds trap_ids_;  // Maps from TrapKeys to numeric ids
-  // Array of TrapKeys indexed by ids.
+  HandlerToIdMap trap_ids_;  // Maps from Handlers to numeric ids
+
+  // Array of handlers indexed by ids.
   //
-  // This is not a raw_ptr as it is an owning pointer anyway, and is meant to be
-  // used between normal code and signal handlers.
-  RAW_PTR_EXCLUSION TrapKey* trap_array_ = nullptr;
+  // This is not a raw_ptr as it is an owning pointer anyway, and needs
+  // to be safe for signal handlers.
+  RAW_PTR_EXCLUSION TrapRegistry::Handler* trap_array_ = nullptr;
   size_t trap_array_size_ = 0;      // Currently used size of array
   size_t trap_array_capacity_ = 0;  // Currently allocated capacity of array
   bool has_unsafe_traps_ = false;   // Whether unsafe traps have been enabled

@@ -227,7 +227,7 @@ void Trap::SigSys(int nr, LinuxSigInfo* info, ucontext_t* ctx) {
                        SECCOMP_PARM6(ctx));
 #endif  // defined(__mips__)
   } else {
-    const TrapKey& trap = trap_array_[info->si_errno - 1];
+    const auto& trap = trap_array_[info->si_errno - 1];
     if (!trap.safe) {
       SetIsInSigHandler();
     }
@@ -260,12 +260,8 @@ void Trap::SigSys(int nr, LinuxSigInfo* info, ucontext_t* ctx) {
   return;
 }
 
-bool Trap::TrapKey::operator<(const TrapKey& o) const {
-  return std::tie(fnc, aux, safe) < std::tie(o.fnc, o.aux, o.safe);
-}
-
-uint16_t Trap::Add(TrapFnc fnc, const void* aux, bool safe) {
-  if (!safe && !SandboxDebuggingAllowedByUser()) {
+uint16_t Trap::Add(const Handler& handler) {
+  if (!handler.safe && !SandboxDebuggingAllowedByUser()) {
     // Unless the user set the CHROME_SANDBOX_DEBUGGING environment variable,
     // we never return an ErrorCode that is marked as "unsafe". This also
     // means, the BPF compiler will never emit code that allow unsafe system
@@ -282,10 +278,6 @@ uint16_t Trap::Add(TrapFnc fnc, const void* aux, bool safe) {
         "is enabled");
   }
 
-  // Each unique pair of TrapFnc and auxiliary data make up a distinct instance
-  // of a SECCOMP_RET_TRAP.
-  TrapKey key(fnc, aux, safe);
-
   // We return unique identifiers together with SECCOMP_RET_TRAP. This allows
   // us to associate trap with the appropriate handler. The kernel allows us
   // identifiers in the range from 0 to SECCOMP_RET_DATA (0xFFFF). We want to
@@ -295,7 +287,7 @@ uint16_t Trap::Add(TrapFnc fnc, const void* aux, bool safe) {
   // calls that might be async-signal-unsafe.
   // In order to do so, we store all of our traps in a C-style trap_array_.
 
-  TrapIds::const_iterator iter = trap_ids_.find(key);
+  auto iter = trap_ids_.find(handler);
   if (iter != trap_ids_.end()) {
     // We have seen this pair before. Return the same id that we assigned
     // earlier.
@@ -328,8 +320,8 @@ uint16_t Trap::Add(TrapFnc fnc, const void* aux, bool safe) {
   // events.
   if (trap_array_size_ >= trap_array_capacity_) {
     trap_array_capacity_ += kCapacityIncrement;
-    TrapKey* old_trap_array = trap_array_;
-    TrapKey* new_trap_array = new TrapKey[trap_array_capacity_];
+    auto* old_trap_array = trap_array_;
+    auto* new_trap_array = new TrapRegistry::Handler[trap_array_capacity_];
     std::copy_n(old_trap_array, trap_array_size_, new_trap_array);
 
     trap_array_ = new_trap_array;
@@ -341,8 +333,8 @@ uint16_t Trap::Add(TrapFnc fnc, const void* aux, bool safe) {
   }
 
   uint16_t id = trap_array_size_ + 1;
-  trap_ids_[key] = id;
-  trap_array_[trap_array_size_] = key;
+  trap_ids_[handler] = id;
+  trap_array_[trap_array_size_] = handler;
   trap_array_size_++;
   return id;
 }
