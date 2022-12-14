@@ -1,0 +1,65 @@
+# Filter out failing infobar tests from Chrome for Testing trybots
+
+# Chrome for Testing (CfT) adds a global info bar.
+# As a side effect, this fails all tests that explicitly assert the
+# infobar count, as they always differ by one.
+
+# Since those tests are already covered by non-cft trybots, we just disable
+# them for cft trybots.
+
+# https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1222923
+-BackForwardCachePageLoadMetricsObserverBrowserTest.CumulativeLayoutShiftAfterBackForwardCacheRestore
+-BackForwardCachePageLoadMetricsObserverBrowserTest.LayoutShiftNormalization_AfterBackForwardCacheRestore
+-CollectedCookiesViewsTest.ChangeAndCloseDialog
+-CollectedCookiesViewsTest.ChangeAndNavigateAway
+-CollectedCookiesViewsTest.CloseDialog
+-DebuggerApiTest.InfoBar
+-DebuggerApiTest.InfoBarIsNotRemovedIfAttachAgainBeforeFiveSeconds
+-DebuggerApiTest.InfoBarIsRemovedAfterFiveSeconds
+-DevToolsProtocolTest.AutomationOverrideAddsOneInfoBarOnly
+-DevToolsProtocolTest.AutomationOverrideShowsAndRemovesInfoBar
+-ExtensionInstallUIBrowserTest.TestThemeInstallUndoResetsToPreviousTheme
+-GlobalConfirmInfoBarTest.CreateAndCloseInfobar
+-GlobalConfirmInfoBarTest.UserInteraction
+-GlobalConfirmInfoBarTest.VerifyInfobarNonDefaultProperties
+-InfoBarsTest.TestInfoBarsCloseOnNewTheme
+-KnownInterceptionDisclosureInfobarTest.CooldownResetsOnBrowserRestartDesktop
+-KnownInterceptionDisclosureInfobarTest.OnlyShowDisclosureOncePerSession
+-MultipleTabSharingUIViewsBrowserTest.CloseTabs
+-MultipleTabSharingUIViewsBrowserTest.StopSharing
+-MultipleTabSharingUIViewsBrowserTest.VerifyUi
+-TabSharingUIViewsPreferCurrentTabBrowserTest.VerifyUiWhenCapturingAnotherTab
+-WebAppIntegration.ToggleWindowControlsOverlay
+-WebAppIntegration.WindowControlsOverlayStatePreservesBetweenLaunches
+-WebRtcDesktopCaptureBrowserTest.CloseAndReopenNonSharedTab
+-WebRtcDesktopCaptureBrowserTest.SwitchSharedTabBackAndForth
+-All/PageSpecificSiteDataDialogBrowserTest.AllowMenuItem/1
+-All/PageSpecificSiteDataDialogBrowserTest.BlockMenuItem/1
+-All/PageSpecificSiteDataDialogBrowserTest.ClearOnExitMenuItem/1
+-All/PageSpecificSiteDataDialogBrowserTest.CloseDialog/0
+-All/PageSpecificSiteDataDialogBrowserTest.CloseDialog/1
+-All/PageSpecificSiteDataDialogBrowserTest.DeleteMenuItem/1
+-All/TabSharingUIViewsBrowserTest.ChangeCapturedTabFavicon/0
+-All/TabSharingUIViewsBrowserTest.ChangeCapturedTabFavicon/1
+-All/TabSharingUIViewsBrowserTest.ChangeCapturingTabFavicon/0
+-All/TabSharingUIViewsBrowserTest.ChangeCapturingTabFavicon/1
+-All/TabSharingUIViewsBrowserTest.ChangeOtherTabFavicon/0
+-All/TabSharingUIViewsBrowserTest.ChangeOtherTabFavicon/1
+-All/TabSharingUIViewsBrowserTest.CloseTab/0
+-All/TabSharingUIViewsBrowserTest.CloseTab/1
+-All/TabSharingUIViewsBrowserTest.CloseTabInIncognitoBrowser/0
+-All/TabSharingUIViewsBrowserTest.CloseTabInIncognitoBrowser/1
+-All/TabSharingUIViewsBrowserTest.InfobarLabelUpdatedOnNavigation/0
+-All/TabSharingUIViewsBrowserTest.InfobarLabelUpdatedOnNavigation/1
+-All/TabSharingUIViewsBrowserTest.KillSharedTab/0
+-All/TabSharingUIViewsBrowserTest.KillSharedTab/1
+-All/TabSharingUIViewsBrowserTest.StartSharing/0
+-All/TabSharingUIViewsBrowserTest.StartSharing/1
+-All/TabSharingUIViewsBrowserTest.StopSharing/0
+-All/TabSharingUIViewsBrowserTest.StopSharing/1
+-All/TabSharingUIViewsBrowserTest.SwitchSharedTab/0
+-All/TabSharingUIViewsBrowserTest.SwitchSharedTab/1
+
+# https://ci.chromium.org/ui/p/chromium/builders/try/win-rel/25038/test-results
+-FindInPageControllerTest.FindMovesWhenObscuring
+-InteractionTestUtilBrowserTest.CompareScreenshot_WebPage

@@ -1082,6 +1082,11 @@
           'shards': 20,
         },
       },
+      'linux-rel-cft': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux.linux-rel-cft.browser_tests.filter',
+        ],
+      },
       'mac-code-coverage': {
         'args': [
           '--coverage-continuous-mode=1',
@@ -1091,6 +1096,11 @@
         'swarming': {
           'shards': 12,
         },
+      },
+      'mac-rel-cft': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel-cft.browser_tests.filter',
+        ],
       },
       'mac11-arm64-rel-tests': {
         'args': [
@@ -1121,6 +1131,11 @@
       'win-backuprefptr-x64-fyi-rel': {
        'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/win_backuprefptr_fyi.browser_tests.filter',
+        ],
+      },
+      'win-rel-cft': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/win.win-rel-cft.browser_tests.filter',
         ],
       },
       'win10-rel-no-external-ip': {

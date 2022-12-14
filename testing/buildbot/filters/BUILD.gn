@@ -59,12 +59,15 @@ source_set("browser_tests_filters") {
     "//testing/buildbot/filters/fuchsia.browser_tests.filter",
     "//testing/buildbot/filters/linux-chromeos.browser_tests.require_lacros.filter",
     "//testing/buildbot/filters/linux-lacros.browser_tests.filter",
+    "//testing/buildbot/filters/linux.linux-rel-cft.browser_tests.filter",
+    "//testing/buildbot/filters/mac.mac-rel-cft.browser_tests.filter",
+    "//testing/buildbot/filters/mac.mac-rel.browser_tests.filter",
     "//testing/buildbot/filters/mac.mac11-arm64-rel.browser_tests.filter",
     "//testing/buildbot/filters/mac.mac12-arm64-rel.browser_tests.filter",
-    "//testing/buildbot/filters/mac.mac-rel.browser_tests.filter",
     "//testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter",
     "//testing/buildbot/filters/pixel_tests.filter",
     "//testing/buildbot/filters/webrtc_functional.browser_tests.filter",
+    "//testing/buildbot/filters/win.win-rel-cft.browser_tests.filter",
     "//testing/buildbot/filters/win_backuprefptr_fyi.browser_tests.filter",
   ]
 }
