@@ -7,53 +7,15 @@ import 'chrome://settings/privacy_sandbox/app.js';
 import {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrDialogElement} from 'chrome://settings/lazy_load.js';
 import {PrivacySandboxAppElement, PrivacySandboxSettingsView} from 'chrome://settings/privacy_sandbox/app.js';
-import {CanonicalTopic, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
+import {PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
 import {CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-
-class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
-    PrivacySandboxBrowserProxy {
-  constructor() {
-    super([
-      'getFledgeState',
-      'setFledgeJoiningAllowed',
-      'getTopicsState',
-      'setTopicAllowed',
-    ]);
-  }
-
-  getFledgeState() {
-    this.methodCalled('getFledgeState');
-    return Promise.resolve({
-      joiningSites: ['test-site-one.com'],
-      blockedSites: ['test-site-two.com'],
-    });
-  }
-
-  setFledgeJoiningAllowed(site: string, allowed: boolean) {
-    this.methodCalled('setFledgeJoiningAllowed', [site, allowed]);
-  }
-
-  getTopicsState() {
-    this.methodCalled('getTopicsState');
-    return Promise.resolve({
-      topTopics:
-          [{topicId: 1, taxonomyVersion: 1, displayString: 'test-topic-1'}],
-      blockedTopics:
-          [{topicId: 2, taxonomyVersion: 1, displayString: 'test-topic-2'}],
-    });
-  }
-
-  setTopicAllowed(topic: CanonicalTopic, allowed: boolean) {
-    this.methodCalled('setTopicAllowed', [topic, allowed]);
-  }
-}
+import {TestPrivacySandboxBrowserProxy} from './test_privacy_sandbox_browser_proxy.js';
 
 suite('PrivacySandboxSettings', function() {
   let page: PrivacySandboxAppElement;
