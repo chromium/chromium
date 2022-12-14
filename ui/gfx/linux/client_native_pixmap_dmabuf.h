@@ -61,7 +61,8 @@ class ClientNativePixmapDmaBuf : public gfx::ClientNativePixmap {
 
   const gfx::NativePixmapHandle pixmap_handle_;
   const gfx::Size size_;
-  const std::array<PlaneInfo, kMaxPlanes> plane_info_;
+  std::array<PlaneInfo, kMaxPlanes> plane_info_;
+  bool mapped_ = false;
 };
 
 }  // namespace gfx
