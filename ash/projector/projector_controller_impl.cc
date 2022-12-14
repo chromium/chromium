@@ -507,7 +507,6 @@ void ProjectorControllerImpl::MaybeStopSpeechRecognition() {
   DCHECK(client_->GetSpeechRecognitionAvailability().IsAvailable());
 
   client_->StopSpeechRecognition();
-  is_speech_recognition_on_ = false;
 }
 
 void ProjectorControllerImpl::OnContainerFolderCreated(
