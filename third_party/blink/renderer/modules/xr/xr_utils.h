@@ -20,6 +20,7 @@ class Transform;
 namespace blink {
 
 class DOMPointReadOnly;
+class ExecutionContext;
 class WebGLRenderingContextBase;
 
 DOMFloat32Array* transformationMatrixToDOMFloat32Array(const gfx::Transform&);
@@ -51,6 +52,16 @@ device::mojom::blink::XRHandJoint StringToMojomHandJoint(
     const String& hand_joint_string);
 String MojomHandJointToString(device::mojom::blink::XRHandJoint hand_joint);
 
+// Converts the given string to an XRSessionFeature. If the string is
+// unrecognized, returns nullopt. Based on the spec:
+// https://immersive-web.github.io/webxr/#feature-name
+absl::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
+    const ExecutionContext* context,
+    const String& feature_string);
+
+// Inverse of |StringToXRSessionFeature()|, used for logging to console and for
+// |XRSession::enabledFeatures|.
+String XRSessionFeatureToString(device::mojom::XRSessionFeature feature);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_UTILS_H_

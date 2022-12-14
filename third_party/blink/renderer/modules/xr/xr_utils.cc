@@ -178,4 +178,92 @@ String MojomHandJointToString(device::mojom::blink::XRHandJoint hand_joint) {
   }
 }
 
+absl::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
+    const ExecutionContext* context,
+    const String& feature_string) {
+  if (feature_string == "viewer") {
+    return device::mojom::XRSessionFeature::REF_SPACE_VIEWER;
+  } else if (feature_string == "local") {
+    return device::mojom::XRSessionFeature::REF_SPACE_LOCAL;
+  } else if (feature_string == "local-floor") {
+    return device::mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR;
+  } else if (feature_string == "bounded-floor") {
+    return device::mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR;
+  } else if (feature_string == "unbounded") {
+    return device::mojom::XRSessionFeature::REF_SPACE_UNBOUNDED;
+  } else if (RuntimeEnabledFeatures::WebXRHitTestEnabled(context) &&
+             feature_string == "hit-test") {
+    return device::mojom::XRSessionFeature::HIT_TEST;
+  } else if (RuntimeEnabledFeatures::WebXRAnchorsEnabled(context) &&
+             feature_string == "anchors") {
+    return device::mojom::XRSessionFeature::ANCHORS;
+  } else if (feature_string == "dom-overlay") {
+    return device::mojom::XRSessionFeature::DOM_OVERLAY;
+  } else if (RuntimeEnabledFeatures::WebXRLightEstimationEnabled(context) &&
+             feature_string == "light-estimation") {
+    return device::mojom::XRSessionFeature::LIGHT_ESTIMATION;
+  } else if (RuntimeEnabledFeatures::WebXRCameraAccessEnabled(context) &&
+             feature_string == "camera-access") {
+    return device::mojom::XRSessionFeature::CAMERA_ACCESS;
+  } else if (RuntimeEnabledFeatures::WebXRPlaneDetectionEnabled(context) &&
+             feature_string == "plane-detection") {
+    return device::mojom::XRSessionFeature::PLANE_DETECTION;
+  } else if (RuntimeEnabledFeatures::WebXRDepthEnabled(context) &&
+             feature_string == "depth-sensing") {
+    return device::mojom::XRSessionFeature::DEPTH;
+  } else if (RuntimeEnabledFeatures::WebXRImageTrackingEnabled(context) &&
+             feature_string == "image-tracking") {
+    return device::mojom::XRSessionFeature::IMAGE_TRACKING;
+  } else if (RuntimeEnabledFeatures::WebXRHandInputEnabled(context) &&
+             feature_string == "hand-tracking") {
+    return device::mojom::XRSessionFeature::HAND_INPUT;
+  } else if (feature_string == "secondary-views") {
+    return device::mojom::XRSessionFeature::SECONDARY_VIEWS;
+  } else if (RuntimeEnabledFeatures::WebXRLayersEnabled(context) &&
+             feature_string == "layers") {
+    return device::mojom::XRSessionFeature::LAYERS;
+  }
+
+  return absl::nullopt;
+}
+
+String XRSessionFeatureToString(device::mojom::XRSessionFeature feature) {
+  switch (feature) {
+    case device::mojom::XRSessionFeature::REF_SPACE_VIEWER:
+      return "viewer";
+    case device::mojom::XRSessionFeature::REF_SPACE_LOCAL:
+      return "local";
+    case device::mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR:
+      return "local-floor";
+    case device::mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR:
+      return "bounded-floor";
+    case device::mojom::XRSessionFeature::REF_SPACE_UNBOUNDED:
+      return "unbounded";
+    case device::mojom::XRSessionFeature::DOM_OVERLAY:
+      return "dom-overlay";
+    case device::mojom::XRSessionFeature::HIT_TEST:
+      return "hit-test";
+    case device::mojom::XRSessionFeature::LIGHT_ESTIMATION:
+      return "light-estimation";
+    case device::mojom::XRSessionFeature::ANCHORS:
+      return "anchors";
+    case device::mojom::XRSessionFeature::CAMERA_ACCESS:
+      return "camera-access";
+    case device::mojom::XRSessionFeature::PLANE_DETECTION:
+      return "plane-detection";
+    case device::mojom::XRSessionFeature::DEPTH:
+      return "depth-sensing";
+    case device::mojom::XRSessionFeature::IMAGE_TRACKING:
+      return "image-tracking";
+    case device::mojom::XRSessionFeature::HAND_INPUT:
+      return "hand-tracking";
+    case device::mojom::XRSessionFeature::SECONDARY_VIEWS:
+      return "secondary-views";
+    case device::mojom::XRSessionFeature::LAYERS:
+      return "layers";
+  }
+
+  return "";
+}
+
 }  // namespace blink
