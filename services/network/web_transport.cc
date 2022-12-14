@@ -217,7 +217,7 @@ class WebTransport::Stream final {
 
   void Send() {
     MaySendFin();
-    while (outgoing_ && outgoing_->CanWrite()) {
+    while (readable_ && outgoing_ && outgoing_->CanWrite()) {
       const void* data = nullptr;
       uint32_t available = 0;
       MojoResult result = readable_->BeginReadData(
@@ -250,7 +250,7 @@ class WebTransport::Stream final {
   }
 
   void MaySendFin() {
-    if (!outgoing_) {
+    if (!readable_ || !outgoing_) {
       return;
     }
     if (!has_seen_end_of_pipe_for_readable_ || !has_received_fin_from_client_) {

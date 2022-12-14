@@ -108,5 +108,44 @@ IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, CertificateFingerprint) {
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
+// A test that aims to reproduce https://crbug.com/1369030 -- note that since
+// the bug in question is a race condition, this test will probably be flaky if
+// this is actually broken.
+IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, EchoLargeBidirectionalStreams) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+
+  ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
+
+  ASSERT_TRUE(
+      ExecJs(shell(), base::StringPrintf(R"JS(
+    async function run() {
+      const transport = new WebTransport('https://localhost:%d/echo');
+      await transport.ready;
+
+      const numBytes = 1024 * 1024;
+      const numStreams = 5;
+      for (let i = 0; i < numStreams; i++) {
+        const stream = await transport.createBidirectionalStream();
+        const writer = stream.writable.getWriter();
+        await writer.write(new Uint8Array(numBytes));
+        await writer.close();
+        let response = await (new Response(stream.readable).arrayBuffer());
+        if (response.byteLength != numBytes) {
+          throw Error('Size mismatch, received size: '
+                         + response.byteLength.toString());
+        }
+      }
+    }
+
+    run().then(() => { document.title = 'PASS'; },
+               (e) => { console.log(e); document.title = 'FAIL'; });
+)JS",
+                                         server_.server_address().port())));
+
+  ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
+}
+
 }  // namespace
 }  // namespace content
