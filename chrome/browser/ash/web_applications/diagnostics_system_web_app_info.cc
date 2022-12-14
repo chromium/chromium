@@ -10,6 +10,7 @@
 #include "ash/webui/grit/ash_diagnostics_app_resources.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
+#include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -61,4 +62,17 @@ gfx::Size DiagnosticsSystemAppDelegate::GetMinimumWindowSize() const {
 
 bool DiagnosticsSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
+}
+
+Browser* DiagnosticsSystemAppDelegate::LaunchAndNavigateSystemWebApp(
+    Profile* profile,
+    web_app::WebAppProvider* provider,
+    const GURL& url,
+    const apps::AppLaunchParams& params) const {
+  // Opening Diagnostics as an SWA does not automatically close any Diagnostics
+  // Dialog instances so attempt to close it here.
+  ash::DiagnosticsDialog::MaybeCloseExistingDialog();
+
+  return SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(profile, provider,
+                                                             url, params);
 }
