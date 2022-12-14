@@ -33,8 +33,7 @@ static_library("android") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable-v23/page_info_bg.xml",
-    "java/res/drawable-v31/page_info_bg.xml",
+    "java/res/drawable/page_info_bg.xml",
     "java/res/layout/button_preference_text_button.xml",
     "java/res/layout/connection_info.xml",
     "java/res/layout/page_info.xml",
