@@ -130,6 +130,7 @@ BASE_DECLARE_FEATURE(kCheckPasswordsAgainstCryptohomeHelper);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kChromadAvailable);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kClipboardHistoryNudgeSessionReset);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kClipboardHistoryRefresh);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kClipboardHistoryReorder);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kConsumerAutoUpdateToggleAllowed);
@@ -661,6 +662,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsChromadAvailableEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherItemColorSyncEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsClipboardHistoryNudgeSessionResetEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryRefreshEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryReorderEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsConsumerAutoUpdateToggleAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubEnabled();
