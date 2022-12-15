@@ -40,7 +40,7 @@ void DeviceOAuth2TokenStoreChromeOS::RegisterPrefs(
 void DeviceOAuth2TokenStoreChromeOS::Init(InitCallback callback) {
   state_ = State::INITIALIZING;
   // Pull in the system salt.
-  SystemSaltGetter::Get()->GetSystemSalt(
+  ash::SystemSaltGetter::Get()->GetSystemSalt(
       base::BindOnce(&DeviceOAuth2TokenStoreChromeOS::DidGetSystemSalt,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

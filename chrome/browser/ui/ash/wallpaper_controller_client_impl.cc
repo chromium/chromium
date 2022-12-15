@@ -119,11 +119,11 @@ user_manager::UserType GetUserType(const AccountId& id) {
 // So this function gives WallpaperManager independent hashing method to break
 // this dependency.
 std::string HashWallpaperFilesIdStr(const std::string& files_id_unhashed) {
-  chromeos::SystemSaltGetter* salt_getter = chromeos::SystemSaltGetter::Get();
+  ash::SystemSaltGetter* salt_getter = ash::SystemSaltGetter::Get();
   DCHECK(salt_getter);
 
   // System salt must be defined at this point.
-  const chromeos::SystemSaltGetter::RawSalt* salt = salt_getter->GetRawSalt();
+  const ash::SystemSaltGetter::RawSalt* salt = salt_getter->GetRawSalt();
   if (!salt)
     LOG(FATAL) << "WallpaperManager HashWallpaperFilesIdStr(): no salt!";
 
@@ -141,8 +141,8 @@ std::string HashWallpaperFilesIdStr(const std::string& files_id_unhashed) {
 
 // Returns true if wallpaper files id can be returned successfully.
 bool CanGetFilesId() {
-  return chromeos::SystemSaltGetter::IsInitialized() &&
-         chromeos::SystemSaltGetter::Get()->GetRawSalt();
+  return ash::SystemSaltGetter::IsInitialized() &&
+         ash::SystemSaltGetter::Get()->GetRawSalt();
 }
 
 void GetFilesIdSaltReady(
@@ -508,7 +508,7 @@ base::FilePath WallpaperControllerClientImpl::GetWallpaperPathFromDriveFs(
 void WallpaperControllerClientImpl::GetFilesId(
     const AccountId& account_id,
     base::OnceCallback<void(const std::string&)> files_id_callback) const {
-  chromeos::SystemSaltGetter::Get()->AddOnSystemSaltReady(base::BindOnce(
+  ash::SystemSaltGetter::Get()->AddOnSystemSaltReady(base::BindOnce(
       &GetFilesIdSaltReady, account_id, std::move(files_id_callback)));
 }
 

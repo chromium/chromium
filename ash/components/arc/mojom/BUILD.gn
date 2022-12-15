@@ -240,7 +240,7 @@ mojom("mojom") {
         },
         {
           mojom = "arc.mojom.MountEvent"
-          cpp = "::chromeos::disks::DiskMountManager::MountEvent"
+          cpp = "::ash::disks::DiskMountManager::MountEvent"
         },
       ]
       traits_headers = [

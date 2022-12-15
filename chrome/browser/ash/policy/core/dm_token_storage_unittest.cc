@@ -28,10 +28,10 @@ class DMTokenStorageTest : public testing::Test {
 
   void SetSaltPending() {
     // Clear the cached salt.
-    chromeos::SystemSaltGetter::Shutdown();
+    ash::SystemSaltGetter::Shutdown();
     FakeCryptohomeMiscClient::Get()->set_system_salt(std::vector<uint8_t>());
     FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
-    chromeos::SystemSaltGetter::Initialize();
+    ash::SystemSaltGetter::Initialize();
   }
 
   void SetSaltAvailable() {
@@ -49,12 +49,12 @@ class DMTokenStorageTest : public testing::Test {
     ash::CryptohomeMiscClient::InitializeFake();
     SetSaltAvailable();
 
-    chromeos::SystemSaltGetter::Initialize();
+    ash::SystemSaltGetter::Initialize();
   }
 
   void TearDown() override {
     dm_token_storage_.reset();
-    chromeos::SystemSaltGetter::Shutdown();
+    ash::SystemSaltGetter::Shutdown();
     ash::CryptohomeMiscClient::Shutdown();
     base::RunLoop().RunUntilIdle();
   }

@@ -67,9 +67,4 @@ void ExpectResult(T expected_value,
 }  // namespace assistant
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::assistant::test {
-using ::ash::assistant::test::ExpectResult;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_ASSISTANT_TEST_SUPPORT_EXPECT_UTILS_H_

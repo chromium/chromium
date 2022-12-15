@@ -30,6 +30,9 @@ using extensions::mojom::ManifestLocation;
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+using ::ash::StubInstallAttributes;
+
 const char kErrorWindowAlreadyExists[] =
     "Login screen extension UI already in use.";
 const char kErrorNoExistingWindow[] = "No open window to close.";

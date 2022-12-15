@@ -51,7 +51,7 @@ bool DeviceCommandSetVolumeJob::ParseCommandPayload(
 void DeviceCommandSetVolumeJob::RunImpl(CallbackWithResult succeeded_callback,
                                         CallbackWithResult failed_callback) {
   SYSLOG(INFO) << "Running set volume command, volume = " << volume_;
-  auto* audio_handler = chromeos::CrasAudioHandler::Get();
+  auto* audio_handler = ash::CrasAudioHandler::Get();
   audio_handler->SetOutputVolumePercent(volume_);
   bool mute = audio_handler->IsOutputVolumeBelowDefaultMuteLevel();
   audio_handler->SetOutputMute(mute);

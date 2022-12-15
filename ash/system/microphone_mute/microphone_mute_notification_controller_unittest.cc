@@ -314,7 +314,7 @@ TEST_F(MicrophoneMuteNotificationControllerTest,
             0);
   // Clicking the action button should unmute device.
   ClickOnNotificationButton();
-  EXPECT_FALSE(chromeos::CrasAudioHandler::Get()->IsInputMuted());
+  EXPECT_FALSE(CrasAudioHandler::Get()->IsInputMuted());
 
   EXPECT_FALSE(GetNotification());
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -342,7 +342,7 @@ TEST_F(MicrophoneMuteNotificationControllerTest, SwMuteNotificationActionBody) {
   // Clicking the action button should unmute device.
   ClickOnNotificationBody();
   EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
-  EXPECT_TRUE(chromeos::CrasAudioHandler::Get()->IsInputMuted());
+  EXPECT_TRUE(CrasAudioHandler::Get()->IsInputMuted());
 
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 privacy_hub_metrics::kPrivacyHubOpenedHistogram,
@@ -369,10 +369,10 @@ TEST_F(MicrophoneMuteNotificationControllerTest,
   EXPECT_CALL(new_window_delegate(), OpenUrl).Times(1);
   ClickOnNotificationButton();
 
-  EXPECT_TRUE(chromeos::CrasAudioHandler::Get()->IsInputMuted());
+  EXPECT_TRUE(CrasAudioHandler::Get()->IsInputMuted());
 
   SetMicrophoneMuteSwitchState(/*muted=*/false);
-  ASSERT_FALSE(chromeos::CrasAudioHandler::Get()->IsInputMuted());
+  ASSERT_FALSE(CrasAudioHandler::Get()->IsInputMuted());
   EXPECT_FALSE(GetNotification());
 }
 
@@ -388,7 +388,7 @@ TEST_F(MicrophoneMuteNotificationControllerTest, HwMuteNotificationActionBody) {
   ClickOnNotificationBody();
 
   // Check that clicking the body has no effect and notification disappears.
-  EXPECT_TRUE(chromeos::CrasAudioHandler::Get()->IsInputMuted());
+  EXPECT_TRUE(CrasAudioHandler::Get()->IsInputMuted());
   EXPECT_FALSE(GetNotification());
 }
 
@@ -417,7 +417,7 @@ TEST_F(MicrophoneMuteNotificationControllerTest,
             notification->buttons()[0].title);
 
   SetMicrophoneMuteSwitchState(/*muted=*/false);
-  ASSERT_FALSE(chromeos::CrasAudioHandler::Get()->IsInputMuted());
+  ASSERT_FALSE(CrasAudioHandler::Get()->IsInputMuted());
   EXPECT_FALSE(GetNotification());
 }
 
@@ -440,7 +440,7 @@ TEST_F(MicrophoneMuteNotificationControllerTest,
   EXPECT_TRUE(GetPopupNotification());
 
   SetMicrophoneMuteSwitchState(/*muted=*/false);
-  ASSERT_FALSE(chromeos::CrasAudioHandler::Get()->IsInputMuted());
+  ASSERT_FALSE(CrasAudioHandler::Get()->IsInputMuted());
   EXPECT_FALSE(GetNotification());
 }
 

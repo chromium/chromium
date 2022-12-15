@@ -245,7 +245,7 @@ class AuthSessionAuthenticatorTest : public ::testing::Test,
     }
 
     CryptohomeMiscClient::InitializeFake();
-    chromeos::SystemSaltGetter::Initialize();
+    SystemSaltGetter::Initialize();
     UserDataAuthClient::OverrideGlobalInstanceForTesting(&userdataauth_);
 
     EXPECT_CALL(auth_status_consumer_, OnAuthSuccess(_))
@@ -271,7 +271,7 @@ class AuthSessionAuthenticatorTest : public ::testing::Test,
   }
 
   ~AuthSessionAuthenticatorTest() override {
-    chromeos::SystemSaltGetter::Shutdown();
+    SystemSaltGetter::Shutdown();
     CryptohomeMiscClient::Shutdown();
   }
 

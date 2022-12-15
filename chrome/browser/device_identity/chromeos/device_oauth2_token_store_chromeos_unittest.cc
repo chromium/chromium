@@ -48,7 +48,7 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
     ash::FakeCryptohomeMiscClient::Get()->set_system_salt(
         ash::FakeCryptohomeMiscClient::GetStubSystemSalt());
 
-    chromeos::SystemSaltGetter::Initialize();
+    ash::SystemSaltGetter::Initialize();
 
     scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_(
         new ownership::MockOwnerKeyUtil());
@@ -61,7 +61,7 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
   void TearDown() override {
     base::ThreadPoolInstance::Get()->FlushForTesting();
     ash::DeviceSettingsService::Get()->UnsetSessionManager();
-    chromeos::SystemSaltGetter::Shutdown();
+    ash::SystemSaltGetter::Shutdown();
     ash::CryptohomeMiscClient::Shutdown();
   }
 

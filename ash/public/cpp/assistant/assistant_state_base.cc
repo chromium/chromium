@@ -138,7 +138,7 @@ bool AssistantStateBase::IsScreenContextAllowed() const {
 bool AssistantStateBase::HasAudioInputDevice() const {
   ash::AudioDeviceList devices;
   ash::CrasAudioHandler::Get()->GetAudioDevices(&devices);
-  for (const chromeos::AudioDevice& device : devices) {
+  for (const AudioDevice& device : devices) {
     if (device.is_input)
       return true;
   }

@@ -101,12 +101,12 @@ class AuthPerformerTestBase : public testing::Test {
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {
     CryptohomeMiscClient::InitializeFake();
-    chromeos::SystemSaltGetter::Initialize();
+    SystemSaltGetter::Initialize();
     context_ = std::make_unique<UserContext>();
   }
 
   ~AuthPerformerTestBase() override {
-    chromeos::SystemSaltGetter::Shutdown();
+    SystemSaltGetter::Shutdown();
     CryptohomeMiscClient::Shutdown();
   }
 

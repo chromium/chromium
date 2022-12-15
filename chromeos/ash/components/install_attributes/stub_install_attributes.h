@@ -83,10 +83,4 @@ class ScopedStubInstallAttributes {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-using ::ash::ScopedStubInstallAttributes;
-using ::ash::StubInstallAttributes;
-}  // namespace chromeos
-
 #endif  // CHROMEOS_ASH_COMPONENTS_INSTALL_ATTRIBUTES_STUB_INSTALL_ATTRIBUTES_H_

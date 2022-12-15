@@ -894,7 +894,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     // Use FakeUpdateEngineClient.
     update_engine_client_ = ash::UpdateEngineClient::InitializeFakeForTest();
 
-    chromeos::CrasAudioHandler::InitializeForTesting();
+    ash::CrasAudioHandler::InitializeForTesting();
     ash::UserDataAuthClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
     ash::AttestationClient::InitializeFake();
@@ -923,7 +923,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     ash::AttestationClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     ash::UserDataAuthClient::Shutdown();
-    chromeos::CrasAudioHandler::Shutdown();
+    ash::CrasAudioHandler::Shutdown();
     ash::UpdateEngineClient::Shutdown();
     ash::KioskAppManager::Shutdown();
     ash::cros_healthd::FakeCrosHealthd::Shutdown();
@@ -2913,7 +2913,7 @@ TEST_F(DeviceStatusCollectorTest, TestSoundVolume) {
   const int kCustomVolume = 42;
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceAudioStatus, true);
-  chromeos::CrasAudioHandler::Get()->SetOutputVolumePercent(kCustomVolume);
+  ash::CrasAudioHandler::Get()->SetOutputVolumePercent(kCustomVolume);
   GetStatus();
   EXPECT_EQ(kCustomVolume, device_status_.sound_volume());
 }

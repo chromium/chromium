@@ -121,8 +121,8 @@ SkColor ComputeAverageColor(const SkBitmap& bitmap) {
 
 // Initialize system salt to calculate wallpaper file names.
 void SetSystemSalt() {
-  chromeos::SystemSaltGetter::Get()->SetRawSaltForTesting(
-      chromeos::SystemSaltGetter::RawSalt({1, 2, 3, 4, 5, 6, 7, 8}));
+  SystemSaltGetter::Get()->SetRawSaltForTesting(
+      SystemSaltGetter::RawSalt({1, 2, 3, 4, 5, 6, 7, 8}));
 }
 
 }  // namespace

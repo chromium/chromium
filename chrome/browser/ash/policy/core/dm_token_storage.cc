@@ -37,7 +37,7 @@ DMTokenStorageBase::~DMTokenStorageBase() = default;
 DMTokenStorage::DMTokenStorage(PrefService* local_state)
     : local_state_(local_state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  chromeos::SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
+  ash::SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
       &DMTokenStorage::OnSystemSaltReceived, weak_ptr_factory_.GetWeakPtr()));
 }
 

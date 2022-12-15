@@ -486,12 +486,12 @@ void BrowserLoader::OnCheckInstalled(bool was_installed) {
   // assumes that system salt is available. This isn't always true when chrome
   // restarts to apply non-owner flags. It's hard to make MetadataTable async.
   // Ensure salt is available before unloading. https://crbug.com/1122674
-  chromeos::SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
+  ash::SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
       &BrowserLoader::UnloadAfterCleanUp, weak_factory_.GetWeakPtr()));
 }
 
 void BrowserLoader::UnloadAfterCleanUp(const std::string& ignored_salt) {
-  CHECK(chromeos::SystemSaltGetter::Get()->GetRawSalt());
+  CHECK(ash::SystemSaltGetter::Get()->GetRawSalt());
   component_manager_->Unload(GetLacrosComponentName());
 }
 

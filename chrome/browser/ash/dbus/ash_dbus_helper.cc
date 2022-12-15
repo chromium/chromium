@@ -124,7 +124,7 @@ void InitializeDBus() {
 
   OverrideStubPathsIfNeeded();
 
-  chromeos::SystemSaltGetter::Initialize();
+  SystemSaltGetter::Initialize();
 
   // Initialize DBusThreadManager for the browser.
   DBusThreadManager::Initialize();
@@ -345,7 +345,7 @@ void ShutdownDBus() {
 
   shill_clients::Shutdown();
   DBusThreadManager::Shutdown();
-  chromeos::SystemSaltGetter::Shutdown();
+  SystemSaltGetter::Shutdown();
 }
 
 }  // namespace ash

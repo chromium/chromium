@@ -27,8 +27,8 @@ class WallPaperApiTest : public extensions::ExtensionApiTest {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WallPaperApiTest, Wallpaper) {
-  chromeos::SystemSaltGetter::Get()->SetRawSaltForTesting(
-      chromeos::SystemSaltGetter::RawSalt({1, 2, 3, 4, 5, 6, 7, 8}));
+  ash::SystemSaltGetter::Get()->SetRawSaltForTesting(
+      ash::SystemSaltGetter::RawSalt({1, 2, 3, 4, 5, 6, 7, 8}));
 
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("wallpaper")) << message_;

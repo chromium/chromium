@@ -86,8 +86,8 @@ void VerifyResults(base::RunLoop* run_loop,
                    int expected_volume,
                    bool expected_muted) {
   EXPECT_EQ(RemoteCommandJob::SUCCEEDED, job->status());
-  int volume = chromeos::CrasAudioHandler::Get()->GetOutputVolumePercent();
-  bool muted = chromeos::CrasAudioHandler::Get()->IsOutputMuted();
+  int volume = ash::CrasAudioHandler::Get()->GetOutputVolumePercent();
+  bool muted = ash::CrasAudioHandler::Get()->IsOutputMuted();
   EXPECT_EQ(expected_volume, volume);
   EXPECT_EQ(expected_muted, muted);
   run_loop->Quit();

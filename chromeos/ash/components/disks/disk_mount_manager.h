@@ -264,11 +264,4 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
 }  // namespace disks
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace disks {
-using ::ash::disks::DiskMountManager;
-}  // namespace disks
-}  // namespace chromeos
-
 #endif  // CHROMEOS_ASH_COMPONENTS_DISKS_DISK_MOUNT_MANAGER_H_

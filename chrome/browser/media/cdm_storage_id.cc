@@ -116,7 +116,7 @@ void ComputeStorageId(const std::vector<uint8_t>& profile_salt,
   CdmStorageIdCallback scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
                                                   std::vector<uint8_t>());
-  chromeos::SystemSaltGetter::Get()->GetSystemSalt(
+  ash::SystemSaltGetter::Get()->GetSystemSalt(
       base::BindOnce(&ComputeAndReturnStorageId, profile_salt, origin,
                      std::move(scoped_callback)));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)

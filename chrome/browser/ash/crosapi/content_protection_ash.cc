@@ -73,7 +73,7 @@ void ContentProtectionAsh::QueryWindowStatus(
 }
 
 void ContentProtectionAsh::GetSystemSalt(GetSystemSaltCallback callback) {
-  chromeos::SystemSaltGetter::Get()->GetSystemSalt(std::move(callback));
+  ash::SystemSaltGetter::Get()->GetSystemSalt(std::move(callback));
 }
 
 void ContentProtectionAsh::ChallengePlatform(

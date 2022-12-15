@@ -115,9 +115,4 @@ class FeatureUsageMetrics final : public base::PowerSuspendObserver {
 
 }  // namespace ash::feature_usage
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::feature_usage {
-using ::ash::feature_usage::FeatureUsageMetrics;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_FEATURE_USAGE_FEATURE_USAGE_METRICS_H_

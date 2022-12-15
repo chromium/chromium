@@ -2513,7 +2513,7 @@ bool DeviceStatusCollector::GetCPUInfo(em::DeviceStatusReportRequest* status) {
 
 bool DeviceStatusCollector::GetAudioStatus(
     em::DeviceStatusReportRequest* status) {
-  chromeos::CrasAudioHandler* audio_handler = chromeos::CrasAudioHandler::Get();
+  ash::CrasAudioHandler* audio_handler = ash::CrasAudioHandler::Get();
   status->set_sound_volume(audio_handler->GetOutputVolumePercent());
   return true;
 }

@@ -190,7 +190,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
     web_kiosk_app_manager_ = std::make_unique<ash::WebKioskAppManager>();
 
     // SystemSaltGetter is used by the token service.
-    chromeos::SystemSaltGetter::Initialize();
+    ash::SystemSaltGetter::Initialize();
     DeviceOAuth2TokenServiceFactory::Initialize(
         test_url_loader_factory_.GetSafeWeakWrapper(), &local_state_);
     // The token service also requires local state.
@@ -199,7 +199,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
 
   void TearDown() override {
     DeviceOAuth2TokenServiceFactory::Shutdown();
-    chromeos::SystemSaltGetter::Shutdown();
+    ash::SystemSaltGetter::Shutdown();
 
     web_kiosk_app_manager_.reset();
     arc_kiosk_app_manager_.reset();

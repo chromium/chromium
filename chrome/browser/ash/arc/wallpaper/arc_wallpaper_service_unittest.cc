@@ -101,8 +101,8 @@ class ArcWallpaperServiceTest : public testing::Test {
         arc_service_manager_.arc_bridge_service()->wallpaper());
 
     // Salt
-    chromeos::SystemSaltGetter::Initialize();
-    chromeos::SystemSaltGetter::Get()->SetRawSaltForTesting({0x01, 0x02, 0x03});
+    ash::SystemSaltGetter::Initialize();
+    ash::SystemSaltGetter::Get()->SetRawSaltForTesting({0x01, 0x02, 0x03});
   }
 
   void TearDown() override {
@@ -112,7 +112,7 @@ class ArcWallpaperServiceTest : public testing::Test {
 
     wallpaper_controller_client_.reset();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-    chromeos::SystemSaltGetter::Shutdown();
+    ash::SystemSaltGetter::Shutdown();
   }
 
  protected:

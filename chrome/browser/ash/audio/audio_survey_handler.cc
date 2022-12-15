@@ -16,11 +16,11 @@ AudioSurveyHandler::AudioSurveyHandler() {
     return;
   }
 
-  chromeos::CrasAudioHandler::Get()->AddAudioObserver(this);
+  CrasAudioHandler::Get()->AddAudioObserver(this);
 }
 AudioSurveyHandler::~AudioSurveyHandler() {
-  if (chromeos::CrasAudioHandler::Get()) {
-    chromeos::CrasAudioHandler::Get()->RemoveAudioObserver(this);
+  if (CrasAudioHandler::Get()) {
+    CrasAudioHandler::Get()->RemoveAudioObserver(this);
   }
 }
 

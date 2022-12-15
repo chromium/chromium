@@ -246,9 +246,4 @@ class COMPONENT_EXPORT(ASH_INSTALL_ATTRIBUTES) InstallAttributes {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-using ::ash::InstallAttributes;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_INSTALL_ATTRIBUTES_INSTALL_ATTRIBUTES_H_
