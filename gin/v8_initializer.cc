@@ -356,6 +356,10 @@ void SetFlags(IsolateHolder::ScriptMode mode,
     SetV8Flags("--use_strict");
   }
 
+  SetV8FlagsIfOverridden(features::kV8UseLibmTrigFunctions,
+                         "--use-libm-trig-functions",
+                         "--no-use-libm-trig-functions");
+
   if (js_command_line_flags.empty())
     return;
 
