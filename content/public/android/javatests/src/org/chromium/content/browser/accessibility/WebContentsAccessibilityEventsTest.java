@@ -709,6 +709,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1392791")
     public void test_immediateRefresh() {
         performTest("immediate-refresh.html", EMPTY_EXPECTATIONS_FILE);
     }
