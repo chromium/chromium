@@ -140,7 +140,8 @@ static jboolean JNI_TranslateBridge_ShouldShowManualTranslateIPH(
 static void JNI_TranslateBridge_SetPredefinedTargetLanguage(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_web_contents,
-    const base::android::JavaParamRef<jstring>& j_translate_language) {
+    const base::android::JavaParamRef<jstring>& j_translate_language,
+    jboolean j_should_auto_translate) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
   const std::string translate_language(
@@ -149,7 +150,8 @@ static void JNI_TranslateBridge_SetPredefinedTargetLanguage(
   ChromeTranslateClient* client =
       ChromeTranslateClient::FromWebContents(web_contents);
   DCHECK(client);
-  client->SetPredefinedTargetLanguage(translate_language);
+  client->SetPredefinedTargetLanguage(translate_language,
+                                      j_should_auto_translate);
 }
 
 static base::android::ScopedJavaLocalRef<jstring>

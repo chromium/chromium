@@ -317,9 +317,11 @@ void ChromeTranslateClient::ManualTranslateWhenReady() {
 #endif
 
 void ChromeTranslateClient::SetPredefinedTargetLanguage(
-    const std::string& translate_language_code) {
+    const std::string& translate_language_code,
+    bool should_auto_translate) {
   translate::TranslateManager* manager = GetTranslateManager();
-  manager->SetPredefinedTargetLanguage(translate_language_code);
+  manager->SetPredefinedTargetLanguage(translate_language_code,
+                                       should_auto_translate);
 }
 
 bool ChromeTranslateClient::IsTranslatableURL(const GURL& url) {

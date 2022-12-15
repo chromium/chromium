@@ -78,6 +78,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sAnonymousUpdateChecks);
                 add(ChromeFeatureList.sAppMenuMobileSiteOption);
                 add(ChromeFeatureList.sBackGestureRefactorAndroid);
+                add(ChromeFeatureList.sCctAutoTranslate);
                 add(ChromeFeatureList.sCctBrandTransparency);
                 add(ChromeFeatureList.sCctFeatureUsage);
                 add(ChromeFeatureList.sCctIncognito);
@@ -162,6 +163,8 @@ public class ChromeCachedFlags {
                         add(PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL);
                         add(PartialCustomTabHeightStrategy.LOG_IMMERSIVE_MODE_CONFIRMATIONS);
                         add(ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS);
+                        add(CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES);
+                        add(CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST);
                         add(CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY);
                         add(CustomTabIntentDataProvider.DENYLIST_ENTRIES);
                         add(CustomTabIntentDataProvider.ALLOWLIST_ENTRIES);

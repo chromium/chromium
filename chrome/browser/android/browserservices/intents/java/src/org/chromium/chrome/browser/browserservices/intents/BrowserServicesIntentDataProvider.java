@@ -389,6 +389,14 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
+     * @return Whether or not the page should be automatically translated into the target language
+     *         indicated by {@link getTranslateLanguage()}.
+     */
+    public boolean shouldAutoTranslate() {
+        return false;
+    }
+
+    /**
      * Returns {@link ShareTarget} describing the share target, or null if there is no associated
      * share target.
      */

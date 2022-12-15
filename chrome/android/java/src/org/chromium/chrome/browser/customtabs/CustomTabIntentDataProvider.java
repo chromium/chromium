@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CustomTabsFeature;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -151,8 +152,34 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      * Extra that, if set, specifies Translate UI should be triggered with
      * specified target language.
      */
-    private static final String EXTRA_TRANSLATE_LANGUAGE =
+    @VisibleForTesting
+    static final String EXTRA_TRANSLATE_LANGUAGE =
             "androidx.browser.customtabs.extra.TRANSLATE_LANGUAGE";
+
+    /**
+     * Extra that, if set, specifies that the loaded page should be automatically translated once it
+     * loads with the specified target language. This overrides EXTRA_TRANSLATE_LANGUAGE.
+     */
+    @VisibleForTesting
+    static final String EXTRA_AUTO_TRANSLATE_LANGUAGE =
+            "androidx.browser.customtabs.extra.AUTO_TRANSLATE_LANGUAGE";
+
+    /**
+     * Parameter that, if true, indicates that the {@link EXTRA_AUTO_TRANSLATE_LANGUAGE} should be
+     * automatically allowed from any first party package name.
+     */
+    public static final BooleanCachedFieldTrialParameter AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.CCT_AUTO_TRANSLATE, "allow_all_first_parties", false);
+
+    /**
+     * Parameter that lists a pipe ("|") separated list of package names from which the {@link
+     * EXTRA_AUTO_TRANSLATE_LANGUAGE} should be allowed. This defaults to a single list item
+     * consisting of the package name of the Android Google Search App.
+     */
+    public static final StringCachedFieldTrialParameter AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST =
+            new StringCachedFieldTrialParameter(ChromeFeatureList.CCT_AUTO_TRANSLATE,
+                    "package_names_allowlist", "com.google.android.googlequicksearchbox");
 
     private static final String EXTRA_TWA_DISCLOSURE_UI =
             "androidx.browser.trusted.extra.DISCLOSURE_VERSION";
@@ -276,6 +303,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     /** ISO 639 language code */
     @Nullable
     private final String mTranslateLanguage;
+    /** ISO 639 language code, overrides {@link mTranslateLanguage} if non-null. */
+    @Nullable
+    private final String mAutoTranslateLanguage;
+
     private final int mDefaultOrientation;
 
     @Nullable
@@ -448,6 +479,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 IntentUtils.safeGetBooleanExtra(intent, EXTRA_DISABLE_DOWNLOAD_BUTTON, false);
 
         mTranslateLanguage = IntentUtils.safeGetStringExtra(intent, EXTRA_TRANSLATE_LANGUAGE);
+        mAutoTranslateLanguage =
+                IntentUtils.safeGetStringExtra(intent, EXTRA_AUTO_TRANSLATE_LANGUAGE);
+
         // Import the {@link ScreenOrientation}.
         mDefaultOrientation = convertOrientationType(IntentUtils.safeGetIntExtra(intent,
                 TrustedWebActivityIntentBuilder.EXTRA_SCREEN_ORIENTATION,
@@ -788,6 +822,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (mTranslateLanguage != null) {
             featureUsage.log(CustomTabsFeature.EXTRA_TRANSLATE_LANGUAGE);
         }
+        if (mAutoTranslateLanguage != null) {
+            featureUsage.log(CustomTabsFeature.EXTRA_AUTO_TRANSLATE_LANGUAGE);
+        }
         if (IntentUtils.safeHasExtra(intent, TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE)) {
             featureUsage.log(CustomTabsFeature.EXTRA_DISPLAY_MODE);
         }
@@ -1014,7 +1051,27 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     @Nullable
     public String getTranslateLanguage() {
-        return mTranslateLanguage;
+        return shouldAutoTranslate() ? mAutoTranslateLanguage : mTranslateLanguage;
+    }
+
+    @Override
+    public boolean shouldAutoTranslate() {
+        return mAutoTranslateLanguage != null && isAllowedToAutoTranslate();
+    }
+
+    private static boolean isPackageNameInList(String packageName, String pipeDelimitedList) {
+        if (packageName == null || TextUtils.isEmpty(pipeDelimitedList)) return false;
+        for (String p : pipeDelimitedList.split("\\|")) {
+            if (packageName.equals(p)) return true;
+        }
+        return false;
+    }
+
+    private boolean isAllowedToAutoTranslate() {
+        if (!ChromeFeatureList.sCctAutoTranslate.isEnabled()) return false;
+        if (mIsTrustedIntent && AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES.getValue()) return true;
+        return isPackageNameInList(
+                getClientPackageName(), AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST.getValue());
     }
 
     @Override
@@ -1080,19 +1137,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (packageName == null) return false;
         String defaultPolicy = THIRD_PARTIES_DEFAULT_POLICY.getValue();
         if (defaultPolicy.equals(DEFAULT_POLICY_USE_ALLOWLIST)) {
-            String allowList = ALLOWLIST_ENTRIES.getValue();
-            if (TextUtils.isEmpty(allowList)) return false;
-            for (String p : allowList.split("\\|")) {
-                if (packageName.equals(p)) return true;
-            }
-            return false;
+            return isPackageNameInList(packageName, ALLOWLIST_ENTRIES.getValue());
         } else if (defaultPolicy.equals(DEFAULT_POLICY_USE_DENYLIST)) {
-            String denyList = DENYLIST_ENTRIES.getValue();
-            if (TextUtils.isEmpty(denyList)) return true;
-            for (String p : denyList.split("\\|")) {
-                if (packageName.equals(p)) return false;
-            }
-            return true;
+            return !isPackageNameInList(packageName, DENYLIST_ENTRIES.getValue());
         }
         assert false : "We can't get here since the default policy is use denylist.";
         return false;

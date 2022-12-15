@@ -1249,49 +1249,6 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage_BlockedSite) {
       ElementsAre(Bucket(metrics::INITIATION_STATUS_DISABLED_BY_CONFIG, 1)));
 }
 
-TEST_F(TranslateManagerTest, PredefinedTargetLanguage_OverrideBlockedSite) {
-  PrepareTranslateManager();
-  manager_->set_application_locale("en");
-
-  language::AcceptLanguagesService accept_languages(&prefs_,
-                                                    accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
-      .WillByDefault(Return(&accept_languages));
-
-  const GURL kTestUrl("https://www.example.com/");
-  driver_.SetVisibleURL(kTestUrl);
-  ON_CALL(mock_translate_client_, IsTranslatableURL(kTestUrl))
-      .WillByDefault(Return(true));
-  translate_prefs_.AddSiteToNeverPromptList(kTestUrl.HostNoBracketsPiece());
-  ASSERT_TRUE(
-      translate_prefs_.IsSiteOnNeverPromptList(kTestUrl.HostNoBracketsPiece()));
-
-  network_notifier_.SimulateOnline();
-
-  translate_manager_->SetPredefinedTargetLanguage(
-      "ru", /*should_auto_translate=*/true);
-  EXPECT_EQ(
-      "ru",
-      translate_manager_->GetLanguageState()->GetPredefinedTargetLanguage());
-  EXPECT_TRUE(translate_manager_->GetLanguageState()
-                  ->should_auto_translate_to_predefined_target_language());
-
-  translate_manager_->GetLanguageState()->LanguageDetermined("de", true);
-
-  EXPECT_CALL(
-      mock_translate_client_,
-      ShowTranslateUI(translate::TRANSLATE_STEP_TRANSLATING, "de", "ru",
-                      TranslateErrors::NONE, /*triggered_from_menu=*/false))
-      .WillOnce(Return(true));
-
-  base::HistogramTester histogram_tester;
-  translate_manager_->InitiateTranslation("de");
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kInitiationStatusName),
-      ElementsAre(Bucket(
-          metrics::INITIATION_STATUS_AUTO_BY_PREDEFINED_TARGET_LANGUAGE, 1)));
-}
-
 TEST_F(TranslateManagerTest, PredefinedTargetLanguage_AutoTranslate) {
   PrepareTranslateManager();
   manager_->set_application_locale("en");

@@ -542,8 +542,13 @@ TranslateMetricsLoggerImpl::ConvertTranslationTypeToRevertedTranslationStatus(
       translation_type == TranslationType::kManualContextMenuReTranslation)
     return TranslationStatus::kRevertedManualContextMenuTranslation;
   if (translation_type == TranslationType::kAutomaticTranslationByPref ||
-      translation_type == TranslationType::kAutomaticTranslationByLink)
+      translation_type == TranslationType::kAutomaticTranslationByLink) {
     return TranslationStatus::kRevertedAutomaticTranslation;
+  }
+  if (translation_type ==
+      TranslationType::kAutomaticTranslationToPredefinedTarget) {
+    return TranslationStatus::kRevertedAutomaticTranslationToPredefinedTarget;
+  }
   return TranslationStatus::kUninitialized;
 }
 
@@ -573,6 +578,16 @@ TranslateMetricsLoggerImpl::ConvertTranslationTypeToFailedTranslationStatus(
     else
       return TranslationStatus::kFailedWithNoErrorAutomaticTranslation;
   }
+  if (translation_type ==
+      TranslationType::kAutomaticTranslationToPredefinedTarget) {
+    if (was_translation_error) {
+      return TranslationStatus::
+          kFailedWithErrorAutomaticTranslationToPredefinedTarget;
+    } else {
+      return TranslationStatus::
+          kFailedWithNoErrorAutomaticTranslationToPredefinedTarget;
+    }
+  }
   return TranslationStatus::kUninitialized;
 }
 
@@ -593,6 +608,11 @@ TranslateMetricsLoggerImpl::ConvertTranslationTypeToSuccessfulTranslationStatus(
     return TranslationStatus::kSuccessFromAutomaticTranslationByPref;
   if (translation_type == TranslationType::kAutomaticTranslationByLink)
     return TranslationStatus::kSuccessFromAutomaticTranslationByLink;
+  if (translation_type ==
+      TranslationType::kAutomaticTranslationToPredefinedTarget) {
+    return TranslationStatus::
+        kSuccessFromAutomaticTranslationToPredefinedTarget;
+  }
   return TranslationStatus::kUninitialized;
 }
 

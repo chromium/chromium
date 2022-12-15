@@ -370,8 +370,9 @@ public class CustomTabActivityTabController implements InflationObserver {
         initializeTab(tab);
 
         if (mIntentDataProvider.getTranslateLanguage() != null) {
-            TranslateBridge.setPredefinedTargetLanguage(
-                    tab, mIntentDataProvider.getTranslateLanguage());
+            TranslateBridge.setPredefinedTargetLanguage(tab,
+                    mIntentDataProvider.getTranslateLanguage(),
+                    mIntentDataProvider.shouldAutoTranslate());
         }
 
         return tab;

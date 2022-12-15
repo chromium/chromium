@@ -48,8 +48,14 @@ BASE_DECLARE_FEATURE(kTranslateAssistContent);
 // This feature enables an intent that starts translating the foreground tab.
 BASE_DECLARE_FEATURE(kTranslateIntent);
 
-// This feature enables an intent that starts translating the foreground tab.
+// This feature enables showing the user's content languages separately at the
+// top of the language picker menu in the Translate UI.
 BASE_DECLARE_FEATURE(kContentLanguagesInLanguagePicker);
+
+// This feature enables certain trusted Android apps to open a Chrome Custom Tab
+// and cause it to immediately automatically translate into a desired target
+// language.
+BASE_DECLARE_FEATURE(kCctAutoTranslate);
 
 enum class OverrideLanguageModel {
   DEFAULT,

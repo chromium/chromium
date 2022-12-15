@@ -23988,6 +23988,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="39" label="TWA EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY"/>
   <int value="40" label="TWA origins EXTRA_ADDITIONAL_TRUSTED_ORIGINS"/>
   <int value="41" label="Url bar hiding EXTRA_ENABLE_URLBAR_HIDING"/>
+  <int value="42" label="Translate specified EXTRA_AUTO_TRANSLATE_LANGUAGE"/>
 </enum>
 
 <enum name="CustomTabsParallelRequestStatusOnStart">
@@ -101137,6 +101138,17 @@ Full version information for the fingerprint enum values:
       label="Failed with no error, manual translation from Context Menu"/>
   <int value="19"
       label="Failed with an error, manual translation from Context Menu"/>
+  <int value="20"
+      label="Succeeded, automatic translation to a predefined target language"/>
+  <int value="21"
+      label="Reverted by user, automatic translation to a predefined target
+             language"/>
+  <int value="22"
+      label="Failed with no error, automatic translation to a predefined
+             target language"/>
+  <int value="23"
+      label="Failed with an error, automatic translation to a predefined
+             target language"/>
 </enum>
 
 <enum name="TranslationType">
@@ -101161,6 +101173,7 @@ Full version information for the fingerprint enum values:
   <int value="8"
       label="Manual translation Context Menu, after page was already
              translated"/>
+  <int value="9" label="Automatic translation to a predefined target language"/>
 </enum>
 
 <enum name="TrayBackgroundViewCatalogName">

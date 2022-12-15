@@ -987,12 +987,11 @@ void TranslateManager::FilterForUserPrefs(
     decision->PreventAutoTranslate();
     decision->PreventShowingUI();
 
-    // Disable showing the translate UI for a predefined target language unless
-    // autotranslation to the predefined target language is enabled.
-    if (!language_state_
-             .should_auto_translate_to_predefined_target_language()) {
-      decision->PreventShowingPredefinedLanguageTranslateUI();
-    }
+    // Disable showing the translate UI for a predefined target language,
+    // although note that auto translation to a predefined target language is
+    // still allowed to happen, since that auto-translation overrides the user's
+    // language blocklist.
+    decision->PreventShowingPredefinedLanguageTranslateUI();
 
     decision->initiation_statuses.push_back(
         TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_CONFIG);
@@ -1014,12 +1013,9 @@ void TranslateManager::FilterForUserPrefs(
     decision->PreventShowingHrefTranslateUI();
     decision->PreventAutoHrefTranslate();
 
-    // Disable showing the translate UI for a predefined target language unless
-    // autotranslation to the predefined target language is enabled.
-    if (!language_state_
-             .should_auto_translate_to_predefined_target_language()) {
-      decision->PreventShowingPredefinedLanguageTranslateUI();
-    }
+    // The site blocklist isn't overridden for predefined target languages.
+    decision->PreventShowingPredefinedLanguageTranslateUI();
+    decision->PreventPredefinedLanguageAutoTranslate();
 
     decision->initiation_statuses.push_back(
         TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_CONFIG);
@@ -1075,26 +1071,33 @@ void TranslateManager::FilterForPredefinedTarget(
     TranslateTriggerDecision* decision,
     TranslatePrefs* translate_prefs,
     const std::string& page_language_code) {
+  decision->predefined_translate_source = page_language_code;
   decision->predefined_translate_target =
       language_state_.GetPredefinedTargetLanguage();
-  if (!IsTranslatableLanguagePair(page_language_code,
-                                  decision->predefined_translate_target)) {
-    decision->PreventShowingPredefinedLanguageTranslateUI();
-    decision->PreventPredefinedLanguageAutoTranslate();
-  }
 
   if (!language_state_.should_auto_translate_to_predefined_target_language()) {
     decision->PreventPredefinedLanguageAutoTranslate();
   }
-}
 
-bool TranslateManager::IsTranslatableLanguagePair(
-    const std::string& page_language_code,
-    const std::string& target_language_code) {
-  return !target_language_code.empty() &&
-         TranslateDownloadManager::IsSupportedLanguage(target_language_code) &&
-         TranslateDownloadManager::IsSupportedLanguage(page_language_code) &&
-         page_language_code != target_language_code;
+  if (decision->predefined_translate_target.empty() ||
+      !TranslateDownloadManager::IsSupportedLanguage(
+          decision->predefined_translate_target)) {
+    decision->PreventShowingPredefinedLanguageTranslateUI();
+    decision->PreventPredefinedLanguageAutoTranslate();
+    return;
+  }
+
+  if (!TranslateDownloadManager::IsSupportedLanguage(
+          decision->predefined_translate_source) ||
+      decision->predefined_translate_source ==
+          decision->href_translate_target) {
+    // If a predefined auto-translate target language is present but the page
+    // language is unsupported, unknown, or seems to match this target language,
+    // then as a last ditch effort assume that language detection was incorrect
+    // and send "und" as the source language to make the translate service
+    // attempt to detect the language as it processes the page content.
+    decision->predefined_translate_source = translate::kUnknownLanguageCode;
+  }
 }
 
 void TranslateManager::MaybeShowOmniboxIcon(
@@ -1133,8 +1136,9 @@ bool TranslateManager::MaterializeDecision(
   }
 
   if (decision.can_auto_translate_for_predefined_language()) {
-    TranslatePage(page_language_code, decision.predefined_translate_target,
-                  false);
+    TranslatePage(decision.predefined_translate_source,
+                  decision.predefined_translate_target, false,
+                  TranslationType::kAutomaticTranslationToPredefinedTarget);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
         TriggerDecision::kAutomaticTranslationToPredefinedTarget);
     return true;

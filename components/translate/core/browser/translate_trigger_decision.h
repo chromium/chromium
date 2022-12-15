@@ -66,6 +66,7 @@ struct TranslateTriggerDecision {
   std::string auto_translate_target;
   std::string href_translate_source;
   std::string href_translate_target;
+  std::string predefined_translate_source;
   std::string predefined_translate_target;
 
  private:

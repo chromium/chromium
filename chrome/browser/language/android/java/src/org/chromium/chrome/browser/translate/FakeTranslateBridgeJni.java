@@ -183,7 +183,8 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public void setPredefinedTargetLanguage(WebContents webContents, String targetLanguage) {
+    public void setPredefinedTargetLanguage(
+            WebContents webContents, String targetLanguage, boolean shouldAutoTranslate) {
         throw new UnsupportedOperationException();
     }
 

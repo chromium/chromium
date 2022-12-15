@@ -202,12 +202,6 @@ class TranslateManager {
   // See https://github.com/dtapuska/html-translate
   static bool IsAvailable(const TranslatePrefs* prefs);
 
-  // Check whether there is specified target, the source and the target are both
-  // supported, and the source and target don't match.
-  static bool IsTranslatableLanguagePair(
-      const std::string& page_language_code,
-      const std::string& target_language_code);
-
   // Returns true if the MATCHES_PREVIOUS_LANGUAGE decision should be overridden
   // and logs the event appropriately.
   bool ShouldOverrideMatchesPreviousLanguageDecision();
