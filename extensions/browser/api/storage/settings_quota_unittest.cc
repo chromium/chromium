@@ -31,7 +31,7 @@ class ExtensionSettingsQuotaTest : public testing::Test {
         byte_value_256_(base::Value(base::Value::Type::LIST)),
         delegate_(new value_store::TestingValueStore()) {
     for (int i = 1; i < 89; ++i) {
-      byte_value_256_.Append(i);
+      byte_value_256_.GetList().Append(i);
     }
     ValidateByteValues();
   }

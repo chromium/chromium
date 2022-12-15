@@ -44,10 +44,10 @@ class SessionStorageManagerUnittest : public ExtensionsTest {
         value_string_("value"),
         value_list_(base::Value::Type::LIST),
         value_dict_(base::Value::Type::DICTIONARY) {
-    value_list_.Append(1);
-    value_list_.Append(2);
-    value_dict_.SetIntKey("int", 123);
-    value_dict_.SetStringKey("string", "abc");
+    value_list_.GetList().Append(1);
+    value_list_.GetList().Append(2);
+    value_dict_.GetDict().Set("int", 123);
+    value_dict_.GetDict().Set("string", "abc");
   }
 
  protected:
