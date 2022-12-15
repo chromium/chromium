@@ -29740,13 +29740,20 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromNTPFeedBottomSigninPromo">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of the metric.</description>
+  <owner>sczs@chromium.com</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <description>
+    Recorded when showing sign-in promo card in the feed bottom.
+  </description>
 </action>
 
 <action name="Signin_Impression_FromNTPFeedCardMenuSigninPromo">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of the metric.</description>
+  <owner>sczs@chromium.com</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <description>
+    Recorded when showing sign-in promo UI triggered by feed card menu
+    personalization options.
+  </description>
 </action>
 
 <action name="Signin_Impression_FromNTPFeedTopPromo">
@@ -30378,13 +30385,19 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromNTPFeedBottomSigninPromo">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of the metric.</description>
+  <owner>sczs@chromium.org</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <description>
+    A sign-in flow is shown triggered by NTP feed bottom sign-in entry point.
+  </description>
 </action>
 
 <action name="Signin_Signin_FromNTPFeedCardMenuSigninPromo">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of the metric.</description>
+  <owner>sczs@chromium.org</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <description>
+    A sign-in flow is shown triggered by NTP feed card sign-in promo UI.
+  </description>
 </action>
 
 <action name="Signin_Signin_FromNTPFeedTopPromo">
