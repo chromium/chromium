@@ -1,0 +1,69 @@
+Tests the data of WebSocket trace events
+Recording started
+Tracing complete
+Got a WebSocketCreate event:
+Object: {
+	args: {
+		data: {
+			frame: string
+			identifier: number
+			url: string
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got a WebSocketSendHandshakeRequest event:
+Object: {
+	args: {
+		data: {
+			frame: string
+			identifier: number
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got a WebSocketReceiveHandshakeResponse event:
+Object: {
+	args: {
+		data: {
+			frame: string
+			identifier: number
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got a WebSocketDestroy event:
+Object: {
+	args: {
+		data: {
+			frame: string
+			identifier: number
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+
