@@ -45,7 +45,7 @@ namespace extensions {
 
 ExtensionActionHandler::ExtensionActionHandler() = default;
 
-ExtensionActionHandler::~ExtensionActionHandler() {}
+ExtensionActionHandler::~ExtensionActionHandler() = default;
 
 bool ExtensionActionHandler::Parse(Extension* extension,
                                    std::u16string* error) {

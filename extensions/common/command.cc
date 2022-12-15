@@ -270,7 +270,7 @@ Command::Command(const std::string& command_name,
 
 Command::Command(const Command& other) = default;
 
-Command::~Command() {}
+Command::~Command() = default;
 
 // static
 std::string Command::CommandPlatform() {

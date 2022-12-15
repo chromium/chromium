@@ -17,7 +17,7 @@ using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 
-PermissionSet::PermissionSet() {}
+PermissionSet::PermissionSet() = default;
 PermissionSet::PermissionSet(APIPermissionSet apis,
                              ManifestPermissionSet manifest_permissions,
                              URLPatternSet explicit_hosts,

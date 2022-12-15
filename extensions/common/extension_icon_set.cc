@@ -10,11 +10,11 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 
-ExtensionIconSet::ExtensionIconSet() {}
+ExtensionIconSet::ExtensionIconSet() = default;
 
 ExtensionIconSet::ExtensionIconSet(const ExtensionIconSet& other) = default;
 
-ExtensionIconSet::~ExtensionIconSet() {}
+ExtensionIconSet::~ExtensionIconSet() = default;
 
 void ExtensionIconSet::Clear() {
   map_.clear();

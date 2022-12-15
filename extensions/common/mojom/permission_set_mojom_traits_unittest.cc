@@ -19,10 +19,10 @@ using mojo::test::SerializeAndDeserialize;
 
 class MockManifestHandler : public ManifestHandler {
  public:
-  MockManifestHandler() {}
+  MockManifestHandler() = default;
   MockManifestHandler(const MockManifestHandler&) = delete;
   MockManifestHandler& operator=(const MockManifestHandler&) = delete;
-  ~MockManifestHandler() override {}
+  ~MockManifestHandler() override = default;
 
   bool Parse(Extension* extension, std::u16string* error) override {
     return true;

@@ -864,6 +864,6 @@ ExtensionInfo::ExtensionInfo(const base::Value::Dict* manifest,
     extension_manifest = std::make_unique<base::Value::Dict>(manifest->Clone());
 }
 
-ExtensionInfo::~ExtensionInfo() {}
+ExtensionInfo::~ExtensionInfo() = default;
 
 }   // namespace extensions

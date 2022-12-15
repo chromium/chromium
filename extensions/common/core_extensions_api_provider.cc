@@ -17,7 +17,7 @@
 
 namespace extensions {
 
-CoreExtensionsAPIProvider::CoreExtensionsAPIProvider() {}
+CoreExtensionsAPIProvider::CoreExtensionsAPIProvider() = default;
 CoreExtensionsAPIProvider::~CoreExtensionsAPIProvider() = default;
 
 void CoreExtensionsAPIProvider::AddAPIFeatures(FeatureProvider* provider) {

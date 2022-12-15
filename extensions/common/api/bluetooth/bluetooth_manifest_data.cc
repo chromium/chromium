@@ -18,7 +18,7 @@ BluetoothManifestData::BluetoothManifestData(
   DCHECK(permission_);
 }
 
-BluetoothManifestData::~BluetoothManifestData() {}
+BluetoothManifestData::~BluetoothManifestData() = default;
 
 // static
 BluetoothManifestData* BluetoothManifestData::Get(const Extension* extension) {
@@ -72,6 +72,6 @@ BluetoothPermissionRequest::BluetoothPermissionRequest(
     const std::string& uuid)
     : uuid(uuid) {}
 
-BluetoothPermissionRequest::~BluetoothPermissionRequest() {}
+BluetoothPermissionRequest::~BluetoothPermissionRequest() = default;
 
 }  // namespace extensions

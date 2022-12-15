@@ -131,7 +131,7 @@ ExtensionBuilder::ExtensionBuilder(const std::string& name, Type type)
   manifest_data_->type = type;
 }
 
-ExtensionBuilder::~ExtensionBuilder() {}
+ExtensionBuilder::~ExtensionBuilder() = default;
 
 ExtensionBuilder::ExtensionBuilder(ExtensionBuilder&& other) = default;
 ExtensionBuilder& ExtensionBuilder::operator=(ExtensionBuilder&& other) =

@@ -23,8 +23,8 @@ namespace errors = externally_connectable_errors;
 
 class ExternallyConnectableTest : public ManifestTest {
  public:
-  ExternallyConnectableTest() {}
-  ~ExternallyConnectableTest() override {}
+  ExternallyConnectableTest() = default;
+  ~ExternallyConnectableTest() override = default;
 
  protected:
   ExternallyConnectableInfo* GetExternallyConnectableInfo(

@@ -140,13 +140,13 @@ class ExtensionActionManifestTest
     : public ManifestTest,
       public testing::WithParamInterface<ActionInfo::Type> {
  public:
-  ExtensionActionManifestTest() {}
+  ExtensionActionManifestTest() = default;
 
   ExtensionActionManifestTest(const ExtensionActionManifestTest&) = delete;
   ExtensionActionManifestTest& operator=(const ExtensionActionManifestTest&) =
       delete;
 
-  ~ExtensionActionManifestTest() override {}
+  ~ExtensionActionManifestTest() override = default;
 
   // Constructs and returns a ManifestData object with the provided
   // |action_spec|.

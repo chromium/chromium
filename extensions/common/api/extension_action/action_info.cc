@@ -37,7 +37,7 @@ struct ActionInfoData : public Extension::ManifestData {
 ActionInfoData::ActionInfoData(std::unique_ptr<ActionInfo> info)
     : action_info(std::move(info)) {}
 
-ActionInfoData::~ActionInfoData() {}
+ActionInfoData::~ActionInfoData() = default;
 
 }  // namespace
 

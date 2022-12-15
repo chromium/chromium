@@ -46,7 +46,7 @@ bool ExtractFromDict(const std::string& key,
 
 }  // namespace
 
-UsbDevicePermissionData::UsbDevicePermissionData() {}
+UsbDevicePermissionData::UsbDevicePermissionData() = default;
 
 UsbDevicePermissionData::UsbDevicePermissionData(int vendor_id,
                                                  int product_id,
