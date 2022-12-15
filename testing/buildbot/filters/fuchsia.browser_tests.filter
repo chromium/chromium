@@ -531,7 +531,8 @@
 # TODO(crbug.com/1326982): Crashed with no info
 -InProcess/ChromeNetworkServiceBrowserTest.EncryptedCookies/0
 -OutOfProcess/ChromeNetworkServiceBrowserTest.EncryptedCookies/0
--VariationsSafeModeEndToEndBrowserTest.ExtendedSafeModeEndToEnd
+-VariationsSafeModeEndToEndBrowserTest.ExtendedNullSeedEndToEnd
+-VariationsSafeModeEndToEndBrowserTest.ExtendedSafeSeedEndToEnd
 
 # TODO(crbug.com/1349540): Missing various services, see bug for more info.
 -ProfileKeyedServiceBrowserTest.SystemProfileParent_NeededServices
