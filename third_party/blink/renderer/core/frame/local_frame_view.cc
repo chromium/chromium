@@ -2484,6 +2484,8 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
 
     {
       ScriptForbiddenScope::AllowUserAgentScript allow_script;
+      base::AutoReset<DocumentLifecycle::LifecycleState> saved_target_state(
+          &target_state_, DocumentLifecycle::kUninitialized);
       needs_to_repeat_lifecycle = RunResizeObserverSteps(target_state);
     }
     // Only run the rest of the steps here if resize observer is done.
