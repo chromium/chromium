@@ -43,6 +43,7 @@
 
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 #include <sanitizer/asan_interface.h>
+#include "base/debug/asan_service.h"
 #endif
 
 using testing::AllOf;
@@ -2010,6 +2011,8 @@ const char kAsanBrpMaybeProtected_ThreadPool[] =
 class AsanBackupRefPtrTest : public testing::Test {
  protected:
   void SetUp() override {
+    base::debug::AsanService::GetInstance()->Initialize();
+
     if (!RawPtrAsanService::GetInstance().IsEnabled()) {
       base::RawPtrAsanService::GetInstance().Configure(
           base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
