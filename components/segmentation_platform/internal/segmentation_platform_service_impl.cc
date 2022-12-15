@@ -23,6 +23,7 @@
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
+#include "components/segmentation_platform/internal/selection/request_dispatcher.h"
 #include "components/segmentation_platform/internal/selection/segment_score_provider.h"
 #include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
@@ -95,6 +96,20 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
           &SegmentationPlatformServiceImpl::OnModelRefreshNeeded,
           weak_ptr_factory_.GetWeakPtr()));
 
+  std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+      result_providers;
+  for (const auto& config : configs_) {
+    result_providers[config->segmentation_key] = SegmentResultProvider::Create(
+        storage_service_->segment_info_database(),
+        storage_service_->signal_storage_config(),
+        storage_service_->default_model_manager(), &execution_service_, clock_,
+        platform_options_.force_refresh_results);
+  }
+
+  // Central class to delegate the client requests.
+  request_dispatcher_ = std::make_unique<RequestDispatcher>(
+      configs_, std::move(result_providers));
+
   for (const auto& config : configs_) {
     segment_selectors_[config->segmentation_key] =
         std::make_unique<SegmentSelectorImpl>(
@@ -141,7 +156,8 @@ void SegmentationPlatformServiceImpl::GetClassificationResult(
     const PredictionOptions& prediction_options,
     scoped_refptr<InputContext> input_context,
     ClassificationResultCallback callback) {
-  // TODO(ritikagup@) : Implement logic.
+  request_dispatcher_->GetClassificationResult(
+      segmentation_key, prediction_options, input_context, std::move(callback));
 }
 
 SegmentSelectionResult SegmentationPlatformServiceImpl::GetCachedSegmentResult(
@@ -155,6 +171,7 @@ void SegmentationPlatformServiceImpl::GetSelectedSegmentOnDemand(
     const std::string& segmentation_key,
     scoped_refptr<InputContext> input_context,
     SegmentSelectionCallback callback) {
+  // TODO(shaktisahu): Delete this API after enabling RequestDispatcher.
   if (!storage_init_status_.has_value()) {
     // If the platform isn't fully initialized, cache the input arguments to run
     // later.
@@ -236,6 +253,8 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
   for (auto& selector : segment_selectors_) {
     selector.second->OnPlatformInitialized(&execution_service_);
   }
+
+  request_dispatcher_->OnPlatformInitialized(success);
 
   // Run any method calls that were received during initialization.
   while (!pending_actions_.empty()) {

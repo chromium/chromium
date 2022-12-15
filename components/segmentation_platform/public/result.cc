@@ -11,8 +11,19 @@ ClassificationResult::ClassificationResult(PredictionStatus status)
 
 ClassificationResult::~ClassificationResult() = default;
 
+ClassificationResult::ClassificationResult(const ClassificationResult&) =
+    default;
+
+ClassificationResult& ClassificationResult::operator=(
+    const ClassificationResult&) = default;
+
 RegressionResult::RegressionResult(PredictionStatus status) : status(status) {}
 
 RegressionResult::~RegressionResult() = default;
+
+RegressionResult::RegressionResult(const RegressionResult&) = default;
+
+RegressionResult& RegressionResult::operator=(const RegressionResult&) =
+    default;
 
 }  // namespace segmentation_platform

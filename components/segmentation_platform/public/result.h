@@ -28,12 +28,11 @@ struct ClassificationResult {
   explicit ClassificationResult(PredictionStatus status);
   ~ClassificationResult();
 
-  // Disallow copy/assign.
-  ClassificationResult(const ClassificationResult&) = delete;
-  ClassificationResult& operator=(const ClassificationResult&) = delete;
+  ClassificationResult(const ClassificationResult&);
+  ClassificationResult& operator=(const ClassificationResult&);
 
   // Various error codes such as model failed or insufficient data collection.
-  const PredictionStatus status;
+  PredictionStatus status;
 
   // The list of labels arranged in descending order of result from model
   // evaluation. For BinaryClassifier, it is eithier a `positive_label` or
@@ -50,12 +49,11 @@ struct RegressionResult {
   explicit RegressionResult(PredictionStatus status);
   ~RegressionResult();
 
-  // Disallow copy/assign.
-  RegressionResult(const RegressionResult&) = delete;
-  RegressionResult& operator=(const RegressionResult&) = delete;
+  RegressionResult(const RegressionResult&);
+  RegressionResult& operator=(const RegressionResult&);
 
   // Various error codes such as model failed or insufficient data collection.
-  const PredictionStatus status;
+  PredictionStatus status;
 
   // The result of regression.
   float regression_result{0.0f};

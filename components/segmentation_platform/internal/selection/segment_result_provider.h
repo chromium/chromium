@@ -50,18 +50,19 @@ class SegmentResultProvider {
   struct SegmentResult {
     explicit SegmentResult(ResultState state);
     SegmentResult(ResultState state,
-                  float rank,
-                  std::unique_ptr<ModelExecutionResult> execution_result);
+                  const proto::PredictionResult& result,
+                  float rank);
     ~SegmentResult();
     SegmentResult(const SegmentResult&) = delete;
     SegmentResult& operator=(const SegmentResult&) = delete;
 
     ResultState state = ResultState::kUnknown;
-    absl::optional<float> rank;
 
-    // The execution result is only available when the model is executed.
-    // TODO(ssid): Support storing inputs to disk if needed.
-    std::unique_ptr<ModelExecutionResult> execution_result;
+    // Contains the raw scores along with output config.
+    proto::PredictionResult result;
+
+    // TODO(shaktisahu): Delete this after full migration.
+    absl::optional<float> rank;
   };
   using SegmentResultCallback =
       base::OnceCallback<void(std::unique_ptr<SegmentResult>)>;

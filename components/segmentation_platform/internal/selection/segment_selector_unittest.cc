@@ -228,9 +228,7 @@ TEST_F(SegmentSelectorTest, RunSelectionOnDemand) {
             auto result =
                 std::make_unique<SegmentResultProvider::SegmentResult>(
                     SegmentResultProvider::ResultState::kTfliteModelScoreUsed,
-                    rank,
-                    std::make_unique<ModelExecutionResult>(
-                        ModelExecutionStatus::kSuccess));
+                    proto::PredictionResult(), rank);
             std::move(options->callback).Run(std::move(result));
           }));
   segment_selector_->set_segment_result_provider_for_testing(

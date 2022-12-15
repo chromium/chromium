@@ -13,6 +13,7 @@
 #include "base/types/id_type.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/segmentation_platform/public/prediction_options.h"
 #include "components/segmentation_platform/public/result.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -47,18 +48,6 @@ class SegmentationPlatformService : public KeyedService,
   SegmentationPlatformService(const SegmentationPlatformService&) = delete;
   SegmentationPlatformService& operator=(const SegmentationPlatformService&) =
       delete;
-
-  struct PredictionOptions {
-    PredictionOptions() = default;
-    ~PredictionOptions() = default;
-
-    // Disallow copy/assign.
-    PredictionOptions(const PredictionOptions&) = delete;
-    PredictionOptions& operator=(const PredictionOptions&) = delete;
-
-    // Set to true if on demand execution is to be done.
-    bool on_demand_execution = false;
-  };
 
   // Registers preferences used by this class in the provided |registry|.  This
   // should be called for the Profile registry.

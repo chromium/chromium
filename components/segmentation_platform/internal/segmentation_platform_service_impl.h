@@ -49,6 +49,7 @@ class InputDelegateHolder;
 }
 
 struct Config;
+class RequestDispatcher;
 class FieldTrialRegister;
 class ModelProviderFactory;
 class SegmentSelectorImpl;
@@ -164,6 +165,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // SegmentSelectorImpl and ModelExecutionSchedulerImpl.
   base::flat_map<std::string, std::unique_ptr<SegmentSelectorImpl>>
       segment_selectors_;
+
+  // For routing requests to the right handler.
+  std::unique_ptr<RequestDispatcher> request_dispatcher_;
 
   // Segment results.
   std::unique_ptr<SegmentScoreProvider> segment_score_provider_;

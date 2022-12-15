@@ -25,6 +25,8 @@ PowerUserModelTest.*
 PriceTrackingActionModelTest.*
 PriceTrackingInputDelegateTest.*
 QueryTilesModelTest.*
+RequestDispatcherTest.*
+RequestHandlerTest.*
 ResumeHeavyUserModelTest.*
 SearchUserModelTest.*
 SegmentInfoCacheTest.*
