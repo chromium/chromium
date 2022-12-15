@@ -1813,7 +1813,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kUseMojoVideoDecoderForPepperAllowed,
     policy::policy_prefs::kUseMojoVideoDecoderForPepperAllowed,
     base::Value::Type::BOOLEAN },
-#endif
+  { key::kPPAPISharedImagesSwapChainAllowed,
+    policy::policy_prefs::kPPAPISharedImagesSwapChainAllowed,
+    base::Value::Type::BOOLEAN },
+#endif // BUILDFLAG(ENABLE_PPAPI)
 };
 // clang-format on
 

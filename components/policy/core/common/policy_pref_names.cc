@@ -131,5 +131,10 @@ const char kSendMouseEventsDisabledFormControlsEnabled[] =
 const char kUseMojoVideoDecoderForPepperAllowed[] =
     "policy.use_mojo_video_decoder_for_pepper_allowed";
 
+// If true the feature PPAPISharedImagesSwapChain will be allowed, otherwise
+// feature will be forced off.
+const char kPPAPISharedImagesSwapChainAllowed[] =
+    "policy.ppapi_shared_images_swap_chain_allowed";
+
 }  // namespace policy_prefs
 }  // namespace policy

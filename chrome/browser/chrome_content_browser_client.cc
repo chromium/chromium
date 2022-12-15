@@ -1544,6 +1544,8 @@ void ChromeContentBrowserClient::RegisterLocalStatePrefs(
                                 true);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kUseMojoVideoDecoderForPepperAllowed, true);
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kPPAPISharedImagesSwapChainAllowed, true);
 }
 
 // static
