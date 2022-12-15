@@ -49,8 +49,7 @@ AppIconDecoder::AppIconDecoder(
     const base::FilePath& base_path,
     const std::string& app_id,
     int32_t size_in_dip,
-    base::OnceCallback<void(AppIconDecoder* decoder, gfx::ImageSkia icon)>
-        callback)
+    base::OnceCallback<void(AppIconDecoder* decoder, IconValuePtr iv)> callback)
     : base_path_(base_path),
       app_id_(app_id),
       size_in_dip_(size_in_dip),
@@ -72,19 +71,22 @@ void AppIconDecoder::Start() {
 }
 
 void AppIconDecoder::OnIconRead(
-    std::map<ui::ResourceScaleFactor, std::vector<uint8_t>> icon_datas) {
-  for (auto& [scale_factor, icon_data] : icon_datas) {
-    if (icon_data.empty()) {
+    std::map<ui::ResourceScaleFactor, IconValuePtr> icon_datas) {
+  for (auto& [scale_factor, iv] : icon_datas) {
+    if (!iv || iv->icon_type != IconType::kCompressed ||
+        iv->compressed.empty()) {
       DiscardDecodeRequest();
       return;
     }
 
+    is_maskable_icon_ = iv->is_maskable_icon;
+
     if (g_decode_request_for_testing) {
       SkBitmap bitmap;
-      if (!icon_data.empty() &&
+      if (!iv->compressed.empty() &&
           gfx::PNGCodec::Decode(
-              reinterpret_cast<const unsigned char*>(&icon_data.front()),
-              icon_data.size(), &bitmap)) {
+              reinterpret_cast<const unsigned char*>(&iv->compressed.front()),
+              iv->compressed.size(), &bitmap)) {
         UpdateImageSkia(scale_factor, bitmap);
       } else {
         DiscardDecodeRequest();
@@ -96,7 +98,8 @@ void AppIconDecoder::OnIconRead(
     // ARC app icons' security requests.
     decode_requests_.emplace_back(
         std::make_unique<DecodeRequest>(scale_factor, *this));
-    ImageDecoder::Start(decode_requests_.back().get(), std::move(icon_data));
+    ImageDecoder::Start(decode_requests_.back().get(),
+                        std::move(iv->compressed));
   }
 }
 
@@ -115,7 +118,11 @@ void AppIconDecoder::UpdateImageSkia(ui::ResourceScaleFactor scale_factor,
     // 'callback_' is responsible to remove this AppIconDecoder object, then
     // all decode requests saved in `decode_requests_` can be destroyed, so we
     // don't need to free  DecodeRequest's objects in `decode_requests_`.
-    std::move(callback_).Run(this, image_skia_);
+    auto iv = std::make_unique<apps::IconValue>();
+    iv->icon_type = IconType::kUncompressed;
+    iv->uncompressed = image_skia_;
+    iv->is_maskable_icon = is_maskable_icon_;
+    std::move(callback_).Run(this, std::move(iv));
   }
 }
 
@@ -123,7 +130,7 @@ void AppIconDecoder::DiscardDecodeRequest() {
   // 'callback_' is responsible to remove this AppIconDecoder object, then
   // all decode requests saved in `decode_requests_` can be destroyed, so we
   // don't need to free  DecodeRequest's objects in `decode_requests_`.
-  std::move(callback_).Run(this, gfx::ImageSkia());
+  std::move(callback_).Run(this, nullptr);
 }
 
 ScopedDecodeRequestForTesting::ScopedDecodeRequestForTesting() {

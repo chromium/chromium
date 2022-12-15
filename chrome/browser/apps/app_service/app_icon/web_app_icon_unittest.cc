@@ -1334,10 +1334,12 @@ TEST_F(AppServiceWebAppIconTest, GetMaskableStandardIcon) {
 
   // Verify the icon reading and writing function in AppService for the
   // kStandard icon.
+  // Set the icon effects kCrOsStandardIcon. AppIconReader should convert the
+  // icon effects to kCrOsStandardBackground and kCrOsStandardMask for the
+  // maskable icon.
   IconKey icon_key;
-  icon_key.icon_effects = apps::IconEffects::kRoundCorners |
-                          apps::IconEffects::kCrOsStandardBackground |
-                          apps::IconEffects::kCrOsStandardMask;
+  icon_key.icon_effects =
+      apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardIcon;
   auto ret = MultipleLoadIconFromIconKey(app_id, icon_key, IconType::kStandard);
 
   ASSERT_EQ(2U, ret.size());

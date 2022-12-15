@@ -45,7 +45,7 @@ class AppIconReader {
                               IconType icon_type,
                               LoadIconCallback callback,
                               AppIconDecoder* decoder,
-                              gfx::ImageSkia image);
+                              IconValuePtr iv);
 
   void OnCompleteWithIconValue(int32_t size_in_dip,
                                IconType icon_type,

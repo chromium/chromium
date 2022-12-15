@@ -17,12 +17,14 @@ namespace {
 void WriteIconFile(const base::FilePath& base_path,
                    const std::string& app_id,
                    int32_t icon_size_in_px,
+                   bool is_maskable_icon,
                    const std::vector<uint8_t>& icon_data) {
   if (icon_data.empty()) {
     return;
   }
 
-  const auto icon_path = apps::GetIconPath(base_path, app_id, icon_size_in_px);
+  const auto icon_path =
+      apps::GetIconPath(base_path, app_id, icon_size_in_px, is_maskable_icon);
   if (!base::CreateDirectory(icon_path.DirName())) {
     return;
   }
@@ -156,12 +158,13 @@ void AppIconWriter::OnIconLoad(const std::string& app_id,
   }
 
   std::vector<uint8_t> icon_data = iv->compressed;
+  bool is_maskable_icon = iv->is_maskable_icon;
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(
           &WriteIconFile, profile_->GetPath(), app_id,
           apps_util::ConvertDipToPxForScale(size_in_dip, scale_factor),
-          std::move(icon_data)),
+          is_maskable_icon, std::move(icon_data)),
       base::BindOnce(&AppIconWriter::OnWriteIconFile,
                      weak_ptr_factory_.GetWeakPtr(), app_id, size_in_dip,
                      icon_effects, icon_type, scale_factor, std::move(iv)));

@@ -31,7 +31,7 @@ class AppIconDecoder {
                  const std::string& app_id,
                  int32_t size_in_dip,
                  base::OnceCallback<void(AppIconDecoder* decoder,
-                                         gfx::ImageSkia icon)> callback);
+                                         IconValuePtr iv)> callback);
   AppIconDecoder(const AppIconDecoder&) = delete;
   AppIconDecoder& operator=(const AppIconDecoder&) = delete;
   ~AppIconDecoder();
@@ -59,8 +59,7 @@ class AppIconDecoder {
     AppIconDecoder& host_;
   };
 
-  void OnIconRead(
-      std::map<ui::ResourceScaleFactor, std::vector<uint8_t>> icon_data);
+  void OnIconRead(std::map<ui::ResourceScaleFactor, IconValuePtr> icon_data);
 
   void UpdateImageSkia(ui::ResourceScaleFactor scale_factor,
                        const SkBitmap& bitmap);
@@ -70,11 +69,12 @@ class AppIconDecoder {
   const base::FilePath base_path_;
   const std::string app_id_;
   int32_t size_in_dip_;
-  base::OnceCallback<void(AppIconDecoder* decoder, gfx::ImageSkia icon)>
-      callback_;
+  base::OnceCallback<void(AppIconDecoder* decoder, IconValuePtr iv)> callback_;
 
   gfx::ImageSkia image_skia_;
   std::set<ui::ResourceScaleFactor> incomplete_scale_factors_;
+
+  bool is_maskable_icon_;
 
   // Contains pending image decode requests.
   std::vector<std::unique_ptr<DecodeRequest>> decode_requests_;
