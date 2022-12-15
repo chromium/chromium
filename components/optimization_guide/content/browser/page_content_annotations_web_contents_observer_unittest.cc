@@ -83,9 +83,11 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
   explicit FakePageContentAnnotationsService(
       OptimizationGuideModelProvider* optimization_guide_model_provider,
       history::HistoryService* history_service)
-      : PageContentAnnotationsService("en-US",
+      : PageContentAnnotationsService(nullptr,
+                                      "en-US",
                                       optimization_guide_model_provider,
                                       history_service,
+                                      nullptr,
                                       nullptr,
                                       nullptr,
                                       base::FilePath(),

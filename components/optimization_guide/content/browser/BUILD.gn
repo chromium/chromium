@@ -39,6 +39,7 @@ static_library("browser") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/no_state_prefetch/browser",
+    "//components/omnibox/browser",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/content/mojom:mojo_interfaces",
@@ -50,6 +51,7 @@ static_library("browser") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
+    "//third_party/omnibox_proto",
   ]
   if (build_with_tflite_lib) {
     public_deps += [

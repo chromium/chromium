@@ -12,6 +12,9 @@
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/search_suggestion_parser.h"
 
 class ZeroSuggestCacheService : public KeyedService {
  public:
@@ -26,6 +29,14 @@ class ZeroSuggestCacheService : public KeyedService {
 
     // JSON response received from the remote Suggest service.
     std::string response_json;
+
+    // Parses the stored JSON response in order to extract the list of
+    // suggestions received from the remote Suggest service.
+    // For memory efficiency reasons, CacheEntry does not store the
+    // deserialized SuggestResults object as a data member.
+    SearchSuggestionParser::SuggestResults GetSuggestResults(
+        const AutocompleteInput& input,
+        const AutocompleteProviderClient& client) const;
 
     // Estimates dynamic memory usage.
     // See base/trace_event/memory_usage_estimator.h for more info.

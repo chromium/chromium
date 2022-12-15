@@ -490,7 +490,8 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "WebRtcEventLogManagerKeyedService",
     "WebrtcAudioPrivateEventService",
     "feedback::FeedbackUploaderChrome",
-    "sct_reporting::Factory"
+    "sct_reporting::Factory",
+    "ZeroSuggestCacheServiceFactory",
   };
   // clang-format on
 
