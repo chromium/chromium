@@ -1196,7 +1196,6 @@ class CONTENT_EXPORT NavigationRequest
       mojo::ScopedDataPipeConsumerHandle response_body,
       GlobalRequestID request_id,
       bool is_download,
-      blink::NavigationDownloadPolicy download_policy,
       net::NetworkAnonymizationKey network_anonymization_key,
       absl::optional<SubresourceLoaderParams> subresource_loader_params,
       EarlyHints early_hints) override;
@@ -1405,8 +1404,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // Record download related UseCounters when navigation is a download before
   // filtered by download_policy.
-  void RecordDownloadUseCountersPrePolicyCheck(
-      blink::NavigationDownloadPolicy download_policy);
+  void RecordDownloadUseCountersPrePolicyCheck();
 
   // Record download related UseCounters when navigation is a download after
   // filtered by download_policy.
@@ -1697,6 +1695,10 @@ class CONTENT_EXPORT NavigationRequest
   // TODO(https://crbug.com/1395742): Complete the implementation the browser
   // side implementation.
   void ComputeDownloadPolicy();
+
+  blink::NavigationDownloadPolicy& download_policy() {
+    return common_params_->download_policy;
+  }
 
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;

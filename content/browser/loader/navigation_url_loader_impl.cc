@@ -1287,7 +1287,6 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
                               frame_tree_node_id_)),
       navigation_ui_data_(std::move(navigation_ui_data)),
       interceptors_(std::move(initial_interceptors)),
-      download_policy_(request_info_->common_params->download_policy),
       loader_creation_time_(base::TimeTicks::Now()),
       ukm_source_id_(FrameTreeNode::GloballyFindByID(frame_tree_node_id_)
                          ->navigation_request()
@@ -1540,9 +1539,6 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
       "navigation", "Navigation timeToResponseStarted", TRACE_ID_LOCAL(this),
       "&NavigationURLLoaderImpl", static_cast<void*>(this), "success", true);
 
-  if (is_download)
-    download_policy_.RecordHistogram();
-
   NavigationURLLoaderDelegate::EarlyHints early_hints;
   if (early_hints_manager_) {
     early_hints.was_resource_hints_received =
@@ -1560,7 +1556,6 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
   delegate_->OnResponseStarted(
       std::move(url_loader_client_endpoints), std::move(response_head),
       std::move(response_body), global_request_id, is_download,
-      download_policy_,
       resource_request_->trusted_params->isolation_info
           .network_anonymization_key(),
       std::move(subresource_loader_params_), std::move(early_hints));

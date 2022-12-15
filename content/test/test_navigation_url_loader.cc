@@ -109,7 +109,6 @@ void TestNavigationURLLoader::CallOnResponseStarted(
   delegate_->OnResponseStarted(
       std::move(url_loader_client_endpoints), std::move(response_head),
       std::move(response_body), GlobalRequestID::MakeBrowserInitiated(), false,
-      blink::NavigationDownloadPolicy(),
       request_info_->isolation_info.network_anonymization_key(), absl::nullopt,
       std::move(early_hints));
 }

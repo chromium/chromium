@@ -3653,18 +3653,21 @@ void NavigationRequest::OnResponseStarted(
     mojo::ScopedDataPipeConsumerHandle response_body,
     GlobalRequestID request_id,
     bool is_download,
-    blink::NavigationDownloadPolicy download_policy,
     net::NetworkAnonymizationKey network_anonymization_key,
     absl::optional<SubresourceLoaderParams> subresource_loader_params,
     EarlyHints early_hints) {
+  if (is_download) {
+    download_policy().RecordHistogram();
+  }
+
   ScopedCrashKeys crash_keys(*this);
 
   // The |loader_|'s job is finished. It must not call the NavigationRequest
   // anymore from now.
   loader_.reset();
   if (is_download)
-    RecordDownloadUseCountersPrePolicyCheck(download_policy);
-  is_download_ = is_download && download_policy.IsDownloadAllowed();
+    RecordDownloadUseCountersPrePolicyCheck();
+  is_download_ = is_download && download_policy().IsDownloadAllowed();
   if (is_download_)
     RecordDownloadUseCountersPostPolicyCheck();
   request_id_ = request_id;
@@ -6006,14 +6009,13 @@ bool NavigationRequest::IsSameDocument() const {
   return NavigationTypeUtils::IsSameDocument(common_params_->navigation_type);
 }
 
-void NavigationRequest::RecordDownloadUseCountersPrePolicyCheck(
-    blink::NavigationDownloadPolicy download_policy) {
+void NavigationRequest::RecordDownloadUseCountersPrePolicyCheck() {
   RenderFrameHost* rfh = frame_tree_node_->current_frame_host();
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       rfh, blink::mojom::WebFeature::kDownloadPrePolicyCheck);
 
   // Log UseCounters for opener navigations.
-  if (download_policy.IsType(
+  if (download_policy().IsType(
           blink::NavigationDownloadType::kOpenerCrossOrigin)) {
     rfh->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
@@ -6027,26 +6029,26 @@ void NavigationRequest::RecordDownloadUseCountersPrePolicyCheck(
   }
 
   // Log UseCounters for download in sandbox.
-  if (download_policy.IsType(blink::NavigationDownloadType::kSandbox)) {
+  if (download_policy().IsType(blink::NavigationDownloadType::kSandbox)) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::kDownloadInSandbox);
   }
 
   // Log UseCounters for download without user activation.
-  if (download_policy.IsType(blink::NavigationDownloadType::kNoGesture)) {
+  if (download_policy().IsType(blink::NavigationDownloadType::kNoGesture)) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::kDownloadWithoutUserGesture);
   }
 
   // Log UseCounters for download in ad frame without user activation.
-  if (download_policy.IsType(
+  if (download_policy().IsType(
           blink::NavigationDownloadType::kAdFrameNoGesture)) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::kDownloadInAdFrameWithoutUserGesture);
   }
 
   // Log UseCounters for download in ad frame.
-  if (download_policy.IsType(blink::NavigationDownloadType::kAdFrame)) {
+  if (download_policy().IsType(blink::NavigationDownloadType::kAdFrame)) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::kDownloadInAdFrame);
   }
@@ -8492,12 +8494,9 @@ NavigationRequest::GetRuntimeFeatureStateContext() {
 // fields from the bitfield can be computed from the browser process. This
 // function is a partial attempt at doing it.
 void NavigationRequest::ComputeDownloadPolicy() {
-  blink::NavigationDownloadPolicy& download_policy =
-      common_params_->download_policy;
-
   // [ViewSource]
   if (GetNavigationEntry() && GetNavigationEntry()->IsViewSourceMode()) {
-    download_policy.SetDisallowed(blink::NavigationDownloadType::kViewSource);
+    download_policy().SetDisallowed(blink::NavigationDownloadType::kViewSource);
   }
 
   // [Sandbox]
@@ -8506,7 +8505,7 @@ void NavigationRequest::ComputeDownloadPolicy() {
       (commit_params_->frame_policy.sandbox_flags &
        network::mojom::WebSandboxFlags::kDownloads) ==
           network::mojom::WebSandboxFlags::kDownloads) {
-    download_policy.SetDisallowed(blink::NavigationDownloadType::kSandbox);
+    download_policy().SetDisallowed(blink::NavigationDownloadType::kSandbox);
   }
 
   // TODO(arthursonzogni): Check if the following fields from the

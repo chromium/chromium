@@ -38,11 +38,6 @@ void TestNavigationURLLoaderDelegate::WaitForRequestFailed() {
   request_failed_.reset();
 }
 
-void TestNavigationURLLoaderDelegate::ReleaseURLLoaderClientEndpoints() {
-  url_loader_client_endpoints_ = nullptr;
-  response_body_.reset();
-}
-
 void TestNavigationURLLoaderDelegate::OnRequestRedirected(
     const net::RedirectInfo& redirect_info,
     const net::NetworkAnonymizationKey& network_anonymization_key,
@@ -59,17 +54,14 @@ void TestNavigationURLLoaderDelegate::OnResponseStarted(
     mojo::ScopedDataPipeConsumerHandle response_body,
     GlobalRequestID request_id,
     bool is_download,
-    blink::NavigationDownloadPolicy download_policy,
     net::NetworkAnonymizationKey network_anonymization_key,
     absl::optional<SubresourceLoaderParams> subresource_loader_params,
     EarlyHints early_hints) {
   on_request_handled_counter_++;
   response_head_ = std::move(response_head);
   response_body_ = std::move(response_body);
-  url_loader_client_endpoints_ = std::move(url_loader_client_endpoints);
   if (response_head_->ssl_info.has_value())
     ssl_info_ = *response_head_->ssl_info;
-  is_download_ = is_download && download_policy.IsDownloadAllowed();
   if (response_started_)
     response_started_->Quit();
 }
