@@ -20,7 +20,7 @@
 #include "ui/gfx/geometry/size_f.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #endif
 
 namespace display {

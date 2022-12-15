@@ -6,7 +6,7 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chromeos/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "content/public/test/browser_test.h"
 
 namespace {

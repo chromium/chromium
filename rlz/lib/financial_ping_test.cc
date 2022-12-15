@@ -39,7 +39,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/system/factory_ping_embargo_check.h"
+#include "chromeos/ash/components/system/factory_ping_embargo_check.h"
 #include "rlz/chromeos/lib/rlz_value_store_chromeos.h"
 #endif
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SYSTEM_SCHEDULER_CONFIGURATION_MANAGER_BASE_H_
-#define CHROMEOS_SYSTEM_SCHEDULER_CONFIGURATION_MANAGER_BASE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SYSTEM_SCHEDULER_CONFIGURATION_MANAGER_BASE_H_
+#define CHROMEOS_ASH_COMPONENTS_SYSTEM_SCHEDULER_CONFIGURATION_MANAGER_BASE_H_
 
 #include <stddef.h>
 
@@ -16,7 +16,8 @@
 namespace chromeos {
 
 // A base class for SchedulerConfigurationManager.
-class COMPONENT_EXPORT(CHROMEOS_SYSTEM) SchedulerConfigurationManagerBase {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
+    SchedulerConfigurationManagerBase {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -48,4 +49,4 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) SchedulerConfigurationManagerBase {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SYSTEM_SCHEDULER_CONFIGURATION_MANAGER_BASE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SYSTEM_SCHEDULER_CONFIGURATION_MANAGER_BASE_H_

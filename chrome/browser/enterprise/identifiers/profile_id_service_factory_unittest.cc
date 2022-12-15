@@ -25,7 +25,7 @@
 #endif  // BUILDFLAG(IS_WIN)
 #else
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_init_params.h"

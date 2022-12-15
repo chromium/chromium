@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
-#include "chromeos/system/scheduler_configuration_manager_base.h"
+#include "chromeos/ash/components/system/scheduler_configuration_manager_base.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

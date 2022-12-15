@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/policy/core/device_cloud_policy_client_factory_ash.h"
 
 #include "base/test/task_environment.h"
-#include "chromeos/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"

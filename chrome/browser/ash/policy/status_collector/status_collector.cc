@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/policy/status_collector/app_info_generator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/user_manager/user_manager.h"
 

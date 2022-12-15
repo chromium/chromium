@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/system/kiosk_oem_manifest_parser.h"
+#include "chromeos/ash/components/system/kiosk_oem_manifest_parser.h"
 
 #include "chromeos/test/chromeos_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"

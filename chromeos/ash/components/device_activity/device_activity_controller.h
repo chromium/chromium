@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

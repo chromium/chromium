@@ -161,7 +161,7 @@ component("ozone_base") {
   visibility += [
     # Everyone should depend on //ui/ozone instead except a handful of
     # things that would otherwise create a cycle.
-    "//chromeos/system:system",
+    "//chromeos/ash/components/system",
     "//ui/base/ime/ash/*",
     "//ui/events/ozone/*",
     "//ui/ozone/common/*",

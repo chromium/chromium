@@ -58,7 +58,7 @@
 #include "v8/include/v8-version-string.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "content/browser/tracing/cros_tracing_agent.h"
 #endif
 

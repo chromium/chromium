@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/system/factory_ping_embargo_check.h"
+#include "chromeos/ash/components/system/factory_ping_embargo_check.h"
 
 #include <string>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 
 namespace chromeos {
 namespace system {

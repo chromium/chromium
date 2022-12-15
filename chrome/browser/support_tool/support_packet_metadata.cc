@@ -27,7 +27,7 @@
 #include "chrome/browser/policy/policy_ui_utils.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/feedback/pii_types.h"
 #include "components/policy/core/browser/webui/json_generation.h"

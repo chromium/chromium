@@ -19,7 +19,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chromeos/ash/components/attestation/fake_attestation_flow.h"
 #include "chromeos/ash/components/attestation/fake_certificate.h"
-#include "chromeos/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_switches.h"

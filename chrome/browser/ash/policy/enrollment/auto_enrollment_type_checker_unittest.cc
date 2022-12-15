@@ -11,8 +11,8 @@
 #include "base/test/scoped_command_line.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
-#include "chromeos/system/factory_ping_embargo_check.h"
-#include "chromeos/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/factory_ping_embargo_check.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::system {

@@ -64,7 +64,7 @@
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/exo/wm_helper_chromeos.h"
 #include "components/prefs/pref_service.h"

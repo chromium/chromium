@@ -75,7 +75,7 @@
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/language/core/common/locale_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #endif

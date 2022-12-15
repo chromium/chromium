@@ -69,7 +69,7 @@ component("manager") {
       "update_display_configuration_task.h",
     ]
     deps += [
-      "//chromeos/system",
+      "//chromeos/ash/components/system",
       "//chromeos/ui/base",
     ]
   }

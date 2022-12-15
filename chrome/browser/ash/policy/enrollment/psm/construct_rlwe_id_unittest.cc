@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/policy/enrollment/psm/construct_rlwe_id.h"
 
-#include "chromeos/system/fake_statistics_provider.h"
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 

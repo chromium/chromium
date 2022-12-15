@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SYSTEM_KIOSK_OEM_MANIFEST_PARSER_H_
-#define CHROMEOS_SYSTEM_KIOSK_OEM_MANIFEST_PARSER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SYSTEM_KIOSK_OEM_MANIFEST_PARSER_H_
+#define CHROMEOS_ASH_COMPONENTS_SYSTEM_KIOSK_OEM_MANIFEST_PARSER_H_
 
 #include <string>
 
@@ -13,7 +13,7 @@
 namespace chromeos {
 
 // Parser for app kiosk OEM manifest files.
-class COMPONENT_EXPORT(CHROMEOS_SYSTEM) KioskOemManifestParser {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) KioskOemManifestParser {
  public:
   // Kiosk OEM manifest.
   struct Manifest {
@@ -41,4 +41,4 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) KioskOemManifestParser {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SYSTEM_KIOSK_OEM_MANIFEST_PARSER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SYSTEM_KIOSK_OEM_MANIFEST_PARSER_H_

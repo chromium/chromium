@@ -15,7 +15,7 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "chromeos/system/scheduler_configuration_manager_base.h"
+#include "chromeos/ash/components/system/scheduler_configuration_manager_base.h"
 
 namespace base {
 struct SystemMemoryInfoKB;

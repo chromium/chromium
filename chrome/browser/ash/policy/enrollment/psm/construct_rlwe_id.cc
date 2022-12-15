@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 
 namespace psm_rlwe = private_membership::rlwe;

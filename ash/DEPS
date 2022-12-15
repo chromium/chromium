@@ -69,6 +69,7 @@ include_rules = [
   "+chromeos/ash/components/multidevice",
   "+chromeos/ash/components/peripheral_notification",
   "+chromeos/ash/components/proximity_auth",
+  "+chromeos/ash/components/system",
   "+chromeos/components/quick_answers",
   "+chromeos/components/security_token_pin",
   "+chromeos/components/sensors",
@@ -101,7 +102,6 @@ include_rules = [
   "+chromeos/services/network_config/public",
   "+chromeos/services/power/public",
   "+chromeos/strings",
-  "+chromeos/system",
   "+chromeos/ui",
 
   # ui/base/idle depends on SessionManagerClient so disallow it.

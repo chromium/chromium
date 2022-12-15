@@ -56,7 +56,7 @@ source_set("util") {
     deps += [ "//chromeos/startup:startup" ]
   }
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/system" ]
+    deps += [ "//chromeos/ash/components/system" ]
   }
 }
 
@@ -328,7 +328,7 @@ source_set("internal") {
     deps += [ "//components/policy/android:jni_headers" ]
   }
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/system" ]
+    deps += [ "//chromeos/ash/components/system" ]
     sources += [
       "default_chrome_apps_migrator.cc",
       "default_chrome_apps_migrator.h",
@@ -615,7 +615,7 @@ source_set("unit_tests") {
     "//ui/base",
   ]
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/system" ]
+    deps += [ "//chromeos/ash/components/system" ]
   }
   if (is_android) {
     deps += [ "//components/policy/android:test_jni_headers" ]

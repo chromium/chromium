@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "chromeos/system/name_value_pairs_parser.h"
+#include "chromeos/ash/components/system/name_value_pairs_parser.h"
 
 namespace chromeos {
 namespace system {

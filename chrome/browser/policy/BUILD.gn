@@ -91,7 +91,7 @@ source_set("onc") {
       "//chromeos/ash/components/install_attributes",
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/settings",
-      "//chromeos/system:system",
+      "//chromeos/ash/components/system",
       "//components/policy/core/common:common_constants",
       "//components/user_manager:user_manager",
       "//dbus",
@@ -453,7 +453,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/ash",
       "//chrome/browser/ash:test_support",
-      "//chromeos/system",
+      "//chromeos/ash/components/system",
     ]
   }
 }

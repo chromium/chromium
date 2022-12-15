@@ -14,7 +14,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/google/google_brand_code_map_chromeos.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"

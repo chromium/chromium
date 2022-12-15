@@ -2,60 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-if (is_chromeos_ash) {
-  # Used to build and run fuzzer in ash-only code.
-  import("//testing/libfuzzer/fuzzer_test.gni")
-}
-
-assert(is_chromeos,
-       "Non-Chrome-OS or Lacros builds must not depend on //chromeos")
+assert(is_chromeos, "Non Chrome OS build must not depend on //chromeos")
 
 component("system") {
   output_name = "chromeos_system"
   defines = [ "IS_CHROMEOS_SYSTEM_IMPL" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chromeos:chromeos_export",
+  ]
   sources = [
+    "core_scheduling.cc",
+    "core_scheduling.h",
     "cpu_temperature_reader.cc",
     "cpu_temperature_reader.h",
   ]
-
-  if (is_chromeos) {
-    deps += [ "//chromeos:chromeos_export" ]
-    sources += [
-      "core_scheduling.cc",
-      "core_scheduling.h",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash/constants",
-      "//base",
-      "//ui/ozone:ozone_base",
-    ]
-    sources += [
-      "devicemode.cc",
-      "devicemode.h",
-      "factory_ping_embargo_check.cc",
-      "factory_ping_embargo_check.h",
-      "kiosk_oem_manifest_parser.cc",
-      "kiosk_oem_manifest_parser.h",
-
-      # Used when running mash, both on Linux and on real devices.
-      "fake_statistics_provider.cc",
-      "fake_statistics_provider.h",
-      "name_value_pairs_parser.cc",
-      "name_value_pairs_parser.h",
-      "scheduler_configuration_manager_base.cc",
-      "scheduler_configuration_manager_base.h",
-      "statistics_provider.cc",
-      "statistics_provider.h",
-      "statistics_provider_impl.cc",
-      "statistics_provider_impl.h",
-    ]
-  }
 }
 
 source_set("unit_tests") {
@@ -66,25 +27,4 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   sources = [ "cpu_temperature_reader_unittest.cc" ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash/constants",
-      "//base/test:test_support",
-      "//chromeos:test_utils",
-    ]
-    sources += [
-      "factory_ping_embargo_check_unittest.cc",
-      "kiosk_oem_manifest_parser_unittest.cc",
-      "name_value_pairs_parser_unittest.cc",
-      "statistics_provider_impl_unittest.cc",
-    ]
-  }
-}
-
-if (is_chromeos_ash) {
-  fuzzer_test("name_value_pairs_parser_fuzzer") {
-    sources = [ "name_value_pairs_parser_fuzzer.cc" ]
-    deps = [ ":system" ]
-  }
 }

@@ -10,8 +10,8 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "build/branding_buildflags.h"
-#include "chromeos/system/factory_ping_embargo_check.h"
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/factory_ping_embargo_check.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 
 namespace ash::system {
 // TODO(https://crbug.com/1164001): remove when migrated to ash::

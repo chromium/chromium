@@ -3,6 +3,7 @@ include_rules = [
   "+chromeos/ash/components/dbus/system_clock",
   "+chromeos/ash/components/dbus/session_manager",
   "+chromeos/ash/components/network",
+  "+chromeos/ash/components/system",
   "+components/policy",
   "+components/version_info",
   "+google_apis",

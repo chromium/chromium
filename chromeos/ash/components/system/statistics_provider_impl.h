@@ -1,9 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SYSTEM_STATISTICS_PROVIDER_IMPL_H_
-#define CHROMEOS_SYSTEM_STATISTICS_PROVIDER_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SYSTEM_STATISTICS_PROVIDER_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_SYSTEM_STATISTICS_PROVIDER_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -20,16 +20,17 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromeos/system/name_value_pairs_parser.h"
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/name_value_pairs_parser.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos::system {
 
 // Result of loading values from the cached VPD file.
-COMPONENT_EXPORT(CHROMEOS_SYSTEM) extern const char kMetricVpdCacheReadResult[];
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
+extern const char kMetricVpdCacheReadResult[];
 
-class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProviderImpl
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
     : public StatisticsProvider {
  public:
   struct StatisticsSources {
@@ -170,4 +171,4 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProviderImpl
 
 }  // namespace chromeos::system
 
-#endif  // CHROMEOS_SYSTEM_STATISTICS_PROVIDER_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SYSTEM_STATISTICS_PROVIDER_IMPL_H_

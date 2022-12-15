@@ -70,7 +70,7 @@ enrollment can be skipped depends on policy set by admins.
 
 ### OEM-triggered Enrollment
 
-Device manufacturers can provide special [OEM manifest](https://cs.chromium.org/chromium/src/chromeos/system/statistics_provider.cc?rcl=2e366a611abdd2be6995e625f3281d40fab5b5e3&l=83)
+Device manufacturers can provide special [OEM manifest](https://cs.chromium.org/chromium/src/chromeos/ash/components/system/statistics_provider.cc?rcl=2e366a611abdd2be6995e625f3281d40fab5b5e3&l=83)
 that controls if device should be enrolled, and if enrollment is forced.
 Authentication is the same as in **Manual enrollment** case.
 

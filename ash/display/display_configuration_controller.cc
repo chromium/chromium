@@ -18,7 +18,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
 #include "base/time/time.h"
-#include "chromeos/system/devicemode.h"
+#include "chromeos/ash/components/system/devicemode.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager.h"

@@ -30,7 +30,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chromeos/system/devicemode.h"
+#include "chromeos/ash/components/system/devicemode.h"
 #include "chromeos/ui/base/display_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"

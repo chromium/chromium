@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SYSTEM_NAME_VALUE_PAIRS_PARSER_H_
-#define CHROMEOS_SYSTEM_NAME_VALUE_PAIRS_PARSER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SYSTEM_NAME_VALUE_PAIRS_PARSER_H_
+#define CHROMEOS_ASH_COMPONENTS_SYSTEM_NAME_VALUE_PAIRS_PARSER_H_
 
 #include <string>
 #include <vector>
@@ -40,7 +40,7 @@ enum class NameValuePairsFormat {
 
 // The parser is used to get machine info as name-value pairs. Defined here to
 // be accessible by tests.
-class COMPONENT_EXPORT(CHROMEOS_SYSTEM) NameValuePairsParser {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) NameValuePairsParser {
  public:
   using NameValueMap = base::flat_map<std::string, std::string>;
 
@@ -93,4 +93,4 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) NameValuePairsParser {
 }  // namespace system
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SYSTEM_NAME_VALUE_PAIRS_PARSER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SYSTEM_NAME_VALUE_PAIRS_PARSER_H_

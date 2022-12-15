@@ -1,8 +1,8 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/system/statistics_provider_impl.h"
+#include "chromeos/ash/components/system/statistics_provider_impl.h"
 
 #include <memory>
 #include <string>
@@ -28,7 +28,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/system/kiosk_oem_manifest_parser.h"
+#include "chromeos/ash/components/system/kiosk_oem_manifest_parser.h"
 
 namespace chromeos::system {
 

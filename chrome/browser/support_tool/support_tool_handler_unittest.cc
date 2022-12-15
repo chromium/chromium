@@ -31,8 +31,8 @@
 #include "third_party/zlib/google/zip_reader.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/system/fake_statistics_provider.h"
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using testing::IsSupersetOf;

@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/system/input_device_settings.h"
 
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {

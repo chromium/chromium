@@ -5,7 +5,7 @@
 include_rules = [
   "+build",
   "+chromeos/ash/components/dbus",
-  "+chromeos/system",
+  "+chromeos/ash/components/system",
   "+dbus",
   "+mojo/core/embedder",
   "+net",  # This is only used when force_rlz_use_chrome_net=1 is passed to gyp.

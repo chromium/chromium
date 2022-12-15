@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 
 namespace ash {
 class NetworkState;

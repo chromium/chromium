@@ -9,7 +9,7 @@
 #include "base/test/scoped_running_on_chromeos.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
-#include "chromeos/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "content/public/common/content_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

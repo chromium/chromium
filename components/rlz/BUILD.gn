@@ -55,6 +55,6 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/system" ]
+    deps += [ "//chromeos/ash/components/system" ]
   }
 }

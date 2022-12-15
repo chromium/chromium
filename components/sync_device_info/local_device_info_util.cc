@@ -17,7 +17,7 @@
 #include "ui/base/device_form_factor.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #endif
 
 namespace syncer {

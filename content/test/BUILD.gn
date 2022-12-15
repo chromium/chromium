@@ -1955,7 +1955,7 @@ test("content_browsertests") {
       "//chromeos/ash/components/audio",
       "//chromeos/ash/components/dbus/audio",
       "//chromeos/ash/components/dbus/debug_daemon",
-      "//chromeos/system",
+      "//chromeos/ash/components/system",
     ]
   }
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SYSTEM_FAKE_STATISTICS_PROVIDER_H_
-#define CHROMEOS_SYSTEM_FAKE_STATISTICS_PROVIDER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SYSTEM_FAKE_STATISTICS_PROVIDER_H_
+#define CHROMEOS_ASH_COMPONENTS_SYSTEM_FAKE_STATISTICS_PROVIDER_H_
 
 #include <string>
 
@@ -11,12 +11,12 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/string_piece.h"
-#include "chromeos/system/statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 
 namespace chromeos::system {
 
 // A fake StatisticsProvider implementation that is useful in tests.
-class COMPONENT_EXPORT(CHROMEOS_SYSTEM) FakeStatisticsProvider
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) FakeStatisticsProvider
     : public StatisticsProvider {
  public:
   FakeStatisticsProvider();
@@ -51,8 +51,8 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) FakeStatisticsProvider
 
 // A convenience subclass that automatically registers itself as the test
 // StatisticsProvider during construction and cleans up at destruction.
-class COMPONENT_EXPORT(CHROMEOS_SYSTEM) ScopedFakeStatisticsProvider
-    : public FakeStatisticsProvider {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
+    ScopedFakeStatisticsProvider : public FakeStatisticsProvider {
  public:
   ScopedFakeStatisticsProvider();
 
@@ -71,4 +71,4 @@ namespace ash::system {
 using ::chromeos::system::ScopedFakeStatisticsProvider;
 }  // namespace ash::system
 
-#endif  // CHROMEOS_SYSTEM_FAKE_STATISTICS_PROVIDER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SYSTEM_FAKE_STATISTICS_PROVIDER_H_

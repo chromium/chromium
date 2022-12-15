@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SYSTEM_FACTORY_PING_EMBARGO_CHECK_H_
-#define CHROMEOS_SYSTEM_FACTORY_PING_EMBARGO_CHECK_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SYSTEM_FACTORY_PING_EMBARGO_CHECK_H_
+#define CHROMEOS_ASH_COMPONENTS_SYSTEM_FACTORY_PING_EMBARGO_CHECK_H_
 
 #include "base/component_export.h"
 #include "base/time/time.h"
@@ -32,15 +32,15 @@ enum class FactoryPingEmbargoState {
   kPassed
 };
 
-COMPONENT_EXPORT(CHROMEOS_SYSTEM)
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
 FactoryPingEmbargoState GetEnterpriseManagementPingEmbargoState(
     StatisticsProvider* statistics_provider);
 
-COMPONENT_EXPORT(CHROMEOS_SYSTEM)
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
 FactoryPingEmbargoState GetRlzPingEmbargoState(
     StatisticsProvider* statistics_provider);
 
 }  // namespace system
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SYSTEM_FACTORY_PING_EMBARGO_CHECK_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SYSTEM_FACTORY_PING_EMBARGO_CHECK_H_

@@ -87,7 +87,7 @@ if (enable_rlz_support) {
       deps += [
         "//chromeos/ash/components/dbus",
         "//chromeos/ash/components/dbus/debug_daemon",
-        "//chromeos/system",
+        "//chromeos/ash/components/system",
       ]
     }
 
@@ -143,7 +143,7 @@ if (enable_rlz_support) {
     if (is_chromeos_ash) {
       deps += [
         "//chromeos/ash/components/dbus",
-        "//chromeos/system",
+        "//chromeos/ash/components/system",
       ]
     }
 
@@ -166,7 +166,7 @@ if (enable_rlz_support) {
       "//build:chromeos_buildflags",
     ]
     if (is_chromeos_ash) {
-      public_deps += [ "//chromeos/system" ]
+      public_deps += [ "//chromeos/ash/components/system" ]
     }
   }
 
@@ -203,7 +203,7 @@ if (enable_rlz_support) {
       deps += [
         "//chromeos/ash/components/dbus:test_support",
         "//chromeos/ash/components/dbus/debug_daemon",
-        "//chromeos/system",
+        "//chromeos/ash/components/system",
       ]
     }
   }
