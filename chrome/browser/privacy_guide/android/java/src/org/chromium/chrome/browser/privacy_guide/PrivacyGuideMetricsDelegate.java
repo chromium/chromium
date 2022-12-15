@@ -114,6 +114,10 @@ class PrivacyGuideMetricsDelegate {
                 stateChange, PrivacyGuideSettingsStates.MAX_VALUE);
         // Record user action for clicking the next button on the Safe Browsing card
         RecordUserAction.record("Settings.PrivacyGuide.NextClickSafeBrowsing");
+        // Record histogram for clicking the next button on the Safe Browsing card
+        RecordHistogram.recordEnumeratedHistogram("Settings.PrivacyGuide.NextNavigation",
+                PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON,
+                PrivacyGuideInteractions.MAX_VALUE);
     }
 
     /**

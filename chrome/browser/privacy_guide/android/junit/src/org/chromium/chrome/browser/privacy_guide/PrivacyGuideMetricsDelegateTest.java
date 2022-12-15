@@ -316,6 +316,20 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
+    public void testSafeBrowsing_nextNavigationHistogram() {
+        mockSafeBrowsingState(
+                SafeBrowsingState.STANDARD_PROTECTION, SafeBrowsingState.STANDARD_PROTECTION);
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(NEXT_NAVIGATION_HISTOGRAM,
+                        PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON));
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SAFE_BROWSING);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(NEXT_NAVIGATION_HISTOGRAM,
+                        PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON));
+    }
+
+    @Test
+    @SmallTest
     public void testCookies_block3PIncognitoTo3PIncognitoSettingsStatesHistogram() {
         mockCookieControlsMode(
                 CookieControlsMode.INCOGNITO_ONLY, CookieControlsMode.INCOGNITO_ONLY);

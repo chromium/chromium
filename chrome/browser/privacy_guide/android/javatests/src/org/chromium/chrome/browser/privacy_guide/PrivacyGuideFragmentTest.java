@@ -688,6 +688,26 @@ public class PrivacyGuideFragmentTest {
     @Test
     @SmallTest
     @Feature({"PrivacyGuide"})
+    public void testSafeBrowsingCard_nextNavigationHistogram() {
+        launchPrivacyGuide();
+        navigateToSafeBrowsingCard();
+
+        assertEquals(0,
+                mHistogramTestRule.getHistogramValueCount(NEXT_NAVIGATION_HISTOGRAM,
+                        PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON));
+
+        // SB page -> Cookies page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_safe_browsing_intro));
+        onView(withText(R.string.next)).perform(click());
+
+        assertEquals(1,
+                mHistogramTestRule.getHistogramValueCount(NEXT_NAVIGATION_HISTOGRAM,
+                        PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PrivacyGuide"})
     public void testSafeBrowsingCard_standardToStandardSettingsStatesHistogram() {
         launchPrivacyGuide();
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
