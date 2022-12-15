@@ -484,6 +484,7 @@ URLLoader::URLLoader(
     base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder,
     std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_helper_factory,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
+    mojo::PendingRemote<mojom::TrustTokenAccessObserver> trust_token_observer,
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
@@ -532,6 +533,10 @@ URLLoader::URLLoader(
       cookie_observer_remote_(std::move(cookie_observer)),
       cookie_observer_(PtrOrFallback(cookie_observer_remote_,
                                      context.GetCookieAccessObserver())),
+      trust_token_observer_remote_(std::move(trust_token_observer)),
+      trust_token_observer_(
+          PtrOrFallback(trust_token_observer_remote_,
+                        context.GetTrustTokenAccessObserver())),
       url_loader_network_observer_remote_(
           std::move(url_loader_network_observer)),
       url_loader_network_observer_(
@@ -937,6 +942,21 @@ void URLLoader::BeginTrustTokenOperationIfNecessaryAndThenScheduleStart(
 void URLLoader::OnDoneConstructingTrustTokenHelper(
     mojom::TrustTokenOperationType type,
     TrustTokenStatusOrRequestHelper status_or_helper) {
+  if (trust_token_observer_) {
+    const net::IsolationInfo& isolation_info = url_request_->isolation_info();
+    url::Origin top_frame_origin;
+    if (isolation_info.top_frame_origin()) {
+      top_frame_origin = *isolation_info.top_frame_origin();
+    }
+
+    bool token_operation_unauthorized =
+        status_or_helper.status() ==
+        mojom::TrustTokenOperationStatus::kUnauthorized;
+    trust_token_observer_->OnTrustTokensAccessed(
+        mojom::TrustTokenAccessDetails::New(top_frame_origin,
+                                            token_operation_unauthorized));
+  }
+
   if (!status_or_helper.ok()) {
     trust_token_status_ = status_or_helper.status();
 

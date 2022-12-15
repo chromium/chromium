@@ -50,6 +50,9 @@ enum TrustTokenOperationStatus {
   // some other general, probably transient, manner.
   kUnavailable,
 
+  // The operation was unauthorized due to some sort of policy.
+  kUnauthorized,
+
   // The server response was malformed or otherwise invalid.
   kBadResponse,
 

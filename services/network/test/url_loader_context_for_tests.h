@@ -42,6 +42,7 @@ class URLLoaderContextForTests : public URLLoaderContext {
   const cors::OriginAccessList& GetOriginAccessList() const override;
   const mojom::URLLoaderFactoryParams& GetFactoryParams() const override;
   mojom::CookieAccessObserver* GetCookieAccessObserver() const override;
+  mojom::TrustTokenAccessObserver* GetTrustTokenAccessObserver() const override;
   mojom::CrossOriginEmbedderPolicyReporter* GetCoepReporter() const override;
   mojom::DevToolsObserver* GetDevToolsObserver() const override;
   mojom::NetworkContextClient* GetNetworkContextClient() const override;

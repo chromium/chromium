@@ -6408,6 +6408,7 @@ domain Network
         ResourceExhausted
         AlreadyExists
         Unavailable
+        Unauthorized
         BadResponse
         InternalError
         UnknownError

@@ -98,7 +98,7 @@ void TrustTokenRequestHelperFactory::CreateTrustTokenHelperForRequest(
 
   if (!authorizer_.Run()) {
     LogOutcome(net_log, params.type, Outcome::kRejectedByAuthorizer);
-    std::move(done).Run(mojom::TrustTokenOperationStatus::kUnavailable);
+    std::move(done).Run(mojom::TrustTokenOperationStatus::kUnauthorized);
     return;
   }
 

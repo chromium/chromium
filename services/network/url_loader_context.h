@@ -27,6 +27,7 @@ class CrossOriginEmbedderPolicyReporter;
 class DevToolsObserver;
 class NetworkContextClient;
 class TrustedURLLoaderHeaderClient;
+class TrustTokenAccessObserver;
 class URLLoaderFactoryParams;
 class URLLoaderNetworkServiceObserver;
 }  // namespace mojom
@@ -39,6 +40,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoaderContext {
   virtual const cors::OriginAccessList& GetOriginAccessList() const = 0;
   virtual const mojom::URLLoaderFactoryParams& GetFactoryParams() const = 0;
   virtual mojom::CookieAccessObserver* GetCookieAccessObserver() const = 0;
+  virtual mojom::TrustTokenAccessObserver* GetTrustTokenAccessObserver()
+      const = 0;
   virtual mojom::CrossOriginEmbedderPolicyReporter* GetCoepReporter() const = 0;
   virtual mojom::DevToolsObserver* GetDevToolsObserver() const = 0;
   virtual mojom::NetworkContextClient* GetNetworkContextClient() const = 0;

@@ -291,7 +291,7 @@ TEST_F(TrustTokenRequestHelperFactoryTest, RespectsAuthorizer) {
   run_loop.Run();
 
   EXPECT_EQ(obtained_result.status(),
-            mojom::TrustTokenOperationStatus::kUnavailable);
+            mojom::TrustTokenOperationStatus::kUnauthorized);
   histogram_tester.ExpectUniqueSample(
       "Net.TrustTokens.RequestHelperFactoryOutcome.Signing",
       Outcome::kRejectedByAuthorizer, 1);

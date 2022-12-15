@@ -45,6 +45,7 @@
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/trust_token_access_observer.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler.h"
@@ -156,6 +157,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       std::unique_ptr<TrustTokenRequestHelperFactory>
           trust_token_helper_factory,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
+      mojo::PendingRemote<mojom::TrustTokenAccessObserver> trust_token_observer,
       mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
@@ -597,6 +599,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // URLLoaderFactory).
   const mojo::Remote<mojom::CookieAccessObserver> cookie_observer_remote_;
   const raw_ptr<mojom::CookieAccessObserver> cookie_observer_ = nullptr;
+  const mojo::Remote<mojom::TrustTokenAccessObserver>
+      trust_token_observer_remote_;
+  const raw_ptr<mojom::TrustTokenAccessObserver> trust_token_observer_ =
+      nullptr;
   const mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
       url_loader_network_observer_remote_;
   const raw_ptr<mojom::URLLoaderNetworkServiceObserver>

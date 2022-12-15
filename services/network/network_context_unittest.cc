@@ -7168,7 +7168,7 @@ TEST_F(NetworkContextTest,
   EXPECT_EQ(client->completion_status().error_code,
             net::ERR_TRUST_TOKEN_OPERATION_FAILED);
   EXPECT_EQ(client->completion_status().trust_token_operation_status,
-            mojom::TrustTokenOperationStatus::kUnavailable);
+            mojom::TrustTokenOperationStatus::kUnauthorized);
 }
 
 TEST_F(NetworkContextTest, NoAvailableTrustTokensWhenTrustTokensAreDisabled) {

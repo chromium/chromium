@@ -3160,6 +3160,9 @@ String GetTrustTokenOperationStatus(
     case network::mojom::TrustTokenOperationStatus::kUnavailable:
       return protocol::Network::TrustTokenOperationDone::StatusEnum::
           Unavailable;
+    case network::mojom::TrustTokenOperationStatus::kUnauthorized:
+      return protocol::Network::TrustTokenOperationDone::StatusEnum::
+          Unauthorized;
     case network::mojom::TrustTokenOperationStatus::kBadResponse:
       return protocol::Network::TrustTokenOperationDone::StatusEnum::
           BadResponse;

@@ -643,9 +643,9 @@ struct URLLoaderOptions {
         std::move(sync_url_loader_client), traffic_annotation, request_id,
         keepalive_request_size, std::move(keepalive_statistics_recorder),
         std::move(trust_token_helper_factory), std::move(cookie_observer),
-        std::move(url_loader_network_observer), std::move(devtools_observer),
-        std::move(accept_ch_frame_observer), third_party_cookies_enabled,
-        cache_transparency_settings);
+        std::move(trust_token_observer), std::move(url_loader_network_observer),
+        std::move(devtools_observer), std::move(accept_ch_frame_observer),
+        third_party_cookies_enabled, cache_transparency_settings);
   }
 
   int32_t options = mojom::kURLLoadOptionNone;
@@ -657,6 +657,8 @@ struct URLLoaderOptions {
   base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder;
   std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_helper_factory;
   mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer =
+      mojo::NullRemote();
+  mojo::PendingRemote<mojom::TrustTokenAccessObserver> trust_token_observer =
       mojo::NullRemote();
   mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
       url_loader_network_observer = mojo::NullRemote();
@@ -3886,6 +3888,70 @@ MATCHER_P3(MatchesCookieDetails, type, cookie_or_line, is_include, "") {
       arg, result_listener);
 }
 
+class MockTrustTokenObserver : public network::mojom::TrustTokenAccessObserver {
+ public:
+  MockTrustTokenObserver() = default;
+  ~MockTrustTokenObserver() override = default;
+
+  struct TrustTokenDetails {
+    explicit TrustTokenDetails(const mojom::TrustTokenAccessDetailsPtr& details)
+        : origin(details->origin), blocked(details->blocked) {}
+
+    url::Origin origin;
+    bool blocked;
+  };
+
+  mojo::PendingRemote<mojom::TrustTokenAccessObserver> GetRemote() {
+    mojo::PendingRemote<mojom::TrustTokenAccessObserver> remote;
+    receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
+    return remote;
+  }
+
+  void OnTrustTokensAccessed(
+      mojom::TrustTokenAccessDetailsPtr details) override {
+    observed_tokens_.emplace_back(details);
+    if (wait_for_token_count_ &&
+        observed_tokens().size() >= wait_for_token_count_) {
+      std::move(wait_for_tokens_quit_closure_).Run();
+    }
+  }
+
+  void WaitForTrustTokens(size_t token_count) {
+    if (observed_tokens_.size() < token_count) {
+      wait_for_token_count_ = token_count;
+      base::RunLoop run_loop;
+      wait_for_tokens_quit_closure_ = run_loop.QuitClosure();
+      run_loop.Run();
+    }
+    EXPECT_EQ(observed_tokens_.size(), token_count);
+  }
+
+  void Clone(mojo::PendingReceiver<mojom::TrustTokenAccessObserver> observer)
+      override {
+    receivers_.Add(this, std::move(observer));
+  }
+
+  const std::vector<TrustTokenDetails>& observed_tokens() {
+    return observed_tokens_;
+  }
+
+ private:
+  size_t wait_for_token_count_ = 0;
+  base::OnceClosure wait_for_tokens_quit_closure_;
+  std::vector<TrustTokenDetails> observed_tokens_;
+  mojo::ReceiverSet<mojom::TrustTokenAccessObserver> receivers_;
+};
+
+MATCHER_P2(MatchesTrustTokenDetails, origin, blocked, "") {
+  return testing::ExplainMatchResult(
+      testing::AllOf(
+          testing::Field(&MockTrustTokenObserver::TrustTokenDetails::origin,
+                         origin),
+          testing::Field(&MockTrustTokenObserver::TrustTokenDetails::blocked,
+                         blocked)),
+      arg, result_listener);
+}
+
 // Responds certificate request with previously set responses.
 class ClientCertAuthObserver : public TestURLLoaderNetworkObserver {
  public:
@@ -5839,6 +5905,8 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
   MockTrustTokenDevToolsObserver devtools_observer;
 
   URLLoaderOptions url_loader_options;
+  MockTrustTokenObserver trust_token_observer;
+  url_loader_options.trust_token_observer = trust_token_observer.GetRemote();
   url_loader_options.trust_token_helper_factory =
       std::make_unique<MockTrustTokenRequestHelperFactory>(
           mojom::TrustTokenOperationStatus::kOk /* on_begin */,
@@ -5869,6 +5937,11 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
   EXPECT_EQ(ReadBody(), expected);
 
   EXPECT_FALSE(client()->response_head()->headers->raw_headers().empty());
+
+  trust_token_observer.WaitForTrustTokens(1u);
+  EXPECT_THAT(trust_token_observer.observed_tokens(),
+              testing::ElementsAre(
+                  MatchesTrustTokenDetails(test_server()->GetOrigin(), false)));
 }
 
 // A request with an associated Trust Tokens operation whose Begin step returns
@@ -5890,6 +5963,8 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
   MockTrustTokenDevToolsObserver devtools_observer;
 
   URLLoaderOptions url_loader_options;
+  MockTrustTokenObserver trust_token_observer;
+  url_loader_options.trust_token_observer = trust_token_observer.GetRemote();
   url_loader_options.trust_token_helper_factory =
       std::make_unique<MockTrustTokenRequestHelperFactory>(
           mojom::TrustTokenOperationStatus::kAlreadyExists /* on_begin */,
@@ -5914,6 +5989,11 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
 
   EXPECT_FALSE(client()->response_head());
   EXPECT_FALSE(client()->response_body().is_valid());
+
+  trust_token_observer.WaitForTrustTokens(1u);
+  EXPECT_THAT(trust_token_observer.observed_tokens(),
+              testing::ElementsAre(
+                  MatchesTrustTokenDetails(test_server()->GetOrigin(), false)));
 }
 
 // When a request's associated Trust Tokens operation's Begin step fails, the
@@ -5929,6 +6009,8 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
   MockTrustTokenDevToolsObserver devtools_observer;
 
   URLLoaderOptions url_loader_options;
+  MockTrustTokenObserver trust_token_observer;
+  url_loader_options.trust_token_observer = trust_token_observer.GetRemote();
   url_loader_options.trust_token_helper_factory =
       std::make_unique<MockTrustTokenRequestHelperFactory>(
           mojom::TrustTokenOperationStatus::kFailedPrecondition /* on_begin */,
@@ -5953,6 +6035,11 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
 
   EXPECT_FALSE(client()->response_head());
   EXPECT_FALSE(client()->response_body().is_valid());
+
+  trust_token_observer.WaitForTrustTokens(1u);
+  EXPECT_THAT(trust_token_observer.observed_tokens(),
+              testing::ElementsAre(
+                  MatchesTrustTokenDetails(test_server()->GetOrigin(), false)));
 }
 
 // When a request's associated Trust Tokens operation's Begin step succeeds but
@@ -5968,6 +6055,8 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
   MockTrustTokenDevToolsObserver devtools_observer;
 
   URLLoaderOptions url_loader_options;
+  MockTrustTokenObserver trust_token_observer;
+  url_loader_options.trust_token_observer = trust_token_observer.GetRemote();
   url_loader_options.trust_token_helper_factory =
       std::make_unique<MockTrustTokenRequestHelperFactory>(
           mojom::TrustTokenOperationStatus::kOk /* on_begin */,
@@ -5990,6 +6079,11 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
   // Verify the DevTools event was fired and it has the right status.
   EXPECT_EQ(devtools_observer.trust_token_operation_status(),
             mojom::TrustTokenOperationStatus::kBadResponse);
+
+  trust_token_observer.WaitForTrustTokens(1u);
+  EXPECT_THAT(trust_token_observer.observed_tokens(),
+              testing::ElementsAre(
+                  MatchesTrustTokenDetails(test_server()->GetOrigin(), false)));
 }
 
 // When URLLoader receives a  request parameterized to perform a Trust Tokens
@@ -6007,6 +6101,8 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
   MockTrustTokenDevToolsObserver devtools_observer;
 
   URLLoaderOptions url_loader_options;
+  MockTrustTokenObserver trust_token_observer;
+  url_loader_options.trust_token_observer = trust_token_observer.GetRemote();
   url_loader_options.trust_token_helper_factory =
       std::make_unique<MockTrustTokenRequestHelperFactory>(
           mojom::TrustTokenOperationStatus::
@@ -6028,6 +6124,54 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
   // Verify the DevTools event was fired and it has the right status.
   EXPECT_EQ(devtools_observer.trust_token_operation_status(),
             mojom::TrustTokenOperationStatus::kInternalError);
+
+  trust_token_observer.WaitForTrustTokens(1u);
+  EXPECT_THAT(trust_token_observer.observed_tokens(),
+              testing::ElementsAre(
+                  MatchesTrustTokenDetails(test_server()->GetOrigin(), false)));
+}
+
+// When URLLoader receives a request that is blocked by policy, the request
+// should fail entirely and report a blocked event to the observer.
+TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
+       HandlesTrustTokenRequestHelperCreationBlocked) {
+  ResourceRequest request = CreateTrustTokenResourceRequest();
+
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader_remote;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  MockTrustTokenDevToolsObserver devtools_observer;
+
+  URLLoaderOptions url_loader_options;
+  MockTrustTokenObserver trust_token_observer;
+  url_loader_options.trust_token_observer = trust_token_observer.GetRemote();
+  url_loader_options.trust_token_helper_factory =
+      std::make_unique<MockTrustTokenRequestHelperFactory>(
+          mojom::TrustTokenOperationStatus::
+              kUnauthorized /* helper_creation_error */,
+          GetParam());
+  url_loader_options.devtools_observer = devtools_observer.Bind();
+  url_loader = url_loader_options.MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader_remote.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  EXPECT_EQ(client()->completion_status().error_code,
+            net::ERR_TRUST_TOKEN_OPERATION_FAILED);
+  EXPECT_EQ(client()->completion_status().trust_token_operation_status,
+            mojom::TrustTokenOperationStatus::kUnauthorized);
+  // Verify the DevTools event was fired and it has the right status.
+  EXPECT_EQ(devtools_observer.trust_token_operation_status(),
+            mojom::TrustTokenOperationStatus::kUnauthorized);
+
+  trust_token_observer.WaitForTrustTokens(1u);
+  EXPECT_THAT(trust_token_observer.observed_tokens(),
+              testing::ElementsAre(
+                  MatchesTrustTokenDetails(test_server()->GetOrigin(), true)));
 }
 
 TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateFactory) {
@@ -6049,6 +6193,8 @@ TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateFactory) {
   base::RunLoop delete_run_loop;
   mojo::PendingRemote<mojom::URLLoader> loader;
   URLLoaderOptions url_loader_options;
+  MockTrustTokenObserver trust_token_observer;
+  url_loader_options.trust_token_observer = trust_token_observer.GetRemote();
   url_loader_options.devtools_observer = devtools_observer.Bind();
   std::unique_ptr<URLLoader> url_loader = url_loader_options.MakeURLLoader(
       context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),

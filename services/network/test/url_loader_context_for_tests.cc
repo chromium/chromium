@@ -28,6 +28,11 @@ mojom::CookieAccessObserver* URLLoaderContextForTests::GetCookieAccessObserver()
   return nullptr;
 }
 
+mojom::TrustTokenAccessObserver*
+URLLoaderContextForTests::GetTrustTokenAccessObserver() const {
+  return nullptr;
+}
+
 mojom::CrossOriginEmbedderPolicyReporter*
 URLLoaderContextForTests::GetCoepReporter() const {
   return nullptr;
