@@ -68,24 +68,41 @@ std::string GetSegmentationKey(std::vector<std::unique_ptr<Config>>* configs,
   return std::string();
 }
 
+std::map<SegmentId, absl::optional<proto::SegmentInfo>> GetPreferedSegmentInfo(
+    DefaultModelManager::SegmentInfoList&& segment_list) {
+  std::map<SegmentId, absl::optional<proto::SegmentInfo>> result;
+  for (const auto& segment_wrapper : segment_list) {
+    absl::optional<proto::SegmentInfo>& segment_info_optional =
+        result[segment_wrapper->segment_info.segment_id()];
+    if (segment_wrapper->segment_source ==
+        DefaultModelManager::SegmentSource::DATABASE) {
+      segment_info_optional = std::move(segment_wrapper->segment_info);
+    } else if (!segment_info_optional.has_value()) {
+      segment_info_optional = std::move(segment_wrapper->segment_info);
+    }
+  }
+
+  return result;
+}
+
 }  // namespace
 
 TrainingDataCollectorImpl::TrainingDataCollectorImpl(
-    SegmentInfoDatabase* segment_info_database,
     processing::FeatureListQueryProcessor* processor,
     HistogramSignalHandler* histogram_signal_handler,
-    SignalStorageConfig* signal_storage_config,
+    StorageService* storage_service,
     std::vector<std::unique_ptr<Config>>* configs,
     PrefService* profile_prefs,
     base::Clock* clock)
-    : segment_info_database_(segment_info_database),
+    : segment_info_database_(storage_service->segment_info_database()),
       feature_list_query_processor_(processor),
       histogram_signal_handler_(histogram_signal_handler),
-      signal_storage_config_(signal_storage_config),
+      signal_storage_config_(storage_service->signal_storage_config()),
       configs_(configs),
       clock_(clock),
       result_prefs_(std::make_unique<SegmentationResultPrefs>(profile_prefs)),
-      training_cache_(std::make_unique<TrainingDataCache>()) {}
+      training_cache_(std::make_unique<TrainingDataCache>()),
+      default_model_manager_(storage_service->default_model_manager()) {}
 
 TrainingDataCollectorImpl::~TrainingDataCollectorImpl() {
   histogram_signal_handler_->RemoveObserver(this);
@@ -101,19 +118,20 @@ void TrainingDataCollectorImpl::OnServiceInitialized() {
   if (segment_ids.empty()) {
     return;
   }
-  segment_info_database_->GetSegmentInfoForSegments(
-      segment_ids,
+  default_model_manager_->GetAllSegmentInfoFromBothModels(
+      segment_ids, segment_info_database_,
       base::BindOnce(&TrainingDataCollectorImpl::OnGetSegmentsInfoList,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
-    std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segments) {
+    DefaultModelManager::SegmentInfoList segments) {
   histogram_signal_handler_->AddObserver(this);
+  std::map<SegmentId, absl::optional<proto::SegmentInfo>> segment_list =
+      GetPreferedSegmentInfo(std::move(segments));
 
-  DCHECK(segments);
-  for (const auto& segment : *segments) {
-    const proto::SegmentInfo& segment_info = segment.second;
+  for (const auto& segment : segment_list) {
+    const proto::SegmentInfo& segment_info = segment.second.value();
 
     // Skip the segment if it is not in allowed list.
     if (!SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info)) {
@@ -388,21 +406,29 @@ void TrainingDataCollectorImpl::OnDecisionTime(
   const TrainingDataCache::RequestId request_id =
       training_cache_->GenerateNextId();
 
-  segment_info_database_->GetSegmentInfo(
-      id,
+  default_model_manager_->GetAllSegmentInfoFromBothModels(
+      {id}, segment_info_database_,
       base::BindOnce(&TrainingDataCollectorImpl::OnGetSegmentInfoAtDecisionTime,
-                     weak_ptr_factory_.GetWeakPtr(), request_id, type));
+                     weak_ptr_factory_.GetWeakPtr(), id, request_id, type,
+                     input_context));
 }
 
 void TrainingDataCollectorImpl::OnGetSegmentInfoAtDecisionTime(
-    TrainingDataCache::RequestId id,
+    proto::SegmentId segment_id,
+    TrainingDataCache::RequestId request_id,
     DecisionType type,
-    absl::optional<proto::SegmentInfo> segment) {
-  // If no segment info has been found.
-  if (!segment.has_value())
-    return;
+    scoped_refptr<InputContext> input_context,
+    DefaultModelManager::SegmentInfoList segment_list) {
+  absl::optional<proto::SegmentInfo> segment_info_optional =
+      std::move(GetPreferedSegmentInfo(std::move(segment_list))[segment_id]);
 
-  const proto::SegmentInfo& segment_info = segment.value();
+  // If no segment info list has been found.
+  if (!segment_info_optional) {
+    return;
+  }
+
+  const proto::SegmentInfo& segment_info = segment_info_optional.value();
+
   if (!CanReportTrainingData(segment_info, /*include_outputs*/ false))
     return;
 
@@ -411,18 +437,17 @@ void TrainingDataCollectorImpl::OnGetSegmentInfoAtDecisionTime(
       segment_info.model_metadata().training_outputs().trigger_config();
   if (training_config.decision_type() == type) {
     RecordTrainingDataCollectionEvent(
-        segment_info.segment_id(),
+        segment_id,
         stats::TrainingDataCollectionEvent::kImmediateCollectionStart);
 
     // Generate training data inputs.
     feature_list_query_processor_->ProcessFeatureList(
-        segment_info.model_metadata(), /*input_context*/ nullptr,
-        segment_info.segment_id(), clock_->Now(),
+        segment_info.model_metadata(), input_context, segment_id, clock_->Now(),
         /*process_option=*/
         FeatureListQueryProcessor::ProcessOption::kInputsOnly,
         base::BindOnce(
             &TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime,
-            weak_ptr_factory_.GetWeakPtr(), id, segment_info));
+            weak_ptr_factory_.GetWeakPtr(), request_id, segment_info));
   }
 }
 
@@ -493,6 +518,8 @@ void TrainingDataCollectorImpl::onGetOutputsOnObservationTrigger(
   // TODO(haileywang): Add state in cache for each request; never seen,
   // fulfilled, unfullfilled. (Or make triggers cancellable callbacks)
   // TODO(haileywang): Add usage of |ImmediaCollectionParam|.
+  // TODO(haileywang): Add output processing failure uma histogram (maybe
+  // success histogram too).
   OnGetTrainingTensors(absl::nullopt, segment_info, has_error,
                        cached_input_tensors, output_tensors);
 }

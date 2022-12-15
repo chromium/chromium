@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "components/segmentation_platform/internal/data_collection/training_data_cache.h"
+#include "components/segmentation_platform/internal/database/storage_service.h"
+#include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
@@ -28,8 +30,6 @@ class FeatureListQueryProcessor;
 
 struct Config;
 class HistogramSignalHandler;
-class SegmentInfoDatabase;
-class SignalStorageConfig;
 
 // Collect training data and report as Ukm message. Live on main thread.
 // TODO(ssid): Make a new class that owns the training data collector and
@@ -37,10 +37,9 @@ class SignalStorageConfig;
 class TrainingDataCollector {
  public:
   static std::unique_ptr<TrainingDataCollector> Create(
-      SegmentInfoDatabase* segment_info_database,
       processing::FeatureListQueryProcessor* processor,
       HistogramSignalHandler* histogram_signal_handler,
-      SignalStorageConfig* signal_storage_config,
+      StorageService* storage_service,
       std::vector<std::unique_ptr<Config>>* configs,
       PrefService* profile_prefs,
       base::Clock* clock);

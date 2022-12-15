@@ -157,6 +157,9 @@ class MetadataWriter {
       const std::vector<std::pair<float, std::string>>& bins,
       std::string underflow_label);
 
+  // Append a delay trigger for training data collection.
+  void AddDelayTrigger(uint64_t delay_sec);
+
  private:
   const raw_ptr<proto::SegmentationModelMetadata> metadata_;
 };

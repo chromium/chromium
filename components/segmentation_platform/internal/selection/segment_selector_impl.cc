@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
@@ -131,6 +132,11 @@ SegmentSelectorImpl::~SegmentSelectorImpl() = default;
 
 void SegmentSelectorImpl::OnPlatformInitialized(
     ExecutionService* execution_service) {
+  // If training data collector has been set for testing, do not get it from
+  // execution service.
+  if (!training_data_collector_) {
+    training_data_collector_ = execution_service->training_data_collector();
+  }
   segment_result_provider_ = SegmentResultProvider::Create(
       segment_database_, signal_storage_config_, default_model_manager_,
       execution_service, clock_, platform_options_.force_refresh_results);
@@ -275,6 +281,13 @@ void SegmentSelectorImpl::OnGetResultForSegmentSelection(
     return;
   }
   ranks->insert(std::make_pair(current_segment_id, *result->rank));
+
+  if (config_->on_demand_execution && training_data_collector_) {
+    // Collect training data on demand.
+    training_data_collector_->OnDecisionTime(
+        current_segment_id, input_context,
+        proto::TrainingOutputs::TriggerConfig::ONDEMAND);
+  }
 
   GetRankForNextSegment(std::move(ranks), input_context, std::move(callback));
 }

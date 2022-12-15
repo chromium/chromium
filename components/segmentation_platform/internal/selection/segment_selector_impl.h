@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/platform_options.h"
+#include "components/segmentation_platform/internal/scheduler/execution_service.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/internal/selection/segment_selector.h"
 #include "components/segmentation_platform/public/input_context.h"
@@ -26,7 +27,6 @@ namespace segmentation_platform {
 
 struct Config;
 class DefaultModelManager;
-class ExecutionService;
 class ExperimentalGroupRecorder;
 class FieldTrialRegister;
 class SegmentationResultPrefs;
@@ -72,6 +72,11 @@ class SegmentSelectorImpl : public SegmentSelector {
   void set_segment_result_provider_for_testing(
       std::unique_ptr<SegmentResultProvider> result_provider) {
     segment_result_provider_ = std::move(result_provider);
+  }
+
+  void set_training_data_collector_for_testing(
+      TrainingDataCollector* training_data_collector) {
+    training_data_collector_ = training_data_collector;
   }
 
  private:
@@ -141,6 +146,9 @@ class SegmentSelectorImpl : public SegmentSelector {
   // Segment selection result is read from prefs on init and used for serving
   // the clients in the current session.
   SegmentSelectionResult selected_segment_last_session_;
+
+  // Pointer to the training data collector.
+  raw_ptr<TrainingDataCollector> training_data_collector_{};
 
   base::WeakPtrFactory<SegmentSelectorImpl> weak_ptr_factory_{this};
 };

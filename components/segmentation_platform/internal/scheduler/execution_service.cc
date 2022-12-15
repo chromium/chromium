@@ -5,7 +5,6 @@
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
 
 #include "components/prefs/pref_service.h"
-#include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
@@ -56,10 +55,9 @@ void ExecutionService::Initialize(
           std::make_unique<processing::FeatureAggregatorImpl>());
 
   training_data_collector_ = TrainingDataCollector::Create(
-      storage_service->segment_info_database(),
       feature_list_query_processor_.get(),
-      signal_handler->deprecated_histogram_signal_handler(),
-      storage_service->signal_storage_config(), configs, profile_prefs, clock);
+      signal_handler->deprecated_histogram_signal_handler(), storage_service,
+      configs, profile_prefs, clock);
 
   model_executor_ = std::make_unique<ModelExecutorImpl>(
       clock, feature_list_query_processor_.get());

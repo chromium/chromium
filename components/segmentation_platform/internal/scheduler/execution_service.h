@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
+#include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
@@ -31,7 +32,6 @@ class ModelExecutor;
 class ModelProviderFactory;
 class SignalHandler;
 class StorageService;
-class TrainingDataCollector;
 
 // Handles feature processing and model execution.
 class ExecutionService {
@@ -61,6 +61,11 @@ class ExecutionService {
       std::unique_ptr<processing::InputDelegateHolder> input_delegate_holder,
       std::vector<std::unique_ptr<Config>>* configs,
       PrefService* profile_prefs);
+
+  // Returns the training data collector.
+  TrainingDataCollector* training_data_collector() {
+    return training_data_collector_.get();
+  }
 
   // Called whenever a new or updated model is available. Must be a valid
   // SegmentInfo with valid metadata and features.

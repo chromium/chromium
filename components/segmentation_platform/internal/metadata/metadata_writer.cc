@@ -176,4 +176,12 @@ void MetadataWriter::AddOutputConfigForBinnedClassifier(
   }
 }
 
+void MetadataWriter::AddDelayTrigger(uint64_t delay_sec) {
+  auto* config =
+      metadata_->mutable_training_outputs()->mutable_trigger_config();
+  auto* trigger = config->add_observation_trigger();
+  trigger->set_delay_sec(delay_sec);
+  config->set_decision_type(proto::TrainingOutputs::TriggerConfig::ONDEMAND);
+}
+
 }  // namespace segmentation_platform

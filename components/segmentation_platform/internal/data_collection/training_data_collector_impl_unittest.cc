@@ -18,6 +18,7 @@
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/processing/mock_feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+#include "components/segmentation_platform/internal/mock_ukm_data_manager.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
@@ -81,10 +82,17 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     ON_CALL(feature_list_processor_, ProcessFeatureList(_, _, _, _, _, _))
         .WillByDefault(
             RunOnceCallback<5>(false, inputs, ModelProvider::Response()));
-    ON_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
-        .WillByDefault(Return(true));
 
-    test_segment_info_db_ = std::make_unique<test::TestSegmentInfoDatabase>();
+    auto test_segment_info_db =
+        std::make_unique<test::TestSegmentInfoDatabase>();
+    test_segment_info_db_ = test_segment_info_db.get();
+
+    auto signal_storage_config =
+        std::make_unique<NiceMock<MockSignalStorageConfig>>();
+    signal_storage_config_ = signal_storage_config.get();
+
+    ON_CALL(*signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
+        .WillByDefault(Return(true));
 
     configs_.emplace_back(std::make_unique<Config>());
     configs_[0]->segmentation_key = kSegmentationKey;
@@ -101,21 +109,28 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     selected_segment.selection_time = base::Time::Now() - base::Days(1);
     result_prefs.SaveSegmentationResultToPref(kSegmentationKey,
                                               selected_segment);
+
+    storage_service_ = std::make_unique<StorageService>(
+        std::move(test_segment_info_db), nullptr,
+        std::move(signal_storage_config),
+        std::make_unique<DefaultModelManager>(nullptr,
+                                              base::flat_set<SegmentId>()),
+        &ukm_data_manager_);
+
     collector_ = std::make_unique<TrainingDataCollectorImpl>(
-        test_segment_info_db_.get(), &feature_list_processor_,
-        &histogram_signal_handler_, &signal_storage_config_, &configs_, &prefs_,
-        &clock_);
+        &feature_list_processor_, &histogram_signal_handler_,
+        storage_service_.get(), &configs_, &prefs_, &clock_);
   }
 
  protected:
   TrainingDataCollectorImpl* collector() { return collector_.get(); }
   test::TestSegmentInfoDatabase* test_segment_db() {
-    return test_segment_info_db_.get();
+    return test_segment_info_db_;
   }
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
   base::SimpleTestClock* clock() { return &clock_; }
   MockSignalStorageConfig* signal_storage_config() {
-    return &signal_storage_config_;
+    return signal_storage_config_;
   }
   processing::MockFeatureListQueryProcessor* feature_list_processor() {
     return &feature_list_processor_;
@@ -236,11 +251,13 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
   ukm::TestAutoSetUkmRecorder test_recorder_;
   NiceMock<processing::MockFeatureListQueryProcessor> feature_list_processor_;
   NiceMock<MockHistogramSignalHandler> histogram_signal_handler_;
-  NiceMock<MockSignalStorageConfig> signal_storage_config_;
-  std::unique_ptr<test::TestSegmentInfoDatabase> test_segment_info_db_;
+  raw_ptr<NiceMock<MockSignalStorageConfig>> signal_storage_config_;
+  test::TestSegmentInfoDatabase* test_segment_info_db_;
   std::unique_ptr<TrainingDataCollectorImpl> collector_;
   TestingPrefServiceSimple prefs_;
   std::vector<std::unique_ptr<Config>> configs_;
+  NiceMock<MockUkmDataManager> ukm_data_manager_;
+  std::unique_ptr<StorageService> storage_service_;
 };
 
 // No segment info in database. Do nothing.

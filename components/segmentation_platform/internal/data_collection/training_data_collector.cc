@@ -15,18 +15,17 @@ namespace segmentation_platform {
 
 // static
 std::unique_ptr<TrainingDataCollector> TrainingDataCollector::Create(
-    SegmentInfoDatabase* segment_info_database,
     processing::FeatureListQueryProcessor* processor,
     HistogramSignalHandler* histogram_signal_handler,
-    SignalStorageConfig* signal_storage_config,
+    StorageService* storage_service,
     std::vector<std::unique_ptr<Config>>* configs,
     PrefService* profile_prefs,
     base::Clock* clock) {
   if (base::FeatureList::IsEnabled(
           features::kSegmentationStructuredMetricsFeature)) {
     return std::make_unique<TrainingDataCollectorImpl>(
-        segment_info_database, processor, histogram_signal_handler,
-        signal_storage_config, configs, profile_prefs, clock);
+        processor, histogram_signal_handler, storage_service, configs,
+        profile_prefs, clock);
   }
 
   return std::make_unique<DummyTrainingDataCollector>();

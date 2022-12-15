@@ -32,6 +32,8 @@ class SegmentInfo;
 
 namespace {
 
+using ::testing::NiceMock;
+
 class MockFieldTrialRegister : public FieldTrialRegister {
  public:
   MOCK_METHOD2(RegisterFieldTrial,
@@ -59,6 +61,20 @@ class MockResultProvider : public SegmentResultProvider {
  public:
   MOCK_METHOD1(GetSegmentResult,
                void(std::unique_ptr<GetResultOptions> options));
+};
+
+class MockTrainingDataCollector : public TrainingDataCollector {
+ public:
+  MOCK_METHOD0(OnModelMetadataUpdated, void());
+  MOCK_METHOD0(OnServiceInitialized, void());
+  MOCK_METHOD0(ReportCollectedContinuousTrainingData, void());
+  MOCK_METHOD3(OnDecisionTime,
+               void(proto::SegmentId id,
+                    scoped_refptr<InputContext> input_context,
+                    DecisionType type));
+  MOCK_METHOD2(OnObservationTrigger,
+               void(TrainingDataCache::RequestId request_id,
+                    const proto::SegmentInfo& segment_info));
 };
 
 }  // namespace
@@ -101,6 +117,8 @@ class SegmentSelectorTest : public testing::Test {
         segment_database_.get(), &signal_storage_config_,
         std::move(prefs_moved), config_.get(), &field_trial_register_, &clock_,
         PlatformOptions::CreateDefault(), default_manager_.get());
+    segment_selector_->set_training_data_collector_for_testing(
+        &training_data_collector_);
     segment_selector_->OnPlatformInitialized(nullptr);
   }
 
@@ -145,13 +163,14 @@ class SegmentSelectorTest : public testing::Test {
   TestModelProviderFactory::Data model_providers_;
   TestModelProviderFactory provider_factory_;
   std::unique_ptr<Config> config_;
-  MockFieldTrialRegister field_trial_register_;
+  NiceMock<MockFieldTrialRegister> field_trial_register_;
   base::SimpleTestClock clock_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   MockSignalStorageConfig signal_storage_config_;
   std::unique_ptr<DefaultModelManager> default_manager_;
   raw_ptr<TestSegmentationResultPrefs> prefs_;
   std::unique_ptr<SegmentSelectorImpl> segment_selector_;
+  MockTrainingDataCollector training_data_collector_;
 };
 
 TEST_F(SegmentSelectorTest, FindBestSegmentFlowWithTwoSegments) {
@@ -193,6 +212,11 @@ TEST_F(SegmentSelectorTest, RunSelectionOnDemand) {
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
   float mapping2[][2] = {{0.3, 1}, {0.4, 4}};
   InitializeMetadataForSegment(kSegmentId2, mapping2, 2);
+
+  EXPECT_CALL(training_data_collector_, OnDecisionTime(kSegmentId, _, _))
+      .Times(1);
+  EXPECT_CALL(training_data_collector_, OnDecisionTime(kSegmentId2, _, _))
+      .Times(1);
 
   auto result_provider = std::make_unique<MockResultProvider>();
   EXPECT_CALL(*result_provider, GetSegmentResult(_))
@@ -415,6 +439,8 @@ TEST_F(SegmentSelectorTest,
       segment_database_.get(), &signal_storage_config_, std::move(prefs_moved),
       config_.get(), &field_trial_register_, &clock_,
       PlatformOptions::CreateDefault(), default_manager_.get());
+  segment_selector_->set_training_data_collector_for_testing(
+      &training_data_collector_);
   segment_selector_->OnPlatformInitialized(nullptr);
 
   SegmentSelectionResult result;
@@ -569,6 +595,8 @@ TEST_F(SegmentSelectorTest, SubsegmentRecording) {
               wait_for_subsegment.QuitClosure().Run();
           }));
 
+  segment_selector_->set_training_data_collector_for_testing(
+      &training_data_collector_);
   segment_selector_->OnPlatformInitialized(nullptr);
   wait_for_subsegment.Run();
   EXPECT_THAT(

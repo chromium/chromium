@@ -32,10 +32,9 @@ class SegmentationResultPrefs;
 class TrainingDataCollectorImpl : public TrainingDataCollector,
                                   public HistogramSignalHandler::Observer {
  public:
-  TrainingDataCollectorImpl(SegmentInfoDatabase* segment_info_database,
-                            processing::FeatureListQueryProcessor* processor,
+  TrainingDataCollectorImpl(processing::FeatureListQueryProcessor* processor,
                             HistogramSignalHandler* histogram_signal_handler,
-                            SignalStorageConfig* signal_storage_config,
+                            StorageService* storage_service,
                             std::vector<std::unique_ptr<Config>>* configs,
                             PrefService* profile_prefs,
                             base::Clock* clock);
@@ -63,8 +62,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
     float output_value;           // Value of the output.
   };
 
-  void OnGetSegmentsInfoList(
-      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segments);
+  void OnGetSegmentsInfoList(DefaultModelManager::SegmentInfoList segment_list);
 
   void ReportForSegmentsInfoList(
       const absl::optional<ImmediaCollectionParam>& param,
@@ -74,9 +72,11 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       absl::optional<proto::SegmentInfo> segment);
 
   void OnGetSegmentInfoAtDecisionTime(
-      TrainingDataCache::RequestId id,
+      proto::SegmentId segment_id,
+      TrainingDataCache::RequestId request_id,
       DecisionType type,
-      absl::optional<proto::SegmentInfo> segment);
+      scoped_refptr<InputContext> input_context,
+      DefaultModelManager::SegmentInfoList segment_list);
 
   void OnGetTrainingTensorsAtDecisionTime(
       TrainingDataCache::RequestId request_id,
@@ -105,18 +105,22 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   bool CanReportTrainingData(const proto::SegmentInfo& segment_info,
                              bool include_output);
 
-  raw_ptr<SegmentInfoDatabase> segment_info_database_;
-  raw_ptr<processing::FeatureListQueryProcessor> feature_list_query_processor_;
-  raw_ptr<HistogramSignalHandler> histogram_signal_handler_;
-  raw_ptr<SignalStorageConfig> signal_storage_config_;
-  raw_ptr<std::vector<std::unique_ptr<Config>>> configs_;
-  raw_ptr<base::Clock> clock_;
+  const raw_ptr<SegmentInfoDatabase> segment_info_database_;
+  const raw_ptr<processing::FeatureListQueryProcessor>
+      feature_list_query_processor_;
+  const raw_ptr<HistogramSignalHandler> histogram_signal_handler_;
+  const raw_ptr<SignalStorageConfig> signal_storage_config_;
+  const raw_ptr<std::vector<std::unique_ptr<Config>>> configs_;
+  const raw_ptr<base::Clock> clock_;
 
   // Helper class to read/write results to the prefs.
   std::unique_ptr<SegmentationResultPrefs> result_prefs_;
 
   // Cache class to temporarily store training data in the observation period.
   std::unique_ptr<TrainingDataCache> training_cache_;
+
+  // Class to get segment info from default models.
+  const raw_ptr<DefaultModelManager> default_model_manager_;
 
   // Hash of histograms for immediate training data collection. When any
   // histogram hash contained in the map is recorded, a UKM message is reported
