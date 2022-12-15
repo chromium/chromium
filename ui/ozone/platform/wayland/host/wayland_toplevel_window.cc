@@ -785,6 +785,11 @@ void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
 void WaylandToplevelWindow::ShowSnapPreview(
     WaylandWindowSnapDirection snap_direction,
     bool allow_haptic_feedback) {
+  if (IsSupportedOnAuraSurface(ZAURA_TOPLEVEL_INTENT_TO_SNAP_SINCE_VERSION)) {
+    shell_toplevel_->ShowSnapPreview(snap_direction, allow_haptic_feedback);
+    return;
+  }
+
   if (IsSupportedOnAuraSurface(ZAURA_SURFACE_INTENT_TO_SNAP_SINCE_VERSION)) {
     uint32_t zaura_shell_snap_direction = ZAURA_SURFACE_SNAP_DIRECTION_NONE;
     switch (snap_direction) {
@@ -808,10 +813,14 @@ void WaylandToplevelWindow::ShowSnapPreview(
 void WaylandToplevelWindow::CommitSnap(
     WaylandWindowSnapDirection snap_direction,
     float snap_ratio) {
+  if (IsSupportedOnAuraSurface(ZAURA_TOPLEVEL_UNSET_SNAP_SINCE_VERSION)) {
+    shell_toplevel_->CommitSnap(snap_direction, snap_ratio);
+    return;
+  }
+
   if (IsSupportedOnAuraSurface(ZAURA_TOPLEVEL_SET_SNAP_PRIMARY_SINCE_VERSION)) {
     switch (snap_direction) {
       case WaylandWindowSnapDirection::kNone:
-        // TODO(sophiewen): Move unset_snap to aura toplevel.
         zaura_surface_unset_snap(aura_surface());
         return;
       case WaylandWindowSnapDirection::kPrimary:

@@ -65,6 +65,8 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void SetScaleFactor(float scale_factor) override;
   void CommitSnap(WaylandWindowSnapDirection snap_direction,
                   float snap_ratio) override;
+  void ShowSnapPreview(WaylandWindowSnapDirection snap_direction,
+                       bool allow_haptic_feedback) override;
 
   XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
 

@@ -161,6 +161,12 @@ class ShellToplevelWrapper {
   // height in portrait mode.
   virtual void CommitSnap(WaylandWindowSnapDirection snap_direction,
                           float snap_ratio) = 0;
+
+  // Signals the underneath platform to shows a preview for the given window
+  // snap direction. `allow_haptic_feedback` indicates if it should send haptic
+  // feedback.
+  virtual void ShowSnapPreview(WaylandWindowSnapDirection snap_direction,
+                               bool allow_haptic_feedback) = 0;
 };
 
 // Look for |value| in |wl_array| in C++ style.
