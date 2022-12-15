@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "content/public/browser/web_contents.h"
@@ -84,6 +85,7 @@ void TestAppBannerManagerDesktop::AwaitAppInstall() {
 
 void TestAppBannerManagerDesktop::OnDidGetManifest(
     const InstallableData& result) {
+  debug_log_.Append("OnDidGetManifest");
   AppBannerManagerDesktop::OnDidGetManifest(result);
 
   // AppBannerManagerDesktop does not call |OnDidPerformInstallableCheck| to
@@ -94,6 +96,7 @@ void TestAppBannerManagerDesktop::OnDidGetManifest(
 }
 void TestAppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(
     const InstallableData& result) {
+  debug_log_.Append("OnDidPerformInstallableWebAppCheck");
   AppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(result);
   SetInstallable(result.NoBlockingErrors());
 }
@@ -105,11 +108,13 @@ void TestAppBannerManagerDesktop::PerformServiceWorkerCheck() {
 
 void TestAppBannerManagerDesktop::OnDidPerformWorkerCheck(
     const InstallableData& result) {
+  debug_log_.Append("OnDidPerformWorkerCheck");
   AppBannerManagerDesktop::OnDidPerformWorkerCheck(result);
   SetPromotable(result.NoBlockingErrors());
 }
 
 void TestAppBannerManagerDesktop::ResetCurrentPageData() {
+  debug_log_.Append("ResetCurrentPageData");
   AppBannerManagerDesktop::ResetCurrentPageData();
   installable_.reset();
   promotable_ = false;
@@ -139,6 +144,7 @@ void TestAppBannerManagerDesktop::DidFinishCreatingWebApp(
 void TestAppBannerManagerDesktop::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
+  debug_log_.Append("DidFinishLoad");
   if (ShouldIgnore(render_frame_host, validated_url)) {
     SetInstallable(false);
     return;
@@ -148,6 +154,8 @@ void TestAppBannerManagerDesktop::DidFinishLoad(
 }
 
 void TestAppBannerManagerDesktop::UpdateState(AppBannerManager::State state) {
+  debug_log_.Append(
+      base::StringPrintf("State updated to %d", static_cast<int>(state)));
   AppBannerManager::UpdateState(state);
 
   if (state == AppBannerManager::State::PENDING_ENGAGEMENT ||
@@ -159,13 +167,18 @@ void TestAppBannerManagerDesktop::UpdateState(AppBannerManager::State state) {
 }
 
 void TestAppBannerManagerDesktop::SetInstallable(bool installable) {
-  DCHECK(!installable_.has_value() || installable_ == installable);
+  debug_log_.Append(base::StringPrintf("SetInstallable(%d)", installable));
+  DCHECK(!installable_.has_value() || installable_ == installable)
+      << "Cannot set installable to " << installable << ", already set to "
+      << installable_.value() << ". Debug log:\n"
+      << debug_log_.DebugString();
   installable_ = installable;
   if (installable_quit_closure_)
     std::move(installable_quit_closure_).Run();
 }
 
 void TestAppBannerManagerDesktop::SetPromotable(bool promotable) {
+  debug_log_.Append(base::StringPrintf("SetPromotable(%d)", promotable));
   DCHECK(waiting_for_worker_);
   waiting_for_worker_ = false;
   promotable_ = promotable;

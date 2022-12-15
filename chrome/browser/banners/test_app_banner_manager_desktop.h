@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_BANNERS_TEST_APP_BANNER_MANAGER_DESKTOP_H_
 #define CHROME_BROWSER_BANNERS_TEST_APP_BANNER_MANAGER_DESKTOP_H_
 
+#include "base/values.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -77,6 +78,7 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   void OnFinished();
 
   absl::optional<bool> installable_;
+  base::Value::List debug_log_;
   bool waiting_for_worker_;
   bool promotable_;
   base::OnceClosure tear_down_quit_closure_;
