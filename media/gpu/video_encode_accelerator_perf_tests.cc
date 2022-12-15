@@ -319,10 +319,12 @@ void PerformanceMetrics::WriteToFile() const {
 }
 
 struct BitstreamQualityMetrics {
-  BitstreamQualityMetrics(const PSNRVideoFrameValidator* const psnr_validator,
-                          const SSIMVideoFrameValidator* const ssim_validator,
-                          const absl::optional<size_t>& spatial_idx,
-                          const absl::optional<size_t>& temporal_idx);
+  BitstreamQualityMetrics(
+      const PSNRVideoFrameValidator* const psnr_validator,
+      const SSIMVideoFrameValidator* const ssim_validator,
+      const PSNRVideoFrameValidator* const bottom_row_psnr_validator,
+      const absl::optional<size_t>& spatial_idx,
+      const absl::optional<size_t>& temporal_idx);
 
   void Output(uint32_t target_bitrate, uint32_t actual_bitrate);
 
@@ -345,30 +347,37 @@ struct BitstreamQualityMetrics {
   static QualityStats ComputeQualityStats(
       const std::map<size_t, double>& values);
 
-  void WriteToConsole(const std::string& svc_text,
-                      const BitstreamQualityMetrics::QualityStats& psnr_stats,
-                      const BitstreamQualityMetrics::QualityStats& ssim_stats,
-                      uint32_t target_bitrate,
-                      uint32_t actual_bitrate) const;
-  void WriteToFile(const std::string& svc_text,
-                   const BitstreamQualityMetrics::QualityStats& psnr_stats,
-                   const BitstreamQualityMetrics::QualityStats& ssim_stats,
-                   uint32_t target_bitrate,
-                   uint32_t actual_bitrate) const;
+  void WriteToConsole(
+      const std::string& svc_text,
+      const BitstreamQualityMetrics::QualityStats& psnr_stats,
+      const BitstreamQualityMetrics::QualityStats& ssim_stats,
+      const BitstreamQualityMetrics::QualityStats& bottom_row_psnr_stats,
+      uint32_t target_bitrate,
+      uint32_t actual_bitrate) const;
+  void WriteToFile(
+      const std::string& svc_text,
+      const BitstreamQualityMetrics::QualityStats& psnr_stats,
+      const BitstreamQualityMetrics::QualityStats& ssim_stats,
+      const BitstreamQualityMetrics::QualityStats& bottom_row_psnr_stats,
+      uint32_t target_bitrate,
+      uint32_t actual_bitrate) const;
 
   const raw_ptr<const PSNRVideoFrameValidator> psnr_validator;
   const raw_ptr<const SSIMVideoFrameValidator> ssim_validator;
+  const raw_ptr<const PSNRVideoFrameValidator> bottom_row_psnr_validator;
 };
 
 BitstreamQualityMetrics::BitstreamQualityMetrics(
     const PSNRVideoFrameValidator* const psnr_validator,
     const SSIMVideoFrameValidator* const ssim_validator,
+    const PSNRVideoFrameValidator* const bottom_row_psnr_validator,
     const absl::optional<size_t>& spatial_idx,
     const absl::optional<size_t>& temporal_idx)
     : spatial_idx(spatial_idx),
       temporal_idx(temporal_idx),
       psnr_validator(psnr_validator),
-      ssim_validator(ssim_validator) {}
+      ssim_validator(ssim_validator),
+      bottom_row_psnr_validator(bottom_row_psnr_validator) {}
 
 // static
 BitstreamQualityMetrics::QualityStats
@@ -408,16 +417,20 @@ void BitstreamQualityMetrics::Output(uint32_t target_bitrate,
 
   auto psnr_stats = ComputeQualityStats(psnr_validator->GetPSNRValues());
   auto ssim_stats = ComputeQualityStats(ssim_validator->GetSSIMValues());
+  auto bottom_row_psnr_stats =
+      ComputeQualityStats(bottom_row_psnr_validator->GetPSNRValues());
 
-  WriteToConsole(svc_text, psnr_stats, ssim_stats, target_bitrate,
-                 actual_bitrate);
-  WriteToFile(svc_text, psnr_stats, ssim_stats, target_bitrate, actual_bitrate);
+  WriteToConsole(svc_text, psnr_stats, ssim_stats, bottom_row_psnr_stats,
+                 target_bitrate, actual_bitrate);
+  WriteToFile(svc_text, psnr_stats, ssim_stats, bottom_row_psnr_stats,
+              target_bitrate, actual_bitrate);
 }
 
 void BitstreamQualityMetrics::WriteToConsole(
     const std::string& svc_text,
     const BitstreamQualityMetrics::QualityStats& psnr_stats,
     const BitstreamQualityMetrics::QualityStats& ssim_stats,
+    const BitstreamQualityMetrics::QualityStats& bottom_row_psnr_stats,
     uint32_t target_bitrate,
     uint32_t actual_bitrate) const {
   const auto default_ssize = std::cout.precision();
@@ -443,6 +456,14 @@ void BitstreamQualityMetrics::WriteToConsole(
             << std::endl;
   std::cout << "PSNR - percentile 75: " << psnr_stats.percentile_75
             << std::endl;
+  std::cout << "Bottom row PSNR - average:       " << bottom_row_psnr_stats.avg
+            << std::endl;
+  std::cout << "Bottom row PSNR - percentile 25: "
+            << bottom_row_psnr_stats.percentile_25 << std::endl;
+  std::cout << "Bottom row PSNR - percentile 50: "
+            << bottom_row_psnr_stats.percentile_50 << std::endl;
+  std::cout << "Bottom row PSNR - percentile 75: "
+            << bottom_row_psnr_stats.percentile_75 << std::endl;
   std::cout.precision(default_ssize);
 }
 
@@ -450,6 +471,7 @@ void BitstreamQualityMetrics::WriteToFile(
     const std::string& svc_text,
     const BitstreamQualityMetrics::QualityStats& psnr_stats,
     const BitstreamQualityMetrics::QualityStats& ssim_stats,
+    const BitstreamQualityMetrics::QualityStats& bottom_row_psnr_stats,
     uint32_t target_bitrate,
     uint32_t actual_bitrate) const {
   base::FilePath output_folder_path = base::FilePath(g_env->OutputFolder());
@@ -467,6 +489,8 @@ void BitstreamQualityMetrics::WriteToFile(
       base::Value((actual_bitrate * 100.0 / target_bitrate) - 100.0));
   metrics.SetKey("SSIMAverage", base::Value(ssim_stats.avg));
   metrics.SetKey("PSNRAverage", base::Value(psnr_stats.avg));
+  metrics.SetKey("BottomRowPSNRAverage",
+                 base::Value(bottom_row_psnr_stats.avg));
   // Write ssim values bitstream delivery times to json.
   base::Value ssim_values(base::Value::Type::LIST);
   for (double value : ssim_stats.values_in_order)
@@ -478,6 +502,12 @@ void BitstreamQualityMetrics::WriteToFile(
   for (double value : psnr_stats.values_in_order)
     psnr_values.Append(value);
   metrics.SetKey("PSNRValues", std::move(psnr_values));
+
+  // Write bottom row psnr values to json.
+  base::Value bottom_row_psnr_values(base::Value::Type::LIST);
+  for (double value : bottom_row_psnr_stats.values_in_order)
+    bottom_row_psnr_values.Append(value);
+  metrics.SetKey("BottomRowPSNRValues", std::move(bottom_row_psnr_values));
 
   // Write json to file.
   std::string metrics_str;
@@ -570,11 +600,20 @@ class VideoEncoderTest : public ::testing::Test {
         VideoFrameValidator::ValidationMode::kAverage,
         /*tolerance=*/0.0);
     LOG_ASSERT(psnr_validator);
+    auto bottom_row_psnr_validator = PSNRVideoFrameValidator::Create(
+        get_model_frame_cb,
+        /*corrupt_frame_processor=*/nullptr,
+        VideoFrameValidator::ValidationMode::kAverage,
+        /*tolerance=*/0.0,
+        base::BindRepeating(&BottomRowCrop, kDefaultBottomRowCropHeight));
+    LOG_ASSERT(bottom_row_psnr_validator);
     quality_metrics_.push_back(BitstreamQualityMetrics(
         psnr_validator.get(), ssim_validator.get(),
-        spatial_layer_index_to_decode, temporal_layer_index_to_decode));
+        bottom_row_psnr_validator.get(), spatial_layer_index_to_decode,
+        temporal_layer_index_to_decode));
     video_frame_processors.push_back(std::move(ssim_validator));
     video_frame_processors.push_back(std::move(psnr_validator));
+    video_frame_processors.push_back(std::move(bottom_row_psnr_validator));
 
     VideoDecoderConfig decoder_config(
         VideoCodecProfileToVideoCodec(profile), profile,
