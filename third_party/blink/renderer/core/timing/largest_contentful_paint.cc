@@ -20,8 +20,13 @@ LargestContentfulPaint::LargestContentfulPaint(
     const AtomicString& id,
     const String& url,
     Element* element,
-    uint32_t navigation_id)
-    : PerformanceEntry(g_empty_atom, start_time, start_time, navigation_id),
+    uint32_t navigation_id,
+    DOMWindow* source)
+    : PerformanceEntry(g_empty_atom,
+                       start_time,
+                       start_time,
+                       navigation_id,
+                       source),
       size_(size),
       render_time_(render_time),
       load_time_(load_time),

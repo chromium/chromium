@@ -80,7 +80,8 @@ PerformanceResourceTiming::PerformanceResourceTiming(
     base::TimeTicks time_origin,
     bool cross_origin_isolated_capability,
     const AtomicString& initiator_type,
-    ExecutionContext* context)
+    ExecutionContext* context,
+    DOMWindow* source)
     : PerformanceEntry(AtomicString(info.name),
                        Performance::MonotonicTimeToDOMHighResTimeStamp(
                            time_origin,
@@ -92,7 +93,8 @@ PerformanceResourceTiming::PerformanceResourceTiming(
                            info.response_end,
                            info.allow_negative_values,
                            cross_origin_isolated_capability),
-                       PerformanceEntry::GetNavigationId(context)),
+                       PerformanceEntry::GetNavigationId(context),
+                       source),
       initiator_type_(initiator_type.empty()
                           ? fetch_initiator_type_names::kOther
                           : initiator_type),
@@ -136,8 +138,9 @@ PerformanceResourceTiming::PerformanceResourceTiming(
     bool is_secure_transport,
     HeapVector<Member<PerformanceServerTiming>> server_timing,
     ExecutionContext* context,
-    NavigationDeliveryType navigation_delivery_type)
-    : PerformanceEntry(name, 0.0, 0.0, kNavigationIdDefaultValue),
+    NavigationDeliveryType navigation_delivery_type,
+    DOMWindow* source)
+    : PerformanceEntry(name, 0.0, 0.0, kNavigationIdDefaultValue, source),
       delivery_type_(GetDeliveryType(navigation_delivery_type, cache_state)),
       time_origin_(time_origin),
       cross_origin_isolated_capability_(cross_origin_isolated_capability),

@@ -594,7 +594,7 @@
     },
     {
       name: "CrossFramePerformanceTimeline",
-      status: "test",
+      status: "experimental",
       base_feature: "CrossFramePerformanceTimeline",
     },
     {

@@ -37,5 +37,6 @@ interface PerformanceEntry {
     readonly attribute DOMHighResTimeStamp startTime;
     readonly attribute DOMHighResTimeStamp duration;
     [RuntimeEnabled=NavigationId] readonly attribute unsigned long navigationId;
+    [RuntimeEnabled=CrossFramePerformanceTimeline, Exposed=Window] readonly attribute EventTarget source;
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

@@ -20,11 +20,12 @@ PerformanceLongTaskTiming::PerformanceLongTaskTiming(
     const AtomicString& culprit_src,
     const AtomicString& culprit_id,
     const AtomicString& culprit_name,
-    const uint32_t navigation_id)
-    : PerformanceEntry(duration, name, start_time, navigation_id) {
+    const uint32_t navigation_id,
+    DOMWindow* source)
+    : PerformanceEntry(duration, name, start_time, navigation_id, source) {
   auto* attribution_entry = MakeGarbageCollected<TaskAttributionTiming>(
       "unknown", culprit_type, culprit_src, culprit_id, culprit_name,
-      navigation_id);
+      navigation_id, source);
   attribution_.push_back(*attribution_entry);
 }
 

@@ -31,7 +31,8 @@ class PerformanceLongTaskTiming final : public PerformanceEntry {
                             const AtomicString& culprit_src,
                             const AtomicString& culprit_id,
                             const AtomicString& culprit_name,
-                            const uint32_t navigation_id);
+                            const uint32_t navigation_id,
+                            DOMWindow* source);
   ~PerformanceLongTaskTiming() override;
 
   const AtomicString& entryType() const override;

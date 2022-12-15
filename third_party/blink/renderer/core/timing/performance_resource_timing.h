@@ -66,12 +66,14 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
       bool is_secure_transport,
       HeapVector<Member<PerformanceServerTiming>> server_timing,
       ExecutionContext* context,
-      network::mojom::NavigationDeliveryType delivery_type);
+      network::mojom::NavigationDeliveryType delivery_type,
+      DOMWindow* source);
   PerformanceResourceTiming(const mojom::blink::ResourceTimingInfo&,
                             base::TimeTicks time_origin,
                             bool cross_origin_isolated_capability,
                             const AtomicString& initiator_type,
-                            ExecutionContext* context);
+                            ExecutionContext* context,
+                            DOMWindow* source);
   ~PerformanceResourceTiming() override;
 
   const AtomicString& entryType() const override;

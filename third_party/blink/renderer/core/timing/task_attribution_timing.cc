@@ -15,8 +15,9 @@ TaskAttributionTiming::TaskAttributionTiming(const AtomicString& name,
                                              const AtomicString& container_src,
                                              const AtomicString& container_id,
                                              const AtomicString& container_name,
-                                             const uint32_t navigation_id)
-    : PerformanceEntry(name, 0.0, 0.0, navigation_id),
+                                             const uint32_t navigation_id,
+                                             DOMWindow* source)
+    : PerformanceEntry(name, 0.0, 0.0, navigation_id, source),
       container_type_(container_type),
       container_src_(container_src),
       container_id_(container_id),

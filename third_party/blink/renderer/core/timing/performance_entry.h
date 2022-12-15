@@ -35,6 +35,7 @@
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
+#include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -79,6 +80,9 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   const AtomicString& name() const { return name_; }
   DOMHighResTimeStamp startTime() const;
   uint32_t navigationId() const;
+  // source() will return null if the PerformanceEntry did not originate from a
+  // Window context.
+  DOMWindow* source() const;
   virtual const AtomicString& entryType() const = 0;
   virtual PerformanceEntryType EntryTypeEnum() const = 0;
   // PerformanceNavigationTiming will override this due to
@@ -129,15 +133,19 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   virtual mojom::blink::PerformanceMarkOrMeasurePtr
   ToMojoPerformanceMarkOrMeasure();
 
+  void Trace(Visitor*) const override;
+
  protected:
   PerformanceEntry(const AtomicString& name,
                    double start_time,
                    double finish_time,
-                   uint32_t navigation_id);
+                   uint32_t navigation_id,
+                   DOMWindow* source);
   PerformanceEntry(double duration,
                    const AtomicString& name,
                    double start_time,
-                   uint32_t navigation_id);
+                   uint32_t navigation_id,
+                   DOMWindow* source);
 
   virtual void BuildJSONValue(V8ObjectBuilder&) const;
 
@@ -149,6 +157,9 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   const double start_time_;
   const int index_;
   const uint32_t navigation_id_;
+  // source_ will be null if the PerformanceEntry did not originate from a
+  // Window context.
+  const Member<DOMWindow> source_;
 };
 
 }  // namespace blink

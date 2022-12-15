@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_mark_options.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -46,7 +47,7 @@ TEST(PerformanceMarkTest, Construction) {
 
   PerformanceMark* pm = MakeGarbageCollected<PerformanceMark>(
       "mark-name", 0, base::TimeTicks(), SerializedScriptValue::NullValue(),
-      exception_state, 1);
+      exception_state, 1, LocalDOMWindow::From(script_state));
   ASSERT_EQ(pm->entryType(), performance_entry_names::kMark);
   ASSERT_EQ(pm->EntryTypeEnum(), PerformanceEntry::EntryType::kMark);
 
@@ -65,7 +66,8 @@ TEST(PerformanceMarkTest, ConstructionWithDetail) {
       SerializedScriptValue::Create(String("some-payload"));
 
   PerformanceMark* pm = MakeGarbageCollected<PerformanceMark>(
-      "mark-name", 0, base::TimeTicks(), payload_string, exception_state);
+      "mark-name", 0, base::TimeTicks(), payload_string, exception_state, 0,
+      LocalDOMWindow::From(script_state));
   ASSERT_EQ(pm->entryType(), performance_entry_names::kMark);
   ASSERT_EQ(pm->EntryTypeEnum(), PerformanceEntry::EntryType::kMark);
 
@@ -86,7 +88,8 @@ TEST(PerformanceMarkTest, BuildJSONValue) {
   const AtomicString expected_entry_type = "mark";
   PerformanceMark pm(expected_name, expected_start_time, base::TimeTicks(),
                      SerializedScriptValue::NullValue(), exception_state,
-                     expected_navigation_count);
+                     expected_navigation_count,
+                     LocalDOMWindow::From(script_state));
 
   ScriptValue json_object = pm.toJSONForBinding(script_state);
   EXPECT_TRUE(json_object.IsObject());

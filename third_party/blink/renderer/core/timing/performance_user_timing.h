@@ -53,7 +53,8 @@ class UserTiming final : public GarbageCollected<UserTiming> {
                               const absl::optional<double>& duration,
                               const V8UnionDoubleOrString* end,
                               const ScriptValue& detail,
-                              ExceptionState&);
+                              ExceptionState&,
+                              DOMWindow* source);
   void ClearMeasures(const AtomicString& measure_name);
 
   PerformanceEntryVector GetMarks() const;

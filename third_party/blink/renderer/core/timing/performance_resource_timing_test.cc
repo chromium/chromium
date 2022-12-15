@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/core/timing/performance_resource_timing.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 
 namespace blink {
@@ -31,6 +33,10 @@ class PerformanceResourceTimingTest : public testing::Test {
                                       connection_info);
   }
 
+  void Initialize(ScriptState* script_state) { script_state_ = script_state; }
+
+  ScriptState* GetScriptState() { return script_state_; }
+
  private:
   PerformanceResourceTiming* MakePerformanceResourceTiming(
       const mojom::blink::ResourceTimingInfo& info) {
@@ -42,12 +48,18 @@ class PerformanceResourceTimingTest : public testing::Test {
             .GetExecutionContext()
             ->CrossOriginIsolatedCapability(),
         /*initiator_type=*/"",
-        dummy_page_holder->GetDocument().GetExecutionContext());
+        dummy_page_holder->GetDocument().GetExecutionContext(),
+        LocalDOMWindow::From(GetScriptState()));
   }
+
+  Persistent<ScriptState> script_state_;
 };
 
 TEST_F(PerformanceResourceTimingTest,
        TestFallbackToConnectionInfoWhenALPNUnknown) {
+  V8TestingScope scope;
+  Initialize(scope.GetScriptState());
+
   AtomicString connection_info = "http/1.1";
   AtomicString alpn_negotiated_protocol = "unknown";
   EXPECT_EQ(GetNextHopProtocol(alpn_negotiated_protocol, connection_info),
@@ -56,12 +68,18 @@ TEST_F(PerformanceResourceTimingTest,
 
 TEST_F(PerformanceResourceTimingTest,
        TestFallbackToHTTPInfoWhenALPNAndConnectionInfoUnknown) {
+  V8TestingScope scope;
+  Initialize(scope.GetScriptState());
+
   AtomicString connection_info = "unknown";
   AtomicString alpn_negotiated_protocol = "unknown";
   EXPECT_EQ(GetNextHopProtocol(alpn_negotiated_protocol, connection_info), "");
 }
 
 TEST_F(PerformanceResourceTimingTest, TestNoChangeWhenContainsQuic) {
+  V8TestingScope scope;
+  Initialize(scope.GetScriptState());
+
   AtomicString connection_info = "http/1.1";
   AtomicString alpn_negotiated_protocol = "http/2+quic/39";
   EXPECT_EQ(GetNextHopProtocol(alpn_negotiated_protocol, connection_info),
@@ -69,6 +87,9 @@ TEST_F(PerformanceResourceTimingTest, TestNoChangeWhenContainsQuic) {
 }
 
 TEST_F(PerformanceResourceTimingTest, TestNoChangeWhenOtherwise) {
+  V8TestingScope scope;
+  Initialize(scope.GetScriptState());
+
   AtomicString connection_info = "http/1.1";
   AtomicString alpn_negotiated_protocol = "RandomProtocol";
   EXPECT_EQ(GetNextHopProtocol(alpn_negotiated_protocol, connection_info),
@@ -76,6 +97,9 @@ TEST_F(PerformanceResourceTimingTest, TestNoChangeWhenOtherwise) {
 }
 
 TEST_F(PerformanceResourceTimingTest, TestNextHopProtocolIsGuardedByTao) {
+  V8TestingScope scope;
+  Initialize(scope.GetScriptState());
+
   AtomicString connection_info = "http/1.1";
   AtomicString alpn_negotiated_protocol = "RandomProtocol";
   EXPECT_EQ(

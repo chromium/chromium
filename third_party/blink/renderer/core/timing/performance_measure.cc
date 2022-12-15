@@ -19,21 +19,23 @@ PerformanceMeasure::PerformanceMeasure(
     double start_time,
     double end_time,
     scoped_refptr<SerializedScriptValue> serialized_detail,
-    ExceptionState& exception_state)
+    ExceptionState& exception_state,
+    DOMWindow* source)
     : PerformanceEntry(name,
                        start_time,
                        end_time,
-                       PerformanceEntry::GetNavigationId(script_state)),
+                       PerformanceEntry::GetNavigationId(script_state),
+                       source),
       serialized_detail_(serialized_detail) {}
 
 // static
-PerformanceMeasure* PerformanceMeasure::Create(
-    ScriptState* script_state,
-    const AtomicString& name,
-    double start_time,
-    double end_time,
-    const ScriptValue& detail,
-    ExceptionState& exception_state) {
+PerformanceMeasure* PerformanceMeasure::Create(ScriptState* script_state,
+                                               const AtomicString& name,
+                                               double start_time,
+                                               double end_time,
+                                               const ScriptValue& detail,
+                                               ExceptionState& exception_state,
+                                               DOMWindow* source) {
   scoped_refptr<SerializedScriptValue> serialized_detail;
   if (detail.IsEmpty()) {
     serialized_detail = nullptr;
@@ -46,7 +48,7 @@ PerformanceMeasure* PerformanceMeasure::Create(
   }
   return MakeGarbageCollected<PerformanceMeasure>(
       script_state, name, start_time, end_time, serialized_detail,
-      exception_state);
+      exception_state, source);
 }
 
 ScriptValue PerformanceMeasure::detail(ScriptState* script_state) {

@@ -68,7 +68,8 @@ PerformanceNavigationTiming::PerformanceNavigationTiming(
                          window->Url().Protocol().Ascii()),
           std::move(server_timing),
           window,
-          navigation_delivery_type),
+          navigation_delivery_type,
+          window),
       ExecutionContextClient(window),
       resource_timing_info_(info) {
   DCHECK(window);
