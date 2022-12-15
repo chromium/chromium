@@ -231,6 +231,7 @@ CookieSettings::GetCookieSettingWithMetadata(
   }
 
   bool allowed_by_storage_access_grant = false;
+  bool allowed_by_override = false;
   if (cookie_setting != CONTENT_SETTING_BLOCK && !found_explicit_setting) {
     // Check for should block third party.
     if (block_third_party_cookies_ && is_third_party_request &&
@@ -242,6 +243,11 @@ CookieSettings::GetCookieSettingWithMetadata(
           ShouldConsiderStorageAccessGrants(query_reason) && match &&
           match->GetContentSetting() == CONTENT_SETTING_ALLOW) {
         allowed_by_storage_access_grant = true;
+      } else if (overrides.Has(
+                     net::CookieSettingOverride::kForceThirdPartyByUser)) {
+        cookie_setting = CONTENT_SETTING_ALLOW;
+        third_party_blocking_outcome = ThirdPartyBlockingOutcome::kForceAllowed;
+        allowed_by_override = true;
       } else {
         cookie_setting = CONTENT_SETTING_BLOCK;
         third_party_blocking_outcome =
@@ -251,22 +257,18 @@ CookieSettings::GetCookieSettingWithMetadata(
   }
 
   if (cookie_setting == CONTENT_SETTING_BLOCK) {
-    if (is_third_party_request &&
-        overrides.Has(net::CookieSettingOverride::kForceThirdPartyByUser)) {
-      cookie_setting = CONTENT_SETTING_ALLOW;
-      third_party_blocking_outcome = ThirdPartyBlockingOutcome::kForceAllowed;
-      FireStorageAccessHistogram(
-          net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED);
-    } else {
-      FireStorageAccessHistogram(
-          net::cookie_util::StorageAccessResult::ACCESS_BLOCKED);
-    }
+    FireStorageAccessHistogram(
+        net::cookie_util::StorageAccessResult::ACCESS_BLOCKED);
+  } else if (allowed_by_storage_access_grant) {
+    FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
+                                   ACCESS_ALLOWED_STORAGE_ACCESS_GRANT);
+
+  } else if (allowed_by_override) {
+    FireStorageAccessHistogram(
+        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED);
   } else {
     FireStorageAccessHistogram(
-        allowed_by_storage_access_grant
-            ? net::cookie_util::StorageAccessResult::
-                  ACCESS_ALLOWED_STORAGE_ACCESS_GRANT
-            : net::cookie_util::StorageAccessResult::ACCESS_ALLOWED);
+        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED);
   }
 
   return {cookie_setting, third_party_blocking_outcome};

@@ -171,10 +171,12 @@ TEST_P(CookieSettingsTest, GetCookieSettingMustMatchBothPatterns) {
                                       QueryReason::kCookies),
             CONTENT_SETTING_ALLOW);
 
+  // This is blocked and not forced by override, because the override
+  // does not apply to a block by pattern match.
   EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kOtherURL),
                                       GetCookieSettingOverrides(), nullptr,
                                       QueryReason::kCookies),
-            SettingWithForceAllowThirdPartyCookies());
+            CONTENT_SETTING_BLOCK);
 }
 
 TEST_P(CookieSettingsTest, GetCookieSettingGetsFirstSetting) {
@@ -286,7 +288,23 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
                                       QueryReason::kCookies),
             SettingWithForceAllowThirdPartyCookies());
 
-  // If cookies are globally blocked, SAA grants should be ignored.
+  // If third-party cookies are blocked, SAA grant takes precedence over
+  // possible override to force allow 3PCs.
+  {
+    settings.set_block_third_party_cookies(true);
+    base::HistogramTester histogram_tester_2;
+    EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
+                                        GetCookieSettingOverrides(), nullptr,
+                                        QueryReason::kCookies),
+              SettingWithEitherOverride());
+    histogram_tester_2.ExpectTotalCount(kAllowedRequestsHistogram, 1);
+    histogram_tester_2.ExpectBucketCount(
+        kAllowedRequestsHistogram,
+        static_cast<int>(BlockedStorageAccessResultWithEitherOverride()), 1);
+  }
+
+  // If cookies are globally blocked, SAA grants and 3PC override
+  // should both be ignored.
   {
     settings.set_content_settings(
         {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
@@ -295,12 +313,11 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
     EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
                                         GetCookieSettingOverrides(), nullptr,
                                         QueryReason::kCookies),
-              SettingWithForceAllowThirdPartyCookies());
+              CONTENT_SETTING_BLOCK);
     histogram_tester_2.ExpectTotalCount(kAllowedRequestsHistogram, 1);
     histogram_tester_2.ExpectBucketCount(
         kAllowedRequestsHistogram,
-        static_cast<int>(
-            BlockedStorageAccessResultWithForceAllowThirdPartyCookies()),
+        static_cast<int>(net::cookie_util::StorageAccessResult::ACCESS_BLOCKED),
         1);
   }
 }
@@ -371,7 +388,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAARespectsSettings) {
   EXPECT_EQ(
       settings.GetCookieSetting(url, top_level_url, GetCookieSettingOverrides(),
                                 nullptr, QueryReason::kCookies),
-      SettingWithForceAllowThirdPartyCookies());
+      CONTENT_SETTING_BLOCK);
 }
 
 // Once a grant expires access should no longer be given.
