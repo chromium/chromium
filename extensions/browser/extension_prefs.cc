@@ -528,17 +528,16 @@ void ExtensionPrefs::SetBooleanPref(const std::string& id,
 
 void ExtensionPrefs::SetStringPref(const std::string& id,
                                    const PrefMap& pref,
-                                   const std::string value) {
+                                   std::string value) {
   DCHECK_EQ(pref.type, PrefType::kString);
   UpdateExtensionPrefInternal(id, pref, base::Value(std::move(value)));
 }
 
 void ExtensionPrefs::SetListPref(const std::string& id,
                                  const PrefMap& pref,
-                                 base::Value value) {
+                                 base::Value::List value) {
   DCHECK_EQ(pref.type, PrefType::kList);
-  DCHECK_EQ(base::Value::Type::LIST, value.type());
-  UpdateExtensionPrefInternal(id, pref, std::move(value));
+  UpdateExtensionPrefInternal(id, pref, base::Value(std::move(value)));
 }
 
 void ExtensionPrefs::SetDictionaryPref(const std::string& id,
@@ -550,7 +549,7 @@ void ExtensionPrefs::SetDictionaryPref(const std::string& id,
 
 void ExtensionPrefs::SetTimePref(const std::string& id,
                                  const PrefMap& pref,
-                                 const base::Time value) {
+                                 base::Time value) {
   DCHECK_EQ(pref.type, PrefType::kTime);
   UpdateExtensionPrefInternal(id, pref, ::base::TimeToValue(value));
 }

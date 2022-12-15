@@ -1406,8 +1406,7 @@ TEST_F(ExtensionPrefsSimpleTest, ExtensionSpecificPrefsMapTest) {
                                    std::move(dict));
   base::Value::List list;
   list.Append("list_val");
-  prefs.prefs()->SetListPref(extension_id, kTestListPref,
-                             base::Value(std::move(list)));
+  prefs.prefs()->SetListPref(extension_id, kTestListPref, std::move(list));
   base::Time time = base::Time::Now();
   prefs.prefs()->SetTimePref(extension_id, kTestTimePref, time);
 

@@ -296,16 +296,16 @@ class ExtensionPrefs : public KeyedService {
   void SetBooleanPref(const std::string& id, const PrefMap& pref, bool value);
   void SetStringPref(const std::string& id,
                      const PrefMap& pref,
-                     const std::string value);
+                     std::string value);
   void SetListPref(const std::string& id,
                    const PrefMap& pref,
-                   base::Value value);
+                   base::Value::List value);
   void SetDictionaryPref(const std::string& id,
                          const PrefMap& pref,
                          base::Value::Dict value);
   void SetTimePref(const std::string& id,
                    const PrefMap& pref,
-                   const base::Time value);
+                   base::Time value);
 
   void UpdateExtensionPref(const std::string& id,
                            base::StringPiece key,
