@@ -171,6 +171,10 @@ void LogUma(bool success,
     } else {
       base::UmaHistogramSparse("Extensions.Functions.SucceededTime.Over10ms",
                                histogram_value);
+      if (elapsed_time >= base::Seconds(270)) {
+        base::UmaHistogramSparse("Extensions.Functions.SucceededTime.Over270s",
+                                 histogram_value);
+      }
     }
     UMA_HISTOGRAM_TIMES("Extensions.Functions.SucceededTotalExecutionTime",
                         elapsed_time);
@@ -187,6 +191,10 @@ void LogUma(bool success,
     } else {
       base::UmaHistogramSparse("Extensions.Functions.FailedTime.Over10ms",
                                histogram_value);
+      if (elapsed_time >= base::Seconds(270)) {
+        base::UmaHistogramSparse("Extensions.Functions.FailedTime.Over270s",
+                                 histogram_value);
+      }
     }
     base::UmaHistogramTimes(
         WrapUma("Extensions.Functions.FailedTotalExecutionTime",

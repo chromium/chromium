@@ -29,6 +29,8 @@ chromium-metrics-reviews@google.com.
       summary="Execution took between 5ms and 10ms (slow)."/>
   <variant name=".LessThan1ms" summary="Execution took less than 1ms (fast)."/>
   <variant name=".Over10ms" summary="Execution took over 10ms (glacial)."/>
+  <variant name=".Over270s"
+      summary="Execution took over 4 and half minutes, close to timeout."/>
 </variants>
 
 <variants name="ExtensionMessagingPortType">
