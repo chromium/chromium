@@ -74,6 +74,27 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     float font_zoom_ = 1;
   };
 
+  class CORE_EXPORT LineHeightSize {
+    DISALLOW_NEW();
+
+   public:
+    LineHeightSize() = default;
+    LineHeightSize(const Length& line_height, const Font* font, float font_zoom)
+        : line_height_(line_height), font_(font), font_zoom_(font_zoom) {}
+    explicit LineHeightSize(const ComputedStyle&);
+
+    float Lh(float zoom) const;
+
+   private:
+    Length line_height_;
+    // Note that this Font may be different from the instance held
+    // by FontSizes (for the same CSSToLengthConversionData object).
+    const Font* font_ = nullptr;
+    // Like ex/ch/ic, lh is also based on font-metrics and is pre-zoomed by
+    // a factor of `font_zoom_`.
+    float font_zoom_ = 1;
+  };
+
   class CORE_EXPORT ViewportSize {
     DISALLOW_NEW();
 
@@ -157,9 +178,9 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
 
   CSSToLengthConversionData() : CSSLengthResolver(1 /* zoom */) {}
   CSSToLengthConversionData(const ComputedStyle* element_style,
-                            const ComputedStyle* parent_style,
                             WritingMode,
                             const FontSizes&,
+                            const LineHeightSize&,
                             const ViewportSize&,
                             const ContainerSizes&,
                             float zoom);
@@ -175,7 +196,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   float ExFontSize(float zoom) const override;
   float ChFontSize(float zoom) const override;
   float IcFontSize(float zoom) const override;
-  float LineHeight() const override;
+  float LineHeight(float zoom) const override;
   double ViewportWidth() const override;
   double ViewportHeight() const override;
   double SmallViewportWidth() const override;
@@ -189,7 +210,9 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   WritingMode GetWritingMode() const override;
 
   void SetFontSizes(const FontSizes& font_sizes) { font_sizes_ = font_sizes; }
-  void ClearLhStyle() { lh_style_ = nullptr; }
+  void SetLineHeightSize(const LineHeightSize& line_height_size) {
+    line_height_size_ = line_height_size;
+  }
 
   // See ContainerSizes::PreCachedCopy.
   //
@@ -198,8 +221,8 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   ContainerSizes PreCachedContainerSizesCopy() const;
 
   CSSToLengthConversionData CopyWithAdjustedZoom(float new_zoom) const {
-    return CSSToLengthConversionData(style_, lh_style_, writing_mode_,
-                                     font_sizes_, viewport_size_,
+    return CSSToLengthConversionData(style_, writing_mode_, font_sizes_,
+                                     line_height_size_, viewport_size_,
                                      container_sizes_, new_zoom);
   }
   CSSToLengthConversionData Unzoomed() const {
@@ -208,9 +231,9 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
 
  private:
   const ComputedStyle* style_ = nullptr;
-  const ComputedStyle* lh_style_ = nullptr;
   WritingMode writing_mode_ = WritingMode::kHorizontalTb;
   FontSizes font_sizes_;
+  LineHeightSize line_height_size_;
   ViewportSize viewport_size_;
   ContainerSizes container_sizes_;
 };

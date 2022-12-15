@@ -120,7 +120,8 @@ float MediaValuesCached::IcFontSize(float zoom) const {
   return data_.ic_size;
 }
 
-float MediaValuesCached::LineHeight() const {
+float MediaValuesCached::LineHeight(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
   return data_.line_height;
 }
 

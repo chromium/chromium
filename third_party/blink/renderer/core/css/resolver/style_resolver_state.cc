@@ -129,14 +129,16 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
   float rem = RootElementStyle() ? RootElementStyle()->SpecifiedFontSize() : 1;
   CSSToLengthConversionData::FontSizes font_sizes(
       em, rem, &font_style->GetFont(), font_style->EffectiveZoom());
+  CSSToLengthConversionData::LineHeightSize line_height_size(
+      ParentStyle() ? *ParentStyle() : *Style());
   CSSToLengthConversionData::ViewportSize viewport_size(
       GetDocument().GetLayoutView());
   CSSToLengthConversionData::ContainerSizes container_sizes(
       container_unit_context_);
 
-  return CSSToLengthConversionData(Style(), ParentStyle(),
-                                   StyleBuilder().GetWritingMode(), font_sizes,
-                                   viewport_size, container_sizes, 1);
+  return CSSToLengthConversionData(Style(), StyleBuilder().GetWritingMode(),
+                                   font_sizes, line_height_size, viewport_size,
+                                   container_sizes, 1);
 }
 
 CSSToLengthConversionData StyleResolverState::FontSizeConversionData() const {
@@ -251,7 +253,8 @@ void StyleResolverState::UpdateFont() {
 }
 
 void StyleResolverState::UpdateLineHeight() {
-  css_to_length_conversion_data_.ClearLhStyle();
+  css_to_length_conversion_data_.SetLineHeightSize(
+      CSSToLengthConversionData::LineHeightSize(*Style()));
 }
 
 }  // namespace blink

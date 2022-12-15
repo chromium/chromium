@@ -29,6 +29,7 @@ class CORE_EXPORT CSSLengthResolver {
   virtual float ExFontSize(float zoom) const = 0;
   virtual float ChFontSize(float zoom) const = 0;
   virtual float IcFontSize(float zoom) const = 0;
+  virtual float LineHeight(float zoom) const = 0;
 
   // Other sizes are not pre-zoomed.
   virtual double ViewportWidth() const = 0;
@@ -41,7 +42,6 @@ class CORE_EXPORT CSSLengthResolver {
   virtual double DynamicViewportHeight() const = 0;
   virtual double ContainerWidth() const = 0;
   virtual double ContainerHeight() const = 0;
-  virtual float LineHeight() const = 0;
 
   virtual WritingMode GetWritingMode() const = 0;
 

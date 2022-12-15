@@ -1974,18 +1974,23 @@ Length ComputedStyle::LineHeight() const {
   return lh;
 }
 
-float ComputedStyle::ComputedLineHeight() const {
-  const Length& lh = LineHeight();
-
+float ComputedStyle::ComputedLineHeight(const Length& lh, const Font& font) {
   // Negative value means the line height is not set. Use the font's built-in
-  // spacing, if avalible.
-  if (lh.IsNegative() && GetFont().PrimaryFont())
-    return GetFont().PrimaryFont()->GetFontMetrics().LineSpacing();
+  // spacing, if available.
+  if (lh.IsNegative() && font.PrimaryFont()) {
+    return font.PrimaryFont()->GetFontMetrics().LineSpacing();
+  }
 
-  if (lh.IsPercentOrCalc())
-    return MinimumValueForLength(lh, LayoutUnit(ComputedFontSize()));
+  if (lh.IsPercentOrCalc()) {
+    return MinimumValueForLength(
+        lh, LayoutUnit(font.GetFontDescription().ComputedSize()));
+  }
 
   return lh.Value();
+}
+
+float ComputedStyle::ComputedLineHeight() const {
+  return ComputedLineHeight(LineHeight(), GetFont());
 }
 
 LayoutUnit ComputedStyle::ComputedLineHeightAsFixed(const Font& font) const {

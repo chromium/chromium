@@ -71,7 +71,8 @@ float MediaValuesDynamic::IcFontSize(float zoom) const {
   return CalculateIcSize(frame_);
 }
 
-float MediaValuesDynamic::LineHeight() const {
+float MediaValuesDynamic::LineHeight(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
   return CalculateLineHeight(frame_);
 }
 

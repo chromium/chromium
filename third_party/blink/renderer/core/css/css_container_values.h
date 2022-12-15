@@ -31,7 +31,7 @@ class CSSContainerValues : public MediaValuesDynamic {
   float ExFontSize(float zoom) const override;
   float ChFontSize(float zoom) const override;
   float IcFontSize(float zoom) const override;
-  float LineHeight() const override;
+  float LineHeight(float zoom) const override;
   // Note that ContainerWidth/ContainerHeight are used to resolve
   // container *units*. See `container_sizes_`.
   Element* ContainerElement() const override { return element_; }
@@ -50,6 +50,8 @@ class CSSContainerValues : public MediaValuesDynamic {
   WritingMode writing_mode_;
   // Container font sizes for resolving relative lengths.
   CSSToLengthConversionData::FontSizes font_sizes_;
+  // LineHeightSize of the container element.
+  CSSToLengthConversionData::LineHeightSize line_height_size_;
   // Used to resolve container-relative units found in the @container prelude.
   // Such units refer to container sizes of *ancestor* containers, and must
   // not be confused with the size of the *current* container (which is stored

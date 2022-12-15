@@ -57,12 +57,13 @@ static void VerifyCSSCalc(String text,
   Font font;
   CSSToLengthConversionData::FontSizes font_sizes(font_size, font_size, &font,
                                                   1);
+  CSSToLengthConversionData::LineHeightSize line_height_size;
   CSSToLengthConversionData::ViewportSize viewport_size(viewport_width,
                                                         viewport_height);
   CSSToLengthConversionData::ContainerSizes container_sizes;
   CSSToLengthConversionData conversion_data(
-      nullptr, nullptr, WritingMode::kHorizontalTb, font_sizes, viewport_size,
-      container_sizes, 1.0);
+      nullptr, WritingMode::kHorizontalTb, font_sizes, line_height_size,
+      viewport_size, container_sizes, 1.0);
   EXPECT_APPROX_EQ(value, math_value->ComputeLength<float>(conversion_data));
 }
 

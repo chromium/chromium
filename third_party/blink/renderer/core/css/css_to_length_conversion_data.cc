@@ -115,6 +115,23 @@ float CSSToLengthConversionData::FontSizes::Ic(float zoom) const {
   return full_width.value() / font_zoom_ * zoom;
 }
 
+CSSToLengthConversionData::LineHeightSize::LineHeightSize(
+    const ComputedStyle& style)
+    : LineHeightSize(style.LineHeight(),
+                     &style.GetFont(),
+                     style.EffectiveZoom()) {}
+
+float CSSToLengthConversionData::LineHeightSize::Lh(float zoom) const {
+  if (!font_) {
+    return 0;
+  }
+  // Like font-metrics-based units, lh is also based on pre-zoomed font metrics.
+  // We therefore need to unzoom using the font zoom before applying the target
+  // zoom.
+  return ComputedStyle::ComputedLineHeight(line_height_, *font_) / font_zoom_ *
+         zoom;
+}
+
 CSSToLengthConversionData::ViewportSize::ViewportSize(
     const LayoutView* layout_view) {
   if (layout_view) {
@@ -177,18 +194,18 @@ void CSSToLengthConversionData::ContainerSizes::CacheSizeIfNeeded(
 
 CSSToLengthConversionData::CSSToLengthConversionData(
     const ComputedStyle* element_style,
-    const ComputedStyle* parent_style,
     WritingMode writing_mode,
     const FontSizes& font_sizes,
+    const LineHeightSize& line_height_size,
     const ViewportSize& viewport_size,
     const ContainerSizes& container_sizes,
     float zoom)
     : CSSLengthResolver(
           ClampTo<float>(zoom, std::numeric_limits<float>::denorm_min())),
       style_(element_style),
-      lh_style_(parent_style),
       writing_mode_(writing_mode),
       font_sizes_(font_sizes),
+      line_height_size_(line_height_size),
       viewport_size_(viewport_size),
       container_sizes_(container_sizes) {}
 
@@ -199,13 +216,14 @@ CSSToLengthConversionData::CSSToLengthConversionData(
     const LayoutView* layout_view,
     const ContainerSizes& container_sizes,
     float zoom)
-    : CSSToLengthConversionData(element_style,
-                                parent_style,
-                                element_style->GetWritingMode(),
-                                FontSizes(element_style, root_style),
-                                ViewportSize(layout_view),
-                                container_sizes,
-                                zoom) {}
+    : CSSToLengthConversionData(
+          element_style,
+          element_style->GetWritingMode(),
+          FontSizes(element_style, root_style),
+          LineHeightSize(parent_style ? *parent_style : *element_style),
+          ViewportSize(layout_view),
+          container_sizes,
+          zoom) {}
 
 float CSSToLengthConversionData::EmFontSize(float zoom) const {
   // FIXME: Remove style_ from this class. Plumb viewport and font unit
@@ -240,20 +258,12 @@ float CSSToLengthConversionData::IcFontSize(float zoom) const {
   return font_sizes_.Ic(zoom);
 }
 
-float CSSToLengthConversionData::LineHeight() const {
-  const ComputedStyle* style = lh_style_ ? lh_style_ : style_;
-  if (!style)
-    return 0;
+float CSSToLengthConversionData::LineHeight(float zoom) const {
   if (style_) {
     const_cast<ComputedStyle*>(style_)->SetHasGlyphRelativeUnits();
     const_cast<ComputedStyle*>(style_)->SetHasLineHeightRelativeUnits();
   }
-  // The line-height is zoom'ed given the zoom factor of its style origin which
-  // may be the zoom factor of this element or the parent element.
-  // We need to unzoom the line-height's applied zoom before always applying
-  // the current Zoom() factor in CSSLengthResolver.
-  return AdjustForAbsoluteZoom::AdjustFloat(style->ComputedLineHeight(),
-                                            *style);
+  return line_height_size_.Lh(zoom);
 }
 
 double CSSToLengthConversionData::ViewportWidth() const {

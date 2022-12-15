@@ -19,12 +19,13 @@ FontDescription FontStyleResolver::ComputeFont(
 
   FontDescription fontDescription;
   Font font(fontDescription, font_selector);
-  CSSToLengthConversionData::FontSizes fontSizes(10, 10, &font, 1);
-  CSSToLengthConversionData::ViewportSize viewportSize(0, 0);
+  CSSToLengthConversionData::FontSizes font_sizes(10, 10, &font, 1);
+  CSSToLengthConversionData::LineHeightSize line_height_size;
+  CSSToLengthConversionData::ViewportSize viewport_size(0, 0);
   CSSToLengthConversionData::ContainerSizes container_sizes;
-  CSSToLengthConversionData conversionData(
-      nullptr, nullptr, WritingMode::kHorizontalTb, fontSizes, viewportSize,
-      container_sizes, 1);
+  CSSToLengthConversionData conversionData(nullptr, WritingMode::kHorizontalTb,
+                                           font_sizes, line_height_size,
+                                           viewport_size, container_sizes, 1);
 
   // CSSPropertyID::kFontSize
   if (property_set.HasProperty(CSSPropertyID::kFontSize)) {
