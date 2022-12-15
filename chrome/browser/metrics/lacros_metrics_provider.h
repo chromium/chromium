@@ -25,6 +25,7 @@ class LacrosMetricsProvider : public metrics::MetricsProvider {
       metrics::SystemProfileProto* system_profile_proto) override;
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
+  void ProvideCurrentSessionUKMData() override;
 };
 
 #endif  //  CHROME_BROWSER_METRICS_LACROS_METRICS_PROVIDER_H_

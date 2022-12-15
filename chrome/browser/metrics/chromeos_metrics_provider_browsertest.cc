@@ -7,19 +7,26 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
+#include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/enrollment_status.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 namespace {
+
+using UkmEntry = ukm::builders::ChromeOS_DeviceManagement;
 
 // Returns the user type for logging in.
 ash::LoggedInUserMixin::LogInType GetLogInType(
@@ -155,4 +162,61 @@ IN_PROC_BROWSER_TEST_P(ChromeOSMetricsProviderGuestModeTest, PrimaryUserType) {
 
   histogram_tester.ExpectUniqueSample("UMA.PrimaryUserType",
                                       user_manager::USER_TYPE_GUEST, 1);
+}
+
+class ChromeOSMetricsProviderEnrolledDeviceTest
+    : public policy::DevicePolicyCrosBrowserTest {
+ public:
+  ChromeOSMetricsProviderEnrolledDeviceTest() {
+    device_state_.set_skip_initial_policy_setup(true);
+    device_state_.SetState(
+        ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
+  }
+
+  ~ChromeOSMetricsProviderEnrolledDeviceTest() override = default;
+};
+
+// Test that the UKM event is recorded with the correct value when the device is
+// managed.
+IN_PROC_BROWSER_TEST_F(ChromeOSMetricsProviderEnrolledDeviceTest,
+                       ProvideCurrentSessionUKMData) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  g_browser_process->metrics_service()
+      ->GetDelegatingProviderForTesting()
+      ->ProvideCurrentSessionUKMData();
+
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(1u, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[0], UkmEntry::kEnrollmentStatusName,
+      static_cast<int>(EnrollmentStatus::kManaged));
+}
+
+class ChromeOSMetricsProviderConsumerOwnedDeviceTest
+    : public policy::DevicePolicyCrosBrowserTest {
+ public:
+  ChromeOSMetricsProviderConsumerOwnedDeviceTest() {
+    device_state_.set_skip_initial_policy_setup(true);
+    device_state_.SetState(
+        ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED);
+  }
+
+  ~ChromeOSMetricsProviderConsumerOwnedDeviceTest() override = default;
+};
+// Test that the UKM event is recorded with the correct value when the device is
+// not managed.
+IN_PROC_BROWSER_TEST_F(ChromeOSMetricsProviderConsumerOwnedDeviceTest,
+                       ProvideCurrentSessionUKMData) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  g_browser_process->metrics_service()
+      ->GetDelegatingProviderForTesting()
+      ->ProvideCurrentSessionUKMData();
+
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(1u, ukm_entries.size());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      ukm_entries[0], UkmEntry::kEnrollmentStatusName,
+      static_cast<int>(EnrollmentStatus::kNonManaged));
 }

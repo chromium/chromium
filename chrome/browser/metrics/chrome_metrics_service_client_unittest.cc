@@ -154,11 +154,16 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterUKMProviders) {
   // NetworkMetricsProvider, GPUMetricsProvider, CPUMetricsProvider
   // ScreenInfoMetricsProvider, FormFactorMetricsProvider, FieldTrialsProvider,
   // and PrivacyBudgetMetricsProvider.
+  size_t expected_providers = 7;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const size_t expected_providers = 8;  // ChromeOSMetricsProvider
-#else
-  const size_t expected_providers = 7;
+  // ChromeOSMetricsProvider
+  expected_providers++;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // LacrosMetricsProvider
+  expected_providers++;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =
       TestChromeMetricsServiceClient::Create(metrics_state_manager_.get());

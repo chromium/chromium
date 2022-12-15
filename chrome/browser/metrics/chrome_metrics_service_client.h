@@ -162,6 +162,7 @@ class ChromeMetricsServiceClient
  private:
   friend class ChromeMetricsServiceClientTest;
   friend class ChromeMetricsServiceClientTestIgnoredForAppMetrics;
+  friend class ChromeMetricsServiceClientTestWithoutUKMProviders;
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServiceClientTest, IsWebstoreExtension);
 
   // Registers providers to the MetricsService. These provide data from
@@ -170,7 +171,7 @@ class ChromeMetricsServiceClient
 
   // Registers providers to the UkmService. These provide data from alternate
   // sources.
-  void RegisterUKMProviders();
+  virtual void RegisterUKMProviders();
 
   // Returns true iff profiler data should be included in the next metrics log.
   // NOTE: This method is probabilistic and also updates internal state as a

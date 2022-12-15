@@ -9,6 +9,9 @@
 #include "chrome/browser/metrics/enrollment_status.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/startup/browser_params_proxy.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace {
@@ -48,4 +51,12 @@ void LacrosMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   ProvideStabilityMetrics(uma_proto->mutable_system_profile());
   base::UmaHistogramBoolean("ChromeOS.IsLacrosBrowser", true);
+}
+
+void LacrosMetricsProvider::ProvideCurrentSessionUKMData() {
+  ukm::SourceId source_id = ukm::NoURLSourceId();
+  EnrollmentStatus status = GetEnrollmentStatus();
+  ukm::builders::ChromeOS_DeviceManagement(source_id)
+      .SetEnrollmentStatus(static_cast<int64_t>(status))
+      .Record(ukm::UkmRecorder::Get());
 }

@@ -72,6 +72,28 @@ class FakeMultiDeviceSetupClientImplFactory
       fake_multidevice_setup_client_;
 };
 
+class ChromeMetricsServiceClientTestWithoutUKMProviders
+    : public ChromeMetricsServiceClient {
+ public:
+  // Equivalent to ChromeMetricsServiceClient::Create
+  static std::unique_ptr<ChromeMetricsServiceClientTestWithoutUKMProviders>
+  Create(metrics::MetricsStateManager* metrics_state_manager) {
+    std::unique_ptr<ChromeMetricsServiceClientTestWithoutUKMProviders> client(
+        new ChromeMetricsServiceClientTestWithoutUKMProviders(
+            metrics_state_manager));
+    client->Initialize();
+
+    return client;
+  }
+
+ private:
+  explicit ChromeMetricsServiceClientTestWithoutUKMProviders(
+      metrics::MetricsStateManager* state_manager)
+      : ChromeMetricsServiceClient(state_manager) {}
+
+  void RegisterUKMProviders() override {}
+};
+
 class MockSyncService : public syncer::TestSyncService {
  public:
   MockSyncService() {
@@ -211,7 +233,8 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics
     SetUrlKeyedAnonymizedDataCollectionEnabled(prefs, /*enabled=*/true);
 
     std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =
-        ChromeMetricsServiceClient::Create(metrics_state_manager_.get());
+        ChromeMetricsServiceClientTestWithoutUKMProviders::Create(
+            metrics_state_manager_.get());
     chrome_metrics_service_client->StartObserving(&sync_service_, &prefs);
 
     chrome_metrics_service_client_ = chrome_metrics_service_client.get();

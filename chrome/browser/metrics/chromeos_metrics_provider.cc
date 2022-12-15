@@ -53,6 +53,9 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "components/variations/hashing.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "ui/display/display.h"
 #include "ui/events/event_utils.h"
@@ -225,6 +228,14 @@ void ChromeOSMetricsProvider::ProvideCurrentSessionData(
   if (should_provide_histograms) {
     UpdateUserTypeUMA();
   }
+}
+
+void ChromeOSMetricsProvider::ProvideCurrentSessionUKMData() {
+  ukm::SourceId source_id = ukm::NoURLSourceId();
+  EnrollmentStatus status = GetEnrollmentStatus();
+  ukm::builders::ChromeOS_DeviceManagement(source_id)
+      .SetEnrollmentStatus(static_cast<int64_t>(status))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 bool ChromeOSMetricsProvider::UpdateUserTypeUMA() {

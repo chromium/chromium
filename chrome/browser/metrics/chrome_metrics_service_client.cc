@@ -939,6 +939,11 @@ void ChromeMetricsServiceClient::RegisterUKMProviders() {
               cros_system_profile_provider_.get())));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  ukm_service_->RegisterMetricsProvider(
+      std::make_unique<LacrosMetricsProvider>());
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<metrics::GPUMetricsProvider>());
 

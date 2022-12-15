@@ -53,6 +53,7 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
       metrics::SystemProfileProto* system_profile_proto) override;
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
+  void ProvideCurrentSessionUKMData() override;
 
  private:
   void ProvideAccessibilityMetrics();

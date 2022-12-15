@@ -5073,6 +5073,26 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="ChromeOS.DeviceManagement">
+  <owner>siakabaro@google.com</owner>
+  <summary>
+    Records the ChromeOS device management state. This event is recorded once
+    per UKM report and is not associated with a source URL.
+  </summary>
+  <metric name="EnrollmentStatus" enum="EnrollmentStatus">
+    <summary>
+      An enum value representing the enrollment status of a ChromeOS device.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="ChromeOS.WebsiteUsageTime">
   <owner>nancylingwang@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
