@@ -255,6 +255,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.Limits.VariationKeySize.{Size}" units="KiB"
+    expires_after="2023-09-22">
+  <owner>dalerogerson@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The number of kilobytes of the variations crash keys, recorded every time
+    crash keys are updated. Crash keys larger than kVariationKeySize will be
+    truncated. The size of kVariationKeySize is controlled by the preprocessor
+    macro LARGE_VARIATION_KEY_SIZE. {Size};
+  </summary>
+  <token key="Size">
+    <variant name="Default"
+        summary="&quot;Default&quot; is recorded when
+                 LARGE_VARIATION_KEY_SIZE is NOT defined."/>
+    <variant name="Large"
+        summary="&quot;Large&quot; is used when LARGE_VARIATION_KEY_SIZE is
+                 defined."/>
+  </token>
+</histogram>
+
 <histogram name="Variations.LoadPermanentConsistencyCountryResult"
     enum="VariationsPermanentConsistencyCountryResult"
     expires_after="2023-11-01">

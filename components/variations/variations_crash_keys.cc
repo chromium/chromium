@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/debug/leak_annotations.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -28,14 +29,19 @@ namespace variations {
 
 namespace {
 
-// Size of the "num-experiments" crash key in bytes. 4096 bytes should be able
-// to hold about 227 entries, given each entry is 18 bytes long (due to being
+// Size of the "num-experiments" crash key in bytes. 1024*6 bytes should be able
+// to hold about 341 entries, given each entry is 18 bytes long (due to being
 // of the form "8e7abfb0-c16397b7,").
 #if BUILDFLAG(LARGE_VARIATION_KEY_SIZE)
-constexpr size_t kVariationsKeySize = 8192;
+constexpr size_t kVariationsKeySize = 1024 * 8;
+constexpr char kVariationKeySizeHistogram[] =
+    "Variations.Limits.VariationKeySize.Large";
 #else
-constexpr size_t kVariationsKeySize = 6144;
+constexpr size_t kVariationsKeySize = 1024 * 6;
+constexpr char kVariationKeySizeHistogram[] =
+    "Variations.Limits.VariationKeySize.Default";
 #endif
+constexpr size_t kVariationsKeySizeNumBuckets = 16;
 
 // Crash key reporting the number of experiments. 8 is the size of the crash key
 // in bytes, which is used to hold an int as a string.
@@ -180,13 +186,14 @@ void VariationsCrashKeys::UpdateCrashKeys() {
   ExperimentListInfo info = GetExperimentListInfo();
   g_num_variations_crash_key.Set(base::NumberToString(info.num_experiments));
 
+  const size_t count_of_kbs = info.experiment_list.size() / 1024;
+  UMA_HISTOGRAM_EXACT_LINEAR(kVariationKeySizeHistogram, count_of_kbs,
+                             kVariationsKeySizeNumBuckets);
   if (info.experiment_list.size() > kVariationsKeySize) {
     // If size exceeded, truncate to the last full entry.
     int comma_index =
         info.experiment_list.substr(0, kVariationsKeySize).rfind(',');
     info.experiment_list.resize(comma_index + 1);
-    // NOTREACHED() will let us know of the problem and adjust the limit.
-    NOTREACHED();
   }
 
   g_variations_crash_key.Set(info.experiment_list);
