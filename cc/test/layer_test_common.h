@@ -7,20 +7,6 @@
 
 #include "cc/layers/layer_collections.h"
 
-#define EXPECT_SET_NEEDS_COMMIT(expect, code_to_test)                 \
-  do {                                                                \
-    EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times((expect)); \
-    code_to_test;                                                     \
-    Mock::VerifyAndClearExpectations(layer_tree_host_.get());         \
-  } while (false)
-
-#define EXPECT_SET_NEEDS_UPDATE(expect, code_to_test)                       \
-  do {                                                                      \
-    EXPECT_CALL(*layer_tree_host_, SetNeedsUpdateLayers()).Times((expect)); \
-    code_to_test;                                                           \
-    Mock::VerifyAndClearExpectations(layer_tree_host_.get());               \
-  } while (false)
-
 namespace gfx {
 class Rect;
 }
