@@ -70,20 +70,16 @@ void IterateTextContentByOffsets(const PaintOpBuffer& buffer,
 }
 }  // namespace
 
-DisplayItemList::DisplayItemList(UsageHint usage_hint)
-    : usage_hint_(usage_hint) {
-  if (usage_hint_ == kTopLevelDisplayItemList) {
-    visual_rects_.reserve(1024);
-    offsets_.reserve(1024);
-    paired_begin_stack_.reserve(32);
-  }
+DisplayItemList::DisplayItemList() {
+  visual_rects_.reserve(1024);
+  offsets_.reserve(1024);
+  paired_begin_stack_.reserve(32);
 }
 
 DisplayItemList::~DisplayItemList() = default;
 
 void DisplayItemList::Raster(SkCanvas* canvas,
                              ImageProvider* image_provider) const {
-  DCHECK(usage_hint_ == kTopLevelDisplayItemList);
   gfx::Rect canvas_playback_rect;
   if (!GetCanvasClipBounds(canvas, &canvas_playback_rect))
     return;
@@ -142,9 +138,6 @@ void DisplayItemList::EndPaintOfPairedEnd() {
   DCHECK_LT(current_range_start_, paint_op_buffer_.size());
   current_range_start_ = kNotPainting;
 #endif
-  if (usage_hint_ == kToBeReleasedAsPaintOpBuffer)
-    return;
-
   DCHECK(paired_begin_stack_.size());
   size_t last_begin_index = paired_begin_stack_.back().first_index;
   size_t last_begin_count = paired_begin_stack_.back().count;
@@ -184,18 +177,17 @@ void DisplayItemList::FinalizeImpl() {
   DCHECK_EQ(visual_rects_.size(), offsets_.size());
 #endif
 
-  if (usage_hint_ == kTopLevelDisplayItemList) {
-    rtree_.Build(visual_rects_,
-                 [](const std::vector<gfx::Rect>& rects, size_t index) {
-                   return rects[index];
-                 },
-                 [this](const std::vector<gfx::Rect>& rects, size_t index) {
-                   // Ignore the given rects, since the payload comes from
-                   // offsets. However, the indices match, so we can just index
-                   // into offsets.
-                   return offsets_[index];
-                 });
-  }
+  rtree_.Build(
+      visual_rects_,
+      [](const std::vector<gfx::Rect>& rects, size_t index) {
+        return rects[index];
+      },
+      [this](const std::vector<gfx::Rect>& rects, size_t index) {
+        // Ignore the given rects, since the payload comes from
+        // offsets. However, the indices match, so we can just index
+        // into offsets.
+        return offsets_[index];
+      });
   visual_rects_.clear();
   visual_rects_.shrink_to_fit();
   offsets_.clear();
@@ -296,8 +288,6 @@ void DisplayItemList::AddToValue(base::trace_event::TracedValue* state,
 }
 
 void DisplayItemList::GenerateDiscardableImagesMetadata() {
-  DCHECK(usage_hint_ == kTopLevelDisplayItemList);
-
   gfx::Rect bounds;
   if (rtree_.has_valid_bounds()) {
     bounds = rtree_.GetBoundsOrDie();
@@ -326,18 +316,9 @@ void DisplayItemList::Reset() {
   paired_begin_stack_.shrink_to_fit();
 }
 
-sk_sp<PaintRecord> DisplayItemList::ReleaseAsRecord() {
-  sk_sp<PaintRecord> record =
-      sk_make_sp<PaintOpBuffer>(std::move(paint_op_buffer_));
-
-  Reset();
-  return record;
-}
-
 bool DisplayItemList::GetColorIfSolidInRect(const gfx::Rect& rect,
                                             SkColor4f* color,
                                             int max_ops_to_analyze) {
-  DCHECK(usage_hint_ == kTopLevelDisplayItemList);
   std::vector<size_t>* offsets_to_use = nullptr;
   std::vector<size_t> offsets;
   if (rtree_.has_valid_bounds() && !rect.Contains(rtree_.GetBoundsOrDie())) {

@@ -538,8 +538,7 @@ void SynthesizedClip::UpdateLayer(const ClipPaintPropertyNode& clip,
 
 scoped_refptr<cc::DisplayItemList>
 SynthesizedClip::PaintContentsToDisplayList() {
-  auto cc_list = base::MakeRefCounted<cc::DisplayItemList>(
-      cc::DisplayItemList::kTopLevelDisplayItemList);
+  auto cc_list = base::MakeRefCounted<cc::DisplayItemList>();
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   cc_list->StartPaint();

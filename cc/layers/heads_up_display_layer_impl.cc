@@ -362,8 +362,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     const auto& size = pool_resource.size();
     RecordPaintCanvas canvas;
     DrawHudContents(&canvas);
-    auto display_item_list = base::MakeRefCounted<DisplayItemList>(
-        DisplayItemList::kTopLevelDisplayItemList);
+    auto display_item_list = base::MakeRefCounted<DisplayItemList>();
     display_item_list->StartPaint();
     display_item_list->push<DrawRecordOp>(canvas.ReleaseAsRecord());
     display_item_list->EndPaintOfUnpaired(gfx::Rect(size));

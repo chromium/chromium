@@ -1139,7 +1139,7 @@ TEST_F(DisplayItemListTest, TotalOpCount) {
   list->StartPaint();
   list->push<SaveOp>();
   list->push<TranslateOp>(10.f, 20.f);
-  list->push<DrawRecordOp>(sub_list->ReleaseAsRecord());
+  list->push<DrawRecordOp>(sub_list->FinalizeAndReleaseAsRecord());
   list->push<RestoreOp>();
   list->EndPaintOfUnpaired(gfx::Rect());
   EXPECT_EQ(8u, list->TotalOpCount());
@@ -1161,7 +1161,7 @@ TEST_F(DisplayItemListTest, AreaOfDrawText) {
   sub_list->StartPaint();
   sub_list->push<DrawTextBlobOp>(text_blob1, 0.0f, 0.0f, PaintFlags());
   sub_list->EndPaintOfUnpaired(gfx::Rect());
-  auto record = sub_list->ReleaseAsRecord();
+  auto record = sub_list->FinalizeAndReleaseAsRecord();
 
   list->StartPaint();
   list->push<SaveOp>();

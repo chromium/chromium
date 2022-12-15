@@ -1429,9 +1429,7 @@ void CanvasResourceProvider::RasterRecordOOP(
           ? SkColors::kBlack
           : SkColors::kTransparent;
 
-  auto list = base::MakeRefCounted<cc::DisplayItemList>(
-      cc::DisplayItemList::kTopLevelDisplayItemList);
-
+  auto list = base::MakeRefCounted<cc::DisplayItemList>();
   list->StartPaint();
   list->push<cc::DrawRecordOp>(std::move(last_recording));
   list->EndPaintOfUnpaired(gfx::Rect(Size().width(), Size().height()));

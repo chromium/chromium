@@ -22,10 +22,8 @@ size_t PaintArtifact::ApproximateUnsharedMemoryUsage() const {
 
 sk_sp<PaintRecord> PaintArtifact::GetPaintRecord(
     const PropertyTreeState& replay_state) const {
-  return PaintChunksToCcLayer::Convert(
-             PaintChunkSubset(this), replay_state, gfx::Vector2dF(),
-             cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer)
-      ->ReleaseAsRecord();
+  return PaintChunksToCcLayer::Convert(PaintChunkSubset(this), replay_state,
+                                       gfx::Vector2dF());
 }
 
 void PaintArtifact::RecordDebugInfo(DisplayItemClientId client_id,

@@ -34,7 +34,7 @@ TEST(InkDropMaskTest, PathInkDropMaskPaintsTriangle) {
       ui::PaintContext(list.get(), 1.f, gfx::Rect(layer_size), false));
   EXPECT_EQ(1u, list->num_paint_ops()) << list->ToString();
 
-  sk_sp<cc::PaintRecord> record = list->ReleaseAsRecord();
+  sk_sp<cc::PaintRecord> record = list->FinalizeAndReleaseAsRecord();
   const auto* draw_record_op = record->GetOpAtForTesting<cc::DrawRecordOp>(0);
   ASSERT_NE(nullptr, draw_record_op);
   const auto* draw_op =

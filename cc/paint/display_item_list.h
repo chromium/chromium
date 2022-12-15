@@ -50,11 +50,7 @@ namespace cc {
 class CC_PAINT_EXPORT DisplayItemList
     : public base::RefCountedThreadSafe<DisplayItemList> {
  public:
-  // TODO(vmpstr): It would be cool if we didn't need this, and instead used
-  // PaintOpBuffer directly when we needed to release this as a paint op buffer.
-  enum UsageHint { kTopLevelDisplayItemList, kToBeReleasedAsPaintOpBuffer };
-
-  explicit DisplayItemList(UsageHint = kTopLevelDisplayItemList);
+  DisplayItemList();
   DisplayItemList(const DisplayItemList&) = delete;
   DisplayItemList& operator=(const DisplayItemList&) = delete;
 
@@ -86,8 +82,7 @@ class CC_PAINT_EXPORT DisplayItemList
     DCHECK(IsPainting());
 #endif
     size_t offset = paint_op_buffer_.next_op_offset();
-    if (usage_hint_ == kTopLevelDisplayItemList)
-      offsets_.push_back(offset);
+    offsets_.push_back(offset);
     const T& op = paint_op_buffer_.push<T>(std::forward<Args>(args)...);
     DCHECK(op.IsValid());
     return offset;
@@ -106,9 +101,6 @@ class CC_PAINT_EXPORT DisplayItemList
     DCHECK(IsPainting());
     current_range_start_ = kNotPainting;
 #endif
-    if (usage_hint_ == kToBeReleasedAsPaintOpBuffer)
-      return;
-
     visual_rects_.resize(paint_op_buffer_.size(), visual_rect);
     GrowCurrentBeginItemVisualRect(visual_rect);
   }
@@ -119,9 +111,6 @@ class CC_PAINT_EXPORT DisplayItemList
     DCHECK_LT(current_range_start_, paint_op_buffer_.size());
     current_range_start_ = kNotPainting;
 #endif
-    if (usage_hint_ == kToBeReleasedAsPaintOpBuffer)
-      return;
-
     DCHECK_LT(visual_rects_.size(), paint_op_buffer_.size());
     size_t count = paint_op_buffer_.size() - visual_rects_.size();
     paired_begin_stack_.push_back({visual_rects_.size(), count});
@@ -133,9 +122,8 @@ class CC_PAINT_EXPORT DisplayItemList
   // Called after all items are appended, to process the items.
   void Finalize();
 
-  // Combination of Finalize() and ReleaseAsRecord(). Differs from from calling
-  // the two individualy in so far as the backing buffer of PaintOpBuffer may
-  // be retained.
+  // Calls Finalize(), and returns a PaintRecord from this DisplayItemList,
+  // leaving |this| in an empty state.
   sk_sp<PaintRecord> FinalizeAndReleaseAsRecord();
 
   struct DirectlyCompositedImageResult {
@@ -181,10 +169,6 @@ class CC_PAINT_EXPORT DisplayItemList
     return visual_rects_[static_cast<size_t>(index)];
   }
 
-  // Generate a PaintRecord from this DisplayItemList, leaving |this| in
-  // an empty state.
-  sk_sp<PaintRecord> ReleaseAsRecord();
-
   // If a rectangle is solid color, returns that color. |max_ops_to_analyze|
   // indicates the maximum number of draw ops we consider when determining if a
   // rectangle is solid color.
@@ -224,7 +208,6 @@ class CC_PAINT_EXPORT DisplayItemList
   // If we're currently within a paired display item block, unions the
   // given visual rect with the begin display item's visual rect.
   void GrowCurrentBeginItemVisualRect(const gfx::Rect& visual_rect) {
-    DCHECK_EQ(usage_hint_, kTopLevelDisplayItemList);
     if (!paired_begin_stack_.empty())
       visual_rects_[paired_begin_stack_.back().first_index].Union(visual_rect);
   }
@@ -262,8 +245,6 @@ class CC_PAINT_EXPORT DisplayItemList
   const size_t kNotPainting = static_cast<size_t>(-1);
   size_t current_range_start_ = kNotPainting;
 #endif
-
-  UsageHint usage_hint_;
 
   friend class base::RefCountedThreadSafe<DisplayItemList>;
   FRIEND_TEST_ALL_PREFIXES(DisplayItemListTest, BytesUsed);

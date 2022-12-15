@@ -117,10 +117,12 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
     return;
   }
 
-  cc_display_item_list_ = PaintChunksToCcLayer::Convert(
+  cc_display_item_list_ = base::MakeRefCounted<cc::DisplayItemList>();
+  PaintChunksToCcLayer::ConvertInto(
       paint_chunks, layer_state, layer_offset,
-      cc::DisplayItemList::kTopLevelDisplayItemList,
-      base::OptionalToPtr(raster_under_invalidation_params));
+      base::OptionalToPtr(raster_under_invalidation_params),
+      *cc_display_item_list_);
+  cc_display_item_list_->Finalize();
 
   cc_picture_layer_->SetBounds(layer_bounds);
   cc_picture_layer_->SetHitTestable(true);

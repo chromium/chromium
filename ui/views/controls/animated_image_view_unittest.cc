@@ -77,15 +77,14 @@ class AnimatedImageViewTest : public ViewsTestBase {
   }
 
   sk_sp<cc::PaintRecord> Paint(const gfx::Rect& invalidation_rect) {
-    auto display_list = base::MakeRefCounted<cc::DisplayItemList>(
-        cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer);
+    auto display_list = base::MakeRefCounted<cc::DisplayItemList>();
     ui::PaintContext paint_context(display_list.get(),
                                    /*device_scale_factor=*/1.f,
                                    invalidation_rect, /*is_pixel_canvas=*/true);
     view_->Paint(PaintInfo::CreateRootPaintInfo(paint_context,
                                                 invalidation_rect.size()));
     RunPendingMessages();
-    return display_list->ReleaseAsRecord();
+    return display_list->FinalizeAndReleaseAsRecord();
   }
 
   Widget widget_;
