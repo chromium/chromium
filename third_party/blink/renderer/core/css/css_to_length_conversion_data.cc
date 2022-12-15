@@ -70,9 +70,8 @@ void SetHasContainerRelativeUnits(const ComputedStyle* style) {
 CSSToLengthConversionData::FontSizes::FontSizes(float em,
                                                 float rem,
                                                 const Font* font,
-                                                float zoom)
-    : em_(em), rem_(rem), font_(font), zoom_(zoom) {
-  // FIXME: Improve RAII of StyleResolverState to use const Font&.
+                                                float font_zoom)
+    : em_(em), rem_(rem), font_(font), font_zoom_(font_zoom) {
   DCHECK(font_);
 }
 
@@ -83,51 +82,37 @@ CSSToLengthConversionData::FontSizes::FontSizes(const ComputedStyle* style,
                 &style->GetFont(),
                 style->EffectiveZoom()) {}
 
-float CSSToLengthConversionData::FontSizes::Ex() const {
+float CSSToLengthConversionData::FontSizes::Ex(float zoom) const {
   DCHECK(font_);
   const SimpleFontData* font_data = font_->PrimaryFont();
   DCHECK(font_data);
   if (!font_data || !font_data->GetFontMetrics().HasXHeight())
     return em_ / 2.0f;
-  // Font-metrics-based units already account for `zoom`. Therefore we need
-  // to unzoom using `zoom` first, if the zoom is adjusted.
-  float unzoom = (zoom_adjust_.has_value() ? zoom_ : 1.0f);
-  return font_data->GetFontMetrics().XHeight() / unzoom *
-         zoom_adjust_.value_or(1.0f);
+  // Font-metrics-based units are pre-zoomed with a factor of `font_zoom_`,
+  // we need to unzoom using that factor before applying the target zoom.
+  return font_data->GetFontMetrics().XHeight() / font_zoom_ * zoom;
 }
 
-float CSSToLengthConversionData::FontSizes::Ch() const {
+float CSSToLengthConversionData::FontSizes::Ch(float zoom) const {
   DCHECK(font_);
   const SimpleFontData* font_data = font_->PrimaryFont();
   DCHECK(font_data);
-  // Font-metrics-based units already account for `zoom`. Therefore we need
-  // to unzoom using `zoom` first, if the zoom is adjusted.
-  float unzoom = (zoom_adjust_.has_value() ? zoom_ : 1.0f);
-  return font_data ? (font_data->GetFontMetrics().ZeroWidth() / unzoom *
-                      zoom_adjust_.value_or(1.0f))
-                   : 0;
+  // Font-metrics-based units are pre-zoomed with a factor of `font_zoom_`,
+  // we need to unzoom using that factor before applying the target zoom.
+  return font_data->GetFontMetrics().ZeroWidth() / font_zoom_ * zoom;
 }
 
-float CSSToLengthConversionData::FontSizes::Ic() const {
+float CSSToLengthConversionData::FontSizes::Ic(float zoom) const {
   DCHECK(font_);
   const SimpleFontData* font_data = font_->PrimaryFont();
   DCHECK(font_data);
   absl::optional<float> full_width =
       font_data->GetFontMetrics().IdeographicFullWidth();
   if (!full_width.has_value())
-    return Em();
-  // Font-metrics has zoom applied, which means we need to unzoom to get the
-  // value in CSS pixels.
-  float unzoom = (zoom_adjust_.has_value() ? zoom_ : 1.0f);
-  return full_width.value() / unzoom * zoom_adjust_.value_or(1.0f);
-}
-
-CSSToLengthConversionData::FontSizes
-CSSToLengthConversionData::FontSizes::CopyWithAdjustedZoom(
-    float new_zoom) const {
-  FontSizes font_sizes = *this;
-  font_sizes.zoom_adjust_ = new_zoom;
-  return font_sizes;
+    return Em(zoom);
+  // Font-metrics-based units are pre-zoomed with a factor of `font_zoom_`,
+  // we need to unzoom using that factor before applying the target zoom.
+  return full_width.value() / font_zoom_ * zoom;
 }
 
 CSSToLengthConversionData::ViewportSize::ViewportSize(
@@ -205,10 +190,7 @@ CSSToLengthConversionData::CSSToLengthConversionData(
       writing_mode_(writing_mode),
       font_sizes_(font_sizes),
       viewport_size_(viewport_size),
-      container_sizes_(container_sizes) {
-  if (Zoom() != font_sizes_.zoom_)
-    font_sizes_ = font_sizes.CopyWithAdjustedZoom(Zoom());
-}
+      container_sizes_(container_sizes) {}
 
 CSSToLengthConversionData::CSSToLengthConversionData(
     const ComputedStyle* element_style,
@@ -225,37 +207,37 @@ CSSToLengthConversionData::CSSToLengthConversionData(
                                 container_sizes,
                                 zoom) {}
 
-float CSSToLengthConversionData::EmFontSize() const {
+float CSSToLengthConversionData::EmFontSize(float zoom) const {
   // FIXME: Remove style_ from this class. Plumb viewport and font unit
   // information through as output parameters on functions involved in length
   // resolution.
   if (style_)
     const_cast<ComputedStyle*>(style_)->SetHasEmUnits();
-  return font_sizes_.Em();
+  return font_sizes_.Em(zoom);
 }
 
-float CSSToLengthConversionData::RemFontSize() const {
+float CSSToLengthConversionData::RemFontSize(float zoom) const {
   if (style_)
     const_cast<ComputedStyle*>(style_)->SetHasRemUnits();
-  return font_sizes_.Rem();
+  return font_sizes_.Rem(zoom);
 }
 
-float CSSToLengthConversionData::ExFontSize() const {
+float CSSToLengthConversionData::ExFontSize(float zoom) const {
   if (style_)
     const_cast<ComputedStyle*>(style_)->SetHasGlyphRelativeUnits();
-  return font_sizes_.Ex();
+  return font_sizes_.Ex(zoom);
 }
 
-float CSSToLengthConversionData::ChFontSize() const {
+float CSSToLengthConversionData::ChFontSize(float zoom) const {
   if (style_)
     const_cast<ComputedStyle*>(style_)->SetHasGlyphRelativeUnits();
-  return font_sizes_.Ch();
+  return font_sizes_.Ch(zoom);
 }
 
-float CSSToLengthConversionData::IcFontSize() const {
+float CSSToLengthConversionData::IcFontSize(float zoom) const {
   if (style_)
     const_cast<ComputedStyle*>(style_)->SetHasGlyphRelativeUnits();
-  return font_sizes_.Ic();
+  return font_sizes_.Ic(zoom);
 }
 
 float CSSToLengthConversionData::LineHeight() const {

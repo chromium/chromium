@@ -26,11 +26,11 @@ class CSSContainerValues : public MediaValuesDynamic {
   void Trace(Visitor*) const override;
 
  protected:
-  float EmFontSize() const override;
-  float RemFontSize() const override;
-  float ExFontSize() const override;
-  float ChFontSize() const override;
-  float IcFontSize() const override;
+  float EmFontSize(float zoom) const override;
+  float RemFontSize(float zoom) const override;
+  float ExFontSize(float zoom) const override;
+  float ChFontSize(float zoom) const override;
+  float IcFontSize(float zoom) const override;
   float LineHeight() const override;
   // Note that ContainerWidth/ContainerHeight are used to resolve
   // container *units*. See `container_sizes_`.

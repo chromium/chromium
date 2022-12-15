@@ -265,19 +265,19 @@ double CSSLengthResolver::ZoomedComputedPixels(
     // zoom factor.
     case CSSPrimitiveValue::UnitType::kEms:
     case CSSPrimitiveValue::UnitType::kQuirkyEms:
-      return value * EmFontSize();
+      return value * EmFontSize(Zoom());
 
     case CSSPrimitiveValue::UnitType::kExs:
-      return value * ExFontSize();
+      return value * ExFontSize(Zoom());
 
     case CSSPrimitiveValue::UnitType::kRems:
-      return value * RemFontSize();
+      return value * RemFontSize(Zoom());
 
     case CSSPrimitiveValue::UnitType::kChs:
-      return value * ChFontSize();
+      return value * ChFontSize(Zoom());
 
     case CSSPrimitiveValue::UnitType::kIcs:
-      return value * IcFontSize();
+      return value * IcFontSize(Zoom());
 
     default:
       NOTREACHED();

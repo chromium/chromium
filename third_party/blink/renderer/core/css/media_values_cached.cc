@@ -94,24 +94,29 @@ MediaValues* MediaValuesCached::Copy() const {
   return MakeGarbageCollected<MediaValuesCached>(data_);
 }
 
-float MediaValuesCached::EmFontSize() const {
+float MediaValuesCached::EmFontSize(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
   return data_.em_size;
 }
 
-float MediaValuesCached::RemFontSize() const {
+float MediaValuesCached::RemFontSize(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
   // For media queries rem and em units are both based on the initial font.
   return data_.em_size;
 }
 
-float MediaValuesCached::ExFontSize() const {
+float MediaValuesCached::ExFontSize(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
   return data_.ex_size;
 }
 
-float MediaValuesCached::ChFontSize() const {
+float MediaValuesCached::ChFontSize(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
   return data_.ch_size;
 }
 
-float MediaValuesCached::IcFontSize() const {
+float MediaValuesCached::IcFontSize(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
   return data_.ic_size;
 }
 

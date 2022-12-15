@@ -45,24 +45,29 @@ MediaValuesDynamic::MediaValuesDynamic(LocalFrame* frame,
   DCHECK(frame_);
 }
 
-float MediaValuesDynamic::EmFontSize() const {
+float MediaValuesDynamic::EmFontSize(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
   return CalculateEmSize(frame_);
 }
 
-float MediaValuesDynamic::RemFontSize() const {
+float MediaValuesDynamic::RemFontSize(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
   // For media queries rem and em units are both based on the initial font.
   return CalculateEmSize(frame_);
 }
 
-float MediaValuesDynamic::ExFontSize() const {
+float MediaValuesDynamic::ExFontSize(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
   return CalculateExSize(frame_);
 }
 
-float MediaValuesDynamic::ChFontSize() const {
+float MediaValuesDynamic::ChFontSize(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
   return CalculateChSize(frame_);
 }
 
-float MediaValuesDynamic::IcFontSize() const {
+float MediaValuesDynamic::IcFontSize(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
   return CalculateIcSize(frame_);
 }
 

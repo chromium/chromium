@@ -56,27 +56,22 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
 
    public:
     FontSizes() = default;
-    FontSizes(float em, float rem, const Font*, float zoom);
+    FontSizes(float em, float rem, const Font*, float font_zoom);
     FontSizes(const ComputedStyle*, const ComputedStyle* root_style);
 
-    FontSizes Unzoomed() const { return CopyWithAdjustedZoom(1.0f); }
-
-    float Em() const { return em_ * zoom_adjust_.value_or(zoom_); }
-    float Rem() const { return rem_ * zoom_adjust_.value_or(zoom_); }
-    float Ex() const;
-    float Ch() const;
-    float Ic() const;
+    float Em(float zoom) const { return em_ * zoom; }
+    float Rem(float zoom) const { return rem_ * zoom; }
+    float Ex(float zoom) const;
+    float Ch(float zoom) const;
+    float Ic(float zoom) const;
 
    private:
-    friend class CSSToLengthConversionData;
-
-    FontSizes CopyWithAdjustedZoom(float new_zoom) const;
-
     float em_ = 0;
     float rem_ = 0;
     const Font* font_ = nullptr;
-    float zoom_ = 1;
-    absl::optional<float> zoom_adjust_;
+    // Font-metrics-based units (ex, ch, ic) are pre-zoomed by a factor of
+    // `font_zoom_`.
+    float font_zoom_ = 1;
   };
 
   class CORE_EXPORT ViewportSize {
@@ -175,11 +170,11 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
                             const ContainerSizes&,
                             float zoom);
 
-  float EmFontSize() const override;
-  float RemFontSize() const override;
-  float ExFontSize() const override;
-  float ChFontSize() const override;
-  float IcFontSize() const override;
+  float EmFontSize(float zoom) const override;
+  float RemFontSize(float zoom) const override;
+  float ExFontSize(float zoom) const override;
+  float ChFontSize(float zoom) const override;
+  float IcFontSize(float zoom) const override;
   float LineHeight() const override;
   double ViewportWidth() const override;
   double ViewportHeight() const override;

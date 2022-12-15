@@ -21,9 +21,8 @@ CSSContainerValues::CSSContainerValues(Document& document,
       height_(height),
       writing_mode_(container.ComputedStyleRef().GetWritingMode()),
       font_sizes_(CSSToLengthConversionData::FontSizes(
-                      container.GetComputedStyle(),
-                      document.documentElement()->GetComputedStyle())
-                      .Unzoomed()),
+          container.GetComputedStyle(),
+          document.documentElement()->GetComputedStyle())),
       container_sizes_(container.ParentOrShadowHostElement()) {}
 
 void CSSContainerValues::Trace(Visitor* visitor) const {
@@ -32,24 +31,24 @@ void CSSContainerValues::Trace(Visitor* visitor) const {
   MediaValuesDynamic::Trace(visitor);
 }
 
-float CSSContainerValues::EmFontSize() const {
-  return font_sizes_.Em();
+float CSSContainerValues::EmFontSize(float zoom) const {
+  return font_sizes_.Em(zoom);
 }
 
-float CSSContainerValues::RemFontSize() const {
-  return font_sizes_.Rem();
+float CSSContainerValues::RemFontSize(float zoom) const {
+  return font_sizes_.Rem(zoom);
 }
 
-float CSSContainerValues::ExFontSize() const {
-  return font_sizes_.Ex();
+float CSSContainerValues::ExFontSize(float zoom) const {
+  return font_sizes_.Ex(zoom);
 }
 
-float CSSContainerValues::ChFontSize() const {
-  return font_sizes_.Ch();
+float CSSContainerValues::ChFontSize(float zoom) const {
+  return font_sizes_.Ch(zoom);
 }
 
-float CSSContainerValues::IcFontSize() const {
-  return font_sizes_.Ic();
+float CSSContainerValues::IcFontSize(float zoom) const {
+  return font_sizes_.Ic(zoom);
 }
 
 float CSSContainerValues::LineHeight() const {

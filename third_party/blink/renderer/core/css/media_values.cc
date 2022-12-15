@@ -213,9 +213,7 @@ float MediaValues::CalculateEmSize(LocalFrame* frame) {
   DCHECK(frame->GetDocument());
   const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
   DCHECK(style);
-  // CSSToLengthConversionData::FontSizes returns pre-zoomed font sizes. Need to
-  // scale back to CSS pixels.
-  return CSSToLengthConversionData::FontSizes(style, style).Unzoomed().Em();
+  return CSSToLengthConversionData::FontSizes(style, style).Em(/* zoom */ 1.0f);
 }
 
 float MediaValues::CalculateExSize(LocalFrame* frame) {
@@ -223,9 +221,7 @@ float MediaValues::CalculateExSize(LocalFrame* frame) {
   DCHECK(frame->GetDocument());
   const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
   DCHECK(style);
-  // CSSToLengthConversionData::FontSizes returns pre-zoomed font sizes. Need to
-  // scale back to CSS pixels.
-  return CSSToLengthConversionData::FontSizes(style, style).Unzoomed().Ex();
+  return CSSToLengthConversionData::FontSizes(style, style).Ex(/* zoom */ 1.0f);
 }
 
 float MediaValues::CalculateChSize(LocalFrame* frame) {
@@ -233,9 +229,7 @@ float MediaValues::CalculateChSize(LocalFrame* frame) {
   DCHECK(frame->GetDocument());
   const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
   DCHECK(style);
-  // CSSToLengthConversionData::FontSizes returns pre-zoomed font sizes. Need to
-  // scale back to CSS pixels.
-  return CSSToLengthConversionData::FontSizes(style, style).Unzoomed().Ch();
+  return CSSToLengthConversionData::FontSizes(style, style).Ch(/* zoom */ 1.0f);
 }
 
 float MediaValues::CalculateIcSize(LocalFrame* frame) {
@@ -243,9 +237,7 @@ float MediaValues::CalculateIcSize(LocalFrame* frame) {
   DCHECK(frame->GetDocument());
   const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
   DCHECK(style);
-  // CSSToLengthConversionData::FontSizes returns pre-zoomed font sizes. Need to
-  // scale back to CSS pixels.
-  return CSSToLengthConversionData::FontSizes(style, style).Unzoomed().Ic();
+  return CSSToLengthConversionData::FontSizes(style, style).Ic(/* zoom */ 1.0f);
 }
 
 float MediaValues::CalculateLineHeight(LocalFrame* frame) {
