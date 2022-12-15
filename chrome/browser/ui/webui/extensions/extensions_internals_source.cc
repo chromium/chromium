@@ -125,29 +125,47 @@ base::Value::List CreationFlagsToList(int creation_flags) {
 }
 
 base::Value::List DisableReasonsToList(int disable_reasons) {
+  static_assert(extensions::disable_reason::DISABLE_REASON_LAST == 1 << 22,
+                "Please add your new disable reason here.");
+
   base::Value::List disable_reasons_value;
+  if (disable_reasons & extensions::disable_reason::DISABLE_USER_ACTION) {
+    disable_reasons_value.Append("DISABLE_USER_ACTION");
+  }
   if (disable_reasons &
       extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE) {
     disable_reasons_value.Append("DISABLE_PERMISSIONS_INCREASE");
   }
-  if (disable_reasons & extensions::disable_reason::DISABLE_RELOAD)
+  if (disable_reasons & extensions::disable_reason::DISABLE_RELOAD) {
     disable_reasons_value.Append("DISABLE_RELOAD");
+  }
   if (disable_reasons &
       extensions::disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT) {
     disable_reasons_value.Append("DISABLE_UNSUPPORTED_REQUIREMENT");
   }
-  if (disable_reasons & extensions::disable_reason::DISABLE_SIDELOAD_WIPEOUT)
+  if (disable_reasons & extensions::disable_reason::DISABLE_SIDELOAD_WIPEOUT) {
     disable_reasons_value.Append("DISABLE_SIDELOAD_WIPEOUT");
-  if (disable_reasons & extensions::disable_reason::DISABLE_NOT_VERIFIED)
+  }
+  if (disable_reasons &
+      extensions::disable_reason::DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC) {
+    disable_reasons_value.Append("DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC");
+  }
+  if (disable_reasons & extensions::disable_reason::DISABLE_NOT_VERIFIED) {
     disable_reasons_value.Append("DISABLE_NOT_VERIFIED");
-  if (disable_reasons & extensions::disable_reason::DISABLE_GREYLIST)
+  }
+  if (disable_reasons & extensions::disable_reason::DISABLE_GREYLIST) {
     disable_reasons_value.Append("DISABLE_GREYLIST");
-  if (disable_reasons & extensions::disable_reason::DISABLE_CORRUPTED)
+  }
+  if (disable_reasons & extensions::disable_reason::DISABLE_CORRUPTED) {
     disable_reasons_value.Append("DISABLE_CORRUPTED");
-  if (disable_reasons & extensions::disable_reason::DISABLE_REMOTE_INSTALL)
+  }
+  if (disable_reasons & extensions::disable_reason::DISABLE_REMOTE_INSTALL) {
     disable_reasons_value.Append("DISABLE_REMOTE_INSTALL");
-  if (disable_reasons & extensions::disable_reason::DISABLE_EXTERNAL_EXTENSION)
+  }
+  if (disable_reasons &
+      extensions::disable_reason::DISABLE_EXTERNAL_EXTENSION) {
     disable_reasons_value.Append("DISABLE_EXTERNAL_EXTENSION");
+  }
   if (disable_reasons &
       extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY) {
     disable_reasons_value.Append("DISABLE_UPDATE_REQUIRED_BY_POLICY");
@@ -156,10 +174,23 @@ base::Value::List DisableReasonsToList(int disable_reasons) {
       extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED) {
     disable_reasons_value.Append("DISABLE_CUSTODIAN_APPROVAL_REQUIRED");
   }
-  if (disable_reasons & extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY)
+  if (disable_reasons & extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY) {
     disable_reasons_value.Append("DISABLE_BLOCKED_BY_POLICY");
+  }
+  if (disable_reasons & extensions::disable_reason::DISABLE_REINSTALL) {
+    disable_reasons_value.Append("DISABLE_REINSTALL");
+  }
+  if (disable_reasons & extensions::disable_reason::DISABLE_NOT_ALLOWLISTED) {
+    disable_reasons_value.Append("DISABLE_NOT_ALLOWLISTED");
+  }
+  if (disable_reasons &
+      extensions::disable_reason::DISABLE_NOT_ASH_KEEPLISTED) {
+    disable_reasons_value.Append("DISABLE_NOT_ASH_KEEPLISTED");
+  }
+
   return disable_reasons_value;
 }
+
 // The JSON we generate looks like this:
 // Note:
 // - tab_specific permissions can have 0 or more DICT entries with each tab id
