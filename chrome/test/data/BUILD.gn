@@ -52,6 +52,7 @@ copy("web_ui_test_mojom_js_module") {
 }
 
 group("closure_compile") {
+  testonly = true
   deps = [ "cast:closure_compile" ]
 
   if (is_chromeos_ash) {

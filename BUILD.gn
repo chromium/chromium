@@ -1755,23 +1755,23 @@ if (is_android) {
 if (enable_js_type_check) {
   group("webui_closure_compile") {
     testonly = true
-    data_deps = [
-      "components/neterror/resources:closure_compile",
-      "components/security_interstitials:closure_compile",
-      "ui/webui/resources:closure_compile",
-    ]
-    if (is_chromeos_ash) {
-      data_deps += [
+    if (is_ios) {
+      data_deps = [ "ui/webui/resources/js/ios:closure_compile" ]
+    } else if (is_chromeos_ash) {
+      data_deps = [
         "ash/webui:closure_compile",
+        "chrome/browser/resources:closure_compile",
+        "chrome/test/data:closure_compile",
         "mojo/public/tools/bindings/generators/js_templates/lite/test:closure_compile",
         "ui/file_manager:closure_compile",
       ]
-    }
-    if (is_chromeos || is_android) {
-      data_deps += [ "chrome/browser/resources:closure_compile" ]
-    }
-    if (!is_castos) {
-      data_deps += [ "chrome/test:closure_compile" ]
+    } else if (is_chromeos || is_android) {
+      data_deps = [
+        "chrome/browser/resources:closure_compile",
+        "chrome/test/data:closure_compile",
+      ]
+    } else if (!is_castos) {
+      data_deps = [ "chrome/test/data:closure_compile" ]
     }
   }
 }

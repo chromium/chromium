@@ -74,11 +74,8 @@ def CheckWebDevStyle(input_api, output_api):
 def CheckNoDisallowedJS(input_api, output_api):
   # Ignore legacy files from the js/ subfolder along with tools/.
   EXCLUDE_PATH_PREFIXES = [
-    'ui/webui/resources/js/assert.js',
-    'ui/webui/resources/js/cr.m.js',
     'ui/webui/resources/js/dom_automation_controller.js',
     'ui/webui/resources/js/ios/',
-    'ui/webui/resources/js/load_time_data.m.js',
     'ui/webui/resources/js/load_time_data_deprecated.js',
     'ui/webui/resources/js/util_deprecated.js',
     'ui/webui/resources/tools/',

@@ -11066,12 +11066,6 @@ if (is_win) {
   }
 }
 
-group("closure_compile") {
-  testonly = true
-
-  deps = [ "data:closure_compile" ]
-}
-
 # This is split out here instead of being part of //chrome/test:browser_tests
 # because many of the Windows tests have specific hardware requirements, and
 # it's cleaner to just have a separate target we can compile only on supported

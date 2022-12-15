@@ -4,7 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//crypto/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/typescript/ts_definitions.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/include_polymer.gni")
@@ -126,10 +125,6 @@ group("preprocess") {
   if (include_polymer) {
     public_deps += [ "cr_components:preprocess" ]
   }
-}
-
-group("closure_compile") {
-  deps = [ "js:closure_compile" ]
 }
 
 # TypeScript targets
