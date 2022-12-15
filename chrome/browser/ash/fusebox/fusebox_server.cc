@@ -162,7 +162,7 @@ ParseResult ParseFileSystemURL(const fusebox::MonikerMap& moniker_map,
 // looks unused, but we need to keep the storage::FileSystemContext reference
 // alive until the callbacks are run.
 
-void FillInDirEntryProto(fusebox_staging::DirEntryProto* dir_entry_proto,
+void FillInDirEntryProto(DirEntryProto* dir_entry_proto,
                          const base::File::Info& info,
                          bool read_only) {
   dir_entry_proto->set_mode_bits(
@@ -185,13 +185,13 @@ void RunCreateAndThenStatCallback(
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
     std::move(on_failure).Run();
-    fusebox_staging::CreateResponseProto response_proto;
+    CreateResponseProto response_proto;
     response_proto.set_posix_error_code(posix_error_code);
     std::move(callback).Run(response_proto);
     return;
   }
 
-  fusebox_staging::CreateResponseProto response_proto;
+  CreateResponseProto response_proto;
   response_proto.set_fuse_handle(fuse_handle);
   FillInDirEntryProto(response_proto.mutable_stat(), info, read_only);
   std::move(callback).Run(response_proto);
@@ -210,7 +210,7 @@ void RunCreateCallback(
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
     std::move(on_failure).Run();
-    fusebox_staging::CreateResponseProto response_proto;
+    CreateResponseProto response_proto;
     response_proto.set_posix_error_code(posix_error_code);
     std::move(callback).Run(response_proto);
     return;
@@ -246,13 +246,13 @@ void RunMkDirAndThenStatCallback(
 
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
-    fusebox_staging::MkDirResponseProto response_proto;
+    MkDirResponseProto response_proto;
     response_proto.set_posix_error_code(posix_error_code);
     std::move(callback).Run(response_proto);
     return;
   }
 
-  fusebox_staging::MkDirResponseProto response_proto;
+  MkDirResponseProto response_proto;
   FillInDirEntryProto(response_proto.mutable_stat(), info, read_only);
   std::move(callback).Run(response_proto);
 }
@@ -267,7 +267,7 @@ void RunMkDirCallback(
 
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
-    fusebox_staging::MkDirResponseProto response_proto;
+    MkDirResponseProto response_proto;
     response_proto.set_posix_error_code(posix_error_code);
     std::move(callback).Run(response_proto);
     return;
@@ -296,7 +296,7 @@ void RunRead2CallbackFailure(Server::Read2Callback callback,
                              base::File::Error error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  fusebox_staging::Read2ResponseProto response_proto;
+  Read2ResponseProto response_proto;
   response_proto.set_posix_error_code(FileErrorToErrno(error_code));
   std::move(callback).Run(response_proto);
 }
@@ -306,7 +306,7 @@ void RunRead2CallbackTypical(Server::Read2Callback callback,
                              int length) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  fusebox_staging::Read2ResponseProto response_proto;
+  Read2ResponseProto response_proto;
   if (length < 0) {
     response_proto.set_posix_error_code(NetErrorToErrno(length));
   } else {
@@ -325,13 +325,13 @@ void RunRmDirCallback(
 
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
-    fusebox_staging::RmDirResponseProto response_proto;
+    RmDirResponseProto response_proto;
     response_proto.set_posix_error_code(posix_error_code);
     std::move(callback).Run(response_proto);
     return;
   }
 
-  fusebox_staging::RmDirResponseProto response_proto;
+  RmDirResponseProto response_proto;
   std::move(callback).Run(response_proto);
 }
 
@@ -345,13 +345,13 @@ void RunTruncateAndThenStatCallback(
 
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
-    fusebox_staging::TruncateResponseProto response_proto;
+    TruncateResponseProto response_proto;
     response_proto.set_posix_error_code(posix_error_code);
     std::move(callback).Run(response_proto);
     return;
   }
 
-  fusebox_staging::TruncateResponseProto response_proto;
+  TruncateResponseProto response_proto;
   FillInDirEntryProto(response_proto.mutable_stat(), info, read_only);
   std::move(callback).Run(response_proto);
 }
@@ -366,7 +366,7 @@ void RunTruncateCallback(
 
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
-    fusebox_staging::TruncateResponseProto response_proto;
+    TruncateResponseProto response_proto;
     response_proto.set_posix_error_code(posix_error_code);
     std::move(callback).Run(response_proto);
     return;
@@ -399,13 +399,13 @@ void RunUnlinkCallback(
 
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
-    fusebox_staging::UnlinkResponseProto response_proto;
+    UnlinkResponseProto response_proto;
     response_proto.set_posix_error_code(posix_error_code);
     std::move(callback).Run(response_proto);
     return;
   }
 
-  fusebox_staging::UnlinkResponseProto response_proto;
+  UnlinkResponseProto response_proto;
   std::move(callback).Run(response_proto);
 }
 
@@ -413,7 +413,7 @@ void RunWrite2CallbackFailure(Server::Write2Callback callback,
                               base::File::Error error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  fusebox_staging::Write2ResponseProto response_proto;
+  Write2ResponseProto response_proto;
   response_proto.set_posix_error_code(FileErrorToErrno(error_code));
   std::move(callback).Run(response_proto);
 }
@@ -421,7 +421,7 @@ void RunWrite2CallbackFailure(Server::Write2Callback callback,
 void RunWrite2CallbackTypical(Server::Write2Callback callback, int length) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  fusebox_staging::Write2ResponseProto response_proto;
+  Write2ResponseProto response_proto;
   if (length < 0) {
     response_proto.set_posix_error_code(NetErrorToErrno(length));
   }
@@ -438,13 +438,13 @@ void RunStat2Callback(
 
   int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
-    fusebox_staging::Stat2ResponseProto response_proto;
+    Stat2ResponseProto response_proto;
     response_proto.set_posix_error_code(posix_error_code);
     std::move(callback).Run(response_proto);
     return;
   }
 
-  fusebox_staging::Stat2ResponseProto response_proto;
+  Stat2ResponseProto response_proto;
   FillInDirEntryProto(response_proto.mutable_stat(), info, read_only);
   std::move(callback).Run(response_proto);
 }
@@ -613,20 +613,18 @@ Server::FuseFileMapEntry::FuseFileMapEntry(FuseFileMapEntry&&) = default;
 
 Server::FuseFileMapEntry::~FuseFileMapEntry() = default;
 
-void Server::FuseFileMapEntry::DoRead2(
-    const fusebox_staging::Read2RequestProto& request,
-    Server::Read2Callback callback) {
+void Server::FuseFileMapEntry::DoRead2(const Read2RequestProto& request,
+                                       Server::Read2Callback callback) {
   int64_t offset = request.has_offset() ? request.offset() : 0;
   int64_t length = request.has_length() ? request.length() : 0;
   seqbnd_read_writer_.AsyncCall(&Server::ReadWriter::Read)
       .WithArgs(fs_context_, offset, length, std::move(callback));
 }
 
-void Server::FuseFileMapEntry::DoWrite2(
-    const fusebox_staging::Write2RequestProto& request,
-    Server::Write2Callback callback) {
+void Server::FuseFileMapEntry::DoWrite2(const Write2RequestProto& request,
+                                        Server::Write2Callback callback) {
   if (!request.has_data() || request.data().empty()) {
-    fusebox_staging::Write2ResponseProto response_proto;
+    Write2ResponseProto response_proto;
     std::move(callback).Run(response_proto);
     return;
   }
@@ -775,7 +773,7 @@ base::Value Server::GetDebugJSON() {
   return base::Value(std::move(dict));
 }
 
-void Server::Close2(const fusebox_staging::Close2RequestProto& request_proto,
+void Server::Close2(const Close2RequestProto& request_proto,
                     Close2Callback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -783,7 +781,7 @@ void Server::Close2(const fusebox_staging::Close2RequestProto& request_proto,
       request_proto.has_fuse_handle() ? request_proto.fuse_handle() : 0;
   auto iter = fuse_file_map_.find(fuse_handle);
   if (iter == fuse_file_map_.end()) {
-    fusebox_staging::Close2ResponseProto response_proto;
+    Close2ResponseProto response_proto;
     response_proto.set_posix_error_code(ENOENT);
     std::move(callback).Run(response_proto);
     return;
@@ -796,18 +794,18 @@ void Server::Close2(const fusebox_staging::Close2RequestProto& request_proto,
 
   fuse_file_map_.erase(iter);
 
-  fusebox_staging::Close2ResponseProto response_proto;
+  Close2ResponseProto response_proto;
   std::move(callback).Run(response_proto);
 
   if (!pending_reads.empty()) {
-    fusebox_staging::Read2ResponseProto read2_response_proto;
+    Read2ResponseProto read2_response_proto;
     read2_response_proto.set_posix_error_code(EBUSY);
     for (auto& pending_read : pending_reads) {
       std::move(pending_read.second).Run(read2_response_proto);
     }
   }
   if (!pending_writes.empty()) {
-    fusebox_staging::Write2ResponseProto write2_esponse_proto;
+    Write2ResponseProto write2_esponse_proto;
     write2_esponse_proto.set_posix_error_code(EBUSY);
     for (auto& pending_read : pending_writes) {
       std::move(pending_read.second).Run(write2_esponse_proto);
@@ -815,7 +813,7 @@ void Server::Close2(const fusebox_staging::Close2RequestProto& request_proto,
   }
 }
 
-void Server::Create(const fusebox_staging::CreateRequestProto& request_proto,
+void Server::Create(const CreateRequestProto& request_proto,
                     CreateCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -825,12 +823,12 @@ void Server::Create(const fusebox_staging::CreateRequestProto& request_proto,
 
   auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
   if (common.error_code != base::File::Error::FILE_OK) {
-    fusebox_staging::CreateResponseProto response_proto;
+    CreateResponseProto response_proto;
     response_proto.set_posix_error_code(FileErrorToErrno(common.error_code));
     std::move(callback).Run(response_proto);
     return;
   } else if (common.read_only) {
-    fusebox_staging::CreateResponseProto response_proto;
+    CreateResponseProto response_proto;
     response_proto.set_posix_error_code(EACCES);
     std::move(callback).Run(response_proto);
     return;
@@ -861,7 +859,7 @@ void Server::Create(const fusebox_staging::CreateRequestProto& request_proto,
           common.fs_url, exclusive, std::move(outer_callback)));
 }
 
-void Server::MkDir(const fusebox_staging::MkDirRequestProto& request_proto,
+void Server::MkDir(const MkDirRequestProto& request_proto,
                    MkDirCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -871,12 +869,12 @@ void Server::MkDir(const fusebox_staging::MkDirRequestProto& request_proto,
 
   auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
   if (common.error_code != base::File::Error::FILE_OK) {
-    fusebox_staging::MkDirResponseProto response_proto;
+    MkDirResponseProto response_proto;
     response_proto.set_posix_error_code(FileErrorToErrno(common.error_code));
     std::move(callback).Run(response_proto);
     return;
   } else if (common.read_only) {
-    fusebox_staging::MkDirResponseProto response_proto;
+    MkDirResponseProto response_proto;
     response_proto.set_posix_error_code(EACCES);
     std::move(callback).Run(response_proto);
     return;
@@ -899,41 +897,41 @@ void Server::MkDir(const fusebox_staging::MkDirRequestProto& request_proto,
                      std::move(outer_callback)));
 }
 
-void Server::Open2(const fusebox_staging::Open2RequestProto& request_proto,
+void Server::Open2(const Open2RequestProto& request_proto,
                    Open2Callback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::string fs_url_as_string = request_proto.has_file_system_url()
                                      ? request_proto.file_system_url()
                                      : std::string();
-  fusebox_staging::AccessMode access_mode =
-      request_proto.has_access_mode() ? request_proto.access_mode()
-                                      : fusebox_staging::AccessMode::NO_ACCESS;
+  AccessMode access_mode = request_proto.has_access_mode()
+                               ? request_proto.access_mode()
+                               : AccessMode::NO_ACCESS;
 
   auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
   if (common.error_code != base::File::Error::FILE_OK) {
-    fusebox_staging::Open2ResponseProto response_proto;
+    Open2ResponseProto response_proto;
     response_proto.set_posix_error_code(FileErrorToErrno(common.error_code));
     std::move(callback).Run(response_proto);
     return;
   }
 
-  bool readable = (access_mode == fusebox_staging::AccessMode::READ_ONLY) ||
-                  (access_mode == fusebox_staging::AccessMode::READ_WRITE);
-  bool writable = !common.read_only &&
-                  ((access_mode == fusebox_staging::AccessMode::WRITE_ONLY) ||
-                   (access_mode == fusebox_staging::AccessMode::READ_WRITE));
+  bool readable = (access_mode == AccessMode::READ_ONLY) ||
+                  (access_mode == AccessMode::READ_WRITE);
+  bool writable =
+      !common.read_only && ((access_mode == AccessMode::WRITE_ONLY) ||
+                            (access_mode == AccessMode::READ_WRITE));
 
   uint64_t fuse_handle = InsertFuseFileMapEntry(
       FuseFileMapEntry(std::move(common.fs_context), std::move(common.fs_url),
                        readable, writable));
 
-  fusebox_staging::Open2ResponseProto response_proto;
+  Open2ResponseProto response_proto;
   response_proto.set_fuse_handle(fuse_handle);
   std::move(callback).Run(response_proto);
 }
 
-void Server::Read2(const fusebox_staging::Read2RequestProto& request_proto,
+void Server::Read2(const Read2RequestProto& request_proto,
                    Read2Callback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -941,12 +939,12 @@ void Server::Read2(const fusebox_staging::Read2RequestProto& request_proto,
       request_proto.has_fuse_handle() ? request_proto.fuse_handle() : 0;
   auto iter = fuse_file_map_.find(fuse_handle);
   if (iter == fuse_file_map_.end()) {
-    fusebox_staging::Read2ResponseProto response_proto;
+    Read2ResponseProto response_proto;
     response_proto.set_posix_error_code(ENOENT);
     std::move(callback).Run(response_proto);
     return;
   } else if (!iter->second.readable_) {
-    fusebox_staging::Read2ResponseProto response_proto;
+    Read2ResponseProto response_proto;
     response_proto.set_posix_error_code(EACCES);
     std::move(callback).Run(response_proto);
     return;
@@ -1024,7 +1022,7 @@ void Server::ReadDir2(const ReadDir2RequestProto& request_proto,
           common.fs_url, std::move(outer_callback)));
 }
 
-void Server::RmDir(const fusebox_staging::RmDirRequestProto& request_proto,
+void Server::RmDir(const RmDirRequestProto& request_proto,
                    RmDirCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -1034,12 +1032,12 @@ void Server::RmDir(const fusebox_staging::RmDirRequestProto& request_proto,
 
   auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
   if (common.error_code != base::File::Error::FILE_OK) {
-    fusebox_staging::RmDirResponseProto response_proto;
+    RmDirResponseProto response_proto;
     response_proto.set_posix_error_code(FileErrorToErrno(common.error_code));
     std::move(callback).Run(response_proto);
     return;
   } else if (common.read_only) {
-    fusebox_staging::RmDirResponseProto response_proto;
+    RmDirResponseProto response_proto;
     response_proto.set_posix_error_code(EACCES);
     std::move(callback).Run(response_proto);
     return;
@@ -1059,7 +1057,7 @@ void Server::RmDir(const fusebox_staging::RmDirRequestProto& request_proto,
                      common.fs_url, std::move(outer_callback)));
 }
 
-void Server::Stat2(const fusebox_staging::Stat2RequestProto& request_proto,
+void Server::Stat2(const Stat2RequestProto& request_proto,
                    Stat2Callback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -1071,13 +1069,13 @@ void Server::Stat2(const fusebox_staging::Stat2RequestProto& request_proto,
   if (common.is_moniker_root) {
     constexpr bool is_directory = true;
     constexpr bool read_only = true;
-    fusebox_staging::Stat2ResponseProto response_proto;
-    fusebox_staging::DirEntryProto* stat = response_proto.mutable_stat();
+    Stat2ResponseProto response_proto;
+    DirEntryProto* stat = response_proto.mutable_stat();
     stat->set_mode_bits(Server::MakeModeBits(is_directory, read_only));
     std::move(callback).Run(response_proto);
     return;
   } else if (common.error_code != base::File::Error::FILE_OK) {
-    fusebox_staging::Stat2ResponseProto response_proto;
+    Stat2ResponseProto response_proto;
     response_proto.set_posix_error_code(FileErrorToErrno(common.error_code));
     std::move(callback).Run(response_proto);
     return;
@@ -1102,9 +1100,8 @@ void Server::Stat2(const fusebox_staging::Stat2RequestProto& request_proto,
           common.fs_url, metadata_fields, std::move(outer_callback)));
 }
 
-void Server::Truncate(
-    const fusebox_staging::TruncateRequestProto& request_proto,
-    TruncateCallback callback) {
+void Server::Truncate(const TruncateRequestProto& request_proto,
+                      TruncateCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::string fs_url_as_string = request_proto.has_file_system_url()
@@ -1113,12 +1110,12 @@ void Server::Truncate(
 
   auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
   if (common.error_code != base::File::Error::FILE_OK) {
-    fusebox_staging::TruncateResponseProto response_proto;
+    TruncateResponseProto response_proto;
     response_proto.set_posix_error_code(FileErrorToErrno(common.error_code));
     std::move(callback).Run(response_proto);
     return;
   } else if (common.read_only) {
-    fusebox_staging::TruncateResponseProto response_proto;
+    TruncateResponseProto response_proto;
     response_proto.set_posix_error_code(EACCES);
     std::move(callback).Run(response_proto);
     return;
@@ -1140,7 +1137,7 @@ void Server::Truncate(
           std::move(outer_callback)));
 }
 
-void Server::Unlink(const fusebox_staging::UnlinkRequestProto& request_proto,
+void Server::Unlink(const UnlinkRequestProto& request_proto,
                     UnlinkCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -1150,12 +1147,12 @@ void Server::Unlink(const fusebox_staging::UnlinkRequestProto& request_proto,
 
   auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
   if (common.error_code != base::File::Error::FILE_OK) {
-    fusebox_staging::UnlinkResponseProto response_proto;
+    UnlinkResponseProto response_proto;
     response_proto.set_posix_error_code(FileErrorToErrno(common.error_code));
     std::move(callback).Run(response_proto);
     return;
   } else if (common.read_only) {
-    fusebox_staging::UnlinkResponseProto response_proto;
+    UnlinkResponseProto response_proto;
     response_proto.set_posix_error_code(EACCES);
     std::move(callback).Run(response_proto);
     return;
@@ -1175,7 +1172,7 @@ void Server::Unlink(const fusebox_staging::UnlinkRequestProto& request_proto,
           common.fs_url, std::move(outer_callback)));
 }
 
-void Server::Write2(const fusebox_staging::Write2RequestProto& request_proto,
+void Server::Write2(const Write2RequestProto& request_proto,
                     Write2Callback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -1183,18 +1180,18 @@ void Server::Write2(const fusebox_staging::Write2RequestProto& request_proto,
       request_proto.has_fuse_handle() ? request_proto.fuse_handle() : 0;
   auto iter = fuse_file_map_.find(fuse_handle);
   if (iter == fuse_file_map_.end()) {
-    fusebox_staging::Write2ResponseProto response_proto;
+    Write2ResponseProto response_proto;
     response_proto.set_posix_error_code(ENOENT);
     std::move(callback).Run(response_proto);
     return;
   } else if (!iter->second.writable_) {
-    fusebox_staging::Write2ResponseProto response_proto;
+    Write2ResponseProto response_proto;
     response_proto.set_posix_error_code(EACCES);
     std::move(callback).Run(response_proto);
     return;
   } else if (request_proto.has_data() &&
              (request_proto.data().size() > INT_MAX)) {
-    fusebox_staging::Write2ResponseProto response_proto;
+    Write2ResponseProto response_proto;
     response_proto.set_posix_error_code(EMSGSIZE);
     std::move(callback).Run(response_proto);
     return;
@@ -1312,15 +1309,14 @@ void Server::RemoveTempDir(const std::string& fusebox_file_path) {
           std::move(scoped_temp_dir)));
 }
 
-void Server::OnRead2(
-    uint64_t fuse_handle,
-    Read2Callback callback,
-    const fusebox_staging::Read2ResponseProto& response_proto) {
+void Server::OnRead2(uint64_t fuse_handle,
+                     Read2Callback callback,
+                     const Read2ResponseProto& response_proto) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto iter = fuse_file_map_.find(fuse_handle);
   if (iter == fuse_file_map_.end()) {
-    fusebox_staging::Read2ResponseProto enoent_response_proto;
+    Read2ResponseProto enoent_response_proto;
     enoent_response_proto.set_posix_error_code(ENOENT);
     std::move(callback).Run(enoent_response_proto);
     return;
@@ -1373,15 +1369,14 @@ void Server::OnReadDirectory(
   }
 }
 
-void Server::OnWrite2(
-    uint64_t fuse_handle,
-    Write2Callback callback,
-    const fusebox_staging::Write2ResponseProto& response_proto) {
+void Server::OnWrite2(uint64_t fuse_handle,
+                      Write2Callback callback,
+                      const Write2ResponseProto& response_proto) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto iter = fuse_file_map_.find(fuse_handle);
   if (iter == fuse_file_map_.end()) {
-    fusebox_staging::Write2ResponseProto enoent_response_proto;
+    Write2ResponseProto enoent_response_proto;
     enoent_response_proto.set_posix_error_code(ENOENT);
     std::move(callback).Run(enoent_response_proto);
     return;

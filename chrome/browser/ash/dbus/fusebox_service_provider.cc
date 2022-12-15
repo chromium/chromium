@@ -14,14 +14,6 @@
 // This file provides the "D-Bus protocol logic" half of the FuseBox server,
 // coupled with the "business logic" half in fusebox_server.cc.
 
-// The "fusebox_staging" concept is described in
-// chrome/browser/ash/fusebox/fusebox_staging.proto
-//
-// TODO(b/255520194): remove this section.
-namespace fusebox_staging {
-const char kStat2Method[] = "Stat2";
-}  // namespace fusebox_staging
-
 namespace ash {
 
 namespace {
@@ -64,7 +56,7 @@ void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
   ExportProtoMethod(fusebox::kRead2Method, &fusebox::Server::Read2);
   ExportProtoMethod(fusebox::kReadDir2Method, &fusebox::Server::ReadDir2);
   ExportProtoMethod(fusebox::kRmDirMethod, &fusebox::Server::RmDir);
-  ExportProtoMethod(fusebox_staging::kStat2Method, &fusebox::Server::Stat2);
+  ExportProtoMethod(fusebox::kStat2Method, &fusebox::Server::Stat2);
   ExportProtoMethod(fusebox::kTruncateMethod, &fusebox::Server::Truncate);
   ExportProtoMethod(fusebox::kUnlinkMethod, &fusebox::Server::Unlink);
   ExportProtoMethod(fusebox::kWrite2Method, &fusebox::Server::Write2);
