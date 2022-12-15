@@ -1466,6 +1466,31 @@ TEST_F(TabletWindowFloatTest, TuckToMagnetismCorner) {
             window->bounds().bottom_right());
 }
 
+// Tests that tapping on a point on the edge but far from the tuck handle does
+// not untuck a tucked window. Regression test for b/262573071.
+TEST_F(TabletWindowFloatTest, ClickOnEdgeDoesNotUntuck) {
+  UpdateDisplay("800x600");
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  // The window is magnetized to the bottom right by default.
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+  auto* float_controller = Shell::Get()->float_controller();
+
+  // Tuck the window in the bottom right.
+  FlingWindow(window.get(), /*left=*/false, /*up=*/false);
+  ASSERT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+
+  // Select a point close to the edge that is not close to the tuck handle.
+  const gfx::Point point(799, window->GetBoundsInScreen().y());
+  views::Widget* tuck_handle_widget =
+      float_controller->GetTuckHandleWidget(window.get());
+  ASSERT_FALSE(tuck_handle_widget->GetWindowBoundsInScreen().Contains(point));
+
+  // Tests that we are still tucked after tapping that point.
+  GetEventGenerator()->GestureTapAt(point);
+  EXPECT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+}
+
 TEST_F(TabletWindowFloatTest, UntuckWindowGestures) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   // The window is magnetized to the bottom right by default.

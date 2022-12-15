@@ -5,8 +5,14 @@
 #ifndef ASH_WM_FLOAT_SCOPED_WINDOW_TUCKER_H_
 #define ASH_WM_FLOAT_SCOPED_WINDOW_TUCKER_H_
 
+#include <memory>
+
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/wm/public/activation_change_observer.h"
+
+namespace aura {
+class ScopedWindowTargeter;
+}
 
 namespace ash {
 
@@ -47,6 +53,11 @@ class ScopedWindowTucker : public wm::ActivationChangeObserver {
 
   // True iff the window is tucked to the left screen edge, false otherwise.
   bool left_ = false;
+
+  // Used to remove the window targeter that was in use before tucking the
+  // window, if any. Re-installs the original targeter on the window after
+  // untucking.
+  std::unique_ptr<aura::ScopedWindowTargeter> targeter_;
 
   views::UniqueWidgetPtr tuck_handle_widget_ =
       std::make_unique<views::Widget>();

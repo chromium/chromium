@@ -15,6 +15,8 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "base/time/time.h"
+#include "ui/aura/null_window_targeter.h"
+#include "ui/aura/scoped_window_targeter.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform.h"
@@ -187,6 +189,9 @@ ScopedWindowTucker::ScopedWindowTucker(aura::Window* window, bool left)
   wm::ActivateWindow(window_to_activate);
 
   Shell::Get()->activation_client()->AddObserver(this);
+
+  targeter_ = std::make_unique<aura::ScopedWindowTargeter>(
+      window_, std::make_unique<aura::NullWindowTargeter>());
 }
 
 ScopedWindowTucker::~ScopedWindowTucker() {
