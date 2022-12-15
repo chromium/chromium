@@ -13,15 +13,19 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "fuchsia_web/common/string_util.h"
+#include "fuchsia_web/webengine/browser/trace_event.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_util.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/image/image.h"
@@ -132,8 +136,13 @@ void DiffNavigationEntries(const fuchsia::web::NavigationState& old_entry,
 }  // namespace
 
 NavigationControllerImpl::NavigationControllerImpl(
-    content::WebContents* web_contents)
-    : web_contents_(web_contents), weak_factory_(this) {
+    content::WebContents* web_contents,
+    void* parent_for_trace_flow)
+    : parent_for_trace_flow_(parent_for_trace_flow),
+      web_contents_(web_contents),
+      weak_factory_(this) {
+  DCHECK(parent_for_trace_flow_);
+
   Observe(web_contents_);
 }
 
@@ -253,6 +262,14 @@ void NavigationControllerImpl::MaybeSendNavigationEvent() {
 
   waiting_for_navigation_event_ack_ = true;
 
+  // Note that the events is logged to the parent Frame's flow.
+  TRACE_EVENT(kWebEngineFidlCategory,
+              "fuchsia.web/NavigationEventListener.OnNavigationStateChanged",
+              perfetto::Flow::FromPointer(parent_for_trace_flow_), "url",
+              previous_navigation_state_.url(), "title",
+              previous_navigation_state_.title().data(), "is_loaded",
+              is_main_document_loaded_);
+
   // Send the event to the observer and, upon acknowledgement, revisit this
   // function to send another update.
   navigation_listener_->OnNavigationStateChanged(
@@ -267,6 +284,11 @@ void NavigationControllerImpl::MaybeSendNavigationEvent() {
 void NavigationControllerImpl::LoadUrl(std::string url,
                                        fuchsia::web::LoadUrlParams params,
                                        LoadUrlCallback callback) {
+  // Note that the event is logged to the parent Frame's flow.
+  TRACE_EVENT(kWebEngineFidlCategory,
+              "fuchsia.web/NavigationController.LoadUrl",
+              perfetto::Flow::FromPointer(parent_for_trace_flow_), "url", url);
+
   GURL validated_url(url);
   if (!validated_url.is_valid()) {
     callback(
@@ -310,20 +332,33 @@ void NavigationControllerImpl::LoadUrl(std::string url,
 }
 
 void NavigationControllerImpl::GoBack() {
+  TRACE_EVENT(kWebEngineFidlCategory, "fuchsia.web/NavigationController.GoBack",
+              perfetto::Flow::FromPointer(parent_for_trace_flow_));
+
   if (web_contents_->GetController().CanGoBack())
     web_contents_->GetController().GoBack();
 }
 
 void NavigationControllerImpl::GoForward() {
+  TRACE_EVENT(kWebEngineFidlCategory,
+              "fuchsia.web/NavigationController.GoForward",
+              perfetto::Flow::FromPointer(parent_for_trace_flow_));
+
   if (web_contents_->GetController().CanGoForward())
     web_contents_->GetController().GoForward();
 }
 
 void NavigationControllerImpl::Stop() {
+  TRACE_EVENT(kWebEngineFidlCategory, "fuchsia.web/NavigationController.Stop",
+              perfetto::Flow::FromPointer(parent_for_trace_flow_));
+
   web_contents_->Stop();
 }
 
 void NavigationControllerImpl::Reload(fuchsia::web::ReloadType type) {
+  TRACE_EVENT(kWebEngineFidlCategory, "fuchsia.web/NavigationController.Reload",
+              perfetto::Flow::FromPointer(parent_for_trace_flow_));
+
   content::ReloadType internal_reload_type;
   switch (type) {
     case fuchsia::web::ReloadType::PARTIAL_CACHE:

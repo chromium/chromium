@@ -317,6 +317,7 @@ component("web_engine_core") {
     "browser/navigation_policy_throttle.h",
     "browser/theme_manager.cc",
     "browser/theme_manager.h",
+    "browser/trace_event.h",
     "browser/url_request_rewrite_type_converters.cc",
     "browser/url_request_rewrite_type_converters.h",
     "browser/web_engine_browser_context.cc",

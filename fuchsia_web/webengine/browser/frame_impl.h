@@ -221,6 +221,11 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   // |accessibility_bridge_|.
   void ConnectToAccessibilityBridge();
 
+  // Shared implementation of CreateView and CreateViewWithViewRef.
+  void CreateViewImpl(fuchsia::ui::views::ViewToken view_token,
+                      fuchsia::ui::views::ViewRefControl control_ref,
+                      fuchsia::ui::views::ViewRef view_ref);
+
   // fuchsia::web::Frame implementation.
   void CreateView(fuchsia::ui::views::ViewToken view_token) override;
   void CreateViewWithViewRef(fuchsia::ui::views::ViewToken view_token,

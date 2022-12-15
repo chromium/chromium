@@ -180,6 +180,7 @@
   X("wakeup.flow")                                                       \
   X("wayland")                                                           \
   X("webaudio")                                                          \
+  X("webengine.fidl")                                                    \
   X("weblayer")                                                          \
   X("WebCore")                                                           \
   X("webrtc")                                                            \
