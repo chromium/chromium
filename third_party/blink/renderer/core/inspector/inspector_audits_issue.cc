@@ -77,6 +77,18 @@ protocol::Network::CorsError RendererCorsIssueCodeToProtocol(
   }
 }
 
+protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
+    mojom::blink::GenericIssueErrorType error_type) {
+  switch (error_type) {
+    case mojom::blink::GenericIssueErrorType::
+        kCrossOriginPortalPostMessageError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          CrossOriginPortalPostMessageError;
+    case mojom::blink::GenericIssueErrorType::kFormLabelForNameError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::FormLabelForNameError;
+  }
+}
+
 }  // namespace
 
 std::unique_ptr<protocol::Audits::SourceCodeLocation> CreateProtocolLocation(
@@ -785,6 +797,28 @@ void AuditsIssue::ReportMixedContentIssue(
       protocol::Audits::InspectorIssue::create()
           .setCode(protocol::Audits::InspectorIssueCodeEnum::MixedContentIssue)
           .setDetails(std::move(details))
+          .build();
+
+  frame->DomWindow()->AddInspectorIssue(AuditsIssue(std::move(issue)));
+}
+
+void AuditsIssue::ReportGenericIssue(
+    LocalFrame* frame,
+    mojom::blink::GenericIssueErrorType error_type,
+    int violating_node_id) {
+  auto audits_issue_details =
+      protocol::Audits::GenericIssueDetails::create()
+          .setErrorType(GenericIssueErrorTypeToProtocol(error_type))
+          .setViolatingNodeId(violating_node_id)
+          .build();
+
+  auto issue =
+      protocol::Audits::InspectorIssue::create()
+          .setCode(protocol::Audits::InspectorIssueCodeEnum::GenericIssue)
+          .setDetails(
+              protocol::Audits::InspectorIssueDetails::create()
+                  .setGenericIssueDetails(std::move(audits_issue_details))
+                  .build())
           .build();
 
   frame->DomWindow()->AddInspectorIssue(AuditsIssue(std::move(issue)));

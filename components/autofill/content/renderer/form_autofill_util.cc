@@ -1410,6 +1410,16 @@ void MatchLabelsAndFields(
     field_data->label += label_text;
     field_data->label_source = FormFieldData::LabelSource::kFor;
     base::UmaHistogramEnumeration(kAssignedLabelSourceHistogram, label_source);
+
+    if (label_source == AssignedLabelSource::kName) {
+      // Add a DevTools issue informing the developer that the `label`'s for-
+      // attribute is pointing to the name of a field, even though the ID should
+      // be used.
+      // TODO(crbug.com/1339277): Use `root` once the feature is launched.
+      label.GetDocument().GetFrame()->AddGenericIssue(
+          blink::mojom::GenericIssueErrorType::kFormLabelForNameError,
+          label.GetDevToolsNodeId());
+    }
   }
 }
 
@@ -1524,6 +1534,8 @@ bool FormOrFieldsetsToFormData(
     // `root` of `MatchLabelsAndFields()` all label tags are considered. This is
     // necessary to support label-for inference in unowned forms and in owned
     // forms utilizing the form-attribute.
+    // TODO(crbug.com/1339277): Change the type of `MatchLabelsAndFields()`'s
+    // first parameter to `WebDocument`.
     if (!control_elements.empty())
       MatchLabelsAndFields(control_elements[0].GetDocument(), field_set);
   } else {

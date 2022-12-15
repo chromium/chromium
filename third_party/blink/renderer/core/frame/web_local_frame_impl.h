@@ -559,6 +559,8 @@ class CORE_EXPORT WebLocalFrameImpl final
                                bool discard_duplicates) override;
 
   void AddInspectorIssueImpl(mojom::blink::InspectorIssueCode code) override;
+  void AddGenericIssueImpl(mojom::blink::GenericIssueErrorType error_type,
+                           int violating_node_id) override;
 
  private:
   friend LocalFrameClientImpl;

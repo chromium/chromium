@@ -9,6 +9,7 @@
 #include "base/unguessable_token.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -220,6 +221,10 @@ class CORE_EXPORT AuditsIssue {
       Element* element,
       SourceLocation* source_location,
       absl::optional<base::UnguessableToken> issue_id);
+
+  static void ReportGenericIssue(LocalFrame* frame,
+                                 mojom::blink::GenericIssueErrorType error_type,
+                                 int violating_node_id);
 
  private:
   explicit AuditsIssue(std::unique_ptr<protocol::Audits::InspectorIssue> issue);

@@ -446,6 +446,11 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
     AddInspectorIssueImpl(code);
   }
 
+  void AddGenericIssue(mojom::GenericIssueErrorType error_type,
+                       int violating_node_id) {
+    AddGenericIssueImpl(error_type, violating_node_id);
+  }
+
   // Expose modal dialog methods to avoid having to go through JavaScript.
   virtual void Alert(const WebString& message) = 0;
   virtual bool Confirm(const WebString& message) = 0;
@@ -926,6 +931,9 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void AddMessageToConsoleImpl(const WebConsoleMessage&,
                                        bool discard_duplicates) = 0;
   virtual void AddInspectorIssueImpl(blink::mojom::InspectorIssueCode code) = 0;
+  virtual void AddGenericIssueImpl(
+      blink::mojom::GenericIssueErrorType error_type,
+      int violating_node_id) = 0;
 
   virtual void CreateFrameWidgetInternal(
       base::PassKey<WebLocalFrame> pass_key,

@@ -1661,10 +1661,12 @@ void ApplyNetworkContextParamsOverrides(
 protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
     blink::mojom::GenericIssueErrorType error_type) {
   switch (error_type) {
-    case (blink::mojom::GenericIssueErrorType::
-              kCrossOriginPortalPostMessageError):
+    case blink::mojom::GenericIssueErrorType::
+        kCrossOriginPortalPostMessageError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           CrossOriginPortalPostMessageError;
+    case blink::mojom::GenericIssueErrorType::kFormLabelForNameError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::FormLabelForNameError;
   }
 }
 
