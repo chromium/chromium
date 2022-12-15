@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_ACCOUNT_CAPABILITIES_FETCHER_IOS_H_
-#define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_ACCOUNT_CAPABILITIES_FETCHER_IOS_H_
+#ifndef IOS_CHROME_BROWSER_SIGNIN_ACCOUNT_CAPABILITIES_FETCHER_IOS_H_
+#define IOS_CHROME_BROWSER_SIGNIN_ACCOUNT_CAPABILITIES_FETCHER_IOS_H_
 
 #import "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 #import "components/signin/public/identity_manager/account_info.h"
+#import "ios/chrome/browser/signin/capabilities_dict.h"
 #import "ios/chrome/browser/signin/system_identity.h"
-#import "ios/public/provider/chrome/browser/signin/capabilities_dict.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 namespace ios {
@@ -41,4 +41,4 @@ class AccountCapabilitiesFetcherIOS : public AccountCapabilitiesFetcher {
 
 }  // namespace ios
 
-#endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_ACCOUNT_CAPABILITIES_FETCHER_IOS_H_
+#endif  // IOS_CHROME_BROWSER_SIGNIN_ACCOUNT_CAPABILITIES_FETCHER_IOS_H_

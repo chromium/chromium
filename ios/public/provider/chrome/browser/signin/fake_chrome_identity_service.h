@@ -5,7 +5,7 @@
 #ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_FAKE_CHROME_IDENTITY_SERVICE_H_
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_FAKE_CHROME_IDENTITY_SERVICE_H_
 
-#import "ios/public/provider/chrome/browser/signin/capabilities_dict.h"
+#import "ios/chrome/browser/signin/capabilities_dict.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 #import <Foundation/Foundation.h>

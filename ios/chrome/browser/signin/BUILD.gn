@@ -129,6 +129,30 @@ source_set("signin_util") {
   ]
 }
 
+source_set("fetcher") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "account_capabilities_fetcher_ios.h",
+    "account_capabilities_fetcher_ios.mm",
+  ]
+  deps = [
+    ":capabilities_types",
+    ":system_identity",
+    "//base",
+    "//components/signin/internal/identity_manager",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/browser_state",
+    "//ios/public/provider/chrome/browser/signin:signin",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("capabilities_types") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "capabilities_dict.h" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("constants") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -321,6 +345,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "account_capabilities_fetcher_ios_unittest.mm",
     "account_consistency_browser_agent_unittest.mm",
     "authentication_service_observer_bridge_unittest.mm",
     "authentication_service_unittest.mm",
@@ -335,6 +360,9 @@ source_set("unit_tests") {
     "user_approved_account_list_manager_unittest.mm",
   ]
   deps = [
+    ":capabilities_types",
+    ":fake_system_identity",
+    ":fetcher",
     ":signin",
     ":system_identity",
     ":test_support",
@@ -361,7 +389,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/prefs:pref_names",
-    "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
     "//ios/chrome/browser/ui/commands",
@@ -390,8 +417,8 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "authentication_service_egtest.mm" ]
   deps = [
+    ":fake_system_identity",
     "//base",
-    "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

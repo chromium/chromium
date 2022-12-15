@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/public/provider/chrome/browser/signin/account_capabilities_fetcher_ios.h"
+#import "ios/chrome/browser/signin/account_capabilities_fetcher_ios.h"
 
 #import "base/callback.h"
 #import "base/run_loop.h"
 #import "base/test/task_environment.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#import "ios/chrome/browser/signin/capabilities_dict.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/public/provider/chrome/browser/signin/capabilities_dict.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

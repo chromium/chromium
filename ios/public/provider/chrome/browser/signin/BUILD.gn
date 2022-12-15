@@ -11,30 +11,12 @@ source_set("signin") {
     "chrome_identity_service.mm",
   ]
   deps = [
-    ":capabilities_types",
     "//base",
     "//components/signin/internal/identity_manager",
     "//components/sync/driver",
     "//google_apis",
+    "//ios/chrome/browser/signin:capabilities_types",
     "//ios/chrome/browser/signin:system_identity",
-  ]
-}
-
-source_set("fetcher") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "account_capabilities_fetcher_ios.h",
-    "account_capabilities_fetcher_ios.mm",
-  ]
-  deps = [
-    ":signin",
-    "//base",
-    "//components/signin/internal/identity_manager",
-    "//components/signin/public/identity_manager",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/signin:system_identity",
-    "//ios/public/provider/chrome/browser/signin:capabilities_types",
-    "//third_party/abseil-cpp:absl",
   ]
 }
 
@@ -83,13 +65,13 @@ source_set("test_support") {
     "fake_chrome_identity_service.mm",
   ]
   deps = [
-    ":capabilities_types",
     ":constants",
     ":signin",
     "//base",
     "//base/test:test_support",
     "//components/signin/public/identity_manager",
     "//google_apis",
+    "//ios/chrome/browser/signin:capabilities_types",
     "//ios/chrome/browser/signin:fake_account_details_view_controller",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/signin:system_identity",
@@ -101,10 +83,12 @@ source_set("test_support") {
   public_deps = [ "//testing/gmock" ]
 }
 
+# Forwarding-target needed until internal repository has been updated to
+# use the new target.
 source_set("capabilities_types") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "capabilities_dict.h" ]
-  frameworks = [ "Foundation.framework" ]
+  public_deps = [ "//ios/chrome/browser/signin:capabilities_types" ]
 }
 
 source_set("constants") {
@@ -122,19 +106,14 @@ source_set("constants") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "account_capabilities_fetcher_ios_unittest.mm",
-    "chrome_identity_service_unittest.mm",
-  ]
+  sources = [ "chrome_identity_service_unittest.mm" ]
   deps = [
-    ":capabilities_types",
-    ":fetcher",
     ":signin",
     "//base",
     "//base/test:test_support",
     "//components/signin/internal/identity_manager",
+    "//ios/chrome/browser/signin:capabilities_types",
     "//ios/chrome/browser/signin:fake_system_identity",
-    "//ios/public/provider/chrome/browser/signin:capabilities_types",
     "//testing/gmock",
     "//testing/gtest",
   ]

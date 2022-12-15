@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/public/provider/chrome/browser/signin/account_capabilities_fetcher_ios.h"
+#import "ios/chrome/browser/signin/account_capabilities_fetcher_ios.h"
 
 #import <Foundation/Foundation.h>
 #import <map>

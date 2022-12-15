@@ -13,7 +13,7 @@
 
 #include "base/callback.h"
 #include "base/observer_list.h"
-#import "ios/public/provider/chrome/browser/signin/capabilities_dict.h"
+#import "ios/chrome/browser/signin/capabilities_dict.h"
 
 @class ChromeIdentityInteractionManager;
 @protocol SystemIdentity;

@@ -5,14 +5,7 @@
 #ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_CAPABILITIES_DICT_H_
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_CAPABILITIES_DICT_H_
 
-#import <Foundation/Foundation.h>
-
-namespace ios {
-
-// Dictionary from capability name, as in `account_capabilities.cc` to a
-// `ChromeIdentityCapabilityResult` encoded as a NSNumber.
-using CapabilitiesDict = NSDictionary<NSString*, NSNumber*>;
-
-}  // namespace ios
+// Forwarding header needed to prevent breaking internal repository.
+#include "ios/chrome/browser/signin/capabilities_dict.h"
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_CAPABILITIES_DICT_H_
