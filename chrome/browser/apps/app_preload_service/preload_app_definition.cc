@@ -12,19 +12,18 @@ std::string PreloadAppDefinition::GetName() const {
 
 AppType PreloadAppDefinition::GetPlatform() const {
   switch (app_proto_.platform()) {
-    case proto::AppProvisioningResponse::PLATFORM_UNKNOWN:
+    case proto::AppProvisioningListAppsResponse::PLATFORM_UNKNOWN:
       return AppType::kUnknown;
-    case proto::AppProvisioningResponse::PLATFORM_WEB:
+    case proto::AppProvisioningListAppsResponse::PLATFORM_WEB:
       return AppType::kWeb;
-    case proto::AppProvisioningResponse::PLATFORM_ANDROID:
+    case proto::AppProvisioningListAppsResponse::PLATFORM_ANDROID:
       return AppType::kArc;
   }
 }
 
 bool PreloadAppDefinition::IsOemApp() const {
   return app_proto_.install_reason() ==
-         proto::AppProvisioningResponse_InstallReason::
-             AppProvisioningResponse_InstallReason_INSTALL_REASON_OEM;
+         proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM;
 }
 
 std::string PreloadAppDefinition::GetWebAppManifestId() const {

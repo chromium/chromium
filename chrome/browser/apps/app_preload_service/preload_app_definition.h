@@ -17,7 +17,8 @@ namespace apps {
 // extraction and conversion of information.
 class PreloadAppDefinition {
  public:
-  explicit PreloadAppDefinition(proto::AppProvisioningResponse_App app_proto)
+  explicit PreloadAppDefinition(
+      proto::AppProvisioningListAppsResponse_App app_proto)
       : app_proto_(app_proto) {}
   PreloadAppDefinition(const PreloadAppDefinition&) = default;
   PreloadAppDefinition& operator=(const PreloadAppDefinition&) = default;
@@ -35,7 +36,7 @@ class PreloadAppDefinition {
   std::string GetWebAppManifestId() const;
 
  private:
-  proto::AppProvisioningResponse_App app_proto_;
+  proto::AppProvisioningListAppsResponse_App app_proto_;
 };
 
 std::ostream& operator<<(std::ostream& os, const PreloadAppDefinition& app);

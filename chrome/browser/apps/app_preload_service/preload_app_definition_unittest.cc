@@ -17,16 +17,13 @@ namespace {
 
 // Returns a sample valid web App response proto. Tests should overwrite the
 // individual fields that they need to verify.
-proto::AppProvisioningResponse_App CreateTestWebApp() {
-  proto::AppProvisioningResponse_App app;
+proto::AppProvisioningListAppsResponse_App CreateTestWebApp() {
+  proto::AppProvisioningListAppsResponse_App app;
   app.set_name("Test app");
-  app.set_platform(proto::AppProvisioningResponse::PLATFORM_WEB);
+  app.set_platform(proto::AppProvisioningListAppsResponse::PLATFORM_WEB);
   auto* web_extras = app.mutable_web_extras();
   web_extras->set_manifest_id("https://www.example.com/home");
-  web_extras->set_start_url("https://www.example.com/home");
-  web_extras->set_scope("https://www.example.com/");
-  web_extras->set_display_mode(
-      proto::AppProvisioningResponse::DISPLAY_MODE_STANDALONE);
+  web_extras->set_manifest_url("https://www.example.com/home/manifest.json");
   return app;
 }
 }  // namespace
@@ -37,7 +34,7 @@ class PreloadAppDefinitionTest : public testing::Test {
 };
 
 TEST_F(PreloadAppDefinitionTest, GetNameWhenNotSet) {
-  proto::AppProvisioningResponse_App app;
+  proto::AppProvisioningListAppsResponse_App app;
 
   auto app_def = PreloadAppDefinition(app);
   ASSERT_EQ(app_def.GetName(), "");
@@ -45,7 +42,7 @@ TEST_F(PreloadAppDefinitionTest, GetNameWhenNotSet) {
 
 TEST_F(PreloadAppDefinitionTest, GetName) {
   const std::string test_name = "test_app_name";
-  proto::AppProvisioningResponse_App app;
+  proto::AppProvisioningListAppsResponse_App app;
 
   app.set_name(test_name);
   auto app_def = PreloadAppDefinition(app);
@@ -53,50 +50,50 @@ TEST_F(PreloadAppDefinitionTest, GetName) {
 }
 
 TEST_F(PreloadAppDefinitionTest, GetPlatformWhenNotSet) {
-  proto::AppProvisioningResponse_App app;
+  proto::AppProvisioningListAppsResponse_App app;
 
   auto app_def = PreloadAppDefinition(app);
   ASSERT_EQ(app_def.GetPlatform(), AppType::kUnknown);
 }
 
 TEST_F(PreloadAppDefinitionTest, GetPlatform) {
-  proto::AppProvisioningResponse_App app;
+  proto::AppProvisioningListAppsResponse_App app;
 
-  app.set_platform(proto::AppProvisioningResponse_Platform::
-                       AppProvisioningResponse_Platform_PLATFORM_WEB);
+  app.set_platform(proto::AppProvisioningListAppsResponse_Platform::
+                       AppProvisioningListAppsResponse_Platform_PLATFORM_WEB);
   auto app_def = PreloadAppDefinition(app);
   ASSERT_EQ(app_def.GetPlatform(), AppType::kWeb);
 }
 
 TEST_F(PreloadAppDefinitionTest, IsOemAppWhenNotSet) {
-  proto::AppProvisioningResponse_App app;
+  proto::AppProvisioningListAppsResponse_App app;
 
   auto app_def = PreloadAppDefinition(app);
   ASSERT_FALSE(app_def.IsOemApp());
 }
 
 TEST_F(PreloadAppDefinitionTest, IsOemApp) {
-  proto::AppProvisioningResponse_App app;
+  proto::AppProvisioningListAppsResponse_App app;
 
   app.set_install_reason(
-      proto::AppProvisioningResponse_InstallReason::
-          AppProvisioningResponse_InstallReason_INSTALL_REASON_OEM);
+      proto::AppProvisioningListAppsResponse_InstallReason::
+          AppProvisioningListAppsResponse_InstallReason_INSTALL_REASON_OEM);
   auto app_def = PreloadAppDefinition(app);
   ASSERT_TRUE(app_def.IsOemApp());
 }
 
 TEST_F(PreloadAppDefinitionTest, IsNotOemApp) {
-  proto::AppProvisioningResponse_App app;
+  proto::AppProvisioningListAppsResponse_App app;
 
   app.set_install_reason(
-      proto::AppProvisioningResponse_InstallReason::
-          AppProvisioningResponse_InstallReason_INSTALL_REASON_DEFAULT);
+      proto::AppProvisioningListAppsResponse_InstallReason::
+          AppProvisioningListAppsResponse_InstallReason_INSTALL_REASON_DEFAULT);
   auto app_def = PreloadAppDefinition(app);
   ASSERT_FALSE(app_def.IsOemApp());
 }
 
 TEST_F(PreloadAppDefinitionTest, GetWebAppManifestId) {
-  proto::AppProvisioningResponse_App app = CreateTestWebApp();
+  proto::AppProvisioningListAppsResponse_App app = CreateTestWebApp();
   app.mutable_web_extras()->set_manifest_id(
       "https://www.example.com/manifest_id/");
 
@@ -107,8 +104,8 @@ TEST_F(PreloadAppDefinitionTest, GetWebAppManifestId) {
 }
 
 TEST_F(PreloadAppDefinitionTest, GetWebAppManifestIdNotSpecified) {
-  proto::AppProvisioningResponse_App app;
-  app.set_platform(proto::AppProvisioningResponse::PLATFORM_WEB);
+  proto::AppProvisioningListAppsResponse_App app;
+  app.set_platform(proto::AppProvisioningListAppsResponse::PLATFORM_WEB);
 
   PreloadAppDefinition app_def(app);
 

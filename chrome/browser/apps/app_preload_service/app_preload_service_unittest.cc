@@ -45,13 +45,12 @@ const base::Value::Dict& GetStateManager(Profile* profile) {
   return profile->GetPrefs()->GetDict(kApsStateManager);
 }
 
-void FillWebExtras(apps::proto::AppProvisioningResponse_WebExtras* extras,
-                   const std::string& start_url) {
-  extras->set_manifest_id(start_url);
-  extras->set_start_url(start_url);
-  extras->set_scope(start_url);
-  extras->set_display_mode(
-      apps::proto::AppProvisioningResponse::DISPLAY_MODE_STANDALONE);
+void FillWebExtras(
+    apps::proto::AppProvisioningListAppsResponse_WebExtras* extras,
+    const std::string& manifest_id,
+    const std::string& manifest_url) {
+  extras->set_manifest_id(manifest_id);
+  extras->set_manifest_url(manifest_url);
 }
 
 }  // namespace
@@ -160,7 +159,7 @@ TEST_F(AppPreloadServiceTest, FirstLoginStartedPrefSet) {
 TEST_F(AppPreloadServiceTest, FirstLoginCompletedPrefSetAfterSuccess) {
   // An empty response indicates that the request completed successfully, but
   // there are no apps to install.
-  proto::AppProvisioningResponse response;
+  proto::AppProvisioningListAppsResponse response;
 
   url_loader_factory_.AddResponse(
       AppPreloadServerConnector::GetServerUrl().spec(),
@@ -194,12 +193,14 @@ TEST_F(AppPreloadServiceTest, FirstLoginExistingUserNotStarted) {
 
 // TODO(b/261632289): temporarily disabled while refactoring is in progress.
 TEST_F(AppPreloadServiceTest, DISABLED_WebAppInstall) {
-  proto::AppProvisioningResponse response;
+  proto::AppProvisioningListAppsResponse response;
   auto* app = response.add_apps_to_install();
   app->set_name("Peanut Types");
-  app->set_platform(proto::AppProvisioningResponse::PLATFORM_WEB);
-  app->set_install_reason(proto::AppProvisioningResponse::INSTALL_REASON_OEM);
-  FillWebExtras(app->mutable_web_extras(), "https://peanuttypes.com/app");
+  app->set_platform(proto::AppProvisioningListAppsResponse::PLATFORM_WEB);
+  app->set_install_reason(
+      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
+  FillWebExtras(app->mutable_web_extras(), "https://peanuttypes.com/app",
+                "https://meltingpot.googleusercontent.com/manifest.json");
 
   url_loader_factory_.AddResponse(
       AppPreloadServerConnector::GetServerUrl().spec(),
@@ -224,13 +225,14 @@ TEST_F(AppPreloadServiceTest, DISABLED_WebAppInstall) {
 }
 
 TEST_F(AppPreloadServiceTest, IgnoreDefaultAppInstall) {
-  proto::AppProvisioningResponse response;
+  proto::AppProvisioningListAppsResponse response;
   auto* app = response.add_apps_to_install();
   app->set_name("Peanut Types");
-  app->set_platform(proto::AppProvisioningResponse::PLATFORM_WEB);
+  app->set_platform(proto::AppProvisioningListAppsResponse::PLATFORM_WEB);
   app->set_install_reason(
-      proto::AppProvisioningResponse::INSTALL_REASON_DEFAULT);
-  FillWebExtras(app->mutable_web_extras(), "https://peanuttypes.com/app");
+      proto::AppProvisioningListAppsResponse::INSTALL_REASON_DEFAULT);
+  FillWebExtras(app->mutable_web_extras(), "https://peanuttypes.com/app",
+                "https://meltingpot.googleusercontent.com/manifest.json");
 
   url_loader_factory_.AddResponse(
       AppPreloadServerConnector::GetServerUrl().spec(),
@@ -253,11 +255,12 @@ TEST_F(AppPreloadServiceTest, IgnoreAndroidAppInstall) {
   constexpr char kPackageName[] = "com.peanuttypes";
   constexpr char kActivityName[] = "com.peanuttypes.PeanutTypesActivity";
 
-  proto::AppProvisioningResponse response;
+  proto::AppProvisioningListAppsResponse response;
   auto* app = response.add_apps_to_install();
   app->set_name("Peanut Types");
-  app->set_platform(proto::AppProvisioningResponse::PLATFORM_ANDROID);
-  app->set_install_reason(proto::AppProvisioningResponse::INSTALL_REASON_OEM);
+  app->set_platform(proto::AppProvisioningListAppsResponse::PLATFORM_ANDROID);
+  app->set_install_reason(
+      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
   app->mutable_android_extras()->set_package_name(kPackageName);
   app->mutable_android_extras()->set_activity_name(kActivityName);
 
@@ -281,19 +284,22 @@ TEST_F(AppPreloadServiceTest, IgnoreAndroidAppInstall) {
 
 // TODO(b/261632289): temporarily disabled while refactoring is in progress.
 TEST_F(AppPreloadServiceTest, DISABLED_InstallOverUserApp) {
-  constexpr char kStartUrl[] = "https://www.example.com/";
+  constexpr char kManifestId[] = "https://www.example.com/";
+  constexpr char kManifestUrl[] =
+      "https://meltingpot.googleusercontent.com/manifest.json";
   constexpr char kUserAppName[] = "User Installed App";
 
   auto app_id = web_app::test::InstallDummyWebApp(GetProfile(), kUserAppName,
-                                                  GURL(kStartUrl));
+                                                  GURL(kManifestId));
 
-  proto::AppProvisioningResponse response;
+  proto::AppProvisioningListAppsResponse response;
   auto* app = response.add_apps_to_install();
 
   app->set_name("OEM Installed app");
-  app->set_platform(proto::AppProvisioningResponse::PLATFORM_WEB);
-  app->set_install_reason(proto::AppProvisioningResponse::INSTALL_REASON_OEM);
-  FillWebExtras(app->mutable_web_extras(), kStartUrl);
+  app->set_platform(proto::AppProvisioningListAppsResponse::PLATFORM_WEB);
+  app->set_install_reason(
+      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
+  FillWebExtras(app->mutable_web_extras(), kManifestId, kManifestUrl);
 
   url_loader_factory_.AddResponse(
       AppPreloadServerConnector::GetServerUrl().spec(),

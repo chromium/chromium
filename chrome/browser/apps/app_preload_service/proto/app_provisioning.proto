@@ -16,7 +16,7 @@ package apps.proto;
 
 // TODO(b/243338003): Review and finalise API. >> THIS IS A DRAFT API ONLY <<
 
-message AppProvisioningRequest {
+message AppProvisioningListAppsRequest {
   enum UserType {
     // Default for deserialization when an unexpected value is encountered.
     // Indicates to the client that the server has a new platform and needs
@@ -70,7 +70,7 @@ message AppProvisioningRequest {
   optional UserType user_type = 6;
 }
 
-message AppProvisioningResponse {
+message AppProvisioningListAppsResponse {
   // A list of zero or more apps for APS to install.
   repeated App apps_to_install = 1;
 
@@ -98,25 +98,6 @@ message AppProvisioningResponse {
 
     // An app installed for an OEM.
     INSTALL_REASON_OEM = 2;
-  }
-
-  enum DisplayMode {
-    // Default for deserialization when an unexpected value is encountered.
-    // Indicates to the client that the server has a new mode and needs the
-    // proto file updated.
-    DISPLAY_MODE_UNKNOWN = 0;
-
-    // Full Screen.
-    DISPLAY_MODE_FULLSCREEN = 1;
-
-    // Standalone.
-    DISPLAY_MODE_STANDALONE = 2;
-
-    // Minimal UI.
-    DISPLAY_MODE_MINIMAL_UI = 3;
-
-    // Browser.
-    DISPLAY_MODE_BROWSER = 4;
   }
 
   message Icon {
@@ -149,14 +130,9 @@ message AppProvisioningResponse {
     // |manifest_id| uniquely identifies a web app.
     optional string manifest_id = 1;
 
-    // The navigation scope of the web app.
-    optional string scope = 2;
-
-    // The start url that is loaded into the web app when it opens up.
-    optional string start_url = 3;
-
-    // The display mode of the web app.
-    optional DisplayMode display_mode = 4;
+    // A URL to the web app's manifest in json format. This will always be from
+    // the host meltingpot.googleusercontent.com.
+    optional string manifest_url = 2;
   }
 
   message App {
@@ -183,11 +159,5 @@ message AppProvisioningResponse {
       AndroidExtras android_extras = 6;
       WebExtras web_extras = 7;
     }
-
-    // The shelf order for this app.
-    optional uint32 shelf_order = 8;
-
-    // The launcher order for this app.
-    optional uint32 launcher_order = 9;
   }
 }

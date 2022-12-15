@@ -74,20 +74,20 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginRequest) {
   EXPECT_EQ(method_override_header, "GET");
   EXPECT_EQ(content_type, "application/x-protobuf");
 
-  proto::AppProvisioningRequest request;
+  proto::AppProvisioningListAppsRequest request;
   ASSERT_TRUE(request.ParseFromString(body));
 
   EXPECT_EQ(request.board(), "brya");
   EXPECT_EQ(request.language(), "en-US");
   EXPECT_EQ(request.model(), "taniks");
   EXPECT_EQ(request.user_type(),
-            apps::proto::AppProvisioningRequest::USERTYPE_UNMANAGED);
+            apps::proto::AppProvisioningListAppsRequest::USERTYPE_UNMANAGED);
   EXPECT_EQ(request.chrome_os_version().ash_chrome(), "10.10.10");
   EXPECT_EQ(request.chrome_os_version().platform(), "12345.0.0");
 }
 
 TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginSuccessfulResponse) {
-  proto::AppProvisioningResponse response;
+  proto::AppProvisioningListAppsResponse response;
   auto* app = response.add_apps_to_install();
   app->set_name("Peanut Types");
 

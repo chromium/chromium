@@ -48,22 +48,22 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       }
     )");
 
-apps::proto::AppProvisioningRequest::UserType ConvertStringUserTypeToProto(
-    const std::string& user_type) {
+apps::proto::AppProvisioningListAppsRequest::UserType
+ConvertStringUserTypeToProto(const std::string& user_type) {
   if (user_type == apps::kUserTypeUnmanaged) {
-    return apps::proto::AppProvisioningRequest::USERTYPE_UNMANAGED;
+    return apps::proto::AppProvisioningListAppsRequest::USERTYPE_UNMANAGED;
   } else if (user_type == apps::kUserTypeManaged) {
-    return apps::proto::AppProvisioningRequest::USERTYPE_MANAGED;
+    return apps::proto::AppProvisioningListAppsRequest::USERTYPE_MANAGED;
   } else if (user_type == apps::kUserTypeChild) {
-    return apps::proto::AppProvisioningRequest::USERTYPE_CHILD;
+    return apps::proto::AppProvisioningListAppsRequest::USERTYPE_CHILD;
   } else if (user_type == apps::kUserTypeGuest) {
-    return apps::proto::AppProvisioningRequest::USERTYPE_GUEST;
+    return apps::proto::AppProvisioningListAppsRequest::USERTYPE_GUEST;
   }
-  return apps::proto::AppProvisioningRequest::USERTYPE_UNKNOWN;
+  return apps::proto::AppProvisioningListAppsRequest::USERTYPE_UNKNOWN;
 }
 
 std::string BuildGetAppsForFirstLoginRequestBody(const apps::DeviceInfo& info) {
-  apps::proto::AppProvisioningRequest request_proto;
+  apps::proto::AppProvisioningListAppsRequest request_proto;
   request_proto.set_board(info.board);
   request_proto.set_model(info.model);
   request_proto.set_language(info.locale);
@@ -146,7 +146,7 @@ void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
     return;
   }
 
-  proto::AppProvisioningResponse response;
+  proto::AppProvisioningListAppsResponse response;
 
   if (!response.ParseFromString(*response_body)) {
     LOG(ERROR) << "Parsing failed";
