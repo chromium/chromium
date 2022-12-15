@@ -1694,5 +1694,15 @@
     ],
     "args": ["--enable-features=SplitUserMediaQueues"],
     "expires": "Jul 1, 2023"
+  },
+  {
+    "prefix": "extend-script-resource-lifetime",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "http/tests/cache/script-keepalive.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=ExtendScriptResourceLifetime"],
+    "expires": "Jul 1, 2023"
   }
 ]
