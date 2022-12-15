@@ -845,7 +845,8 @@ void WaylandSurface::set_color_space(gfx::ColorSpace color_space) {
       color_space.GetTransferID() == gfx::ColorSpace::TransferID::INVALID ||
       color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::INVALID ||
       color_space.GetRangeID() == gfx::ColorSpace::RangeID::INVALID) {
-    LOG(ERROR) << "WaylandSurface::SetColorSpace: Encountered invalid surface.";
+    DLOG(ERROR)
+        << "WaylandSurface::SetColorSpace: Encountered invalid surface.";
     return;
   }
   auto wayland_zcr_color_space =
