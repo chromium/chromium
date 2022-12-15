@@ -48,10 +48,7 @@ function createAutocompleteMatch(): AutocompleteMatch {
     imageUrl: '',
     removeButtonA11yLabel: mojoString16(''),
     type: '',
-    action: undefined,
-    answer: undefined,
     isRichSuggestion: false,
-    tailSuggestCommonPrefix: undefined,
   };
 }
 

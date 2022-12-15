@@ -91,7 +91,6 @@ suite('NewTabPageBackgroundManagerTest', () => {
       positionX: 'left',
       positionY: 'top',
       scrimDisplay: 'none',
-      attributionUrl: undefined,
     });
 
     // Assert.

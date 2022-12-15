@@ -53,8 +53,6 @@ function createImageDoodle(width: number = 500, height: number = 200): Doodle {
         height,
         backgroundColor: {value: 0xffffffff},
         imageImpressionLogUrl: {url: 'https://log.com'},
-        animationUrl: undefined,
-        animationImpressionLogUrl: undefined,
       },
       dark: {
         imageUrl: {url: createImageDataUrl(width, height, 'blue')},
@@ -68,13 +66,10 @@ function createImageDoodle(width: number = 500, height: number = 200): Doodle {
         height,
         backgroundColor: {value: 0x000000ff},
         imageImpressionLogUrl: {url: 'https://dark_log.com'},
-        animationUrl: undefined,
-        animationImpressionLogUrl: undefined,
       },
       onClickUrl: {url: 'https://foo.com'},
       shareUrl: {url: 'https://foo.com'},
     },
-    interactive: undefined,
     description: '',
   };
 }
@@ -279,7 +274,6 @@ suite('NewTabPageLogoTest', () => {
         width: 200,
         height: 100,
       },
-      image: undefined,
       description: '',
     });
     logo.dark = false;
@@ -311,7 +305,6 @@ suite('NewTabPageLogoTest', () => {
         width: 200,
         height: 100,
       },
-      image: undefined,
       description: '',
     });
 
@@ -400,7 +393,6 @@ suite('NewTabPageLogoTest', () => {
         width: 1000,
         height: 500,
       },
-      image: undefined,
       description: '',
     });
 
@@ -419,7 +411,6 @@ suite('NewTabPageLogoTest', () => {
         width: 200,
         height: 100,
       },
-      image: undefined,
       description: '',
     });
     const transitionend = eventToPromise('transitionend', $$(logo, '#iframe')!);
@@ -458,7 +449,6 @@ suite('NewTabPageLogoTest', () => {
         width: 200,
         height: 100,
       },
-      image: undefined,
       description: '',
     });
     const height = $$<HTMLElement>(logo, '#iframe')!.offsetHeight;
@@ -488,7 +478,6 @@ suite('NewTabPageLogoTest', () => {
         width: 200,
         height: 100,
       },
-      image: undefined,
       description: '',
     });
     logo.dark = false;

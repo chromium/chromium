@@ -56,14 +56,6 @@ export function installMock<T extends object>(
 export function createBackgroundImage(url: string): BackgroundImage {
   return {
     url: {url},
-    attributionUrl: undefined,
-    positionX: undefined,
-    positionY: undefined,
-    repeatX: undefined,
-    repeatY: undefined,
-    scrimDisplay: undefined,
-    size: undefined,
-    url2x: undefined,
   };
 }
 
@@ -76,13 +68,10 @@ export function createTheme(isDark: boolean = false): Theme {
   };
   return {
     backgroundColor: {value: 0xffff0000},
-    backgroundImage: undefined,
     backgroundImageAttribution1: '',
     backgroundImageAttribution2: '',
-    backgroundImageAttributionUrl: undefined,
     dailyRefreshCollectionId: '',
     isDark,
-    logoColor: undefined,
     mostVisited: mostVisited,
     textColor: {value: 0xff0000ff},
     themeRealboxIcons: false,
