@@ -350,11 +350,6 @@ void ExtensionAppsChromeOs::PauseApp(const std::string& app_id) {
   if (paused_apps_.MaybeAddApp(app_id)) {
     SetIconEffect(app_id);
   }
-
-  constexpr bool kPaused = true;
-  PublisherBase::Publish(
-      paused_apps_.GetAppWithPauseStatus(mojom_app_type(), app_id, kPaused),
-      subscribers());
   AppPublisher::Publish(paused_apps_.CreateAppWithPauseStatus(
       app_type(), app_id, /*paused=*/true));
 
@@ -373,10 +368,6 @@ void ExtensionAppsChromeOs::UnpauseApp(const std::string& app_id) {
     SetIconEffect(app_id);
   }
 
-  constexpr bool kPaused = false;
-  PublisherBase::Publish(
-      paused_apps_.GetAppWithPauseStatus(mojom_app_type(), app_id, kPaused),
-      subscribers());
   AppPublisher::Publish(paused_apps_.CreateAppWithPauseStatus(
       app_type(), app_id, /*paused=*/false));
 

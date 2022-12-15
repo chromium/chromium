@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
 
@@ -23,11 +22,6 @@ class PausedApps {
 
   PausedApps(const PausedApps&) = delete;
   PausedApps& operator=(const PausedApps&) = delete;
-
-  static apps::mojom::AppPtr GetAppWithPauseStatus(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      bool paused);
 
   AppPtr CreateAppWithPauseStatus(AppType app_type,
                                   const std::string& app_id,

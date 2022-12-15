@@ -12,19 +12,6 @@ PausedApps::PausedApps() = default;
 
 PausedApps::~PausedApps() = default;
 
-// static
-apps::mojom::AppPtr PausedApps::GetAppWithPauseStatus(
-    apps::mojom::AppType app_type,
-    const std::string& app_id,
-    bool paused) {
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = app_type;
-  app->app_id = app_id;
-  app->paused = (paused) ? apps::mojom::OptionalBool::kTrue
-                         : apps::mojom::OptionalBool::kFalse;
-  return app;
-}
-
 AppPtr PausedApps::CreateAppWithPauseStatus(AppType app_type,
                                             const std::string& app_id,
                                             bool paused) {

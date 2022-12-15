@@ -1095,10 +1095,6 @@ void ArcApps::PauseApp(const std::string& app_id) {
     SetIconEffect(app_id);
   }
 
-  constexpr bool kPaused = true;
-  PublisherBase::Publish(paused_apps_.GetAppWithPauseStatus(
-                             apps::mojom::AppType::kArc, app_id, kPaused),
-                         subscribers_);
   AppPublisher::Publish(paused_apps_.CreateAppWithPauseStatus(
       AppType::kArc, app_id, /*paused=*/true));
   CloseTasks(app_id);
@@ -1109,10 +1105,6 @@ void ArcApps::UnpauseApp(const std::string& app_id) {
     SetIconEffect(app_id);
   }
 
-  constexpr bool kPaused = false;
-  PublisherBase::Publish(paused_apps_.GetAppWithPauseStatus(
-                             apps::mojom::AppType::kArc, app_id, kPaused),
-                         subscribers_);
   AppPublisher::Publish(paused_apps_.CreateAppWithPauseStatus(
       AppType::kArc, app_id, /*paused=*/false));
 }
