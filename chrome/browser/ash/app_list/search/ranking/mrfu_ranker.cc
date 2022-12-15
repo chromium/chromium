@@ -101,7 +101,7 @@ void MrfuCategoryRanker::Train(const LaunchData& launch) {
       ash::AppListLaunchedFrom::kLaunchedFromSearchBox) {
     return;
   }
-  mrfu_->Use(CategoryToString(ResultTypeToCategory(launch.result_type)));
+  mrfu_->Use(CategoryToString(launch.category));
 }
 
 void MrfuCategoryRanker::SetDefaultCategoryScores() {

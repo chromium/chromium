@@ -38,11 +38,11 @@ Results RankerTestBase::MakeResults(const std::vector<std::string>& ids,
 }
 
 LaunchData RankerTestBase::MakeLaunchData(const std::string& id,
-                                          ResultType result_type) {
+                                          Category category) {
   LaunchData launch;
   launch.launched_from = ash::AppListLaunchedFrom::kLaunchedFromSearchBox;
   launch.id = id;
-  launch.result_type = result_type;
+  launch.category = category;
   return launch;
 }
 

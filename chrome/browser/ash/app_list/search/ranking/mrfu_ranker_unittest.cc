@@ -111,10 +111,10 @@ TEST_F(MrfuCategoryRankerTest, TrainAndRank) {
   Wait();
 
   // Train so that settings should be first, followed by apps.
-  ranker.Train(MakeLaunchData("a", ResultType::kInstalledApp));
-  ranker.Train(MakeLaunchData("c", ResultType::kOsSettings));
-  ranker.Train(MakeLaunchData("d", ResultType::kOsSettings));
-  ranker.Train(MakeLaunchData("b", ResultType::kInstalledApp));
+  ranker.Train(MakeLaunchData("a", Category::kApps));
+  ranker.Train(MakeLaunchData("c", Category::kSettings));
+  ranker.Train(MakeLaunchData("d", Category::kSettings));
+  ranker.Train(MakeLaunchData("b", Category::kApps));
 
   ResultsMap results;
   results[ResultType::kInstalledApp] =

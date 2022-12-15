@@ -34,7 +34,7 @@ class RankerTestBase : public testing::Test {
                       Category category = Category::kUnknown);
 
   LaunchData MakeLaunchData(const std::string& id,
-                            ResultType result_type = ResultType::kUnknown);
+                            Category category = Category::kUnknown);
 
   template <typename T>
   T ReadProtoFromDisk() {

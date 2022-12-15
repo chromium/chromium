@@ -22,13 +22,6 @@ std::string CategoryToString(const Category value);
 
 Category StringToCategory(const std::string& value);
 
-// TODO(crbug.com/1378862): This can be removed once LaunchData contains the
-// result category.
-//
-// This is slightly inconsistent with the true result->category mapping, because
-// Omnibox results can either be in the kWeb or kSearchAndAssistant category.
-Category ResultTypeToCategory(ResultType result_type);
-
 }  // namespace app_list
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_UTIL_H_

@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/arc/app_shortcuts/arc_app_shortcuts_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/base/models/image_model.h"
@@ -81,6 +82,7 @@ void ArcAppShortcutsMenuBuilder::ExecuteCommand(int command_id) {
   launch_data.id = ConstructArcAppShortcutUrl(
       app_id_, app_shortcut_items_->at(index).shortcut_id),
   launch_data.result_type = ash::AppListSearchResultType::kArcAppShortcut;
+  launch_data.category = app_list::Category::kAppShortcuts;
   app_list_client_impl->search_controller()->Train(std::move(launch_data));
 }
 

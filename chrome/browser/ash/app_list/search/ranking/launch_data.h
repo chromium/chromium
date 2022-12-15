@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 
 namespace app_list {
 
@@ -24,6 +25,8 @@ struct LaunchData {
       ash::AppListSearchResultType::kUnknown;
   ash::AppListLaunchedFrom launched_from =
       ash::AppListLaunchedFrom::kLaunchedFromShelf;
+  // The category of the result.
+  Category category = Category::kUnknown;
   // The type of app launched.
   ash::AppListLaunchType launch_type = ash::AppListLaunchType::kSearchResult;
   // The index of the suggested app launched, if applicable.

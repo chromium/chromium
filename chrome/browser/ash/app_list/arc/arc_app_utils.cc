@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/app_list/arc/intent.h"
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/arc/arc_migration_guide_notification.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
@@ -783,6 +784,7 @@ void ExecuteArcShortcutCommand(content::BrowserContext* context,
   launch_data.id =
       ConstructArcAppShortcutUrl(arc_shelf_id.app_id(), shortcut_id),
   launch_data.result_type = ash::AppListSearchResultType::kArcAppShortcut;
+  launch_data.category = app_list::Category::kAppShortcuts;
   app_list_client_impl->search_controller()->Train(std::move(launch_data));
 }
 

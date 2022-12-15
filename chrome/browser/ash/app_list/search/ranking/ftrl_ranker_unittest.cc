@@ -133,7 +133,7 @@ TEST_F(FtrlRankerTest, TrainAndRankCategories) {
 
   for (int i = 0; i < 10; ++i) {
     ranker.UpdateCategoryRanks(results, categories, ResultType::kInstalledApp);
-    ranker.Train(MakeLaunchData("a", ResultType::kInstalledApp));
+    ranker.Train(MakeLaunchData("a", Category::kApps));
   }
 
   // The weights of the FTRL optimizer should reflect that the good ranker is
@@ -149,7 +149,7 @@ TEST_F(FtrlRankerTest, TrainAndRankCategories) {
   // particularly good job at predicting "c"'s category.
   for (int i = 0; i < 10; ++i) {
     ranker.UpdateResultRanks(results, ResultType::kInstalledApp);
-    ranker.Train(MakeLaunchData("c", ResultType::kFileSearch));
+    ranker.Train(MakeLaunchData("c", Category::kFiles));
   }
 
   // The weights of the 'bad' expert should have recovered.

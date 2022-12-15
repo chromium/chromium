@@ -41,7 +41,7 @@ void FtrlRanker::Train(const LaunchData& launch) {
       ftrl_->Train(launch.id);
       break;
     case FtrlRanker::RankingKind::kCategories:
-      ftrl_->Train(CategoryToString(ResultTypeToCategory(launch.result_type)));
+      ftrl_->Train(CategoryToString(launch.category));
       break;
   }
 }

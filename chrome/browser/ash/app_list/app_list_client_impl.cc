@@ -212,6 +212,7 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
   app_list::LaunchData launch_data;
   launch_data.id = result_id;
   launch_data.result_type = result->result_type();
+  launch_data.category = result->category();
   launch_data.launch_type = launch_type;
   launch_data.launched_from = launched_from;
   launch_data.suggestion_index = suggestion_index;
