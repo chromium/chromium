@@ -1,0 +1,12 @@
+{
+    "manifest_version": 3,
+    "name": "Proxy extension for testing",
+    "version": "1.0.2",
+    "background": {
+      "service_worker": "background.js"
+    },
+    "permissions": [
+        "proxy", "tabs"
+    ],
+    "incognito": "spanning"
+}
