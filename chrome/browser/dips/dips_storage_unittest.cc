@@ -7,7 +7,9 @@
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/sequence_bound.h"
+#include "chrome/browser/dips/dips_state.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,6 +47,9 @@ class DIPSStorageTest : public testing::Test {
 
  protected:
   TestStorage storage_;
+
+ private:
+  base::test::TaskEnvironment env_;
 };
 
 TEST(DirtyBit, Constructor) {
@@ -453,6 +458,30 @@ TEST_F(DIPSStorageTest, RemoveBySiteIgnoresDeletionWithTimeRange) {
             absl::make_optional(base::Time::FromDoubleT(3)));  // no change
   EXPECT_EQ(state1.stateless_bounce_times().first,
             absl::make_optional(base::Time::FromDoubleT(4)));  // no change
+}
+
+TEST_F(DIPSStorageTest, RemoveRows) {
+  GURL url1("https://example1.com");
+  GURL url2("https://example2.com");
+  ASSERT_TRUE(url1.is_valid());
+  ASSERT_TRUE(url2.is_valid());
+
+  StateValue test_value = {
+      {base::Time::FromDoubleT(1), base::Time::FromDoubleT(1)},
+      {base::Time::FromDoubleT(2), base::Time::FromDoubleT(2)},
+      {base::Time::FromDoubleT(3), base::Time::FromDoubleT(3)},
+      {base::Time::FromDoubleT(4), base::Time::FromDoubleT(4)}};
+
+  storage_.WriteForTesting(url1, test_value);
+  storage_.WriteForTesting(url2, test_value);
+
+  ASSERT_EQ(storage_.Read(url1).ToStateValue(), test_value);
+  ASSERT_EQ(storage_.Read(url2).ToStateValue(), test_value);
+
+  storage_.RemoveRows({GetSiteForDIPS(url1), GetSiteForDIPS(url2)});
+
+  EXPECT_FALSE(storage_.Read(url1).was_loaded());
+  EXPECT_FALSE(storage_.Read(url2).was_loaded());
 }
 
 class DIPSStoragePrepopulateTest : public testing::Test {

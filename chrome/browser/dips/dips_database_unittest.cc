@@ -158,6 +158,28 @@ TEST_P(DIPSDatabaseAllColumnTest, DeleteBounce) {
   EXPECT_FALSE(db_->Read(site).has_value());
 }
 
+// Test deleting many entries from the `bounces` table of the DIPSDatabase.
+TEST_P(DIPSDatabaseAllColumnTest, DeleteSeveralBounces) {
+  // Add a bounce for site.
+  const std::string site1 = GetSiteForDIPS(GURL("http://www.youtube.com/"));
+  const std::string site2 = GetSiteForDIPS(GURL("http://www.picasa.com/"));
+
+  TimestampRange bounce{Time::FromDoubleT(1), Time::FromDoubleT(1)};
+  EXPECT_TRUE(WriteToVariableColumn(site1, bounce));
+  EXPECT_TRUE(WriteToVariableColumn(site2, bounce));
+
+  // Verify that both sites are in the bounces table.
+  EXPECT_TRUE(db_->Read(site1).has_value());
+  EXPECT_TRUE(db_->Read(site2).has_value());
+
+  //  Delete site's entry in bounces.
+  EXPECT_TRUE(db_->RemoveRows({site1, site2}));
+
+  // Query the bounces for site, making sure there is no state now.
+  EXPECT_FALSE(db_->Read(site1).has_value());
+  EXPECT_FALSE(db_->Read(site2).has_value());
+}
+
 // Test reading the `bounces` table of the DIPSDatabase.
 TEST_P(DIPSDatabaseAllColumnTest, ReadBounce) {
   // Add a bounce for site.

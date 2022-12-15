@@ -413,6 +413,27 @@ bool DIPSDatabase::RemoveRow(const std::string& site) {
   return statement.Run();
 }
 
+bool DIPSDatabase::RemoveRows(const std::vector<std::string>& sites) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!CheckDBInit()) {
+    return false;
+  }
+
+  sql::Statement s_remove_rows(db_->GetUniqueStatement(
+      base::StrCat(
+          {"DELETE FROM bounces "
+           "WHERE site IN(",
+           base::JoinString(std::vector<std::string>(sites.size(), "?"), ","),
+           ")"})
+          .c_str()));
+
+  for (size_t i = 0; i < sites.size(); i++) {
+    s_remove_rows.BindString(i, sites[i]);
+  }
+
+  return s_remove_rows.Run();
+}
+
 bool DIPSDatabase::RemoveEventsByTime(const base::Time& delete_begin,
                                       const base::Time& delete_end,
                                       const DIPSEventRemovalType type) {

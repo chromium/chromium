@@ -134,6 +134,11 @@ void DIPSStorage::RemoveEvents(base::Time delete_begin,
   }
 }
 
+void DIPSStorage::RemoveRows(const std::vector<std::string>& sites) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  db_->RemoveRows(sites);
+}
+
 // DIPSTabHelper Function Impls ------------------------------------------------
 
 void DIPSStorage::RecordStorage(const GURL& url,
@@ -181,30 +186,6 @@ void DIPSStorage::RecordStatelessBounce(const GURL& url, base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
   Read(url).update_stateless_bounce_time(time);
-}
-
-std::vector<std::string> DIPSStorage::GetSitesThatBounced(
-    base::Time range_start,
-    base::Time last_interaction) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_);
-  return db_->GetSitesThatBounced(range_start, last_interaction);
-}
-
-std::vector<std::string> DIPSStorage::GetSitesThatBouncedWithState(
-    base::Time range_start,
-    base::Time last_interaction) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_);
-  return db_->GetSitesThatBouncedWithState(range_start, last_interaction);
-}
-
-std::vector<std::string> DIPSStorage::GetSitesThatUsedStorage(
-    base::Time range_start,
-    base::Time last_interaction) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_);
-  return db_->GetSitesThatUsedStorage(range_start, last_interaction);
 }
 
 /* static */

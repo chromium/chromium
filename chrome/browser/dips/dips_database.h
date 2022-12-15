@@ -82,6 +82,8 @@ class DIPSDatabase {
   // executes successfully.
   bool RemoveRow(const std::string& site);
 
+  bool RemoveRows(const std::vector<std::string>& sites);
+
   bool RemoveEventsByTime(const base::Time& delete_begin,
                           const base::Time& delete_end,
                           const DIPSEventRemovalType type);
