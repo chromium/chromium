@@ -57659,6 +57659,7 @@ from previous Chrome versions.
   <int value="-1802559277" label="RunTasksByBatches:disabled"/>
   <int value="-1802502753" label="enable-manual-password-generation:enabled"/>
   <int value="-1801515363" label="ThreadedPreloadScanner:enabled"/>
+  <int value="-1801349476" label="FloatWindow:enabled"/>
   <int value="-1799801575" label="CookieDeprecationMessages:enabled"/>
   <int value="-1798337879" label="enable-md-downloads"/>
   <int value="-1798258607" label="AdaptiveCharging:disabled"/>
@@ -58338,7 +58339,6 @@ from previous Chrome versions.
   <int value="-1408288176" label="enable-account-consistency"/>
   <int value="-1407904527"
       label="OmniboxRemoveSuggestionHeaderCapitalization:disabled"/>
-  <int value="-1407568904" label="CrOSLabsFloatWindow:enabled"/>
   <int value="-1405349891" label="PictureInPictureAPI:enabled"/>
   <int value="-1405048637" label="OfflinePagesResourceBasedSnapshot:enabled"/>
   <int value="-1404469375" label="RemoteCopyProgressNotification:enabled"/>
@@ -62253,6 +62253,7 @@ from previous Chrome versions.
   <int value="879992337" label="disable-pull-to-refresh-effect"/>
   <int value="880201245" label="NewTabPageTilesTitleWrapAround:disabled"/>
   <int value="880510010" label="enable-permissions-bubbles"/>
+  <int value="882103442" label="FloatWindow:disabled"/>
   <int value="882893584" label="UseOfHashAffiliationFetcher:disabled"/>
   <int value="883190338" label="PrintWithReducedRasterization:disabled"/>
   <int value="884106779" label="supervised-user-safesites"/>
@@ -64176,7 +64177,6 @@ from previous Chrome versions.
       label="ContextualSuggestionsAlternateCardLayout:enabled"/>
   <int value="2006856618" label="BiometricTouchToFill:enabled"/>
   <int value="2007421572" label="EapGtcWifiAuthentication:disabled"/>
-  <int value="2007638959" label="CrOSLabsFloatWindow:disabled"/>
   <int value="2008599705" label="EnableFeedbackPanel:enabled"/>
   <int value="2008878342" label="TouchToFillAndroid:disabled"/>
   <int value="2009097351" label="memlog-sampling-rate"/>

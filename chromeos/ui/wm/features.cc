@@ -12,9 +12,7 @@ namespace chromeos::wm::features {
 
 // Enables a window to float.
 // https://crbug.com/1240411
-BASE_FEATURE(kFloatWindow,
-             "CrOSLabsFloatWindow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFloatWindow, "FloatWindow", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPartialSplit, "PartialSplit", base::FEATURE_DISABLED_BY_DEFAULT);
 

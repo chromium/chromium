@@ -5450,10 +5450,11 @@ const char kFilesTrashName[] = "Enable Files Trash.";
 const char kFilesTrashDescription[] =
     "Enable trash for My files volume in Files App.";
 
-const char kFloatWindow[] = "CrOS Labs: Float current active window";
+const char kFloatWindow[] = "Float current active window";
 const char kFloatWindowDescription[] =
     "Enables the accelerator (Command + Alt + F) to float current active "
-    "window.";
+    "window. You can also access this from Multitask Menu, by "
+    "hovering/long-pressing on the maximize button on the window frame.";
 
 const char kForceSpectreVariant2MitigationName[] =
     "Force Spectre variant 2 mitigagtion";

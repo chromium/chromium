@@ -1144,11 +1144,6 @@
     "expiry_milestone": 114
   },
   {
-    "name": "cros-labs-float-window",
-    "owners": [ "shidi", "afakhry" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "cros-labs-overview-desk-navigation",
     "owners": [ "richui", "janetmac" ],
     "expiry_milestone": 122
@@ -3804,6 +3799,11 @@
     "name": "filling-across-affiliated-websites",
     "owners": [ "vsemeniuk@google.com", "vasilii" ],
     "expiry_milestone": 111
+  },
+  {
+    "name": "float-window",
+    "owners": [ "shidi", "afakhry" ],
+    "expiry_milestone": 122
   },
   {
     "name": "focus-follows-cursor",
