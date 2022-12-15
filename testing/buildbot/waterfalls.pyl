@@ -2577,9 +2577,6 @@
         },
       },
       'fuchsia-x64-chrome-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
         'browser_config': 'fuchsia-chrome',
         'os_type': 'fuchsia',
         'mixins': [
@@ -2593,9 +2590,6 @@
           ],
         },
         'test_suites': {
-          # TODO(crbug.com/1372204): Only run the gpu_telemetry_tests that do
-          # not run on CI or another FYI bot. Ideally, they would all run there.
-          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_experimental_tests',
           'gtest_tests': 'fuchsia_chrome_large_gtests',
         },
       },
