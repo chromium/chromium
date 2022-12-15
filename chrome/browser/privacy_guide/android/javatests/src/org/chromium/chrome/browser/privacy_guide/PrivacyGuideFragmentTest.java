@@ -873,6 +873,26 @@ public class PrivacyGuideFragmentTest {
     @Test
     @SmallTest
     @Feature({"PrivacyGuide"})
+    public void testCookiesCard_nextNavigationHistogram() {
+        launchPrivacyGuide();
+        navigateToCookiesCard();
+
+        assertEquals(0,
+                mHistogramTestRule.getHistogramValueCount(
+                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.COOKIES_NEXT_BUTTON));
+
+        // Cookies page -> Complete page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_cookies_intro));
+        onView(withText(R.string.privacy_guide_finish_button)).perform(click());
+
+        assertEquals(1,
+                mHistogramTestRule.getHistogramValueCount(
+                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.COOKIES_NEXT_BUTTON));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PrivacyGuide"})
     public void testCookiesCard_block3PIncognitoTo3PIncognitoSettingsStatesHistogram() {
         launchPrivacyGuide();
         setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);

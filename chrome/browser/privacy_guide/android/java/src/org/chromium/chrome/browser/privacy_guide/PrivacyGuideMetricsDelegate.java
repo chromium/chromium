@@ -152,6 +152,9 @@ class PrivacyGuideMetricsDelegate {
                 stateChange, PrivacyGuideSettingsStates.MAX_VALUE);
         // Record user action for clicking the next button on the Cookies card
         RecordUserAction.record("Settings.PrivacyGuide.NextClickCookies");
+        // Record histogram for clicking the next button on the Cookies card
+        RecordHistogram.recordEnumeratedHistogram("Settings.PrivacyGuide.NextNavigation",
+                PrivacyGuideInteractions.COOKIES_NEXT_BUTTON, PrivacyGuideInteractions.MAX_VALUE);
     }
 
     /**

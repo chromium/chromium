@@ -408,6 +408,20 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
+    public void testCookies_nextNavigationHistogram() {
+        mockCookieControlsMode(
+                CookieControlsMode.INCOGNITO_ONLY, CookieControlsMode.INCOGNITO_ONLY);
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.COOKIES_NEXT_BUTTON));
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.COOKIES_NEXT_BUTTON));
+    }
+
+    @Test
+    @SmallTest
     public void testMSBB_changeMSBBOnUserAction() {
         PrivacyGuideMetricsDelegate.recordMetricsOnMSBBChange(true);
         assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeMSBBOn"));
