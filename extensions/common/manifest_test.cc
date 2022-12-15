@@ -69,8 +69,7 @@ ManifestTest::ManifestTest()
     : enable_apps_(true) {
 }
 
-ManifestTest::~ManifestTest() {
-}
+ManifestTest::~ManifestTest() = default;
 
 // Helper class that simplifies creating methods that take either a filename
 // to a manifest or the manifest itself.
@@ -82,6 +81,14 @@ ManifestTest::ManifestData::ManifestData(base::Value manifest,
     : name_(name), manifest_(std::move(manifest)) {
   CHECK(manifest_.is_dict()) << "Manifest must be a dictionary. " << name_;
 }
+
+ManifestTest::ManifestData::ManifestData(base::Value::Dict manifest,
+                                         base::StringPiece name)
+    : ManifestData(base::Value(std::move(manifest)), std::move(name)) {}
+
+ManifestTest::ManifestData::ManifestData(base::Value::Dict manifest)
+    : ManifestData(base::Value(std::move(manifest))) {}
+
 ManifestTest::ManifestData::ManifestData(base::Value manifest)
     : name_(GetNameFromManifest(manifest)), manifest_(std::move(manifest)) {
   CHECK(manifest_.is_dict()) << "Manifest must be a dictionary.";

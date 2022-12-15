@@ -39,8 +39,12 @@ class ManifestTest : public testing::Test {
   class ManifestData {
    public:
     explicit ManifestData(base::StringPiece name);
+    // This is deprecated. Use the constructor that accepts base::Value::Dict.
     explicit ManifestData(base::Value manifest);
+    explicit ManifestData(base::Value::Dict manifest);
+    // This is deprecated. Use the constructor that accepts base::Value::Dict.
     ManifestData(base::Value manifest, base::StringPiece name);
+    ManifestData(base::Value::Dict manifest, base::StringPiece name);
     ManifestData(ManifestData&& other);
     ~ManifestData();
 
