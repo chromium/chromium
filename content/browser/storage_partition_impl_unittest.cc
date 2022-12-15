@@ -35,6 +35,7 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/local_storage_database.pb.h"
@@ -106,6 +107,8 @@ using CookieDeletionFilterPtr = network::mojom::CookieDeletionFilterPtr;
 
 namespace content {
 namespace {
+
+using ::attribution_reporting::SuitableOrigin;
 
 const char kCacheKey[] = "key";
 const char kCacheValue[] = "cached value";
@@ -1823,8 +1826,8 @@ TEST_F(StoragePartitionImplTest, ConversionsClearAllData) {
 
   base::Time now = base::Time::Now();
   for (int i = 0; i < 20; i++) {
-    auto origin = url::Origin::Create(
-        GURL(base::StringPrintf("https://www.%d.test/", i)));
+    auto origin = *SuitableOrigin::Deserialize(
+        base::StringPrintf("https://www.%d.test/", i));
     auto source = SourceBuilder(now)
                       .SetExpiry(base::Days(2))
                       .SetSourceOrigin(origin)
@@ -1850,12 +1853,12 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
 
   base::Time now = base::Time::Now();
   for (int i = 0; i < 5; i++) {
-    auto impression =
-        url::Origin::Create(GURL(base::StringPrintf("https://imp-%d.com/", i)));
-    auto reporter = url::Origin::Create(
-        GURL(base::StringPrintf("https://reporter-%d.com/", i)));
-    auto conv = url::Origin::Create(
-        GURL(base::StringPrintf("https://conv-%d.com/", i)));
+    auto impression = *SuitableOrigin::Deserialize(
+        base::StringPrintf("https://imp-%d.com/", i));
+    auto reporter = *SuitableOrigin::Deserialize(
+        base::StringPrintf("https://reporter-%d.com/", i));
+    auto conv = *SuitableOrigin::Deserialize(
+        base::StringPrintf("https://conv-%d.com/", i));
     attribution_manager->HandleSource(SourceBuilder(now)
                                           .SetSourceOrigin(impression)
                                           .SetReportingOrigin(reporter)

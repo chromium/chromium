@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
@@ -65,6 +66,8 @@
 namespace content {
 
 namespace {
+
+using ::attribution_reporting::SuitableOrigin;
 
 using ::testing::_;
 using ::testing::AllOf;
@@ -441,9 +444,9 @@ TEST_F(AttributionManagerImplTest,
       "https://c.example/.well-known/attribution-reporting/"
       "report-event-attribution");
 
-  const auto origin_a = url::Origin::Create(url_a);
-  const auto origin_b = url::Origin::Create(url_b);
-  const auto origin_c = url::Origin::Create(url_c);
+  const auto origin_a = *SuitableOrigin::Create(url_a);
+  const auto origin_b = *SuitableOrigin::Create(url_b);
+  const auto origin_c = *SuitableOrigin::Create(url_c);
 
   attribution_manager_->HandleSource(SourceBuilder()
                                          .SetExpiry(kImpressionExpiry)
@@ -491,8 +494,8 @@ TEST_F(AttributionManagerImplTest,
       "https://b.example/.well-known/attribution-reporting/"
       "report-event-attribution");
 
-  const auto origin_a = url::Origin::Create(url_a);
-  const auto origin_b = url::Origin::Create(url_b);
+  const auto origin_a = *SuitableOrigin::Create(url_a);
+  const auto origin_b = *SuitableOrigin::Create(url_b);
 
   attribution_manager_->HandleSource(SourceBuilder()
                                          .SetExpiry(kImpressionExpiry)
@@ -576,8 +579,8 @@ TEST_F(AttributionManagerImplTest, RetryLogicOverridesGetReportTimer) {
       "https://b.example/.well-known/attribution-reporting/"
       "report-event-attribution");
 
-  const auto origin_a = url::Origin::Create(url_a);
-  const auto origin_b = url::Origin::Create(url_b);
+  const auto origin_a = *SuitableOrigin::Create(url_a);
+  const auto origin_b = *SuitableOrigin::Create(url_b);
 
   attribution_manager_->HandleSource(SourceBuilder()
                                          .SetExpiry(kImpressionExpiry)
@@ -990,7 +993,7 @@ TEST_F(AttributionManagerImplTest, SessionOnlyOrigins_DataDeletedAtShutdown) {
   GURL session_only_origin("https://sessiononly.example");
   auto impression =
       SourceBuilder()
-          .SetSourceOrigin(url::Origin::Create(session_only_origin))
+          .SetSourceOrigin(*SuitableOrigin::Create(session_only_origin))
           .Build();
 
   mock_storage_policy_->AddSessionOnly(session_only_origin);
@@ -1010,8 +1013,8 @@ TEST_F(AttributionManagerImplTest, SessionOnlyOrigins_DataDeletedAtShutdown) {
 
 TEST_F(AttributionManagerImplTest,
        SessionOnlyOrigins_DeletedIfAnyOriginMatches) {
-  url::Origin session_only_origin =
-      url::Origin::Create(GURL("https://sessiononly.example"));
+  const auto session_only_origin =
+      *SuitableOrigin::Deserialize("https://sessiononly.example");
   // Create impressions which each have the session only origin as one of
   // impression/conversion/reporting origin.
   auto impression1 =
@@ -1024,7 +1027,7 @@ TEST_F(AttributionManagerImplTest,
   // Create one  impression which is not session only.
   auto impression4 = SourceBuilder().Build();
 
-  mock_storage_policy_->AddSessionOnly(session_only_origin.GetURL());
+  mock_storage_policy_->AddSessionOnly(session_only_origin->GetURL());
 
   attribution_manager_->HandleSource(impression1);
   attribution_manager_->HandleSource(impression2);
@@ -1403,9 +1406,10 @@ TEST_F(AttributionManagerImplTest, EmbedderDisallowsReporting_ReportNotSent) {
 
 TEST_F(AttributionManagerImplTest,
        EmbedderDisallowsReporting_DebugReportNotSent) {
-  const auto source_origin = url::Origin::Create(GURL("https://i.test"));
-  const auto destination_origin = url::Origin::Create(GURL("https://d.test"));
-  const auto reporting_origin = url::Origin::Create(GURL("https://r.test"));
+  const auto source_origin = *SuitableOrigin::Deserialize("https://i.test");
+  const auto destination_origin =
+      *SuitableOrigin::Deserialize("https://d.test");
+  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r.test");
 
   cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
 
@@ -1626,8 +1630,8 @@ TEST_F(AttributionManagerImplFakeReportTest,
 TEST_F(AttributionManagerImplTest, RegistrationsHandledInOrder) {
   cookie_checker_->DeferCallbacks();
 
-  const auto r1 = url::Origin::Create(GURL("https://r1.test"));
-  const auto r2 = url::Origin::Create(GURL("https://r2.test"));
+  const auto r1 = *SuitableOrigin::Deserialize("https://r1.test");
+  const auto r2 = *SuitableOrigin::Deserialize("https://r2.test");
 
   attribution_manager_->HandleSource(SourceBuilder()
                                          .SetSourceEventId(1)
@@ -1734,7 +1738,7 @@ TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
     attribution_manager_->HandleSource(
         SourceBuilder()
             .SetReportingOrigin(
-                url::Origin::Create(GURL(test_case.reporting_origin)))
+                *SuitableOrigin::Deserialize(test_case.reporting_origin))
             .SetDebugKey(test_case.input_debug_key)
             .SetExpiry(kImpressionExpiry)
             .Build());
@@ -1762,7 +1766,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
 
   for (const auto& test_case : kDebugKeyTestCases) {
     const auto reporting_origin =
-        url::Origin::Create(GURL(test_case.reporting_origin));
+        *SuitableOrigin::Deserialize(test_case.reporting_origin);
 
     attribution_manager_->HandleSource(SourceBuilder()
                                            .SetReportingOrigin(reporting_origin)
@@ -1792,7 +1796,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
 }
 
 TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
-  const auto reporting_origin = url::Origin::Create(GURL("https://r1.test"));
+  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
 
   cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
 
@@ -2096,7 +2100,7 @@ TEST_F(AttributionManagerImplTest, TooManyEventsInQueue) {
 }
 
 TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
-  url::Origin reporting_origin = url::Origin::Create(GURL("https://r1.test"));
+  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
   cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
 
   // Failed without debug reporting.
@@ -2119,7 +2123,7 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
   // but no debug cookie is set, therefore no debug report is sent.
   attribution_manager_->HandleTrigger(
       TriggerBuilder()
-          .SetReportingOrigin(url::Origin::Create(GURL("https://r2.test")))
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r2.test"))
           .SetDebugReporting(true)
           .Build());
   task_environment_.RunUntilIdle();
@@ -2159,7 +2163,7 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
 
 TEST_F(AttributionManagerImplTest,
        EmbedderDisallowsTriggerVerboseDebugReport_NoReportSent) {
-  url::Origin reporting_origin = url::Origin::Create(GURL("https://r1.test"));
+  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
   cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
 
   MockAttributionReportingContentBrowserClient browser_client;
@@ -2201,7 +2205,8 @@ class AttributionManagerImplDebugReportTest
 TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
   attribution_manager_->HandleSource(SourceBuilder().Build());
 
-  const auto destination_origin = url::Origin::Create(GURL("https://d.test"));
+  const auto destination_origin =
+      *SuitableOrigin::Deserialize("https://d.test");
 
   // Failed without debug reporting.
   attribution_manager_->HandleSource(
@@ -2297,7 +2302,7 @@ TEST_F(AttributionManagerImplDebugReportTest,
 
   attribution_manager_->HandleSource(
       SourceBuilder()
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://d.test")))
+          .SetDestinationOrigin(*SuitableOrigin::Deserialize("https://d.test"))
           .SetDebugReporting(true)
           .Build());
 
@@ -2326,7 +2331,7 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
   const int kExpectedStatus = 200;
   EXPECT_CALL(observer, OnDebugReportSent(_, kExpectedStatus, _));
 
-  url::Origin reporting_origin = url::Origin::Create(GURL("https://r1.test"));
+  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
   cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
 
   attribution_manager_->HandleSource(SourceBuilder().Build());
@@ -2351,7 +2356,7 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
   // debug cookie is set, therefore no debug report is sent.
   attribution_manager_->HandleSource(
       SourceBuilder()
-          .SetReportingOrigin(url::Origin::Create(GURL("https://r2.test")))
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r2.test"))
           .SetDebugReporting(true)
           .Build());
   task_environment_.RunUntilIdle();

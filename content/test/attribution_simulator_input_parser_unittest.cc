@@ -189,12 +189,12 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
           Pair(SourceBuilder(kOffsetTime + base::Milliseconds(1643235574123))
                    .SetSourceType(AttributionSourceType::kNavigation)
                    .SetReportingOrigin(
-                       url::Origin::Create(GURL("https://a.r.test")))
+                       *SuitableOrigin::Deserialize("https://a.r.test"))
                    .SetSourceOrigin(
-                       url::Origin::Create(GURL("https://a.s.test")))
+                       *SuitableOrigin::Deserialize("https://a.s.test"))
                    .SetSourceEventId(123)
                    .SetDestinationOrigin(
-                       url::Origin::Create(GURL("https://a.d.test")))
+                       *SuitableOrigin::Deserialize("https://a.d.test"))
                    .SetExpiry(base::Days(10))
                    .SetEventReportWindow(base::Days(10))
                    .SetAggregatableReportWindow(base::Days(10))
@@ -206,12 +206,12 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
           Pair(SourceBuilder(kOffsetTime + base::Milliseconds(1643235573123))
                    .SetSourceType(AttributionSourceType::kEvent)
                    .SetReportingOrigin(
-                       url::Origin::Create(GURL("https://b.r.test")))
+                       *SuitableOrigin::Deserialize("https://b.r.test"))
                    .SetSourceOrigin(
-                       url::Origin::Create(GURL("https://b.s.test")))
+                       *SuitableOrigin::Deserialize("https://b.s.test"))
                    .SetSourceEventId(0)  // default
                    .SetDestinationOrigin(
-                       url::Origin::Create(GURL("https://b.d.test")))
+                       *SuitableOrigin::Deserialize("https://b.d.test"))
                    .SetExpiry(base::Days(30))                    // default
                    .SetEventReportWindow(base::Days(30))         // default
                    .SetAggregatableReportWindow(base::Days(30))  // default
@@ -223,12 +223,12 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
               SourceBuilder(kOffsetTime + base::Milliseconds(1643235575123))
                   .SetSourceType(AttributionSourceType::kEvent)
                   .SetReportingOrigin(
-                      url::Origin::Create(GURL("https://c.r.test")))
+                      *SuitableOrigin::Deserialize("https://c.r.test"))
                   .SetSourceOrigin(
-                      url::Origin::Create(GURL("https://c.s.test")))
+                      *SuitableOrigin::Deserialize("https://c.s.test"))
                   .SetSourceEventId(789)
                   .SetDestinationOrigin(
-                      url::Origin::Create(GURL("https://c.d.test")))
+                      *SuitableOrigin::Deserialize("https://c.d.test"))
                   .SetExpiry(base::Days(10))  // rounded to whole number of days
                   .SetEventReportWindow(
                       base::Days(10))  // rounded to whole number of days
@@ -247,12 +247,12 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
               SourceBuilder(kOffsetTime + base::Milliseconds(1643235576123))
                   .SetSourceType(AttributionSourceType::kEvent)
                   .SetReportingOrigin(
-                      url::Origin::Create(GURL("https://c.r.test")))
+                      *SuitableOrigin::Deserialize("https://c.r.test"))
                   .SetSourceOrigin(
-                      url::Origin::Create(GURL("https://c.s.test")))
+                      *SuitableOrigin::Deserialize("https://c.s.test"))
                   .SetSourceEventId(789)
                   .SetDestinationOrigin(
-                      url::Origin::Create(GURL("https://c.d.test")))
+                      *SuitableOrigin::Deserialize("https://c.d.test"))
                   .SetExpiry(base::Days(10))  // rounded to whole number of days
                   .SetEventReportWindow(
                       base::Days(8))  // rounded to whole number of days

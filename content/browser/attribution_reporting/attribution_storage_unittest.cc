@@ -274,16 +274,17 @@ TEST_F(AttributionStorageTest, MultipleImpressionsForConversion_OneConverts) {
 
 TEST_F(AttributionStorageTest,
        CrossOriginSameDomainConversion_ImpressionConverted) {
-  auto impression =
-      SourceBuilder()
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://sub.a.test")))
-          .Build();
+  auto impression = SourceBuilder()
+                        .SetDestinationOrigin(
+                            *SuitableOrigin::Deserialize("https://sub.a.test"))
+                        .Build();
   storage()->StoreSource(impression);
   EXPECT_EQ(
       AttributionTrigger::EventLevelResult::kSuccess,
       MaybeCreateAndStoreEventLevelReport(
           TriggerBuilder()
-              .SetDestinationOrigin(url::Origin::Create(GURL("https://a.test")))
+              .SetDestinationOrigin(
+                  *SuitableOrigin::Deserialize("https://a.test"))
               .SetReportingOrigin(impression.common_info().reporting_origin())
               .Build()));
 }
@@ -390,8 +391,8 @@ TEST_F(AttributionStorageTest, OneConversion_OneReportScheduled) {
 TEST_F(AttributionStorageTest,
        ConversionWithDifferentReportingOrigin_NoReportScheduled) {
   auto impression = SourceBuilder()
-                        .SetReportingOrigin(
-                            url::Origin::Create(GURL("https://different.test")))
+                        .SetReportingOrigin(*SuitableOrigin::Deserialize(
+                            "https://different.test"))
                         .Build();
   storage()->StoreSource(impression);
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
@@ -405,8 +406,8 @@ TEST_F(AttributionStorageTest,
 TEST_F(AttributionStorageTest,
        ConversionWithDifferentConversionOrigin_NoReportScheduled) {
   auto impression = SourceBuilder()
-                        .SetDestinationOrigin(
-                            url::Origin::Create(GURL("https://different.test")))
+                        .SetDestinationOrigin(*SuitableOrigin::Deserialize(
+                            "https://different.test"))
                         .Build();
   storage()->StoreSource(impression);
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
@@ -458,7 +459,7 @@ TEST_F(AttributionStorageTest,
 
   auto new_impression =
       SourceBuilder()
-          .SetSourceOrigin(url::Origin::Create(GURL("https://other.test/")))
+          .SetSourceOrigin(*SuitableOrigin::Deserialize("https://other.test/"))
           .Build();
   storage()->StoreSource(new_impression);
 
@@ -520,8 +521,8 @@ TEST_F(AttributionStorageTest,
 
   // Store a new impression with a different reporting origin.
   storage()->StoreSource(SourceBuilder()
-                             .SetReportingOrigin(url::Origin::Create(
-                                 GURL("https://different.test")))
+                             .SetReportingOrigin(*SuitableOrigin::Deserialize(
+                                 "https://different.test"))
                              .Build());
 
   // The first impression should still be active and able to convert.
@@ -642,21 +643,21 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
 
 TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {
   delegate()->set_max_sources_per_origin(2);
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetSourceOrigin(url::Origin::Create(GURL("https://foo.a.example")))
-          .SetSourceEventId(3)
-          .Build());
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetSourceOrigin(url::Origin::Create(GURL("https://foo.a.example")))
-          .SetSourceEventId(5)
-          .Build());
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetSourceOrigin(url::Origin::Create(GURL("https://bar.a.example")))
-          .SetSourceEventId(7)
-          .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetSourceOrigin(*SuitableOrigin::Deserialize(
+                                 "https://foo.a.example"))
+                             .SetSourceEventId(3)
+                             .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetSourceOrigin(*SuitableOrigin::Deserialize(
+                                 "https://foo.a.example"))
+                             .SetSourceEventId(5)
+                             .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetSourceOrigin(*SuitableOrigin::Deserialize(
+                                 "https://bar.a.example"))
+                             .SetSourceEventId(7)
+                             .Build());
 
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(SourceEventIdIs(3u), SourceEventIdIs(5u),
@@ -666,8 +667,8 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {
   // limit of 2.
   EXPECT_EQ(storage()
                 ->StoreSource(SourceBuilder()
-                                  .SetSourceOrigin(url::Origin::Create(
-                                      GURL("https://foo.a.example")))
+                                  .SetSourceOrigin(*SuitableOrigin::Deserialize(
+                                      "https://foo.a.example"))
                                   .SetSourceEventId(9)
                                   .Build())
                 .status,
@@ -675,11 +676,11 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {
 
   // This impression should be stored, because its origin hasn't hit the limit
   // of 2.
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetSourceOrigin(url::Origin::Create(GURL("https://bar.a.example")))
-          .SetSourceEventId(11)
-          .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetSourceOrigin(*SuitableOrigin::Deserialize(
+                                 "https://bar.a.example"))
+                             .SetSourceEventId(11)
+                             .Build());
 
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(SourceEventIdIs(3u), SourceEventIdIs(5u),
@@ -804,7 +805,7 @@ TEST_F(AttributionStorageTest, ClearDataNullFilter) {
 
   for (int i = 0; i < 10; i++) {
     auto origin =
-        url::Origin::Create(GURL(base::StringPrintf("https://%d.com/", i)));
+        *SuitableOrigin::Deserialize(base::StringPrintf("https://%d.com/", i));
     storage()->StoreSource(SourceBuilder(now)
                                .SetExpiry(base::Days(30))
                                .SetSourceOrigin(origin)
@@ -817,7 +818,7 @@ TEST_F(AttributionStorageTest, ClearDataNullFilter) {
   // Convert half of them now, half after another day.
   for (int i = 0; i < 5; i++) {
     auto origin =
-        url::Origin::Create(GURL(base::StringPrintf("https://%d.com/", i)));
+        *SuitableOrigin::Deserialize(base::StringPrintf("https://%d.com/", i));
     EXPECT_EQ(
         AttributionTrigger::EventLevelResult::kSuccess,
         MaybeCreateAndStoreEventLevelReport(TriggerBuilder()
@@ -828,7 +829,7 @@ TEST_F(AttributionStorageTest, ClearDataNullFilter) {
   task_environment_.FastForwardBy(base::Days(1));
   for (int i = 5; i < 10; i++) {
     auto origin =
-        url::Origin::Create(GURL(base::StringPrintf("https://%d.com/", i)));
+        *SuitableOrigin::Deserialize(base::StringPrintf("https://%d.com/", i));
     EXPECT_EQ(
         AttributionTrigger::EventLevelResult::kSuccess,
         MaybeCreateAndStoreEventLevelReport(TriggerBuilder()
@@ -1179,10 +1180,11 @@ TEST_F(AttributionStorageTest,
     return storage()
         ->StoreSource(
             SourceBuilder()
-                .SetSourceOrigin(url::Origin::Create(GURL(source_origin)))
-                .SetReportingOrigin(url::Origin::Create(GURL(reporting_origin)))
+                .SetSourceOrigin(*SuitableOrigin::Deserialize(source_origin))
+                .SetReportingOrigin(
+                    *SuitableOrigin::Deserialize(reporting_origin))
                 .SetDestinationOrigin(
-                    url::Origin::Create(GURL(destination_origin)))
+                    *SuitableOrigin::Deserialize(destination_origin))
                 .SetExpiry(base::Days(30))
                 .Build())
         .status;
@@ -1225,10 +1227,11 @@ TEST_F(AttributionStorageTest, DestinationLimit_ApplyLimit) {
     return storage()
         ->StoreSource(
             SourceBuilder()
-                .SetSourceOrigin(url::Origin::Create(GURL(source_origin)))
-                .SetReportingOrigin(url::Origin::Create(GURL(reporting_origin)))
+                .SetSourceOrigin(*SuitableOrigin::Deserialize(source_origin))
+                .SetReportingOrigin(
+                    *SuitableOrigin::Deserialize(reporting_origin))
                 .SetDestinationOrigin(
-                    url::Origin::Create(GURL(destination_origin)))
+                    *SuitableOrigin::Deserialize(destination_origin))
                 .SetExpiry(expiry)
                 .Build())
         .status;
@@ -1244,14 +1247,14 @@ TEST_F(AttributionStorageTest, DestinationLimit_ApplyLimit) {
       store_source("https://s.test", "https://a.r.test", "https://d2.test"),
       StorableSource::Result::kInsufficientUniqueDestinationCapacity);
 
-  EXPECT_EQ(
-      AttributionTrigger::EventLevelResult::kSuccess,
-      MaybeCreateAndStoreEventLevelReport(
-          TriggerBuilder()
-              .SetReportingOrigin(url::Origin::Create(GURL("https://a.r.test")))
-              .SetDestinationOrigin(
-                  url::Origin::Create(GURL("https://d1.test")))
-              .Build()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder()
+                    .SetReportingOrigin(
+                        *SuitableOrigin::Deserialize("https://a.r.test"))
+                    .SetDestinationOrigin(
+                        *SuitableOrigin::Deserialize("https://d1.test"))
+                    .Build()));
 
   // Allowed by pending, dropped by unexpired (therefore dropped and not stored).
   EXPECT_EQ(
@@ -1269,14 +1272,14 @@ TEST_F(AttributionStorageTest, DestinationLimit_ApplyLimit) {
 TEST_F(AttributionStorageTest,
        MaxAttributionDestinationsPerSource_AppliesToNavigationSources) {
   delegate()->set_max_destinations_per_source_site_reporting_origin(1);
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example/")))
-          .Build());
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://b.example")))
-          .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
+                                 "https://a.example/"))
+                             .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
+                                 "https://b.example"))
+                             .Build());
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 }
@@ -1284,14 +1287,15 @@ TEST_F(AttributionStorageTest,
 TEST_F(AttributionStorageTest,
        MaxAttributionDestinationsPerSource_CountsAllSourceTypes) {
   delegate()->set_max_destinations_per_source_site_reporting_origin(1);
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example/")))
-          .SetSourceType(AttributionSourceType::kNavigation)
-          .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
+                                 "https://a.example/"))
+                             .SetSourceType(AttributionSourceType::kNavigation)
+                             .Build());
   AttributionStorage::StoreSourceResult result = storage()->StoreSource(
       SourceBuilder()
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://b.example")))
+          .SetDestinationOrigin(
+              *SuitableOrigin::Deserialize("https://b.example"))
           .SetSourceType(AttributionSourceType::kEvent)
           .Build());
   EXPECT_EQ(result.status,
@@ -1308,28 +1312,28 @@ TEST_F(AttributionStorageTest,
 
   const base::TimeDelta expiry = base::Milliseconds(5);
 
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example/")))
-          .SetSourceType(AttributionSourceType::kNavigation)
-          .SetExpiry(expiry)
-          .Build());
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://b.example")))
-          .SetSourceType(AttributionSourceType::kEvent)
-          .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
+                                 "https://a.example/"))
+                             .SetSourceType(AttributionSourceType::kNavigation)
+                             .SetExpiry(expiry)
+                             .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
+                                 "https://b.example"))
+                             .SetSourceType(AttributionSourceType::kEvent)
+                             .Build());
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   task_environment_.FastForwardBy(expiry);
   EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
 
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://b.example")))
-          .SetSourceType(AttributionSourceType::kEvent)
-          .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
+                                 "https://b.example"))
+                             .SetSourceType(AttributionSourceType::kEvent)
+                             .Build());
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 }
@@ -1655,16 +1659,16 @@ TEST_F(AttributionStorageTest, TriggerPriority_DeactivatesImpression) {
 }
 
 TEST_F(AttributionStorageTest, DedupKey_Dedups) {
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetSourceEventId(1)
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example")))
-          .Build());
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetSourceEventId(2)
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://b.example")))
-          .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetSourceEventId(1)
+                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
+                                 "https://a.example"))
+                             .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetSourceEventId(2)
+                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
+                                 "https://b.example"))
+                             .Build());
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(DedupKeysAre(IsEmpty()), DedupKeysAre(IsEmpty())));
 
@@ -1672,7 +1676,7 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder()
                     .SetDestinationOrigin(
-                        url::Origin::Create(GURL("https://a.example")))
+                        *SuitableOrigin::Deserialize("https://a.example"))
                     .SetDedupKey(11)
                     .SetTriggerData(71)
                     .Build()));
@@ -1683,7 +1687,7 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder()
                     .SetDestinationOrigin(
-                        url::Origin::Create(GURL("https://a.example")))
+                        *SuitableOrigin::Deserialize("https://a.example"))
                     .SetDedupKey(12)
                     .SetTriggerData(72)
                     .Build()));
@@ -1694,7 +1698,7 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder()
                     .SetDestinationOrigin(
-                        url::Origin::Create(GURL("https://b.example")))
+                        *SuitableOrigin::Deserialize("https://b.example"))
                     .SetDedupKey(12)
                     .SetTriggerData(73)
                     .Build()));
@@ -1702,7 +1706,8 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
   // Shouldn't be stored because conversion destination and dedup key match.
   auto result = storage()->MaybeCreateAndStoreReport(
       TriggerBuilder()
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example")))
+          .SetDestinationOrigin(
+              *SuitableOrigin::Deserialize("https://a.example"))
           .SetDedupKey(11)
           .SetTriggerData(74)
           .Build());
@@ -1715,7 +1720,7 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder()
                     .SetDestinationOrigin(
-                        url::Origin::Create(GURL("https://b.example")))
+                        *SuitableOrigin::Deserialize("https://b.example"))
                     .SetDedupKey(12)
                     .SetTriggerData(75)
                     .Build()));
@@ -1732,11 +1737,11 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
 }
 
 TEST_F(AttributionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetSourceEventId(1)
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example")))
-          .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetSourceEventId(1)
+                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
+                                 "https://a.example"))
+                             .Build());
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
@@ -1745,7 +1750,7 @@ TEST_F(AttributionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder()
                     .SetDestinationOrigin(
-                        url::Origin::Create(GURL("https://a.example")))
+                        *SuitableOrigin::Deserialize("https://a.example"))
                     .SetDedupKey(2)
                     .SetTriggerData(3)
                     .Build()));
@@ -1767,7 +1772,7 @@ TEST_F(AttributionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder()
                     .SetDestinationOrigin(
-                        url::Origin::Create(GURL("https://a.example")))
+                        *SuitableOrigin::Deserialize("https://a.example"))
                     .SetDedupKey(2)
                     .SetTriggerData(5)
                     .Build()));
@@ -1778,16 +1783,16 @@ TEST_F(AttributionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
 
 TEST_F(AttributionStorageTest, AggregatableDedupKey_Dedups) {
   TestAggregatableSourceProvider provider;
-  storage()->StoreSource(
-      provider.GetBuilder()
-          .SetSourceEventId(1)
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example")))
-          .Build());
-  storage()->StoreSource(
-      provider.GetBuilder()
-          .SetSourceEventId(2)
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://b.example")))
-          .Build());
+  storage()->StoreSource(provider.GetBuilder()
+                             .SetSourceEventId(1)
+                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
+                                 "https://a.example"))
+                             .Build());
+  storage()->StoreSource(provider.GetBuilder()
+                             .SetSourceEventId(2)
+                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
+                                 "https://b.example"))
+                             .Build());
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(AggregatableDedupKeysAre(IsEmpty()),
                           AggregatableDedupKeysAre(IsEmpty())));
@@ -1796,7 +1801,7 @@ TEST_F(AttributionStorageTest, AggregatableDedupKey_Dedups) {
             MaybeCreateAndStoreAggregatableReport(
                 DefaultAggregatableTriggerBuilder()
                     .SetDestinationOrigin(
-                        url::Origin::Create(GURL("https://a.example")))
+                        *SuitableOrigin::Deserialize("https://a.example"))
                     .SetAggregatableDedupKey(11)
                     .SetDebugKey(71)
                     .Build(/*generate_event_trigger_data=*/false)));
@@ -1807,7 +1812,7 @@ TEST_F(AttributionStorageTest, AggregatableDedupKey_Dedups) {
             MaybeCreateAndStoreAggregatableReport(
                 DefaultAggregatableTriggerBuilder()
                     .SetDestinationOrigin(
-                        url::Origin::Create(GURL("https://a.example")))
+                        *SuitableOrigin::Deserialize("https://a.example"))
                     .SetAggregatableDedupKey(12)
                     .SetDebugKey(72)
                     .Build(/*generate_event_trigger_data=*/false)));
@@ -1818,7 +1823,7 @@ TEST_F(AttributionStorageTest, AggregatableDedupKey_Dedups) {
             MaybeCreateAndStoreAggregatableReport(
                 DefaultAggregatableTriggerBuilder()
                     .SetDestinationOrigin(
-                        url::Origin::Create(GURL("https://b.example")))
+                        *SuitableOrigin::Deserialize("https://b.example"))
                     .SetAggregatableDedupKey(12)
                     .SetDebugKey(73)
                     .Build(/*generate_event_trigger_data=*/false)));
@@ -1828,7 +1833,7 @@ TEST_F(AttributionStorageTest, AggregatableDedupKey_Dedups) {
             MaybeCreateAndStoreAggregatableReport(
                 DefaultAggregatableTriggerBuilder()
                     .SetDestinationOrigin(
-                        url::Origin::Create(GURL("https://a.example")))
+                        *SuitableOrigin::Deserialize("https://a.example"))
                     .SetAggregatableDedupKey(11)
                     .SetDebugKey(74)
                     .Build(/*generate_event_trigger_data=*/false)));
@@ -1838,7 +1843,7 @@ TEST_F(AttributionStorageTest, AggregatableDedupKey_Dedups) {
             MaybeCreateAndStoreAggregatableReport(
                 DefaultAggregatableTriggerBuilder()
                     .SetDestinationOrigin(
-                        url::Origin::Create(GURL("https://b.example")))
+                        *SuitableOrigin::Deserialize("https://b.example"))
                     .SetAggregatableDedupKey(12)
                     .SetDebugKey(75)
                     .Build(/*generate_event_trigger_data=*/false)));
@@ -1855,12 +1860,12 @@ TEST_F(AttributionStorageTest, AggregatableDedupKey_Dedups) {
 
 TEST_F(AttributionStorageTest,
        AggregatableDedupKey_DedupsAfterConversionDeletion) {
-  storage()->StoreSource(
-      TestAggregatableSourceProvider()
-          .GetBuilder()
-          .SetSourceEventId(1)
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example")))
-          .Build());
+  storage()->StoreSource(TestAggregatableSourceProvider()
+                             .GetBuilder()
+                             .SetSourceEventId(1)
+                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
+                                 "https://a.example"))
+                             .Build());
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
@@ -1869,7 +1874,7 @@ TEST_F(AttributionStorageTest,
             MaybeCreateAndStoreAggregatableReport(
                 DefaultAggregatableTriggerBuilder()
                     .SetDestinationOrigin(
-                        url::Origin::Create(GURL("https://a.example")))
+                        *SuitableOrigin::Deserialize("https://a.example"))
                     .SetAggregatableDedupKey(2)
                     .SetDebugKey(3)
                     .Build(/*generate_event_trigger_data=*/false)));
@@ -1891,7 +1896,7 @@ TEST_F(AttributionStorageTest,
             MaybeCreateAndStoreAggregatableReport(
                 DefaultAggregatableTriggerBuilder()
                     .SetDestinationOrigin(
-                        url::Origin::Create(GURL("https://a.example")))
+                        *SuitableOrigin::Deserialize("https://a.example"))
                     .SetAggregatableDedupKey(2)
                     .SetDebugKey(5)
                     .Build(/*generate_event_trigger_data=*/false)));
@@ -1901,16 +1906,17 @@ TEST_F(AttributionStorageTest,
 }
 
 TEST_F(AttributionStorageTest, DedupKey_AggregatableReportNotDedups) {
-  storage()->StoreSource(
-      TestAggregatableSourceProvider()
-          .GetBuilder()
-          .SetSourceEventId(1)
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example")))
-          .Build());
+  storage()->StoreSource(TestAggregatableSourceProvider()
+                             .GetBuilder()
+                             .SetSourceEventId(1)
+                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
+                                 "https://a.example"))
+                             .Build());
 
   auto result = storage()->MaybeCreateAndStoreReport(
       DefaultAggregatableTriggerBuilder()
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example")))
+          .SetDestinationOrigin(
+              *SuitableOrigin::Deserialize("https://a.example"))
           .SetDedupKey(11)
           .Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
@@ -1920,7 +1926,8 @@ TEST_F(AttributionStorageTest, DedupKey_AggregatableReportNotDedups) {
 
   result = storage()->MaybeCreateAndStoreReport(
       DefaultAggregatableTriggerBuilder()
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example")))
+          .SetDestinationOrigin(
+              *SuitableOrigin::Deserialize("https://a.example"))
           .SetDedupKey(11)
           .Build());
 
@@ -1931,16 +1938,17 @@ TEST_F(AttributionStorageTest, DedupKey_AggregatableReportNotDedups) {
 }
 
 TEST_F(AttributionStorageTest, AggregatableDedupKey_EventLevelReportNotDedups) {
-  storage()->StoreSource(
-      TestAggregatableSourceProvider()
-          .GetBuilder()
-          .SetSourceEventId(1)
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example")))
-          .Build());
+  storage()->StoreSource(TestAggregatableSourceProvider()
+                             .GetBuilder()
+                             .SetSourceEventId(1)
+                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
+                                 "https://a.example"))
+                             .Build());
 
   auto result = storage()->MaybeCreateAndStoreReport(
       DefaultAggregatableTriggerBuilder()
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example")))
+          .SetDestinationOrigin(
+              *SuitableOrigin::Deserialize("https://a.example"))
           .SetAggregatableDedupKey(11)
           .Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
@@ -1950,7 +1958,8 @@ TEST_F(AttributionStorageTest, AggregatableDedupKey_EventLevelReportNotDedups) {
 
   result = storage()->MaybeCreateAndStoreReport(
       DefaultAggregatableTriggerBuilder()
-          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example")))
+          .SetDestinationOrigin(
+              *SuitableOrigin::Deserialize("https://a.example"))
           .SetAggregatableDedupKey(11)
           .Build());
 
@@ -2206,8 +2215,8 @@ TEST_F(AttributionStorageTest,
 }
 
 TEST_F(AttributionStorageTest, GetNextEventReportTime) {
-  const auto origin_a = url::Origin::Create(GURL("https://a.example/"));
-  const auto origin_b = url::Origin::Create(GURL("https://b.example/"));
+  const auto origin_a = *SuitableOrigin::Deserialize("https://a.example/");
+  const auto origin_b = *SuitableOrigin::Deserialize("https://b.example/");
 
   EXPECT_EQ(storage()->GetNextReportTime(base::Time::Min()), absl::nullopt);
 
@@ -2350,21 +2359,21 @@ TEST_F(AttributionStorageTest, MaxReportingOriginsPerSource) {
 
   auto result = storage()->StoreSource(
       SourceBuilder()
-          .SetReportingOrigin(url::Origin::Create(GURL("https://r1.test")))
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r1.test"))
           .SetDebugKey(1)
           .Build());
   ASSERT_EQ(result.status, StorableSource::Result::kSuccess);
 
   result = storage()->StoreSource(
       SourceBuilder()
-          .SetReportingOrigin(url::Origin::Create(GURL("https://r2.test")))
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r2.test"))
           .SetDebugKey(2)
           .Build());
   ASSERT_EQ(result.status, StorableSource::Result::kSuccess);
 
   result = storage()->StoreSource(
       SourceBuilder()
-          .SetReportingOrigin(url::Origin::Create(GURL("https://r3.test")))
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r3.test"))
           .SetDebugKey(3)
           .Build());
   ASSERT_EQ(result.status, StorableSource::Result::kExcessiveReportingOrigins);
@@ -2384,9 +2393,9 @@ TEST_F(AttributionStorageTest, MaxReportingOriginsPerAttribution) {
       .max_attributions = std::numeric_limits<int64_t>::max(),
   });
 
-  const auto origin1 = url::Origin::Create(GURL("https://r1.test"));
-  const auto origin2 = url::Origin::Create(GURL("https://r2.test"));
-  const auto origin3 = url::Origin::Create(GURL("https://r3.test"));
+  const auto origin1 = *SuitableOrigin::Deserialize("https://r1.test");
+  const auto origin2 = *SuitableOrigin::Deserialize("https://r2.test");
+  const auto origin3 = *SuitableOrigin::Deserialize("https://r3.test");
 
   SourceBuilder source_builder = TestAggregatableSourceProvider().GetBuilder();
   TriggerBuilder trigger_builder = DefaultAggregatableTriggerBuilder();
@@ -2519,8 +2528,8 @@ TEST_F(AttributionStorageTest,
        GetAttributionReports_SetsRandomizedTriggerRate) {
   delegate()->set_randomized_response_rates(/*navigation=*/.2, /*event=*/.4);
 
-  const auto origin1 = url::Origin::Create(GURL("https://r1.test"));
-  const auto origin2 = url::Origin::Create(GURL("https://r2.test"));
+  const auto origin1 = *SuitableOrigin::Deserialize("https://r1.test");
+  const auto origin2 = *SuitableOrigin::Deserialize("https://r2.test");
 
   storage()->StoreSource(SourceBuilder()
                              .SetReportingOrigin(origin1)
@@ -2600,8 +2609,8 @@ TEST_F(AttributionStorageTest, SourceEventIdSanitized) {
 TEST_F(AttributionStorageTest, TriggerDataSanitized) {
   delegate()->set_trigger_data_cardinality(/*navigation=*/4, /*event=*/3);
 
-  const auto origin1 = url::Origin::Create(GURL("https://r1.test"));
-  const auto origin2 = url::Origin::Create(GURL("https://r2.test"));
+  const auto origin1 = *SuitableOrigin::Deserialize("https://r1.test");
+  const auto origin2 = *SuitableOrigin::Deserialize("https://r2.test");
 
   storage()->StoreSource(SourceBuilder()
                              .SetReportingOrigin(origin1)

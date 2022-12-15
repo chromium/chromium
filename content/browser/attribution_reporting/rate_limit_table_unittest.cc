@@ -19,6 +19,7 @@
 #include "base/files/file_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -30,14 +31,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 
 namespace {
 
 using RateLimitScope = ::content::RateLimitTable::Scope;
+
+using ::attribution_reporting::SuitableOrigin;
 
 using ::testing::_;
 using ::testing::ElementsAre;
@@ -83,9 +84,10 @@ struct RateLimitRow {
     auto source_time = scope == RateLimitScope::kSource ? time : base::Time();
     auto builder = SourceBuilder(source_time);
 
-    builder.SetSourceOrigin(url::Origin::Create(GURL(source_origin)));
-    builder.SetDestinationOrigin(url::Origin::Create(GURL(destination_origin)));
-    builder.SetReportingOrigin(url::Origin::Create(GURL(reporting_origin)));
+    builder.SetSourceOrigin(*SuitableOrigin::Deserialize(source_origin));
+    builder.SetDestinationOrigin(
+        *SuitableOrigin::Deserialize(destination_origin));
+    builder.SetReportingOrigin(*SuitableOrigin::Deserialize(reporting_origin));
     builder.SetExpiry(source_expiry);
 
     return builder;
@@ -637,22 +639,24 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRows) {
   delegate_.set_delete_expired_rate_limits_frequency(base::Minutes(4));
 
   ASSERT_TRUE(table_.AddRateLimitForAttribution(
-      &db_, AttributionInfoBuilder(SourceBuilder()
-                                       .SetSourceOrigin(url::Origin::Create(
-                                           GURL("https://s1.test")))
-                                       .BuildStored())
-                .SetTime(base::Time::Now())
-                .Build()));
+      &db_,
+      AttributionInfoBuilder(
+          SourceBuilder()
+              .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s1.test"))
+              .BuildStored())
+          .SetTime(base::Time::Now())
+          .Build()));
 
   task_environment_.FastForwardBy(base::Minutes(4) - base::Milliseconds(1));
 
   ASSERT_TRUE(table_.AddRateLimitForAttribution(
-      &db_, AttributionInfoBuilder(SourceBuilder()
-                                       .SetSourceOrigin(url::Origin::Create(
-                                           GURL("https://s2.test")))
-                                       .BuildStored())
-                .SetTime(base::Time::Now())
-                .Build()));
+      &db_,
+      AttributionInfoBuilder(
+          SourceBuilder()
+              .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s2.test"))
+              .BuildStored())
+          .SetTime(base::Time::Now())
+          .Build()));
 
   // Neither row has expired at this point.
   ASSERT_THAT(GetRateLimitRows(), SizeIs(2));
@@ -661,12 +665,13 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRows) {
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
   ASSERT_TRUE(table_.AddRateLimitForAttribution(
-      &db_, AttributionInfoBuilder(SourceBuilder()
-                                       .SetSourceOrigin(url::Origin::Create(
-                                           GURL("https://s3.test")))
-                                       .BuildStored())
-                .SetTime(base::Time::Now())
-                .Build()));
+      &db_,
+      AttributionInfoBuilder(
+          SourceBuilder()
+              .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s3.test"))
+              .BuildStored())
+          .SetTime(base::Time::Now())
+          .Build()));
 
   // The first row should be expired at this point.
   ASSERT_THAT(
@@ -688,22 +693,25 @@ TEST_F(RateLimitTableTest, AddRateLimitSource_DeletesExpiredRows) {
   delegate_.set_delete_expired_rate_limits_frequency(base::Minutes(4));
 
   ASSERT_TRUE(table_.AddRateLimitForSource(
-      &db_, SourceBuilder()
-                .SetSourceOrigin(url::Origin::Create(GURL("https://s1.test")))
-                .BuildStored()));
+      &db_,
+      SourceBuilder()
+          .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s1.test"))
+          .BuildStored()));
 
   ASSERT_TRUE(table_.AddRateLimitForSource(
-      &db_, SourceBuilder()
-                .SetSourceOrigin(url::Origin::Create(GURL("https://s2.test")))
-                .SetExpiry(base::Minutes(5))
-                .BuildStored()));
+      &db_,
+      SourceBuilder()
+          .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s2.test"))
+          .SetExpiry(base::Minutes(5))
+          .BuildStored()));
 
   task_environment_.FastForwardBy(base::Minutes(4) - base::Milliseconds(1));
 
   ASSERT_TRUE(table_.AddRateLimitForSource(
-      &db_, SourceBuilder()
-                .SetSourceOrigin(url::Origin::Create(GURL("https://s3.test")))
-                .BuildStored()));
+      &db_,
+      SourceBuilder()
+          .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s3.test"))
+          .BuildStored()));
 
   // No row has expired at this point.
   ASSERT_THAT(GetRateLimitRows(), SizeIs(3));
@@ -712,9 +720,10 @@ TEST_F(RateLimitTableTest, AddRateLimitSource_DeletesExpiredRows) {
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
   ASSERT_TRUE(table_.AddRateLimitForSource(
-      &db_, SourceBuilder()
-                .SetSourceOrigin(url::Origin::Create(GURL("https://s4.test")))
-                .BuildStored()));
+      &db_,
+      SourceBuilder()
+          .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s4.test"))
+          .BuildStored()));
 
   // The first row should be expired at this point. The second row is not
   // expired since the source is not expired yet.

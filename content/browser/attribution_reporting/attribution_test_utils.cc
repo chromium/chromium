@@ -40,7 +40,6 @@
 #include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/attribution_reporting/attribution_input_event_tracker_android.h"
@@ -500,21 +499,9 @@ SourceBuilder& SourceBuilder::SetSourceEventId(uint64_t source_event_id) {
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetSourceOrigin(url::Origin origin) {
-  auto suitable_origin = SuitableOrigin::Create(std::move(origin));
-  CHECK(suitable_origin);
-  return SetSourceOrigin(std::move(*suitable_origin));
-}
-
 SourceBuilder& SourceBuilder::SetSourceOrigin(SuitableOrigin origin) {
   source_origin_ = std::move(origin);
   return *this;
-}
-
-SourceBuilder& SourceBuilder::SetDestinationOrigin(url::Origin origin) {
-  auto suitable_origin = SuitableOrigin::Create(std::move(origin));
-  CHECK(suitable_origin);
-  return SetDestinationOrigin(std::move(*suitable_origin));
 }
 
 SourceBuilder& SourceBuilder::SetDestinationOrigin(SuitableOrigin origin) {
@@ -526,12 +513,6 @@ SourceBuilder& SourceBuilder::SetDestinationOrigins(
   DCHECK(!origins.empty());
   destination_origins_ = std::move(origins);
   return *this;
-}
-
-SourceBuilder& SourceBuilder::SetReportingOrigin(url::Origin origin) {
-  auto suitable_origin = SuitableOrigin::Create(std::move(origin));
-  CHECK(suitable_origin);
-  return SetReportingOrigin(std::move(*suitable_origin));
 }
 
 SourceBuilder& SourceBuilder::SetReportingOrigin(SuitableOrigin origin) {
@@ -670,23 +651,9 @@ TriggerBuilder& TriggerBuilder::SetEventSourceTriggerData(
   return *this;
 }
 
-TriggerBuilder& TriggerBuilder::SetDestinationOrigin(
-    url::Origin destination_origin) {
-  auto suitable_origin = SuitableOrigin::Create(std::move(destination_origin));
-  CHECK(suitable_origin);
-  return SetDestinationOrigin(std::move(*suitable_origin));
-}
-
 TriggerBuilder& TriggerBuilder::SetDestinationOrigin(SuitableOrigin origin) {
   destination_origin_ = std::move(origin);
   return *this;
-}
-
-TriggerBuilder& TriggerBuilder::SetReportingOrigin(
-    url::Origin reporting_origin) {
-  auto suitable_origin = SuitableOrigin::Create(std::move(reporting_origin));
-  CHECK(suitable_origin);
-  return SetReportingOrigin(std::move(*suitable_origin));
 }
 
 TriggerBuilder& TriggerBuilder::SetReportingOrigin(SuitableOrigin origin) {

@@ -412,21 +412,12 @@ class SourceBuilder {
 
   SourceBuilder& SetSourceEventId(uint64_t source_event_id);
 
-  // TODO(crbug.com/1383580): Remove this method.
-  SourceBuilder& SetSourceOrigin(url::Origin origin);
-
   SourceBuilder& SetSourceOrigin(attribution_reporting::SuitableOrigin);
-
-  // TODO(crbug.com/1383580): Remove this method.
-  SourceBuilder& SetDestinationOrigin(url::Origin origin);
 
   SourceBuilder& SetDestinationOrigin(attribution_reporting::SuitableOrigin);
 
   SourceBuilder& SetDestinationOrigins(
       base::flat_set<attribution_reporting::SuitableOrigin>);
-
-  // TODO(crbug.com/1383580): Remove this method.
-  SourceBuilder& SetReportingOrigin(url::Origin origin);
 
   SourceBuilder& SetReportingOrigin(attribution_reporting::SuitableOrigin);
 
@@ -515,13 +506,7 @@ class TriggerBuilder {
 
   TriggerBuilder& SetEventSourceTriggerData(uint64_t event_source_trigger_data);
 
-  // TODO(crbug.com/1383580): Remove this method.
-  TriggerBuilder& SetDestinationOrigin(url::Origin destination_origin);
-
   TriggerBuilder& SetDestinationOrigin(attribution_reporting::SuitableOrigin);
-
-  // TODO(crbug.com/1383580): Remove this method.
-  TriggerBuilder& SetReportingOrigin(url::Origin reporting_origin);
 
   TriggerBuilder& SetReportingOrigin(attribution_reporting::SuitableOrigin);
 
