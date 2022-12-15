@@ -187,7 +187,7 @@ void FileSelectHelper::FileSelectedWithExtraInfo(
 
   const base::FilePath& path = file.local_path;
   if (dialog_type_ == ui::SelectFileDialog::SELECT_UPLOAD_FOLDER) {
-    StartNewEnumeration(path);
+    PerformContentAnalysisForFolderUploadIfNeeded(path);
     return;
   }
 
@@ -405,6 +405,75 @@ void FileSelectHelper::ContentAnalysisCompletionCallback(
 }
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
+void FileSelectHelper::PerformContentAnalysisForFolderUploadIfNeeded(
+    const base::FilePath& path) {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  auto files_scan_data =
+      std::make_unique<enterprise_connectors::FilesScanData>(std::vector{path});
+  auto* files_scan_data_raw = files_scan_data.get();
+  files_scan_data_raw->ExpandPaths(
+      base::BindOnce(&FileSelectHelper::ScanDataCallback, this, path,
+                     std::move(files_scan_data)));
+#else
+  StartNewEnumeration(path);
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+}
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+
+void FileSelectHelper::ScanDataCallback(
+    const base::FilePath& path,
+    std::unique_ptr<enterprise_connectors::FilesScanData> files_scan_data) {
+  if (AbortIfWebContentsDestroyed()) {
+    return;
+  }
+
+  enterprise_connectors::ContentAnalysisDelegate::Data data;
+  if (enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
+          profile_, web_contents_->GetLastCommittedURL(), &data,
+          enterprise_connectors::AnalysisConnector::FILE_ATTACHED)) {
+    for (const auto& epath : files_scan_data->expanded_paths()) {
+      data.paths.push_back(epath);
+    }
+  }
+
+  if (data.paths.empty()) {
+    StartNewEnumeration(path);
+  } else {
+    enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
+        web_contents_, std::move(data),
+        base::BindOnce(
+            &FileSelectHelper::FolderUploadContentAnalysisCompletionCallback,
+            this, path),
+        safe_browsing::DeepScanAccessPoint::UPLOAD);
+  }
+}
+
+void FileSelectHelper::FolderUploadContentAnalysisCompletionCallback(
+    const base::FilePath& path,
+    const enterprise_connectors::ContentAnalysisDelegate::Data& data,
+    enterprise_connectors::ContentAnalysisDelegate::Result& result) {
+  if (AbortIfWebContentsDestroyed()) {
+    return;
+  }
+
+  DCHECK_EQ(data.text.size(), 0u);
+  DCHECK_EQ(result.text_results.size(), 0u);
+  DCHECK_EQ(data.paths.size(), result.paths_results.size());
+
+  bool all_file_results_allowed = !base::Contains(result.paths_results, false);
+
+  if (all_file_results_allowed) {
+    StartNewEnumeration(path);
+  } else {
+    for (size_t i = 0; i < data.paths.size(); ++i) {
+      result.paths_results[i] = false;
+    }
+  }
+}
+
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+
 void FileSelectHelper::NotifyListenerAndEnd(
     std::vector<blink::mojom::FileChooserFileInfoPtr> list) {
   listener_->FileSelected(std::move(list), base_dir_, dialog_mode_);
@@ -451,6 +520,10 @@ void FileSelectHelper::SetFileSelectListenerForTesting(
 
 void FileSelectHelper::DontAbortOnMissingWebContentsForTesting() {
   abort_on_missing_web_contents_in_tests_ = false;
+}
+
+bool FileSelectHelper::IsDirectoryEnumerationStartedForTesting() {
+  return directory_enumeration_.get() != nullptr;
 }
 
 std::unique_ptr<ui::SelectFileDialog::FileTypeInfo>

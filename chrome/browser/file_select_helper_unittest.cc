@@ -63,10 +63,12 @@ void PrepareContentAnalysisCompletionCallbackArgs(
     enterprise_connectors::ContentAnalysisDelegate::Result* result) {
   DCHECK_EQ(status.size(), paths.size());
 
-  for (auto& path : paths) {
-    orig_files->push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
-        blink::mojom::NativeFileInfo::New(path,
-                                          path.BaseName().AsUTF16Unsafe())));
+  if (orig_files) {
+    for (auto& path : paths) {
+      orig_files->push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
+          blink::mojom::NativeFileInfo::New(path,
+                                            path.BaseName().AsUTF16Unsafe())));
+    }
   }
 
   data->paths = std::move(paths);
@@ -429,6 +431,87 @@ TEST_F(FileSelectHelperTest,
   EXPECT_EQ(data_dir_.AppendASCII("bar.doc"),
             files[1]->get_native_file()->file_path);
   EXPECT_TRUE(files[2]->is_file_system());
+}
+
+TEST_F(FileSelectHelperTest,
+       ContentAnalysisCompletionCallback_FolderUpload_OK) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  scoped_refptr<FileSelectHelper> file_select_helper =
+      new FileSelectHelper(&profile);
+
+  std::vector<blink::mojom::FileChooserFileInfoPtr> files;
+  auto listener = base::MakeRefCounted<TestFileSelectListener>(&files);
+  file_select_helper->SetFileSelectListenerForTesting(std::move(listener));
+  file_select_helper->DontAbortOnMissingWebContentsForTesting();
+
+  enterprise_connectors::ContentAnalysisDelegate::Data data;
+  enterprise_connectors::ContentAnalysisDelegate::Result result;
+
+  PrepareContentAnalysisCompletionCallbackArgs(
+      {data_dir_.AppendASCII("foo.doc"), data_dir_.AppendASCII("bar.doc")},
+      {true, true}, nullptr, &data, &result);
+
+  EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
+
+  file_select_helper->FolderUploadContentAnalysisCompletionCallback(
+      data_dir_, data, result);
+
+  EXPECT_TRUE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
+}
+
+TEST_F(FileSelectHelperTest,
+       ContentAnalysisCompletionCallback_FolderUpload_Bad) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  scoped_refptr<FileSelectHelper> file_select_helper =
+      new FileSelectHelper(&profile);
+
+  std::vector<blink::mojom::FileChooserFileInfoPtr> files;
+  auto listener = base::MakeRefCounted<TestFileSelectListener>(&files);
+  file_select_helper->SetFileSelectListenerForTesting(std::move(listener));
+  file_select_helper->DontAbortOnMissingWebContentsForTesting();
+
+  enterprise_connectors::ContentAnalysisDelegate::Data data;
+  enterprise_connectors::ContentAnalysisDelegate::Result result;
+
+  PrepareContentAnalysisCompletionCallbackArgs(
+      {data_dir_.AppendASCII("foo.doc"), data_dir_.AppendASCII("bar.doc")},
+      {false, false}, nullptr, &data, &result);
+
+  EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
+
+  file_select_helper->FolderUploadContentAnalysisCompletionCallback(
+      data_dir_, data, result);
+
+  EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
+}
+
+TEST_F(FileSelectHelperTest,
+       ContentAnalysisCompletionCallback_FolderUpload_OKBad) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  scoped_refptr<FileSelectHelper> file_select_helper =
+      new FileSelectHelper(&profile);
+
+  std::vector<blink::mojom::FileChooserFileInfoPtr> files;
+  auto listener = base::MakeRefCounted<TestFileSelectListener>(&files);
+  file_select_helper->SetFileSelectListenerForTesting(std::move(listener));
+  file_select_helper->DontAbortOnMissingWebContentsForTesting();
+
+  enterprise_connectors::ContentAnalysisDelegate::Data data;
+  enterprise_connectors::ContentAnalysisDelegate::Result result;
+
+  PrepareContentAnalysisCompletionCallbackArgs(
+      {data_dir_.AppendASCII("foo.doc"), data_dir_.AppendASCII("bar.doc")},
+      {true, false}, nullptr, &data, &result);
+
+  EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
+
+  file_select_helper->FolderUploadContentAnalysisCompletionCallback(
+      data_dir_, data, result);
+
+  EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
 }
 
 TEST_F(FileSelectHelperTest, GetFileTypesFromAcceptType) {
