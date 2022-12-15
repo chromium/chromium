@@ -85098,6 +85098,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="Chrome has no app-level permission, message was ignored"/>
   <int value="10"
       label="Chrome has no app-level permission, FCM was auto-revoked"/>
+  <int value="11"
+      label="Origin permission auto-revoked due to disruptive behavior"/>
 </enum>
 
 <enum name="PushGetRegistrationStatus">
@@ -85150,6 +85152,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="13" label="Abusive origin permission auto-revoked"/>
   <int value="14"
       label="Chrome has no app-level permissions, FCM auto-revoked"/>
+  <int value="15" label="Disruptive origin permission auto-revoked"/>
 </enum>
 
 <enum name="PushUnregistrationStatus">
