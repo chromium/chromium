@@ -547,6 +547,26 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyRequestCopiesAcceptHeader) {
   EXPECT_THAT(accept_header_value, Eq("text/html"));
 }
 
+TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyRequestDisablesCaching) {
+  RegisterWebApp(CreateIsolatedWebApp(
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{
+          .proxy_url = url::Origin::Create(GURL("http://example.com"))}}));
+
+  CreateFactory();
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = GURL("isolated-app://" + kDevWebBundleId + "/foo/bar.html");
+  CreateLoaderAndRun(std::move(request));
+
+  std::string cache_control_header_value;
+  ASSERT_THAT(
+      url_handler().request()->headers.GetHeader(
+          net::HttpRequestHeaders::kCacheControl, &cache_control_header_value),
+      IsTrue());
+  EXPECT_THAT(cache_control_header_value, Eq("no-cache"));
+}
+
 TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyRequestDefaultsToAcceptingAll) {
   RegisterWebApp(CreateIsolatedWebApp(
       kDevAppStartUrl,

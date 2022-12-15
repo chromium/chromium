@@ -483,6 +483,8 @@ void IsolatedWebAppURLLoaderFactory::HandleDevModeProxy(
                                      &accept_header_value);
   proxy_request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                   accept_header_value);
+  proxy_request.headers.SetHeader(net::HttpRequestHeaders::kCacheControl,
+                                  "no-cache");
 
   content::StoragePartition* storage_partition = profile_->GetStoragePartition(
       url_info.storage_partition_config(profile_), /*can_create=*/false);
