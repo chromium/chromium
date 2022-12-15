@@ -15,6 +15,7 @@
 #include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/external_metrics.h"
 #include "components/metrics/structured/histogram_util.h"
+#include "components/metrics/structured/project_validator.h"
 #include "components/metrics/structured/storage.pb.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_metrics_validator.h"
@@ -137,8 +138,9 @@ void StructuredMetricsProvider::OnProfileAdded(
   // in the first logged-in user's cryptohome. So if a second profile is added
   // we should ignore it. All init state beyond |InitState::kUninitialized| mean
   // a profile has already been added.
-  if (init_state_ != InitState::kUninitialized)
+  if (init_state_ != InitState::kUninitialized) {
     return;
+  }
   init_state_ = InitState::kProfileAdded;
 
   const auto save_delay = base::Milliseconds(kSaveDelayMs);
@@ -209,8 +211,9 @@ void StructuredMetricsProvider::OnEventRecord(const Event& event) {
 absl::optional<int> StructuredMetricsProvider::LastKeyRotation(
     const uint64_t project_name_hash) {
   DCHECK(base::CurrentUIThread::IsSet());
-  if (init_state_ != InitState::kInitialized)
+  if (init_state_ != InitState::kInitialized) {
     return absl::nullopt;
+  }
   DCHECK(profile_key_data_->is_initialized());
   DCHECK(device_key_data_->is_initialized());
 
@@ -274,8 +277,9 @@ void StructuredMetricsProvider::OnSystemProfileInitialized() {
 void StructuredMetricsProvider::ProvideCurrentSessionData(
     ChromeUserMetricsExtension* uma_proto) {
   DCHECK(base::CurrentUIThread::IsSet());
-  if (!recording_enabled_ || init_state_ != InitState::kInitialized)
+  if (!recording_enabled_ || init_state_ != InitState::kInitialized) {
     return;
+  }
 
   if (base::FeatureList::IsEnabled(kDelayUploadUntilHwid) &&
       !system_profile_initialized_) {
@@ -404,7 +408,6 @@ void StructuredMetricsProvider::RecordEvent(const Event& event) {
     return;
   }
   const auto* project_validator = maybe_project_validator.value();
-
   const auto maybe_event_validator =
       project_validator->GetEventValidator(event.event_name());
   DCHECK(maybe_event_validator.has_value());
@@ -433,24 +436,10 @@ void StructuredMetricsProvider::RecordEvent(const Event& event) {
 
   event_proto->set_project_name_hash(project_validator->project_hash());
 
-  // Choose which KeyData to use for this event.
-  KeyData* key_data;
-  switch (project_validator->id_scope()) {
-    case IdScope::kPerProfile:
-      key_data = profile_key_data_.get();
-      break;
-    case IdScope::kPerDevice:
-      key_data = device_key_data_.get();
-      break;
-    default:
-      // In case id_scope is uninitialized.
-      NOTREACHED();
-  }
-
-  // TODO(crbug/1350322): Add client_id and user_id once they are added to the
-  // original proto.
+  // Sequence-related metadata.
   if (project_validator->event_type() ==
-      StructuredEventProto_EventType_SEQUENCE) {
+          StructuredEventProto_EventType_SEQUENCE &&
+      base::FeatureList::IsEnabled(kEventSequenceLogging)) {
     auto* event_sequence_metadata =
         event_proto->mutable_event_sequence_metadata();
 
@@ -460,6 +449,36 @@ void StructuredMetricsProvider::RecordEvent(const Event& event) {
         event.recorded_time_since_boot().InMilliseconds());
     event_sequence_metadata->set_event_unique_id(
         base::HashMetricName(event.event_sequence_metadata().event_unique_id));
+    event_proto->set_device_project_id(
+        device_key_data_.get()->Id(project_validator->project_hash(),
+                                   project_validator->key_rotation_period()));
+    event_proto->set_user_project_id(
+        profile_key_data_.get()->Id(project_validator->project_hash(),
+                                    project_validator->key_rotation_period()));
+  }
+
+  // Choose which KeyData to use for this event.
+  KeyData* key_data;
+  switch (project_validator->id_scope()) {
+    case IdScope::kPerProfile:
+      key_data = profile_key_data_.get();
+      break;
+    case IdScope::kPerDevice:
+      // For event sequence, use the profile key for now to hash strings.
+      //
+      // TODO(crbug/1399632): Event sequence is considered a structured metrics
+      // project. Once the client supports device/profile split of events like
+      // structured metrics, remove this.
+      if (project_validator->event_type() ==
+          StructuredEventProto_EventType_SEQUENCE) {
+        key_data = profile_key_data_.get();
+      } else {
+        key_data = device_key_data_.get();
+      }
+      break;
+    default:
+      // In case id_scope is uninitialized.
+      NOTREACHED();
   }
 
   // Set the ID for this event, if any.

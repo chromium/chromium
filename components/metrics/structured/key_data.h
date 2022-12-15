@@ -16,8 +16,7 @@
 #include "components/metrics/structured/storage.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
 class KeyDataTest;
 
@@ -26,7 +25,7 @@ class KeyDataTest;
 //
 // The class maintains one key and its rotation data for every project defined
 // in /tools/metrics/structured.xml. This can be used to generate:
-//  - a user ID for the project with KeyData::Id.
+//  - an ID for the project with KeyData::Id.
 //  - a hash of a given value for an event with KeyData::HmacMetric.
 //
 // KeyData performs key rotation. Every project is associated with a rotation
@@ -136,7 +135,6 @@ class KeyData {
   base::WeakPtrFactory<KeyData> weak_factory_{this};
 };
 
-}  // namespace structured
-}  // namespace metrics
+}  // namespace metrics::structured
 
 #endif  // COMPONENTS_METRICS_STRUCTURED_KEY_DATA_H_

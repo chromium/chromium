@@ -40,7 +40,7 @@ constexpr uint64_t kProjectFourHash = UINT64_C(6801665881746546626);
 constexpr uint64_t kProjectFiveHash = UINT64_C(3960582687892677139);
 // The name hash of "TestProjectSix"
 constexpr uint64_t kProjectSixHash = UINT64_C(6972396123792667134);
-// The name hash for "CrOSEvents"
+// The name hash of "CrOSEvents"
 constexpr uint64_t kCrOSEventsProjectHash = UINT64_C(12657197978410187837);
 
 // The name hash of "chrome::TestProjectOne::TestEventOne".
@@ -1079,6 +1079,9 @@ TEST_F(StructuredMetricsProviderHwidTest,
 TEST_F(StructuredMetricsProviderTest, EventSequenceLogging) {
   Init();
 
+  scoped_feature_list_.InitAndEnableFeature(
+      metrics::structured::kEventSequenceLogging);
+
   const int test_time = 50;
   const double test_metric = 1.0;
 
@@ -1093,6 +1096,10 @@ TEST_F(StructuredMetricsProviderTest, EventSequenceLogging) {
 
   const auto& event = data.events(0);
   EXPECT_EQ(event.project_name_hash(), kCrOSEventsProjectHash);
+
+  // Sequence events should have both a device and user project id.
+  EXPECT_TRUE(event.has_device_project_id());
+  EXPECT_TRUE(event.has_user_project_id());
 
   // Verify that event sequence metadata has been serialized correctly.
   const auto& event_metadata = event.event_sequence_metadata();

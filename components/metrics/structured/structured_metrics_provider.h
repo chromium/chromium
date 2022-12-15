@@ -14,6 +14,7 @@
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/key_data.h"
+#include "components/metrics/structured/project_validator.h"
 #include "components/metrics/structured/recorder.h"
 
 namespace metrics {

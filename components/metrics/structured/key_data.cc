@@ -16,8 +16,7 @@
 #include "crypto/hmac.h"
 #include "crypto/sha2.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 namespace {
 
 // The expected size of a key, in bytes.
@@ -209,5 +208,4 @@ void KeyData::Purge() {
   proto_->Purge();
 }
 
-}  // namespace structured
-}  // namespace metrics
+}  // namespace metrics::structured
