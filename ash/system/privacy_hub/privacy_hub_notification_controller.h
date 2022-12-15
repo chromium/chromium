@@ -66,6 +66,11 @@ class ASH_EXPORT PrivacyHubNotificationController {
   // Display the microphone is disabled notification.
   void ShowMicrophoneDisabledNotification() const;
 
+  // Constructs the notification message for the combined notification,
+  // containing the app names that use mic and camera sensors. The notification
+  // has different format, depending on the number of the apps.
+  std::u16string GenerateMicrophoneAndCameraDisabledNotificationMessage();
+
   // Display a combined notification when camera software switch and
   // microphone are disabled.
   void ShowMicrophoneAndCameraDisabledNotification();

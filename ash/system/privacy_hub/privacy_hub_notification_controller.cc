@@ -4,7 +4,10 @@
 
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 
+#include <iterator>
+
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -74,6 +77,39 @@ void PrivacyHubNotificationController::ShowLocationDisabledNotification()
   // will get them in future CLs.
 }
 
+std::u16string PrivacyHubNotificationController::
+    GenerateMicrophoneAndCameraDisabledNotificationMessage() {
+  SensorDisabledNotificationDelegate* delegate =
+      SensorDisabledNotificationDelegate::Get();
+  DCHECK(delegate);
+
+  auto camera_apps = delegate->GetAppsAccessingSensor(
+      SensorDisabledNotificationDelegate::Sensor::kCamera);
+  auto mic_apps = delegate->GetAppsAccessingSensor(
+      SensorDisabledNotificationDelegate::Sensor::kMicrophone);
+
+  // Take mathematical union of the apps. Two different apps can have the same
+  // short name, we'll display it only once.
+  std::set<std::u16string> all_apps;
+  all_apps.insert(camera_apps.begin(), camera_apps.end());
+  all_apps.insert(mic_apps.begin(), mic_apps.end());
+
+  if (all_apps.size() == 1) {
+    return l10n_util::GetStringFUTF16(
+        IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+        *all_apps.begin());
+  }
+  if (all_apps.size() == 2) {
+    return l10n_util::GetStringFUTF16(
+        IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
+        *all_apps.begin(), *std::next(all_apps.begin()));
+  }
+
+  // Return generic text by default.
+  return l10n_util::GetStringUTF16(
+      IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE);
+}
+
 void PrivacyHubNotificationController::
     ShowMicrophoneAndCameraDisabledNotification() {
   message_center::RichNotificationData notification_data;
@@ -86,8 +122,7 @@ void PrivacyHubNotificationController::
           message_center::NOTIFICATION_TYPE_SIMPLE, kCombinedNotificationId,
           l10n_util::GetStringUTF16(
               IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_TITLE),
-          l10n_util::GetStringUTF16(
-              IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE),
+          GenerateMicrophoneAndCameraDisabledNotificationMessage(),
           /*display_source=*/std::u16string(),
           /*origin_url=*/GURL(),
           message_center::NotifierId(
