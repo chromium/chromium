@@ -33,7 +33,7 @@ struct Category {
   friend bool operator==(const Category& lhs, const Category& rhs) {
     constexpr const double kScoreTolerance = 1e-6;
     return lhs.class_name == rhs.class_name &&
-           abs((double)(lhs.score - rhs.score)) <= kScoreTolerance;
+           std::abs((double)(lhs.score - rhs.score)) <= kScoreTolerance;
   }
 
   friend bool operator!=(const Category& lhs, const Category& rhs) {
