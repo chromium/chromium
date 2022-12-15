@@ -633,6 +633,12 @@ class PixelTestPages():
                       base_name + '_OffscreenCanvasTransferToImageBitmap',
                       test_rect=[0, 0, 300, 300],
                       browser_args=browser_args),
+        PixelTestPage(
+            'pixel_offscreenCanvas_transferToImageBitmap_main.html',
+            base_name +
+            '_OffscreenCanvasTransferToImageBitmapSoftwareCompositing',
+            test_rect=[0, 0, 300, 300],
+            browser_args=browser_args + unaccelerated_args),
         PixelTestPage('pixel_offscreenCanvas_transferToImageBitmap_worker.html',
                       base_name + '_OffscreenCanvasTransferToImageBitmapWorker',
                       test_rect=[0, 0, 300, 300],

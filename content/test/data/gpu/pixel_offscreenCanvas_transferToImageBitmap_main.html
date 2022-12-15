@@ -8,7 +8,7 @@ that the baseline images are regenerated on the next run.
 
 <html>
 <head>
-<title>OffscreenCanvas transferToImageBitmap on main thread: green and blue squares on white background.</title>
+<title>OffscreenCanvas transferToImageBitmap on main thread: RGB squares and on large blue square on white background.</title>
 <style type="text/css">
 .nomargin {
   margin: 0px auto;
@@ -29,8 +29,18 @@ function draw()
   var height = 100;
   var aCanvas = new OffscreenCanvas(width, height);
   var gl = aCanvas.getContext('webgl');
-  gl.clearColor(0.0, 1.0, 0.0, 1.0);
+  gl.enable(gl.SCISSOR_TEST);
+  gl.scissor(0, 50, 50, 50);
+  gl.clearColor(1, 0, 0, 1);
   gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.scissor(50, 50, 100, 50);
+  gl.clearColor(0, 1, 0, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.scissor(0, 0, 50, 50);
+  gl.clearColor(0, 0, 1, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.disable(gl.SCISSOR_TEST);
+
   var image1 = aCanvas.transferToImageBitmap();
   gl.clearColor(0.0, 0.0, 1.0, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT);

@@ -151,6 +151,18 @@ bool ImageLayerBridge::PrepareTransferableResource(
 
   const bool gpu_compositing = SharedGpuContext::IsGpuCompositingEnabled();
 
+  if (!gpu_compositing) {
+    // Readback if needed and retain the readback in image_ to prevent future
+    // readbacks.
+    // Note: Switching to unaccelerated may change the value of
+    // image_->IsOriginTopLeft(), so it is important to make the switch before
+    // calling IsOriginTopLeft().
+    image_ = image_->MakeUnaccelerated();
+    if (!image_) {
+      return false;
+    }
+  }
+
   const ImageOrientation origin = image_->IsOriginTopLeft()
                                       ? ImageOrientationEnum::kOriginTopLeft
                                       : ImageOrientationEnum::kOriginBottomLeft;
@@ -204,12 +216,6 @@ bool ImageLayerBridge::PrepareTransferableResource(
                               std::move(image_for_compositor));
     *out_release_callback = std::move(func);
   } else {
-    // Readback if needed and retain the readback in image_ to prevent future
-    // readbacks
-    image_ = image_->MakeUnaccelerated();
-    if (!image_)
-      return false;
-
     sk_sp<SkImage> sk_image =
         image_->PaintImageForCurrentFrame().GetSwSkImage();
     if (!sk_image)

@@ -83,6 +83,7 @@
 [ android ] Pixel_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
 [ android ] Pixel_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
 [ android ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
+[ android ] Pixel_OffscreenCanvasTransferToImageBitmapSoftwareCompositing [ Skip ]
 [ chromeos ] Pixel_OffscreenCanvasUnaccelerated2D [ Skip ]
 [ chromeos ] Pixel_OffscreenCanvasUnaccelerated2DWorker [ Skip ]
 [ chromeos ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Skip ]
@@ -95,6 +96,7 @@
 [ chromeos ] Pixel_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
 [ chromeos ] Pixel_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
 [ chromeos ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
+[ chromeos ] Pixel_OffscreenCanvasTransferToImageBitmapSoftwareCompositing [ Skip ]
 [ fuchsia ] Pixel_OffscreenCanvasUnaccelerated2D [ Skip ]
 [ fuchsia ] Pixel_OffscreenCanvasUnaccelerated2DWorker [ Skip ]
 [ fuchsia ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Skip ]
@@ -107,6 +109,7 @@
 [ fuchsia ] Pixel_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
 [ fuchsia ] Pixel_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
 [ fuchsia ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
+[ fuchsia ] Pixel_OffscreenCanvasTransferToImageBitmapSoftwareCompositing [ Skip ]
 
 # Skip tab switching tests on Android webview and Fuchsia since they don't have tabs
 [ android android-webview-instrumentation ] Pixel_Canvas2DTabSwitch [ Skip ]
