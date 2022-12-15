@@ -84,12 +84,15 @@ class GPUMappedDOMArrayBuffer : public DOMArrayBuffer {
   // result will be a copy of the contents, not a reference to
   // the same backing store. This is required by the WebGPU specification so
   // that the mapped backing store may not be shared cross-thread.
-  bool Transfer(v8::Isolate* isolate, ArrayBufferContents& result) override {
+  bool Transfer(v8::Isolate* isolate,
+                v8::Local<v8::Value> detach_key,
+                ArrayBufferContents& result,
+                ExceptionState& exception_state) override {
     // Transfer into |contents| which will detach |this| and all views of
     // |this|.
     ArrayBufferContents contents;
-    bool did_detach = DOMArrayBuffer::Transfer(isolate, contents);
-    if (!did_detach) {
+    if (!DOMArrayBuffer::Transfer(isolate, detach_key, contents,
+                                  exception_state)) {
       return false;
     }
 
@@ -101,11 +104,19 @@ class GPUMappedDOMArrayBuffer : public DOMArrayBuffer {
     return true;
   }
 
-  bool DetachContents(v8::Isolate* isolate) {
+  void DetachContents(v8::Isolate* isolate) {
+    if (IsDetached()) {
+      return;
+    }
+    NonThrowableExceptionState exception_state;
     // Detach the array buffer by transferring the contents out and dropping
     // them.
     ArrayBufferContents contents;
-    return DOMArrayBuffer::Transfer(isolate, contents);
+    bool result = DOMArrayBuffer::Transfer(isolate, v8::Local<v8::Value>(),
+                                           contents, exception_state);
+    // TODO(crbug.com/1326210): Temporary CHECK to prevent aliased array
+    // buffers.
+    CHECK(result && IsDetached());
   }
 
   void Trace(Visitor* visitor) const override {
@@ -424,8 +435,6 @@ void GPUBuffer::DetachMappedArrayBuffers(v8::Isolate* isolate) {
     DCHECK(array_buffer->IsDetachable(isolate));
 
     array_buffer->DetachContents(isolate);
-    // TODO(crbug.com/1326210): Temporary CHECK to prevent aliased array buffers.
-    CHECK(array_buffer->IsDetached());
   }
   mapped_array_buffers_.clear();
 }

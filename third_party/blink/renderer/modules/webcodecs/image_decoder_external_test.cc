@@ -147,7 +147,9 @@ TEST_F(ImageDecoderTest, DecodeNeuteredAtConstruction) {
   init->setData(MakeGarbageCollected<V8ImageBufferSource>(buffer));
 
   ArrayBufferContents contents;
-  ASSERT_TRUE(buffer->Transfer(v8_scope.GetIsolate(), contents));
+  ASSERT_TRUE(buffer->Transfer(v8_scope.GetIsolate(), contents,
+                               v8_scope.GetExceptionState()));
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   auto* decoder = ImageDecoderExternal::Create(v8_scope.GetScriptState(), init,
                                                v8_scope.GetExceptionState());
@@ -178,7 +180,9 @@ TEST_F(ImageDecoderTest, DecodeNeuteredAtDecodeTime) {
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   ArrayBufferContents contents;
-  ASSERT_TRUE(buffer->Transfer(v8_scope.GetIsolate(), contents));
+  ASSERT_TRUE(buffer->Transfer(v8_scope.GetIsolate(), contents,
+                               v8_scope.GetExceptionState()));
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   auto promise = decoder->decode(MakeOptions(0, true));
   ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);

@@ -9,6 +9,7 @@
 #include "gin/public/isolate_holder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -32,19 +33,23 @@ class DOMArrayBufferTest : public testing::Test {
 };
 
 TEST_F(DOMArrayBufferTest, TransferredArrayBufferIsDetached) {
+  V8TestingScope v8_scope;
   ArrayBufferContents src(10, 4, ArrayBufferContents::kNotShared,
                           ArrayBufferContents::kZeroInitialize);
   auto* buffer = DOMArrayBuffer::Create(src);
   ArrayBufferContents dst;
-  buffer->Transfer(isolate(), dst);
+  ASSERT_TRUE(buffer->Transfer(isolate(), dst, v8_scope.GetExceptionState()));
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
   ASSERT_EQ(true, buffer->IsDetached());
 }
 
 TEST_F(DOMArrayBufferTest, TransferredEmptyArrayBufferIsDetached) {
+  V8TestingScope v8_scope;
   ArrayBufferContents src;
   auto* buffer = DOMArrayBuffer::Create(src);
   ArrayBufferContents dst;
-  buffer->Transfer(isolate(), dst);
+  ASSERT_TRUE(buffer->Transfer(isolate(), dst, v8_scope.GetExceptionState()));
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
   ASSERT_EQ(true, buffer->IsDetached());
 }
 

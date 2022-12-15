@@ -409,9 +409,8 @@ ScriptPromise NativeIOFile::read(ScriptState* script_state,
   int read_size = NativeIOOperationSize(*buffer);
 
   std::unique_ptr<NativeIODataBuffer> result_buffer_data =
-      NativeIODataBuffer::Create(script_state, buffer);
+      NativeIODataBuffer::Create(script_state, buffer, exception_state);
   if (!result_buffer_data) {
-    exception_state.ThrowTypeError("Could not transfer buffer");
     return ScriptPromise();
   }
   DCHECK(result_buffer_data->IsValid());
@@ -490,9 +489,8 @@ ScriptPromise NativeIOFile::write(ScriptState* script_state,
   io_pending_ = true;
 
   std::unique_ptr<NativeIODataBuffer> result_buffer_data =
-      NativeIODataBuffer::Create(script_state, buffer);
+      NativeIODataBuffer::Create(script_state, buffer, exception_state);
   if (!result_buffer_data) {
-    exception_state.ThrowTypeError("Could not transfer buffer");
     return ScriptPromise();
   }
   DCHECK(result_buffer_data->IsValid());

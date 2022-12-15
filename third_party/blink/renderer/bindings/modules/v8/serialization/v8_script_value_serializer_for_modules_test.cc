@@ -1724,5 +1724,62 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCropTarget) {
 }
 #endif
 
+TEST(V8ScriptValueSerializerForModulesTest,
+     ArrayBufferDetachKeyPreventsTransfer) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  v8::Isolate* isolate = scope.GetIsolate();
+
+  DOMArrayBuffer* ab = DOMArrayBuffer::Create(10, sizeof(float));
+  v8::Local<v8::ArrayBuffer> v8_ab =
+      ToV8Traits<DOMArrayBuffer>::ToV8(script_state, ab)
+          .ToLocalChecked()
+          .As<v8::ArrayBuffer>();
+  v8_ab->SetDetachKey(V8AtomicString(isolate, "my key"));
+
+  // Attempt to transfer the ArrayBuffer. It should fail with a TypeError
+  // because the ArrayBufferDetachKey used to transfer is not "my key".
+  Transferables transferables;
+  transferables.array_buffers.push_back(ab);
+  V8ScriptValueSerializer::Options serialize_options;
+  serialize_options.transferables = &transferables;
+  ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
+                                 "Window", "postMessage");
+  EXPECT_FALSE(
+      V8ScriptValueSerializerForModules(script_state, serialize_options)
+          .Serialize(v8_ab, exception_state));
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_THAT(ToCoreString(exception_state.GetException()
+                               ->ToString(scope.GetContext())
+                               .ToLocalChecked())
+                  .Ascii(),
+              testing::StartsWith("TypeError"));
+  EXPECT_FALSE(v8_ab->WasDetached());
+}
+
+TEST(V8ScriptValueSerializerForModulesTest,
+     ArrayBufferDetachKeyDoesNotPreventSerialize) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  v8::Isolate* isolate = scope.GetIsolate();
+
+  DOMArrayBuffer* ab = DOMArrayBuffer::Create(10, sizeof(float));
+  v8::Local<v8::ArrayBuffer> v8_ab =
+      ToV8Traits<DOMArrayBuffer>::ToV8(script_state, ab)
+          .ToLocalChecked()
+          .As<v8::ArrayBuffer>();
+  v8_ab->SetDetachKey(V8AtomicString(isolate, "my key"));
+
+  // Attempt to serialize the ArrayBuffer. It should not fail with a TypeError
+  // even though it has an ArrayBufferDetachKey because it will not be detached.
+  V8ScriptValueSerializer::Options serialize_options;
+  ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
+                                 "Window", "postMessage");
+  EXPECT_TRUE(V8ScriptValueSerializerForModules(script_state, serialize_options)
+                  .Serialize(v8_ab, exception_state));
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_FALSE(v8_ab->WasDetached());
+}
+
 }  // namespace
 }  // namespace blink

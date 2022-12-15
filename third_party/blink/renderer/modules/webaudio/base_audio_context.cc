@@ -327,8 +327,12 @@ ScriptPromise BaseAudioContext::decodeAudioData(
   ArrayBufferContents buffer_contents;
   // Detach the audio array buffer from the main thread and start
   // async decoding of the data.
-  if (audio_data->IsDetachable(isolate) &&
-      audio_data->Transfer(isolate, buffer_contents)) {
+  if (!audio_data->IsDetachable(isolate) || audio_data->IsDetached()) {
+    // If audioData is already detached (neutered) we need to reject the
+    // promise with an error.
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
+                                      "Cannot decode detached ArrayBuffer");
+  } else if (audio_data->Transfer(isolate, buffer_contents, exception_state)) {
     DOMArrayBuffer* audio = DOMArrayBuffer::Create(buffer_contents);
 
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -340,10 +344,8 @@ ScriptPromise BaseAudioContext::decodeAudioData(
     return promise;
   }
 
-  // If audioData is already detached (neutered) we need to reject the
-  // promise with an error.
-  exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                    "Cannot decode detached ArrayBuffer");
+  // Forward the exception to the callback.
+  DCHECK(exception_state.HadException());
   v8::Local<v8::Value> error = exception_state.GetException();
   if (error_callback) {
     error_callback->InvokeAndReportException(

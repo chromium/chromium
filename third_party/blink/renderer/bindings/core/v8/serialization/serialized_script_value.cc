@@ -620,11 +620,13 @@ SerializedScriptValue::TransferArrayBufferContents(
             "ArrayBuffer at index " + String::Number(index) +
             " is not detachable and could not be transferred.");
         return ArrayBufferContentsArray();
-      } else if (!array_buffer->Transfer(isolate, contents.at(index))) {
+      } else if (array_buffer->IsDetached()) {
         exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                           "ArrayBuffer at index " +
                                               String::Number(index) +
                                               " could not be transferred.");
+      } else if (!array_buffer->Transfer(isolate, contents.at(index),
+                                         exception_state)) {
         return ArrayBufferContentsArray();
       }
     }

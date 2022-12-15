@@ -302,7 +302,7 @@ void ReadableByteStreamController::Enqueue(
   // 7. Let transferredBuffer be ? TransferArrayBuffer(buffer).
   DOMArrayBuffer* const transferred_buffer =
       TransferArrayBuffer(script_state, buffer, exception_state);
-  if (exception_state.HadException()) {
+  if (!transferred_buffer) {
     return;
   }
 
@@ -1579,13 +1579,16 @@ DOMArrayBuffer* ReadableByteStreamController::TransferArrayBuffer(
     DOMArrayBuffer* buffer,
     ExceptionState& exception_state) {
   DCHECK(!buffer->IsDetached());
-  ArrayBufferContents contents;
-  if (buffer->IsDetachable(script_state->GetIsolate()) &&
-      buffer->Transfer(script_state->GetIsolate(), contents)) {
-    return DOMArrayBuffer::Create(std::move(contents));
+  if (!buffer->IsDetachable(script_state->GetIsolate())) {
+    exception_state.ThrowTypeError("Could not transfer ArrayBuffer");
+    return nullptr;
   }
-  exception_state.ThrowTypeError("not able to transfer array buffer");
-  return nullptr;
+  ArrayBufferContents contents;
+  if (!buffer->Transfer(script_state->GetIsolate(), contents,
+                        exception_state)) {
+    return nullptr;
+  }
+  return DOMArrayBuffer::Create(std::move(contents));
 }
 
 void ReadableByteStreamController::Trace(Visitor* visitor) const {

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "v8/include/v8-isolate.h"
 
@@ -23,15 +24,19 @@ int NativeIOOperationSize(const DOMArrayBufferView& buffer) {
 
 DOMArrayBufferView* TransferToNewArrayBufferView(
     v8::Isolate* isolate,
-    NotShared<DOMArrayBufferView> source) {
+    NotShared<DOMArrayBufferView> source,
+    ExceptionState& exception_state) {
   size_t offset = source->byteOffset();
   size_t length = source->byteLength() / source->TypeSize();
 
   ArrayBufferContents target_contents;
   // Avoid transferring a non-detachable ArrayBuffer, to prevent copying and
   // ensure source detachment.
-  if (!source->buffer()->IsDetachable(isolate) ||
-      !source->buffer()->Transfer(isolate, target_contents)) {
+  if (!source->buffer()->IsDetachable(isolate)) {
+    exception_state.ThrowTypeError("Could not transfer ArrayBuffer");
+    return nullptr;
+  }
+  if (!source->buffer()->Transfer(isolate, target_contents, exception_state)) {
     return nullptr;
   }
   DOMArrayBuffer* target_buffer =
@@ -82,7 +87,8 @@ DOMArrayBufferView* TransferToNewArrayBufferView(
 // static
 std::unique_ptr<NativeIODataBuffer> NativeIODataBuffer::Create(
     ScriptState* script_state,
-    NotShared<DOMArrayBufferView> source) {
+    NotShared<DOMArrayBufferView> source,
+    ExceptionState& exception_state) {
   DCHECK(script_state);
   DCHECK(source);
 
@@ -95,11 +101,12 @@ std::unique_ptr<NativeIODataBuffer> NativeIODataBuffer::Create(
   // Transfer() copies non-detachable input buffers.
   DOMArrayBuffer* buffer = source->buffer();
   v8::Isolate* isolate = script_state->GetIsolate();
-  if (!buffer->IsDetachable(isolate))
+  if (!buffer->IsDetachable(isolate)) {
+    exception_state.ThrowTypeError("Could not transfer ArrayBuffer.");
     return nullptr;
-
+  }
   ArrayBufferContents contents;
-  if (!buffer->Transfer(isolate, contents))
+  if (!buffer->Transfer(isolate, contents, exception_state))
     return nullptr;
   DCHECK(source->IsDetached());
 
