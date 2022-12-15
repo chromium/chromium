@@ -182,6 +182,14 @@ struct Promo {
   array<PromoPart> middle_slot_parts;
 };
 
+// Used to determine available modules for the NTP.
+struct ModuleIdName {
+  // A unique identifier associated with a module.
+  string id;
+  // The name associated with a module.
+  string name;
+};
+
 // Action the user performed while using the customize dialog. Used for metrics
 // logging only. Actions correspond to items in NTPLoggingEventType.
 enum CustomizeDialogAction {
@@ -263,6 +271,8 @@ interface PageHandler {
   // `module_ids` is an array of module descriptor ids that identifies the
   // modules that loaded with data.
   OnModulesLoadedWithData(array<string> module_ids);
+  // Returns a list of available module id and name pairs.
+  GetModulesIdNames() => (array<ModuleIdName> data);
   // Sets the order of modules.
   SetModulesOrder(array<string> module_ids);
   // Returns the order of modules or an empty array if the user has not

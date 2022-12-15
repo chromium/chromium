@@ -6,9 +6,9 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/lazy_load.js';
 
 import {CartHandlerRemote} from 'chrome://new-tab-page/chrome_cart.mojom-webui.js';
-import {ChromeCartProxy, CustomizeModulesElement, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
+import {ChromeCartProxy, CustomizeModulesElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {ModuleIdName, PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -20,7 +20,6 @@ import {assertNotStyle, assertStyle, installMock} from './test_support.js';
 suite('NewTabPageCustomizeModulesTest', () => {
   let handler: TestBrowserProxy<PageHandlerRemote>;
   let callbackRouterRemote: PageRemote;
-  let moduleRegistry: TestBrowserProxy<ModuleRegistry>;
   let metrics: MetricsTracker;
   let cartHandler: TestBrowserProxy<CartHandlerRemote>;
 
@@ -28,11 +27,9 @@ suite('NewTabPageCustomizeModulesTest', () => {
       allDisabled: boolean,
       modules: Array<{id: string, name: string, disabled: boolean}>):
       Promise<CustomizeModulesElement> {
-    moduleRegistry.setResultFor(
-        'getDescriptors',
-        modules.map(
-            ({id, name}) =>
-                new ModuleDescriptor(id, name, () => Promise.resolve(null))));
+    handler.setResultFor('getModulesIdNames', Promise.resolve({
+      data: modules.map(({id, name}) => ({id, name} as ModuleIdName)),
+    }));
     const customizeModules = document.createElement('ntp-customize-modules');
     document.body.appendChild(customizeModules);
     assertStyle(customizeModules.$.container, 'display', 'none');
@@ -52,7 +49,6 @@ suite('NewTabPageCustomizeModulesTest', () => {
             NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
     callbackRouterRemote = NewTabPageProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
-    moduleRegistry = installMock(ModuleRegistry);
     metrics = fakeMetricsPrivate();
     loadTimeData.overrideValues({modulesVisibleManagedByPolicy: false});
     cartHandler = installMock(CartHandlerRemote, ChromeCartProxy.setHandler);

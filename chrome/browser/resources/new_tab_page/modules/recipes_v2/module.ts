@@ -7,7 +7,7 @@ import '../module_header.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
+import {I18nMixin} from '../../i18n_setup.js';
 import {Recipe} from '../../recipes.mojom-webui.js';
 import {InfoDialogElement} from '../info_dialog.js';
 import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
@@ -56,5 +56,4 @@ async function createModule(): Promise<HTMLElement> {
 
 export const recipeTasksDescriptor: ModuleDescriptorV2 = new ModuleDescriptorV2(
     /*id=*/ 'recipe_tasks',
-    /*name=*/ loadTimeData.getString('modulesRecipeTasksSentence'),
     /*height*/ ModuleHeight.TALL, createModule);

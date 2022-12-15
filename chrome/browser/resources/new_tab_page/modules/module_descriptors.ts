@@ -17,68 +17,38 @@ import {driveDescriptor as driveV2Descriptor} from './drive_v2/module.js';
 import {dummyV2Descriptor, dummyV2Descriptor02, dummyV2Descriptor03, dummyV2Descriptor04, dummyV2Descriptor05, dummyV2Descriptor06, dummyV2Descriptor07, dummyV2Descriptor08, dummyV2Descriptor09, dummyV2Descriptor10, dummyV2Descriptor11, dummyV2Descriptor12} from './dummy_v2/module.js';
 // </if>
 import {feedDescriptor, feedV2Descriptor} from './feed/module.js';
-import {ModuleDescriptor, ModuleDescriptorV2} from './module_descriptor.js';
+import {ModuleDescriptor} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {photosDescriptor} from './photos/module.js';
 import {recipeTasksDescriptor} from './recipes/module.js';
 import {recipeTasksDescriptor as recipeTasksV2Descriptor} from './recipes_v2/module.js';
 
+const modulesRedesignedEnabled: boolean =
+    loadTimeData.getBoolean('modulesRedesignedEnabled');
 export const descriptors: ModuleDescriptor[] = [];
-
-export const descriptorsV2: ModuleDescriptorV2[] = [];
-
-if (loadTimeData.getBoolean('recipeTasksModuleEnabled')) {
-  if (loadTimeData.getBoolean('modulesRedesignedEnabled')) {
-    descriptorsV2.push(recipeTasksV2Descriptor);
-  } else {
-    descriptors.push(recipeTasksDescriptor);
-  }
-}
-
-if (loadTimeData.getBoolean('chromeCartModuleEnabled')) {
-  if (loadTimeData.getBoolean('modulesRedesignedEnabled')) {
-    descriptorsV2.push(chromeCartV2Descriptor);
-  } else {
-    descriptors.push(chromeCartDescriptor);
-  }
-}
-
-if (loadTimeData.getBoolean('driveModuleEnabled')) {
-  if (loadTimeData.getBoolean('modulesRedesignedEnabled')) {
-    descriptorsV2.push(driveV2Descriptor);
-  } else {
-    descriptors.push(driveDescriptor);
-  }
-}
-
-if (loadTimeData.getBoolean('photosModuleEnabled')) {
-  descriptors.push(photosDescriptor);
-}
-
-if (loadTimeData.getBoolean('feedModuleEnabled')) {
-  if (loadTimeData.getBoolean('modulesRedesignedEnabled')) {
-    descriptorsV2.push(feedV2Descriptor);
-  } else {
-    descriptors.push(feedDescriptor);
-  }
-}
+descriptors.push(
+    modulesRedesignedEnabled ? recipeTasksV2Descriptor : recipeTasksDescriptor);
+descriptors.push(
+    modulesRedesignedEnabled ? chromeCartV2Descriptor : chromeCartDescriptor);
+descriptors.push(
+    modulesRedesignedEnabled ? driveV2Descriptor : driveDescriptor);
+descriptors.push(photosDescriptor);
+descriptors.push(modulesRedesignedEnabled ? feedV2Descriptor : feedDescriptor);
 
 // <if expr="not is_official_build">
-if (loadTimeData.getBoolean('dummyModulesEnabled')) {
-  if (loadTimeData.getBoolean('modulesRedesignedEnabled')) {
-    descriptorsV2.push(dummyV2Descriptor);
-    descriptorsV2.push(dummyV2Descriptor02);
-    descriptorsV2.push(dummyV2Descriptor03);
-    descriptorsV2.push(dummyV2Descriptor04);
-    descriptorsV2.push(dummyV2Descriptor05);
-    descriptorsV2.push(dummyV2Descriptor06);
-    descriptorsV2.push(dummyV2Descriptor07);
-    descriptorsV2.push(dummyV2Descriptor08);
-    descriptorsV2.push(dummyV2Descriptor09);
-    descriptorsV2.push(dummyV2Descriptor10);
-    descriptorsV2.push(dummyV2Descriptor11);
-    descriptorsV2.push(dummyV2Descriptor12);
-  }
+if (modulesRedesignedEnabled) {
+  descriptors.push(dummyV2Descriptor);
+  descriptors.push(dummyV2Descriptor02);
+  descriptors.push(dummyV2Descriptor03);
+  descriptors.push(dummyV2Descriptor04);
+  descriptors.push(dummyV2Descriptor05);
+  descriptors.push(dummyV2Descriptor06);
+  descriptors.push(dummyV2Descriptor07);
+  descriptors.push(dummyV2Descriptor08);
+  descriptors.push(dummyV2Descriptor09);
+  descriptors.push(dummyV2Descriptor10);
+  descriptors.push(dummyV2Descriptor11);
+  descriptors.push(dummyV2Descriptor12);
 }
 // </if>
 

@@ -20,7 +20,6 @@ import {ModuleRegistry} from './module_registry.js';
 import {ModuleWrapperElement} from './module_wrapper.js';
 import {getTemplate} from './modules.html.js';
 
-
 export type DismissModuleEvent =
     CustomEvent<{message: string, restoreCallback: () => void}>;
 export type DisableModuleEvent = DismissModuleEvent;

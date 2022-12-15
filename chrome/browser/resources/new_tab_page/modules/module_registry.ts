@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from '../i18n_setup.js';
+import {ModuleIdName} from '../new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 
 import {Module, ModuleDescriptor} from './module_descriptor.js';
-import {descriptors, descriptorsV2} from './module_descriptors.js';
+import {descriptors} from './module_descriptors.js';
 
 /**
  * @fileoverview The module registry holds the descriptors of NTP modules and
@@ -17,11 +17,7 @@ let instance: ModuleRegistry|null = null;
 
 export class ModuleRegistry {
   static getInstance(): ModuleRegistry {
-    return instance ||
-        (instance = new ModuleRegistry(
-             loadTimeData.getBoolean('modulesRedesignedEnabled') ?
-                 descriptorsV2 :
-                 descriptors));
+    return instance || (instance = new ModuleRegistry(descriptors));
   }
 
   static setInstance(newInstance: ModuleRegistry) {
@@ -57,8 +53,14 @@ export class ModuleRegistry {
           });
       NewTabPageProxy.getInstance().handler.updateDisabledModules();
     });
-    const descriptors =
-        this.descriptors_.filter(d => !disabledIds.includes(d.id));
+
+    const descriptorsMap: Map<string, ModuleDescriptor> =
+        new Map(this.descriptors_.map(d => [d.id, d]));
+    const modulesIdNames: ModuleIdName[] =
+        (await NewTabPageProxy.getInstance().handler.getModulesIdNames()).data;
+    const descriptors: ModuleDescriptor[] =
+        modulesIdNames.filter(d => !disabledIds.includes(d.id))
+            .map(details => descriptorsMap.get(details.id)!);
 
     // Modules may have an updated order, e.g. because of drag&drop or a Finch
     // param. Apply the updated order such that modules without a specified

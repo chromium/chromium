@@ -80,72 +80,60 @@ function createDummyElement(titleId: string): DummyModuleElement {
 
 export const dummyV2Descriptor: ModuleDescriptorV2 = new ModuleDescriptorV2(
     /*id=*/ 'dummy',
-    /*name=*/ loadTimeData.getString('modulesDummyTitle'),
     /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummyTitle')));
 
 export const dummyV2Descriptor02: ModuleDescriptorV2 = new ModuleDescriptorV2(
     /*id=*/ 'dummy2',
-    /*name=*/ loadTimeData.getString('modulesDummy2Title'),
     /*height*/ ModuleHeight.TALL,
     () => Promise.resolve(createDummyElement('modulesDummy2Title')));
 
 export const dummyV2Descriptor03: ModuleDescriptorV2 = new ModuleDescriptorV2(
     /*id=*/ 'dummy3',
-    /*name=*/ loadTimeData.getString('modulesDummy3Title'),
     /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy3Title')));
 
 export const dummyV2Descriptor04: ModuleDescriptorV2 = new ModuleDescriptorV2(
     /*id=*/ 'dummy4',
-    /*name=*/ loadTimeData.getString('modulesDummy4Title'),
     /*height*/ ModuleHeight.TALL,
     () => Promise.resolve(createDummyElement('modulesDummy4Title')));
 
 export const dummyV2Descriptor05: ModuleDescriptorV2 = new ModuleDescriptorV2(
     /*id=*/ 'dummy5',
-    /*name=*/ loadTimeData.getString('modulesDummy5Title'),
     /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy5Title')));
 
 export const dummyV2Descriptor06: ModuleDescriptorV2 = new ModuleDescriptorV2(
     /*id=*/ 'dummy6',
-    /*name=*/ loadTimeData.getString('modulesDummy6Title'),
     /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy6Title')));
 
 export const dummyV2Descriptor07: ModuleDescriptorV2 = new ModuleDescriptorV2(
     /*id=*/ 'dummy7',
-    /*name=*/ loadTimeData.getString('modulesDummy7Title'),
     /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy7Title')));
 
 export const dummyV2Descriptor08: ModuleDescriptorV2 = new ModuleDescriptorV2(
     /*id=*/ 'dummy8',
-    /*name=*/ loadTimeData.getString('modulesDummy8Title'),
     /*height*/ ModuleHeight.TALL,
     () => Promise.resolve(createDummyElement('modulesDummy8Title')));
 
 export const dummyV2Descriptor09: ModuleDescriptorV2 = new ModuleDescriptorV2(
     /*id=*/ 'dummy9',
-    /*name=*/ loadTimeData.getString('modulesDummy9Title'),
     /*height*/ ModuleHeight.TALL,
     () => Promise.resolve(createDummyElement('modulesDummy9Title')));
 
 export const dummyV2Descriptor10: ModuleDescriptorV2 = new ModuleDescriptorV2(
     /*id=*/ 'dummy10',
-    /*name=*/ loadTimeData.getString('modulesDummy10Title'),
     /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy10Title')));
 
 export const dummyV2Descriptor11: ModuleDescriptorV2 = new ModuleDescriptorV2(
     /*id=*/ 'dummy11',
-    /*name=*/ loadTimeData.getString('modulesDummy11Title'),
     /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy11Title')));
 
 export const dummyV2Descriptor12: ModuleDescriptorV2 = new ModuleDescriptorV2(
     /*id=*/ 'dummy12',
-    /*name=*/ loadTimeData.getString('modulesDummy12Title'),
     /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy12Title')));

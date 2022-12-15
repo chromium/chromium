@@ -386,5 +386,4 @@ async function createCartElement(): Promise<HTMLElement> {
 
 export const chromeCartDescriptor: ModuleDescriptorV2 = new ModuleDescriptorV2(
     /*id=*/ 'chrome_cart',
-    /*name=*/ loadTimeData.getString('modulesCartSentence'),
     /*height*/ ModuleHeight.TALL, createCartElement);
