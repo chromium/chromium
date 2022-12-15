@@ -1853,7 +1853,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       kToolsMenuGuide,
       kTabSwitcherGuide,
       kSecondaryToolbarGuide,
-      kDiscoverFeedHeaderMenuGuide,
     ];
     AddNamedGuidesToView(guideNames, self.view);
 

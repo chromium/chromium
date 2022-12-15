@@ -83,6 +83,7 @@
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -413,11 +414,9 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     return;
   }
-  NamedGuide* menuButtonGuide =
-      [NamedGuide guideWithName:kDiscoverFeedHeaderMenuGuide
-                           view:self.feedHeaderViewController.menuButton];
-
-  menuButtonGuide.constrainedView = self.feedHeaderViewController.menuButton;
+  [LayoutGuideCenterForBrowser(self.browser)
+      referenceView:self.feedHeaderViewController.menuButton
+          underName:kDiscoverFeedHeaderMenuGuide];
 }
 
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {

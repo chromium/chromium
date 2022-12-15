@@ -167,10 +167,8 @@ const CGFloat kBubblePresentationDelay = 1;
   NSString* text =
       l10n_util::GetNSStringWithFixup(IDS_IOS_DISCOVER_FEED_HEADER_IPH);
 
-  NamedGuide* guide = [NamedGuide guideWithName:kDiscoverFeedHeaderMenuGuide
-                                           view:self.rootViewController.view];
-  DCHECK(guide);
-  UIView* menuButton = guide.constrainedView;
+  UIView* menuButton = [self.layoutGuideCenter
+      referencedViewUnderName:kDiscoverFeedHeaderMenuGuide];
   // Checks "canPresentBubble" after checking that the NTP with feed is visible.
   // This ensures that the feature tracker doesn't trigger the IPH event if the
   // bubble isn't shown, which would prevent it from ever being shown again.
