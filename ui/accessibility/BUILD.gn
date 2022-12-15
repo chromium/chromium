@@ -179,6 +179,8 @@ component("accessibility_internal") {
     "ax_tree_source_annotator.h",
     "ax_tree_source_checker.h",
     "ax_tree_source_observer.h",
+    "ax_tree_update_util.cc",
+    "ax_tree_update_util.h",
     "null_ax_action_target.cc",
     "null_ax_action_target.h",
   ]
@@ -281,6 +283,7 @@ test("accessibility_unittests") {
     "ax_tree_serializer_unittest.cc",
     "ax_tree_source_checker_unittest.cc",
     "ax_tree_unittest.cc",
+    "ax_tree_update_util_unittest.cc",
     "mojom/ax_action_data_mojom_traits_unittest.cc",
     "mojom/ax_event_intent_mojom_traits_unittest.cc",
     "mojom/ax_event_mojom_traits_unittest.cc",

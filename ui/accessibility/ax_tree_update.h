@@ -86,13 +86,6 @@ struct AX_BASE_EXPORT AXTreeUpdate {
   std::string ToString() const;
 };
 
-// Two tree updates can be merged into one if the second one
-// doesn't clear a subtree, doesn't have new tree data, and
-// doesn't have a new root id - in other words the second tree
-// update consists of only changes to nodes.
-bool AX_BASE_EXPORT TreeUpdatesCanBeMerged(const AXTreeUpdate& u1,
-                                           const AXTreeUpdate& u2);
-
 }  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_AX_TREE_UPDATE_H_

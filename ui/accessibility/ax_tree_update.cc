@@ -63,19 +63,4 @@ std::string AXTreeUpdate::ToString() const {
   return result;
 }
 
-bool TreeUpdatesCanBeMerged(
-    const AXTreeUpdate& u1,
-    const AXTreeUpdate& u2) {
-  if (u2.node_id_to_clear)
-    return false;
-
-  if (u2.has_tree_data && u2.tree_data != u1.tree_data)
-    return false;
-
-  if (u2.root_id != u1.root_id)
-    return false;
-
-  return true;
-}
-
 }  // namespace ui
