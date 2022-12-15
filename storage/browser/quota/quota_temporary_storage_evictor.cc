@@ -27,7 +27,7 @@ void UmaHistogramMbytes(const std::string& name, int sample) {
   base::UmaHistogramCustomCounts(name, sample / kMBytes, 1,
                                  10 * 1024 * 1024 /* 10 TB */, 100);
 }
-}
+}  // namespace
 
 namespace storage {
 
@@ -35,8 +35,7 @@ QuotaTemporaryStorageEvictor::QuotaTemporaryStorageEvictor(
     QuotaEvictionHandler* quota_eviction_handler,
     int64_t interval_ms)
     : quota_eviction_handler_(quota_eviction_handler),
-      interval_ms_(interval_ms),
-      timer_disabled_for_testing_(false) {
+      interval_ms_(interval_ms) {
   DCHECK(quota_eviction_handler);
 }
 
@@ -52,8 +51,7 @@ void QuotaTemporaryStorageEvictor::GetStatistics(
   (*statistics)["errors-on-getting-usage-and-quota"] =
       statistics_.num_errors_on_getting_usage_and_quota;
   (*statistics)["evicted-buckets"] = statistics_.num_evicted_buckets;
-  (*statistics)["eviction-rounds"] =
-      statistics_.num_eviction_rounds;
+  (*statistics)["eviction-rounds"] = statistics_.num_eviction_rounds;
   (*statistics)["skipped-eviction-rounds"] =
       statistics_.num_skipped_eviction_rounds;
 }
@@ -115,12 +113,28 @@ void QuotaTemporaryStorageEvictor::OnEvictionRoundFinished() {
   } else {
     ++statistics_.num_skipped_eviction_rounds;
   }
+
+  if (!on_round_finished_for_testing_.is_null()) {
+    on_round_finished_for_testing_.Run();
+  }
+
   // Reset stats for next round.
   round_statistics_ = EvictionRoundStatistics();
 }
 
 void QuotaTemporaryStorageEvictor::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Don't start while we're in a round.
+  if (round_statistics_.in_round) {
+    return;
+  }
+
+  // If we already have a round scheduled, just run it now.
+  if (eviction_timer_.IsRunning()) {
+    eviction_timer_.FireNow();
+    return;
+  }
 
   base::AutoReset<bool> auto_reset(&timer_disabled_for_testing_, false);
   StartEvictionTimerWithDelay(0);
@@ -183,8 +197,7 @@ void QuotaTemporaryStorageEvictor::OnGotEvictionRoundInfo(
       current_usage - static_cast<int64_t>(settings.pool_size *
                                            kUsageRatioToStartEviction));
   int64_t diskspace_shortage =
-      std::max(INT64_C(0),
-               settings.should_remain_available - available_space);
+      std::max(INT64_C(0), settings.should_remain_available - available_space);
   DCHECK(current_usage_is_complete || diskspace_shortage == 0);
 
   // If we're using so little that freeing all of it wouldn't help,

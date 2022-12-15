@@ -209,6 +209,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   // Flushes previously scheduled commits.
   void CommitNow();
 
+  // The given callback will be invoked whenever the database encounters a full
+  // disk error.
+  void SetOnFullDiskErrorCallback(const base::RepeatingClosure& callback);
+
   // Testing support for database corruption handling.
   //
   // Runs `corrupter` on the same sequence used to do database I/O,
@@ -293,6 +297,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   static const size_t kTableCount;
   static const IndexSchema kIndexes[];
   static const size_t kIndexCount;
+
+  base::RepeatingClosure full_disk_error_callback_;
 };
 
 }  // namespace storage

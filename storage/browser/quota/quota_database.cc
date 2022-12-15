@@ -860,12 +860,19 @@ QuotaError QuotaDatabase::EnsureOpened() {
 
   db_->set_histogram_tag("Quota");
 
-  // UMA logging and don't crash on database errors in DCHECK builds.
-  db_->set_error_callback(
-      base::BindRepeating([](int sqlite_error_code, sql::Statement* statement) {
+  db_->set_error_callback(base::BindRepeating(
+      [](base::RepeatingClosure full_disk_error_callback, int sqlite_error_code,
+         sql::Statement* statement) {
         sql::UmaHistogramSqliteResult("Quota.QuotaDatabaseError",
                                       sqlite_error_code);
-      }));
+
+        if (!full_disk_error_callback.is_null() &&
+            static_cast<sql::SqliteErrorCode>(sqlite_error_code) ==
+                sql::SqliteErrorCode::kFullDisk) {
+          full_disk_error_callback.Run();
+        }
+      },
+      full_disk_error_callback_));
 
   // Migrate an existing database from the old path.
   if (!db_file_path_.empty() && !MoveLegacyDatabase()) {
@@ -1132,6 +1139,11 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
   }
 
   return result;
+}
+
+void QuotaDatabase::SetOnFullDiskErrorCallback(
+    const base::RepeatingClosure& callback) {
+  full_disk_error_callback_ = callback;
 }
 
 }  // namespace storage

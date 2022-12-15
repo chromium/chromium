@@ -1727,6 +1727,12 @@ void QuotaManagerImpl::EnsureDatabaseOpened() {
   database_ = std::make_unique<QuotaDatabase>(is_incognito_ ? base::FilePath()
                                                             : profile_path_);
 
+  // Start the storage eviction routine on a full disk error.
+  database_->SetOnFullDiskErrorCallback(
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         base::BindRepeating(&QuotaManagerImpl::StartEviction,
+                                             weak_factory_.GetWeakPtr())));
+
   temporary_usage_tracker_ = std::make_unique<UsageTracker>(
       this, client_types_[StorageType::kTemporary], StorageType::kTemporary,
       special_storage_policy_.get());
@@ -1993,12 +1999,13 @@ void QuotaManagerImpl::AddBucketTableEntry(
 
 void QuotaManagerImpl::StartEviction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!temporary_storage_evictor_.get());
 
   if (eviction_disabled_)
     return;
-  temporary_storage_evictor_ = std::make_unique<QuotaTemporaryStorageEvictor>(
-      this, kEvictionIntervalInMilliSeconds);
+  if (!temporary_storage_evictor_) {
+    temporary_storage_evictor_ = std::make_unique<QuotaTemporaryStorageEvictor>(
+        this, kEvictionIntervalInMilliSeconds);
+  }
   temporary_storage_evictor_->Start();
 }
 

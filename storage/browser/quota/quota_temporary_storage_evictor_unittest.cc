@@ -29,6 +29,11 @@ class QuotaTemporaryStorageEvictorTest;
 
 namespace {
 
+struct EvictionBucket {
+  BucketLocator locator;
+  int64_t usage;
+};
+
 class MockQuotaEvictionHandler : public QuotaEvictionHandler {
  public:
   void EvictExpiredBuckets(StatusCallback done) override {
@@ -57,9 +62,11 @@ class MockQuotaEvictionHandler : public QuotaEvictionHandler {
     }
     if (!task_for_get_usage_and_quota_.is_null())
       task_for_get_usage_and_quota_.Run();
-    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk, settings_,
-                            available_space_, available_space_ * 2, GetUsage(),
-                            true);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), blink::mojom::QuotaStatusCode::kOk,
+                       settings_, available_space_, available_space_ * 2,
+                       GetUsage(), true));
   }
 
   void GetEvictionBucket(StorageType type,
@@ -117,6 +124,10 @@ class MockQuotaEvictionHandler : public QuotaEvictionHandler {
     EnsureBucketRemoved(bucket);
     bucket_order_.push_back(bucket);
     buckets_[bucket.id] = usage;
+  }
+
+  bool HasBucket(const EvictionBucket& bucket) {
+    return base::Contains(buckets_, bucket.locator.id);
   }
 
  private:
@@ -202,6 +213,62 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
                          blink::mojom::StorageType::kTemporary, is_default);
   }
 
+  EvictionBucket CreateEvictionBucket(const std::string& url,
+                                      int64_t usage,
+                                      bool is_default = true) {
+    return EvictionBucket{CreateBucket(url, is_default), usage};
+  }
+
+  EvictionBucket CreateAndAddBucket(const std::string& url,
+                                    int64_t usage,
+                                    bool is_default = true) {
+    EvictionBucket bucket = CreateEvictionBucket(url, usage, is_default);
+    quota_eviction_handler()->AddBucket(bucket.locator, bucket.usage);
+    return bucket;
+  }
+
+  bool EvictorHasBuckets(const std::vector<EvictionBucket>& buckets) {
+    int64_t total_usage = 0;
+    for (const auto& bucket : buckets) {
+      if (!quota_eviction_handler_->HasBucket(bucket)) {
+        return false;
+      }
+      total_usage += bucket.usage;
+    }
+    return total_usage == quota_eviction_handler_->GetUsage();
+  }
+
+  void RunAnEvictionRound(bool schedule_next_round) {
+    temporary_storage_evictor_->timer_disabled_for_testing_ =
+        !schedule_next_round;
+    base::RunLoop run_loop;
+    quota_eviction_handler_->set_task_for_get_usage_and_quota(
+        base::BindRepeating(
+            [](int* num_get_usage_and_quota_for_eviction) {
+              (*num_get_usage_and_quota_for_eviction)++;
+            },
+            base::Unretained(&num_get_usage_and_quota_for_eviction_)));
+    set_on_round_finished_callback(run_loop.QuitClosure());
+    temporary_storage_evictor()->Start();
+    run_loop.Run();
+  }
+
+  bool RunAnEvictionPass() {
+    base::RunLoop run_loop;
+    quota_eviction_handler_->set_task_for_get_usage_and_quota(
+        base::BindRepeating(
+            [](base::RepeatingClosure quit_closure,
+               int* num_get_usage_and_quota_for_eviction) {
+              (*num_get_usage_and_quota_for_eviction)++;
+              quit_closure.Run();
+            },
+            run_loop.QuitClosure(),
+            base::Unretained(&num_get_usage_and_quota_for_eviction_)));
+    set_on_round_finished_callback(run_loop.QuitClosure());
+    run_loop.Run();
+    return temporary_storage_evictor_->round_statistics_.in_round;
+  }
+
  protected:
   MockQuotaEvictionHandler* quota_eviction_handler() const {
     return static_cast<MockQuotaEvictionHandler*>(
@@ -218,6 +285,10 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
 
   void disable_timer_for_testing() const {
     temporary_storage_evictor_->timer_disabled_for_testing_ = true;
+  }
+
+  void set_on_round_finished_callback(base::RepeatingClosure callback) {
+    temporary_storage_evictor_->on_round_finished_for_testing_ = callback;
   }
 
   int num_get_usage_and_quota_for_eviction() const {
@@ -444,6 +515,89 @@ TEST_F(QuotaTemporaryStorageEvictorTest, DiskSpaceEvictionTest) {
   EXPECT_EQ(2, statistics().num_evicted_buckets);
   EXPECT_EQ(1, statistics().num_eviction_rounds);
   EXPECT_EQ(0, statistics().num_skipped_eviction_rounds);  // FIXME?
+}
+
+TEST_F(QuotaTemporaryStorageEvictorTest, CallingStartAfterEvictionScheduled) {
+  // After running an eviction round and letting it schedule the next one, it
+  // should immediately run the next one if you call Start instead of waiting
+  // out the timer.
+  quota_eviction_handler()->SetPoolSize(4000);
+  quota_eviction_handler()->set_available_space(1000000000);
+
+  EvictionBucket bucket_z = CreateAndAddBucket("http://www.z.com", 20);
+  EvictionBucket bucket_y = CreateAndAddBucket("http://www.y.com", 2900);
+  EvictionBucket bucket_x = CreateAndAddBucket("http://www.x.com", 450);
+  EvictionBucket bucket_w = CreateAndAddBucket("http://www.w.com", 400);
+  EXPECT_TRUE(EvictorHasBuckets({bucket_z, bucket_y, bucket_x, bucket_w}));
+
+  RunAnEvictionRound(/*schedule_next_round=*/true);
+  EXPECT_TRUE(EvictorHasBuckets({bucket_x, bucket_w}));
+
+  EvictionBucket bucket_v = CreateAndAddBucket("http://www.v.com", 2000);
+  EvictionBucket bucket_u = CreateAndAddBucket("http://www.u.com", 400);
+  EXPECT_TRUE(EvictorHasBuckets({bucket_x, bucket_w, bucket_v, bucket_u}));
+
+  RunAnEvictionRound(/*schedule_next_round=*/false);
+  EXPECT_TRUE(EvictorHasBuckets({bucket_w, bucket_v, bucket_u}));
+
+  EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
+  EXPECT_EQ(3, statistics().num_evicted_buckets);
+  EXPECT_EQ(2, statistics().num_eviction_rounds);
+  EXPECT_EQ(0, statistics().num_skipped_eviction_rounds);
+  EXPECT_EQ(2U, quota_eviction_handler()->get_evict_expired_buckets_count());
+}
+
+TEST_F(QuotaTemporaryStorageEvictorTest,
+       CallingStartImmediatelyAfterEvictionScheduled) {
+  // After calling start to schedule an eviction round, calling start multiple
+  // times before the eviction round begins shouldn't cause it to run multiple
+  // times.
+  quota_eviction_handler()->SetPoolSize(4000);
+  quota_eviction_handler()->set_available_space(1000000000);
+
+  EvictionBucket bucket_z = CreateAndAddBucket("http://www.z.com", 20);
+  EvictionBucket bucket_y = CreateAndAddBucket("http://www.y.com", 2900);
+  EvictionBucket bucket_x = CreateAndAddBucket("http://www.x.com", 450);
+  EvictionBucket bucket_w = CreateAndAddBucket("http://www.w.com", 400);
+  EXPECT_TRUE(EvictorHasBuckets({bucket_z, bucket_y, bucket_x, bucket_w}));
+
+  temporary_storage_evictor()->Start();
+  temporary_storage_evictor()->Start();
+  RunAnEvictionRound(/*schedule_next_round=*/false);
+  EXPECT_TRUE(EvictorHasBuckets({bucket_x, bucket_w}));
+
+  EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
+  EXPECT_EQ(2, statistics().num_evicted_buckets);
+  EXPECT_EQ(1, statistics().num_eviction_rounds);
+  EXPECT_EQ(0, statistics().num_skipped_eviction_rounds);
+  EXPECT_EQ(1U, quota_eviction_handler()->get_evict_expired_buckets_count());
+}
+
+TEST_F(QuotaTemporaryStorageEvictorTest, CallingStartDuringEvictionRoutine) {
+  // If we're in the middle of an eviction round, calling Start should do
+  // nothing.
+  quota_eviction_handler()->SetPoolSize(4000);
+  quota_eviction_handler()->set_available_space(1000000000);
+
+  EvictionBucket bucket_z = CreateAndAddBucket("http://www.z.com", 20);
+  EvictionBucket bucket_y = CreateAndAddBucket("http://www.y.com", 2900);
+  EvictionBucket bucket_x = CreateAndAddBucket("http://www.x.com", 450);
+  EvictionBucket bucket_w = CreateAndAddBucket("http://www.w.com", 400);
+  EXPECT_TRUE(EvictorHasBuckets({bucket_z, bucket_y, bucket_x, bucket_w}));
+
+  disable_timer_for_testing();
+  temporary_storage_evictor()->Start();
+  while (RunAnEvictionPass()) {
+    temporary_storage_evictor_->Start();
+  }
+  EXPECT_TRUE(EvictorHasBuckets({bucket_x, bucket_w}));
+
+  EXPECT_EQ(3, num_get_usage_and_quota_for_eviction());
+  EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
+  EXPECT_EQ(2, statistics().num_evicted_buckets);
+  EXPECT_EQ(1, statistics().num_eviction_rounds);
+  EXPECT_EQ(0, statistics().num_skipped_eviction_rounds);
+  EXPECT_EQ(1U, quota_eviction_handler()->get_evict_expired_buckets_count());
 }
 
 }  // namespace storage
