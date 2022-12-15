@@ -182,16 +182,12 @@
   [super willMoveToWindow:newWindow];
   [NamedGuide guideWithName:kPrimaryToolbarGuide view:self].constrainedView =
       nil;
-  [NamedGuide guideWithName:kPrimaryToolbarLocationViewGuide view:self]
-      .constrainedView = nil;
 }
 
 - (void)didMoveToWindow {
   [super didMoveToWindow];
   [NamedGuide guideWithName:kPrimaryToolbarGuide view:self].constrainedView =
       self;
-  [NamedGuide guideWithName:kPrimaryToolbarLocationViewGuide view:self]
-      .constrainedView = self.locationBarContainer;
 }
 
 #pragma mark - Setup
