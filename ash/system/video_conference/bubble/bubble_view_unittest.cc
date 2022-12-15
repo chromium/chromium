@@ -46,6 +46,7 @@ class BubbleViewTest : public AshTestBase {
     // Instantiate these fake effects, to be registered/unregistered as needed.
     office_bunny_ =
         std::make_unique<fake_video_conference::OfficeBunnyEffect>();
+    shaggy_fur_ = std::make_unique<fake_video_conference::ShaggyFurEffect>();
 
     set_create_global_cras_audio_handler(false);
     AshTestBase::SetUp();
@@ -54,9 +55,19 @@ class BubbleViewTest : public AshTestBase {
   void TearDown() override {
     AshTestBase::TearDown();
     office_bunny_.reset();
+    shaggy_fur_.reset();
     controller_.reset();
     CrasAudioHandler::Shutdown();
     CrasAudioClient::Shutdown();
+  }
+
+  views::View* GetSetValueEffectButton(int index) {
+    // Map `index` to a `BubbleViewID`, for lookup.
+    BubbleViewID id =
+        static_cast<BubbleViewID>(index + BubbleViewID::kSetValueButtonMin);
+    DCHECK_GE(id, BubbleViewID::kSetValueButtonMin);
+    DCHECK_LE(id, BubbleViewID::kSetValueButtonMax);
+    return bubble_view()->GetViewByID(id);
   }
 
   VideoConferenceTray* video_conference_tray() {
@@ -79,6 +90,11 @@ class BubbleViewTest : public AshTestBase {
         video_conference::BubbleViewID::kToggleEffectsView);
   }
 
+  views::View* set_value_effects_view() {
+    return bubble_view()->GetViewByID(
+        video_conference::BubbleViewID::kSetValueEffectsView);
+  }
+
   views::View* return_to_app() {
     return bubble_view()->GetViewByID(
         video_conference::BubbleViewID::kReturnToApp);
@@ -93,10 +109,15 @@ class BubbleViewTest : public AshTestBase {
     return office_bunny_.get();
   }
 
+  ash::fake_video_conference::ShaggyFurEffect* shaggy_fur() {
+    return shaggy_fur_.get();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<FakeVideoConferenceTrayController> controller_;
   std::unique_ptr<ash::fake_video_conference::OfficeBunnyEffect> office_bunny_;
+  std::unique_ptr<ash::fake_video_conference::ShaggyFurEffect> shaggy_fur_;
 };
 
 TEST_F(BubbleViewTest, NoEffects) {
@@ -174,4 +195,80 @@ TEST_F(BubbleViewTest, ToggleButtonClicked) {
   EXPECT_EQ(office_bunny()->num_activations_for_testing(), 1);
 }
 
+TEST_F(BubbleViewTest, RegisterSetValueEffect) {
+  // Open up the bubble, no set-value effects present.
+  LeftClickOn(toggle_bubble_button());
+  EXPECT_FALSE(toggle_effects_view());
+
+  // Close the bubble.
+  LeftClickOn(toggle_bubble_button());
+
+  // Add one set-value effect.
+  controller()->effects_manager().RegisterDelegate(shaggy_fur());
+
+  // Open up the bubble, set-value effects container view is present/visible.
+  LeftClickOn(toggle_bubble_button());
+  EXPECT_TRUE(set_value_effects_view());
+  EXPECT_TRUE(set_value_effects_view()->GetVisible());
+}
+
+TEST_F(BubbleViewTest, UnregisterSetValueEffect) {
+  // Add one set-value effect.
+  controller()->effects_manager().RegisterDelegate(shaggy_fur());
+
+  // Open up the bubble, set-value effects are present/visible.
+  LeftClickOn(toggle_bubble_button());
+  EXPECT_TRUE(set_value_effects_view());
+  EXPECT_TRUE(set_value_effects_view()->GetVisible());
+
+  // Take down the bubble.
+  LeftClickOn(toggle_bubble_button());
+
+  // Remove the set-value effect.
+  controller()->effects_manager().UnregisterDelegate(shaggy_fur());
+
+  // Open up the bubble again, no effects present.
+  LeftClickOn(toggle_bubble_button());
+  EXPECT_FALSE(set_value_effects_view());
+}
+
+TEST_F(BubbleViewTest, SetValueButtonClicked) {
+  // Verify that the delegate hosts a single effect which has at least two
+  // values.
+  EXPECT_EQ(shaggy_fur()->GetNumEffects(), 1);
+  EXPECT_GE(shaggy_fur()->GetEffect(0)->GetNumStates(), 2);
+
+  // Add one set-value effect.
+  controller()->effects_manager().RegisterDelegate(shaggy_fur());
+
+  // Click to open the bubble, effect value 0 button is present/visible.
+  LeftClickOn(toggle_bubble_button());
+  views::View* button = GetSetValueEffectButton(0);
+  EXPECT_TRUE(button);
+  EXPECT_TRUE(button->GetVisible());
+
+  // Effect button for value 0 has not yet been clicked.
+  EXPECT_EQ(shaggy_fur()->GetNumActivationsForTesting(0), 0);
+
+  // Click the effect value 0 button, verify that the value has been "activated"
+  // once.
+  LeftClickOn(button);
+  EXPECT_EQ(shaggy_fur()->GetNumActivationsForTesting(0), 1);
+
+  // Now test another button, confirm that set-value effect button 1 is
+  // present/visible.
+  button = GetSetValueEffectButton(1);
+  EXPECT_TRUE(button);
+  EXPECT_TRUE(button->GetVisible());
+
+  // Effect button for value 1 has not yet been clicked.
+  EXPECT_EQ(shaggy_fur()->GetNumActivationsForTesting(1), 0);
+
+  // Click the effect value 1 button, verify that value 1 has been "activated"
+  // once, and confirm that value 0 has still only been activated once i.e. we
+  // just activated value 1 and not value 0.
+  LeftClickOn(button);
+  EXPECT_EQ(shaggy_fur()->GetNumActivationsForTesting(1), 1);
+  EXPECT_EQ(shaggy_fur()->GetNumActivationsForTesting(0), 1);
+}
 }  // namespace ash::video_conference

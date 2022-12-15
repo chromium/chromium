@@ -1940,6 +1940,8 @@ component("ash") {
     "system/video_conference/bubble/bubble_view_ids.h",
     "system/video_conference/bubble/return_to_app_button.cc",
     "system/video_conference/bubble/return_to_app_button.h",
+    "system/video_conference/bubble/set_value_effects_view.cc",
+    "system/video_conference/bubble/set_value_effects_view.h",
     "system/video_conference/bubble/toggle_effects_view.cc",
     "system/video_conference/bubble/toggle_effects_view.h",
     "system/video_conference/effects/fake_video_conference_effects.cc",

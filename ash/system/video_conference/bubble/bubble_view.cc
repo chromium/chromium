@@ -7,6 +7,7 @@
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/bubble/return_to_app_button.h"
+#include "ash/system/video_conference/bubble/set_value_effects_view.h"
 #include "ash/system/video_conference/bubble/toggle_effects_view.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
@@ -36,6 +37,10 @@ BubbleView::BubbleView(const InitParams& init_params,
 
   if (controller->effects_manager().HasToggleEffects())
     AddChildView(std::make_unique<ToggleEffectsView>(controller));
+
+  if (controller->effects_manager().HasSetValueEffects()) {
+    AddChildView(std::make_unique<SetValueEffectsView>(controller));
+  }
 
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(kBorderInsetDimension, kBorderInsetDimension)));

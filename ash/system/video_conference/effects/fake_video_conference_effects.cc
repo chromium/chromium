@@ -74,7 +74,7 @@ GreenhouseEffect::GreenhouseEffect()
     : SimpleToggleEffect(
           /*label_text=*/u"Greenhouse") {}
 
-// Delegate that hosts a set-value effect.
+// Delegates that host a set-value effect.
 
 ShaggyFurEffect::ShaggyFurEffect() {
   std::unique_ptr<VcHostedEffect> effect =
@@ -116,8 +116,9 @@ ShaggyFurEffect::ShaggyFurEffect() {
   AddEffect(std::move(effect));
 
   // Initialize click counts.
-  for (int i = 0; i < static_cast<int>(FurShagginess::kMaxNumValues); ++i)
+  for (int i = 0; i < static_cast<int>(FurShagginess::kMaxNumValues); ++i) {
     num_activations_for_testing_.push_back(0);
+  }
 }
 
 ShaggyFurEffect::~ShaggyFurEffect() = default;
@@ -133,6 +134,79 @@ void ShaggyFurEffect::OnEffectControlActivated(int effect_id, int value) {
 
 int ShaggyFurEffect::GetNumActivationsForTesting(int value) {
   DCHECK(value >= 0 && value < static_cast<int>(FurShagginess::kMaxNumValues));
+  return num_activations_for_testing_[value];
+}
+
+SuperCutnessEffect::SuperCutnessEffect() {
+  std::unique_ptr<VcHostedEffect> effect =
+      std::make_unique<VcHostedEffect>(VcEffectType::kSetValue);
+  std::unique_ptr<VcEffectState> ugly_dog_state =
+      std::make_unique<VcEffectState>(
+          /*icon=*/nullptr,
+          /*label_text=*/u"Ugly Dog",
+          /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
+          /*button_callback=*/
+          base::BindRepeating(&SuperCutnessEffect::OnEffectControlActivated,
+                              base::Unretained(this),
+                              /*effect_id=*/0,
+                              /*value=*/static_cast<int>(HowCute::kUglyDog)));
+  std::unique_ptr<VcEffectState> teddy_bear_state =
+      std::make_unique<VcEffectState>(
+          /*icon=*/nullptr,
+          /*label_text=*/u"Teddy Bear",
+          /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
+          /*button_callback=*/
+          base::BindRepeating(&SuperCutnessEffect::OnEffectControlActivated,
+                              base::Unretained(this),
+                              /*effect_id=*/0,
+                              /*value=*/static_cast<int>(HowCute::kTeddyBear)));
+  std::unique_ptr<VcEffectState> zara_state = std::make_unique<VcEffectState>(
+      /*icon=*/nullptr,
+      /*label_text=*/u"Zara",
+      /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
+      /*button_callback=*/
+      base::BindRepeating(&SuperCutnessEffect::OnEffectControlActivated,
+                          base::Unretained(this),
+                          /*effect_id=*/0,
+                          /*value=*/static_cast<int>(HowCute::kZara)));
+  std::unique_ptr<VcEffectState> inscrutable_state =
+      std::make_unique<VcEffectState>(
+          /*icon=*/nullptr,
+          /*label_text=*/u"Inscrutable",
+          /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
+          /*button_callback=*/
+          base::BindRepeating(
+              &SuperCutnessEffect::OnEffectControlActivated,
+              base::Unretained(this),
+              /*effect_id=*/0,
+              /*value=*/static_cast<int>(HowCute::kInscrutable)));
+  effect->AddState(std::move(ugly_dog_state));
+  effect->AddState(std::move(teddy_bear_state));
+  effect->AddState(std::move(zara_state));
+  effect->AddState(std::move(inscrutable_state));
+  effect->set_label_text(u"Super Cuteness");
+  effect->set_id(200);
+  AddEffect(std::move(effect));
+
+  // Initialize click counts.
+  for (int i = 0; i < static_cast<int>(HowCute::kMaxNumValues); ++i) {
+    num_activations_for_testing_.push_back(0);
+  }
+}
+
+SuperCutnessEffect::~SuperCutnessEffect() = default;
+
+int SuperCutnessEffect::GetEffectState(int effect_id) {
+  return static_cast<int>(HowCute::kTeddyBear);
+}
+
+void SuperCutnessEffect::OnEffectControlActivated(int effect_id, int value) {
+  DCHECK(value >= 0 && value < static_cast<int>(HowCute::kMaxNumValues));
+  ++num_activations_for_testing_[value];
+}
+
+int SuperCutnessEffect::GetNumActivationsForTesting(int value) {
+  DCHECK(value >= 0 && value < static_cast<int>(HowCute::kMaxNumValues));
   return num_activations_for_testing_[value];
 }
 

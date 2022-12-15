@@ -29,9 +29,16 @@ enum BubbleViewID {
   // `kToggleEffectsContainer`.
   kToggleEffectsButton,
 
-  // Button for setting an individual value of a "set-value" VC effect, a child
-  // of `kSetValueEffectsContainer`.
-  kSetValueButton,
+  // Buttons for setting an individual value of a "set-value" VC effect,
+  // children of `kSetValueEffectsContainer`. Since the number of values for a
+  // given effect can't be known at compile-time, an allowable range of IDs
+  // [`kSetValueButtonMin`..`kSetValueButtonMax`] is allocated, with IDs clamped
+  // at kSetValueButtonMax. If a specific ID doesn't matter, then just use
+  // `kSetValueButton`.
+  kSetValueButtonMin = kToggleEffectsButton + 1,
+  kSetValueButton = kSetValueButtonMin,
+  kSetValueButtonMax = kSetValueButtonMin + 100,
+  kNextAvailableId = kSetValueButtonMax + 1,
 };
 
 }  // namespace ash::video_conference

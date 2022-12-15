@@ -150,6 +150,37 @@ class ASH_EXPORT ShaggyFurEffect : public VcEffectsDelegate {
   std::vector<int> num_activations_for_testing_;
 };
 
+class ASH_EXPORT SuperCutnessEffect : public VcEffectsDelegate {
+ public:
+  enum class HowCute {
+    kUglyDog = 0,
+    kTeddyBear = 1,
+    kZara = 2,
+    kInscrutable = 3,
+    kMaxNumValues = 4,
+  };
+
+  SuperCutnessEffect();
+
+  SuperCutnessEffect(const SuperCutnessEffect&) = delete;
+  SuperCutnessEffect& operator=(const SuperCutnessEffect&) = delete;
+
+  ~SuperCutnessEffect() override;
+
+  // VcEffectsDelegate:
+  int GetEffectState(int effect_id) override;
+  void OnEffectControlActivated(int effect_id, int value) override;
+
+  // Returns the number of times the button/state for `value` has been
+  // activated.
+  int GetNumActivationsForTesting(int value);
+
+ private:
+  // Number of times each value has been clicked, one count for each value in
+  // `HowCute`.
+  std::vector<int> num_activations_for_testing_;
+};
+
 }  // namespace ash::fake_video_conference
 
 #endif  // ASH_SYSTEM_VIDEO_CONFERENCE_EFFECTS_FAKE_VIDEO_CONFERENCE_EFFECTS_H_
