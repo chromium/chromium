@@ -9,6 +9,7 @@
 #include "base/guid.h"
 #include "base/rand_util.h"
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/model_store_metadata_entry.h"
@@ -242,6 +243,54 @@ TEST_F(PredictionModelStoreTest, UpdateMetadataForExistingModel) {
   EXPECT_LE(base::Minutes(99),
             metadata_entry->GetExpiryTime() - base::Time::Now());
   EXPECT_TRUE(metadata_entry->GetKeepBeyondValidDuration());
+}
+
+TEST_F(PredictionModelStoreTest, ModelStorageMetrics) {
+  RunUntilIdle();
+  base::HistogramTester histogram_tester;
+
+  auto model_cache_key = CreateModelCacheKey(kTestLocaleFoo);
+  auto model_detail =
+      CreateTestModelFiles(kTestOptimizationTargetFoo, model_cache_key, {});
+  prediction_model_store_->UpdateModel(
+      kTestOptimizationTargetFoo, model_cache_key, model_detail.model_info,
+      model_detail.base_model_dir, base::DoNothing());
+  RunUntilIdle();
+  model_detail =
+      CreateTestModelFiles(kTestOptimizationTargetBar, model_cache_key, {});
+  prediction_model_store_->UpdateModel(
+      kTestOptimizationTargetBar, model_cache_key, model_detail.model_info,
+      model_detail.base_model_dir, base::DoNothing());
+  RunUntilIdle();
+
+  // Recreate the model store, and that should record model storage metrics.
+  prediction_model_store_ =
+      PredictionModelStore::CreatePredictionModelStoreForTesting(
+          local_state_prefs_.get(), temp_models_dir_.GetPath());
+  RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelStore.ModelCount.PainfulPageLoad", 1,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelStore.TotalDirectorySize."
+      "PainfulPageLoad",
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelStore.ModelCount.ModelValidation", 1,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelStore.TotalDirectorySize."
+      "ModelValidation",
+      1);
+  EXPECT_EQ(2U, histogram_tester
+                    .GetTotalCountsForPrefix(
+                        "OptimizationGuide.PredictionModelStore.ModelCount.")
+                    .size());
+  EXPECT_EQ(
+      2U, histogram_tester
+              .GetTotalCountsForPrefix(
+                  "OptimizationGuide.PredictionModelStore.TotalDirectorySize.")
+              .size());
 }
 
 }  // namespace optimization_guide

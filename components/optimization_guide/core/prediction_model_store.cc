@@ -4,9 +4,11 @@
 
 #include "components/optimization_guide/core/prediction_model_store.h"
 
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/model_store_metadata_entry.h"
@@ -18,6 +20,8 @@
 namespace optimization_guide {
 
 namespace {
+
+constexpr size_t kBytesPerMegabyte = 1024 * 1024;
 
 // Returns the model info parsed from |model_info_path|.
 absl::optional<proto::ModelInfo> ParseModelInfoFromFile(
@@ -55,6 +59,50 @@ std::vector<base::FilePath> GetModelFilePaths(
   return model_file_paths;
 }
 
+// Parses the OptimizationTarget from the string.
+proto::OptimizationTarget ParseOptimizationTargetFromString(
+    const std::string& optimization_target_str) {
+  int optimization_target;
+  if (!base::StringToInt(optimization_target_str, &optimization_target)) {
+    return proto::OPTIMIZATION_TARGET_UNKNOWN;
+  }
+  if (!proto::OptimizationTarget_IsValid(optimization_target)) {
+    return proto::OPTIMIZATION_TARGET_UNKNOWN;
+  }
+  return static_cast<proto::OptimizationTarget>(optimization_target);
+}
+
+void RecordModelStorageMetrics(const base::FilePath& base_store_dir) {
+  base::FileEnumerator enumerator(base_store_dir, false,
+                                  base::FileEnumerator::DIRECTORIES);
+  for (base::FilePath optimization_target_dir = enumerator.Next();
+       !optimization_target_dir.empty();
+       optimization_target_dir = enumerator.Next()) {
+    proto::OptimizationTarget optimization_target =
+        ParseOptimizationTargetFromString(
+            optimization_target_dir.BaseName().AsUTF8Unsafe());
+    if (optimization_target == proto::OPTIMIZATION_TARGET_UNKNOWN) {
+      continue;
+    }
+    size_t total_models = 0;
+    base::FileEnumerator models_enumerator(optimization_target_dir, false,
+                                           base::FileEnumerator::DIRECTORIES);
+    for (base::FilePath model_dir = models_enumerator.Next();
+         !model_dir.empty(); model_dir = models_enumerator.Next()) {
+      total_models++;
+    }
+    base::UmaHistogramCounts100(
+        "OptimizationGuide.PredictionModelStore.ModelCount." +
+            GetStringNameForOptimizationTarget(optimization_target),
+        total_models);
+    base::UmaHistogramMemoryMB(
+        "OptimizationGuide.PredictionModelStore.TotalDirectorySize." +
+            GetStringNameForOptimizationTarget(optimization_target),
+        base::ComputeDirectorySize(optimization_target_dir) /
+            kBytesPerMegabyte);
+  }
+}
+
 }  // namespace
 
 // static
@@ -83,6 +131,9 @@ void PredictionModelStore::Initialize(PrefService* local_state,
 
   local_state_ = local_state;
   base_store_dir_ = base_store_dir;
+
+  background_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&RecordModelStorageMetrics, base_store_dir_));
 }
 
 // static
