@@ -5,9 +5,12 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {Accelerator, Modifier, MojoAccelerator} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {areAcceleratorsEqual, getAcceleratorId, isCustomizationDisabled} from 'chrome://shortcut-customization/js/shortcut_utils.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
+import {Accelerator, Modifier, MojoAccelerator, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {areAcceleratorsEqual, getAccelerator, getAcceleratorId, isCustomizationDisabled, isDefaultAcceleratorInfo, isTextAcceleratorInfo} from 'chrome://shortcut-customization/js/shortcut_utils.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+import {createDefaultAcceleratorInfo, createTextAcceleratorInfo} from './shortcut_customization_test_util.js';
 
 suite('shortcutUtilsTest', function() {
   test('CustomizationDisabled', async () => {
@@ -70,5 +73,35 @@ suite('shortcutUtilsTest', function() {
   test('GetAcceleratorId', async () => {
     assertEquals(`${0}-${80}`, getAcceleratorId(0, 80));
     assertEquals(`${0}-${80}`, getAcceleratorId('0', '80'));
+  });
+
+  test('isTextAcceleratorInfo', async () => {
+    const textAcceleratorParts: TextAcceleratorPart[] =
+        [{text: stringToMojoString16('a'), type: TextAcceleratorPartType.kKey}];
+    const textAccelerator = createTextAcceleratorInfo(textAcceleratorParts);
+    assertTrue(isTextAcceleratorInfo(textAccelerator));
+    assertFalse(isDefaultAcceleratorInfo(textAccelerator));
+  });
+
+  test('isDefaultAcceleratorInfo', async () => {
+    const defaultAccelerator = createDefaultAcceleratorInfo(
+        Modifier.ALT,
+        /*keyCode=*/ 221,
+        /*keyDisplay=*/ ']');
+    assertTrue(isDefaultAcceleratorInfo(defaultAccelerator));
+    assertFalse(isTextAcceleratorInfo(defaultAccelerator));
+  });
+
+  test('GetAccelerator', async () => {
+    const acceleratorInfo = createDefaultAcceleratorInfo(
+        Modifier.ALT,
+        /*keyCode=*/ 221,
+        /*keyDisplay=*/ ']');
+    const expectedAccelerator: Accelerator = {
+      modifiers: Modifier.ALT,
+      keyCode: 221,  // c
+    };
+    const actualAccelerator = getAccelerator(acceleratorInfo);
+    assertDeepEquals(expectedAccelerator, actualAccelerator);
   });
 });

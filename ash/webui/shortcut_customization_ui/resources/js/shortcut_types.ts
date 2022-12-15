@@ -27,6 +27,10 @@ export enum Modifier {
   COMMAND = 1 << 4,
 }
 
+export type TextAcceleratorPart = AcceleratorInfoTypes.TextAcceleratorPart;
+export const TextAcceleratorPartType =
+    AcceleratorInfoTypes.TextAcceleratorPartType;
+
 /**
  * A string of the form `{source}-{action_id}`.
  * This concatenation uniquely identifies one {@link Accelerator}.

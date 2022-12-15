@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AcceleratorState, AcceleratorType, DefaultAcceleratorInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorState, AcceleratorType, DefaultAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from 'chrome://shortcut-customization/js/shortcut_types.js';
 
 
 export function createDefaultAcceleratorInfo(
@@ -19,6 +19,20 @@ export function createDefaultAcceleratorInfo(
       },
     },
     locked: locked,
+    state: AcceleratorState.kEnabled,
+    type: AcceleratorType.kDefault,
+  };
+}
+
+export function createTextAcceleratorInfo(
+    parts: TextAcceleratorPart[], locked = false): TextAcceleratorInfo {
+  return {
+    layoutProperties: {
+      textAccelerator: {
+        textAccelerator: parts,
+      },
+    },
+    locked,
     state: AcceleratorState.kEnabled,
     type: AcceleratorType.kDefault,
   };
