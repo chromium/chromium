@@ -369,7 +369,7 @@ class IntegrationTest : public ::testing::Test {
 TEST_F(IntegrationTest, DoNothing) {}
 
 TEST_F(IntegrationTest, Install) {
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   EXPECT_TRUE(WaitForUpdaterExit());
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
@@ -393,7 +393,7 @@ TEST_F(IntegrationTest, OverinstallWorking) {
 
   // A new version hands off installation to the old version, and doesn't
   // change the active version of the updater.
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   EXPECT_TRUE(WaitForUpdaterExit());
   ExpectVersionNotActive(kUpdaterVersion);
 
@@ -407,7 +407,7 @@ TEST_F(IntegrationTest, OverinstallBroken) {
 
   // Since the old version is not working, the new version should install and
   // become active.
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   EXPECT_TRUE(WaitForUpdaterExit());
   ExpectVersionActive(kUpdaterVersion);
 
@@ -416,7 +416,7 @@ TEST_F(IntegrationTest, OverinstallBroken) {
 #endif  // !BUILDFLAG(IS_LINUX)
 
 TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   ExpectInstalled();
   EXPECT_TRUE(WaitForUpdaterExit());
   SetupFakeUpdaterHigherVersion();
@@ -443,7 +443,7 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
 
 TEST_F(IntegrationTest, QualifyUpdater) {
   ScopedServer test_server(test_commands_);
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   ExpectInstalled();
   EXPECT_TRUE(WaitForUpdaterExit());
   SetupFakeUpdaterLowerVersion();
@@ -470,7 +470,7 @@ TEST_F(IntegrationTest, QualifyUpdater) {
 
 TEST_F(IntegrationTest, SelfUpdate) {
   ScopedServer test_server(test_commands_);
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
 
   base::Version next_version(base::StringPrintf("%s1", kUpdaterVersion));
   ExpectUpdateSequence(&test_server, kUpdaterAppId, "",
@@ -485,7 +485,7 @@ TEST_F(IntegrationTest, SelfUpdate) {
 
 TEST_F(IntegrationTest, SelfUpdateWithWakeAll) {
   ScopedServer test_server(test_commands_);
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
 
   base::Version next_version(base::StringPrintf("%s1", kUpdaterVersion));
   ExpectUpdateSequence(&test_server, kUpdaterAppId, "",
@@ -508,7 +508,7 @@ TEST_F(IntegrationTest, ReportsActive) {
                                            TestTimeouts::action_timeout());
 
   ScopedServer test_server(test_commands_);
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   ExpectInstalled();
 
   // Register apps test1 and test2. Expect pings for each.
@@ -540,7 +540,7 @@ TEST_F(IntegrationTest, ReportsActive) {
 
 TEST_F(IntegrationTest, UpdateApp) {
   ScopedServer test_server(test_commands_);
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
 
   const std::string kAppId("test");
   InstallApp(kAppId);
@@ -563,7 +563,7 @@ TEST_F(IntegrationTest, UpdateApp) {
 #if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTest, ForceInstallApp) {
   ScopedServer test_server(test_commands_);
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
 
   base::Value::Dict group_policies;
   group_policies.Set("Installtest1", IsSystemInstall(GetTestScope())
@@ -588,7 +588,7 @@ TEST_F(IntegrationTest, ForceInstallApp) {
 
 TEST_F(IntegrationTest, MultipleWakesOneNetRequest) {
   ScopedServer test_server(test_commands_);
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
 
   // Only one sequence visible to the server despite multiple wakes.
   ExpectNoUpdateSequence(&test_server, kUpdaterAppId);
@@ -600,7 +600,7 @@ TEST_F(IntegrationTest, MultipleWakesOneNetRequest) {
 
 TEST_F(IntegrationTest, MultipleUpdateAllsMultipleNetRequests) {
   ScopedServer test_server(test_commands_);
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
 
   ExpectNoUpdateSequence(&test_server, kUpdaterAppId);
   UpdateAll();
@@ -612,14 +612,14 @@ TEST_F(IntegrationTest, MultipleUpdateAllsMultipleNetRequests) {
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTest, MarshalInterface) {
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   ExpectMarshalInterfaceSucceeds();
   Uninstall();
 }
 
 TEST_F(IntegrationTest, LegacyUpdate3Web) {
   ScopedServer test_server(test_commands_);
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
 
   const char kAppId[] = "test1";
   InstallApp(kAppId);
@@ -648,13 +648,13 @@ TEST_F(IntegrationTest, LegacyUpdate3Web) {
 }
 
 TEST_F(IntegrationTest, LegacyProcessLauncher) {
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   ExpectLegacyProcessLauncherSucceeds();
   Uninstall();
 }
 
 TEST_F(IntegrationTest, LegacyAppCommandWeb) {
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
 
   const char kAppId[] = "test1";
   InstallApp(kAppId);
@@ -668,7 +668,7 @@ TEST_F(IntegrationTest, LegacyAppCommandWeb) {
 
 TEST_F(IntegrationTest, LegacyPolicyStatus) {
   ScopedServer test_server(test_commands_);
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
 
   const std::string kAppId("test");
   InstallApp(kAppId);
@@ -683,7 +683,7 @@ TEST_F(IntegrationTest, LegacyPolicyStatus) {
 }
 
 TEST_F(IntegrationTest, UninstallCmdLine) {
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
@@ -703,7 +703,7 @@ TEST_F(IntegrationTest, UninstallCmdLine) {
 #endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(IntegrationTest, UnregisterUninstalledApp) {
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   ExpectInstalled();
   InstallApp("test1");
   InstallApp("test2");
@@ -724,7 +724,7 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
 }
 
 TEST_F(IntegrationTest, UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   EXPECT_TRUE(WaitForUpdaterExit());
   ExpectInstalled();
   SetServerStarts(24);
@@ -733,7 +733,7 @@ TEST_F(IntegrationTest, UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
 }
 
 TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   InstallApp("test1");
   ExpectInstalled();
   EXPECT_TRUE(WaitForUpdaterExit());
@@ -750,7 +750,7 @@ TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
 }
 
 TEST_F(IntegrationTest, RotateLog) {
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   EXPECT_TRUE(WaitForUpdaterExit());
   FillLog();
   RunWake(0);
@@ -763,7 +763,7 @@ TEST_F(IntegrationTest, RotateLog) {
 // test need not run on Windows.
 #if BUILDFLAG(IS_MAC)
 TEST_F(IntegrationTest, UnregisterUnownedApp) {
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
@@ -837,7 +837,7 @@ TEST_F(IntegrationTest, InstallLowerVersion) {
 #endif
 
 TEST_F(IntegrationTest, UpdateServiceStress) {
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   ExpectInstalled();
   StressUpdateService();
   Uninstall();
@@ -845,7 +845,7 @@ TEST_F(IntegrationTest, UpdateServiceStress) {
 
 TEST_F(IntegrationTest, SameVersionUpdate) {
   ScopedServer test_server(test_commands_);
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   ExpectInstalled();
 
   const std::string app_id = "test-appid";
@@ -885,7 +885,7 @@ TEST_F(IntegrationTest, SameVersionUpdate) {
 
 TEST_F(IntegrationTest, InstallDataIndex) {
   ScopedServer test_server(test_commands_);
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   ExpectInstalled();
 
   const std::string app_id = "test-appid";
@@ -925,7 +925,7 @@ TEST_F(IntegrationTest, InstallDataIndex) {
 
 TEST_F(IntegrationTest, MigrateLegacyUpdater) {
   SetupFakeLegacyUpdaterData();
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   ExpectInstalled();
   ExpectLegacyUpdaterDataMigrated();
   Uninstall();
@@ -943,21 +943,21 @@ TEST_F(IntegrationTest, RecoveryNoUpdater) {
 }
 
 TEST_F(IntegrationTest, OfflineInstall) {
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   ExpectInstalled();
   RunOfflineInstall(/*is_legacy_install=*/false, /*is_silent_install=*/false);
   Uninstall();
 }
 
 TEST_F(IntegrationTest, SilentOfflineInstall) {
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   ExpectInstalled();
   RunOfflineInstall(/*is_legacy_install=*/false, /*is_silent_install=*/true);
   Uninstall();
 }
 
 TEST_F(IntegrationTest, LegacySilentOfflineInstall) {
-  Install();
+  ASSERT_NO_FATAL_FAILURE(Install());
   ExpectInstalled();
   RunOfflineInstall(/*is_legacy_install=*/true, /*is_silent_install=*/true);
   Uninstall();
