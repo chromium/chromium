@@ -38,6 +38,14 @@ bool SaveFile(const std::string& content, const base::FilePath& path) {
   return base::WriteFile(path, content);
 }
 
+const std::string GetFormattedLangauge(const icu::Locale& locale) {
+  const std::string language = locale.getLanguage();
+  if (language == "zh") {
+    return "zh_TW";
+  }
+  return language;
+}
+
 }  // namespace
 
 ProjectorMetadataController::ProjectorMetadataController() = default;
@@ -46,8 +54,8 @@ ProjectorMetadataController::~ProjectorMetadataController() = default;
 
 void ProjectorMetadataController::OnRecordingStarted() {
   metadata_ = std::make_unique<ProjectorMetadata>();
-  auto locale = icu::Locale::getDefault();
-  metadata_->SetCaptionLanguage(locale.getLanguage());
+  metadata_->SetCaptionLanguage(
+      GetFormattedLangauge(icu::Locale::getDefault()));
 }
 
 void ProjectorMetadataController::RecordTranscription(
