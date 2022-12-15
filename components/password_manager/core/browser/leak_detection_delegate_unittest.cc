@@ -316,42 +316,6 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithFalseResult) {
       "PasswordManager.LeakDetection.NotifyIsLeakedTime", 0);
 }
 
-TEST_F(LeakDetectionDelegateTest,
-       LeakDetectionWithForcedDialogAfterEverySuccessfulSubmission) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPasswordChange,
-      {{features::kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission,
-        "true"}});
-
-  EXPECT_TRUE(base::GetFieldTrialParamByFeatureAsBool(
-      password_manager::features::kPasswordChange,
-      password_manager::features::
-          kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission,
-      false));
-
-  LeakDetectionDelegateInterface* delegate_interface = &delegate();
-  const PasswordForm form = CreateTestForm();
-
-  EXPECT_CALL(client(), GetProfilePasswordStore())
-      .WillRepeatedly(Return(profile_store()));
-  ExpectPasswords({});
-  EXPECT_CALL(factory(), TryCreateLeakCheck)
-      .WillOnce(
-          Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
-  delegate().StartLeakCheck(form);
-
-  EXPECT_CALL(client(),
-              NotifyUserCredentialsWereLeaked(
-                  password_manager::CreateLeakType(
-                      IsSaved(false), IsReused(false), IsSyncing(false)),
-                  form.url, form.username_value));
-
-  delegate_interface->OnLeakDetectionDone(
-      /*is_leaked=*/false, form.url, form.username_value, form.password_value);
-  WaitForPasswordStore();
-}
-
 TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithTrueResult) {
   base::HistogramTester histogram_tester;
   LeakDetectionDelegateInterface* delegate_interface = &delegate();

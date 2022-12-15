@@ -26,7 +26,6 @@
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/password_manager/core/browser/ui/weak_check_utility.h"
@@ -127,21 +126,6 @@ InsecureCredentialsManager::GetInsecureCredentialEntries() const {
   DCHECK(presenter_);
   std::vector<CredentialUIEntry> credentials =
       presenter_->GetSavedCredentials();
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          password_manager::features::kPasswordChangeInSettings,
-          password_manager::features::
-              kPasswordChangeInSettingsWithForcedWarningForEverySite,
-          /*default_value=*/false)) {
-    // If a flag is set to return every credential as compromised, ensure that
-    // all credentials contain a "leak" password issue.
-    for (auto& credential : credentials) {
-      if (!credential.IsLeaked() && !credential.IsPhished()) {
-        credential.password_issues[InsecureType::kLeaked] =
-            InsecurityMetadata();
-      }
-    }
-    return credentials;
-  }
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Otherwise erase entries which aren't leaked and phished.
   base::EraseIf(credentials, [](const auto& credential) {

@@ -292,12 +292,7 @@ struct PasswordChangeParams {
 class PasswordChangeCredentialLeakDialogUtilsTest
     : public testing::TestWithParam<PasswordChangeParams> {
  public:
-  PasswordChangeCredentialLeakDialogUtilsTest() {
-    feature_list_.InitAndEnableFeature(features::kPasswordChange);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+  PasswordChangeCredentialLeakDialogUtilsTest() = default;
 };
 
 TEST_P(PasswordChangeCredentialLeakDialogUtilsTest, ShouldShowCancelButton) {

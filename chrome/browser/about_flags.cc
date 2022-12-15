@@ -2692,35 +2692,6 @@ const FeatureEntry::Choice kCrostiniContainerChoices[] = {
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// The variations of --password-change-support.
-const FeatureEntry::FeatureParam
-    kPasswordChangeVariationWithForcedDialogAfterEverySuccessfulSubmission[] = {
-        {password_manager::features::
-             kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission,
-         "true"}};
-
-const FeatureEntry::FeatureVariation kPasswordChangeFeatureVariations[] = {
-    {"Force dialog after every successful form submission.",
-     kPasswordChangeVariationWithForcedDialogAfterEverySuccessfulSubmission,
-     std::size(
-         kPasswordChangeVariationWithForcedDialogAfterEverySuccessfulSubmission),
-     nullptr}};
-
-// The variations of --password-change-in-settings.
-const FeatureEntry::FeatureParam
-    kPasswordChangeInSettingsVariationWithForcedWarningForEverySite[] = {
-        {password_manager::features::
-             kPasswordChangeInSettingsWithForcedWarningForEverySite,
-         "true"}};
-
-const FeatureEntry::FeatureVariation
-    kPasswordChangeInSettingsFeatureVariations[] = {
-        {"Force leak warnings for every site in settings.",
-         kPasswordChangeInSettingsVariationWithForcedWarningForEverySite,
-         std::size(
-             kPasswordChangeInSettingsVariationWithForcedWarningForEverySite),
-         nullptr}};
-
 #if BUILDFLAG(IS_ANDROID)
 // The variations of --metrics-settings-android.
 const FeatureEntry::FeatureParam kMetricsSettingsAndroidAlternativeOne[] = {
@@ -7385,25 +7356,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDoubleBufferCompositingDescription, kOsCrOS,
      SINGLE_VALUE_TYPE(switches::kDoubleBufferCompositing)},
 
-    {"password-change-support", flag_descriptions::kPasswordChangeName,
-     flag_descriptions::kPasswordChangeDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(password_manager::features::kPasswordChange,
-                                    kPasswordChangeFeatureVariations,
-                                    "PasswordChangeFeatureVariations")},
-    {"password-change-in-settings",
-     flag_descriptions::kPasswordChangeInSettingsName,
-     flag_descriptions::kPasswordChangeInSettingsDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         password_manager::features::kPasswordChangeInSettings,
-         kPasswordChangeInSettingsFeatureVariations,
-         "PasswordChangeInSettingsFeatureVariations")},
-
 #if !BUILDFLAG(IS_ANDROID)
-    {"password-change-account-store-users",
-     flag_descriptions::kPasswordChangeAccountStoreUsersName,
-     flag_descriptions::kPasswordChangeAccountStoreUsersDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kPasswordChangeAccountStoreUsers)},
     {"page-info-cookies-subpage",
      flag_descriptions::kPageInfoCookiesSubpageName,
      flag_descriptions::kPageInfoCookiesSubpageDescription, kOsDesktop,

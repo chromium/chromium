@@ -50,11 +50,6 @@ BASE_DECLARE_FEATURE(kNewRegexForOtpFields);
 BASE_DECLARE_FEATURE(kPasswordViewPageInSettings);
 BASE_DECLARE_FEATURE(kSendPasswords);
 BASE_DECLARE_FEATURE(kLeakDetectionUnauthenticated);
-// TODO(crbug.com/1386065): Delete the following two flags as part of APC
-// deprecation.
-BASE_DECLARE_FEATURE(kPasswordChange);
-BASE_DECLARE_FEATURE(kPasswordChangeInSettings);
-BASE_DECLARE_FEATURE(kPasswordChangeAccountStoreUsers);
 BASE_DECLARE_FEATURE(kPasswordChangeWellKnown);
 BASE_DECLARE_FEATURE(kPasswordImport);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
@@ -173,11 +168,6 @@ extern const char kGenerationRequirementsFieldTrial[];
 extern const char kGenerationRequirementsVersion[];
 extern const char kGenerationRequirementsPrefixLength[];
 extern const char kGenerationRequirementsTimeout[];
-
-// Password change feature variations.
-extern const char
-    kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission[];
-extern const char kPasswordChangeInSettingsWithForcedWarningForEverySite[];
 
 #if BUILDFLAG(IS_ANDROID)
 // Touch To Fill submission feature's variations.

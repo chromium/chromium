@@ -1018,27 +1018,6 @@ TEST_F(InsecureCredentialsManagerTest, UnMuteReusedPasswordNoOp) {
                   .is_muted.value());
 }
 
-TEST_F(InsecureCredentialsManagerTest, GetInsecureCredentialEntriesWithFlag) {
-  PasswordForm password_form =
-      MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
-
-  store().AddLogin(password_form);
-  RunUntilIdle();
-
-  EXPECT_THAT(provider().GetInsecureCredentialEntries(), IsEmpty());
-
-  // Turn on the field trial parameter to force password leaks everywhere.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      password_manager::features::kPasswordChangeInSettings,
-      {{password_manager::features::
-            kPasswordChangeInSettingsWithForcedWarningForEverySite,
-        "true"}});
-
-  // The credential is now returned as insecure.
-  EXPECT_THAT(provider().GetInsecureCredentialEntries(), SizeIs(1u));
-}
-
 // Test verifies that editing Compromised Credential makes it secure.
 TEST_F(InsecureCredentialsManagerTest, UpdateCompromisedPassword) {
   PasswordForm password_form =

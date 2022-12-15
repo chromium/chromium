@@ -4,9 +4,6 @@
 
 #include "components/password_manager/core/browser/leak_detection_delegate.h"
 
-#include "base/metrics/field_trial.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
@@ -79,12 +76,7 @@ void LeakDetectionDelegate::OnLeakDetectionDone(bool is_leaked,
     logger.LogBoolean(Logger::STRING_LEAK_DETECTION_FINISHED, is_leaked);
   }
 
-  bool force_dialog_for_testing = base::GetFieldTrialParamByFeatureAsBool(
-      password_manager::features::kPasswordChange,
-      password_manager::features::
-          kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission,
-      false);
-  if (is_leaked || force_dialog_for_testing) {
+  if (is_leaked) {
     // Query the helper to asynchronously determine the `CredentialLeakType`.
     helper_ = std::make_unique<LeakDetectionDelegateHelper>(
         client_->GetProfilePasswordStore(), client_->GetAccountPasswordStore(),

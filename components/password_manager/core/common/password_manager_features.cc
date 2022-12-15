@@ -144,21 +144,6 @@ BASE_FEATURE(kLeakDetectionUnauthenticated,
              "LeakDetectionUnauthenticated",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables automatic password change flow from leaked password dialog.
-BASE_FEATURE(kPasswordChange,
-             "PasswordChange",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables password change flow from bulk leak check in settings.
-BASE_FEATURE(kPasswordChangeInSettings,
-             "PasswordChangeInSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables automatic password change for account store credentials.
-BASE_FEATURE(kPasswordChangeAccountStoreUsers,
-             "PasswordChangeAccountStoreUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables .well-known based password change flow from leaked password dialog.
 BASE_FEATURE(kPasswordChangeWellKnown,
              "PasswordChangeWellKnown",
@@ -327,15 +312,6 @@ const char kGenerationRequirementsPrefixLength[] = "prefix_length";
 // high values is not strong.
 // Default to 5000 ms.
 const char kGenerationRequirementsTimeout[] = "timeout";
-
-// Enables showing leaked dialog after every successful form submission.
-const char kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission[] =
-    "should_force_dialog_after_every_sucessful_form_submission";
-
-// Enables showing leaked warning for every site while doing bulk leak check in
-// settings.
-const char kPasswordChangeInSettingsWithForcedWarningForEverySite[] =
-    "should_force_warning_for_every_site_in_settings";
 
 #if BUILDFLAG(IS_ANDROID)
 bool UsesUnifiedPasswordManagerUi() {

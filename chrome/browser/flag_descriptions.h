@@ -1278,17 +1278,8 @@ extern const char kPageVisibilityPageContentAnnotationsDescription[];
 extern const char kParallelDownloadingName[];
 extern const char kParallelDownloadingDescription[];
 
-extern const char kPasswordChangeInSettingsName[];
-extern const char kPasswordChangeInSettingsDescription[];
-
-extern const char kPasswordChangeName[];
-extern const char kPasswordChangeDescription[];
-
 extern const char kPasswordImportName[];
 extern const char kPasswordImportDescription[];
-
-extern const char kPasswordChangeAccountStoreUsersName[];
-extern const char kPasswordChangeAccountStoreUsersDescription[];
 
 extern const char kPasswordStrengthIndicatorName[];
 extern const char kPasswordStrengthIndicatorDescription[];

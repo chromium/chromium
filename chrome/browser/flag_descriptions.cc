@@ -2284,23 +2284,9 @@ const char kParallelDownloadingName[] = "Parallel downloading";
 const char kParallelDownloadingDescription[] =
     "Enable parallel downloading to accelerate download speed.";
 
-const char kPasswordChangeInSettingsName[] =
-    "Rework password change flow from settings";
-const char kPasswordChangeInSettingsDescription[] =
-    "Change password when bulk leak check detected an issue.";
-
-const char kPasswordChangeName[] = "Rework password change flow";
-const char kPasswordChangeDescription[] =
-    "Change password when password leak is detected.";
-
 const char kPasswordImportName[] = "Password import";
 const char kPasswordImportDescription[] =
     "Import functionality in password settings.";
-
-const char kPasswordChangeAccountStoreUsersName[] =
-    "Password change for account store users";
-const char kPasswordChangeAccountStoreUsersDescription[] =
-    "Enables automated password change for credentials in the account store.";
 
 const char kPasswordStrengthIndicatorName[] = "Password strength indicator";
 const char kPasswordStrengthIndicatorDescription[] =
