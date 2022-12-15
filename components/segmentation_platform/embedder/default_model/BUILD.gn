@@ -4,14 +4,14 @@
 
 static_library("default_model") {
   sources = [
+    "contextual_page_actions_model.cc",
+    "contextual_page_actions_model.h",
     "cross_device_user_segment.cc",
     "cross_device_user_segment.h",
     "feed_user_segment.cc",
     "feed_user_segment.h",
     "low_user_engagement_model.cc",
     "low_user_engagement_model.h",
-    "price_tracking_action_model.cc",
-    "price_tracking_action_model.h",
     "resume_heavy_user_model.cc",
     "resume_heavy_user_model.h",
     "search_user_model.cc",
@@ -47,10 +47,10 @@ source_set("unit_tests") {
   # IMPORTANT NOTE: When adding new tests, also remember to update the list of
   # tests in //components/segmentation_platform/components_unittests.filter
   sources = [
+    "contextual_page_actions_model_unittest.cc",
     "cross_device_user_segment_unittest.cc",
     "feed_user_segment_unittest.cc",
     "low_user_engagement_model_unittest.cc",
-    "price_tracking_action_model_unittest.cc",
     "resume_heavy_user_model_unittest.cc",
     "search_user_model_unittest.cc",
     "shopping_user_model_unittest.cc",

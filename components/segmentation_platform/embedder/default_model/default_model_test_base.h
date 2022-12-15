@@ -46,6 +46,12 @@ class DefaultModelTestBase : public testing::Test {
   absl::optional<ModelProvider::Response> ExecuteWithInput(
       const ModelProvider::Request& inputs);
 
+  // Executes the model with inputs, applies classifier and checks against
+  // the expected ordered labels.
+  void ExpectClassifierResults(
+      const ModelProvider::Request& input,
+      const std::vector<std::string>& expected_ordered_labels);
+
   // `sub_segment_key` is combination of `segmentation_key` +
   // `kSubSegmentDiscreteMappingSuffix`. Use `GetSubsegmentKey()`  from
   // constants.h. `sub_segment_name` is the name of the segment expected to be

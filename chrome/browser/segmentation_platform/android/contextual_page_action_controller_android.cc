@@ -6,57 +6,90 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/android/chrome_jni_headers/ContextualPageActionController_jni.h"
-#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
-#include "components/commerce/core/shopping_service.h"
-#include "components/segmentation_platform/public/android/segmentation_platform_conversion_bridge.h"
+#include "chrome/browser/ui/android/toolbar/adaptive_toolbar_enums.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/input_context.h"
-#include "components/segmentation_platform/public/segment_selection_result.h"
+#include "components/segmentation_platform/public/prediction_options.h"
+#include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "url/android/gurl_android.h"
 
 using base::android::JavaParamRef;
 
-void RunGetSelectedSegmentCallback(
-    const base::android::JavaRef<jobject>& j_callback,
-    const segmentation_platform::SegmentSelectionResult& result) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  RunObjectCallbackAndroid(
-      j_callback, segmentation_platform::SegmentationPlatformConversionBridge::
-                      CreateJavaSegmentSelectionResult(env, result));
+// TODO(shaktisahu): Split this file to extract a JNI independent class that
+// can be unit tested.
+namespace {
+
+AdaptiveToolbarButtonVariant ActionLabelToAdaptiveToolbarButtonVariant(
+    const std::string& label) {
+  AdaptiveToolbarButtonVariant action = AdaptiveToolbarButtonVariant::UNKNOWN;
+  if (label ==
+      segmentation_platform::kContextualPageActionModelLabelPriceTracking) {
+    action = AdaptiveToolbarButtonVariant::PRICE_TRACKING;
+  } else if (label ==
+             segmentation_platform::kContextualPageActionModelLabelReaderMode) {
+    action = AdaptiveToolbarButtonVariant::READER_MODE;
+  }
+  return action;
 }
+
+void RunGetClassificationResultCallback(
+    const base::android::JavaRef<jobject>& j_callback,
+    const segmentation_platform::ClassificationResult& result) {
+  std::string action_label =
+      result.ordered_labels.empty() ? "" : result.ordered_labels[0];
+
+  base::android::RunIntCallbackAndroid(
+      j_callback, static_cast<int32_t>(
+                      ActionLabelToAdaptiveToolbarButtonVariant(action_label)));
+}
+
+}  // namespace
 
 static void JNI_ContextualPageActionController_ComputeContextualPageAction(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jobject>& j_url,
     jboolean j_can_track_price,
+    jboolean j_has_reader_mode,
     const JavaParamRef<jobject>& j_callback) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   if (!profile) {
-    RunGetSelectedSegmentCallback(
-        j_callback, segmentation_platform::SegmentSelectionResult());
+    RunGetClassificationResultCallback(
+        j_callback, segmentation_platform::ClassificationResult(
+                        segmentation_platform::PredictionStatus::kFailed));
     return;
   }
   auto url = url::GURLAndroid::ToNativeGURL(env, j_url);
 
   scoped_refptr<segmentation_platform::InputContext> input_context =
       base::MakeRefCounted<segmentation_platform::InputContext>();
-  input_context->metadata_args.emplace("is_price_tracking",
-                                       static_cast<float>(j_can_track_price));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kContextualPageActionModelInputPriceTracking,
+      static_cast<float>(j_can_track_price));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kContextualPageActionModelInputReaderMode,
+      static_cast<float>(j_has_reader_mode));
   input_context->metadata_args.emplace("url", *url);
+
   segmentation_platform::SegmentationPlatformService*
       segmentation_platform_service = segmentation_platform::
           SegmentationPlatformServiceFactory::GetForProfile(profile);
   if (!segmentation_platform_service) {
-    RunGetSelectedSegmentCallback(
-        j_callback, segmentation_platform::SegmentSelectionResult());
+    RunGetClassificationResultCallback(
+        j_callback, segmentation_platform::ClassificationResult(
+                        segmentation_platform::PredictionStatus::kFailed));
     return;
   }
-  segmentation_platform_service->GetSelectedSegmentOnDemand(
-      segmentation_platform::kContextualPageActionsKey, input_context,
-      base::BindOnce(&RunGetSelectedSegmentCallback,
+
+  segmentation_platform::PredictionOptions prediction_options;
+  prediction_options.on_demand_execution = true;
+  segmentation_platform_service->GetClassificationResult(
+      segmentation_platform::kContextualPageActionsKey, prediction_options,
+      input_context,
+      base::BindOnce(&RunGetClassificationResultCallback,
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback)));
 }

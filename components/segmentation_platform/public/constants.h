@@ -104,6 +104,15 @@ std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id);
 // Returns Subsegment key for the given `segmentation_key`.
 std::string GetSubsegmentKey(const std::string& segmentation_key);
 
+// TODO(shaktisahu): Move these to a nicer location.
+// Labels for contextual page actions model.
+const char kContextualPageActionModelLabelPriceTracking[] = "price_tracking";
+const char kContextualPageActionModelLabelReaderMode[] = "reader_mode";
+
+// Custom inputs for contextual page actions model.
+const char kContextualPageActionModelInputPriceTracking[] = "can_track_price";
+const char kContextualPageActionModelInputReaderMode[] = "has_reader_mode";
+
 }  // namespace segmentation_platform
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_CONSTANTS_H_

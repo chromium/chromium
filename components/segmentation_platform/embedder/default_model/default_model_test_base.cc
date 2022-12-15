@@ -4,6 +4,12 @@
 
 #include "components/segmentation_platform/embedder/default_model/default_model_test_base.h"
 
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+#include "components/segmentation_platform/internal/post_processor/post_processor.h"
+#include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/proto/output_config.pb.h"
+#include "components/segmentation_platform/public/proto/prediction_result.pb.h"
+
 namespace segmentation_platform {
 
 DefaultModelTestBase::DefaultModelTestBase(
@@ -74,6 +80,20 @@ absl::optional<ModelProvider::Response> DefaultModelTestBase::ExecuteWithInput(
                      base::Unretained(this), loop.QuitClosure(), &result));
   loop.Run();
   return result;
+}
+
+void DefaultModelTestBase::ExpectClassifierResults(
+    const ModelProvider::Request& input,
+    const std::vector<std::string>& expected_ordered_labels) {
+  auto result = ExecuteWithInput(input);
+  EXPECT_TRUE(result.has_value());
+
+  EXPECT_TRUE(fetched_metadata_->has_output_config());
+  auto prediction_result = metadata_utils::CreatePredictionResult(
+      result.value(), fetched_metadata_->output_config(), base::Time::Now());
+
+  auto winning_labels = PostProcessor().GetClassifierResults(prediction_result);
+  EXPECT_EQ(expected_ordered_labels, winning_labels);
 }
 
 void DefaultModelTestBase::OnFinishedExecuteWithInput(

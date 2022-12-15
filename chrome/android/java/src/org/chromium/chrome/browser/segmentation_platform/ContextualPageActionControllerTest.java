@@ -42,12 +42,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.components.segmentation_platform.SegmentSelectionResult;
-import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 
-/**
- * Unit tests for {@link ContextualPageActionController}
- */
+/** Unit tests for {@link ContextualPageActionController} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
@@ -110,23 +106,20 @@ public class ContextualPageActionControllerTest {
         return contextualPageActionController;
     }
 
-    private void setMockSegmentationResult(
-            org.chromium.components.segmentation_platform.proto.SegmentationProto
-                    .SegmentId segmentationResult) {
+    private void setMockSegmentationResult(@AdaptiveToolbarButtonVariant int buttonVariant) {
         Mockito.doAnswer(invocation -> {
-                   Callback<SegmentSelectionResult> callback = invocation.getArgument(3);
-                   callback.onResult(new SegmentSelectionResult(true, segmentationResult));
+                   Callback<Integer> callback = invocation.getArgument(4);
+                   callback.onResult(buttonVariant);
                    return null;
                })
                 .when(mMockControllerJni)
-                .computeContextualPageAction(any(), any(), anyBoolean(), any());
+                .computeContextualPageAction(any(), any(), anyBoolean(), anyBoolean(), any());
     }
 
     @Test
     public void loadingTabsAreIgnored() {
         mMockConfiguration.screenWidthDp = 450;
-        setMockSegmentationResult(
-                SegmentId.OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING);
+        setMockSegmentationResult(AdaptiveToolbarButtonVariant.PRICE_TRACKING);
 
         when(mMockTab.isLoading()).thenReturn(true);
 
@@ -141,8 +134,7 @@ public class ContextualPageActionControllerTest {
     @Test
     public void incognitoTabsRevertToDefaultAction() {
         mMockConfiguration.screenWidthDp = 450;
-        setMockSegmentationResult(
-                SegmentId.OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING);
+        setMockSegmentationResult(AdaptiveToolbarButtonVariant.PRICE_TRACKING);
 
         when(mMockTab.isIncognito()).thenReturn(true);
 
@@ -158,8 +150,7 @@ public class ContextualPageActionControllerTest {
     @Test
     public void buttonNotShownWhenUiDisabled() {
         mMockConfiguration.screenWidthDp = 450;
-        setMockSegmentationResult(
-                SegmentId.OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING);
+        setMockSegmentationResult(AdaptiveToolbarButtonVariant.PRICE_TRACKING);
         TestValues testValues = new TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, true);
         testValues.addFieldTrialParamOverride(
@@ -175,6 +166,7 @@ public class ContextualPageActionControllerTest {
 
         verify(mMockAdaptiveToolbarController, never()).showDynamicAction(anyInt());
         // Even if the UI is disabled segmentation should be called.
-        verify(mMockControllerJni).computeContextualPageAction(any(), any(), anyBoolean(), any());
+        verify(mMockControllerJni)
+                .computeContextualPageAction(any(), any(), anyBoolean(), anyBoolean(), any());
     }
 }

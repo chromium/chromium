@@ -34,9 +34,9 @@
 #include "chrome/browser/segmentation_platform/default_model/chrome_start_model_android_v2.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/segmentation_platform/embedder/default_model/contextual_page_actions_model.h"
 #include "components/segmentation_platform/embedder/default_model/intentional_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/power_user_segment.h"
-#include "components/segmentation_platform/embedder/default_model/price_tracking_action_model.h"
 #include "components/segmentation_platform/embedder/default_model/query_tiles_model.h"
 #include "components/segmentation_platform/embedder/input_delegate/price_tracking_input_delegate.h"
 #endif
@@ -98,7 +98,7 @@ std::unique_ptr<Config> GetConfigForContextualPageActions(
   config->segmentation_uma_name = kContextualPageActionsUmaName;
   config->AddSegmentId(
       SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
-      std::make_unique<PriceTrackingActionModel>());
+      std::make_unique<ContextualPageActionsModel>());
 
   auto shopping_service_getter = base::BindRepeating(
       commerce::ShoppingServiceFactory::GetForBrowserContextIfExists, context);

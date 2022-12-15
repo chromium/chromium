@@ -21,9 +21,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.components.segmentation_platform.SegmentSelectionResult;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -148,11 +146,9 @@ public class ContextualPageActionController {
     private void findBestAction(SignalAccumulator signalAccumulator) {
         Tab tab = getValidActiveTab();
         if (tab == null) return;
-        // TODO(crbug/1373905): Remove this after segmentation integration for reader mode.
-        boolean canTrackPrice =
-                signalAccumulator.hasPriceTracking() || signalAccumulator.hasReaderMode();
-        ContextualPageActionControllerJni.get().computeContextualPageAction(
-                mProfileSupplier.get(), tab.getUrl(), canTrackPrice, result -> {
+        ContextualPageActionControllerJni.get().computeContextualPageAction(mProfileSupplier.get(),
+                tab.getUrl(), signalAccumulator.hasPriceTracking(),
+                signalAccumulator.hasReaderMode(), result -> {
                     if (tab.isDestroyed()) return;
 
                     boolean isSameTab =
@@ -160,15 +156,7 @@ public class ContextualPageActionController {
                     if (!isSameTab) return;
 
                     if (!AdaptiveToolbarFeatures.isContextualPageActionUiEnabled()) return;
-                    int action = AdaptiveToolbarStatePredictor
-                                         .getAdaptiveToolbarButtonVariantFromSegmentId(
-                                                 result.selectedSegment);
-                    // TODO(crbug/1373905): Remove this after segmentation integration for reader
-                    // mode.
-                    if (signalAccumulator.hasReaderMode()) {
-                        action = AdaptiveToolbarButtonVariant.READER_MODE;
-                    }
-                    showDynamicAction(action);
+                    showDynamicAction(result);
                 });
     }
 
@@ -192,6 +180,6 @@ public class ContextualPageActionController {
     @NativeMethods
     interface Natives {
         void computeContextualPageAction(Profile profile, GURL url, boolean canTrackPrice,
-                Callback<SegmentSelectionResult> callback);
+                boolean hasReaderMode, Callback<Integer> callback);
     }
 }
