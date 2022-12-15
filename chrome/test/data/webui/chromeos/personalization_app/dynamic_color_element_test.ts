@@ -166,14 +166,21 @@ suite('DynamicColorElementTest', function() {
   test('sets color scheme', async () => {
     personalizationStore.expectAction(ThemeActionName.SET_COLOR_SCHEME);
     showColorSchemeButtons();
+    const button = getColorSchemeButtons()[1]!;
+    assertEquals(button.getAttribute('aria-checked'), 'false');
+    personalizationStore.setReducersEnabled(true);
 
-    getColorSchemeButtons()[1]!.click();
+    button.click();
     await themeProvider.whenCalled('setColorScheme');
 
     const action =
         await personalizationStore.waitForAction(
             ThemeActionName.SET_COLOR_SCHEME) as SetColorSchemePrefAction;
     assertTrue(!!action.colorScheme);
+    assertEquals(
+        Number(button.dataset['colorSchemeId']!),
+        personalizationStore.data.theme.colorSchemeSelected);
+    assertEquals(button.getAttribute('aria-checked'), 'true');
   });
 
   test('set static color', async () => {

@@ -342,6 +342,9 @@ interface ThemeObserver {
   // Notifies the JS side the current state of color mode auto scheduler.
   OnColorModeAutoScheduleChanged(bool enabled);
 
+  //Notifies the JS side about the current state of the color scheme.
+  OnColorSchemeChanged(ColorScheme color_scheme);
+
   // Notifies the JS side about the current state of the static color.
   OnStaticColorChanged(skia.mojom.SkColor? color);
 };
@@ -364,6 +367,9 @@ interface ThemeProvider {
   // Sets the seed color for dynamic color.
   // @see //ash/style/color_palette_controller.h
   SetStaticColor(skia.mojom.SkColor static_color);
+
+  // Retrieves the color scheme for dynamic color.
+  GetColorScheme() => (ColorScheme color_scheme);
 
   // Retrieves the static seed color for dynamic color.
   GetStaticColor() => (skia.mojom.SkColor? static_color);

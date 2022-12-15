@@ -49,6 +49,8 @@ class FakePersonalizationAppThemeProvider
 
   void SetStaticColor(::SkColor static_color) override;
 
+  void GetColorScheme(GetColorSchemeCallback callback) override;
+
   void GetStaticColor(GetStaticColorCallback callback) override;
 
   void IsDarkModeEnabled(IsDarkModeEnabledCallback callback) override;

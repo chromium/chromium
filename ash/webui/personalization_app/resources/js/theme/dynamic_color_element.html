@@ -77,10 +77,11 @@
       selected-item="{{colorSchemeHighlightedButton_}}"
       hidden="[[!automaticSeedColorEnabled]]">
     <template is="dom-repeat" items="[[colorSchemes_]]" as="colorScheme">
-      <cr-button 
+      <cr-button
           tabindex$="[[getTabIndex_(colorScheme.id)]]"
           on-click="onClickColorSchemeButton_"
-          data-color-scheme-id$="[[colorScheme.id]]">
+          data-color-scheme-id$="[[colorScheme.id]]"
+          aria-checked$="[[getColorSchemeAriaChecked_(colorScheme.id, colorSchemeSelected_)]]">
         <color-scheme-icon-svg scheme="[[colorScheme]]"></color-scheme-icon-svg>
       </cr-button>
     </template>

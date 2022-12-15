@@ -55,6 +55,11 @@ void FakePersonalizationAppThemeProvider::SetStaticColor(
   return;
 }
 
+void FakePersonalizationAppThemeProvider::GetColorScheme(
+    GetColorSchemeCallback callback) {
+  std::move(callback).Run(ash::ColorScheme::kTonalSpot);
+}
+
 void FakePersonalizationAppThemeProvider::GetStaticColor(
     GetStaticColorCallback callback) {
   std::move(callback).Run(SK_ColorBLUE);

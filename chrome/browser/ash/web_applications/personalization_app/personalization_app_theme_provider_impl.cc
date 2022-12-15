@@ -57,8 +57,9 @@ void PersonalizationAppThemeProviderImpl::SetThemeObserver(
   // Call once to get the initial status.
   NotifyColorModeAutoScheduleChanged();
   if (ash::features::IsJellyEnabled()) {
-    // TODO(b/261505637): Observe changes to the static color pref.
+    // TODO(b/261505637): Observe changes to the color prefs.
     OnStaticColorChanged(color_palette_controller_->static_color());
+    OnColorSchemeChanged(color_palette_controller_->color_scheme());
   }
 }
 
@@ -101,6 +102,12 @@ void PersonalizationAppThemeProviderImpl::OnColorModeChanged(
   theme_observer_remote_->OnColorModeChanged(dark_mode_enabled);
 }
 
+void PersonalizationAppThemeProviderImpl::OnColorSchemeChanged(
+    ColorScheme color_scheme) {
+  DCHECK(theme_observer_remote_.is_bound());
+  theme_observer_remote_->OnColorSchemeChanged(color_scheme);
+}
+
 void PersonalizationAppThemeProviderImpl::OnStaticColorChanged(
     absl::optional<SkColor> color) {
   DCHECK(theme_observer_remote_.is_bound());
@@ -121,6 +128,16 @@ void PersonalizationAppThemeProviderImpl::NotifyColorModeAutoScheduleChanged() {
       IsColorModeAutoScheduleEnabled());
 }
 
+void PersonalizationAppThemeProviderImpl::GetColorScheme(
+    GetColorSchemeCallback callback) {
+  if (!ash::features::IsJellyEnabled()) {
+    theme_receiver_.ReportBadMessage(
+        "Cannot call GetColorScheme without Jelly enabled.");
+    return;
+  }
+  std::move(callback).Run(color_palette_controller_->color_scheme());
+}
+
 void PersonalizationAppThemeProviderImpl::SetColorScheme(
     ColorScheme color_scheme) {
   if (!ash::features::IsJellyEnabled()) {
@@ -129,16 +146,7 @@ void PersonalizationAppThemeProviderImpl::SetColorScheme(
     return;
   }
   color_palette_controller_->SetColorScheme(color_scheme, base::DoNothing());
-}
-
-void PersonalizationAppThemeProviderImpl::SetStaticColor(SkColor static_color) {
-  if (!ash::features::IsJellyEnabled()) {
-    theme_receiver_.ReportBadMessage(
-        "Cannot call SetStaticColor without Jelly enabled.");
-    return;
-  }
-  color_palette_controller_->SetStaticColor(static_color, base::DoNothing());
-  OnStaticColorChanged(static_color);
+  OnColorSchemeChanged(color_scheme);
 }
 
 void PersonalizationAppThemeProviderImpl::GetStaticColor(
@@ -149,5 +157,15 @@ void PersonalizationAppThemeProviderImpl::GetStaticColor(
     return;
   }
   std::move(callback).Run(color_palette_controller_->static_color());
+}
+
+void PersonalizationAppThemeProviderImpl::SetStaticColor(SkColor static_color) {
+  if (!ash::features::IsJellyEnabled()) {
+    theme_receiver_.ReportBadMessage(
+        "Cannot call SetStaticColor without Jelly enabled.");
+    return;
+  }
+  color_palette_controller_->SetStaticColor(static_color, base::DoNothing());
+  OnStaticColorChanged(static_color);
 }
 }  // namespace ash::personalization_app

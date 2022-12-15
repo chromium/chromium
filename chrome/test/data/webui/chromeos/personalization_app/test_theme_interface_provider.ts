@@ -15,6 +15,7 @@ export class TestThemeProvider extends TestBrowserProxy implements
       'setColorModeAutoScheduleEnabled',
       'setColorScheme',
       'setStaticColor',
+      'getColorScheme',
       'getStaticColor',
       'isDarkModeEnabled',
       'isColorModeAutoScheduleEnabled',
@@ -52,6 +53,11 @@ export class TestThemeProvider extends TestBrowserProxy implements
   setStaticColor(color: SkColor) {
     this.methodCalled('setStaticColor', color);
     this.staticColor = color;
+  }
+
+  getColorScheme() {
+    this.methodCalled('getColorScheme');
+    return Promise.resolve({colorScheme: ColorScheme.kTonalSpot});
   }
 
   getStaticColor() {

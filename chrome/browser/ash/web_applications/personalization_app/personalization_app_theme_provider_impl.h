@@ -63,6 +63,8 @@ class PersonalizationAppThemeProviderImpl
   // ash::ColorModeObserver:
   void OnColorModeChanged(bool dark_mode_enabled) override;
 
+  void GetColorScheme(GetColorSchemeCallback callback) override;
+
   void GetStaticColor(GetStaticColorCallback callback) override;
 
  private:
@@ -70,6 +72,8 @@ class PersonalizationAppThemeProviderImpl
 
   // Notify webUI the current state of color mode auto scheduler.
   void NotifyColorModeAutoScheduleChanged();
+
+  void OnColorSchemeChanged(ColorScheme color_scheme);
 
   void OnStaticColorChanged(absl::optional<SkColor> color);
 

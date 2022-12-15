@@ -107,6 +107,10 @@ class MockPersonalizationAppThemeProvider
               (bool enabled),
               (override));
   MOCK_METHOD(void,
+              GetColorScheme,
+              (GetColorSchemeCallback callback),
+              (override));
+  MOCK_METHOD(void,
               GetStaticColor,
               (GetStaticColorCallback callback),
               (override));
