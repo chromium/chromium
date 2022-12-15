@@ -77,6 +77,8 @@ bool WebGPUTextureAlphaClearer::IsCompatible(WGPUDevice device,
 void WebGPUTextureAlphaClearer::ClearAlpha(WGPUTexture texture) {
   const auto& procs = dawn_control_client_->GetProcs();
 
+  // Push an error scope to capture errors here.
+  procs.devicePushErrorScope(device_, WGPUErrorFilter_Validation);
   WGPUTextureView attachment_view = procs.textureCreateView(texture, nullptr);
 
   WGPUDawnEncoderInternalUsageDescriptor internal_usage_desc = {
@@ -115,6 +117,21 @@ void WebGPUTextureAlphaClearer::ClearAlpha(WGPUTexture texture) {
   procs.commandEncoderRelease(command_encoder);
   procs.commandBufferRelease(command_buffer);
   procs.textureViewRelease(attachment_view);
+
+  // Pop the error scope and swallow errors. There are errors
+  // when the configured canvas produces an error GPUTexture. Errors from
+  // the alpha clear should be hidden from the application.
+  procs.devicePopErrorScope(
+      device_,
+      [](WGPUErrorType type, const char* message, void*) {
+        // There may be other error types like DeviceLost or Unknown if
+        // the device is destroyed before we receive a response from the
+        // GPU service.
+        if (type == WGPUErrorType_Validation) {
+          DLOG(ERROR) << "WebGPUTextureAlphaClearer errored:" << message;
+        }
+      },
+      nullptr);
 }
 
 }  // namespace blink
