@@ -864,7 +864,8 @@ void CompositeEditCommand::DeleteInsignificantText(Text* text_node,
 
   if (text_layout_object->IsInLayoutNGInlineFormattingContext()) {
     const String string = PlainText(
-        EphemeralRange(Position(*text_node, start), Position(*text_node, end)));
+        EphemeralRange(Position(*text_node, start), Position(*text_node, end)),
+        TextIteratorBehavior::Builder().SetEmitsOriginalText(true).Build());
     if (string.empty())
       return DeleteTextFromNode(text_node, start, end - start);
     // Replace the text between start and end with collapsed version.

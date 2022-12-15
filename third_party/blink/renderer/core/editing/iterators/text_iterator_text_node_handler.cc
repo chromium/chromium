@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_text_state.h"
+#include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 
 namespace blink {
@@ -42,15 +43,30 @@ StringAndOffsetRange ComputeTextAndOffsetsForEmission(
     const NGOffsetMapping& mapping,
     const NGOffsetMappingUnit& unit,
     const TextIteratorBehavior& behavior) {
-  // TODO(xiaochengh): Handle EmitsOriginalText.
-  if (behavior.EmitsSpaceForNbsp()) {
-    String string = mapping.GetText().Substring(
-        unit.TextContentStart(),
-        unit.TextContentEnd() - unit.TextContentStart());
-    string.Replace(kNoBreakSpaceCharacter, kSpaceCharacter);
-    return {string, 0, string.length()};
+  StringAndOffsetRange result{mapping.GetText(), unit.TextContentStart(),
+                              unit.TextContentEnd()};
+
+  if (behavior.EmitsOriginalText()) {
+    // This is ensured because |unit.GetLayoutObject()| must be the
+    // LayoutObject for TextIteratorTextNodeHandler's |text_node_|.
+    DCHECK(IsA<LayoutText>(unit.GetLayoutObject()));
+    result.string =
+        To<LayoutText>(unit.GetLayoutObject())
+            .OriginalText()
+            ->Substring(unit.DOMStart(), unit.DOMEnd() - unit.DOMStart());
+    result.start = 0;
+    result.end = result.string.length();
   }
-  return {mapping.GetText(), unit.TextContentStart(), unit.TextContentEnd()};
+
+  if (behavior.EmitsSpaceForNbsp()) {
+    result.string =
+        result.string.Substring(result.start, result.end - result.start);
+    result.string.Replace(kNoBreakSpaceCharacter, kSpaceCharacter);
+    result.start = 0;
+    result.end = result.string.length();
+  }
+
+  return result;
 }
 
 }  // namespace
