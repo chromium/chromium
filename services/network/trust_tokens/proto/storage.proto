@@ -15,9 +15,8 @@ import "public.proto";
 message TrustTokenIssuerConfig {
   // Any signed-but-unspent tokens received from the issuer.
   repeated TrustToken tokens = 3;
-  // The time of the most recent issuance for this pair. Used for
-  // rate-limiting.
-  optional string last_issuance = 4;
+  // The time of the most recent issuance for this pair.
+  optional Timestamp last_issuance = 4;
 }
 
 // A top-level domain’s config currently just stores
@@ -31,10 +30,10 @@ message TrustTokenToplevelConfig {
 message TrustTokenIssuerToplevelPairConfig {
   // The time of the most recent redemption for this pair. Used for
   // rate-limiting and expiration.
-  optional string last_redemption = 1;
+  optional Timestamp last_redemption = 1;
   // The redemption record cached for this pair, if any.
   optional TrustTokenRedemptionRecord redemption_record = 2;
   // The time of the redemption before last for this pair. Used for
   // rate-limiting.
-  optional string penultimate_redemption = 3;
+  optional Timestamp penultimate_redemption = 3;
 }

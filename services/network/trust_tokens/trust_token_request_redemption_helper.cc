@@ -265,9 +265,8 @@ void TrustTokenRequestRedemptionHelper::Finalize(
   record_to_store.set_body(std::move(*maybe_redemption_record));
   record_to_store.set_token_verification_key(
       std::move(token_verification_key_));
-  int64_t since_epoch =
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
-  record_to_store.set_creation_time_windows_epoch_micros(since_epoch);
+  *record_to_store.mutable_creation_time() =
+      internal::TimeToTimestamp(base::Time::Now());
   if (has_lifetime)
     record_to_store.set_lifetime(lifetime);
   token_store_->SetRedemptionRecord(*issuer_, top_level_origin_,

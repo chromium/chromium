@@ -10,6 +10,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
+#include "services/network/trust_tokens/proto/public.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -18,13 +19,11 @@ namespace internal {
 
 // types.h provides utility functions for Trust TrustTokens type conversion.
 
-// Deserializes a base::Time. Returns nullopt on failure (for instance,
-// deserialization can fail if |my_string| is malformed due to data
-// corruption) and the deserialized Time on success.
-absl::optional<base::Time> StringToTime(base::StringPiece my_string);
+// Converts a Timstamp into a base:Time.
+base::Time TimestampToTime(Timestamp timestamp);
 
-// Serializes a base::Time.
-std::string TimeToString(base::Time my_time);
+// Converts a base:Time into a Timestamp.
+Timestamp TimeToTimestamp(base::Time time);
 
 // Serializes a TrustTokenOperationType.
 base::StringPiece TrustTokenOperationTypeToString(

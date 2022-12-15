@@ -6,15 +6,19 @@
 
 #include "base/json/values_util.h"
 #include "base/time/time.h"
+#include "services/network/trust_tokens/proto/public.pb.h"
 
 namespace network::internal {
 
-absl::optional<base::Time> StringToTime(base::StringPiece my_string) {
-  return base::ValueToTime(base::Value(my_string));
+base::Time TimestampToTime(Timestamp timestamp) {
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(timestamp.micros()));
 }
 
-std::string TimeToString(base::Time my_time) {
-  return base::TimeToValue(my_time).GetString();
+Timestamp TimeToTimestamp(base::Time time) {
+  Timestamp timestamp = Timestamp();
+  timestamp.set_micros(time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  return timestamp;
 }
 
 base::StringPiece TrustTokenOperationTypeToString(

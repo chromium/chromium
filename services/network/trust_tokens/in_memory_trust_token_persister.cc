@@ -4,6 +4,7 @@
 
 #include "services/network/trust_tokens/in_memory_trust_token_persister.h"
 #include "base/containers/cxx20_erase.h"
+#include "services/network/trust_tokens/types.h"
 
 #include "base/containers/cxx20_erase_map.h"
 #include "url/gurl.h"
@@ -79,9 +80,9 @@ bool InMemoryTrustTokenPersister::DeleteIssuerConfig(
     // clear all tokens first, we will add them back if they are not a match
     new_issuer_config.clear_tokens();
     for (const auto& token : kv.second->tokens()) {
-      if (token.has_creation_time_windows_epoch_micros()) {
-        const base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
-            base::Microseconds(token.creation_time_windows_epoch_micros()));
+      if (token.has_creation_time()) {
+        const base::Time creation_time =
+            internal::TimestampToTime(token.creation_time());
         if (!time_matcher.Run(creation_time)) {
           // add token back to new issuer config
           TrustToken* new_token = new_issuer_config.add_tokens();
@@ -155,11 +156,10 @@ bool InMemoryTrustTokenPersister::DeleteIssuerToplevelPairConfig(
       continue;
     }
 
-    if (pair_config->redemption_record()
-            .has_creation_time_windows_epoch_micros()) {
-      const base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
-          base::Microseconds(pair_config->redemption_record()
-                                 .creation_time_windows_epoch_micros()));
+    auto redemption_record = pair_config->redemption_record();
+    if (redemption_record.has_creation_time()) {
+      const base::Time creation_time =
+          internal::TimestampToTime(redemption_record.creation_time());
 
       if (time_matcher.Run(creation_time)) {
         keys_to_delete.push_back(kv.first);

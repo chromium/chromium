@@ -21,9 +21,8 @@ message TrustToken {
   // remain active.
   optional bytes signing_key = 2;  // required
 
-  // Time delta in microseconds between creation of the token and the windows
-  // epoch.
-  optional int64 creation_time_windows_epoch_micros = 3;
+  // Creation time of the token.
+  optional Timestamp creation_time = 3;
 }
 
 // A TrustTokenRedemptionRecord message stores state associated with a single
@@ -42,7 +41,11 @@ message TrustTokenRedemptionRecord {
   // when the relevant key is expired.
   optional uint64 lifetime = 5;
 
-  // Time delta in microseconds between creation of the redemption record and
-  // the windows epoch.
-  optional int64 creation_time_windows_epoch_micros = 6;
+  // Creation time of the redemption record.
+  optional Timestamp creation_time = 6;
+}
+
+message Timestamp {
+  // Represents microseconds since the Windows epoch.
+  required int64 micros = 1;
 }

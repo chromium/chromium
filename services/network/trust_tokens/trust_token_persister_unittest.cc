@@ -4,6 +4,7 @@
 
 #include "services/network/trust_tokens/trust_token_persister.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -20,6 +21,7 @@
 #include "services/network/trust_tokens/sqlite_trust_token_persister.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_database_owner.h"
+#include "services/network/trust_tokens/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -34,26 +36,28 @@ namespace {
 // Some arbitrary time in microseconds since windows epoch. This is a
 // timestamp before begin timestamp to be used in time filters. Tokens
 // and redemtion records created at this time should not be deleted.
-const int64_t before_begin = 12345;
+const base::Time before_begin =
+    base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(12345));
 // 1 microsecond after before_begin, this will be used as begin time
 // in time filters.
-const base::Time begin_time = base::Time::FromDeltaSinceWindowsEpoch(
-    base::Microseconds(before_begin) + base::Microseconds(1));
+const base::Time begin_time = before_begin + base::Microseconds(1);
 // 42 seconds later than begin_time (in microseconds since windows epoch). This
 // will be used as creation time for token and redemption records.  Data with
 // this creation time will get deleted.
-const int64_t time_in_window =
-    begin_time.ToDeltaSinceWindowsEpoch().InMicroseconds() +
-    base::Seconds(42).InMicroseconds();
+const base::Time time_in_window = begin_time + base::Seconds(42);
 // 1 second after time_in_window, this will be used as end time in time
 // filters.
-const base::Time end_time = base::Time::FromDeltaSinceWindowsEpoch(
-    base::Microseconds(time_in_window) + base::Seconds(1));
+const base::Time end_time = time_in_window + base::Seconds(1);
 // 1 microseconds later than end time (in microseconds since windows epoch).
 // This will be used as a creation time, data created at this time
 // should not be deleted.
-const int64_t after_end_time =
-    end_time.ToDeltaSinceWindowsEpoch().InMicroseconds() + 1;
+const base::Time after_end_time = end_time + base::Microseconds(1);
+
+// Helper for creating a Timestamp object from a number of microseconds
+const auto TimestampFromMicros = [](int64_t micros) -> Timestamp {
+  return internal::TimeToTimestamp(
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(micros)));
+};
 
 // A matcher that returns true if origin == origin_to_delete.
 // This is used to create matchers in tests.
@@ -255,8 +259,8 @@ TYPED_TEST(TrustTokenPersisterTest, StoresIssuerToplevelPairConfigs) {
                        // time to initialize.
 
   TrustTokenIssuerToplevelPairConfig config;
-  config.set_penultimate_redemption("four o'clock");
-  config.set_last_redemption("five o'clock");
+  *config.mutable_penultimate_redemption() = TimestampFromMicros(100);
+  *config.mutable_last_redemption() = TimestampFromMicros(200);
 
   auto config_to_store =
       std::make_unique<TrustTokenIssuerToplevelPairConfig>(config);
@@ -296,8 +300,8 @@ TYPED_TEST(TrustTokenPersisterTest, DeletesIssuerToplevelKeyedDataNoRR) {
 
   // create pair config that has no redemption record
   TrustTokenIssuerToplevelPairConfig pair_config;
-  pair_config.set_penultimate_redemption("four o'clock");
-  pair_config.set_last_redemption("five o'clock");
+  *pair_config.mutable_penultimate_redemption() = TimestampFromMicros(100);
+  *pair_config.mutable_last_redemption() = TimestampFromMicros(200);
 
   // set config
   auto toplevel = *SuitableTrustTokenOrigin::Create(GURL("https://a.com/"));
@@ -326,8 +330,8 @@ TYPED_TEST(TrustTokenPersisterTest,
 
   // create pair config that has no redemption record
   TrustTokenIssuerToplevelPairConfig pair_config;
-  pair_config.set_penultimate_redemption("four o'clock");
-  pair_config.set_last_redemption("five o'clock");
+  *pair_config.mutable_penultimate_redemption() = TimestampFromMicros(100);
+  *pair_config.mutable_last_redemption() = TimestampFromMicros(200);
 
   // set redemption record
   TrustTokenRedemptionRecord rr;
@@ -372,15 +376,15 @@ TYPED_TEST(TrustTokenPersisterTest,
 
   // create pair config that has no redemption record
   TrustTokenIssuerToplevelPairConfig pair_config;
-  pair_config.set_penultimate_redemption("four o'clock");
-  pair_config.set_last_redemption("five o'clock");
+  *pair_config.mutable_penultimate_redemption() = TimestampFromMicros(100);
+  *pair_config.mutable_last_redemption() = TimestampFromMicros(100);
 
   // set redemption record
   TrustTokenRedemptionRecord rr;
   rr.set_body("rr body");
   rr.set_token_verification_key("key");
   rr.set_lifetime(1234567);
-  rr.set_creation_time_windows_epoch_micros(before_begin);
+  *rr.mutable_creation_time() = internal::TimeToTimestamp(before_begin);
   *(pair_config.mutable_redemption_record()) = rr;
 
   // set config
@@ -400,8 +404,8 @@ TYPED_TEST(TrustTokenPersisterTest,
   EXPECT_TRUE(persister->GetIssuerToplevelPairConfig(issuer, toplevel));
 
   // set creation time to after end
-  pair_config.mutable_redemption_record()
-      ->set_creation_time_windows_epoch_micros(after_end_time);
+  *pair_config.mutable_redemption_record()->mutable_creation_time() =
+      internal::TimeToTimestamp(after_end_time);
   env.RunUntilIdle();
 
   // Creation time is after end time. Should not delete.
@@ -423,15 +427,15 @@ TYPED_TEST(TrustTokenPersisterTest,
 
   // create pair config that has no redemption record
   TrustTokenIssuerToplevelPairConfig pair_config;
-  pair_config.set_penultimate_redemption("four o'clock");
-  pair_config.set_last_redemption("five o'clock");
+  *pair_config.mutable_penultimate_redemption() = TimestampFromMicros(100);
+  *pair_config.mutable_last_redemption() = TimestampFromMicros(200);
 
   // set redemption record
   TrustTokenRedemptionRecord rr;
   rr.set_body("rr body");
   rr.set_token_verification_key("key");
   rr.set_lifetime(1234567);
-  rr.set_creation_time_windows_epoch_micros(time_in_window);
+  *rr.mutable_creation_time() = internal::TimeToTimestamp(time_in_window);
   *(pair_config.mutable_redemption_record()) = rr;
 
   // set config
@@ -527,7 +531,7 @@ TYPED_TEST(TrustTokenPersisterTest,
   // set token
   TrustToken* token = issuer_config.add_tokens();
   token->set_signing_key("key");
-  token->set_creation_time_windows_epoch_micros(before_begin);
+  *token->mutable_creation_time() = internal::TimeToTimestamp(before_begin);
 
   // set issuer config
   auto issuer = *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
@@ -547,7 +551,7 @@ TYPED_TEST(TrustTokenPersisterTest,
   issuer_config.clear_tokens();
   token = issuer_config.add_tokens();
   token->set_signing_key("key");
-  token->set_creation_time_windows_epoch_micros(time_in_window);
+  *token->mutable_creation_time() = internal::TimeToTimestamp(time_in_window);
   persister->SetIssuerConfig(
       issuer, std::make_unique<TrustTokenIssuerConfig>(issuer_config));
   env.RunUntilIdle();
@@ -612,7 +616,7 @@ TYPED_TEST(TrustTokenPersisterTest, RetrievesAvailableTrustTokens) {
   TrustTokenIssuerConfig config;
   TrustToken my_token;
   my_token.set_body("token token token");
-  my_token.set_creation_time_windows_epoch_micros(time_in_window);
+  *my_token.mutable_creation_time() = internal::TimeToTimestamp(time_in_window);
   *config.add_tokens() = my_token;
 
   auto config_to_store = std::make_unique<TrustTokenIssuerConfig>(config);
@@ -647,17 +651,20 @@ TYPED_TEST(TrustTokenPersisterTest, SomeTokensAreOutOfTimeWindow) {
     TrustToken* first_token = issuer_config.add_tokens();
     first_token->set_signing_key("key");
     first_token->set_body("before begin time");
-    first_token->set_creation_time_windows_epoch_micros(before_begin);
+    *first_token->mutable_creation_time() =
+        internal::TimeToTimestamp(before_begin);
 
     TrustToken* second_token = issuer_config.add_tokens();
     second_token->set_signing_key("key");
     second_token->set_body("between begin and end time");
-    second_token->set_creation_time_windows_epoch_micros(time_in_window);
+    *second_token->mutable_creation_time() =
+        internal::TimeToTimestamp(time_in_window);
 
     TrustToken* third_token = issuer_config.add_tokens();
     third_token->set_signing_key("key");
     third_token->set_body("after end");
-    third_token->set_creation_time_windows_epoch_micros(after_end_time);
+    *third_token->mutable_creation_time() =
+        internal::TimeToTimestamp(after_end_time);
   }
 
   auto issuer = *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
@@ -697,21 +704,19 @@ TYPED_TEST(TrustTokenPersisterTest, AllTokensAreWithinTimeWindow) {
 
   TrustTokenIssuerConfig issuer_config;
 
-  const int64_t begin_time_in_micros =
-      begin_time.ToDeltaSinceWindowsEpoch().InMicroseconds();
-  const int64_t end_time_in_micros =
-      end_time.ToDeltaSinceWindowsEpoch().InMicroseconds();
   // add tokens within window
   for (int i = 0; i < 5; ++i) {
     TrustToken* b_token = issuer_config.add_tokens();
     b_token->set_signing_key("key");
     b_token->set_body("token towards begin time");
-    b_token->set_creation_time_windows_epoch_micros(begin_time_in_micros + i);
+    *b_token->mutable_creation_time() =
+        internal::TimeToTimestamp(begin_time + base::Microseconds(i));
 
     TrustToken* e_token = issuer_config.add_tokens();
     e_token->set_signing_key("key");
     e_token->set_body("token towards end time");
-    e_token->set_creation_time_windows_epoch_micros(end_time_in_micros - i);
+    *e_token->mutable_creation_time() =
+        internal::TimeToTimestamp(end_time - base::Microseconds(i));
   }
   auto issuer = *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
 
@@ -751,12 +756,14 @@ TYPED_TEST(TrustTokenPersisterTest, AllTokensAreOutOfTimeWindow) {
     TrustToken* first_token = issuer_config.add_tokens();
     first_token->set_signing_key("key");
     first_token->set_body("before begin time");
-    first_token->set_creation_time_windows_epoch_micros(before_begin);
+    *first_token->mutable_creation_time() =
+        internal::TimeToTimestamp(before_begin);
 
     TrustToken* second_token = issuer_config.add_tokens();
     second_token->set_signing_key("key");
     second_token->set_body("after end");
-    second_token->set_creation_time_windows_epoch_micros(after_end_time);
+    *second_token->mutable_creation_time() =
+        internal::TimeToTimestamp(after_end_time);
   }
 
   auto issuer = *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
@@ -797,13 +804,13 @@ TYPED_TEST(TrustTokenPersisterTest,
                        // time to initialize.
 
   TrustTokenIssuerToplevelPairConfig config;
-  config.set_penultimate_redemption("four o'clock");
-  config.set_last_redemption("five o'clock");
+  *config.mutable_penultimate_redemption() = TimestampFromMicros(100);
+  *config.mutable_last_redemption() = TimestampFromMicros(200);
   TrustTokenRedemptionRecord rr;
   rr.set_body("rr body");
   rr.set_token_verification_key("key");
   rr.set_lifetime(1234567);
-  rr.set_creation_time_windows_epoch_micros(before_begin);
+  *rr.mutable_creation_time() = internal::TimeToTimestamp(before_begin);
   *(config.mutable_redemption_record()) = rr;
 
   auto config_to_store =
@@ -826,7 +833,7 @@ TYPED_TEST(TrustTokenPersisterTest,
   EXPECT_THAT(result, Pointee(EqualsProto(config)));
 
   // update redemptino record to have creation time after end time
-  rr.set_creation_time_windows_epoch_micros(after_end_time);
+  *rr.mutable_creation_time() = internal::TimeToTimestamp(after_end_time);
   *(result->mutable_redemption_record()) = rr;
   env.RunUntilIdle();
 

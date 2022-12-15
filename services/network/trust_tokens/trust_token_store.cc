@@ -66,7 +66,8 @@ void TrustTokenStore::RecordIssuance(const SuitableTrustTokenOrigin& issuer) {
       persister_->GetIssuerConfig(issuer);
   if (!config)
     config = std::make_unique<TrustTokenIssuerConfig>();
-  config->set_last_issuance(internal::TimeToString(base::Time::Now()));
+  *config->mutable_last_issuance() =
+      internal::TimeToTimestamp(base::Time::Now());
   persister_->SetIssuerConfig(issuer, std::move(config));
 }
 
@@ -78,12 +79,9 @@ absl::optional<base::TimeDelta> TrustTokenStore::TimeSinceLastIssuance(
     return absl::nullopt;
   if (!config->has_last_issuance())
     return absl::nullopt;
-  absl::optional<base::Time> maybe_last_issuance =
-      internal::StringToTime(config->last_issuance());
-  if (!maybe_last_issuance)
-    return absl::nullopt;
 
-  base::TimeDelta ret = base::Time::Now() - *maybe_last_issuance;
+  base::Time last_issuance = internal::TimestampToTime(config->last_issuance());
+  base::TimeDelta ret = base::Time::Now() - last_issuance;
   if (ret.is_negative())
     return absl::nullopt;
 
@@ -100,12 +98,10 @@ bool TrustTokenStore::IsRedemptionLimitHit(
     return false;
   if (!config->has_penultimate_redemption())
     return false;
-  absl::optional<base::Time> maybe_penultimate_redemption =
-      internal::StringToTime(config->penultimate_redemption());
-  if (!maybe_penultimate_redemption)
-    return false;
 
-  base::TimeDelta ret = base::Time::Now() - *maybe_penultimate_redemption;
+  base::Time penultimate_redemption =
+      internal::TimestampToTime(config->penultimate_redemption());
+  base::TimeDelta ret = base::Time::Now() - penultimate_redemption;
   if (ret.is_negative())
     return false;
   if (ret > base::Seconds(
@@ -122,14 +118,10 @@ absl::optional<base::TimeDelta> TrustTokenStore::TimeSinceLastRedemption(
     return absl::nullopt;
   if (!config->has_last_redemption())
     return absl::nullopt;
-  absl::optional<base::Time> maybe_last_redemption =
-      internal::StringToTime(config->last_redemption());
-  // internal::StringToTime can fail in the case of data corruption (or writer
-  // error).
-  if (!maybe_last_redemption)
-    return absl::nullopt;
 
-  base::TimeDelta ret = base::Time::Now() - *maybe_last_redemption;
+  base::Time last_redemption =
+      internal::TimestampToTime(config->last_redemption());
+  base::TimeDelta ret = base::Time::Now() - last_redemption;
   if (ret.is_negative())
     return absl::nullopt;
   return ret;
@@ -209,9 +201,8 @@ void TrustTokenStore::AddTokens(const SuitableTrustTokenOrigin& issuer,
     TrustToken* entry = config->add_tokens();
     entry->set_body(*it);
     entry->set_signing_key(std::string(issuing_key));
-    int64_t since_epoch =
-        base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
-    entry->set_creation_time_windows_epoch_micros(since_epoch);
+    *entry->mutable_creation_time() =
+        internal::TimeToTimestamp(base::Time::Now());
   }
 
   persister_->SetIssuerConfig(issuer, std::move(config));
@@ -266,8 +257,9 @@ void TrustTokenStore::SetRedemptionRecord(
   if (!config)
     config = std::make_unique<TrustTokenIssuerToplevelPairConfig>();
   *config->mutable_redemption_record() = record;
-  config->set_penultimate_redemption(config->last_redemption());
-  config->set_last_redemption(internal::TimeToString(base::Time::Now()));
+  *config->mutable_penultimate_redemption() = config->last_redemption();
+  *config->mutable_last_redemption() =
+      internal::TimeToTimestamp(base::Time::Now());
   persister_->SetIssuerToplevelPairConfig(issuer, top_level, std::move(config));
 }
 

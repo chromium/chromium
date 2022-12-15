@@ -25,6 +25,7 @@
 #include "services/network/trust_tokens/trust_token_key_commitment_getter.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "services/network/trust_tokens/trust_token_store.h"
+#include "services/network/trust_tokens/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -985,8 +986,8 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")));
   EXPECT_TRUE(maybe_record);
   EXPECT_FALSE(maybe_record->has_lifetime());
-  EXPECT_TRUE(maybe_record->has_creation_time_windows_epoch_micros());
-  EXPECT_EQ(maybe_record->creation_time_windows_epoch_micros(),
+  EXPECT_TRUE(maybe_record->has_creation_time());
+  EXPECT_EQ(maybe_record->creation_time().micros(),
             base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 

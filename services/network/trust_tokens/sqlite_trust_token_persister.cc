@@ -13,6 +13,7 @@
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/proto/storage.pb.h"
 #include "services/network/trust_tokens/trust_token_database_owner.h"
+#include "services/network/trust_tokens/types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -192,9 +193,9 @@ bool SQLiteTrustTokenPersister::DeleteIssuerConfig(
     // clear all tokens first, we will add them back if they are not a match
     new_issuer_config.clear_tokens();
     for (const auto& token : kv.second.tokens()) {
-      if (token.has_creation_time_windows_epoch_micros()) {
-        const base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
-            base::Microseconds(token.creation_time_windows_epoch_micros()));
+      if (token.has_creation_time()) {
+        const base::Time creation_time =
+            internal::TimestampToTime(token.creation_time());
         if (!time_matcher.Run(creation_time)) {
           // add token back to new issuer config
           TrustToken* new_token = new_issuer_config.add_tokens();
@@ -281,11 +282,10 @@ bool SQLiteTrustTokenPersister::DeleteIssuerToplevelPairConfig(
       continue;
     }
 
-    if (pair_config.redemption_record()
-            .has_creation_time_windows_epoch_micros()) {
-      const base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
-          base::Microseconds(pair_config.redemption_record()
-                                 .creation_time_windows_epoch_micros()));
+    auto redemption_record = pair_config.redemption_record();
+    if (redemption_record.has_creation_time()) {
+      const base::Time creation_time =
+          internal::TimestampToTime(redemption_record.creation_time());
       if (time_matcher.Run(creation_time)) {
         keys_to_delete.push_back(kv.first);
         data_deleted = true;
