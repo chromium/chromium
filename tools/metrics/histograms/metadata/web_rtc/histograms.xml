@@ -754,56 +754,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.BWE.Probing.ProbeClusterSizeInBytes" units="bytes"
-    expires_after="2022-01-23">
-  <owner>jonasolsson@chromium.org</owner>
-  <owner>crodbro@chromium.org</owner>
-  <summary>
-    The size in bytes of the probe cluster. Counted for each cluster once all
-    its packets have been sent.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.BWE.Probing.ProbesPerCluster" units="units"
-    expires_after="2022-01-23">
-  <owner>jonasolsson@chromium.org</owner>
-  <owner>crodbro@chromium.org</owner>
-  <summary>
-    The size in packets of the probe cluster. Counted for each cluster once all
-    its packets have been sent.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.BWE.Probing.TimePerProbeCluster" units="ms"
-    expires_after="2022-08-28">
-  <owner>jonasolsson@chromium.org</owner>
-  <owner>crodbro@chromium.org</owner>
-  <summary>
-    The time from sending the first to the last packet of the probe cluster.
-    Counted for each cluster once all its packets have been sent.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.BWE.Probing.TotalFailedProbeClusters" units="units"
-    expires_after="2020-10-01">
-  <owner>jonasolsson@chromium.org</owner>
-  <owner>crodbro@chromium.org</owner>
-  <summary>
-    Counts the amount of probe clusters that timed out. Counted when the prober
-    is destroyed.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.BWE.Probing.TotalProbeClustersRequested" units="units"
-    expires_after="2022-01-16">
-  <owner>jonasolsson@chromium.org</owner>
-  <owner>crodbro@chromium.org</owner>
-  <summary>
-    Counts the amount of probe clusters that the bitrate prober created. Counted
-    when the prober is destroyed.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.BWE.RampUpTimeTo1000kbpsInMs" units="ms"
     expires_after="2023-02-26">
   <owner>holmer@chromium.org</owner>
