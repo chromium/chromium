@@ -5,7 +5,6 @@
 #include "chrome/services/file_util/single_file_tar_reader.h"
 
 #include "base/check.h"
-#include "base/numerics/safe_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {

@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,7 +45,8 @@ TEST_F(SingleFileTarReaderTest, ExtractTarFile) {
 
     base::span<const uint8_t> bin_buffer;
     tar_reader.ExtractChunk(
-        base::make_span(tar_buffer.data(), static_cast<size_t>(bytes_read)),
+        base::make_span(tar_buffer.data(),
+                        base::checked_cast<size_t>(bytes_read)),
         bin_buffer);
     contents.insert(contents.begin(), bin_buffer.begin(), bin_buffer.end());
   }
@@ -91,7 +93,8 @@ TEST_F(SingleFileTarReaderTest, EmptyFile) {
 
   base::span<const uint8_t> bin_buffer;
   tar_reader.ExtractChunk(
-      base::make_span(tar_buffer.data(), static_cast<size_t>(bytes_read)),
+      base::make_span(tar_buffer.data(),
+                      base::checked_cast<size_t>(bytes_read)),
       bin_buffer);
 
   EXPECT_TRUE(tar_reader.IsComplete());

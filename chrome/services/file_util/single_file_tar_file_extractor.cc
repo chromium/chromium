@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/numerics/safe_conversions.h"
 #include "chrome/services/file_util/public/mojom/constants.mojom.h"
 #include "chrome/services/file_util/single_file_tar_reader.h"
 

@@ -57,9 +57,9 @@ class ExtractorInner {
       }
 
       absl::optional<chrome::file_util::mojom::ExtractionResult> result;
-      ExtractChunk(
-          base::make_span(xz_buffer.data(), static_cast<size_t>(bytes_read)),
-          &result);
+      ExtractChunk(base::make_span(xz_buffer.data(),
+                                   base::checked_cast<size_t>(bytes_read)),
+                   &result);
       if (result.has_value())
         return result.value();
 
