@@ -1014,44 +1014,18 @@ bool SetNonBlocking(int fd) {
   return false;
 }
 
-namespace {
-
-// ::PrefetchVirtualMemory() is only available on Windows 8 and above. Chrome
-// supports Windows 7, so we need to check for the function's presence
-// dynamically.
-using PrefetchVirtualMemoryPtr = decltype(&::PrefetchVirtualMemory);
-
-// Returns null if ::PrefetchVirtualMemory() is not available.
-PrefetchVirtualMemoryPtr GetPrefetchVirtualMemoryPtr() {
-  HMODULE kernel32_dll = ::GetModuleHandleA("kernel32.dll");
-  return reinterpret_cast<PrefetchVirtualMemoryPtr>(
-      GetProcAddress(kernel32_dll, "PrefetchVirtualMemory"));
-}
-
-}  // namespace
-
 bool PreReadFile(const FilePath& file_path,
                  bool is_executable,
                  int64_t max_bytes) {
   DCHECK_GE(max_bytes, 0);
 
-  // On Win8 and higher use ::PrefetchVirtualMemory(). This is better than a
-  // simple data file read, more from a RAM perspective than CPU. This is
-  // because reading the file as data results in double mapping to
-  // Image/executable pages for all pages of code executed.
-  static PrefetchVirtualMemoryPtr prefetch_virtual_memory =
-      GetPrefetchVirtualMemoryPtr();
-
-  if (prefetch_virtual_memory == nullptr)
-    return internal::PreReadFileSlow(file_path, max_bytes);
-
   if (max_bytes == 0) {
-    // PrefetchVirtualMemory() fails when asked to read zero bytes.
+    // ::PrefetchVirtualMemory() fails when asked to read zero bytes.
     // base::MemoryMappedFile::Initialize() fails on an empty file.
     return true;
   }
 
-  // PrefetchVirtualMemory() fails if the file is opened with write access.
+  // ::PrefetchVirtualMemory() fails if the file is opened with write access.
   MemoryMappedFile::Access access = is_executable
                                         ? MemoryMappedFile::READ_CODE_IMAGE
                                         : MemoryMappedFile::READ_ONLY;
@@ -1063,7 +1037,11 @@ bool PreReadFile(const FilePath& file_path,
       std::min(base::saturated_cast<::SIZE_T>(max_bytes),
                base::saturated_cast<::SIZE_T>(mapped_file.length()));
   ::_WIN32_MEMORY_RANGE_ENTRY address_range = {mapped_file.data(), length};
-  if (!prefetch_virtual_memory(::GetCurrentProcess(),
+  // Use ::PrefetchVirtualMemory(). This is better than a
+  // simple data file read, more from a RAM perspective than CPU. This is
+  // because reading the file as data results in double mapping to
+  // Image/executable pages for all pages of code executed.
+  if (!::PrefetchVirtualMemory(::GetCurrentProcess(),
                                /*NumberOfEntries=*/1, &address_range,
                                /*Flags=*/0)) {
     return internal::PreReadFileSlow(file_path, max_bytes);
