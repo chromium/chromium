@@ -216,10 +216,10 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorPrefsBrowserTest,
   auto state = base::MakeRefCounted<JsonPrefStore>(data_path.Append(
       *context_params->file_paths->http_server_properties_file_name));
 
-  base::DictionaryValue pref_value;
-  base::Value value("2G");
-  pref_value.SetKey("network_id_foo", value.Clone());
-  state->SetValue("net.network_qualities", pref_value.Clone(), 0);
+  base::Value::Dict pref_value;
+  pref_value.Set("network_id_foo", "2G");
+  state->SetValue("net.network_qualities", base::Value(std::move(pref_value)),
+                  0);
 
   // Wait for the pending commit to finish before creating the network context.
   base::RunLoop loop;
