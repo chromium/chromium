@@ -75,12 +75,16 @@ enum class OobeDialogState {
 
   // Showing enrollment success step.
   ENROLLMENT_SUCCESS = 17,
+
   // Showing theme selection screen.
   THEME_SELECTION = 18,
 
   // Showing marketing opt-in screen.
   MARKETING_OPT_IN = 19,
 
+  // Closing the login screen extension UI created by a Chrome extension using
+  // chrome.loginScreenUi API.
+  EXTENSION_LOGIN_CLOSED = 20,
 };
 
 // Modes of the managed device, which is used to update the visibility of

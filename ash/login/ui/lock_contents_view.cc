@@ -531,6 +531,11 @@ LockContentsView::TestApi::users() const {
   return view_->users_;
 }
 
+LoginCameraTimeoutView* LockContentsView::TestApi::login_camera_timeout_view()
+    const {
+  return view_->login_camera_timeout_view_;
+}
+
 LoginBigUserView* LockContentsView::TestApi::FindBigUser(
     const AccountId& account_id) {
   LoginBigUserView* big_view =
@@ -1489,20 +1494,27 @@ void LockContentsView::OnFocusLeavingLockScreenApps(bool reverse) {
 }
 
 void LockContentsView::OnOobeDialogStateChanged(OobeDialogState state) {
-  bool oobe_dialog_was_visible = oobe_dialog_visible_;
-  oobe_dialog_visible_ = state != OobeDialogState::HIDDEN;
+  const bool oobe_dialog_was_visible = oobe_dialog_visible_;
+  oobe_dialog_visible_ = state != OobeDialogState::HIDDEN &&
+                         state != OobeDialogState::EXTENSION_LOGIN &&
+                         state != OobeDialogState::EXTENSION_LOGIN_CLOSED;
   extension_ui_visible_ = state == OobeDialogState::EXTENSION_LOGIN;
+  const bool oobe_dialog_closed = state == OobeDialogState::HIDDEN;
+  // If the main dialog is not visible any more. The main dialog can either be
+  // the OOBE dialog or the login screen extension UI.
+  const bool main_dialog_closed =
+      oobe_dialog_closed || state == OobeDialogState::EXTENSION_LOGIN_CLOSED;
 
   // Show either oobe dialog or user pods.
   if (main_view_)
-    main_view_->SetVisible(!oobe_dialog_visible_);
-  GetWidget()->widget_delegate()->SetCanActivate(!oobe_dialog_visible_);
+    main_view_->SetVisible(main_dialog_closed);
+  GetWidget()->widget_delegate()->SetCanActivate(main_dialog_closed);
 
   UpdateBottomStatusIndicatorVisibility();
 
-  if (!oobe_dialog_visible_ && CurrentBigUserView()) {
+  if (main_dialog_closed && CurrentBigUserView()) {
     CurrentBigUserView()->RequestFocus();
-  } else if (!oobe_dialog_visible_ && login_camera_timeout_view_) {
+  } else if (oobe_dialog_closed && login_camera_timeout_view_) {
     login_camera_timeout_view_->RequestFocus();
   }
   // If OOBE dialog visibility changes we need to force an update of the a11y

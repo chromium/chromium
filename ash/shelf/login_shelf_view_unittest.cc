@@ -526,6 +526,14 @@ TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterDialogStateChange) {
   login_shelf_view_->SetLoginDialogState(OobeDialogState::EXTENSION_LOGIN);
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
 
+  // Show shutdown, browse as guest and add user buttons when state ==
+  // OobeDialogState::EXTENSION_LOGIN_CLOSED.
+  login_shelf_view_->SetLoginDialogState(
+      OobeDialogState::EXTENSION_LOGIN_CLOSED);
+  EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown,
+                                 LoginShelfView::kBrowseAsGuest,
+                                 LoginShelfView::kAddUser}));
+
   // Hide shutdown button during enrollment.
   login_shelf_view_->SetLoginDialogState(
       OobeDialogState::ENROLLMENT_CANCEL_DISABLED);

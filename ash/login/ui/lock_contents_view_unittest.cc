@@ -22,6 +22,7 @@
 #include "ash/login/ui/lock_screen_media_controls_view.h"
 #include "ash/login/ui/login_auth_user_view.h"
 #include "ash/login/ui/login_big_user_view.h"
+#include "ash/login/ui/login_camera_timeout_view.h"
 #include "ash/login/ui/login_display_style.h"
 #include "ash/login/ui/login_expanded_public_account_view.h"
 #include "ash/login/ui/login_keyboard_test_base.h"
@@ -3221,6 +3222,142 @@ TEST_F(LockContentsViewUnitTest, SmartLockStateHidesAuthErrorMessage) {
   // notifying a successful auth result will hide the password field.
   DataDispatcher()->NotifySmartLockAuthResult(account_id, /*successful=*/true);
   EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
+}
+
+TEST_F(LockContentsViewUnitTest,
+       LoginNotReactingOnEventsWithLoginExtensionUiShown) {
+  auto* contents = new LockContentsView(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  SetWidget(CreateWidgetWithContent(contents));
+  SetUserCount(3);
+
+  LockContentsView::TestApi lock_contents(contents);
+  ScrollableUsersListView::TestApi users_list(lock_contents.users_list());
+  const auto* const list_user_view = users_list.user_views()[0];
+  LoginBigUserView* auth_view = lock_contents.primary_big_view();
+
+  AccountId auth_view_user =
+      auth_view->GetCurrentUser().basic_user_info.account_id;
+  AccountId list_user =
+      list_user_view->current_user().basic_user_info.account_id;
+
+  DataDispatcher()->NotifyOobeDialogState(OobeDialogState::EXTENSION_LOGIN);
+
+  // Send event to swap users.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(list_user_view->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+
+  // User info is not swapped.
+  EXPECT_EQ(auth_view_user,
+            auth_view->GetCurrentUser().basic_user_info.account_id);
+  EXPECT_EQ(list_user,
+            list_user_view->current_user().basic_user_info.account_id);
+
+  // Hide Login extension UI.
+  DataDispatcher()->NotifyOobeDialogState(
+      OobeDialogState::EXTENSION_LOGIN_CLOSED);
+
+  // Attempt swap again.
+  generator->MoveMouseTo(list_user_view->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+
+  // User info should be now swapped.
+  EXPECT_EQ(list_user, auth_view->GetCurrentUser().basic_user_info.account_id);
+  EXPECT_EQ(auth_view_user,
+            list_user_view->current_user().basic_user_info.account_id);
+}
+
+TEST_F(LockContentsViewUnitTest, LoginExtensionUiWithUsers) {
+  // If the device is enrolled, bottom_status_indicator should be visible.
+  Shell::Get()->system_tray_model()->SetDeviceEnterpriseInfo(
+      DeviceEnterpriseInfo{"BestCompanyEver",
+                           /*active_directory_managed=*/false,
+                           ManagementDeviceMode::kNone});
+
+  auto* contents = new LockContentsView(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  SetWidget(CreateWidgetWithContent(contents));
+  SetUserCount(3);
+
+  LockContentsView::TestApi lock_contents(contents);
+
+  // login_camera_timeout_view not created when there are users.
+  EXPECT_EQ(nullptr, lock_contents.login_camera_timeout_view());
+
+  views::View* main_view = lock_contents.main_view();
+  EXPECT_TRUE(main_view->GetVisible());
+  EXPECT_TRUE(lock_contents.bottom_status_indicator()->GetVisible());
+
+  // Show login screen extension UI.
+  DataDispatcher()->NotifyOobeDialogState(OobeDialogState::EXTENSION_LOGIN);
+
+  // Main view and bottom_status_indicator not visible any more.
+  EXPECT_FALSE(main_view->GetVisible());
+  EXPECT_FALSE(lock_contents.bottom_status_indicator()->GetVisible());
+
+  // Close login screen extension UI.
+  DataDispatcher()->NotifyOobeDialogState(
+      OobeDialogState::EXTENSION_LOGIN_CLOSED);
+
+  EXPECT_TRUE(main_view->GetVisible());
+  EXPECT_TRUE(lock_contents.bottom_status_indicator()->GetVisible());
+}
+
+TEST_F(LockContentsViewUnitTest, LoginExtensionUiWithNoUsers) {
+  // If the device is enrolled, bottom_status_indicator should be visible.
+  Shell::Get()->system_tray_model()->SetDeviceEnterpriseInfo(
+      DeviceEnterpriseInfo{"BestCompanyEver",
+                           /*active_directory_managed=*/false,
+                           ManagementDeviceMode::kNone});
+
+  auto* contents = new LockContentsView(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  SetWidget(CreateWidgetWithContent(contents));
+  SetUserCount(0);
+
+  LockContentsView::TestApi lock_contents(contents);
+
+  // login_camera_timeout_view is created when there are no users.
+  ASSERT_NE(nullptr, lock_contents.login_camera_timeout_view());
+  LoginCameraTimeoutView::TestApi login_camera_timeout_view(
+      lock_contents.login_camera_timeout_view());
+
+  views::View* main_view = lock_contents.main_view();
+  EXPECT_TRUE(main_view->GetVisible());
+  EXPECT_TRUE(lock_contents.bottom_status_indicator()->GetVisible());
+  EXPECT_FALSE(login_camera_timeout_view.arrow_button()->HasFocus());
+
+  // Show login screen extension UI.
+  DataDispatcher()->NotifyOobeDialogState(OobeDialogState::EXTENSION_LOGIN);
+
+  // Main view and bottom_status_indicator not visible any more.
+  EXPECT_FALSE(main_view->GetVisible());
+  EXPECT_FALSE(lock_contents.bottom_status_indicator()->GetVisible());
+  EXPECT_FALSE(login_camera_timeout_view.arrow_button()->HasFocus());
+
+  // Close login screen extension UI.
+  DataDispatcher()->NotifyOobeDialogState(
+      OobeDialogState::EXTENSION_LOGIN_CLOSED);
+
+  EXPECT_TRUE(main_view->GetVisible());
+  EXPECT_TRUE(lock_contents.bottom_status_indicator()->GetVisible());
+  // LoginCameraTimeoutView's arrow_button is not focused when the login screen
+  // extension UI closed.
+  EXPECT_FALSE(login_camera_timeout_view.arrow_button()->HasFocus());
+
+  // Hide OOBE dialog.
+  DataDispatcher()->NotifyOobeDialogState(OobeDialogState::HIDDEN);
+
+  // LoginCameraTimeoutView's arrow_button gets focused when the OOBE dialog is
+  // hidden.
+  EXPECT_TRUE(login_camera_timeout_view.arrow_button()->HasFocus());
 }
 
 class LockContentsViewWithKioskLicenseTest : public LoginTestBase {

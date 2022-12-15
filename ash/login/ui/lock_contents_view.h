@@ -114,6 +114,7 @@ class ASH_EXPORT LockContentsView
     LoginExpandedPublicAccountView* expanded_view() const;
     views::View* main_view() const;
     const std::vector<LockContentsView::UserState>& users() const;
+    LoginCameraTimeoutView* login_camera_timeout_view() const;
 
     // Finds and focuses (if needed) Big User View view specified by
     // |account_id|. Returns nullptr if the user not found.

@@ -220,6 +220,8 @@ class ASH_EXPORT LoginShelfView : public views::View,
 
   bool ShouldShowSignInButton() const;
 
+  bool ShouldShowAddUserButton() const;
+
   bool ShouldShowAppsButton() const;
 
   bool ShouldShowGuestAndAppsButtons() const;

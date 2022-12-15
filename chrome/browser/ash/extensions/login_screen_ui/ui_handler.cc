@@ -168,7 +168,7 @@ void UiHandler::OnWindowClosed(const std::string& extension_id) {
 
 void UiHandler::ResetWindowAndHide() {
   ash::LoginScreen::Get()->GetModel()->NotifyOobeDialogState(
-      ash::OobeDialogState::HIDDEN);
+      ash::OobeDialogState::EXTENSION_LOGIN_CLOSED);
 
   current_window_.reset(nullptr);
 }

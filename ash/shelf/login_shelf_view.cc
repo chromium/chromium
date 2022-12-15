@@ -898,19 +898,12 @@ void LoginShelfView::UpdateUi() {
                                    SessionState::LOGIN_SECONDARY);
   GetViewByID(kParentAccess)->SetVisible(is_locked && show_parent_access_);
 
-  bool is_login_primary = (session_state == SessionState::LOGIN_PRIMARY);
-  bool dialog_visible = dialog_state_ != OobeDialogState::HIDDEN;
-
   GetViewByID(kBrowseAsGuest)->SetVisible(ShouldShowGuestButton());
   GetViewByID(kEnterpriseEnrollment)
       ->SetVisible(ShouldShowEnterpriseEnrollmentButton());
   GetViewByID(kSignIn)->SetVisible(ShouldShowSignInButton());
 
-  // Show add user button when it's in login screen and Oobe UI dialog is not
-  // visible. The button should not appear if the device is not connected to a
-  // network.
-  GetViewByID(kAddUser)->SetVisible(!kiosk_license_mode_ && !dialog_visible &&
-                                    is_login_primary);
+  GetViewByID(kAddUser)->SetVisible(ShouldShowAddUserButton());
   kiosk_apps_button_->SetVisible(kiosk_apps_button_->HasApps() &&
                                  ShouldShowAppsButton());
   if (kiosk_license_mode_) {
@@ -992,7 +985,8 @@ bool LoginShelfView::ShouldShowGuestAndAppsButtons() const {
       dialog_state_ == OobeDialogState::GAIA_SIGNIN) {
     dialog_state_allowed = !login_screen_has_users_ && is_first_signin_step_;
   } else if (dialog_state_ == OobeDialogState::ERROR ||
-             dialog_state_ == OobeDialogState::HIDDEN) {
+             dialog_state_ == OobeDialogState::HIDDEN ||
+             dialog_state_ == OobeDialogState::EXTENSION_LOGIN_CLOSED) {
     dialog_state_allowed = true;
   }
 
@@ -1011,6 +1005,7 @@ bool LoginShelfView::ShouldShowGuestAndAppsButtons() const {
 bool LoginShelfView::ShouldShowShutdownButton() const {
   if (features::IsOobeRemoveShutdownButtonEnabled()) {
     return dialog_state_ == OobeDialogState::HIDDEN ||
+           dialog_state_ == OobeDialogState::EXTENSION_LOGIN_CLOSED ||
            dialog_state_ == OobeDialogState::ENROLLMENT_SUCCESS ||
            dialog_state_ == OobeDialogState::EXTENSION_LOGIN ||
            dialog_state_ == OobeDialogState::BLOCKING ||
@@ -1072,6 +1067,27 @@ bool LoginShelfView::ShouldShowSignInButton() const {
       Shell::Get()->session_controller()->GetSessionState();
   return session_state == SessionState::OOBE &&
          dialog_state_ == OobeDialogState::ENROLLMENT_CANCEL_ENABLED;
+}
+
+// Show add user button if:
+// 1. We are on the login screen.
+// 2. The device is not in kiosk license mode.
+// 3. The OOBE dialog or login extension UI is closed.
+bool LoginShelfView::ShouldShowAddUserButton() const {
+  const SessionState session_state =
+      Shell::Get()->session_controller()->GetSessionState();
+
+  if (session_state != SessionState::LOGIN_PRIMARY)
+    return false;
+
+  if (kiosk_license_mode_)
+    return false;
+
+  if (dialog_state_ != OobeDialogState::HIDDEN &&
+      dialog_state_ != OobeDialogState::EXTENSION_LOGIN_CLOSED)
+    return false;
+
+  return true;
 }
 
 bool LoginShelfView::ShouldShowAppsButton() const {
