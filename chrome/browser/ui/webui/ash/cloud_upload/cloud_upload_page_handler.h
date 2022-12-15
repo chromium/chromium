@@ -57,11 +57,6 @@ class CloudUploadPageHandler : public mojom::PageHandler {
   void SetAlwaysMoveOfficeFiles(bool always_move) override;
 
  private:
-  void OnOfficeWebAppInstalled(
-      InstallOfficeWebAppCallback callback,
-      const GURL& install_url,
-      web_app::ExternallyManagedAppManager::InstallResult result);
-
   Profile* profile_;
   content::WebUI* web_ui_;
   mojom::DialogArgsPtr dialog_args_;

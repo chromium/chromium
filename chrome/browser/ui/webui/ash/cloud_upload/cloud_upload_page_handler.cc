@@ -10,23 +10,16 @@
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
-#include "chrome/browser/chromeos/extensions/file_system_provider/provider_function.h"
+#include "chrome/browser/chromeos/office_web_app/office_web_app.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
-#include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "url/gurl.h"
 
 namespace ash::cloud_upload {
-namespace {
-const char kMicrosoft365WebAppUrl[] = "https://www.office.com/?from=Homescreen";
-}  // namespace
 
 using ash::file_system_provider::ProvidedFileSystemInfo;
 using ash::file_system_provider::ProviderId;
@@ -87,32 +80,16 @@ void CloudUploadPageHandler::InstallOfficeWebApp(
     std::move(callback).Run(false);
     return;
   }
-  auto wrapped_callback =
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false);
 
-  web_app::ExternalInstallOptions options(
-      GURL(kMicrosoft365WebAppUrl), web_app::UserDisplayMode::kStandalone,
-      web_app::ExternalInstallSource::kInternalMicrosoft365Setup);
-  options.fallback_app_name = "Microsoft 365";
-  options.add_to_quick_launch_bar = false;
+  auto wrapped_callback = base::BindOnce(
+      [](InstallOfficeWebAppCallback callback,
+         webapps::InstallResultCode result_code) {
+        std::move(callback).Run(webapps::IsSuccess(result_code));
+      },
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false));
 
-  provider->externally_managed_app_manager().InstallNow(
-      std::move(options),
-      base::BindOnce(&CloudUploadPageHandler::OnOfficeWebAppInstalled,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(wrapped_callback)));
-  return;
-}
-
-void CloudUploadPageHandler::OnOfficeWebAppInstalled(
-    InstallOfficeWebAppCallback callback,
-    const GURL& install_url,
-    web_app::ExternallyManagedAppManager::InstallResult result) {
-  if (webapps::IsSuccess(result.code)) {
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-    proxy->SetSupportedLinksPreference(*result.app_id);
-  }
-  std::move(callback).Run(webapps::IsSuccess(result.code));
+  // Web apps are managed in Ash.
+  chromeos::InstallMicrosoft365(profile_, std::move(wrapped_callback));
 }
 
 void CloudUploadPageHandler::IsODFSMounted(IsODFSMountedCallback callback) {

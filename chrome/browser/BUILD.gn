@@ -5827,6 +5827,11 @@ static_library("browser") {
     deps += [
       "//ash/webui/projector_app/public/cpp",
       "//chrome/browser/chromeos/extensions/telemetry",
+
+      # This is a dependency only to allow `allow_circular_includes_from` to
+      # include this target (which actually depends on //chrome/browser).
+      # TODO(b/262484731): Remove this when app service has its own target.
+      "//chrome/browser/chromeos/office_web_app",
       "//chrome/browser/metrics/structured",
       "//chrome/browser/policy:onc",
       "//chrome/browser/ui/quick_answers",
@@ -5864,6 +5869,9 @@ static_library("browser") {
 
     allow_circular_includes_from += [
       "//chrome/browser/policy:onc",
+
+      # TODO(b/262484731): Remove this when app service has its own target.
+      "//chrome/browser/chromeos/office_web_app",
 
       # TODO(b/215757706): Find a way to avoid the circular include.
       "//chrome/browser/ui/quick_answers",
