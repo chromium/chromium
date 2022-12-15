@@ -1727,7 +1727,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.EnrollmentRollbackAttestation"
     enum="EnterpriseEnrollmentType" expires_after="2023-11-30">
-  <owner>crisguerrero@google.com</owner>
+  <owner>crisguerrero@chromium.org</owner>
   <owner>mpolzer@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -1740,7 +1740,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.EnrollmentRollbackManualFallback"
     enum="EnterpriseEnrollmentType" expires_after="2023-11-30">
-  <owner>crisguerrero@google.com</owner>
+  <owner>crisguerrero@chromium.org</owner>
   <owner>mpolzer@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>

@@ -11590,20 +11590,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Rollback.OobeRestoreResult" enum="Rollback_OobeRestoreResult"
-    expires_after="2022-04-01">
+    expires_after="2023-11-30">
   <owner>mpolzer@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>crisguerrero@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
-    The result when attempting to restore data during a Chrome OS rollback.
+    The result when attempting to restore data during a ChromeOS rollback.
   </summary>
 </histogram>
 
 <histogram name="Rollback.RollbackSaveResult"
-    enum="Rollback_RollbackSaveResult" expires_after="2022-04-01">
+    enum="Rollback_RollbackSaveResult" expires_after="2023-11-30">
   <owner>mpolzer@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>crisguerrero@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
-    The result when attempting to save data during a Chrome OS rollback.
+    The result when attempting to save data during a ChromeOS rollback.
   </summary>
 </histogram>
 
@@ -14344,9 +14346,10 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UpgradeDetector.RollbackReason"
-    enum="UpgradeDetectorRollbackReason" expires_after="2022-05-01">
+    enum="UpgradeDetectorRollbackReason" expires_after="2023-11-30">
   <owner>mpolzer@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>crisguerrero@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Tracks what is the reason we're doing a rollback instead of an update (going
     to a more stable channel or admin-initiated enterprise rollback). We're
@@ -14355,7 +14358,7 @@ should be kept until we use this API.  -->
     Sent when the device finished installing the rollback image, shows the
     notification and is waiting for reboot.
 
-    This metric is specific to Chrome OS.
+    This metric is specific to ChromeOS.
   </summary>
 </histogram>
 

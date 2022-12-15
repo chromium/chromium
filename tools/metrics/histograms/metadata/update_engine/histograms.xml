@@ -299,13 +299,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Check.RollbackTargetVersion"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2023-06-11">
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2023-11-30">
   <owner>mpolzer@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>crisguerrero@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
-    First section of the Chrome OS target version set by device policy and sent
+    First section of the ChromeOS target version set by device policy and sent
     to Omaha if rollback is also allowed. This is a sparse histogram, since the
-    possible valid values are stable Chrome OS version prefixes (usually one per
+    possible valid values are stable ChromeOS version prefixes (usually one per
     milestone).
 
     Example value: 10323 (meaning M65 stable).
@@ -314,7 +315,7 @@ chromium-metrics-reviews@google.com.
     policy is set and the value of the RollbackToTargetVersion device policy is
     one of the values allowing rollback.
 
-    This metric is specific to Chrome OS.
+    This metric is specific to ChromeOS.
   </summary>
 </histogram>
 
@@ -416,38 +417,40 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.EnterpriseRollback.Failure"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2023-01-01">
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2023-11-30">
   <owner>mpolzer@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>crisguerrero@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
-    First section of the Chrome OS version to which an enterprise rollback
+    First section of the ChromeOS version to which an enterprise rollback
     (rollback initiated by the admin of the device) has failed. This is a sparse
-    histogram, since the possible valid values are stable Chrome OS version
+    histogram, since the possible valid values are stable ChromeOS version
     prefixes (usually one per milestone).
 
     Example value: 10323 (meaning M65 stable).
 
     This is reported after a rollback image has failed installing.
 
-    This metric is specific to Chrome OS.
+    This metric is specific to ChromeOS.
   </summary>
 </histogram>
 
 <histogram name="UpdateEngine.EnterpriseRollback.Success"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2023-01-01">
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2023-11-30">
   <owner>mpolzer@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>crisguerrero@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
-    First section of the Chrome OS version to which an enterprise rollback
+    First section of the ChromeOS version to which an enterprise rollback
     (rollback initiated by the admin of the device) has succeeded. This is a
-    sparse histogram, since the possible valid values are stable Chrome OS
+    sparse histogram, since the possible valid values are stable ChromeOS
     version prefixes (usually one per milestone).
 
     Example value: 10323 (meaning M65 stable).
 
     This is reported after a rollback image has been successfully installed.
 
-    This metric is specific to Chrome OS.
+    This metric is specific to ChromeOS.
   </summary>
 </histogram>
 
