@@ -45,14 +45,27 @@ source_set("fuchsia_component_support") {
   ]
 }
 
+source_set("annotations_manager") {
+  visibility = [ "*" ]
+  public = [ "annotations_manager.h" ]
+  sources = [ "annotations_manager.cc" ]
+  public_deps = [
+    "//base",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element",
+    "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   visibility += [ "//components:components_unittests__exec" ]
   sources = [
+    "annotations_manager_unittest.cc",
     "config_reader_unittest.cc",
     "inspect_unittest.cc",
   ]
   deps = [
+    ":annotations_manager",
     ":fuchsia_component_support",
     "//base",
     "//base/test:test_support",

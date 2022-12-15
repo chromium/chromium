@@ -4,6 +4,8 @@
 
 #include "chrome/browser/fuchsia/element_manager_impl.h"
 
+#include <lib/fpromise/promise.h>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -48,14 +50,6 @@ ElementManagerImpl::~ElementManagerImpl() {
   BrowserList::RemoveObserver(this);
 }
 
-std::vector<fuchsia::element::Annotation> ElementManagerImpl::GetAnnotations() {
-  std::vector<fuchsia::element::Annotation> annotations;
-  for (const auto& annotation : annotations_) {
-    annotations.push_back(fidl::Clone(annotation.second));
-  }
-  return annotations;
-}
-
 void ElementManagerImpl::ProposeElement(
     fuchsia::element::Spec spec,
     fidl::InterfaceRequest<fuchsia::element::Controller> element_controller,
@@ -87,11 +81,8 @@ void ElementManagerImpl::ProposeElement(
 
   // Store the annotations to be used for all subsequent window-creation
   // actions.
-  annotations_.clear();
-  for (auto& annotation : *spec.mutable_annotations()) {
-    auto key = fidl::Clone(annotation.key);
-    annotations_.insert_or_assign(std::move(key), std::move(annotation));
-  }
+  annotations_manager_.UpdateAnnotations(
+      std::move(*spec.mutable_annotations()));
 
   // Request that the caller act on the request, e.g. by opening a new tab.
   if (!new_proposal_callback_.Run(command_line)) {
@@ -110,22 +101,17 @@ void ElementManagerImpl::UpdateAnnotations(
     std::vector<fuchsia::element::Annotation> annotations_to_set,
     std::vector<fuchsia::element::AnnotationKey> annotations_to_delete,
     UpdateAnnotationsCallback callback) {
-  for (const auto& key : annotations_to_delete) {
-    annotations_.erase(key);
+  if (annotations_manager_.UpdateAnnotations(
+          std::move(annotations_to_set), std::move(annotations_to_delete))) {
+    callback(fpromise::ok());
+  } else {
+    callback(fpromise::error(
+        fuchsia::element::UpdateAnnotationsError::INVALID_ARGS));
   }
-  for (auto& annotation : annotations_to_set) {
-    auto key = fidl::Clone(annotation.key);
-    annotations_.insert_or_assign(std::move(key), std::move(annotation));
-  }
-  callback(fuchsia::element::AnnotationController_UpdateAnnotations_Result::
-               WithResponse({}));
 }
 
 void ElementManagerImpl::GetAnnotations(GetAnnotationsCallback callback) {
-  fuchsia::element::AnnotationController_GetAnnotations_Response response(
-      GetAnnotations());
-  callback(fuchsia::element::AnnotationController_GetAnnotations_Result::
-               WithResponse(std::move(response)));
+  callback(fpromise::ok(annotations_manager_.GetAnnotations()));
 }
 
 void ElementManagerImpl::OnBrowserRemoved(Browser* browser) {

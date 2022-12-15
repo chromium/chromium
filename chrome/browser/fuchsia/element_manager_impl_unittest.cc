@@ -70,9 +70,9 @@ std::vector<fuchsia::element::Annotation> TestAnnotations(
   return results;
 }
 
-class TestElementManagerImpl : public testing::Test {
+class ElementManagerImplTest : public testing::Test {
  public:
-  TestElementManagerImpl()
+  ElementManagerImplTest()
       : element_manager_(base::ComponentContextForProcess()->outgoing().get(),
                          base::BindLambdaForTesting(
                              [&](const base::CommandLine& command_line) {
@@ -97,7 +97,7 @@ class TestElementManagerImpl : public testing::Test {
   int browser_count_ = 0;
 };
 
-TEST_F(TestElementManagerImpl, CorrectSpec) {
+TEST_F(ElementManagerImplTest, CorrectSpec) {
   auto element_manager = GetElementManagerPtr();
   for (const char* url : {
            "fuchsia-pkg://fuchsia.com/chrome#meta/chrome.cm",
@@ -125,7 +125,7 @@ TEST_F(TestElementManagerImpl, CorrectSpec) {
   }
 }
 
-TEST_F(TestElementManagerImpl, IncorrectSpec) {
+TEST_F(ElementManagerImplTest, IncorrectSpec) {
   auto element_manager = GetElementManagerPtr();
   for (const char* url : {
            "foobar",
@@ -155,7 +155,7 @@ TEST_F(TestElementManagerImpl, IncorrectSpec) {
   }
 }
 
-TEST_F(TestElementManagerImpl, ElementControllerClosedOnInvalidSpec) {
+TEST_F(ElementManagerImplTest, ElementControllerClosedOnInvalidSpec) {
   auto element_manager = GetElementManagerPtr();
 
   fuchsia::element::ControllerPtr controller;
@@ -180,8 +180,8 @@ TEST_F(TestElementManagerImpl, ElementControllerClosedOnInvalidSpec) {
   EXPECT_FALSE(controller.is_bound());
 }
 
-TEST_F(TestElementManagerImpl, Annotations) {
-  EXPECT_EQ(0u, element_manager_.GetAnnotations().size());
+TEST_F(ElementManagerImplTest, Annotations) {
+  EXPECT_EQ(0u, element_manager_.annotations_manager().GetAnnotations().size());
 
   auto element_manager = GetElementManagerPtr();
 
@@ -203,7 +203,7 @@ TEST_F(TestElementManagerImpl, Annotations) {
   }
 
   std::vector<fuchsia::element::Annotation> annotations =
-      element_manager_.GetAnnotations();
+      element_manager_.annotations_manager().GetAnnotations();
   EXPECT_EQ(3u, annotations.size());
   for (const auto* key : {"key1", "key2", "key3"}) {
     EXPECT_TRUE(base::Contains(annotations, key, [](const auto& annotation) {
@@ -236,7 +236,7 @@ TEST_F(TestElementManagerImpl, Annotations) {
         });
     run_loop.Run();
   }
-  annotations = element_manager_.GetAnnotations();
+  annotations = element_manager_.annotations_manager().GetAnnotations();
   EXPECT_EQ(3u, annotations.size());
   for (const auto* key : {"key1", "key3", "key4"}) {
     EXPECT_TRUE(base::Contains(annotations, key, [](const auto& annotation) {
@@ -245,7 +245,7 @@ TEST_F(TestElementManagerImpl, Annotations) {
   }
 }
 
-TEST_F(TestElementManagerImpl, ElementControllerAndBrowserLifeCycle) {
+TEST_F(ElementManagerImplTest, ElementControllerAndBrowserLifeCycle) {
   auto element_manager = GetElementManagerPtr();
 
   fuchsia::element::ControllerPtr controller;

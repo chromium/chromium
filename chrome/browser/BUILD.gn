@@ -6569,6 +6569,7 @@ static_library("browser") {
 
     deps += [
       "//components/fuchsia_component_support",
+      "//components/fuchsia_component_support:annotations_manager",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.app",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.composition",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",

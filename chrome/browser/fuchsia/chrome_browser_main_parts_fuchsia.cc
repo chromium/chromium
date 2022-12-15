@@ -570,7 +570,8 @@ class ChromeBrowserMainPartsFuchsia::UseGraphicalPresenter final {
     fuchsia::element::ViewSpec view_spec;
     view_spec.set_view_holder_token(std::move(view_holder_token));
     view_spec.set_view_ref(std::move(view_ref));
-    view_spec.set_annotations(fidl::Clone(element_manager_->GetAnnotations()));
+    view_spec.set_annotations(
+        element_manager_->annotations_manager().GetAnnotations());
     graphical_presenter_->PresentView(std::move(view_spec), nullptr,
                                       view_controller.NewRequest(),
                                       [](auto result) {});
@@ -584,7 +585,8 @@ class ChromeBrowserMainPartsFuchsia::UseGraphicalPresenter final {
     fuchsia::element::ViewSpec view_spec;
     view_spec.set_viewport_creation_token(std::move(viewport_creation_token));
     view_spec.set_view_ref(std::move(view_ref_pair.view_ref));
-    view_spec.set_annotations(fidl::Clone(element_manager_->GetAnnotations()));
+    view_spec.set_annotations(
+        element_manager_->annotations_manager().GetAnnotations());
     graphical_presenter_->PresentView(std::move(view_spec), nullptr,
                                       view_controller.NewRequest(),
                                       [](auto result) {});

@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "components/fuchsia_component_support/annotations_manager.h"
 
 namespace base {
 class CommandLine;
@@ -45,7 +46,9 @@ class ElementManagerImpl final : public fuchsia::element::Manager,
   ElementManagerImpl(const ElementManagerImpl&) = delete;
   ElementManagerImpl& operator=(const ElementManagerImpl&) = delete;
 
-  std::vector<fuchsia::element::Annotation> GetAnnotations();
+  fuchsia_component_support::AnnotationsManager& annotations_manager() {
+    return annotations_manager_;
+  }
 
   // fuchsia::element::Manager implementation
   void ProposeElement(
@@ -75,12 +78,11 @@ class ElementManagerImpl final : public fuchsia::element::Manager,
 
   base::ScopedServiceBinding<fuchsia::element::Manager> binding_;
   const NewProposalCallback new_proposal_callback_;
-  HaveBrowserCallback have_browser_for_test_;
+
   fidl::BindingSet<fuchsia::element::Controller> controller_bindings_;
-  base::flat_map<fuchsia::element::AnnotationKey,
-                 fuchsia::element::Annotation,
-                 AnnotationKeyCompare>
-      annotations_;
+  fuchsia_component_support::AnnotationsManager annotations_manager_;
+
+  HaveBrowserCallback have_browser_for_test_;
 };
 
 #endif  // CHROME_BROWSER_FUCHSIA_ELEMENT_MANAGER_IMPL_H_
