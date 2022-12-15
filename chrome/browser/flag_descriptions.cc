@@ -518,6 +518,12 @@ const char kAutofillShowManualFallbackInContextMenuDescription[] =
     "When enabled, users would get address/credit cards/passwords autofilling "
     "options in the context menu if the context menu is opened on a text field";
 
+const char kAutofillTouchToFillForCreditCardsAndroidName[] =
+    "Enable Touch To Fill bottomsheet for Autofill credit card suggestions";
+const char kAutofillTouchToFillForCreditCardsAndroidDescription[] =
+    "When enabled, Autofill credit card suggestions are shown on the "
+    "Touch To Fill bottomsheet";
+
 const char kAutofillUpstreamAllowAdditionalEmailDomainsName[] =
     "Allow Autofill credit card upload save for select non-Google-based "
     "accounts";

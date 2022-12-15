@@ -277,6 +277,9 @@ extern const char kAutofillSaveCardUiExperimentFasterAndProtected[];
 extern const char kAutofillShowManualFallbackInContextMenuName[];
 extern const char kAutofillShowManualFallbackInContextMenuDescription[];
 
+extern const char kAutofillTouchToFillForCreditCardsAndroidName[];
+extern const char kAutofillTouchToFillForCreditCardsAndroidDescription[];
+
 extern const char kAutofillUpstreamAllowAdditionalEmailDomainsName[];
 extern const char kAutofillUpstreamAllowAdditionalEmailDomainsDescription[];
 

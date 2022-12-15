@@ -60807,6 +60807,8 @@ from previous Chrome versions.
   <int value="37024318" label="disable-affiliation-based-matching"/>
   <int value="38213894" label="PrivacySettingsRedesign:enabled"/>
   <int value="38904620" label="TabSwitcherLongpressMenu:enabled"/>
+  <int value="39035791"
+      label="AutofillTouchToFillForCreditCardsAndroid:enabled"/>
   <int value="41881657" label="MessagesForAndroidAdsBlocked:enabled"/>
   <int value="41990393" label="ContextMenuGoogleLensChip:enabled"/>
   <int value="42098736" label="TranslateAndroidManualTrigger:disabled"/>
@@ -63925,6 +63927,8 @@ from previous Chrome versions.
   <int value="1887031213" label="AutofillManualFallbackAndroid:disabled"/>
   <int value="1887882558" label="RTCUnifiedPlanByDefault:enabled"/>
   <int value="1888075407" label="CrOSDspBasedNsAllowed:enabled"/>
+  <int value="1888665816"
+      label="AutofillTouchToFillForCreditCardsAndroid:disabled"/>
   <int value="1888812860" label="ChromeModernAlternateCardLayout:enabled"/>
   <int value="1889038381" label="AppManagementAppDetails:disabled"/>
   <int value="1889076955" label="disable-app-link"/>

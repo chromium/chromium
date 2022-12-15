@@ -1755,6 +1755,11 @@
     "expiry_milestone": 78
   },
   {
+    "name": "enable-autofill-touch-to-fill-for-credit-cards",
+    "owners": [ "vishwasuppoor", "izuzic" ],
+    "expiry_milestone": 113
+  },
+  {
     "name": "enable-autofill-upi-vpa",
     "owners": [ "mlerman" ],
     "expiry_milestone": 115
