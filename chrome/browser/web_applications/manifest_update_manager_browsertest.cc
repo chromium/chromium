@@ -326,7 +326,8 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     // Cannot construct RunLoop in constructor due to threading restrictions.
     shortcut_run_loop_.emplace();
-    test::WaitUntilReady(WebAppProvider::GetForTest(browser()->profile()));
+    test::WaitUntilWebAppProviderAndSubsystemsReady(
+        WebAppProvider::GetForTest(browser()->profile()));
   }
 
   void OnShortcutInfoRetrieved(std::unique_ptr<ShortcutInfo> shortcut_info) {

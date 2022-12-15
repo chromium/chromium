@@ -37,6 +37,10 @@ void AwaitStartWebAppProviderAndSubsystems(Profile* profile);
 // Wait until the provided WebAppProvider is ready.
 void WaitUntilReady(WebAppProvider* provider);
 
+// Wait until the provided WebAppProvider is ready and its subsystems startup
+// is complete.
+void WaitUntilWebAppProviderAndSubsystemsReady(WebAppProvider* provider);
+
 AppId InstallDummyWebApp(
     Profile* profile,
     const std::string& app_name,

@@ -46,18 +46,26 @@ void WaitUntilReady(WebAppProvider* provider) {
   run_loop.Run();
 }
 
+void WaitUntilWebAppProviderAndSubsystemsReady(WebAppProvider* provider) {
+  WaitUntilReady(provider);
+
+  if (provider->on_external_managers_synchronized().is_signaled()) {
+    return;
+  }
+
+  base::RunLoop run_loop;
+  provider->on_external_managers_synchronized().Post(FROM_HERE,
+                                                     run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 void AwaitStartWebAppProviderAndSubsystems(Profile* profile) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableDefaultApps);
   FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile);
   DCHECK(provider);
   provider->StartWithSubsystems();
-  WaitUntilReady(provider);
-
-  base::RunLoop run_loop;
-  provider->on_external_managers_synchronized().Post(FROM_HERE,
-                                                     run_loop.QuitClosure());
-  run_loop.Run();
+  WaitUntilWebAppProviderAndSubsystemsReady(provider);
 }
 
 AppId InstallDummyWebApp(Profile* profile,
