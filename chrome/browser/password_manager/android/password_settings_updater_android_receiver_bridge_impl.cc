@@ -26,23 +26,27 @@ PasswordSettingsUpdaterAndroidReceiverBridge::Create() {
 
 PasswordSettingsUpdaterAndroidReceiverBridgeImpl::
     PasswordSettingsUpdaterAndroidReceiverBridgeImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   java_object_ = Java_PasswordSettingsUpdaterReceiverBridge_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
 }
 
 PasswordSettingsUpdaterAndroidReceiverBridgeImpl::
     ~PasswordSettingsUpdaterAndroidReceiverBridgeImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   Java_PasswordSettingsUpdaterReceiverBridge_destroy(
       base::android::AttachCurrentThread(), java_object_);
 }
 
 base::android::ScopedJavaGlobalRef<jobject>
 PasswordSettingsUpdaterAndroidReceiverBridgeImpl::GetJavaBridge() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   return java_object_;
 }
 
 void PasswordSettingsUpdaterAndroidReceiverBridgeImpl::SetConsumer(
     base::WeakPtr<Consumer> consumer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   consumer_ = std::move(consumer);
 }
 
@@ -50,6 +54,7 @@ void PasswordSettingsUpdaterAndroidReceiverBridgeImpl::OnSettingValueFetched(
     JNIEnv* env,
     jint setting,
     jboolean setting_value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   if (!consumer_)
     return;
   consumer_->OnSettingValueFetched(static_cast<PasswordManagerSetting>(setting),
@@ -59,6 +64,7 @@ void PasswordSettingsUpdaterAndroidReceiverBridgeImpl::OnSettingValueFetched(
 void PasswordSettingsUpdaterAndroidReceiverBridgeImpl::OnSettingValueAbsent(
     JNIEnv* env,
     jint setting) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   if (!consumer_)
     return;
   consumer_->OnSettingValueAbsent(static_cast<PasswordManagerSetting>(setting));
@@ -69,11 +75,13 @@ void PasswordSettingsUpdaterAndroidReceiverBridgeImpl::OnSettingFetchingError(
     jint setting,
     jint error,
     jint api_error_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   // TODO(crbug.com/1289700): Notify a consumer/record metrics.
 }
 
 void PasswordSettingsUpdaterAndroidReceiverBridgeImpl::
     OnSuccessfulSettingChange(JNIEnv* env, jint setting) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   // TODO(crbug.com/1289700): Notify a consumer/record metrics.
 }
 
@@ -82,6 +90,7 @@ void PasswordSettingsUpdaterAndroidReceiverBridgeImpl::OnFailedSettingChange(
     jint setting,
     jint error,
     jint api_error_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   // TODO(crbug.com/1289700): Notify a consumer/record metrics.
 }
 

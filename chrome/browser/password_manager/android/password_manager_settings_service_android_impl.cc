@@ -9,8 +9,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
-#include "chrome/browser/password_manager/android/password_settings_updater_android_dispatcher_bridge.h"
-#include "chrome/browser/password_manager/android/password_settings_updater_android_receiver_bridge.h"
+#include "chrome/browser/password_manager/android/password_settings_updater_android_bridge_helper.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -24,11 +23,15 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using password_manager::PasswordManagerSetting;
-using password_manager::PasswordSettingsUpdaterAndroidDispatcherBridge;
-using password_manager::PasswordSettingsUpdaterAndroidReceiverBridge;
+using password_manager::PasswordSettingsUpdaterAndroidBridgeHelper;
 using password_manager::sync_util::IsPasswordSyncEnabled;
 
 namespace {
+
+using Consumer =
+    password_manager::PasswordSettingsUpdaterAndroidReceiverBridge::Consumer;
+using SyncingAccount = password_manager::
+    PasswordSettingsUpdaterAndroidReceiverBridge::SyncingAccount;
 
 constexpr PasswordManagerSetting kAllPasswordSettings[] = {
     PasswordManagerSetting::kOfferToSavePasswords,
@@ -100,10 +103,9 @@ PasswordManagerSettingsServiceAndroidImpl::
   DCHECK(pref_service_);
   DCHECK(sync_service_);
   DCHECK(password_manager::features::UsesUnifiedPasswordManagerUi());
-  if (!PasswordSettingsUpdaterAndroidDispatcherBridge::CanCreateAccessor())
+  if (!PasswordSettingsUpdaterAndroidBridgeHelper::CanCreateAccessor())
     return;
-  receiver_bridge_ = PasswordSettingsUpdaterAndroidReceiverBridge::Create();
-  dispatcher_bridge_ = PasswordSettingsUpdaterAndroidDispatcherBridge::Create();
+  bridge_helper_ = PasswordSettingsUpdaterAndroidBridgeHelper::Create();
   lifecycle_helper_ = std::make_unique<PasswordManagerLifecycleHelperImpl>();
   Init();
 }
@@ -114,19 +116,16 @@ PasswordManagerSettingsServiceAndroidImpl::
         base::PassKey<class PasswordManagerSettingsServiceAndroidImplTest>,
         PrefService* pref_service,
         syncer::SyncService* sync_service,
-        std::unique_ptr<PasswordSettingsUpdaterAndroidReceiverBridge>
-            receiver_bridge,
-        std::unique_ptr<PasswordSettingsUpdaterAndroidDispatcherBridge>
-            dispatcher_bridge,
+        std::unique_ptr<PasswordSettingsUpdaterAndroidBridgeHelper>
+            bridge_helper,
         std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper)
     : pref_service_(pref_service),
       sync_service_(sync_service),
-      receiver_bridge_(std::move(receiver_bridge)),
-      dispatcher_bridge_(std::move(dispatcher_bridge)),
+      bridge_helper_(std::move(bridge_helper)),
       lifecycle_helper_(std::move(lifecycle_helper)) {
   DCHECK(pref_service_);
   DCHECK(sync_service_);
-  if (!dispatcher_bridge_)
+  if (!bridge_helper_)
     return;
   Init();
 }
@@ -156,7 +155,7 @@ bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
     return regular_pref->GetValue()->GetBool();
   }
 
-  if (!dispatcher_bridge_) {
+  if (!bridge_helper_) {
     return regular_pref->GetValue()->GetBool();
   }
 
@@ -172,14 +171,14 @@ bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
 
 void PasswordManagerSettingsServiceAndroidImpl::RequestSettingsFromBackend() {
   // Backend has settings data only if passwords are synced.
-  if (dispatcher_bridge_ && IsPasswordSyncEnabled(sync_service_) &&
+  if (bridge_helper_ && IsPasswordSyncEnabled(sync_service_) &&
       !IsUnenrolledFromUPM(pref_service_)) {
     FetchSettings();
   }
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
-  if (!dispatcher_bridge_ || !IsPasswordSyncEnabled(sync_service_) ||
+  if (!bridge_helper_ || !IsPasswordSyncEnabled(sync_service_) ||
       IsUnenrolledFromUPM(pref_service_)) {
     pref_service_->SetBoolean(
         password_manager::prefs::kCredentialsEnableAutosignin, false);
@@ -192,17 +191,15 @@ void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
 
   pref_service_->SetBoolean(password_manager::prefs::kAutoSignInEnabledGMS,
                             false);
-  dispatcher_bridge_->SetPasswordSettingValue(
-      PasswordSettingsUpdaterAndroidDispatcherBridge::SyncingAccount(
-          sync_service_->GetAccountInfo().email),
+  bridge_helper_->SetPasswordSettingValue(
+      SyncingAccount(sync_service_->GetAccountInfo().email),
       PasswordManagerSetting::kAutoSignIn, false);
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::Init() {
-  DCHECK(receiver_bridge_);
+  DCHECK(bridge_helper_);
   MigratePrefsIfNeeded();
-  dispatcher_bridge_->Init(receiver_bridge_->GetJavaBridge());
-  receiver_bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
+  bridge_helper_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
 
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
       &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
@@ -251,7 +248,7 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueFetched(
 
 void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueAbsent(
     password_manager::PasswordManagerSetting setting) {
-  DCHECK(dispatcher_bridge_);
+  DCHECK(bridge_helper_);
   UpdateSettingFetchState(setting);
   if (IsUnenrolledFromUPM(pref_service_))
     return;
@@ -270,10 +267,9 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueAbsent(
   // If Chrome has an explicitly set value, GMS needs to know about it.
   // TODO(crbug.com/1289700): Check whether this should be guarded by a
   // migration pref.
-  dispatcher_bridge_->SetPasswordSettingValue(
-      PasswordSettingsUpdaterAndroidDispatcherBridge::SyncingAccount(
-          sync_service_->GetAccountInfo().email),
-      setting, pref->GetValue()->GetBool());
+  bridge_helper_->SetPasswordSettingValue(
+      SyncingAccount(sync_service_->GetAccountInfo().email), setting,
+      pref->GetValue()->GetBool());
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::MigratePrefsIfNeeded() {
@@ -328,10 +324,10 @@ void PasswordManagerSettingsServiceAndroidImpl::UpdateSettingFetchState(
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::FetchSettings() {
-  DCHECK(dispatcher_bridge_);
+  DCHECK(bridge_helper_);
   for (PasswordManagerSetting setting : kAllPasswordSettings) {
-    dispatcher_bridge_->GetPasswordSettingValue(
-        PasswordSettingsUpdaterAndroidDispatcherBridge::SyncingAccount(
+    bridge_helper_->GetPasswordSettingValue(
+        SyncingAccount(
             pref_service_->GetString(::prefs::kGoogleServicesLastUsername)),
         setting);
   }

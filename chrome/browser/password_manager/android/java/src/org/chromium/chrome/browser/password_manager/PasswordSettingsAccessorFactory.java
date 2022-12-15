@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import static org.chromium.base.ThreadUtils.assertOnUiThread;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend.BackendException;
@@ -26,7 +24,6 @@ public abstract class PasswordSettingsAccessorFactory {
      * @return The shared {@link PasswordSettingsAccessorFactory} instance.
      */
     public static PasswordSettingsAccessorFactory getOrCreate() {
-        assertOnUiThread();
         if (sInstance == null) {
             sInstance = new PasswordSettingsAccessorFactoryImpl();
         }

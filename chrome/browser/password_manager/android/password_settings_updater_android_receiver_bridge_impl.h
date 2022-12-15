@@ -51,6 +51,9 @@ class PasswordSettingsUpdaterAndroidReceiverBridgeImpl
   // This object is an instance of PasswordSettingsUpdaterBridge, i.e.
   // the Java counterpart to this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
+
+  // All callbacks should be called on the default UI sequence.
+  SEQUENCE_CHECKER(main_sequence_checker_);
 };
 
 }  // namespace password_manager

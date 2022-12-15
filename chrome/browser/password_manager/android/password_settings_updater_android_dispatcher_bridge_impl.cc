@@ -46,15 +46,19 @@ PasswordSettingsUpdaterAndroidDispatcherBridge::Create() {
 
 PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::
     PasswordSettingsUpdaterAndroidDispatcherBridgeImpl() {
+  DETACH_FROM_THREAD(thread_checker_);
   DCHECK(Java_PasswordSettingsUpdaterDispatcherBridge_canCreateAccessor(
       base::android::AttachCurrentThread()));
 }
 
 PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::
-    ~PasswordSettingsUpdaterAndroidDispatcherBridgeImpl() = default;
+    ~PasswordSettingsUpdaterAndroidDispatcherBridgeImpl() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
 
 void PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::Init(
     base::android::ScopedJavaGlobalRef<jobject> receiver_bridge) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   java_object_ = Java_PasswordSettingsUpdaterDispatcherBridge_create(
       base::android::AttachCurrentThread(), receiver_bridge);
 }
@@ -62,6 +66,7 @@ void PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::Init(
 void PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::
     GetPasswordSettingValue(absl::optional<SyncingAccount> account,
                             PasswordManagerSetting setting) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordSettingsUpdaterDispatcherBridge_getSettingValue(
       base::android::AttachCurrentThread(), java_object_,
       GetJavaStringFromAccount(account), static_cast<int>(setting));
@@ -71,6 +76,7 @@ void PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::
     SetPasswordSettingValue(absl::optional<SyncingAccount> account,
                             PasswordManagerSetting setting,
                             bool value) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordSettingsUpdaterDispatcherBridge_setSettingValue(
       base::android::AttachCurrentThread(), java_object_,
       GetJavaStringFromAccount(account), static_cast<int>(setting), value);

@@ -9,10 +9,10 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
-#include "chrome/browser/password_manager/android/password_settings_updater_android_dispatcher_bridge.h"
+#include "chrome/browser/password_manager/android/password_settings_updater_android_bridge_helper.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_receiver_bridge.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/sync_service.h"
@@ -36,11 +36,8 @@ class PasswordManagerSettingsServiceAndroidImpl
       PrefService* pref_service,
       syncer::SyncService* sync_service,
       std::unique_ptr<
-          password_manager::PasswordSettingsUpdaterAndroidReceiverBridge>
-          receiver_bridge,
-      std::unique_ptr<
-          password_manager::PasswordSettingsUpdaterAndroidDispatcherBridge>
-          dispatcher_bridge,
+          password_manager::PasswordSettingsUpdaterAndroidBridgeHelper>
+          bridge_helper,
       std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper);
 
   PasswordManagerSettingsServiceAndroidImpl(
@@ -67,7 +64,7 @@ class PasswordManagerSettingsServiceAndroidImpl
 
   void OnChromeForegrounded();
 
-  // PasswordSettingsUpdaterAndroidReceiverBridge::Consumer implementation
+  // PasswordSettingsUpdaterAndroidBridgeHelper::Consumer implementation
   void OnSettingValueFetched(password_manager::PasswordManagerSetting setting,
                              bool value) override;
   void OnSettingValueAbsent(
@@ -111,15 +108,9 @@ class PasswordManagerSettingsServiceAndroidImpl
   // or settings.
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
 
-  // Bridge used by the service to receive callbacks from the Java side.
-  std::unique_ptr<
-      password_manager::PasswordSettingsUpdaterAndroidReceiverBridge>
-      receiver_bridge_;
-
-  // Bridge used by the service to talk to the Java side.
-  std::unique_ptr<
-      password_manager::PasswordSettingsUpdaterAndroidDispatcherBridge>
-      dispatcher_bridge_;
+  // Bridge helper used by the service to communicate with the Java backend.
+  std::unique_ptr<password_manager::PasswordSettingsUpdaterAndroidBridgeHelper>
+      bridge_helper_;
 
   // Notifies the service when Chrome is foregrounded, so that the service
   // can request settings values from Google Mobile Services.

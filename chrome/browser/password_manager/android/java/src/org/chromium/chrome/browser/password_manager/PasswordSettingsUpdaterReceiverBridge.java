@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import static org.chromium.base.ThreadUtils.assertOnUiThread;
+
 import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -28,11 +30,13 @@ public class PasswordSettingsUpdaterReceiverBridge {
 
     @CalledByNative
     static PasswordSettingsUpdaterReceiverBridge create(long nativeReceiverBridge) {
+        assertOnUiThread();
         return new PasswordSettingsUpdaterReceiverBridge(nativeReceiverBridge);
     }
 
     void onSettingValueFetched(@PasswordManagerSetting int setting, Optional<Boolean> settingValue,
             PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
+        assertOnUiThread();
         metricsRecorder.recordMetrics(null);
         if (mNativeReceiverBridge == 0) return;
 
@@ -47,6 +51,7 @@ public class PasswordSettingsUpdaterReceiverBridge {
 
     void handleFetchingException(@PasswordManagerSetting int setting, Exception exception,
             PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
+        assertOnUiThread();
         metricsRecorder.recordMetrics(exception);
         if (mNativeReceiverBridge == 0) return;
 
@@ -65,6 +70,7 @@ public class PasswordSettingsUpdaterReceiverBridge {
 
     void onSettingValueSet(@PasswordManagerSetting int setting,
             PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
+        assertOnUiThread();
         metricsRecorder.recordMetrics(null);
         if (mNativeReceiverBridge == 0) return;
 
@@ -74,6 +80,7 @@ public class PasswordSettingsUpdaterReceiverBridge {
 
     void handleSettingException(@PasswordManagerSetting int setting, Exception exception,
             PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
+        assertOnUiThread();
         metricsRecorder.recordMetrics(exception);
         if (mNativeReceiverBridge == 0) return;
 
@@ -97,6 +104,7 @@ public class PasswordSettingsUpdaterReceiverBridge {
 
     @CalledByNative
     private void destroy() {
+        assertOnUiThread();
         mNativeReceiverBridge = 0;
     }
 

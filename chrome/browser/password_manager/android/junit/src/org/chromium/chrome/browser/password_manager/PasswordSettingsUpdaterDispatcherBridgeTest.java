@@ -9,6 +9,8 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.base.ThreadUtils.setThreadAssertsDisabledForTesting;
+
 import android.accounts.Account;
 
 import org.junit.Before;
@@ -52,6 +54,9 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
 
     @Before
     public void setUp() {
+        // Dispatcher bridge checks it is used on the background thread. Disable this check for this
+        // test.
+        setThreadAssertsDisabledForTesting(true);
         MockitoAnnotations.initMocks(this);
         mDispatcherBridge =
                 new PasswordSettingsUpdaterDispatcherBridge(mReceiverBridgeMock, mAccessorMock);

@@ -85,6 +85,7 @@ class PasswordSettingsUpdaterAndroidBridgeHelperImplTest
     RunUntilIdle();
     Mock::VerifyAndClearExpectations(receiver_bridge_);
     Mock::VerifyAndClearExpectations(dispatcher_bridge_);
+    Mock::VerifyAndClearExpectations(&consumer_);
   }
 
   MockPasswordSettingsUpdaterAndroidReceiverBridge* receiver_bridge() {

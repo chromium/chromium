@@ -13,7 +13,7 @@
 namespace password_manager {
 
 // Helper class that executes password accessor bridge operations on the
-// background thread. All operations are executed sequentially on the same
+// background thread. All operations are executed sequentally on the same
 // physical thread as JNIEnv can not be shared between threads.
 // This class methods should be called from the UI thread.
 class PasswordSettingsUpdaterAndroidBridgeHelperImpl
@@ -28,10 +28,13 @@ class PasswordSettingsUpdaterAndroidBridgeHelperImpl
           dispatcher_bridge);
 
   PasswordSettingsUpdaterAndroidBridgeHelperImpl(
+      PasswordSettingsUpdaterAndroidBridgeHelperImpl&&) = delete;
+  PasswordSettingsUpdaterAndroidBridgeHelperImpl(
       const PasswordSettingsUpdaterAndroidBridgeHelperImpl&) = delete;
   PasswordSettingsUpdaterAndroidBridgeHelperImpl& operator=(
+      PasswordSettingsUpdaterAndroidBridgeHelperImpl&&) = delete;
+  PasswordSettingsUpdaterAndroidBridgeHelperImpl& operator=(
       const PasswordSettingsUpdaterAndroidBridgeHelperImpl&) = delete;
-
   ~PasswordSettingsUpdaterAndroidBridgeHelperImpl() override;
 
   // PasswordSettingsUpdaterAndroidBridgeHelper implementation
