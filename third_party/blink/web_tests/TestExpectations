@@ -2983,7 +2983,6 @@ crbug.com/958381 external/wpt/css/CSS2/tables/table-anonymous-objects-203.xht [ 
 crbug.com/958381 external/wpt/css/CSS2/tables/table-anonymous-objects-204.xht [ Crash Failure Pass Timeout ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/anonymous-table-box-width-001.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-010.xht [ Failure ]
-crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-195.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-196.xht [ Failure ]
 
 # Custom-elements
@@ -4717,7 +4716,6 @@ crbug.com/1010170 media/video-played-reset.html [ Failure Pass ]
 
 # Sheriff 2020-07-07
 # Additionally disabled on mac due to crbug.com/988248
-crbug.com/1083302 media/controls/volumechange-muted-attribute.html [ Failure Pass ]
 
 # Sheriff 2020-07-10
 

@@ -312,7 +312,6 @@ crbug.com/1299212 fast/forms/datetimelocal/datetimelocal-appearance-basic.html [
 
 crbug.com/1179552 fragmentation/multi-line-cells.html [ Failure Pass ]
 
-crbug.com/1179556 paint/caret/multicol_block_children.html [ Failure Pass ]
 crbug.com/1179556 paint/invalidation/forms/checkbox-focus-by-mouse-then-keydown.html [ Failure Pass ]
 crbug.com/1179556 paint/invalidation/svg/absolute-sized-content-with-resources.xhtml [ Failure Pass ]
 crbug.com/1179556 paint/invalidation/svg/js-late-mask-and-object-creation.svg [ Failure Pass ]
