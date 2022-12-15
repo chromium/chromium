@@ -83,6 +83,9 @@ interface CustomizeChromePageHandler {
 
   // Sets theme to default classic chrome.
   SetClassicChromeDefaultTheme();
+
+  // Choose custom background from local file system.
+  ChooseLocalCustomBackground() => (bool success);
 };
 
 // WebUI-side handler for requests from the browser.

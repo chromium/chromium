@@ -17,6 +17,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
@@ -38,6 +39,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_provider.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/shell_dialogs/select_file_dialog_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -46,6 +48,77 @@ class BrowserContext;
 namespace {
 
 using testing::_;
+
+// A test SelectFileDialog to go straight to calling the listener.
+class TestSelectFileDialog : public ui::SelectFileDialog {
+ public:
+  TestSelectFileDialog(Listener* listener,
+                       std::unique_ptr<ui::SelectFilePolicy> policy,
+                       const bool auto_cancel)
+      : ui::SelectFileDialog(listener, std::move(policy)),
+        auto_cancel_(auto_cancel) {}
+
+  TestSelectFileDialog(const TestSelectFileDialog&) = delete;
+  TestSelectFileDialog& operator=(const TestSelectFileDialog&) = delete;
+
+ protected:
+  ~TestSelectFileDialog() override = default;
+
+  void SelectFileImpl(Type type,
+                      const std::u16string& title,
+                      const base::FilePath& default_path,
+                      const FileTypeInfo* file_types,
+                      int file_type_index,
+                      const base::FilePath::StringType& default_extension,
+                      gfx::NativeWindow owning_window,
+                      void* params,
+                      const GURL* caller) override {
+    if (auto_cancel_) {
+      listener_->FileSelectionCanceled(params);
+    } else {
+      listener_->FileSelected(base::FilePath(FILE_PATH_LITERAL("/test/path")),
+                              file_type_index, params);
+    }
+  }
+  // Pure virtual methods that need to be implemented.
+  bool IsRunning(gfx::NativeWindow owning_window) const override {
+    return false;
+  }
+  void ListenerDestroyed() override {}
+  bool HasMultipleFileTypeChoicesImpl() override { return false; }
+
+ private:
+  bool auto_cancel_;
+};
+
+class TestSelectFilePolicy : public ui::SelectFilePolicy {
+ public:
+  TestSelectFilePolicy& operator=(const TestSelectFilePolicy&) = delete;
+
+  // Pure virtual methods that need to be implemented.
+  bool CanOpenSelectFileDialog() override { return true; }
+  void SelectFileDenied() override {}
+};
+
+// A test SelectFileDialogFactory so that the TestSelectFileDialog is used.
+class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
+ public:
+  explicit TestSelectFileDialogFactory(bool auto_cancel)
+      : auto_cancel_(auto_cancel) {}
+
+  TestSelectFileDialogFactory& operator=(const TestSelectFileDialogFactory&) =
+      delete;
+
+  ui::SelectFileDialog* Create(
+      ui::SelectFileDialog::Listener* listener,
+      std::unique_ptr<ui::SelectFilePolicy> policy) override {
+    return new TestSelectFileDialog(
+        listener, std::make_unique<TestSelectFilePolicy>(), auto_cancel_);
+  }
+
+ private:
+  bool auto_cancel_;
+};
 
 class MockPage : public side_panel::mojom::CustomizeChromePage {
  public:
@@ -71,6 +144,7 @@ class MockNtpCustomBackgroundService : public NtpCustomBackgroundService {
       : NtpCustomBackgroundService(profile) {}
   MOCK_METHOD0(GetCustomBackground, absl::optional<CustomBackground>());
   MOCK_METHOD0(ResetCustomBackgroundInfo, void());
+  MOCK_METHOD1(SelectLocalBackgroundImage, void(const base::FilePath&));
 };
 
 class MockNtpBackgroundService : public NtpBackgroundService {
@@ -384,4 +458,34 @@ TEST_F(CustomizeChromePageHandlerTest, SetClassicChromeDefaultTheme) {
   EXPECT_CALL(mock_theme_service(), UseDefaultTheme).Times(1);
 
   handler().SetClassicChromeDefaultTheme();
+}
+
+TEST_F(CustomizeChromePageHandlerTest, ChooseLocalCustomBackgroundSuccess) {
+  bool success;
+  base::MockCallback<
+      CustomizeChromePageHandler::ChooseLocalCustomBackgroundCallback>
+      callback;
+  ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(false));
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&success](bool success_arg) { success = std::move(success_arg); }));
+  EXPECT_CALL(mock_ntp_custom_background_service_, SelectLocalBackgroundImage)
+      .Times(1);
+  handler().ChooseLocalCustomBackground(callback.Get());
+  EXPECT_TRUE(success);
+}
+
+TEST_F(CustomizeChromePageHandlerTest, ChooseLocalCustomBackgroundCancel) {
+  bool success;
+  base::MockCallback<
+      CustomizeChromePageHandler::ChooseLocalCustomBackgroundCallback>
+      callback;
+  ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(true));
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&success](bool success_arg) { success = std::move(success_arg); }));
+  handler().ChooseLocalCustomBackground(callback.Get());
+  EXPECT_TRUE(!success);
 }

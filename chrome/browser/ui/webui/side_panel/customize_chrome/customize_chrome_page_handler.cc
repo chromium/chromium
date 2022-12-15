@@ -14,6 +14,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_colors.h"
@@ -49,6 +50,9 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
 
 CustomizeChromePageHandler::~CustomizeChromePageHandler() {
   ntp_background_service_->RemoveObserver(this);
+  if (select_file_dialog_) {
+    select_file_dialog_->ListenerDestroyed();
+  }
 }
 
 void CustomizeChromePageHandler::SetMostVisitedSettings(
@@ -138,6 +142,34 @@ void CustomizeChromePageHandler::SetClassicChromeDefaultTheme() {
   theme_service_->UseDefaultTheme();
 }
 
+void CustomizeChromePageHandler::ChooseLocalCustomBackground(
+    ChooseLocalCustomBackgroundCallback callback) {
+  // Early return if the select file dialog is already active.
+  if (select_file_dialog_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  select_file_dialog_ = ui::SelectFileDialog::Create(
+      this, std::make_unique<ChromeSelectFilePolicy>(web_contents_));
+  ui::SelectFileDialog::FileTypeInfo file_types;
+  file_types.allowed_paths = ui::SelectFileDialog::FileTypeInfo::NATIVE_PATH;
+  file_types.extensions.resize(1);
+  file_types.extensions[0].push_back(FILE_PATH_LITERAL("jpg"));
+  file_types.extensions[0].push_back(FILE_PATH_LITERAL("jpeg"));
+  file_types.extensions[0].push_back(FILE_PATH_LITERAL("png"));
+  file_types.extensions[0].push_back(FILE_PATH_LITERAL("gif"));
+  file_types.extension_description_overrides.push_back(
+      l10n_util::GetStringUTF16(IDS_UPLOAD_IMAGE_FORMAT));
+  DCHECK(!choose_local_custom_background_callback_);
+  choose_local_custom_background_callback_ = std::move(callback);
+  select_file_dialog_->SelectFile(
+      ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
+      profile_->last_selected_directory(), &file_types, 0,
+      base::FilePath::StringType(), web_contents_->GetTopLevelNativeWindow(),
+      nullptr);
+}
+
 void CustomizeChromePageHandler::OnNativeThemeUpdated(
     ui::NativeTheme* observed_theme) {
   UpdateTheme();
@@ -193,4 +225,24 @@ void CustomizeChromePageHandler::OnNextCollectionImageAvailable() {}
 void CustomizeChromePageHandler::OnNtpBackgroundServiceShuttingDown() {
   ntp_background_service_->RemoveObserver(this);
   ntp_background_service_ = nullptr;
+}
+
+void CustomizeChromePageHandler::FileSelected(const base::FilePath& path,
+                                              int index,
+                                              void* params) {
+  DCHECK(choose_local_custom_background_callback_);
+  if (ntp_custom_background_service_) {
+    profile_->set_last_selected_directory(path.DirName());
+    ntp_custom_background_service_->SelectLocalBackgroundImage(path);
+  }
+
+  select_file_dialog_ = nullptr;
+  std::move(choose_local_custom_background_callback_).Run(true);
+}
+
+void CustomizeChromePageHandler::FileSelectionCanceled(void* params) {
+  DCHECK(choose_local_custom_background_callback_);
+  select_file_dialog_ = nullptr;
+
+  std::move(choose_local_custom_background_callback_).Run(false);
 }

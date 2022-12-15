@@ -65,7 +65,8 @@ class NtpCustomBackgroundService : public KeyedService,
                                const std::string& collection_id);
 
   // Invoked when a user selected the "Upload an image" option on the NTP.
-  void SelectLocalBackgroundImage(const base::FilePath& path);
+  // Virtual for testing.
+  virtual void SelectLocalBackgroundImage(const base::FilePath& path);
 
   // Virtual for testing.
   virtual void RefreshBackgroundIfNeeded();

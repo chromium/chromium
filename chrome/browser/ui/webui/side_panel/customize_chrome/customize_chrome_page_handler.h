@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace content {
 class WebContents;
@@ -29,7 +30,8 @@ class CustomizeChromePageHandler
     : public side_panel::mojom::CustomizeChromePageHandler,
       public NtpBackgroundServiceObserver,
       public ui::NativeThemeObserver,
-      public ThemeServiceObserver {
+      public ThemeServiceObserver,
+      public ui::SelectFileDialog::Listener {
  public:
   CustomizeChromePageHandler(
       mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>
@@ -54,6 +56,8 @@ class CustomizeChromePageHandler
   void SetDefaultColor() override;
   void SetForegroundColor(SkColor foreground_color) override;
   void SetClassicChromeDefaultTheme() override;
+  void ChooseLocalCustomBackground(
+      ChooseLocalCustomBackgroundCallback callback) override;
 
  private:
   // ui::NativeThemeObserver:
@@ -71,8 +75,16 @@ class CustomizeChromePageHandler
   void OnNextCollectionImageAvailable() override;
   void OnNtpBackgroundServiceShuttingDown() override;
 
+  // SelectFileDialog::Listener:
+  void FileSelected(const base::FilePath& path,
+                    int index,
+                    void* params) override;
+  void FileSelectionCanceled(void* params) override;
+
+  ChooseLocalCustomBackgroundCallback choose_local_custom_background_callback_;
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   raw_ptr<Profile> profile_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<NtpBackgroundService> ntp_background_service_;
   GetBackgroundCollectionsCallback background_collections_callback_;

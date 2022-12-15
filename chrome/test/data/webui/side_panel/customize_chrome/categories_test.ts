@@ -97,4 +97,17 @@ suite('CategoriesTest', () => {
     assertTrue(!!event);
     assertEquals(1, handler.getCallCount('setClassicChromeDefaultTheme'));
   });
+
+  test('clicking upload image creates dialog and sends event', async () => {
+    await setInitialSettings(0);
+    handler.setResultFor('chooseLocalCustomBackground', Promise.resolve({
+      success: true,
+    }));
+
+    const eventPromise = eventToPromise('theme-select', categoriesElement);
+    categoriesElement.$.uploadImageTile.click();
+    const event = await eventPromise;
+    assertTrue(!!event);
+    assertEquals(1, handler.getCallCount('chooseLocalCustomBackground'));
+  });
 });
