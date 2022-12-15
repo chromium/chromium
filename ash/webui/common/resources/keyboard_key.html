@@ -40,12 +40,12 @@
     }
 
   :host {
-    --background-color-pressed: var(--cros-icon-color-selection);
+    --background-color-disabled: var(--cros-bg-color-dropped-elevation-2);
+    --background-color-pressed: var(--google-blue-800);
     --background-color-unpressed: var(--cros-highlight-color);
     --background-color-tested: rgba(var(--cros-icon-color-selection-rgb),
-        var(--cros-second-tone-opacity));
-    --background-color-disabled: var(--cros-bg-color-dropped-elevation-2);
-    --border-color: var(--cros-icon-color-prominent);
+        .85);
+    --border-color: var(--cros-text-color-selection);
     --border-radius:
         var(--keyboard-key-top-radii, 4px)
         var(--keyboard-key-top-radii, 4px)
@@ -53,15 +53,19 @@
         4px;
     --icon-size: min(100%, var(--keyboard-key-icon-size, 100%));
     --travel: var(--keyboard-key-travel, 4px);
-    --text-color-unpressed: var(--cros-icon-color-prominent);
+    --text-color-unpressed: var(--cros-text-color-selection);
     --text-color-pressed: var(--cros-button-icon-color-primary);
-
+    --text-color-tested: var(--cros-button-icon-color-primary);
     position: relative;
   }
 
   @media (prefers-color-scheme: dark) {
     :host {
       --background-color-disabled: var(--cros-bg-color-elevation-4);
+      --background-color-pressed: var(--cros-icon-color-selection);
+      --background-color-unpressed: var(--cros-button-active-shadow-color-ambient-primary);
+      --background-color-tested: rgba(var(--cros-icon-color-selection-rgb),
+        .65);
     }
   }
 
@@ -167,6 +171,11 @@
 
   :host([state='tested']) #key {
     background-color: var(--background-color-tested);
+    color: var(--text-color-tested);
+  }
+
+  :host([state='tested']) iron-icon {
+    --iron-icon-fill-color: var(--text-color-tested);
   }
 
   #shadow {
@@ -203,7 +212,7 @@
 </style>
 <div id="shadow"></div>
 <div id="key-background"></div>
-<div id="key" aria-label="[[ariaLabel_]]">
+<div id="key" aria-label="[[ariaLabel_]]" aria-disabled="true">
   <!--
     Child elements are aria-hidden to make ChromeVox treat the whole key as
     one unit with an aria-label, rather than individual labels that don't
