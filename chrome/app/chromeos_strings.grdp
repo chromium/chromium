@@ -4243,7 +4243,7 @@
   </message>
 
   <!-- Lacros data migration screen. -->
-  <message translateable="false" name="IDS_LACROS_DATA_MIGRATION_SCREEN_TITLE" desc="Title of the data migration screen.">
+  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_TITLE" desc="Title of the data migration screen.">
     Updating Chrome browser
   </message>
   <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_SUBTITLE" desc="Shows the % of progress.">
