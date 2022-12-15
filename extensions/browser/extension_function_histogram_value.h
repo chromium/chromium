@@ -1805,6 +1805,7 @@ enum HistogramValue {
   OS_DIAGNOSTICS_RUNEMMCLIFETIMEROUTINE = 1742,
   AUTOFILLPRIVATE_SAVEIBAN = 1743,
   AUTOFILLPRIVATE_GETIBANLIST = 1744,
+  ENTERPRISE_PLATFORMKEYS_CHALLENGEKEY = 1745,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

@@ -35521,6 +35521,7 @@ Called by update_extension_histograms.py.-->
   <int value="1742" label="OS_DIAGNOSTICS_RUNEMMCLIFETIMEROUTINE"/>
   <int value="1743" label="AUTOFILLPRIVATE_SAVEIBAN"/>
   <int value="1744" label="AUTOFILLPRIVATE_GETIBANLIST"/>
+  <int value="1745" label="ENTERPRISE_PLATFORMKEYS_CHALLENGEKEY"/>
 </enum>
 
 <enum name="ExtensionIconState">

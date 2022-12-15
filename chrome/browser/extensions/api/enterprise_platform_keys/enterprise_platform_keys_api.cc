@@ -49,6 +49,8 @@ const char kUnsupportedProfile[] = "Not available.";
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 const char kExtensionDoesNotHavePermission[] =
     "The extension does not have permission to call this function.";
+const char kChromeOsEcdsaUnsupported[] =
+    "Installed ChromeOS version does not support ECDSA.";
 
 crosapi::mojom::KeystoreService* GetKeystoreService(
     content::BrowserContext* browser_context) {
@@ -401,6 +403,11 @@ EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
 void EnterprisePlatformKeysChallengeMachineKeyFunction::
     OnChallengeAttestationOnlyKeystore(
         crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result) {
+  // It's possible the browser context was destroyed during the async work.
+  // If that happens, bail.
+  if (!browser_context()) {
+    return;
+  }
   if (result->is_error_message()) {
     Respond(Error(result->get_error_message()));
     return;
@@ -445,12 +452,110 @@ EnterprisePlatformKeysChallengeUserKeyFunction::Run() {
 void EnterprisePlatformKeysChallengeUserKeyFunction::
     OnChallengeAttestationOnlyKeystore(
         crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result) {
+  // It's possible the browser context was destroyed during the async work.
+  // If that happens, bail.
+  if (!browser_context()) {
+    return;
+  }
   if (result->is_error_message()) {
     Respond(Error(result->get_error_message()));
     return;
   }
   DCHECK(result->is_challenge_response());
   Respond(ArgumentList(api_epk::ChallengeUserKey::Results::Create(
+      result->get_challenge_response())));
+}
+
+//------------------------------------------------------------------------------
+
+const uint64_t kChallengeKeystoreAlgorithmParameterMinVersion = 17;
+
+ExtensionFunction::ResponseAction
+EnterprisePlatformKeysChallengeKeyFunction::Run() {
+  std::unique_ptr<api_epk::ChallengeKey::Params> params(
+      api_epk::ChallengeKey::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::string error = ValidateCrosapi(
+      KeystoreService::kChallengeAttestationOnlyKeystoreMinVersion,
+      browser_context());
+  if (!error.empty()) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  if (!platform_keys::IsExtensionAllowed(
+          Profile::FromBrowserContext(browser_context()), extension())) {
+    return RespondNow(Error(kExtensionDoesNotHavePermission));
+  }
+
+  crosapi::mojom::KeystoreType keystore_type =
+      crosapi::mojom::KeystoreType::kDevice;
+  EXTENSION_FUNCTION_VALIDATE(params->options.scope !=
+                              api::enterprise_platform_keys::SCOPE_NONE);
+  switch (params->options.scope) {
+    case api::enterprise_platform_keys::SCOPE_USER:
+      keystore_type = crosapi::mojom::KeystoreType::kUser;
+      break;
+    case api::enterprise_platform_keys::SCOPE_MACHINE:
+      keystore_type = crosapi::mojom::KeystoreType::kDevice;
+      break;
+    case api::enterprise_platform_keys::SCOPE_NONE:
+      NOTREACHED();
+  }
+
+  // Default to RSA when not registering a key.
+  crosapi::mojom::KeystoreSigningAlgorithmName algorithm =
+      crosapi::mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115;
+  if (params->options.register_key.has_value()) {
+    EXTENSION_FUNCTION_VALIDATE(params->options.register_key->algorithm !=
+                                api::enterprise_platform_keys::ALGORITHM_NONE);
+    switch (params->options.register_key->algorithm) {
+      case api::enterprise_platform_keys::ALGORITHM_RSA:
+        algorithm =
+            crosapi::mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115;
+        break;
+      case api::enterprise_platform_keys::ALGORITHM_ECDSA: {
+        // Older versions of Ash default to RSA. If ECDSA is specified but the
+        // Keystore would use RSA instead, return an error.
+        const std::string version_error = ValidateCrosapi(
+            kChallengeKeystoreAlgorithmParameterMinVersion, browser_context());
+        if (!version_error.empty()) {
+          return RespondNow(Error(kChromeOsEcdsaUnsupported));
+        }
+        algorithm = crosapi::mojom::KeystoreSigningAlgorithmName::kEcdsa;
+        break;
+      }
+      case api::enterprise_platform_keys::ALGORITHM_NONE:
+        NOTREACHED();
+    }
+  }
+
+  auto callback = base::BindOnce(&EnterprisePlatformKeysChallengeKeyFunction::
+                                     OnChallengeAttestationOnlyKeystore,
+                                 this);
+  GetKeystoreService(browser_context())
+      ->ChallengeAttestationOnlyKeystore(
+          keystore_type, params->options.challenge,
+          /*migrate=*/params->options.register_key.has_value(), algorithm,
+          std::move(callback));
+
+  return RespondLater();
+}
+
+void EnterprisePlatformKeysChallengeKeyFunction::
+    OnChallengeAttestationOnlyKeystore(
+        crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result) {
+  // It's possible the browser context was destroyed during the async work.
+  // If that happens, bail.
+  if (!browser_context()) {
+    return;
+  }
+  if (result->is_error_message()) {
+    Respond(Error(result->get_error_message()));
+    return;
+  }
+  DCHECK(result->is_challenge_response());
+  Respond(ArgumentList(api_epk::ChallengeKey::Results::Create(
       result->get_challenge_response())));
 }
 

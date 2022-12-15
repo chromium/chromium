@@ -120,6 +120,17 @@ class EnterprisePlatformKeysChallengeUserKeyFunction
                              ENTERPRISE_PLATFORMKEYS_CHALLENGEUSERKEY)
 };
 
+class EnterprisePlatformKeysChallengeKeyFunction : public ExtensionFunction {
+ private:
+  ~EnterprisePlatformKeysChallengeKeyFunction() override = default;
+  ResponseAction Run() override;
+
+  void OnChallengeAttestationOnlyKeystore(
+      crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result);
+  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.challengeKey",
+                             ENTERPRISE_PLATFORMKEYS_CHALLENGEKEY)
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_PLATFORM_KEYS_ENTERPRISE_PLATFORM_KEYS_API_H_
