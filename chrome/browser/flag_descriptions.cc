@@ -2000,11 +2000,6 @@ const char kOmniboxRemoveExcessiveRecycledViewClearCallsName[] =
 const char kOmniboxRemoveExcessiveRecycledViewClearCallsDescription[] =
     "Remove excessive clear calls on RecycledViewPool in omnibox.";
 
-const char kOmniboxRemoveSuggestionHeaderChevronName[] =
-    "Omnibox Remove Suggestion Header Chevron";
-const char kOmniboxRemoveSuggestionHeaderChevronDescription[] =
-    "Remove the chevron on the right side of omnibox suggestion search header.";
-
 const char kOmniboxReportAssistedQueryStatsName[] =
     "Omnibox Assisted Query Stats param";
 const char kOmniboxReportAssistedQueryStatsDescription[] =

@@ -119,7 +119,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 AutocompleteResult.fromCache(actualList, groupsDetails));
 
         verifier.verify(mMockHeaderProcessor, times(1))
-                .populateModel(any(), eq(1), eq(SECTION_2_EXPANDED_WITH_HEADER.getHeaderText()));
+                .populateModel(any(), eq(SECTION_2_EXPANDED_WITH_HEADER.getHeaderText()));
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestion), any(), eq(0));
         verifier.verify(mMockSuggestionProcessor, times(1))
@@ -172,13 +172,13 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestionWithNoGroup), any(), eq(0));
         verifier.verify(mMockHeaderProcessor, times(1))
-                .populateModel(any(), eq(1), eq(SECTION_2_EXPANDED_WITH_HEADER.getHeaderText()));
+                .populateModel(any(), eq(SECTION_2_EXPANDED_WITH_HEADER.getHeaderText()));
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestionForGroup1), any(), eq(1));
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestionForGroup1), any(), eq(2));
         verifier.verify(mMockHeaderProcessor, times(1))
-                .populateModel(any(), eq(2), eq(SECTION_3_EXPANDED_WITH_HEADER.getHeaderText()));
+                .populateModel(any(), eq(SECTION_3_EXPANDED_WITH_HEADER.getHeaderText()));
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestionForGroup2), any(), eq(3));
         verifier.verify(mMockSuggestionProcessor, times(1))
@@ -242,14 +242,14 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestionForGroup1), any(), eq(2));
         verifier.verify(mMockHeaderProcessor, times(1))
-                .populateModel(any(), eq(2), eq(SECTION_2_EXPANDED_WITH_HEADER.getHeaderText()));
+                .populateModel(any(), eq(SECTION_2_EXPANDED_WITH_HEADER.getHeaderText()));
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestionForGroup2), any(), eq(3));
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestionForGroup2), any(), eq(4));
 
         // Make sure no other headers were ever constructed.
-        verify(mMockHeaderProcessor, times(1)).populateModel(any(), anyInt(), any());
+        verify(mMockHeaderProcessor, times(1)).populateModel(any(), any());
 
         Assert.assertEquals(6, model.size()); // 1 header + 5 suggestions.
 

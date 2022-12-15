@@ -415,12 +415,6 @@ BASE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor,
              "OmniboxMatchToolbarAndStatusBarColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature used to remove the chevron on the right side of suggestion list
-// header under omnibox.
-BASE_FEATURE(kOmniboxRemoveSuggestionHeaderChevron,
-             "OmniboxRemoveSuggestionHeaderChevron",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature used to add a recycled view pool on the most visited tile carousel.
 BASE_FEATURE(kOmniboxMostVisitedTilesAddRecycledViewPool,
              "OmniboxMostVisitedTilesAddRecycledViewPool",

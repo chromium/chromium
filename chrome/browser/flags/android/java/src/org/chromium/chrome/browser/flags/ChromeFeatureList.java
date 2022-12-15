@@ -409,8 +409,6 @@ public abstract class ChromeFeatureList {
             "OmniboxMostVisitedTilesTitleWrapAround";
     public static final String OMNIBOX_REMOVE_EXCESSIVE_RECYCLED_VIEW_CLEAR_CALLS =
             "OmniboxRemoveExcessiveRecycledViewClearCalls";
-    public static final String OMNIBOX_REMOVE_SUGGESTION_HEADER_CHEVRON =
-            "OmniboxRemoveSuggestionHeaderChevron";
     public static final String OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS =
             "OmniboxUpdatedConnectionSecurityIndicators";
     public static final String OPAQUE_ORIGIN_FOR_INCOMING_INTENTS =

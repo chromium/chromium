@@ -9,7 +9,6 @@ import android.content.res.Resources;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.TextViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -22,34 +21,15 @@ public class HeaderViewBinder {
     /** @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object) */
     public static void bind(PropertyModel model, HeaderView view, PropertyKey propertyKey) {
         if (HeaderViewProperties.TITLE == propertyKey) {
-            view.getTextView().setText(model.get(HeaderViewProperties.TITLE));
+            view.setText(model.get(HeaderViewProperties.TITLE));
         } else if (propertyKey == SuggestionCommonProperties.COLOR_SCHEME) {
             final boolean isIncognito = model.get(SuggestionCommonProperties.COLOR_SCHEME)
                     == BrandedColorScheme.INCOGNITO;
             TextViewCompat.setTextAppearance(
-                    view.getTextView(), ChromeColors.getTextMediumThickSecondaryStyle(isIncognito));
-            ApiCompatibilityUtils.setImageTintList(view.getIconView(),
-                    ChromeColors.getPrimaryIconTint(view.getContext(), isIncognito));
+                    view, ChromeColors.getTextMediumThickSecondaryStyle(isIncognito));
         } else if (propertyKey == SuggestionCommonProperties.LAYOUT_DIRECTION) {
             ViewCompat.setLayoutDirection(
                     view, model.get(SuggestionCommonProperties.LAYOUT_DIRECTION));
-        } else if (propertyKey == HeaderViewProperties.IS_COLLAPSED) {
-            boolean isCollapsed = model.get(HeaderViewProperties.IS_COLLAPSED);
-            view.getIconView().setImageResource(isCollapsed ? R.drawable.ic_expand_more_black_24dp
-                                                            : R.drawable.ic_expand_less_black_24dp);
-            view.setCollapsedStateForAccessibility(isCollapsed);
-        } else if (propertyKey == HeaderViewProperties.DELEGATE) {
-            HeaderViewProperties.Delegate delegate = model.get(HeaderViewProperties.DELEGATE);
-            if (delegate != null) {
-                view.setOnClickListener(v -> delegate.onHeaderClicked());
-                view.setOnSelectListener(delegate::onHeaderSelected);
-            } else {
-                view.setOnClickListener(null);
-                view.setOnSelectListener(null);
-            }
-        } else if (propertyKey == HeaderViewProperties.SHOULD_REMOVE_CHEVRON) {
-            view.setShouldRemoveSuggestionHeaderChevron(
-                    model.get(HeaderViewProperties.SHOULD_REMOVE_CHEVRON));
         } else if (propertyKey == HeaderViewProperties.USE_MODERNIZED_HEADER_PADDING) {
             boolean useModernizedHeaderPadding =
                     model.get(HeaderViewProperties.USE_MODERNIZED_HEADER_PADDING);

@@ -1144,9 +1144,6 @@ extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
 extern const char kOmniboxRemoveExcessiveRecycledViewClearCallsName[];
 extern const char kOmniboxRemoveExcessiveRecycledViewClearCallsDescription[];
 
-extern const char kOmniboxRemoveSuggestionHeaderChevronName[];
-extern const char kOmniboxRemoveSuggestionHeaderChevronDescription[];
-
 extern const char kOmniboxRichAutocompletionPromisingName[];
 extern const char kOmniboxRichAutocompletionPromisingDescription[];
 

@@ -98,7 +98,7 @@ class DropdownItemViewInfoListBuilder {
             // Feature is enabled on non-tablet devices.
             mDividerLineProcessor = new DividerLineProcessor(context);
         }
-        mHeaderProcessor = new HeaderProcessor(context, host, delegate);
+        mHeaderProcessor = new HeaderProcessor(context);
         registerSuggestionProcessor(new EditUrlSuggestionProcessor(
                 context, host, delegate, mFaviconFetcher, mActivityTabSupplier, shareSupplier));
         registerSuggestionProcessor(
@@ -313,7 +313,7 @@ class DropdownItemViewInfoListBuilder {
                 // header text may be empty.
                 if (details != null && !TextUtils.isEmpty(details.getHeaderText())) {
                     final PropertyModel model = mHeaderProcessor.createModel();
-                    mHeaderProcessor.populateModel(model, currentGroup, details.getHeaderText());
+                    mHeaderProcessor.populateModel(model, details.getHeaderText());
                     viewInfoList.add(
                             new DropdownItemViewInfo(mHeaderProcessor, model, currentGroup));
                 }

@@ -634,16 +634,6 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kOmniboxRemoveSuggestionHeaderChevron_DisallowCollapse[] = {
-        {"allow_group_collapsed_state", "false"}};
-const FeatureEntry::FeatureVariation
-    kOmniboxRemoveSuggestionHeaderChevronVariations[] = {
-        {"DisallowCollapse",
-         kOmniboxRemoveSuggestionHeaderChevron_DisallowCollapse,
-         std::size(kOmniboxRemoveSuggestionHeaderChevron_DisallowCollapse),
-         nullptr},
-};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam
@@ -5286,15 +5276,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxMostVisitedTilesAddRecycledViewPoolDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxMostVisitedTilesAddRecycledViewPool)},
-
-    {"omnibox-remove-suggestion-header-chevron",
-     flag_descriptions::kOmniboxRemoveSuggestionHeaderChevronName,
-     flag_descriptions::kOmniboxRemoveSuggestionHeaderChevronDescription,
-     kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox::kOmniboxRemoveSuggestionHeaderChevron,
-         kOmniboxRemoveSuggestionHeaderChevronVariations,
-         "OmniboxRemoveSuggestionHeaderChevron")},
 
     {"omnibox-most-visited-tiles-title-wrap-around",
      flag_descriptions::kOmniboxMostVisitedTilesTitleWrapAroundName,

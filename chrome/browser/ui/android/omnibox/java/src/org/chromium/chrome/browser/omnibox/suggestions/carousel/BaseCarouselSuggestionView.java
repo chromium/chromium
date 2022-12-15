@@ -48,9 +48,6 @@ public class BaseCarouselSuggestionView extends LinearLayout {
         mHeader = new HeaderView(context);
         mHeader.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        mHeader.getIconView().setVisibility(GONE);
-        mHeader.setClickable(false);
-        mHeader.setFocusable(false);
         mHeader.setVisibility(View.GONE);
         addView(mHeader);
 
@@ -111,7 +108,7 @@ public class BaseCarouselSuggestionView extends LinearLayout {
 
     /** @return Header TextView element. */
     TextView getHeaderTextView() {
-        return mHeader.getTextView();
+        return mHeader;
     }
 
     /** @return Header element. */

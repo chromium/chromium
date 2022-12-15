@@ -7349,7 +7349,6 @@
                         "OmniboxFocusTriggersSRPZeroSuggest",
                         "OmniboxMaxURLMatches",
                         "OmniboxMostVisitedTilesTitleWrapAround",
-                        "OmniboxRemoveSuggestionHeaderChevron",
                         "OmniboxRetainSuggestionsWithHeaders",
                         "OmniboxUIExperimentMaxAutocompleteMatches",
                         "OrganicRepeatableQueries"
