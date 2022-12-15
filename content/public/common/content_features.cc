@@ -1269,6 +1269,12 @@ BASE_FEATURE(kWebAssemblyDynamicTiering,
              "WebAssemblyDynamicTiering",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable support for the WebAssembly Garbage Collection proposal:
+// https://github.com/WebAssembly/gc.
+BASE_FEATURE(kWebAssemblyGarbageCollection,
+             "WebAssemblyGarbageCollection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable WebAssembly lazy compilation (JIT on first call).
 BASE_FEATURE(kWebAssemblyLazyCompilation,
              "WebAssemblyLazyCompilation",

@@ -3352,6 +3352,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-webassembly-garbage-collection",
+    "owners": [ "adamk", "jkummerow", "wasm-team@google.com" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "enable-webassembly-lazy-compilation",
     "owners": [ "clemensb", "wasm-team@google.com" ],
     "expiry_milestone": 116

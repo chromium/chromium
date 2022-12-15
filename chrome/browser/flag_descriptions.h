@@ -750,6 +750,9 @@ extern const char kExperimentalWebAssemblyStackSwitchingDescription[];
 extern const char kEnableWasmBaselineName[];
 extern const char kEnableWasmBaselineDescription[];
 
+extern const char kEnableWasmGarbageCollectionName[];
+extern const char kEnableWasmGarbageCollectionDescription[];
+
 extern const char kEnableWasmLazyCompilationName[];
 extern const char kEnableWasmLazyCompilationDescription[];
 

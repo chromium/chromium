@@ -169,6 +169,11 @@ RenderProcessImpl::RenderProcessImpl()
                         "--no-experimental-wasm-stack-switching");
 #endif  // defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
 
+  SetV8FlagIfFeature(features::kWebAssemblyGarbageCollection,
+                     "--experimental-wasm-gc");
+  SetV8FlagIfNotFeature(features::kWebAssemblyGarbageCollection,
+                        "--no-experimental-wasm-gc");
+
   SetV8FlagIfFeature(features::kWebAssemblyLazyCompilation,
                      "--wasm-lazy-compilation");
   SetV8FlagIfNotFeature(features::kWebAssemblyLazyCompilation,

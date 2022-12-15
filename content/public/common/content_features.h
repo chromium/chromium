@@ -267,6 +267,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyDynamicTiering);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kEnableExperimentalWebAssemblyStackSwitching);
 #endif  // defined(ARCH_CPU_X86_64)
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyGarbageCollection);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyLazyCompilation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyRelaxedSimd);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTiering);

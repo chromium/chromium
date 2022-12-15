@@ -1345,6 +1345,12 @@ const char kEnableWasmLazyCompilationName[] = "WebAssembly lazy compilation";
 const char kEnableWasmLazyCompilationDescription[] =
     "Enables lazy (JIT on first call) compilation of WebAssembly modules.";
 
+const char kEnableWasmGarbageCollectionName[] =
+    "WebAssembly Garbage Collection";
+const char kEnableWasmGarbageCollectionDescription[] =
+    "Enables the experimental Garbage Collection (GC) extensions to "
+    "WebAssembly.";
+
 const char kEnableWasmRelaxedSimdName[] = "WebAssembly Relaxed SIMD";
 const char kEnableWasmRelaxedSimdDescription[] =
     "Enables the use of WebAssembly vector operations with relaxed semantics";
