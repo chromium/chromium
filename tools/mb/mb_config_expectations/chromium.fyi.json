@@ -1298,6 +1298,17 @@
       "use_remoteexec": true
     }
   },
+  "linux-wpt-content-shell-asan-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_asan": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_lsan": true,
+      "symbol_level": 1,
+      "use_remoteexec": true
+    }
+  },
   "linux-wpt-content-shell-fyi-rel": {
     "gn_args": {
       "dcheck_always_on": true,

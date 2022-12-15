@@ -92658,6 +92658,42 @@
       }
     ]
   },
+  "linux-wpt-content-shell-asan-fyi-rel": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "--log-wptreport",
+          "--xvfb",
+          "--enable-sanitizer"
+        ],
+        "experiment_percentage": 100,
+        "isolate_name": "wpt_tests_isolate_content_shell",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "wpt_tests_suite",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
+      }
+    ]
+  },
   "linux-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {

@@ -3532,6 +3532,15 @@
         },
         'use_swarming': False,
       },
+      'linux-wpt-content-shell-asan-fyi-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'wpt_web_tests_content_shell',
+        },
+      },
       'linux-wpt-content-shell-fyi-rel': {
         'mixins': [
           'has_native_resultdb_integration',
