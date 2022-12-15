@@ -8,20 +8,20 @@
 <body>
 <svg aria-label="animate should not be exposed">
   <rect x="5" y="5" width="20" height="15">
-    <animate attributeName="opacity" from="1" to="0" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" from="1" to="0" dur="500ms" repeatCount="2"/>
   </rect>
 </svg>
 <svg aria-label="animateMotion should not be exposed">
   <path id="path2" d="M100,250 C 100,50 400,50 400,222" fill="none" stroke="blue" stroke-width="7.06" />
   <path d="M-25,-12.5 L25,-12.5 L 0,-87.5 z" fill="yellow" stroke="red" stroke-width="7.06">
-    <animateMotion dur="6s" repeatCount="indefinite" rotate="auto">
+    <animateMotion dur="500ms" repeatCount="2" rotate="auto">
       <mpath href="#path2"/>
     </animateMotion>
   </path>
 </svg>
 <svg aria-label="animateTransform should not be exposed">
   <rect width="100" height="100">
-    <animateTransform attributeName="transform" type="scale" from="2" to="3" repeatCount="3" dur="4s" fill="freeze"/>
+    <animateTransform attributeName="transform" type="scale" from="2" to="3" repeatCount="3" dur="500ms" fill="freeze"/>
   </rect>
 </svg>
 <svg aria-label="clipPath should not be exposed">
@@ -42,7 +42,7 @@
 </svg>
 <svg aria-label="discard should not be exposed">
   <ellipse cx="98.5" cy="17.5" rx="20.5" ry="17.5" fill="blue" stroke="black" transform="translate(9 252) translate(3 -296)">
-    <animateTransform attributeName="transform" begin="0s" dur="2s" fill="remove" calcMode="linear" type="translate" additive="sum" from="0 0" to="-18 305"/>
+    <animateTransform attributeName="transform" begin="0s" dur="500ms" fill="remove" calcMode="linear" type="translate" additive="sum" from="0 0" to="-18 305"/>
     <discard begin="2s"/>
   </ellipse>
 </svg>
@@ -120,7 +120,7 @@
 <svg aria-label="mpath should not be exposed">
   <path id="path16" d="M100,250 C 100,50 400,50 400,222" fill="none" stroke="blue" stroke-width="7.06"/>
   <path d="M-25,-12.5 L25,-12.5 L 0,-87.5 z" fill="yellow" stroke="red" stroke-width="7.06">
-    <animateMotion dur="6s" repeatCount="indefinite" rotate="auto">
+    <animateMotion dur="500ms" repeatCount="2" rotate="auto">
       <mpath xlink:href="#path16"/>
     </animateMotion>
   </path>
@@ -156,7 +156,7 @@
     .round { rx: 5px; fill: green; }
   </style>
   <rect id="clickable" width="10" height="10">
-    <set attributeName="class" to="round" begin="clickable.click" dur="2s" />
+    <set attributeName="class" to="round" begin="clickable.click" dur="500ms" />
   </rect>
 </svg>
 <svg aria-label="switch should not be exposed">
