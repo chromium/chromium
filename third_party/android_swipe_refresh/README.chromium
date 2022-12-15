@@ -28,5 +28,4 @@ SwipeRefreshLayout
   * All ViewCompat and MotionEventCompat dependencies removed.
   * Added OnResetListener interface to notify SwipeRefreshHandler to detach
     this view.
-  * Add a flag to minimze the number of z-order changes, thereby minimizing
-    relayouts of the UI.
+  * Optimization to minimize number of relayouts of the UI.

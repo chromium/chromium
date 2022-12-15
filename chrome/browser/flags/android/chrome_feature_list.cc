@@ -264,7 +264,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kOmniboxModernizeVisualUpdate,
     &kOpaqueOriginForIncomingIntents,
     &kOptimizeGeolocationHeaderGeneration,
-    &kOptimizeLayoutsForPullRefresh,
     &kPostTaskFocusTab,
     &kProbabilisticCryptidRenderer,
     &kReachedCodeProfiler,
@@ -841,10 +840,6 @@ BASE_FEATURE(kOpaqueOriginForIncomingIntents,
 BASE_FEATURE(kOptimizeGeolocationHeaderGeneration,
              "OptimizeGeolocationHeaderGeneration",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOptimizeLayoutsForPullRefresh,
-             "OptimizeLayoutsForPullRefresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPostTaskFocusTab,
              "PostTaskFocusTab",

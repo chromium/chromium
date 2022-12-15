@@ -21,16 +21,12 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Transformation;
-import android.widget.AbsListView;
 
 /**
  * The SwipeRefreshLayout should be used whenever the user can refresh the
@@ -135,12 +131,6 @@ public class SwipeRefreshLayout extends ViewGroup {
     private float mSpinnerFinalOffset;
 
     private boolean mNotify;
-
-    /**
-     * Flag used during duration of pull-refresh animation to reduce the number of calls to
-     * |bringToFront|, and therefore requested layouts. crbug/1335416
-     */
-    private boolean mOptimizeLayouts;
 
     private int mCircleWidth;
 
@@ -570,11 +560,10 @@ public class SwipeRefreshLayout extends ViewGroup {
      * is currently active, the request will be ignored.
      * @return whether a new pull sequence has started.
      */
-    public boolean start(boolean optimizeLayouts) {
+    public boolean start() {
         if (!isEnabled()) return false;
         if (mRefreshing) return false;
         mCircleView.clearAnimation();
-        mOptimizeLayouts = optimizeLayouts;
         mProgress.stop();
         // See ACTION_DOWN handling in {@link #onTouchEvent(...)}.
         setTargetOffsetTopAndBottom(mOriginalOffsetTop - mCircleView.getTop(), true);
@@ -645,7 +634,7 @@ public class SwipeRefreshLayout extends ViewGroup {
 
     @Override
     public void bringChildToFront(View child) {
-        if (mOptimizeLayouts && indexOfChild(child) == getChildCount() - 1) return;
+        if (indexOfChild(child) == getChildCount() - 1) return;
         super.bringChildToFront(child);
     }
 

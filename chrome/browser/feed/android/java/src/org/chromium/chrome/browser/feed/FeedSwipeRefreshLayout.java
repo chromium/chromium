@@ -276,8 +276,7 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
                 final float yDiff = y - mLastMotionY;
                 if (yDiff > mTouchSlop && !mIsBeingDragged) {
                     mIsBeingDragged = true;
-                    // TODO(1335416): Update this to |true| if experiment is successful
-                    start(false);
+                    start();
                 }
                 break;
             }

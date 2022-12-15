@@ -418,7 +418,6 @@ public abstract class ChromeFeatureList {
             "OptimizationGuidePushNotifications";
     public static final String OPTIMIZE_GEOLOCATION_HEADER_GENERATION =
             "OptimizeGeolocationHeaderGeneration";
-    public static final String OPTIMIZE_LAYOUTS_FOR_PULL_REFRESH = "OptimizeLayoutsForPullRefresh";
     public static final String OSK_RESIZES_VISUAL_VIEWPORT = "OSKResizesVisualViewportByDefault";
     public static final String OVERLAY_NEW_LAYOUT = "OverlayNewLayout";
     public static final String PAGE_ANNOTATIONS_SERVICE = "PageAnnotationsService";

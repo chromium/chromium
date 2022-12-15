@@ -7782,21 +7782,6 @@
             ]
         }
     ],
-    "OptimizeLayoutsForPullRefresh": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OptimizeLayoutsForPullRefresh"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptimizeNetworkBuffers": [
         {
             "platforms": [

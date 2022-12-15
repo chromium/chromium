@@ -67,8 +67,7 @@ public class PlayerSwipeRefreshHandler implements OverscrollHandler {
 
     @Override
     public boolean start() {
-        // TODO(1335416): Update this to |true| if experiment is successful
-        return mSwipeRefreshLayout.start(false);
+        return mSwipeRefreshLayout.start();
     }
 
     @Override
