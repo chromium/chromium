@@ -231,6 +231,7 @@ const char* kBlocklistExtensions[] = {
     "GL_EXT_multi_draw_indirect",
     "GL_EXT_raster_multisample",
     "GL_NV_bindless_texture",
+    "GL_NV_framebuffer_mixed_samples",
     "GL_NV_texture_barrier",
     "GL_OES_sample_shading",
     "GL_EXT_draw_instanced",
