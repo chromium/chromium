@@ -11295,6 +11295,44 @@
             ]
         }
     ],
+    "TrustSafetySentimentSurveyV2": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "browsing-data-probability": "0.018",
+                        "browsing-data-trigger-id": "1iSgej9Tq0ugnJ3q1cK0QwXZ12oo",
+                        "control-group-probability": "0.0013",
+                        "control-group-trigger-id": "CXMbsBddw0ugnJ3q1cK0QJM1Hu8m",
+                        "max-time-to-prompt": "60m",
+                        "min-session-time": "30s",
+                        "min-time-to-prompt": "2m",
+                        "ntp-visits-max-range": "4",
+                        "ntp-visits-min-range": "2",
+                        "password-check-probability": "0.8",
+                        "password-check-trigger-id": "Xd54YDVNJ0ugnJ3q1cK0UYBRruNH",
+                        "privacy-guide-probability": "1.0",
+                        "privacy-guide-trigger-id": "tqR1rjeDu0ugnJ3q1cK0P9yJEq7Z",
+                        "probability": "1.0",
+                        "safety-check-probability": "0.8",
+                        "safety-check-trigger-id": "YSDfPVMnX0ugnJ3q1cK0RxEhwkay",
+                        "trusted-surface-probability": "0.17",
+                        "trusted-surface-time": "5s",
+                        "trusted-surface-trigger-id": "CMniDmzgE0ugnJ3q1cK0U6PaEn1f"
+                    },
+                    "enable_features": [
+                        "TrustSafetySentimentSurveyV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "TrustTokenOriginTrial": [
         {
             "platforms": [
