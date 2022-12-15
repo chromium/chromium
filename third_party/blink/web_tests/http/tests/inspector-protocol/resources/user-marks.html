@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+  <body>
+    <script>
+        function dispatchConsoleTimings() {
+            console.time("console time");
+            console.timeStamp("console timestamp");
+            console.timeEnd("console time");
+        }
+        async function dispatchUserTimings() {
+            let userTimingCallback;
+            const userTimingPromise = new Promise(resolve => userTimingCallback = resolve);
+            const startMark = 'startMark';
+            const start = performance.mark(startMark);
+            setTimeout(() => {
+                performance.measure('user timing', startMark);
+                userTimingCallback();
+            }, 20);
+            await userTimingPromise;
+        }
+
+        function dispatchIdleCallback() {
+            let requestCallback;
+            window.__requestIdleCallbackPromise = new Promise((fulfill) => requestCallback = fulfill);
+            const requestIdleCallbackId = window.requestIdleCallback(idleCallback);
+            function idleCallback() {
+                window.cancelIdleCallback(requestIdleCallbackId);
+                requestCallback();
+            }
+        }
+
+        async function dispatchAnimationFrame() {
+            let requestAnimationFrameCallback;
+            const requestAnimationFramePromise = new Promise((fulfill) => requestAnimationFrameCallback = fulfill);
+            const requestAnimationFrameId = window.requestAnimationFrame(animationFrameCallback);
+            function animationFrameCallback() {
+                window.cancelAnimationFrame(requestAnimationFrameId);
+                requestAnimationFrameCallback();
+            }
+            await requestAnimationFramePromise;
+        }
+
+        async function dispatchTimer() {
+            let timerCallback;
+            const timerPromise = new Promise((fulfill) => timerCallback = fulfill);
+            const intervalId = window.setInterval(intervalCallback, 20);
+            function intervalCallback() {
+                clearInterval(intervalId);
+                timerCallback();
+            }
+            await timerPromise;
+        }
+    </script>
+  </body>
+</html>

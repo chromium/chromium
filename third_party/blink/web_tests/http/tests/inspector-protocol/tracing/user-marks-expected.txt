@@ -1,0 +1,217 @@
+Tests the data of user marks trace events
+Recording started
+Tracing complete
+Got a TimeStamp event:
+Object: {
+	args: {
+		data: {
+			frame: string
+			message: string
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got ConsoleTime events:
+Object: {
+	args: {
+	}
+	cat: string
+	id2: {
+		local: string
+	}
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Phase of begin event: b
+Phase of end event: e
+Got a performance mark event:
+Object: {
+	args: {
+		data: {
+			navigationId: string
+			startTime: number
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got user timings events:
+Object: {
+	args: {
+		startTime: number
+	}
+	cat: string
+	id: string
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Phase of begin event: b
+Phase of end event: e
+user timing event ids are equal.
+Got a TimerInstall event:
+Object: {
+	args: {
+		data: {
+			frame: string
+			singleShot: boolean
+			timeout: number
+			timerId: number
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got a TimerFire event:
+Object: {
+	args: {
+		data: {
+			frame: string
+			timerId: number
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got a TimerRemove event:
+Object: {
+	args: {
+		data: {
+			frame: string
+			timerId: number
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got a RequestIdleCallback event:
+Object: {
+	args: {
+		data: {
+			frame: string
+			id: number
+			timeout: number
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got a CancelIdleCallback event:
+Object: {
+	args: {
+		data: {
+			frame: string
+			id: number
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got a FireIdleCallback event:
+Object: {
+	args: {
+		data: {
+			allottedMilliseconds: number
+			frame: string
+			id: number
+			timedOut: boolean
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got a RequestAnimationFrame event:
+Object: {
+	args: {
+		data: {
+			frame: string
+			id: number
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got a CancelAnimationFrame event:
+Object: {
+	args: {
+		data: {
+			frame: string
+			id: number
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got a FireAnimationFrame event:
+Object: {
+	args: {
+		data: {
+			frame: string
+			id: number
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+
