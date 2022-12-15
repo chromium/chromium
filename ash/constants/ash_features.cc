@@ -507,7 +507,7 @@ BASE_FEATURE(kCaptivePortalErrorPage,
 // the user.
 BASE_FEATURE(kChromadAvailable,
              "ChromadAvailable",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables always using device-activity-status data to filter
 // eligible host phones.
