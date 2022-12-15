@@ -57,6 +57,12 @@ config("pgo_optimization_flags") {
       # Temporarily use mac-arm profile until Android native PGO support works.
       # TODO(crbug.com/1308749): fix this.
       _pgo_target = "mac-arm"
+    } else if (is_fuchsia) {
+      if (target_cpu == "arm64") {
+        _pgo_target = "mac-arm"
+      } else {
+        _pgo_target = "mac"
+      }
     }
 
     if (_pgo_target == "win64") {
@@ -66,7 +72,7 @@ config("pgo_optimization_flags") {
     } else if (_pgo_target == "mac-arm") {
       inputs = [ "//chrome/build/mac-arm.pgo.txt" ]
     } else if (_pgo_target == "mac") {
-      inputs = [ "//chrome/build/mac-arm.pgo.txt" ]
+      inputs = [ "//chrome/build/mac.pgo.txt" ]
     } else if (_pgo_target == "linux") {
       inputs = [ "//chrome/build/linux.pgo.txt" ]
     }
