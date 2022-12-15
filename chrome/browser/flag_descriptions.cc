@@ -5985,10 +5985,6 @@ const char kTouchscreenCalibrationDescription[] =
     "If enabled, the user can calibrate the touch screen displays in "
     "chrome://settings/display.";
 
-const char kTouchTextEditingRedesignName[] = "Touch Text Editing Redesign";
-const char kTouchTextEditingRedesignDescription[] =
-    "Enables new touch text editing features.";
-
 const char kTrafficCountersEnabledName[] = "Traffic counters enabled";
 const char kTrafficCountersEnabledDescription[] =
     "If enabled, data usage will be visible in the Cellular Settings UI and "
@@ -6268,6 +6264,10 @@ const char kSyncChromeOSExplicitPassphraseSharingName[] =
     "Sync passphrase sharing";
 const char kSyncChromeOSExplicitPassphraseSharingDescription[] =
     "Allows sharing custom sync passphrase between OS and Browser on ChromeOS";
+
+const char kTouchTextEditingRedesignName[] = "Touch Text Editing Redesign";
+const char kTouchTextEditingRedesignDescription[] =
+    "Enables new touch text editing features.";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)

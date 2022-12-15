@@ -1341,7 +1341,7 @@ void Shell::Init(
   partial_magnifier_controller_ =
       std::make_unique<PartialMagnifierController>();
   highlighter_controller_ = std::make_unique<HighlighterController>();
-  if (base::FeatureList::IsEnabled(features::kTouchTextEditingRedesign)) {
+  if (::features::IsTouchTextEditingRedesignEnabled()) {
     touch_selection_magnifier_runner_ash_ =
         std::make_unique<TouchSelectionMagnifierRunnerAsh>();
   }

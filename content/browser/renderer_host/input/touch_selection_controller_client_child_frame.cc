@@ -4,7 +4,6 @@
 
 #include "content/browser/renderer_host/input/touch_selection_controller_client_child_frame.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
@@ -15,6 +14,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/pointer/touch_editing_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -174,10 +174,9 @@ bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
           ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
       return editable && !result.empty();
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case ui::TouchEditable::kSelectAll:
-      return readable && base::FeatureList::IsEnabled(
-                             ash::features::kTouchTextEditingRedesign);
+      return readable && features::IsTouchTextEditingRedesignEnabled();
 #endif
     default:
       return false;

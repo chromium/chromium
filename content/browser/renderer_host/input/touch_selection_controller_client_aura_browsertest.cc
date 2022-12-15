@@ -11,7 +11,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
@@ -31,6 +33,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/event_sink.h"
 #include "ui/events/event_utils.h"
@@ -167,7 +170,12 @@ class TestTouchSelectionControllerClientAura
 
 class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
  public:
-  TouchSelectionControllerClientAuraTest() {}
+  TouchSelectionControllerClientAuraTest() {
+#if BUILDFLAG(IS_CHROMEOS)
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kTouchTextEditingRedesign);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
 
   TouchSelectionControllerClientAuraTest(
       const TouchSelectionControllerClientAuraTest&) = delete;
@@ -247,6 +255,8 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
 
   raw_ptr<TestTouchSelectionControllerClientAura> selection_controller_client_ =
       nullptr;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class TouchSelectionControllerClientAuraCAPFeatureTest

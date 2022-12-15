@@ -285,6 +285,16 @@ BASE_FEATURE(kDeprecateAltBasedSixPack,
 bool IsDeprecateAltBasedSixPackEnabled() {
   return base::FeatureList::IsEnabled(kDeprecateAltBasedSixPack);
 }
+
+// Whether to enable new touch text editing features for ChromeOS.
+// TODO(b/262297017): Remove after touch text editing redesign ships.
+BASE_FEATURE(kTouchTextEditingRedesign,
+             "TouchTextEditingRedesign",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsTouchTextEditingRedesignEnabled() {
+  return base::FeatureList::IsEnabled(kTouchTextEditingRedesign);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Enables forced colors mode for web content.

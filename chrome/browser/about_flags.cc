@@ -4920,10 +4920,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSystemJapanesePhysicalTypingName,
      flag_descriptions::kSystemJapanesePhysicalTypingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSystemJapanesePhysicalTyping)},
-    {"enable-cros-touch-text-editing-redesign",
-     flag_descriptions::kTouchTextEditingRedesignName,
-     flag_descriptions::kTouchTextEditingRedesignDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kTouchTextEditingRedesign)},
     {"enable-cros-virtual-keyboard-multitouch",
      flag_descriptions::kVirtualKeyboardMultitouchName,
      flag_descriptions::kVirtualKeyboardMultitouchDescription, kOsCrOS,
@@ -4990,6 +4986,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSystemProxyForSystemServicesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSystemProxyForSystemServices)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+    {"enable-cros-touch-text-editing-redesign",
+     flag_descriptions::kTouchTextEditingRedesignName,
+     flag_descriptions::kTouchTextEditingRedesignDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(features::kTouchTextEditingRedesign)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_MAC)
     {"enable-immersive-fullscreen-toolbar",
      flag_descriptions::kImmersiveFullscreenName,

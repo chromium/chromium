@@ -39,7 +39,7 @@ class TouchSelectionMagnifierRunnerAshTest : public NoSessionAshTestBase {
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kTouchTextEditingRedesign);
+        ::features::kTouchTextEditingRedesign);
     NoSessionAshTestBase::SetUp();
   }
 

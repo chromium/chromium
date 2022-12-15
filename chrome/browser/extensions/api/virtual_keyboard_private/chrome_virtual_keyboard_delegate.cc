@@ -571,9 +571,6 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       "darkmode",
       base::FeatureList::IsEnabled(chromeos::features::kDarkLightMode)));
   features.Append(GenerateFeatureFlag(
-      "touchtexteditingredesign",
-      base::FeatureList::IsEnabled(ash::features::kTouchTextEditingRedesign)));
-  features.Append(GenerateFeatureFlag(
       "newheader",
       base::FeatureList::IsEnabled(ash::features::kVirtualKeyboardNewHeader)));
   features.Append(GenerateFeatureFlag(

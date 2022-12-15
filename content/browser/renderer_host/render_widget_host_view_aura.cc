@@ -9,7 +9,6 @@
 #include <set>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -81,6 +80,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/base/owned_window_anchor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
@@ -2628,9 +2628,9 @@ void RenderWidgetHostViewAura::CreateSelectionController() {
       ui::GestureConfiguration::GetInstance()->long_press_time_in_ms());
   tsc_config.tap_slop = ui::GestureConfiguration::GetInstance()
                             ->max_touch_move_in_pixels_for_click();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   tsc_config.enable_longpress_drag_selection =
-      base::FeatureList::IsEnabled(ash::features::kTouchTextEditingRedesign);
+      features::IsTouchTextEditingRedesignEnabled();
 #else
   tsc_config.enable_longpress_drag_selection = false;
 #endif

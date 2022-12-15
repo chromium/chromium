@@ -8,7 +8,6 @@
 #include <set>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -89,6 +88,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -1449,10 +1449,9 @@ void OmniboxViewViews::OnBlur() {
 }
 
 bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (command_id == Textfield::kSelectAll) {
-    return base::FeatureList::IsEnabled(
-        ash::features::kTouchTextEditingRedesign);
+    return features::IsTouchTextEditingRedesignEnabled();
   }
 #endif
   if (command_id == Textfield::kPaste)

@@ -3447,9 +3447,6 @@ extern const char kTetherDescription[];
 extern const char kTouchscreenCalibrationName[];
 extern const char kTouchscreenCalibrationDescription[];
 
-extern const char kTouchTextEditingRedesignName[];
-extern const char kTouchTextEditingRedesignDescription[];
-
 extern const char kTrafficCountersEnabledName[];
 extern const char kTrafficCountersEnabledDescription[];
 
@@ -3615,6 +3612,9 @@ extern const char kDisableQuickAnswersV2TranslationDescription[];
 
 extern const char kSyncChromeOSExplicitPassphraseSharingName[];
 extern const char kSyncChromeOSExplicitPassphraseSharingDescription[];
+
+extern const char kTouchTextEditingRedesignName[];
+extern const char kTouchTextEditingRedesignDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
