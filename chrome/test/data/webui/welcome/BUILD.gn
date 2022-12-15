@@ -3,24 +3,14 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("../build_webui_tests.gni")
 
 assert(!is_chromeos_ash && !is_android)
 
-ts_library("build_ts") {
-  root_dir = "./"
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  path_mappings = [
-    "chrome://welcome/*|" +
-        rebase_path("$root_gen_dir/chrome/browser/resources/welcome/tsc/*",
-                    target_gen_dir),
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
-  ]
-  in_files = [
+build_webui_tests("build") {
+  resource_path_prefix = "welcome"
+
+  files = [
     "app_chooser_test.ts",
     "module_metrics_test.ts",
     "navigation_mixin_test.ts",
@@ -37,19 +27,11 @@ ts_library("build_ts") {
     "test_welcome_browser_proxy.ts",
     "welcome_app_test.ts",
   ]
-  definitions = [ "//tools/typescript/definitions/bookmarks.d.ts" ]
-  deps = [
-    "..:build_ts",
-    "//chrome/browser/resources/welcome:build_ts",
-  ]
-}
 
-generate_grd("build_grdp") {
-  grd_prefix = "webui_welcome"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  resource_path_prefix = "welcome"
+  ts_path_mappings =
+      [ "chrome://welcome/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/welcome/tsc/*",
+                    target_gen_dir) ]
+  ts_definitions = [ "//tools/typescript/definitions/bookmarks.d.ts" ]
+  ts_deps = [ "//chrome/browser/resources/welcome:build_ts" ]
 }

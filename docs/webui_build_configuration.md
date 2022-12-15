@@ -556,9 +556,9 @@ List of files params:
 files: Required parameter. List of all test related files.
 
 TypeScript (ts_library()) related params:
-ts_definitions: See |definitions| in ts_library(). Required parameter.
+ts_definitions: See |definitions| in ts_library(). Optional parameter.
 ts_deps: See |deps| in ts_library(). Required parameter.
-ts_path_mappings: See |path_mappings| in ts_library(). Required parameter.
+ts_path_mappings: See |path_mappings| in ts_library(). Optional parameter.
 
 Other params:
 resource_path_prefix: See |resource_path_prefix| in generate_grd(). Required

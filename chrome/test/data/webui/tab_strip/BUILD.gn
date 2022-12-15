@@ -2,25 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
+import("../build_webui_tests.gni")
 
 assert(enable_webui_tab_strip)
 
-ts_library("build_ts") {
-  root_dir = "./"
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  path_mappings = [
-    "chrome://tab-strip.top-chrome/*|" +
-        rebase_path("$root_gen_dir/chrome/browser/resources/tab_strip/tsc/*",
-                    target_gen_dir),
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
-  ]
-  in_files = [
+build_webui_tests("build") {
+  resource_path_prefix = "tab_strip"
+
+  files = [
     "alert_indicators_test.ts",
     "alert_indicator_test.ts",
     "drag_manager_test.ts",
@@ -30,19 +20,11 @@ ts_library("build_ts") {
     "tab_test.ts",
     "test_tabs_api_proxy.ts",
   ]
-  definitions = [ "//tools/typescript/definitions/tabs.d.ts" ]
-  deps = [
-    "..:build_ts",
-    "//chrome/browser/resources/tab_strip:build_ts",
-  ]
-}
 
-generate_grd("build_grdp") {
-  grd_prefix = "webui_tab_strip"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  resource_path_prefix = "tab_strip"
+  ts_path_mappings =
+      [ "chrome://tab-strip.top-chrome/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/tab_strip/tsc/*",
+                    target_gen_dir) ]
+  ts_definitions = [ "//tools/typescript/definitions/tabs.d.ts" ]
+  ts_deps = [ "//chrome/browser/resources/tab_strip:build_ts" ]
 }

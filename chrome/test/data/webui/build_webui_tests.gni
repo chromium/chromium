@@ -13,8 +13,6 @@ template("build_webui_tests") {
   forward_variables_from(invoker,
                          [
                            "files",
-                           "ts_path_mappings",
-                           "ts_definitions",
                            "ts_deps",
                          ])
 
@@ -34,11 +32,21 @@ template("build_webui_tests") {
     root_dir = preprocess_dir
     out_dir = tsc_dir
     tsconfig_base = "tsconfig_base.json"
-    path_mappings = [ "chrome://webui-test/*|" +
-                      rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                                  target_gen_dir) ] + ts_path_mappings
+
+    path_mappings = []
+
+    # Add invoker provided path_mappings before the default one, because the
+    # order matters.
+    if (defined(invoker.ts_path_mappings)) {
+      path_mappings += invoker.ts_path_mappings
+    }
+    path_mappings += [ "chrome://webui-test/*|" +
+                       rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                                   target_gen_dir) ]
     in_files = files
-    definitions = ts_definitions
+    if (defined(invoker.ts_definitions)) {
+      definitions = invoker.ts_definitions
+    }
     deps = [ "//chrome/test/data/webui:build_ts" ] + ts_deps
     extra_deps = [ ":preprocess" ]
   }

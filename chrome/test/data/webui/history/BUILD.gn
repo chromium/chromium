@@ -2,58 +2,36 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("../build_webui_tests.gni")
 
-# Test files that do not require preprocessing.
-non_preprocessed_files = [
-  "history_clusters/utils.ts",
-  "history_drawer_test.ts",
-  "history_item_focus_test.ts",
-  "history_item_test.ts",
-  "history_list_focus_test.ts",
-  "history_list_test.ts",
-  "history_metrics_test.ts",
-  "history_overflow_menu_test.ts",
-  "history_routing_test.ts",
-  "history_routing_with_query_param_test.ts",
-  "history_supervised_user_test.ts",
-  "history_synced_device_manager_focus_test.ts",
-  "history_synced_tabs_test.ts",
-  "history_toolbar_focus_test.ts",
-  "history_toolbar_test.ts",
-  "link_click_test.ts",
-  "searched_label_test.ts",
-  "test_browser_service.ts",
-  "test_util.ts",
-]
-
-ts_library("build_ts") {
-  root_dir = "."
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  path_mappings = [
-    "chrome://history/*|" +
-        rebase_path("$root_gen_dir/chrome/browser/resources/history/tsc/*",
-                    target_gen_dir),
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
-  ]
-  in_files = non_preprocessed_files
-
-  deps = [
-    "..:build_ts",
-    "//chrome/browser/resources/history:build_ts",
-  ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "webui_history"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+build_webui_tests("build") {
   resource_path_prefix = "history"
+
+  files = [
+    "history_clusters/utils.ts",
+    "history_drawer_test.ts",
+    "history_item_focus_test.ts",
+    "history_item_test.ts",
+    "history_list_focus_test.ts",
+    "history_list_test.ts",
+    "history_metrics_test.ts",
+    "history_overflow_menu_test.ts",
+    "history_routing_test.ts",
+    "history_routing_with_query_param_test.ts",
+    "history_supervised_user_test.ts",
+    "history_synced_device_manager_focus_test.ts",
+    "history_synced_tabs_test.ts",
+    "history_toolbar_focus_test.ts",
+    "history_toolbar_test.ts",
+    "link_click_test.ts",
+    "searched_label_test.ts",
+    "test_browser_service.ts",
+    "test_util.ts",
+  ]
+
+  ts_path_mappings =
+      [ "chrome://history/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/history/tsc/*",
+                    target_gen_dir) ]
+  ts_deps = [ "//chrome/browser/resources/history:build_ts" ]
 }

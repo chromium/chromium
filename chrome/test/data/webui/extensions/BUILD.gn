@@ -4,113 +4,71 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("../build_webui_tests.gni")
 
 assert(enable_extensions, "enable extensions check failed")
 
-# Test files that contain // <if expr> and therefore require preprocessing.
-preprocessed_files = [ "toolbar_test.ts" ]
+build_webui_tests("build") {
+  resource_path_prefix = "extensions"
 
-# Test files that do not require preprocessing. If adding // <if expr> to any
-# file below, move it to the list above.
-non_preprocessed_files = [
-  "activity_log_history_item_test.ts",
-  "activity_log_history_test.ts",
-  "activity_log_stream_item_test.ts",
-  "activity_log_stream_test.ts",
-  "activity_log_test.ts",
-  "code_section_test.ts",
-  "detail_view_test.ts",
-  "error_console_test.ts",
-  "error_page_test.ts",
-  "extension_options_dialog_test.ts",
-  "host_permissions_toggle_list_test.ts",
-  "item_list_test.ts",
-  "item_test.ts",
-  "keyboard_shortcuts_test.ts",
-  "load_error_test.ts",
-  "manager_test.ts",
-  "manager_test_with_activity_log_flag.ts",
-  "manager_test_with_id_query_param.ts",
-  "manager_unit_test.ts",
-  "manager_unit_test_with_activity_log_flag.ts",
-  "navigation_helper_test.ts",
-  "options_dialog_test.ts",
-  "pack_dialog_test.ts",
-  "runtime_host_permissions_test.ts",
-  "runtime_hosts_dialog_test.ts",
-  "shortcut_input_test.ts",
-  "sidebar_test.ts",
-  "site_permissions_by_site_test.ts",
-  "site_permissions_edit_permissions_dialog_test.ts",
-  "site_permissions_edit_url_dialog_test.ts",
-  "site_permissions_list_test.ts",
-  "site_permissions_site_group_test.ts",
-  "site_permissions_test.ts",
-  "test_service.ts",
-  "test_util.ts",
-  "toggle_row_test.ts",
-  "url_util_test.ts",
-]
-
-if (is_chromeos_ash) {
-  non_preprocessed_files += [
-    "kiosk_mode_manager_unit_test.ts",
-    "kiosk_mode_test.ts",
-    "test_kiosk_browser_proxy.ts",
+  files = [
+    "toolbar_test.ts",
+    "activity_log_history_item_test.ts",
+    "activity_log_history_test.ts",
+    "activity_log_stream_item_test.ts",
+    "activity_log_stream_test.ts",
+    "activity_log_test.ts",
+    "code_section_test.ts",
+    "detail_view_test.ts",
+    "error_console_test.ts",
+    "error_page_test.ts",
+    "extension_options_dialog_test.ts",
+    "host_permissions_toggle_list_test.ts",
+    "item_list_test.ts",
+    "item_test.ts",
+    "keyboard_shortcuts_test.ts",
+    "load_error_test.ts",
+    "manager_test.ts",
+    "manager_test_with_activity_log_flag.ts",
+    "manager_test_with_id_query_param.ts",
+    "manager_unit_test.ts",
+    "manager_unit_test_with_activity_log_flag.ts",
+    "navigation_helper_test.ts",
+    "options_dialog_test.ts",
+    "pack_dialog_test.ts",
+    "runtime_host_permissions_test.ts",
+    "runtime_hosts_dialog_test.ts",
+    "shortcut_input_test.ts",
+    "sidebar_test.ts",
+    "site_permissions_by_site_test.ts",
+    "site_permissions_edit_permissions_dialog_test.ts",
+    "site_permissions_edit_url_dialog_test.ts",
+    "site_permissions_list_test.ts",
+    "site_permissions_site_group_test.ts",
+    "site_permissions_test.ts",
+    "test_service.ts",
+    "test_util.ts",
+    "toggle_row_test.ts",
+    "url_util_test.ts",
   ]
-}
 
-preprocessed_folder = "$target_gen_dir/preprocessed"
+  if (is_chromeos_ash) {
+    files += [
+      "kiosk_mode_manager_unit_test.ts",
+      "kiosk_mode_test.ts",
+      "test_kiosk_browser_proxy.ts",
+    ]
+  }
 
-preprocess_if_expr("preprocess") {
-  in_folder = "."
-  out_folder = preprocessed_folder
-  in_files = preprocessed_files
-}
-
-copy("copy") {
-  sources = non_preprocessed_files
-  outputs = [ "$preprocessed_folder/{{source_target_relative}}" ]
-}
-
-ts_library("build_ts") {
-  root_dir = preprocessed_folder
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  path_mappings = [
-    "chrome://extensions/*|" +
+  ts_path_mappings =
+      [ "chrome://extensions/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/extensions/tsc/*",
-                    target_gen_dir),
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
-  ]
-  in_files = preprocessed_files + non_preprocessed_files
+                    target_gen_dir) ]
 
-  deps = [
-    "..:build_ts",
-    "//chrome/browser/resources/extensions:build_ts",
-  ]
-  definitions = [
+  ts_deps = [ "//chrome/browser/resources/extensions:build_ts" ]
+  ts_definitions = [
     "//tools/typescript/definitions/activity_log_private.d.ts",
     "//tools/typescript/definitions/developer_private.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
   ]
-  extra_deps = [
-    ":copy",
-    ":preprocess",
-  ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "webui_extensions"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  resource_path_prefix = "extensions"
 }

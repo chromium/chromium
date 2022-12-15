@@ -2,26 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("../build_webui_tests.gni")
 
-ts_library("build_ts") {
-  root_dir = "./"
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  path_mappings = [
-    "chrome://tab-search.top-chrome/*|" +
-        rebase_path("$root_gen_dir/chrome/browser/resources/tab_search/tsc/*",
-                    target_gen_dir),
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
-    "chrome://webui-test/metrics_reporter/*|" +
-        rebase_path(
-            "$root_gen_dir/chrome/test/data/webui/metrics_reporter/tsc/*",
-            target_gen_dir),
-  ]
-  in_files = [
+build_webui_tests("build") {
+  resource_path_prefix = "tab_search"
+
+  files = [
     "bimap_test.ts",
     "fuzzy_search_test.ts",
     "infinite_list_test.ts",
@@ -33,19 +19,18 @@ ts_library("build_ts") {
     "tab_search_test_helper.ts",
     "test_tab_search_api_proxy.ts",
   ]
-  deps = [
-    "..:build_ts",
+
+  ts_path_mappings = [
+    "chrome://tab-search.top-chrome/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/tab_search/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/metrics_reporter/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/test/data/webui/metrics_reporter/tsc/*",
+            target_gen_dir),
+  ]
+  ts_deps = [
     "../metrics_reporter:build_ts",
     "//chrome/browser/resources/tab_search:build_ts",
   ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "webui_tab_search"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  resource_path_prefix = "tab_search"
 }
