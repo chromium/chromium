@@ -307,12 +307,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPartitionedCookies);
 // frames.
 NET_EXPORT BASE_DECLARE_FEATURE(kNoncedPartitionedCookies);
 
-// When enabled, additional cookie-related APIs will perform cookie field size
-// and character set validation to enforce stricter conformance with RFC6265bis.
-// TODO(crbug.com/1243852) Eventually enable this permanently and remove the
-// feature flag, assuming no breakage occurs with it enabled.
-NET_EXPORT BASE_DECLARE_FEATURE(kExtraCookieValidityChecks);
-
 // Enable recording UMAs for network activities which can wake-up radio on
 // Android.
 NET_EXPORT BASE_DECLARE_FEATURE(kRecordRadioWakeupTrigger);

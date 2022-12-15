@@ -542,9 +542,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   ParsedCookie parsed_cookie(cookie_line, status);
 
-  // We record this metric before checking validity because when
-  // kExtraCookieValidityChecks is enabled the presence of an HTAB will
-  // invalidate the ParsedCookie.
+  // We record this metric before checking validity because the presence of an
+  // HTAB will invalidate the ParsedCookie.
   UMA_HISTOGRAM_BOOLEAN("Cookie.NameOrValueHtab",
                         parsed_cookie.HasInternalHtab());
 
@@ -721,18 +720,10 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
         net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
   }
 
-  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
-    // Validate name and value against character set and size limit constraints.
-    // If IsValidCookieNameValuePair identifies that `name` and/or `value` are
-    // invalid, it will add an ExclusionReason to `status`.
-    ParsedCookie::IsValidCookieNameValuePair(name, value, status);
-
-  } else if (!ParsedCookie::IsValidCookieAttributeValueLegacy(name) ||
-             !ParsedCookie::IsValidCookieAttributeValueLegacy(value) ||
-             (name.empty() && value.empty())) {
-    status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
-  }
+  // Validate name and value against character set and size limit constraints.
+  // If IsValidCookieNameValuePair identifies that `name` and/or `value` are
+  // invalid, it will add an ExclusionReason to `status`.
+  ParsedCookie::IsValidCookieNameValuePair(name, value, status);
 
   // Validate domain against character set and size limit constraints.
   bool domain_is_valid = true;
@@ -743,17 +734,15 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     domain_is_valid = false;
   }
 
-  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
-    if (!ParsedCookie::CookieAttributeValueHasValidCharSet(domain)) {
-      status->AddExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
-      domain_is_valid = false;
-    }
-    if (!ParsedCookie::CookieAttributeValueHasValidSize(domain)) {
-      status->AddExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE);
-      domain_is_valid = false;
-    }
+  if (!ParsedCookie::CookieAttributeValueHasValidCharSet(domain)) {
+    status->AddExclusionReason(
+        net::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
+    domain_is_valid = false;
+  }
+  if (!ParsedCookie::CookieAttributeValueHasValidSize(domain)) {
+    status->AddExclusionReason(
+        net::CookieInclusionStatus::EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE);
+    domain_is_valid = false;
   }
   const std::string& domain_attribute =
       domain_is_valid ? domain : std::string();
@@ -801,9 +790,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
       // error.
       status->AddExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
-    } else if (base::FeatureList::IsEnabled(
-                   features::kExtraCookieValidityChecks) &&
-               !ParsedCookie::CookieAttributeValueHasValidSize(
+    } else if (!ParsedCookie::CookieAttributeValueHasValidSize(
                    encoded_cookie_path)) {
       // The path attribute was specified and encodes into a value that's longer
       // than the length limit, so record an error.
@@ -1432,16 +1419,9 @@ bool CanonicalCookie::IsCanonicalForFromStorage() const {
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
-    if (!ParsedCookie::IsValidCookieName(name_) ||
-        !ParsedCookie::IsValidCookieValue(value_)) {
-      return false;
-    }
-  } else {
-    if (!ParsedCookie::IsValidCookieAttributeValueLegacy(name_) ||
-        !ParsedCookie::IsValidCookieAttributeValueLegacy(value_)) {
-      return false;
-    }
+  if (!ParsedCookie::IsValidCookieName(name_) ||
+      !ParsedCookie::IsValidCookieValue(value_)) {
+    return false;
   }
 
   if (!last_access_date_.is_null() && creation_date_.is_null())

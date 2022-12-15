@@ -254,10 +254,6 @@ BASE_FEATURE(kNoncedPartitionedCookies,
              "NoncedPartitionedCookies",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExtraCookieValidityChecks,
-             "ExtraCookieValidityChecks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRecordRadioWakeupTrigger,
              "RecordRadioWakeupTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);

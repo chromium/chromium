@@ -114,34 +114,6 @@ inline bool SeekBackPast(std::string::const_iterator* it,
   return *it == end;
 }
 
-// Validate value, which may be according to RFC 6265
-// cookie-value      = *cookie-octet / ( DQUOTE *cookie-octet DQUOTE )
-// cookie-octet      = %x21 / %x23-2B / %x2D-3A / %x3C-5B / %x5D-7E
-//                      ; US-ASCII characters excluding CTLs,
-//                      ; whitespace DQUOTE, comma, semicolon,
-//                      ; and backslash
-// Note: This function is being replaced by
-// ParsedCookie::IsValidCookieValue() but remains here while we test that
-// removing this functionality doesn't break things.
-// TODO(crbug.com/1243852) Remove this when kExtraCookieValidityChecks
-// gets removed (assuming the associated changes cause no issues).
-bool IsValidCookieValueLegacy(const std::string& value) {
-  // Number of characters to skip in validation at beginning and end of string.
-  size_t skip = 0;
-  if (value.size() >= 2 && *value.begin() == '"' && *(value.end() - 1) == '"')
-    skip = 1;
-  for (std::string::const_iterator i = value.begin() + skip;
-       i != value.end() - skip; ++i) {
-    bool valid_octet =
-        (*i == 0x21 || (*i >= 0x23 && *i <= 0x2B) ||
-         (*i >= 0x2D && *i <= 0x3A) || (*i >= 0x3C && *i <= 0x5B) ||
-         (*i >= 0x5D && *i <= 0x7E));
-    if (!valid_octet)
-      return false;
-  }
-  return true;
-}
-
 // Returns the string piece within |value| that is a valid cookie value.
 base::StringPiece ValidStringPieceForValue(const std::string& value) {
   std::string::const_iterator it = value.begin();
@@ -168,14 +140,6 @@ ParsedCookie::ParsedCookie(const std::string& cookie_line,
     status_out = &blank_status;
   }
   *status_out = CookieInclusionStatus();
-
-  if ((!base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) &&
-      cookie_line.size() > kMaxCookieSize) {
-    DVLOG(1) << "Not parsing cookie, too large: " << cookie_line.size();
-    status_out->AddExclusionReason(
-        CookieInclusionStatus::EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE);
-    return;
-  }
 
   ParseTokenValuePairs(cookie_line, *status_out);
   if (IsValid()) {
@@ -215,91 +179,65 @@ CookiePriority ParsedCookie::Priority() const {
 }
 
 bool ParsedCookie::SetName(const std::string& name) {
-  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
-    const std::string& value = pairs_.empty() ? "" : pairs_[0].second;
+  const std::string& value = pairs_.empty() ? "" : pairs_[0].second;
 
-    // Ensure there are no invalid characters in `name`. This should be done
-    // before calling ParseTokenString because we want terminating characters
-    // ('\r', '\n', and '\0') and '=' in `name` to cause a rejection instead of
-    // truncation.
-    // TODO(crbug.com/1233602) Once we change logic more broadly to reject
-    // cookies containing these characters, we should be able to simplify this
-    // logic since IsValidCookieNameValuePair() also calls IsValidCookieName().
-    // Also, this check will currently fail if `name` has a tab character in the
-    // leading or trailing whitespace, which is inconsistent with what happens
-    // when parsing a cookie line in the constructor (but the old logic for
-    // SetName() behaved this way as well).
-    if (!IsValidCookieName(name)) {
-      return false;
-    }
-
-    // Use the same whitespace trimming code as the constructor.
-    const std::string& parsed_name = ParseTokenString(name);
-
-    if (!IsValidCookieNameValuePair(parsed_name, value)) {
-      return false;
-    }
-
-    if (pairs_.empty())
-      pairs_.push_back(std::make_pair("", ""));
-    pairs_[0].first = parsed_name;
-
-  } else {
-    if (!name.empty() && !HttpUtil::IsToken(name))
-      return false;
-
-    // Fail if we'd be creating a cookie with an empty name and value.
-    if (name.empty() && (pairs_.empty() || pairs_[0].second.empty()))
-      return false;
-
-    if (pairs_.empty())
-      pairs_.push_back(std::make_pair("", ""));
-    pairs_[0].first = name;
+  // Ensure there are no invalid characters in `name`. This should be done
+  // before calling ParseTokenString because we want terminating characters
+  // ('\r', '\n', and '\0') and '=' in `name` to cause a rejection instead of
+  // truncation.
+  // TODO(crbug.com/1233602) Once we change logic more broadly to reject
+  // cookies containing these characters, we should be able to simplify this
+  // logic since IsValidCookieNameValuePair() also calls IsValidCookieName().
+  // Also, this check will currently fail if `name` has a tab character in the
+  // leading or trailing whitespace, which is inconsistent with what happens
+  // when parsing a cookie line in the constructor (but the old logic for
+  // SetName() behaved this way as well).
+  if (!IsValidCookieName(name)) {
+    return false;
   }
+
+  // Use the same whitespace trimming code as the constructor.
+  const std::string& parsed_name = ParseTokenString(name);
+
+  if (!IsValidCookieNameValuePair(parsed_name, value)) {
+    return false;
+  }
+
+  if (pairs_.empty())
+    pairs_.push_back(std::make_pair("", ""));
+  pairs_[0].first = parsed_name;
+
   return true;
 }
 
 bool ParsedCookie::SetValue(const std::string& value) {
-  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
-    const std::string& name = pairs_.empty() ? "" : pairs_[0].first;
+  const std::string& name = pairs_.empty() ? "" : pairs_[0].first;
 
-    // Ensure there are no invalid characters in `value`. This should be done
-    // before calling ParseValueString because we want terminating characters
-    // ('\r', '\n', and '\0') in `value` to cause a rejection instead of
-    // truncation.
-    // TODO(crbug.com/1233602) Once we change logic more broadly to reject
-    // cookies containing these characters, we should be able to simplify this
-    // logic since IsValidCookieNameValuePair() also calls IsValidCookieValue().
-    // Also, this check will currently fail if `value` has a tab character in
-    // the leading or trailing whitespace, which is inconsistent with what
-    // happens when parsing a cookie line in the constructor (but the old logic
-    // for SetValue() behaved this way as well).
-    if (!IsValidCookieValue(value)) {
-      return false;
-    }
-
-    // Use the same whitespace trimming code as the constructor.
-    const std::string& parsed_value = ParseValueString(value);
-
-    if (!IsValidCookieNameValuePair(name, parsed_value)) {
-      return false;
-    }
-    if (pairs_.empty())
-      pairs_.push_back(std::make_pair("", ""));
-    pairs_[0].second = parsed_value;
-
-  } else {
-    if (!IsValidCookieValueLegacy(value))
-      return false;
-
-    // Fail if we'd be creating a cookie with an empty name and value.
-    if (value.empty() && (pairs_.empty() || pairs_[0].first.empty()))
-      return false;
-
-    if (pairs_.empty())
-      pairs_.push_back(std::make_pair("", ""));
-    pairs_[0].second = value;
+  // Ensure there are no invalid characters in `value`. This should be done
+  // before calling ParseValueString because we want terminating characters
+  // ('\r', '\n', and '\0') in `value` to cause a rejection instead of
+  // truncation.
+  // TODO(crbug.com/1233602) Once we change logic more broadly to reject
+  // cookies containing these characters, we should be able to simplify this
+  // logic since IsValidCookieNameValuePair() also calls IsValidCookieValue().
+  // Also, this check will currently fail if `value` has a tab character in
+  // the leading or trailing whitespace, which is inconsistent with what
+  // happens when parsing a cookie line in the constructor (but the old logic
+  // for SetValue() behaved this way as well).
+  if (!IsValidCookieValue(value)) {
+    return false;
   }
+
+  // Use the same whitespace trimming code as the constructor.
+  const std::string& parsed_value = ParseValueString(value);
+
+  if (!IsValidCookieNameValuePair(name, parsed_value)) {
+    return false;
+  }
+  if (pairs_.empty())
+    pairs_.push_back(std::make_pair("", ""));
+  pairs_[0].second = parsed_value;
+
   return true;
 }
 
@@ -518,13 +456,6 @@ bool ParsedCookie::IsValidCookieValue(const std::string& value) {
 }
 
 // static
-bool ParsedCookie::IsValidCookieAttributeValueLegacy(const std::string& value) {
-  // This legacy method only checks the character set, so use
-  // CookieAttributeValueHasValidCharSet()
-  return CookieAttributeValueHasValidCharSet(value);
-}
-
-// static
 bool ParsedCookie::CookieAttributeValueHasValidCharSet(
     const std::string& value) {
   // A cookie attribute value has the same character set restrictions as cookie
@@ -673,67 +604,21 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
       internal_htab_ = true;
     }
 
-    if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
-      bool ignore_pair = false;
-      if (pair_num == 0) {
-        if (!IsValidCookieNameValuePair(pair.first, pair.second, &status_out)) {
-          pairs_.clear();
-          break;
-        }
-      } else {
-        // From RFC2109: "Attributes (names) (attr) are case-insensitive."
-        pair.first = base::ToLowerASCII(pair.first);
-
-        // Attribute names have the same character set limitations as cookie
-        // names, but only a handful of values are allowed. We don't check that
-        // this attribute name is one of the allowed ones here, so just re-use
-        // the cookie name check.
-        if (!IsValidCookieName(pair.first)) {
-          // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
-          status_out.AddExclusionReason(
-              CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
-          pairs_.clear();
-          break;
-        }
-
-        if (!CookieAttributeValueHasValidCharSet(pair.second)) {
-          // If the attribute value contains invalid characters, the whole
-          // cookie should be ignored.
-          status_out.AddExclusionReason(
-              CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
-          pairs_.clear();
-          break;
-        }
-
-        if (!CookieAttributeValueHasValidSize(pair.second)) {
-          // If the attribute value is too large, it should be ignored.
-          ignore_pair = true;
-          status_out.AddWarningReason(
-              CookieInclusionStatus::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE);
-        }
-      }
-
-      if (!ignore_pair) {
-        pairs_.push_back(pair);
+    bool ignore_pair = false;
+    if (pair_num == 0) {
+      if (!IsValidCookieNameValuePair(pair.first, pair.second, &status_out)) {
+        pairs_.clear();
+        break;
       }
     } else {
-      // Ignore cookies with neither name nor value.
-      if (pair_num == 0 && (pair.first.empty() && pair.second.empty())) {
-        // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
-        status_out.AddExclusionReason(
-            CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
-        pairs_.clear();
-        break;
-      }
-
       // From RFC2109: "Attributes (names) (attr) are case-insensitive."
-      if (pair_num != 0)
-        pair.first = base::ToLowerASCII(pair.first);
+      pair.first = base::ToLowerASCII(pair.first);
 
-      // Ignore Set-Cookie directives containing control characters. See
-      // http://crbug.com/238041.
-      if (!IsValidCookieAttributeValueLegacy(pair.first) ||
-          !IsValidCookieAttributeValueLegacy(pair.second)) {
+      // Attribute names have the same character set limitations as cookie
+      // names, but only a handful of values are allowed. We don't check that
+      // this attribute name is one of the allowed ones here, so just re-use
+      // the cookie name check.
+      if (!IsValidCookieName(pair.first)) {
         // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
         status_out.AddExclusionReason(
             CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
@@ -741,6 +626,24 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
         break;
       }
 
+      if (!CookieAttributeValueHasValidCharSet(pair.second)) {
+        // If the attribute value contains invalid characters, the whole
+        // cookie should be ignored.
+        status_out.AddExclusionReason(
+            CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+        pairs_.clear();
+        break;
+      }
+
+      if (!CookieAttributeValueHasValidSize(pair.second)) {
+        // If the attribute value is too large, it should be ignored.
+        ignore_pair = true;
+        status_out.AddWarningReason(
+            CookieInclusionStatus::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE);
+      }
+    }
+
+    if (!ignore_pair) {
       pairs_.push_back(pair);
     }
 
@@ -813,22 +716,14 @@ bool ParsedCookie::SetString(size_t* index,
   // Inputs containing invalid characters or attribute value strings that are
   // too large should be ignored. Note that we check the attribute value size
   // after removing leading and trailing whitespace.
-  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
-    if (!CookieAttributeValueHasValidCharSet(untrusted_value))
-      return false;
-
-  } else {
-    if (!IsValidCookieAttributeValueLegacy(untrusted_value))
-      return false;
-  }
+  if (!CookieAttributeValueHasValidCharSet(untrusted_value))
+    return false;
 
   // Use the same whitespace trimming code as the constructor.
   const std::string parsed_value = ParseValueString(untrusted_value);
 
-  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
-    if (!CookieAttributeValueHasValidSize(parsed_value))
-      return false;
-  }
+  if (!CookieAttributeValueHasValidSize(parsed_value))
+    return false;
 
   if (parsed_value.empty()) {
     ClearAttributePair(*index);

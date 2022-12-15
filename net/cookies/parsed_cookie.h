@@ -23,11 +23,6 @@ class NET_EXPORT ParsedCookie {
   typedef std::pair<std::string, std::string> TokenValuePair;
   typedef std::vector<TokenValuePair> PairList;
 
-  // The maximum length of a cookie string we will try to parse.
-  // TODO(crbug.com/1243852) Remove this when kExtraCookieValidityChecks
-  // gets removed (assuming the associated changes cause no issues).
-  static const size_t kMaxCookieSize = 4096;
-
   // The maximum length allowed for a cookie string's name/value pair.
   static const size_t kMaxCookieNamePlusValueSize = 4096;
 
@@ -168,10 +163,6 @@ class NET_EXPORT ParsedCookie {
 
   // Is the string less than the size limits set for attribute values?
   static bool CookieAttributeValueHasValidSize(const std::string& value);
-
-  // Is the string valid as a cookie attribute value? (only checks the character
-  // set - no length checks performed)
-  static bool IsValidCookieAttributeValueLegacy(const std::string& value);
 
   // Returns `true` if the name and value combination are valid. Calls
   // IsValidCookieName() and IsValidCookieValue() on `name` and `value`
