@@ -13,6 +13,9 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPaint.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathUtils.h"
 #include "third_party/skia/include/core/SkTypes.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -67,7 +70,7 @@ void DrawSegment(gfx::Canvas& canvas,
   paint.setStrokeCap(SkPaint::kRound_Cap);
 
   SkPath fill;
-  paint.getFillPath(frame, &fill);
+  skpathutils::FillPathWithPaint(frame, paint, &fill);
   fill.addPath(frame);
   canvas.DrawPath(fill, flags);
 }

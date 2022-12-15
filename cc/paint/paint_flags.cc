@@ -11,6 +11,7 @@
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/paint_shader.h"
+#include "third_party/skia/include/core/SkPathUtils.h"
 
 namespace {
 
@@ -99,7 +100,7 @@ bool PaintFlags::getFillPath(const SkPath& src,
                              const SkRect* cull_rect,
                              SkScalar res_scale) const {
   SkPaint paint = ToSkPaint();
-  return paint.getFillPath(src, dst, cull_rect, res_scale);
+  return skpathutils::FillPathWithPaint(src, paint, dst, cull_rect, res_scale);
 }
 
 bool PaintFlags::IsSimpleOpacity() const {
