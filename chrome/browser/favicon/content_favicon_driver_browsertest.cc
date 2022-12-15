@@ -1016,6 +1016,22 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, SVGFavicon) {
   EXPECT_NE(nullptr, result.bitmap_data);
 }
 
+IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, SizesAny) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url =
+      embedded_test_server()->GetURL("/favicon/page_with_sizes_any.html");
+  GURL expected_icon_url = embedded_test_server()->GetURL("/favicon/icon.svg");
+
+  PendingTaskWaiter waiter(web_contents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  waiter.Wait();
+
+  auto result = GetFaviconForPageURL(url, favicon_base::IconType::kFavicon, 16);
+  EXPECT_EQ(expected_icon_url, result.icon_url);
+  EXPECT_EQ(gfx::Size(16, 16), result.pixel_size);
+  EXPECT_NE(nullptr, result.bitmap_data);
+}
+
 // Test that when a user visits a site after a cache deletion, the favicon is
 // fetched again.
 IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,

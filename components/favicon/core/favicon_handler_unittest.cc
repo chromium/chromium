@@ -1774,6 +1774,18 @@ TEST_F(FaviconHandlerTest, TestKeepDownloadedLargestFavicon) {
        FaviconURL(kIconURL16x16, kFavicon, kEmptySizes)});
 }
 
+// Test that the special size keyword "any" (represented as a size of 0x0 in
+// FaviconURL) is handled.
+TEST_F(FaviconHandlerTest, TestConsiderAnySize) {
+  EXPECT_CALL(delegate_,
+              OnFaviconUpdated(_, _, kIconURL16x16, _, ImageSizeIs(16, 16)));
+
+  RunHandlerWithCandidates(
+      FaviconDriverObserver::NON_TOUCH_16_DIP,
+      {FaviconURL(kIconURL16x16, kFavicon, SizeVector{gfx::Size(0, 0)}),
+       FaviconURL(kIconURL64x64, kFavicon, SizeVector{gfx::Size(64, 64)})});
+}
+
 // Test that if a page URL is followed by another page URL which is not
 // considered the same document, favicon candidates listed in the second page
 // get associated to that second page only.

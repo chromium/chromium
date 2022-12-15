@@ -29,6 +29,10 @@
 namespace favicon {
 namespace {
 
+BASE_FEATURE(kFaviconsHandleSizesAny,
+             "FaviconsHandleSizesAny",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const int kLargestIconSize = 192;
 
 // Returns true if |bitmap_results| is non-empty and:
@@ -104,6 +108,15 @@ bool FaviconURLEquals(const FaviconURL& lhs, const FaviconURL& rhs) {
          lhs.icon_sizes == rhs.icon_sizes;
 }
 
+// Returns true if `icon_sizes` has the "any" size keyword specified. The 'any'
+// value is represented as the size 0x0 (e.g `gfx::Size()` or the predicate
+// `gfx::Size::IsZero()`). "0x0" (or generally, a 0 dimension) is considered an
+// invalid size by the 'sizes' parser (see for example `WebIconSizesParser` in
+// Blink).
+bool HasAnySize(const std::vector<gfx::Size>& icon_sizes) {
+  return base::ranges::any_of(icon_sizes, &gfx::Size::IsZero);
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -118,7 +131,12 @@ FaviconHandler::FaviconCandidate::FromFaviconURL(
   candidate.icon_url = favicon_url.icon_url;
   candidate.icon_type = favicon_url.icon_type;
 
-  if (!favicon_url.icon_sizes.empty()) {
+  if (HasAnySize(favicon_url.icon_sizes) &&
+      base::FeatureList::IsEnabled(kFaviconsHandleSizesAny)) {
+    // For candidates which has the keyword "any" as part of their size
+    // information, assign a score of 1.
+    candidate.score = 1.0f;
+  } else if (!favicon_url.icon_sizes.empty()) {
     // For candidates with explicit size information, the score is computed
     // based on similarity with |desired_pixel_sizes|.
     SelectFaviconFrameIndices(favicon_url.icon_sizes, desired_pixel_sizes,
