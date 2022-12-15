@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/ukm/scheme_constants.h"
 #include "components/ukm/ukm_recorder_observer.h"
 #include "components/variations/variations_associated_data.h"
@@ -1190,10 +1191,15 @@ void UkmRecorderImpl::InitDecodeMap() {
 
 void UkmRecorderImpl::NotifyObserversWithNewEntry(
     const mojom::UkmEntry& entry) {
+  TRACE_EVENT("toplevel", "UkmRecorderImpl::NotifyObserversWithNewEntry");
+
   base::AutoLock auto_lock(lock_);
 
   for (const auto& observer : observers_) {
     if (observer.first.contains(entry.event_hash)) {
+      TRACE_EVENT(
+          "toplevel",
+          "UkmRecorderImpl::NotifyObserversWithNewEntry NotifyObserver");
       mojom::UkmEntryPtr cloned = entry.Clone();
       observer.second->Notify(FROM_HERE, &UkmRecorderObserver::OnEntryAdded,
                               base::Passed(&cloned));
