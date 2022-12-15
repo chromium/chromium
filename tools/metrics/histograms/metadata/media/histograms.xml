@@ -6169,6 +6169,67 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MediaRouter.RemotePlayback.SinkCapability.SupportedAudioCodec"
+    enum="AudioCodec" expires_after="2023-06-15">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Recorded when a Cast sink is discovered for a Remote Playback MediaSource
+    and this sink supports the MediaSource's AudioCodec. It is not recorded if
+    the model is not known to support Remoting, in which case the sink's audio
+    capability is unknown.
+  </summary>
+</histogram>
+
+<histogram name="MediaRouter.RemotePlayback.SinkCapability.SupportedVideoCodec"
+    enum="VideoCodec" expires_after="2023-06-15">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Recorded when a Cast sink is discovered for a Remote Playback MediaSource
+    and this sink supports the MediaSource's VideoCodec. It is not recorded if
+    the model is not known to support Remoting, in which case the sink's video
+    capability is unknown.
+  </summary>
+</histogram>
+
+<histogram
+    name="MediaRouter.RemotePlayback.SinkCapability.UnsupportedAudioCodec"
+    enum="AudioCodec" expires_after="2023-06-15">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Recorded when a Cast sink is discovered for a Remote Playback MediaSource
+    and this sink does not support the MediaSource's AudioCodec. It is not
+    recorded if the model is not known to support Remoting, in which case the
+    sink's audio capability is unknown.
+  </summary>
+</histogram>
+
+<histogram
+    name="MediaRouter.RemotePlayback.SinkCapability.UnsupportedVideoCodec"
+    enum="VideoCodec" expires_after="2023-06-15">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Recorded when a Cast sink is discovered for a Remote Playback MediaSource
+    and this sink does not support the MediaSource's VideoCodec. It is not
+    recorded if the model is not known to support Remoting, in which case the
+    sink's video capability is unknown.
+  </summary>
+</histogram>
+
+<histogram name="MediaRouter.RemotePlayback.SinkModelCompatibility"
+    enum="Boolean" expires_after="2023-06-15">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records whether the discovered sink is known to support Media Remoting. It
+    is recorded when media sink query results are sent to the
+    CastMediaRouteProvider.
+  </summary>
+</histogram>
+
 <histogram name="MediaRouter.Route.CreationOutcome"
     enum="MediaRouterCreateRouteOutcome" expires_after="2023-01-03">
   <owner>takumif@chromium.org</owner>

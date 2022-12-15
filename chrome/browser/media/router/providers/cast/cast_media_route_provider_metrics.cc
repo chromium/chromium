@@ -8,6 +8,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "media/base/audio_codecs.h"
+#include "media/base/video_codecs.h"
 
 using cast_channel::ReceiverAppType;
 
@@ -51,6 +53,34 @@ void RecordLaunchSessionResponseAppType(const base::Value* app_type) {
   } else {
     base::UmaHistogramEnumeration(kHistogramCastAppType,
                                   cast_channel::ReceiverAppType::kOther);
+  }
+}
+
+void RecordSinkRemotingCompatibility(bool is_supported_model,
+                                     bool is_supported_audio_codec,
+                                     media::AudioCodec audio_codec,
+                                     bool is_supported_video_codec,
+                                     media::VideoCodec video_codec) {
+  base::UmaHistogramBoolean(kHistogramSinkModelSupportsRemoting,
+                            is_supported_model);
+  if (!is_supported_model) {
+    return;
+  }
+
+  if (is_supported_audio_codec) {
+    base::UmaHistogramEnumeration(kHistogramSinkCapabilitySupportedAudioCodec,
+                                  audio_codec);
+  } else {
+    base::UmaHistogramEnumeration(kHistogramSinkCapabilityUnsupportedAudioCodec,
+                                  audio_codec);
+  }
+
+  if (is_supported_video_codec) {
+    base::UmaHistogramEnumeration(kHistogramSinkCapabilitySupportedVideoCodec,
+                                  video_codec);
+  } else {
+    base::UmaHistogramEnumeration(kHistogramSinkCapabilityUnsupportedVideoCodec,
+                                  video_codec);
   }
 }
 
