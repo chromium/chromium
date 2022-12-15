@@ -66,6 +66,11 @@ TEST_F(ZWPTextInputWrapperV1Test,
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     Mock::VerifyAndClearExpectations(
         server->text_input_manager_v1()->text_input());
+  });
+
+  // The text input extension gets updated and called after another round trip.
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     Mock::VerifyAndClearExpectations(
         server->text_input_extension_v1()->extended_text_input());
   });
@@ -94,6 +99,11 @@ TEST_F(ZWPTextInputWrapperV1Test,
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     Mock::VerifyAndClearExpectations(
         server->text_input_manager_v1()->text_input());
+  });
+
+  // The text input extension gets updated and called after another round trip.
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     Mock::VerifyAndClearExpectations(
         server->text_input_extension_v1()->extended_text_input());
   });
