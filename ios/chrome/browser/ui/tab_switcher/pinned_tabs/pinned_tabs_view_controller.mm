@@ -41,8 +41,11 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
   // Background color of the view.
   UIColor* _backgroundColor;
 
-  // Tracks if the view is available. It does not track if the view is visible.
+  // Tracks if the view is available.
   BOOL _available;
+
+  // Tracks if a drag action is in progress.
+  BOOL _isDragActionInProgress;
 }
 
 - (instancetype)init {
@@ -58,14 +61,16 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
   [super viewDidLoad];
 
   _available = YES;
+  _isDragActionInProgress = NO;
 
   [self configureCollectionView];
-  [self populateFakeItems];
 }
 
 #pragma mark - Public
 
 - (void)dragSessionEnabled:(BOOL)enabled {
+  _isDragActionInProgress = enabled;
+
   [UIView animateWithDuration:kPinnedViewDragAnimationTime
                    animations:^{
                      self->_dragEnabledConstraint.active = enabled;
@@ -79,8 +84,16 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
 }
 
 - (void)pinnedTabsAvailable:(BOOL)available {
+  // The view is available if  `_items` is not empty or if a drag action is in
+  // progress.
+  available = available && (_items.count || _isDragActionInProgress);
   if (available == _available)
     return;
+
+  // Show the view if `available` is true to ensure smooth animation.
+  if (available) {
+    self.view.hidden = NO;
+  }
 
   __weak __typeof(self) weakSelf = self;
   [UIView animateWithDuration:kPinnedViewFadeInTime
@@ -187,6 +200,7 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
     performDropWithCoordinator:
         (id<UICollectionViewDropCoordinator>)coordinator {
   // TODO(crbug.com/1382015): Implement this.
+  [self populateFakeItems];
 }
 
 - (BOOL)collectionView:(UICollectionView*)collectionView
@@ -257,8 +271,10 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
 
 // Updates the pinned tabs view availability after an animation.
 - (void)updatePinnedTabsAvailabilityAfterAnimation:(BOOL)available {
-  self.view.hidden = !available;
   _available = available;
+  if (!_available) {
+    self.view.hidden = YES;
+  }
 }
 
 // Adds fake items to the collection view.
