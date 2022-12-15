@@ -27,8 +27,6 @@ import android.widget.PopupMenu;
 import androidx.annotation.NonNull;
 import androidx.test.filters.SmallTest;
 
-import com.google.common.base.Optional;
-
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -110,6 +108,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Unit tests for {@link AppMenuPropertiesDelegateImpl}.
@@ -858,7 +857,7 @@ public class AppMenuPropertiesDelegateUnitTest {
                 .getBookmarksOfType(eq(PowerBookmarkType.SHOPPING));
         Long clusterId = 1L;
         doReturn(new ShoppingService.ProductInfo(
-                         "", new GURL(""), clusterId, 0, "", 0, "", Optional.absent()))
+                         "", new GURL(""), clusterId, 0, "", 0, "", Optional.empty()))
                 .when(mShoppingService)
                 .getAvailableProductInfoForUrl(any());
         PowerBookmarkMeta meta =

@@ -6,14 +6,14 @@ package org.chromium.components.commerce.core;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.google.common.base.Optional;
-
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.url.GURL;
 
-/** A central hub for accessing shopping and product infomration. */
+import java.util.Optional;
+
+/** A central hub for accessing shopping and product information. */
 @JNINamespace("commerce")
 public class ShoppingService {
     /** A data container for product info provided by the shopping service. */
@@ -167,7 +167,7 @@ public class ShoppingService {
             boolean hasPreviousPrice, long previousAmountMicros) {
         Optional<Long> previousPrice;
         if (hasPreviousPrice) {
-            previousPrice = Optional.absent();
+            previousPrice = Optional.empty();
         } else {
             previousPrice = Optional.of(previousAmountMicros);
         }
