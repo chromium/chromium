@@ -5,10 +5,15 @@
   await dp.Page.enable();
   const protocolMessages = [];
   const originalDispatchMessage = DevToolsAPI.dispatchMessage;
+  const originalSendCommand = DevToolsAPI._sendCommand;
   DevToolsAPI.dispatchMessage = (message) => {
     protocolMessages.push(message);
     originalDispatchMessage(message);
   };
+  DevToolsAPI._sendCommand = (sessionId, method, params) => {
+    protocolMessages.push({sessionId, method, params});
+    return originalSendCommand(sessionId, method, params);
+  }
   window.onerror = (msg) => testRunner.log('onerror: ' + msg);
   window.onunhandledrejection = (e) => testRunner.log('onunhandledrejection: ' + e.reason);
   let errorForLog = new Error();
