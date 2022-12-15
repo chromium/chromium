@@ -878,7 +878,13 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerSecondPublicSessionTest,
 class ExistingUserControllerActiveDirectoryTest
     : public ExistingUserControllerTest {
  public:
-  ExistingUserControllerActiveDirectoryTest() = default;
+  ExistingUserControllerActiveDirectoryTest() {
+    // All tests related to Active Directory login don't make sense when the
+    // kChromadAvailable feature is disabled. We also don't need to verify that
+    // the device is disabled in that case, because the Chromad disabling
+    // feature is already tested in `device_disabling_manager_unittest.cc`.
+    scoped_feature_list_.InitAndEnableFeature(features::kChromadAvailable);
+  }
 
   // Overriden from ExistingUserControllerTest:
   void SetUp() override {
@@ -1012,6 +1018,7 @@ class ExistingUserControllerActiveDirectoryTest
 
  private:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class ExistingUserControllerActiveDirectoryTestCreateProfileDir

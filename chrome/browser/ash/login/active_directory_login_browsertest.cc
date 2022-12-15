@@ -4,11 +4,13 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/base_paths.h"
 #include "base/environment.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/authpolicy/kerberos_files_handler.h"
 #include "chrome/browser/ash/login/test/active_directory_login_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -64,7 +66,13 @@ class ActiveDirectoryLoginTest : public OobeBaseTest {
       :  // Using the same realm as supervised user domain. Should be treated
          // as normal realm.
         test_realm_(user_manager::kSupervisedUserDomain),
-        test_user_(kTestActiveDirectoryUser + ("@" + test_realm_)) {}
+        test_user_(kTestActiveDirectoryUser + ("@" + test_realm_)) {
+    // All tests related to Active Directory login don't make sense when the
+    // kChromadAvailable feature is disabled. We also don't need to verify that
+    // the device is disabled in that case, because the Chromad disabling
+    // feature is already tested in `device_disabling_manager_unittest.cc`.
+    scoped_feature_list_.InitAndEnableFeature(features::kChromadAvailable);
+  }
 
   ActiveDirectoryLoginTest(const ActiveDirectoryLoginTest&) = delete;
   ActiveDirectoryLoginTest& operator=(const ActiveDirectoryLoginTest&) = delete;
@@ -82,6 +90,9 @@ class ActiveDirectoryLoginTest : public OobeBaseTest {
       &mixin_host_,
       DeviceStateMixin::State::OOBE_COMPLETED_ACTIVE_DIRECTORY_ENROLLED};
   ActiveDirectoryLoginMixin ad_login_{&mixin_host_};
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class ActiveDirectoryLoginAutocompleteTest : public ActiveDirectoryLoginTest {

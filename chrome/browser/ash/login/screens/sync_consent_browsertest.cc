@@ -624,6 +624,14 @@ INSTANTIATE_TEST_SUITE_P(All, SyncConsentPolicyDisabledTest, testing::Bool());
 // not use sync.
 class SyncConsentActiveDirectoryTest : public OobeBaseTest {
  public:
+  SyncConsentActiveDirectoryTest() {
+    // All tests related to Active Directory login don't make sense when the
+    // kChromadAvailable feature is disabled. We also don't need to verify that
+    // the device is disabled in that case, because the Chromad disabling
+    // feature is already tested in `device_disabling_manager_unittest.cc`.
+    scoped_feature_list_.InitAndEnableFeature(features::kChromadAvailable);
+  }
+
   ~SyncConsentActiveDirectoryTest() override = default;
 
  protected:
@@ -632,6 +640,9 @@ class SyncConsentActiveDirectoryTest : public OobeBaseTest {
       DeviceStateMixin::State::OOBE_COMPLETED_ACTIVE_DIRECTORY_ENROLLED};
   ActiveDirectoryLoginMixin ad_login_{&mixin_host_};
   base::HistogramTester histogram_tester_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SyncConsentActiveDirectoryTest, LoginDoesNotStartSync) {
