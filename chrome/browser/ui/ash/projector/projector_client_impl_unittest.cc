@@ -204,7 +204,9 @@ TEST_P(ProjectorClientImplUnitTest, SpeechRecognitionResults) {
 
 namespace {
 
+const char kArabic[] = "ar";
 const char kFrench[] = "fr";
+const char kChinese[] = "zh-TW";
 const char kUnsupportedLanguage[] = "am";
 
 bool IsEqualAvailability(const SpeechRecognitionAvailability& first,
@@ -233,6 +235,14 @@ TEST_P(ProjectorClientImplUnitTest, SpeechRecognitionAvailability) {
   availability.server_based_availability =
       ash::ServerBasedRecognitionAvailability::kAvailable;
   if (server_based_available) {
+    EXPECT_TRUE(IsEqualAvailability(
+        projector_client_->GetSpeechRecognitionAvailability(), availability));
+
+    SetLocale(kArabic);
+    EXPECT_TRUE(IsEqualAvailability(
+        projector_client_->GetSpeechRecognitionAvailability(), availability));
+
+    SetLocale(kChinese);
     EXPECT_TRUE(IsEqualAvailability(
         projector_client_->GetSpeechRecognitionAvailability(), availability));
   } else {

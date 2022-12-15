@@ -13,8 +13,10 @@
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/bind.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/browser_process.h"
@@ -46,6 +48,27 @@ namespace {
 
 inline const std::string& GetLocale() {
   return g_browser_process->GetApplicationLocale();
+}
+
+inline const std::string GetLocaleOrLanguageForServerSideRecognition() {
+  const std::string& locale = g_browser_process->GetApplicationLocale();
+
+  // Some languages and locales need to be mapped to the default
+  // languages/locales provided by the server side speech recognition service.
+  static constexpr auto kSupportedLanguagesAndLocales =
+      base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
+          {{"zh", "cmn-hant-tw"},
+           {"zh-tw", "cmn-hant-tw"},
+           {"ar", "ar-x-maghrebi"}});
+
+  base::fixed_flat_map<base::StringPiece, base::StringPiece,
+                       /*size_t=*/3>::const_iterator it =
+      kSupportedLanguagesAndLocales.find(base::ToLowerASCII(locale));
+  if (it != kSupportedLanguagesAndLocales.end()) {
+    return std::string(it->second);
+  }
+
+  return locale;
 }
 
 }  // namespace
@@ -90,12 +113,12 @@ ash::SpeechRecognitionAvailability
 ProjectorClientImpl::GetSpeechRecognitionAvailability() const {
   ash::SpeechRecognitionAvailability availability;
   availability.use_on_device = true;
-  const auto& locale = GetLocale();
   availability.on_device_availability = SpeechRecognitionRecognizerClientImpl::
-      GetOnDeviceSpeechRecognitionAvailability(locale);
+      GetOnDeviceSpeechRecognitionAvailability(GetLocale());
   availability.server_based_availability =
       SpeechRecognitionRecognizerClientImpl::
-          GetServerBasedRecognitionAvailability(locale);
+          GetServerBasedRecognitionAvailability(
+              GetLocaleOrLanguageForServerSideRecognition());
 
   if (ash::features::ShouldForceEnableServerSideSpeechRecognitionForDev() ||
       (availability.on_device_availability !=
@@ -113,11 +136,16 @@ void ProjectorClientImpl::StartSpeechRecognition() {
   DCHECK(availability.IsAvailable());
   DCHECK_EQ(speech_recognizer_.get(), nullptr);
   recognizer_status_ = SPEECH_RECOGNIZER_OFF;
+  const std::string locale =
+      availability.use_on_device
+          ? GetLocale()
+          : GetLocaleOrLanguageForServerSideRecognition();
+
   speech_recognizer_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
       weak_ptr_factory_.GetWeakPtr(), ProfileManager::GetActiveUserProfile(),
       media::mojom::SpeechRecognitionOptions::New(
           media::mojom::SpeechRecognitionMode::kCaption,
-          /*enable_formatting=*/true, GetLocale(),
+          /*enable_formatting=*/true, locale,
           /*is_server_based=*/!availability.use_on_device,
           media::mojom::RecognizerClientType::kProjector));
 }
