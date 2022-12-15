@@ -39,8 +39,8 @@ TEST_F('SwitchAccessFocusRingManagerTest', 'BackButtonFocus', function() {
         'Third node should be a BackButtonNode');
 
     const rings = FocusRingManager.instance.rings_;
-    const primary = rings.get(SAConstants.Focus.ID.PRIMARY);
-    const preview = rings.get(SAConstants.Focus.ID.PREVIEW);
+    const primary = rings[SAConstants.Focus.ID.PRIMARY];
+    const preview = rings[SAConstants.Focus.ID.PREVIEW];
     assertEquals(SAConstants.Focus.ID.PRIMARY, primary.id);
     assertEquals(SAConstants.Focus.ID.PREVIEW, preview.id);
     assertEquals('solid', primary.type);
@@ -74,8 +74,8 @@ AX_TEST_F(
       }
 
       const rings = FocusRingManager.instance.rings_;
-      const primary = rings.get(SAConstants.Focus.ID.PRIMARY);
-      const preview = rings.get(SAConstants.Focus.ID.PREVIEW);
+      const primary = rings[SAConstants.Focus.ID.PRIMARY];
+      const preview = rings[SAConstants.Focus.ID.PREVIEW];
       // Primary and preview focus should be empty.
       assertEquals(0, primary.rects.length);
       assertEquals(0, preview.rects.length);
@@ -88,8 +88,8 @@ AX_TEST_F('SwitchAccessFocusRingManagerTest', 'ButtonFocus', async function() {
   Navigator.byItem.moveTo_(button);
 
   const rings = FocusRingManager.instance.rings_;
-  const primary = rings.get(SAConstants.Focus.ID.PRIMARY);
-  const preview = rings.get(SAConstants.Focus.ID.PREVIEW);
+  const primary = rings[SAConstants.Focus.ID.PRIMARY];
+  const preview = rings[SAConstants.Focus.ID.PREVIEW];
   assertEquals(1, primary.rects.length);
   assertEquals(0, preview.rects.length);
   // Primary focus should be on the button.
@@ -115,17 +115,15 @@ AX_TEST_F('SwitchAccessFocusRingManagerTest', 'GroupFocus', async function() {
 
   // Verify the number of rings.
   const rings = FocusRingManager.instance.rings_;
-  const primary = rings.get(SAConstants.Focus.ID.PRIMARY);
-  const preview = rings.get(SAConstants.Focus.ID.PREVIEW);
+  const primary = rings[SAConstants.Focus.ID.PRIMARY];
+  const preview = rings[SAConstants.Focus.ID.PREVIEW];
   assertEquals(1, primary.rects.length);
   assertEquals(1, preview.rects.length);
 
   // Use ringNodesForTesting_ to verify the underlying nodes.
   const ringNodes = FocusRingManager.instance.ringNodesForTesting_;
-  const primaryNode =
-      ringNodes.get(SAConstants.Focus.ID.PRIMARY).automationNode;
-  const previewNode =
-      ringNodes.get(SAConstants.Focus.ID.PREVIEW).automationNode;
+  const primaryNode = ringNodes[SAConstants.Focus.ID.PRIMARY].automationNode;
+  const previewNode = ringNodes[SAConstants.Focus.ID.PREVIEW].automationNode;
 
   assertEquals(
       menu, primaryNode, 'primary focus should be around the group (the menu)');

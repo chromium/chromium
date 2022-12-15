@@ -7,7 +7,6 @@ import {FocusRingManager} from '../focus_ring_manager.js';
 import {SwitchAccess} from '../switch_access.js';
 import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
 
-
 const AutomationNode = chrome.automation.AutomationNode;
 
 /**
@@ -479,3 +478,6 @@ export class SARootNode {
     }
   }
 }
+
+/** @typedef {!SAChildNode|!SARootNode} */
+export let SANode;
