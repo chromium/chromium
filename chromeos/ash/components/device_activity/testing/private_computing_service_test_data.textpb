@@ -3,7 +3,7 @@ test_cases: {
   get_response: {
     active_status: {
       use_case: CROS_FRESNEL_DAILY
-      last_ping_utc_date: "2022-01-01 00:00:00.000 UTC"
+      last_ping_date: "2022-01-01 00:00:00.000 PST"
     }
   }
   save_response: {
@@ -14,7 +14,7 @@ test_cases: {
   get_response: {
     active_status: {
       use_case: CROS_FRESNEL_DAILY
-      last_ping_utc_date: "2022-01-01 00:00:00.000 UTC"
+      last_ping_date: "2022-01-01 00:00:00.000 PST"
     }
   }
   save_response: {
@@ -43,7 +43,7 @@ test_cases: {
   get_response: {
     active_status: {
       use_case: CROS_FRESNEL_DAILY
-      last_ping_utc_date: "2023-01-01 00:00:00.000 UTC"
+      last_ping_date: "2023-01-01 00:00:00.000 PST"
     }
   }
   save_response: {
@@ -54,7 +54,7 @@ test_cases: {
   get_response: {
     active_status: {
       use_case: CROS_FRESNEL_DAILY
-      last_ping_utc_date: "2022-01-01 00:00:00.000 UTC"
+      last_ping_date: "2022-01-01 00:00:00.000 PST"
     }
   }
   save_response: {
@@ -65,7 +65,7 @@ test_cases: {
   get_response: {
     active_status: {
       use_case: CROS_FRESNEL_DAILY
-      last_ping_utc_date: "2021-01-01 00:00:00.000 UTC"
+      last_ping_date: "2021-01-01 00:00:00.000 PST"
     }
   }
   save_response: {
@@ -76,7 +76,7 @@ test_cases: {
   get_response: {
     active_status: {
       use_case: CROS_FRESNEL_DAILY
-      last_ping_utc_date: "1970-01-01 00:00:00.000 UTC"
+      last_ping_date: "1970-01-01 00:00:00.000 UTC"
     }
   }
   save_response: {
@@ -87,7 +87,7 @@ test_cases: {
   get_response: {
     active_status: {
       use_case: CROS_FRESNEL_DAILY
-      last_ping_utc_date: "XXXX-XX-XX XX:XX:XX.XXX XXX"
+      last_ping_date: "XXXX-XX-XX XX:XX:XX.XXX XXX"
     }
   }
   save_response: {
