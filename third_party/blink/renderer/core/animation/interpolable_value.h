@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLABLE_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLABLE_VALUE_H_
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -82,6 +83,7 @@ class CORE_EXPORT InterpolableValue {
 
 class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
  public:
+  InterpolableNumber() = default;
   explicit InterpolableNumber(double value) : value_(value) {}
 
   double Value() const { return value_; }
@@ -112,14 +114,13 @@ class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
     return new InterpolableNumber(0);
   }
 
-  double value_;
+  double value_ = 0.;
 };
 
 class CORE_EXPORT InterpolableList final : public InterpolableValue {
  public:
   explicit InterpolableList(wtf_size_t size) : values_(size) {}
 
-  // Move-only; use Clone() to make a copy.
   InterpolableList(const InterpolableList&) = delete;
   InterpolableList& operator=(const InterpolableList&) = delete;
   InterpolableList(InterpolableList&&) = default;
@@ -165,6 +166,61 @@ class CORE_EXPORT InterpolableList final : public InterpolableValue {
   InterpolableList* RawCloneAndZero() const final;
 
   Vector<std::unique_ptr<InterpolableValue>> values_;
+};
+
+template <typename T, size_t Size>
+class CORE_EXPORT StaticInterpolableList final {
+ public:
+  const T& Get(wtf_size_t position) const { return values_[position]; }
+  T& GetMutable(wtf_size_t position) { return values_[position]; }
+
+  wtf_size_t length() const { return static_cast<wtf_size_t>(values_.size()); }
+
+  void Set(wtf_size_t position, T value) {
+    values_[position] = std::move(value);
+  }
+
+  StaticInterpolableList Clone() const { return *this; }
+  StaticInterpolableList CloneAndZero() const { return {}; }
+
+  void Interpolate(const StaticInterpolableList& to,
+                   const double progress,
+                   StaticInterpolableList& result) const {
+    for (wtf_size_t i = 0; i < length(); i++) {
+      values_[i].Interpolate(to.values_[i], progress, result.values_[i]);
+    }
+  }
+
+  bool Equals(const StaticInterpolableList& other) const {
+    for (wtf_size_t i = 0; i < length(); i++) {
+      if (!values_[i].Equals(other.values_[i]))
+        return false;
+    }
+    return true;
+  }
+
+  void Scale(double scale) {
+    for (auto& val : values_)
+      val.Scale(scale);
+  }
+
+  void Add(const StaticInterpolableList& other) {
+    for (wtf_size_t i = 0; i < length(); i++)
+      values_[i].Add(other.values_[i]);
+  }
+
+  // We override this to avoid two passes on the list from the base version.
+  void ScaleAndAdd(double scale, const StaticInterpolableList& other) {
+    for (wtf_size_t i = 0; i < length(); i++)
+      values_[i].ScaleAndAdd(scale, other.values_[i]);
+  }
+
+  void AssertCanInterpolateWith(const StaticInterpolableList& other) const {
+    DCHECK_EQ(other.length(), length());
+  }
+
+ private:
+  std::array<T, Size> values_;
 };
 
 template <>

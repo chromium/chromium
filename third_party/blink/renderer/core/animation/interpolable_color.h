@@ -63,18 +63,17 @@ class CORE_EXPORT InterpolableColor : public InterpolableValue {
 
   bool IsKeywordColor() const;
 
-  double Param0() const { return param0_->Value(); }
-  double Param1() const { return param1_->Value(); }
-  double Param2() const { return param2_->Value(); }
-  double Alpha() const { return alpha_->Value(); }
+  double Param0() const { return param0_.Value(); }
+  double Param1() const { return param1_.Value(); }
+  double Param2() const { return param2_.Value(); }
+  double Alpha() const { return alpha_.Value(); }
   Color::ColorInterpolationSpace ColorInterpolationSpace() const {
     return color_interpolation_space_;
   }
 
   double GetColorFraction(ColorKeyword keyword) const {
     int keyword_index = static_cast<int>(keyword);
-    return To<InterpolableNumber>(color_keyword_fractions_->Get(keyword_index))
-        ->Value();
+    return color_keyword_fractions_.Get(keyword_index).Value();
   }
 
   std::unique_ptr<InterpolableColor> Clone() const {
@@ -84,11 +83,14 @@ class CORE_EXPORT InterpolableColor : public InterpolableValue {
   void Composite(const InterpolableColor& other, double fraction);
 
  private:
-  InterpolableColor(std::unique_ptr<InterpolableNumber> param0,
-                    std::unique_ptr<InterpolableNumber> param1,
-                    std::unique_ptr<InterpolableNumber> param2,
-                    std::unique_ptr<InterpolableNumber> alpha,
-                    std::unique_ptr<InterpolableList> color_keyword_fractions,
+  using InterpolableNumberList =
+      StaticInterpolableList<InterpolableNumber, kColorKeywordCount>;
+
+  InterpolableColor(InterpolableNumber param0,
+                    InterpolableNumber param1,
+                    InterpolableNumber param2,
+                    InterpolableNumber alpha,
+                    InterpolableNumberList color_keyword_fractions,
                     Color::ColorInterpolationSpace color_interpolation_space);
 
   void ConvertToColorInterpolationSpace(
@@ -98,12 +100,12 @@ class CORE_EXPORT InterpolableColor : public InterpolableValue {
 
   // All color params are stored premultiplied by alpha.
   // https://csswg.sesse.net/css-color-4/#interpolation-space
-  std::unique_ptr<InterpolableNumber> param0_;
-  std::unique_ptr<InterpolableNumber> param1_;
-  std::unique_ptr<InterpolableNumber> param2_;
-  std::unique_ptr<InterpolableNumber> alpha_;
+  InterpolableNumber param0_;
+  InterpolableNumber param1_;
+  InterpolableNumber param2_;
+  InterpolableNumber alpha_;
 
-  std::unique_ptr<InterpolableList> color_keyword_fractions_;
+  InterpolableNumberList color_keyword_fractions_;
 
   Color::ColorInterpolationSpace color_interpolation_space_ =
       Color::ColorInterpolationSpace::kNone;
