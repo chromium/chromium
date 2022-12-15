@@ -203,12 +203,13 @@ ChromePageInfoDelegate::CreateCookieControlsController() {
 }
 
 std::u16string ChromePageInfoDelegate::GetWebAppShortName() {
-  std::u16string web_app_name;
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  if (browser && browser->app_controller()->IsWebApp(browser)) {
-    web_app_name = browser->app_controller()->GetAppShortName();
+
+  if (browser && web_app::AppBrowserController::IsWebApp(browser)) {
+    return browser->app_controller()->GetAppShortName();
   }
-  return web_app_name;
+
+  return u"";
 }
 
 void ChromePageInfoDelegate::ShowSiteSettings(const GURL& site_url) {
