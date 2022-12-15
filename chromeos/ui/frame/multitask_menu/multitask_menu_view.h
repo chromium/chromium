@@ -6,6 +6,7 @@
 #define CHROMEOS_UI_FRAME_MULTITASK_MENU_MULTITASK_MENU_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -58,8 +59,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
 
  private:
   // Callbacks for the buttons in the multitask menu view.
-  void SplitButtonPressed(bool left_top);
-  void PartialButtonPressed(bool left_top);
+  void SplitButtonPressed(SnapDirection direction);
+  void PartialButtonPressed(SnapDirection direction);
   void FullScreenButtonPressed();
   void FloatButtonPressed();
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chromeos/ui/frame/frame_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -26,14 +27,16 @@ constexpr gfx::Insets kPreferredInsets(4);
 
 // The two buttons share an edge so the inset on both sides needs to be halved
 // so that visually we get the preferred insets above.
-constexpr gfx::Insets kPrimaryLandscapeInsets = gfx::Insets::TLBR(4, 4, 4, 2);
-constexpr gfx::Insets kPrimaryPortraitInsets = gfx::Insets::TLBR(4, 4, 2, 4);
-constexpr gfx::Insets kSecondaryLandscapeInsets = gfx::Insets::TLBR(4, 2, 4, 4);
-constexpr gfx::Insets kSecondaryPortraitInsets = gfx::Insets::TLBR(2, 4, 4, 4);
+constexpr gfx::Insets kLeftButtonInsets = gfx::Insets::TLBR(4, 4, 4, 2);
+constexpr gfx::Insets kTopButtonInsets = gfx::Insets::TLBR(4, 4, 2, 4);
+constexpr gfx::Insets kRightButtonInsets = gfx::Insets::TLBR(4, 2, 4, 4);
+constexpr gfx::Insets kBottomButtonInsets = gfx::Insets::TLBR(2, 4, 4, 4);
 
 // TODO(shidi): Button name needs to be internationalized.
-const std::u16string kPrimaryButtonName = u"Split Primary";
-const std::u16string kSecondaryButtonName = u"Split Secondary";
+const std::u16string kLeftButtonName = u"Split Left";
+const std::u16string kTopButtonName = u"Split Top";
+const std::u16string kRightButtonName = u"Split Right";
+const std::u16string kBottomButtonName = u"Split Bottom";
 
 // Change to secondary hover color when the other button on the same
 // `SplitButtonView` is hovered.
@@ -44,7 +47,7 @@ constexpr SkColor kSplitButtonSecondaryHoverColor =
 
 // -----------------------------------------------------------------------------
 // SplitButton:
-// A button used for SplitButtonView to trigger primary/secondary split.
+// A button used for SplitButtonView to trigger snapping.
 class SplitButtonView::SplitButton : public views::Button {
  public:
   SplitButton(views::Button::PressedCallback pressed_callback,
@@ -88,7 +91,7 @@ class SplitButtonView::SplitButton : public views::Button {
  private:
   SkColor button_color_;
   // The inset between the button window pattern and the border.
-  gfx::Insets insets_;
+  const gfx::Insets insets_;
   // Callback to `SplitButtonView` to change button color.
   // When one split button is hovered, both split buttons on SplitButtonView
   // changed color.
@@ -98,11 +101,10 @@ class SplitButtonView::SplitButton : public views::Button {
 // -----------------------------------------------------------------------------
 // SplitButtonView:
 
-SplitButtonView::SplitButtonView(
-    SplitButtonType type,
-    views::Button::PressedCallback primary_callback,
-    views::Button::PressedCallback secondary_callback,
-    bool is_portrait_mode)
+SplitButtonView::SplitButtonView(SplitButtonType type,
+                                 SplitButtonCallback split_button_callback,
+                                 aura::Window* window,
+                                 bool is_portrait_mode)
     : type_(type) {
   // Left button should stay on the left side for RTL languages.
   SetMirrored(false);
@@ -112,51 +114,63 @@ SplitButtonView::SplitButtonView(
   SetPreferredSize(is_portrait_mode ? kMultitaskButtonPortraitSize
                                     : kMultitaskButtonLandscapeSize);
 
-  auto primary_hover_callback = base::BindRepeating(
-      &SplitButtonView::OnButtonHovered, base::Unretained(this));
-  auto secondary_hover_callback = base::BindRepeating(
-      &SplitButtonView::OnButtonHovered, base::Unretained(this));
-  primary_button_ = AddChildView(std::make_unique<SplitButton>(
-      primary_callback, primary_hover_callback, kPrimaryButtonName,
-      is_portrait_mode ? kPrimaryPortraitInsets : kPrimaryLandscapeInsets));
-  secondary_button_ = AddChildView(std::make_unique<SplitButton>(
-      secondary_callback, secondary_hover_callback, kSecondaryButtonName,
-      is_portrait_mode ? kSecondaryPortraitInsets : kSecondaryLandscapeInsets));
+  auto on_hover = base::BindRepeating(&SplitButtonView::OnButtonHovered,
+                                      base::Unretained(this));
 
-  const int primary_width = type_ == SplitButtonType::kHalfButtons
-                                ? kMultitaskHalfButtonWidth
-                                : kMultitaskTwoThirdButtonWidth;
-  const int secondary_width = type_ == SplitButtonType::kHalfButtons
-                                  ? kMultitaskHalfButtonWidth
-                                  : kMultitaskOneThirdButtonWidth;
+  const SnapDirection left_top_direction =
+      GetSnapDirectionForWindow(window, /*left_top=*/true);
+  const SnapDirection right_bottom_direction =
+      GetSnapDirectionForWindow(window, /*left_top=*/false);
 
-  primary_button_->SetPreferredSize(
-      is_portrait_mode ? gfx::Size(kMultitaskHalfButtonHeight, primary_width)
-                       : gfx::Size(primary_width, kMultitaskHalfButtonHeight));
-  secondary_button_->SetPreferredSize(
+  // Modify `split_button_callback` to pass a direction as well.
+  auto on_left_top_press =
+      base::BindRepeating(split_button_callback, left_top_direction);
+  auto on_right_bottom_press =
+      base::BindRepeating(split_button_callback, right_bottom_direction);
+
+  left_top_button_ = AddChildView(std::make_unique<SplitButton>(
+      on_left_top_press, on_hover,
+      is_portrait_mode ? kTopButtonName : kLeftButtonName,
+      is_portrait_mode ? kTopButtonInsets : kLeftButtonInsets));
+  right_bottom_button_ = AddChildView(std::make_unique<SplitButton>(
+      on_right_bottom_press, on_hover,
+      is_portrait_mode ? kBottomButtonName : kRightButtonName,
+      is_portrait_mode ? kBottomButtonInsets : kRightButtonInsets));
+
+  const int left_top_width = type_ == SplitButtonType::kHalfButtons
+                                 ? kMultitaskHalfButtonWidth
+                                 : kMultitaskTwoThirdButtonWidth;
+  const int right_bottom_width = type_ == SplitButtonType::kHalfButtons
+                                     ? kMultitaskHalfButtonWidth
+                                     : kMultitaskOneThirdButtonWidth;
+
+  left_top_button_->SetPreferredSize(
+      is_portrait_mode ? gfx::Size(kMultitaskHalfButtonHeight, left_top_width)
+                       : gfx::Size(left_top_width, kMultitaskHalfButtonHeight));
+  right_bottom_button_->SetPreferredSize(
       is_portrait_mode
-          ? gfx::Size(kMultitaskHalfButtonHeight, secondary_width)
-          : gfx::Size(secondary_width, kMultitaskHalfButtonHeight));
+          ? gfx::Size(kMultitaskHalfButtonHeight, right_bottom_width)
+          : gfx::Size(right_bottom_width, kMultitaskHalfButtonHeight));
 }
 
 void SplitButtonView::OnButtonHovered() {
   border_color_ = kMultitaskButtonPrimaryHoverColor;
   fill_color_ = kMultitaskButtonViewHoverColor;
-  if (secondary_button_->GetState() == views::Button::STATE_HOVERED) {
-    secondary_button_->set_button_color(kMultitaskButtonPrimaryHoverColor);
-    primary_button_->set_button_color(kSplitButtonSecondaryHoverColor);
-  } else if (primary_button_->GetState() == views::Button::STATE_HOVERED) {
-    primary_button_->set_button_color(kMultitaskButtonPrimaryHoverColor);
-    secondary_button_->set_button_color(kSplitButtonSecondaryHoverColor);
+  if (right_bottom_button_->GetState() == views::Button::STATE_HOVERED) {
+    right_bottom_button_->set_button_color(kMultitaskButtonPrimaryHoverColor);
+    left_top_button_->set_button_color(kSplitButtonSecondaryHoverColor);
+  } else if (left_top_button_->GetState() == views::Button::STATE_HOVERED) {
+    left_top_button_->set_button_color(kMultitaskButtonPrimaryHoverColor);
+    right_bottom_button_->set_button_color(kSplitButtonSecondaryHoverColor);
   } else {
     // Reset color.
     border_color_ = kMultitaskButtonDefaultColor;
     fill_color_ = SK_ColorTRANSPARENT;
-    secondary_button_->set_button_color(kMultitaskButtonDefaultColor);
-    primary_button_->set_button_color(kMultitaskButtonDefaultColor);
+    right_bottom_button_->set_button_color(kMultitaskButtonDefaultColor);
+    left_top_button_->set_button_color(kMultitaskButtonDefaultColor);
   }
-  primary_button_->SchedulePaint();
-  secondary_button_->SchedulePaint();
+  left_top_button_->SchedulePaint();
+  right_bottom_button_->SchedulePaint();
   SchedulePaint();
 }
 

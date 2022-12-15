@@ -75,10 +75,8 @@ MultitaskMenuView::MultitaskMenuView(
     auto half_button = std::make_unique<SplitButtonView>(
         SplitButtonView::SplitButtonType::kHalfButtons,
         base::BindRepeating(&MultitaskMenuView::SplitButtonPressed,
-                            base::Unretained(this), /*left_top=*/true),
-        base::BindRepeating(&MultitaskMenuView::SplitButtonPressed,
-                            base::Unretained(this), /*left_top=*/false),
-        is_portrait_mode);
+                            base::Unretained(this)),
+        window, is_portrait_mode);
     half_button_for_testing_ = half_button.get();
     AddChildView(CreateButtonContainer(std::move(half_button),
                                        IDS_MULTITASK_MENU_HALF_BUTTON_NAME));
@@ -90,10 +88,8 @@ MultitaskMenuView::MultitaskMenuView(
     auto partial_button = std::make_unique<SplitButtonView>(
         SplitButtonView::SplitButtonType::kPartialButtons,
         base::BindRepeating(&MultitaskMenuView::PartialButtonPressed,
-                            base::Unretained(this), /*left_top=*/true),
-        base::BindRepeating(&MultitaskMenuView::PartialButtonPressed,
-                            base::Unretained(this), /*left_top=*/false),
-        is_portrait_mode);
+                            base::Unretained(this)),
+        window, is_portrait_mode);
     partial_button_for_testing_ = partial_button.get();
     AddChildView(CreateButtonContainer(std::move(partial_button),
                                        IDS_MULTITASK_MENU_PARTIAL_BUTTON_NAME));
@@ -133,26 +129,21 @@ MultitaskMenuView::MultitaskMenuView(
 
 MultitaskMenuView::~MultitaskMenuView() = default;
 
-void MultitaskMenuView::SplitButtonPressed(bool left_top) {
-  SnapController::Get()->CommitSnap(
-      window_, GetSnapDirectionForWindow(window_, left_top), kDefaultSnapRatio);
+void MultitaskMenuView::SplitButtonPressed(SnapDirection direction) {
+  SnapController::Get()->CommitSnap(window_, direction, kDefaultSnapRatio);
   on_any_button_pressed_.Run();
 }
 
-void MultitaskMenuView::PartialButtonPressed(bool left_top) {
-  const SnapDirection snap = GetSnapDirectionForWindow(window_, left_top);
-
-  // TODO(crbug.com/1350197): Implement partial split for tablet mode. It
-  // currently splits to the default half ratio.
-  SnapController::Get()->CommitSnap(window_, snap,
-                                    snap == SnapDirection::kPrimary
+void MultitaskMenuView::PartialButtonPressed(SnapDirection direction) {
+  SnapController::Get()->CommitSnap(window_, direction,
+                                    direction == SnapDirection::kPrimary
                                         ? kTwoThirdSnapRatio
                                         : kOneThirdSnapRatio);
   on_any_button_pressed_.Run();
 
   base::RecordAction(base::UserMetricsAction(
-      snap == SnapDirection::kPrimary ? kPartialSplitTwoThirdsUserAction
-                                      : kPartialSplitOneThirdUserAction));
+      direction == SnapDirection::kPrimary ? kPartialSplitTwoThirdsUserAction
+                                           : kPartialSplitOneThirdUserAction));
 }
 
 void MultitaskMenuView::FullScreenButtonPressed() {

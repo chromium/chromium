@@ -7,6 +7,7 @@
 
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_constants.h"
 
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -14,7 +15,9 @@
 
 namespace chromeos {
 
-// A button view with 2 divided buttons, primary and secondary.
+// A button view with 2 divided buttons, left/top and right/bottom. On click,
+// each button will either snap primary or snap secondary, depending on the
+// location of the button and the orientation of the device.
 class SplitButtonView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(SplitButtonView);
@@ -24,9 +27,11 @@ class SplitButtonView : public views::BoxLayoutView {
     kPartialButtons,
   };
 
+  using SplitButtonCallback = base::RepeatingCallback<void(SnapDirection)>;
+
   SplitButtonView(SplitButtonType type,
-                  views::Button::PressedCallback primary_callback,
-                  views::Button::PressedCallback secondary_callback,
+                  SplitButtonCallback split_button_callback,
+                  aura::Window* window,
                   bool is_portrait_mode);
   SplitButtonView(const SplitButtonView&) = delete;
   SplitButtonView& operator=(const SplitButtonView&) = delete;
@@ -40,18 +45,14 @@ class SplitButtonView : public views::BoxLayoutView {
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
-  // Called when either primary/secondary button is hovered. Updates button
-  // colors.
+  // Called when either button is hovered. Updates button colors.
   void OnButtonHovered();
 
-  // Pointers to the buttons that are owned by the views hierarchy. Primary
-  // refers to the button that is physically associated with the left or top;
-  // secondary refers to the button that is physically associated with the
-  // bottom or right.
-  // TODO(shidi): Consider renaming these as primary/secondary snapped is
-  // different from physical left/top or right/bottom.
-  SplitButton* primary_button_;
-  SplitButton* secondary_button_;
+  // Pointers to the buttons that are owned by the views hierarchy. The names
+  // refer to the physical location of the button, which do not change in RTL
+  // languages.
+  SplitButton* left_top_button_ = nullptr;
+  SplitButton* right_bottom_button_ = nullptr;
 
   const SplitButtonType type_;
 
