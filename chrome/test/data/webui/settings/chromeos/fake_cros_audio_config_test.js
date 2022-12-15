@@ -166,4 +166,17 @@ suite('FakeCrosAudioConfig', function() {
         crosAudioConfigMojomWebui.MuteState.kNotMuted,
         onPropertiesUpdated.calls_[2][0].inputMuteState);
   });
+
+  test('VerifySetInputVolumeTriggersMatchingPropertyUpdate', () => {
+    const expectedVolumePercent = 32;
+    /** @type {AudioSystemProperties} */
+    const updatedProperties = {
+      ...defaultProperties,
+      inputVolumePercent: expectedVolumePercent,
+    };
+    onPropertiesUpdated.addExpectation(updatedProperties);
+    crosAudioConfig.setInputVolumePercent(expectedVolumePercent);
+
+    mockController.verifyMocks();
+  });
 });
