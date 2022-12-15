@@ -79,7 +79,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   DeviceLocalAccountManagementPolicyProvider
       provider(policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
   // Set the login state to a public session.
-  ScopedTestPublicSessionLoginState login_state;
+  ash::ScopedTestPublicSessionLoginState login_state;
 
   // Verify that if an extension's location has been whitelisted for use in
   // public sessions, the extension can be installed.

@@ -2193,8 +2193,7 @@ AutotestPrivateGetCryptohomeRecoveryDataFunction::Run() {
   if (!context)
     return RespondNow(Error("WizardContext is not available"));
 
-  chromeos::UserContext* user_context =
-      context->extra_factors_auth_session.get();
+  ash::UserContext* user_context = context->extra_factors_auth_session.get();
   if (!user_context)
     return RespondNow(Error("UserContext is not available"));
 

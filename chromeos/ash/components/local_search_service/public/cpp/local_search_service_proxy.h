@@ -51,9 +51,4 @@ class LocalSearchServiceProxy : public KeyedService {
 
 }  // namespace ash::local_search_service
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::local_search_service {
-using ::ash::local_search_service::LocalSearchServiceProxy;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_PUBLIC_CPP_LOCAL_SEARCH_SERVICE_PROXY_H_

@@ -200,7 +200,7 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics
     // ChromeOs Metrics Provider require g_login_state and power manager client
     // initialized before they can be instantiated.
     chromeos::PowerManagerClient::InitializeFake();
-    chromeos::LoginState::Initialize();
+    ash::LoginState::Initialize();
     chromeos::TpmManagerClient::InitializeFake();
 
     SetupMultiDeviceFactory();
@@ -213,7 +213,7 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics
   }
 
   void TearDown() override {
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
 
     ash::multidevice_setup::MultiDeviceSetupClientImpl::Factory::

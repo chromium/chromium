@@ -118,9 +118,4 @@ class COMPONENT_EXPORT(LOGIN_STATE) LoginState {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::LoginState;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_LOGIN_LOGIN_STATE_LOGIN_STATE_H_

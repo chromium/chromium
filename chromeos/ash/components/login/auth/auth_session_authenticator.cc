@@ -728,7 +728,7 @@ void AuthSessionAuthenticator::RecoverEncryptedData(
     context->SaveKeyForReplacement();
   }
 
-  chromeos::Key auth_key(old_password);
+  Key auth_key(old_password);
   auth_key.SetLabel(key_label);
   context->SetKey(auth_key);
 

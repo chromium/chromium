@@ -93,7 +93,7 @@ void PasswordUpdateFlow::ContinueWithAuthSession(
     user_context->SaveKeyForReplacement();
   }
 
-  chromeos::Key auth_key(old_password);
+  Key auth_key(old_password);
   auth_key.SetLabel(key_label);
   user_context->SetKey(auth_key);
 

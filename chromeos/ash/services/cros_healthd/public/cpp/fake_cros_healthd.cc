@@ -49,8 +49,8 @@ void FakeCrosHealthd::Initialize() {
   CHECK(!g_instance);
   g_instance = new FakeCrosHealthd();
 
-  if (chromeos::mojo_service_manager::IsServiceManagerBound()) {
-    auto* proxy = chromeos::mojo_service_manager::GetServiceManagerProxy();
+  if (mojo_service_manager::IsServiceManagerBound()) {
+    auto* proxy = mojo_service_manager::GetServiceManagerProxy();
     proxy->Register(
         chromeos::mojo_services::kCrosHealthdDiagnostics,
         g_instance->diagnostics_provider_.BindNewPipeAndPassRemote());

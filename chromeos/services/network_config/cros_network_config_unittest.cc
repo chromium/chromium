@@ -62,6 +62,8 @@ namespace network_config {
 namespace {
 
 using ApnTypes = ash::CellularNetworkMetricsLogger::ApnTypes;
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+using ::ash::LoginState;
 
 constexpr int kSimRetriesLeft = 3;
 constexpr char kCellularGuid[] = "cellular_guid";

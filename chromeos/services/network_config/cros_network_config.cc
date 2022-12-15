@@ -61,6 +61,12 @@ namespace network_config {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+using ::ash::LoginState;
+namespace sync_wifi {
+using ::ash::sync_wifi::IsEligibleForSync;
+}
+
 // Error strings from networking_private_api.cc. TODO(1004434): Enumerate
 // these in mojo.
 const char kErrorAccessToSharedConfig[] = "Error.CannotChangeSharedConfig";
@@ -2615,7 +2621,7 @@ void CrosNetworkConfig::GetManagedProperties(
   }
 
   network_configuration_handler_->GetManagedProperties(
-      chromeos::LoginState::Get()->primary_user_hash(), network->path(),
+      LoginState::Get()->primary_user_hash(), network->path(),
       base::BindOnce(&CrosNetworkConfig::OnGetManagedProperties,
                      weak_factory_.GetWeakPtr(), std::move(callback), guid));
 }
@@ -2676,7 +2682,7 @@ void CrosNetworkConfig::OnGetManagedProperties(
   NET_LOG(DEBUG) << "Requesting EAP state for: " + service_path
                  << " from: " << eap_state->path();
   network_configuration_handler_->GetManagedProperties(
-      chromeos::LoginState::Get()->primary_user_hash(), eap_state->path(),
+      LoginState::Get()->primary_user_hash(), eap_state->path(),
       base::BindOnce(&CrosNetworkConfig::OnGetManagedPropertiesEap,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      std::move(managed_properties)));

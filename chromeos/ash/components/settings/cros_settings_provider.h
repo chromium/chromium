@@ -70,9 +70,4 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) CrosSettingsProvider {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::CrosSettingsProvider;
-}  // namespace chromeos
-
 #endif  // CHROMEOS_ASH_COMPONENTS_SETTINGS_CROS_SETTINGS_PROVIDER_H_

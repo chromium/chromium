@@ -905,9 +905,9 @@ IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest, FetchSuccess) {
   test::OobeJS().ClickOnPath(kPrimaryButton);
   OobeScreenExitWaiter(GaiaView::kScreenId).Wait();
 
-  chromeos::UserContext* user_context = LoginDisplayHost::default_host()
-                                            ->GetWizardContext()
-                                            ->extra_factors_auth_session.get();
+  UserContext* user_context = LoginDisplayHost::default_host()
+                                  ->GetWizardContext()
+                                  ->extra_factors_auth_session.get();
   EXPECT_EQ(user_context->GetReauthProofToken(), "fake-reauth-proof-token");
 }
 
@@ -941,9 +941,9 @@ IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest, FetchFailure) {
                                FakeGaiaMixin::kPasswordPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
   OobeScreenExitWaiter(GaiaView::kScreenId).Wait();
-  chromeos::UserContext* user_context = LoginDisplayHost::default_host()
-                                            ->GetWizardContext()
-                                            ->extra_factors_auth_session.get();
+  UserContext* user_context = LoginDisplayHost::default_host()
+                                  ->GetWizardContext()
+                                  ->extra_factors_auth_session.get();
   EXPECT_TRUE(user_context->GetReauthProofToken().empty());
 }
 

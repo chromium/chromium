@@ -355,7 +355,7 @@ void AuthPerformer::HashPasswordAndAuthenticate(
     AuthOperationCallback callback,
     const std::string& system_salt) {
   // Use Key until proper migration to AuthFactors API.
-  chromeos::Key password_key(password);
+  Key password_key(password);
   password_key.SetLabel(key_label);
   password_key.Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF, system_salt);
   context->SetKey(password_key);

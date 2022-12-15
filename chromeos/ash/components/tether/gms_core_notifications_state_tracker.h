@@ -53,11 +53,4 @@ class GmsCoreNotificationsStateTracker {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace tether {
-using ::ash::tether::GmsCoreNotificationsStateTracker;
-}  // namespace tether
-}  // namespace chromeos
-
 #endif  // CHROMEOS_ASH_COMPONENTS_TETHER_GMS_CORE_NOTIFICATIONS_STATE_TRACKER_H_

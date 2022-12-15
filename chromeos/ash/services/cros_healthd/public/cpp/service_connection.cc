@@ -320,8 +320,7 @@ void ServiceConnectionImpl::BindCrosHealthdProbeServiceIfNeeded() {
 }
 
 ServiceConnectionImpl::ServiceConnectionImpl()
-    : use_service_manager_(
-          chromeos::mojo_service_manager::IsServiceManagerBound()) {
+    : use_service_manager_(mojo_service_manager::IsServiceManagerBound()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 #if !defined(USE_REAL_DBUS_CLIENTS)
   // Creates the fake mojo service if need. This is for browser test to do the

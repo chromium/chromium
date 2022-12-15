@@ -81,9 +81,4 @@ class LogBuffer {
 
 }  // namespace ash::multidevice
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos::multidevice {
-using ::ash::multidevice::LogBuffer;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_MULTIDEVICE_LOGGING_LOG_BUFFER_H_

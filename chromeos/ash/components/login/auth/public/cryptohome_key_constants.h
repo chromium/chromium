@@ -29,9 +29,4 @@ extern const char kCryptohomeRecoveryKeyLabel[];
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::kCryptohomeGaiaKeyLabel;
-}  // namespace chromeos
-
 #endif  // CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_CRYPTOHOME_KEY_CONSTANTS_H_

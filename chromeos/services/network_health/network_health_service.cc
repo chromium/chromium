@@ -24,6 +24,12 @@ namespace chromeos::network_health {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojo_service_manager {
+using ::ash::mojo_service_manager::GetServiceManagerProxy;
+using ::ash::mojo_service_manager::IsServiceManagerBound;
+}  // namespace mojo_service_manager
+
 constexpr mojom::NetworkState DeviceStateToNetworkState(
     network_config::mojom::DeviceStateType device_state) {
   switch (device_state) {
@@ -148,7 +154,7 @@ void NetworkHealthService::BindReceiver(
 }
 
 void NetworkHealthService::Request(
-    mojo_service_manager::mojom::ProcessIdentityPtr identity,
+    chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
     mojo::ScopedMessagePipeHandle receiver) {
   BindReceiver(
       mojo::PendingReceiver<mojom::NetworkHealthService>(std::move(receiver)));

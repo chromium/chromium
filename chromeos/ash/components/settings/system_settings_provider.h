@@ -51,9 +51,4 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) SystemSettingsProvider
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::SystemSettingsProvider;
-}  // namespace chromeos
-
 #endif  // CHROMEOS_ASH_COMPONENTS_SETTINGS_SYSTEM_SETTINGS_PROVIDER_H_

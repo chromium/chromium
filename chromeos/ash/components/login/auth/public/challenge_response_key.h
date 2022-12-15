@@ -76,9 +76,4 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::ChallengeResponseKey;
-}  // namespace chromeos
-
 #endif  // CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_CHALLENGE_RESPONSE_KEY_H_

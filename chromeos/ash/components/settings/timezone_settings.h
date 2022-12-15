@@ -55,9 +55,4 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) TimezoneSettings {
 
 }  // namespace ash::system
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::system {
-using ::ash::system::TimezoneSettings;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_SETTINGS_TIMEZONE_SETTINGS_H_

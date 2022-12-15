@@ -26,7 +26,7 @@ class GeneratedTimeZonePrefBase
 
   ~GeneratedTimeZonePrefBase() override;
 
-  // chromeos::system::TimeZoneResolverManager::Observer
+  // ash::system::TimeZoneResolverManager::Observer
   void OnTimeZoneResolverUpdated() override;
 
  protected:

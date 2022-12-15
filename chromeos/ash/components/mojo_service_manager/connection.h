@@ -40,10 +40,4 @@ void SetServiceManagerRemoteForTesting(
 
 }  // namespace ash::mojo_service_manager
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::mojo_service_manager {
-using ::ash::mojo_service_manager::GetServiceManagerProxy;
-using ::ash::mojo_service_manager::IsServiceManagerBound;
-}  // namespace chromeos::mojo_service_manager
-
 #endif  // CHROMEOS_ASH_COMPONENTS_MOJO_SERVICE_MANAGER_CONNECTION_H_

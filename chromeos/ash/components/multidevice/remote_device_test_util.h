@@ -59,12 +59,4 @@ bool IsSameDevice(const RemoteDevice& remote_device,
 
 }  // namespace ash::multidevice
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos::multidevice {
-using ::ash::multidevice::CreateRemoteDeviceListForTest;
-using ::ash::multidevice::CreateRemoteDeviceRefForTest;
-using ::ash::multidevice::CreateRemoteDeviceRefListForTest;
-}  // namespace chromeos::multidevice
-
 #endif  // CHROMEOS_ASH_COMPONENTS_MULTIDEVICE_REMOTE_DEVICE_TEST_UTIL_H_

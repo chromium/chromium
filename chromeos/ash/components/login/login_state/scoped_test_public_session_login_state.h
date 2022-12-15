@@ -25,9 +25,4 @@ class ScopedTestPublicSessionLoginState {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::ScopedTestPublicSessionLoginState;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_LOGIN_LOGIN_STATE_SCOPED_TEST_PUBLIC_SESSION_LOGIN_STATE_H_

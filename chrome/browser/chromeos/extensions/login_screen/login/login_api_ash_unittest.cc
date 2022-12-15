@@ -591,11 +591,11 @@ TEST_F(LoginApiUserSessionUnittest, LaunchSamlUserSession) {
   std::unique_ptr<ScopedTestingProfile> profile = AddRegularUser(kEmail);
   ash::UserContext user_context = GetRegularUserContext(kEmail, kGaiaId);
 
-  chromeos::Key key("password");
+  ash::Key key("password");
   key.SetLabel(ash::kCryptohomeGaiaKeyLabel);
   user_context.SetKey(key);
-  user_context.SetPasswordKey(chromeos::Key("password"));
-  user_context.SetAuthFlow(chromeos::UserContext::AUTH_FLOW_GAIA_WITH_SAML);
+  user_context.SetPasswordKey(ash::Key("password"));
+  user_context.SetAuthFlow(ash::UserContext::AUTH_FLOW_GAIA_WITH_SAML);
   user_context.SetIsUsingSamlPrincipalsApi(false);
   user_context.SetAuthCode("oauth_code");
 

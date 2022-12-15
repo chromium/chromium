@@ -54,9 +54,4 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::SyncTrustedVaultKeys;
-}  // namespace chromeos
-
 #endif  // CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_SYNC_TRUSTED_VAULT_KEYS_H_

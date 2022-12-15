@@ -45,9 +45,4 @@ bool IsEligibleForSync(
 
 }  // namespace ash::sync_wifi
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::sync_wifi {
-using ::ash::sync_wifi::IsEligibleForSync;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_NETWORK_ELIGIBILITY_CHECKER_H_

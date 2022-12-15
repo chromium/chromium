@@ -121,10 +121,4 @@ typedef std::vector<RemoteDeviceRef> RemoteDeviceRefList;
 }  // namespace multidevice
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos::multidevice {
-using ::ash::multidevice::RemoteDeviceRef;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_MULTIDEVICE_REMOTE_DEVICE_REF_H_
