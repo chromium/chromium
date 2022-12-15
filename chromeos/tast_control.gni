@@ -302,6 +302,10 @@ tast_disabled_tests_from_chrome_all = [
   # http://b/262361695
   "printer.ProxyAdd.*",
 
+  # http://b/262649361
+  # Until the LKGM with http://crrev.com/c/4110195 is rolled
+  "a11y.LiveCaption",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
