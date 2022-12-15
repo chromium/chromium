@@ -1463,7 +1463,7 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
 
       Jika kebijakan tidak disetel, situs akan meminta akses, tetapi pengguna dapat mengubah setelan ini.</translation>
 <translation id="2411817661175306360">Peringatan perlindungan sandi nonaktif</translation>
-<translation id="2411919772666155530">Mencekal pemberitahuan di situs ini</translation>
+<translation id="2411919772666155530">Memblokir pemberitahuan di situs ini</translation>
 <translation id="2413022450179356125">Mengaktifkan/menonaktifkan fitur layar privasi.
 
 Jika kebijakan ini ditetapkan ke True, layar privasi akan selalu diaktifkan.
