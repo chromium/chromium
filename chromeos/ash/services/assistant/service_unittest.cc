@@ -102,6 +102,8 @@ class AssistantServiceTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     IssueAccessToken(kAccessToken);
+    // Simulate that the DLC library is loaded.
+    service_->OnLibassistantLoaded(/*success=*/true);
   }
 
   void TearDown() override {

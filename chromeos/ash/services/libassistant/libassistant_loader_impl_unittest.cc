@@ -36,6 +36,9 @@ TEST_F(LibassistantLoaderImplTest, ShouldCreateInstance) {
 }
 
 TEST_F(LibassistantLoaderImplTest, ShouldRunCallbackWithoutDlcFeature) {
+  feature_list_.InitAndDisableFeature(
+      assistant::features::kEnableLibAssistantDlc);
+
   auto* loader = LibassistantLoaderImpl::GetInstance();
   EXPECT_TRUE(loader);
 
