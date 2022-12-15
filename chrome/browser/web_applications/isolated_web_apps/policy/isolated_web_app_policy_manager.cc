@@ -17,7 +17,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/web_applications/commands/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolation_data.h"
