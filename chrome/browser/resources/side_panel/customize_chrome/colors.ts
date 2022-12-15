@@ -145,6 +145,10 @@ export class ColorsElement extends PolymerElement {
     return isChromeColorSelected(this.theme_, this.colors_, color) ? '0' : '-1';
   }
 
+  private themeHasBackgroundImage_(): boolean {
+    return !!this.theme_ && !!this.theme_.backgroundImage;
+  }
+
   private onDefaultColorClick_() {
     CustomizeChromeApiProxy.getInstance().handler.setDefaultColor();
   }

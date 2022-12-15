@@ -45,6 +45,7 @@
       id="defaultColor"
       background-color="[[defaultColor_.background]]"
       foreground-color="[[defaultColor_.foreground]]"
+      background-color-hidden="[[themeHasBackgroundImage_(theme_)]]"
       title="$i18n{defaultColorName}"
       aria-label="$i18n{defaultColorName}"
       role="radio"
@@ -58,6 +59,7 @@
         class="chrome-color"
         background-color="[[item.background]]"
         foreground-color="[[item.foreground]]"
+        background-color-hidden="[[themeHasBackgroundImage_(theme_)]]"
         title="[[item.name]]"
         aria-label$="[[item.name]]"
         role="radio"
@@ -79,6 +81,7 @@
         id="customColor"
         background-color="[[customColor_.background]]"
         foreground-color="[[customColor_.foreground]]"
+        background-color-hidden="[[themeHasBackgroundImage_(theme_)]]"
         checked="[[isCustomColorSelected_]]">
     </customize-chrome-color>
     <div id="colorPickerIcon"></div>

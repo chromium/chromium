@@ -7,7 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {ColorElement} from 'chrome://customize-chrome-side-panel.top-chrome/color.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {assertStyle} from './test_support.js';
+import {assertNotStyle, assertStyle} from './test_support.js';
 
 suite('ColorTest', () => {
   let colorElement: ColorElement;
@@ -50,5 +50,17 @@ suite('ColorTest', () => {
     assertStyle(svg, 'height', '50px');
     const background = colorElement.shadowRoot!.querySelector('#background')!;
     assertStyle(background, 'r', '24px');
+  });
+
+  test('background color can be hidden', () => {
+    colorElement.backgroundColorHidden = true;
+
+    assertStyle(colorElement.$.background, 'display', 'none');
+  });
+
+  test('background color can be shown', () => {
+    colorElement.backgroundColorHidden = false;
+
+    assertNotStyle(colorElement.$.background, 'display', 'none');
   });
 });

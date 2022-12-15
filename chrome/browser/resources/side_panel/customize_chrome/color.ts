@@ -42,12 +42,17 @@ export class ColorElement extends PolymerElement {
         type: Boolean,
         reflectToAttribute: true,
       },
+      backgroundColorHidden: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
   public backgroundColor: SkColor;
   public foregroundColor: SkColor;
   public checked: boolean;
+  public backgroundColorHidden: boolean;
 
   private onColorChange_() {
     this.updateStyles({

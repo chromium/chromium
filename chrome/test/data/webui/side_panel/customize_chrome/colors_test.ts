@@ -13,7 +13,7 @@ import {assertDeepEquals, assertEquals, assertGE, assertTrue} from 'chrome://web
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-import {assertStyle, capture, createTheme, installMock} from './test_support.js';
+import {assertStyle, capture, createBackgroundImage, createTheme, installMock} from './test_support.js';
 
 suite('ColorsTest', () => {
   let colorsElement: ColorsElement;
@@ -209,5 +209,26 @@ suite('ColorsTest', () => {
         colorsElement.shadowRoot!.querySelectorAll('[tabindex="0"]');
     assertEquals(1, indexedColors.length);
     assertEquals(colorsElement.$.customColorContainer, indexedColors[0]);
+  });
+
+  [false, true].forEach((hasBackgroundImage) => {
+    test(
+        `background color visibility if theme has image ${hasBackgroundImage}`,
+        async () => {
+          const theme = createTheme();
+          if (hasBackgroundImage) {
+            theme.backgroundImage = createBackgroundImage('https://foo.com');
+          } else {
+            theme.backgroundImage = undefined;
+          }
+          callbackRouter.setTheme(theme);
+          await callbackRouter.$.flushForTesting();
+
+          const colors = colorsElement.shadowRoot!.querySelectorAll(
+              'customize-chrome-color');
+          for (const color of colors) {
+            assertEquals(hasBackgroundImage, color.backgroundColorHidden);
+          }
+        });
   });
 });
