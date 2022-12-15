@@ -32,11 +32,11 @@ std::unique_ptr<TestResult> MakeResult(const std::string& id) {
 }
 
 Results MakeResults(std::vector<std::string> ids) {
-  Results res;
+  Results results;
   for (const std::string& id : ids) {
-    res.push_back(MakeResult(id));
+    results.push_back(MakeResult(id));
   }
-  return res;
+  return results;
 }
 
 }  // namespace
@@ -55,12 +55,17 @@ class RemovedResultsRankerTest : public testing::Test {
           base::BindRepeating(
               &MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService,
               temp_dir_.GetPath().Append("proto"))}});
-    WaitUntilFileSuggestServiceReady(
-        FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_));
     ranker_ = std::make_unique<RemovedResultsRanker>(profile_);
   }
 
   void Wait() { task_environment_.RunUntilIdle(); }
+
+  // Initialize the file suggest service, which holds the underlying proto for
+  // all removed results.
+  void InitFileService() {
+    WaitUntilFileSuggestServiceReady(
+        FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_));
+  }
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -71,6 +76,8 @@ class RemovedResultsRankerTest : public testing::Test {
 };
 
 TEST_F(RemovedResultsRankerTest, UpdateResultRanks) {
+  InitFileService();
+
   // Request to remove some results.
   ranker_->Remove(MakeResult("A").get());
   ranker_->Remove(MakeResult("C").get());
@@ -102,7 +109,7 @@ TEST_F(RemovedResultsRankerTest, UpdateResultRanks) {
 }
 
 TEST_F(RemovedResultsRankerTest, RankEmptyResults) {
-  Wait();
+  InitFileService();
 
   ResultsMap results_map;
   results_map[ResultType::kInstalledApp] =
@@ -113,7 +120,7 @@ TEST_F(RemovedResultsRankerTest, RankEmptyResults) {
 }
 
 TEST_F(RemovedResultsRankerTest, RankDuplicateResults) {
-  Wait();
+  InitFileService();
 
   // Request to remove some results.
   ranker_->Remove(MakeResult("A").get());
@@ -140,7 +147,7 @@ TEST_F(RemovedResultsRankerTest, RankDuplicateResults) {
 // Verifies that the ranker removes a result through the file suggest keyed
 // service if the result is a file suggestion.
 TEST_F(RemovedResultsRankerTest, RemoveFileSuggestions) {
-  Wait();
+  InitFileService();
 
   const base::FilePath drive_file_result_path("file_A");
   FileResult drive_file_result(
@@ -173,6 +180,25 @@ TEST_F(RemovedResultsRankerTest, RemoveFileSuggestions) {
         EXPECT_EQ(search_result.id, local_file_metadata->id);
       });
   ranker_->Remove(&local_file_result);
+}
+
+TEST_F(RemovedResultsRankerTest, RemoveBeforeInit) {
+  // Don't fully initialize the file service for this test.
+
+  ResultsMap results_map;
+  auto apps = MakeResults({"A", "B"});
+  apps[0]->SetDisplayType(DisplayType::kRecentApps);
+  results_map[ResultType::kInstalledApp] = std::move(apps);
+  results_map[ResultType::kOmnibox] = MakeResults({"C", "D"});
+
+  ranker_->UpdateResultRanks(results_map, ResultType::kInstalledApp);
+  ranker_->UpdateResultRanks(results_map, ResultType::kOmnibox);
+
+  // All results should be filtered out except for the recent app.
+  EXPECT_FALSE(results_map[ResultType::kInstalledApp][0]->scoring().filter);
+  EXPECT_TRUE(results_map[ResultType::kInstalledApp][1]->scoring().filter);
+  EXPECT_TRUE(results_map[ResultType::kOmnibox][0]->scoring().filter);
+  EXPECT_TRUE(results_map[ResultType::kOmnibox][1]->scoring().filter);
 }
 
 }  // namespace app_list::test

@@ -602,7 +602,16 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateSearchTest,
   results_changed_waiter.Wait();
   results_waiter.Wait();
 
-  const auto results = PublishedResults();
+  std::vector<ChromeSearchResult*> results;
+  for (auto* result : PublishedResults()) {
+    // There may be zero state results that are also published, but not visible
+    // in the UI. This test should only check search list results.
+    if (result->display_type() != ash::SearchResultDisplayType::kList)
+      continue;
+
+    results.push_back(result);
+  }
+
   ASSERT_EQ(results.size(), 1u);
   ASSERT_TRUE(results[0]);
   EXPECT_EQ(base::UTF16ToASCII(results[0]->title()), "youtube");

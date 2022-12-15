@@ -37,12 +37,16 @@ void RemovedResultsRanker::UpdateResultRanks(ResultsMap& results,
   const auto it = results.find(provider);
   DCHECK(it != results.end());
 
-  // If `proto_` is not initialized, filter all results; otherwise, filter any
-  // results whose IDs have been recorded as for removal.
+  // If `proto_` is not initialized, filter all results except for recent apps.
+  // Otherwise, filter any results whose IDs have been recorded as for removal.
   const bool proto_initialized = initialized();
   for (const auto& result : it->second) {
-    if (!proto_initialized || (*proto_)->removed_ids().contains(result->id())) {
-      result->scoring().filter = true;
+    if (!proto_initialized) {
+      result->scoring().filter =
+          result->display_type() != DisplayType::kRecentApps;
+    } else {
+      result->scoring().filter =
+          (*proto_)->removed_ids().contains(result->id());
     }
   }
 }
