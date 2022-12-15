@@ -23731,7 +23731,7 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (2nd generation)",
+          "iPhone 7",
           "--version",
           "14.5",
           "--out-dir",
@@ -23748,7 +23748,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_signin_eg2tests_module iPad Pro (12.9-inch) (2nd generation) 14.5",
+        "name": "ios_chrome_signin_eg2tests_module iPhone 7 14.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -23782,7 +23782,7 @@
           "shards": 6
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "variant_id": "iPad Pro (12.9-inch) (2nd generation) 14.5"
+        "variant_id": "iPhone 7 14.5"
       },
       {
         "args": [
@@ -30432,62 +30432,6 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
-          "--version",
-          "15.5",
-          "--output-disabled-tests",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14b47b",
-          "--xctest",
-          "--xcode-parallelization"
-        ],
-        "isolate_name": "ios_chrome_signin_eg2tests_module",
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_chrome_signin_eg2tests_module iPhone 6s 15.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-12"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14b47b",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_15_5",
-              "path": "Runtime-ios-15.5"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
-        },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "variant_id": "iPhone 6s 15.5"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone 7",
           "--version",
           "15.5",
@@ -30596,6 +30540,62 @@
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
         "variant_id": "iPhone 8 16.1"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone X",
+          "--version",
+          "15.5",
+          "--output-disabled-tests",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14b47b",
+          "--xctest",
+          "--xcode-parallelization"
+        ],
+        "isolate_name": "ios_chrome_signin_eg2tests_module",
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_chrome_signin_eg2tests_module iPhone X 15.5",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14b47b",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 6
+        },
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
+        "variant_id": "iPhone X 15.5"
       },
       {
         "args": [
@@ -61851,6 +61851,62 @@
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
         "variant_id": "iPad (6th generation) 16.1"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPad Air (3rd generation)",
+          "--version",
+          "16.1",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14b47b",
+          "--xctest",
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
+        ],
+        "isolate_name": "ios_chrome_signin_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_chrome_signin_eg2tests_module iPad Air (3rd generation) 16.1",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14b47b",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_16_1",
+              "path": "Runtime-ios-16.1"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 6
+        },
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
+        "variant_id": "iPad Air (3rd generation) 16.1"
       },
       {
         "args": [
