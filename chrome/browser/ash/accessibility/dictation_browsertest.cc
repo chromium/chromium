@@ -761,7 +761,8 @@ IN_PROC_BROWSER_TEST_P(DictationTest,
   WaitForCommitText(kFinalSpeechResult16);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationTest, ChromeVoxSilencedWhenToggledOn) {
+// TODO(crbug.com/1401298): Flaky.
+IN_PROC_BROWSER_TEST_P(DictationTest, DISABLED_ChromeVoxSilencedWhenToggledOn) {
   // Set up ChromeVox.
   test::SpeechMonitor sm;
   EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
