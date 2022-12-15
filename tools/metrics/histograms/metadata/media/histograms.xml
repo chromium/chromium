@@ -3914,13 +3914,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Remoting.AllowedByPage" enum="BooleanEnabled"
-    expires_after="2023-09-12">
-  <owner>jophba@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>Tracks whether a web page allows content to be remoted.</summary>
-</histogram>
-
 <histogram name="Media.Remoting.AudioBitrate" units="kbps"
     expires_after="2023-09-12">
   <owner>jophba@chromium.org</owner>
@@ -3968,6 +3961,17 @@ chromium-metrics-reviews@google.com.
     Whether the given media is compatible with media remoting. Recorded whenever
     the conditions are met to start remoting (e.g. the media element is the
     dominant page content and is not paused).
+  </summary>
+</histogram>
+
+<histogram name="Media.Remoting.RemotePlaybackEnabledByPage"
+    enum="BooleanEnabled" expires_after="2023-09-12">
+  <owner>jophba@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Tracks whether a web page allows content to be remoted. Recorded when the
+    media player finishes loading and when the site changes this attribute
+    afterwards.
   </summary>
 </histogram>
 

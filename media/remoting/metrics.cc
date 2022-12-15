@@ -165,9 +165,12 @@ void SessionMetricsRecorder::OnPipelineMetadataChanged(
 }
 
 void SessionMetricsRecorder::OnRemotePlaybackDisabled(bool disabled) {
-  if (disabled == remote_playback_is_disabled_)
+  if (remote_playback_is_disabled_ &&
+      disabled == remote_playback_is_disabled_.value()) {
     return;  // De-dupe redundant notifications.
-  UMA_HISTOGRAM_BOOLEAN("Media.Remoting.AllowedByPage", !disabled);
+  }
+  UMA_HISTOGRAM_BOOLEAN("Media.Remoting.RemotePlaybackEnabledByPage",
+                        !disabled);
   remote_playback_is_disabled_ = disabled;
 }
 
