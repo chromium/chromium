@@ -646,6 +646,16 @@ chromium-metrics-reviews@google.com.
   <summary>Tracks UI events related to the Partial Translate bubble.</summary>
 </histogram>
 
+<histogram name="Translate.PartialTranslation.HttpResponseCode"
+    enum="HttpResponseCode" expires_after="2023-12-13">
+  <owner>basiaz@google.com</owner>
+  <owner>cuianthony@google.com</owner>
+  <summary>
+    For each HTTP response for the Partial Translation request to Contextual
+    Search Plugin, reports the associated HTTP code.
+  </summary>
+</histogram>
+
 <histogram name="Translate.PartialTranslation.ResponseTime" units="ms"
     expires_after="2023-09-30">
   <owner>cuianthony@google.com</owner>
