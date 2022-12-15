@@ -587,6 +587,15 @@ suite('SettingsDevicePage', function() {
       const inputVolumeSlider =
           audioPage.shadowRoot.querySelector('#audioInputGainVolumeSlider');
       assertTrue(isVisible(inputVolumeSlider), 'audioInputGainVolumeSlider');
+      const noiseCancellationSubsectionHeader =
+          audioPage.shadowRoot.querySelector(
+              '#audioInputNoiseCancellationLabel');
+      assertTrue(isVisible(noiseCancellationSubsectionHeader));
+      assertEquals(
+          'Noise Cancellation', noiseCancellationSubsectionHeader.textContent);
+      const noiseCancellationToggle = audioPage.shadowRoot.querySelector(
+          '#audioInputNoiseCancellationToggle');
+      assertTrue(isVisible(noiseCancellationToggle));
     });
   });
 
