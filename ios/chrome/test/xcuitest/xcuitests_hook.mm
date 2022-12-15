@@ -50,6 +50,10 @@ policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
   return nullptr;
 }
 
+std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager() {
+  return nullptr;
+}
+
 void SetUpTestsIfPresent() {
   // No-op for XCUITest.
 }

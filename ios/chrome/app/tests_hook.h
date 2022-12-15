@@ -5,6 +5,9 @@
 #ifndef IOS_CHROME_APP_TESTS_HOOK_H_
 #define IOS_CHROME_APP_TESTS_HOOK_H_
 
+#include <memory>
+
+class SystemIdentityManager;
 namespace policy {
 class ConfigurationPolicyProvider;
 }
@@ -53,6 +56,10 @@ bool DisableMainThreadFreezeDetection();
 // Returns a policy provider that should be installed as the platform policy
 // provider when testing. May return nullptr.
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider();
+
+// Allow overriding the SystemIdentityManager factory. The real factory will
+// be used if this hook returns null.
+std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager();
 
 // Global integration tests setup.
 void SetUpTestsIfPresent();

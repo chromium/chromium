@@ -68,6 +68,7 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
+#import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
 #import "ios/public/provider/chrome/browser/signin/signin_sso_api.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -505,6 +506,21 @@ id<SingleSignOnService> ApplicationContextImpl::GetSSOService() {
     DCHECK(single_sign_on_service_);
   }
   return single_sign_on_service_;
+}
+
+SystemIdentityManager* ApplicationContextImpl::GetSystemIdentityManager() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (!system_identity_manager_) {
+    // Give the opportunity for the test hook to override the factory from
+    // the provider (allowing EG tests to use a fake SystemIdentityManager).
+    system_identity_manager_ = tests_hook::CreateSystemIdentityManager();
+    if (!system_identity_manager_) {
+      system_identity_manager_ =
+          ios::provider::CreateSystemIdentityManager(GetSSOService());
+    }
+    DCHECK(system_identity_manager_);
+  }
+  return system_identity_manager_.get();
 }
 
 segmentation_platform::OTRWebStateObserver*

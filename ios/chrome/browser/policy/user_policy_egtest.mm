@@ -259,7 +259,7 @@ void VerifyTheNotificationUI() {
   config.additional_args.push_back(
       base::StrCat({"--", test_switches::kSignInAtStartup}));
   config.additional_args.push_back(
-      std::string("-") + ios::kAddFakeIdentitiesArg + "=" +
+      std::string("-") + test_switches::kAddFakeIdentitiesAtStartup + "=" +
       [FakeSystemIdentity encodeIdentitiesToBase64:@[ fakeManagedIdentity ]]);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -302,7 +302,7 @@ void VerifyTheNotificationUI() {
   config.additional_args.push_back(
       base::StrCat({"--", test_switches::kSignInAtStartup}));
   config.additional_args.push_back(
-      std::string("-") + ios::kAddFakeIdentitiesArg + "=" +
+      std::string("-") + test_switches::kAddFakeIdentitiesAtStartup + "=" +
       [FakeSystemIdentity encodeIdentitiesToBase64:@[ fakeManagedIdentity ]]);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -356,7 +356,7 @@ void VerifyTheNotificationUI() {
   config.additional_args.push_back(
       base::StrCat({"--", test_switches::kSignInAtStartup}));
   config.additional_args.push_back(
-      std::string("-") + ios::kAddFakeIdentitiesArg + "=" +
+      std::string("-") + test_switches::kAddFakeIdentitiesAtStartup + "=" +
       [FakeSystemIdentity encodeIdentitiesToBase64:@[ fakeManagedIdentity ]]);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 

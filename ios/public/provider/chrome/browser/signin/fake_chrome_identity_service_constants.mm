@@ -14,6 +14,8 @@ NSString* const kManagedIdentityEmailSuffix = @"@google.com";
 
 NSString* const kManagedExampleIdentityEmailSuffix = @"@example.com";
 
+// This constant is duplicated in ios/chrome/test/earl_grey/test_switches.mm.
+// Keep them in sync when modifying it here.
 const char* const kAddFakeIdentitiesArg = "add_fake_identities";
 
 NSArray<NSString*>* GetManagedEmailSuffixes() {

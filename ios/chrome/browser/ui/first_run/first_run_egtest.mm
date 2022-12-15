@@ -742,7 +742,7 @@ GREYLayoutConstraint* BelowConstraint() {
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kSignInAtStartup);
   config.additional_args.push_back(
-      std::string("-") + ios::kAddFakeIdentitiesArg + "=" +
+      std::string("-") + test_switches::kAddFakeIdentitiesAtStartup + "=" +
       [FakeSystemIdentity encodeIdentitiesToBase64:@[ fakeIdentity ]]);
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];

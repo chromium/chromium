@@ -7,9 +7,22 @@
 
 namespace test_switches {
 
+// Switch used to force the use of the real SystemIdentityManager for EarlGrey
+// tests (i.e. the one returned by the provider API). If not specified, a fake
+// SystemIdentityManager is installed for all EarlGrey tests.
+extern const char kForceRealSystemIdentityManager[];
+
+// Switch used to add identities when starting the fake SystemIdentityManager.
+// The value comes from `+[FakeSystemIdentity encodeIdentitiesToBase64:]`.
+//
+// Ignored if kForceRealSystemIdentityManager is used.
+extern const char kAddFakeIdentitiesAtStartup[];
+
 // Switch used to record an identity at startup to avoid automatic sign out.
-// Only uses the identities from the `ios::kAddFakeIdentitiesArg` switch if the
-// switch is set, otherwise fakeIdentity1 is used by default.
+// Only uses the identities from the `kAddFakeIdentitiesAtStartup` switch if
+// the switch is set, otherwise` fakeIdentity1` is used by default.
+//
+// Ignored if kForceRealSystemIdentityManager is used.
 extern const char kSignInAtStartup[];
 
 }  // namespace test_switches

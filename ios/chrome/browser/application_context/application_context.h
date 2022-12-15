@@ -76,6 +76,7 @@ class PrefService;
 class PushNotificationService;
 class SafeBrowsingService;
 @protocol SingleSignOnService;
+class SystemIdentityManager;
 
 // Gets the global application context. Cannot return null.
 ApplicationContext* GetApplicationContext();
@@ -178,6 +179,9 @@ class ApplicationContext {
 
   // Returns the SingleSignOnService instance used by this application.
   virtual id<SingleSignOnService> GetSSOService() = 0;
+
+  // Returns the SystemIdentityManager instance used by this application.
+  virtual SystemIdentityManager* GetSystemIdentityManager() = 0;
 
   // Returns the application's OTRWebStateObserver for segmentation platform.
   virtual segmentation_platform::OTRWebStateObserver*

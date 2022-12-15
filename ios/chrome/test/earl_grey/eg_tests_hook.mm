@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/policy/test_platform_policy_provider.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/signin_test_util.h"
@@ -71,6 +72,37 @@ policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
   return GetTestPlatformPolicyProvider();
 }
 
+std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  if (command_line->HasSwitch(test_switches::kForceRealSystemIdentityManager)) {
+    // By returning nullptr, we force ApplicationContext to use the provider to
+    // create the SystemIdentityManager.
+    return nullptr;
+  }
+
+  NSArray<id<SystemIdentity>>* identities = @[];
+  if (command_line->HasSwitch(test_switches::kAddFakeIdentitiesAtStartup)) {
+    const std::string command_line_value = command_line->GetSwitchValueASCII(
+        test_switches::kAddFakeIdentitiesAtStartup);
+
+    identities =
+        [FakeSystemIdentity identitiesFromBase64String:command_line_value];
+  }
+
+  auto system_identity_manager =
+      std::make_unique<FakeSystemIdentityManager>(identities);
+
+  // Add a fake identity if asked to start the app in signed-in state but
+  // no identity was passed via the kAddFakeIdentitiesAtStartup parameter.
+  if (identities.count == 0 &&
+      command_line->HasSwitch(test_switches::kSignInAtStartup)) {
+    system_identity_manager->AddIdentity([FakeSystemIdentity fakeIdentity1]);
+  }
+
+  return system_identity_manager;
+}
+
 void SetUpTestsIfPresent() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           test_switches::kSignInAtStartup)) {
@@ -81,7 +113,7 @@ void SetUpTestsIfPresent() {
     ios::GetChromeBrowserProvider().SetChromeIdentityServiceForTesting(
         std::move(service));
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-            ios::kAddFakeIdentitiesArg)) {
+            test_switches::kAddFakeIdentitiesAtStartup)) {
       // Add a fake identity by default if no identities were provided from the
       // commandline switch.
       ios::FakeChromeIdentityService* identity_service =

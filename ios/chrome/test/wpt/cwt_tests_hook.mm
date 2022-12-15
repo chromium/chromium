@@ -44,6 +44,9 @@ bool DisableMainThreadFreezeDetection() {
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
   return nullptr;
 }
+std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager() {
+  return nullptr;
+}
 void SetUpTestsIfPresent() {
   CWTWebDriverAppInterface* appInterface =
       [[CWTWebDriverAppInterface alloc] init];

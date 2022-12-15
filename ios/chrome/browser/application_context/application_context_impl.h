@@ -84,6 +84,7 @@ class ApplicationContextImpl : public ApplicationContext {
   breadcrumbs::BreadcrumbPersistentStorageManager*
   GetBreadcrumbPersistentStorageManager() override;
   id<SingleSignOnService> GetSSOService() override;
+  SystemIdentityManager* GetSystemIdentityManager() override;
   segmentation_platform::OTRWebStateObserver*
   GetSegmentationOTRWebStateObserver() override;
   PushNotificationService* GetPushNotificationService() override;
@@ -136,6 +137,7 @@ class ApplicationContextImpl : public ApplicationContext {
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
 
   __strong id<SingleSignOnService> single_sign_on_service_ = nil;
+  std::unique_ptr<SystemIdentityManager> system_identity_manager_;
 
   std::unique_ptr<segmentation_platform::OTRWebStateObserver>
       segmentation_otr_web_state_observer_;
