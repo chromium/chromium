@@ -189,7 +189,8 @@
   "fuchsia-builder-perf-x64": {
     "additional_compile_targets": [
       "chrome_pkg",
-      "base_perftests"
+      "base_perftests",
+      "sync_performance_tests"
     ]
   },
   "fuchsia-perf-ast": {

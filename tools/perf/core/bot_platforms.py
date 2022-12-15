@@ -248,6 +248,19 @@ _OFFICIAL_EXCEPT_DISPLAY_LOCKING_JETSTREAM2 = PerfSuite(
         ['blink_perf.display_locking', 'jetstream2'])
 
 
+def _sync_performance_tests(estimated_runtime=110,
+                            path=None,
+                            additional_flags=None):
+  if not additional_flags:
+    additional_flags = []
+  flags = ['--test-launcher-jobs=1', '--test-launcher-retry-limit=0']
+  flags.extend(additional_flags)
+  return ExecutableConfig('sync_performance_tests',
+                          path=path,
+                          flags=flags,
+                          estimated_runtime=estimated_runtime)
+
+
 def _base_perftests(estimated_runtime=270, path=None, additional_flags=None):
   if not additional_flags:
     additional_flags = []
@@ -357,7 +370,10 @@ for board, pb_name in _PB_IMAGE_PATHS.items():
   FUCHSIA_EXEC_CONFIGS[board] = frozenset([
       _base_perftests(900,
                       path='bin/run_base_perftests',
-                      additional_flags=FUCHSIA_EXEC_ARGS[board])
+                      additional_flags=FUCHSIA_EXEC_ARGS[board]),
+      _sync_performance_tests(900,
+                              path='bin/run_sync_performance_tests',
+                              additional_flags=FUCHSIA_EXEC_ARGS[board]),
   ])
 
 _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([

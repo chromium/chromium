@@ -73,6 +73,7 @@ speedometer2-future,hablich@chromium.org,Blink>JavaScript,,all
 speedometer2-minormc,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,,all
 speedometer2-pcscan,tmrts@chromium.org,Blink>JavaScript,,all
 startup.mobile,"pasko@chromium.org, lizeb@chromium.org",Speed>Metrics>SystemHealthRegressions,,
+sync_performance_tests,mastiz@chromium.org,Services>Sync,https://chromium.googlesource.com/chromium/src/+/HEAD/components/sync/README.md,
 system_health.common_desktop,"charliea@chromium.org, sullivan@chromium.org, tdresser@chromium.org, chrome-speed-metrics-dev@chromium.org",Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,tabs_switching,wasm,webgl"
 system_health.common_mobile,"charliea@chromium.org, sullivan@chromium.org, tdresser@chromium.org, chrome-speed-metrics-dev@chromium.org",Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 system_health.memory_desktop,"pasko@chromium.org, lizeb@chromium.org",,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,tabs_switching,wasm,webgl"

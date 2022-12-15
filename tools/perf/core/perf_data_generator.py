@@ -415,7 +415,8 @@ FYI_BUILDERS = {
         ],
     },
     'fuchsia-builder-perf-x64': {
-        'additional_compile_targets': ['chrome_pkg', 'base_perftests'],
+        'additional_compile_targets':
+        ['chrome_pkg', 'base_perftests', 'sync_performance_tests'],
     },
 }
 
@@ -1560,6 +1561,11 @@ GTEST_BENCHMARKS = {
         'skyostil@chromium.org, gab@chromium.org', 'Internals>SequenceManager',
         ('https://chromium.googlesource.com/chromium/src/+/HEAD/base/' +
          'README.md#performance-testing')),
+    'sync_performance_tests':
+    BenchmarkMetadata(
+        'mastiz@chromium.org', 'Services>Sync',
+        'https://chromium.googlesource.com/chromium/src/+/HEAD/components/sync/README.md'
+    ),
     'tracing_perftests':
     BenchmarkMetadata('eseckler@chromium.org, oysteine@chromium.org',
                       'Speed>Tracing'),

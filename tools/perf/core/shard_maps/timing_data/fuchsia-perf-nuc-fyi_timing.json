@@ -2,5 +2,9 @@
     {
         "duration": "900.0",
         "name": "base_perftests/_gtest_"
+    },
+    {
+        "duration": "900.0",
+        "name": "sync_performance_tests/_gtest_"
     }
 ]

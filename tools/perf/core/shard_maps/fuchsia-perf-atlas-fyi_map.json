@@ -27,18 +27,25 @@
             },
             "speedometer2": {
                 "abridged": false
-            },
-            "system_health.common_desktop": {
-                "end": 24,
-                "abridged": false
+            }
+        },
+        "executables": {
+            "sync_performance_tests": {
+                "arguments": [
+                    "--test-launcher-jobs=1",
+                    "--test-launcher-retry-limit=0",
+                    "-d",
+                    "--os-check=check",
+                    "--system-image-dir=workstation_eng.chromebook-x64"
+                ],
+                "path": "bin/run_sync_performance_tests"
             }
         }
     },
     "2": {
         "benchmarks": {
             "system_health.common_desktop": {
-                "begin": 24,
-                "end": 53,
+                "end": 41,
                 "abridged": false
             }
         }
@@ -46,20 +53,20 @@
     "3": {
         "benchmarks": {
             "system_health.common_desktop": {
-                "begin": 53,
+                "begin": 41,
                 "abridged": false
             }
         }
     },
     "extra_infos": {
-        "num_stories": 86,
-        "predicted_min_shard_time": 280,
-        "predicted_min_shard_index": 1,
-        "predicted_max_shard_time": 900.0,
-        "predicted_max_shard_index": 0,
+        "num_stories": 87,
+        "predicted_min_shard_time": 400,
+        "predicted_min_shard_index": 3,
+        "predicted_max_shard_time": 940.0,
+        "predicted_max_shard_index": 1,
         "shard #0": 900.0,
-        "shard #1": 280,
-        "shard #2": 290,
-        "shard #3": 280
+        "shard #1": 940.0,
+        "shard #2": 410,
+        "shard #3": 400
     }
 }

@@ -1672,6 +1672,19 @@
     "label": "//chrome/test:sync_integration_tests",
     "type": "windowed_test_launcher",
   },
+  "sync_performance_tests": {
+      "args": [
+          "sync_performance_tests",
+          "--non-telemetry=true",
+          "--test-launcher-print-test-stdio=always",
+          "--test-launcher-jobs=1",
+          "--test-launcher-retry-limit=0",
+      ],
+      "label": "//chrome/test:sync_performance_tests",
+      "skip_usage_check": True,  # Used by Pinpoint: crbug.com/1042778
+      "script": "//testing/scripts/run_performance_tests.py",
+      "type": "script",
+  },
   "system_webview_apk": {
     "label": "//android_webview:system_webview_apk",
     "type": "additional_compile_target",
