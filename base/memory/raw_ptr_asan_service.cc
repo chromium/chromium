@@ -12,7 +12,6 @@
 #include <string.h>
 
 #include "base/check_op.h"
-#include "base/debug/asan_service.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_asan_bound_arg_tracker.h"
 #include "base/no_destructor.h"
@@ -34,6 +33,26 @@ constexpr uint8_t kAsanHeapLeftRedzoneMagic = 0xfa;
 // https://github.com/llvm/llvm-project/blob/b84673b3f424882c4c1961fb2c49b6302b68f344/compiler-rt/lib/asan/asan_internal.h#L145
 constexpr uint8_t kAsanUserPoisonedMemoryMagic = 0xf7;
 }  // namespace
+
+#if defined(COMPONENT_BUILD) && defined(_WIN32)
+// In component builds on Windows, weak function exported by ASan have the
+// `__dll` suffix. ASan itself uses the `alternatename` directive to account for
+// that.
+#pragma comment(linker, "/alternatename:__sanitizer_report_error_summary="     \
+                        "__sanitizer_report_error_summary__dll")
+#endif  // defined(COMPONENT_BUILD) && defined(_WIN32)
+
+// static
+void RawPtrAsanService::Log(const char* format, ...) {
+  va_list ap;
+  va_start(ap, format);
+  auto formatted_message = StringPrintV(format, ap);
+  va_end(ap);
+
+  // Despite its name, the function just prints the input to the destination
+  // configured by ASan.
+  __sanitizer_report_error_summary(formatted_message.c_str());
+}
 
 // Mark the first eight bytes of every allocation's header as "user poisoned".
 // This allows us to filter out allocations made before BRP-ASan is activated.
@@ -81,7 +100,7 @@ void RawPtrAsanService::Configure(
     delete dummy_alloc;
 
     __sanitizer_install_malloc_and_free_hooks(MallocHook, FreeHook);
-    debug::AsanService::GetInstance()->AddErrorCallback(ErrorReportCallback);
+    __asan_set_error_report_callback(ErrorReportCallback);
 
     is_dereference_check_enabled_ = !!enable_dereference_check;
     is_extraction_check_enabled_ = !!enable_extraction_check;
@@ -140,7 +159,7 @@ int GetCurrentThreadId() {
 }  // namespace
 
 // static
-void RawPtrAsanService::ErrorReportCallback(const char* report, bool*) {
+void RawPtrAsanService::ErrorReportCallback(const char* report) {
   if (strcmp(__asan_get_report_description(), "heap-use-after-free") != 0)
     return;
 
@@ -262,8 +281,7 @@ void RawPtrAsanService::ErrorReportCallback(const char* report, bool*) {
     }
   }
 
-  debug::AsanService::GetInstance()->Log(
-      "\nMiraclePtr Status: %s\n%s\n%s\n"
+  Log("\nMiraclePtr Status: %s\n%s\n%s\n"
       "Refer to "
       "https://chromium.googlesource.com/chromium/src/+/main/base/memory/"
       "raw_ptr.md for details.",

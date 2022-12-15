@@ -12,7 +12,6 @@
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-#include "base/debug/asan_service.h"
 #include "base/memory/raw_ptr_asan_service.h"
 #endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
@@ -818,8 +817,6 @@ TEST(RawRef, StdLess) {
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 TEST(AsanBackupRefPtrImpl, RawRefGet) {
-  base::debug::AsanService::GetInstance()->Initialize();
-
   if (!base::RawPtrAsanService::GetInstance().IsEnabled()) {
     base::RawPtrAsanService::GetInstance().Configure(
         base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
@@ -844,8 +841,6 @@ TEST(AsanBackupRefPtrImpl, RawRefGet) {
 }
 
 TEST(AsanBackupRefPtrImpl, RawRefOperatorStar) {
-  base::debug::AsanService::GetInstance()->Initialize();
-
   if (!base::RawPtrAsanService::GetInstance().IsEnabled()) {
     base::RawPtrAsanService::GetInstance().Configure(
         base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),

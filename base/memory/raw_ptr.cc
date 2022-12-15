@@ -119,7 +119,6 @@ void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
 
 #include <sanitizer/asan_interface.h>
 #include "base/debug/alias.h"
-#include "base/debug/asan_service.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_asan_service.h"
 #include "base/process/process.h"
@@ -190,7 +189,7 @@ void AsanBackupRefPtrImpl::AsanCheckIfValidExtraction(
     // to catch the potential subsequent dangling dereference, but don't report
     // the extraction itself.
     if (service.is_extraction_check_enabled()) {
-      debug::AsanService::GetInstance()->Log(
+      RawPtrAsanService::Log(
           "=================================================================\n"
           "==%d==WARNING: MiraclePtr: dangling-pointer-extraction on address "
           "%p\n"
@@ -198,7 +197,7 @@ void AsanBackupRefPtrImpl::AsanCheckIfValidExtraction(
           Process::Current().Pid(), ptr);
       __sanitizer_print_stack_trace();
       __asan_describe_address(const_cast<void*>(ptr));
-      debug::AsanService::GetInstance()->Log(
+      RawPtrAsanService::Log(
           "A regular ASan report will follow if the extracted pointer is "
           "dereferenced later.\n"
           "Otherwise, it is still likely a bug to rely on the address of an "

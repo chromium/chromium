@@ -60,6 +60,7 @@ class BASE_EXPORT RawPtrAsanService {
   }
 
   static void SetPendingReport(ReportType type, const volatile void* ptr);
+  static void Log(const char* format, ...);
 
  private:
   enum class Mode {
@@ -80,8 +81,7 @@ class BASE_EXPORT RawPtrAsanService {
 
   static void MallocHook(const volatile void*, size_t);
   static void FreeHook(const volatile void*) {}
-  static void ErrorReportCallback(const char* report,
-                                  bool* should_exit_cleanly);
+  static void ErrorReportCallback(const char* report);
 
   Mode mode_ = Mode::kUninitialized;
   bool is_dereference_check_enabled_ = false;
