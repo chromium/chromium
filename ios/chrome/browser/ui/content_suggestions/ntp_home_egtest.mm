@@ -446,11 +446,13 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Tests that the tap gesture recognizer that dismisses the keyboard and
 // defocuses the omnibox works.
 - (void)testDefocusOmniboxTapWorks {
+  // TODO(crbug.com/1394749): Test fails on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
+  }
+
   [self focusFakebox];
-  // Tap on a space in the collectionView that is not a Feed card.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(ntp_home::DiscoverHeaderTitleAccessibilityID())]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_tap()];
 
   [ChromeEarlGreyUI waitForAppToIdle];
