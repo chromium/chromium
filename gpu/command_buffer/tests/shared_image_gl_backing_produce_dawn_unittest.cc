@@ -56,9 +56,9 @@ class SharedImageGLBackingProduceDawnTest : public WebGPUTest {
     attributes.bind_generates_resource = false;
 
     gl_context_ = std::make_unique<GLInProcessContext>();
-    ContextResult result = gl_context_->Initialize(
-        GetGpuServiceHolder()->task_executor(), attributes,
-        option.shared_memory_limits, /*image_factory=*/nullptr);
+    ContextResult result =
+        gl_context_->Initialize(GetGpuServiceHolder()->task_executor(),
+                                attributes, option.shared_memory_limits);
     ASSERT_EQ(result, ContextResult::kSuccess);
     mock_buffer_map_callback =
         std::make_unique<testing::StrictMock<MockBufferMapCallback>>();

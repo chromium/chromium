@@ -40,7 +40,6 @@
 #include "gpu/command_buffer/service/gpu_fence_manager.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
-#include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/command_buffer/service/mailbox_manager_factory.h"
 #include "gpu/command_buffer/service/memory_program_cache.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -171,7 +170,6 @@ InProcessCommandBuffer::CreateCacheUse() {
 
 gpu::ContextResult InProcessCommandBuffer::Initialize(
     const ContextCreationAttribs& attribs,
-    ImageFactory* image_factory,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     gpu::raster::GrShaderCache* gr_shader_cache,
     GpuProcessActivityFlags* activity_flags) {
@@ -184,8 +182,8 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
   client_thread_weak_ptr_ = client_thread_weak_ptr_factory_.GetWeakPtr();
 
   Capabilities capabilities;
-  InitializeOnGpuThreadParams params(attribs, &capabilities, image_factory,
-                                     gr_shader_cache, activity_flags);
+  InitializeOnGpuThreadParams params(attribs, &capabilities, gr_shader_cache,
+                                     activity_flags);
 
   base::OnceCallback<gpu::ContextResult(void)> init_task =
       base::BindOnce(&InProcessCommandBuffer::InitializeOnGpuThread,
@@ -213,7 +211,7 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
         task_executor_->gpu_preferences(),
         context_group_->feature_info()->workarounds(),
         task_executor_->gpu_feature_info(), context_state_.get(),
-        task_executor_->shared_image_manager(), image_factory,
+        task_executor_->shared_image_manager(), /*image_factory=*/nullptr,
         /*is_for_display_compositor=*/false);
   }
 
@@ -249,9 +247,8 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       task_executor_->mailbox_manager(), std::move(memory_tracker),
       task_executor_->shader_translator_cache(),
       task_executor_->framebuffer_completeness_cache(), feature_info,
-      params.attribs.bind_generates_resource, params.image_factory,
-      nullptr /* progress_reporter */, task_executor_->gpu_feature_info(),
-      task_executor_->discardable_manager(),
+      params.attribs.bind_generates_resource, nullptr /* progress_reporter */,
+      task_executor_->gpu_feature_info(), task_executor_->discardable_manager(),
       task_executor_->passthrough_discardable_manager(),
       task_executor_->shared_image_manager());
 

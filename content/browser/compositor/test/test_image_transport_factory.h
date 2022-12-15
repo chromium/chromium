@@ -14,7 +14,6 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "components/viz/test/test_frame_sink_manager.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
-#include "components/viz/test/test_image_factory.h"
 #include "content/browser/compositor/image_transport_factory.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/compositor/compositor.h"
@@ -55,7 +54,6 @@ class TestImageTransportFactory : public ui::ContextFactory,
 
  private:
   cc::TestTaskGraphRunner task_graph_runner_;
-  viz::TestImageFactory image_factory_;
   viz::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   viz::RendererSettings renderer_settings_;
   viz::FrameSinkIdAllocator frame_sink_id_allocator_;

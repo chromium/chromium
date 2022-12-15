@@ -50,8 +50,7 @@ class YUVReadbackTest : public testing::Test {
     context_ = std::make_unique<gpu::GLInProcessContext>();
     auto result = context_->Initialize(
         TestGpuServiceHolder::GetInstance()->task_executor(), attributes,
-        gpu::SharedMemoryLimits(),
-        /*image_factory=*/nullptr);
+        gpu::SharedMemoryLimits());
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     gl_ = context_->GetImplementation();
     gpu::ContextSupport* support = context_->GetImplementation();

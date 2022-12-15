@@ -48,7 +48,6 @@ class RasterInProcessCommandBufferTest : public ::testing::Test {
     auto context = std::make_unique<RasterInProcessContext>();
     auto result = context->Initialize(
         gpu_thread_holder_.GetTaskExecutor(), attributes, SharedMemoryLimits(),
-        gpu_memory_buffer_factory_->AsImageFactory(),
         /*gr_shader_cache=*/nullptr, /*activity_flags=*/nullptr);
     DCHECK_EQ(result, ContextResult::kSuccess);
     return context;
@@ -57,23 +56,17 @@ class RasterInProcessCommandBufferTest : public ::testing::Test {
   void SetUp() override {
     if (!RasterInProcessContext::SupportedInTest())
       return;
-    gpu_memory_buffer_factory_ =
-        GpuMemoryBufferFactory::CreateNativeType(nullptr);
     gpu_thread_holder_.GetGpuPreferences()->texture_target_exception_list =
         CreateBufferUsageAndFormatExceptionList();
     context_ = CreateRasterInProcessContext();
     ri_ = context_->GetImplementation();
   }
 
-  void TearDown() override {
-    context_.reset();
-    gpu_memory_buffer_factory_.reset();
-  }
+  void TearDown() override { context_.reset(); }
 
  protected:
   InProcessGpuThreadHolder gpu_thread_holder_;
   raw_ptr<raster::RasterInterface> ri_;  // not owned
-  std::unique_ptr<GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
   std::unique_ptr<RasterInProcessContext> context_;
 };
 

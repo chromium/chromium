@@ -46,8 +46,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GLInProcessContext {
   // to correctly create a surface.
   ContextResult Initialize(CommandBufferTaskExecutor* task_executor,
                            const ContextCreationAttribs& attribs,
-                           const SharedMemoryLimits& memory_limits,
-                           ImageFactory* image_factory);
+                           const SharedMemoryLimits& memory_limits);
 
   const Capabilities& GetCapabilities() const;
   const GpuFeatureInfo& GetGpuFeatureInfo() const;

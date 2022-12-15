@@ -36,7 +36,6 @@ class RasterInProcessContext {
   ContextResult Initialize(CommandBufferTaskExecutor* task_executor,
                            const ContextCreationAttribs& attribs,
                            const SharedMemoryLimits& memory_limits,
-                           ImageFactory* image_factory,
                            gpu::raster::GrShaderCache* gr_shader_cache,
                            GpuProcessActivityFlags* activity_flags);
 

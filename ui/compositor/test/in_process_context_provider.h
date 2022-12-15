@@ -25,7 +25,6 @@
 namespace gpu {
 class GLInProcessContext;
 class GpuMemoryBufferManager;
-class ImageFactory;
 class ImplementationBase;
 }
 
@@ -47,7 +46,6 @@ class InProcessContextProvider
   // RasterInterface) and won't support GLES2 or GrContext.
   static scoped_refptr<InProcessContextProvider> CreateOffscreen(
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      gpu::ImageFactory* image_factory,
       bool is_worker);
 
   InProcessContextProvider(const InProcessContextProvider&) = delete;
@@ -82,7 +80,6 @@ class InProcessContextProvider
   InProcessContextProvider(
       const gpu::ContextCreationAttribs& attribs,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      gpu::ImageFactory* image_factory,
       bool support_locking);
   ~InProcessContextProvider() override;
 
@@ -106,7 +103,6 @@ class InProcessContextProvider
   gpu::ContextResult bind_result_;
 
   gpu::ContextCreationAttribs attribs_;
-  raw_ptr<gpu::ImageFactory> image_factory_;
 
   base::Lock context_lock_;
 

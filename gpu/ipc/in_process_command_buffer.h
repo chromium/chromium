@@ -66,7 +66,6 @@ class GpuTaskSchedulerHelper;
 namespace gpu {
 class SharedContextState;
 class GpuProcessActivityFlags;
-class ImageFactory;
 class SharedImageInterface;
 class SyncPointClientState;
 struct ContextCreationAttribs;
@@ -101,7 +100,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
 
   gpu::ContextResult Initialize(
       const ContextCreationAttribs& attribs,
-      ImageFactory* image_factory,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       gpu::raster::GrShaderCache* gr_shader_cache,
       GpuProcessActivityFlags* activity_flags);
@@ -180,18 +178,15 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   struct InitializeOnGpuThreadParams {
     const ContextCreationAttribs& attribs;
     raw_ptr<Capabilities> capabilities;  // Ouptut.
-    raw_ptr<ImageFactory> image_factory;
     raw_ptr<gpu::raster::GrShaderCache> gr_shader_cache;
     raw_ptr<GpuProcessActivityFlags> activity_flags;
 
     InitializeOnGpuThreadParams(const ContextCreationAttribs& attribs,
                                 Capabilities* capabilities,
-                                ImageFactory* image_factory,
                                 gpu::raster::GrShaderCache* gr_shader_cache,
                                 GpuProcessActivityFlags* activity_flags)
         : attribs(attribs),
           capabilities(capabilities),
-          image_factory(image_factory),
           gr_shader_cache(gr_shader_cache),
           activity_flags(activity_flags) {}
   };

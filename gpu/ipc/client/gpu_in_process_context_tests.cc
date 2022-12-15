@@ -38,8 +38,7 @@ class ContextTestBase : public testing::Test {
 
     auto context = std::make_unique<gpu::GLInProcessContext>();
     auto result = context->Initialize(gpu_thread_holder_.GetTaskExecutor(),
-                                      attributes, gpu::SharedMemoryLimits(),
-                                      /*image_factory=*/nullptr);
+                                      attributes, gpu::SharedMemoryLimits());
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     return context;
   }

@@ -31,7 +31,6 @@ namespace ui {
 scoped_refptr<InProcessContextProvider>
 InProcessContextProvider::CreateOffscreen(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    gpu::ImageFactory* image_factory,
     bool is_worker) {
   gpu::ContextCreationAttribs attribs;
   attribs.alpha_size = 8;
@@ -48,17 +47,14 @@ InProcessContextProvider::CreateOffscreen(
   attribs.enable_gles2_interface = !is_worker;
   attribs.enable_oop_rasterization = is_worker;
   return new InProcessContextProvider(attribs, gpu_memory_buffer_manager,
-                                      image_factory, is_worker);
+                                      is_worker);
 }
 
 InProcessContextProvider::InProcessContextProvider(
     const gpu::ContextCreationAttribs& attribs,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    gpu::ImageFactory* image_factory,
     bool support_locking)
-    : support_locking_(support_locking),
-      attribs_(attribs),
-      image_factory_(image_factory) {
+    : support_locking_(support_locking), attribs_(attribs) {
   DCHECK(main_thread_checker_.CalledOnValidThread());
   context_thread_checker_.DetachFromThread();
 }
@@ -93,14 +89,14 @@ gpu::ContextResult InProcessContextProvider::BindToCurrentSequence() {
     raster_context_ = std::make_unique<gpu::RasterInProcessContext>();
     bind_result_ = raster_context_->Initialize(
         holder->task_executor(), attribs_, gpu::SharedMemoryLimits(),
-        image_factory_, holder->gpu_service()->gr_shader_cache(), nullptr);
+        holder->gpu_service()->gr_shader_cache(), nullptr);
 
     impl_base_ = raster_context_->GetImplementation();
   } else {
     gles2_context_ = std::make_unique<gpu::GLInProcessContext>();
     bind_result_ = gles2_context_->Initialize(
         viz::TestGpuServiceHolder::GetInstance()->task_executor(), attribs_,
-        gpu::SharedMemoryLimits(), image_factory_);
+        gpu::SharedMemoryLimits());
 
     impl_base_ = gles2_context_->GetImplementation();
   }

@@ -38,8 +38,7 @@ namespace viz {
 
 namespace {
 
-std::unique_ptr<gpu::GLInProcessContext> CreateGLInProcessContext(
-    TestImageFactory* image_factory) {
+std::unique_ptr<gpu::GLInProcessContext> CreateGLInProcessContext() {
   gpu::ContextCreationAttribs attribs;
   attribs.alpha_size = -1;
   attribs.depth_size = 24;
@@ -53,7 +52,7 @@ std::unique_ptr<gpu::GLInProcessContext> CreateGLInProcessContext(
   auto context = std::make_unique<gpu::GLInProcessContext>();
   auto result =
       context->Initialize(TestGpuServiceHolder::GetInstance()->task_executor(),
-                          attribs, gpu::SharedMemoryLimits(), image_factory);
+                          attribs, gpu::SharedMemoryLimits());
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
 
   return context;
@@ -62,7 +61,7 @@ std::unique_ptr<gpu::GLInProcessContext> CreateGLInProcessContext(
 }  // namespace
 
 std::unique_ptr<gpu::GLInProcessContext> CreateTestInProcessContext() {
-  return CreateGLInProcessContext(nullptr);
+  return CreateGLInProcessContext();
 }
 
 TestInProcessContextProvider::TestInProcessContextProvider(
@@ -89,7 +88,7 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentSequence() {
   auto* holder = TestGpuServiceHolder::GetInstance();
 
   if (type_ == TestContextType::kGLES2) {
-    gles2_context_ = CreateGLInProcessContext(&image_factory_);
+    gles2_context_ = CreateGLInProcessContext();
 
     caps_ = gles2_context_->GetCapabilities();
   } else {
@@ -104,8 +103,7 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentSequence() {
     raster_context_ = std::make_unique<gpu::RasterInProcessContext>();
     auto result = raster_context_->Initialize(
         holder->task_executor(), attribs, gpu::SharedMemoryLimits(),
-        &image_factory_, holder->gpu_service()->gr_shader_cache(),
-        activity_flags_);
+        holder->gpu_service()->gr_shader_cache(), activity_flags_);
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
 
     caps_ = raster_context_->GetCapabilities();

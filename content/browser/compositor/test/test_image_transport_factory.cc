@@ -62,7 +62,7 @@ TestImageTransportFactory::SharedMainThreadContextProvider() {
 
   constexpr bool kSupportsLocking = false;
   shared_main_context_provider_ = ui::InProcessContextProvider::CreateOffscreen(
-      &gpu_memory_buffer_manager_, &image_factory_, kSupportsLocking);
+      &gpu_memory_buffer_manager_, kSupportsLocking);
   auto result = shared_main_context_provider_->BindToCurrentSequence();
   if (result != gpu::ContextResult::kSuccess)
     shared_main_context_provider_ = nullptr;

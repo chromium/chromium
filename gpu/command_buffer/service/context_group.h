@@ -30,7 +30,6 @@ class ProgressReporter;
 
 namespace gpu {
 
-class ImageFactory;
 struct GpuPreferences;
 class MailboxManager;
 class SharedImageManager;
@@ -68,7 +67,6 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
                FramebufferCompletenessCache* framebuffer_completeness_cache,
                const scoped_refptr<FeatureInfo>& feature_info,
                bool bind_generates_resource,
-               gpu::ImageFactory* image_factory,
                gl::ProgressReporter* progress_reporter,
                const GpuFeatureInfo& gpu_feature_info,
                ServiceDiscardableManager* discardable_manager,

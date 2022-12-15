@@ -15,7 +15,6 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
-#include "components/viz/test/test_image_factory.h"
 #include "gpu/config/gpu_feature_info.h"
 
 class GrDirectContext;
@@ -82,7 +81,6 @@ class TestInProcessContextProvider
   raw_ptr<gpu::raster::GrShaderCache> gr_shader_cache_ = nullptr;
   raw_ptr<gpu::GpuProcessActivityFlags> activity_flags_ = nullptr;
 
-  TestImageFactory image_factory_;
   gpu::Capabilities caps_;
 
   // Used for GLES2 contexts only.

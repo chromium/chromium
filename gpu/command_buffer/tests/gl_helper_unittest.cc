@@ -73,7 +73,7 @@ class GLHelperTest : public testing::Test {
     context_ = std::make_unique<GLInProcessContext>();
     auto result = context_->Initialize(
         viz::TestGpuServiceHolder::GetInstance()->task_executor(), attributes,
-        SharedMemoryLimits(), /*image_factory=*/nullptr);
+        SharedMemoryLimits());
     DCHECK_EQ(result, ContextResult::kSuccess);
     gl_ = context_->GetImplementation();
     ContextSupport* support = context_->GetImplementation();

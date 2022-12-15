@@ -103,15 +103,10 @@ void WebGPUTest::Initialize(const Options& options) {
   attributes.enable_gles2_interface = false;
   attributes.context_type = CONTEXT_TYPE_WEBGPU;
 
-#if BUILDFLAG(IS_MAC)
-  ImageFactory* image_factory = &image_factory_;
-#else
-  static constexpr ImageFactory* image_factory = nullptr;
-#endif
   context_ = std::make_unique<WebGPUInProcessContext>();
   ContextResult result =
       context_->Initialize(gpu_service_holder_->task_executor(), attributes,
-                           options.shared_memory_limits, image_factory);
+                           options.shared_memory_limits);
   ASSERT_EQ(result, ContextResult::kSuccess) << "Context failed to initialize";
 
   cmd_helper_ = std::make_unique<webgpu::WebGPUCmdHelper>(

@@ -83,10 +83,6 @@ class WebGPUTest : public testing::Test {
   std::unique_ptr<viz::TestGpuServiceHolder> gpu_service_holder_;
   std::unique_ptr<WebGPUInProcessContext> context_;
   std::unique_ptr<webgpu::WebGPUCmdHelper> cmd_helper_;
-#if BUILDFLAG(IS_MAC)
-  // SharedImages on macOS require a valid image factory.
-  GpuMemoryBufferFactoryIOSurface image_factory_;
-#endif
 };
 
 #define EXPECT_WEBGPU_ERROR(device, type, statement)                           \

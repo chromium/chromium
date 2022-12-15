@@ -80,8 +80,6 @@ viz_static_library("test_support") {
     "test_gpu_memory_buffer_manager.h",
     "test_gpu_service_holder.cc",
     "test_gpu_service_holder.h",
-    "test_image_factory.cc",
-    "test_image_factory.h",
     "test_in_process_context_provider.cc",
     "test_in_process_context_provider.h",
     "test_latest_local_surface_id_lookup_delegate.cc",

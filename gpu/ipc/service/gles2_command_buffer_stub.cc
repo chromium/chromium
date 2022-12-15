@@ -106,15 +106,12 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
   } else {
     scoped_refptr<gles2::FeatureInfo> feature_info = new gles2::FeatureInfo(
         manager->gpu_driver_bug_workarounds(), manager->gpu_feature_info());
-    gpu::GpuMemoryBufferFactory* gmb_factory =
-        manager->gpu_memory_buffer_factory();
     context_group_ = new gles2::ContextGroup(
         manager->gpu_preferences(), gles2::PassthroughCommandDecoderSupported(),
         manager->mailbox_manager(), CreateMemoryTracker(),
         manager->shader_translator_cache(),
         manager->framebuffer_completeness_cache(), feature_info,
         init_params.attribs.bind_generates_resource,
-        gmb_factory ? gmb_factory->AsImageFactory() : nullptr,
         manager->watchdog() /* progress_reporter */,
         manager->gpu_feature_info(), manager->discardable_manager(),
         manager->passthrough_discardable_manager(),

@@ -51,10 +51,9 @@ class ContextGroupTest : public GpuServiceTest {
         gpu_preferences_, false, &mailbox_manager_,
         nullptr /* memory_tracker */, nullptr /* shader_translator_cache */,
         nullptr /* framebuffer_completeness_cache */, feature_info,
-        kBindGeneratesResource, nullptr /* image_factory */,
-        nullptr /* progress_reporter */, GpuFeatureInfo(),
-        &discardable_manager_, nullptr /* passthrough_discardable_manager */,
-        &shared_image_manager_));
+        kBindGeneratesResource, nullptr /* progress_reporter */,
+        GpuFeatureInfo(), &discardable_manager_,
+        nullptr /* passthrough_discardable_manager */, &shared_image_manager_));
   }
 
   GpuPreferences gpu_preferences_;
