@@ -55,9 +55,8 @@ base::Value::Dict CreateTestProxyServerDict(const std::string& schema,
 namespace proxy_api_helpers {
 
 TEST(ExtensionProxyApiHelpers, CreateDataURLFromPACScript) {
-  std::string out;
-  ASSERT_TRUE(CreateDataURLFromPACScript(kSamplePacScript, &out));
-  EXPECT_EQ(kSamplePacScriptAsDataUrl, out);
+  EXPECT_EQ(kSamplePacScriptAsDataUrl,
+            CreateDataURLFromPACScript(kSamplePacScript));
 }
 
 TEST(ExtensionProxyApiHelpers, CreatePACScriptFromDataURL) {
@@ -174,8 +173,10 @@ TEST(ExtensionProxyApiHelpers, GetProxyRulesStringFromExtensionPref) {
   EXPECT_EQ(std::string(), error);
 
   base::Value::Dict proxy_rules;
-  proxy_rules.Set(keys::field_name[1], CreateTestProxyServerDict("proxy1"));
-  proxy_rules.Set(keys::field_name[2], CreateTestProxyServerDict("proxy2"));
+  proxy_rules.Set(proxy_api_helpers::field_name[1],
+                  CreateTestProxyServerDict("proxy1"));
+  proxy_rules.Set(proxy_api_helpers::field_name[2],
+                  CreateTestProxyServerDict("proxy2"));
   proxy_config.Set(keys::kProxyConfigRules, std::move(proxy_rules));
 
   ASSERT_TRUE(GetProxyRulesStringFromExtensionPref(proxy_config, &out, &error,

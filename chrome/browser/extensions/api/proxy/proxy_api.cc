@@ -16,12 +16,20 @@
 #include "chrome/browser/extensions/api/proxy/proxy_api_constants.h"
 #include "chrome/browser/extensions/api/proxy/proxy_api_helpers.h"
 #include "chrome/browser/extensions/event_router_forwarder.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
+
+namespace {
+
+const char kProxyEventFatalKey[] = "fatal";
+const char kProxyEventErrorKey[] = "error";
+const char kProxyEventDetailsKey[] = "details";
+const char kProxyEventOnProxyError[] = "proxy.onProxyError";
+
+}  // anonymous namespace
 
 // static
 ProxyEventRouter* ProxyEventRouter::GetInstance() {
@@ -40,22 +48,19 @@ void ProxyEventRouter::OnProxyError(
     int error_code) {
   base::Value::List args;
   base::Value::Dict dict;
-  dict.Set(proxy_api_constants::kProxyEventFatal, true);
-  dict.Set(proxy_api_constants::kProxyEventError,
-           net::ErrorToString(error_code));
-  dict.Set(proxy_api_constants::kProxyEventDetails, std::string());
+  dict.Set(kProxyEventFatalKey, true);
+  dict.Set(kProxyEventErrorKey, net::ErrorToString(error_code));
+  dict.Set(kProxyEventDetailsKey, std::string());
   args.Append(base::Value(std::move(dict)));
 
   if (profile) {
     event_router->DispatchEventToRenderers(
-        events::PROXY_ON_PROXY_ERROR,
-        proxy_api_constants::kProxyEventOnProxyError, std::move(args), profile,
-        true, GURL(), false);
+        events::PROXY_ON_PROXY_ERROR, kProxyEventOnProxyError, std::move(args),
+        profile, true, GURL(), false);
   } else {
-    event_router->BroadcastEventToRenderers(
-        events::PROXY_ON_PROXY_ERROR,
-        proxy_api_constants::kProxyEventOnProxyError, std::move(args), GURL(),
-        false);
+    event_router->BroadcastEventToRenderers(events::PROXY_ON_PROXY_ERROR,
+                                            kProxyEventOnProxyError,
+                                            std::move(args), GURL(), false);
   }
 }
 
@@ -65,9 +70,8 @@ void ProxyEventRouter::OnPACScriptError(EventRouterForwarder* event_router,
                                         const std::u16string& error) {
   base::Value::List args;
   base::Value::Dict dict;
-  dict.Set(proxy_api_constants::kProxyEventFatal, false);
-  dict.Set(proxy_api_constants::kProxyEventError,
-           net::ErrorToString(net::ERR_PAC_SCRIPT_FAILED));
+  dict.Set(kProxyEventFatalKey, false);
+  dict.Set(kProxyEventErrorKey, net::ErrorToString(net::ERR_PAC_SCRIPT_FAILED));
   std::string error_msg;
   if (line_number != -1) {
     base::SStringPrintf(&error_msg,
@@ -76,19 +80,17 @@ void ProxyEventRouter::OnPACScriptError(EventRouterForwarder* event_router,
   } else {
     error_msg = base::UTF16ToUTF8(error);
   }
-  dict.Set(proxy_api_constants::kProxyEventDetails, error_msg);
+  dict.Set(kProxyEventDetailsKey, error_msg);
   args.Append(base::Value(std::move(dict)));
 
   if (profile) {
     event_router->DispatchEventToRenderers(
-        events::PROXY_ON_PROXY_ERROR,
-        proxy_api_constants::kProxyEventOnProxyError, std::move(args), profile,
-        true, GURL(), false);
+        events::PROXY_ON_PROXY_ERROR, kProxyEventOnProxyError, std::move(args),
+        profile, true, GURL(), false);
   } else {
-    event_router->BroadcastEventToRenderers(
-        events::PROXY_ON_PROXY_ERROR,
-        proxy_api_constants::kProxyEventOnProxyError, std::move(args), GURL(),
-        false);
+    event_router->BroadcastEventToRenderers(events::PROXY_ON_PROXY_ERROR,
+                                            kProxyEventOnProxyError,
+                                            std::move(args), GURL(), false);
   }
 }
 
