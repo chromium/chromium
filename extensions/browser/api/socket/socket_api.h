@@ -17,7 +17,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/common/socket_permission_request.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/extension_function.h"
@@ -36,24 +35,18 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "extensions/browser/api/socket/app_firewall_hole_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
 namespace net {
 class IOBuffer;
 }  // namespace net
 
-namespace network {
-namespace mojom {
+namespace network::mojom {
 class TLSClientSocket;
 class TCPConnectedSocket;
-}  // namespace mojom
-}  // namespace network
+}  // namespace network::mojom
 
 namespace extensions {
 

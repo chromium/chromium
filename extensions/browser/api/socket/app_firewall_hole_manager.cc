@@ -9,9 +9,9 @@
 #include "base/bind.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/firewall_hole_proxy.h"
 #include "extensions/browser/app_window/app_window.h"
 
-using ::ash::FirewallHole;
 using content::BrowserContext;
 
 namespace extensions {
@@ -37,10 +37,10 @@ class AppFirewallHoleManagerFactory : public BrowserContextKeyedServiceFactory {
     DependsOn(AppWindowRegistry::Factory::GetInstance());
   }
 
-  ~AppFirewallHoleManagerFactory() override {}
+  ~AppFirewallHoleManagerFactory() override = default;
 
  private:
-  // BrowserContextKeyedServiceFactory
+  // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       BrowserContext* context) const override {
     return new AppFirewallHoleManager(context);
@@ -68,8 +68,9 @@ bool HasVisibleAppWindows(BrowserContext* context,
 }  // namespace
 
 AppFirewallHole::~AppFirewallHole() {
-  if (manager_)
+  if (manager_) {
     manager_->Close(this);
+  }
 }
 
 AppFirewallHole::AppFirewallHole(
@@ -86,17 +87,23 @@ void AppFirewallHole::SetVisible(bool app_visible) {
   app_visible_ = app_visible;
   if (app_visible_) {
     if (!firewall_hole_) {
-      FirewallHole::Open(type_, port_, "" /* all interfaces */,
-                         base::BindOnce(&AppFirewallHole::OnFirewallHoleOpened,
-                                        weak_factory_.GetWeakPtr()));
+      auto callback = base::BindOnce(&AppFirewallHole::OnFirewallHoleOpened,
+                                     weak_factory_.GetWeakPtr());
+      if (type_ == PortType::kTcp) {
+        content::OpenTCPFirewallHole("" /* all interfaces */, port_,
+                                     std::move(callback));
+      } else {
+        content::OpenUDPFirewallHole("" /* all interfaces */, port_,
+                                     std::move(callback));
+      }
     }
   } else {
-    firewall_hole_.reset(nullptr);
+    firewall_hole_.reset();
   }
 }
 
 void AppFirewallHole::OnFirewallHoleOpened(
-    std::unique_ptr<FirewallHole> firewall_hole) {
+    std::unique_ptr<content::FirewallHoleProxy> firewall_hole) {
   if (app_visible_) {
     DCHECK(!firewall_hole_);
     firewall_hole_ = std::move(firewall_hole);
@@ -108,7 +115,7 @@ AppFirewallHoleManager::AppFirewallHoleManager(BrowserContext* context)
   observation_.Observe(AppWindowRegistry::Get(context));
 }
 
-AppFirewallHoleManager::~AppFirewallHoleManager() {}
+AppFirewallHoleManager::~AppFirewallHoleManager() = default;
 
 AppFirewallHoleManager* AppFirewallHoleManager::Get(BrowserContext* context) {
   return AppFirewallHoleManagerFactory::GetForBrowserContext(context, true);
@@ -118,9 +125,9 @@ std::unique_ptr<AppFirewallHole> AppFirewallHoleManager::Open(
     AppFirewallHole::PortType type,
     uint16_t port,
     const std::string& extension_id) {
-  std::unique_ptr<AppFirewallHole> hole(new AppFirewallHole(
-      weak_factory_.GetWeakPtr(), type, port, extension_id));
-  tracked_holes_.insert(std::make_pair(extension_id, hole.get()));
+  auto hole = base::WrapUnique(new AppFirewallHole(weak_factory_.GetWeakPtr(),
+                                                   type, port, extension_id));
+  tracked_holes_.emplace(extension_id, hole.get());
   if (HasVisibleAppWindows(context_, extension_id)) {
     hole->SetVisible(true);
   }

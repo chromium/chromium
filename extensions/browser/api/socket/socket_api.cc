@@ -38,6 +38,10 @@
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "extensions/browser/api/socket/app_firewall_hole_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 using extensions::mojom::APIPermissionID;
 
 namespace extensions {
@@ -68,9 +72,9 @@ const char kSocketNotConnectedError[] = "Socket not connected";
 const char kWildcardAddress[] = "*";
 const uint16_t kWildcardPort = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kFirewallFailure[] = "Failed to open firewall port";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsPortValid(int port) {
   return port >= 0 && port <= 65535;
@@ -114,7 +118,7 @@ void SocketApiFunction::OpenFirewallHole(const std::string& address,
                                          int socket_id,
                                          Socket* socket) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!net::HostStringIsLocalhost(address)) {
     net::IPEndPoint local_address;
     if (!socket->GetLocalAddress(&local_address)) {
@@ -123,14 +127,13 @@ void SocketApiFunction::OpenFirewallHole(const std::string& address,
       return;
     }
 
-    AppFirewallHole::PortType type = socket->GetSocketType() == Socket::TYPE_TCP
-                                         ? AppFirewallHole::PortType::TCP
-                                         : AppFirewallHole::PortType::UDP;
-
     AppFirewallHoleManager* manager =
         AppFirewallHoleManager::Get(browser_context());
     std::unique_ptr<AppFirewallHole> hole =
-        manager->Open(type, local_address.port(), GetOriginId());
+        manager->Open(socket->GetSocketType() == Socket::TYPE_TCP
+                          ? AppFirewallHole::PortType::kTcp
+                          : AppFirewallHole::PortType::kUdp,
+                      local_address.port(), GetOriginId());
     if (!hole) {
       Respond(ErrorWithCode(-1, kFirewallFailure));
       return;
@@ -678,8 +681,8 @@ ExtensionFunction::ResponseAction SocketSendToFunction::Work() {
   }
 
   if (socket->GetSocketType() == Socket::TYPE_UDP) {
-    SocketPermission::CheckParam param(
-        SocketPermissionRequest::UDP_SEND_TO, hostname_, port_);
+    SocketPermission::CheckParam param(SocketPermissionRequest::UDP_SEND_TO,
+                                       hostname_, port_);
     if (!CheckPermission(param)) {
       return RespondNow(ErrorWithCode(-1, kPermissionError));
     }
@@ -857,8 +860,7 @@ ExtensionFunction::ResponseAction SocketJoinGroupFunction::Work() {
   }
 
   SocketPermission::CheckParam param(
-      SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP,
-      kWildcardAddress,
+      SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP, kWildcardAddress,
       kWildcardPort);
 
   if (!CheckPermission(param)) {
@@ -899,8 +901,7 @@ ExtensionFunction::ResponseAction SocketLeaveGroupFunction::Work() {
   }
 
   SocketPermission::CheckParam param(
-      SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP,
-      kWildcardAddress,
+      SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP, kWildcardAddress,
       kWildcardPort);
   if (!CheckPermission(param)) {
     return RespondNow(ErrorWithCode(-1, kPermissionError));
@@ -998,8 +999,7 @@ ExtensionFunction::ResponseAction SocketGetJoinedGroupsFunction::Work() {
   }
 
   SocketPermission::CheckParam param(
-      SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP,
-      kWildcardAddress,
+      SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP, kWildcardAddress,
       kWildcardPort);
   if (!CheckPermission(param)) {
     return RespondNow(ErrorWithCode(-1, kPermissionError));

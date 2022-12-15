@@ -11,12 +11,12 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chromeos/ash/components/network/firewall_hole.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 
 namespace content {
 class BrowserContext;
-}
+class FirewallHoleProxy;
+}  // namespace content
 
 namespace extensions {
 
@@ -27,12 +27,10 @@ class AppFirewallHoleManager;
 // closed on destruction.
 class AppFirewallHole {
  public:
-  using PortType = ::ash::FirewallHole::PortType;
+  enum class PortType { kTcp, kUdp };
 
   ~AppFirewallHole();
 
-  PortType type() const { return type_; }
-  uint16_t port() const { return port_; }
   const std::string& extension_id() const { return extension_id_; }
 
  private:
@@ -44,7 +42,8 @@ class AppFirewallHole {
                   const std::string& extension_id);
 
   void SetVisible(bool app_visible);
-  void OnFirewallHoleOpened(std::unique_ptr<ash::FirewallHole> firewall_hole);
+  void OnFirewallHoleOpened(
+      std::unique_ptr<content::FirewallHoleProxy> firewall_hole);
 
   PortType type_;
   uint16_t port_;
@@ -53,8 +52,8 @@ class AppFirewallHole {
 
   base::WeakPtr<AppFirewallHoleManager> manager_;
 
-  // This will hold the FirewallHole object if one is opened.
-  std::unique_ptr<ash::FirewallHole> firewall_hole_;
+  // This will hold the FirewallHoleProxy object if one is opened.
+  std::unique_ptr<content::FirewallHoleProxy> firewall_hole_;
 
   base::WeakPtrFactory<AppFirewallHole> weak_factory_{this};
 };
@@ -87,7 +86,7 @@ class AppFirewallHoleManager : public KeyedService,
   void OnAppWindowHidden(AppWindow* app_window) override;
   void OnAppWindowShown(AppWindow* app_window, bool was_hidden) override;
 
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
   base::ScopedObservation<AppWindowRegistry, AppWindowRegistry::Observer>
       observation_{this};
   std::multimap<std::string, AppFirewallHole*> tracked_holes_;

@@ -32,16 +32,13 @@ source_set("socket") {
     "//extensions/common/api",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "app_firewall_hole_manager.cc",
       "app_firewall_hole_manager.h",
     ]
 
-    deps += [
-      "//chromeos/ash/components/network",
-      "//components/keyed_service/content",
-    ]
+    deps += [ "//components/keyed_service/content" ]
   }
 
   public_deps = [ "//extensions/browser:browser_sources" ]

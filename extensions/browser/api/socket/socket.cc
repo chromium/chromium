@@ -24,7 +24,7 @@ static base::LazyInstance<
 
 // static
 template <>
-BrowserContextKeyedAPIFactory<ApiResourceManager<Socket> >*
+BrowserContextKeyedAPIFactory<ApiResourceManager<Socket>>*
 ApiResourceManager<Socket>::GetFactoryInstance() {
   return g_factory.Pointer();
 }
