@@ -215,6 +215,9 @@ class PrivacyGuideMetricsDelegate {
      */
     static void recordMetricsForDoneButton() {
         RecordUserAction.record("Settings.PrivacyGuide.NextClickCompletion");
+        RecordHistogram.recordEnumeratedHistogram("Settings.PrivacyGuide.NextNavigation",
+                PrivacyGuideInteractions.COMPLETION_NEXT_BUTTON,
+                PrivacyGuideInteractions.MAX_VALUE);
     }
 
     /**
