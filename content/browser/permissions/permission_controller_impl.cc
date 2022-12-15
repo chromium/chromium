@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_PERMISSIONS_PERMISSION_CONTROLLER_IMPL_CC_
-#define CONTENT_BROWSER_PERMISSIONS_PERMISSION_CONTROLLER_IMPL_CC_
-
 #include "content/browser/permissions/permission_controller_impl.h"
+
 #include "base/bind.h"
 #include "content/browser/permissions/permission_service_context.h"
 #include "content/browser/permissions/permission_util.h"
@@ -27,6 +25,15 @@
 namespace content {
 
 namespace {
+
+constexpr char kPermissionBlockedPortalsMessage[] =
+    "%s permission has been blocked because it was requested inside a "
+    "portal. "
+    "Portals don't currently support permission requests.";
+
+constexpr char kPermissionBlockedFencedFrameMessage[] =
+    "%s permission has been blocked because it was requested inside a fenced "
+    "frame. Fenced frames don't currently support permission requests.";
 
 absl::optional<blink::scheduler::WebSchedulerTrackedFeature>
 PermissionToSchedulingFeature(PermissionType permission_name) {
@@ -72,15 +79,6 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
       return absl::nullopt;
   }
 }
-
-const char kPermissionBlockedPortalsMessage[] =
-    "%s permission has been blocked because it was requested inside a "
-    "portal. "
-    "Portals don't currently support permission requests.";
-
-const char kPermissionBlockedFencedFrameMessage[] =
-    "%s permission has been blocked because it was requested inside a fenced "
-    "frame. Fenced frames don't currently support permission requests.";
 
 void LogPermissionBlockedMessage(PermissionType permission,
                                  content::RenderFrameHost* rfh,
@@ -225,7 +223,8 @@ PermissionControllerImpl::PermissionControllerImpl(
     : browser_context_(browser_context) {}
 
 // TODO(https://crbug.com/1271543): Remove this method and use
-// `PermissionController` instead. static
+// `PermissionController` instead.
+// static
 PermissionControllerImpl* PermissionControllerImpl::FromBrowserContext(
     BrowserContext* browser_context) {
   return static_cast<PermissionControllerImpl*>(
@@ -718,5 +717,3 @@ void PermissionControllerImpl::NotifyEventListener() {
 }
 
 }  // namespace content
-
-#endif  // CONTENT_BROWSER_PERMISSIONS_PERMISSION_CONTROLLER_IMPL_CC_

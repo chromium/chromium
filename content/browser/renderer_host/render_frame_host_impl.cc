@@ -170,6 +170,7 @@
 #include "content/public/browser/document_service_internal.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_frame_host_observer.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
@@ -1852,6 +1853,10 @@ void RenderFrameHostImpl::DidEnterBackForwardCacheInternal() {
 #if BUILDFLAG(IS_P2P_ENABLED)
   GetProcess()->PauseSocketManagerForRenderFrameHost(GetGlobalId());
 #endif  // BUILDFLAG(IS_P2P_ENABLED)
+
+  for (auto& observer : observers_) {
+    observer.DidEnterBackForwardCache();
+  }
 }
 
 // The frame as been restored from the BackForwardCache.
@@ -3593,6 +3598,14 @@ void RenderFrameHostImpl::SetCrossOriginOpenerPolicyReporter(
 
 bool RenderFrameHostImpl::IsCredentialless() const {
   return policy_container_host_->policies().is_credentialless;
+}
+
+void RenderFrameHostImpl::AddObserver(RenderFrameHostObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void RenderFrameHostImpl::RemoveObserver(RenderFrameHostObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void RenderFrameHostImpl::OnCreateChildFrame(
@@ -13757,6 +13770,12 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
           rfh->SetLifecycleState(new_state);
           ++node_iter;
         }
+      }
+    }
+
+    if (lifecycle_state_ == LifecycleStateImpl::kInBackForwardCache) {
+      for (auto& observer : observers_) {
+        observer.DidRestoreFromBackForwardCache();
       }
     }
   }

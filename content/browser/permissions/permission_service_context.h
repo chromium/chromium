@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/render_frame_host_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -29,6 +30,7 @@ class Origin;
 namespace content {
 
 class BrowserContext;
+class PermissionServiceContextTest;
 class RenderFrameHost;
 class RenderProcessHost;
 
@@ -40,8 +42,10 @@ class RenderProcessHost;
 //
 // PermissionServiceContext instances associated with a RenderFrameHost must be
 // created via the DocumentUserData static factories, as these
-// instances are deleted when a new document is commited.
-class PermissionServiceContext : public RenderProcessHostObserver {
+// instances are deleted when a new document is committed.
+class CONTENT_EXPORT PermissionServiceContext
+    : public RenderProcessHostObserver,
+      public RenderFrameHostObserver {
  public:
   explicit PermissionServiceContext(RenderProcessHost* render_process_host);
   PermissionServiceContext(const PermissionServiceContext&) = delete;
@@ -83,6 +87,10 @@ class PermissionServiceContext : public RenderProcessHostObserver {
   // RenderProcessHostObserver:
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
+  // RenderFrameHostObserver:
+  void DidEnterBackForwardCache() override;
+  void DidRestoreFromBackForwardCache() override;
+
   std::set<blink::PermissionType>& GetOnchangeEventListeners() {
     return onchange_event_listeners_;
   }
@@ -90,6 +98,7 @@ class PermissionServiceContext : public RenderProcessHostObserver {
  private:
   class PermissionSubscription;
   struct DocumentPermissionServiceContextHolder;
+  friend class PermissionServiceContextTest;
 
   // Use DocumentUserData static methods to create instances attached
   // to a RenderFrameHost.

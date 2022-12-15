@@ -2336,6 +2336,7 @@ test("content_unittests") {
     "../browser/payments/payment_app_provider_impl_unittest.cc",
     "../browser/payments/payment_manager_unittest.cc",
     "../browser/permissions/permission_controller_impl_unittest.cc",
+    "../browser/permissions/permission_service_context_unittest.cc",
     "../browser/permissions/permission_util_unittest.cc",
     "../browser/picture_in_picture/picture_in_picture_service_impl_unittest.cc",
     "../browser/preloading/anchor_element_interaction_host_impl_unittest.cc",
