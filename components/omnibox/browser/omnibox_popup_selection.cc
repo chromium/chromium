@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/omnibox/browser/omnibox_popup_selection.h"
+#include "components/omnibox/browser/actions/omnibox_action.h"
 
 #include <algorithm>
 
@@ -92,7 +93,9 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
           match.from_keyword) {
         return false;
       }
-      return match.action != nullptr;
+      // If the action takes over the whole match, don't have a separate Action
+      // control in the tab order (or rendered).
+      return match.action && !match.action->TakesOverMatch();
     case FOCUSED_BUTTON_REMOVE_SUGGESTION:
       return match.SupportsDeletion();
     default:

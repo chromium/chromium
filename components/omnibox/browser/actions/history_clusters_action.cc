@@ -106,10 +106,10 @@ HistoryClustersAction::HistoryClustersAction(
               IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS,
               IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX,
               IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH),
-          GetFullJourneysUrlForQuery(query)),
+          GetFullJourneysUrlForQuery(query),
+          takes_over_match),
       matched_keyword_data_(matched_keyword_data),
-      query_(query),
-      takes_over_match_(takes_over_match) {
+      query_(query) {
 #if BUILDFLAG(IS_ANDROID)
     CreateOrUpdateJavaObject(query);
 #endif
@@ -168,10 +168,6 @@ void HistoryClustersAction::Execute(ExecutionContext& context) const {
   OmniboxAction::Execute(context);
 }
 
-bool HistoryClustersAction::TakesOverMatch() const {
-  return takes_over_match_;
-}
-
 int32_t HistoryClustersAction::GetID() const {
   return static_cast<int32_t>(OmniboxActionId::HISTORY_CLUSTERS);
 }
@@ -217,11 +213,12 @@ void AttachHistoryClustersActions(
   if (result.empty())
     return;
 
-  // If there's a pedal in `result`, don't add a history cluster action to avoid
-  // over-crowding.
+  // If there's any visible action in `result`, don't add a history cluster
+  // action to avoid over-crowding.
   if (!GetConfig().omnibox_action_with_pedals &&
-      base::ranges::any_of(result,
-                           [](const auto& match) { return match.action; })) {
+      base::ranges::any_of(result, [](const auto& match) {
+        return match.action && !match.action->TakesOverMatch();
+      })) {
     return;
   }
 

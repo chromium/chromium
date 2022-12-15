@@ -31,6 +31,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/history_cluster_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/url_prefix.h"
@@ -352,16 +353,19 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
         auto match = ShortcutToACMatch(*shortcut_match.shortcut,
                                        shortcut_match.relevance, input,
                                        fixed_up_input, term_string);
-    // Guard this as `history_clusters::GetConfig()` doesn't exist on iOS.
+    // Guard this as `HistoryClusterProvider` doesn't exist on iOS.
     // Though this code will never run on iOS regardless.
 #if !BUILDFLAG(IS_IOS)
-        if (!history_clusters::GetConfig()
-                 .omnibox_history_cluster_provider_free_ranking) {
-          match.suggestion_group_id = omnibox::GROUP_HISTORY_CLUSTER;
-          // Insert a corresponding omnibox::GroupConfig with default values in
-          // the suggestion groups map; otherwise the group ID will get dropped.
-          suggestion_groups_map_[omnibox::GROUP_HISTORY_CLUSTER];
-        }
+        // `term_string` is only what the user typed, e.g. "new y" instead of
+        // "new york". Use `match.description`, which is the whole string.
+        // This is a bit hacky, but accurately reflects how
+        // `HistoryClusterProvider` constructed the original match.
+        std::string matching_string = base::UTF16ToUTF8(match.description);
+        // Shortcut-generated HC matches have empty `ClusterKeywordData()`s,
+        // because it wasn't generated via an entity match in the first place.
+        HistoryClusterProvider::CompleteHistoryClustersMatch(
+            matching_string, history::ClusterKeywordData(), &match,
+            &suggestion_groups_map_);
 #endif  // !BUILDFLAG(IS_IOS)
 
         return match;

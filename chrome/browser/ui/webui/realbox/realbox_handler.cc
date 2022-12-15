@@ -260,7 +260,9 @@ std::vector<omnibox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
           std::u16string(), kTabIconResourceName);
     }
 
-    if (match.action &&
+    // Omit actions that takeover the whole match, because the C++ handler
+    // remaps the navigation to execute the action. (Doesn't happen in the JS.)
+    if (match.action && !match.action->TakesOverMatch() &&
         base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
       const OmniboxAction::LabelStrings& label_strings =
           match.action->GetLabelStrings();

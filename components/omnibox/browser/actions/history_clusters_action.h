@@ -52,7 +52,6 @@ class HistoryClustersAction : public OmniboxAction {
 
   void RecordActionShown(size_t position, bool executed) const override;
   void Execute(ExecutionContext& context) const override;
-  bool TakesOverMatch() const override;
   int32_t GetID() const override;
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
   const gfx::VectorIcon& GetVectorIcon() const override;
@@ -72,9 +71,6 @@ class HistoryClustersAction : public OmniboxAction {
 
   // Used to open journeys in side panel with relevant clusters
   std::string query_;
-
-  // Used to make the action chip take over the whole match.
-  bool takes_over_match_ = false;
 
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;

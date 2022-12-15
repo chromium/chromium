@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
+#include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
@@ -832,7 +833,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
     EXPECT_EQ(selection, model()->GetPopupSelection());
   }
 
-  // Try the kAllLines step behavior.
+  // Try the `kAllLines` step behavior.
   model()->StepPopupSelection(Selection::kBackward, Selection::kAllLines);
   EXPECT_EQ(Selection(0, Selection::NORMAL), model()->GetPopupSelection());
   model()->StepPopupSelection(Selection::kForward, Selection::kAllLines);
@@ -871,13 +872,13 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithHiddenGroupIds) {
   model()->OnPopupResultChanged();
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
 
-  // Test the simple kAllLines case.
+  // Test the simple `kAllLines` case.
   model()->StepPopupSelection(Selection::kForward, Selection::kAllLines);
   EXPECT_EQ(1u, model()->GetPopupSelection().line);
   model()->StepPopupSelection(Selection::kBackward, Selection::kAllLines);
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
 
-  // Test the kStateOrLine case, forwards and backwards.
+  // Test the `kStateOrLine` case, forwards and backwards.
   for (auto selection : {
            Selection(1, Selection::NORMAL),
            Selection(2, Selection::FOCUSED_BUTTON_HEADER),
@@ -894,7 +895,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithHiddenGroupIds) {
     EXPECT_EQ(selection, model()->GetPopupSelection());
   }
 
-  // Test the kWholeLine case, forwards and backwards.
+  // Test the `kWholeLine` case, forwards and backwards.
   for (auto selection : {
            Selection(0, Selection::NORMAL),
            Selection(1, Selection::NORMAL),
@@ -910,6 +911,77 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithHiddenGroupIds) {
     EXPECT_EQ(selection, model()->GetPopupSelection());
   }
 }
+
+// Actions are not part of the selection stepping in Android and iOS at all.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithActions) {
+  ACMatches matches;
+  for (size_t i = 0; i < 4; ++i) {
+    AutocompleteMatch match(nullptr, 1000, false,
+                            AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+    match.keyword = u"match";
+    match.allowed_to_be_default_match = true;
+    matches.push_back(match);
+  }
+  // The second match has a normal action.
+  matches[1].action =
+      base::MakeRefCounted<OmniboxAction>(OmniboxAction::LabelStrings(), GURL(),
+                                          /*takes_over_match=*/false);
+  // The fourth match has an action that takes over the match.
+  matches[3].action =
+      base::MakeRefCounted<OmniboxAction>(OmniboxAction::LabelStrings(), GURL(),
+                                          /*takes_over_match=*/true);
+
+  auto* result = &model()->autocomplete_controller()->result_;
+  result->AppendMatches(matches);
+
+  AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
+                          TestSchemeClassifier());
+  result->SortAndCull(input, nullptr);
+  model()->OnPopupResultChanged();
+  EXPECT_EQ(0u, model()->GetPopupSelection().line);
+
+  // Step by lines forward.
+  for (size_t n : {1, 2, 3, 0}) {
+    model()->StepPopupSelection(Selection::kForward, Selection::kWholeLine);
+    EXPECT_EQ(n, model()->GetPopupSelection().line);
+  }
+  // Step by lines backward.
+  for (size_t n : {3, 2, 1, 0}) {
+    model()->StepPopupSelection(Selection::kBackward, Selection::kWholeLine);
+    EXPECT_EQ(n, model()->GetPopupSelection().line);
+  }
+
+  // Step by states forward.
+  for (auto selection : {
+           Selection(1, Selection::NORMAL),
+           Selection(1, Selection::FOCUSED_BUTTON_ACTION),
+           Selection(2, Selection::NORMAL),
+           Selection(3, Selection::NORMAL),
+           Selection(0, Selection::NORMAL),
+       }) {
+    model()->StepPopupSelection(Selection::kForward, Selection::kStateOrLine);
+    EXPECT_EQ(selection, model()->GetPopupSelection());
+  }
+  // Step by states backward.
+  for (auto selection : {
+           Selection(3, Selection::NORMAL),
+           Selection(2, Selection::NORMAL),
+           Selection(1, Selection::FOCUSED_BUTTON_ACTION),
+           Selection(1, Selection::NORMAL),
+           Selection(0, Selection::NORMAL),
+       }) {
+    model()->StepPopupSelection(Selection::kBackward, Selection::kStateOrLine);
+    EXPECT_EQ(selection, model()->GetPopupSelection());
+  }
+
+  // Try the `kAllLines` step behavior.
+  model()->StepPopupSelection(Selection::kBackward, Selection::kAllLines);
+  EXPECT_EQ(Selection(0, Selection::NORMAL), model()->GetPopupSelection());
+  model()->StepPopupSelection(Selection::kForward, Selection::kAllLines);
+  EXPECT_EQ(Selection(3, Selection::NORMAL), model()->GetPopupSelection());
+}
+#endif
 
 TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
   // Create a set of three matches "a|1" (inline autocompleted), "a2", "a3".

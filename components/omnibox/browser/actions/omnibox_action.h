@@ -126,7 +126,7 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
     WindowOpenDisposition disposition_;
   };
 
-  OmniboxAction(LabelStrings strings, GURL url);
+  OmniboxAction(LabelStrings strings, GURL url, bool takes_over_match = false);
 
   // Provides read access to labels associated with this Action.
   const LabelStrings& GetLabelStrings() const;
@@ -153,7 +153,7 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
   // If the user presses Enter or clicks on the match at all, the navigation
   // is ignored and the action is executed. Note, when this returns true, the
   // action chip should be un-rendered, because the whole match IS the action.
-  virtual bool TakesOverMatch() const;
+  bool TakesOverMatch() const;
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
   // Returns the vector icon to represent this Action.
@@ -181,6 +181,9 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
 
   // For navigation Actions, this holds the destination URL. Otherwise, empty.
   GURL url_;
+
+  // Used to make the action chip take over the whole match.
+  const bool takes_over_match_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_ACTION_H_
