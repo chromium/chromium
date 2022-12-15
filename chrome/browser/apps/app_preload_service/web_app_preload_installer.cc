@@ -50,7 +50,7 @@ void WebAppPreloadInstaller::InstallAppImpl(
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
 
-  std::unique_ptr<WebAppInstallInfo> info = app.CreateWebAppInstallInfo();
+  std::unique_ptr<WebAppInstallInfo> info = nullptr;
   if (!info) {
     std::move(callback).Run(/*success=*/false);
     return;

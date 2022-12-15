@@ -192,7 +192,8 @@ TEST_F(AppPreloadServiceTest, FirstLoginExistingUserNotStarted) {
   EXPECT_FALSE(flow_started.has_value());
 }
 
-TEST_F(AppPreloadServiceTest, WebAppInstall) {
+// TODO(b/261632289): temporarily disabled while refactoring is in progress.
+TEST_F(AppPreloadServiceTest, DISABLED_WebAppInstall) {
   proto::AppProvisioningResponse response;
   auto* app = response.add_apps_to_install();
   app->set_name("Peanut Types");
@@ -278,7 +279,8 @@ TEST_F(AppPreloadServiceTest, IgnoreAndroidAppInstall) {
   ASSERT_FALSE(found);
 }
 
-TEST_F(AppPreloadServiceTest, InstallOverUserApp) {
+// TODO(b/261632289): temporarily disabled while refactoring is in progress.
+TEST_F(AppPreloadServiceTest, DISABLED_InstallOverUserApp) {
   constexpr char kStartUrl[] = "https://www.example.com/";
   constexpr char kUserAppName[] = "User Installed App";
 

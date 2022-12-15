@@ -39,7 +39,8 @@ class WebAppPreloadInstallerTest : public testing::Test {
   TestingProfile profile_;
 };
 
-TEST_F(WebAppPreloadInstallerTest, InstallOemApp) {
+// TODO(b/261632289): temporarily disabled while refactoring is in progress.
+TEST_F(WebAppPreloadInstallerTest, DISABLED_InstallOemApp) {
   WebAppPreloadInstaller installer(profile());
 
   proto::AppProvisioningResponse_App app;
@@ -82,7 +83,8 @@ TEST_F(WebAppPreloadInstallerTest, InstallFailure) {
   ASSERT_FALSE(result.Get());
 }
 
-TEST_F(WebAppPreloadInstallerTest, InstallWithManifestId) {
+// TODO(b/261632289): temporarily disabled while refactoring is in progress.
+TEST_F(WebAppPreloadInstallerTest, DISABLED_InstallWithManifestId) {
   WebAppPreloadInstaller installer(profile());
 
   proto::AppProvisioningResponse_App app;
@@ -110,7 +112,8 @@ TEST_F(WebAppPreloadInstallerTest, InstallWithManifestId) {
 
 // Reinstalling an existing user-installed app should not overwrite manifest
 // data, but will add the OEM install reason.
-TEST_F(WebAppPreloadInstallerTest, InstallOverUserApp) {
+// TODO(b/261632289): temporarily disabled while refactoring is in progress.
+TEST_F(WebAppPreloadInstallerTest, DISABLED_InstallOverUserApp) {
   constexpr char kStartUrl[] = "https://www.example.com/";
   constexpr char kUserAppName[] = "User Installed App";
 

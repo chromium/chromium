@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_PRELOAD_APP_DEFINITION_H_
 #define CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_PRELOAD_APP_DEFINITION_H_
 
+#include <ostream>
+#include <string>
+
 #include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-
-struct WebAppInstallInfo;
 
 namespace apps {
 
@@ -25,11 +26,6 @@ class PreloadAppDefinition {
   std::string GetName() const;
   AppType GetPlatform() const;
   bool IsOemApp() const;
-
-  // Creates a `WebAppInstallInfo` to install this preloaded app as a web app.
-  // Returns `nullptr` if there was an error converting the app. Must only be
-  // called if `GetPlatform()` returns `AppType::kWeb`.
-  std::unique_ptr<WebAppInstallInfo> CreateWebAppInstallInfo() const;
 
   // Returns the Web App manifest ID for the app, which is the canonical
   // identifier for this app, as specified by
