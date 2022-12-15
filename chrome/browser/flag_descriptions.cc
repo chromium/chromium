@@ -487,6 +487,13 @@ const char kAutofillMoreProminentPopupDescription[] =
     "If enabled Autofill's popup becomes more prominent, i.e. its shadow "
     "becomes more emphasized, position is also updated";
 
+const char kAutofillRemoveCardExpirationAndTypeTitlesName[] =
+    "Remove expiration and type titles from Chrome Payment Settings page on "
+    "desktop";
+const char kAutofillRemoveCardExpirationAndTypeTitlesDescription[] =
+    "When enabled, expiration and type titles will be removed from the Chrome "
+    "Payment Settings page on desktop platforms.";
+
 const char kAutofillUseConsistentPopupSettingsIconsName[] =
     "Consistent Autofill settings icon";
 const char kAutofillUseConsistentPopupSettingsIconsDescription[] =

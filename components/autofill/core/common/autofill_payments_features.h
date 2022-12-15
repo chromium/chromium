@@ -38,6 +38,7 @@ BASE_DECLARE_FEATURE(kAutofillFillIbanFields);
 BASE_DECLARE_FEATURE(kAutofillFillMerchantPromoCodeFields);
 BASE_DECLARE_FEATURE(kAutofillParseIBANFields);
 BASE_DECLARE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields);
+BASE_DECLARE_FEATURE(kAutofillRemoveCardExpirationAndTypeTitles);
 BASE_DECLARE_FEATURE(kAutofillSaveCardDismissOnNavigation);
 BASE_DECLARE_FEATURE(kAutofillSaveCardInfobarEditSupport);
 BASE_DECLARE_FEATURE(kAutofillSaveCardUiExperiment);

@@ -9514,7 +9514,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kServiceWorkerBypassFetchHandlerForMainResourceName,
      flag_descriptions::
          kServiceWorkerBypassFetchHandlerForMainResourceDescription,
-     kOsAll, FEATURE_VALUE_TYPE(features::kServiceWorkerBypassFetchHandler)}
+     kOsAll, FEATURE_VALUE_TYPE(features::kServiceWorkerBypassFetchHandler)},
+
+    {"autofill-remove-card-expiration-and-type-titles",
+     flag_descriptions::kAutofillRemoveCardExpirationAndTypeTitlesName,
+     flag_descriptions::kAutofillRemoveCardExpirationAndTypeTitlesDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillRemoveCardExpirationAndTypeTitles)},
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

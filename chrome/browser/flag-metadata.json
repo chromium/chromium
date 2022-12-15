@@ -574,6 +574,11 @@
     "expiry_milestone": 107
   },
   {
+    "name": "autofill-remove-card-expiration-and-type-titles",
+    "owners": [ "qihuizhao@google.com", "jsaul@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "autofill-save-card-dismiss-on-navigation",
     "owners": [ "sczs", "bling-flags@google.com" ],
     "expiry_milestone": 82

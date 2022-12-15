@@ -57264,6 +57264,8 @@ from previous Chrome versions.
   <int value="-2008272679" label="disable-webrtc-hw-encoding"/>
   <int value="-2007947679" label="OmniboxMostVisitedTilesOnSrp:disabled"/>
   <int value="-2007377632" label="DiscoverFeedMultiColumn:enabled"/>
+  <int value="-2006505465"
+      label="AutofillRemoveCardExpirationAndTypeTitles:disabled"/>
   <int value="-2005089558" label="BackgroundVideoTrackOptimization:disabled"/>
   <int value="-2004882388" label="AutofillPruneSuggestions:enabled"/>
   <int value="-2004862295" label="FedCmUserInfo:disabled"/>
@@ -63860,6 +63862,8 @@ from previous Chrome versions.
   <int value="1841051176" label="WindowsScrollingPersonality:disabled"/>
   <int value="1841793150" label="TwoPanesStartSurfaceAndroid:enabled"/>
   <int value="1841976850" label="FeedLoadingPlaceholder:enabled"/>
+  <int value="1841993231"
+      label="AutofillRemoveCardExpirationAndTypeTitles:enabled"/>
   <int value="1842219851" label="enable-incognito-window-counter"/>
   <int value="1843088575" label="OutOfBlinkCors:enabled"/>
   <int value="1843847665" label="SyncPromoAfterSigninIntercept:disabled"/>

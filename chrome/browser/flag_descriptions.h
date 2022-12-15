@@ -265,6 +265,9 @@ extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
 extern const char kAutofillPreventOverridingPrefilledValuesName[];
 extern const char kAutofillPreventOverridingPrefilledValuesDescription[];
 
+extern const char kAutofillRemoveCardExpirationAndTypeTitlesName[];
+extern const char kAutofillRemoveCardExpirationAndTypeTitlesDescription[];
+
 extern const char kAutofillSaveAndFillVPAName[];
 extern const char kAutofillSaveAndFillVPADescription[];
 
