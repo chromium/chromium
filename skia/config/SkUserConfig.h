@@ -216,10 +216,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_USE_LEGACY_MIPMAP_BUILDER
 
-// To ensure chrome only has access to legacy vma memory query apis until all
-// skia changes to implement new api is completed.
-#define SK_USE_LEGACY_VMA_MEMORY_QUERY
-
 // Temporary until web tests can be rebaselined (skbug.com/13752)
 #define SK_DISABLE_RASTER_PIPELINE_SAMPLING_FIXES
 

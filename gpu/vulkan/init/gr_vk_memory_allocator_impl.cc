@@ -195,16 +195,11 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
     return vma::InvalidateAllocation(allocator_, allocation, offset, size);
   }
 
-  uint64_t totalUsedMemory() const override {
+  std::pair<uint64_t, uint64_t> totalAllocatedAndUsedMemory() const override {
     VmaStats stats;
     vma::CalculateStats(allocator_, &stats);
-    return stats.total.usedBytes;
-  }
-
-  uint64_t totalAllocatedMemory() const override {
-    VmaStats stats;
-    vma::CalculateStats(allocator_, &stats);
-    return stats.total.usedBytes + stats.total.unusedBytes;
+    return {stats.total.usedBytes + stats.total.unusedBytes,
+            stats.total.usedBytes};
   }
 
   const VmaAllocator allocator_;
