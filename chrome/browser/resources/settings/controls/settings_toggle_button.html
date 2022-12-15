@@ -56,7 +56,7 @@
     </template>
   </if>
   <div class="flex" id="labelWrapper" hidden$="[[!label]]">
-    <div class="label" aria-hidden="true">[[label]]</div>
+    <div class="label" aria-hidden="[[!ariaShowLabel]]">[[label]]</div>
     <div class="secondary label" id="sub-label">
       <template is="dom-if" if="[[subLabelIcon]]">
         <span id="sub-label-icon" aria-hidden="true">
@@ -64,7 +64,7 @@
           </iron-icon>
         </span>
       </template>
-      <span id="sub-label-text" aria-hidden="true">
+      <span id="sub-label-text" aria-hidden="[[!ariaShowSublabel]]">
         [[subLabel]]
       </span>
       <template is="dom-if" if="[[learnMoreUrl]]">

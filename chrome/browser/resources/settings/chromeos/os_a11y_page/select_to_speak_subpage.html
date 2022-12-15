@@ -170,12 +170,11 @@ found in the LICENSE file.
   <cr-link-row class="settings-box"
       label="$i18n{selectToSpeakTextToSpeechSettingsLink}"
       on-click="onTextToSpeechSettingsTap_"
+      aria-show-label aria-show-sublabel
       embedded>
   </cr-link-row>
   <template is="dom-if"
       if="[[isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled_]]">
-    <!-- TODO(crbug.com/1354821): Figure out how to make settings-toggle-button
-    and other control labels speakable with Select-to-speak. -->
     <!-- TODO(crbug.com/1354821): Disable and turn off or hide
     voiceSwitchingToggle when enhanced network voices is enabled. -->
     <settings-toggle-button
@@ -184,7 +183,8 @@ found in the LICENSE file.
         pref="{{prefs.settings.a11y.select_to_speak_voice_switching}}"
         label="$i18n{selectToSpeakOptionsVoiceSwitchingDescription}"
         deep-link-focus-id$="[[Setting.kSelectToSpeakVoiceSwitching]]"
-        disabled="[[prefs.settings.a11y.select_to_speak_enhanced_network_voices.value]]">
+        disabled="[[prefs.settings.a11y.select_to_speak_enhanced_network_voices.value]]"
+        aria-show-label aria-show-sublabel>
     </settings-toggle-button>
   </template>
   <settings-toggle-button
@@ -197,6 +197,7 @@ found in the LICENSE file.
       on-settings-boolean-control-change="onEnhancedNetworkVoicesToggleChanged_"
       deep-link-focus-id$="[[Setting.kSelectToSpeakEnhancedNetworkVoices]]"
       disabled="[[prefs.settings.a11y.select_to_speak_voice_switching.value]]"
+      aria-show-label aria-show-sublabel
       no-set-pref>
   </settings-toggle-button>
     <template is="dom-if" if="[[enhancedNetworkVoicesVirtualPref_.value]]">
@@ -258,7 +259,8 @@ found in the LICENSE file.
       class="settings-box continuation"
       pref="{{prefs.settings.a11y.select_to_speak_word_highlight}}"
       label="$i18n{selectToSpeakOptionsHighlightDescription}"
-      deep-link-focus-id$="[[Setting.kSelectToSpeakWordHighlight]]">
+      deep-link-focus-id$="[[Setting.kSelectToSpeakWordHighlight]]"
+      aria-show-label aria-show-sublabel>
   </settings-toggle-button>
   <template is="dom-if"
       if="[[prefs.settings.a11y.select_to_speak_word_highlight.value]]">
@@ -291,7 +293,8 @@ found in the LICENSE file.
       class="settings-box continuation"
       pref="{{prefs.settings.a11y.select_to_speak_background_shading}}"
       label="$i18n{selectToSpeakOptionsBackgroundShadingDescription}"
-      deep-link-focus-id$="[[Setting.kSelectToSpeakBackgroundShading]]">
+      deep-link-focus-id$="[[Setting.kSelectToSpeakBackgroundShading]]"
+      aria-show-label aria-show-sublabel>
   </settings-toggle-button>
 </div>
 <settings-toggle-button
@@ -300,6 +303,7 @@ found in the LICENSE file.
     pref="{{prefs.settings.a11y.select_to_speak_navigation_controls}}"
     label="$i18n{selectToSpeakOptionsNavigationControlsDescription}"
     sub-label="$i18n{selectToSpeakOptionsNavigationControlsSubtitle}"
-    deep-link-focus-id$="[[Setting.kSelectToSpeakNavigationControls]]">
+    deep-link-focus-id$="[[Setting.kSelectToSpeakNavigationControls]]"
+    aria-show-label aria-show-sublabel>
 </settings-toggle-button>
 

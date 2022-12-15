@@ -46,11 +46,12 @@
     aria-hidden="true">
 </iron-icon>
 <div id="labelWrapper" hidden="[[hideLabelWrapper_]]">
-  <div id="label" aria-hidden="true">
+  <div id="label" aria-hidden="[[!ariaShowLabel]]">
     [[label]]
     <slot name="label"></slot>
   </div>
-  <div id="subLabel" class="cr-secondary-text" aria-hidden="true">
+  <div id="subLabel" class="cr-secondary-text"
+      aria-hidden="[[!ariaShowSublabel]]">
     [[subLabel]]
     <slot name="sub-label"></slot>
   </div>

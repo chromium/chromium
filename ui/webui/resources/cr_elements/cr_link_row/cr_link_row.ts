@@ -40,6 +40,18 @@ export class CrLinkRowElement extends PolymerElement {
 
   static get properties() {
     return {
+      ariaShowLabel: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
+
+      ariaShowSublabel: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
+
       startIcon: {
         type: String,
         value: '',
@@ -80,6 +92,8 @@ export class CrLinkRowElement extends PolymerElement {
     };
   }
 
+  ariaShowLabel: boolean;
+  ariaShowSublabel: boolean;
   startIcon: string;
   label: string;
   subLabel: string;

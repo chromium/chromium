@@ -50,6 +50,18 @@ export class SettingsToggleButtonElement extends
         value: '',
       },
 
+      ariaShowLabel: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
+
+      ariaShowSublabel: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
+
       elideLabel: {
         type: Boolean,
         reflectToAttribute: true,
@@ -80,16 +92,14 @@ export class SettingsToggleButtonElement extends
   }
 
   override ariaLabel: string;
+  ariaShowLabel: boolean;
+  ariaShowSublabel: boolean;
   elideLabel: boolean;
-
   // <if expr="chromeos_ash">
   icon: string;
   // </if>
-
   learnMoreUrl: string;
-
   subLabelWithLink: string;
-
   subLabelIcon: string;
 
   override ready() {
