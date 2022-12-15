@@ -10,7 +10,6 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.URLUtil;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -28,7 +27,6 @@ import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.TabSnapshotManager;
 import com.ark.browser.tab.core.ITab;
-import com.ark.browser.ui.dialog.DownloadManagerDialog;
 import com.ark.browser.ui.fragment.dialog.SearchEngineSelectDialog;
 import com.ark.browser.ui.fragment.download.DownloadMultiData;
 import com.ark.browser.ui.multidata.BookmarkMultiData;
@@ -54,7 +52,6 @@ import com.zpj.recyclerview.manager.MultiLayoutManager;
 import com.zpj.statemanager.State;
 import com.zpj.toast.ZToast;
 import com.zpj.utils.KeyboardUtils;
-import com.zpj.utils.ScreenUtils;
 import com.zpj.widget.toolbar.ZSearchBar;
 
 import org.chromium.base.Log;
@@ -67,12 +64,9 @@ import org.chromium.chrome.browser.history.HistoryProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.search_engines.TemplateUrl;
-import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.chrome.R;
 import org.json.JSONArray;
@@ -565,7 +559,7 @@ public class SearchFragment2 extends BaseDialogFragment<SearchFragment2>
 
         ThreadPool.executeIO(() -> {
             List<SearchHistory> historyList = SearchHistoryManager.getSearchHistoryLimited();
-            ThreadPool.post(() -> {
+            ThreadPool.runOnUIThread(() -> {
                 flowHeaderMultiData.setData(historyList);
                 mRecycler.notifyDataSetChanged();
             });
@@ -617,7 +611,7 @@ public class SearchFragment2 extends BaseDialogFragment<SearchFragment2>
             history.setTime(System.currentTimeMillis());
 //            history.saveSync();
 
-            ThreadPool.post(this::initFlowLayout);
+            ThreadPool.runOnUIThread(this::initFlowLayout);
         });
 
         historyProvider.queryHistory("");
@@ -783,7 +777,7 @@ public class SearchFragment2 extends BaseDialogFragment<SearchFragment2>
                     return Long.compare(o2.getTabInfo().getAccessTime(), o1.getTabInfo().getAccessTime());
                 }
             });
-            ThreadPool.post(() -> {
+            ThreadPool.runOnUIThread(() -> {
                 tabListMultiData.setData(tabList);
                 stickHeader0.setTitle("标签页(" + tabListMultiData.getCount() + ")");
                 tabListMultiData.notifyDataSetChange();
@@ -837,7 +831,7 @@ public class SearchFragment2 extends BaseDialogFragment<SearchFragment2>
                             }
                         }
                     }
-                    ThreadPool.post(() -> {
+                    ThreadPool.runOnUIThread(() -> {
                         downloadMultiData.setData(list);
                         stickHeader4.setTitle("下载文件(" + downloadMultiData.getCount() + ")");
                         downloadMultiData.notifyDataSetChange();

@@ -21,8 +21,6 @@ import org.chromium.content_public.browser.RenderWidgetHostView;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -111,7 +109,7 @@ public class TabSnapshotManager {
                             if (file.exists()) {
                                 ThreadPool.executeIO(() -> {
                                     Bitmap bitmap1 = BitmapFactory.decodeFile(file.getPath());
-                                    ThreadPool.post(() -> callback.onResult(bitmap1));
+                                    ThreadPool.runOnUIThread(() -> callback.onResult(bitmap1));
                                 });
                                 return;
                             }
@@ -214,7 +212,7 @@ public class TabSnapshotManager {
 //                                    ArkLogger.e(SnapshotTask.class, "onResult renameTo=" + r);
                                     try (FileInputStream fis = new FileInputStream(file)) {
                                         Bitmap bitmap = BitmapFactory.decodeStream(fis);
-                                        ThreadPool.post(() -> onFinished(bitmap));
+                                        ThreadPool.runOnUIThread(() -> onFinished(bitmap));
                                         synchronized (getInstance().mBitmapCache) {
                                             getInstance().mBitmapCache.put(mPageId, bitmap);
                                         }
@@ -223,7 +221,7 @@ public class TabSnapshotManager {
                                         ArkLogger.e(SnapshotTask.class, "decodeBitmap failed! ", e);
                                     }
                                 }
-                                ThreadPool.post(() -> onFinished(null));
+                                ThreadPool.runOnUIThread(() -> onFinished(null));
                             });
                         }
                     });

@@ -157,6 +157,7 @@ extern const char kWebKitMinimumLogicalFontSize[];
 extern const char kWebKitJavascriptEnabled[];
 extern const char kWebKitWebSecurityEnabled[];
 extern const char kWebKitLoadsImagesAutomatically[];
+extern const char kWebKitImagesEnabled[];
 extern const char kWebKitPluginsEnabled[];
 extern const char kWebKitDomPasteEnabled[];
 extern const char kWebKitTextAreasAreResizable[];

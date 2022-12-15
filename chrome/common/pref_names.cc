@@ -379,6 +379,8 @@ const char kWebKitMinimumLogicalFontSize[] =
 const char kWebKitJavascriptEnabled[] = "webkit.webprefs.javascript_enabled";
 const char kWebKitLoadsImagesAutomatically[] =
     "webkit.webprefs.loads_images_automatically";
+const char kWebKitImagesEnabled[] =
+    "webkit.webprefs.images_enabled";
 const char kWebKitPluginsEnabled[] = "webkit.webprefs.plugins_enabled";
 
 // Boolean that is true when the SSL interstitial should allow users to

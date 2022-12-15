@@ -55,6 +55,7 @@ const char* const kWebPrefsToObserve[] = {
     prefs::kWebKitForceDarkModeEnabled,
     prefs::kWebKitJavascriptEnabled,
     prefs::kWebKitLoadsImagesAutomatically,
+    prefs::kWebKitImagesEnabled,
     prefs::kWebKitMinimumFontSize,
     prefs::kWebKitMinimumLogicalFontSize,
     prefs::kWebKitPluginsEnabled,

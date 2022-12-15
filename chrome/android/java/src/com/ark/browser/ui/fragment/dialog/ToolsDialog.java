@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 
+import com.ark.browser.core.utils.ContentUtils;
 import com.ark.browser.core.utils.TabPrinter;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.settings.AppConfig;
@@ -17,6 +18,7 @@ import com.ark.browser.settings.Keys;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.ui.widget.DrawableTintTextView;
 import com.ark.browser.ui.widget.TextCircleImageView;
+import com.ark.browser.utils.ThreadPool;
 import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
 import com.zpj.skin.SkinEngine;
 import com.zpj.toast.ZToast;
@@ -33,6 +35,7 @@ import org.chromium.chrome.browser.offlinepages.downloads.OfflinePageDownloadBri
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.printing.PrintManagerDelegateImpl;
 import org.chromium.printing.PrintingController;
 import org.chromium.printing.PrintingControllerImpl;
@@ -323,11 +326,19 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
         } else if (id == R.id.tv_translate) {
 
         } else if (id == R.id.tv_smart_no_img) {
-//            tag = !smartNoImageMode;
-//            page.getActiveContentViewCore().setImagesEnabled(!tag);
-//            AppConfig.toggleSmartNoImageMode();
-//            DrawableTintTextView tvSmartNoImg = (DrawableTintTextView) v;
-//            tvSmartNoImg.setTint(getResources().getColor(tag ? R.color.colorPrimary : R.color.google_black_400));
+            boolean tag = !smartNoImageMode;
+            ContentUtils.setImagesEnabled(Profile.getLastUsedRegularProfile(), !tag);
+            ThreadPool.postOnUIThread(() -> {
+                WebContents webContents = page.getWebContents();
+                if (webContents != null) {
+                    webContents.notifyRendererPreferenceUpdate();
+                }
+            });
+
+
+            AppConfig.toggleSmartNoImageMode();
+            DrawableTintTextView tvSmartNoImg = (DrawableTintTextView) v;
+            tvSmartNoImg.setTint(getResources().getColor(tag ? R.color.colorPrimary : R.color.google_black_400));
         } else if (id == R.id.tv_reader_mode) {
             String distillerUrl = DomDistillerUrlUtils.getDistillerViewUrlFromUrl(
                     ReaderModeManager.DOM_DISTILLER_SCHEME, page.getUrl().getSpec(), page.getTitle());

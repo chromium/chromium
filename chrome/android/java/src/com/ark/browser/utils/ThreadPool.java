@@ -46,7 +46,7 @@ public class ThreadPool {
         IOExecutorHolder.EXECUTOR.execute(runnable);
     }
 
-    public static void post(Runnable runnable) {
+    public static void runOnUIThread(Runnable runnable) {
         if (runnable == null) {
             return;
         }

@@ -12,12 +12,10 @@ import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
-import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.PageTransition;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -100,7 +98,7 @@ public class TabListManager {
 
         ThreadPool.execute(() -> {
             tabLists[0].init(nativeWindow);
-            ThreadPool.post(() -> {
+            ThreadPool.runOnUIThread(() -> {
                 tabLists[0].addObserver(tabInfoObserver);
                 mLoaded = true;
                 if (callback != null) {

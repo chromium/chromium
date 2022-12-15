@@ -345,6 +345,8 @@ void PrefsTabHelper::RegisterProfilePrefs(
                                 pref_defaults.web_security_enabled);
   registry->RegisterBooleanPref(prefs::kWebKitLoadsImagesAutomatically,
                                 pref_defaults.loads_images_automatically);
+  registry->RegisterBooleanPref(prefs::kWebKitImagesEnabled,
+                                pref_defaults.images_enabled);
   registry->RegisterBooleanPref(prefs::kWebKitPluginsEnabled,
                                 pref_defaults.plugins_enabled);
   registry->RegisterBooleanPref(prefs::kWebKitDomPasteEnabled,

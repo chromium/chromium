@@ -3395,8 +3395,11 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
 
   if (!prefs->GetBoolean(prefs::kWebKitPluginsEnabled))
     web_prefs->plugins_enabled = false;
+  bool images_enabled = prefs->GetBoolean(prefs::kWebKitImagesEnabled);
+  LOG(ERROR) << "OverrideWebkitPrefs images_enabled=" << images_enabled;
+  web_prefs->images_enabled = images_enabled;
   web_prefs->loads_images_automatically =
-      prefs->GetBoolean(prefs::kWebKitLoadsImagesAutomatically);
+      images_enabled && prefs->GetBoolean(prefs::kWebKitLoadsImagesAutomatically);
 
   if (prefs->GetBoolean(prefs::kDisable3DAPIs)) {
     web_prefs->webgl1_enabled = false;

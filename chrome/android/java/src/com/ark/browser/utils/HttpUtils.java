@@ -71,13 +71,13 @@ public class HttpUtils {
 //                    String body = charset.decode(buffer).toString();
                     Log.d("HttpUtils", "body=" + body);
 
-                    ThreadPool.post(() -> callback.onSuccess(body));
+                    ThreadPool.runOnUIThread(() -> callback.onSuccess(body));
                     bodyStream.close();
                 } else {
                     throw new Exception(isToStream(connection.getErrorStream(), charset));
                 }
             } catch (Exception e) {
-                ThreadPool.post(() -> callback.onFailed(e));
+                ThreadPool.runOnUIThread(() -> callback.onFailed(e));
             } finally {
                 if (connection != null) {
                     connection.disconnect();

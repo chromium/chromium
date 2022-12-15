@@ -7,6 +7,7 @@ package com.ark.browser.core.utils;
 import com.ark.browser.core.UserAgentManager;
 
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -34,10 +35,20 @@ public class ContentUtils {
         ContentUtilsJni.get().setUserAgent(webContents, userAgent.getString(), userAgent.isMobile());
     }
 
+    public static void setLoadsImagesAutomatically(Profile profile, boolean loadsImagesAutomatically) {
+        ContentUtilsJni.get().setLoadsImagesAutomatically(profile, loadsImagesAutomatically);
+    }
+
+    public static void setImagesEnabled(Profile profile, boolean enable) {
+        ContentUtilsJni.get().setImagesEnabled(profile, enable);
+    }
+
     @NativeMethods
     interface Natives {
         String getBrowserUserAgent();
         void setUserAgentOverride(WebContents webContents, boolean overrideInNewTabs);
         void setUserAgent(WebContents webContents, String ua, boolean isMobile);
+        void setLoadsImagesAutomatically(Profile profile, boolean loadsImagesAutomatically);
+        void setImagesEnabled(Profile profile, boolean enable);
     }
 }

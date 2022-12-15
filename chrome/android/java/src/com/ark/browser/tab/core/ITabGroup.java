@@ -294,7 +294,7 @@ public interface ITabGroup {
             ArkLogger.e(ITabGroup.this, "selectTabInfo tab=" + tab + " state=" + state);
 
             TabState finalState = state;
-            ThreadPool.post(() -> {
+            ThreadPool.runOnUIThread(() -> {
                 long start = System.currentTimeMillis();
                 Tab innerTab = tab;
                 if (innerTab == null) {
