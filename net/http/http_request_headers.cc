@@ -75,7 +75,12 @@ HttpRequestHeaders::HeaderKeyValuePair::HeaderKeyValuePair() = default;
 HttpRequestHeaders::HeaderKeyValuePair::HeaderKeyValuePair(
     base::StringPiece key,
     base::StringPiece value)
-    : key(key.data(), key.size()), value(value.data(), value.size()) {}
+    : HeaderKeyValuePair(key, std::string(value)) {}
+
+HttpRequestHeaders::HeaderKeyValuePair::HeaderKeyValuePair(
+    base::StringPiece key,
+    std::string&& value)
+    : key(key), value(std::move(value)) {}
 
 HttpRequestHeaders::Iterator::Iterator(const HttpRequestHeaders& headers)
     : curr_(headers.headers_.begin()), end_(headers.headers_.end()) {}
@@ -121,11 +126,22 @@ void HttpRequestHeaders::Clear() {
 
 void HttpRequestHeaders::SetHeader(base::StringPiece key,
                                    base::StringPiece value) {
+  SetHeader(key, std::string(value));
+}
+
+void HttpRequestHeaders::SetHeader(base::StringPiece key, std::string&& value) {
   // Invalid header names or values could mean clients can attach
   // browser-internal headers.
   CHECK(HttpUtil::IsValidHeaderName(key)) << key;
   CHECK(HttpUtil::IsValidHeaderValue(value)) << key << ":" << value;
-  SetHeaderInternal(key, value);
+
+  SetHeaderInternal(key, std::move(value));
+}
+
+void HttpRequestHeaders::SetHeaderWithoutCheckForTesting(
+    base::StringPiece key,
+    base::StringPiece value) {
+  SetHeaderInternal(key, std::string(value));
 }
 
 void HttpRequestHeaders::SetHeaderIfMissing(base::StringPiece key,
@@ -288,12 +304,12 @@ HttpRequestHeaders::HeaderVector::const_iterator HttpRequestHeaders::FindHeader(
 }
 
 void HttpRequestHeaders::SetHeaderInternal(base::StringPiece key,
-                                           base::StringPiece value) {
+                                           std::string&& value) {
   auto it = FindHeader(key);
   if (it != headers_.end())
-    it->value.assign(value.data(), value.size());
+    it->value = std::move(value);
   else
-    headers_.push_back(HeaderKeyValuePair(key, value));
+    headers_.emplace_back(key, std::move(value));
 }
 
 }  // namespace net
