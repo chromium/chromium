@@ -1872,7 +1872,8 @@ RTCRtpSender* RTCPeerConnection::addTrack(MediaStreamTrack* track,
   RTCRtpSender* sender = transceiver->sender();
   // Newly created senders have no streams set, we have to set it ourselves.
   sender->set_streams(streams);
-  DCHECK_EQ(stream_ids.size(), streams.size());
+  // The native sender may have filtered out duplicates.
+  DCHECK_LE(stream_ids.size(), streams.size());
   return sender;
 }
 
