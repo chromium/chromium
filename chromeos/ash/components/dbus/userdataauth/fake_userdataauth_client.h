@@ -131,6 +131,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
     void DestroySessions();
 
+    void SendLegacyFPAuthSignal(user_data_auth::FingerprintScanResult result);
+
    private:
     FakeUserDataAuthClient::UserCryptohomeState& GetUserState(
         const cryptohome::AccountIdentifier& account_id);

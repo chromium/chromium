@@ -31,6 +31,10 @@ class CryptohomeMixin : public InProcessBrowserTestMixin,
   bool HasPinFactor(const AccountId& user);
   void AddRecoveryFactor(const AccountId& user);
   bool HasRecoveryFactor(const AccountId& user);
+
+  void SendLegacyFingerprintSuccessScan();
+  void SendLegacyFingerprintFailureScan();
+  void SendLegacyFingerprintFailureLockoutScan();
 };
 
 }  // namespace ash
