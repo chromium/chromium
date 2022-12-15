@@ -260,7 +260,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
             gl::GLSurfaceFormat::COLOR_SPACE_DISPLAY_P3);
         break;
     }
-    surface_ = ImageTransportSurface::CreatePresenterOrNativeSurface(
+    surface_ = ImageTransportSurface::CreateNativeGLSurface(
         display, weak_ptr_factory_.GetWeakPtr(), surface_handle_,
         surface_format);
     if (!surface_ || !surface_->Initialize(surface_format)) {

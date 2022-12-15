@@ -17,7 +17,7 @@
 #include "ui/gfx/ca_layer_result.h"
 
 namespace gl {
-class GLSurface;
+class Presenter;
 }  // namespace gl
 
 namespace viz {
@@ -26,20 +26,13 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
  public:
   static const uint32_t kDefaultSharedImageUsage;
 
-  static std::unique_ptr<OutputPresenterGL> Create(
-      SkiaOutputSurfaceDependency* deps,
-      gpu::SharedImageFactory* factory,
-      gpu::SharedImageRepresentationFactory* representation_factory);
-
   OutputPresenterGL(
-      scoped_refptr<gl::GLSurface> gl_surface,
+      scoped_refptr<gl::Presenter> presenter,
       SkiaOutputSurfaceDependency* deps,
       gpu::SharedImageFactory* factory,
       gpu::SharedImageRepresentationFactory* representation_factory,
       uint32_t shared_image_usage = kDefaultSharedImageUsage);
   ~OutputPresenterGL() override;
-
-  gl::GLSurface* gl_surface() { return gl_surface_.get(); }
 
   // OutputPresenter implementation:
   void InitializeCapabilities(OutputSurface::Capabilities* capabilities) final;
@@ -77,7 +70,7 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
 #endif
 
  private:
-  scoped_refptr<gl::GLSurface> gl_surface_;
+  scoped_refptr<gl::Presenter> presenter_;
   raw_ptr<SkiaOutputSurfaceDependency> dependency_;
   const bool supports_async_swap_;
 

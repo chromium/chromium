@@ -113,11 +113,23 @@ gpu::SurfaceHandle SkiaOutputSurfaceDependencyWebView::GetSurfaceHandle() {
   return gpu::kNullSurfaceHandle;
 }
 
+scoped_refptr<gl::Presenter>
+SkiaOutputSurfaceDependencyWebView::CreatePresenter(
+    base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
+    gl::GLSurfaceFormat format) {
+  return nullptr;
+}
 scoped_refptr<gl::GLSurface>
 SkiaOutputSurfaceDependencyWebView::CreateGLSurface(
     base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
     gl::GLSurfaceFormat format) {
   return gl_surface_.get();
+}
+
+base::ScopedClosureRunner SkiaOutputSurfaceDependencyWebView::CachePresenter(
+    gl::Presenter* presenter) {
+  NOTREACHED();
+  return base::ScopedClosureRunner();
 }
 
 base::ScopedClosureRunner SkiaOutputSurfaceDependencyWebView::CacheGLSurface(

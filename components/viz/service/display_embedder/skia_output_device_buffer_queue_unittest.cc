@@ -30,7 +30,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_snapshot.h"
-#include "ui/gl/gl_surface_stub.h"
+#include "ui/gl/gl_utils.h"
+#include "ui/gl/presenter.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -221,8 +222,11 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
   bool enable_purge_mocks_ = false;
 };
 
-class MockGLSurfaceAsync : public gl::GLSurfaceStub {
+class MockPresenter : public gl::Presenter {
  public:
+  explicit MockPresenter(gl::GLDisplayEGL* display)
+      : gl::Presenter(display, gfx::Size()) {}
+
   bool SupportsAsyncSwap() override { return true; }
 
   void SwapBuffersAsync(SwapCompletionCallback completion_callback,
@@ -266,7 +270,7 @@ class MockGLSurfaceAsync : public gl::GLSurfaceStub {
   }
 
  protected:
-  ~MockGLSurfaceAsync() override = default;
+  ~MockPresenter() override = default;
   base::circular_deque<SwapCompletionCallback> swap_completion_callbacks_;
   base::circular_deque<PresentationCallback> presentation_callbacks_;
 };
@@ -323,7 +327,9 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   }
 
   void SetUpOnGpu() override {
-    gl_surface_ = base::MakeRefCounted<MockGLSurfaceAsync>();
+    // TODO(vasilyt): Remove this once presenter doesn't need display.
+    display_ = gl::GetDefaultDisplayEGL();
+    presenter_ = base::MakeRefCounted<MockPresenter>(display_);
     memory_tracker_ = std::make_unique<MemoryTrackerStub>();
     shared_image_factory_ = std::make_unique<gpu::SharedImageFactory>(
         dependency_->GetGpuPreferences(),
@@ -343,7 +349,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
 
     output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
         std::make_unique<OutputPresenterGL>(
-            gl_surface_, dependency_.get(), shared_image_factory_.get(),
+            presenter_, dependency_.get(), shared_image_factory_.get(),
             shared_image_representation_factory_.get()),
         dependency_.get(), shared_image_representation_factory_.get(),
         memory_tracker_.get(), present_callback);
@@ -355,7 +361,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
     shared_image_factory_->DestroyAllSharedImages(true);
     shared_image_factory_.reset();
     memory_tracker_.reset();
-    gl_surface_.reset();
+    presenter_.reset();
   }
 
   using Image = OutputPresenter::Image;
@@ -448,7 +454,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
                                         OutputSurfaceFrame());
   }
 
-  void PageFlipComplete() { gl_surface_->SwapComplete(); }
+  void PageFlipComplete() { presenter_->SwapComplete(); }
 
   SkSurfaceCharacterization CreateSkSurfaceCharacterization(
       const gfx::Size size = kScreenSize) {
@@ -501,7 +507,8 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
 
  protected:
   std::unique_ptr<SkiaOutputSurfaceDependency> dependency_;
-  scoped_refptr<MockGLSurfaceAsync> gl_surface_;
+  raw_ptr<gl::GLDisplayEGL> display_;
+  scoped_refptr<MockPresenter> presenter_;
   std::unique_ptr<MemoryTrackerStub> memory_tracker_;
   TestImageBackingFactory test_backing_factory_;
   std::unique_ptr<gpu::SharedImageFactory> shared_image_factory_;

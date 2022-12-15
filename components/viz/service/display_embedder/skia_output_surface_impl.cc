@@ -1286,9 +1286,8 @@ void SkiaOutputSurfaceImpl::SetNeedsSwapSizeNotifications(
 }
 
 base::ScopedClosureRunner SkiaOutputSurfaceImpl::GetCacheBackBufferCb() {
-  if (!impl_on_gpu_->gl_surface())
-    return base::ScopedClosureRunner();
-  return dependency_->CacheGLSurface(impl_on_gpu_->gl_surface());
+  // Note, that we call it directly on viz thread to get the callback.
+  return impl_on_gpu_->GetCacheBackBufferCb();
 }
 
 void SkiaOutputSurfaceImpl::AddContextLostObserver(

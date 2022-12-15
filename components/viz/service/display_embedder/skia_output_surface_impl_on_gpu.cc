@@ -70,6 +70,7 @@
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/presenter.h"
 #include "ui/gl/progress_reporter.h"
 #include "url/gurl.h"
 
@@ -1653,6 +1654,9 @@ void SkiaOutputSurfaceImplOnGpu::SetGpuVSyncEnabled(bool enabled) {
 void SkiaOutputSurfaceImplOnGpu::SetFrameRate(float frame_rate) {
   if (gl_surface_)
     gl_surface_->SetFrameRate(frame_rate);
+  if (presenter_) {
+    presenter_->SetFrameRate(frame_rate);
+  }
 }
 
 void SkiaOutputSurfaceImplOnGpu::SetCapabilitiesForTesting(
@@ -1722,18 +1726,23 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
         shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());
   } else {
-    gl_surface_ =
-        dependency_->CreateGLSurface(weak_ptr_factory_.GetWeakPtr(), format);
-
-    if (!gl_surface_)
-      return false;
+    presenter_ =
+        dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr(), format);
+    if (!presenter_) {
+      gl_surface_ =
+          dependency_->CreateGLSurface(weak_ptr_factory_.GetWeakPtr(), format);
+      if (!gl_surface_) {
+        return false;
+      }
+    }
 
     if (MakeCurrent(/*need_framebuffer=*/true)) {
-      if (gl_surface_->IsSurfaceless()) {
+      if (presenter_) {
+        DCHECK(presenter_->IsSurfaceless());
 #if !BUILDFLAG(IS_WIN)
         output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
             std::make_unique<OutputPresenterGL>(
-                gl_surface_, dependency_, shared_image_factory_.get(),
+                presenter_, dependency_, shared_image_factory_.get(),
                 shared_image_representation_factory_.get()),
             dependency_, shared_image_representation_factory_.get(),
             shared_gpu_deps_->memory_tracker(),
@@ -1769,13 +1778,30 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
         }
       }
     } else {
+      presenter_ = nullptr;
       gl_surface_ = nullptr;
       context_state_ = nullptr;
       LOG(ERROR) << "Failed to make current during initialization.";
       return false;
     }
   }
-  DCHECK_EQ(gl_surface_->IsOffscreen(), dependency_->IsOffscreen());
+
+  if (dependency_->IsOffscreen()) {
+    DCHECK(gl_surface_);
+    DCHECK_EQ(gl_surface_->IsOffscreen(), true);
+  } else if (gl_surface_) {
+    // OnScreen GLSurfaces are never Surfaceless except on windows where a bit
+    // of work needed to make it use Presenter.
+#if !BUILDFLAG(IS_WIN)
+    DCHECK(!gl_surface_->IsSurfaceless());
+#endif
+  } else {
+    // If there is no gl_surface there must be presenter and it's always
+    // surfaceless.
+    DCHECK(presenter_);
+    DCHECK(presenter_->IsSurfaceless());
+  }
+
   return true;
 }
 
@@ -1800,17 +1826,18 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
 #endif
 
 #if !BUILDFLAG(IS_WIN)
+  std::unique_ptr<OutputPresenter> output_presenter;
 #if BUILDFLAG(IS_FUCHSIA)
-  auto output_presenter = OutputPresenterFuchsia::Create(
+  output_presenter = OutputPresenterFuchsia::Create(
       window_surface_.get(), dependency_, shared_image_factory_.get(),
       shared_image_representation_factory_.get());
 #else
-  auto output_presenter =
-      OutputPresenterGL::Create(dependency_, shared_image_factory_.get(),
-                                shared_image_representation_factory_.get());
-  if (output_presenter) {
-    // TODO(https://crbug.com/1012401): don't depend on GL.
-    gl_surface_ = output_presenter->gl_surface();
+  presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr(),
+                                            gl::GLSurfaceFormat());
+  if (presenter_) {
+    output_presenter = std::make_unique<OutputPresenterGL>(
+        presenter_, dependency_, shared_image_factory_.get(),
+        shared_image_representation_factory_.get());
   }
 #endif
   if (output_presenter) {
@@ -1900,6 +1927,16 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
 }
 
 bool SkiaOutputSurfaceImplOnGpu::MakeCurrent(bool need_framebuffer) {
+// Windows still uses gl_surface for DComp presentation. Once that's switched
+// over to presenter, these DCHECKs will be actual on all platforms and code can
+// be simplified.
+#if !BUILDFLAG(IS_WIN)
+  if (gl_surface_) {
+    DCHECK(context_state_->GrContextIsGL());
+    DCHECK(!gl_surface_->IsSurfaceless() || gl_surface_->IsOffscreen());
+  }
+#endif
+
   // If GL is not being used or GLSurface is not surfaceless, we can ignore
   // making current the GLSurface for better performance.
   bool need_fbo0 = need_framebuffer && context_state_->GrContextIsGL() &&
@@ -1924,8 +1961,14 @@ bool SkiaOutputSurfaceImplOnGpu::MakeCurrent(bool need_framebuffer) {
   // Some GLSurface implements OnMakeCurrent() to tracing current GLContext,
   // even if framebuffer is not needed, we still call OnMakeCurrent() so
   // GLSurface implementation will know the current GLContext.
-  if (gl_surface_ && !need_fbo0)
-    gl_surface_->OnMakeCurrent(context_state_->context());
+  if (!need_fbo0) {
+    if (gl_surface_) {
+      gl_surface_->OnMakeCurrent(context_state_->context());
+    }
+    if (presenter_) {
+      presenter_->OnMakeCurrent(context_state_->context());
+    }
+  }
 
   context_state_->set_need_context_state_reset(true);
   return true;
@@ -1943,12 +1986,22 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
   if (context_is_lost_)
     return;
 
-  if (gl_surface_ && frame) {
-    gl_surface_->SetChoreographerVsyncIdForNextFrame(
-        frame->choreographer_vsync_id);
-    if (frame->delegated_ink_metadata) {
-      gl_surface_->SetDelegatedInkTrailStartPoint(
-          std::move(frame->delegated_ink_metadata));
+  if (frame) {
+    if (gl_surface_) {
+      gl_surface_->SetChoreographerVsyncIdForNextFrame(
+          frame->choreographer_vsync_id);
+      if (frame->delegated_ink_metadata) {
+        gl_surface_->SetDelegatedInkTrailStartPoint(
+            std::move(frame->delegated_ink_metadata));
+      }
+    }
+    if (presenter_) {
+      presenter_->SetChoreographerVsyncIdForNextFrame(
+          frame->choreographer_vsync_id);
+      if (frame->delegated_ink_metadata) {
+        presenter_->SetDelegatedInkTrailStartPoint(
+            std::move(frame->delegated_ink_metadata));
+      }
     }
   }
 
@@ -2193,13 +2246,20 @@ void SkiaOutputSurfaceImplOnGpu::CheckReadbackCompletion() {
 void SkiaOutputSurfaceImplOnGpu::PreserveChildSurfaceControls() {
   if (gl_surface_)
     gl_surface_->PreserveChildSurfaceControls();
+  if (presenter_) {
+    presenter_->PreserveChildSurfaceControls();
+  }
 }
 
 void SkiaOutputSurfaceImplOnGpu::InitDelegatedInkPointRendererReceiver(
     mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
         pending_receiver) {
   if (gl_surface_) {
+    DCHECK(!presenter_);
     gl_surface_->InitDelegatedInkPointRendererReceiver(
+        std::move(pending_receiver));
+  } else if (presenter_) {
+    presenter_->InitDelegatedInkPointRendererReceiver(
         std::move(pending_receiver));
   }
 }
@@ -2366,6 +2426,19 @@ gpu::SkiaImageRepresentation* SkiaOutputSurfaceImplOnGpu::GetSkiaRepresentation(
         mailbox, context_state_.get());
   }
   return it->second.get();
+}
+
+base::ScopedClosureRunner SkiaOutputSurfaceImplOnGpu::GetCacheBackBufferCb() {
+  if (gl_surface_) {
+    DCHECK(!presenter_);
+    return dependency_->CacheGLSurface(gl_surface_.get());
+  }
+
+  if (presenter_) {
+    return dependency_->CachePresenter(presenter_.get());
+  }
+
+  return base::ScopedClosureRunner();
 }
 
 }  // namespace viz

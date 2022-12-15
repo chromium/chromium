@@ -25,6 +25,7 @@ class GURL;
 
 namespace gl {
 class GLSurface;
+class Presenter;
 }
 
 namespace gpu {
@@ -83,11 +84,16 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
   // return kNullSurfaceHandle.
   virtual bool IsOffscreen() = 0;
   virtual gpu::SurfaceHandle GetSurfaceHandle() = 0;
+  virtual scoped_refptr<gl::Presenter> CreatePresenter(
+      base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
+      gl::GLSurfaceFormat format) = 0;
   virtual scoped_refptr<gl::GLSurface> CreateGLSurface(
       base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
       gl::GLSurfaceFormat format) = 0;
   // Hold a ref of the given surface until the returned closure is fired.
   virtual base::ScopedClosureRunner CacheGLSurface(gl::GLSurface* surface) = 0;
+  virtual base::ScopedClosureRunner CachePresenter(
+      gl::Presenter* presenter) = 0;
   virtual void ScheduleGrContextCleanup() = 0;
 
   void PostTaskToClientThread(base::OnceClosure closure) {

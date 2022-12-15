@@ -104,6 +104,15 @@ gpu::SurfaceHandle SkiaOutputSurfaceDependencyImpl::GetSurfaceHandle() {
   return surface_handle_;
 }
 
+scoped_refptr<gl::Presenter> SkiaOutputSurfaceDependencyImpl::CreatePresenter(
+    base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
+    gl::GLSurfaceFormat format) {
+  DCHECK(!IsOffscreen());
+
+  return gpu::ImageTransportSurface::CreatePresenter(
+      GetSharedContextState()->display(), stub, surface_handle_, format);
+}
+
 scoped_refptr<gl::GLSurface> SkiaOutputSurfaceDependencyImpl::CreateGLSurface(
     base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
     gl::GLSurfaceFormat format) {
@@ -111,13 +120,40 @@ scoped_refptr<gl::GLSurface> SkiaOutputSurfaceDependencyImpl::CreateGLSurface(
     return gl::init::CreateOffscreenGLSurfaceWithFormat(
         GetSharedContextState()->display(), gfx::Size(), format);
   } else {
-    return gpu::ImageTransportSurface::CreatePresenterOrNativeSurface(
+    return gpu::ImageTransportSurface::CreateNativeGLSurface(
         GetSharedContextState()->display(), stub, surface_handle_, format);
   }
 }
 
+base::ScopedClosureRunner SkiaOutputSurfaceDependencyImpl::CachePresenter(
+    gl::Presenter* presenter) {
+  // We're running on the viz thread here. We want to release ref on the
+  // compositor gpu thread because presenters are generally not thread-safe. For
+  // the same reason we don't want to mark them as RefCountedThreadSafe to avoid
+  // confusion and so have to AddRef() on the compositor gpu thread too. It's
+  // safe to just PostTask here because SkiaOutputSurfaceImplOnGpu keeps ref on
+  // its Presenter and can be only destroyed by PostTask from viz thread to gpu
+  // thread which will run after this one.
+  gpu_service_impl_->compositor_gpu_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&gl::Presenter::AddRef, base::Unretained(presenter)));
+
+  auto release_callback = base::BindPostTask(
+      gpu_service_impl_->compositor_gpu_task_runner(),
+      base::BindOnce(&gl::Presenter::Release, base::Unretained(presenter)));
+
+  return base::ScopedClosureRunner(std::move(release_callback));
+}
+
 base::ScopedClosureRunner SkiaOutputSurfaceDependencyImpl::CacheGLSurface(
     gl::GLSurface* surface) {
+  // We're running on the viz thread here. We want to release ref on the
+  // compositor gpu thread because presenters are generally not thread-safe. For
+  // the same reason we don't want to mark them as RefCountedThreadSafe to avoid
+  // confusion and so have to AddRef() on the compositor gpu thread too. It's
+  // safe to just PostTask here because SkiaOutputSurfaceImplOnGpu keeps ref on
+  // its GLSurface and can be only destroyed by PostTask from viz thread to gpu
+  // thread which will run after this one.
   gpu_service_impl_->compositor_gpu_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&gl::GLSurface::AddRef, base::Unretained(surface)));

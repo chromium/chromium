@@ -25,15 +25,6 @@ class ImageTransportSurfaceDelegate;
 
 class GPU_IPC_SERVICE_EXPORT ImageTransportSurface {
  public:
-  // Temporary helper function that will try to create Presenter first and
-  // fallback to the GLSurface if it fails.
-  // TODO(vasilyt): Remove this.
-  static scoped_refptr<gl::GLSurface> CreatePresenterOrNativeSurface(
-      gl::GLDisplay* display,
-      base::WeakPtr<ImageTransportSurfaceDelegate> stub,
-      SurfaceHandle surface_handle,
-      gl::GLSurfaceFormat format);
-
   // Creates the appropriate presenter if surfaceless presentation is supported.
   // This will be implemented separately by each platform. On failure, a null
   // scoped_refptr should be returned. Callers should try to fallback to
