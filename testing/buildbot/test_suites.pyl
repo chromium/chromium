@@ -7186,7 +7186,7 @@
     'lacros_skylab_tests_amd64_generic_rel': {
       'lacros_skylab_tests': {
         'variants': [
-          'CROS_VOLTEER_PUBLIC',
+          'CROS_ZORK_PUBLIC',
         ]
       },
     },
