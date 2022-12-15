@@ -307,7 +307,7 @@ TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
       ukm_metrics.end());
   EXPECT_EQ(ukm_metrics.at(
                 ukm::builders::PrefetchProxy_PrefetchedResource::kStatusName),
-            static_cast<int>(PrefetchStatus::kPrefetchResponseUsed));
+            static_cast<int>(PrefetchStatus::kPrefetchUsedProbeSuccess));
 
   ASSERT_TRUE(
       ukm_metrics.find(

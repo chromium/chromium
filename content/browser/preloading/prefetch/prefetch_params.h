@@ -111,9 +111,6 @@ int PrefetchCanaryCheckRetries();
 // prefetches.
 bool PrefetchUseStreamingURLLoader();
 
-// Returns whether the client is involved in the Holdback Finch
-// experiment group.
-bool IsContentPrefetchHoldback();
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PARAMS_H_

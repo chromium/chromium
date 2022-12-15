@@ -227,7 +227,6 @@ bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
 
   switch (container->GetPrefetchStatus()) {
     case PrefetchStatus::kPrefetchSuccessful:
-    case PrefetchStatus::kPrefetchResponseUsed:
       return false;
     case PrefetchStatus::kPrefetchNotEligibleUserHasCookies:
     case PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker:
@@ -241,6 +240,7 @@ bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
     case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
     case PrefetchStatus::kPrefetchNotEligibleExistingProxy:
     case PrefetchStatus::kPrefetchUsedNoProbe:
+    case PrefetchStatus::kPrefetchUsedProbeSuccess:
     case PrefetchStatus::kPrefetchNotUsedProbeFailed:
     case PrefetchStatus::kPrefetchNotStarted:
     case PrefetchStatus::kPrefetchNotFinishedInTime:
@@ -265,9 +265,6 @@ bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
     case PrefetchStatus::kPrefetchIsStaleNSPNotStarted:
     case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
     case PrefetchStatus::kPrefetchFailedRedirectsDisabled:
-    case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
-    case PrefetchStatus::kPrefetchHeldback:
-    case PrefetchStatus::kPrefetchAllowed:
       return true;
   }
 }

@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
@@ -35,7 +36,6 @@ class PrefetchService;
 class PrefetchServingPageMetricsContainer;
 class PrefetchStreamingURLLoader;
 class PrefetchedMainframeResponseContainer;
-class PreloadingAttempt;
 class ProxyLookupClientImpl;
 
 // Holds the relevant size information of the prefetched response. The struct is
@@ -87,11 +87,10 @@ class CONTENT_EXPORT PrefetchContainer {
   }
 
   // The status of the current prefetch. Note that |HasPrefetchStatus| will be
-  // initially false until |SetPrefetchStatus| is called. |SetPrefetchStatus|
-  // also sets |attempt_| PreloadingHoldbackStatus, PreloadingTriggeringOutcome
-  // and PreloadingFailureReason. It is only safe to call after
-  // `OnEligibilityCheckComplete`.
-  void SetPrefetchStatus(PrefetchStatus prefetch_status);
+  // initially false until |SetPrefetchStatus| is called.
+  void SetPrefetchStatus(PrefetchStatus prefetch_status) {
+    prefetch_status_ = prefetch_status;
+  }
   bool HasPrefetchStatus() const { return prefetch_status_.has_value(); }
   PrefetchStatus GetPrefetchStatus() const;
 
@@ -101,9 +100,8 @@ class CONTENT_EXPORT PrefetchContainer {
       std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client);
   std::unique_ptr<ProxyLookupClientImpl> ReleaseProxyLookupClient();
 
-  // Whether or not the prefetch was determined to be eligibile.
-  void OnEligibilityCheckComplete(bool is_eligible,
-                                  absl::optional<PrefetchStatus> status);
+  // Whether or not the prefetch was determined to be eligibile
+  void OnEligibilityCheckComplete(bool is_eligible);
   bool IsEligible() const { return is_eligible_; }
 
   // Whether this prefetch is a decoy. Decoy prefetches will not store the
@@ -227,15 +225,6 @@ class CONTENT_EXPORT PrefetchContainer {
     return prefetch_response_sizes_;
   }
 
-  bool HasPreloadingAttempt() { return !!attempt_; }
-
-  // Simulates a prefetch container that reaches the interceptor. It sets the
-  // `attempt_` to the correct state: `PreloadingEligibility::kEligible`,
-  // `PreloadingHoldbackStatus::kAllowed` and
-  // `PreloadingTriggeringOutcome::kReady`.
-  void SimulateAttemptAtInterceptorForTest();
-  void DisablePrecogLoggingForTest() { attempt_ = nullptr; }
-
  protected:
   friend class PrefetchContainerTest;
 
@@ -349,14 +338,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Weak pointer to DevTools observer
   base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer_;
-
-  // `PreloadingAttempt` is used to track the lifecycle of the preloading event,
-  // and reports various statuses to UKM dashboard. It is initialised along with
-  // `this`, and destroyed when `WCO::DidFinishNavigation` is fired.
-  // `attempt_`'s eligibility is set in `OnEligibilityCheckComplete`, and its
-  // holdback status, triggering outcome and failure reason are set in
-  // `SetPrefetchStatus`.
-  base::WeakPtr<PreloadingAttempt> attempt_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };
