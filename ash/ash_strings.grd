@@ -927,11 +927,8 @@ Style notes:
       <message name="IDS_ASH_DRAG_HANDLE_NUDGE" desc="The text shown to users above the drag handle when the device is in tablet mode and showing the in-app shelf. Instructs them that they can transition to home screen by swiping up from the shelf.">
         Swipe up to go home
       </message>
-      <message name="IDS_ASH_DRAG_HANDLE_HOTSEAT_SHOW_ACCESSIBLE_NAME" desc="The tooltip text indicate that users can use this as a button to show the hotseat/apps in shelf bar.">
-        Show apps in shelf
-      </message>
-      <message name="IDS_ASH_DRAG_HANDLE_HOTSEAT_HIDE_ACCESSIBLE_NAME" desc="The tooltip text indicate that users can use this as a button to hide the hotseat/apps in shelf bar.">
-        Hide apps in shelf
+      <message name="IDS_ASH_DRAG_HANDLE_HOTSEAT_ACCESSIBLE_NAME" desc="The tooltip text indicates that users can use this as a button to show and hide the hotseat/apps in shelf bar.">
+        Apps in shelf
       </message>
       <message name="IDS_ASH_HOME_TO_OVERVIEW_CONTEXTUAL_NUDGE" desc="Text shown to the user below shelf on the home screen in tablet mode, instructing them that they can transition to overview UI by swiping up from the shelf and holding.">
         Swipe up and hold to see open apps

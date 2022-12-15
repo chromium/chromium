@@ -4,6 +4,8 @@
 
 #include "ash/shelf/drag_handle.h"
 
+#include <string>
+
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/controls/contextual_tooltip.h"
@@ -272,7 +274,9 @@ gfx::Rect DragHandle::GetAnchorBoundsInScreen() const {
 }
 
 void DragHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  // TODO(b/262424972): Remove unwanted ", window" string from the announcement.
   Button::GetAccessibleNodeData(node_data);
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kPopUpButton);
 
   std::u16string accessible_name = std::u16string();
   switch (shelf_->shelf_layout_manager()->hotseat_state()) {
@@ -282,7 +286,8 @@ void DragHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       break;
     case HotseatState::kHidden:
       accessible_name = l10n_util::GetStringUTF16(
-          IDS_ASH_DRAG_HANDLE_HOTSEAT_SHOW_ACCESSIBLE_NAME);
+          IDS_ASH_DRAG_HANDLE_HOTSEAT_ACCESSIBLE_NAME);
+      node_data->AddState(ax::mojom::State::kCollapsed);
 
       // When the hotseat is kHidden, the focus traversal should go to the
       // status area as the next focus and the navigation area as the previous
@@ -292,6 +297,8 @@ void DragHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
           shelf_->shelf_widget()->navigation_widget());
       break;
     case HotseatState::kExtended:
+      node_data->AddState(ax::mojom::State::kExpanded);
+
       // When the hotseat is kExtended, the focus traversal should go to the
       // hotseat as both the next and previous focus.
       GetViewAccessibility().OverrideNextFocus(shelf_->hotseat_widget());
@@ -299,9 +306,10 @@ void DragHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
       // The name should be empty when the hotseat is extended but we cannot
       // hide it.
-      if (force_show_hotseat_resetter_)
+      if (force_show_hotseat_resetter_) {
         accessible_name = l10n_util::GetStringUTF16(
-            IDS_ASH_DRAG_HANDLE_HOTSEAT_HIDE_ACCESSIBLE_NAME);
+            IDS_ASH_DRAG_HANDLE_HOTSEAT_ACCESSIBLE_NAME);
+      }
       break;
   }
   node_data->SetName(accessible_name);
