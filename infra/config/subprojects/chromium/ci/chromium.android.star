@@ -1348,6 +1348,7 @@ ci.builder(
 
 ci.builder(
     name = "android-12-x64-rel",
+    branch_selector = branches.STANDARD_MILESTONE,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1369,11 +1370,9 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
-    # TODO(crbug.com/1225851): Add it back to sheriff once the builder is more
-    # stable.
-    sheriff_rotations = args.ignore_default(None),
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
-        category = "builder_tester|x64",
+        category = "on_cq|x64",
         short_name = "12",
     ),
     execution_timeout = 4 * time.hour,

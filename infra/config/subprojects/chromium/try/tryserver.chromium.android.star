@@ -60,22 +60,26 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "android-12-x64-rel",
+    branch_selector = branches.STANDARD_MILESTONE,
     compilator = "android-12-x64-rel-compilator",
     mirrors = [
         "ci/android-12-x64-rel",
     ],
-    # TODO(crbug.com/1225851): Enable it on branch after running on CQ
-    # branch_selector = branches.STANDARD_MILESTONE,
-    main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 100,
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
     ),
+    main_list_view = "try",
+    tryjob = try_.job(),
+    # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
+    # are addressed
+    # use_orchestrator_pool = True,
 )
 
 try_.compilator_builder(
     name = "android-12-x64-rel-compilator",
-    # TODO(crbug.com/1225851): Enable it on branch after running on CQ
-    # branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
 )
 
