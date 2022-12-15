@@ -217,6 +217,9 @@ void Label::SetEnabledColorId(absl::optional<ui::ColorId> enabled_color_id) {
     return;
 
   enabled_color_id_ = enabled_color_id;
+  if (GetWidget())
+    UpdateColorsFromTheme();
+
   OnPropertyChanged(&enabled_color_id_, kPropertyEffectsPaint);
 }
 

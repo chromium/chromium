@@ -297,6 +297,13 @@ TEST_F(LabelTest, ColorPropertyOnEnabledColorIdChange) {
   label()->SetAutoColorReadabilityEnabled(false);
   label()->SetEnabledColorId(ui::kColorPrimaryForeground);
   EXPECT_EQ(color, label()->GetEnabledColor());
+
+  // Update the enabled id and verify the actual enabled color is updated to
+  // reflect the color id change. Regression test case for: b/262402965.
+  label()->SetEnabledColorId(ui::kColorAccent);
+  EXPECT_EQ(
+      label()->GetWidget()->GetColorProvider()->GetColor(ui::kColorAccent),
+      label()->GetEnabledColor());
 }
 
 TEST_F(LabelTest, AlignmentProperty) {
