@@ -26,4 +26,12 @@ bool IsLauncherKeywordExtractionScoringEnabled() {
   return base::FeatureList::IsEnabled(kLauncherKeywordExtractionScoring);
 }
 
+BASE_FEATURE(kLauncherQueryFederatedAnalyticsPHH,
+             "LauncherQueryFederatedAnalyticsPHH",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsLauncherQueryFederatedAnalyticsPHHEnabled() {
+  return base::FeatureList::IsEnabled(kLauncherQueryFederatedAnalyticsPHH);
+}
+
 }  // namespace search_features

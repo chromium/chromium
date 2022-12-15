@@ -15,8 +15,12 @@ BASE_DECLARE_FEATURE(kLauncherGameSearch);
 // Query key word extraction and scoring while search in the launcher
 BASE_DECLARE_FEATURE(kLauncherKeywordExtractionScoring);
 
+// Federated analytics for launcher queries, via Private Heavy Hitters (PHH).
+BASE_DECLARE_FEATURE(kLauncherQueryFederatedAnalyticsPHH);
+
 bool IsLauncherGameSearchEnabled();
 bool IsLauncherKeywordExtractionScoringEnabled();
+bool IsLauncherQueryFederatedAnalyticsPHHEnabled();
 
 }  // namespace search_features
 
