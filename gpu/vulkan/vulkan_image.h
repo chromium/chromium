@@ -49,8 +49,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
       VkImageUsageFlags usage,
       VkImageCreateFlags flags = 0,
       VkImageTiling image_tiling = VK_IMAGE_TILING_OPTIMAL,
-      void* vk_image_create_info_next = nullptr,
-      void* vk_memory_allocation_info_next = nullptr);
+      const void* extra_image_create_info = nullptr,
+      const void* extra_memory_allocation_info = nullptr);
 
   // Create VulkanImage with external memory, it can be exported and used by
   // foreign API
@@ -61,8 +61,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
       VkImageUsageFlags usage,
       VkImageCreateFlags flags = 0,
       VkImageTiling image_tiling = VK_IMAGE_TILING_OPTIMAL,
-      void* image_create_info_next = nullptr,
-      void* memory_allocation_info_next = nullptr);
+      const void* extra_image_create_info = nullptr,
+      const void* extra_memory_allocation_info = nullptr);
 
   static std::unique_ptr<VulkanImage> CreateFromGpuMemoryBufferHandle(
       VulkanDeviceQueue* device_queue,
@@ -99,12 +99,10 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
 
   void Destroy();
 
-  VkMemoryRequirements GetMemoryRequirements(size_t plane);
-
 #if BUILDFLAG(IS_POSIX)
   base::ScopedFD GetMemoryFd(VkExternalMemoryHandleTypeFlagBits handle_type =
                                  VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT) {
-    return memory_->GetMemoryFd(handle_type);
+    return memories_[0]->GetMemoryFd(handle_type);
   }
 #endif
 
@@ -112,12 +110,14 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
   base::win::ScopedHandle GetMemoryHandle(
       VkExternalMemoryHandleTypeFlagBits handle_type =
           VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT) {
-    return memory_->GetMemoryHandle(handle_type);
+    return memories_[0]->GetMemoryHandle(handle_type);
   }
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-  zx::vmo GetMemoryZirconHandle() { return memory_->GetMemoryZirconHandle(); }
+  zx::vmo GetMemoryZirconHandle() {
+    return memories_[0]->GetMemoryZirconHandle();
+  }
 #endif
 
   VulkanDeviceQueue* device_queue() const { return device_queue_; }
@@ -128,8 +128,12 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
   VkFormat format() const { return create_info_.format; }
   VkImageCreateFlags flags() const { return create_info_.flags; }
   VkImageUsageFlags usage() const { return create_info_.usage; }
-  VkDeviceSize device_size() const { return memory_->size(); }
-  uint32_t memory_type_index() const { return memory_->type_index(); }
+  VkDeviceSize device_size(size_t plane = 0) const {
+    return memories_[0]->size();
+  }
+  uint32_t memory_type_index(size_t plane = 0) const {
+    return memories_[0]->type_index();
+  }
   VkImageTiling image_tiling() const { return create_info_.tiling; }
   uint32_t queue_family_index() const { return queue_family_index_; }
   void set_queue_family_index(uint32_t index) { queue_family_index_ = index; }
@@ -137,7 +141,9 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
     return ycbcr_info_;
   }
   VkImage image() const { return image_; }
-  VkDeviceMemory device_memory() const { return memory_->device_memory(); }
+  VkDeviceMemory device_memory(size_t i = 0) const {
+    return memories_[0]->device_memory();
+  }
   VkExternalMemoryHandleTypeFlags handle_types() const { return handle_types_; }
   void set_native_pixmap(scoped_refptr<gfx::NativePixmap> pixmap) {
     native_pixmap_ = std::move(pixmap);
@@ -150,23 +156,39 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
   const std::array<VkSubresourceLayout, 4>& layouts() const { return layouts_; }
 
  private:
-  bool Initialize(VulkanDeviceQueue* device_queue,
-                  const gfx::Size& size,
-                  VkFormat format,
-                  VkImageUsageFlags usage,
-                  VkImageCreateFlags flags,
-                  VkImageTiling image_tiling,
-                  void* image_create_info_next,
-                  void* memory_allocation_info_next,
-                  const VkMemoryRequirements* requirements);
+  // Create VkImage.
+  bool CreateVkImage(const gfx::Size& size,
+                     VkFormat format,
+                     VkImageUsageFlags usage,
+                     VkImageCreateFlags flags,
+                     VkImageTiling image_tiling,
+                     const void* extra_image_create_info);
+  // Get memory requirements for the given plane at index.
+  VkMemoryRequirements GetMemoryRequirements(size_t plane);
+  // Bind memory with the given plane of the image.
+  bool BindMemory(size_t plane, std::unique_ptr<VulkanMemory> memory);
+  // Allocate memory and bind to the given plane of the image.
+  bool AllocateAndBindMemory(size_t plane,
+                             const VkMemoryRequirements* requirements,
+                             const void* extra_memory_allocation_info);
+  // Initialize for single plane or joint planes VkImage
+  bool InitializeSingleOrJointPlanes(VulkanDeviceQueue* device_queue,
+                                     const gfx::Size& size,
+                                     VkFormat format,
+                                     VkImageUsageFlags usage,
+                                     VkImageCreateFlags flags,
+                                     VkImageTiling image_tiling,
+                                     const void* extra_image_create_info,
+                                     const void* extra_memory_allocation_info,
+                                     const VkMemoryRequirements* requirements);
   bool InitializeWithExternalMemory(VulkanDeviceQueue* device_queue,
                                     const gfx::Size& size,
                                     VkFormat format,
                                     VkImageUsageFlags usage,
                                     VkImageCreateFlags flags,
                                     VkImageTiling image_tiling,
-                                    void* image_create_info_next,
-                                    void* memory_allocation_info_next);
+                                    const void* extra_image_create_info,
+                                    const void* extra_memory_allocation_info);
   bool InitializeFromGpuMemoryBufferHandle(
       VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferHandle gmb_handle,
@@ -186,13 +208,15 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
                                                 VkImageCreateFlags flags);
 #endif
 
-  bool disjoint_ = false;
   raw_ptr<VulkanDeviceQueue> device_queue_ = nullptr;
   VkImageCreateInfo create_info_{VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
+  // Image has multi planes and planes are not joint.
+  bool disjoint_planes_ = false;
   uint32_t queue_family_index_ = VK_QUEUE_FAMILY_IGNORED;
   absl::optional<VulkanYCbCrInfo> ycbcr_info_;
   VkImage image_ = VK_NULL_HANDLE;
-  std::unique_ptr<VulkanMemory> memory_;
+  // Device memory for each plane.
+  std::array<std::unique_ptr<VulkanMemory>, 4> memories_;
   VkExternalMemoryHandleTypeFlags handle_types_ = 0;
   scoped_refptr<gfx::NativePixmap> native_pixmap_;
   uint64_t modifier_ = gfx::NativePixmapHandle::kNoModifier;

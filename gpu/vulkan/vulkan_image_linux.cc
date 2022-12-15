@@ -100,9 +100,10 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
   };
 
   VkMemoryRequirements* requirements = nullptr;
-  bool result = Initialize(device_queue, size, format, usage, flags,
-                           image_tiling, &external_image_create_info,
-                           &import_memory_fd_info, requirements);
+  // TODO support multiple plane
+  bool result = InitializeSingleOrJointPlanes(
+      device_queue, size, format, usage, flags, image_tiling,
+      &external_image_create_info, &import_memory_fd_info, requirements);
   // If Initialize successfully, the fd in scoped_fd should be owned by vulkan,
   // otherwise take the ownership of the fd back.
   if (!result) {
@@ -187,7 +188,7 @@ bool VulkanImage::InitializeWithExternalMemoryAndModifiers(
   if (!InitializeWithExternalMemory(device_queue, size, format, usage, flags,
                                     VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT,
                                     &modifier_list,
-                                    /*memory_allocation_info_next=*/nullptr)) {
+                                    /*extra_memory_allocation_info=*/nullptr)) {
     return false;
   }
 

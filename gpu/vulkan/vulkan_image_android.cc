@@ -149,13 +149,12 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
       .memoryTypeBits = ahb_props.memoryTypeBits,
   };
 
-  // If we want to use external format, format must be VK_FORMAT_UNDEFINED.
-  if (!Initialize(device_queue, size,
-                  should_use_external_format ? VK_FORMAT_UNDEFINED
-                                             : ahb_format_props.format,
-                  usage_flags, create_flags, VK_IMAGE_TILING_OPTIMAL,
-                  &external_memory_image_info, &ahb_import_info,
-                  &requirements)) {
+  if (!InitializeSingleOrJointPlanes(
+          device_queue, size,
+          should_use_external_format ? VK_FORMAT_UNDEFINED
+                                     : ahb_format_props.format,
+          usage_flags, create_flags, VK_IMAGE_TILING_OPTIMAL,
+          &external_memory_image_info, &ahb_import_info, &requirements)) {
     return false;
   }
 

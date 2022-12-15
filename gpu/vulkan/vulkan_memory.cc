@@ -13,7 +13,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
-
 namespace {
 
 absl::optional<uint32_t> FindMemoryTypeIndex(
@@ -24,10 +23,12 @@ absl::optional<uint32_t> FindMemoryTypeIndex(
   vkGetPhysicalDeviceMemoryProperties(physical_device, &properties);
   constexpr uint32_t kMaxIndex = 31;
   for (uint32_t i = 0; i <= kMaxIndex; i++) {
-    if (((1u << i) & requirements->memoryTypeBits) == 0)
+    if (((1u << i) & requirements->memoryTypeBits) == 0) {
       continue;
-    if ((properties.memoryTypes[i].propertyFlags & flags) != flags)
+    }
+    if ((properties.memoryTypes[i].propertyFlags & flags) != flags) {
       continue;
+    }
     return i;
   }
   NOTREACHED();
@@ -70,8 +71,9 @@ std::unique_ptr<VulkanMemory> VulkanMemory::Create(
 }
 
 void VulkanMemory::Destroy() {
-  if (!device_queue_)
+  if (!device_queue_) {
     return;
+  }
   VkDevice vk_device = device_queue_->GetVulkanDevice();
   if (device_memory_ != VK_NULL_HANDLE) {
     vkFreeMemory(vk_device, device_memory_, nullptr /* pAllocator */);
