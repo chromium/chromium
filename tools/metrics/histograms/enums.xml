@@ -101149,6 +101149,13 @@ Full version information for the fingerprint enum values:
   <int value="23"
       label="Failed with an error, automatic translation to a predefined
              target language"/>
+  <int value="24" label="Succeeded, automatic translation by hrefTranslate"/>
+  <int value="25"
+      label="Reverted by user, automatic translation by hrefTranslate"/>
+  <int value="26"
+      label="Failed with no error, automatic translation by hrefTranslate"/>
+  <int value="27"
+      label="Failed with an error, automatic translation by hrefTranslate"/>
 </enum>
 
 <enum name="TranslationType">

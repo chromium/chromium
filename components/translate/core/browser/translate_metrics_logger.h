@@ -72,7 +72,11 @@ enum class TranslationStatus {
   kRevertedAutomaticTranslationToPredefinedTarget = 21,
   kFailedWithNoErrorAutomaticTranslationToPredefinedTarget = 22,
   kFailedWithErrorAutomaticTranslationToPredefinedTarget = 23,
-  kMaxValue = kFailedWithErrorAutomaticTranslationToPredefinedTarget,
+  kSuccessFromAutomaticTranslationByHref = 24,
+  kRevertedAutomaticTranslationByHref = 25,
+  kFailedWithNoErrorAutomaticTranslationByHref = 26,
+  kFailedWithErrorAutomaticTranslationByHref = 27,
+  kMaxValue = kFailedWithErrorAutomaticTranslationByHref,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -90,7 +94,8 @@ enum class TranslationType {
   kManualContextMenuInitialTranslation = 7,
   kManualContextMenuReTranslation = 8,
   kAutomaticTranslationToPredefinedTarget = 9,
-  kMaxValue = kAutomaticTranslationToPredefinedTarget,
+  kAutomaticTranslationByHref = 10,
+  kMaxValue = kAutomaticTranslationByHref,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

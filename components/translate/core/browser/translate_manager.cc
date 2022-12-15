@@ -1127,9 +1127,7 @@ bool TranslateManager::MaterializeDecision(
   if (decision.can_auto_href_translate()) {
     TranslatePage(decision.href_translate_source,
                   decision.href_translate_target, false,
-                  GetLanguageState()->InTranslateNavigation()
-                      ? TranslationType::kAutomaticTranslationByLink
-                      : TranslationType::kAutomaticTranslationByPref);
+                  TranslationType::kAutomaticTranslationByHref);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
         TriggerDecision::kAutomaticTranslationByHref);
     return true;

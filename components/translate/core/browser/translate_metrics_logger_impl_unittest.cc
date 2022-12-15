@@ -944,94 +944,6 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
                                 TranslateState::kTranslatedNoUI, 1, 0);
   CheckTranslateErrors(TranslateErrors::NONE, 0);
 
-  // Simulate the page being auto translated due to user preferences. Note that
-  // in this case the translation will be queued before we mark the initial
-  // state, but in general the translation will not finish until after. If the
-  // translation is successful, then we still want to record the initial state
-  // as translated.
-  ResetTest();
-  translate_metrics_logger()->LogTranslationStarted(
-      TranslationType::kAutomaticTranslationByPref);
-  translate_metrics_logger()->LogInitialState();
-  translate_metrics_logger()->LogTranslationFinished(true,
-                                                     TranslateErrors::NONE);
-
-  translate_metrics_logger()->RecordMetrics(true);
-
-  histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationType, TranslationType::kAutomaticTranslationByPref,
-      1);
-  histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationStatus,
-      TranslationStatus::kSuccessFromAutomaticTranslationByPref, 1);
-
-  CheckTranslateStateHistograms(TranslateState::kTranslatedNoUI,
-                                TranslateState::kTranslatedNoUI, 1, 0);
-  CheckTranslateErrors(TranslateErrors::NONE, 0);
-
-  // Simulate a page being auto translated due to a link navigation.
-  ResetTest();
-  translate_metrics_logger()->LogTranslationStarted(
-      TranslationType::kAutomaticTranslationByLink);
-  translate_metrics_logger()->LogInitialState();
-  translate_metrics_logger()->LogTranslationFinished(true,
-                                                     TranslateErrors::NONE);
-
-  translate_metrics_logger()->RecordMetrics(true);
-
-  histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationType, TranslationType::kAutomaticTranslationByLink,
-      1);
-  histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationStatus,
-      TranslationStatus::kSuccessFromAutomaticTranslationByLink, 1);
-
-  CheckTranslateStateHistograms(TranslateState::kTranslatedNoUI,
-                                TranslateState::kTranslatedNoUI, 1, 0);
-  CheckTranslateErrors(TranslateErrors::NONE, 0);
-
-  // Simulate an auto translation where the translation fails with an error.
-  ResetTest();
-  translate_metrics_logger()->LogTranslationStarted(
-      TranslationType::kAutomaticTranslationByPref);
-  translate_metrics_logger()->LogInitialState();
-  translate_metrics_logger()->LogTranslationFinished(false,
-                                                     TranslateErrors::NETWORK);
-
-  translate_metrics_logger()->RecordMetrics(true);
-
-  histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationType, TranslationType::kAutomaticTranslationByPref,
-      1);
-  histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationStatus,
-      TranslationStatus::kFailedWithErrorAutomaticTranslation, 1);
-
-  CheckTranslateStateHistograms(TranslateState::kNotTranslatedNoUI,
-                                TranslateState::kNotTranslatedNoUI, 0, 0);
-  CheckTranslateErrors(TranslateErrors::NETWORK, 1);
-
-  // Simulate an auto translation where the translation fails without an error.
-  ResetTest();
-  translate_metrics_logger()->LogTranslationStarted(
-      TranslationType::kAutomaticTranslationByPref);
-  translate_metrics_logger()->LogInitialState();
-  translate_metrics_logger()->LogTranslationFinished(false,
-                                                     TranslateErrors::NONE);
-
-  translate_metrics_logger()->RecordMetrics(true);
-
-  histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationType, TranslationType::kAutomaticTranslationByPref,
-      1);
-  histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationStatus,
-      TranslationStatus::kFailedWithNoErrorAutomaticTranslation, 1);
-
-  CheckTranslateStateHistograms(TranslateState::kNotTranslatedNoUI,
-                                TranslateState::kNotTranslatedNoUI, 0, 0);
-  CheckTranslateErrors(TranslateErrors::NONE, 0);
-
   // Simulate an auto translation where the translation does not finish.
   ResetTest();
   translate_metrics_logger()->LogTranslationStarted(
@@ -1066,29 +978,6 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
       TranslationType::kManualContextMenuReTranslation,
       TranslationStatus::kRevertedManualContextMenuTranslation);
 
-  // Simulates a page that is automatically translated by pref then reverted.
-  ResetTest();
-  translate_metrics_logger()->LogTranslationStarted(
-      TranslationType::kAutomaticTranslationByPref);
-  translate_metrics_logger()->LogInitialState();
-  translate_metrics_logger()->LogTranslationFinished(true,
-                                                     TranslateErrors::NONE);
-
-  translate_metrics_logger()->LogReversion();
-
-  translate_metrics_logger()->RecordMetrics(true);
-
-  histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationType, TranslationType::kAutomaticTranslationByPref,
-      1);
-  histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationStatus,
-      TranslationStatus::kRevertedAutomaticTranslation, 1);
-
-  CheckTranslateStateHistograms(TranslateState::kTranslatedNoUI,
-                                TranslateState::kNotTranslatedNoUI, 1, 1);
-  CheckTranslateErrors(TranslateErrors::NONE, 0);
-
   // Simulates a page that is automatically translated, then reverted, and
   // finally manually translated via either the Translate UI.
   ResetTest();
@@ -1102,6 +991,131 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
   SimulateAndCheckAutomaticThenManualTranslation(
       true, TranslationType::kManualContextMenuReTranslation,
       TranslationStatus::kSuccessFromManualContextMenuTranslation);
+}
+
+TEST_F(TranslateMetricsLoggerImplTest, LogAutoTranslationSuccess) {
+  const struct {
+    TranslationType translation_type;
+    TranslationStatus expected_translation_status;
+  } kTests[] = {
+      {TranslationType::kAutomaticTranslationByPref,
+       TranslationStatus::kSuccessFromAutomaticTranslationByPref},
+      {TranslationType::kAutomaticTranslationByLink,
+       TranslationStatus::kSuccessFromAutomaticTranslationByLink},
+      {TranslationType::kAutomaticTranslationToPredefinedTarget,
+       TranslationStatus::kSuccessFromAutomaticTranslationToPredefinedTarget},
+      {TranslationType::kAutomaticTranslationByHref,
+       TranslationStatus::kSuccessFromAutomaticTranslationByHref},
+  };
+
+  for (const auto& test : kTests) {
+    translate_metrics_logger()->LogTranslationStarted(test.translation_type);
+    translate_metrics_logger()->LogInitialState();
+    translate_metrics_logger()->LogTranslationFinished(true,
+                                                       TranslateErrors::NONE);
+
+    translate_metrics_logger()->RecordMetrics(true);
+
+    histogram_tester()->ExpectUniqueSample(kTranslateTranslationType,
+                                           test.translation_type, 1);
+    histogram_tester()->ExpectUniqueSample(kTranslateTranslationStatus,
+                                           test.expected_translation_status, 1);
+
+    CheckTranslateStateHistograms(TranslateState::kTranslatedNoUI,
+                                  TranslateState::kTranslatedNoUI, 1, 0);
+    CheckTranslateErrors(TranslateErrors::NONE, 0);
+
+    ResetTest();
+  }
+}
+
+TEST_F(TranslateMetricsLoggerImplTest, LogAutoTranslationFailed) {
+  const struct {
+    TranslationType translation_type;
+    TranslateErrors translate_error_type;
+    TranslationStatus expected_translation_status;
+  } kTests[] = {
+      {TranslationType::kAutomaticTranslationByPref, TranslateErrors::NONE,
+       TranslationStatus::kFailedWithNoErrorAutomaticTranslation},
+      {TranslationType::kAutomaticTranslationByPref, TranslateErrors::NETWORK,
+       TranslationStatus::kFailedWithErrorAutomaticTranslation},
+      {TranslationType::kAutomaticTranslationByLink, TranslateErrors::NONE,
+       TranslationStatus::kFailedWithNoErrorAutomaticTranslation},
+      {TranslationType::kAutomaticTranslationByLink, TranslateErrors::NETWORK,
+       TranslationStatus::kFailedWithErrorAutomaticTranslation},
+      {TranslationType::kAutomaticTranslationToPredefinedTarget,
+       TranslateErrors::NONE,
+       TranslationStatus::
+           kFailedWithNoErrorAutomaticTranslationToPredefinedTarget},
+      {TranslationType::kAutomaticTranslationToPredefinedTarget,
+       TranslateErrors::NETWORK,
+       TranslationStatus::
+           kFailedWithErrorAutomaticTranslationToPredefinedTarget},
+      {TranslationType::kAutomaticTranslationByHref, TranslateErrors::NONE,
+       TranslationStatus::kFailedWithNoErrorAutomaticTranslationByHref},
+      {TranslationType::kAutomaticTranslationByHref, TranslateErrors::NETWORK,
+       TranslationStatus::kFailedWithErrorAutomaticTranslationByHref},
+  };
+
+  for (const auto& test : kTests) {
+    translate_metrics_logger()->LogTranslationStarted(test.translation_type);
+    translate_metrics_logger()->LogInitialState();
+    translate_metrics_logger()->LogTranslationFinished(
+        false, test.translate_error_type);
+
+    translate_metrics_logger()->RecordMetrics(true);
+
+    histogram_tester()->ExpectUniqueSample(kTranslateTranslationType,
+                                           test.translation_type, 1);
+    histogram_tester()->ExpectUniqueSample(kTranslateTranslationStatus,
+                                           test.expected_translation_status, 1);
+
+    CheckTranslateStateHistograms(TranslateState::kNotTranslatedNoUI,
+                                  TranslateState::kNotTranslatedNoUI, 0, 0);
+    CheckTranslateErrors(
+        test.translate_error_type,
+        test.translate_error_type == TranslateErrors::NONE ? 0 : 1);
+
+    ResetTest();
+  }
+}
+
+TEST_F(TranslateMetricsLoggerImplTest, LogAutoTranslationSuccessThenRevert) {
+  const struct {
+    TranslationType translation_type;
+    TranslationStatus expected_translation_status;
+  } kTests[] = {
+      {TranslationType::kAutomaticTranslationByPref,
+       TranslationStatus::kRevertedAutomaticTranslation},
+      {TranslationType::kAutomaticTranslationByLink,
+       TranslationStatus::kRevertedAutomaticTranslation},
+      {TranslationType::kAutomaticTranslationToPredefinedTarget,
+       TranslationStatus::kRevertedAutomaticTranslationToPredefinedTarget},
+      {TranslationType::kAutomaticTranslationByHref,
+       TranslationStatus::kRevertedAutomaticTranslationByHref},
+  };
+
+  for (const auto& test : kTests) {
+    translate_metrics_logger()->LogTranslationStarted(test.translation_type);
+    translate_metrics_logger()->LogInitialState();
+    translate_metrics_logger()->LogTranslationFinished(true,
+                                                       TranslateErrors::NONE);
+
+    translate_metrics_logger()->LogReversion();
+
+    translate_metrics_logger()->RecordMetrics(true);
+
+    histogram_tester()->ExpectUniqueSample(kTranslateTranslationType,
+                                           test.translation_type, 1);
+    histogram_tester()->ExpectUniqueSample(kTranslateTranslationStatus,
+                                           test.expected_translation_status, 1);
+
+    CheckTranslateStateHistograms(TranslateState::kTranslatedNoUI,
+                                  TranslateState::kNotTranslatedNoUI, 1, 1);
+    CheckTranslateErrors(TranslateErrors::NONE, 0);
+
+    ResetTest();
+  }
 }
 
 TEST_F(TranslateMetricsLoggerImplTest, LogTranslationLanguages) {

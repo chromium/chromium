@@ -549,6 +549,9 @@ TranslateMetricsLoggerImpl::ConvertTranslationTypeToRevertedTranslationStatus(
       TranslationType::kAutomaticTranslationToPredefinedTarget) {
     return TranslationStatus::kRevertedAutomaticTranslationToPredefinedTarget;
   }
+  if (translation_type == TranslationType::kAutomaticTranslationByHref) {
+    return TranslationStatus::kRevertedAutomaticTranslationByHref;
+  }
   return TranslationStatus::kUninitialized;
 }
 
@@ -588,6 +591,13 @@ TranslateMetricsLoggerImpl::ConvertTranslationTypeToFailedTranslationStatus(
           kFailedWithNoErrorAutomaticTranslationToPredefinedTarget;
     }
   }
+  if (translation_type == TranslationType::kAutomaticTranslationByHref) {
+    if (was_translation_error) {
+      return TranslationStatus::kFailedWithErrorAutomaticTranslationByHref;
+    } else {
+      return TranslationStatus::kFailedWithNoErrorAutomaticTranslationByHref;
+    }
+  }
   return TranslationStatus::kUninitialized;
 }
 
@@ -612,6 +622,9 @@ TranslateMetricsLoggerImpl::ConvertTranslationTypeToSuccessfulTranslationStatus(
       TranslationType::kAutomaticTranslationToPredefinedTarget) {
     return TranslationStatus::
         kSuccessFromAutomaticTranslationToPredefinedTarget;
+  }
+  if (translation_type == TranslationType::kAutomaticTranslationByHref) {
+    return TranslationStatus::kSuccessFromAutomaticTranslationByHref;
   }
   return TranslationStatus::kUninitialized;
 }
