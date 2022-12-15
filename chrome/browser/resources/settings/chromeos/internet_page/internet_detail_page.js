@@ -59,14 +59,13 @@ import {Route, Router} from '../router.js';
 
 import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
 
+// TODO(crbug/1315757) The following type definitions are only needed for
+// Closure compiler and can be removed when this file is converted to TS.
 /**
- * TODO(crbug/1315757) The following type definitions are only needed for
- * Closure compiler and can be removed when this file is converted to TS.
- *
  * @constructor
  * @extends {HTMLElement}
  */
-export function CellularRoamingToggleButtonElement() {}
+function CellularRoamingToggleButtonElement() {}
 /** @return {?CrToggleElement} */
 CellularRoamingToggleButtonElement.prototype.getCellularRoamingToggle =
     function() {};
@@ -75,9 +74,17 @@ CellularRoamingToggleButtonElement.prototype.getCellularRoamingToggle =
  * @constructor
  * @extends {HTMLElement}
  */
-export function TetherConnectionDialogElement() {}
+function TetherConnectionDialogElement() {}
 TetherConnectionDialogElement.prototype.open = function() {};
 TetherConnectionDialogElement.prototype.close = function() {};
+
+/**
+ * @constructor
+ * @extends {HTMLElement}
+ */
+function NetworkProxySectionElement() {}
+/** @return {?CrToggleElement} */
+NetworkProxySectionElement.prototype.getAllowSharedToggle = function() {};
 
 /**
  * @constructor
@@ -571,7 +578,8 @@ class SettingsInternetDetailPageElement extends
       this.proxyExpanded_ = true;
       this.afterRenderShowDeepLink(
           settingId,
-          () => this.shadowRoot.querySelector('network-proxy-section')
+          () => /** @type {NetworkProxySectionElement} */ (
+                    this.shadowRoot.querySelector('network-proxy-section'))
                     .getAllowSharedToggle());
       return false;
     }

@@ -21,10 +21,6 @@ js_type_check("closure_compile_module") {
     ":internet_page",
     ":internet_page_browser_proxy",
     ":internet_subpage",
-    ":network_always_on_vpn",
-    ":network_proxy_section",
-    ":network_summary",
-    ":network_summary_item",
   ]
 }
 
@@ -97,7 +93,6 @@ js_library("internet_detail_menu") {
 js_library("internet_detail_page") {
   deps = [
     ":internet_page_browser_proxy",
-    ":network_proxy_section",
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources:web_ui_listener_behavior",
@@ -129,6 +124,7 @@ js_library("internet_detail_page") {
   ]
   externs_list = [
     "../settings_controls_types.js",
+    "$externs_path/settings_private.js",
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
     "//ui/webui/resources/cr_elements/policy/cr_policy_indicator_externs.js",
@@ -163,7 +159,6 @@ js_library("internet_page") {
     ":internet_known_networks_page",
     ":internet_page_browser_proxy",
     ":internet_subpage",
-    ":network_summary",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources:web_ui_listener_behavior",
     "//ash/webui/common/resources/cellular_setup:cellular_types",
@@ -183,6 +178,7 @@ js_library("internet_page") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [
+    "../settings_controls_types.js",
     "//ui/webui/resources/cr_elements/cr_toast/cr_toast_externs.js",
     "//ui/webui/resources/cr_elements/policy/cr_policy_indicator_externs.js",
   ]
@@ -194,7 +190,6 @@ js_library("internet_page_browser_proxy") {
 js_library("internet_subpage") {
   deps = [
     ":internet_page_browser_proxy",
-    ":network_always_on_vpn",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/cellular_setup:cellular_types",
     "//ash/webui/common/resources/network:cr_policy_network_behavior_mojo",
@@ -224,65 +219,6 @@ js_library("hotspot_subpage") {
   externs_list = []
 }
 
-js_library("network_always_on_vpn") {
-  deps = [
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources/network:onc_mojo",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("network_proxy_section") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources/network:cr_policy_network_behavior_mojo",
-    "//ash/webui/common/resources/network:cr_policy_network_indicator_mojo",
-    "//ash/webui/common/resources/network:network_proxy",
-    "//chrome/browser/resources/settings/chromeos:os_route",
-    "//chrome/browser/resources/settings/chromeos:prefs_behavior",
-    "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
-    "//chrome/browser/resources/settings/chromeos:router",
-    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "../settings_controls_types.js",
-    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-  ]
-}
-
-js_library("network_summary") {
-  deps = [
-    ":hotspot_summary_item",
-    ":network_summary_item",
-    "//ash/webui/common/resources/network:mojo_interface_provider",
-    "//ash/webui/common/resources/network:network_listener_behavior",
-    "//ash/webui/common/resources/network:onc_mojo",
-    "//chromeos/ash/services/hotspot_config/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("network_summary_item") {
-  deps = [
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:cr_policy_indicator_behavior",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources/network:cellular_utils",
-    "//ash/webui/common/resources/network:cr_policy_network_behavior_mojo",
-    "//ash/webui/common/resources/network:network_icon",
-    "//ash/webui/common/resources/network:network_siminfo",
-    "//ash/webui/common/resources/network:onc_mojo",
-    "//ash/webui/common/resources/traffic_counters:traffic_counters",
-    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
-}
-
 html_to_js("web_components") {
   js_files = [
     "apn_subpage.js",
@@ -294,9 +230,5 @@ html_to_js("web_components") {
     "internet_known_networks_page.js",
     "internet_page.js",
     "internet_subpage.js",
-    "network_always_on_vpn.js",
-    "network_proxy_section.js",
-    "network_summary_item.js",
-    "network_summary.js",
   ]
 }

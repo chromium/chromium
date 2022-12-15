@@ -11,33 +11,32 @@ import './hotspot_summary_item.js';
 import './network_summary_item.js';
 
 import {getHotspotConfig} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
-import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {CrosHotspotConfigInterface, CrosHotspotConfigObserverReceiver, HotspotAllowStatus, HotspotInfo} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {CrosHotspotConfigInterface, CrosHotspotConfigObserverInterface, CrosHotspotConfigObserverReceiver, HotspotAllowStatus, HotspotInfo, HotspotState} from 'chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrosNetworkConfigRemote, FilterType, GlobalPolicy, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {castExists} from '../assert_extras.js';
+
+import {getTemplate} from './network_summary.html.js';
 import {NetworkSummaryItemElement} from './network_summary_item.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {NetworkListenerBehaviorInterface}
- */
 const NetworkSummaryElementBase =
-    mixinBehaviors([NetworkListenerBehavior], PolymerElement);
+    mixinBehaviors([NetworkListenerBehavior], PolymerElement) as {
+      new (): PolymerElement & NetworkListenerBehaviorInterface,
+    };
 
-/** @polymer */
 class NetworkSummaryElement extends NetworkSummaryElementBase {
   static get is() {
-    return 'network-summary';
+    return 'network-summary' as const;
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -45,7 +44,6 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
       /**
        * Highest priority connected network or null. Set here to update
        * internet-page which updates internet-subpage and internet-detail-page.
-       * @type {?OncMojo.NetworkStateProperties}
        */
       defaultNetwork: {
         type: Object,
@@ -57,17 +55,16 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
        * The device state for each network device type. We initialize this to
        * include a disabled WiFi type since WiFi is always present. This reduces
        * the amount of visual change on first load.
-       * @private {!Object<!OncMojo.DeviceStateProperties>}
        */
       deviceStates: {
         type: Object,
         value() {
-          const result = {};
-          result[NetworkType.kWiFi] = {
-            deviceState: DeviceStateType.kDisabled,
-            type: NetworkType.kWiFi,
+          return {
+            [NetworkType.kWiFi]: {
+              deviceState: DeviceStateType.kDisabled,
+              type: NetworkType.kWiFi,
+            },
           };
-          return result;
         },
         notify: true,
       },
@@ -75,7 +72,6 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
       /**
        * Array of active network states, one per device type. Initialized to
        * include a default WiFi state (see deviceStates comment).
-       * @private {!Array<!OncMojo.NetworkStateProperties>}
        */
       activeNetworkStates_: {
         type: Array,
@@ -86,26 +82,22 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
 
       /**
        * List of network state data for each network type.
-       * @private {!Object<!Array<!OncMojo.NetworkStateProperties>>}
        */
       networkStateLists_: {
         type: Object,
         value() {
-          const result = {};
-          result[NetworkType.kWiFi] = [];
-          return result;
+          return {
+            [NetworkType.kWiFi]: [],
+          };
         },
       },
 
-      /** @private {!GlobalPolicy|undefined} */
       globalPolicy_: Object,
 
-      /** @private {!HotspotInfo} */
       hotspotInfo_: Object,
 
       /**
        * Return true if hotspot feature flag is enabled.
-       * @private
        */
       isHotspotFeatureEnabled_: {
         type: Boolean,
@@ -117,47 +109,47 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
     };
   }
 
-  /** @override */
+  defaultNetwork: OncMojo.NetworkStateProperties|null;
+  deviceStates: Record<NetworkType, OncMojo.DeviceStateProperties>;
+  private activeNetworkIds_: Set<string>|null;
+  private activeNetworkStates_: OncMojo.NetworkStateProperties[];
+  private crosHotspotConfig_: CrosHotspotConfigInterface;
+  private crosHotspotConfigObserverReceiver_: CrosHotspotConfigObserverReceiver;
+  private globalPolicy_: GlobalPolicy|undefined;
+  private hotspotInfo_: HotspotInfo;
+  private isHotspotFeatureEnabled_: boolean;
+  private networkConfig_: CrosNetworkConfigRemote;
+  private networkStateLists_:
+      Record<NetworkType, OncMojo.NetworkStateProperties[]>;
+
   constructor() {
     super();
 
     /**
      * Set of GUIDs identifying active networks, one for each type.
-     * @private {?Set<string>}
      */
     this.activeNetworkIds_ = null;
 
-    /** @private {!CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
 
     if (this.isHotspotFeatureEnabled_) {
-      /** @private {!CrosHotspotConfigInterface} */
       this.crosHotspotConfig_ = getHotspotConfig();
-
-      /**
-       * @private {!CrosHotspotConfigObserverReceiver}
-       */
       this.crosHotspotConfigObserverReceiver_ =
-          new CrosHotspotConfigObserverReceiver(
-              /**
-               * @type {!CrosHotspotConfigObserverInterface}
-               */
-              (this));
+          new CrosHotspotConfigObserverReceiver(this);
     }
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
+
     if (this.isHotspotFeatureEnabled_) {
       this.crosHotspotConfig_.addObserver(
           this.crosHotspotConfigObserverReceiver_.$.bindNewPipeAndPassRemote());
     }
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.getNetworkLists_();
@@ -170,30 +162,26 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
     }
   }
 
-  /** override */
-  onHotspotInfoChanged() {
-    this.crosHotspotConfig_.getHotspotInfo().then(response => {
-      this.hotspotInfo_ = response.hotspotInfo;
-    });
+  async onHotspotInfoChanged(): Promise<void> {
+    const response = await this.crosHotspotConfig_.getHotspotInfo();
+    this.hotspotInfo_ = response.hotspotInfo;
   }
 
   /**
    * CrosNetworkConfigObserver impl
-   * @param {!string} userhash
    */
-  onPoliciesApplied(userhash) {
-    this.networkConfig_.getGlobalPolicy().then(response => {
-      this.globalPolicy_ = response.result;
-    });
+  override async onPoliciesApplied(_userhash: string): Promise<void> {
+    const response = await this.networkConfig_.getGlobalPolicy();
+    this.globalPolicy_ = response.result;
   }
 
   /**
    * CrosNetworkConfigObserver impl
    * Updates any matching existing active networks. Note: newly active networks
    * will trigger onNetworkStateListChanged which triggers getNetworkLists_.
-   * @param {!Array<OncMojo.NetworkStateProperties>} networks
    */
-  onActiveNetworksChanged(networks) {
+  override onActiveNetworksChanged(networks: OncMojo.NetworkStateProperties[]):
+      void {
     if (!this.activeNetworkIds_) {
       // Initial list of networks not received yet.
       return;
@@ -208,68 +196,60 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
   }
 
   /** CrosNetworkConfigObserver impl */
-  onNetworkStateListChanged() {
+  override onNetworkStateListChanged(): void {
     this.getNetworkLists_();
   }
 
   /** CrosNetworkConfigObserver impl */
-  onDeviceStateListChanged() {
+  override onDeviceStateListChanged(): void {
     this.getNetworkLists_();
   }
 
   /**
    * Returns the network-summary-item element corresponding to the
    * |networkType|.
-   * @param {!NetworkType} networkType
-   * @return {?NetworkSummaryItemElement}
    */
-  getNetworkRow(networkType) {
+  getNetworkRow(networkType: NetworkType): NetworkSummaryItemElement|null {
     const networkTypeString = OncMojo.getNetworkTypeString(networkType);
-    return /** @type {NetworkSummaryItemElement} */ (
-        this.shadowRoot.querySelector(`#${networkTypeString}`));
+    return this.shadowRoot!.querySelector<NetworkSummaryItemElement>(
+        `#${networkTypeString}`);
   }
 
   /**
    * Requests the list of device states and network states from Chrome.
    * Updates deviceStates, activeNetworkStates, and networkStateLists once the
    * results are returned from Chrome.
-   * @private
    */
-  getNetworkLists_() {
+  private async getNetworkLists_(): Promise<void> {
     // First get the device states.
-    this.networkConfig_.getDeviceStateList().then(response => {
-      // Second get the network states.
-      this.getNetworkStates_(response.result);
-    });
+    const response = await this.networkConfig_.getDeviceStateList();
+    // Second get the network states.
+    this.getNetworkStates_(response.result);
   }
 
   /**
    * Requests the list of network states from Chrome. Updates
    * activeNetworkStates and networkStateLists once the results are returned
    * from Chrome.
-   * @param {!Array<!OncMojo.DeviceStateProperties>} deviceStateList
-   * @private
    */
-  getNetworkStates_(deviceStateList) {
+  private async getNetworkStates_(
+      deviceStateList: OncMojo.DeviceStateProperties[]): Promise<void> {
     const filter = {
       filter: FilterType.kVisible,
       limit: NO_LIMIT,
       networkType: NetworkType.kAll,
     };
-    this.networkConfig_.getNetworkStateList(filter).then(response => {
-      this.updateNetworkStates_(response.result, deviceStateList);
-    });
+    const response = await this.networkConfig_.getNetworkStateList(filter);
+    this.updateNetworkStates_(response.result, deviceStateList);
   }
 
   /**
    * Called after network states are received from getNetworks.
-   * @param {!Array<!OncMojo.NetworkStateProperties>} networkStates The state
-   *     properties for all visible networks.
-   * @param {!Array<!OncMojo.DeviceStateProperties>} deviceStateList
-   * @private
    */
-  updateNetworkStates_(networkStates, deviceStateList) {
-    const newDeviceStates = {};
+  private updateNetworkStates_(
+      networkStates: OncMojo.NetworkStateProperties[],
+      deviceStateList: OncMojo.DeviceStateProperties[]): void {
+    const newDeviceStates: Record<string, OncMojo.DeviceStateProperties> = {};
     for (const device of deviceStateList) {
       newDeviceStates[device.type] = device;
     }
@@ -284,17 +264,17 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
 
     // Clear any current networks.
     const activeNetworkStatesByType =
-        /** @type {!Map<NetworkType, !OncMojo.NetworkStateProperties>} */
-        (new Map());
+        new Map<NetworkType, OncMojo.NetworkStateProperties>();
 
     // Complete list of states by type.
-    const newNetworkStateLists = {};
+    const newNetworkStateLists:
+        Record<string, OncMojo.NetworkStateProperties[]> = {};
     for (const type of orderedNetworkTypes) {
       newNetworkStateLists[type] = [];
     }
 
-    let firstConnectedNetwork = null;
-    networkStates.forEach(function(networkState) {
+    let firstConnectedNetwork: OncMojo.NetworkStateProperties|null = null;
+    networkStates.forEach((networkState) => {
       const type = networkState.type;
       if (!activeNetworkStatesByType.has(type)) {
         activeNetworkStatesByType.set(type, networkState);
@@ -311,7 +291,7 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
 
     // Push the active networks onto newActiveNetworkStates in order based on
     // device priority, creating an empty state for devices with no networks.
-    const newActiveNetworkStates = [];
+    const newActiveNetworkStates: OncMojo.NetworkStateProperties[] = [];
     this.activeNetworkIds_ = new Set();
     for (const type of orderedNetworkTypes) {
       const device = newDeviceStates[type];
@@ -340,8 +320,8 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
 
       // Note: The active state for 'Cellular' may be a Tether network if both
       // types are enabled but no Cellular network exists (edge case).
-      const networkState =
-          this.getActiveStateForType_(activeNetworkStatesByType, type);
+      const networkState = castExists(
+          this.getActiveStateForType_(activeNetworkStatesByType, type));
       if (networkState.source === OncSource.kNone &&
           device.deviceState === DeviceStateType.kProhibited) {
         // Prohibited technologies are enforced by the device policy.
@@ -364,13 +344,10 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
    * Returns the active network state for |type| or a default network state.
    * If there is no 'Cellular' network, return the active 'Tether' network if
    * any since the two types are represented by the same section / subpage.
-   * @param {!Map<NetworkType, !OncMojo.NetworkStateProperties>}
-   *     activeStatesByType
-   * @param {!NetworkType} type
-   * @return {!OncMojo.NetworkStateProperties|undefined}
-   * @private
    */
-  getActiveStateForType_(activeStatesByType, type) {
+  private getActiveStateForType_(
+      activeStatesByType: Map<NetworkType, OncMojo.NetworkStateProperties>,
+      type: NetworkType): OncMojo.NetworkStateProperties|undefined {
     let activeState = activeStatesByType.get(type);
     if (!activeState && type === NetworkType.kCellular) {
       activeState = activeStatesByType.get(NetworkType.kTether);
@@ -380,30 +357,21 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
 
   /**
    * Provides an id string for summary items. Used in tests.
-   * @param {!OncMojo.NetworkStateProperties} network
-   * @return {string}
-   * @private
    */
-  getTypeString_(network) {
+  private getTypeString_(network: OncMojo.NetworkStateProperties): string {
     return OncMojo.getNetworkTypeString(network.type);
   }
 
-  /**
-   * @param {!Object<!OncMojo.DeviceStateProperties>} deviceStates
-   * @return {!OncMojo.DeviceStateProperties|undefined}
-   * @private
-   */
-  getTetherDeviceState_(deviceStates) {
-    return this.deviceStates[NetworkType.kTether];
+  private getTetherDeviceState_(
+      deviceStates: Record<NetworkType, OncMojo.DeviceStateProperties>):
+      OncMojo.DeviceStateProperties|undefined {
+    return deviceStates[NetworkType.kTether];
   }
 
   /**
    * Return whether hotspot row should be shown in network summary.
-   *
-   * @return {boolean}
-   * @private
    */
-  shouldShowHotspotSummary_() {
+  private shouldShowHotspotSummary_(): boolean {
     if (!this.isHotspotFeatureEnabled_ || !this.hotspotInfo_) {
       return false;
     }
@@ -412,6 +380,12 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
         HotspotAllowStatus.kDisallowedNoCellularUpstream &&
         this.hotspotInfo_.allowStatus !==
         HotspotAllowStatus.kDisallowedNoWiFiDownstream;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [NetworkSummaryElement.is]: NetworkSummaryElement;
   }
 }
 

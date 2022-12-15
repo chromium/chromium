@@ -56,6 +56,27 @@ import {ApnSubpageElement} from './apn_subpage';
 import {InternetConfigElement} from './internet_config.js';
 import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
 
+// TODO(crbug/1315757) The following type definitions are only needed for
+// Closure compiler and can be removed when this file is converted to TS.
+/**
+ * @constructor
+ * @extends {HTMLElement}
+ */
+function NetworkSummaryItemElement() {}
+/** @return {?CrToggleElement} */
+NetworkSummaryItemElement.prototype.getDeviceEnabledToggle = function() {};
+
+/**
+ * @constructor
+ * @extends {HTMLElement}
+ */
+function NetworkSummaryElement() {}
+/**
+ * @param {?NetworkType} networkType
+ * @return {?NetworkSummaryItemElement}
+ */
+NetworkSummaryElement.prototype.getNetworkRow = function(networkType) {};
+
 /** @type {number} */
 const ESIM_PROFILE_LIMIT = 5;
 
@@ -426,11 +447,15 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     }
 
     afterNextRender(this, () => {
-      const networkRow = this.shadowRoot.querySelector('network-summary')
+      const networkRow = /** @type {NetworkSummaryElement} */ (
+                             this.shadowRoot.querySelector('network-summary'))
                              .getNetworkRow(networkType);
-      if (networkRow && networkRow.getDeviceEnabledToggle()) {
-        this.showDeepLinkElement(networkRow.getDeviceEnabledToggle());
-        return;
+      if (networkRow) {
+        const toggleEl = networkRow.getDeviceEnabledToggle();
+        if (toggleEl) {
+          this.showDeepLinkElement(toggleEl);
+          return;
+        }
       }
       console.warn(`Element with deep link id ${settingId} not focusable.`);
     });
@@ -506,8 +531,10 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         element = subPage.shadowRoot.querySelector('#networkList');
       }
     } else if (this.detailType_ !== undefined) {
-      const rowForDetailType = this.shadowRoot.querySelector('network-summary')
-                                   .getNetworkRow(this.detailType_);
+      const rowForDetailType =
+          /** @type {NetworkSummaryElement} */ (
+              this.shadowRoot.querySelector('network-summary'))
+              .getNetworkRow(this.detailType_);
 
       // Note: It is possible that the row is no longer present in the DOM
       // (e.g., when a Cellular dongle is unplugged or when Instant Tethering
