@@ -20,7 +20,6 @@ import static org.chromium.base.GarbageCollectionTestUtils.canBeGarbageCollected
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +45,7 @@ import org.mockito.stubbing.Answer;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.JniMocker;
@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.commerce.PriceTracking.BuyableProduct;
 import org.chromium.components.commerce.PriceTracking.PriceTrackingData;
@@ -84,7 +83,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.widget.ButtonCompat;
-import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
@@ -99,6 +97,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
         "force-fieldtrials=Study/Group"})
+@Batch(Batch.UNIT_TESTS)
 public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Rule
     public JniMocker mMocker = new JniMocker();
@@ -704,29 +703,6 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @UiThreadTest
-    public void testSearchTermChip() {
-        String searchTerm = "hello world";
-
-        testGridSelected(mTabGridView, mGridModel);
-        ChipView pageInfoButton = mTabGridView.findViewById(R.id.page_info_button);
-
-        mGridModel.set(TabProperties.SEARCH_QUERY, searchTerm);
-        Assert.assertEquals(View.VISIBLE, pageInfoButton.getVisibility());
-        Assert.assertEquals(searchTerm, pageInfoButton.getPrimaryTextView().getText());
-
-        mGridModel.set(TabProperties.SEARCH_QUERY, null);
-        Assert.assertEquals(View.GONE, pageInfoButton.getVisibility());
-
-        mGridModel.set(TabProperties.SEARCH_QUERY, searchTerm);
-        Assert.assertEquals(View.VISIBLE, pageInfoButton.getVisibility());
-
-        mGridModel.set(TabProperties.SEARCH_QUERY, null);
-        Assert.assertEquals(View.GONE, pageInfoButton.getVisibility());
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
     public void testPriceStringPriceDrop() {
         Tab tab = MockTab.createAndInitialize(1, false);
         MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
@@ -971,43 +947,6 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         public void fetch(Callback<CouponPersistedTabData> callback) {
             callback.onResult(mCouponPersistedTabData);
         }
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    public void testSearchListener() {
-        ChipView pageInfoButton = mTabGridView.findViewById(R.id.page_info_button);
-
-        AtomicInteger clickedTabId = new AtomicInteger(Tab.INVALID_TAB_ID);
-        TabListMediator.TabActionListener searchListener = clickedTabId::set;
-        mGridModel.set(TabProperties.PAGE_INFO_LISTENER, searchListener);
-
-        pageInfoButton.performClick();
-        Assert.assertEquals(TAB1_ID, clickedTabId.get());
-
-        clickedTabId.set(Tab.INVALID_TAB_ID);
-        mGridModel.set(TabProperties.PAGE_INFO_LISTENER, null);
-        pageInfoButton.performClick();
-        Assert.assertEquals(Tab.INVALID_TAB_ID, clickedTabId.get());
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    public void testSearchChipIcon() {
-        ChipView pageInfoButton = mTabGridView.findViewById(R.id.page_info_button);
-        View iconView = pageInfoButton.getChildAt(0);
-        Assert.assertTrue(iconView instanceof ChromeImageView);
-        ChromeImageView iconImageView = (ChromeImageView) iconView;
-
-        mGridModel.set(TabProperties.PAGE_INFO_ICON_DRAWABLE_ID, R.drawable.ic_logo_googleg_24dp);
-        Drawable googleDrawable = iconImageView.getDrawable();
-
-        mGridModel.set(TabProperties.PAGE_INFO_ICON_DRAWABLE_ID, R.drawable.ic_search);
-        Drawable magnifierDrawable = iconImageView.getDrawable();
-
-        Assert.assertNotEquals(magnifierDrawable, googleDrawable);
     }
 
     @Test

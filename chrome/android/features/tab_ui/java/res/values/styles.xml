@@ -22,11 +22,4 @@ found in the LICENSE file.
         <item name="colorTileBase">?attr/colorOnPrimary</item>
         <item name="elevationTileBase">@dimen/default_elevation_0</item>
     </style>
-
-    <style name="SearchShortcutChip" parent="Chip">
-        <item name="cornerRadius">@dimen/chip_default_height</item>
-        <item name="primaryTextAppearance">@style/TextAppearance.TextMediumThick.Primary</item>
-        <item name="chipColor">@color/chip_background_color</item>
-    </style>
-
 </resources>

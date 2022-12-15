@@ -98,17 +98,6 @@ found in the LICENSE file.
                 android:text="@string/tabswitcher_create_group"
                 android:visibility="gone"
                 style="@style/FilledButton"/>
-            <org.chromium.components.browser_ui.widget.chips.ChipView
-                android:id="@+id/page_info_button"
-                android:gravity="center"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_margin="8dp"
-                android:elevation="4dp"
-                android:visibility="gone"
-                style="@style/SearchShortcutChip" />
         </RelativeLayout>
         <org.chromium.ui.widget.ChromeImageView
             android:id="@+id/action_button"

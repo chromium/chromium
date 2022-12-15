@@ -104,9 +104,6 @@ public class TabProperties {
             .WritableObjectPropertyKey<AccessibilityDelegate> ACCESSIBILITY_DELEGATE =
             new PropertyModel.WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<String> SEARCH_QUERY =
-            new WritableObjectPropertyKey<>();
-
     public static final WritableObjectPropertyKey<TabListMediator.ShoppingPersistedTabDataFetcher>
             SHOPPING_PERSISTED_TAB_DATA_FETCHER = new WritableObjectPropertyKey<>(true);
 
@@ -115,12 +112,6 @@ public class TabProperties {
 
     public static final WritableObjectPropertyKey<TabListMediator.CouponPersistedTabDataFetcher>
             COUPON_PERSISTED_TAB_DATA_FETCHER = new WritableObjectPropertyKey<>(true);
-
-    public static final WritableObjectPropertyKey<TabListMediator.TabActionListener>
-            PAGE_INFO_LISTENER = new WritableObjectPropertyKey<>();
-
-    public static final PropertyModel.WritableIntPropertyKey PAGE_INFO_ICON_DRAWABLE_ID =
-            new PropertyModel.WritableIntPropertyKey();
 
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION_STRING =
             new WritableObjectPropertyKey<>();
@@ -137,8 +128,7 @@ public class TabProperties {
             TAB_SELECTION_DELEGATE, IS_INCOGNITO, SELECTED_TAB_BACKGROUND_DRAWABLE_ID,
             TABSTRIP_FAVICON_BACKGROUND_COLOR_ID, SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
             SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND, URL_DOMAIN, ACCESSIBILITY_DELEGATE,
-            SEARCH_QUERY, PAGE_INFO_LISTENER, PAGE_INFO_ICON_DRAWABLE_ID, CARD_TYPE,
-            CONTENT_DESCRIPTION_STRING, CLOSE_BUTTON_DESCRIPTION_STRING,
+            CARD_TYPE, CONTENT_DESCRIPTION_STRING, CLOSE_BUTTON_DESCRIPTION_STRING,
             SHOPPING_PERSISTED_TAB_DATA_FETCHER, STORE_PERSISTED_TAB_DATA_FETCHER,
             COUPON_PERSISTED_TAB_DATA_FETCHER, SHOULD_SHOW_PRICE_DROP_TOOLTIP};
 

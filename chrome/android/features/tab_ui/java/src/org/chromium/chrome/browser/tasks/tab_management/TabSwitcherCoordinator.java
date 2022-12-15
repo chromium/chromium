@@ -352,9 +352,7 @@ public class TabSwitcherCoordinator
                 mTabSwitcherMenuActionHandler = null;
             }
 
-            if (ChromeFeatureList.sInstantStart.isEnabled()
-                    || TabUiFeatureUtilities.ENABLE_SEARCH_CHIP.getValue()
-                            && mode != TabListCoordinator.TabListMode.CAROUSEL) {
+            if (ChromeFeatureList.sInstantStart.isEnabled()) {
                 mTabAttributeCache = new TabAttributeCache(mTabModelSelector);
             }
 

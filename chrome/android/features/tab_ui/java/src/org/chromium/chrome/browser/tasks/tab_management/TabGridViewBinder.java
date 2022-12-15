@@ -30,7 +30,6 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
@@ -113,15 +112,6 @@ class TabGridViewBinder {
             updateColor(view, model.get(TabProperties.IS_INCOGNITO),
                     model.get(TabProperties.IS_SELECTED));
             updateFavicon(view, model);
-            if (TabUiFeatureUtilities.ENABLE_SEARCH_CHIP.getValue()) {
-                ChipView pageInfoButton = (ChipView) view.fastFindViewById(R.id.page_info_button);
-                pageInfoButton.getPrimaryTextView().setTextAlignment(
-                        View.TEXT_ALIGNMENT_VIEW_START);
-                pageInfoButton.getPrimaryTextView().setEllipsize(TextUtils.TruncateAt.END);
-                // TODO(crbug.com/1048255): The selected state of ChipView doesn't look elevated.
-                //  Fix the elevation in style instead.
-                pageInfoButton.setSelected(false);
-            }
         } else if (TabProperties.FAVICON == propertyKey) {
             updateFavicon(view, model);
         } else if (TabProperties.THUMBNAIL_FETCHER == propertyKey) {
@@ -198,17 +188,6 @@ class TabGridViewBinder {
                     model.get(TabProperties.IS_SELECTED));
         } else if (TabProperties.ACCESSIBILITY_DELEGATE == propertyKey) {
             view.setAccessibilityDelegate(model.get(TabProperties.ACCESSIBILITY_DELEGATE));
-        } else if (TabProperties.SEARCH_QUERY == propertyKey) {
-            String query = model.get(TabProperties.SEARCH_QUERY);
-            ChipView pageInfoButton = (ChipView) view.fastFindViewById(R.id.page_info_button);
-            if (TextUtils.isEmpty(query)) {
-                pageInfoButton.setVisibility(View.GONE);
-            } else {
-                // Search query and price string are mutually exclusive
-                assert model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER) == null;
-                pageInfoButton.setVisibility(View.VISIBLE);
-                pageInfoButton.getPrimaryTextView().setText(query);
-            }
         } else if (TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER == propertyKey) {
             fetchPriceDrop(model, (priceDrop) -> {
                 PriceCardView priceCardView =
@@ -276,23 +255,6 @@ class TabGridViewBinder {
                 LargeMessageCardView.showPriceDropTooltip(
                         priceCardView.findViewById(R.id.current_price));
             }
-        } else if (TabProperties.PAGE_INFO_LISTENER == propertyKey) {
-            TabListMediator.TabActionListener listener =
-                    model.get(TabProperties.PAGE_INFO_LISTENER);
-            ChipView pageInfoButton = (ChipView) view.fastFindViewById(R.id.page_info_button);
-            if (listener == null) {
-                pageInfoButton.setOnClickListener(null);
-                return;
-            }
-            pageInfoButton.setOnClickListener(v -> {
-                int tabId = model.get(TabProperties.TAB_ID);
-                listener.run(tabId);
-            });
-        } else if (TabProperties.PAGE_INFO_ICON_DRAWABLE_ID == propertyKey) {
-            ChipView pageInfoButton = (ChipView) view.fastFindViewById(R.id.page_info_button);
-            int iconDrawableId = model.get(TabProperties.PAGE_INFO_ICON_DRAWABLE_ID);
-            boolean shouldTint = iconDrawableId != R.drawable.ic_logo_googleg_24dp;
-            pageInfoButton.setIcon(iconDrawableId, shouldTint);
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             view.setSelected(model.get(TabProperties.IS_SELECTED));
             updateColorForActionButton(view, model.get(TabProperties.IS_INCOGNITO),

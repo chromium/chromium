@@ -191,8 +191,6 @@ public class ChromeCachedFlags {
                         add(TabUiFeatureUtilities.ENABLE_LAUNCH_BUG_FIX);
                         add(TabUiFeatureUtilities.ENABLE_LAUNCH_POLISH);
                         add(TabUiFeatureUtilities.DELAY_GTS_CREATION);
-                        add(TabUiFeatureUtilities.ENABLE_SEARCH_CHIP);
-                        add(TabUiFeatureUtilities.ENABLE_SEARCH_CHIP_ADAPTIVE);
                         add(TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION);
                         add(TabUiFeatureUtilities.SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST);
                         add(TabUiFeatureUtilities.ENABLE_TAB_GROUP_SHARING);

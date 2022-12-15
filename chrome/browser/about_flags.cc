@@ -2088,9 +2088,6 @@ const FeatureEntry::FeatureParam kTabGridLayoutAndroid_TallNTV[] = {
     {"enable_launch_polish", "true"},
     {"enable_launch_bug_fix", "true"}};
 
-const FeatureEntry::FeatureParam kTabGridLayoutAndroid_SearchChip[] = {
-    {"enable_search_term_chip", "true"}};
-
 const FeatureEntry::FeatureParam
     kTabGridLayoutAndroid_TabGroupAutoCreation_TabGroupFirst[] = {
         {"enable_tab_group_auto_creation", "false"},
@@ -2105,8 +2102,6 @@ const FeatureEntry::FeatureVariation kTabGridLayoutAndroidVariations[] = {
      std::size(kTabGridLayoutAndroid_NewTabVariation), nullptr},
     {"Tall NTV", kTabGridLayoutAndroid_TallNTV,
      std::size(kTabGridLayoutAndroid_TallNTV), nullptr},
-    {"Search term chip", kTabGridLayoutAndroid_SearchChip,
-     std::size(kTabGridLayoutAndroid_SearchChip), nullptr},
     {"Without auto group", kTabGridLayoutAndroid_TabGroupAutoCreation,
      std::size(kTabGridLayoutAndroid_TabGroupAutoCreation), nullptr},
     {"Without auto group-group first",
