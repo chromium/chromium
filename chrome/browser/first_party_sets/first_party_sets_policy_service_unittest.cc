@@ -160,8 +160,6 @@ class FirstPartySetsPolicyServiceTest
 
   void SetUp() override {
     DefaultFirstPartySetsPolicyServiceTest::SetUp();
-    content::FirstPartySetsHandler::GetInstance()->SetInstanceForTesting(
-        &first_party_sets_handler_);
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -189,8 +187,6 @@ class FirstPartySetsPolicyServiceTest
     // tests if the factory has already created a service for the testing
     // profile being used.
     service_->ResetForTesting();
-    content::FirstPartySetsHandler::GetInstance()->SetInstanceForTesting(
-        nullptr);
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_.reset();
   }

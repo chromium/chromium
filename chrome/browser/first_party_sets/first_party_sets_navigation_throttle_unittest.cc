@@ -44,8 +44,6 @@ class FirstPartySetsNavigationThrottleTest
     subframe_ = content::RenderFrameHostTester::For(main_rfh())
                     ->AppendChild("subframe");
 
-    content::FirstPartySetsHandler::GetInstance()->SetInstanceForTesting(
-        &first_party_sets_handler_);
     service_ =
         FirstPartySetsPolicyServiceFactory::GetForBrowserContext(profile());
     ASSERT_NE(service_, nullptr);
