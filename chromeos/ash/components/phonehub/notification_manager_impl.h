@@ -9,6 +9,7 @@
 #include "chromeos/ash/components/phonehub/notification_manager.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace phonehub {
@@ -40,7 +41,8 @@ class NotificationManagerImpl
   MessageSender* message_sender_;
   UserActionRecorder* user_action_recorder_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
-  multidevice_setup::mojom::FeatureState notifications_feature_status_;
+  absl::optional<multidevice_setup::mojom::FeatureState>
+      notifications_feature_status_;
 };
 
 }  // namespace phonehub
