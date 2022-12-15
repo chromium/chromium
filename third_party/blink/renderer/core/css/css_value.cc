@@ -83,6 +83,7 @@
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
+#include "third_party/blink/renderer/core/css/css_view_value.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
@@ -304,6 +305,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<CSSLightDarkValuePair>(*this, other);
       case kScrollClass:
         return CompareCSSValues<cssvalue::CSSScrollValue>(*this, other);
+      case kViewClass:
+        return CompareCSSValues<cssvalue::CSSViewValue>(*this, other);
       case kRatioClass:
         return CompareCSSValues<cssvalue::CSSRatioValue>(*this, other);
     }
@@ -442,6 +445,8 @@ String CSSValue::CssText() const {
       return To<CSSLightDarkValuePair>(this)->CustomCSSText();
     case kScrollClass:
       return To<cssvalue::CSSScrollValue>(this)->CustomCSSText();
+    case kViewClass:
+      return To<cssvalue::CSSViewValue>(this)->CustomCSSText();
     case kRatioClass:
       return To<cssvalue::CSSRatioValue>(this)->CustomCSSText();
   }
@@ -648,6 +653,9 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kScrollClass:
       To<cssvalue::CSSScrollValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kViewClass:
+      To<cssvalue::CSSViewValue>(this)->TraceAfterDispatch(visitor);
       return;
     case kRatioClass:
       To<cssvalue::CSSRatioValue>(this)->TraceAfterDispatch(visitor);

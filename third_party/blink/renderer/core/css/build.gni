@@ -295,6 +295,8 @@ blink_core_sources_css = [
   "css_variable_data.h",
   "css_variable_reference_value.cc",
   "css_variable_reference_value.h",
+  "css_view_value.cc",
+  "css_view_value.h",
   "cssom/computed_style_property_map.cc",
   "cssom/computed_style_property_map.h",
   "cssom/cross_thread_color_value.cc",

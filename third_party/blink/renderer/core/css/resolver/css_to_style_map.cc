@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/css/css_scroll_value.h"
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
+#include "third_party/blink/renderer/core/css/css_view_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/scoped_css_value.h"
@@ -404,6 +405,15 @@ StyleTimeline CSSToStyleMap::MapAnimationTimeline(
     return StyleTimeline(MakeGarbageCollected<ScopedCSSName>(
         AtomicString(string_value->Value()), scoped_value.GetTreeScope()));
   }
+  if (value.IsViewValue()) {
+    const auto& view_value = To<cssvalue::CSSViewValue>(value);
+    const auto* axis_value = DynamicTo<CSSIdentifierValue>(view_value.Axis());
+    TimelineAxis axis = axis_value ? axis_value->ConvertTo<TimelineAxis>()
+                                   : StyleTimeline::ViewData::DefaultAxis();
+    return StyleTimeline(StyleTimeline::ViewData(axis));
+  }
+
+  DCHECK(value.IsScrollValue());
   const auto& scroll_value = To<cssvalue::CSSScrollValue>(value);
   const auto* axis_value = DynamicTo<CSSIdentifierValue>(scroll_value.Axis());
   const auto* scroller_value =

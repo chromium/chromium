@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
+#include "third_party/blink/renderer/core/css/css_view_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
@@ -3697,6 +3698,31 @@ CSSValue* ConsumeScrollFunction(CSSParserTokenRange& range,
   return MakeGarbageCollected<cssvalue::CSSScrollValue>(axis, scroller);
 }
 
+CSSValue* ConsumeViewFunction(CSSParserTokenRange& range,
+                              const CSSParserContext& context) {
+  if (range.Peek().FunctionId() != CSSValueID::kView) {
+    return nullptr;
+  }
+
+  CSSParserTokenRange block = range.ConsumeBlock();
+  CSSIdentifierValue* axis =
+      ConsumeIdent<CSSValueID::kBlock, CSSValueID::kInline,
+                   CSSValueID::kVertical, CSSValueID::kHorizontal>(block);
+
+  // TODO(crbug.com/1393087): Should parse inset as well.
+  if (!block.AtEnd()) {
+    return nullptr;
+  }
+
+  // Nullify default values.
+  // https://drafts.csswg.org/scroll-animations-1/#valdef-scroll-block
+  if (axis && IsIdent(*axis, CSSValueID::kBlock)) {
+    axis = nullptr;
+  }
+
+  return MakeGarbageCollected<cssvalue::CSSViewValue>(axis);
+}
+
 CSSValue* ConsumeAnimationTimeline(CSSParserTokenRange& range,
                                    const CSSParserContext& context) {
   if (auto* value = ConsumeIdent<CSSValueID::kNone, CSSValueID::kAuto>(range))
@@ -3705,6 +3731,9 @@ CSSValue* ConsumeAnimationTimeline(CSSParserTokenRange& range,
     return value;
   if (auto* value = ConsumeString(range))
     return value;
+  if (auto* value = ConsumeViewFunction(range, context)) {
+    return value;
+  }
   return ConsumeScrollFunction(range, context);
 }
 

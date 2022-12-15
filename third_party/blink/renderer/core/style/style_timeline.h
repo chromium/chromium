@@ -48,9 +48,29 @@ class CORE_EXPORT StyleTimeline {
     TimelineScroller scroller_;
   };
 
+  // https://drafts.csswg.org/scroll-animations-1/#view-notation
+  class ViewData {
+   public:
+    static TimelineAxis DefaultAxis() { return TimelineAxis::kBlock; }
+
+    ViewData(TimelineAxis axis) : axis_(axis) {}
+
+    bool operator==(const ViewData& other) const {
+      return axis_ == other.axis_;
+    }
+    bool operator!=(const ViewData& other) const { return !(*this == other); }
+
+    TimelineAxis GetAxis() const { return axis_; }
+    bool HasDefaultAxis() const { return axis_ == DefaultAxis(); }
+
+   private:
+    TimelineAxis axis_;
+  };
+
   explicit StyleTimeline(CSSValueID keyword) : data_(keyword) {}
   explicit StyleTimeline(const ScopedCSSName* name) : data_(name) {}
   explicit StyleTimeline(const ScrollData& scroll_data) : data_(scroll_data) {}
+  explicit StyleTimeline(const ViewData& view_data) : data_(view_data) {}
 
   bool operator==(const StyleTimeline& other) const {
     if (IsName() && other.IsName()) {
@@ -67,15 +87,19 @@ class CORE_EXPORT StyleTimeline {
     return absl::holds_alternative<Persistent<const ScopedCSSName>>(data_);
   }
   bool IsScroll() const { return absl::holds_alternative<ScrollData>(data_); }
+  bool IsView() const { return absl::holds_alternative<ViewData>(data_); }
 
   const CSSValueID& GetKeyword() const { return absl::get<CSSValueID>(data_); }
   const ScopedCSSName& GetName() const {
     return *absl::get<Persistent<const ScopedCSSName>>(data_);
   }
   const ScrollData& GetScroll() const { return absl::get<ScrollData>(data_); }
+  const ViewData& GetView() const { return absl::get<ViewData>(data_); }
 
  private:
-  absl::variant<CSSValueID, Persistent<const ScopedCSSName>, ScrollData> data_;
+  absl::
+      variant<CSSValueID, Persistent<const ScopedCSSName>, ScrollData, ViewData>
+          data_;
 };
 
 }  // namespace blink
