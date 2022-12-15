@@ -9,9 +9,4 @@
 #endif
 
 @implementation FakeInfobarBannerConsumer
-
-- (void)addCustomStyle:(UIFontDescriptorSymbolicTraits)symbolicTraits
-       toSubtitleRange:(NSRange)range {
-}
-
 @end
