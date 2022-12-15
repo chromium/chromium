@@ -690,11 +690,11 @@ class QuicNetworkTransactionTest
     // QUIC v1 and QUIC v2 are considered a match, because they have the same
     // ALPN token.
     if ((connection_info == HttpResponseInfo::CONNECTION_INFO_QUIC_RFC_V1 ||
-         connection_info == HttpResponseInfo::CONNECTION_INFO_QUIC_2_DRAFT_1) &&
+         connection_info == HttpResponseInfo::CONNECTION_INFO_QUIC_2_DRAFT_8) &&
         (response->connection_info ==
              HttpResponseInfo::CONNECTION_INFO_QUIC_RFC_V1 ||
          response->connection_info ==
-             HttpResponseInfo::CONNECTION_INFO_QUIC_2_DRAFT_1)) {
+             HttpResponseInfo::CONNECTION_INFO_QUIC_2_DRAFT_8)) {
       return;
     }
 
