@@ -24,6 +24,7 @@
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace segmentation_platform {
 namespace {
@@ -81,6 +82,10 @@ class SegmentResultProviderTest : public testing::Test {
   ~SegmentResultProviderTest() override = default;
 
   void SetUp() override {
+    // TODO(khokhlov): Replace with a test environment for tracing after the
+    // SDK migration
+    perfetto::internal::TrackRegistry::InitializeInstance();
+
     default_manager_ = std::make_unique<DefaultModelManager>(
         &provider_factory_,
         std::vector<SegmentId>({kTestSegment, kTestSegment2}));

@@ -30,6 +30,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using base::test::RunOnceCallback;
 using ::testing::_;
@@ -82,6 +83,10 @@ class SegmentationPlatformServiceImplTest
   void SetUp() override {
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
+
+    // TODO(khokhlov): Replace with a test environment for tracing after the
+    // SDK migration
+    perfetto::internal::TrackRegistry::InitializeInstance();
 
     // Setup model provider data for default model for supporting on demand
     // execution.
