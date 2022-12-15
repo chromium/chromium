@@ -211,12 +211,9 @@ void BreadcrumbPersistentStorageManager::WritePendingBreadcrumbs() {
   if (!CheckForFileConsent() || pending_breadcrumbs_.empty())
     return;
 
-  // Make a copy of |pending_breadcrumbs_| to pass to the DoWriteEventsToFile()
-  // callback, since |pending_breadcrumbs_| is about to be cleared.
-  const std::string pending_breadcrumbs = pending_breadcrumbs_;
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&DoWriteEventsToFile, breadcrumbs_file_path_,
-                                file_position_.value(), pending_breadcrumbs,
+                                file_position_.value(), pending_breadcrumbs_,
                                 /*append=*/true, write_counter_,
                                 write_counter_at_last_full_rewrite_));
 
