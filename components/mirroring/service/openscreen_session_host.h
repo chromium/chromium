@@ -19,6 +19,7 @@
 #include "components/mirroring/service/openscreen_message_port.h"
 #include "components/mirroring/service/openscreen_rpc_dispatcher.h"
 #include "components/mirroring/service/rtp_stream.h"
+#include "components/openscreen_platform/event_trace_logging_platform.h"
 #include "components/openscreen_platform/task_runner.h"
 #include "gpu/config/gpu_info.h"
 #include "media/capture/video/video_capture_feedback.h"

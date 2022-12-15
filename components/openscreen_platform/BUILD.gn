@@ -79,11 +79,13 @@ source_set("openscreen_platform_without_sockets") {
       [ "//components/cast_streaming/test:test_sender_without_socket_deps" ]
 
   public = [
+    "event_trace_logging_platform.h",
     "network_util.h",
     "task_runner.h",
   ]
 
   sources = [
+    "event_trace_logging_platform.cc",
     "logging.cc",
     "network_util.cc",
     "task_runner.cc",

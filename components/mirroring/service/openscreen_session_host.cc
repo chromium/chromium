@@ -243,6 +243,8 @@ OpenscreenSessionHost::OpenscreenSessionHost(
                     std::move(inbound_channel)) {
   DCHECK(resource_provider_);
 
+  openscreen_platform::EventTraceLoggingPlatform::EnsureInstance();
+
   mirror_settings_.SetResolutionConstraints(max_resolution.width(),
                                             max_resolution.height());
 
