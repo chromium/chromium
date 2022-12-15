@@ -28,6 +28,7 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"
@@ -188,11 +189,14 @@ PrefetchContainer::PrefetchContainer(
   if (rfh) {
     auto* preloading_data = PreloadingData::GetOrCreateForWebContents(
         WebContents::FromRenderFrameHost(rfh));
+    auto matcher =
+        base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)
+            ? PreloadingDataImpl::GetSameURLAndNoVarySearchURLMatcher(
+                  prefetch_document_manager_, url_)
+            : PreloadingDataImpl::GetSameURLMatcher(url_);
     auto* attempt = preloading_data->AddPreloadingAttempt(
         ToPreloadingPredictor(ContentPreloadingPredictor::kSpeculationRules),
-        PreloadingType::kPrefetch,
-        PreloadingDataImpl::GetSameURLAndNoVarySearchURLMatcher(
-            prefetch_document_manager_, url_));
+        PreloadingType::kPrefetch, std::move(matcher));
     attempt_ = attempt->GetWeakPtr();
     // `PreloadingPrediction` is added in `PreloadingDecider`.
   }
