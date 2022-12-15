@@ -536,11 +536,6 @@ void WindowEventDispatcher::OnEventProcessingStarted(ui::Event* event) {
     return;
   }
 
-  if (host_->compositor() && cc::CustomMetricRecorder::Get()) {
-    event_metrics_monitors_.push_back(
-        CreateScropedMetricsMonitorForEvent(*event));
-  }
-
   // The held events are already in |window()|'s coordinate system. So it is
   // not necessary to apply the transform to convert from the host's
   // coordinate system to |window()|'s coordinate system.
@@ -558,13 +553,6 @@ void WindowEventDispatcher::OnEventProcessingFinished(
     return;
 
   observer_notifiers_.pop();
-  if (host_->compositor() && cc::CustomMetricRecorder::Get()) {
-    std::unique_ptr<cc::EventsMetricsManager::ScopedMonitor> monitor =
-        std::move(event_metrics_monitors_.back());
-    event_metrics_monitors_.pop_back();
-    if (event->handled() && ShouldReportEventLatency(target, details))
-      monitor->SetSaveMetrics();
-  }
 }
 
 bool WindowEventDispatcher::ShouldReportEventLatency(
@@ -593,6 +581,11 @@ bool WindowEventDispatcher::CanDispatchToTarget(ui::EventTarget* target) {
 ui::EventDispatchDetails WindowEventDispatcher::PreDispatchEvent(
     ui::EventTarget* target,
     ui::Event* event) {
+  if (host_->compositor() && cc::CustomMetricRecorder::Get()) {
+    event_metrics_monitors_.push_back(
+        CreateScropedMetricsMonitorForEvent(*event));
+  }
+
   Window* target_window = static_cast<Window*>(target);
   CHECK(window()->Contains(target_window));
 
@@ -700,9 +693,20 @@ ui::EventDispatchDetails WindowEventDispatcher::PostDispatchEvent(
                 touchevent.unique_event_id(), event.result(),
                 false /* is_source_touch_event_set_blocking */, window);
 
-        return ProcessGestures(window, std::move(gestures));
+        details = ProcessGestures(window, std::move(gestures));
       }
     }
+  }
+
+  // Note this must run after processing events corresponding to the event
+  // monitor creation code in PreDispatchEvent to track latencies properly.
+  if (!details.dispatcher_destroyed && host_->compositor() &&
+      cc::CustomMetricRecorder::Get()) {
+    std::unique_ptr<cc::EventsMetricsManager::ScopedMonitor> monitor =
+        std::move(event_metrics_monitors_.back());
+    event_metrics_monitors_.pop_back();
+    if (event.handled() && ShouldReportEventLatency(target, details))
+      monitor->SetSaveMetrics();
   }
 
   return details;
